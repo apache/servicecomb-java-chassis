@@ -31,8 +31,12 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
 import mockit.Expectations;
@@ -42,6 +46,21 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestInvokerUtils {
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
+
+  SCBEngine scbEngine = new SCBEngine();
+
+  @Before
+  public void setup() {
+    new MockUp<SCBEngine>() {
+      @Mock
+      SCBEngine getInstance() {
+        return scbEngine;
+      }
+    };
+    scbEngine.setStatus(SCBStatus.UP);
+  }
 
   @Test
   public void testSyncInvokeInvocationWithException() {
@@ -69,9 +88,6 @@ public class TestInvokerUtils {
   @Test
   public void testReactiveInvoke(@Mocked Invocation invocation, @Mocked InvocationContext parentContext,
       @Mocked Response response) {
-
-    SCBEngine.getInstance().setStatus(SCBStatus.UP);
-
     new MockUp<Invocation>(invocation) {
       @Mock
       InvocationContext getParentContext() {
@@ -94,9 +110,6 @@ public class TestInvokerUtils {
   @SuppressWarnings("deprecation")
   @Test
   public void invoke() {
-
-    SCBEngine.getInstance().setStatus(SCBStatus.UP);
-
     new MockUp<InvokerUtils>() {
       @Mock
       Object syncInvoke(Invocation invocation) {
@@ -108,73 +121,30 @@ public class TestInvokerUtils {
   }
 
   @Test
-  public void testSyncInvokeNotReady(@Mocked Invocation invocation) {
+  public void testSyncInvoke_4param_NotReady() {
+    scbEngine.setStatus(SCBStatus.DOWN);
 
-    SCBEngine.getInstance().setStatus(SCBStatus.DOWN);
-
-    try {
-      InvokerUtils.syncInvoke(invocation);
-      Assert.fail("must throw exception");
-    } catch (IllegalStateException e) {
-      Assert
-          .assertEquals("System is starting and not ready for remote calls or shutting down in progress, STATUS = DOWN",
-              e.getMessage());
-    }
-
-    try {
-      InvokerUtils.syncInvoke("ms", "schemaId", "opName", null);
-      Assert.fail("must throw exception");
-    } catch (IllegalStateException e) {
-      Assert
-          .assertEquals("System is starting and not ready for remote calls or shutting down in progress, STATUS = DOWN",
-              e.getMessage());
-    }
-
-    try {
-      InvokerUtils.syncInvoke("ms", "latest", "rest", "schemaId", "opName", null);
-      Assert.fail("must throw exception");
-    } catch (IllegalStateException e) {
-      Assert
-          .assertEquals("System is starting and not ready for remote calls or shutting down in progress, STATUS = DOWN",
-              e.getMessage());
-    }
+    expectedException.expect(IllegalStateException.class);
+    expectedException.expectMessage(
+        Matchers.is("System is starting and not ready for remote calls or shutting down in progress, STATUS = DOWN"));
+    InvokerUtils.syncInvoke("ms", "schemaId", "opName", null);
   }
 
   @Test
-  public void testReactiveInvokeNotReady(@Mocked Invocation invocation, @Mocked InvocationContext parentContext,
-      @Mocked Response response) {
+  public void testSyncInvoke_6param_NotReady() {
+    scbEngine.setStatus(SCBStatus.DOWN);
 
-    SCBEngine.getInstance().setStatus(SCBStatus.DOWN);
+    expectedException.expect(IllegalStateException.class);
+    expectedException.expectMessage(
+        Matchers.is("System is starting and not ready for remote calls or shutting down in progress, STATUS = DOWN"));
 
-    new MockUp<Invocation>(invocation) {
-      @Mock
-      InvocationContext getParentContext() {
-        return parentContext;
-      }
-
-      @Mock
-      void next(AsyncResponse asyncResp) {
-        asyncResp.handle(response);
-      }
-    };
-
-    Holder<InvocationContext> holder = new Holder<>();
-    try {
-      InvokerUtils.reactiveInvoke(invocation, ar -> holder.value = ContextUtils.getInvocationContext());
-    } catch (IllegalStateException e) {
-      Assert
-          .assertEquals("System is starting and not ready for remote calls or shutting down in progress, STATUS = DOWN",
-              e.getMessage());
-    }
+    InvokerUtils.syncInvoke("ms", "latest", "rest", "schemaId", "opName", null);
   }
 
   @Test
   public void testSyncInvokeReady(@Injectable ConsumerProviderManager consumerProviderManager,
       @Injectable Invocation invocation) {
-
-    SCBEngine.getInstance().setStatus(SCBStatus.UP);
-
-    CseContext.getInstance().setConsumerProviderManager(consumerProviderManager);
+    scbEngine.setConsumerProviderManager(consumerProviderManager);
 
     new Expectations(InvocationFactory.class) {
       {

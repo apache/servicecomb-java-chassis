@@ -36,7 +36,6 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
 import org.hamcrest.Matchers;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -54,14 +53,17 @@ public class TestInvoker {
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
+  SCBEngine scbEngine = new SCBEngine();
+
   @Before
   public void setup() {
-    SCBEngine.getInstance().setStatus(SCBStatus.UP);
-  }
-
-  @After
-  public void teardown() {
-    SCBEngine.getInstance().setStatus(SCBStatus.DOWN);
+    new MockUp<SCBEngine>() {
+      @Mock
+      SCBEngine getInstance() {
+        return scbEngine;
+      }
+    };
+    scbEngine.setStatus(SCBStatus.UP);
   }
 
   @Test
@@ -78,7 +80,7 @@ public class TestInvoker {
         microserviceMeta.ensureFindSchemaMeta("schemaId");
       }
     };
-    CseContext.getInstance().setConsumerProviderManager(manager);
+    scbEngine.setConsumerProviderManager(manager);
     CseContext.getInstance().setConsumerSchemaFactory(factory);
     CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
 
@@ -103,7 +105,7 @@ public class TestInvoker {
         microserviceMeta.findSchemaMeta(IPerson.class);
       }
     };
-    CseContext.getInstance().setConsumerProviderManager(manager);
+    scbEngine.setConsumerProviderManager(manager);
     CseContext.getInstance().setConsumerSchemaFactory(factory);
     CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
 
@@ -130,7 +132,7 @@ public class TestInvoker {
         microserviceMeta.ensureFindSchemaMeta(IPerson.class.getName());
       }
     };
-    CseContext.getInstance().setConsumerProviderManager(manager);
+    scbEngine.setConsumerProviderManager(manager);
     CseContext.getInstance().setConsumerSchemaFactory(factory);
     CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
 

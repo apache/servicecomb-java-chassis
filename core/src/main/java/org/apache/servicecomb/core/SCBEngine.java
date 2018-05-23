@@ -28,6 +28,7 @@ import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.handler.HandlerConfigUtils;
 import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
+import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.event.EventManager;
@@ -266,5 +267,25 @@ public class SCBEngine {
       }
       TimeUnit.SECONDS.sleep(1);
     }
+  }
+
+  protected void ensureStatusUp() {
+    SCBStatus currentStatus = getStatus();
+    if (!SCBStatus.UP.equals(currentStatus)) {
+      throw new IllegalStateException(
+          "System is starting and not ready for remote calls or shutting down in progress, STATUS = " + currentStatus);
+    }
+  }
+
+  public ReferenceConfig createReferenceConfigForInvoke(String microserviceName, String versionRule, String transport) {
+    ensureStatusUp();
+
+    return consumerProviderManager.createReferenceConfig(microserviceName, versionRule, transport);
+  }
+
+  public ReferenceConfig getReferenceConfigForInvoke(String microserviceName) {
+    ensureStatusUp();
+
+    return consumerProviderManager.getReferenceConfig(microserviceName);
   }
 }

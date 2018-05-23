@@ -17,10 +17,8 @@
 
 package org.apache.servicecomb.core.provider.consumer;
 
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.core.SCBStatus;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
@@ -35,22 +33,24 @@ public final class InvokerUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(InvokerUtils.class);
 
   public static Object syncInvoke(String microserviceName, String schemaId, String operationName, Object[] args) {
-    checkEngineStatus();
-    ReferenceConfig referenceConfig = CseContext.getInstance().getConsumerProviderManager()
-        .getReferenceConfig(microserviceName);
+    ReferenceConfig referenceConfig = SCBEngine.getInstance().getReferenceConfigForInvoke(microserviceName);
     return syncInvoke(generateInvocation(schemaId, operationName, args, referenceConfig));
   }
 
   public static Object syncInvoke(String microserviceName, String microserviceVersion, String transport,
       String schemaId, String operationName, Object[] args) {
-    checkEngineStatus();
-    ReferenceConfig referenceConfig = CseContext.getInstance().getConsumerProviderManager()
-        .createReferenceConfig(microserviceName, microserviceVersion, transport);
+    ReferenceConfig referenceConfig = SCBEngine.getInstance()
+        .createReferenceConfigForInvoke(microserviceName, microserviceVersion, transport);
     return syncInvoke(generateInvocation(schemaId, operationName, args, referenceConfig));
   }
 
+  /**
+   * it's a internal API, caller make sure already invoked SCBEngine.ensureStatusUp
+   * @param invocation
+   * @return contract result
+   * @throws InvocationException
+   */
   public static Object syncInvoke(Invocation invocation) throws InvocationException {
-    checkEngineStatus();
     Response response = innerSyncInvoke(invocation);
     if (response.isSuccessed()) {
       return response.getResult();
@@ -58,8 +58,12 @@ public final class InvokerUtils {
     throw ExceptionFactory.convertConsumerException(response.getResult());
   }
 
+  /**
+   * it's a internal API, caller make sure already invoked SCBEngine.ensureStatusUp
+   * @param invocation
+   * @return servicecomb response object
+   */
   public static Response innerSyncInvoke(Invocation invocation) {
-    checkEngineStatus();
     try {
       invocation.onStart();
       SyncResponseExecutor respExecutor = new SyncResponseExecutor();
@@ -81,8 +85,12 @@ public final class InvokerUtils {
     }
   }
 
+  /**
+   * it's a internal API, caller make sure already invoked SCBEngine.ensureStatusUp
+   * @param invocation
+   * @param asyncResp
+   */
   public static void reactiveInvoke(Invocation invocation, AsyncResponse asyncResp) {
-    checkEngineStatus();
     try {
       invocation.onStart();
       invocation.setSync(false);
@@ -114,17 +122,8 @@ public final class InvokerUtils {
     return InvocationFactory.forConsumer(referenceConfig, schemaMeta, operationName, args);
   }
 
-  private static void checkEngineStatus() {
-    if (!SCBStatus.UP.equals(SCBEngine.getInstance().getStatus())) {
-      throw new IllegalStateException(
-          "System is starting and not ready for remote calls or shutting down in progress, STATUS = " + String
-              .valueOf(SCBEngine.getInstance().getStatus()));
-    }
-  }
-
   @Deprecated
   public static Object invoke(Invocation invocation) {
-    checkEngineStatus();
     return syncInvoke(invocation);
   }
 }
