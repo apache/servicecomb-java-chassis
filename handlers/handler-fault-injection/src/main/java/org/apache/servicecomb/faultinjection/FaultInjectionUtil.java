@@ -140,7 +140,6 @@ public class FaultInjectionUtil {
    *
    * @param reqCount
    * @param percentage
-   * @param key
    * @return true: delay/abort is needed. false: delay/abort is not needed.
    */
   public static boolean isFaultNeedToInject(long reqCount, int percentage) {
