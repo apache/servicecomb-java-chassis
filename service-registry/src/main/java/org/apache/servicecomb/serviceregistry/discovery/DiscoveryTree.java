@@ -50,7 +50,7 @@ public class DiscoveryTree {
   public void sort() {
     filters.sort(Comparator.comparingInt(DiscoveryFilter::getOrder));
 
-    LOGGER.info("found DiscoveryFilter:");
+    LOGGER.info("sort DiscoveryFilter:");
     for (DiscoveryFilter filter : filters) {
       LOGGER.info("DiscoveryFilter {}.", filter.getClass().getName());
     }

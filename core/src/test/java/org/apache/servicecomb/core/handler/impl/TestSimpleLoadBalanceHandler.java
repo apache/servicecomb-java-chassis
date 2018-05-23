@@ -24,12 +24,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.core.filter.OperationInstancesDiscoveryFilter;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
+import org.apache.servicecomb.serviceregistry.discovery.DiscoveryFilter;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.After;
@@ -42,9 +45,12 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestSimpleLoadBalanceHandler {
-  SimpleLoadBalanceHandler handler = new SimpleLoadBalanceHandler();
+  SimpleLoadBalanceHandler handler;
 
-  Map<String, AtomicInteger> indexMap = Deencapsulation.getField(handler, "indexMap");
+  Map<String, AtomicInteger> indexMap;
+
+  @Mocked
+  OperationInstancesDiscoveryFilter operationInstancesDiscoveryFilter;
 
   @Mocked
   Invocation invocation;
@@ -71,8 +77,10 @@ public class TestSimpleLoadBalanceHandler {
     CseContext.getInstance().setTransportManager(transportManager);
 
     RegistryUtils.setServiceRegistry(serviceRegistry);
-    new Expectations() {
+    new Expectations(SPIServiceUtils.class) {
       {
+        SPIServiceUtils.getSortedService(DiscoveryFilter.class);
+        result = Collections.emptyList();
         serviceRegistry.getInstanceCacheManager();
         result = instanceCacheManager;
         instanceCacheManager.getOrCreateVersionedCache(anyString, anyString, anyString);
@@ -81,6 +89,9 @@ public class TestSimpleLoadBalanceHandler {
         result = "";
       }
     };
+
+    handler = new SimpleLoadBalanceHandler();
+    indexMap = Deencapsulation.getField(handler, "indexMap");
   }
 
   @After

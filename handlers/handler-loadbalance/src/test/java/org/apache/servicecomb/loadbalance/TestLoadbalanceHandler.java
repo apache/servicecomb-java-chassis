@@ -18,6 +18,7 @@
 package org.apache.servicecomb.loadbalance;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.loadbalance.filter.SimpleTransactionControlFilter;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
@@ -39,6 +41,7 @@ import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
+import org.apache.servicecomb.serviceregistry.discovery.DiscoveryFilter;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.hamcrest.Matchers;
@@ -72,9 +75,9 @@ public class TestLoadbalanceHandler {
 
   IRule rule = Mockito.mock(IRule.class);
 
-  LoadbalanceHandler handler = new LoadbalanceHandler();
+  LoadbalanceHandler handler;
 
-  Map<String, LoadBalancer> loadBalancerMap = Deencapsulation.getField(handler, "loadBalancerMap");
+  Map<String, LoadBalancer> loadBalancerMap;
 
   private LoadBalancer loadBalancer = new LoadBalancer("loadBalancerName", rule, "test");
 
@@ -149,6 +152,13 @@ public class TestLoadbalanceHandler {
       }
     };
 
+    new Expectations(SPIServiceUtils.class) {
+      {
+        SPIServiceUtils.getSortedService(DiscoveryFilter.class);
+        result = Collections.emptyList();
+      }
+    };
+
     BeansHolder holder = new BeansHolder();
     List<ExtensionsFactory> extensionsFactories = new ArrayList<>();
     extensionsFactories.add(new RuleClassNameExtentionsFactory());
@@ -156,6 +166,9 @@ public class TestLoadbalanceHandler {
     extensionsFactories.add(new DefaultRetryExtensionsFactory());
     Deencapsulation.setField(holder, "extentionsFactories", extensionsFactories);
     holder.init();
+
+    handler = new LoadbalanceHandler();
+    loadBalancerMap = Deencapsulation.getField(handler, "loadBalancerMap");
   }
 
   @After

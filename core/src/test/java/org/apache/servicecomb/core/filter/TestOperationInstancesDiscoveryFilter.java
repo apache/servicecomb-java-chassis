@@ -15,15 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.edge.core;
+package org.apache.servicecomb.core.filter;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
 
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
@@ -49,7 +46,7 @@ import org.apache.servicecomb.serviceregistry.registry.LocalServiceRegistry;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
-import org.apache.servicecomb.swagger.generator.jaxrs.JaxrsSwaggerGeneratorContext;
+import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -59,27 +56,26 @@ import org.springframework.context.ApplicationContext;
 
 import com.google.common.eventbus.EventBus;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.SwaggerDefinition;
 import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestOperationInstancesDiscoveryFilter {
-  @Path("/v1")
+  @SwaggerDefinition(basePath = "/v1")
   private static class V1_0_0 {
-    @Path("/add")
-    @GET
+    @ApiOperation(value = "", httpMethod = "GET")
     public void add() {
     }
   }
 
-  @Path("/v1")
+  @SwaggerDefinition(basePath = "/v1")
   private static class V1_1_0 {
-    @Path("/add")
-    @GET
+    @ApiOperation(value = "", httpMethod = "GET")
     public void add() {
     }
 
-    @Path("/dec")
-    @GET
+    @ApiOperation(value = "", httpMethod = "GET")
     public void dec() {
     }
   }
@@ -88,7 +84,7 @@ public class TestOperationInstancesDiscoveryFilter {
 
   DiscoveryContext context = new DiscoveryContext();
 
-  SwaggerGeneratorContext swaggerGeneratorContext = new JaxrsSwaggerGeneratorContext();
+  SwaggerGeneratorContext swaggerGeneratorContext = new PojoSwaggerGeneratorContext();
 
   EventBus eventBus = new EventBus();
 

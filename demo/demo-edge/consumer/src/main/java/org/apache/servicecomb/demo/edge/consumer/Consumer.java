@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.servicecomb.core.Endpoint;
-import org.apache.servicecomb.core.endpoint.EndpointsCache;
 import org.apache.servicecomb.demo.edge.model.AppClientDataRsp;
 import org.apache.servicecomb.demo.edge.model.ChannelRequestBase;
 import org.apache.servicecomb.demo.edge.model.DependTypeA;
@@ -37,6 +35,8 @@ import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -206,10 +206,17 @@ public class Consumer {
 
   private URIEndpointObject prepareEdge(String prefix) {
     Microservice microservice = RegistryUtils.getMicroservice();
-    EndpointsCache endpointsCache = new EndpointsCache(microservice.getAppId(), "edge", "latest", "");
-    Endpoint ep = endpointsCache.getLatestEndpoints().get(0);
-    URIEndpointObject edgeAddress = (URIEndpointObject) ep.getAddress();
-    edgePrefix = String.format("http://%s:%d/" + prefix + "/business", edgeAddress.getHostOrIp(), edgeAddress.getPort());
+    MicroserviceInstance microserviceInstance = (MicroserviceInstance) RegistryUtils.getServiceRegistry()
+        .getAppManager()
+        .getOrCreateMicroserviceVersionRule(microservice.getAppId(), "edge", DefinitionConst.VERSION_RULE_ALL)
+        .getVersionedCache()
+        .mapData()
+        .values()
+        .stream()
+        .findFirst()
+        .get();
+    URIEndpointObject edgeAddress = new URIEndpointObject(microserviceInstance.getEndpoints().get(0));
+    edgePrefix = String.format("http://%s:%d/%s/business", edgeAddress.getHostOrIp(), edgeAddress.getPort(), prefix);
     return edgeAddress;
   }
 

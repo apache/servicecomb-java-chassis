@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.edge.core;
+package org.apache.servicecomb.core.filter;
 
 import java.util.Comparator;
 import java.util.HashMap;
