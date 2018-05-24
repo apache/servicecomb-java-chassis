@@ -35,12 +35,16 @@ import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerRespo
 import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapperFactory;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapperFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import io.swagger.annotations.ApiOperation;
 
 @Component
 public class SwaggerEnvironment {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerEnvironment.class);
+
   @Inject
   private ProducerArgumentsMapperFactory producerArgumentsFactory;
 
@@ -76,7 +80,7 @@ public class SwaggerEnvironment {
   }
 
   public SwaggerConsumer createConsumer(Class<?> consumerIntf) {
-    // consumer与契约接口相同
+    // consumer interface equals to contract interface
     return createConsumer(consumerIntf, consumerIntf);
   }
 
@@ -89,11 +93,12 @@ public class SwaggerEnvironment {
       // consumer参数不一定等于swagger参数
       Method swaggerMethod = ReflectUtils.findMethod(swaggerIntf, swaggerMethodName);
       if (swaggerMethod == null) {
-        // consumer大于契约，非法
-        String msg = String.format("consumer method %s:%s not exist in swagger.",
+        // consumer method set bigger than contract, it's invalid
+        // but we need to support consumer upgrade before producer, so only log and ignore it.
+        LOGGER.warn("consumer method {}:{} not exist in contract.",
             consumerIntf.getName(),
             consumerMethod.getName());
-        throw new Error(msg);
+        continue;
       }
 
       ConsumerArgumentsMapper argsMapper =

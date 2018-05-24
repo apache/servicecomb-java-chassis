@@ -23,9 +23,11 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
 import org.apache.servicecomb.common.javassist.JavassistUtils;
+import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
 import org.apache.servicecomb.swagger.invocation.models.ProducerImpl;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -52,5 +54,24 @@ public class TestSwaggerEnvironment {
   @Test
   public void unableToFindHiddenMethod() {
     assertThat(producer.findOperation("hiddenMethod"), is(nullValue()));
+  }
+
+  interface ConsumerIntf {
+    void exist();
+
+    void notExist();
+  }
+
+  interface ContractIntf {
+    void exist();
+  }
+
+  @Test
+  public void createConsumer_consumerMethodSetBigger() {
+    SwaggerConsumer swaggerConsumer = env.getSwaggerEnvironment()
+        .createConsumer(ConsumerIntf.class, ContractIntf.class);
+
+    Assert.assertNotNull(swaggerConsumer.findOperation("exist"));
+    Assert.assertNull(swaggerConsumer.findOperation("notExist"));
   }
 }
