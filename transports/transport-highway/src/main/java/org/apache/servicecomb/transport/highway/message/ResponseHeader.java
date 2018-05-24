@@ -19,7 +19,7 @@ package org.apache.servicecomb.transport.highway.message;
 
 import java.util.Map;
 
-import org.apache.servicecomb.codec.protobuf.utils.ProtobufSchemaUtils;
+import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
 import org.apache.servicecomb.swagger.invocation.response.Headers;
 
@@ -29,7 +29,8 @@ import io.protostuff.runtime.ProtobufFeature;
 import io.vertx.core.buffer.Buffer;
 
 public class ResponseHeader {
-  private static WrapSchema responseHeaderSchema = ProtobufSchemaUtils.getOrCreateSchema(ResponseHeader.class);
+  private static WrapSchema responseHeaderSchema = ProtobufManager.getDefaultScopedProtobufSchemaManager()
+      .getOrCreateSchema(ResponseHeader.class);
 
   public static WrapSchema getResponseHeaderSchema() {
     return responseHeaderSchema;

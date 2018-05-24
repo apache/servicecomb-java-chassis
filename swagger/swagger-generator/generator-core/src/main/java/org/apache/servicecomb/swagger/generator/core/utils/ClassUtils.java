@@ -167,7 +167,7 @@ public final class ClassUtils {
         continue;
       }
 
-      part = part.replaceAll("[<>-]", "_").replace("[", "array_");
+      part = part.replaceAll("[;<>-]", "_").replace("[", "array_");
       if (Character.isDigit(part.charAt(0)) || SourceVersion.isKeyword(part)) {
         part = "_" + part;
       }

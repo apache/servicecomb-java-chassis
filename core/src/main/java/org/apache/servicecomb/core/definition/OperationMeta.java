@@ -93,6 +93,10 @@ public class OperationMeta {
     return responsesMeta.findResponseMeta(statusCode);
   }
 
+  public MicroserviceMeta getMicroserviceMeta() {
+    return schemaMeta.getMicroserviceMeta();
+  }
+
   public SchemaMeta getSchemaMeta() {
     return schemaMeta;
   }
