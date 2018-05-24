@@ -24,10 +24,11 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.SCBStatus;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.schema.ConsumerSchemaFactory;
 import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
+import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
+import org.apache.servicecomb.provider.pojo.Invoker.InvokerMeta;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.engine.bootstrap.BootstrapNormal;
@@ -69,33 +70,28 @@ public class TestInvoker {
   @Test
   public void testNormalSchemaId(@Injectable ConsumerProviderManager manager,
       @Injectable ReferenceConfig config,
-      @Injectable MicroserviceMeta microserviceMeta,
-      @Injectable ConsumerSchemaFactory factory) {
+      @Injectable MicroserviceMeta microserviceMeta) {
     new Expectations() {
       {
         manager.getReferenceConfig("test");
         result = config;
         config.getMicroserviceMeta();
         result = microserviceMeta;
-        microserviceMeta.ensureFindSchemaMeta("schemaId");
       }
     };
     scbEngine.setConsumerProviderManager(manager);
-    CseContext.getInstance().setConsumerSchemaFactory(factory);
     CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
 
     Invoker invoker = new Invoker("test", "schemaId", IPerson.class);
-    invoker.prepare();
+    InvokerMeta invokerMeta = invoker.createInvokerMeta();
 
-    SwaggerConsumer swaggerConsumer = Deencapsulation.getField(invoker, "swaggerConsumer");
-    Assert.assertEquals(IPerson.class, swaggerConsumer.getConsumerIntf());
+    Assert.assertEquals(IPerson.class, invokerMeta.swaggerConsumer.getConsumerIntf());
   }
 
   @Test
   public void testFindSchemaByConsumerInterface(@Injectable ConsumerProviderManager manager,
       @Injectable ReferenceConfig config,
-      @Injectable MicroserviceMeta microserviceMeta,
-      @Injectable ConsumerSchemaFactory factory) {
+      @Injectable MicroserviceMeta microserviceMeta) {
     new Expectations() {
       {
         manager.getReferenceConfig("test");
@@ -106,21 +102,18 @@ public class TestInvoker {
       }
     };
     scbEngine.setConsumerProviderManager(manager);
-    CseContext.getInstance().setConsumerSchemaFactory(factory);
     CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
 
     Invoker invoker = new Invoker("test", null, IPerson.class);
-    invoker.prepare();
+    InvokerMeta invokerMeta = invoker.createInvokerMeta();
 
-    SwaggerConsumer swaggerConsumer = Deencapsulation.getField(invoker, "swaggerConsumer");
-    Assert.assertEquals(IPerson.class, swaggerConsumer.getConsumerIntf());
+    Assert.assertEquals(IPerson.class, invokerMeta.swaggerConsumer.getConsumerIntf());
   }
 
   @Test
   public void testConsumerInterfaceAsSchemaId(@Injectable ConsumerProviderManager manager,
       @Injectable ReferenceConfig config,
-      @Injectable MicroserviceMeta microserviceMeta,
-      @Injectable ConsumerSchemaFactory factory) {
+      @Injectable MicroserviceMeta microserviceMeta) {
     new Expectations() {
       {
         manager.getReferenceConfig("test");
@@ -129,18 +122,14 @@ public class TestInvoker {
         result = microserviceMeta;
         microserviceMeta.findSchemaMeta(IPerson.class);
         result = null;
-        microserviceMeta.ensureFindSchemaMeta(IPerson.class.getName());
       }
     };
     scbEngine.setConsumerProviderManager(manager);
-    CseContext.getInstance().setConsumerSchemaFactory(factory);
     CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
 
     Invoker invoker = new Invoker("test", null, IPerson.class);
-    invoker.prepare();
-
-    SwaggerConsumer swaggerConsumer = Deencapsulation.getField(invoker, "swaggerConsumer");
-    Assert.assertEquals(IPerson.class, swaggerConsumer.getConsumerIntf());
+    InvokerMeta invokerMeta = invoker.createInvokerMeta();
+    Assert.assertEquals(IPerson.class, invokerMeta.swaggerConsumer.getConsumerIntf());
   }
 
   @Test
@@ -235,5 +224,53 @@ public class TestInvoker {
       Assert.assertEquals(null, result);
       Assert.assertSame(error, ex);
     });
+  }
+
+  @Test
+  public void createInvokerMeta_schemaNotInContract(@Injectable ConsumerProviderManager manager,
+      @Injectable ReferenceConfig config,
+      @Injectable MicroserviceMeta microserviceMeta) {
+    new Expectations() {
+      {
+        manager.getReferenceConfig("test");
+        result = config;
+        config.getMicroserviceMeta();
+        result = microserviceMeta;
+        microserviceMeta.findSchemaMeta("schemaId");
+        result = null;
+      }
+    };
+    scbEngine.setConsumerProviderManager(manager);
+    CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
+
+    Invoker invoker = new Invoker("test", "schemaId", IPerson.class);
+
+    expectedException.expect(IllegalStateException.class);
+    expectedException.expectMessage(Matchers
+        .is("Schema not exist, microserviceName=test, schemaId=schemaId, consumer interface=org.apache.servicecomb.provider.pojo.IPerson; "
+            + "new producer not running or not deployed."));
+    invoker.createInvokerMeta();
+  }
+
+  @Test
+  public void invoke_methodNotInContract(@Mocked SwaggerConsumer swaggerConsumer,
+      @Mocked ReferenceConfig referenceConfig, @Mocked MicroserviceMeta microserviceMeta) {
+    Invoker invoker = new Invoker("test", null, IPerson.class);
+    InvokerMeta invokerMeta = new InvokerMeta(referenceConfig, microserviceMeta, null, swaggerConsumer);
+    Deencapsulation.setField(invoker, "invokerMeta", invokerMeta);
+    new Expectations() {
+      {
+        swaggerConsumer.findOperation(anyString);
+        result = null;
+        referenceConfig.getMicroserviceMeta();
+        result = microserviceMeta;
+      }
+    };
+
+    expectedException.expect(IllegalStateException.class);
+    expectedException.expectMessage(Matchers
+        .is("Consumer method org.apache.servicecomb.provider.pojo.IPerson:trim not exist in contract, "
+            + "microserviceName=test, schemaId=null; new producer not running or not deployed."));
+    invoker.invoke(null, ReflectUtils.findMethod(String.class, "trim"), null);
   }
 }

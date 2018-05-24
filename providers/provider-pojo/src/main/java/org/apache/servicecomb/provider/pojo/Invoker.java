@@ -37,6 +37,30 @@ import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.springframework.util.StringUtils;
 
 public class Invoker implements InvocationHandler {
+  static class InvokerMeta {
+    final ReferenceConfig referenceConfig;
+
+    final MicroserviceMeta microserviceMeta;
+
+    final SchemaMeta schemaMeta;
+
+    final SwaggerConsumer swaggerConsumer;
+
+    public InvokerMeta(ReferenceConfig referenceConfig,
+        MicroserviceMeta microserviceMeta, SchemaMeta schemaMeta,
+        SwaggerConsumer swaggerConsumer) {
+      this.referenceConfig = referenceConfig;
+      this.microserviceMeta = microserviceMeta;
+      this.schemaMeta = schemaMeta;
+      this.swaggerConsumer = swaggerConsumer;
+    }
+
+    // initialized and meta not changed
+    public boolean isValid() {
+      return swaggerConsumer != null && microserviceMeta == referenceConfig.getMicroserviceMeta();
+    }
+  }
+
   // 原始数据
   private String microserviceName;
 
@@ -45,11 +69,7 @@ public class Invoker implements InvocationHandler {
   private Class<?> consumerIntf;
 
   // 生成的数据
-  private SchemaMeta schemaMeta;
-
-  private ReferenceConfig referenceConfig;
-
-  private volatile SwaggerConsumer swaggerConsumer;
+  private InvokerMeta invokerMeta = new InvokerMeta(null, null, null, null);
 
   @SuppressWarnings("unchecked")
   public static <T> T createProxy(String microserviceName, String schemaId, Class<?> consumerIntf) {
@@ -63,39 +83,65 @@ public class Invoker implements InvocationHandler {
     this.consumerIntf = consumerIntf;
   }
 
-  protected void prepare() {
-    referenceConfig = SCBEngine.getInstance().getReferenceConfigForInvoke(microserviceName);
+  protected InvokerMeta createInvokerMeta() {
+    ReferenceConfig referenceConfig = SCBEngine.getInstance().getReferenceConfigForInvoke(microserviceName);
     MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
 
+    SchemaMeta schemaMeta;
     if (StringUtils.isEmpty(schemaId)) {
       // 未指定schemaId，看看consumer接口是否等于契约接口
       schemaMeta = microserviceMeta.findSchemaMeta(consumerIntf);
       if (schemaMeta == null) {
         // 尝试用consumer接口名作为schemaId
-        schemaId = consumerIntf.getName();
-        schemaMeta = microserviceMeta.ensureFindSchemaMeta(schemaId);
+        schemaMeta = microserviceMeta.findSchemaMeta(consumerIntf.getName());
       }
     } else {
-      schemaMeta = microserviceMeta.ensureFindSchemaMeta(schemaId);
+      schemaMeta = microserviceMeta.findSchemaMeta(schemaId);
     }
 
-    this.swaggerConsumer = CseContext.getInstance().getSwaggerEnvironment().createConsumer(consumerIntf,
+    if (schemaMeta == null) {
+      throw new IllegalStateException(
+          String.format(
+              "Schema not exist, microserviceName=%s, schemaId=%s, consumer interface=%s; "
+                  + "new producer not running or not deployed.",
+              microserviceName,
+              StringUtils.isEmpty(schemaId) ? "" : schemaId,
+              consumerIntf.getName()));
+    }
+
+    SwaggerConsumer swaggerConsumer = CseContext.getInstance().getSwaggerEnvironment().createConsumer(consumerIntf,
         schemaMeta.getSwaggerIntf());
+    return new InvokerMeta(referenceConfig, microserviceMeta, schemaMeta, swaggerConsumer);
   }
 
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) {
-    if (swaggerConsumer == null) {
+    InvokerMeta currentInvokerMeta = invokerMeta;
+    if (!currentInvokerMeta.isValid()) {
       synchronized (this) {
-        if (swaggerConsumer == null) {
-          prepare();
+        currentInvokerMeta = invokerMeta;
+        if (!currentInvokerMeta.isValid()) {
+          invokerMeta = createInvokerMeta();
+          currentInvokerMeta = invokerMeta;
         }
       }
     }
 
-    SwaggerConsumerOperation consumerOperation = swaggerConsumer.findOperation(method.getName());
+    SwaggerConsumerOperation consumerOperation = currentInvokerMeta.swaggerConsumer.findOperation(method.getName());
+    if (consumerOperation == null) {
+      throw new IllegalStateException(
+          String.format(
+              "Consumer method %s:%s not exist in contract, microserviceName=%s, schemaId=%s; "
+                  + "new producer not running or not deployed.",
+              consumerIntf.getName(),
+              method.getName(),
+              microserviceName,
+              schemaId));
+    }
+
     Invocation invocation = InvocationFactory
-        .forConsumer(referenceConfig, schemaMeta, consumerOperation.getSwaggerMethod().getName(), null);
+        .forConsumer(currentInvokerMeta.referenceConfig, currentInvokerMeta.schemaMeta,
+            consumerOperation.getSwaggerMethod().getName(), null);
 
     consumerOperation.getArgumentsMapper().toInvocation(args, invocation);
 
