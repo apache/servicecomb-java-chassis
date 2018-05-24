@@ -20,6 +20,7 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog.element.creator;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.CookieItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.DatetimeConfigurableItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.InvocationContextItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.PlainTextItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.RequestHeaderItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.ResponseHeaderItem;
@@ -31,7 +32,7 @@ import org.junit.Test;
 import io.vertx.ext.web.RoutingContext;
 
 public class PercentagePrefixConfigurableItemCreatorTest {
-  private static final String PATTERN = "test %{EEE, dd MMM yyyy HH:mm:ss zzz}t %{VARNAME1}i %{VARNAME2}o %{VARNAME3}C";
+  private static final String PATTERN = "test %{EEE, dd MMM yyyy HH:mm:ss zzz}t %{VARNAME1}i %{VARNAME2}o %{VARNAME3}C %{var name4}SCB-ctx";
 
   private static final PercentagePrefixConfigurableItemCreator CREATOR = new PercentagePrefixConfigurableItemCreator();
 
@@ -56,7 +57,6 @@ public class PercentagePrefixConfigurableItemCreatorTest {
     Assert.assertEquals(RequestHeaderItem.class, item.getClass());
     Assert.assertEquals("VARNAME1", ((RequestHeaderItem) item).getVarName());
   }
-
 
   @Test
   public void testCreateResponseHeaderItem() {
@@ -89,6 +89,18 @@ public class PercentagePrefixConfigurableItemCreatorTest {
     AccessLogItem<RoutingContext> item = CREATOR.create(PATTERN, location);
 
     Assert.assertEquals(PlainTextItem.class, item.getClass());
-    Assert.assertEquals("test ", ((PlainTextItem) item).getFormattedItem(null));
+    Assert.assertEquals("test ", item.getFormattedItem(null));
+  }
+
+  @Test
+  public void testCreateInvocationContextItem() {
+    AccessLogItemLocation location = new AccessLogItemLocation().setStart(78)
+        .setEnd(97)
+        .setPlaceHolder(AccessLogItemTypeEnum.SCB_INVOCATION_CONTEXT);
+
+    AccessLogItem<RoutingContext> item = CREATOR.create(PATTERN, location);
+
+    Assert.assertEquals(InvocationContextItem.class, item.getClass());
+    Assert.assertEquals("var name4", ((InvocationContextItem) item).getVarName());
   }
 }

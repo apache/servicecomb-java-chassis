@@ -26,7 +26,7 @@ public class PercentagePrefixConfigurableMatcherTest {
 
   public static final PercentagePrefixConfigurableMatcher MATCHER = new PercentagePrefixConfigurableMatcher();
 
-  public static final String TEST_RAW_PATTERN = "%{pattern}t %{test pattern}C %{test pattern}t";
+  public static final String TEST_RAW_PATTERN = "%{pattern}t %{test pattern}C %{test pattern}t %{test pattern}SCB-ctx";
 
   @Test
   public void testMatch() {
@@ -48,6 +48,14 @@ public class PercentagePrefixConfigurableMatcherTest {
             .setPlaceHolder(AccessLogItemTypeEnum.COOKIE));
 
     location = MATCHER.match(TEST_RAW_PATTERN, 30);
+    Assert.assertEquals(
+        location,
+        new AccessLogItemLocation()
+            .setStart(46)
+            .setEnd(68)
+            .setPlaceHolder(AccessLogItemTypeEnum.SCB_INVOCATION_CONTEXT));
+
+    location = MATCHER.match(TEST_RAW_PATTERN, 47);
     Assert.assertNull(location);
   }
 

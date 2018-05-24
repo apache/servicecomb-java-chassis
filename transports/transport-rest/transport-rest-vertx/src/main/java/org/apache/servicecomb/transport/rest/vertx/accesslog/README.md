@@ -22,10 +22,10 @@ servicecomb:
 
 ## Supported log elements
 
-***Currently Supported Elements***
+***Currently Supported Elements (Apache & W3C)***
 
 | Element | Apache | W3C | Comment |
-| ----|------|------------| --------|
+| :----   | :----- | :-- | :------ |
 | HTTP method | %m  | cs-method | |
 | HTTP status | %s  | sc-status | |
 | Duration in second | %T  | - | The time taken to serve the request, in seconds |
@@ -41,11 +41,17 @@ servicecomb:
 | URI path and query string | - | cs-uri | |
 | Request protocol | %H | - | |
 | Datetime the request was received | %t | - | Write in default format, i.e. pattern is "EEE, dd MMM yyyy HH:mm:ss zzz", Locale is US and Timezone is GMT |
-| Configurable datetime the request was received | %{PATTERN\|TIMEZONE\|LOCALE}t | - | Write datetime in specified format pattern, timezone and locale. TIMEZONE and LOCALE can be omitted |
+| Configurable datetime the request was received | %{PATTERN&#x7C;TIMEZONE&#x7C;LOCALE}t | - | Write datetime in specified format pattern, timezone and locale. TIMEZONE and LOCALE can be omitted |
 | Request Header | %{VARNAME}i  | - | '-' is written if not found |
 | Response header | %{VARNAME}o  | - | '-' is written if not found |
 | Cookie | %{VARNAME}C  | - | '-' is written if not found |
-| TraceId | - | - | TraceId provided by ServiceComb，log format placeholder is "%SCB-traceId" |
+
+***Currently Supported Elements (ServiceComb)***
+
+| Element | Placeholder | Comment |
+| :----   | :---------- | :------ |
+| TraceId | %SCB-traceId | TraceId provided by ServiceComb |
+| Invocation Context | %{VARNAME}SCB-ctx | Variable carried in invocation context, '-' is written if not found | 
 
 ## Access log file settings
 
@@ -59,3 +65,8 @@ Default access log printer is based on Log4j, users can override access log file
 | :----------------- | :------------ | :------ |
 | paas.logs.accesslog.dir | ${paas.logs.dir} | access log output directory |
 | paas.logs.accesslog.file | access.log | access log file name |
+
+## Access log item reference
+
+- [mod_log_config - Apache HTTP Server Version 2.4](http://httpd.apache.org/docs/2.4/en/mod/mod_log_config.html)
+- [Extended Log File Format](https://www.w3.org/TR/WD-logfile.html)
