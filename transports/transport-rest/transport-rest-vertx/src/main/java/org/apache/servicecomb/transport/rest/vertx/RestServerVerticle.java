@@ -30,7 +30,6 @@ import org.apache.servicecomb.foundation.vertx.VertxTLSBuilder;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogConfiguration;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.impl.AccessLogHandler;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.impl.DefaultAccessLogPatternParser;
-import org.apache.servicecomb.transport.rest.vertx.trace.TracePrepareHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +68,6 @@ public class RestServerVerticle extends AbstractVerticle {
         return;
       }
       Router mainRouter = Router.router(vertx);
-      mountTracePrepareHandler(mainRouter);
       mountAccessLogHandler(mainRouter);
       initDispatcher(mainRouter);
       HttpServer httpServer = createHttpServer();
@@ -80,10 +78,6 @@ public class RestServerVerticle extends AbstractVerticle {
       LOGGER.error("", e);
       throw e;
     }
-  }
-
-  private void mountTracePrepareHandler(Router mainRouter) {
-    mainRouter.route().handler(new TracePrepareHandler());
   }
 
   private void mountAccessLogHandler(Router mainRouter) {

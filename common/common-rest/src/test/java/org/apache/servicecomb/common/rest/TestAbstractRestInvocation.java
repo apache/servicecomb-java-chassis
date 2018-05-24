@@ -242,7 +242,7 @@ public class TestAbstractRestInvocation {
 
   @Test
   public void getContextNull() {
-    Assert.assertEquals(null, restInvocation.getContext("key"));
+    Assert.assertNull(restInvocation.getContext("key"));
   }
 
   @Test
@@ -437,7 +437,7 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void sendResponseStatusAndContentTypeAndHeader(@Mocked Response response) throws Exception {
+  public void sendResponseStatusAndContentTypeAndHeader(@Mocked Response response) {
     new Expectations() {
       {
         response.getStatusCode();
@@ -487,7 +487,7 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void testDoSendResponseHeaderNull(@Mocked Response response) throws Exception {
+  public void testDoSendResponseHeaderNull(@Mocked Response response) {
     Headers headers = new Headers();
 
     new Expectations() {
@@ -525,12 +525,12 @@ public class TestAbstractRestInvocation {
       restInvocation.sendResponse(response);
       Assert.fail("must throw exception");
     } catch (Error e) {
-      Assert.assertEquals(null, resultHeaders.getHeaderMap());
+      Assert.assertNull(resultHeaders.getHeaderMap());
     }
   }
 
   @Test
-  public void testDoSendResponseHeaderNormal(@Mocked Response response) throws Exception {
+  public void testDoSendResponseHeaderNormal(@Mocked Response response) {
     Headers headers = new Headers();
     headers.addHeader("h1", "h1v1");
     headers.addHeader("h1", "h1v2");
@@ -575,7 +575,7 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void testDoSendResponseResultOK(@Mocked Response response) throws Exception {
+  public void testDoSendResponseResultOK(@Mocked Response response) {
     new Expectations() {
       {
         response.getResult();
@@ -609,8 +609,7 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void testDoSendResponseResultOKFilter(@Mocked Response response)
-      throws Exception {
+  public void testDoSendResponseResultOKFilter(@Mocked Response response) {
     Headers headers = new Headers();
     headers.addHeader("Content-Type", "application/json");
     new Expectations() {
@@ -814,6 +813,7 @@ public class TestAbstractRestInvocation {
     };
 
     Holder<Boolean> result = new Holder<>();
+    Holder<Invocation> createdInvocation = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
       protected void runOnExecutor() {
@@ -822,11 +822,15 @@ public class TestAbstractRestInvocation {
     };
     restInvocation.requestEx = requestEx;
     restInvocation.restOperationMeta = restOperation;
+    // prepareInvocation() is invoked in restInvocation.scheduleInvocation(),
+    // test whether the afterCreateInvocationHandler is invoked properly
+    restInvocation.setAfterCreateInvocationHandler(invocation -> createdInvocation.value = invocation);
 
     restInvocation.scheduleInvocation();
     EventManager.unregister(subscriber);
 
     Assert.assertTrue(result.value);
+    Assert.assertSame(this.invocation, createdInvocation.value);
     Assert.assertEquals(time, invocation.getStartTime());
     Assert.assertSame(invocation, eventHolder.value.getInvocation());
   }

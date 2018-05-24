@@ -25,6 +25,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.http.HttpHeaders;
+import org.apache.servicecomb.common.rest.AbstractRestInvocation.AfterCreateInvocationHandler;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.RestProducerInvocation;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
@@ -73,6 +74,8 @@ public class TestVertxRestDispatcher {
 
   boolean invoked;
 
+  AfterCreateInvocationHandler afterCreateInvocationHandler;
+
   @Before
   public void setUp() {
     dispatcher = new VertxRestDispatcher();
@@ -88,6 +91,12 @@ public class TestVertxRestDispatcher {
       void invoke(Transport transport, HttpServletRequestEx requestEx, HttpServletResponseEx responseEx,
           List<HttpServerFilter> httpServerFilters) {
         invoked = true;
+      }
+
+      @Mock
+      void setAfterCreateInvocationHandler(
+          AfterCreateInvocationHandler afterCreateInvocationHandler) {
+        TestVertxRestDispatcher.this.afterCreateInvocationHandler = afterCreateInvocationHandler;
       }
     };
 
@@ -300,6 +309,7 @@ public class TestVertxRestDispatcher {
     Deencapsulation.invoke(dispatcher, "onRequest", routingContext);
 
     Assert.assertEquals(RestProducerInvocation.class, map.get(RestConst.REST_PRODUCER_INVOCATION).getClass());
+    Assert.assertNotNull(this.afterCreateInvocationHandler);
     Assert.assertTrue(invoked);
   }
 

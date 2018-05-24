@@ -191,6 +191,8 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
 
     RestProducerInvocation restProducerInvocation = new RestProducerInvocation();
     context.put(RestConst.REST_PRODUCER_INVOCATION, restProducerInvocation);
+    restProducerInvocation.setAfterCreateInvocationHandler(
+        invocation -> context.put(RestConst.REST_INVOCATION_CONTEXT, invocation));
     restProducerInvocation.invoke(transport, requestEx, responseEx, httpServerFilters);
   }
 }

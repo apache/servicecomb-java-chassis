@@ -50,7 +50,6 @@ public class RestProducerInvocation extends AbstractRestInvocation {
       return;
     }
 
-    createInvocation();
     scheduleInvocation();
   }
 

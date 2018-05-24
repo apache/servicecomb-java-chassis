@@ -59,6 +59,7 @@ public class EdgeInvocation extends AbstractRestInvocation {
     this.responseEx = new VertxServerResponseToHttpServletResponse(context.response());
     this.httpServerFilters = httpServerFilters;
     requestEx.setAttribute(RestConst.REST_REQUEST, requestEx);
+    setAfterCreateInvocationHandler(invocation -> context.put(RestConst.REST_INVOCATION_CONTEXT, invocation));
   }
 
   public void edgeInvoke() {
