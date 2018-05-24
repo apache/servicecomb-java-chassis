@@ -22,5 +22,9 @@ import io.vertx.ext.web.Router;
 public interface VertxHttpDispatcher {
   int getOrder();
 
+  default boolean enabled() {
+    return true;
+  }
+
   void init(Router router);
 }

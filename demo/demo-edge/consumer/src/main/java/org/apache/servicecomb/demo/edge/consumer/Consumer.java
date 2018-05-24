@@ -78,8 +78,8 @@ public class Consumer {
     request.setLanguage("zh_CN");
   }
 
-  public void run() {
-    prepareEdge();
+  public void run(String prefix) {
+    prepareEdge(prefix);
 
     testRecursiveSelf();
     testDependType();
@@ -204,12 +204,12 @@ public class Consumer {
     results.add(result);
   }
 
-  private URIEndpointObject prepareEdge() {
+  private URIEndpointObject prepareEdge(String prefix) {
     Microservice microservice = RegistryUtils.getMicroservice();
     EndpointsCache endpointsCache = new EndpointsCache(microservice.getAppId(), "edge", "latest", "");
     Endpoint ep = endpointsCache.getLatestEndpoints().get(0);
     URIEndpointObject edgeAddress = (URIEndpointObject) ep.getAddress();
-    edgePrefix = String.format("http://%s:%d/api/business", edgeAddress.getHostOrIp(), edgeAddress.getPort());
+    edgePrefix = String.format("http://%s:%d/" + prefix + "/business", edgeAddress.getHostOrIp(), edgeAddress.getPort());
     return edgeAddress;
   }
 
