@@ -61,5 +61,7 @@ public enum AccessLogItemTypeEnum {
   // %{VARNAME}C
   COOKIE,
   // %SCB-traceId
-  SCB_TRACE_ID;
+  SCB_TRACE_ID,
+  // %{VARNAME}SCB-ctx
+  SCB_INVOCATION_CONTEXT
 }

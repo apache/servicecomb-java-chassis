@@ -17,31 +17,52 @@
 
 package org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl;
 
-import org.apache.servicecomb.core.Const;
+import java.util.Map;
+
+import org.apache.servicecomb.common.rest.RestConst;
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
 import org.springframework.util.StringUtils;
 
 import io.vertx.ext.web.RoutingContext;
 
-public class TraceIdItem extends InvocationContextItem {
+public class InvocationContextItem implements AccessLogItem<RoutingContext> {
 
-  public static final String TRACE_ID = Const.TRACE_ID_NAME;
+  public static final String NOT_FOUND = "-";
 
-  public TraceIdItem() {
-    super(TRACE_ID);
+  String varName;
+
+  public InvocationContextItem(String varName) {
+    this.varName = varName;
   }
 
   @Override
   public String getFormattedItem(AccessLogParam<RoutingContext> accessLogParam) {
-    String traceId = getValueFromInvocationContext(accessLogParam);
-    if (StringUtils.isEmpty(traceId)) {
-      traceId = accessLogParam.getContextData().request().getHeader(TRACE_ID);
+    String invocationContextValue = getValueFromInvocationContext(accessLogParam);
+
+    if (StringUtils.isEmpty(invocationContextValue)) {
+      return NOT_FOUND;
     }
 
-    if (StringUtils.isEmpty(traceId)) {
-      return InvocationContextItem.NOT_FOUND;
+    return invocationContextValue;
+  }
+
+  protected String getValueFromInvocationContext(AccessLogParam<RoutingContext> accessLogParam) {
+    Map<String, Object> data = accessLogParam.getContextData().data();
+    if (null == data) {
+      return null;
     }
 
-    return traceId;
+    Invocation invocation = (Invocation) data.get(RestConst.REST_INVOCATION_CONTEXT);
+    if (null == invocation) {
+      return null;
+    }
+
+    return invocation.getContext(varName);
+  }
+
+  public String getVarName() {
+    return varName;
   }
 }

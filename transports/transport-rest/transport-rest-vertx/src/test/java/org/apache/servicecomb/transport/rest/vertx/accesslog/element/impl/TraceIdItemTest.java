@@ -22,7 +22,7 @@ import static org.hamcrest.core.Is.is;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.common.rest.RestProducerInvocation;
+import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
@@ -32,7 +32,6 @@ import org.mockito.Mockito;
 
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
-import mockit.Deencapsulation;
 
 public class TraceIdItemTest {
   private static final TraceIdItem ELEMENT = new TraceIdItem();
@@ -42,14 +41,12 @@ public class TraceIdItemTest {
     AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext routingContext = Mockito.mock(RoutingContext.class);
     Map<String, Object> data = new HashMap<>();
-    RestProducerInvocation restProducerInvocation = new RestProducerInvocation();
     Invocation invocation = Mockito.mock(Invocation.class);
     String traceIdTest = "traceIdTest";
 
     Mockito.when(invocation.getContext(Const.TRACE_ID_NAME)).thenReturn(traceIdTest);
-    Deencapsulation.setField(restProducerInvocation, "invocation", invocation);
     Mockito.when(routingContext.data()).thenReturn(data);
-    data.put("servicecomb-rest-producer-invocation", restProducerInvocation);
+    data.put(RestConst.REST_INVOCATION_CONTEXT, invocation);
 
     param.setContextData(routingContext);
 
@@ -62,14 +59,12 @@ public class TraceIdItemTest {
     AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext routingContext = Mockito.mock(RoutingContext.class);
     Map<String, Object> data = new HashMap<>();
-    RestProducerInvocation restProducerInvocation = new RestProducerInvocation();
     Invocation invocation = Mockito.mock(Invocation.class);
     String traceIdTest = "traceIdTest";
 
     Mockito.when(invocation.getContext(Const.TRACE_ID_NAME)).thenReturn(null);
-    Deencapsulation.setField(restProducerInvocation, "invocation", invocation);
     Mockito.when(routingContext.data()).thenReturn(data);
-    data.put("servicecomb-rest-producer-invocation", restProducerInvocation);
+    data.put(RestConst.REST_INVOCATION_CONTEXT, invocation);
 
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
     Mockito.when(request.getHeader(Const.TRACE_ID_NAME)).thenReturn(traceIdTest);
@@ -86,13 +81,11 @@ public class TraceIdItemTest {
     AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext routingContext = Mockito.mock(RoutingContext.class);
     Map<String, Object> data = new HashMap<>();
-    RestProducerInvocation restProducerInvocation = new RestProducerInvocation();
     Invocation invocation = Mockito.mock(Invocation.class);
 
     Mockito.when(invocation.getContext(Const.TRACE_ID_NAME)).thenReturn("");
-    Deencapsulation.setField(restProducerInvocation, "invocation", invocation);
     Mockito.when(routingContext.data()).thenReturn(data);
-    data.put("servicecomb-rest-producer-invocation", restProducerInvocation);
+    data.put(RestConst.REST_INVOCATION_CONTEXT, invocation);
 
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
     Mockito.when(request.getHeader(Const.TRACE_ID_NAME)).thenReturn(null);

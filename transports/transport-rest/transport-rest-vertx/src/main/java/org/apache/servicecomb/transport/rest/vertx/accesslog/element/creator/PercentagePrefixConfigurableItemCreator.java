@@ -20,10 +20,12 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog.element.creator;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.CookieItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.DatetimeConfigurableItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.InvocationContextItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.PlainTextItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.RequestHeaderItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.ResponseHeaderItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemLocation;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.matcher.PercentagePrefixConfigurableMatcher;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.placeholder.AccessLogItemTypeEnum;
 
 import io.vertx.ext.web.RoutingContext;
@@ -47,6 +49,8 @@ public class PercentagePrefixConfigurableItemCreator implements AccessLogItemCre
         return new CookieItem(config);
       case TEXT_PLAIN:
         return new PlainTextItem(config);
+      case SCB_INVOCATION_CONTEXT:
+        return new InvocationContextItem(config);
       default:
         // unexpected situation
         return null;
@@ -57,6 +61,8 @@ public class PercentagePrefixConfigurableItemCreator implements AccessLogItemCre
     if (location.getPlaceHolder() == AccessLogItemTypeEnum.TEXT_PLAIN) {
       return rawPattern.substring(location.getStart(), location.getEnd());
     }
-    return rawPattern.substring(location.getStart() + 2, location.getEnd() - 2);
+    return rawPattern.substring(location.getStart() + PercentagePrefixConfigurableMatcher.GENERAL_PREFIX.length(),
+        location.getEnd()
+            - PercentagePrefixConfigurableMatcher.getSuffix(location.getPlaceHolder()).length());
   }
 }

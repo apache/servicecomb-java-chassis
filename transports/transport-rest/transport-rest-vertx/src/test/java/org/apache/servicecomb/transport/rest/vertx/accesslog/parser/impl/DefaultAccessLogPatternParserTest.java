@@ -40,14 +40,15 @@ public class DefaultAccessLogPatternParserTest {
       + "%{incoming-header}i"
       + "%{outgoing-header}o"
       + "%{cookie}C"
-      + "%SCB-traceId";
+      + "%SCB-traceId"
+      + "%{invocationContext}SCB-ctx";
 
   private static DefaultAccessLogPatternParser accessLogPatternParser = new DefaultAccessLogPatternParser();
 
   @Test
   public void testParsePattern() {
     List<AccessLogItemLocation> result = accessLogPatternParser.parsePattern(ROW_PATTERN);
-    assertEquals(27, result.size());
+    assertEquals(28, result.size());
 
     assertThat(result.stream().map(AccessLogItemLocation::getPlaceHolder)
             .filter(Objects::nonNull).collect(Collectors.toList()),
@@ -78,7 +79,8 @@ public class DefaultAccessLogPatternParserTest {
             AccessLogItemTypeEnum.REQUEST_HEADER,
             AccessLogItemTypeEnum.RESPONSE_HEADER,
             AccessLogItemTypeEnum.COOKIE,
-            AccessLogItemTypeEnum.SCB_TRACE_ID));
+            AccessLogItemTypeEnum.SCB_TRACE_ID,
+            AccessLogItemTypeEnum.SCB_INVOCATION_CONTEXT));
   }
 
   @Test

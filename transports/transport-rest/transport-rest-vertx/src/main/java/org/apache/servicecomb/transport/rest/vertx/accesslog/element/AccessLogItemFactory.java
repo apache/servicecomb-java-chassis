@@ -39,7 +39,7 @@ public class AccessLogItemFactory {
 
   public List<AccessLogItem<RoutingContext>> createAccessLogItem(String rawPattern,
       List<AccessLogItemLocation> locationList) {
-    List<AccessLogItem<RoutingContext>> itemList = new ArrayList<>();
+    List<AccessLogItem<RoutingContext>> itemList = new ArrayList<>(locationList.size());
     for (AccessLogItemLocation location : locationList) {
       setItemList(rawPattern, itemList, location);
     }
