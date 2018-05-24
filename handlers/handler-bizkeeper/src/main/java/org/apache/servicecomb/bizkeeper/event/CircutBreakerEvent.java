@@ -23,8 +23,13 @@ import com.netflix.hystrix.HystrixCommandMetrics;
 
 public class CircutBreakerEvent extends AlarmEvent {
 
-  //当前调用的接口
-  private String invocationName;
+  private String role;
+
+  private String microservice;
+
+  private String schema;
+
+  private String operation;
 
   //当前总请求数
   private long currentTotalRequest;
@@ -45,7 +50,11 @@ public class CircutBreakerEvent extends AlarmEvent {
     super(type);
     HystrixCommandMetrics hystrixCommandMetrics =
         HystrixCommandMetrics.getInstance(commandKey);
-    this.invocationName = commandKey.name();
+    String[] arrayKey = commandKey.name().split("\\.");
+    this.role = arrayKey[0];
+    this.microservice = arrayKey[1];
+    this.schema = arrayKey[2];
+    this.operation = arrayKey[3];
     if (hystrixCommandMetrics != null) {
       this.currentTotalRequest = hystrixCommandMetrics.getHealthCounts().getTotalRequests();
       this.currentErrorPercentage = hystrixCommandMetrics.getHealthCounts().getErrorCount();
@@ -58,8 +67,20 @@ public class CircutBreakerEvent extends AlarmEvent {
     }
   }
 
-  public String getInvocationName() {
-    return invocationName;
+  public String getRole() {
+    return role;
+  }
+
+  public String getMicroservice() {
+    return microservice;
+  }
+
+  public String getSchema() {
+    return schema;
+  }
+
+  public String getOperation() {
+    return operation;
   }
 
   public long getCurrentTotalRequest() {

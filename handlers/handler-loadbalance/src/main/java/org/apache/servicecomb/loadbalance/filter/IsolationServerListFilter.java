@@ -97,19 +97,21 @@ public final class IsolationServerListFilter implements ServerListFilterExt {
     ServerStats serverStats = stats.getSingleServerStat(server);
     long totalRequest = serverStats.getTotalRequestsCount();
     long failureRequest = serverStats.getSuccessiveConnectionFailureCount();
-    int currentCountinuousFailureCount = ((CseServer) server).getCountinuousFailureCount();
-    double currentErrorThresholdPercentage = (failureRequest / (double) totalRequest) * PERCENT;
+    int currentCountinuousFailureCount = 0;
+    double currentErrorThresholdPercentage = 0;
     if (totalRequest < enableRequestThreshold) {
       return true;
     }
 
     if (continuousFailureThreshold > 0) {
       // continuousFailureThreshold has higher priority to decide the result
+      currentCountinuousFailureCount = ((CseServer) server).getCountinuousFailureCount();
       if (currentCountinuousFailureCount < continuousFailureThreshold) {
         return true;
       }
     } else {
       // if continuousFailureThreshold, then check error percentage
+      currentErrorThresholdPercentage = (failureRequest / (double) totalRequest) * PERCENT;
       if (currentErrorThresholdPercentage < errorThresholdPercentage) {
         return true;
       }

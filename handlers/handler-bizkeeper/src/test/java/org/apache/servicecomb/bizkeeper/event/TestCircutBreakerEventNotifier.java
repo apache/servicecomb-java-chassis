@@ -66,7 +66,7 @@ public class TestCircutBreakerEventNotifier {
 
   @Test
   public void testMarkEvent() {
-    Mockito.when(commandKey.name()).thenReturn("testKey");
+    Mockito.when(commandKey.name()).thenReturn("Consumer.springmvc.springmvcHello.sayHi");
     new Expectations(HystrixCommandMetrics.class) {
       {
         HystrixCommandMetrics.getInstance(commandKey);
