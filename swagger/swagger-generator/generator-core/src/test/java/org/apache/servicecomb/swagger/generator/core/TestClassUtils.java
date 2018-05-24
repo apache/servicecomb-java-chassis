@@ -157,6 +157,12 @@ public class TestClassUtils {
   }
 
   @Test
+  public void testCorrectClassNameStringArray() {
+    String result = ClassUtils.correctClassName("[Ljava/lang/String;");
+    Assert.assertThat(result, is("array_Ljava/lang/String_"));
+  }
+
+  @Test
   public void testCorrectClassNameNormal() {
     String result = ClassUtils.correctClassName("String");
     Assert.assertThat(result, is("String"));

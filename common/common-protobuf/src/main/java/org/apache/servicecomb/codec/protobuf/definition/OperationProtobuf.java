@@ -21,25 +21,28 @@ import java.lang.reflect.Method;
 
 import javax.ws.rs.core.Response.Status.Family;
 
-import org.apache.servicecomb.codec.protobuf.utils.ProtobufSchemaUtils;
+import org.apache.servicecomb.codec.protobuf.utils.ScopedProtobufSchemaManager;
 import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
 
 public class OperationProtobuf {
+  private ScopedProtobufSchemaManager scopedProtobufSchemaManager;
+
   private OperationMeta operationMeta;
 
   private WrapSchema requestSchema;
 
   private WrapSchema responseSchema;
 
-  public OperationProtobuf(OperationMeta operationMeta) {
+  public OperationProtobuf(ScopedProtobufSchemaManager scopedProtobufSchemaManager, OperationMeta operationMeta) {
+    this.scopedProtobufSchemaManager = scopedProtobufSchemaManager;
     this.operationMeta = operationMeta;
 
-    requestSchema = ProtobufSchemaUtils.getOrCreateArgsSchema(operationMeta);
+    requestSchema = scopedProtobufSchemaManager.getOrCreateArgsSchema(operationMeta);
 
     Method method = operationMeta.getMethod();
-    responseSchema = ProtobufSchemaUtils.getOrCreateSchema(method.getGenericReturnType());
+    responseSchema = scopedProtobufSchemaManager.getOrCreateSchema(method.getGenericReturnType());
   }
 
   public OperationMeta getOperationMeta() {
@@ -60,6 +63,6 @@ public class OperationProtobuf {
     }
 
     ResponseMeta responseMeta = operationMeta.findResponseMeta(statusCode);
-    return ProtobufSchemaUtils.getOrCreateSchema(responseMeta.getJavaType());
+    return scopedProtobufSchemaManager.getOrCreateSchema(responseMeta.getJavaType());
   }
 }

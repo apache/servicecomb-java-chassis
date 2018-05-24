@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.codec.protobuf.definition;
 
+import org.apache.servicecomb.codec.protobuf.utils.ScopedProtobufSchemaManager;
+import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -37,6 +39,9 @@ public final class ProtobufManager {
 
   private static final Object LOCK = new Object();
 
+  private static ScopedProtobufSchemaManager defaultScopedProtobufSchemaManager = new ScopedProtobufSchemaManager(
+      Thread.currentThread().getContextClassLoader());
+
   static {
     // 支持在idl中定义empty message
     mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
@@ -45,13 +50,28 @@ public final class ProtobufManager {
   private ProtobufManager() {
   }
 
+  /**
+   * only for app classloader
+   * @return
+   */
+  public static ScopedProtobufSchemaManager getDefaultScopedProtobufSchemaManager() {
+    return defaultScopedProtobufSchemaManager;
+  }
+
   public static OperationProtobuf getOrCreateOperation(OperationMeta operationMeta) throws Exception {
-    OperationProtobuf operationProtobuf = operationMeta.getExtData(ProtobufManager.EXT_ID);
+    OperationProtobuf operationProtobuf = operationMeta.getExtData(EXT_ID);
     if (operationProtobuf == null) {
       synchronized (LOCK) {
-        operationProtobuf = operationMeta.getExtData(ProtobufManager.EXT_ID);
+        MicroserviceMeta microserviceMeta = operationMeta.getMicroserviceMeta();
+        ScopedProtobufSchemaManager scopedProtobufSchemaManager = microserviceMeta.getExtData(EXT_ID);
+        if (scopedProtobufSchemaManager == null) {
+          scopedProtobufSchemaManager = new ScopedProtobufSchemaManager(microserviceMeta.getClassLoader());
+          microserviceMeta.putExtData(EXT_ID, scopedProtobufSchemaManager);
+        }
+
+        operationProtobuf = operationMeta.getExtData(EXT_ID);
         if (operationProtobuf == null) {
-          operationProtobuf = new OperationProtobuf(operationMeta);
+          operationProtobuf = new OperationProtobuf(scopedProtobufSchemaManager, operationMeta);
           operationMeta.putExtData(EXT_ID, operationProtobuf);
         }
       }

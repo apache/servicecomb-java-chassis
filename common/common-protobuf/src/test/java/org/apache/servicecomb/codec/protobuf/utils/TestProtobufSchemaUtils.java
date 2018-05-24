@@ -32,6 +32,17 @@ import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtobufOutput;
 
 public class TestProtobufSchemaUtils {
+  class MyClassLoader extends ClassLoader {
+    public MyClassLoader() {
+      super(Thread.currentThread().getContextClassLoader());
+    }
+  }
+
+  //ClassLoader classLoader = Thread.currentThread().getContextClassLoader();//new MyClassLoader();
+  ClassLoader classLoader = new MyClassLoader();
+
+  ScopedProtobufSchemaManager scopedProtobufSchemaManager = new ScopedProtobufSchemaManager(classLoader);
+
   public static class TestMap {
     public Map<String, String> map = new HashMap<>();
 
@@ -98,7 +109,7 @@ public class TestProtobufSchemaUtils {
 
   @SuppressWarnings("unchecked")
   private <T> T writeThenRead(T value) throws Exception {
-    WrapSchema schema = ProtobufSchemaUtils.getOrCreateSchema(value.getClass());
+    WrapSchema schema = scopedProtobufSchemaManager.getOrCreateSchema(value.getClass());
 
     byte[] bytes = toByteArray(schema, value);
     Object result = toObject(schema, bytes);
@@ -121,7 +132,7 @@ public class TestProtobufSchemaUtils {
 
   @Test
   public void object() throws Exception {
-    WrapSchema schema = ProtobufSchemaUtils.getOrCreateSchema(Object.class);
+    WrapSchema schema = scopedProtobufSchemaManager.getOrCreateSchema(Object.class);
 
     LinkedBuffer linkedBuf = LinkedBuffer.allocate();
     ProtobufOutput output = new ProtobufOutput(linkedBuf);

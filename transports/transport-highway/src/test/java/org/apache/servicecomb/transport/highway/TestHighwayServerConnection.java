@@ -21,7 +21,6 @@ import java.net.InetSocketAddress;
 import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
-import org.apache.servicecomb.codec.protobuf.utils.ProtobufSchemaUtils;
 import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Endpoint;
@@ -49,10 +48,10 @@ import mockit.Mocked;
 
 public class TestHighwayServerConnection {
   private static WrapSchema requestHeaderSchema =
-      ProtobufSchemaUtils.getOrCreateSchema(RequestHeader.class);
+      ProtobufManager.getDefaultScopedProtobufSchemaManager().getOrCreateSchema(RequestHeader.class);
 
   private static WrapSchema setParameterRequestSchema =
-      ProtobufSchemaUtils.getOrCreateSchema(LoginRequest.class);
+      ProtobufManager.getDefaultScopedProtobufSchemaManager().getOrCreateSchema(LoginRequest.class);
 
   HighwayServerConnection connection;
 
