@@ -25,6 +25,10 @@ public class ConsumerMain {
     Log4jUtils.init();
     BeanUtils.init();
 
-    new Consumer().run();
+    System.out.println("Running api dispater.");
+    new Consumer().run("api");
+    System.out.println("Running rest dispater.");
+    new Consumer().run("rest");
+
   }
 }

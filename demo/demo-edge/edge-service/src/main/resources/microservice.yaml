@@ -37,3 +37,11 @@ servicecomb:
           auth: loadbalance
   executors:
     default: cse.executor.groupThreadPool
+  http:
+    dispatcher:
+      edge:
+        default:
+          enabled: true
+          prefix: rest
+          withVersion: true
+          pathIndex: 2

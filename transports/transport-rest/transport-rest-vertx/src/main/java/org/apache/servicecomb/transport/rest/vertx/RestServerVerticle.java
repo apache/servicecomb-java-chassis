@@ -100,7 +100,9 @@ public class RestServerVerticle extends AbstractVerticle {
   private void initDispatcher(Router mainRouter) {
     List<VertxHttpDispatcher> dispatchers = SPIServiceUtils.getSortedService(VertxHttpDispatcher.class);
     for (VertxHttpDispatcher dispatcher : dispatchers) {
-      dispatcher.init(mainRouter);
+      if(dispatcher.enabled()) {
+        dispatcher.init(mainRouter);
+      }
     }
   }
 

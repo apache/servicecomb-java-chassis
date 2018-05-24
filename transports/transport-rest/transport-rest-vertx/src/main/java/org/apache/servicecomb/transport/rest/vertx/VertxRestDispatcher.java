@@ -36,6 +36,8 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
@@ -45,11 +47,18 @@ import io.vertx.ext.web.handler.CookieHandler;
 public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
   private static final Logger LOGGER = LoggerFactory.getLogger(VertxRestDispatcher.class);
 
+  private static final String KEY_ENABLED = "servicecomb.http.dispatcher.rest.enabled";
+
   private Transport transport;
 
   @Override
   public int getOrder() {
     return Integer.MAX_VALUE;
+  }
+
+  @Override
+  public boolean enabled() {
+    return DynamicPropertyFactory.getInstance().getBooleanProperty(KEY_ENABLED, true).get();
   }
 
   @Override
