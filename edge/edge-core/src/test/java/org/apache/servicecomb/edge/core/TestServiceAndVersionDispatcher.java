@@ -47,6 +47,7 @@ public class TestServiceAndVersionDispatcher {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void testOnRequest(@Mocked Router router, @Mocked Route route
       , @Mocked RoutingContext context
       , @Mocked HttpServerRequest requst
