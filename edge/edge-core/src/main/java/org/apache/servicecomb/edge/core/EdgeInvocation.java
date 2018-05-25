@@ -52,14 +52,16 @@ public class EdgeInvocation extends AbstractRestInvocation {
 
   protected String versionRule = DefinitionConst.VERSION_RULE_ALL;
 
+  protected RoutingContext routingContext;
+
   public void init(String microserviceName, RoutingContext context, String path,
       List<HttpServerFilter> httpServerFilters) {
     this.microserviceName = microserviceName;
     this.requestEx = new VertxServerRequestToHttpServletRequest(context, path);
     this.responseEx = new VertxServerResponseToHttpServletResponse(context.response());
+    this.routingContext = context;
     this.httpServerFilters = httpServerFilters;
     requestEx.setAttribute(RestConst.REST_REQUEST, requestEx);
-    setAfterCreateInvocationHandler(invocation -> context.put(RestConst.REST_INVOCATION_CONTEXT, invocation));
   }
 
   public void edgeInvoke() {
@@ -128,5 +130,6 @@ public class EdgeInvocation extends AbstractRestInvocation {
     this.invocation.setSync(false);
     this.invocation.getHandlerContext().put(EDGE_INVOCATION_CONTEXT, Vertx.currentContext());
     this.invocation.setResponseExecutor(new ReactiveResponseExecutor());
+    this.routingContext.put(RestConst.REST_INVOCATION_CONTEXT, invocation);
   }
 }

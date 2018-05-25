@@ -24,7 +24,7 @@ import javax.ws.rs.core.Response.Status.Family;
 
 import org.apache.servicecomb.common.rest.AbstractRestInvocation;
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.common.rest.RestProducerInvocation;
+import org.apache.servicecomb.common.rest.VertxRestInvocation;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Transport;
@@ -189,10 +189,8 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
     HttpServletRequestEx requestEx = new VertxServerRequestToHttpServletRequest(context);
     HttpServletResponseEx responseEx = new VertxServerResponseToHttpServletResponse(context.response());
 
-    RestProducerInvocation restProducerInvocation = new RestProducerInvocation();
-    context.put(RestConst.REST_PRODUCER_INVOCATION, restProducerInvocation);
-    restProducerInvocation.setAfterCreateInvocationHandler(
-        invocation -> context.put(RestConst.REST_INVOCATION_CONTEXT, invocation));
-    restProducerInvocation.invoke(transport, requestEx, responseEx, httpServerFilters);
+    VertxRestInvocation vertxRestInvocation = new VertxRestInvocation();
+    context.put(RestConst.REST_PRODUCER_INVOCATION, vertxRestInvocation);
+    vertxRestInvocation.invoke(transport, requestEx, responseEx, httpServerFilters);
   }
 }

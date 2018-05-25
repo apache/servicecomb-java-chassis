@@ -63,11 +63,6 @@ public abstract class AbstractRestInvocation {
 
   protected List<HttpServerFilter> httpServerFilters = Collections.emptyList();
 
-  /**
-   * this handler should be invoked after the invocation is created(which usually happened in createInvocation() method)
-   */
-  protected AfterCreateInvocationHandler afterCreateInvocationHandler;
-
   public void setHttpServerFilters(List<HttpServerFilter> httpServerFilters) {
     this.httpServerFilters = httpServerFilters;
   }
@@ -113,7 +108,7 @@ public abstract class AbstractRestInvocation {
   }
 
   protected void scheduleInvocation() {
-    prepareInvocation();
+    createInvocation();
     invocation.onStart();
     OperationMeta operationMeta = restOperationMeta.getOperationMeta();
 
@@ -136,17 +131,6 @@ public abstract class AbstractRestInvocation {
         }
       }
     });
-  }
-
-  /**
-   * Encapsulate the invocation preparation process to ensure the {@link #afterCreateInvocationHandler} is always
-   * invoked after the {@link #invocation} is created.
-   */
-  private void prepareInvocation() {
-    createInvocation();
-    if (null != afterCreateInvocationHandler) {
-      afterCreateInvocationHandler.handle(invocation);
-    }
   }
 
   protected void runOnExecutor() {
@@ -264,22 +248,5 @@ public abstract class AbstractRestInvocation {
     if (invocation != null) {
       invocation.onFinish(response);
     }
-  }
-
-  public void setAfterCreateInvocationHandler(
-      AfterCreateInvocationHandler afterCreateInvocationHandler) {
-    this.afterCreateInvocationHandler = afterCreateInvocationHandler;
-  }
-
-  /**
-   * After the {@link AbstractRestInvocation#invocation} is instantiated, the {@link AbstractRestInvocation#invocation}
-   * will be passed into {@link AfterCreateInvocationHandler#handle(Invocation)} so that users can do something with it.
-   */
-  public static interface AfterCreateInvocationHandler {
-    /**
-     * @see AfterCreateInvocationHandler
-     * @param invocation {@link AbstractRestInvocation#invocation}
-     */
-    void handle(Invocation invocation);
   }
 }

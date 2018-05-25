@@ -236,4 +236,8 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
     final FileUpload fileUpload = upload.get();
     return new FileUploadPart(fileUpload);
   }
+
+  public RoutingContext getContext() {
+    return context;
+  }
 }

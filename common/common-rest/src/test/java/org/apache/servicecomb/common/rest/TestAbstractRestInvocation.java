@@ -813,7 +813,6 @@ public class TestAbstractRestInvocation {
     };
 
     Holder<Boolean> result = new Holder<>();
-    Holder<Invocation> createdInvocation = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
       protected void runOnExecutor() {
@@ -822,15 +821,11 @@ public class TestAbstractRestInvocation {
     };
     restInvocation.requestEx = requestEx;
     restInvocation.restOperationMeta = restOperation;
-    // prepareInvocation() is invoked in restInvocation.scheduleInvocation(),
-    // test whether the afterCreateInvocationHandler is invoked properly
-    restInvocation.setAfterCreateInvocationHandler(invocation -> createdInvocation.value = invocation);
 
     restInvocation.scheduleInvocation();
     EventManager.unregister(subscriber);
 
     Assert.assertTrue(result.value);
-    Assert.assertSame(this.invocation, createdInvocation.value);
     Assert.assertEquals(time, invocation.getStartTime());
     Assert.assertSame(invocation, eventHolder.value.getInvocation());
   }
