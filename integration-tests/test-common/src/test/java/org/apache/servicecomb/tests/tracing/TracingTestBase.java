@@ -25,7 +25,6 @@ import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 
 import java.lang.invoke.MethodHandles;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -64,9 +63,7 @@ public class TracingTestBase {
   }
 
   private static void setUpLocalRegistry() {
-    ClassLoader loader = Thread.currentThread().getContextClassLoader();
-    URL resource = loader.getResource("registry.yaml");
-    System.setProperty(LOCAL_REGISTRY_FILE_KEY, resource.getPath());
+    System.setProperty(LOCAL_REGISTRY_FILE_KEY, "notExistJustForceLocal");
   }
 
   protected void assertThatSpansReceivedByZipkin(Collection<String> logs, String... values) {
@@ -91,7 +88,7 @@ public class TracingTestBase {
     assertThat(responseEntity.getStatusCode(), is(OK));
     String body = responseEntity.getBody();
     log.info("Received trace json: {}", body);
-    List<Span> spans = new ArrayList<Span>();
+    List<Span> spans = new ArrayList<>();
     SpanBytesDecoder.JSON_V2.decodeList(body.getBytes(), spans);
 
     List<String> tracedValues = tracedValues(spans);

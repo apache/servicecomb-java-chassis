@@ -17,7 +17,7 @@
 
 APPLICATION_ID: tracing-app
 service_description:
-  name: gateway-service
+  name: dummy
   version: 0.0.2
 servicecomb:
   service:

@@ -35,7 +35,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -85,10 +84,7 @@ public class SpringMvcIntegrationTestBase {
   private final String controllerUrl = baseUrl + "springmvc/controller/";
 
   public static void setUpLocalRegistry() {
-    ClassLoader loader = Thread.currentThread().getContextClassLoader();
-    URL resource = loader.getResource("registry.yaml");
-    assert resource != null;
-    System.setProperty(LOCAL_REGISTRY_FILE_KEY, resource.getPath());
+    System.setProperty(LOCAL_REGISTRY_FILE_KEY, "notExistJustForceLocal");
   }
 
   @Test
