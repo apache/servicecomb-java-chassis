@@ -22,8 +22,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.servicecomb.common.rest.AbstractRestInvocation.AfterCreateInvocationHandler;
-import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
@@ -48,10 +46,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mockito;
 
 import io.vertx.core.Context;
-import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.impl.VertxImpl;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.impl.HttpServerRequestWrapperForTest;
@@ -236,22 +232,7 @@ public class TestEdgeInvocation {
   }
 
   @Test
-  public void testSetAfterCreateInvocationHandler() {
-    EdgeInvocation edgeInvocation = new EdgeInvocation();
-    RoutingContext routingContext = Mockito.mock(RoutingContext.class);
-    HttpServerRequest httpServerRequest = Mockito.mock(HttpServerRequest.class);
-
-    Mockito.when(routingContext.request()).thenReturn(httpServerRequest);
-
-    // afterCreateInvocationHandler should be set in init()
-    edgeInvocation.init(microserviceName, routingContext, "/base", httpServerFilters);
-
-    AfterCreateInvocationHandler afterCreateInvocationHandler = Deencapsulation
-        .getField(edgeInvocation, "afterCreateInvocationHandler");
-
-    Invocation invocation = Mockito.mock(Invocation.class);
-    afterCreateInvocationHandler.handle(invocation);
-
-    Mockito.verify(routingContext, Mockito.times(1)).put(RestConst.REST_INVOCATION_CONTEXT, invocation);
+  public void testSetRoutingContext() {
+    Assert.assertSame(this.routingContext, edgeInvocation.routingContext);
   }
 }
