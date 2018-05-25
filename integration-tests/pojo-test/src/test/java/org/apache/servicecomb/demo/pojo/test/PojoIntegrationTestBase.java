@@ -29,7 +29,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -51,9 +50,7 @@ import org.junit.Test;
 public class PojoIntegrationTestBase {
 
   protected static void setUpLocalRegistry() {
-    ClassLoader loader = Thread.currentThread().getContextClassLoader();
-    URL resource = loader.getResource("registry.yaml");
-    System.setProperty(LOCAL_REGISTRY_FILE_KEY, resource.getPath());
+    System.setProperty(LOCAL_REGISTRY_FILE_KEY, "notExistJustForceLocal");
   }
 
   @Test
