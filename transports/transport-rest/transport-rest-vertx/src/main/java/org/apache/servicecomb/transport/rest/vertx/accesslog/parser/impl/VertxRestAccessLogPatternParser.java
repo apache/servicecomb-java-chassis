@@ -18,6 +18,7 @@
 package org.apache.servicecomb.transport.rest.vertx.accesslog.parser.impl;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
@@ -31,11 +32,30 @@ import io.vertx.ext.web.RoutingContext;
  * The parser is used for rest-over-vertx transport.
  */
 public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<RoutingContext> {
+  public static final Comparator<AccessLogItemMetaWrapper> accessLogItemMetaWrapperComparator = (w1, w2) -> {
+    AccessLogItemMeta meta1 = w1.getAccessLogItemMeta();
+    AccessLogItemMeta meta2 = w2.getAccessLogItemMeta();
+    int result = meta1.getOrder() - meta2.getOrder();
+    if (result != 0) {
+      return result;
+    }
+
+    // one of meta1 & meta2 has suffix, but the other one doesn't have
+    if (meta1.getSuffix() == null ^ meta2.getSuffix() == null) {
+      return meta1.getSuffix() == null ? 1 : -1;
+    }
+
+    if (null != meta1.getSuffix()) {
+      result = comparePlaceholderString(meta1.getSuffix(), meta2.getSuffix());
+    }
+
+    return 0 == result ?
+        comparePlaceholderString(meta1.getPrefix(), meta2.getPrefix())
+        : result;
+  };
+
   private List<VertxRestAccessLogItemCreator> creators = new ArrayList<>();
 
-  /**
-   * All of the {@linkplain AccessLogItemMeta} will be wrapped into {@linkplain AccessLogItemMetaWrapper}.
-   */
   private List<AccessLogItemMetaWrapper> accessLogItemMetaWrappers = new ArrayList<>();
 
   public VertxRestAccessLogPatternParser() {
@@ -44,6 +64,28 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
         accessLogItemMetaWrappers.add(new AccessLogItemMetaWrapper(accessLogItemMeta, creator));
       }
     }
+    sortAccessLogItemMetaWrapper(accessLogItemMetaWrappers);
+  }
+
+  /**
+   * Behavior of this compare:
+   * 1. comparePlaceholderString("abc","bbc") < 0
+   * 2. comparePlaceholderString("abc","ab") < 0
+   * 3. comparePlaceholderString("abc","abc) = 0
+   */
+  public static int comparePlaceholderString(String s1, String s2) {
+    int result = s1.compareTo(s2);
+    if (0 == result) {
+      return result;
+    }
+
+    // there are two possible cases:
+    // 1. s1="ab", s2="def"
+    // 2. s1="ab", s2="abc"
+    // in the case1 just return the result, but int the case2 the result should be reversed
+    return result < 0 ?
+        (s2.startsWith(s1) ? -result : result)
+        : (s1.startsWith(s2) ? -result : result);
   }
 
   /**
@@ -55,6 +97,44 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
     List<AccessLogItem<RoutingContext>> itemList = new ArrayList<>();
     // the algorithm is unimplemented.
     return itemList;
+  }
+
+  /**
+   * Sort all of the {@link AccessLogItemMetaWrapper}, the wrapper that is in front of the others has higher priority.
+   * <p/>
+   * Sort rule(priority decreased):
+   * <ol>
+   *   <li>compare the {@link AccessLogItemMeta#order}</li>
+   *   <li>compare the {@link AccessLogItemMeta#suffix} in lexicographic order, if one's suffix is start with
+   *   the other one's suffix, this one(who's suffix is longer) has higher priority</li>
+   *   <li>compare the {@link AccessLogItemMeta#prefix}, compare rule is the same as suffix.</li>
+   * </ol>
+   * <p/>
+   * e.g. given a list of {@link AccessLogItemMeta} like below:
+   * <ol>
+   * <li>(%ac{,}bcd)</li>
+   * <li>(%ac{,}bc)</li>
+   * <li>(%ac{,}a)</li>
+   * <li>(%ac,)</li>
+   * <li>(%b,)</li>
+   * <li>(%a)</li>
+   * <li>(%{,}b)</li>
+   * <li>(%{,}bc)</li>
+   * </ol>
+   * the result is:
+   * <ol>
+   * <li>(%ac{,}a)</li>
+   * <li>(%ac{,}bcd)</li>
+   * <li>(%ac{,}bc)</li>
+   * <li>(%{,}bc)</li>
+   * <li>(%{,}b)</li>
+   * <li>(%ac,)</li>
+   * <li>(%a)</li>
+   * <li>(%b,)</li>
+   * </ol>
+   */
+  private void sortAccessLogItemMetaWrapper(List<AccessLogItemMetaWrapper> accessLogItemMetaWrapperList) {
+    accessLogItemMetaWrapperList.sort(accessLogItemMetaWrapperComparator);
   }
 
   public static class AccessLogItemMetaWrapper {

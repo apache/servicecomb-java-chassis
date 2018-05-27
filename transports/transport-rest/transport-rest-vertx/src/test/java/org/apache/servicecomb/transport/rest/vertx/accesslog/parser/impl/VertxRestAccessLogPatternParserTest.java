@@ -17,5 +17,113 @@
 
 package org.apache.servicecomb.transport.rest.vertx.accesslog.parser.impl;
 
+import java.util.Comparator;
+import java.util.function.Function;
+
+import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemMeta;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.impl.VertxRestAccessLogPatternParser.AccessLogItemMetaWrapper;
+import org.junit.Assert;
+import org.junit.Test;
+
 public class VertxRestAccessLogPatternParserTest {
+
+  Comparator<AccessLogItemMetaWrapper> comparator = VertxRestAccessLogPatternParser.accessLogItemMetaWrapperComparator;
+
+  Function<AccessLogItemMeta, AccessLogItemMetaWrapper> wrapper =
+      accessLogItemMeta -> new AccessLogItemMetaWrapper(accessLogItemMeta, null);
+
+  /**
+   * one factor test
+   */
+  @Test
+  public void testCompareMetaSimple() {
+    Assert.assertTrue(
+        comparator.compare(
+            wrapper.apply(new AccessLogItemMeta(null, null, 0)),
+            wrapper.apply(new AccessLogItemMeta(null, null, 1))
+        ) < 0
+    );
+    Assert.assertTrue(
+        comparator.compare(
+            wrapper.apply(new AccessLogItemMeta(null, "}abc")),
+            wrapper.apply(new AccessLogItemMeta(null, null))
+        ) < 0
+    );
+    Assert.assertTrue(
+        comparator.compare(
+            wrapper.apply(new AccessLogItemMeta(null, "}abc")),
+            wrapper.apply(new AccessLogItemMeta(null, "}de"))
+        ) < 0
+    );
+    Assert.assertTrue(
+        comparator.compare(
+            wrapper.apply(new AccessLogItemMeta(null, "}abc")),
+            wrapper.apply(new AccessLogItemMeta(null, "}ab"))
+        ) < 0
+    );
+    Assert.assertTrue(
+        comparator.compare(
+            wrapper.apply(new AccessLogItemMeta("%abc", null)),
+            wrapper.apply(new AccessLogItemMeta("%de", null))
+        ) < 0
+    );
+    Assert.assertTrue(
+        comparator.compare(
+            wrapper.apply(new AccessLogItemMeta("%abc", null)),
+            wrapper.apply(new AccessLogItemMeta("%ab", null))
+        ) < 0
+    );
+    Assert.assertEquals(0, comparator.compare(
+        wrapper.apply(new AccessLogItemMeta("%abc", null)),
+        wrapper.apply(new AccessLogItemMeta("%abc", null))
+    ));
+  }
+
+  /**
+   * multiple factors test
+   */
+  @Test
+  public void testCompareMetaComplex() {
+    Assert.assertTrue(
+        comparator.compare(
+            wrapper.apply(new AccessLogItemMeta("%bcd", "}ab", 0)),
+            wrapper.apply(new AccessLogItemMeta("%abc", "}abc", 0))
+        ) > 0
+    );
+    Assert.assertTrue(
+        comparator.compare(
+            wrapper.apply(new AccessLogItemMeta("%abc", null, 0)),
+            wrapper.apply(new AccessLogItemMeta("%bcd", "}ab", 0))
+        ) > 0
+    );
+    Assert.assertTrue(
+        comparator.compare(
+            wrapper.apply(new AccessLogItemMeta("%bcd", "}abc")),
+            wrapper.apply(new AccessLogItemMeta("%abc", "}abc"))
+        ) > 0
+    );
+    Assert.assertTrue(
+        comparator.compare(
+            wrapper.apply(new AccessLogItemMeta("%abc", "}abc", 1)),
+            wrapper.apply(new AccessLogItemMeta("%ab", "}ab", 0))
+        ) > 0
+    );
+  }
+
+  @Test
+  public void testComparePlaceholderString() {
+    Assert.assertTrue(
+        VertxRestAccessLogPatternParser.comparePlaceholderString("abc", "bbc") < 0
+    );
+    Assert.assertTrue(
+        VertxRestAccessLogPatternParser.comparePlaceholderString("abc", "ab") < 0
+    );
+    Assert.assertEquals(0, VertxRestAccessLogPatternParser.comparePlaceholderString("abc", "abc"));
+    Assert.assertTrue(
+        VertxRestAccessLogPatternParser.comparePlaceholderString("bbc", "abc") > 0
+    );
+    Assert.assertTrue(
+        VertxRestAccessLogPatternParser.comparePlaceholderString("ab", "abc") > 0
+    );
+  }
 }
