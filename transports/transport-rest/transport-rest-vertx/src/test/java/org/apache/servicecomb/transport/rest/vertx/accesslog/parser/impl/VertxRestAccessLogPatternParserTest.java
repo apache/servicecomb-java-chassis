@@ -17,15 +17,151 @@
 
 package org.apache.servicecomb.transport.rest.vertx.accesslog.parser.impl;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.function.Function;
 
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.CookieItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.DatetimeConfigurableItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.DurationMillisecondItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.DurationSecondItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.FirstLineOfRequestItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.HttpMethodItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.HttpStatusItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.InvocationContextItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.LocalHostItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.LocalPortItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.QueryStringItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.RemoteHostItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.RequestHeaderItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.RequestProtocolItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.ResponseHeaderItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.ResponseSizeItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.TraceIdItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.UrlPathItem;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.UrlPathWithQueryItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemMeta;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.impl.VertxRestAccessLogPatternParser.AccessLogItemMetaWrapper;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.vertx.ext.web.RoutingContext;
+
 public class VertxRestAccessLogPatternParserTest {
+  private static final String ROW_PATTERN = "[cs-method] %m %s%T%D%h%v%p%B%b%r%U%q"
+      + "cs-uri-stemcs-uri-querycs-uri%H%t%{yyyy MM dd HH:mm:ss zzz}t"
+      + "%{yyyy MM dd HH:mm:ss|GMT+0|en-US}t"
+      + "%{incoming-header}i"
+      + "%{outgoing-header}o"
+      + "%{cookie}C"
+      + "%SCB-traceId"
+      + "%{ctx}SCB-ctx";
+
+  private static VertxRestAccessLogPatternParser accessLogPatternParser = new VertxRestAccessLogPatternParser();
+
+  @Test
+  public void testParsePatternFullTest() {
+    List<AccessLogItem<RoutingContext>> result = accessLogPatternParser.parsePattern(ROW_PATTERN);
+    assertEquals(28, result.size());
+
+    assertEquals("[", result.get(0).getFormattedItem(null));
+    assertEquals(HttpMethodItem.class, result.get(1).getClass());
+    assertEquals("] ", result.get(2).getFormattedItem(null));
+    assertEquals(HttpMethodItem.class, result.get(3).getClass());
+    assertEquals(" ", result.get(4).getFormattedItem(null));
+    assertEquals(HttpStatusItem.class, result.get(5).getClass());
+    assertEquals(DurationSecondItem.class, result.get(6).getClass());
+    assertEquals(DurationMillisecondItem.class, result.get(7).getClass());
+    assertEquals(RemoteHostItem.class, result.get(8).getClass());
+    assertEquals(LocalHostItem.class, result.get(9).getClass());
+    assertEquals(LocalPortItem.class, result.get(10).getClass());
+    assertEquals(ResponseSizeItem.class, result.get(11).getClass());
+    assertEquals("0", ((ResponseSizeItem) result.get(11)).getZeroBytes());
+    assertEquals(ResponseSizeItem.class, result.get(12).getClass());
+    assertEquals("-", ((ResponseSizeItem) result.get(12)).getZeroBytes());
+    assertEquals(FirstLineOfRequestItem.class, result.get(13).getClass());
+    assertEquals(UrlPathItem.class, result.get(14).getClass());
+    assertEquals(QueryStringItem.class, result.get(15).getClass());
+    assertEquals(UrlPathItem.class, result.get(16).getClass());
+    assertEquals(QueryStringItem.class, result.get(17).getClass());
+    assertEquals(UrlPathWithQueryItem.class, result.get(18).getClass());
+    assertEquals(RequestProtocolItem.class, result.get(19).getClass());
+    assertEquals(DatetimeConfigurableItem.class, result.get(20).getClass());
+    assertEquals(DatetimeConfigurableItem.DEFAULT_DATETIME_PATTERN,
+        ((DatetimeConfigurableItem) result.get(20)).getPattern());
+    assertEquals(DatetimeConfigurableItem.DEFAULT_LOCALE, ((DatetimeConfigurableItem) result.get(20)).getLocale());
+    assertEquals(TimeZone.getDefault(), ((DatetimeConfigurableItem) result.get(20)).getTimezone());
+    assertEquals("yyyy MM dd HH:mm:ss zzz", ((DatetimeConfigurableItem) result.get(21)).getPattern());
+    assertEquals(DatetimeConfigurableItem.DEFAULT_LOCALE, ((DatetimeConfigurableItem) result.get(21)).getLocale());
+    assertEquals(TimeZone.getDefault(), ((DatetimeConfigurableItem) result.get(21)).getTimezone());
+    assertEquals("yyyy MM dd HH:mm:ss", ((DatetimeConfigurableItem) result.get(22)).getPattern());
+    assertEquals(Locale.forLanguageTag("en-US"), ((DatetimeConfigurableItem) result.get(22)).getLocale());
+    assertEquals(TimeZone.getTimeZone("GMT+0"), ((DatetimeConfigurableItem) result.get(22)).getTimezone());
+    assertEquals(RequestHeaderItem.class, result.get(23).getClass());
+    assertEquals("incoming-header", ((RequestHeaderItem) result.get(23)).getVarName());
+    assertEquals(ResponseHeaderItem.class, result.get(24).getClass());
+    assertEquals("outgoing-header", ((ResponseHeaderItem) result.get(24)).getVarName());
+    assertEquals(CookieItem.class, result.get(25).getClass());
+    assertEquals("cookie", ((CookieItem) result.get(25)).getVarName());
+    assertEquals(TraceIdItem.class, result.get(26).getClass());
+    assertEquals(InvocationContextItem.class, result.get(27).getClass());
+    assertEquals("ctx", ((InvocationContextItem) result.get(27)).getVarName());
+  }
+
+  @Test
+  public void testParsePattern() {
+    String pattern = " %m  cs-uri-stem %{response-header}o ";
+    List<AccessLogItem<RoutingContext>> result = accessLogPatternParser.parsePattern(pattern);
+    assertEquals(7, result.size());
+
+    assertEquals(" ", result.get(0).getFormattedItem(null));
+    assertEquals(HttpMethodItem.class, result.get(1).getClass());
+    assertEquals("  ", result.get(2).getFormattedItem(null));
+    assertEquals(UrlPathItem.class, result.get(3).getClass());
+    assertEquals(" ", result.get(4).getFormattedItem(null));
+    assertEquals(ResponseHeaderItem.class, result.get(5).getClass());
+    assertEquals("response-header", ((ResponseHeaderItem) result.get(5)).getVarName());
+    assertEquals(" ", result.get(6).getFormattedItem(null));
+  }
+
+  @Test
+  public void testParsePatternWithNoBlank() {
+    String pattern = "%mcs-uri-stem%{response-header}o";
+    List<AccessLogItem<RoutingContext>> result = accessLogPatternParser.parsePattern(pattern);
+    assertEquals(3, result.size());
+
+    assertEquals(HttpMethodItem.class, result.get(0).getClass());
+    assertEquals(UrlPathItem.class, result.get(1).getClass());
+    assertEquals(ResponseHeaderItem.class, result.get(2).getClass());
+    assertEquals("response-header", ((ResponseHeaderItem) result.get(2)).getVarName());
+  }
+
+  @Test
+  public void testParsePatternComplex() {
+    String pattern = "%m  cs-uri-stem %{response-header}o abc cs-uri-query %s%{request} header}i plain cs-uri";
+    List<AccessLogItem<RoutingContext>> result = accessLogPatternParser.parsePattern(pattern);
+    assertEquals(12, result.size());
+
+    assertEquals(HttpMethodItem.class, result.get(0).getClass());
+    assertEquals("  ", result.get(1).getFormattedItem(null));
+    assertEquals(UrlPathItem.class, result.get(2).getClass());
+    assertEquals(" ", result.get(3).getFormattedItem(null));
+    assertEquals(ResponseHeaderItem.class, result.get(4).getClass());
+    assertEquals("response-header", ((ResponseHeaderItem) result.get(4)).getVarName());
+    assertEquals(" abc ", result.get(5).getFormattedItem(null));
+    assertEquals(QueryStringItem.class, result.get(6).getClass());
+    assertEquals(" ", result.get(7).getFormattedItem(null));
+    assertEquals(HttpStatusItem.class, result.get(8).getClass());
+    assertEquals(RequestHeaderItem.class, result.get(9).getClass());
+    assertEquals("request} header", ((RequestHeaderItem) result.get(9)).getVarName());
+    assertEquals(" plain ", result.get(10).getFormattedItem(null));
+    assertEquals(UrlPathWithQueryItem.class, result.get(11).getClass());
+  }
 
   Comparator<AccessLogItemMetaWrapper> comparator = VertxRestAccessLogPatternParser.accessLogItemMetaWrapperComparator;
 
