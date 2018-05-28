@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
@@ -256,7 +257,10 @@ public class SCBEngine {
     VertxUtils.blockCloseVertxByName("config-center");
     VertxUtils.blockCloseVertxByName("transport");
 
-    //Step 6: notify all component do clean works via AFTER_CLOSE Event
+    //Step 6: destroy config center source
+    ConfigUtil.destroyConfigCenterConfigurationSource();
+
+    //Step 7: notify all component do clean works via AFTER_CLOSE Event
     safeTriggerEvent(EventType.AFTER_CLOSE);
   }
 
