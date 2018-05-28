@@ -83,42 +83,44 @@ public class SchemaMeta extends CommonService<OperationMeta> {
   }
 
   private void initOperations() {
-    if (swagger.getPaths() != null) {
-      for (Entry<String, Path> entry : swagger.getPaths().entrySet()) {
-        String strPath = entry.getKey();
-        Path path = entry.getValue();
-        for (Entry<HttpMethod, Operation> operationEntry : path.getOperationMap().entrySet()) {
-          Operation operation = operationEntry.getValue();
-          if (operation.getOperationId() == null) {
-            throw ExceptionUtils.operationIdInvalid(getSchemaId(), strPath);
-          }
+    if (swagger.getPaths() == null) {
+      return;
+    }
 
-          // org.apache.servicecomb.swagger.engine.SwaggerEnvironment.createConsumer(Class<?>, Class<?>)
-          // org.apache.servicecomb.swagger.engine.SwaggerEnvironment.createProducer(Object, Swagger)
-          // had make sure that consumer/swagger or producer/swagger can work
-          //
-          // in this place, do not throw exception when method not exists
-          // eg:
-          //   swagger interface is a.b.c, and consumer interface is a.b.c too.
-          //   version 1, they are the same
-          //   version 2, producer add a new operation, that means swagger have more operation than consumer interface a.b.c
-          //              interface a.b.c in consumer process is the old interface
-          //              so for swagger, can not do any valid check here
-          //              only need to save found method, that's enough.
-          Method method = ReflectUtils.findMethod(swaggerIntf, operation.getOperationId());
-          if (method == null) {
-            LOGGER.warn("method {} not found in swagger interface {}, schemaId={}",
-                operation.getOperationId(),
-                swaggerIntf.getName(),
-                getSchemaId());
-            continue;
-          }
-
-          String httpMethod = operationEntry.getKey().name();
-          OperationMeta operationMeta = new OperationMeta();
-          operationMeta.init(this, method, strPath, httpMethod, operation);
-          operationMgr.register(method.getName(), operationMeta);
+    for (Entry<String, Path> entry : swagger.getPaths().entrySet()) {
+      String strPath = entry.getKey();
+      Path path = entry.getValue();
+      for (Entry<HttpMethod, Operation> operationEntry : path.getOperationMap().entrySet()) {
+        Operation operation = operationEntry.getValue();
+        if (operation.getOperationId() == null) {
+          throw ExceptionUtils.operationIdInvalid(getSchemaId(), strPath);
         }
+
+        // org.apache.servicecomb.swagger.engine.SwaggerEnvironment.createConsumer(Class<?>, Class<?>)
+        // org.apache.servicecomb.swagger.engine.SwaggerEnvironment.createProducer(Object, Swagger)
+        // had make sure that consumer/swagger or producer/swagger can work
+        //
+        // in this place, do not throw exception when method not exists
+        // eg:
+        //   swagger interface is a.b.c, and consumer interface is a.b.c too.
+        //   version 1, they are the same
+        //   version 2, producer add a new operation, that means swagger have more operation than consumer interface a.b.c
+        //              interface a.b.c in consumer process is the old interface
+        //              so for swagger, can not do any valid check here
+        //              only need to save found method, that's enough.
+        Method method = ReflectUtils.findMethod(swaggerIntf, operation.getOperationId());
+        if (method == null) {
+          LOGGER.warn("method {} not found in swagger interface {}, schemaId={}",
+              operation.getOperationId(),
+              swaggerIntf.getName(),
+              getSchemaId());
+          continue;
+        }
+
+        String httpMethod = operationEntry.getKey().name();
+        OperationMeta operationMeta = new OperationMeta();
+        operationMeta.init(this, method, strPath, httpMethod, operation);
+        operationMgr.register(method.getName(), operationMeta);
       }
     }
   }
