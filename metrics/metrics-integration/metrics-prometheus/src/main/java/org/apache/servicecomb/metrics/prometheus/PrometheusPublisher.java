@@ -114,7 +114,7 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
   }
 
   @Override
-  public void uninit() {
+  public void destroy() {
     if (httpServer == null) {
       return;
     }

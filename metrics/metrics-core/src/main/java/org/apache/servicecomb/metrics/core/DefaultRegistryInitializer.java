@@ -49,7 +49,7 @@ public class DefaultRegistryInitializer implements MetricsInitializer {
   }
 
   @Override
-  public void uninit() {
+  public void destroy() {
     DefaultMonitorRegistry.getInstance().unregister(registry);
     globalRegistry.remove(registry);
   }

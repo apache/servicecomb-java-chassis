@@ -54,12 +54,14 @@ public class MetricsBootstrap {
   }
 
   public void shutdown() {
-    executorService.shutdown();
+    if (executorService != null) {
+      executorService.shutdown();
+    }
 
     List<MetricsInitializer> initializers = new ArrayList<>(SPIServiceUtils.getSortedService(MetricsInitializer.class));
     Collections.reverse(initializers);
     initializers.forEach(initializer -> {
-      initializer.uninit();
+      initializer.destroy();
     });
   }
 
