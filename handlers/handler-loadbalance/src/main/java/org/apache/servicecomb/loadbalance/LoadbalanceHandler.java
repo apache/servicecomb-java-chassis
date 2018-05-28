@@ -68,7 +68,10 @@ public class LoadbalanceHandler implements Handler {
 
     @Override
     public Thread newThread(Runnable r) {
-      return new Thread(r, "retry-pool-thread-" + count.getAndIncrement());
+      Thread thread = new Thread(r, "retry-pool-thread-" + count.getAndIncrement());
+      // avoid block shutdown
+      thread.setDaemon(true);
+      return thread;
     }
   });
 
