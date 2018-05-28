@@ -17,28 +17,39 @@
 
 package org.apache.servicecomb.core.provider.producer;
 
+import java.io.Closeable;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.ProducerProvider;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
+import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.definition.SchemaUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProducerProviderManager {
+public class ProducerProviderManager implements BootListener {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProducerProviderManager.class);
+
   @Autowired(required = false)
   private List<ProducerProvider> producerProviderList = Collections.emptyList();
 
   @Inject
   private MicroserviceMetaManager microserviceMetaManager;
+
+  private MicroserviceMeta microserviceMeta;
 
   public void init() throws Exception {
     for (ProducerProvider provider : producerProviderList) {
@@ -46,10 +57,32 @@ public class ProducerProviderManager {
     }
 
     Microservice microservice = RegistryUtils.getMicroservice();
-    MicroserviceMeta microserviceMeta = microserviceMetaManager.getOrCreateMicroserviceMeta(microservice);
+    microserviceMeta = microserviceMetaManager.getOrCreateMicroserviceMeta(microservice);
     for (SchemaMeta schemaMeta : microserviceMeta.getSchemaMetas()) {
       String content = SchemaUtils.swaggerToString(schemaMeta.getSwagger());
       microservice.addSchema(schemaMeta.getSchemaId(), content);
+    }
+  }
+
+  @Override
+  public void onBootEvent(BootEvent event) {
+    if (!EventType.AFTER_CLOSE.equals(event.getEventType())) {
+      return;
+    }
+
+    for (OperationMeta operationMeta : microserviceMeta.getOperations()) {
+      if (ExecutorService.class.isInstance(operationMeta.getExecutor())) {
+        ((ExecutorService) operationMeta.getExecutor()).shutdown();
+        continue;
+      }
+
+      if (Closeable.class.isInstance(operationMeta.getExecutor())) {
+        IOUtils.closeQuietly((Closeable) operationMeta.getExecutor());
+        continue;
+      }
+
+      LOGGER.warn("Executor {} do not support close or shutdown, it may block service shutdown.",
+          operationMeta.getExecutor().getClass().getName());
     }
   }
 }
