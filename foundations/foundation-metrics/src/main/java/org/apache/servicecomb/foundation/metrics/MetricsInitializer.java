@@ -29,7 +29,7 @@ public interface MetricsInitializer {
    */
   void init(CompositeRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config);
 
-  default void uninit() {
+  default void destroy() {
 
   }
 }
