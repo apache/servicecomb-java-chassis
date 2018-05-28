@@ -19,7 +19,6 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog.impl;
 
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogGenerator;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogPatternParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,8 +30,8 @@ public class AccessLogHandler implements Handler<RoutingContext> {
 
   private AccessLogGenerator accessLogGenerator;
 
-  public AccessLogHandler(String rawPattern, AccessLogPatternParser accessLogPatternParser) {
-    accessLogGenerator = new AccessLogGenerator(rawPattern, accessLogPatternParser);
+  public AccessLogHandler(String rawPattern) {
+    accessLogGenerator = new AccessLogGenerator(rawPattern);
   }
 
   @Override
