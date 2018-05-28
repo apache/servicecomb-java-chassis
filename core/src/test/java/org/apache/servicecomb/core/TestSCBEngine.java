@@ -18,7 +18,9 @@
 package org.apache.servicecomb.core;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
 import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
@@ -36,6 +38,8 @@ import org.mockito.Mockito;
 
 import mockit.Expectations;
 import mockit.Injectable;
+import mockit.Mock;
+import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestSCBEngine {
@@ -47,13 +51,19 @@ public class TestSCBEngine {
       @Injectable ConsumerProviderManager consumerProviderManager,
       @Injectable TransportManager transportManager,
       @Injectable AppManager appManager) {
-
     new Expectations(RegistryUtils.class) {
       {
         RegistryUtils.getServiceRegistry().getAppManager();
         RegistryUtils.getInstanceCacheManager();
         RegistryUtils.run();
         RegistryUtils.destroy();
+      }
+    };
+    AtomicBoolean configDestroy = new AtomicBoolean();
+    new MockUp<ConfigUtil>() {
+      @Mock
+      void destroyConfigCenterConfigurationSource() {
+        configDestroy.set(true);
       }
     };
 
@@ -75,6 +85,7 @@ public class TestSCBEngine {
     engine.uninit();
 
     Assert.assertEquals(SCBStatus.DOWN, engine.getStatus());
+    Assert.assertTrue(configDestroy.get());
   }
 
   @Test
