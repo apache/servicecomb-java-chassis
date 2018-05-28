@@ -29,7 +29,6 @@ import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
 import org.apache.servicecomb.foundation.vertx.VertxTLSBuilder;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogConfiguration;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.impl.AccessLogHandler;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.impl.DefaultAccessLogPatternParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,15 +85,15 @@ public class RestServerVerticle extends AbstractVerticle {
       LOGGER.info("access log enabled, pattern = {}", pattern);
       mainRouter.route()
           .handler(new AccessLogHandler(
-              pattern,
-              new DefaultAccessLogPatternParser()));
+              pattern
+          ));
     }
   }
 
   private void initDispatcher(Router mainRouter) {
     List<VertxHttpDispatcher> dispatchers = SPIServiceUtils.getSortedService(VertxHttpDispatcher.class);
     for (VertxHttpDispatcher dispatcher : dispatchers) {
-      if(dispatcher.enabled()) {
+      if (dispatcher.enabled()) {
         dispatcher.init(mainRouter);
       }
     }
