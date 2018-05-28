@@ -29,6 +29,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public final class JsonUtils {
   public static final ObjectMapper OBJ_MAPPER;
@@ -37,6 +38,7 @@ public final class JsonUtils {
     OBJ_MAPPER = new ObjectMapper();
     OBJ_MAPPER.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     OBJ_MAPPER.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+    OBJ_MAPPER.registerModule(new JavaTimeModule());
   }
 
   private JsonUtils() {
