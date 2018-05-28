@@ -84,6 +84,8 @@ public class SchemaMeta extends CommonService<OperationMeta> {
 
   private void initOperations() {
     if (swagger.getPaths() == null) {
+      LOGGER.error(swagger.getInfo().getTitle() + " with path " + swagger.getBasePath()
+          + " is an empty interface, please delete it or fill with one method!");
       return;
     }
 
