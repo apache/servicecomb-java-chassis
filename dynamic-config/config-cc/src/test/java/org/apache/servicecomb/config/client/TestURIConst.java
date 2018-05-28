@@ -25,7 +25,24 @@ import mockit.Mocked;
 
 public class TestURIConst {
   @Test
-  public void testURI(final @Mocked ConfigCenterConfig config) {
+  public void testURI_v2(final @Mocked ConfigCenterConfig config) {
+    new Expectations() {
+      {
+        config.getDomainName();
+        result = "mytenant";
+        config.getApiVersion();
+        result = "v2";
+      }
+    };
+
+    URIConst uriConst = new URIConst();
+    Assert.assertEquals("/members", uriConst.MEMBERS);
+    Assert.assertEquals("/configuration/v2/refresh/items", uriConst.REFRESH_ITEMS);
+    Assert.assertEquals("/configuration/v2/items", uriConst.ITEMS);
+  }
+
+  @Test
+  public void testURI_v3(final @Mocked ConfigCenterConfig config) {
     new Expectations() {
       {
         config.getDomainName();
@@ -35,8 +52,9 @@ public class TestURIConst {
       }
     };
 
-    Assert.assertEquals(URIConst.MEMBERS, "/v3/mytenant/configuration/members");
-    Assert.assertEquals(URIConst.REFRESH_ITEMS, "/v3/mytenant/configuration/refresh/items");
-    Assert.assertEquals(URIConst.ITEMS, "/v3/mytenant/configuration/items");
+    URIConst uriConst = new URIConst();
+    Assert.assertEquals("/v3/mytenant/configuration/members", uriConst.MEMBERS);
+    Assert.assertEquals("/v3/mytenant/configuration/refresh/items", uriConst.REFRESH_ITEMS);
+    Assert.assertEquals("/v3/mytenant/configuration/items", uriConst.ITEMS);
   }
 }
