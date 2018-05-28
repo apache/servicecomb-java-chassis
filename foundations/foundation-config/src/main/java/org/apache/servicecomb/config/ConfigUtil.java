@@ -241,6 +241,16 @@ public final class ConfigUtil {
     }
   }
 
+  public static void destroyConfigCenterConfigurationSource() {
+    SPIServiceUtils.getAllService(ConfigCenterConfigurationSource.class).forEach(source -> {
+      try {
+        source.destroy();
+      } catch (Throwable e) {
+        LOGGER.error("Failed to destroy {}", source.getClass().getName());
+      }
+    });
+  }
+
   public static void addExtraConfig(String extraConfigName, Map<String, Object> extraConfig) {
     EXTRA_CONFIG_MAP.put(extraConfigName, extraConfig);
   }

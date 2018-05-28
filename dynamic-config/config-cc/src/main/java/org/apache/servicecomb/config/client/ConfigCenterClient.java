@@ -83,11 +83,11 @@ public class ConfigCenterClient {
 
   private static final String SSL_KEY = "cc.consumer";
 
-  private static final ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(1);
-
   private static final long HEARTBEAT_INTERVAL = 30000;
 
   private static final long BOOTUP_WAIT_TIME = 10;
+
+  private ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
 
   private ScheduledExecutorService heartbeatTask = null;
 
@@ -109,12 +109,14 @@ public class ConfigCenterClient {
 
   private ConfigCenterConfigurationSourceImpl.UpdateHandler updateHandler;
 
-  private static ClientPoolManager<HttpClientWithContext> clientMgr;
+  private ClientPoolManager<HttpClientWithContext> clientMgr;
 
   private boolean isWatching = false;
 
-  private static final ServiceLoader<AuthHeaderProvider> authHeaderProviders =
+  private final ServiceLoader<AuthHeaderProvider> authHeaderProviders =
       ServiceLoader.load(AuthHeaderProvider.class);
+
+  private URIConst uriConst = new URIConst();
 
   public ConfigCenterClient(ConfigCenterConfigurationSourceImpl.UpdateHandler updateHandler) {
     this.updateHandler = updateHandler;
@@ -134,10 +136,22 @@ public class ConfigCenterClient {
     refreshMembers(memberDiscovery);
     ConfigRefresh refreshTask = new ConfigRefresh(parseConfigUtils, memberDiscovery);
     refreshTask.run(true);
-    EXECUTOR.scheduleWithFixedDelay(refreshTask,
+    executor.scheduleWithFixedDelay(refreshTask,
         firstRefreshInterval,
         refreshInterval,
         TimeUnit.MILLISECONDS);
+  }
+
+  public void destroy() {
+    if (executor != null) {
+      executor.shutdown();
+      executor = null;
+    }
+
+    if (heartbeatTask != null) {
+      heartbeatTask.shutdown();
+      heartbeatTask = null;
+    }
   }
 
   private void refreshMembers(MemberDiscovery memberDiscovery) {
@@ -145,7 +159,7 @@ public class ConfigCenterClient {
       String configCenter = memberDiscovery.getConfigServer();
       IpPort ipPort = NetUtils.parseIpPortFromURI(configCenter);
       clientMgr.findThreadBindClientPool().runOnContext(client -> {
-        HttpClientRequest request = client.get(ipPort.getPort(), ipPort.getHostOrIp(), URIConst.MEMBERS, rsp -> {
+        HttpClientRequest request = client.get(ipPort.getPort(), ipPort.getHostOrIp(), uriConst.MEMBERS, rsp -> {
           if (rsp.statusCode() == HttpResponseStatus.OK.code()) {
             rsp.bodyHandler(buf -> {
               memberDiscovery.refreshMembers(buf.toJsonObject());
@@ -153,7 +167,7 @@ public class ConfigCenterClient {
           }
         });
         SignRequest signReq = createSignRequest(request.method().toString(),
-            configCenter + URIConst.MEMBERS,
+            configCenter + uriConst.MEMBERS,
             new HashMap<>(),
             null);
         if (ConfigCenterConfig.INSTANCE.getToken() != null) {
@@ -247,7 +261,7 @@ public class ConfigCenterClient {
         throws UnsupportedEncodingException, InterruptedException {
       CountDownLatch waiter = new CountDownLatch(1);
       IpPort ipPort = NetUtils.parseIpPortFromURI(configCenter);
-      String url = URIConst.REFRESH_ITEMS + "?dimensionsInfo="
+      String url = uriConst.REFRESH_ITEMS + "?dimensionsInfo="
           + StringUtils.deleteWhitespace(URLEncoder.encode(serviceName, "UTF-8"));
       Map<String, String> headers = new HashMap<>();
       headers.put("x-domain-name", tenantName);
@@ -337,7 +351,7 @@ public class ConfigCenterClient {
         LOGGER.error("encode failed. Error message: {}", e.getMessage());
         encodeServiceName = StringUtils.deleteWhitespace(serviceName);
       }
-      String path = URIConst.ITEMS + "?dimensionsInfo=" + encodeServiceName;
+      String path = uriConst.ITEMS + "?dimensionsInfo=" + encodeServiceName;
       clientMgr.findThreadBindClientPool().runOnContext(client -> {
         IpPort ipPort = NetUtils.parseIpPortFromURI(configcenter);
         HttpClientRequest request = client.get(ipPort.getPort(), ipPort.getHostOrIp(), path, rsp -> {

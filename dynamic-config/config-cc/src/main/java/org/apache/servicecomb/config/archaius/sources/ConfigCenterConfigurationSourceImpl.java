@@ -49,6 +49,8 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
 
   private UpdateHandler updateHandler = new UpdateHandler();
 
+  private ConfigCenterClient configCenterClient;
+
   private static final String CONFIG_CENTER_URL_KEY = "cse.config.client.serverUri";
 
   public ConfigCenterConfigurationSourceImpl() {
@@ -64,7 +66,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
   }
 
   private void init() {
-    ConfigCenterClient configCenterClient = new ConfigCenterClient(updateHandler);
+    configCenterClient = new ConfigCenterClient(updateHandler);
     configCenterClient.connectServer();
   }
 
@@ -72,6 +74,15 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
   public void init(Configuration localConfiguration) {
     ConfigCenterConfig.setConcurrentCompositeConfiguration((ConcurrentCompositeConfiguration) localConfiguration);
     init();
+  }
+
+  @Override
+  public void destroy() {
+    if (configCenterClient == null) {
+      return;
+    }
+
+    configCenterClient.destroy();
   }
 
   public void addUpdateListener(WatchedUpdateListener watchedUpdateListener) {

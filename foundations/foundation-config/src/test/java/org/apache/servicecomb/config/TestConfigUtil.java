@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.servicecomb.config.archaius.sources.ConfigModel;
@@ -48,6 +49,8 @@ import com.netflix.config.DynamicWatchedConfiguration;
 
 import mockit.Deencapsulation;
 import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
 
 public class TestConfigUtil {
 
@@ -342,5 +345,27 @@ public class TestConfigUtil {
         map.put(key, value);
       }
     }
+  }
+
+  @Test
+  public void destroyConfigCenterConfigurationSource() {
+    AtomicInteger count = new AtomicInteger();
+    ConfigCenterConfigurationSource source = new MockUp<ConfigCenterConfigurationSource>() {
+      @Mock
+      void destroy() {
+        count.incrementAndGet();
+      }
+    }.getMockInstance();
+
+    new Expectations(SPIServiceUtils.class) {
+      {
+        SPIServiceUtils.getAllService(ConfigCenterConfigurationSource.class);
+        result = Arrays.asList(source, source);
+      }
+    };
+
+    ConfigUtil.destroyConfigCenterConfigurationSource();
+
+    Assert.assertEquals(2, count.get());
   }
 }

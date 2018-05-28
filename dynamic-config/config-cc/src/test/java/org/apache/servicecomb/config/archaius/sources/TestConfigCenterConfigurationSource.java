@@ -18,8 +18,11 @@ package org.apache.servicecomb.config.archaius.sources;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.servicecomb.config.archaius.sources.ConfigCenterConfigurationSourceImpl.UpdateHandler;
+import org.apache.servicecomb.config.client.ConfigCenterClient;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -28,6 +31,8 @@ import com.netflix.config.WatchedUpdateListener;
 import com.netflix.config.WatchedUpdateResult;
 
 import mockit.Deencapsulation;
+import mockit.Mock;
+import mockit.MockUp;
 
 /**
  * Created by on 2017/1/12.
@@ -90,5 +95,30 @@ public class TestConfigCenterConfigurationSource {
     configCenterSource.addUpdateListener(watchedUpdateListener);
     configCenterSource.removeUpdateListener(watchedUpdateListener);
     Assert.assertTrue(configCenterSource.getCurrentListeners().isEmpty());
+  }
+
+  @Test
+  public void destroy_notInit() {
+    ConfigCenterConfigurationSourceImpl configCenterSource = new ConfigCenterConfigurationSourceImpl();
+
+    // need not throw exception
+    configCenterSource.destroy();
+  }
+
+  @Test
+  public void destroy_inited() throws IllegalAccessException {
+    AtomicInteger count = new AtomicInteger();
+    ConfigCenterClient configCenterClient = new MockUp<ConfigCenterClient>() {
+      @Mock
+      void destroy() {
+        count.incrementAndGet();
+      }
+    }.getMockInstance();
+    ConfigCenterConfigurationSourceImpl configCenterSource = new ConfigCenterConfigurationSourceImpl();
+    FieldUtils.writeDeclaredField(configCenterSource, "configCenterClient", configCenterClient, true);
+
+    configCenterSource.destroy();
+
+    Assert.assertEquals(1, count.get());
   }
 }

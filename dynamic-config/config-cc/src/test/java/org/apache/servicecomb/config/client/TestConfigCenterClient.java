@@ -20,12 +20,15 @@ package org.apache.servicecomb.config.client;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.archaius.sources.ConfigCenterConfigurationSourceImpl;
 import org.apache.servicecomb.config.archaius.sources.ConfigCenterConfigurationSourceImpl.UpdateHandler;
 import org.apache.servicecomb.config.client.ConfigCenterClient.ConfigRefresh;
 import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext.RunHandler;
 import org.junit.Assert;
@@ -45,8 +48,10 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.WebSocket;
 import io.vertx.core.json.JsonObject;
 import mockit.Deencapsulation;
+import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
+import mockit.Mocked;
 
 public class TestConfigCenterClient {
   @BeforeClass
@@ -110,9 +115,9 @@ public class TestConfigCenterClient {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testConfigRefresh() {
+  public void testConfigRefresh(@Mocked ClientPoolManager<HttpClientWithContext> clientMgr,
+      @Mocked HttpClientWithContext httpClientWithContext) {
     ConfigCenterConfigurationSourceImpl impl = new ConfigCenterConfigurationSourceImpl();
-    impl.init(ConfigUtil.createLocalConfig());
     UpdateHandler updateHandler = impl.new UpdateHandler();
     HttpClientRequest request = Mockito.mock(HttpClientRequest.class);
     Mockito.when(request.headers()).thenReturn(MultiMap.caseInsensitiveMultiMap());
@@ -120,13 +125,13 @@ public class TestConfigCenterClient {
     Mockito.when(rsp.toString())
         .thenReturn("{\"application\":{\"2\":\"2\",\"aa\":\"1\"},\"vmalledge\":{\"aa\":\"3\"}}");
 
-    HttpClientResponse event = Mockito.mock(HttpClientResponse.class);
-    Mockito.when(event.bodyHandler(Mockito.any(Handler.class))).then(invocation -> {
+    HttpClientResponse httpClientResponse = Mockito.mock(HttpClientResponse.class);
+    Mockito.when(httpClientResponse.bodyHandler(Mockito.any(Handler.class))).then(invocation -> {
       Handler<Buffer> handler = invocation.getArgumentAt(0, Handler.class);
       handler.handle(rsp);
       return null;
     });
-    Mockito.when(event.statusCode()).thenReturn(200);
+    Mockito.when(httpClientResponse.statusCode()).thenReturn(200);
 
     Buffer buf = Mockito.mock(Buffer.class);
     Mockito.when(buf.toJsonObject()).thenReturn(new JsonObject(
@@ -142,7 +147,7 @@ public class TestConfigCenterClient {
         httpClient.get(Mockito.anyInt(), Mockito.anyString(), Mockito.anyString(), Mockito.any(Handler.class)))
         .then(invocation -> {
           Handler<HttpClientResponse> handler = invocation.getArgumentAt(3, Handler.class);
-          handler.handle(event);
+          handler.handle(httpClientResponse);
           return request;
         });
     Mockito.when(httpClient.websocket(Mockito.anyInt(),
@@ -162,7 +167,15 @@ public class TestConfigCenterClient {
         handler.run(httpClient);
       }
     };
+    new Expectations() {
+      {
+        clientMgr.findThreadBindClientPool();
+        result = httpClientWithContext;
+      }
+    };
+
     ConfigCenterClient cc = new ConfigCenterClient(updateHandler);
+    Deencapsulation.setField(cc, "clientMgr", clientMgr);
     ParseConfigUtils parseConfigUtils = new ParseConfigUtils(updateHandler);
     MemberDiscovery memberdis = new MemberDiscovery(Arrays.asList("http://configcentertest:30103"));
     ConfigRefresh refresh = cc.new ConfigRefresh(parseConfigUtils, memberdis);
@@ -175,7 +188,8 @@ public class TestConfigCenterClient {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testConfigRefreshException() {
+  public void testConfigRefreshException(@Mocked ClientPoolManager<HttpClientWithContext> clientMgr,
+      @Mocked HttpClientWithContext httpClientWithContext) {
     ConfigCenterConfigurationSourceImpl impl = new ConfigCenterConfigurationSourceImpl();
     Map<String, String> map = new HashMap<>();
     EventManager.register(new Object() {
@@ -189,7 +203,6 @@ public class TestConfigCenterClient {
         }
       }
     });
-    impl.init(ConfigUtil.createLocalConfig());
     UpdateHandler updateHandler = impl.new UpdateHandler();
     HttpClientRequest request = Mockito.mock(HttpClientRequest.class);
     Mockito.when(request.headers()).thenReturn(MultiMap.caseInsensitiveMultiMap());
@@ -221,7 +234,14 @@ public class TestConfigCenterClient {
         handler.run(httpClient);
       }
     };
+    new Expectations() {
+      {
+        clientMgr.findThreadBindClientPool();
+        result = httpClientWithContext;
+      }
+    };
     ConfigCenterClient cc = new ConfigCenterClient(updateHandler);
+    Deencapsulation.setField(cc, "clientMgr", clientMgr);
     ParseConfigUtils parseConfigUtils = new ParseConfigUtils(updateHandler);
     MemberDiscovery memberdis = new MemberDiscovery(Arrays.asList("http://configcentertest:30103"));
     ConfigRefresh refresh = cc.new ConfigRefresh(parseConfigUtils, memberdis);
@@ -230,5 +250,20 @@ public class TestConfigCenterClient {
     Mockito.when(event.statusCode()).thenReturn(200);
     refresh.run();
     Assert.assertEquals("Succ event trigger", map.get("result"));
+  }
+
+  @Test
+  public void destroy() {
+    ConfigCenterClient configCenterClient = new ConfigCenterClient(null);
+    ScheduledExecutorService executor = Deencapsulation.getField(configCenterClient, "executor");
+    ScheduledExecutorService heartbeatTask = Executors.newScheduledThreadPool(1);
+    Deencapsulation.setField(configCenterClient, "heartbeatTask", heartbeatTask);
+
+    Assert.assertFalse(executor.isShutdown());
+
+    configCenterClient.destroy();
+
+    Assert.assertTrue(executor.isShutdown());
+    Assert.assertTrue(heartbeatTask.isShutdown());
   }
 }
