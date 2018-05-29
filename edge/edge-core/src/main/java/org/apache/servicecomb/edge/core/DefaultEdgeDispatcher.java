@@ -35,7 +35,7 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
 
   private static final String KEY_WITH_VERSION = "servicecomb.http.dispatcher.edge.default.withVersion";
 
-  private static final String KEY_PATH_INDEX = "servicecomb.http.dispatcher.edge.default.pathIndex";
+  private static final String KEY_PREFIX_SEGMENT_COUNT = "servicecomb.http.dispatcher.edge.default.prefixSegmentCount";
 
   private CompatiblePathVersionMapper versionMapper = new CompatiblePathVersionMapper();
 
@@ -43,7 +43,7 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
 
   private boolean withVersion;
 
-  private int pathIndex;
+  private int prefixSegmentCount;
 
   @Override
   public int getOrder() {
@@ -59,7 +59,7 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
   public void init(Router router) {
     prefix = DynamicPropertyFactory.getInstance().getStringProperty(KEY_PREFIX, "api").get();
     withVersion = DynamicPropertyFactory.getInstance().getBooleanProperty(KEY_WITH_VERSION, true).get();
-    pathIndex = DynamicPropertyFactory.getInstance().getIntProperty(KEY_PATH_INDEX, 1).get();
+    prefixSegmentCount = DynamicPropertyFactory.getInstance().getIntProperty(KEY_PREFIX_SEGMENT_COUNT, 1).get();
     String regex;
     if (withVersion) {
       regex = "/" + prefix + "/([^\\\\/]+)/([^\\\\/]+)/(.*)";
@@ -74,7 +74,7 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
   protected void onRequest(RoutingContext context) {
     Map<String, String> pathParams = context.pathParams();
     String microserviceName = pathParams.get("param0");
-    String path = Utils.findActualPath(context.request().path(), pathIndex);
+    String path = Utils.findActualPath(context.request().path(), prefixSegmentCount);
 
     EdgeInvocation edgeInvocation = new EdgeInvocation();
     if (withVersion) {
