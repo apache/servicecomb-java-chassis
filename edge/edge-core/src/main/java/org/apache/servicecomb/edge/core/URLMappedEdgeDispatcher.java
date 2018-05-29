@@ -42,7 +42,7 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
 
     String versionRule;
 
-    int pathIndex;
+    int prefixSegmentCount;
 
     Pattern pattern;
 
@@ -63,7 +63,7 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
 
   private static final String KEY_MAPPING_VERSION_RULE = "servicecomb.http.dispatcher.edge.url.mappings.%s.versionRule";
 
-  private static final String KEY_MAPPING_PATH_INDEX = "servicecomb.http.dispatcher.edge.url.mappings.%s.pathIndex";
+  private static final String KEY_MAPPING_PREFIX_SEGMENT_COUNT = "servicecomb.http.dispatcher.edge.url.mappings.%s.prefixSegmentCount";
 
   private Map<String, ConfigurationItem> configurations = new HashMap<>();
 
@@ -123,8 +123,8 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
         if (StringUtils.isEmpty(configurationItem.microserviceName)) {
           continue;
         }
-        configurationItem.pathIndex = DynamicPropertyFactory.getInstance()
-            .getIntProperty(String.format(KEY_MAPPING_PATH_INDEX, pathKeyItem), 0).get();
+        configurationItem.prefixSegmentCount = DynamicPropertyFactory.getInstance()
+            .getIntProperty(String.format(KEY_MAPPING_PREFIX_SEGMENT_COUNT, pathKeyItem), 0).get();
         configurationItem.versionRule = DynamicPropertyFactory.getInstance()
             .getStringProperty(String.format(KEY_MAPPING_VERSION_RULE, pathKeyItem), "0.0.0+").get();
         configurations.put(pathKeyItem, configurationItem);
@@ -149,7 +149,7 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
       return;
     }
 
-    String path = Utils.findActualPath(context.request().path(), configurationItem.pathIndex);
+    String path = Utils.findActualPath(context.request().path(), configurationItem.prefixSegmentCount);
 
     EdgeInvocation edgeInvocation = new EdgeInvocation();
     if (configurationItem.versionRule != null) {

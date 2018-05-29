@@ -65,13 +65,13 @@ public class TestURLMappedEdgeDispatcher {
 
     ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.mappings.service1.path", "/a/b/c/.*");
     ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.mappings.service1.microserviceName", "serviceName");
-    ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.mappings.service1.pathIndex", 2);
+    ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.mappings.service1.prefixSegmentCount", 2);
     ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.mappings.service1.versionRule", "2.0.0+");
     items = Deencapsulation.getField(dispatcher, "configurations");
     Assert.assertEquals(items.size(), 1);
     ConfigurationItem item = items.get("service1");
     Assert.assertEquals(item.microserviceName, "serviceName");
-    Assert.assertEquals(item.pathIndex, 2);
+    Assert.assertEquals(item.prefixSegmentCount, 2);
     Assert.assertEquals(item.stringPattern, "/a/b/c/.*");
     Assert.assertEquals(item.versionRule, "2.0.0+");
 
@@ -81,7 +81,7 @@ public class TestURLMappedEdgeDispatcher {
     Assert.assertEquals(items.size(), 1);
     item = items.get("service1");
     Assert.assertEquals(item.microserviceName, "serviceName");
-    Assert.assertEquals(item.pathIndex, 2);
+    Assert.assertEquals(item.prefixSegmentCount, 2);
     Assert.assertEquals(item.stringPattern, "/a/b/c/.*");
     Assert.assertEquals(item.versionRule, "2.0.0+");
 
