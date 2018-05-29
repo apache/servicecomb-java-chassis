@@ -17,11 +17,14 @@
 
 package org.apache.servicecomb.common.rest.codec;
 
+import java.time.LocalDateTime;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 public class TestRestObjectMapper {
 
@@ -33,5 +36,11 @@ public class TestRestObjectMapper {
   @Test
   public void testDeserializationFeature() {
     Assert.assertFalse(RestObjectMapper.INSTANCE.isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES));
+  }
+
+  @Test
+  public void testJSR310Module() {
+    Assert.assertTrue(RestObjectMapper.INSTANCE.canDeserialize(TypeFactory.defaultInstance().constructType(LocalDateTime.class)));
+    Assert.assertTrue(RestObjectMapper.INSTANCE.canSerialize(LocalDateTime.class));
   }
 }
