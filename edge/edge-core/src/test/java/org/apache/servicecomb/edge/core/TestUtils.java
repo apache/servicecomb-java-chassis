@@ -15,23 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.edge.consumer;
+package org.apache.servicecomb.edge.core;
 
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
+import org.junit.Assert;
+import org.junit.Test;
 
-public class ConsumerMain {
-  public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
-
-    System.out.println("Running api dispater.");
-    new Consumer().run("api");
-    System.out.println("Running rest dispater.");
-    new Consumer().run("rest");
-    System.out.println("Running url dispater.");
-    new Consumer().run("url");
-
-    System.out.println("All test case finished.");
+public class TestUtils {
+  @Test
+  public void testUtisl() {
+    Assert.assertEquals(Utils.findActualPath("/a/b/c", -1), "/a/b/c");
+    Assert.assertEquals(Utils.findActualPath("/a/b/c", 0), "/a/b/c");
+    Assert.assertEquals(Utils.findActualPath("/a/b/c", 1), "/b/c");
+    Assert.assertEquals(Utils.findActualPath("/a/b/c", 2), "/c");
+    Assert.assertEquals(Utils.findActualPath("/a/b/c", 3), "");
+    Assert.assertEquals(Utils.findActualPath("/a/b/c", 100), "");
   }
 }
