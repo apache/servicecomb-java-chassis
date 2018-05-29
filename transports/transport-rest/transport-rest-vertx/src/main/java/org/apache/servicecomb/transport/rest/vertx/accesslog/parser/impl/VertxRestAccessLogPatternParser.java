@@ -22,11 +22,14 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.PlainTextItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemMeta;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogPatternParser;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.VertxRestAccessLogItemCreator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.vertx.ext.web.RoutingContext;
 
@@ -34,6 +37,8 @@ import io.vertx.ext.web.RoutingContext;
  * The parser is used for rest-over-vertx transport.
  */
 public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<RoutingContext> {
+  private static final Logger LOGGER = LoggerFactory.getLogger(VertxRestAccessLogPatternParser.class);
+
   public static final Comparator<AccessLogItemMetaWrapper> accessLogItemMetaWrapperComparator = (w1, w2) -> {
     AccessLogItemMeta meta1 = w1.getAccessLogItemMeta();
     AccessLogItemMeta meta2 = w2.getAccessLogItemMeta();
@@ -56,18 +61,26 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
         : result;
   };
 
-  private List<VertxRestAccessLogItemCreator> creators = new ArrayList<>();
+  private List<VertxRestAccessLogItemCreator> creators;
 
   private List<AccessLogItemMetaWrapper> accessLogItemMetaWrappers = new ArrayList<>();
 
   public VertxRestAccessLogPatternParser() {
-    creators.add(new DefaultAccessLogItemCreator());
-    for (VertxRestAccessLogItemCreator creator : creators) {
+    List<VertxRestAccessLogItemCreator> creators = loadVertxRestAccessLogItemCreators();
+    this.creators = creators;
+    if (null == creators) {
+      LOGGER.error("cannot load VertxRestAccessLogItemCreator!");
+    }
+    for (VertxRestAccessLogItemCreator creator : this.creators) {
       for (AccessLogItemMeta accessLogItemMeta : creator.getAccessLogItemMeta()) {
         accessLogItemMetaWrappers.add(new AccessLogItemMetaWrapper(accessLogItemMeta, creator));
       }
     }
     sortAccessLogItemMetaWrapper(accessLogItemMetaWrappers);
+  }
+
+  private List<VertxRestAccessLogItemCreator> loadVertxRestAccessLogItemCreators() {
+    return SPIServiceUtils.getOrLoadSortedService(VertxRestAccessLogItemCreator.class);
   }
 
   /**
@@ -135,6 +148,7 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
    */
   @Override
   public List<AccessLogItem<RoutingContext>> parsePattern(String rawPattern) {
+    LOGGER.info("parse the pattern of access log: [{}]", rawPattern);
     List<AccessLogItemLocation> locationList = matchAccessLogItem(rawPattern);
     locationList = fillInPlainTextLocation(rawPattern, locationList);
 
@@ -364,4 +378,3 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
     }
   }
 }
-
