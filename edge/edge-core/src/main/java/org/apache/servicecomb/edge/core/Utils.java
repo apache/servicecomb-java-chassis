@@ -15,23 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.edge.consumer;
+package org.apache.servicecomb.edge.core;
 
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
+/**
+ * Commonly used methods in this package.
+ */
+public final class Utils {
+  private Utils() {
 
-public class ConsumerMain {
-  public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
+  }
 
-    System.out.println("Running api dispater.");
-    new Consumer().run("api");
-    System.out.println("Running rest dispater.");
-    new Consumer().run("rest");
-    System.out.println("Running url dispater.");
-    new Consumer().run("url");
+  /**
+   * Get the actual path without prefix
+   * @param path full path
+   * @param pathIndex the index of / that after prefix
+   * @return actual path
+   */
+  public static String findActualPath(String path, int pathIndex) {
+    if (pathIndex <= 0) {
+      return path;
+    }
 
-    System.out.println("All test case finished.");
+    int fromIndex = 0;
+    int counter = pathIndex;
+    char[] chars = path.toCharArray();
+    for (int i = 0; i < chars.length; i++) {
+      if (chars[i] == '/') {
+        if (--counter < 0) {
+          fromIndex = i;
+          break;
+        }
+      }
+    }
+    return fromIndex > 0 ? path.substring(fromIndex) : "";
   }
 }
