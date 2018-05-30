@@ -186,7 +186,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     String serviceCenterVersion = srClient.getServiceCenterInfo().getVersion();
     String validateSuccessVersion = "1.0.0";
     int compareResult = serviceCenterVersion.compareTo(validateSuccessVersion);
-    if(compareResult<1){
+    if(compareResult<1){ 
       microservice.getFramework().setVersion(null);
     }
     microservice.setRegisterBy(CONFIG_DEFAULT_REGISTER_BY);
