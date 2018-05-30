@@ -52,7 +52,7 @@ public final class ProduceProcessorManager extends RegisterManager<String, Produ
       if (type.equals(processor.getName()))
         return processor;
     }
-    LOGGER.error("Getting the current produceProcessor type {} failed, use default produceProcessor: application/json",
+    LOGGER.warn("Getting the current produceProcessor type {} failed, use default produceProcessor: application/json",
         type);
     return new ProduceJsonProcessor();
   }
