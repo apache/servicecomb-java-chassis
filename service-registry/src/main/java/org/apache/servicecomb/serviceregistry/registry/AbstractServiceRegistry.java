@@ -184,16 +184,16 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     framework.setVersion(FrameworkVersions.allVersions());
     microservice.setFramework(framework);
     ServiceCenterInfo info = srClient.getServiceCenterInfo();
-		microservice.setRegisterBy(CONFIG_DEFAULT_REGISTER_BY);
-		while (info == null) {
-			return;
-		}
-		String serviceCenterVersion = info.getVersion();
-		String validateSuccessVersion = "1.0.0";
-		int compareResult = serviceCenterVersion.compareTo(validateSuccessVersion);// 如果大于1.0.0，不需要兼容
-		if (compareResult < 1) {
-			microservice.getFramework().setVersion(null);
-		}
+    microservice.setRegisterBy(CONFIG_DEFAULT_REGISTER_BY);
+    while (info == null) {
+      return;
+    }
+    String serviceCenterVersion = info.getVersion();
+    String validateSuccessVersion = "1.0.0";
+    int compareResult = serviceCenterVersion.compareTo(validateSuccessVersion);// 如果大于1.0.0，不需要兼容
+    if (compareResult < 1) {
+    microservice.getFramework().setVersion(null);
+    }
     microservice.setRegisterBy(CONFIG_DEFAULT_REGISTER_BY);
   }
 
