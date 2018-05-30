@@ -26,7 +26,7 @@ import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
 
 import com.fasterxml.jackson.databind.JavaType;
 
-public class ProduceJsonProcessor extends AbstractProduceProcessor {
+public class ProduceJsonProcessor implements ProduceProcessor {
 
   @Override
   public String getName() {

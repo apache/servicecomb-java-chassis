@@ -17,24 +17,42 @@
 
 package org.apache.servicecomb.common.rest.codec.produce;
 
+import java.util.ServiceLoader;
+
 import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.foundation.common.RegisterManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class ProduceProcessorManager extends RegisterManager<String, ProduceProcessor> {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProduceProcessorManager.class);
+
+  private static final ServiceLoader<ProduceProcessor> produceProcessor = ServiceLoader.load(ProduceProcessor.class);
+
   private static final String NAME = "produce processor mgr";
 
   public static final String DEFAULT_TYPE = MediaType.APPLICATION_JSON;
 
   public static final ProduceProcessorManager INSTANCE = new ProduceProcessorManager();
 
-  public static final ProduceProcessor JSON_PROCESSOR = new ProduceJsonProcessor();
+  public static final ProduceProcessor JSON_PROCESSOR = chooseProduceProcessor(MediaType.APPLICATION_JSON);
 
-  public static final ProduceProcessor PLAIN_PROCESSOR = new ProduceTextPlainProcessor();
+  public static final ProduceProcessor PLAIN_PROCESSOR = chooseProduceProcessor(MediaType.TEXT_PLAIN);
 
   public static final ProduceProcessor DEFAULT_PROCESSOR = JSON_PROCESSOR;
 
   private ProduceProcessorManager() {
     super(NAME);
+    produceProcessor.forEach(processor -> register(processor.getName(), processor));
+  }
+
+  public static ProduceProcessor chooseProduceProcessor(String type) {
+    for (ProduceProcessor processor : produceProcessor) {
+      if (type.equals(processor.getName()))
+        return processor;
+    }
+    LOGGER.error("Getting the current produceProcessor type {} failed, use default produceProcessor: application/json", type);
+    return new ProduceJsonProcessor();
   }
 }
