@@ -183,8 +183,8 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     framework.setName(CONFIG_FRAMEWORK_DEFAULT_NAME);
     framework.setVersion(FrameworkVersions.allVersions());
     microservice.setFramework(framework);
-    ServiceCenterInfo info = srClient.getServiceCenterInfo();
     microservice.setRegisterBy(CONFIG_DEFAULT_REGISTER_BY);
+    ServiceCenterInfo info = srClient.getServiceCenterInfo();
     while (info == null) {
       return;
     }
