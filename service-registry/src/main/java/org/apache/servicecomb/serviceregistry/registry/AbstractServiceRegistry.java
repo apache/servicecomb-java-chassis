@@ -194,7 +194,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     if (compareResult < 1) {
     microservice.getFramework().setVersion(null);
     }
-    microservice.setRegisterBy(CONFIG_DEFAULT_REGISTER_BY);
   }
 
 
