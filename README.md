@@ -58,6 +58,12 @@ The first build may take a longer than expected as Maven downloads all the depen
 
       mvn clean install -Pdocker -Pit -Pdocker-machine
 
+
+## Get The Latest Release
+
+[Download Java-Chassis](http://servicecomb.incubator.apache.org/release/java-chassis-downloads/)
+
+
 ## Contact
 
 Bugs: [issues](https://issues.apache.org/jira/browse/SCB)
