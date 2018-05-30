@@ -68,10 +68,14 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
   @Override
   protected boolean doRegister() {
     LOGGER.info("running microservice register task.");
-    String serviceId = srClient.getMicroserviceId(microservice.getAppId(),
-        microservice.getServiceName(),
-        microservice.getVersion(),
-        microservice.getEnvironment());
+    String serviceId = srClient.getMicroserviceId(microservice.getAppId(), microservice.getServiceName(),
+        microservice.getVersion(), microservice.getEnvironment());
+    String serviceCenterVersion = srClient.getServiceCenterInfo().getVersion();
+    String validateSuccessVersion = "1.0.0";
+    int compareResult = serviceCenterVersion.compareTo(validateSuccessVersion);
+    if (compareResult < 1) {
+      microservice.getFramework().setVersion(null);
+    }
     if (!StringUtils.isEmpty(serviceId)) {
       // 已经注册过了，不需要重新注册
       microservice.setServiceId(serviceId);
