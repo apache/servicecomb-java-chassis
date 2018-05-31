@@ -174,4 +174,21 @@ public class TestSwaggerUtils {
 
     Assert.assertEquals("response of 200", response.getDescription());
   }
+
+
+  @Test(expected = ServiceCombException.class)
+  public void testInvalidate() throws Exception {
+    URL resource = TestSwaggerUtils.class.getResource("/swagger1.yaml");
+    byte[] buffer = new byte[2048];
+    Swagger swagger = SwaggerUtils.parseSwagger(resource);
+    SwaggerUtils.invalidateSwagger(swagger);
+  }
+
+  @Test
+  public void testInvalidateValid() throws Exception {
+    URL resource = TestSwaggerUtils.class.getResource("/swagger2.yaml");
+    byte[] buffer = new byte[2048];
+    Swagger swagger = SwaggerUtils.parseSwagger(resource);
+    SwaggerUtils.invalidateSwagger(swagger);
+  }
 }

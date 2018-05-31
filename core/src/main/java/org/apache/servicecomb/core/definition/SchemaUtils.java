@@ -45,6 +45,8 @@ public final class SchemaUtils {
   }
 
   public static Swagger parseSwagger(String swaggerContent) {
-    return SwaggerUtils.parseSwagger(swaggerContent);
+    Swagger swagger = SwaggerUtils.parseSwagger(swaggerContent);
+    SwaggerUtils.invalidateSwagger(swagger);
+    return swagger;
   }
 }
