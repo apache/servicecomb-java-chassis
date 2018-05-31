@@ -24,6 +24,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.demo.CodeFirstRestTemplate;
 import org.apache.servicecomb.demo.DemoConst;
@@ -61,6 +62,7 @@ public class JaxrsClient {
     codeFirstClient.testCodeFirst(templateNew, "jaxrs", "/codeFirstJaxrs/");
     testCompute(templateNew);
     testValidator(templateNew);
+    testClientTimeOut(templateNew);
   }
 
   private static void testCompute(RestTemplate template) throws Exception {
@@ -249,5 +251,47 @@ public class JaxrsClient {
     student.setAge(15);
     Student result = template.postForObject(cseUrlPrefix + "sayhello", student, Student.class);
     TestMgr.check("hello test 15", result);
+  }
+
+  private static void testClientTimeOut(RestTemplate template) throws Exception {
+    String microserviceName = "jaxrs";
+    for (String transport : DemoConst.transports) {
+      if (transport.equals(Const.ANY_TRANSPORT)) {
+        continue;
+      }
+      CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
+      TestMgr.setMsg(microserviceName, transport);
+
+      String cseUrlPrefix = "cse://" + microserviceName + "/clientreqtimeout/";
+
+      testClientTimeoutSayHi(template, cseUrlPrefix);
+      testClientTimeoutAdd(template, cseUrlPrefix);
+    }
+  }
+
+  private static void testClientTimeoutSayHi(RestTemplate template, String cseUrlPrefix) {
+    Student student = new Student();
+    student.setName("timeout");
+    student.setAge(30);
+    Student result = template.postForObject(cseUrlPrefix + "sayhello", student, Student.class);
+    TestMgr.check("hello timeout 30", result);
+  }
+
+  private static void testClientTimeoutAdd(RestTemplate template, String cseUrlPrefix) {
+    Map<String, String> params = new HashMap<>();
+    params.put("a", "5");
+    params.put("b", "20");
+    boolean isExcep = false;
+    try {
+      template.postForObject(cseUrlPrefix + "add", params, Integer.class);
+    } catch (InvocationException e) {
+      isExcep = true;
+      TestMgr.check(490, e.getStatus().getStatusCode());
+      TestMgr.check(
+          "CommonExceptionData [message=Cse Internal Bad Request]",
+          e.getErrorData());
+    }
+
+    TestMgr.check(true, isExcep);
   }
 }
