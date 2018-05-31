@@ -82,7 +82,7 @@ public class TestSCBEngine {
 
     Assert.assertEquals(SCBStatus.UP, engine.getStatus());
 
-    engine.uninit();
+    engine.destroy();
 
     Assert.assertEquals(SCBStatus.DOWN, engine.getStatus());
     Assert.assertTrue(configDestroy.get());

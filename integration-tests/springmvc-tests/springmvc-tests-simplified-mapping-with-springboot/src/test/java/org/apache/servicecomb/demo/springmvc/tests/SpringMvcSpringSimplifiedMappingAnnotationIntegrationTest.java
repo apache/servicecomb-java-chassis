@@ -36,6 +36,6 @@ public class SpringMvcSpringSimplifiedMappingAnnotationIntegrationTest extends S
 
   @AfterClass
   public static void shutdown() {
-    SCBEngine.getInstance().uninit();
+    SCBEngine.getInstance().destroy();
   }
 }
