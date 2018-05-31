@@ -57,21 +57,26 @@ public class SchemaMeta extends CommonService<OperationMeta> {
   private SwaggerToClassGenerator swaggerToClassGenerator;
 
   public SchemaMeta(Swagger swagger, MicroserviceMeta microserviceMeta, String schemaId) {
-    this.packageName = SchemaUtils.generatePackageName(microserviceMeta, schemaId);
+    try {
+      this.packageName = SchemaUtils.generatePackageName(microserviceMeta, schemaId);
 
-    this.swagger = swagger;
-    this.name = schemaId;
+      this.swagger = swagger;
+      this.name = schemaId;
 
-    this.microserviceMeta = microserviceMeta;
-    this.microserviceQualifiedName = microserviceMeta.getName() + "." + schemaId;
+      this.microserviceMeta = microserviceMeta;
+      this.microserviceQualifiedName = microserviceMeta.getName() + "." + schemaId;
 
-    swaggerToClassGenerator = new SwaggerToClassGenerator(microserviceMeta.getClassLoader(), swagger, packageName);
-    swaggerIntf = swaggerToClassGenerator.convert();
+      swaggerToClassGenerator = new SwaggerToClassGenerator(microserviceMeta.getClassLoader(), swagger, packageName);
+      swaggerIntf = swaggerToClassGenerator.convert();
 
-    createOperationMgr("schemaMeta " + schemaId + " operation mgr");
-    operationMgr.setRegisterErrorFmt("Operation name repeat, schema=%s, operation=%s");
+      createOperationMgr("schemaMeta " + schemaId + " operation mgr");
+      operationMgr.setRegisterErrorFmt("Operation name repeat, schema=%s, operation=%s");
 
-    initOperations();
+      initOperations();
+    } catch (Throwable e) {
+      LOGGER.error("Unhandled exception to service " + microserviceMeta.getName() + " schema " + schemaId);
+      throw e;
+    }
   }
 
   public SwaggerToClassGenerator getSwaggerToClassGenerator() {
