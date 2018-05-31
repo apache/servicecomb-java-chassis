@@ -18,6 +18,7 @@
 package org.apache.servicecomb.core.transport;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -32,13 +33,26 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.springframework.util.ReflectionUtils;
+
+import com.netflix.config.DynamicProperty;
 
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 
 public class TestAbstractTransport {
+  private Method updatePropertyMethod =
+      ReflectionUtils.findMethod(DynamicProperty.class, "updateProperty", String.class, Object.class);
+
+  private void updateProperty(String key, Object value) {
+    updatePropertyMethod.setAccessible(true);
+    ReflectionUtils.invokeMethod(updatePropertyMethod, null, key, value);
+  }
+
   class MyAbstractTransport extends AbstractTransport {
+
     @Override
     public String getName() {
       return "my";
@@ -125,7 +139,7 @@ public class TestAbstractTransport {
     transport.setListenAddressWithoutSchema(null);
     Assert.assertNull(transport.getEndpoint().getEndpoint());
     Assert.assertNull(transport.parseAddress(null));
-    Assert.assertEquals(30000, AbstractTransport.getRequestTimeoutProperty().get());
+    Assert.assertEquals(30000, AbstractTransport.getReqTimeout(Mockito.mock(Invocation.class)));
   }
 
   @Test(expected = NumberFormatException.class)
@@ -133,5 +147,68 @@ public class TestAbstractTransport {
     MyAbstractTransport transport = new MyAbstractTransport();
 
     transport.setListenAddressWithoutSchema(":127.0.0.1:9090");
+  }
+
+  /**
+   * Tests the request call timeout for service level timeout value
+   */
+  @Test
+  public void testRequestCfgService() throws Exception {
+    System.setProperty("cse.request.timeout.hello1", "3000");
+    Invocation invocation = Mockito.mock(Invocation.class);
+    Mockito.when(invocation.getOperationName()).thenReturn("sayHello1");
+    Mockito.when(invocation.getSchemaId()).thenReturn("sayHelloSchema1");
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("hello1");
+    //check for service level timeout value
+    Assert.assertEquals(3000, AbstractTransport.getReqTimeout(invocation));
+    System.getProperties().remove("cse.request.timeout.hello1");
+  }
+
+  /**
+   * Tests the request call timeout for schema level timeout value
+   */
+  @Test
+  public void testRequestCfgSchema() throws Exception {
+    System.setProperty("cse.request.timeout.hello2.sayHelloSchema2", "2000");
+    Invocation invocation = Mockito.mock(Invocation.class);
+    Mockito.when(invocation.getOperationName()).thenReturn("sayHello2");
+    Mockito.when(invocation.getSchemaId()).thenReturn("sayHelloSchema2");
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("hello2");
+
+    Assert.assertEquals(2000, AbstractTransport.getReqTimeout(invocation));
+    System.getProperties().remove("cse.request.timeout.hello2.sayHelloSchema2");
+  }
+
+  /**
+   * Tests the request call timeout for operatation level timeout value
+   */
+  @Test
+  public void testRequestCfgOperation() throws Exception {
+    System.setProperty("cse.request.timeout.hello3.sayHelloSchema3.sayHello3", "1000");
+    Invocation invocation = Mockito.mock(Invocation.class);
+    Mockito.when(invocation.getOperationName()).thenReturn("sayHello3");
+    Mockito.when(invocation.getSchemaId()).thenReturn("sayHelloSchema3");
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("hello3");
+
+    Assert.assertEquals(1000, AbstractTransport.getReqTimeout(invocation));
+    System.getProperties().remove("cse.request.timeout.hello3.sayHelloSchema3.sayHello3");
+  }
+
+  /**
+   * Tests the request call timeout with configuration change event for operation level config.
+   */
+  @Test
+  public void testRequestTimeoutCfgEvent() {
+    System.setProperty("cse.request.timeout.hello4.sayHelloSchema4.sayHello4", "1000");
+    Invocation invocation = Mockito.mock(Invocation.class);
+    Mockito.when(invocation.getOperationName()).thenReturn("sayHello4");
+    Mockito.when(invocation.getSchemaId()).thenReturn("sayHelloSchema4");
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("hello4");
+    Assert.assertEquals(1000, AbstractTransport.getReqTimeout(invocation));
+
+    updateProperty("cse.request.timeout.hello4.sayHelloSchema4.sayHello4", 2000);
+
+    Assert.assertEquals(2000, AbstractTransport.getReqTimeout(invocation));
+    System.getProperties().remove("cse.request.timeout.hello4.sayHelloSchema4.sayHello4");
   }
 }

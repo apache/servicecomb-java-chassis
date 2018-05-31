@@ -116,7 +116,9 @@ public class RestClientInvocation {
     // 从业务线程转移到网络线程中去发送
     httpClientWithContext.runOnContext(httpClient -> {
       this.setCseContext();
-      clientRequest.setTimeout(AbstractTransport.getRequestTimeoutProperty().get());
+      //set the timeout based on priority. the priority is follows.
+      //high priotiry: 1) operational level 2)schema level 3) service level 4) global level : low priotiry.
+      clientRequest.setTimeout(AbstractTransport.getReqTimeout(invocation));
       try {
         restClientRequest.end();
       } catch (Throwable e) {

@@ -35,8 +35,6 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.netflix.config.DynamicLongProperty;
-
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 
@@ -63,13 +61,6 @@ public class HighwayClient {
 
   private TcpClientConfig createTcpClientConfig() {
     TcpClientConfig tcpClientConfig = new TcpClientConfig();
-    DynamicLongProperty prop = AbstractTransport.getRequestTimeoutProperty();
-    prop.addCallback(new Runnable() {
-      public void run() {
-        tcpClientConfig.setRequestTimeoutMillis(prop.get());
-      }
-    });
-    tcpClientConfig.setRequestTimeoutMillis(prop.get());
 
     SSLOptionFactory factory =
         SSLOptionFactory.createSSLOptionFactory(SSL_KEY, null);
@@ -93,7 +84,13 @@ public class HighwayClient {
 
     HighwayClientConnection tcpClient =
         tcpClientPool.findOrCreateClient(invocation.getEndpoint().getEndpoint());
+
+    //set the timeout based on priority. the priority is follows.
+    //high priotiry: 1) operational level 2)schema level 3) service level 4) global level : low priotiry.
+    TcpClientConfig tcpClientConfig = tcpClient.getClientConfig();
+    tcpClientConfig.setRequestTimeoutMillis(AbstractTransport.getReqTimeout(invocation));
     HighwayClientPackage clientPackage = new HighwayClientPackage(invocation, operationProtobuf, tcpClient);
+
     LOGGER.debug("Sending request by highway, qualifiedName={}, endpoint={}.",
         invocation.getMicroserviceQualifiedName(),
         invocation.getEndpoint().getEndpoint());
