@@ -178,7 +178,7 @@ public class SCBEngine {
         doInit();
         status = SCBStatus.UP;
       } catch (Exception e) {
-        uninit();
+        destroy();
         status = SCBStatus.FAILED;
         throw new IllegalStateException("ServiceComb init failed.", e);
       }
@@ -218,23 +218,23 @@ public class SCBEngine {
 
     RegistryUtils.run();
 
-    Runtime.getRuntime().addShutdownHook(new Thread(this::uninit));
+    Runtime.getRuntime().addShutdownHook(new Thread(this::destroy));
   }
 
   /**
    * not allow throw any exception
    * even some step throw exception, must catch it and go on, otherwise shutdown process will be broken.
    */
-  public synchronized void uninit() {
+  public synchronized void destroy() {
     if (SCBStatus.UP.equals(status)) {
       LOGGER.info("ServiceComb is closing now...");
-      doUninit();
+      doDestroy();
       status = SCBStatus.DOWN;
       LOGGER.info("ServiceComb had closed");
     }
   }
 
-  private void doUninit() {
+  private void doDestroy() {
     //Step 1: notify all component stop invoke via BEFORE_CLOSE Event
     safeTriggerEvent(EventType.BEFORE_CLOSE);
 

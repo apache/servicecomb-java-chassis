@@ -73,7 +73,7 @@ public class CseApplicationListener
 
       SCBEngine.getInstance().init();
     } else if (event instanceof ContextClosedEvent) {
-      SCBEngine.getInstance().uninit();
+      SCBEngine.getInstance().destroy();
     }
   }
 }

@@ -32,6 +32,6 @@ public class RawSpringMvcIntegrationTest extends SpringMvcIntegrationTestBase {
 
   @AfterClass
   public static void shutdown() {
-    SCBEngine.getInstance().uninit();
+    SCBEngine.getInstance().destroy();
   }
 }

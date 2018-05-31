@@ -35,7 +35,7 @@ public class TestCseApplicationListener {
     AtomicInteger count = new AtomicInteger();
     SCBEngine scbEngine = new SCBEngine() {
       @Override
-      public synchronized void uninit() {
+      public synchronized void destroy() {
         count.incrementAndGet();
       }
     };
