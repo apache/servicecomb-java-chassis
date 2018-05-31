@@ -37,5 +37,5 @@ cse:
     timeout:
       jaxrs:
         clientreqtimeout:
-          sayHello: 500
-          add: 500
+          sayHello: 100
+          add: 100
