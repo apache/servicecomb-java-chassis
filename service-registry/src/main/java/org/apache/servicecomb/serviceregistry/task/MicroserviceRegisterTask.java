@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.servicecomb.foundation.common.base.ServiceCombConstants;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
@@ -161,13 +162,13 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
           return false;
         }
       } else {
-        String curSchemaSumary = existSchema.getSummary();
+        String curSchemaSummary = existSchema.getSummary();
         String schemaSummary = Hashing.sha256().newHasher().putString(content, Charsets.UTF_8).hash().toString();
-        if (!schemaSummary.equals(curSchemaSumary)) {
-          if (microservice.getInstance().getEnvironment().equalsIgnoreCase("development")) {
+        if (!schemaSummary.equals(curSchemaSummary)) {
+          if (microservice.getEnvironment().equalsIgnoreCase(ServiceCombConstants.DEVELOPMENT_SERVICECOMB_ENV)) {
             LOGGER.info(
-                "schemaId [{}]'s content changes and the current enviroment is development, so re-register it!",
-                schemaId);
+                "schemaId [{}]'s content changes and the current environment is {}, so re-register it!",
+                schemaId, ServiceCombConstants.DEVELOPMENT_SERVICECOMB_ENV);
             if (!srClient.registerSchema(microservice.getServiceId(), schemaId, content)) {
               return false;
             }
@@ -175,7 +176,9 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
             throw new IllegalStateException("schemaId [" + schemaId
                 + "] exists in service center, but the content does not match the local content that means there are interface change "
                 + "and you need to increment microservice version before deploying. "
-                + "Or you can configure instance_description.environment=development to work in development enviroment and ignore this error");
+                + "Or you can configure service_description.environment="
+                + ServiceCombConstants.DEVELOPMENT_SERVICECOMB_ENV
+                + " to work in development environment and ignore this error");
           }
         }
       }

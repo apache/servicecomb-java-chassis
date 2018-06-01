@@ -229,7 +229,7 @@ public class TestMicroserviceRegisterTask {
   @Test
   public void testReRegisteredSetForDev(@Mocked ServiceRegistryClient srClient) {
     ArchaiusUtils.resetConfig();
-    ArchaiusUtils.setProperty("instance_description.environment", "development");
+    ArchaiusUtils.setProperty("service_description.environment", "development");
     Microservice otherMicroservice = new Microservice();
     otherMicroservice.setAppId(microservice.getAppId());
     otherMicroservice.setServiceName("ms1");
@@ -255,7 +255,7 @@ public class TestMicroserviceRegisterTask {
     };
 
     microservice.addSchema("s1", "");
-    microservice.getInstance().setEnvironment("development");
+    microservice.setEnvironment("development");
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
     registerTask.run();
 
@@ -327,7 +327,7 @@ public class TestMicroserviceRegisterTask {
     };
 
     microservice.addSchema("s1", "");
-    microservice.getInstance().setEnvironment("prod");
+    microservice.setEnvironment("prod");
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
     registerTask.run();
   }

@@ -64,4 +64,8 @@ public interface ServiceCombConstants {
   String SERVICECOMB_ENV = "SERVICECOMB_ENV";
 
   String DEFAULT_SERVICECOMB_ENV = "";
+
+  String DEVELOPMENT_SERVICECOMB_ENV = "development";
+
+  String PRODUCTION_SERVICECOMB_ENV = "production";
 }

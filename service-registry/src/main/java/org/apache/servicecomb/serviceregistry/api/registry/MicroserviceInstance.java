@@ -55,6 +55,10 @@ public class MicroserviceInstance {
 
   private HealthCheck healthCheck;
 
+  /**
+   * Will be abandoned, use {@link Microservice#environment} instead
+   */
+  @Deprecated
   private String environment;
 
   private String stage;
