@@ -75,7 +75,7 @@ public final class SwaggerUtils {
    * Provide a method to validate swagger. This method is now implemented to check common errors, and the logic
    * will be changed when necessary. For internal use only.
    */
-  public static void invalidateSwagger(Swagger swagger) {
+  public static void validateSwagger(Swagger swagger) {
     Map<String, Path> paths = swagger.getPaths();
     for (Path path : paths.values()) {
       Operation operation = path.getPost();

@@ -181,7 +181,7 @@ public class TestSwaggerUtils {
     URL resource = TestSwaggerUtils.class.getResource("/swagger1.yaml");
     byte[] buffer = new byte[2048];
     Swagger swagger = SwaggerUtils.parseSwagger(resource);
-    SwaggerUtils.invalidateSwagger(swagger);
+    SwaggerUtils.validateSwagger(swagger);
   }
 
   @Test
@@ -189,6 +189,6 @@ public class TestSwaggerUtils {
     URL resource = TestSwaggerUtils.class.getResource("/swagger2.yaml");
     byte[] buffer = new byte[2048];
     Swagger swagger = SwaggerUtils.parseSwagger(resource);
-    SwaggerUtils.invalidateSwagger(swagger);
+    SwaggerUtils.validateSwagger(swagger);
   }
 }
