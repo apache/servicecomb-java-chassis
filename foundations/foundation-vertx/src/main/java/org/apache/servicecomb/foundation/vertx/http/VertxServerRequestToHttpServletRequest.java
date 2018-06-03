@@ -31,6 +31,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.Part;
 import javax.ws.rs.core.HttpHeaders;
 
+import org.apache.servicecomb.foundation.common.http.HttpUtils;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +60,11 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
   private String path;
 
   private SocketAddress socketAddress;
+
+  // cache from convert vertx parameters to servlet parameters
+  private Map<String, String[]> parameterMap;
+
+  private String characterEncoding;
 
   public VertxServerRequestToHttpServletRequest(RoutingContext context, String path) {
     this(context);
@@ -106,19 +112,27 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
 
   @Override
   public String[] getParameterValues(String name) {
+    if (parameterMap != null) {
+      return parameterMap.get(name);
+    }
+
     List<String> paramList = this.vertxRequest.params().getAll(name);
-    return (String[]) paramList.toArray(new String[paramList.size()]);
+    return paramList.toArray(new String[paramList.size()]);
   }
 
   @Override
   public Map<String, String[]> getParameterMap() {
-    Map<String, String[]> paramMap = new HashMap<>();
-    MultiMap map = this.vertxRequest.params();
-    for (String name : map.names()) {
-      List<String> valueList = map.getAll(name);
-      paramMap.put(name, (String[]) map.getAll(name).toArray(new String[valueList.size()]));
+    if (parameterMap == null) {
+      Map<String, String[]> paramMap = new HashMap<>();
+      MultiMap map = this.vertxRequest.params();
+      for (String name : map.names()) {
+        List<String> valueList = map.getAll(name);
+        paramMap.put(name, map.getAll(name).toArray(new String[valueList.size()]));
+      }
+      parameterMap = paramMap;
     }
-    return paramMap;
+
+    return parameterMap;
   }
 
   @Override
@@ -239,5 +253,14 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
 
   public RoutingContext getContext() {
     return context;
+  }
+
+  @Override
+  public String getCharacterEncoding() {
+    if (characterEncoding == null) {
+      characterEncoding = HttpUtils.getCharsetFromContentType(getContentType());
+    }
+
+    return characterEncoding;
   }
 }

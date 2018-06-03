@@ -20,11 +20,17 @@ package org.apache.servicecomb.foundation.vertx.http;
 import java.util.Collections;
 import java.util.Enumeration;
 
+import javax.ws.rs.core.HttpHeaders;
+
+import org.apache.servicecomb.foundation.common.http.HttpUtils;
+
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
 
 public class VertxClientRequestToHttpServletRequest extends AbstractHttpServletRequest {
   private HttpClientRequest clientRequest;
+
+  private String characterEncoding;
 
   public VertxClientRequestToHttpServletRequest(HttpClientRequest clientRequest, Buffer bodyBuffer) {
     this.clientRequest = clientRequest;
@@ -69,5 +75,24 @@ public class VertxClientRequestToHttpServletRequest extends AbstractHttpServletR
   @Override
   public String getContextPath() {
     return "";
+  }
+
+  @Override
+  public String getMethod() {
+    return clientRequest.method().name();
+  }
+
+  @Override
+  public String getContentType() {
+    return clientRequest.headers().get(HttpHeaders.CONTENT_TYPE);
+  }
+
+  @Override
+  public String getCharacterEncoding() {
+    if (characterEncoding == null) {
+      characterEncoding = HttpUtils.getCharsetFromContentType(getContentType());
+    }
+
+    return characterEncoding;
   }
 }
