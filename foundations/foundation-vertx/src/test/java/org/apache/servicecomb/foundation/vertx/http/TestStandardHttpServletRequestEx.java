@@ -19,11 +19,19 @@ package org.apache.servicecomb.foundation.vertx.http;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.HttpMethod;
+import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -77,5 +85,51 @@ public class TestStandardHttpServletRequestEx {
     Assert.assertEquals("abc", requestEx.getBodyBuffer().toString());
     // do not create another one
     Assert.assertSame(cachedInputStream, requestEx.getInputStream());
+  }
+
+  @Test
+  public void parameterMap_inherited() {
+    Map<String, String[]> inherited = new HashMap<>();
+    String[] v1 = new String[] {"v1-1", "v1-2"};
+    inherited.put("p1", v1);
+    new Expectations() {
+      {
+        request.getParameterMap();
+        result = inherited;
+        request.getMethod();
+        result = HttpMethod.POST;
+      }
+    };
+
+    Assert.assertSame(inherited, requestEx.getParameterMap());
+    Assert.assertThat(Collections.list(requestEx.getParameterNames()), Matchers.contains("p1"));
+    Assert.assertSame(v1, requestEx.getParameterValues("p1"));
+    Assert.assertEquals("v1-1", requestEx.getParameter("p1"));
+  }
+
+  @Test
+  public void parameterMap_merge() throws IOException {
+    Map<String, String[]> inherited = new HashMap<>();
+    String[] v1 = new String[] {"v1-1", "v1-2"};
+    inherited.put("p1", v1);
+
+    Buffer buffer = Buffer.buffer("p1=v1-3;p2=v2");
+    BufferInputStream inputStream = new BufferInputStream(buffer.getByteBuf());
+    new Expectations() {
+      {
+        request.getParameterMap();
+        result = inherited;
+        request.getMethod();
+        result = HttpMethod.PUT;
+        request.getContentType();
+        result = MediaType.APPLICATION_FORM_URLENCODED.toUpperCase(Locale.US) + ";abc";
+        request.getInputStream();
+        result = inputStream;
+      }
+    };
+
+    Assert.assertThat(Collections.list(requestEx.getParameterNames()), Matchers.contains("p1", "p2"));
+    Assert.assertThat(requestEx.getParameterValues("p1"), Matchers.arrayContaining("v1-1", "v1-2", "v1-3"));
+    Assert.assertEquals("v1-1", requestEx.getParameter("p1"));
   }
 }

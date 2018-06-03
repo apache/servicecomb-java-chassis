@@ -18,12 +18,27 @@
 package org.apache.servicecomb.foundation.vertx.http;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
+import javax.ws.rs.HttpMethod;
+import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
 
 import io.netty.buffer.ByteBuf;
@@ -36,6 +51,11 @@ public class StandardHttpServletRequestEx extends HttpServletRequestWrapper impl
   private boolean cacheRequest;
 
   private ServletInputStream inputStream;
+
+  // by servlet specification
+  // only parse application/x-www-form-urlencoded of post request automatically
+  // we will parse this even not post method
+  private Map<String, String[]> parameterMap;
 
   public StandardHttpServletRequestEx(HttpServletRequest request) {
     super(request);
@@ -78,5 +98,75 @@ public class StandardHttpServletRequestEx extends HttpServletRequestWrapper impl
   @Override
   public int getBodyBytesLength() {
     return bodyBuffer.getBodyBytesLength();
+  }
+
+  private Map<String, String[]> parseParameterMap() {
+    // 1.post method already parsed by servlet
+    // 2.not APPLICATION_FORM_URLENCODED, no need to enhance
+    if (getMethod().equalsIgnoreCase(HttpMethod.POST)
+        || !StringUtils.startsWithIgnoreCase(getContentType(), MediaType.APPLICATION_FORM_URLENCODED)) {
+      return super.getParameterMap();
+    }
+
+    Map<String, List<String>> listMap = parseUrlEncodedBody();
+    mergeParameterMaptoListMap(listMap);
+    return convertListMapToArrayMap(listMap);
+  }
+
+  private Map<String, String[]> convertListMapToArrayMap(Map<String, List<String>> listMap) {
+    Map<String, String[]> arrayMap = new HashMap<>();
+    for (Entry<String, List<String>> entry : listMap.entrySet()) {
+      arrayMap.put(entry.getKey(), entry.getValue().toArray(new String[entry.getValue().size()]));
+    }
+    return arrayMap;
+  }
+
+  private void mergeParameterMaptoListMap(Map<String, List<String>> listMap) {
+    for (Entry<String, String[]> entry : super.getParameterMap().entrySet()) {
+      List<String> values = listMap.computeIfAbsent(entry.getKey(), k -> new ArrayList<>());
+      // follow servlet behavior, inherited value first, and then body value
+      values.addAll(0, Arrays.asList(entry.getValue()));
+    }
+  }
+
+  private Map<String, List<String>> parseUrlEncodedBody() {
+    try (InputStream inputStream = getInputStream()) {
+      Map<String, List<String>> listMap = new HashMap<>();
+      String body = IOUtils.toString(inputStream);
+      List<NameValuePair> pairs = URLEncodedUtils
+          .parse(body, getCharacterEncoding() == null ? null : Charset.forName(getCharacterEncoding()));
+      for (NameValuePair pair : pairs) {
+        List<String> values = listMap.computeIfAbsent(pair.getName(), k -> new ArrayList<>());
+        values.add(pair.getValue());
+      }
+      return listMap;
+    } catch (IOException e) {
+      throw new IllegalStateException("", e);
+    }
+  }
+
+  @Override
+  public String[] getParameterValues(String name) {
+    return getParameterMap().get(name);
+  }
+
+  @Override
+  public String getParameter(String name) {
+    String[] values = getParameterMap().get(name);
+    return values == null ? null : values[0];
+  }
+
+  @Override
+  public Enumeration<String> getParameterNames() {
+    return Collections.enumeration(getParameterMap().keySet());
+  }
+
+  @Override
+  public Map<String, String[]> getParameterMap() {
+    if (parameterMap == null) {
+      parameterMap = parseParameterMap();
+    }
+
+    return parameterMap;
   }
 }
