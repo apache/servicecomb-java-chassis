@@ -30,6 +30,9 @@ import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 
 import io.vertx.core.net.SocketAddress;
 
+/**
+ * when transport is not over http, mock a HttpServletRequest from Invocation
+ */
 public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
   private RestOperationMeta swaggerOperation;
 
@@ -125,5 +128,23 @@ public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
   @Override
   public String getContextPath() {
     return "";
+  }
+
+  /**
+   * it's a mock httpServletRequest, contentType is unknown
+   * @return contentType
+   */
+  @Override
+  public String getContentType() {
+    return null;
+  }
+
+  /**
+   * it's a mock httpServletRequest, characterEncoding is unknown
+   * @return characterEncoding
+   */
+  @Override
+  public String getCharacterEncoding() {
+    return null;
   }
 }

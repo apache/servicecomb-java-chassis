@@ -29,6 +29,7 @@ import javax.servlet.http.Cookie;
 import javax.ws.rs.core.HttpHeaders;
 import javax.xml.ws.Holder;
 
+import org.apache.servicecomb.foundation.common.http.HttpUtils;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -182,6 +183,7 @@ public class TestVertxServerRequestToHttpServletRequest {
     Map<String, String[]> result = request.getParameterMap();
     Assert.assertThat(result.keySet(), Matchers.contains("name"));
     Assert.assertThat(result.get("name"), Matchers.arrayContaining("value"));
+    Assert.assertSame(result, request.getParameterMap());
   }
 
   @Test
@@ -435,5 +437,19 @@ public class TestVertxServerRequestToHttpServletRequest {
         Deencapsulation.getField(VertxServerRequestToHttpServletRequest.class, "EMPTY_ASYNC_CONTEXT");
 
     Assert.assertSame(asyncContext, request.getAsyncContext());
+  }
+
+  @Test
+  public void getCharacterEncoding() {
+    new Expectations(HttpUtils.class) {
+      {
+        vertxRequest.getHeader(HttpHeaders.CONTENT_TYPE);
+        result = "ct";
+        HttpUtils.getCharsetFromContentType("ct");
+        result = "ce";
+      }
+    };
+
+    Assert.assertEquals("ce", request.getCharacterEncoding());
   }
 }
