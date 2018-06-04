@@ -192,7 +192,8 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     String validateSuccessVersion = "1.0.0"; 
     int compareResult = serviceCenterVersion.compareTo(validateSuccessVersion);// 如果大于1.0.0，不需要兼容
     if (compareResult < 1) {
-    microservice.getFramework().setVersion(null);
+      microservice.getFramework().setVersion(null);
+    }  
   }
 
 
