@@ -20,7 +20,6 @@ package org.apache.servicecomb.config.archaius.sources;
 import static org.apache.servicecomb.config.archaius.sources.ConfigSourceMaker.yamlConfigSource;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 import java.net.URL;
 import java.util.List;
@@ -50,8 +49,6 @@ public class TestYAMLConfigurationSource {
     assertEquals(20, configMap.size());
     assertNotNull(configMap.get("trace.handler.sampler.percent"));
     assertEquals(0.5, configMap.get("trace.handler.sampler.percent"));
-    assertEquals("http://10.120.169.202:9980/", configMap.get("registry.client.serviceUrl.defaultZone"));
-    assertNull(configMap.get("eureka.client.serviceUrl.defaultZone"));
   }
 
   @Test
