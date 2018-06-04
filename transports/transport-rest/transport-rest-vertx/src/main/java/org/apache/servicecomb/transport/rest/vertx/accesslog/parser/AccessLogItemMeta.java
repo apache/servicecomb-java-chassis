@@ -22,36 +22,53 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogIt
 /**
  * The meta data of {@linkplain AccessLogItem}.
  */
-public class AccessLogItemMeta {
-  private String prefix;
+public class AccessLogItemMeta<T> {
+  protected String prefix;
 
-  private String suffix;
+  protected String suffix;
 
   /**
    * Used for sorting {@linkplain AccessLogItemMeta}. Default value is 0.
    * Smaller one has higher priority.
    */
-  private int order;
+  protected int order;
 
-  public AccessLogItemMeta(String prefix, String suffix, int order) {
-    this.prefix = prefix;
-    this.suffix = suffix;
-    this.order = order;
-  }
-
-  public AccessLogItemMeta(String prefix, String suffix) {
-    this(prefix, suffix, 0);
-  }
+  protected AccessLogItemCreator<T> accessLogItemCreator;
 
   public String getPrefix() {
     return prefix;
+  }
+
+  public AccessLogItemMeta<T> setPrefix(String prefix) {
+    this.prefix = prefix;
+    return this;
   }
 
   public String getSuffix() {
     return suffix;
   }
 
+  public AccessLogItemMeta<T> setSuffix(String suffix) {
+    this.suffix = suffix;
+    return this;
+  }
+
   public int getOrder() {
     return order;
+  }
+
+  public AccessLogItemMeta<T> setOrder(int order) {
+    this.order = order;
+    return this;
+  }
+
+  public AccessLogItemCreator<T> getAccessLogItemCreator() {
+    return accessLogItemCreator;
+  }
+
+  public AccessLogItemMeta<T> setAccessLogItemCreator(
+      AccessLogItemCreator<T> accessLogItemCreator) {
+    this.accessLogItemCreator = accessLogItemCreator;
+    return this;
   }
 }

@@ -27,7 +27,8 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogIt
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.PlainTextItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemMeta;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogPatternParser;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.VertxRestAccessLogItemCreator;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.CompositeVertxRestAccessLogItemMeta;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.VertxRestAccessLogItemMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,55 +40,53 @@ import io.vertx.ext.web.RoutingContext;
 public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<RoutingContext> {
   private static final Logger LOGGER = LoggerFactory.getLogger(VertxRestAccessLogPatternParser.class);
 
-  public static final Comparator<AccessLogItemMetaWrapper> accessLogItemMetaWrapperComparator = (w1, w2) -> {
-    AccessLogItemMeta meta1 = w1.getAccessLogItemMeta();
-    AccessLogItemMeta meta2 = w2.getAccessLogItemMeta();
-    int result = meta1.getOrder() - meta2.getOrder();
+  public static final Comparator<VertxRestAccessLogItemMeta> accessLogItemMetaComparator = (m1, m2) -> {
+    int result = m1.getOrder() - m2.getOrder();
     if (result != 0) {
       return result;
     }
 
-    // one of meta1 & meta2 has suffix, but the other one doesn't have
-    if (meta1.getSuffix() == null ^ meta2.getSuffix() == null) {
-      return meta1.getSuffix() == null ? 1 : -1;
+    // one of m1 & m2 has suffix, but the other one doesn't have
+    if (m1.getSuffix() == null ^ m2.getSuffix() == null) {
+      return m1.getSuffix() == null ? 1 : -1;
     }
 
-    if (null != meta1.getSuffix()) {
-      result = comparePlaceholderString(meta1.getSuffix(), meta2.getSuffix());
+    if (null != m1.getSuffix()) {
+      result = comparePlaceholderString(m1.getSuffix(), m2.getSuffix());
     }
 
     return 0 == result ?
-        comparePlaceholderString(meta1.getPrefix(), meta2.getPrefix())
+        comparePlaceholderString(m1.getPrefix(), m2.getPrefix())
         : result;
   };
 
-  private List<VertxRestAccessLogItemCreator> creators;
-
-  private List<AccessLogItemMetaWrapper> accessLogItemMetaWrappers = new ArrayList<>();
+  private List<VertxRestAccessLogItemMeta> metaList = new ArrayList<>();
 
   public VertxRestAccessLogPatternParser() {
-    List<VertxRestAccessLogItemCreator> creators = loadVertxRestAccessLogItemCreators();
-    this.creators = creators;
-    if (null == creators) {
-      LOGGER.error("cannot load VertxRestAccessLogItemCreator!");
+    List<VertxRestAccessLogItemMeta> loadedMeta = loadVertxRestAccessLogItemMeta();
+    if (null == loadedMeta || loadedMeta.isEmpty()) {
+      LOGGER.error("cannot load AccessLogItemMeta!");
+      throw new IllegalStateException("cannot load AccessLogItemMeta!");
     }
-    for (VertxRestAccessLogItemCreator creator : this.creators) {
-      for (AccessLogItemMeta accessLogItemMeta : creator.getAccessLogItemMeta()) {
-        accessLogItemMetaWrappers.add(new AccessLogItemMetaWrapper(accessLogItemMeta, creator));
+    for (VertxRestAccessLogItemMeta meta : loadedMeta) {
+      if (CompositeVertxRestAccessLogItemMeta.class.isAssignableFrom(meta.getClass())) {
+        this.metaList.addAll(((CompositeVertxRestAccessLogItemMeta) meta).getAccessLogItemMetas());
+      } else {
+        this.metaList.add(meta);
       }
     }
-    sortAccessLogItemMetaWrapper(accessLogItemMetaWrappers);
+    sortAccessLogItemMeta(this.metaList);
   }
 
-  private List<VertxRestAccessLogItemCreator> loadVertxRestAccessLogItemCreators() {
-    return SPIServiceUtils.getOrLoadSortedService(VertxRestAccessLogItemCreator.class);
+  private List<VertxRestAccessLogItemMeta> loadVertxRestAccessLogItemMeta() {
+    return SPIServiceUtils.getOrLoadSortedService(VertxRestAccessLogItemMeta.class);
   }
 
   /**
    * Behavior of this compare:
    * 1. comparePlaceholderString("abc","bbc") < 0
    * 2. comparePlaceholderString("abc","ab") < 0
-   * 3. comparePlaceholderString("abc","abc) = 0
+   * 3. comparePlaceholderString("abc","abc") = 0
    */
   public static int comparePlaceholderString(String s1, String s2) {
     int result = s1.compareTo(s2);
@@ -105,7 +104,7 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
   }
 
   /**
-   * Sort all of the {@link AccessLogItemMetaWrapper}, the wrapper that is in front of the others has higher priority.
+   * Sort all of the {@link AccessLogItemMeta}, the meta that is in front of the others has higher priority.
    * <p/>
    * Sort rule(priority decreased):
    * <ol>
@@ -138,8 +137,8 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
    * <li>(%b,)</li>
    * </ol>
    */
-  public static void sortAccessLogItemMetaWrapper(List<AccessLogItemMetaWrapper> accessLogItemMetaWrapperList) {
-    accessLogItemMetaWrapperList.sort(accessLogItemMetaWrapperComparator);
+  public static void sortAccessLogItemMeta(List<VertxRestAccessLogItemMeta> accessLogItemMetaList) {
+    accessLogItemMetaList.sort(accessLogItemMetaComparator);
   }
 
   /**
@@ -156,7 +155,7 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
   }
 
   /**
-   * Use the {@link #accessLogItemMetaWrappers} to match rawPattern.
+   * Use the {@link #metaList} to match rawPattern.
    * Return a list of {@link AccessLogItemLocation}.
    * Plain text is ignored.
    */
@@ -165,8 +164,8 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
     int cursor = 0;
     while (cursor < rawPattern.length()) {
       AccessLogItemLocation candidate = null;
-      for (AccessLogItemMetaWrapper wrapper : accessLogItemMetaWrappers) {
-        if (null != candidate && null == wrapper.getSuffix()) {
+      for (VertxRestAccessLogItemMeta meta : metaList) {
+        if (null != candidate && null == meta.getSuffix()) {
           // TODO:
           // if user define item("%{","}ab") and item("%{_","}abc") and the pattern is "%{_var}ab}abc"
           // currently the result is item("%{","_var","}ab"), plaintext("}abc")
@@ -177,10 +176,10 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
           cursor = candidate.tail;
           break;
         }
-        if (rawPattern.startsWith(wrapper.getPrefix(), cursor)) {
-          if (null == wrapper.getSuffix()) {
+        if (rawPattern.startsWith(meta.getPrefix(), cursor)) {
+          if (null == meta.getSuffix()) {
             // for simple type AccessLogItem, there is no need to try to match the next item.
-            candidate = new AccessLogItemLocation(cursor, wrapper);
+            candidate = new AccessLogItemLocation(cursor, meta);
             cursor = candidate.tail;
             break;
           }
@@ -188,12 +187,12 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
           // e.g. "%{varName1}o ${varName2}i" should be divided into
           // ResponseHeaderItem with varName="varName1" and RequestHeaderItem with varName="varName2"
           // INSTEAD OF RequestHeaderItem with varName="varName1}o ${varName2"
-          int rear = rawPattern.indexOf(wrapper.getSuffix(), cursor);
+          int rear = rawPattern.indexOf(meta.getSuffix(), cursor);
           if (rear < 0) {
             continue;
           }
           if (null == candidate || rear < candidate.suffixIndex) {
-            candidate = new AccessLogItemLocation(cursor, rear, wrapper);
+            candidate = new AccessLogItemLocation(cursor, rear, meta);
           }
           // There is a matched item which is in front of this item, so this item is ignored.
         }
@@ -258,8 +257,8 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
     List<AccessLogItem<RoutingContext>> itemList = new ArrayList<>();
 
     for (AccessLogItemLocation accessLogItemLocation : locationList) {
-      AccessLogItemMetaWrapper accessLogItemMetaWrapper = accessLogItemLocation.accessLogItemMetaWrapper;
-      if (null == accessLogItemMetaWrapper) {
+      VertxRestAccessLogItemMeta accessLogItemMeta = accessLogItemLocation.accessLogItemMeta;
+      if (null == accessLogItemMeta) {
         // a PlainTextItem location
         itemList.add(new PlainTextItem(rawPattern.substring(
             accessLogItemLocation.prefixIndex, accessLogItemLocation.tail
@@ -268,8 +267,7 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
       }
 
       itemList.add(
-          accessLogItemMetaWrapper.getVertxRestAccessLogItemCreator().createItem(
-              accessLogItemMetaWrapper.getAccessLogItemMeta(),
+          accessLogItemMeta.getAccessLogItemCreator().createItem(
               getConfigString(rawPattern, accessLogItemLocation))
       );
     }
@@ -304,7 +302,7 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
      */
     int tail;
 
-    AccessLogItemMetaWrapper accessLogItemMetaWrapper;
+    VertxRestAccessLogItemMeta accessLogItemMeta;
 
     /**
      * for {@link PlainTextItem} only
@@ -318,62 +316,34 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
     /**
      * for configurable type AccessLogItem
      */
-    AccessLogItemLocation(int prefixIndex, int suffixIndex, AccessLogItemMetaWrapper accessLogItemMetaWrapper) {
+    AccessLogItemLocation(int prefixIndex, int suffixIndex, VertxRestAccessLogItemMeta accessLogItemMeta) {
       this.prefixIndex = prefixIndex;
       this.suffixIndex = suffixIndex;
-      this.tail = suffixIndex + accessLogItemMetaWrapper.getSuffix().length();
-      this.accessLogItemMetaWrapper = accessLogItemMetaWrapper;
+      this.tail = suffixIndex + accessLogItemMeta.getSuffix().length();
+      this.accessLogItemMeta = accessLogItemMeta;
     }
 
     /**
      * for simple type AccessLogItem
      */
-    AccessLogItemLocation(int prefixIndex, AccessLogItemMetaWrapper accessLogItemMetaWrapper) {
+    AccessLogItemLocation(int prefixIndex, VertxRestAccessLogItemMeta accessLogItemMeta) {
       this.prefixIndex = prefixIndex;
-      this.suffixIndex = prefixIndex + accessLogItemMetaWrapper.getPrefix().length();
+      this.suffixIndex = prefixIndex + accessLogItemMeta.getPrefix().length();
       this.tail = this.suffixIndex;
-      this.accessLogItemMetaWrapper = accessLogItemMetaWrapper;
-    }
-
-    public String getPrefix() {
-      if (null == accessLogItemMetaWrapper) {
-        return null;
-      }
-      return accessLogItemMetaWrapper.getPrefix();
-    }
-
-    public String getSuffix() {
-      if (null == accessLogItemMetaWrapper) {
-        return null;
-      }
-      return accessLogItemMetaWrapper.getSuffix();
-    }
-  }
-
-  public static class AccessLogItemMetaWrapper {
-    private AccessLogItemMeta accessLogItemMeta;
-
-    private VertxRestAccessLogItemCreator vertxRestAccessLogItemCreator;
-
-    public AccessLogItemMetaWrapper(AccessLogItemMeta accessLogItemMeta,
-        VertxRestAccessLogItemCreator vertxRestAccessLogItemCreator) {
       this.accessLogItemMeta = accessLogItemMeta;
-      this.vertxRestAccessLogItemCreator = vertxRestAccessLogItemCreator;
-    }
-
-    public AccessLogItemMeta getAccessLogItemMeta() {
-      return accessLogItemMeta;
-    }
-
-    public VertxRestAccessLogItemCreator getVertxRestAccessLogItemCreator() {
-      return vertxRestAccessLogItemCreator;
     }
 
     public String getPrefix() {
+      if (null == accessLogItemMeta) {
+        return null;
+      }
       return accessLogItemMeta.getPrefix();
     }
 
     public String getSuffix() {
+      if (null == accessLogItemMeta) {
+        return null;
+      }
       return accessLogItemMeta.getSuffix();
     }
   }

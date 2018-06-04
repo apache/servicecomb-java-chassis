@@ -25,7 +25,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
-import java.util.function.Function;
 
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.CookieItem;
@@ -47,9 +46,8 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.Respon
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.TraceIdItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.UrlPathItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.UrlPathWithQueryItem;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemMeta;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.VertxRestAccessLogItemCreator;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.impl.VertxRestAccessLogPatternParser.AccessLogItemMetaWrapper;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.CompositeVertxRestAccessLogItemMeta;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.VertxRestAccessLogItemMeta;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -169,10 +167,7 @@ public class VertxRestAccessLogPatternParserTest {
     assertEquals(UrlPathWithQueryItem.class, result.get(11).getClass());
   }
 
-  Comparator<AccessLogItemMetaWrapper> comparator = VertxRestAccessLogPatternParser.accessLogItemMetaWrapperComparator;
-
-  Function<AccessLogItemMeta, AccessLogItemMetaWrapper> wrapper =
-      accessLogItemMeta -> new AccessLogItemMetaWrapper(accessLogItemMeta, null);
+  Comparator<VertxRestAccessLogItemMeta> comparator = VertxRestAccessLogPatternParser.accessLogItemMetaComparator;
 
   /**
    * one factor test
@@ -181,43 +176,43 @@ public class VertxRestAccessLogPatternParserTest {
   public void testCompareMetaSimple() {
     Assert.assertTrue(
         comparator.compare(
-            wrapper.apply(new AccessLogItemMeta(null, null, 0)),
-            wrapper.apply(new AccessLogItemMeta(null, null, 1))
+            new VertxRestAccessLogItemMeta(null, null, null, 0),
+            new VertxRestAccessLogItemMeta(null, null, null, 1)
         ) < 0
     );
     Assert.assertTrue(
         comparator.compare(
-            wrapper.apply(new AccessLogItemMeta(null, "}abc")),
-            wrapper.apply(new AccessLogItemMeta(null, null))
+            new VertxRestAccessLogItemMeta(null, "}abc", null, 0),
+            new VertxRestAccessLogItemMeta(null, null, null, 0)
         ) < 0
     );
     Assert.assertTrue(
         comparator.compare(
-            wrapper.apply(new AccessLogItemMeta(null, "}abc")),
-            wrapper.apply(new AccessLogItemMeta(null, "}de"))
+            new VertxRestAccessLogItemMeta(null, "}abc", null, 0),
+            new VertxRestAccessLogItemMeta(null, "}de", null, 0)
         ) < 0
     );
     Assert.assertTrue(
         comparator.compare(
-            wrapper.apply(new AccessLogItemMeta(null, "}abc")),
-            wrapper.apply(new AccessLogItemMeta(null, "}ab"))
+            new VertxRestAccessLogItemMeta(null, "}abc", null, 0),
+            new VertxRestAccessLogItemMeta(null, "}ab", null, 0)
         ) < 0
     );
     Assert.assertTrue(
         comparator.compare(
-            wrapper.apply(new AccessLogItemMeta("%abc", null)),
-            wrapper.apply(new AccessLogItemMeta("%de", null))
+            new VertxRestAccessLogItemMeta("%abc", null, null, 0),
+            new VertxRestAccessLogItemMeta("%de", null, null, 0)
         ) < 0
     );
     Assert.assertTrue(
         comparator.compare(
-            wrapper.apply(new AccessLogItemMeta("%abc", null)),
-            wrapper.apply(new AccessLogItemMeta("%ab", null))
+            new VertxRestAccessLogItemMeta("%abc", null, null, 0),
+            new VertxRestAccessLogItemMeta("%ab", null, null, 0)
         ) < 0
     );
     Assert.assertEquals(0, comparator.compare(
-        wrapper.apply(new AccessLogItemMeta("%abc", null)),
-        wrapper.apply(new AccessLogItemMeta("%abc", null))
+        new VertxRestAccessLogItemMeta("%abc", null, null, 0),
+        new VertxRestAccessLogItemMeta("%abc", null, null, 0)
     ));
   }
 
@@ -228,26 +223,26 @@ public class VertxRestAccessLogPatternParserTest {
   public void testCompareMetaComplex() {
     Assert.assertTrue(
         comparator.compare(
-            wrapper.apply(new AccessLogItemMeta("%bcd", "}ab", 0)),
-            wrapper.apply(new AccessLogItemMeta("%abc", "}abc", 0))
+            new VertxRestAccessLogItemMeta("%bcd", "}ab", null, 0),
+            new VertxRestAccessLogItemMeta("%abc", "}abc", null, 0)
         ) > 0
     );
     Assert.assertTrue(
         comparator.compare(
-            wrapper.apply(new AccessLogItemMeta("%abc", null, 0)),
-            wrapper.apply(new AccessLogItemMeta("%bcd", "}ab", 0))
+            new VertxRestAccessLogItemMeta("%abc", null, null, 0),
+            new VertxRestAccessLogItemMeta("%bcd", "}ab", null, 0)
         ) > 0
     );
     Assert.assertTrue(
         comparator.compare(
-            wrapper.apply(new AccessLogItemMeta("%bcd", "}abc")),
-            wrapper.apply(new AccessLogItemMeta("%abc", "}abc"))
+            new VertxRestAccessLogItemMeta("%bcd", "}abc", null, 0),
+            new VertxRestAccessLogItemMeta("%abc", "}abc", null, 0)
         ) > 0
     );
     Assert.assertTrue(
         comparator.compare(
-            wrapper.apply(new AccessLogItemMeta("%abc", "}abc", 1)),
-            wrapper.apply(new AccessLogItemMeta("%ab", "}ab", 0))
+            new VertxRestAccessLogItemMeta("%abc", "}abc", null, 1),
+            new VertxRestAccessLogItemMeta("%ab", "}ab", null, 0)
         ) > 0
     );
   }
@@ -271,69 +266,57 @@ public class VertxRestAccessLogPatternParserTest {
 
   @Test
   public void testExtendedVertxRestAccessLogItemCreator() {
-    final List<AccessLogItemMeta> metaList0 = new ArrayList<>();
-    metaList0.add(new AccessLogItemMeta("%{", "}abc"));
-    metaList0.add(new AccessLogItemMeta("%{", "}a"));
-    metaList0.add(new AccessLogItemMeta("%{", null));
-    metaList0.add(new AccessLogItemMeta("%_", null, -1));
+    final List<VertxRestAccessLogItemMeta> metaList0 = new ArrayList<>();
+    metaList0.add(new VertxRestAccessLogItemMeta("%{", "}abc", null));
+    metaList0.add(new VertxRestAccessLogItemMeta("%{", "}a", null));
+    metaList0.add(new VertxRestAccessLogItemMeta("%_", null, null, -1));
 
-    final List<AccessLogItemMeta> metaList1 = new ArrayList<>();
-    metaList0.add(new AccessLogItemMeta("%a", "}abc"));
-    metaList0.add(new AccessLogItemMeta("%0", "}abc", 1));
-    metaList0.add(new AccessLogItemMeta("%m", null));
-
-    final VertxRestAccessLogItemCreator accessLogItemCreator0 = new VertxRestAccessLogItemCreator() {
-      @Override
-      public List<AccessLogItemMeta> getAccessLogItemMeta() {
-        return metaList0;
-      }
-
-      @Override
-      public AccessLogItem<RoutingContext> createItem(AccessLogItemMeta accessLogItemMeta, String config) {
-        return null;
-      }
-    };
-
-    final VertxRestAccessLogItemCreator accessLogItemCreator1 = new VertxRestAccessLogItemCreator() {
-      @Override
-      public List<AccessLogItemMeta> getAccessLogItemMeta() {
-        return metaList1;
-      }
-
-      @Override
-      public AccessLogItem<RoutingContext> createItem(AccessLogItemMeta accessLogItemMeta, String config) {
-        return null;
-      }
-    };
+    final List<VertxRestAccessLogItemMeta> metaList1 = new ArrayList<>();
+    metaList0.add(new VertxRestAccessLogItemMeta("%a", "}abc", null));
+    metaList0.add(new VertxRestAccessLogItemMeta("%0", "}abc", null, 1));
+    metaList0.add(new VertxRestAccessLogItemMeta("%m", null, null));
 
     new MockUp<VertxRestAccessLogPatternParser>() {
       @Mock
-      List<VertxRestAccessLogItemCreator> loadVertxRestAccessLogItemCreators() {
-        List<VertxRestAccessLogItemCreator> creators = new ArrayList<>(1);
-        creators.add(accessLogItemCreator0);
-        creators.add(accessLogItemCreator1);
-        return creators;
+      List<VertxRestAccessLogItemMeta> loadVertxRestAccessLogItemMeta() {
+        List<VertxRestAccessLogItemMeta> metaList = new ArrayList<>(1);
+        CompositeVertxRestAccessLogItemMeta compositeMeta0 = new CompositeVertxRestAccessLogItemMeta() {
+          @Override
+          public List<VertxRestAccessLogItemMeta> getAccessLogItemMetas() {
+            return metaList0;
+          }
+        };
+        CompositeVertxRestAccessLogItemMeta compositeMeta1 = new CompositeVertxRestAccessLogItemMeta() {
+          @Override
+          public List<VertxRestAccessLogItemMeta> getAccessLogItemMetas() {
+            return metaList1;
+          }
+        };
+        metaList.add(compositeMeta0);
+        metaList.add(compositeMeta1);
+        metaList.add(new VertxRestAccessLogItemMeta("%{", null, null));
+        return metaList;
       }
     };
 
     VertxRestAccessLogPatternParser parser = new VertxRestAccessLogPatternParser();
 
-    List<AccessLogItemMetaWrapper> accessLogItemMetaWrappers =
-        Deencapsulation.getField(parser, "accessLogItemMetaWrappers");
+    List<VertxRestAccessLogItemMeta> accessLogItemMetaList =
+        Deencapsulation.getField(parser, "metaList");
 
-    assertEquals(7, accessLogItemMetaWrappers.size());
-    assertEquals("%_", accessLogItemMetaWrappers.get(0).getPrefix());
-    assertEquals("%a", accessLogItemMetaWrappers.get(1).getPrefix());
-    assertEquals("}abc", accessLogItemMetaWrappers.get(1).getSuffix());
-    assertEquals("%{", accessLogItemMetaWrappers.get(2).getPrefix());
-    assertEquals("}abc", accessLogItemMetaWrappers.get(2).getSuffix());
-    assertEquals("%{", accessLogItemMetaWrappers.get(3).getPrefix());
-    assertEquals("}a", accessLogItemMetaWrappers.get(3).getSuffix());
-    assertEquals("%m", accessLogItemMetaWrappers.get(4).getPrefix());
-    assertNull(accessLogItemMetaWrappers.get(4).getSuffix());
-    assertEquals("%{", accessLogItemMetaWrappers.get(5).getPrefix());
-    assertNull(accessLogItemMetaWrappers.get(5).getSuffix());
-    assertEquals("%0", accessLogItemMetaWrappers.get(6).getPrefix());
-    assertEquals("}abc", accessLogItemMetaWrappers.get(6).getSuffix());
+    assertEquals(7, accessLogItemMetaList.size());
+    assertEquals("%_", accessLogItemMetaList.get(0).getPrefix());
+    assertEquals("%a", accessLogItemMetaList.get(1).getPrefix());
+    assertEquals("}abc", accessLogItemMetaList.get(1).getSuffix());
+    assertEquals("%{", accessLogItemMetaList.get(2).getPrefix());
+    assertEquals("}abc", accessLogItemMetaList.get(2).getSuffix());
+    assertEquals("%{", accessLogItemMetaList.get(3).getPrefix());
+    assertEquals("}a", accessLogItemMetaList.get(3).getSuffix());
+    assertEquals("%m", accessLogItemMetaList.get(4).getPrefix());
+    assertNull(accessLogItemMetaList.get(4).getSuffix());
+    assertEquals("%{", accessLogItemMetaList.get(5).getPrefix());
+    assertNull(accessLogItemMetaList.get(5).getSuffix());
+    assertEquals("%0", accessLogItemMetaList.get(6).getPrefix());
+    assertEquals("}abc", accessLogItemMetaList.get(6).getSuffix());
   }
 }
