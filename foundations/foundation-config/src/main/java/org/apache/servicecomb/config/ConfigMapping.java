@@ -27,12 +27,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by   on 2017/1/5.
  */
 public final class ConfigMapping {
   private static Map<String, Object> configMap = null;
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConfigMapping.class);
 
   static {
     ClassLoader loader = Thread.currentThread().getContextClassLoader();
@@ -48,7 +52,7 @@ public final class ConfigMapping {
         configMap.putAll(YAMLUtil.yaml2Properties(url.openStream()));
       }
     } catch (IOException e) {
-      e.printStackTrace();
+      LOGGER.error("get config mapping file error!", e);
     }
   }
 
