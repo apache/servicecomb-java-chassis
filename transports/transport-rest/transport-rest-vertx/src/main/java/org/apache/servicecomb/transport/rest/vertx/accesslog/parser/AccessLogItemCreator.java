@@ -17,29 +17,18 @@
 
 package org.apache.servicecomb.transport.rest.vertx.accesslog.parser;
 
-import java.util.List;
-
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
 
-import io.vertx.ext.web.RoutingContext;
-
 /**
- * The {@linkplain VertxRestAccessLogItemCreator}s are able to instantiate a group of {@linkplain AccessLogItem}.
+ * The {@linkplain AccessLogItemCreator}s are able to instantiate a group of {@linkplain AccessLogItem}.
  */
-public interface VertxRestAccessLogItemCreator {
+public interface AccessLogItemCreator<T> {
   /**
-   * @return A list of {@linkplain AccessLogItemMeta} to show that what kinds of {@linkplain AccessLogItem}
-   * this creator is able to instantiate.
-   */
-  List<AccessLogItemMeta> getAccessLogItemMeta();
-
-  /**
-   * Create an instance of {@linkplain AccessLogItem} which is specified by {@linkplain AccessLogItemMeta} and config.
-   * @param accessLogItemMeta determine which kind of {@linkplain AccessLogItem} is created.
+   * Create an instance of {@linkplain AccessLogItem} which is specified by the config.
    * @param config
    * e.g. For {@linkplain org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.CookieItem CookieItem},
    * the pattern may be "%{varName}C", and it's config is "varName". Some {@linkplain AccessLogItem} with no configurable
    * pattern (like "%m") will receive {@code null} as config.
    */
-  AccessLogItem<RoutingContext> createItem(AccessLogItemMeta accessLogItemMeta, String config);
+  AccessLogItem<T> createItem(String config);
 }
