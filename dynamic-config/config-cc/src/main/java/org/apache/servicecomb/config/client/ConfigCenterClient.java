@@ -63,6 +63,7 @@ import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.CaseInsensitiveHeaders;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientRequest;
@@ -292,7 +293,12 @@ public class ConfigCenterClient {
                 stopHeartBeatThread();
                 isWatching = false;
               });
-              ws.handler(action -> {
+
+              ws.pongHandler(pong -> {
+                // ignore, just prevent NPE.
+              });
+              ws.frameHandler(frame -> {
+                Buffer action = frame.binaryData();
                 LOGGER.info("watching config recieved {}", action);
                 Map<String, Object> mAction = action.toJsonObject().getMap();
                 if ("CREATE".equals(mAction.get("action"))) {
