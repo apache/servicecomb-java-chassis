@@ -45,7 +45,6 @@ public class TestURLMappedEdgeDispatcher {
   }
 
   @Test
-  @SuppressWarnings(value = "unchecked")
   public void testConfigurations(@Mocked RoutingContext context
       , @Mocked HttpServerRequest requst
       , @Mocked EdgeInvocation invocation) {

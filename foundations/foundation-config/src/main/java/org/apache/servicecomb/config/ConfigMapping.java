@@ -17,9 +17,16 @@
 
 package org.apache.servicecomb.config;
 
-import java.io.InputStream;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.configuration.Configuration;
 
 /**
  * Created by   on 2017/1/5.
@@ -29,8 +36,20 @@ public final class ConfigMapping {
 
   static {
     ClassLoader loader = Thread.currentThread().getContextClassLoader();
-    InputStream is = loader.getResourceAsStream("mapping.yaml");
-    configMap = YAMLUtil.yaml2Properties(is);
+    List<URL> urlList = new ArrayList<>();
+    configMap = new HashMap<String, Object>();
+    Enumeration<URL> urls;
+    try {
+      urls = loader.getResources("mapping.yaml");
+      while (urls.hasMoreElements()) {
+        urlList.add(urls.nextElement());
+      }
+      for (URL url : urlList) {
+        configMap.putAll(YAMLUtil.yaml2Properties(url.openStream()));
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   private ConfigMapping() {
@@ -51,12 +70,27 @@ public final class ConfigMapping {
     Map<String, Object> retMap = new LinkedHashMap<>();
     retMap.putAll(oldMap);
     for (Map.Entry<String, Object> entry : configMap.entrySet()) {
-      String key = entry.getKey();
-      Object configValue = oldMap.get(key);
+      String targetMapping = entry.getKey();
+      String sourceMapping = (String) entry.getValue();
+      Object configValue = oldMap.get(sourceMapping);
       if (configValue != null) {
-        String newKey = (String) entry.getValue();
-        retMap.put(newKey, configValue);
-        retMap.remove(key);
+        retMap.put(targetMapping, configValue);
+      }
+    }
+    return retMap;
+  }
+
+  public static Map<String, Object> getConvertedMap(Configuration config) {
+    if (configMap == null) {
+      return new LinkedHashMap<>();
+    }
+    Map<String, Object> retMap = new LinkedHashMap<>();
+    for (Map.Entry<String, Object> entry : configMap.entrySet()) {
+      String targetMapping = entry.getKey();
+      String sourceMapping = (String) entry.getValue();
+      Object configValue = config.getProperty(sourceMapping);
+      if (configValue != null) {
+        retMap.put(targetMapping, configValue);
       }
     }
     return retMap;

@@ -15,5 +15,12 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-service_description:
-  environment: SERVICECOMB_ENV
+cse:
+  testmapping:
+    key: CSE_ENV_MAPPING
+  service:
+    mapping:
+      address: MY_SERVICES_ENDPOINT
+  service1:
+    mapping:
+      address: MY_SERVICES_ENDPOINT

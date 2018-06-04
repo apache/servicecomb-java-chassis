@@ -131,17 +131,19 @@ public final class ConfigUtil {
         convertEnvVariable(new ConcurrentMapConfiguration(new EnvironmentConfiguration())),
         "configFromEnvironment");
     // If there is extra configurations, add it into config.
-    EXTRA_CONFIG_MAP.entrySet().stream()
+    EXTRA_CONFIG_MAP.entrySet()
+        .stream()
         .filter(mapEntry -> !mapEntry.getValue().isEmpty())
-        .forEachOrdered(configMapEntry ->
-            duplicateServiceCombConfigToCse(config,
-                new ConcurrentMapConfiguration(configMapEntry.getValue()),
-                configMapEntry.getKey()));
+        .forEachOrdered(configMapEntry -> duplicateServiceCombConfigToCse(config,
+            new ConcurrentMapConfiguration(configMapEntry.getValue()),
+            configMapEntry.getKey()));
     duplicateServiceCombConfigToCse(config,
         new DynamicConfiguration(
             new MicroserviceConfigurationSource(configModelList), new NeverStartPollingScheduler()),
         "configFromYamlFile");
-
+    duplicateServiceCombConfigToCseAtFront(config,
+        new ConcurrentMapConfiguration(ConfigMapping.getConvertedMap(config)),
+        "configFromMapping");
     return config;
   }
 
@@ -179,6 +181,14 @@ public final class ConfigUtil {
     duplicateServiceCombConfigToCse(source);
 
     compositeConfiguration.addConfiguration(source, sourceName);
+  }
+
+  private static void duplicateServiceCombConfigToCseAtFront(ConcurrentCompositeConfiguration compositeConfiguration,
+      AbstractConfiguration source,
+      String sourceName) {
+    duplicateServiceCombConfigToCse(source);
+
+    compositeConfiguration.addConfigurationAtFront(source, sourceName);
   }
 
   private static ConfigCenterConfigurationSource createConfigCenterConfigurationSource(
