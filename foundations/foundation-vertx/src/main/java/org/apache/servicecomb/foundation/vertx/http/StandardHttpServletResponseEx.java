@@ -18,6 +18,7 @@
 package org.apache.servicecomb.foundation.vertx.http;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -28,7 +29,10 @@ import javax.servlet.http.Part;
 import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
+import org.apache.servicecomb.foundation.vertx.stream.PumpFromPart;
 
+import io.vertx.core.Context;
+import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 
 public class StandardHttpServletResponseEx extends HttpServletResponseWrapper implements HttpServletResponseEx {
@@ -99,7 +103,20 @@ public class StandardHttpServletResponseEx extends HttpServletResponseWrapper im
   }
 
   @Override
-  public CompletableFuture<Void> sendPart(Part body) {
-    throw new Error("not supported method");
+  public CompletableFuture<Void> sendPart(Part part) {
+    DownloadUtils.prepareDownloadHeader(this, part);
+
+    OutputStream outputStream;
+    try {
+      outputStream = getOutputStream();
+    } catch (IOException e) {
+      CompletableFuture<Void> future = new CompletableFuture<>();
+      future.completeExceptionally(e);
+      return future;
+    }
+
+    // if context is null, then will switch to sync logic
+    Context context = Vertx.currentContext();
+    return new PumpFromPart(context, part).toOutputStream(outputStream, false);
   }
 }
