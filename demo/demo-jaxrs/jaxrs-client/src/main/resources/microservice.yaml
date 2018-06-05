@@ -34,8 +34,12 @@ servicecomb:
     retryHandler: mycustomhandler
 cse:
   request:
-    timeout:
-      jaxrs:
-        clientreqtimeout:
-          sayHello: 100
-          add: 100
+    timeout: 5000
+    jaxrs:
+      timeout: 1000
+      clientreqtimeout:
+        timeout: 150
+        sayHello:
+          timeout: 100
+        add:
+          timeout: 100

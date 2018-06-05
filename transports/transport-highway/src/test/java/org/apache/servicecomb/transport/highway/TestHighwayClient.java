@@ -83,7 +83,7 @@ public class TestHighwayClient {
 
   @Test
   public void testRequestTimeout() {
-    Assert.assertEquals(AbstractTransport.getReqTimeout(invocation), 2000);
+    Assert.assertEquals(AbstractTransport.getReqTimeout("sayHi", "hello", "test"), 2000);
   }
 
   @Test

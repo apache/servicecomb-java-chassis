@@ -23,16 +23,13 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
-import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
@@ -41,7 +38,6 @@ import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.netflix.config.DynamicLongProperty;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.Vertx;
@@ -49,20 +45,16 @@ import io.vertx.core.Vertx;
 public abstract class AbstractTransport implements Transport {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTransport.class);
 
-  private static final String CONSUMER_REQUEST_TIMEOUT = "cse.request.timeout";
+  public static final String PROP_ROOT = "cse.request";
 
-  // key is configuration parameter.
-  private static Map<String, String> cfgCallback = new ConcurrentHashMapEx<>();
-
-  // key is config paramter
-  private static Map<String, AtomicLong> configCenterValue = new ConcurrentHashMapEx<>();
-
-  private static final long REQUEST_TIMEOUT_CFG_FAIL = -1;
+  public static final String PROP_TIMEOUT = ".timeout";
 
   /*
    * 用于参数传递：比如向RestServerVerticle传递endpoint地址。
    */
   public static final String ENDPOINT_KEY = "cse.endpoint";
+
+  private static final long REQUEST_TIMEOUT_CFG_FAIL = -1;
 
   private static final long DEFAULT_TIMEOUT_MILLIS = 30000;
 
@@ -163,81 +155,33 @@ public abstract class AbstractTransport implements Transport {
   }
 
   /**
-   * Handles the request timeout configurations.
-   * 
-   * @param invocation
-   *            invocation of request
-   * @return configuration value
+   * Handles the request timeout configurations. 
+   * @param operationName operation name
+   * @param schema schema id
+   * @param microservice micro service name
+   * @return configured value
    */
-  public static long getReqTimeout(Invocation invocation) {
-    long value = 0;
-    String config;
-
-    // get the config base on priority. operationName-->schema-->service-->global
-    String operationName = invocation.getOperationName();
-    String schema = invocation.getSchemaId();
-    String serviceName = invocation.getMicroserviceName();
-
-    config = CONSUMER_REQUEST_TIMEOUT + "." + serviceName + "." + schema + "." + operationName;
-    value = getConfigValue(config);
-    if ((value != REQUEST_TIMEOUT_CFG_FAIL)) {
-      return value;
-    }
-
-    config = CONSUMER_REQUEST_TIMEOUT + "." + serviceName + "." + schema;
-    value = getConfigValue(config);
-    if ((value != REQUEST_TIMEOUT_CFG_FAIL)) {
-      return value;
-    }
-
-    config = CONSUMER_REQUEST_TIMEOUT + "." + serviceName;
-    value = getConfigValue(config);
-    if ((value != REQUEST_TIMEOUT_CFG_FAIL)) {
-      return value;
-    }
-
-    value = getConfigValue(CONSUMER_REQUEST_TIMEOUT);
-    if ((value != REQUEST_TIMEOUT_CFG_FAIL)) {
-      return value;
-    }
-    return DEFAULT_TIMEOUT_MILLIS;
+  public static long getReqTimeout(String operationName, String schema, String microservice) {
+    return getLongProperty(DEFAULT_TIMEOUT_MILLIS,
+        PROP_ROOT + "." + microservice + "." + schema + "." + operationName + PROP_TIMEOUT,
+        PROP_ROOT + "." + microservice + "." + schema + PROP_TIMEOUT,
+        PROP_ROOT + "." + microservice + PROP_TIMEOUT,
+        PROP_ROOT + PROP_TIMEOUT);
   }
 
   /**
-   * Get the configuration value
-   * @param config config parameter
-   * @return long value
+   * Handles the request timeout configurations. 
+   * @param defaultValue
+   * @param keys list of keys
+   * @return configured value
    */
-  private static long getConfigParam(String config, long defaultValue) {
-    DynamicLongProperty dynamicLongProperty = DynamicPropertyFactory.getInstance().getLongProperty(config,
-        defaultValue);
-
-    cfgCallback.computeIfAbsent(config, key -> {
-      dynamicLongProperty.addCallback(() -> {
-        long newValue = dynamicLongProperty.get();
-        String cfgName = dynamicLongProperty.getName();
-
-        //store the value in config center map and check for next requests.
-        configCenterValue.put(cfgName, new AtomicLong(newValue));
-        LOGGER.info("{} changed to {}", cfgName, newValue);
-      });
-      return config;
-    });
-
-    return dynamicLongProperty.get();
-  }
-
-  /**
-   * Get the configuration value
-   * @param config config parameter
-   * @return long value
-   */
-  private static long getConfigValue(String config) {
-    //first need to check in config center map which has high priority.
-    if (configCenterValue.containsKey(config)) {
-      return configCenterValue.get(config).get();
+  private static long getLongProperty(long defaultValue, String... keys) {
+    for (String key : keys) {
+      long property = DynamicPropertyFactory.getInstance().getLongProperty(key, REQUEST_TIMEOUT_CFG_FAIL).get();
+      if (property != REQUEST_TIMEOUT_CFG_FAIL) {
+        return property;
+      }
     }
-
-    return getConfigParam(config, REQUEST_TIMEOUT_CFG_FAIL);
+    return defaultValue;
   }
 }
