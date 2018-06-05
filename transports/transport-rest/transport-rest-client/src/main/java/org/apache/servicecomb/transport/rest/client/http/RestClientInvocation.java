@@ -118,7 +118,9 @@ public class RestClientInvocation {
       this.setCseContext();
       //set the timeout based on priority. the priority is follows.
       //high priotiry: 1) operational level 2)schema level 3) service level 4) global level : low priotiry.
-      clientRequest.setTimeout(AbstractTransport.getReqTimeout(invocation));
+      clientRequest.setTimeout(AbstractTransport.getReqTimeout(invocation.getOperationName(),
+          invocation.getSchemaId(),
+          invocation.getMicroserviceName()));
       try {
         restClientRequest.end();
       } catch (Throwable e) {
