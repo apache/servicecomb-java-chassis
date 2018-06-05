@@ -323,8 +323,8 @@ public class TestConfigUtil {
     String overriddenConfigKey = "servicecomb.cse.servicecomb.file";
     extraConfig.put(extraConfigKey, extraConfigValue);
     final String propertyHigherPriority = "higher_priority";
-    String mapedKey1 = "cse.service.mapping.address";
-    String mapedKey2 = "cse.service1.mapping.address";
+    String mapedKey1 = "servicecomb.service.mapping.address";
+    String mapedKey2 = "servicecomb.service1.mapping.address";
     extraConfig.put(overriddenConfigKey, propertyHigherPriority);
 
     ConfigUtil.addExtraConfig("testExtraConfig", extraConfig);

@@ -15,7 +15,7 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-cse:
+servicecomb:
   testmapping:
     key: CSE_ENV_MAPPING
   service:

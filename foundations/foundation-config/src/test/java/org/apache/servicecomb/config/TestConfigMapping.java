@@ -38,7 +38,7 @@ public class TestConfigMapping {
 
   @Test
   public void testConvertedMap() {
-    String value = ConfigMapping.map("cse.testmapping.key");
+    String value = ConfigMapping.map("servicecomb.testmapping.key");
     Map<String, Object> m = ConfigMapping.getMapping();
     Map<String, Object> m1 = ConfigMapping.getConvertedMap(m);
     assertEquals("CSE_ENV_MAPPING", value);
