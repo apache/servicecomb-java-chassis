@@ -74,11 +74,19 @@ public final class ConfigMapping {
     Map<String, Object> retMap = new LinkedHashMap<>();
     retMap.putAll(oldMap);
     for (Map.Entry<String, Object> entry : configMap.entrySet()) {
-      String targetMapping = entry.getKey();
-      String sourceMapping = (String) entry.getValue();
-      Object configValue = oldMap.get(sourceMapping);
+      String key = entry.getKey();
+      Object configValue = oldMap.get(key);
       if (configValue != null) {
-        retMap.put(targetMapping, configValue);
+        if (entry.getValue() instanceof List) {
+          @SuppressWarnings("unchecked")
+          List<String> newKeys = (List<String>) entry.getValue();
+          for (String newKey : newKeys) {
+            retMap.put(newKey, configValue);
+          }
+        } else {
+          String newKey = (String) entry.getValue();
+          retMap.put(newKey, configValue);
+        }
       }
     }
     return retMap;
@@ -90,11 +98,19 @@ public final class ConfigMapping {
     }
     Map<String, Object> retMap = new LinkedHashMap<>();
     for (Map.Entry<String, Object> entry : configMap.entrySet()) {
-      String targetMapping = entry.getKey();
-      String sourceMapping = (String) entry.getValue();
-      Object configValue = config.getProperty(sourceMapping);
+      String key = entry.getKey();
+      Object configValue = config.getProperty(key);
       if (configValue != null) {
-        retMap.put(targetMapping, configValue);
+        if (entry.getValue() instanceof List) {
+          @SuppressWarnings("unchecked")
+          List<String> newKeys = (List<String>) entry.getValue();
+          for (String newKey : newKeys) {
+            retMap.put(newKey, configValue);
+          }
+        } else {
+          String newKey = (String) entry.getValue();
+          retMap.put(newKey, configValue);
+        }
       }
     }
     return retMap;

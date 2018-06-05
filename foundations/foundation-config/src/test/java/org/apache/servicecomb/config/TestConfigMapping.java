@@ -30,18 +30,18 @@ import org.junit.Test;
 public class TestConfigMapping {
   @Test
   public void testMapping() {
-    String value = ConfigMapping.map("service_description.environment");
+    String value = ConfigMapping.map("SERVICECOMB_ENV");
     Map<String, Object> m = ConfigMapping.getMapping();
-    assertEquals("SERVICECOMB_ENV", value);
+    assertEquals("service_description.environment", value);
     assertNotNull(m);
   }
 
   @Test
   public void testConvertedMap() {
-    String value = ConfigMapping.map("servicecomb.testmapping.key");
+    String value = ConfigMapping.map("CSE_ENV_MAPPING");
     Map<String, Object> m = ConfigMapping.getMapping();
     Map<String, Object> m1 = ConfigMapping.getConvertedMap(m);
-    assertEquals("CSE_ENV_MAPPING", value);
+    assertEquals("servicecomb.testmapping.key", value);
     assertNotNull(m1);
   }
 }

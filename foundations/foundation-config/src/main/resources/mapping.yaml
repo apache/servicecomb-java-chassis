@@ -15,5 +15,4 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-service_description:
-  environment: SERVICECOMB_ENV
+SERVICECOMB_ENV: service_description.environment
