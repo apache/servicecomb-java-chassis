@@ -69,8 +69,9 @@ public class TestDownload {
     future.whenComplete((result, e) -> {
       Object value = result;
       if (File.class.isInstance(value)) {
-        value = readFileToString((File) value);
-        ((File) value).delete();
+        File file = (File) value;
+        value = readFileToString(file);
+        file.delete();
       } else if (byte[].class.isInstance(value)) {
         value = new String((byte[]) value);
       }
@@ -128,6 +129,7 @@ public class TestDownload {
           .allOf(futures.toArray(new CompletableFuture[futures.size()]))
           .get();
     } catch (InterruptedException | ExecutionException e1) {
+      TestMgr.failed("test download failed.", e1);
     }
   }
 }
