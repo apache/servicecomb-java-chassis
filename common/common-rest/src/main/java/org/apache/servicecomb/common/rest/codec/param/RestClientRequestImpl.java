@@ -20,7 +20,6 @@ package org.apache.servicecomb.common.rest.codec.param;
 import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -32,25 +31,23 @@ import java.util.UUID;
 import javax.servlet.http.Part;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
 import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
-import org.apache.servicecomb.foundation.vertx.stream.InputStreamToReadStream;
+import org.apache.servicecomb.foundation.vertx.stream.PumpFromPart;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.vertx.core.Vertx;
+import io.vertx.core.Context;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpHeaders;
-import io.vertx.core.streams.Pump;
 
 public class RestClientRequestImpl implements RestClientRequest {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestClientRequestImpl.class);
 
-  protected Vertx vertx;
+  protected Context context;
 
   protected AsyncResponse asyncResp;
 
@@ -64,8 +61,8 @@ public class RestClientRequestImpl implements RestClientRequest {
 
   protected Buffer bodyBuffer;
 
-  public RestClientRequestImpl(HttpClientRequest request, Vertx vertx, AsyncResponse asyncResp) {
-    this.vertx = vertx;
+  public RestClientRequestImpl(HttpClientRequest request, Context context, AsyncResponse asyncResp) {
+    this.context = context;
     this.asyncResp = asyncResp;
     this.request = request;
   }
@@ -175,30 +172,19 @@ public class RestClientRequestImpl implements RestClientRequest {
     Part part = entry.getValue();
     String filename = part.getSubmittedFileName();
 
-    InputStreamToReadStream fileStream = null;
-    try {
-      fileStream = new InputStreamToReadStream(vertx, part.getInputStream());
-    } catch (IOException e) {
-      asyncResp.consumerFail(e);
-      return;
-    }
-
-    InputStreamToReadStream finalFileStream = fileStream;
-    fileStream.exceptionHandler(e -> {
-      LOGGER.debug("Failed to sending file [{}:{}].", name, filename, e);
-      IOUtils.closeQuietly(finalFileStream.getInputStream());
-      asyncResp.consumerFail(e);
-    });
-    fileStream.endHandler(V -> {
-      LOGGER.debug("finish sending file [{}:{}].", name, filename);
-      IOUtils.closeQuietly(finalFileStream.getInputStream());
-
-      attachFile(boundary, uploadsIterator);
-    });
-
     Buffer fileHeader = fileBoundaryInfo(boundary, name, part);
     request.write(fileHeader);
-    Pump.pump(fileStream, request).start();
+
+    new PumpFromPart(context, part).toWriteStream(request).whenComplete((v, e) -> {
+      if (e != null) {
+        LOGGER.debug("Failed to sending file [{}:{}].", name, filename, e);
+        asyncResp.consumerFail(e);
+        return;
+      }
+
+      LOGGER.debug("finish sending file [{}:{}].", name, filename);
+      attachFile(boundary, uploadsIterator);
+    });
   }
 
   private Buffer boundaryEndInfo(String boundary) {

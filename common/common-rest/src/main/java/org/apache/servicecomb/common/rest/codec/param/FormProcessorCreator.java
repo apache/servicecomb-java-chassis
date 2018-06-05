@@ -42,7 +42,7 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
     }
 
     @Override
-    public Object getValue(HttpServletRequest request) throws Exception {
+    public Object getValue(HttpServletRequest request) {
       @SuppressWarnings("unchecked")
       Map<String, Object> forms = (Map<String, Object>) request.getAttribute(RestConst.FORM_PARAMETERS);
       if (forms != null) {
@@ -57,7 +57,7 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
     }
 
     @Override
-    public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
+    public void setValue(RestClientRequest clientRequest, Object arg) {
       clientRequest.addForm(paramPath, arg);
     }
 
