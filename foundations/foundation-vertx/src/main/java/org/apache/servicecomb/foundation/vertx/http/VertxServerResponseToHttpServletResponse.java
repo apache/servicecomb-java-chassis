@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.foundation.vertx.http;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -27,22 +25,14 @@ import javax.servlet.http.Part;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response.StatusType;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
-import org.apache.servicecomb.foundation.common.http.HttpUtils;
-import org.apache.servicecomb.foundation.common.part.FilePartForSend;
-import org.apache.servicecomb.foundation.vertx.stream.InputStreamToReadStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.servicecomb.foundation.vertx.stream.PumpFromPart;
 
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerResponse;
-import io.vertx.core.streams.Pump;
 
 public class VertxServerResponseToHttpServletResponse extends AbstractHttpServletResponse {
-  private static final Logger LOGGER = LoggerFactory.getLogger(VertxServerResponseToHttpServletResponse.class);
-
   private Context context;
 
   private HttpServerResponse serverResponse;
@@ -112,7 +102,7 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
   }
 
   @Override
-  public void flushBuffer() throws IOException {
+  public void flushBuffer() {
     if (context == Vertx.currentContext()) {
       internalFlushBuffer();
       return;
@@ -134,60 +124,13 @@ public class VertxServerResponseToHttpServletResponse extends AbstractHttpServle
 
   @Override
   public CompletableFuture<Void> sendPart(Part part) {
-    prepareSendPartHeader(part);
+    DownloadUtils.prepareDownloadHeader(this, part);
 
-    if (ReadStreamPart.class.isInstance(part)) {
-      return ((ReadStreamPart) part).saveToWriteStream(this.serverResponse);
-    }
-
-    CompletableFuture<Void> future = new CompletableFuture<Void>();
-    try {
-      InputStream is = part.getInputStream();
-      context.runOnContext(v -> {
-        InputStreamToReadStream inputStreamToReadStream = new InputStreamToReadStream(context.owner(), is);
-        inputStreamToReadStream.exceptionHandler(t -> {
-          clearPartResource(part, is);
-          future.completeExceptionally(t);
-        });
-        inputStreamToReadStream.endHandler(V -> {
-          clearPartResource(part, is);
-          future.complete(null);
-        });
-        Pump.pump(inputStreamToReadStream, serverResponse).start();
-      });
-    } catch (IOException e) {
-      future.completeExceptionally(e);
-    }
-
-    return future;
+    return new PumpFromPart(context, part).toWriteStream(serverResponse);
   }
 
-  protected void prepareSendPartHeader(Part part) {
-    if (!serverResponse.headers().contains(HttpHeaders.CONTENT_LENGTH)) {
-      serverResponse.setChunked(true);
-    }
-
-    if (!serverResponse.headers().contains(HttpHeaders.CONTENT_TYPE)) {
-      serverResponse.putHeader(HttpHeaders.CONTENT_TYPE, part.getContentType());
-    }
-
-    if (!serverResponse.headers().contains(HttpHeaders.CONTENT_DISPOSITION)) {
-      // to support chinese and space filename in firefox
-      // must use "filename*", (https://tools.ietf.org/html/rtf6266)
-      String encodedFileName = HttpUtils.uriEncodePath(part.getSubmittedFileName());
-      serverResponse.putHeader(HttpHeaders.CONTENT_DISPOSITION,
-          "attachment;filename=" + encodedFileName + ";filename*=utf-8''" + encodedFileName);
-    }
-  }
-
-  protected void clearPartResource(Part part, InputStream is) {
-    IOUtils.closeQuietly(is);
-    if (FilePartForSend.class.isInstance(part) && ((FilePartForSend) part).isDeleteAfterFinished()) {
-      try {
-        part.delete();
-      } catch (IOException e) {
-        LOGGER.error("Failed to delete temp file: {}.", ((FilePartForSend) part).getAbsolutePath(), e);
-      }
-    }
+  @Override
+  public void setChunked(boolean chunked) {
+    serverResponse.setChunked(chunked);
   }
 }

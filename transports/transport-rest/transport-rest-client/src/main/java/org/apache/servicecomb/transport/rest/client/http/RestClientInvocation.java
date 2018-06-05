@@ -84,7 +84,7 @@ public class RestClientInvocation {
     createRequest(ipPort, path);
     clientRequest.putHeader(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE, invocation.getMicroserviceName());
     RestClientRequestImpl restClientRequest =
-        new RestClientRequestImpl(clientRequest, httpClientWithContext.context().owner(), asyncResp);
+        new RestClientRequestImpl(clientRequest, httpClientWithContext.context(), asyncResp);
     invocation.getHandlerContext().put(RestConst.INVOCATION_HANDLER_REQUESTCLIENT, restClientRequest);
 
     Buffer requestBodyBuffer = restClientRequest.getBodyBuffer();

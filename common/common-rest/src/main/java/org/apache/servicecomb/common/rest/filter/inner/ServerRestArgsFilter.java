@@ -69,7 +69,7 @@ public class ServerRestArgsFilter implements HttpServerFilter {
 
     responseEx.setContentType(produceProcessor.getName() + "; charset=utf-8");
 
-    CompletableFuture<Void> future = new CompletableFuture<Void>();
+    CompletableFuture<Void> future = new CompletableFuture<>();
     try (BufferOutputStream output = new BufferOutputStream(Unpooled.compositeBuffer())) {
       produceProcessor.encodeResponse(output, body);
 

@@ -31,6 +31,7 @@ import javax.ws.rs.core.Response.StatusType;
 import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
 import org.apache.servicecomb.foundation.common.part.FilePart;
+import org.apache.servicecomb.foundation.vertx.stream.PumpFromPart;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -46,6 +47,7 @@ import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.impl.SyncContext;
 import io.vertx.core.impl.VertxImpl;
 import io.vertx.core.streams.WriteStream;
 import mockit.Deencapsulation;
@@ -151,19 +153,14 @@ public class TestVertxServerResponseToHttpServletResponse {
       }
 
       @Mock
-      Vertx owner() {
-        return vertx;
-      }
-    };
-
-    new MockUp<Vertx>(vertx) {
-      @Mock
       <T> void executeBlocking(Handler<Future<T>> blockingCodeHandler, boolean ordered,
           Handler<AsyncResult<T>> resultHandler) {
-        Future<T> future = Future.future();
-        future.setHandler(resultHandler);
+        SyncContext.syncExecuteBlocking(blockingCodeHandler, resultHandler);
+      }
 
-        blockingCodeHandler.handle(future);
+      @Mock
+      Vertx owner() {
+        return vertx;
       }
     };
 
@@ -308,7 +305,7 @@ public class TestVertxServerResponseToHttpServletResponse {
         result = "测     试";
       }
     };
-    response.prepareSendPartHeader(part);
+    DownloadUtils.prepareDownloadHeader(response, part);
 
     Assert.assertTrue(serverResponse.isChunked());
     Assert.assertEquals("type", response.getHeader(HttpHeaders.CONTENT_TYPE));
@@ -323,7 +320,7 @@ public class TestVertxServerResponseToHttpServletResponse {
     headers.add(HttpHeaders.CONTENT_TYPE, "type");
     headers.add(HttpHeaders.CONTENT_DISPOSITION, "disposition");
 
-    response.prepareSendPartHeader(part);
+    DownloadUtils.prepareDownloadHeader(response, part);
 
     Assert.assertFalse(serverResponse.isChunked());
     Assert.assertEquals("type", response.getHeader(HttpHeaders.CONTENT_TYPE));
@@ -372,13 +369,12 @@ public class TestVertxServerResponseToHttpServletResponse {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void sendPart_ReadStreamPart(@Mocked ReadStreamPart part)
-      throws IOException, InterruptedException, ExecutionException {
+  public void sendPart_ReadStreamPart(@Mocked ReadStreamPart part) {
     CompletableFuture<Void> future = new CompletableFuture<>();
-    new Expectations() {
-      {
-        part.saveToWriteStream((WriteStream<Buffer>) any);
-        result = future;
+    new MockUp<PumpFromPart>() {
+      @Mock
+      CompletableFuture<Void> toWriteStream(WriteStream<Buffer> writeStream) {
+        return future;
       }
     };
 
@@ -409,7 +405,7 @@ public class TestVertxServerResponseToHttpServletResponse {
     FilePart part = new FilePart(null, file).setDeleteAfterFinished(true);
 
     Assert.assertTrue(file.exists());
-    response.clearPartResource(part, part.getInputStream());
+    DownloadUtils.clearPartResource(part);
     Assert.assertFalse(file.exists());
   }
 
@@ -420,7 +416,7 @@ public class TestVertxServerResponseToHttpServletResponse {
     FilePart part = new FilePart(null, file);
 
     Assert.assertTrue(file.exists());
-    response.clearPartResource(part, part.getInputStream());
+    DownloadUtils.clearPartResource(part);
     Assert.assertTrue(file.exists());
 
     file.delete();

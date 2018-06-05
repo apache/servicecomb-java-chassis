@@ -26,6 +26,7 @@ import javax.ws.rs.core.HttpHeaders;
 import org.apache.commons.lang.StringUtils;
 import org.apache.servicecomb.foundation.common.http.HttpUtils;
 import org.apache.servicecomb.foundation.common.part.AbstractPart;
+import org.apache.servicecomb.foundation.vertx.stream.PumpCommon;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +37,6 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.file.AsyncFile;
 import io.vertx.core.file.OpenOptions;
 import io.vertx.core.http.HttpClientResponse;
-import io.vertx.core.streams.Pump;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.core.streams.WriteStream;
 
@@ -74,33 +74,32 @@ public class ReadStreamPart extends AbstractPart {
     readStream.pause();
   }
 
+  public Context getContext() {
+    return context;
+  }
+
+  public ReadStream<Buffer> getReadStream() {
+    return readStream;
+  }
+
+  /**
+   *
+   * @param writeStream
+   * @return future of save action<br>
+   *
+   * important: WriteStream did not provide endHandler, so we can not know when will really finished write.
+   * so the return future only means finished read from readStream.
+   */
   public CompletableFuture<Void> saveToWriteStream(WriteStream<Buffer> writeStream) {
-    CompletableFuture<Void> future = new CompletableFuture<>();
-
-    writeStream.exceptionHandler(future::completeExceptionally);
-    readStream.exceptionHandler(future::completeExceptionally);
-    readStream.endHandler(future::complete);
-
-    // if readStream(HttpClientResponse) and writeStream(HttpServerResponse)
-    // belongs to difference eventloop
-    // maybe will cause deadlock
-    // if happened, vertx will print deadlock stacks
-    Pump.pump(readStream, writeStream).start();
-    readStream.resume();
-
-    return future;
+    return new PumpCommon().pump(context, readStream, writeStream);
   }
 
   public CompletableFuture<byte[]> saveAsBytes() {
-    return saveAs(buf -> {
-      return buf.getBytes();
-    });
+    return saveAs(buf -> buf.getBytes());
   }
 
   public CompletableFuture<String> saveAsString() {
-    return saveAs(buf -> {
-      return buf.toString();
-    });
+    return saveAs(buf -> buf.toString());
   }
 
   public <T> CompletableFuture<T> saveAs(Function<Buffer, T> converter) {
@@ -109,14 +108,17 @@ public class ReadStreamPart extends AbstractPart {
 
     readStream.exceptionHandler(future::completeExceptionally);
     readStream.handler(buffer::appendBuffer);
-    readStream.endHandler(v -> {
-      future.complete(converter.apply(buffer));
-    });
+    readStream.endHandler(v -> future.complete(converter.apply(buffer)));
     readStream.resume();
 
     return future;
   }
 
+  /**
+   *
+   * @param fileName
+   * @return future of save to file, future complete means write to file finished
+   */
   public CompletableFuture<File> saveToFile(String fileName) {
     File file = new File(fileName);
     file.getParentFile().mkdirs();
@@ -124,12 +126,20 @@ public class ReadStreamPart extends AbstractPart {
     return saveToFile(file, openOptions);
   }
 
+  /**
+   *
+   * @param file
+   * @param openOptions
+   * @return future of save to file, future complete means write to file finished
+   */
   public CompletableFuture<File> saveToFile(File file, OpenOptions openOptions) {
     CompletableFuture<File> future = new CompletableFuture<>();
 
-    Vertx vertx = context.owner();
-    vertx.fileSystem().open(file.getAbsolutePath(), openOptions, ar -> {
-      onFileOpened(file, ar, future);
+    context.runOnContext((v) -> {
+      Vertx vertx = context.owner();
+      vertx.fileSystem().open(file.getAbsolutePath(), openOptions, ar -> {
+        onFileOpened(file, ar, future);
+      });
     });
 
     return future;
