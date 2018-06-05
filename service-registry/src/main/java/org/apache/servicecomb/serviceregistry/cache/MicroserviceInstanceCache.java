@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 
 /**
  * 微服务实例缓存 key为：serviceId@instanceId 缓存limit：1000 缓存老化策略：30分钟没有访问就过期。
@@ -51,10 +52,14 @@ public class MicroserviceInstanceCache {
   public static Microservice getOrCreate(String serviceId) {
     try {
       return microservices.get(serviceId, () -> {
-        return RegistryUtils.getServiceRegistryClient().getMicroservice(serviceId);
+        Microservice microservice = RegistryUtils.getServiceRegistryClient().getMicroservice(serviceId);
+        if (microservice == null) {
+          throw new IllegalArgumentException("service id not exists.");
+        }
+        return microservice;
       });
-    } catch (ExecutionException e) {
-      logger.error("get microservice from cache failed:" + serviceId);
+    } catch (ExecutionException | UncheckedExecutionException e) {
+      logger.error("get microservice from cache failed, {}, {}", serviceId, e.getMessage());
       return null;
     }
   }
@@ -66,17 +71,18 @@ public class MicroserviceInstanceCache {
 
         @Override
         public MicroserviceInstance call() throws Exception {
-          logger.debug("get microservice instance from SC");
-          return getMicroserviceInstanceFromSC(serviceId, instanceId);
+          MicroserviceInstance instance = RegistryUtils.getServiceRegistryClient()
+              .findServiceInstance(serviceId, instanceId);
+          if (instance == null) {
+            throw new IllegalArgumentException("instance id not exists.");
+          }
+          return instance;
         }
       });
-    } catch (ExecutionException e) {
-      logger.error("get microservice instance from cache failed:" + String.format("%s@%s", serviceId, instanceId));
+    } catch (ExecutionException | UncheckedExecutionException e) {
+      logger.error("get microservice instance from cache failed, {}, {}", String.format("%s@%s", serviceId, instanceId),
+          e.getMessage());
       return null;
     }
-  }
-
-  private static MicroserviceInstance getMicroserviceInstanceFromSC(String serviceId, String instanceId) {
-    return RegistryUtils.getServiceRegistryClient().findServiceInstance(serviceId, instanceId);
   }
 }

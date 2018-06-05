@@ -68,10 +68,16 @@ public class AccessController {
   }
 
   private boolean whiteAllowed(Microservice microservice) {
+    if(whiteList.isEmpty()) {
+      return true;
+    }
     return matchFound(microservice, whiteList);
   }
 
   private boolean blackDenied(Microservice microservice) {
+    if(blackList.isEmpty()) {
+      return false;
+    }
     return matchFound(microservice, blackList);
   }
 

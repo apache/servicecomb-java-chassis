@@ -51,7 +51,6 @@ public class RSAProviderTokenManager {
         return false;
       }
       if (validatedToken.contains(rsaToken)) {
-        LOGGER.info("found vaildate token in vaildate pool");
         return accessController.isAllowed(MicroserviceInstanceCache.getOrCreate(rsaToken.getServiceId()));
       }
 
@@ -63,8 +62,6 @@ public class RSAProviderTokenManager {
         validatedToken.add(rsaToken);
         return accessController.isAllowed(MicroserviceInstanceCache.getOrCreate(rsaToken.getServiceId()));
       }
-
-      LOGGER.error("token verify error");
       return false;
     } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | SignatureException e) {
       LOGGER.error("verfiy error", e);
