@@ -107,8 +107,8 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
     }
 
     // 根据class动态产生契约
-    SwaggerGenerator generator = generateSwagger(context);
     if (swagger == null) {
+      SwaggerGenerator generator = generateSwagger(context);
       swagger = generator.getSwagger();
       String swaggerContent = getSwaggerContent(swagger);
       LOGGER.info("generate swagger for {}/{}/{}, swagger: {}",
