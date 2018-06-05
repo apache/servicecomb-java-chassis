@@ -103,7 +103,7 @@ public class RestClientRequestImpl implements RestClientRequest {
     request.setChunked(true);
 
     String boundary = "boundary" + UUID.randomUUID().toString();
-    putHeader(CONTENT_TYPE, MULTIPART_FORM_DATA + "; boundary=" + boundary);
+    putHeader(CONTENT_TYPE, MULTIPART_FORM_DATA + "; charset=UTF-8; boundary=" + boundary);
 
     genBodyForm(boundary);
 
