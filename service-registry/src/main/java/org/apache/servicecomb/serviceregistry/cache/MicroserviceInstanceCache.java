@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,22 @@ public class MicroserviceInstanceCache {
       .expireAfterAccess(30, TimeUnit.MINUTES)
       .build();
 
+  private static final Cache<String, Microservice> microservices = CacheBuilder.newBuilder()
+      .maximumSize(1000)
+      .expireAfterAccess(30, TimeUnit.MINUTES)
+      .build();
+
+  public static Microservice getOrCreate(String serviceId) {
+    try {
+      return microservices.get(serviceId, () -> {
+        return RegistryUtils.getServiceRegistryClient().getMicroservice(serviceId);
+      });
+    } catch (ExecutionException e) {
+      logger.error("get microservice from cache failed:" + serviceId);
+      return null;
+    }
+  }
+
   public static MicroserviceInstance getOrCreate(String serviceId, String instanceId) {
     try {
       String key = String.format("%s@%s", serviceId, instanceId);
@@ -54,7 +71,7 @@ public class MicroserviceInstanceCache {
         }
       });
     } catch (ExecutionException e) {
-      logger.error("get microservice from cache failed:" + String.format("%s@%s", serviceId, instanceId));
+      logger.error("get microservice instance from cache failed:" + String.format("%s@%s", serviceId, instanceId));
       return null;
     }
   }
