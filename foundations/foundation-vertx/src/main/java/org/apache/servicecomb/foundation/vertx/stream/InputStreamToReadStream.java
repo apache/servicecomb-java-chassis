@@ -25,9 +25,9 @@ import org.slf4j.LoggerFactory;
 
 import io.netty.buffer.Unpooled;
 import io.vertx.core.AsyncResult;
+import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.streams.ReadStream;
 
@@ -36,7 +36,7 @@ public class InputStreamToReadStream implements ReadStream<Buffer> {
 
   public static final int DEFAULT_READ_BUFFER_SIZE = 1024 * 1024;
 
-  private Vertx vertx;
+  private Context context;
 
   private InputStream inputStream;
 
@@ -54,14 +54,15 @@ public class InputStreamToReadStream implements ReadStream<Buffer> {
 
   private Handler<Void> endHandler;
 
-  public InputStreamToReadStream(Vertx vertx, InputStream inputStream) {
-    this.vertx = vertx;
+  private boolean autoCloseInputStream;
+
+  public InputStreamToReadStream(Context context, InputStream inputStream,
+      boolean autoCloseInputStream) {
+    this.context = context;
     this.inputStream = inputStream;
+    this.autoCloseInputStream = autoCloseInputStream;
   }
 
-  public InputStream getInputStream() {
-    return inputStream;
-  }
 
   public synchronized InputStreamToReadStream readBufferSize(int readBufferSize) {
     this.readBufferSize = readBufferSize;
@@ -113,8 +114,8 @@ public class InputStreamToReadStream implements ReadStream<Buffer> {
     if (!readInProgress) {
       readInProgress = true;
 
-      vertx.executeBlocking(this::readInWorker,
-          false,
+      context.executeBlocking(this::readInWorker,
+          true,
           this::afterReadInEventloop);
     }
   }
@@ -129,9 +130,14 @@ public class InputStreamToReadStream implements ReadStream<Buffer> {
     }
   }
 
+  private void handleException(Throwable e) {
+    closeInputStream();
+    exceptionHandler.handle(e);
+  }
+
   private synchronized void afterReadInEventloop(AsyncResult<ReadResult> ar) {
     if (ar.failed()) {
-      exceptionHandler.handle(ar.cause());
+      handleException(ar.cause());
       return;
     }
 
@@ -175,8 +181,22 @@ public class InputStreamToReadStream implements ReadStream<Buffer> {
 
   private synchronized void handleEnd() {
     dataHandler = null;
+    closeInputStream();
     if (endHandler != null) {
       endHandler.handle(null);
+    }
+  }
+
+  private void closeInputStream() {
+    closed = true;
+    if (!autoCloseInputStream) {
+      return;
+    }
+
+    try {
+      inputStream.close();
+    } catch (IOException e) {
+      LOGGER.error("failed to close inputSteam.", e);
     }
   }
 
