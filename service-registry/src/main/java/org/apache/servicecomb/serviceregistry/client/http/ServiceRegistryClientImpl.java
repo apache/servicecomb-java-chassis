@@ -27,11 +27,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
 import javax.ws.rs.core.Response.Status;
-import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
@@ -60,8 +60,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Charsets;
-import com.google.common.hash.Hashing;
 
 import io.netty.handler.codec.http.HttpStatusClass;
 import io.vertx.core.Handler;
@@ -108,10 +106,16 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         }
         return;
       }
+      holder.setStatusCode(response.statusCode());
       response.bodyHandler(
           bodyBuffer -> {
             if (cls.getName().equals(HttpClientResponse.class.getName())) {
               holder.value = (T) response;
+              countDownLatch.countDown();
+              return;
+            }
+            if (cls.equals(String.class)) {
+              holder.setValue((T) bodyBuffer.toString());
               countDownLatch.countDown();
               return;
             }
@@ -131,6 +135,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
               holder.value =
                   JsonUtils.readValue(bodyBuffer.getBytes(), cls);
             } catch (Exception e) {
+              holder.setStatusCode(0).setThrowable(e);
               LOGGER.warn("read value failed and response message is {}",
                   bodyBuffer.toString());
             }
@@ -291,7 +296,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     try {
       CreateSchemaRequest request = new CreateSchemaRequest();
       request.setSchema(schemaContent);
-      request.setSummary(Hashing.sha256().newHasher().putString(schemaContent, Charsets.UTF_8).hash().toString());
+      request.setSummary(RegistryUtils.calcSchemaSummary(schemaContent));
       byte[] body = JsonUtils.writeValueAsBytes(request);
 
       CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -355,9 +360,10 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   @Override
-  public List<GetSchemaResponse> getSchemas(String microserviceId) {
+  public Holder<List<GetSchemaResponse>> getSchemas(String microserviceId) {
     Holder<GetSchemasResponse> holder = new Holder<>();
     IpPort ipPort = ipPortManager.getAvailableAddress();
+    Holder<List<GetSchemaResponse>> resultHolder = new Holder<>();
 
     CountDownLatch countDownLatch = new CountDownLatch(1);
     // default not return schema content, just return summary!
@@ -372,11 +378,15 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
           microserviceId,
           e);
     }
+    resultHolder.setStatusCode(holder.getStatusCode()).setThrowable(holder.getThrowable());
     if (holder.value != null) {
-      return holder.value.getSchema() != null ? holder.value.getSchema() : holder.value.getSchemas();
+      return resultHolder.setValue(
+          holder.value.getSchema() != null ?
+              holder.value.getSchema() :
+              holder.value.getSchemas());
     }
 
-    return null;
+    return resultHolder;
   }
 
   @Override

@@ -23,6 +23,8 @@ import java.util.List;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
+import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
+import org.apache.servicecomb.serviceregistry.client.http.Holder;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.hamcrest.Matchers;
@@ -181,4 +183,12 @@ public class LocalServiceRegistryClientImplTest {
     ServiceCenterInfo serviceCenterInfo = registryClient.getServiceCenterInfo();
     Assert.assertEquals("1.0.0", serviceCenterInfo.getVersion());
   }
+
+  @Test
+  public void testGetSchemas() {
+    Holder<List<GetSchemaResponse>> schemasHolder = registryClient.getSchemas("001");
+    Assert.assertEquals(200, schemasHolder.getStatusCode());
+    Assert.assertTrue(schemasHolder.getValue().isEmpty());
+  }
 }
+
