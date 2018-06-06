@@ -84,8 +84,8 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
 
   /**
    * Behavior of this compare:
-   * 1. comparePlaceholderString("abc","bbc") < 0
-   * 2. comparePlaceholderString("abc","ab") < 0
+   * 1. comparePlaceholderString("abc","bbc") &lt; 0
+   * 2. comparePlaceholderString("abc","ab") &lt; 0
    * 3. comparePlaceholderString("abc","abc") = 0
    */
   public static int comparePlaceholderString(String s1, String s2) {
@@ -105,7 +105,7 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
 
   /**
    * Sort all of the {@link AccessLogItemMeta}, the meta that is in front of the others has higher priority.
-   * <p/>
+   * 
    * Sort rule(priority decreased):
    * <ol>
    *   <li>compare the {@link AccessLogItemMeta#order}</li>
@@ -113,7 +113,7 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
    *   the other one's suffix, this one(who's suffix is longer) has higher priority</li>
    *   <li>compare the {@link AccessLogItemMeta#prefix}, compare rule is the same as suffix.</li>
    * </ol>
-   * <p/>
+   *
    * e.g. given a list of {@link AccessLogItemMeta} like below:
    * <ol>
    * <li>(%ac{,}bcd)</li>
