@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import javax.ws.rs.core.Response.Status;
-import javax.xml.ws.Holder;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
@@ -75,7 +74,7 @@ public class TestServiceRegistryClientImpl {
 
     new MockUp<CountDownLatch>() {
       @Mock
-      public void await() throws InterruptedException {
+      public void await() {
       }
     };
   }
@@ -310,12 +309,15 @@ public class TestServiceRegistryClientImpl {
             "{\"schema\":[{\"schemaId\":\"metricsEndpoint\",\"summary\":\"c1188d709631a9038874f9efc6eb894f\"},{\"schemaId\":\"comment\",\"summary\":\"bfa81d625cfbd3a57f38745323e16824\"},"
                 + "{\"schemaId\":\"healthEndpoint\",\"summary\":\"96a0aaaaa454cfa0c716e70c0017fe27\"}]}",
             GetSchemasResponse.class);
+        holder.statusCode = 200;
         holder.value = schemasResp;
       }
     };
-    List<GetSchemaResponse> abc = oClient.getSchemas(microserviceId);
-    Assert.assertEquals(3, abc.size());
-    Assert.assertEquals("bfa81d625cfbd3a57f38745323e16824", abc.get(1).getSummary());
+    Holder<List<GetSchemaResponse>> schemasHolder = oClient.getSchemas(microserviceId);
+    List<GetSchemaResponse> schemaResponses = schemasHolder.getValue();
+    Assert.assertEquals(200, schemasHolder.getStatusCode());
+    Assert.assertEquals(3, schemaResponses.size());
+    Assert.assertEquals("bfa81d625cfbd3a57f38745323e16824", schemaResponses.get(1).getSummary());
   }
 
   @Test
@@ -330,12 +332,32 @@ public class TestServiceRegistryClientImpl {
             "{\"schemas\":[{\"schemaId\":\"metricsEndpoint\",\"summary\":\"c1188d709631a9038874f9efc6eb894f\"},{\"schemaId\":\"comment\",\"summary\":\"bfa81d625cfbd3a57f38745323e16824\"},"
                 + "{\"schemaId\":\"healthEndpoint\",\"summary\":\"96a0aaaaa454cfa0c716e70c0017fe27\"}]}",
             GetSchemasResponse.class);
+        holder.statusCode = 200;
         holder.value = schemasResp;
       }
     };
-    List<GetSchemaResponse> abc = oClient.getSchemas(microserviceId);
-    Assert.assertEquals(3, abc.size());
-    Assert.assertEquals("bfa81d625cfbd3a57f38745323e16824", abc.get(1).getSummary());
+    Holder<List<GetSchemaResponse>> schemasHolder = oClient.getSchemas(microserviceId);
+    List<GetSchemaResponse> schemas = schemasHolder.getValue();
+    Assert.assertEquals(200, schemasHolder.getStatusCode());
+    Assert.assertEquals(3, schemas.size());
+    Assert.assertEquals("bfa81d625cfbd3a57f38745323e16824", schemas.get(1).getSummary());
+  }
+
+  @Test
+  public void getSchemasFailed() {
+    String microserviceId = "msId";
+
+    new MockUp<RestUtils>() {
+      @Mock
+      void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+        Holder<GetSchemasResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
+        holder.setStatusCode(Status.NOT_FOUND.getStatusCode());
+      }
+    };
+    Holder<List<GetSchemaResponse>> schemasHolder = oClient.getSchemas(microserviceId);
+    List<GetSchemaResponse> schemaResponses = schemasHolder.getValue();
+    Assert.assertEquals(404, schemasHolder.getStatusCode());
+    Assert.assertNull(schemaResponses);
   }
 
   @Test

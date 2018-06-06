@@ -40,6 +40,8 @@ import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Charsets;
+import com.google.common.hash.Hashing;
 import com.netflix.config.DynamicPropertyFactory;
 
 public final class RegistryUtils {
@@ -220,5 +222,9 @@ public final class RegistryUtils {
   public static MicroserviceInstances findServiceInstances(String appId, String serviceName,
       String versionRule, String revision) {
     return serviceRegistry.findServiceInstances(appId, serviceName, versionRule, revision);
+  }
+
+  public static String calcSchemaSummary(String schemaContent) {
+    return Hashing.sha256().newHasher().putString(schemaContent, Charsets.UTF_8).hash().toString();
   }
 }

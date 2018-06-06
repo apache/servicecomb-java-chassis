@@ -27,6 +27,7 @@ import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
 import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
+import org.apache.servicecomb.serviceregistry.client.http.Holder;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 
 public interface ServiceRegistryClient {
@@ -82,7 +83,7 @@ public interface ServiceRegistryClient {
    *
    * 批量获取schemas内容
    */
-  List<GetSchemaResponse> getSchemas(String microserviceId);
+  Holder<List<GetSchemaResponse>> getSchemas(String microserviceId);
 
   /**
    *
