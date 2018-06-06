@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * Hold a group of {@link VertxRestAccessLogItemMeta} so that user can define
  * only one VertxRestAccessLogItemMeta in spi loading file and load a group of meta.
- * <p/>
+ * 
  * Once the access log loading mechanism finds that a meta is CompositeVertxRestAccessLogItemMeta,
  * the meta hold by it will be used in access log while this meta itself will be ignored.
  */
