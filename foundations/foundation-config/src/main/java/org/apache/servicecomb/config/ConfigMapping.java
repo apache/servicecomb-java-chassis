@@ -18,6 +18,7 @@
 package org.apache.servicecomb.config;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -49,7 +50,9 @@ public final class ConfigMapping {
         urlList.add(urls.nextElement());
       }
       for (URL url : urlList) {
-        configMap.putAll(YAMLUtil.yaml2Properties(url.openStream()));
+        try (InputStream in = url.openStream()) {
+          configMap.putAll(YAMLUtil.yaml2Properties(in));
+        }
       }
     } catch (IOException e) {
       LOGGER.error("get config mapping file error!", e);

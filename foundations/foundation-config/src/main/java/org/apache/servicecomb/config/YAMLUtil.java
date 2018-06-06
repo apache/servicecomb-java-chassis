@@ -30,6 +30,15 @@ public final class YAMLUtil {
   private YAMLUtil() {
   }
 
+  /**
+   * load a input {@link InputStream} to be a map {@link Map}, you have to close the inputStream by yourself, such as:<br>
+   * <p>try (InputStream in = url.openStream()) {<br>
+   *   &nbsp;&nbsp;&nbsp;&nbsp;    configMap.putAll(YAMLUtil.yaml2Properties(in));<br>
+   *     }<br>
+   * </p>
+   * @param input the stream to be loaded
+   * @return a config map
+   */
   @SuppressWarnings("unchecked")
   public static Map<String, Object> yaml2Properties(InputStream input) {
     Map<String, Object> configurations = new LinkedHashMap<>();
