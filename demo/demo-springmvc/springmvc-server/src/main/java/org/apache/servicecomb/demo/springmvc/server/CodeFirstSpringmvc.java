@@ -115,10 +115,10 @@ public class CodeFirstSpringmvc {
   @RequestMapping(path = "/responseEntity", method = RequestMethod.POST)
   public ResponseEntity<Date> responseEntity(InvocationContext c1, @RequestAttribute("date") Date date) {
     HttpHeaders headers = new HttpHeaders();
-    headers.add("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE).toString());
+    headers.add("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE));
 
     InvocationContext c2 = ContextUtils.getInvocationContext();
-    headers.add("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE).toString());
+    headers.add("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE));
 
     return new ResponseEntity<>(date, headers, HttpStatus.ACCEPTED);
   }
@@ -127,13 +127,7 @@ public class CodeFirstSpringmvc {
       @ResponseHeader(name = "h2", response = String.class)})
   @RequestMapping(path = "/responseEntity", method = RequestMethod.PATCH)
   public ResponseEntity<Date> responseEntityPATCH(InvocationContext c1, @RequestAttribute("date") Date date) {
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE).toString());
-
-    InvocationContext c2 = ContextUtils.getInvocationContext();
-    headers.add("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE).toString());
-
-    return new ResponseEntity<>(date, headers, HttpStatus.ACCEPTED);
+    return responseEntity(c1, date);
   }
 
   @ApiResponse(code = 200, response = User.class, message = "")

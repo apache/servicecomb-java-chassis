@@ -15,7 +15,12 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
+cse-config-order: 100
+
 servicecomb:
   rest:
     servlet:
       urlPattern: /rest/*
+    address: 0.0.0.0:8080?sslEnabled=false
+  highway:
+    address: 0.0.0.0:7070?sslEnabled=false

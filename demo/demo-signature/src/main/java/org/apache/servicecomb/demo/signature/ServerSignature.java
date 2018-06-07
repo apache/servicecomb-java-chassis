@@ -50,8 +50,9 @@ public class ServerSignature implements HttpServerFilter {
     String clientSignature = requestEx.getHeader("signature");
     LOGGER.info("check request signature, client: {}, server: {}.", clientSignature, signature);
     if (!signature.equals(clientSignature)) {
-      LOGGER.error("check request signature failed");
-      return Response.create(Status.UNAUTHORIZED, "check request signature failed");
+      LOGGER.error("check request signature failed: {}", invocation.getInvocationQualifiedName());
+      return Response
+          .create(Status.UNAUTHORIZED, "check request signature failed: " + invocation.getInvocationQualifiedName());
     }
 
     return null;
