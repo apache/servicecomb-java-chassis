@@ -35,11 +35,11 @@ public class TestCustomCommandGroupKey {
     Mockito.when(invocation.getInvocationType()).thenReturn(InvocationType.CONSUMER);
     Mockito.when(invocation.getSchemaId()).thenReturn("schemaId");
     Mockito.when(invocation.getOperationName()).thenReturn("operationName");
-    CustomCommandGroupKey customCommandGroupKey =
-        (CustomCommandGroupKey) CustomCommandGroupKey.asKey("type", invocation);
-    Assert.assertEquals("CONSUMER", customCommandGroupKey.getInvocationType());
-    Assert.assertEquals("microserviceName", customCommandGroupKey.getMicroserviceName());
-    Assert.assertEquals("schemaId", customCommandGroupKey.getSchema());
-    Assert.assertEquals("operationName", customCommandGroupKey.getOperation());
+    CustomizeCommandGroupKey customizeCommandGroupKey =
+        (CustomizeCommandGroupKey) CustomizeCommandGroupKey.asKey("type", invocation);
+    Assert.assertEquals("CONSUMER", customizeCommandGroupKey.getInvocationType());
+    Assert.assertEquals("microserviceName", customizeCommandGroupKey.getMicroserviceName());
+    Assert.assertEquals("schemaId", customizeCommandGroupKey.getSchema());
+    Assert.assertEquals("operationName", customizeCommandGroupKey.getOperation());
   }
 }
