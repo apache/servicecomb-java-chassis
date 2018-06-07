@@ -17,25 +17,50 @@
 
 package org.apache.servicecomb.transport.rest.servlet;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
+import javax.servlet.ServletRegistration.Dynamic;
+import javax.servlet.http.HttpServlet;
 
+import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestServletUtils {
+  @Before
+  public void setUp() {
+    ArchaiusUtils.resetConfig();
+  }
+
+  @After
+  public void tearDown() {
+    ArchaiusUtils.resetConfig();
+  }
+
   @Test
   public void testCheckUrlPatternNormal() {
     ServletUtils.checkUrlPattern("/*");
@@ -178,5 +203,97 @@ public class TestServletUtils {
 
     Assert.assertThat(System.getProperty(Const.URL_PREFIX), Matchers.is("/root/rest"));
     System.clearProperty(Const.URL_PREFIX);
+  }
+
+  @Test
+  public void createUploadDir_relative(@Mocked ServletContext servletContext) throws IOException {
+    File tempDir = Files.createTempDirectory("temp").toFile();
+    new Expectations() {
+      {
+        servletContext.getAttribute(ServletContext.TEMPDIR);
+        result = tempDir;
+      }
+    };
+
+    File expectDir = new File(tempDir, "upload");
+    Assert.assertFalse(expectDir.exists());
+
+    File dir = ServletUtils.createUploadDir(servletContext, "upload");
+    Assert.assertTrue(expectDir.exists());
+    Assert.assertEquals(expectDir.getAbsolutePath(), dir.getAbsolutePath());
+
+    dir.delete();
+    Assert.assertFalse(expectDir.exists());
+
+    tempDir.delete();
+    Assert.assertFalse(tempDir.exists());
+  }
+
+  @Test
+  public void createUploadDir_absolute(@Mocked ServletContext servletContext) throws IOException {
+    File tempDir = Files.createTempDirectory("temp").toFile();
+
+    File expectDir = new File(tempDir, "upload");
+    Assert.assertFalse(expectDir.exists());
+
+    File dir = ServletUtils.createUploadDir(servletContext, expectDir.getAbsolutePath());
+    Assert.assertTrue(expectDir.exists());
+    Assert.assertEquals(expectDir.getAbsolutePath(), dir.getAbsolutePath());
+
+    dir.delete();
+    Assert.assertFalse(expectDir.exists());
+
+    tempDir.delete();
+    Assert.assertFalse(tempDir.exists());
+  }
+
+  @Test
+  public void setServletParameters_notSupportUpload() {
+    // not support upload will not set parameters to servlet, so servletContext is null will not throw exception
+    ServletUtils.setServletParameters(null);
+  }
+
+  @Test
+  public void setServletParameters_supportUpload(@Mocked ServletContext servletContext, @Mocked Dynamic d1,
+      @Mocked ServletRegistration d2) throws IOException {
+    Map<String, ServletRegistration> servletRegistrations = new HashMap<>();
+    servletRegistrations.put("d1", d1);
+    servletRegistrations.put("d2", d2);
+    new Expectations() {
+      {
+        servletContext.getServletRegistrations();
+        result = servletRegistrations;
+        d1.getClassName();
+        result = RestServlet.class.getName();
+        d2.getClassName();
+        result = HttpServlet.class.getName();
+      }
+    };
+
+    List<MultipartConfigElement> multipartConfigs = new ArrayList<>();
+    new MockUp<Dynamic>(d1) {
+      @Mock
+      void setMultipartConfig(MultipartConfigElement multipartConfig) {
+        multipartConfigs.add(multipartConfig);
+      }
+    };
+
+    File tempDir = Files.createTempDirectory("temp").toFile();
+    File uploadDir = new File(tempDir, "upload");
+    ArchaiusUtils.setProperty(RestConst.UPLOAD_DIR, uploadDir.getAbsolutePath());
+
+    ServletUtils.setServletParameters(servletContext);
+
+    Assert.assertEquals(1, multipartConfigs.size());
+
+    MultipartConfigElement multipartConfigElement = multipartConfigs.get(0);
+    Assert.assertEquals(uploadDir.getAbsolutePath(), multipartConfigElement.getLocation());
+    Assert.assertEquals(-1, multipartConfigElement.getMaxFileSize());
+    Assert.assertEquals(-1, multipartConfigElement.getMaxRequestSize());
+    Assert.assertEquals(0, multipartConfigElement.getFileSizeThreshold());
+
+    uploadDir.delete();
+    tempDir.delete();
+    Assert.assertFalse(tempDir.exists());
   }
 }
