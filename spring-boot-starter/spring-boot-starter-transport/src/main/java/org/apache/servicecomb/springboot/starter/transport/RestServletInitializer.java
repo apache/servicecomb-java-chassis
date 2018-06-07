@@ -24,7 +24,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
 import org.apache.commons.configuration.Configuration;
-import org.apache.servicecomb.transport.rest.servlet.RestServletInjector;
 import org.apache.servicecomb.transport.rest.servlet.ServletConfig;
 import org.apache.servicecomb.transport.rest.servlet.ServletUtils;
 import org.slf4j.Logger;
@@ -60,8 +59,8 @@ public class RestServletInitializer extends AbstractConfigurableEmbeddedServletC
         Configuration configuration = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
         configuration.setProperty(ServletConfig.KEY_SERVLET_URL_PATTERN, ServletConfig.DEFAULT_URL_PATTERN);
       }
-      RestServletInjector.defaultInject(servletContext);
-      ServletUtils.saveUrlPrefix(servletContext);
+
+      ServletUtils.init(servletContext);
     } catch (IOException e) {
       throw new ServletException(e);
     }

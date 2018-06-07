@@ -17,14 +17,18 @@
 
 package org.apache.servicecomb.transport.rest.servlet;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
+import javax.servlet.ServletRegistration.Dynamic;
 
+import org.apache.servicecomb.common.rest.UploadConfig;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
@@ -75,9 +79,7 @@ public class ServletUtils {
 
   static String[] filterUrlPatterns(Collection<String> urlPatterns) {
     return urlPatterns.stream()
-        .filter(pattern -> {
-          return !pattern.trim().isEmpty();
-        })
+        .filter(pattern -> !pattern.trim().isEmpty())
         .filter(pattern -> {
           checkUrlPattern(pattern.trim());
           return true;
@@ -86,13 +88,7 @@ public class ServletUtils {
   }
 
   static String[] collectUrlPatterns(ServletContext servletContext, Class<?> servletCls) {
-    List<ServletRegistration> servlets = servletContext.getServletRegistrations()
-        .values()
-        .stream()
-        .filter(predicate -> {
-          return predicate.getClassName().equals(servletCls.getName());
-        })
-        .collect(Collectors.toList());
+    List<ServletRegistration> servlets = findServletRegistrations(servletContext, servletCls);
     if (servlets.isEmpty()) {
       return new String[] {};
     }
@@ -108,13 +104,22 @@ public class ServletUtils {
     return filterUrlPatterns(mappings);
   }
 
+  static List<ServletRegistration> findServletRegistrations(ServletContext servletContext,
+      Class<?> servletCls) {
+    return servletContext.getServletRegistrations()
+        .values()
+        .stream()
+        .filter(predicate -> predicate.getClassName().equals(servletCls.getName()))
+        .collect(Collectors.toList());
+  }
+
   static String collectUrlPrefix(ServletContext servletContext, Class<?> servletCls) {
     String[] urlPatterns = collectUrlPatterns(servletContext, servletCls);
     if (urlPatterns.length == 0) {
       return null;
     }
 
-    // even have multiple urlPattern, we only choose a to set as urlPrefix
+    // even have multiple urlPattern, we only choose one to set as urlPrefix
     // only make sure sdk can invoke
     String urlPattern = urlPatterns[0];
     return servletContext.getContextPath() + urlPattern.substring(0, urlPattern.length() - 2);
@@ -129,5 +134,46 @@ public class ServletUtils {
 
     System.setProperty(Const.URL_PREFIX, urlPrefix);
     LOGGER.info("UrlPrefix of this instance is \"{}\".", urlPrefix);
+  }
+
+  static File createUploadDir(ServletContext servletContext, String location) {
+    // If relative, it is relative to TEMPDIR
+    File dir = new File(location);
+    if (!dir.isAbsolute()) {
+      dir = new File((File) servletContext.getAttribute(ServletContext.TEMPDIR), location).getAbsoluteFile();
+    }
+
+    if (!dir.exists()) {
+      dir.mkdirs();
+    }
+
+    return dir;
+  }
+
+  static void setServletParameters(ServletContext servletContext) {
+    UploadConfig uploadConfig = new UploadConfig();
+    MultipartConfigElement multipartConfig = uploadConfig.toMultipartConfigElement();
+    if (multipartConfig == null) {
+      return;
+    }
+
+    File dir = createUploadDir(servletContext, multipartConfig.getLocation());
+    LOGGER.info("set uploads directory to {}.", dir.getAbsolutePath());
+
+    List<ServletRegistration> servlets = findServletRegistrations(servletContext, RestServlet.class);
+    for (ServletRegistration servletRegistration : servlets) {
+      if (!Dynamic.class.isInstance(servletRegistration)) {
+        continue;
+      }
+
+      Dynamic dynamic = (Dynamic) servletRegistration;
+      dynamic.setMultipartConfig(multipartConfig);
+    }
+  }
+
+  public static void init(ServletContext servletContext) {
+    RestServletInjector.defaultInject(servletContext);
+    ServletUtils.saveUrlPrefix(servletContext);
+    setServletParameters(servletContext);
   }
 }
