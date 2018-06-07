@@ -63,6 +63,6 @@ public class ProduceTextPlainProcessor implements ProduceProcessor {
   @Override
   public int getOrder() {
     // TODO Auto-generated method stub
-    return 11;
+    return 0;
   }
 }

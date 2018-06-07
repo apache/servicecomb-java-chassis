@@ -46,6 +46,6 @@ public class ProduceJsonProcessor implements ProduceProcessor {
   @Override
   public int getOrder() {
     // TODO Auto-generated method stub
-    return 10;
+    return 0;
   }
 }
