@@ -35,7 +35,7 @@ public class RequestClientTimeOut {
   @Path("/add")
   @POST
   public int add(@FormParam("a") int a, @FormParam("b") int b) throws InterruptedException {
-    Thread.sleep(1000);
+    Thread.sleep(3000);
     return a + b;
   }
 
