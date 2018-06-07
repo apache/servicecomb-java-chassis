@@ -59,7 +59,9 @@ public class VertxRestTransport extends AbstractTransport {
     }
 
     if (!NetUtils.canTcpListen(ep.getSocketAddress().getAddress(), ep.getPort())) {
-      log.warn("can not listen {}, port may have been occupied, this may cause client report error when being accessed. skip {}.", ep.getSocketAddress(), this.getClass().getName());
+      log.warn(
+          "WARNING: Can not start VertxRestTransport, the port:{} may have been occupied. You can ignore this message if you are using a web container like tomcat.",
+          ep.getPort());
       return false;
     }
 
