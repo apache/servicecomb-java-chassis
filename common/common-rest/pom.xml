@@ -51,7 +51,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>foundation-metrics</artifactId>
+      <artifactId>foundation-test-scaffolding</artifactId>
     </dependency>
   </dependencies>
 </project>
