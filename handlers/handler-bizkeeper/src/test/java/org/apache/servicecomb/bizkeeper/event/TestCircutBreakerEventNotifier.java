@@ -43,7 +43,6 @@ public class TestCircutBreakerEventNotifier {
 
   Object receiveEvent = null;
 
-  @SuppressWarnings("static-access")
   @Before
   public void setUp() throws Exception {
     taskList = new ArrayList<>();
@@ -55,13 +54,12 @@ public class TestCircutBreakerEventNotifier {
         taskList.add(circutBreakerEvent);
       }
     };
-    circutBreakerEventNotifier.eventManager.register(receiveEvent);
+    circutBreakerEventNotifier.eventBus.register(receiveEvent);
   }
 
-  @SuppressWarnings("static-access")
   @After
   public void tearDown() throws Exception {
-    circutBreakerEventNotifier.eventManager.unregister(receiveEvent);
+    circutBreakerEventNotifier.eventBus.unregister(receiveEvent);
   }
 
   @Test

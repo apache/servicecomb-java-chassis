@@ -29,6 +29,7 @@ import org.apache.servicecomb.loadbalance.event.IsolationServerEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.eventbus.EventBus;
 import com.netflix.loadbalancer.LoadBalancerStats;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ServerStats;
@@ -51,7 +52,7 @@ public final class IsolationServerListFilter implements ServerListFilterExt {
 
   private LoadBalancerStats stats;
 
-  public EventManager eventManager = new EventManager();
+  public EventBus eventBus = EventManager.getEventBus();
 
   public void setLoadBalancerStats(LoadBalancerStats stats) {
     this.stats = stats;
@@ -91,7 +92,6 @@ public final class IsolationServerListFilter implements ServerListFilterExt {
     continuousFailureThreshold = Configuration.INSTANCE.getContinuousFailureThreshold(microserviceName);
   }
 
-  @SuppressWarnings("static-access")
   private boolean allowVisit(Server server) {
     updateSettings();
     ServerStats serverStats = stats.getSingleServerStat(server);
@@ -121,7 +121,7 @@ public final class IsolationServerListFilter implements ServerListFilterExt {
       LOGGER.info("The Service {}'s instance {} has been break, will give a single test opportunity.",
           microserviceName,
           server);
-      eventManager.post(new IsolationServerEvent(microserviceName, totalRequest, currentCountinuousFailureCount,
+      eventBus.post(new IsolationServerEvent(microserviceName, totalRequest, currentCountinuousFailureCount,
           currentErrorThresholdPercentage,
           continuousFailureThreshold, errorThresholdPercentage, enableRequestThreshold,
           singleTestTime, Type.CLOSE));
@@ -129,7 +129,7 @@ public final class IsolationServerListFilter implements ServerListFilterExt {
     }
 
     LOGGER.warn("The Service {}'s instance {} has been break!", microserviceName, server);
-    eventManager.post(new IsolationServerEvent(microserviceName, totalRequest, currentCountinuousFailureCount,
+    eventBus.post(new IsolationServerEvent(microserviceName, totalRequest, currentCountinuousFailureCount,
         currentErrorThresholdPercentage,
         continuousFailureThreshold, errorThresholdPercentage, enableRequestThreshold,
         singleTestTime, Type.OPEN));

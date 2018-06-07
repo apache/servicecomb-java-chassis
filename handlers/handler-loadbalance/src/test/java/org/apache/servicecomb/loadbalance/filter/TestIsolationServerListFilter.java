@@ -59,7 +59,6 @@ public class TestIsolationServerListFilter {
     ArchaiusUtils.resetConfig();
   }
 
-  @SuppressWarnings("static-access")
   @Before
   public void setUp() throws Exception {
     isolationServerListFilter = new IsolationServerListFilter();
@@ -76,13 +75,12 @@ public class TestIsolationServerListFilter {
         taskList.add(isolationServerEvent);
       }
     };
-    isolationServerListFilter.eventManager.register(receiveEvent);
+    isolationServerListFilter.eventBus.register(receiveEvent);
   }
 
-  @SuppressWarnings("static-access")
   @After
   public void tearDown() throws Exception {
-    isolationServerListFilter.eventManager.unregister(receiveEvent);
+    isolationServerListFilter.eventBus.unregister(receiveEvent);
     isolationServerListFilter = null;
     loadBalancerStats = null;
 

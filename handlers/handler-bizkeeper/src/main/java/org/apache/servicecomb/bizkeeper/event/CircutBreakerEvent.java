@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.bizkeeper.event;
 
+
+import org.apache.servicecomb.bizkeeper.CustomCommandGroupKey;
 import org.apache.servicecomb.foundation.common.event.AlarmEvent;
 
 import com.netflix.hystrix.HystrixCommandKey;
@@ -50,12 +52,12 @@ public class CircutBreakerEvent extends AlarmEvent {
     super(type);
     HystrixCommandMetrics hystrixCommandMetrics =
         HystrixCommandMetrics.getInstance(commandKey);
-    String[] arrayKey = commandKey.name().split("\\.");
-    this.role = arrayKey[0];
-    this.microservice = arrayKey[1];
-    this.schema = arrayKey[2];
-    this.operation = arrayKey[3];
     if (hystrixCommandMetrics != null) {
+      CustomCommandGroupKey customCommandGroupKey = (CustomCommandGroupKey) hystrixCommandMetrics.getCommandGroup();
+      this.microservice = customCommandGroupKey.getMicroserviceName();
+      this.role = customCommandGroupKey.getInvocationType();
+      this.schema = customCommandGroupKey.getSchema();
+      this.operation = customCommandGroupKey.getOperation();
       this.currentTotalRequest = hystrixCommandMetrics.getHealthCounts().getTotalRequests();
       this.currentErrorPercentage = hystrixCommandMetrics.getHealthCounts().getErrorCount();
       this.currentErrorCount = hystrixCommandMetrics.getHealthCounts().getErrorPercentage();

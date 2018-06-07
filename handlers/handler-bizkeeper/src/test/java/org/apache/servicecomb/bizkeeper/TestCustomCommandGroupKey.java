@@ -24,27 +24,22 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.netflix.hystrix.strategy.HystrixPlugins;
-
-/**
- *
- *
- */
-public class TestConsumerBizkeeperHandler {
-
+public class TestCustomCommandGroupKey {
   @Test
-  public void testCreateBizkeeperCommand() {
-    HystrixPlugins.reset();
-    ConsumerBizkeeperHandler consumerBizkeeperHandler = new ConsumerBizkeeperHandler();
+  public void testToHystrixCommandGroupKey() {
 
     Invocation invocation = Mockito.mock(Invocation.class);
     Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
-    Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
+    Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test2");
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("microserviceName");
     Mockito.when(invocation.getInvocationType()).thenReturn(InvocationType.CONSUMER);
-
-    CommandKey.toHystrixCommandGroupKey("groupname", invocation);
-    CommandKey.toHystrixCommandKey("groupname", invocation);
-    BizkeeperCommand command = consumerBizkeeperHandler.createBizkeeperCommand(invocation);
-    Assert.assertNotNull(command);
+    Mockito.when(invocation.getSchemaId()).thenReturn("schemaId");
+    Mockito.when(invocation.getOperationName()).thenReturn("operationName");
+    CustomCommandGroupKey customCommandGroupKey =
+        (CustomCommandGroupKey) CustomCommandGroupKey.asKey("type", invocation);
+    Assert.assertEquals("CONSUMER", customCommandGroupKey.getInvocationType());
+    Assert.assertEquals("microserviceName", customCommandGroupKey.getMicroserviceName());
+    Assert.assertEquals("schemaId", customCommandGroupKey.getSchema());
+    Assert.assertEquals("operationName", customCommandGroupKey.getOperation());
   }
 }
