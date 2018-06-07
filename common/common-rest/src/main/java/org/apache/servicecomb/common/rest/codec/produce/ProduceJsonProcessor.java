@@ -42,4 +42,10 @@ public class ProduceJsonProcessor implements ProduceProcessor {
   public Object doDecodeResponse(InputStream input, JavaType type) throws Exception {
     return RestObjectMapper.INSTANCE.readValue(input, type);
   }
+
+  @Override
+  public int getOrder() {
+    // TODO Auto-generated method stub
+    return 10;
+  }
 }

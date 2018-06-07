@@ -59,4 +59,10 @@ public class ProduceTextPlainProcessor implements ProduceProcessor {
     //                    .newInstance((String)result);
     //        }
   }
+
+  @Override
+  public int getOrder() {
+    // TODO Auto-generated method stub
+    return 11;
+  }
 }

@@ -17,18 +17,14 @@
 
 package org.apache.servicecomb.common.rest.codec.produce;
 
-import java.util.ServiceLoader;
-
+import java.util.List;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.foundation.common.RegisterManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 
 public final class ProduceProcessorManager extends RegisterManager<String, ProduceProcessor> {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ProduceProcessorManager.class);
-
-  private static final ServiceLoader<ProduceProcessor> produceProcessor = ServiceLoader.load(ProduceProcessor.class);
+  private static final List<ProduceProcessor> produceProcessor = SPIServiceUtils.getAllService(ProduceProcessor.class);
 
   private static final String NAME = "produce processor mgr";
 
@@ -36,24 +32,14 @@ public final class ProduceProcessorManager extends RegisterManager<String, Produ
 
   public static final ProduceProcessorManager INSTANCE = new ProduceProcessorManager();
 
-  public static final ProduceProcessor JSON_PROCESSOR = chooseProduceProcessor(MediaType.APPLICATION_JSON);
+  public static final ProduceProcessor JSON_PROCESSOR = SPIServiceUtils.getTargetService(ProduceProcessor.class, ProduceJsonProcessor.class);
 
-  public static final ProduceProcessor PLAIN_PROCESSOR = chooseProduceProcessor(MediaType.TEXT_PLAIN);
+  public static final ProduceProcessor PLAIN_PROCESSOR = SPIServiceUtils.getTargetService(ProduceProcessor.class, ProduceTextPlainProcessor.class);
 
   public static final ProduceProcessor DEFAULT_PROCESSOR = JSON_PROCESSOR;
 
   private ProduceProcessorManager() {
     super(NAME);
     produceProcessor.forEach(processor -> register(processor.getName(), processor));
-  }
-
-  public static ProduceProcessor chooseProduceProcessor(String type) {
-    for (ProduceProcessor processor : produceProcessor) {
-      if (type.equals(processor.getName()))
-        return processor;
-    }
-    LOGGER.warn("Getting the current produceProcessor type {} failed, use default produceProcessor: application/json",
-        type);
-    return new ProduceJsonProcessor();
   }
 }

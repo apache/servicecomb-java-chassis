@@ -30,6 +30,8 @@ import io.vertx.core.buffer.Buffer;
 public interface ProduceProcessor {
   String getName();
 
+  int getOrder();
+
   default void encodeResponse(OutputStream output, Object result) throws Exception {
     if (result == null) {
       return;
