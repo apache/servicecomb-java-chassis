@@ -39,9 +39,8 @@ public abstract class AbstractEndpointDiscoveryFilter implements DiscoveryFilter
   @Override
   public DiscoveryTreeNode discovery(DiscoveryContext context, DiscoveryTreeNode parent) {
     String expectTransportName = findTransportName(context, parent);
-    return parent.children().computeIfAbsent(expectTransportName, etn -> {
-      return createDiscoveryTreeNode(expectTransportName, context, parent);
-    });
+    return parent.children()
+        .computeIfAbsent(expectTransportName, etn -> createDiscoveryTreeNode(expectTransportName, context, parent));
   }
 
   @SuppressWarnings("unchecked")
