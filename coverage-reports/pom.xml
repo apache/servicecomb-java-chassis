@@ -268,11 +268,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
-      <artifactId>springmvc-tests</artifactId>
-      <version>1.0.0-m2-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>springmvc-tests-general</artifactId>
       <version>1.0.0-m2-SNAPSHOT</version>
     </dependency>
