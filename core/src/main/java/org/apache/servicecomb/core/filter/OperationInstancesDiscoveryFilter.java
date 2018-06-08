@@ -113,9 +113,8 @@ public class OperationInstancesDiscoveryFilter extends AbstractDiscoveryFilter {
     Map<MicroserviceVersionMeta, Map<String, MicroserviceInstance>> versionMap = new IdentityHashMap<>();
     for (MicroserviceInstance instance : instances.values()) {
       MicroserviceVersionMeta versionMeta = MicroserviceVersions.getVersion(instance.getServiceId());
-      Map<String, MicroserviceInstance> versionInstances = versionMap.computeIfAbsent(versionMeta, vm -> {
-        return new HashMap<>();
-      });
+      Map<String, MicroserviceInstance> versionInstances = versionMap
+          .computeIfAbsent(versionMeta, vm -> new HashMap<>());
       versionInstances.put(instance.getInstanceId(), instance);
     }
     return versionMap;
