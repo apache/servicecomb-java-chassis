@@ -87,6 +87,10 @@ public class TcpClientConnection extends TcpConnection {
     return localSupportLogin;
   }
 
+  public TcpClientConfig getClientConfig() {
+    return clientConfig;
+  }
+
   public void setLocalSupportLogin(boolean localSupportLogin) {
     this.localSupportLogin = localSupportLogin;
   }

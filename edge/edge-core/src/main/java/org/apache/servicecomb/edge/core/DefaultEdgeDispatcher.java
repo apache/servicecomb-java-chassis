@@ -26,7 +26,7 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.CookieHandler;
 
 /**
- * Provide an easy mapping dispatcher. User can configure prefix to easily using edge service.
+ * Provide an easy mapping dispatcher that starts with a common prefix pattern.
  */
 public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
   private static final String KEY_ENABLED = "servicecomb.http.dispatcher.edge.default.enabled";
@@ -35,7 +35,7 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
 
   private static final String KEY_WITH_VERSION = "servicecomb.http.dispatcher.edge.default.withVersion";
 
-  private static final String KEY_PATH_INDEX = "servicecomb.http.dispatcher.edge.default.pathIndex";
+  private static final String KEY_PREFIX_SEGMENT_COUNT = "servicecomb.http.dispatcher.edge.default.prefixSegmentCount";
 
   private CompatiblePathVersionMapper versionMapper = new CompatiblePathVersionMapper();
 
@@ -43,7 +43,7 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
 
   private boolean withVersion;
 
-  private int pathIndex;
+  private int prefixSegmentCount;
 
   @Override
   public int getOrder() {
@@ -59,7 +59,7 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
   public void init(Router router) {
     prefix = DynamicPropertyFactory.getInstance().getStringProperty(KEY_PREFIX, "api").get();
     withVersion = DynamicPropertyFactory.getInstance().getBooleanProperty(KEY_WITH_VERSION, true).get();
-    pathIndex = DynamicPropertyFactory.getInstance().getIntProperty(KEY_PATH_INDEX, 2).get();
+    prefixSegmentCount = DynamicPropertyFactory.getInstance().getIntProperty(KEY_PREFIX_SEGMENT_COUNT, 1).get();
     String regex;
     if (withVersion) {
       regex = "/" + prefix + "/([^\\\\/]+)/([^\\\\/]+)/(.*)";
@@ -74,7 +74,7 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
   protected void onRequest(RoutingContext context) {
     Map<String, String> pathParams = context.pathParams();
     String microserviceName = pathParams.get("param0");
-    String path = findActualPath(context.request().path());
+    String path = Utils.findActualPath(context.request().path(), prefixSegmentCount);
 
     EdgeInvocation edgeInvocation = new EdgeInvocation();
     if (withVersion) {
@@ -83,20 +83,5 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
     }
     edgeInvocation.init(microserviceName, context, path, httpServerFilters);
     edgeInvocation.edgeInvoke();
-  }
-
-  protected String findActualPath(String path) {
-    int fromIndex = 0;
-    int counter = pathIndex;
-    char[] chars = path.toCharArray();
-    for (int i = 0; i < chars.length; i++) {
-      if (chars[i] == '/') {
-        if (--counter <= 0) {
-          fromIndex = i;
-          break;
-        }
-      }
-    }
-    return path.substring(fromIndex > 0 ? fromIndex : 0);
   }
 }

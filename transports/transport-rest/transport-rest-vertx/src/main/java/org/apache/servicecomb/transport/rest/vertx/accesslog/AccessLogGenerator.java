@@ -20,9 +20,8 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog;
 import java.util.List;
 
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItemFactory;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemLocation;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogPatternParser;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.impl.VertxRestAccessLogPatternParser;
 
 import io.vertx.ext.web.RoutingContext;
 
@@ -37,15 +36,12 @@ public class AccessLogGenerator {
    */
   private AccessLogItem<RoutingContext>[] accessLogItems;
 
-  private AccessLogItemFactory accessLogItemFactory = new AccessLogItemFactory();
+  private AccessLogPatternParser<RoutingContext> accessLogPatternParser = new VertxRestAccessLogPatternParser();
 
   @SuppressWarnings("unchecked")
-  public AccessLogGenerator(String rawPattern, AccessLogPatternParser accessLogPatternParser) {
-    List<AccessLogItemLocation> locationList = accessLogPatternParser.parsePattern(rawPattern);
-
-    List<AccessLogItem<RoutingContext>> itemList = accessLogItemFactory.createAccessLogItem(rawPattern, locationList);
-    accessLogItems = new AccessLogItem[itemList.size()];
-    accessLogItems = itemList.toArray(accessLogItems);
+  public AccessLogGenerator(String rawPattern) {
+    List<AccessLogItem<RoutingContext>> accessLogItemList = accessLogPatternParser.parsePattern(rawPattern);
+    accessLogItems = accessLogItemList.toArray(new AccessLogItem[0]);
   }
 
   public String generateLog(AccessLogParam<RoutingContext> accessLogParam) {
@@ -59,7 +55,6 @@ public class AccessLogGenerator {
 
     return log.toString();
   }
-
 
   private AccessLogItem<RoutingContext>[] getAccessLogItems() {
     return accessLogItems;

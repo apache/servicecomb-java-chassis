@@ -17,10 +17,12 @@
 
 package org.apache.servicecomb.core.executor;
 
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -30,7 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import com.netflix.config.DynamicPropertyFactory;
 
-public class FixedThreadExecutor implements Executor {
+public class FixedThreadExecutor implements Executor, Closeable {
   private static final Logger LOGGER = LoggerFactory.getLogger(FixedThreadExecutor.class);
 
   public static final String KEY_GROUP = "servicecomb.executor.default.group";
@@ -38,7 +40,7 @@ public class FixedThreadExecutor implements Executor {
   public static final String KEY_THREAD = "servicecomb.executor.default.thread-per-group";
 
   // to avoid multiple network thread conflicted when put tasks to executor queue
-  private List<Executor> executorList = new ArrayList<>();
+  private List<ExecutorService> executorList = new ArrayList<>();
 
   // for bind network thread to one executor
   // it's impossible that has too many network thread, so index will not too big that less than 0
@@ -58,7 +60,7 @@ public class FixedThreadExecutor implements Executor {
     }
   }
 
-  public List<Executor> getExecutorList() {
+  public List<ExecutorService> getExecutorList() {
     return executorList;
   }
 
@@ -73,5 +75,13 @@ public class FixedThreadExecutor implements Executor {
   private Executor chooseExecutor(long threadId) {
     int idx = index.getAndIncrement() % executorList.size();
     return executorList.get(idx);
+  }
+
+  @Override
+  public void close() {
+    for (ExecutorService executorService : executorList) {
+      executorService.shutdown();
+    }
+    executorList.clear();
   }
 }

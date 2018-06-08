@@ -19,6 +19,8 @@ package org.apache.servicecomb.swagger;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.ws.rs.core.Response.Status;
@@ -36,6 +38,8 @@ import io.swagger.models.Operation;
 import io.swagger.models.Path;
 import io.swagger.models.Response;
 import io.swagger.models.Swagger;
+import io.swagger.models.parameters.BodyParameter;
+import io.swagger.models.parameters.Parameter;
 import io.swagger.util.Yaml;
 
 public final class SwaggerUtils {
@@ -64,6 +68,27 @@ public final class SwaggerUtils {
       return internalParseSwagger(swaggerContent);
     } catch (Throwable e) {
       throw new ServiceCombException("Parse swagger from content failed, ", e);
+    }
+  }
+
+  /**
+   * Provide a method to validate swagger. This method is now implemented to check common errors, and the logic
+   * will be changed when necessary. For internal use only.
+   */
+  public static void validateSwagger(Swagger swagger) {
+    Map<String, Path> paths = swagger.getPaths();
+    for (Path path : paths.values()) {
+      Operation operation = path.getPost();
+      if (operation != null) {
+        List<Parameter> parameters = operation.getParameters();
+        for (Parameter parameter : parameters) {
+          if (BodyParameter.class.isInstance(parameter)) {
+            if (((BodyParameter) parameter).getSchema() == null) {
+              throw new ServiceCombException("swagger validator: body parameter schema is empty.");
+            }
+          }
+        }
+      }
     }
   }
 

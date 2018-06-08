@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 
 import javax.ws.rs.core.Response.Status;
 import javax.xml.ws.Holder;
@@ -470,5 +472,19 @@ public class TestLoadbalanceHandler {
     Assert.assertFalse(handler.isFailedResponse(Response.create(500, "", "")));
     Assert.assertTrue(handler.isFailedResponse(Response.create(490, "", "")));
     Assert.assertTrue(handler.isFailedResponse(Response.consumerFailResp(new NullPointerException())));
+  }
+
+  @Test
+  public void retryPoolDaemon() throws ExecutionException, InterruptedException {
+    ExecutorService RETRY_POOL = Deencapsulation.getField(handler, "RETRY_POOL");
+
+    Holder<Thread> nameHolder = new Holder<>();
+
+    RETRY_POOL.submit(() -> {
+      nameHolder.value = Thread.currentThread();
+    }).get();
+
+    Assert.assertThat(nameHolder.value.getName(), Matchers.startsWith("retry-pool-thread-"));
+    Assert.assertTrue(nameHolder.value.isDaemon());
   }
 }

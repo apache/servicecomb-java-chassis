@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.transport.rest.vertx.accesslog.element.creator;
+package org.apache.servicecomb.samples.uselog4j2;
 
-import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemLocation;
+import org.apache.servicecomb.provider.pojo.RpcSchema;
 
-/**
- * The actual creator of AccessLogItem.
- */
-public interface AccessLogItemCreator<T> {
-  AccessLogItem<T> create(String rawPattern, AccessLogItemLocation location);
+@RpcSchema(schemaId = "hello")
+public class HelloImpl implements Hello {
+
+  public String hello() {
+    return "Hello World!";
+  }
 }

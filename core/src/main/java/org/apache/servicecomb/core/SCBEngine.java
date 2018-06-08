@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
@@ -177,7 +178,7 @@ public class SCBEngine {
         doInit();
         status = SCBStatus.UP;
       } catch (Exception e) {
-        uninit();
+        destroy();
         status = SCBStatus.FAILED;
         throw new IllegalStateException("ServiceComb init failed.", e);
       }
@@ -217,23 +218,23 @@ public class SCBEngine {
 
     RegistryUtils.run();
 
-    Runtime.getRuntime().addShutdownHook(new Thread(this::uninit));
+    Runtime.getRuntime().addShutdownHook(new Thread(this::destroy));
   }
 
   /**
    * not allow throw any exception
    * even some step throw exception, must catch it and go on, otherwise shutdown process will be broken.
    */
-  public synchronized void uninit() {
+  public synchronized void destroy() {
     if (SCBStatus.UP.equals(status)) {
       LOGGER.info("ServiceComb is closing now...");
-      doUninit();
+      doDestroy();
       status = SCBStatus.DOWN;
       LOGGER.info("ServiceComb had closed");
     }
   }
 
-  private void doUninit() {
+  private void doDestroy() {
     //Step 1: notify all component stop invoke via BEFORE_CLOSE Event
     safeTriggerEvent(EventType.BEFORE_CLOSE);
 
@@ -256,7 +257,10 @@ public class SCBEngine {
     VertxUtils.blockCloseVertxByName("config-center");
     VertxUtils.blockCloseVertxByName("transport");
 
-    //Step 6: notify all component do clean works via AFTER_CLOSE Event
+    //Step 6: destroy config center source
+    ConfigUtil.destroyConfigCenterConfigurationSource();
+
+    //Step 7: notify all component do clean works via AFTER_CLOSE Event
     safeTriggerEvent(EventType.AFTER_CLOSE);
   }
 

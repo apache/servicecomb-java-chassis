@@ -35,7 +35,7 @@ import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
 
-public class TestServiceAndVersionDispatcher {
+public class TestDefaultEdgeDispatcher {
   @Before
   public void setUp() {
 
@@ -79,7 +79,7 @@ public class TestServiceAndVersionDispatcher {
     };
     dispatcher.init(router);
     Assert.assertEquals(dispatcher.enabled(), false);
-    Assert.assertEquals(dispatcher.findActualPath("/api/test"), "/test");
+    Assert.assertEquals(Utils.findActualPath("/api/test", 1), "/test");
     Assert.assertEquals(dispatcher.getOrder(), 20000);
 
     dispatcher.onRequest(context);

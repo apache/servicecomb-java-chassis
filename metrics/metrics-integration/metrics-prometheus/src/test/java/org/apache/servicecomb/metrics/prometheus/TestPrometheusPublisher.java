@@ -102,6 +102,6 @@ public class TestPrometheusPublisher {
           "count_name{tag1=\"tag1v\",tag2=\"tag2v\",} 1.0\n", IOUtils.toString(is));
     }
 
-    publisher.uninit();
+    publisher.destroy();
   }
 }

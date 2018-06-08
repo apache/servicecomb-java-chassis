@@ -322,4 +322,14 @@ public class TestInvocationToHttpServletRequest {
     InvocationToHttpServletRequest request = new InvocationToHttpServletRequest(invocation);
     Assert.assertEquals("", request.getContextPath());
   }
+
+  @Test
+  public void getContentType() {
+    Assert.assertNull(request.getContentType());
+  }
+
+  @Test
+  public void getCharacterEncoding() {
+    Assert.assertNull(request.getCharacterEncoding());
+  }
 }

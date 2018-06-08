@@ -25,4 +25,8 @@ public interface ConfigCenterConfigurationSource extends WatchedConfigurationSou
   boolean isValidSource(Configuration localConfiguration);
 
   void init(Configuration localConfiguration);
+
+  default void destroy() {
+
+  }
 }

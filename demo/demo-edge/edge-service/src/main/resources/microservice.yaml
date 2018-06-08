@@ -44,4 +44,17 @@ servicecomb:
           enabled: true
           prefix: rest
           withVersion: true
-          pathIndex: 2
+          prefixSegmentCount: 1
+        url:
+          enabled: true
+          mappings:
+            businessV1:
+              prefixSegmentCount: 1
+              path: "/url/business/v1/.*"
+              microserviceName: business
+              versionRule: 1.0.0-2.0.0
+            businessV2:
+              prefixSegmentCount: 1
+              path: "/url/business/v2/.*"
+              microserviceName: business
+              versionRule: 2.0.0-3.0.0

@@ -33,6 +33,6 @@ public class RawSpringMvcSimplifiedMappingAnnotationIntegrationTest extends Spri
 
   @AfterClass
   public static void shutdown() {
-    SCBEngine.getInstance().uninit();
+    SCBEngine.getInstance().destroy();
   }
 }

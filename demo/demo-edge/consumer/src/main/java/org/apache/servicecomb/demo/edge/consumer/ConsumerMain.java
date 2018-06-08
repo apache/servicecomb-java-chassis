@@ -29,6 +29,9 @@ public class ConsumerMain {
     new Consumer().run("api");
     System.out.println("Running rest dispater.");
     new Consumer().run("rest");
+    System.out.println("Running url dispater.");
+    new Consumer().run("url");
 
+    System.out.println("All test case finished.");
   }
 }

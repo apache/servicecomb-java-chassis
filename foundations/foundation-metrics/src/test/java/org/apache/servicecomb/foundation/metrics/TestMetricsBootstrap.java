@@ -102,7 +102,7 @@ public class TestMetricsBootstrap {
 
   @Test
   public void shutdown(@Mocked ScheduledExecutorService scheduledExecutorService) {
-    List<MetricsInitializer> uninitList = new ArrayList<>();
+    List<MetricsInitializer> destroyList = new ArrayList<>();
     MetricsInitializer initializer1 = new MetricsInitializer() {
       @Override
       public int getOrder() {
@@ -114,8 +114,8 @@ public class TestMetricsBootstrap {
       }
 
       @Override
-      public void uninit() {
-        uninitList.add(this);
+      public void destroy() {
+        destroyList.add(this);
       }
     };
 
@@ -130,8 +130,8 @@ public class TestMetricsBootstrap {
       }
 
       @Override
-      public void uninit() {
-        uninitList.add(this);
+      public void destroy() {
+        destroyList.add(this);
       }
     };
 
@@ -145,6 +145,14 @@ public class TestMetricsBootstrap {
 
     bootstrap.shutdown();
 
-    Assert.assertThat(uninitList, Matchers.contains(initializer2, initializer1));
+    Assert.assertThat(destroyList, Matchers.contains(initializer2, initializer1));
+  }
+
+  @Test
+  public void shutdown_notStart() {
+    Assert.assertNull(Deencapsulation.getField(bootstrap, "executorService"));
+
+    // should not throw exception
+    bootstrap.shutdown();
   }
 }

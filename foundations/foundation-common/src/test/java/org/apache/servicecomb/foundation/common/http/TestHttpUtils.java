@@ -18,6 +18,8 @@ package org.apache.servicecomb.foundation.common.http;
 
 import java.net.URISyntaxException;
 
+import javax.ws.rs.core.MediaType;
+
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -110,5 +112,54 @@ public class TestHttpUtils {
   @Test
   public void parseFileNameFromHeaderValue_ignorePath() {
     Assert.assertEquals("a.txt", HttpUtils.parseFileNameFromHeaderValue("xx;filename=../../a.txt"));
+  }
+
+  @Test
+  public void getCharsetFromContentType_noContentType() {
+    String character = HttpUtils.getCharsetFromContentType(null);
+
+    Assert.assertNull(character);
+  }
+
+  @Test
+  public void getCharsetFromContentType_noCharset() {
+    String character = HttpUtils.getCharsetFromContentType(MediaType.APPLICATION_JSON);
+
+    Assert.assertNull(character);
+  }
+
+  @Test
+  public void getCharsetFromContentType_noSemicolonEnd() {
+    String character = HttpUtils.getCharsetFromContentType(MediaType.APPLICATION_JSON + ";charset=utf-8");
+
+    Assert.assertEquals("utf-8", character);
+  }
+
+  @Test
+  public void getCharsetFromContentType_semicolonEnd() {
+    String character = HttpUtils.getCharsetFromContentType(MediaType.APPLICATION_JSON + ";charset=utf-8;");
+
+    Assert.assertEquals("utf-8", character);
+  }
+
+  @Test
+  public void getCharsetFromContentType_needTrim() {
+    String character = HttpUtils.getCharsetFromContentType(MediaType.APPLICATION_JSON + ";charset= utf-8 ;");
+
+    Assert.assertEquals("utf-8", character);
+  }
+
+  @Test
+  public void getCharsetFromContentType_quotationMarks() {
+    String character = HttpUtils.getCharsetFromContentType(MediaType.APPLICATION_JSON + ";charset=\"utf-8\";");
+
+    Assert.assertEquals("utf-8", character);
+  }
+
+  @Test
+  public void getCharsetFromContentType_quotationMarks_needTrim() {
+    String character = HttpUtils.getCharsetFromContentType(MediaType.APPLICATION_JSON + ";charset=\" utf-8 \";");
+
+    Assert.assertEquals("utf-8", character);
   }
 }

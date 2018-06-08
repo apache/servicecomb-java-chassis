@@ -19,6 +19,9 @@ package org.apache.servicecomb.foundation.vertx.http;
 
 import java.util.Collections;
 
+import javax.ws.rs.core.HttpHeaders;
+
+import org.apache.servicecomb.foundation.common.http.HttpUtils;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,6 +30,7 @@ import org.junit.Test;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
+import io.vertx.core.http.HttpMethod;
 import mockit.Expectations;
 import mockit.Mocked;
 
@@ -142,5 +146,52 @@ public class TestVertxClientRequestToHttpServletRequest {
   @Test
   public void testGetContextPath() {
     Assert.assertEquals("", request.getContextPath());
+  }
+
+  @Test
+  public void getMethod() {
+    new Expectations() {
+      {
+        clientRequest.method();
+        result = HttpMethod.GET;
+      }
+    };
+
+    Assert.assertEquals("GET", request.getMethod());
+  }
+
+  @Test
+  public void getContentType() {
+    MultiMap headers = MultiMap.caseInsensitiveMultiMap();
+    new Expectations() {
+      {
+        clientRequest.headers();
+        result = headers;
+      }
+    };
+
+    request.addHeader(HttpHeaders.CONTENT_TYPE, "ct");
+
+    Assert.assertEquals("ct", request.getContentType());
+  }
+
+  @Test
+  public void getCharacterEncoding() {
+    String contentType = "ct";
+    String characterEncoding = "ce";
+
+    MultiMap headers = MultiMap.caseInsensitiveMultiMap();
+    new Expectations(HttpUtils.class) {
+      {
+        HttpUtils.getCharsetFromContentType(contentType);
+        result = characterEncoding;
+        clientRequest.headers();
+        result = headers;
+      }
+    };
+
+    request.addHeader(HttpHeaders.CONTENT_TYPE, contentType);
+
+    Assert.assertEquals("ce", request.getCharacterEncoding());
   }
 }
