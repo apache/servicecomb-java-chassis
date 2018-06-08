@@ -125,4 +125,14 @@ public class TestVersionedCache {
     Assert.assertFalse(cacheOld.isExpired(cacheOld));
     Assert.assertFalse(cacheNew.isExpired(cacheOld));
   }
+
+  @Test
+  public void isSameVersion() {
+    VersionedCache cacheOld = new VersionedCache().autoCacheVersion();
+    VersionedCache cacheNew = new VersionedCache().autoCacheVersion();
+    VersionedCache cacheSame = new VersionedCache().cacheVersion(cacheNew.cacheVersion());
+
+    Assert.assertFalse(cacheOld.isSameVersion(cacheNew));
+    Assert.assertTrue(cacheSame.isSameVersion(cacheNew));
+  }
 }

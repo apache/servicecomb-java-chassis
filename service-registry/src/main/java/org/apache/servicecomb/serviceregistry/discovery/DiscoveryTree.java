@@ -28,10 +28,54 @@ import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * <a href="https://servicecomb.atlassian.net/browse/JAV-479">help to understand DiscoveryTree</a>
+ * <pre>
+ * DiscoveryTree is used to:
+ * 1.get all instances by app/microserviceName/versionRule
+ * 2.filter all instances set, and output another set, the output set is instance or something else, this depend on filter set
+ *
+ * DiscoveryFilter have different types:
+ * 1.normal filter: just filter input set
+ * 2.grouping filter: will split input set to groups
+ * 3.convert filter: eg: convert from instance to endpoint
+ * different types can composite in one filter
+ *
+ * features:
+ * 1.every group combination(eg:1.0.0-2.0.0/1.0.0+/self/RESTful) relate to a loadBalancer instance
+ * 2.if some filter output set is empty, DiscoveryTree can support try refilter logic
+ *   eg: if there is no available instances in self AZ, can refilter in other AZ
+ *   red arrows in <a href="https://servicecomb.atlassian.net/browse/JAV-479">help to understand DiscoveryTree</a>, show the refilter logic
+ * 3.every filter must try to cache result, avoid calculate every time.
+ *
+ * usage:
+ * 1.declare a field: DiscoveryTree discoveryTree = new DiscoveryTree();
+ * 2.initialize:
+ *     discoveryTree.loadFromSPI(DiscoveryFilter.class);
+ *     // add filters by your requirement
+ *     discoveryTree.addFilter(new EndpointDiscoveryFilter());
+ *     discoveryTree.sort();
+ * 3.filter for a invocation:
+ *     DiscoveryContext context = new DiscoveryContext();
+ *     context.setInputParameters(invocation);
+ *     VersionedCache endpointsVersionedCache = discoveryTree.discovery(context,
+ *         invocation.getAppId(),
+ *         invocation.getMicroserviceName(),
+ *         invocation.getMicroserviceVersionRule());
+ *     if (endpointsVersionedCache.isEmpty()) {
+ *       // 404 not found logic
+ *       ......
+ *       return;
+ *     }
+ *
+ *     // result is endpoints or something else, which is depends on your filter set
+ *     List&lt;Endpoint&gt; endpoints = endpointsVersionedCache.data();
+ *</pre>
+ */
 public class DiscoveryTree {
   private static final Logger LOGGER = LoggerFactory.getLogger(DiscoveryTree.class);
 
-  private DiscoveryTreeNode root;
+  private volatile DiscoveryTreeNode root;
 
   private final Object lock = new Object();
 
@@ -56,6 +100,10 @@ public class DiscoveryTree {
     }
   }
 
+  protected boolean isMatch(VersionedCache existing, VersionedCache inputCache) {
+    return existing != null && existing.isSameVersion(inputCache);
+  }
+
   protected boolean isExpired(VersionedCache existing, VersionedCache inputCache) {
     return existing == null || existing.isExpired(inputCache);
   }
@@ -71,32 +119,38 @@ public class DiscoveryTree {
   }
 
   public DiscoveryTreeNode discovery(DiscoveryContext context, VersionedCache inputCache) {
-    // must save root, otherwise, maybe use old cache to create children in new root
+    DiscoveryTreeNode tmpRoot = getOrCreateRoot(inputCache);
+    DiscoveryTreeNode parent = tmpRoot.children()
+        .computeIfAbsent(inputCache.name(), name -> new DiscoveryTreeNode().fromCache(inputCache));
+    return doDiscovery(context, parent);
+  }
+
+  protected DiscoveryTreeNode getOrCreateRoot(VersionedCache inputCache) {
     DiscoveryTreeNode tmpRoot = root;
-    if (isExpired(tmpRoot, inputCache)) {
-      synchronized (lock) {
-        if (isExpired(tmpRoot, inputCache)) {
-          root = new DiscoveryTreeNode().cacheVersion(inputCache.cacheVersion());
-          tmpRoot = root;
-        }
+    if (isMatch(tmpRoot, inputCache)) {
+      return tmpRoot;
+    }
+
+    synchronized (lock) {
+      if (isExpired(root, inputCache)) {
+        // not initialized or inputCache newer than root, create new root
+        root = new DiscoveryTreeNode().cacheVersion(inputCache.cacheVersion());
+        return root;
+      }
+
+      if (root.isSameVersion(inputCache)) {
+        // reuse root directly
+        return root;
       }
     }
 
-    // tmpRoot.cacheVersion() >= inputCache.cacheVersion()
-    // 1) thread 1, use v1 inputCache, did not assign tmpRoot, and suspended
-    // 2) thread 2, use v2 inputCache, update root instance
-    // 3) thread 1 go on, in this time, tmpRoot.cacheVersion() > inputCache.cacheVersion()
-    //    is not expired
+    // root newer than inputCache, it's a minimal probability event:
+    // 1) thread 1, use v1 inputCache, run into getOrCreateRoot, but did not run any code yet, suspend and switch to thread 2
+    // 2) thread 2, use v2 inputCache, v2 > v1, create new root
+    // 3) thread 1 go on, then root is newer than inputCache
     //    but if create old children in new version root, it's a wrong logic
-    //    and this is rarely to happen, so we only let it go with a real temporary root.
-    if (tmpRoot.cacheVersion() > inputCache.cacheVersion()) {
-      tmpRoot = new DiscoveryTreeNode().cacheVersion(inputCache.cacheVersion());
-    }
-
-    DiscoveryTreeNode parent = tmpRoot.children().computeIfAbsent(inputCache.name(), name -> {
-      return new DiscoveryTreeNode().fromCache(inputCache);
-    });
-    return doDiscovery(context, parent);
+    // so just create a temporary root for the inputCache, DO NOT assign to root
+    return new DiscoveryTreeNode().cacheVersion(inputCache.cacheVersion());
   }
 
   protected DiscoveryTreeNode doDiscovery(DiscoveryContext context, DiscoveryTreeNode parent) {
