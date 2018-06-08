@@ -129,6 +129,10 @@ public class VersionedCache {
     return newCache.cacheVersion - cacheVersion > 0;
   }
 
+  public boolean isSameVersion(VersionedCache newCache) {
+    return newCache.cacheVersion == cacheVersion;
+  }
+
   public boolean isEmpty() {
     return isEmpty.isEmpty();
   }

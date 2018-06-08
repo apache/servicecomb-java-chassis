@@ -84,6 +84,23 @@ public class TestDiscoveryTree {
   }
 
   @Test
+  public void isMatch_existingNull() {
+    Assert.assertFalse(discoveryTree.isMatch(null, null));
+  }
+
+  @Test
+  public void isMatch_yes() {
+    parent.cacheVersion(1);
+    Assert.assertTrue(discoveryTree.isMatch(new DiscoveryTreeNode().cacheVersion(1), parent));
+  }
+
+  @Test
+  public void isMatch_no() {
+    parent.cacheVersion(0);
+    Assert.assertFalse(discoveryTree.isExpired(new DiscoveryTreeNode().cacheVersion(1), parent));
+  }
+
+  @Test
   public void isExpired_existingNull() {
     Assert.assertTrue(discoveryTree.isExpired(null, null));
   }
@@ -232,5 +249,37 @@ public class TestDiscoveryTree {
 
     discoveryTree.discovery(context, new VersionedCache().cacheVersion(0).name("input"));
     Assert.assertTrue(parent.children().isEmpty());
+  }
+
+  @Test
+  public void getOrCreateRoot_match() {
+    Deencapsulation.setField(discoveryTree, "root", parent);
+
+    DiscoveryTreeNode root = discoveryTree.getOrCreateRoot(parent);
+
+    Assert.assertSame(parent, root);
+  }
+
+  @Test
+  public void getOrCreateRoot_expired() {
+    Deencapsulation.setField(discoveryTree, "root", parent);
+
+    VersionedCache inputCache = new VersionedCache().cacheVersion(parent.cacheVersion() + 1);
+    DiscoveryTreeNode root = discoveryTree.getOrCreateRoot(inputCache);
+
+    Assert.assertEquals(inputCache.cacheVersion(), root.cacheVersion());
+    Assert.assertSame(Deencapsulation.getField(discoveryTree, "root"), root);
+  }
+
+
+  @Test
+  public void getOrCreateRoot_tempRoot() {
+    Deencapsulation.setField(discoveryTree, "root", parent);
+
+    VersionedCache inputCache = new VersionedCache().cacheVersion(parent.cacheVersion() - 1);
+    DiscoveryTreeNode root = discoveryTree.getOrCreateRoot(inputCache);
+
+    Assert.assertEquals(inputCache.cacheVersion(), root.cacheVersion());
+    Assert.assertNotSame(Deencapsulation.getField(discoveryTree, "root"), root);
   }
 }
