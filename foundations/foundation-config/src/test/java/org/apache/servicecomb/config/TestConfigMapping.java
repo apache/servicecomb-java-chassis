@@ -30,18 +30,18 @@ import org.junit.Test;
 public class TestConfigMapping {
   @Test
   public void testMapping() {
-    String value = ConfigMapping.map("eureka.client.serviceUrl.defaultZone");
+    String value = ConfigMapping.map("SERVICECOMB_ENV");
     Map<String, Object> m = ConfigMapping.getMapping();
-    assertEquals(value, "registry.client.serviceUrl.defaultZone");
+    assertEquals("service_description.environment", value);
     assertNotNull(m);
   }
 
   @Test
   public void testConvertedMap() {
-    String value = ConfigMapping.map("eureka.client.serviceUrl.defaultZone");
+    String value = ConfigMapping.map("CSE_ENV_MAPPING");
     Map<String, Object> m = ConfigMapping.getMapping();
     Map<String, Object> m1 = ConfigMapping.getConvertedMap(m);
-    assertEquals(value, "registry.client.serviceUrl.defaultZone");
+    assertEquals("servicecomb.testmapping.key", value);
     assertNotNull(m1);
   }
 }

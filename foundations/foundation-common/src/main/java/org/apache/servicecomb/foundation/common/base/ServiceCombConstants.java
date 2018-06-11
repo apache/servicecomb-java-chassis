@@ -61,7 +61,7 @@ public interface ServiceCombConstants {
 
   String CONFIG_DEFAULT_REGISTER_BY = "SDK";
 
-  String SERVICECOMB_ENV = "SERVICECOMB_ENV";
+  String SERVICECOMB_ENV = "service_description.environment";
 
   String DEFAULT_SERVICECOMB_ENV = "";
 }
