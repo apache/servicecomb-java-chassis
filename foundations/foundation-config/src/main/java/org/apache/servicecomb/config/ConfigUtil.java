@@ -27,6 +27,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.netflix.config.*;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.EnvironmentConfiguration;
@@ -39,15 +40,6 @@ import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.netflix.config.ConcurrentCompositeConfiguration;
-import com.netflix.config.ConcurrentMapConfiguration;
-import com.netflix.config.ConfigurationManager;
-import com.netflix.config.DynamicConfiguration;
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicWatchedConfiguration;
-import com.netflix.config.WatchedUpdateListener;
-import com.netflix.config.WatchedUpdateResult;
 
 public final class ConfigUtil {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigUtil.class);
@@ -232,11 +224,6 @@ public final class ConfigUtil {
   }
 
   public static void installDynamicConfig() {
-    if (ConfigurationManager.isConfigurationInstalled()) {
-      LOGGER.warn("Configuration installed by others, will ignore this configuration.");
-      return;
-    }
-
     ConcurrentCompositeConfiguration compositeConfig = ConfigUtil.createLocalConfig();
     ConfigCenterConfigurationSource configCenterConfigurationSource =
         createConfigCenterConfigurationSource(compositeConfig);
@@ -244,7 +231,19 @@ public final class ConfigUtil {
       createDynamicWatchedConfiguration(compositeConfig, configCenterConfigurationSource);
     }
 
-    ConfigurationManager.install(compositeConfig);
+    if (ConfigurationManager.isConfigurationInstalled()) {
+        AbstractConfiguration installedConfiguration = ConfigurationManager.getConfigInstance();
+        if(installedConfiguration instanceof AggregatedConfiguration) {
+            ((AggregatedConfiguration)installedConfiguration).addConfiguration(compositeConfig);
+        }
+        else {
+            LOGGER.warn("Configuration installed by others, will ignore this configuration.");
+            return;
+        }
+    }
+    else {
+        ConfigurationManager.install(compositeConfig);
+    }
 
     if (configCenterConfigurationSource != null) {
       configCenterConfigurationSource.init(compositeConfig);

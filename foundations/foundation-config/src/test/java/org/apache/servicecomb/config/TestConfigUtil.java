@@ -30,7 +30,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.netflix.config.*;
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.configuration.MapConfiguration;
 import org.apache.servicecomb.config.archaius.sources.ConfigModel;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
@@ -41,11 +43,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.netflix.config.ConcurrentCompositeConfiguration;
-import com.netflix.config.DynamicConfiguration;
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicWatchedConfiguration;
 
 import mockit.Deencapsulation;
 import mockit.Expectations;
@@ -76,12 +73,29 @@ public class TestConfigUtil {
       throw new IllegalStateException(e);
     }
 
+    //support install with other configuration
+    ConcurrentCompositeConfiguration compositeConfiguration = new ConcurrentCompositeConfiguration();
+    Map<String,Object> props = new HashMap<>();
+    props.put("other_config.key1", "other_config.value1");
+    props.put("cse.cse.servicecomb.file", "valueToOverride");
+    compositeConfiguration.addConfiguration(new MapConfiguration(props));
+    ConfigurationManager.install(compositeConfiguration);
+
     ConfigUtil.installDynamicConfig();
   }
 
   @AfterClass
   public static void tearDown() {
     ArchaiusUtils.resetConfig();
+  }
+
+  @Test
+  public void testGetOtherConfiguration()
+  {
+    Assert.assertEquals("other_config.value1",
+            DynamicPropertyFactory.getInstance().getStringProperty("other_config.key1",null));
+    Assert.assertEquals("value",
+            DynamicPropertyFactory.getInstance().getStringProperty("cse.cse.servicecomb.file",null));
   }
 
   @Test
