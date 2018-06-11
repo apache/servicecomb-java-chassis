@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.servicecomb.demo.produceprocessor.ProduceJsonProcessor
 org.apache.servicecomb.demo.produceprocessor.ProduceAppXmlProcessor
+org.apache.servicecomb.demo.produceprocessor.override.ProduceAppXmlProcessor

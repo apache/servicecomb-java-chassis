@@ -131,7 +131,6 @@ public class CodeFirstRestTemplate {
   private void testCodeFirstAppXml(RestTemplate template, String cseUrlPrefix) {
     JAXBPerson person = new JAXBPerson("jake", 22, "it", "60kg");
     person.setJob(new JAXBJob("developer", "coding"));
-    System.out.println("person:\n" + person);
     HttpHeaders headers = new HttpHeaders();
     headers.add("Accept", MediaType.APPLICATION_XML_VALUE);
     headers.add("Content-Type", MediaType.APPLICATION_XML_VALUE);
@@ -140,8 +139,7 @@ public class CodeFirstRestTemplate {
         HttpMethod.POST,
         requestEntity,
         JAXBPerson.class);
-    System.out.println("result:\n" + resEntity.getBody());
-    TestMgr.check(-1, ProduceProcessorManager.INSTANCE.ensureFindValue(MediaType.APPLICATION_JSON_VALUE).getOrder());
+    TestMgr.check(-1, ProduceProcessorManager.INSTANCE.ensureFindValue(MediaType.APPLICATION_XML_VALUE).getOrder());
     TestMgr.check(person, resEntity.getBody());
   }
 

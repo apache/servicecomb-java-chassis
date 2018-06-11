@@ -17,17 +17,17 @@
 
 package org.apache.servicecomb.common.rest.codec.produce;
 
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
+import java.util.Set;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.foundation.common.RegisterManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 
 public final class ProduceProcessorManager extends RegisterManager<String, ProduceProcessor> {
-  private static final List<ProduceProcessor> produceProcessor = SPIServiceUtils.getAllService(ProduceProcessor.class);
+  private static final List<ProduceProcessor> produceProcessor =
+      SPIServiceUtils.getSortedService(ProduceProcessor.class);
 
   private static final String NAME = "produce processor mgr";
 
@@ -35,20 +35,20 @@ public final class ProduceProcessorManager extends RegisterManager<String, Produ
 
   public static final ProduceProcessorManager INSTANCE = new ProduceProcessorManager();
 
-  public static final ProduceProcessor JSON_PROCESSOR = SPIServiceUtils.getTargetService(ProduceProcessor.class, ProduceJsonProcessor.class);
+  public static final ProduceProcessor JSON_PROCESSOR =
+      SPIServiceUtils.getTargetService(ProduceProcessor.class, ProduceJsonProcessor.class);
 
-  public static final ProduceProcessor PLAIN_PROCESSOR = SPIServiceUtils.getTargetService(ProduceProcessor.class, ProduceTextPlainProcessor.class);
+  public static final ProduceProcessor PLAIN_PROCESSOR =
+      SPIServiceUtils.getTargetService(ProduceProcessor.class, ProduceTextPlainProcessor.class);
 
   public static final ProduceProcessor DEFAULT_PROCESSOR = JSON_PROCESSOR;
 
   private ProduceProcessorManager() {
     super(NAME);
-    Map<String, Object> map = new ConcurrentHashMap<>();
+    Set<String> set = new HashSet<>();
     produceProcessor.forEach(processor -> {
-      if (!map.containsKey(processor.getName())) {
-        map.put(processor.getName(), processor);
+      if (set.add(processor.getName()))
         register(processor.getName(), processor);
-      }
     });
   }
 }
