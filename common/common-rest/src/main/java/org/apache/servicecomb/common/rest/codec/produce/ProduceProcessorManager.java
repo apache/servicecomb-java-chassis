@@ -18,6 +18,9 @@
 package org.apache.servicecomb.common.rest.codec.produce;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.foundation.common.RegisterManager;
@@ -40,6 +43,12 @@ public final class ProduceProcessorManager extends RegisterManager<String, Produ
 
   private ProduceProcessorManager() {
     super(NAME);
-    produceProcessor.forEach(processor -> register(processor.getName(), processor));
+    Map<String, Object> map = new ConcurrentHashMap<>();
+    produceProcessor.forEach(processor -> {
+      if (!map.containsKey(processor.getName())) {
+        map.put(processor.getName(), processor);
+        register(processor.getName(), processor);
+      }
+    });
   }
 }
