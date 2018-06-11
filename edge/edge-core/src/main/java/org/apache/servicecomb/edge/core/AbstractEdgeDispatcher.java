@@ -19,6 +19,7 @@ package org.apache.servicecomb.edge.core;
 
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.transport.rest.vertx.AbstractVertxHttpDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +33,15 @@ public abstract class AbstractEdgeDispatcher extends AbstractVertxHttpDispatcher
   protected void onFailure(RoutingContext context) {
     LOGGER.error("edge server failed.", context.failure());
     HttpServerResponse response = context.response();
-    response.setStatusCode(Status.BAD_GATEWAY.getStatusCode());
-    response.setStatusMessage(Status.BAD_GATEWAY.getReasonPhrase());
-    response.end();
+    if (context.failure() instanceof InvocationException) {
+      InvocationException exception = (InvocationException) context.failure();
+      response.setStatusCode(exception.getStatusCode());
+      response.setStatusMessage(exception.getErrorData().toString());
+      response.end();
+    } else {
+      response.setStatusCode(Status.BAD_GATEWAY.getStatusCode());
+      response.setStatusMessage(Status.BAD_GATEWAY.getReasonPhrase());
+      response.end();
+    }
   }
 }
