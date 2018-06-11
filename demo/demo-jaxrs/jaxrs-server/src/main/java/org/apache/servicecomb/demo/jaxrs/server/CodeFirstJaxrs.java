@@ -42,6 +42,7 @@ import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
 import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
+import org.apache.servicecomb.demo.jaxbbean.JAXBPerson;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
@@ -90,6 +91,14 @@ public class CodeFirstJaxrs {
   @POST
   @Consumes(MediaType.TEXT_PLAIN)
   public String textPlain(String body) {
+    return body;
+  }
+
+  @Path("/appXml")
+  @POST
+  @Consumes(MediaType.APPLICATION_XML)
+  @Produces(MediaType.APPLICATION_XML)
+  public JAXBPerson appXml(JAXBPerson body) {
     return body;
   }
 
