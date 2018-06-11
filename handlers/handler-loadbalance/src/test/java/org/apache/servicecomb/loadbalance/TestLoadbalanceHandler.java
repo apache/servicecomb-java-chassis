@@ -48,10 +48,8 @@ import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -105,13 +103,8 @@ public class TestLoadbalanceHandler {
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
-  @AfterClass
-  public static void classTeardown() {
-    ArchaiusUtils.resetConfig();
-  }
-
-  @BeforeClass
-  public static void beforeCls() {
+  @Before
+  public void setUp() {
     ConfigUtil.installDynamicConfig();
     AbstractConfiguration configuration =
         (AbstractConfiguration) DynamicPropertyFactory.getBackingConfigurationSource();
@@ -122,10 +115,7 @@ public class TestLoadbalanceHandler {
     configuration.addProperty("cse.loadbalance.serverListFilters", "a");
     configuration.addProperty("cse.loadbalance.serverListFilter.a.className",
         "org.apache.servicecomb.loadbalance.MyServerListFilterExt");
-  }
 
-  @Before
-  public void setUp() {
     new MockUp<Invocation>(invocation) {
       @Mock
       String getMicroserviceName() {
@@ -177,6 +167,7 @@ public class TestLoadbalanceHandler {
   public void teardown() {
     CseContext.getInstance().setTransportManager(null);
     RegistryUtils.setServiceRegistry(null);
+    ArchaiusUtils.resetConfig();
   }
 
   @Test
@@ -287,12 +278,7 @@ public class TestLoadbalanceHandler {
 
   @Test
   public void setTransactionControlFilter_InvalidPolicy() {
-    new MockUp<Configuration>(Configuration.INSTANCE) {
-      @Mock
-      String getFlowsplitFilterPolicy(String microservice) {
-        return "InvalidPolicy";
-      }
-    };
+    ArchaiusUtils.setProperty("cse.loadbalance.ms.transactionControl.policy", "InvalidPolicy");
 
     expectedException.expect(Error.class);
     expectedException.expectMessage(Matchers.is("Fail to create instance of class: InvalidPolicy"));
@@ -332,6 +318,8 @@ public class TestLoadbalanceHandler {
 
   @Test
   public void getOrCreateLoadBalancer() throws Exception {
+    LoadbalanceHandler handler = new LoadbalanceHandler();
+
     MicroserviceInstance instance = new MicroserviceInstance();
     instance.setInstanceId("id");
     instance.getEndpoints().add("rest://localhost:8080");
