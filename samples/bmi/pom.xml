@@ -29,7 +29,7 @@
   <groupId>org.apache.servicecomb.samples</groupId>
   <artifactId>bmi</artifactId>
   <name>Java Chassis::Samples::BMI</name>
-  <version>1.0.0-m2-SNAPSHOT</version>
+  <version>1.0.0-m2</version>
   <packaging>pom</packaging>
 
   <modules>

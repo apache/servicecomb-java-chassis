@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.servicecomb</groupId>
     <artifactId>transports</artifactId>
-    <version>1.0.0-m2-SNAPSHOT</version>
+    <version>1.0.0-m2</version>
   </parent>
   <artifactId>transport-rest</artifactId>
   <name>Java Chassis::Transports::Rest</name>

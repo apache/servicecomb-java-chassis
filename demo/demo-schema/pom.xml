@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.apache.servicecomb.demo</groupId>
     <artifactId>demo-parent</artifactId>
-    <version>1.0.0-m2-SNAPSHOT</version>
+    <version>1.0.0-m2</version>
   </parent>
   <artifactId>demo-schema</artifactId>
   <name>Java Chassis::Demo::Schema</name>

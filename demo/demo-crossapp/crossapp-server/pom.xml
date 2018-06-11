@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.servicecomb.demo</groupId>
     <artifactId>demo-crossapp</artifactId>
-    <version>1.0.0-m2-SNAPSHOT</version>
+    <version>1.0.0-m2</version>
   </parent>
   <artifactId>crossapp-server</artifactId>
   <name>Java Chassis::Demo::CrossApp::Server</name>
@@ -56,7 +56,7 @@
             <mixin>
               <groupId>org.apache.servicecomb.demo</groupId>
               <artifactId>docker-build-config</artifactId>
-              <version>1.0.0-m2-SNAPSHOT</version>
+              <version>1.0.0-m2</version>
             </mixin>
           </mixins>
         </configuration>

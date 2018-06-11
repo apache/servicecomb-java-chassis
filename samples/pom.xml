@@ -24,7 +24,7 @@
   <artifactId>samples</artifactId>
   <name>Java Chassis::Samples</name>
   <packaging>pom</packaging>
-  <version>1.0.0-m2-SNAPSHOT</version>
+  <version>1.0.0-m2</version>
   <modules>
     <module>codefirst-sample</module>
     <module>custom-handler-sample</module>
@@ -45,14 +45,14 @@
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>java-chassis-dependencies</artifactId>
-        <version>1.0.0-m2-SNAPSHOT</version>
+        <version>1.0.0-m2</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb.samples</groupId>
         <artifactId>common-schema</artifactId>
-        <version>1.0.0-m2-SNAPSHOT</version>
+        <version>1.0.0-m2</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

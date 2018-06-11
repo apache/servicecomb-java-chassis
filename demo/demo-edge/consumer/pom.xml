@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.servicecomb.demo</groupId>
     <artifactId>demo-edge</artifactId>
-    <version>1.0.0-m2-SNAPSHOT</version>
+    <version>1.0.0-m2</version>
   </parent>
   <artifactId>consumer</artifactId>
   <name>Java Chassis::Demo::Edge::Consumer</name>
@@ -51,7 +51,7 @@
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>model</artifactId>
-      <version>1.0.0-m2-SNAPSHOT</version>
+      <version>1.0.0-m2</version>
     </dependency>
   </dependencies>
 </project>
