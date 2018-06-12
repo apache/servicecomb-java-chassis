@@ -223,7 +223,8 @@ public class LoadbalanceHandler implements Handler {
       @Override
       public void onExceptionWithServer(ExecutionContext<Invocation> context, Throwable exception,
           ExecutionInfo info) {
-        LOGGER.error("onExceptionWithServer msg {}; server {}",
+        LOGGER.error("onExceptionWithServer operation {}; msg {}; server {}",
+            context.getRequest().getInvocationQualifiedName(),
             exception.getMessage(),
             context.getRequest().getEndpoint());
       }
@@ -274,7 +275,8 @@ public class LoadbalanceHandler implements Handler {
             invocation.setEndpoint(((CseServer) s).getEndpoint());
             invocation.next(resp -> {
               if (isFailedResponse(resp)) {
-                LOGGER.error("service call error, msg is {}, server is {} ",
+                LOGGER.error("service {}, call error, msg is {}, server is {} ",
+                    invocation.getInvocationQualifiedName(),
                     ((Throwable) resp.getResult()).getMessage(),
                     s);
                 chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
