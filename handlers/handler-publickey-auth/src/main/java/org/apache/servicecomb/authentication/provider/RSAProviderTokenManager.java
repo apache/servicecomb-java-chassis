@@ -49,7 +49,6 @@ public class RSAProviderTokenManager {
         return false;
       }
       if (validatedToken.contains(rsaToken)) {
-        LOGGER.info("found vaildate token in vaildate pool");
         return true;
       }
 
