@@ -72,6 +72,7 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
         context.getMicroservice().getVersion(),
         context.getSchemaId(),
         !StringUtils.isEmpty(schemaContent));
+    LOGGER.debug(schemaContent);
     if (schemaContent != null) {
       return SchemaUtils.parseSwagger(schemaContent);
     }
