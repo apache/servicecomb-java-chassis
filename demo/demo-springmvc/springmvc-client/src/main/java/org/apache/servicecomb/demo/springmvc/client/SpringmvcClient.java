@@ -36,6 +36,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 public class SpringmvcClient {
   private static RestTemplate templateUrlWithServiceName = new CseRestTemplate();
 
@@ -53,6 +55,8 @@ public class SpringmvcClient {
   }
 
   public static void run() {
+    testConfigurationDuplicate();
+
     templateUrlWithServiceName.setRequestFactory(new UrlWithServiceNameClientHttpRequestFactory());
     restTemplate = RestTemplateBuilder.create();
     controller = BeanUtils.getBean("controller");
@@ -197,5 +201,20 @@ public class SpringmvcClient {
     Person user = new Person();
     user.setName("world");
     TestMgr.check("ha world", controller.saySomething("ha", user));
+  }
+
+  private static void testConfigurationDuplicate() {
+    // this configuration will give warning messages:
+    // Key servicecomb.test.duplicate2 with an ambiguous item cse.test.duplicate2 exists, please use the same prefix or will get unexpected merged value.
+    // Key servicecomb.test.duplicate1 with an ambiguous item cse.test.duplicate1 exists, please use the same prefix or will get unexpected merged value.
+    // and the expected value is not quite determined. But will not get wrong value like 'older,newer' or 'newer,older'
+    TestMgr.check(DynamicPropertyFactory.getInstance().getStringProperty("cse.test.duplicate2", "wrong").get(),
+        "newer");
+    TestMgr.check(DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.test.duplicate2", "wrong").get(),
+        "older");
+    TestMgr.check(DynamicPropertyFactory.getInstance().getStringProperty("cse.test.duplicate1", "wrong").get(),
+        "older");
+    TestMgr.check(DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.test.duplicate1", "wrong").get(),
+        "newer");
   }
 }

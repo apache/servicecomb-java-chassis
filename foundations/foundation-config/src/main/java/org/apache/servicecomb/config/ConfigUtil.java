@@ -171,7 +171,14 @@ public final class ConfigUtil {
       }
 
       String cseKey = CONFIG_CSE_PREFIX + key.substring(key.indexOf(".") + 1);
-      source.addProperty(cseKey, source.getProperty(key));
+      if (!source.containsKey(cseKey)) {
+        source.addProperty(cseKey, source.getProperty(key));
+      } else {
+        LOGGER
+            .warn(
+                "Key {} with an ambiguous item {} exists, please use the same prefix or will get unexpected merged value.",
+                key, cseKey);
+      }
     }
   }
 
