@@ -57,6 +57,7 @@ public class Invoker implements InvocationHandler {
 
     // initialized and meta not changed
     public boolean isValid() {
+      SCBEngine.getInstance().ensureStatusUp();
       return swaggerConsumer != null && microserviceMeta == referenceConfig.getMicroserviceMeta();
     }
   }

@@ -273,7 +273,7 @@ public class SCBEngine {
     }
   }
 
-  protected void ensureStatusUp() {
+  public void ensureStatusUp() {
     SCBStatus currentStatus = getStatus();
     if (!SCBStatus.UP.equals(currentStatus)) {
       throw new IllegalStateException(
