@@ -45,4 +45,45 @@ public class TestCtTypeJavaType {
     Assert.assertEquals("Ljava/util/List<Lorg/apache/servicecomb/common/javassist/TestCtTypeJavaType;>;",
         listJavaType.getGenericSignature());
   }
+
+  /**
+   * The {@link CtTypeJavaType} with different CtType should holds different hash code.
+   */
+  @Test
+  public void testHashCode() {
+    JavaType newJavaType = TypeFactory.defaultInstance().constructType(String.class);
+    CtType newCtType = new CtType(newJavaType);
+    CtTypeJavaType newCtTypeJavaType = new CtTypeJavaType(newCtType);
+    Assert.assertNotEquals(ctTypeJavaType.hashCode(), newCtTypeJavaType.hashCode());
+
+    newJavaType = TypeFactory.defaultInstance().constructType(cls);
+    newCtType = new CtType(newJavaType);
+    newCtTypeJavaType = new CtTypeJavaType(newCtType);
+    Assert.assertEquals(ctTypeJavaType.hashCode(), newCtTypeJavaType.hashCode());
+  }
+
+  /**
+   * The {@link CtTypeJavaType}s holding different type information should not equal to each others.
+   * While those holding the same type information should be equal.
+   */
+  @Test
+  public void testEquals() {
+    JavaType newJavaType = TypeFactory.defaultInstance().constructType(String.class);
+    CtType newCtType = new CtType(newJavaType);
+    CtTypeJavaType newCtTypeJavaType = new CtTypeJavaType(newCtType);
+    Assert.assertNotEquals(ctTypeJavaType, newCtTypeJavaType);
+
+    newJavaType = TypeFactory.defaultInstance().constructType(cls);
+    newCtType = new CtType(newJavaType);
+    newCtTypeJavaType = new CtTypeJavaType(newCtType);
+    Assert.assertEquals(ctTypeJavaType, newCtTypeJavaType);
+
+    // test subClass of CtTypeJavaType
+    newJavaType = TypeFactory.defaultInstance().constructType(cls);
+    newCtType = new CtType(newJavaType);
+    newCtTypeJavaType = new CtTypeJavaType(newCtType) {
+      private static final long serialVersionUID = 1876189050753964880L;
+    };
+    Assert.assertEquals(ctTypeJavaType, newCtTypeJavaType);
+  }
 }
