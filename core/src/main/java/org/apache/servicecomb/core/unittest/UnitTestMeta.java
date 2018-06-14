@@ -61,6 +61,10 @@ public class UnitTestMeta {
 
   private ConsumerProviderManager consumerProviderManager;
 
+  public ConsumerProviderManager getConsumerProviderManager() {
+    return consumerProviderManager;
+  }
+
   private ConsumerSchemaFactory consumerSchemaFactory;
 
   private SchemaLoader schemaLoader = new SchemaLoader() {

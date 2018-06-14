@@ -108,7 +108,13 @@ public abstract class AbstractRestInvocation {
   }
 
   protected void scheduleInvocation() {
-    createInvocation();
+    try {
+      createInvocation();
+    } catch (IllegalStateException e) {
+      sendFailResponse(e);
+      return;
+    }
+
     invocation.onStart();
     OperationMeta operationMeta = restOperationMeta.getOperationMeta();
 
@@ -161,7 +167,6 @@ public abstract class AbstractRestInvocation {
 
   protected Response prepareInvoke() throws Throwable {
     this.initProduceProcessor();
-
     this.setContext();
     invocation.getHandlerContext().put(RestConst.REST_REQUEST, requestEx);
 

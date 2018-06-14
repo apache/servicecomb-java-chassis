@@ -33,7 +33,6 @@ import org.apache.servicecomb.provider.springmvc.reference.CseClientHttpResponse
 import org.apache.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGeneratorContext;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.http.HttpMethod;
@@ -44,32 +43,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import mockit.Mock;
-import mockit.MockUp;
-
 public class CseAsyncClientHttpRequestTest {
   static UnitTestMeta meta = new UnitTestMeta();
-
-  SCBEngine scbEngine = new SCBEngine();
-
-  @Before
-  public void setup() {
-    new MockUp<SCBEngine>() {
-      @Mock
-      SCBEngine getInstance() {
-        return scbEngine;
-      }
-    };
-    scbEngine.setStatus(SCBStatus.UP);
-  }
 
   @BeforeClass
   public static void classSetup() {
     CseContext.getInstance()
         .getSchemaListenerManager()
         .setSchemaListenerList(Collections.singletonList(new RestEngineSchemaListener()));
-
     meta.registerSchema(new SpringmvcSwaggerGeneratorContext(), CseAsyncClientHttpRequestTestSchema.class);
+    SCBEngine.getInstance().setConsumerProviderManager(meta.getConsumerProviderManager());
+    SCBEngine.getInstance().setStatus(SCBStatus.UP);
   }
 
   @RequestMapping(path = "CseAsyncClientHttpRequestTestSchema")
