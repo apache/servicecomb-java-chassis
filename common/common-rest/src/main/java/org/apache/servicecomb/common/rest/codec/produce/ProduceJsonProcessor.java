@@ -26,7 +26,7 @@ import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
 
 import com.fasterxml.jackson.databind.JavaType;
 
-public class ProduceJsonProcessor extends AbstractProduceProcessor {
+public class ProduceJsonProcessor implements ProduceProcessor {
 
   @Override
   public String getName() {
@@ -41,5 +41,10 @@ public class ProduceJsonProcessor extends AbstractProduceProcessor {
   @Override
   public Object doDecodeResponse(InputStream input, JavaType type) throws Exception {
     return RestObjectMapper.INSTANCE.readValue(input, type);
+  }
+
+  @Override
+  public int getOrder() {
+    return 0;
   }
 }
