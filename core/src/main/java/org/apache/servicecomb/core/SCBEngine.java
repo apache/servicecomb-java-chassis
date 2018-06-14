@@ -277,7 +277,7 @@ public class SCBEngine {
     SCBStatus currentStatus = getStatus();
     if (!SCBStatus.UP.equals(currentStatus)) {
       throw new IllegalStateException(
-          "System is starting and not ready for remote calls or shutting down in progress, STATUS = " + currentStatus);
+          "The request is rejected, as the service cannot process the request due to STATUS = " + currentStatus);
     }
   }
 

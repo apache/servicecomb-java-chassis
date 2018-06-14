@@ -19,6 +19,8 @@ package org.apache.servicecomb.transport.highway;
 
 import javax.xml.ws.Holder;
 
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.SCBStatus;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
@@ -65,11 +67,13 @@ public class TestHighwayServerInvoke {
   @BeforeClass
   public static void classSetup() {
     EventManager.eventBus = new EventBus();
+    SCBEngine.getInstance().setStatus(SCBStatus.UP);
   }
 
   @AfterClass
   public static void classTeardown() {
     EventManager.eventBus = new EventBus();
+    SCBEngine.getInstance().setStatus(SCBStatus.DOWN);
   }
 
   @Before
