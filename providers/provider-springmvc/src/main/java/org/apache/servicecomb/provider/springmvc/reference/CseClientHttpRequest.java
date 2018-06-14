@@ -29,8 +29,8 @@ import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
@@ -149,8 +149,7 @@ public class CseClientHttpRequest implements ClientHttpRequest {
   protected RequestMeta createRequestMeta(String httpMethod, URI uri) {
     String microserviceName = uri.getAuthority();
 
-    ReferenceConfig referenceConfig = CseContext.getInstance().getConsumerProviderManager()
-        .getReferenceConfig(microserviceName);
+    ReferenceConfig referenceConfig = SCBEngine.getInstance().getReferenceConfigForInvoke(microserviceName);
 
     MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
     ServicePathManager servicePathManager = ServicePathManager.getServicePathManager(microserviceMeta);

@@ -37,21 +37,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import mockit.Mock;
-import mockit.MockUp;
-
 public class TestCseClientHttpRequest {
-  SCBEngine scbEngine = new SCBEngine();
+  static UnitTestMeta meta = new UnitTestMeta();
 
   @Before
   public void setup() {
-    new MockUp<SCBEngine>() {
-      @Mock
-      SCBEngine getInstance() {
-        return scbEngine;
-      }
-    };
-    scbEngine.setStatus(SCBStatus.UP);
+    SCBEngine.getInstance().setStatus(SCBStatus.UP);
+    CseContext.getInstance()
+        .getSchemaListenerManager()
+        .setSchemaListenerList(Collections.singletonList(new RestEngineSchemaListener()));
+    meta.registerSchema(new SpringmvcSwaggerGeneratorContext(), SpringmvcImpl.class);
+    SCBEngine.getInstance().setConsumerProviderManager(meta.getConsumerProviderManager());
   }
 
   @RequestMapping(path = "SpringmvcImpl")

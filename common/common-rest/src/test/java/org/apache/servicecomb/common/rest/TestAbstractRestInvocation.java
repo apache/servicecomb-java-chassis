@@ -36,6 +36,8 @@ import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.SCBStatus;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -121,11 +123,13 @@ public class TestAbstractRestInvocation {
   @BeforeClass
   public static void classSetup() {
     EventManager.eventBus = new EventBus();
+    SCBEngine.getInstance().setStatus(SCBStatus.UP);
   }
 
   @AfterClass
   public static void classTeardown() {
     EventManager.eventBus = new EventBus();
+    SCBEngine.getInstance().setStatus(SCBStatus.DOWN);
   }
 
   @Before
