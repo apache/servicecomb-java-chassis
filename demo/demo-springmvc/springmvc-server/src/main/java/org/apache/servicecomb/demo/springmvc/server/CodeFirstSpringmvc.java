@@ -162,7 +162,7 @@ public class CodeFirstSpringmvc {
     return body;
   }
 
-  @RequestMapping(path = "/appXml", method = RequestMethod.POST, consumes = MediaType.APPLICATION_XML_VALUE, produces = MediaType.APPLICATION_XML_VALUE)
+  @RequestMapping(path = "/appXml", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_XML_VALUE)
   public JAXBPerson appXml(@RequestBody JAXBPerson person) {
     return person;
   }

@@ -133,7 +133,7 @@ public class CodeFirstRestTemplate {
     person.setJob(new JAXBJob("developer", "coding"));
     HttpHeaders headers = new HttpHeaders();
     headers.add("Accept", MediaType.APPLICATION_XML_VALUE);
-    headers.add("Content-Type", MediaType.APPLICATION_XML_VALUE);
+    headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
     HttpEntity<JAXBPerson> requestEntity = new HttpEntity<>(person, headers);
     ResponseEntity<JAXBPerson> resEntity = template.exchange(cseUrlPrefix + "appXml",
         HttpMethod.POST,

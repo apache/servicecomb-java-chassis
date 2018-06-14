@@ -96,7 +96,7 @@ public class CodeFirstJaxrs {
 
   @Path("/appXml")
   @POST
-  @Consumes(MediaType.APPLICATION_XML)
+  @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_XML)
   public JAXBPerson appXml(JAXBPerson body) {
     return body;
