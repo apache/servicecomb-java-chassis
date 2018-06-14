@@ -158,7 +158,9 @@ public class HighwayServerInvoke {
           msgId);
       LOGGER.error(msg, e);
     } finally {
-      invocation.onFinish(response);
+      if (invocation != null) {
+        invocation.onFinish(response);
+      }
     }
   }
 
@@ -173,7 +175,7 @@ public class HighwayServerInvoke {
       invocation.onStart();
       operationMeta.getExecutor().execute(() -> runInExecutor());
     } catch (IllegalStateException e) {
-      sendResponse(invocation.getContext(), Response.providerFailResp(e));
+      sendResponse(header.getContext(), Response.providerFailResp(e));
     }
   }
 }

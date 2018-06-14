@@ -106,7 +106,7 @@ public class TestSCBEngine {
 
     expectedException.expect(IllegalStateException.class);
     expectedException.expectMessage(
-        Matchers.is("System is starting and not ready for remote calls or shutting down in progress, STATUS = DOWN"));
+        Matchers.is("The request is rejected, as the service cannot process the request due to STATUS = DOWN"));
     engine.createReferenceConfigForInvoke(null, null, null);
   }
 
@@ -128,7 +128,7 @@ public class TestSCBEngine {
 
     expectedException.expect(IllegalStateException.class);
     expectedException.expectMessage(
-        Matchers.is("System is starting and not ready for remote calls or shutting down in progress, STATUS = DOWN"));
+        Matchers.is("The request is rejected, as the service cannot process the request due to STATUS = DOWN"));
     engine.getReferenceConfigForInvoke(null);
   }
 }
