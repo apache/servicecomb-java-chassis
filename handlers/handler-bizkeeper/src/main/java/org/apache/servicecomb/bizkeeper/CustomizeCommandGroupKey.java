@@ -23,51 +23,36 @@ import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.netflix.hystrix.HystrixKey;
 import com.netflix.hystrix.util.InternMap;
 
+/**
+ * 通过定制CommandGroupKey，目的是携带Invocation部分静态信息，便于CircutBreakerEvent获取。
+ */
 public class CustomizeCommandGroupKey extends HystrixKey.HystrixKeyDefault implements HystrixCommandGroupKey {
 
-  private String invocationType;
+  private Invocation instance;
 
-  private String microserviceName;
-
-  private String schema;
-
-  private String operation;
-
-  public CustomizeCommandGroupKey(Invocation invocation) {
-    super(invocation.getInvocationType().name() + "." + invocation.getOperationMeta().getMicroserviceQualifiedName());
-    this.invocationType = invocation.getInvocationType().name();
-    this.microserviceName = invocation.getMicroserviceName();
-    this.schema = invocation.getSchemaId();
-    this.operation = invocation.getOperationName();
+  public CustomizeCommandGroupKey(String key) {
+    super(key);
   }
 
-  private static final InternMap<Invocation, CustomizeCommandGroupKey> intern =
-      new InternMap<Invocation, CustomizeCommandGroupKey>(
-          new InternMap.ValueConstructor<Invocation, CustomizeCommandGroupKey>() {
-            @Override
-            public CustomizeCommandGroupKey create(Invocation invocation) {
-              return new CustomizeCommandGroupKey(invocation);
-            }
-          });
+  private static final InternMap<String, CustomizeCommandGroupKey> intern = new InternMap<String, CustomizeCommandGroupKey>(
+      new InternMap.ValueConstructor<String, CustomizeCommandGroupKey>() {
+        @Override
+        public CustomizeCommandGroupKey create(String key) {
+          return new CustomizeCommandGroupKey(key);
+        }
+      });
 
-
-  public static HystrixCommandGroupKey asKey(String type, Invocation invocation) {
-    return intern.interned(invocation);
+  public static HystrixCommandGroupKey asKey(String key, Invocation invocation) {
+    CustomizeCommandGroupKey result = intern.interned(key);
+    result.setInvocation(invocation);
+    return result;
   }
 
-  public String getInvocationType() {
-    return invocationType;
+  public void setInvocation(Invocation invocation) {
+    this.instance = invocation;
   }
 
-  public String getMicroserviceName() {
-    return microserviceName;
-  }
-
-  public String getOperation() {
-    return operation;
-  }
-
-  public String getSchema() {
-    return schema;
+  public Invocation getInstance() {
+    return instance;
   }
 }

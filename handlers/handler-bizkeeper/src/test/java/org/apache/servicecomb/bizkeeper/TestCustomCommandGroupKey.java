@@ -18,8 +18,6 @@
 package org.apache.servicecomb.bizkeeper;
 
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -27,19 +25,20 @@ import org.mockito.Mockito;
 public class TestCustomCommandGroupKey {
   @Test
   public void testToHystrixCommandGroupKey() {
-
     Invocation invocation = Mockito.mock(Invocation.class);
-    Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
-    Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test2");
-    Mockito.when(invocation.getMicroserviceName()).thenReturn("microserviceName");
-    Mockito.when(invocation.getInvocationType()).thenReturn(InvocationType.CONSUMER);
-    Mockito.when(invocation.getSchemaId()).thenReturn("schemaId");
-    Mockito.when(invocation.getOperationName()).thenReturn("operationName");
     CustomizeCommandGroupKey customizeCommandGroupKey =
-        (CustomizeCommandGroupKey) CustomizeCommandGroupKey.asKey("type", invocation);
-    Assert.assertEquals("CONSUMER", customizeCommandGroupKey.getInvocationType());
-    Assert.assertEquals("microserviceName", customizeCommandGroupKey.getMicroserviceName());
-    Assert.assertEquals("schemaId", customizeCommandGroupKey.getSchema());
-    Assert.assertEquals("operationName", customizeCommandGroupKey.getOperation());
+        (CustomizeCommandGroupKey) CustomizeCommandGroupKey.asKey("key", invocation);
+    Assert.assertEquals(invocation, customizeCommandGroupKey.getInstance());
+  }
+
+  @Test
+  public void testOOM() {
+    Invocation invocation1 = Mockito.mock(Invocation.class);
+    Invocation invocation2 = Mockito.mock(Invocation.class);
+    CustomizeCommandGroupKey customizeCommandGroupKey1 =
+        (CustomizeCommandGroupKey) CustomizeCommandGroupKey.asKey("key", invocation1);
+    CustomizeCommandGroupKey customizeCommandGroupKey2 =
+        (CustomizeCommandGroupKey) CustomizeCommandGroupKey.asKey("key", invocation2);
+    Assert.assertEquals(customizeCommandGroupKey1, customizeCommandGroupKey2);
   }
 }

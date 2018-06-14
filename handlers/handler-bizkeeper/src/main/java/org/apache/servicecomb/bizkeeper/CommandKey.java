@@ -31,7 +31,8 @@ public final class CommandKey {
   }
 
   public static HystrixCommandGroupKey toHystrixCommandGroupKey(String type, Invocation invocation) {
-    return CustomizeCommandGroupKey.asKey(type, invocation);
+    return CustomizeCommandGroupKey.asKey(type + "." + invocation.getOperationMeta().getMicroserviceQualifiedName(),
+        invocation);
   }
 
   public static HystrixCommandKey toHystrixCommandKey(String type, Invocation invocation) {

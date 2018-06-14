@@ -87,7 +87,6 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
       Mockito.when(invocation.getMicroserviceName()).thenReturn("test1");
       Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
       Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
-      Mockito.when(invocation.getInvocationType()).thenReturn(InvocationType.CONSUMER);
       validAssert = true;
 
       bizkeeperHandler.handle(invocation, asyncResp);
@@ -158,7 +157,6 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
     Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName())
         .thenReturn("testHandleInError");
-    Mockito.when(invocation.getInvocationType()).thenReturn(InvocationType.CONSUMER);
     FallbackPolicy policy = Mockito.mock(FallbackPolicy.class);
     Mockito.when(policy.name()).thenReturn("throwException");
     Mockito.when(policy.getFallbackResponse(Mockito.any(Invocation.class))).thenThrow(new RuntimeException());
@@ -183,7 +181,6 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
     Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName())
         .thenReturn("testHandlNextException");
-    Mockito.when(invocation.getInvocationType()).thenReturn(InvocationType.CONSUMER);
     Mockito.doThrow(new Exception("testHandlNextException")).when(invocation).next(Mockito.any(AsyncResponse.class));
     bizkeeperHandler.handle(invocation, f -> {
       Assert.assertTrue(f.isFailed());
@@ -196,7 +193,6 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
     Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName())
         .thenReturn("testHandleSuccess");
-    Mockito.when(invocation.getInvocationType()).thenReturn(InvocationType.CONSUMER);
     Mockito.doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) {

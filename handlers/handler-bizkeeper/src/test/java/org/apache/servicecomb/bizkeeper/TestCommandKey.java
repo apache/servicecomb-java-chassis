@@ -19,7 +19,6 @@ package org.apache.servicecomb.bizkeeper;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -39,7 +38,6 @@ public class TestCommandKey {
 
     Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
     Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
-    Mockito.when(invocation.getInvocationType()).thenReturn(InvocationType.CONSUMER);
     Assert.assertNotNull(invocation);
     HystrixCommandGroupKey hystrixCommandGroupKey = CommandKey.toHystrixCommandGroupKey("groupname", invocation);
     Assert.assertNotNull(hystrixCommandGroupKey);

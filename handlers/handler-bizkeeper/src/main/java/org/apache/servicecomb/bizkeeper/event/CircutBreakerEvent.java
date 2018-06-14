@@ -50,15 +50,14 @@ public class CircutBreakerEvent extends AlarmEvent {
 
   public CircutBreakerEvent(HystrixCommandKey commandKey, Type type) {
     super(type);
-    HystrixCommandMetrics hystrixCommandMetrics =
-        HystrixCommandMetrics.getInstance(commandKey);
+    HystrixCommandMetrics hystrixCommandMetrics = HystrixCommandMetrics.getInstance(commandKey);
     if (hystrixCommandMetrics != null) {
-      CustomizeCommandGroupKey customizeCommandGroupKey =
-          (CustomizeCommandGroupKey) hystrixCommandMetrics.getCommandGroup();
-      this.microservice = customizeCommandGroupKey.getMicroserviceName();
-      this.role = customizeCommandGroupKey.getInvocationType();
-      this.schema = customizeCommandGroupKey.getSchema();
-      this.operation = customizeCommandGroupKey.getOperation();
+      CustomizeCommandGroupKey customCommandGroupKey = (CustomizeCommandGroupKey) hystrixCommandMetrics
+          .getCommandGroup();
+      this.microservice = customCommandGroupKey.getInstance().getMicroserviceName();
+      this.role = customCommandGroupKey.getInstance().getInvocationType().name();
+      this.schema = customCommandGroupKey.getInstance().getSchemaId();
+      this.operation = customCommandGroupKey.getInstance().getOperationName();
       this.currentTotalRequest = hystrixCommandMetrics.getHealthCounts().getTotalRequests();
       this.currentErrorPercentage = hystrixCommandMetrics.getHealthCounts().getErrorCount();
       this.currentErrorCount = hystrixCommandMetrics.getHealthCounts().getErrorPercentage();
