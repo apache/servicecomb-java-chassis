@@ -31,12 +31,9 @@ public class QpsController {
   private AtomicLong requestCount = new AtomicLong();
 
   // 本周期之前的请求数
-  private volatile long lastRequestCount = 0;
+  private volatile long lastRequestCount = 1;
 
   private static final int CYCLE_LENGTH = 1000;
-
-  // 是否为第一周期
-  private boolean firstCycle = true;
 
   public QpsController(String key, Integer qpsLimit) {
     this.key = key;
@@ -60,11 +57,6 @@ public class QpsController {
   public boolean isLimitNewRequest() {
     long newCount = requestCount.incrementAndGet();
     long msNow = System.currentTimeMillis();
-    if (firstCycle) {
-      // 第一周期对策，以解决[SCB-651]成功请求数比limitValue少1的问题
-      lastRequestCount = newCount;
-      firstCycle = false;
-    }
     if (msNow - msCycleBegin > CYCLE_LENGTH) {
       // 新周期
       // 会有多线程竞争，互相覆盖的问题，不过无所谓，不会有什么后果
