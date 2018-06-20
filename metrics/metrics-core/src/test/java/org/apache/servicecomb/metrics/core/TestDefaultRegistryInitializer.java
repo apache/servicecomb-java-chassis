@@ -54,4 +54,10 @@ public class TestDefaultRegistryInitializer {
     Assert.assertEquals(0, registries.size());
     Assert.assertEquals(0, DefaultMonitorRegistry.getInstance().getRegisteredMonitors().size());
   }
+
+  @Test
+  public void destroy_notInit() {
+    // should not throw exception
+    registryInitializer.destroy();
+  }
 }
