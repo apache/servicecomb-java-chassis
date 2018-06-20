@@ -1,0 +1,71 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.servicecomb.foundation.common.utils;
+
+import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+public class TestJvmUtils {
+  static String orgCmd = System.getProperty(JvmUtils.SUN_JAVA_COMMAND);
+
+  @Before
+  public void setup() {
+    System.clearProperty(JvmUtils.SUN_JAVA_COMMAND);
+  }
+
+  @AfterClass
+  public static void tearDown() {
+    if (orgCmd == null) {
+      System.clearProperty(JvmUtils.SUN_JAVA_COMMAND);
+      return;
+    }
+
+    System.setProperty(JvmUtils.SUN_JAVA_COMMAND, orgCmd);
+  }
+
+  @Test
+  public void findMainClass_notExist() {
+    Assert.assertNull(JvmUtils.findMainClass());
+  }
+
+  @Test
+  public void findMainClass_existButEmpty() {
+    System.setProperty(JvmUtils.SUN_JAVA_COMMAND, "");
+    Assert.assertNull(JvmUtils.findMainClass());
+  }
+
+  @Test
+  public void findMainClass_invalid() {
+    LogCollector logCollector = new LogCollector();
+
+    System.setProperty(JvmUtils.SUN_JAVA_COMMAND, "invalidCls");
+
+    Assert.assertNull(JvmUtils.findMainClass());
+    Assert.assertEquals("\"invalidCls\" is not a valid class.", logCollector.getEvents().get(0).getMessage());
+    logCollector.teardown();
+  }
+
+  @Test
+  public void findMainClass_normal() {
+    System.setProperty(JvmUtils.SUN_JAVA_COMMAND, TestJvmUtils.class.getName() + " arg");
+
+    Assert.assertEquals(TestJvmUtils.class, JvmUtils.findMainClass());
+  }
+}
