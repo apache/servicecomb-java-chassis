@@ -74,7 +74,7 @@ public class SyncContext extends EventLoopContext {
   @Override
   <T> void executeBlocking(Action<T> action, Handler<Future<T>> blockingCodeHandler,
       Handler<AsyncResult<T>> resultHandler,
-      Executor exec, TaskQueue queue, PoolMetrics metrics) {
+      Executor exec, TaskQueue queue, @SuppressWarnings("rawtypes") PoolMetrics metrics) {
     syncExecuteBlocking(blockingCodeHandler, resultHandler);
   }
 }
