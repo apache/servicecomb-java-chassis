@@ -31,3 +31,10 @@ servicecomb:
       address: http://127.0.0.1:30100
   rest:
     address: 127.0.0.1:8080
+  cors:
+    enabled: true
+    origin: "*"
+    allowedHeader: abc,def
+    allowedMethod: GET,PUT,POST,DELETE
+    exposedHeader: abc,def
+    maxAge: 1
