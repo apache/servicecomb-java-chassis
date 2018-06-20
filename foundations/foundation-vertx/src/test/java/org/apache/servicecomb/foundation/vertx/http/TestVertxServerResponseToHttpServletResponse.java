@@ -367,7 +367,6 @@ public class TestVertxServerResponseToHttpServletResponse {
     future.get();
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   public void sendPart_ReadStreamPart(@Mocked ReadStreamPart part) {
     CompletableFuture<Void> future = new CompletableFuture<>();

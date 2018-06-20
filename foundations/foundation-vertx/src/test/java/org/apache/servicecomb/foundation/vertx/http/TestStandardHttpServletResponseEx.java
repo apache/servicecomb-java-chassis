@@ -50,11 +50,6 @@ public class TestStandardHttpServletResponseEx {
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
-  private void setExceptionExpected() {
-    expectedException.expect(Error.class);
-    expectedException.expectMessage(Matchers.is("not supported method"));
-  }
-
   @Before
   public void setup() {
     responseEx = new StandardHttpServletResponseEx(response);
