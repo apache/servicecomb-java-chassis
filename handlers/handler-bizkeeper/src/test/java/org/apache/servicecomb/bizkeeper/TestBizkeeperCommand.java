@@ -39,7 +39,6 @@ public class TestBizkeeperCommand {
     Invocation invocation = Mockito.mock(Invocation.class);
     Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
     Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
-
     HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
         .withRequestCacheEnabled(true)
         .withRequestLogEnabled(false);
@@ -72,7 +71,6 @@ public class TestBizkeeperCommand {
     Invocation invocation = Mockito.mock(Invocation.class);
     Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
     Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
-
     HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
         .withRequestCacheEnabled(true)
         .withRequestLogEnabled(false);
@@ -93,7 +91,6 @@ public class TestBizkeeperCommand {
     Invocation invocation = Mockito.mock(Invocation.class);
     Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
     Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
-
     HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
         .withRequestCacheEnabled(true)
         .withRequestLogEnabled(false);
@@ -114,7 +111,6 @@ public class TestBizkeeperCommand {
     Invocation invocation = Mockito.mock(Invocation.class);
     Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
     Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
-
     HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
         .withRequestCacheEnabled(true)
         .withRequestLogEnabled(false);
@@ -136,7 +132,6 @@ public class TestBizkeeperCommand {
     Invocation invocation = Mockito.mock(Invocation.class);
     Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
     Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
-
     HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
         .withRequestCacheEnabled(true)
         .withRequestLogEnabled(false);
@@ -169,7 +164,6 @@ public class TestBizkeeperCommand {
     Invocation invocation = Mockito.mock(Invocation.class);
     Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
     Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
-
     HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
         .withRequestCacheEnabled(true)
         .withRequestLogEnabled(false);
@@ -190,7 +184,6 @@ public class TestBizkeeperCommand {
     Invocation invocation = Mockito.mock(Invocation.class);
     Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
     Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
-
     HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
         .withRequestCacheEnabled(true)
         .withRequestLogEnabled(false);
@@ -211,7 +204,6 @@ public class TestBizkeeperCommand {
     Invocation invocation = Mockito.mock(Invocation.class);
     Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
     Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName()).thenReturn("test1");
-
     HystrixCommandProperties.Setter setter = HystrixCommandProperties.Setter()
         .withRequestCacheEnabled(true)
         .withRequestLogEnabled(false);

@@ -14,29 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.foundation.common.event;
 
-package org.apache.servicecomb.bizkeeper;
+public class AlarmEvent {
 
-import org.apache.servicecomb.core.Invocation;
+  Type type;
 
-import com.netflix.hystrix.HystrixCommandGroupKey;
-import com.netflix.hystrix.HystrixCommandKey;
-
-/**
- * 创建对应的Key值
- *
- */
-public final class CommandKey {
-  private CommandKey() {
+  public AlarmEvent(Type type) {
+    this.type = type;
   }
 
-  public static HystrixCommandGroupKey toHystrixCommandGroupKey(String type, Invocation invocation) {
-    return CustomizeCommandGroupKey.asKey(type + "." + invocation.getOperationMeta().getMicroserviceQualifiedName(),
-        invocation);
+  public Type getType() {
+    return this.type;
   }
 
-  public static HystrixCommandKey toHystrixCommandKey(String type, Invocation invocation) {
-    return HystrixCommandKey.Factory
-        .asKey(type + "." + invocation.getOperationMeta().getMicroserviceQualifiedName());
-  }
+  public enum Type {
+    OPEN,
+    CLOSE
+  };
 }
