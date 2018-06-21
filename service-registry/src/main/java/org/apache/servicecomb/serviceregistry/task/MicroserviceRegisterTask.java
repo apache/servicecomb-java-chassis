@@ -307,7 +307,10 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
 
       // Currently nothing to do but print a warning
       LOGGER.warn("There are schemas only existing in service center: {}, which means there are interfaces changed. "
-          + "It's recommended to increment microservice version before deploying.", scSchemaMap.keySet());
+              + "It's recommended to increment microservice version before deploying.",
+          scSchemaMap.keySet());
+      LOGGER.warn("ATTENTION: The schemas in new version are less than the old version, "
+          + "which may cause compatibility problems.");
     }
   }
 
