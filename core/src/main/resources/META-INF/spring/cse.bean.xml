@@ -29,12 +29,14 @@
     <property name="configId" value="config"/>
   </bean>
 
-  <bean class="org.apache.servicecomb.core.CseContext" factory-method="getInstance"></bean>
+  <bean class="org.apache.servicecomb.core.CseContext" factory-method="getInstance"/>
 
   <bean class="org.apache.servicecomb.core.CseApplicationListener">
   </bean>
 
-  <bean id="cse.executor.groupThreadPool" class="org.apache.servicecomb.core.executor.FixedThreadExecutor"></bean>
+  <bean id="cse.executor.groupThreadPool" class="org.apache.servicecomb.core.executor.FixedThreadExecutor"/>
   <alias name="cse.executor.groupThreadPool" alias="cse.executor.default"/>
-  <bean id="cse.executor.reactive" class="org.apache.servicecomb.core.executor.ReactiveExecutor"></bean>
+  <alias name="cse.executor.groupThreadPool" alias="servicecomb.executor.groupThreadPool"/>
+  <bean id="cse.executor.reactive" class="org.apache.servicecomb.core.executor.ReactiveExecutor"/>
+  <alias name="cse.executor.reactive" alias="servicecomb.executor.reactive"/>
 </beans>
