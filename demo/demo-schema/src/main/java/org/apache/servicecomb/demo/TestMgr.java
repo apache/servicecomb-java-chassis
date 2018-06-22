@@ -74,6 +74,10 @@ public class TestMgr {
     errorList.add(error);
   }
 
+  public static boolean isSuccess() {
+    return errorList.isEmpty();
+  }
+
   public static void summary() {
     if (errorList.isEmpty()) {
       LOGGER.info("............. test finished ............");
