@@ -21,6 +21,7 @@ APPLICATION_ID: springmvctest
 service_description:
   name: springmvc
   version: 0.0.3
+  environment: development
   paths:
     - path: /test1/testpath
       property:

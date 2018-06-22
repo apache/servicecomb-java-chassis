@@ -18,6 +18,7 @@
 APPLICATION_ID: springmvctest
 service_description:
   name: springmvcClient
+  environment: development
   version: 0.0.1
 servicecomb:
   service:
