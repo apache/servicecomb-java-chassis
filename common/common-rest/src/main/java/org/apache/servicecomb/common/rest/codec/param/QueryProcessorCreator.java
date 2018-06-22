@@ -27,11 +27,22 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.parameters.Parameter;
+import io.swagger.models.parameters.QueryParameter;
 
 public class QueryProcessorCreator implements ParamValueProcessorCreator {
   public static final String PARAMTYPE = "query";
 
   public static class QueryProcessor extends AbstractParamProcessor {
+    Object defaultValue;
+
+    public Object getDefaultValue() {
+      return defaultValue;
+    }
+
+    public void setDefaultValue(Object defaultValue) {
+      this.defaultValue = defaultValue;
+    }
+
     public QueryProcessor(String paramPath, JavaType targetType) {
       super(paramPath, targetType);
     }
@@ -43,6 +54,12 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
         value = request.getParameterValues(paramPath);
       } else {
         value = request.getParameter(paramPath);
+        if (value == null || value.equals("")) {
+          Object defaultValue = getDefaultValue();
+          if (defaultValue != null) {
+            value = defaultValue;
+          }
+        }
       }
 
       return convertValue(value, targetType);
@@ -66,6 +83,10 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
   @Override
   public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
     JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
-    return new QueryProcessor(parameter.getName(), targetType);
+    QueryProcessor queryProcessor = new QueryProcessor(parameter.getName(), targetType);
+    if (parameter instanceof QueryParameter) {
+      queryProcessor.setDefaultValue(((QueryParameter) parameter).getDefaultValue());
+    }
+    return queryProcessor;
   }
 }

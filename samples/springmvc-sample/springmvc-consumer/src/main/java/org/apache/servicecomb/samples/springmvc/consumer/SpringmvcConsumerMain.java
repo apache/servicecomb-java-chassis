@@ -51,9 +51,12 @@ public class SpringmvcConsumerMain {
     // RestTemplate Consumer
     String sayHiResult =
         restTemplate.postForObject("cse://springmvc/springmvchello/sayhi?name=Java Chassis", null, String.class);
+    String sayHiDefaultResult =
+        restTemplate.postForObject("cse://springmvc/springmvchello/sayhi", null, String.class);
     String sayHelloResult = restTemplate.postForObject("cse://springmvc/springmvchello/sayhello", person, String.class);
     System.out.println("RestTemplate Consumer or POJO Consumer.  You can choose whatever you like.");
     System.out.println("RestTemplate consumer sayhi services: " + sayHiResult);
+    System.out.println("RestTemplate consumer sayHiDefault services: " + sayHiDefaultResult);
     System.out.println("RestTemplate consumer sayhello services: " + sayHelloResult);
 
     // POJO Consumer
@@ -70,8 +73,8 @@ public class SpringmvcConsumerMain {
     HttpEntity<Person> entity = new HttpEntity<>(person);
     ListenableFuture<ResponseEntity<String>> listenableFuture = cseAsyncRestTemplate
         .exchange("cse://springmvc/springmvchello/sayhello", HttpMethod.POST, entity, String.class);
-//    ResponseEntity<String> responseEntity1 = listenableFuture.get();
-//    System.out.println("AsyncRestTemplate Consumer sayHello services: " + responseEntity1.getBody());
+    //    ResponseEntity<String> responseEntity1 = listenableFuture.get();
+    //    System.out.println("AsyncRestTemplate Consumer sayHello services: " + responseEntity1.getBody());
 
     listenableFuture.addCallback(
         new ListenableFutureCallback<ResponseEntity<String>>() {
@@ -84,8 +87,7 @@ public class SpringmvcConsumerMain {
           public void onSuccess(ResponseEntity<String> result) {
             System.out.println("AsyncRestTemplate Consumer sayHello services: " + result.getBody());
           }
-        }
-    );
+        });
   }
 
   public static void init() throws Exception {
