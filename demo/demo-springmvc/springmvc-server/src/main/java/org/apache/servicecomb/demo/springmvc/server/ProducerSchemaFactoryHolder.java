@@ -21,9 +21,11 @@ import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.definition.schema.ProducerSchemaFactory;
 import org.apache.servicecomb.demo.TestMgr;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -34,8 +36,9 @@ import io.swagger.models.Swagger;
 import io.swagger.util.Yaml;
 
 /**
- * Created by Administrator on 2018/6/22.
+ * Testing schemas generation should be same for each boot up and accommodate swagger.
  */
+@Component
 public class ProducerSchemaFactoryHolder implements BootListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProducerSchemaFactoryHolder.class);
 
@@ -53,7 +56,7 @@ public class ProducerSchemaFactoryHolder implements BootListener {
             new CodeFirstSpringmvcForSchema());
     String codeFirst = getSwaggerContent(meta.getSwagger());
     TestMgr.check("07a48acef4cc1a7f2387d695923c49e98951a974e4f51cf1356d6878db48888f",
-        Hashing.sha256().newHasher().putString(codeFirst, Charsets.UTF_8).hash().toString());
+        RegistryUtils.calcSchemaSummary(codeFirst));
     TestMgr.check(codeFirst.length(), 899);
 
     if (!TestMgr.isSuccess()) {
