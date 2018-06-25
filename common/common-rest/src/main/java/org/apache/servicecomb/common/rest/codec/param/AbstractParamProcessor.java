@@ -24,9 +24,16 @@ public abstract class AbstractParamProcessor implements ParamValueProcessor {
 
   protected JavaType targetType;
 
-  public AbstractParamProcessor(String paramPath, JavaType targetType) {
+  protected Object defaultValue;
+
+  public Object getDefaultValue() {
+    return defaultValue;
+  }
+
+  public AbstractParamProcessor(String paramPath, JavaType targetType, Object defaultValue) {
     this.paramPath = paramPath;
     this.targetType = targetType;
+    this.defaultValue = defaultValue;
   }
 
   public String getParameterPath() {
