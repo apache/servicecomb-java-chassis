@@ -83,6 +83,8 @@ public class SpringmvcClient {
       testController(templateUrlWithServiceName, microserviceName);
 
       testController();
+
+      testDefaultValues(templateUrlWithServiceName, microserviceName);
     }
     HttpHeaders headers = new HttpHeaders();
     headers.set("Accept-Encoding", "gzip");
@@ -103,12 +105,11 @@ public class SpringmvcClient {
     @SuppressWarnings("unchecked")
     Map<String, Double> metrics = restTemplate.getForObject(prefix + "/metrics", Map.class);
 
-//    TestMgr.check(true, metrics.get("jvm(name=heapUsed,statistic=gauge)") != 0);
+    //    TestMgr.check(true, metrics.get("jvm(name=heapUsed,statistic=gauge)") != 0);
     TestMgr.check(true, metrics.size() > 0);
     TestMgr.check(true,
         metrics.get(
-            "servicecomb.invocation(operation=springmvc.codeFirst.saySomething,role=PRODUCER,stage=total,statistic=count,status=200,transport=highway)")
-            >= 0);
+            "servicecomb.invocation(operation=springmvc.codeFirst.saySomething,role=PRODUCER,stage=total,statistic=count,status=200,transport=highway)") >= 0);
 
     //prometheus integration test
     try {
@@ -216,5 +217,21 @@ public class SpringmvcClient {
         "older");
     TestMgr.check(DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.test.duplicate1", "wrong").get(),
         "newer");
+  }
+
+  private static void testDefaultValues(RestTemplate template, String microserviceName) {
+    String prefix = "cse://" + microserviceName;
+
+    TestMgr.check("hi test your age is : 20",
+        template.getForObject(prefix + "/default/sayhi",
+            String.class));
+
+    TestMgr.check("20",
+        template.getForObject(prefix + "/default/add",
+            String.class));
+
+    TestMgr.check("hei test",
+        template.getForObject(prefix + "/default/sayhei",
+            String.class));
   }
 }

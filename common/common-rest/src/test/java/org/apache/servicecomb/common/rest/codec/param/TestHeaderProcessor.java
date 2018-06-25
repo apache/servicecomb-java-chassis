@@ -49,7 +49,7 @@ public class TestHeaderProcessor {
   RestClientRequest clientRequest;
 
   private HeaderProcessor createProcessor(String name, Class<?> type) {
-    return new HeaderProcessor(name, TypeFactory.defaultInstance().constructType(type));
+    return new HeaderProcessor(name, TypeFactory.defaultInstance().constructType(type), null);
   }
 
   private void createClientRequest() {
@@ -132,7 +132,8 @@ public class TestHeaderProcessor {
     };
 
     HeaderProcessor processor =
-        new HeaderProcessor("h1", TypeFactory.defaultInstance().constructCollectionType(List.class, String.class));
+        new HeaderProcessor("h1", TypeFactory.defaultInstance().constructCollectionType(List.class, String.class),
+            null);
     Object value = processor.getValue(request);
     Assert.assertThat((List<String>) value, Matchers.contains("h1v"));
   }
@@ -148,7 +149,7 @@ public class TestHeaderProcessor {
     };
 
     HeaderProcessor processor =
-        new HeaderProcessor("h1", TypeFactory.defaultInstance().constructCollectionType(Set.class, String.class));
+        new HeaderProcessor("h1", TypeFactory.defaultInstance().constructCollectionType(Set.class, String.class), null);
     Object value = processor.getValue(request);
     Assert.assertThat((Set<String>) value, Matchers.contains("h1v"));
   }

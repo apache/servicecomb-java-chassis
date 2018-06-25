@@ -30,13 +30,14 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.parameters.Parameter;
+import io.swagger.models.parameters.PathParameter;
 
 public class PathProcessorCreator implements ParamValueProcessorCreator {
   public static final String PARAMTYPE = "path";
 
   public static class PathProcessor extends AbstractParamProcessor {
-    public PathProcessor(String paramPath, JavaType targetType) {
-      super(paramPath, targetType);
+    public PathProcessor(String paramPath, JavaType targetType, Object defaultValue) {
+      super(paramPath, targetType, defaultValue);
     }
 
     @Override
@@ -72,6 +73,6 @@ public class PathProcessorCreator implements ParamValueProcessorCreator {
   @Override
   public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
     JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
-    return new PathProcessor(parameter.getName(), targetType);
+    return new PathProcessor(parameter.getName(), targetType, ((PathParameter) parameter).getDefaultValue());
   }
 }

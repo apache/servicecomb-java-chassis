@@ -37,8 +37,8 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
   public static final String PARAMTYPE = "formData";
 
   public static class FormProcessor extends AbstractParamProcessor {
-    public FormProcessor(String paramPath, JavaType targetType) {
-      super(paramPath, targetType);
+    public FormProcessor(String paramPath, JavaType targetType, Object defaultValue) {
+      super(paramPath, targetType, defaultValue);
     }
 
     @Override
@@ -76,9 +76,9 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
     JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
 
     if (isPart(parameter)) {
-      return new PartProcessor(parameter.getName(), targetType);
+      return new PartProcessor(parameter.getName(), targetType, ((FormParameter) parameter).getDefaultValue());
     }
-    return new FormProcessor(parameter.getName(), targetType);
+    return new FormProcessor(parameter.getName(), targetType, ((FormParameter) parameter).getDefaultValue());
   }
 
   private boolean isPart(Parameter parameter) {
@@ -86,8 +86,8 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
   }
 
   private static class PartProcessor extends AbstractParamProcessor {
-    PartProcessor(String paramPath, JavaType targetType) {
-      super(paramPath, targetType);
+    PartProcessor(String paramPath, JavaType targetType, Object defaultValue) {
+      super(paramPath, targetType, defaultValue);
     }
 
     @Override
