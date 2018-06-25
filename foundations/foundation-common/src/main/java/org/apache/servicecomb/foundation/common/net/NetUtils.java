@@ -193,10 +193,26 @@ public final class NetUtils {
   }
 
   public static String getHostName() {
+    if (hostName == null) {
+      try {
+        InetAddress localHost = InetAddress.getLocalHost();
+        hostName = localHost.getHostName();
+      } catch (UnknownHostException e) {
+       LOGGER.warn("get host name failed,{}.",e);
+      }
+    }
     return hostName;
   }
 
   public static String getHostAddress() {
+    if(hostAddress == null){
+      try {
+        InetAddress localHost = InetAddress.getLocalHost();
+        hostAddress = localHost.getHostAddress();
+      } catch (UnknownHostException e) {
+        LOGGER.warn("get host address failed,{}.",e);
+      }
+    }
     return hostAddress;
   }
 
