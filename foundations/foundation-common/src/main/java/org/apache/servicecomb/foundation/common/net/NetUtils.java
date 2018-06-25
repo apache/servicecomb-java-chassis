@@ -26,6 +26,7 @@ import java.net.ServerSocket;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -189,10 +190,26 @@ public final class NetUtils {
   }
 
   public static String getHostName() {
+    if (hostName == null) {
+      try {
+        InetAddress localHost = InetAddress.getLocalHost();
+        hostName = localHost.getHostName();
+      } catch (UnknownHostException e) {
+        LOGGER.warn("get host name failed,{}.", e);
+      }
+    }
     return hostName;
   }
 
   public static String getHostAddress() {
+    if(hostAddress == null){ 
+      try { 
+        InetAddress localHost = InetAddress.getLocalHost(); 
+        hostAddress = localHost.getHostAddress(); 
+      } catch (UnknownHostException e) { 
+        LOGGER.warn("get host address failed,{}.",e); 
+      } 
+    } 
     return hostAddress;
   }
 
