@@ -29,7 +29,7 @@ import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.net.UnknownHostException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
