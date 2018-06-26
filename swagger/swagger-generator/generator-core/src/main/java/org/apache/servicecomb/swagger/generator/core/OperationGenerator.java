@@ -27,6 +27,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.ws.rs.DefaultValue;
+
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.extend.parameter.ContextParameter;
 import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
@@ -71,6 +73,8 @@ public class OperationGenerator {
   protected String path;
 
   protected String httpMethod;
+
+  protected String defaultValue;
 
   public OperationGenerator(SwaggerGenerator swaggerGenerator, Method providerMethod) {
     this.swaggerGenerator = swaggerGenerator;
@@ -274,10 +278,15 @@ public class OperationGenerator {
 
   protected void processByParameterAnnotation(Annotation[] paramAnnotations, int paramIdx) {
     for (Annotation annotation : paramAnnotations) {
-      ParameterAnnotationProcessor processor =
-          context.findParameterAnnotationProcessor(annotation.annotationType());
-      if (processor != null) {
-        processor.process(annotation, this, paramIdx);
+      //JAX-RS default value cannot be mapped to parameter name directly, stored it to map with the actual parameter
+      if (annotation instanceof DefaultValue) {
+        this.defaultValue = ((DefaultValue) annotation).value();
+      } else {
+        ParameterAnnotationProcessor processor =
+            context.findParameterAnnotationProcessor(annotation.annotationType());
+        if (processor != null) {
+          processor.process(annotation, this, paramIdx);
+        }
       }
     }
   }
@@ -366,5 +375,9 @@ public class OperationGenerator {
           providerMethod.getName()));
     }
     pathObj.set(httpMethod, operation);
+  }
+
+  public String getDefaultValue() {
+    return defaultValue;
   }
 }
