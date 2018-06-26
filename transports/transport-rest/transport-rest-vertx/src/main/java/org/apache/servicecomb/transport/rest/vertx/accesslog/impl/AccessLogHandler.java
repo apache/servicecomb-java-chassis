@@ -19,6 +19,7 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog.impl;
 
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogGenerator;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.LocalHostItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,11 +37,17 @@ public class AccessLogHandler implements Handler<RoutingContext> {
 
   @Override
   public void handle(RoutingContext context) {
-    AccessLogParam<RoutingContext> accessLogParam = new AccessLogParam<>();
-    accessLogParam.setStartMillisecond(System.currentTimeMillis()).setContextData(context);
+    AccessLogParam<RoutingContext> accessLogParam = getRoutingContextAccessLogParam(context);
 
     context.response().endHandler(event -> LOGGER.info(accessLogGenerator.generateLog(accessLogParam)));
 
     context.next();
+  }
+
+  private AccessLogParam<RoutingContext> getRoutingContextAccessLogParam(RoutingContext context) {
+    AccessLogParam<RoutingContext> accessLogParam = new AccessLogParam<>();
+    accessLogParam.setStartMillisecond(System.currentTimeMillis()).setContextData(context);
+    accessLogParam.setLocalAddress(LocalHostItem.getLocalAddress(accessLogParam));
+    return accessLogParam;
   }
 }

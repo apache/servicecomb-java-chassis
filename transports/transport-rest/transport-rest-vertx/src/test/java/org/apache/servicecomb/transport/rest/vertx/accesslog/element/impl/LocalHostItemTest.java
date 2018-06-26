@@ -20,6 +20,7 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -32,7 +33,16 @@ public class LocalHostItemTest {
   public static final LocalHostItem ELEMENT = new LocalHostItem();
 
   @Test
-  public void getFormattedElement() {
+  public void getFormattedItem() {
+    String localAddress = "192.168.0.1";
+    AccessLogParam<RoutingContext> accessLogParam = new AccessLogParam<>();
+    accessLogParam.setLocalAddress(localAddress);
+
+    Assert.assertEquals(localAddress, ELEMENT.getFormattedItem(accessLogParam));
+  }
+
+  @Test
+  public void getLocalAddress() {
     AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
@@ -44,26 +54,26 @@ public class LocalHostItemTest {
     Mockito.when(request.localAddress()).thenReturn(localAddress);
     Mockito.when(localAddress.host()).thenReturn(localHost);
 
-    String result = ELEMENT.getFormattedItem(param);
+    String result = LocalHostItem.getLocalAddress(param);
 
     assertEquals(localHost, result);
   }
 
   @Test
-  public void getFormattedElementOnRequestIsNull() {
+  public void getLocalAddressOnRequestIsNull() {
     AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
 
     param.setContextData(context);
     Mockito.when(context.request()).thenReturn(null);
 
-    String result = ELEMENT.getFormattedItem(param);
+    String result = LocalHostItem.getLocalAddress(param);
 
     assertEquals("-", result);
   }
 
   @Test
-  public void getFormattedElementOnLocalAddressIsNull() {
+  public void getLocalAddressOnLocalAddressIsNull() {
     AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
@@ -72,13 +82,13 @@ public class LocalHostItemTest {
     Mockito.when(context.request()).thenReturn(request);
     Mockito.when(request.localAddress()).thenReturn(null);
 
-    String result = ELEMENT.getFormattedItem(param);
+    String result = LocalHostItem.getLocalAddress(param);
 
     assertEquals("-", result);
   }
 
   @Test
-  public void getFormattedElementOnHostIsNull() {
+  public void getLocalAddressOnHostIsNull() {
     AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
@@ -89,13 +99,13 @@ public class LocalHostItemTest {
     Mockito.when(request.localAddress()).thenReturn(localAddress);
     Mockito.when(localAddress.host()).thenReturn(null);
 
-    String result = ELEMENT.getFormattedItem(param);
+    String result = LocalHostItem.getLocalAddress(param);
 
     assertEquals("-", result);
   }
 
   @Test
-  public void getFormattedElementIsEmpty() {
+  public void getLocalAddressIsEmpty() {
     AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
     HttpServerRequest request = Mockito.mock(HttpServerRequest.class);
@@ -107,7 +117,7 @@ public class LocalHostItemTest {
     Mockito.when(request.localAddress()).thenReturn(localAddress);
     Mockito.when(localAddress.host()).thenReturn(localHost);
 
-    String result = ELEMENT.getFormattedItem(param);
+    String result = LocalHostItem.getLocalAddress(param);
 
     assertEquals("-", result);
   }
