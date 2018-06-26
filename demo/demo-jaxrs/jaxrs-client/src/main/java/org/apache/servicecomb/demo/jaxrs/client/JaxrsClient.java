@@ -63,6 +63,7 @@ public class JaxrsClient {
     testCompute(templateNew);
     testValidator(templateNew);
     testClientTimeOut(templateNew);
+    testDefaultValues(templateNew);
   }
 
   private static void testCompute(RestTemplate template) throws Exception {
@@ -96,6 +97,26 @@ public class JaxrsClient {
       testValidatorSayHiFail(template, cseUrlPrefix);
       testValidatorExchangeSuccess(template, cseUrlPrefix);
       testValidatorExchangeFail(template, cseUrlPrefix);
+    }
+  }
+
+  private static void testDefaultValues(RestTemplate template) throws Exception {
+    String microserviceName = "jaxrs";
+    for (String transport : DemoConst.transports) {
+      CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
+      TestMgr.setMsg(microserviceName, transport);
+
+      String cseUrlPrefix = "cse://" + microserviceName + "/default/";
+
+      TestMgr.check("40",
+          template.getForObject(cseUrlPrefix + "/add",
+              String.class));
+
+      TestMgr.check("hi test your age is : 20",
+          template.getForObject(cseUrlPrefix + "/sayhei",
+              String.class));
+
+
     }
   }
 
@@ -188,7 +209,8 @@ public class JaxrsClient {
       // ignored
       TestMgr.check(
           "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=",
-          e.getErrorData().toString().substring(0, "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=".length()));
+          e.getErrorData().toString().substring(0,
+              "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=".length()));
     }
 
     TestMgr.check(true, isExcep);
@@ -213,7 +235,8 @@ public class JaxrsClient {
       // Message dependends on locale, so just check the short part.
       TestMgr.check(
           "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=",
-          e.getErrorData().toString().substring(0, "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=".length()));
+          e.getErrorData().toString().substring(0,
+              "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=".length()));
     }
     TestMgr.check(true, isExcep);
   }
@@ -245,7 +268,8 @@ public class JaxrsClient {
       // Message dependends on locale, so just check the short part.
       TestMgr.check(
           "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=",
-          e.getErrorData().toString().substring(0, "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=".length()));
+          e.getErrorData().toString().substring(0,
+              "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=".length()));
     }
     TestMgr.check(true, isExcep);
   }

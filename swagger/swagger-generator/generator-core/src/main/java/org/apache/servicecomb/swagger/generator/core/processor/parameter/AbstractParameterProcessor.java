@@ -39,7 +39,7 @@ public abstract class AbstractParameterProcessor<T extends AbstractSerializableP
       T parameter) {
     setParameterName(annotation, operationGenerator, paramIdx, parameter);
     setParameterType(operationGenerator, paramIdx, parameter);
-    setParameterDefaultValue(annotation, parameter);
+    setParameterDefaultValue(annotation, operationGenerator, parameter);
   }
 
   protected void setParameterType(OperationGenerator operationGenerator, int paramIdx,
@@ -57,10 +57,15 @@ public abstract class AbstractParameterProcessor<T extends AbstractSerializableP
     parameter.setName(paramName);
   }
 
-  protected void setParameterDefaultValue(Object annotation, T parameter) {
-    String defaultValue = getAnnotationParameterDefaultValue(annotation);
+  protected void setParameterDefaultValue(Object annotation, OperationGenerator operationGenerator, T parameter) {
+    String defaultValue = operationGenerator.getDefaultValue();
     if (StringUtils.isNotEmpty(defaultValue)) {
       parameter.setDefaultValue(defaultValue);
+    } else {
+      defaultValue = getAnnotationParameterDefaultValue(annotation);
+      if (StringUtils.isNotEmpty(defaultValue)) {
+        parameter.setDefaultValue(defaultValue);
+      }
     }
 
   }
