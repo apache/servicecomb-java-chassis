@@ -31,6 +31,10 @@ public class LocalHostItem implements AccessLogItem<RoutingContext> {
 
   @Override
   public String getFormattedItem(AccessLogParam<RoutingContext> accessLogParam) {
+    return accessLogParam.getLocalAddress();
+  }
+
+  public static String getLocalAddress(AccessLogParam<RoutingContext> accessLogParam) {
     HttpServerRequest request = accessLogParam.getContextData().request();
     if (null == request) {
       return EMPTY_RESULT;
