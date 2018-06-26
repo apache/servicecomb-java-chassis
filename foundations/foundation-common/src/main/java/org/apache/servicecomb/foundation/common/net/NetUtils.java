@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.foundation.common.net;
 
-import java.io.IOException;
+import java.io.IOException; 
 import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
@@ -29,7 +29,7 @@ import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.net.UnknownHostException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -193,10 +193,26 @@ public final class NetUtils {
   }
 
   public static String getHostName() {
+    if (hostName == null) {
+      try {
+        InetAddress localHost = InetAddress.getLocalHost();
+        hostName = localHost.getHostName();
+      } catch (UnknownHostException e) {
+       LOGGER.warn("get host name failed,{}.",e);
+      }
+    }
     return hostName;
   }
 
   public static String getHostAddress() {
+    if(hostAddress == null){
+      try {
+        InetAddress localHost = InetAddress.getLocalHost();
+        hostAddress = localHost.getHostAddress();
+      } catch (UnknownHostException e) {
+        LOGGER.warn("get host address failed,{}.",e);
+      }
+    }
     return hostAddress;
   }
 
