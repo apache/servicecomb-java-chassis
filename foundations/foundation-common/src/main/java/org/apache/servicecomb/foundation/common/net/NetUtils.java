@@ -56,6 +56,10 @@ public final class NetUtils {
   private static String hostAddress;
 
   static {
+    doGetHostNameAndHostAddress();
+  }
+
+  private static void doGetHostNameAndHostAddress() {
     try {
       doGetIpv4AddressFromNetworkInterface();
       // getLocalHost will throw exception in some docker image and sometimes will do a hostname lookup and time consuming
@@ -191,24 +195,14 @@ public final class NetUtils {
 
   public static String getHostName() {
     if (hostName == null) {
-      try {
-        InetAddress localHost = InetAddress.getLocalHost();
-        hostName = localHost.getHostName();
-      } catch (UnknownHostException e) {
-        LOGGER.warn("get host name failed,{}.", e);
-      }
+      doGetHostNameAndHostAddress();
     }
     return hostName;
   }
 
   public static String getHostAddress() {
     if(hostAddress == null){ 
-      try { 
-        InetAddress localHost = InetAddress.getLocalHost(); 
-        hostAddress = localHost.getHostAddress(); 
-      } catch (UnknownHostException e) { 
-        LOGGER.warn("get host address failed,{}.",e); 
-      } 
+      doGetHostNameAndHostAddress();
     } 
     return hostAddress;
   }
