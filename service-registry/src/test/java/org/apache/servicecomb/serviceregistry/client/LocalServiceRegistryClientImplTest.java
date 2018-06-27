@@ -190,5 +190,12 @@ public class LocalServiceRegistryClientImplTest {
     Assert.assertEquals(200, schemasHolder.getStatusCode());
     Assert.assertTrue(schemasHolder.getValue().isEmpty());
   }
+
+  @Test
+  public void testLoadSchemaIdsFromRegistryFile() {
+    Microservice microservice = registryClient.getMicroservice("001");
+    Assert.assertThat(microservice.getSchemas().size(), Is.is(1));
+    Assert.assertTrue(microservice.getSchemas().contains("springmvcHello"));
+  }
 }
 
