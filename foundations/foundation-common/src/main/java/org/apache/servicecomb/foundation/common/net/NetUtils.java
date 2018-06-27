@@ -26,6 +26,7 @@ import java.net.ServerSocket;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,6 +56,10 @@ public final class NetUtils {
   private static String hostAddress;
 
   static {
+    doGetHostNameAndHostAddress();
+  }
+
+  private static void doGetHostNameAndHostAddress() {
     try {
       doGetIpv4AddressFromNetworkInterface();
       // getLocalHost will throw exception in some docker image and sometimes will do a hostname lookup and time consuming
@@ -193,10 +198,16 @@ public final class NetUtils {
   }
 
   public static String getHostName() {
+    if (hostName == null) {
+      doGetHostNameAndHostAddress();
+    }
     return hostName;
   }
 
   public static String getHostAddress() {
+    if(hostAddress == null){ 
+      doGetHostNameAndHostAddress();
+    } 
     return hostAddress;
   }
 
