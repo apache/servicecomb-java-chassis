@@ -85,6 +85,7 @@ public class SpringmvcClient {
       testController();
 
       testDefaultValues(templateUrlWithServiceName, microserviceName);
+      testRequiredBody(templateUrlWithServiceName, microserviceName);
     }
     HttpHeaders headers = new HttpHeaders();
     headers.set("Accept-Encoding", "gzip");
@@ -221,17 +222,33 @@ public class SpringmvcClient {
 
   private static void testDefaultValues(RestTemplate template, String microserviceName) {
     String prefix = "cse://" + microserviceName;
-
     TestMgr.check("hi test your age is : 20",
-        template.getForObject(prefix + "/default/sayhi",
+        template.getForObject(prefix + "/annotations/sayhi",
             String.class));
 
     TestMgr.check("20",
-        template.getForObject(prefix + "/default/add",
+        template.getForObject(prefix + "/annotations/add",
             String.class));
 
     TestMgr.check("hei test",
-        template.getForObject(prefix + "/default/sayhei",
+        template.getForObject(prefix + "/annotations/sayhei",
             String.class));
+  }
+
+  private static void testRequiredBody(RestTemplate template, String microserviceName) {
+    String prefix = "cse://" + microserviceName;
+    Person user = new Person();
+    user.setName("world");
+    TestMgr.check("ha world",
+        template.postForObject(prefix + "/annotations/saysomething?prefix={prefix}",
+            user,
+            String.class,
+            "ha"));
+
+    TestMgr.check("No user data found",
+        template.postForObject(prefix + "/annotations/saysomething?prefix={prefix}",
+            null,
+            String.class,
+            "ha"));
   }
 }
