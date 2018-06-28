@@ -18,6 +18,7 @@
 package org.apache.servicecomb.foundation.common.net;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.HashMap;
@@ -106,5 +107,23 @@ public class TestNetUtils {
     ss.close();
 
     Assert.assertTrue(NetUtils.canTcpListen(address, port));
+  }
+  
+  @Test
+  public void testGetHostName() throws Exception {
+    Assert.assertNotEquals(null, NetUtils.getHostAddress());
+    Assert.assertNotEquals(null, NetUtils.getHostName());
+    
+    Class<?> clazz = Class.forName("org.apache.servicecomb.foundation.common.net.NetUtils");
+    Field hostNameField = clazz.getDeclaredField("hostName");
+    hostNameField.setAccessible(true);
+    hostNameField.set(NetUtils.class, null);
+    Assert.assertNotEquals(null, NetUtils.getHostName());
+    
+    Field hostAddressField = clazz.getDeclaredField("hostAddress");
+    hostAddressField.setAccessible(true);
+    hostAddressField.set(NetUtils.class, null);
+    Assert.assertNotEquals(null, NetUtils.getHostAddress());
+  
   }
 }

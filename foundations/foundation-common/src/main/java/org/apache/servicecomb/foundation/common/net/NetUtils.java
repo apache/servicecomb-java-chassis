@@ -55,6 +55,10 @@ public final class NetUtils {
   private static String hostAddress;
 
   static {
+    doGetHostNameAndHostAddress();
+  }
+
+  private static void doGetHostNameAndHostAddress() {
     try {
       doGetIpv4AddressFromNetworkInterface();
       // getLocalHost will throw exception in some docker image and sometimes will do a hostname lookup and time consuming
@@ -193,10 +197,20 @@ public final class NetUtils {
   }
 
   public static String getHostName() {
+    //If failed to get host name ,micro-service will registry failed
+    //So I add retry mechanism
+    if(hostName == null) {
+      doGetHostNameAndHostAddress();
+    }
     return hostName;
   }
 
   public static String getHostAddress() {
+    //If failed to get host address ,micro-service will registry failed
+    //So I add retry mechanism
+    if(hostAddress == null) {
+      doGetHostNameAndHostAddress();
+    }
     return hostAddress;
   }
 
