@@ -107,4 +107,18 @@ public class TestNetUtils {
 
     Assert.assertTrue(NetUtils.canTcpListen(address, port));
   }
+
+  @Test public void testGetHostName(){
+    String hostName = NetUtils.getHostName();
+    Assert.assertNotEquals(null,hostName);
+    hostName = null;
+    Assert.assertNotEquals(hostName,NetUtils.getHostName());
+  }
+
+  @Test public void testGetHostAddress(){
+      String hostAddress = NetUtils.getHostAddress();
+      Assert.assertNotEquals(null,hostAddress);
+      hostAddress = null;
+      Assert.assertNotEquals(hostAddress,NetUtils.getHostAddress());
+  }
 }
