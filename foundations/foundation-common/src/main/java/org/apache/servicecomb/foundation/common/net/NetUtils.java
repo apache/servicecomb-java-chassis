@@ -26,7 +26,6 @@ import java.net.ServerSocket;
 import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -66,7 +65,7 @@ public final class NetUtils {
       InetAddress localHost = InetAddress.getLocalHost();
       hostName = localHost.getHostName();
       if ((localHost.isAnyLocalAddress() || localHost.isLoopbackAddress() || localHost.isMulticastAddress())
-              && !allInterfaceAddresses.isEmpty()) {
+            && !allInterfaceAddresses.isEmpty()) {
         InetAddress availabelAddress = allInterfaceAddresses.values().iterator().next();
         hostAddress = availabelAddress.getHostAddress();
         LOGGER.warn("cannot find a proper host address, choose {}, may not be correct.", hostAddress);
@@ -75,7 +74,7 @@ public final class NetUtils {
       }
 
       LOGGER.info(
-              "add host name from localhost:" + hostName + ",host address:" + hostAddress);
+            "add host name from localhost:" + hostName + ",host address:" + hostAddress);
     } catch (Exception e) {
       LOGGER.error("got exception when trying to get addresses:", e);
       if (allInterfaceAddresses.size() >= 1) {
@@ -84,7 +83,7 @@ public final class NetUtils {
         hostName = entry.getHostName();
         hostAddress = entry.getHostAddress();
         LOGGER.info(
-                "add host name from interfaces:" + hostName + ",host address:" + hostAddress);
+              "add host name from interfaces:" + hostName + ",host address:" + hostAddress);
       }
     }
   }
@@ -111,13 +110,13 @@ public final class NetUtils {
         InetAddress address = iterAddress.nextElement();
 
         if (address.isAnyLocalAddress() || address.isLoopbackAddress() || address.isMulticastAddress()
-                || Inet6Address.class.isInstance(address)) {
+              || Inet6Address.class.isInstance(address)) {
           continue;
         }
 
         if (Inet4Address.class.isInstance(address)) {
           LOGGER.info(
-                  "add network interface name:" + network.getName() + ",host address:" + address.getHostAddress());
+                "add network interface name:" + network.getName() + ",host address:" + address.getHostAddress());
           allInterfaceAddresses.put(network.getName(), address);
         }
       }
