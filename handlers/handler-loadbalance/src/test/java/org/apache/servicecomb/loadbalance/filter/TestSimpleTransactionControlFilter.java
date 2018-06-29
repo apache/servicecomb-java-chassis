@@ -25,7 +25,8 @@ import java.util.Map;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.loadbalance.CseServer;
+import org.apache.servicecomb.loadbalance.LoadBalancer;
+import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,13 +34,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.netflix.loadbalancer.RandomRule;
 import com.netflix.loadbalancer.Server;
 
 public class TestSimpleTransactionControlFilter {
 
   private SimpleTransactionControlFilter filter;
 
-  private CseServer server;
+  private ServiceCombServer server;
 
   @BeforeClass
   public static void beforeCls() {
@@ -52,12 +54,14 @@ public class TestSimpleTransactionControlFilter {
   @Before
   public void setUp() {
     filter = new SimpleTransactionControlFilter();
+    LoadBalancer loadBalancer = new LoadBalancer(new RandomRule(), "microserviceName", null);
+    filter.setLoadBalancer(loadBalancer);
     Map<String, String> properties = new HashMap<>();
     properties.put("tag0", "value0");
     properties.put("tag1", "value1");
     MicroserviceInstance instance = new MicroserviceInstance();
     instance.setProperties(properties);
-    server = Mockito.mock(CseServer.class);
+    server = Mockito.mock(ServiceCombServer.class);
     Mockito.when(server.getInstance()).thenReturn(instance);
   }
 
@@ -80,11 +84,10 @@ public class TestSimpleTransactionControlFilter {
   @Test
   public void testGetFilteredListOfServers() {
     Invocation invocation = Mockito.mock(Invocation.class);
-    filter.setInvocation(invocation);
 
     List<Server> servers = new ArrayList<>();
     servers.add(server);
-    List<Server> filteredServers = filter.getFilteredListOfServers(servers);
+    List<Server> filteredServers = filter.getFilteredListOfServers(servers, null);
     Assert.assertEquals(1, filteredServers.size());
   }
 }

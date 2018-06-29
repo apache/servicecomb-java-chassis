@@ -19,7 +19,7 @@ package org.apache.servicecomb.loadbalance.filter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.loadbalance.CseServer;
+import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.DataCenterInfo;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
@@ -73,7 +73,7 @@ public class TestZoneAwareServerListFilterExt {
     };
     ZoneAwareServerListFilterExt filter = new ZoneAwareServerListFilterExt();
     List<Server> servers = new ArrayList<>();
-    CseServer noneMatchServer = new MockUp<CseServer>() {
+    ServiceCombServer noneMatchServer = new MockUp<ServiceCombServer>() {
       @Mock
       public String toString() {
         return "noneMatchServer";
@@ -89,7 +89,7 @@ public class TestZoneAwareServerListFilterExt {
         return noneMatchInstance;
       }
     }.getMockInstance();
-    CseServer regionMatchregionMatchServer = new MockUp<CseServer>() {
+    ServiceCombServer regionMatchregionMatchServer = new MockUp<ServiceCombServer>() {
       @Mock
       public String toString() {
         return "regionMatchregionMatchServer";
@@ -106,7 +106,7 @@ public class TestZoneAwareServerListFilterExt {
       }
     }.getMockInstance();
 
-    CseServer allmatchServer = new MockUp<CseServer>() {
+    ServiceCombServer allmatchServer = new MockUp<ServiceCombServer>() {
       @Mock
       public String toString() {
         return "allmatchServer";
@@ -124,17 +124,17 @@ public class TestZoneAwareServerListFilterExt {
     }.getMockInstance();
 
     servers.add(noneMatchServer);
-    List<Server> result = filter.getFilteredListOfServers(servers);
+    List<Server> result = filter.getFilteredListOfServers(servers, null);
     Assert.assertEquals(result.size(), 1);
     Assert.assertEquals(result.get(0), noneMatchServer);
 
     servers.add(regionMatchregionMatchServer);
-    result = filter.getFilteredListOfServers(servers);
+    result = filter.getFilteredListOfServers(servers, null);
     Assert.assertEquals(result.size(), 1);
     Assert.assertEquals(result.get(0), regionMatchregionMatchServer);
 
     servers.add(allmatchServer);
-    result = filter.getFilteredListOfServers(servers);
+    result = filter.getFilteredListOfServers(servers, null);
     Assert.assertEquals(result.size(), 1);
     Assert.assertEquals(result.get(0), allmatchServer);
   }

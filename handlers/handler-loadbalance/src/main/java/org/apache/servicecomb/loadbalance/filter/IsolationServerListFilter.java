@@ -20,17 +20,19 @@ package org.apache.servicecomb.loadbalance.filter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.event.AlarmEvent.Type;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.loadbalance.Configuration;
-import org.apache.servicecomb.loadbalance.CseServer;
+import org.apache.servicecomb.loadbalance.LoadBalancer;
 import org.apache.servicecomb.loadbalance.ServerListFilterExt;
+import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.loadbalance.event.IsolationServerEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
-import com.netflix.loadbalancer.LoadBalancerStats;
+import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ServerStats;
 
@@ -40,8 +42,6 @@ public final class IsolationServerListFilter implements ServerListFilterExt {
 
   private static final double PERCENT = 100;
 
-  private String microserviceName;
-
   private int errorThresholdPercentage;
 
   private long singleTestTime;
@@ -50,29 +50,29 @@ public final class IsolationServerListFilter implements ServerListFilterExt {
 
   private int continuousFailureThreshold;
 
-  private LoadBalancerStats stats;
+  private LoadBalancer loadBalancer;
 
   public EventBus eventBus = EventManager.getEventBus();
 
-  public void setLoadBalancerStats(LoadBalancerStats stats) {
-    this.stats = stats;
-  }
-
-  public LoadBalancerStats getLoadBalancerStats() {
-    return stats;
-  }
-
-  public String getMicroserviceName() {
-    return microserviceName;
-  }
-
-  public void setMicroserviceName(String microserviceName) {
-    this.microserviceName = microserviceName;
+  @Override
+  public int getOrder() {
+    return 100;
   }
 
   @Override
-  public List<Server> getFilteredListOfServers(List<Server> servers) {
-    if (!Configuration.INSTANCE.isIsolationFilterOpen(microserviceName)) {
+  public boolean enabled() {
+    return DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.loadbalance.filter.isolation.enabled", true).get();
+  }
+
+  @Override
+  public void setLoadBalancer(LoadBalancer loadBalancer) {
+    this.loadBalancer = loadBalancer;
+  }
+
+  @Override
+  public List<Server> getFilteredListOfServers(List<Server> servers, Invocation invocation) {
+    if (!Configuration.INSTANCE.isIsolationFilterOpen(this.loadBalancer.getMicroServiceName())) {
       return servers;
     }
 
@@ -86,15 +86,17 @@ public final class IsolationServerListFilter implements ServerListFilterExt {
   }
 
   private void updateSettings() {
-    errorThresholdPercentage = Configuration.INSTANCE.getErrorThresholdPercentage(microserviceName);
-    singleTestTime = Configuration.INSTANCE.getSingleTestTime(microserviceName);
-    enableRequestThreshold = Configuration.INSTANCE.getEnableRequestThreshold(microserviceName);
-    continuousFailureThreshold = Configuration.INSTANCE.getContinuousFailureThreshold(microserviceName);
+    errorThresholdPercentage = Configuration.INSTANCE
+        .getErrorThresholdPercentage(this.loadBalancer.getMicroServiceName());
+    singleTestTime = Configuration.INSTANCE.getSingleTestTime(this.loadBalancer.getMicroServiceName());
+    enableRequestThreshold = Configuration.INSTANCE.getEnableRequestThreshold(this.loadBalancer.getMicroServiceName());
+    continuousFailureThreshold = Configuration.INSTANCE
+        .getContinuousFailureThreshold(this.loadBalancer.getMicroServiceName());
   }
 
   private boolean allowVisit(Server server) {
     updateSettings();
-    ServerStats serverStats = stats.getSingleServerStat(server);
+    ServerStats serverStats = this.loadBalancer.getLoadBalancerStats().getSingleServerStat(server);
     long totalRequest = serverStats.getTotalRequestsCount();
     long failureRequest = serverStats.getSuccessiveConnectionFailureCount();
     int currentCountinuousFailureCount = 0;
@@ -105,7 +107,7 @@ public final class IsolationServerListFilter implements ServerListFilterExt {
 
     if (continuousFailureThreshold > 0) {
       // continuousFailureThreshold has higher priority to decide the result
-      currentCountinuousFailureCount = ((CseServer) server).getCountinuousFailureCount();
+      currentCountinuousFailureCount = ((ServiceCombServer) server).getCountinuousFailureCount();
       if (currentCountinuousFailureCount < continuousFailureThreshold) {
         return true;
       }
@@ -117,22 +119,24 @@ public final class IsolationServerListFilter implements ServerListFilterExt {
       }
     }
 
-    if ((System.currentTimeMillis() - ((CseServer) server).getLastVisitTime()) > singleTestTime) {
+    if ((System.currentTimeMillis() - ((ServiceCombServer) server).getLastVisitTime()) > singleTestTime) {
       LOGGER.info("The Service {}'s instance {} has been break, will give a single test opportunity.",
-          microserviceName,
+          this.loadBalancer.getMicroServiceName(),
           server);
-      eventBus.post(new IsolationServerEvent(microserviceName, totalRequest, currentCountinuousFailureCount,
+      eventBus.post(new IsolationServerEvent(this.loadBalancer.getMicroServiceName(), totalRequest,
+          currentCountinuousFailureCount,
           currentErrorThresholdPercentage,
           continuousFailureThreshold, errorThresholdPercentage, enableRequestThreshold,
           singleTestTime, Type.CLOSE));
       return true;
     }
 
-    LOGGER.warn("The Service {}'s instance {} has been break!", microserviceName, server);
-    eventBus.post(new IsolationServerEvent(microserviceName, totalRequest, currentCountinuousFailureCount,
-        currentErrorThresholdPercentage,
-        continuousFailureThreshold, errorThresholdPercentage, enableRequestThreshold,
-        singleTestTime, Type.OPEN));
+    LOGGER.warn("The Service {}'s instance {} has been break!", this.loadBalancer.getMicroServiceName(), server);
+    eventBus.post(
+        new IsolationServerEvent(this.loadBalancer.getMicroServiceName(), totalRequest, currentCountinuousFailureCount,
+            currentErrorThresholdPercentage,
+            continuousFailureThreshold, errorThresholdPercentage, enableRequestThreshold,
+            singleTestTime, Type.OPEN));
     return false;
   }
 }

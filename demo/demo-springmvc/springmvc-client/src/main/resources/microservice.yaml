@@ -54,10 +54,6 @@ servicecomb:
     retryEnabled: true
     retryOnSame: 1
     retryOnNext: 1
-    serverListFilters: zoneaware
-    serverListFilter:
-      zoneaware:
-        className: org.apache.servicecomb.loadbalance.filter.ZoneAwareServerListFilterExt
   fallbackpolicy:
     Consumer:
       springmvc:
