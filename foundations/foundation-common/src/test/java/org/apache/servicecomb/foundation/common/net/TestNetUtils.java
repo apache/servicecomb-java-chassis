@@ -111,18 +111,13 @@ public class TestNetUtils {
   
   @Test
   public void testGetHostName() throws Exception {
+    Assert.assertNotEquals(null, NetUtils.getHostName());
     Assert.assertNotEquals(null, NetUtils.getHostAddress());
+     
+    Deencapsulation.setField(NetUtils.class, "hostName", null);
     Assert.assertNotEquals(null, NetUtils.getHostName());
-    
-    Class<?> clazz = Class.forName("org.apache.servicecomb.foundation.common.net.NetUtils");
-    Field hostNameField = clazz.getDeclaredField("hostName");
-    hostNameField.setAccessible(true);
-    hostNameField.set(NetUtils.class, null);
-    Assert.assertNotEquals(null, NetUtils.getHostName());
-    
-    Field hostAddressField = clazz.getDeclaredField("hostAddress");
-    hostAddressField.setAccessible(true);
-    hostAddressField.set(NetUtils.class, null);
+      
+    Deencapsulation.setField(NetUtils.class, "hostAddress", null);
     Assert.assertNotEquals(null, NetUtils.getHostAddress());
   
   }
