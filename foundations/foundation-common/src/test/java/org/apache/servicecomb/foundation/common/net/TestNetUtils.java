@@ -110,15 +110,16 @@ public class TestNetUtils {
   }
   
   @Test
-  public void testGetHostName() throws Exception {
+  public void testGetHostName() {
     Assert.assertNotEquals(null, NetUtils.getHostName());
-    Assert.assertNotEquals(null, NetUtils.getHostAddress());
-     
     Deencapsulation.setField(NetUtils.class, "hostName", null);
     Assert.assertNotEquals(null, NetUtils.getHostName());
-      
+  }
+
+  @Test
+  public void testGetHostAddress() {
+    Assert.assertNotEquals(null, NetUtils.getHostAddress());
     Deencapsulation.setField(NetUtils.class, "hostAddress", null);
     Assert.assertNotEquals(null, NetUtils.getHostAddress());
-  
   }
 }
