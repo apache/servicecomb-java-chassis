@@ -25,6 +25,7 @@ import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.ConsumerProvider;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -52,7 +53,18 @@ public class ConsumerProviderManager {
   }
 
   public ReferenceConfig createReferenceConfig(String microserviceName, String versionRule, String transport) {
-    return new ReferenceConfig(appManager, microserviceName, versionRule, transport);
+    ReferenceConfig referenceConfig = new ReferenceConfig(appManager, microserviceName, versionRule, transport);
+
+    MicroserviceVersionRule microserviceVersionRule = referenceConfig.getMicroserviceVersionRule();
+    if (microserviceVersionRule.getLatestMicroserviceVersion() == null) {
+      throw new IllegalStateException(
+          String.format(
+              "Probably invoke a service before it is registered, or no instance found for it, appId=%s, name=%s",
+              microserviceVersionRule.getAppId(),
+              microserviceVersionRule.getMicroserviceName()));
+    }
+
+    return referenceConfig;
   }
 
   public ReferenceConfig createReferenceConfig(String microserviceName) {
@@ -72,7 +84,7 @@ public class ConsumerProviderManager {
         .getStringProperty(key + ".transport", defaultTransport)
         .get();
 
-    return new ReferenceConfig(appManager, microserviceName, versionRule, transport);
+    return createReferenceConfig(microserviceName, versionRule, transport);
   }
 
   public ReferenceConfig getReferenceConfig(String microserviceName) {
