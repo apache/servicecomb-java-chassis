@@ -86,8 +86,8 @@ public class TestConsumerProviderManager {
 
   @Test
   public void createReferenceConfig_config() {
-    ArchaiusUtils.setProperty("cse.references.app:ms.version-rule", "1.0.0+");
-    ArchaiusUtils.setProperty("cse.references.app:ms.transport", Const.RESTFUL);
+    ArchaiusUtils.setProperty("servicecomb.references.app:ms.version-rule", "1.0.0+");
+    ArchaiusUtils.setProperty("servicecomb.references.app:ms.transport", Const.RESTFUL);
 
     ReferenceConfig referenceConfig = mockCreateReferenceConfig();
 

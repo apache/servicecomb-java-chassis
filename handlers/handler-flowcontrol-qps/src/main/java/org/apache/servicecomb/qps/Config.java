@@ -26,16 +26,16 @@ import com.netflix.config.DynamicPropertyFactory;
 public final class Config {
   private static final Logger LOGGER = LoggerFactory.getLogger(Config.class);
 
-  public static final String CONSUMER_LIMIT_KEY_PREFIX = "cse.flowcontrol.Consumer.qps.limit.";
+  public static final String CONSUMER_LIMIT_KEY_PREFIX = "servicecomb.flowcontrol.Consumer.qps.limit.";
 
-  public static final String PROVIDER_LIMIT_KEY_PREFIX = "cse.flowcontrol.Provider.qps.limit.";
+  public static final String PROVIDER_LIMIT_KEY_PREFIX = "servicecomb.flowcontrol.Provider.qps.limit.";
 
   public static final String PROVIDER_LIMIT_KEY_GLOBAL =
-      "cse.flowcontrol.Provider.qps.global.limit";
+      "servicecomb.flowcontrol.Provider.qps.global.limit";
 
-  public static final String CONSUMER_ENABLED = "cse.flowcontrol.Consumer.qps.enabled";
+  public static final String CONSUMER_ENABLED = "servicecomb.flowcontrol.Consumer.qps.enabled";
 
-  public static final String PROVIDER_ENABLED = "cse.flowcontrol.Provider.qps.enabled";
+  public static final String PROVIDER_ENABLED = "servicecomb.flowcontrol.Provider.qps.enabled";
 
   public static final Config INSTANCE = new Config();
 

@@ -31,25 +31,25 @@ public final class ConfigCenterConfig {
 
   private static ConcurrentCompositeConfiguration finalConfig;
 
-  private static final String AUTO_DISCOVERY_ENABLED = "cse.service.registry.autodiscovery";
+  private static final String AUTO_DISCOVERY_ENABLED = "servicecomb.service.registry.autodiscovery";
 
-  private static final String SERVER_URL_KEY = "cse.config.client.serverUri";
+  private static final String SERVER_URL_KEY = "servicecomb.config.client.serverUri";
 
-  private static final String REFRESH_MODE = "cse.config.client.refreshMode";
+  private static final String REFRESH_MODE = "servicecomb.config.client.refreshMode";
 
-  private static final String REFRESH_PORT = "cse.config.client.refreshPort";
+  private static final String REFRESH_PORT = "servicecomb.config.client.refreshPort";
 
-  private static final String TENANT_NAME = "cse.config.client.tenantName";
+  private static final String TENANT_NAME = "servicecomb.config.client.tenantName";
 
-  private static final String DOMAIN_NAME = "cse.config.client.domainName";
+  private static final String DOMAIN_NAME = "servicecomb.config.client.domainName";
 
-  private static final String TOKEN_NAME = "cse.config.client.token";
+  private static final String TOKEN_NAME = "servicecomb.config.client.token";
 
-  private static final String URI_API_VERSION = "cse.config.client.api.version";
+  private static final String URI_API_VERSION = "servicecomb.config.client.api.version";
 
-  private static final String REFRESH_INTERVAL = "cse.config.client.refresh_interval";
+  private static final String REFRESH_INTERVAL = "servicecomb.config.client.refresh_interval";
 
-  private static final String FIRST_REFRESH_INTERVAL = "cse.config.client.first_refresh_interval";
+  private static final String FIRST_REFRESH_INTERVAL = "servicecomb.config.client.first_refresh_interval";
 
   private static final String SERVICE_NAME = "service_description.name";
 
@@ -59,7 +59,7 @@ public final class ConfigCenterConfig {
 
   private static final String INSTANCE_TAGS = "instance_description.properties.tags";
 
-  public static final String PROXY_PRE_NAME = "cse.proxy.";
+  public static final String PROXY_PRE_NAME = "servicecomb.proxy.";
 
   public static final String PROXY_ENABLE = PROXY_PRE_NAME + "enable";
 
@@ -185,7 +185,7 @@ public final class ConfigCenterConfig {
   }
 
   public int getConnectionTimeout() {
-    return finalConfig.getInt("cse.config.client.timeout.connection", DEFAULT_TIMEOUT_IN_MS);
+    return finalConfig.getInt("servicecomb.config.client.timeout.connection", DEFAULT_TIMEOUT_IN_MS);
   }
 
   public String getEnvironment() {

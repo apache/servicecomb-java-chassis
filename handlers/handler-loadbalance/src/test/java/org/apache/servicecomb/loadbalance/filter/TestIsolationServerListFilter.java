@@ -63,9 +63,9 @@ public class TestIsolationServerListFilter {
   public void setUp() throws Exception {
     isolationServerListFilter = new IsolationServerListFilter();
     loadBalancerStats = new LoadBalancerStats("loadBalancer");
-    ArchaiusUtils.setProperty("cse.loadbalance.isolation.enabled",
+    ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.enabled",
         "true");
-    ArchaiusUtils.setProperty("cse.loadbalance.isolation.enableRequestThreshold",
+    ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.enableRequestThreshold",
         "3");
 
     taskList = new ArrayList<>();
@@ -86,7 +86,7 @@ public class TestIsolationServerListFilter {
 
     AbstractConfiguration configuration =
         (AbstractConfiguration) DynamicPropertyFactory.getBackingConfigurationSource();
-    configuration.clearProperty("cse.loadbalance.isolation.continuousFailureThreshold");
+    configuration.clearProperty("servicecomb.loadbalance.isolation.continuousFailureThreshold");
   }
 
   @Test
@@ -128,7 +128,7 @@ public class TestIsolationServerListFilter {
   @Test
   public void testGetFilteredListOfServersOnContinuousFailureReachesThreshold() {
     ((AbstractConfiguration) DynamicPropertyFactory.getBackingConfigurationSource())
-        .addProperty("cse.loadbalance.isolation.continuousFailureThreshold",
+        .addProperty("servicecomb.loadbalance.isolation.continuousFailureThreshold",
             "3");
     Invocation invocation = Mockito.mock(Invocation.class);
     CseServer testServer = Mockito.mock(CseServer.class);
@@ -152,7 +152,7 @@ public class TestIsolationServerListFilter {
   @Test
   public void testGetFilteredListOfServersOnContinuousFailureIsBelowThreshold() {
     ((AbstractConfiguration) DynamicPropertyFactory.getBackingConfigurationSource())
-        .addProperty("cse.loadbalance.isolation.continuousFailureThreshold",
+        .addProperty("servicecomb.loadbalance.isolation.continuousFailureThreshold",
             "3");
     Invocation invocation = Mockito.mock(Invocation.class);
     CseServer testServer = Mockito.mock(CseServer.class);

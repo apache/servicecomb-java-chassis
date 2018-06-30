@@ -26,9 +26,9 @@ public class FaultInjectionConst {
 
   public static final int FAULT_INJECTION_ERROR = -1;
 
-  public static final String CONSUMER_FAULTINJECTION = "cse.governance.Consumer.";
+  public static final String CONSUMER_FAULTINJECTION = "servicecomb.governance.Consumer.";
 
-  public static final String CONSUMER_FAULTINJECTION_GLOBAL = "cse.governance.Consumer._global.";
+  public static final String CONSUMER_FAULTINJECTION_GLOBAL = "servicecomb.governance.Consumer._global.";
 
   public static final String CONSUMER_FAULTINJECTION_POLICY_PROTOCOLS = "policy.fault.protocols.";
 }

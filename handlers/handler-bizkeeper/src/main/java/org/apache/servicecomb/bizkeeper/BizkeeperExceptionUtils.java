@@ -21,10 +21,10 @@ import org.apache.servicecomb.core.exception.CseException;
 import org.apache.servicecomb.core.exception.ExceptionUtils;
 
 public class BizkeeperExceptionUtils extends ExceptionUtils {
-  public static final String CSE_HANDLER_BK_FALLBACK = "cse.bizkeeper.fallback";
+  public static final String SERVICECOMB_BIZKEEPER_FALLBACK = "servicecomb.bizkeeper.fallback";
 
   static {
-    ERROR_DESC_MGR.register(CSE_HANDLER_BK_FALLBACK,
+    ERROR_DESC_MGR.register(SERVICECOMB_BIZKEEPER_FALLBACK,
         "This is a fallback call from circuit breaker. "
             + "\n You can add fallback logic by catching this exception. " + "\n info: operation=%s.");
   }

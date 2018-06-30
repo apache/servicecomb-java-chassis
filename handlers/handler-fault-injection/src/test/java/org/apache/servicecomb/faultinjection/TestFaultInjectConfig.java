@@ -60,16 +60,16 @@ public class TestFaultInjectConfig {
 
   @Test
   public void testFaultInjectConfig() throws Exception {
-    int val = FaultInjectionConfig.getConfigVal("cse.servicecomb.handler.consumer.faultinject.config", 0);
+    int val = FaultInjectionConfig.getConfigVal("servicecomb.servicecomb.handler.consumer.faultinject.config", 0);
     Assert.assertEquals(0, val);
   }
 
   @Test
   public void testConstants() {
-    assertEquals("cse.governance.Consumer.", FaultInjectionConst.CONSUMER_FAULTINJECTION);
+    assertEquals("servicecomb.governance.Consumer.", FaultInjectionConst.CONSUMER_FAULTINJECTION);
     assertEquals("policy.fault.protocols.", FaultInjectionConst.CONSUMER_FAULTINJECTION_POLICY_PROTOCOLS);
     assertEquals(-1, FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE);
-    assertEquals("cse.governance.Consumer._global.", FaultInjectionConst.CONSUMER_FAULTINJECTION_GLOBAL);
+    assertEquals("servicecomb.governance.Consumer._global.", FaultInjectionConst.CONSUMER_FAULTINJECTION_GLOBAL);
     assertEquals(-1, FaultInjectionConst.FAULT_INJECTION_ERROR);
   }
 

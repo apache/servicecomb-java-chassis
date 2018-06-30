@@ -33,7 +33,7 @@ public class RegistryIntializer {
   }
 
   public static void initRegistry() {
-    String address = DynamicPropertyFactory.getInstance().getStringProperty("cse.rest.address", null).get();
+    String address = DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.rest.address", null).get();
     if (null != address) {
       try {
         RegistryUtils.init();

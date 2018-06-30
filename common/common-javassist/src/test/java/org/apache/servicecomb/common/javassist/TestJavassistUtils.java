@@ -44,7 +44,7 @@ public class TestJavassistUtils {
   @Test
   public void testField() throws Exception {
     ClassConfig classConfig = new ClassConfig();
-    classConfig.setClassName("cse.ut.testField");
+    classConfig.setClassName("servicecomb.ut.testField");
 
     FieldConfig fieldConfig = classConfig.addField("intField", int.class);
     fieldConfig.setGenGetter(true);
@@ -96,7 +96,7 @@ public class TestJavassistUtils {
   public void testAddParameter() {
     ClassConfig classConfig = new ClassConfig();
     classConfig.setIntf(true);
-    String intfName = "cse.ut.TestAddParameter";
+    String intfName = "servicecomb.ut.TestAddParameter";
     classConfig.setClassName(intfName);
 
     MethodConfig methodConfig = new MethodConfig();
@@ -123,7 +123,7 @@ public class TestJavassistUtils {
   public void testInterface() {
     ClassConfig classConfig = new ClassConfig();
     classConfig.setIntf(true);
-    String intfName = "cse.ut.TestInterface";
+    String intfName = "servicecomb.ut.TestInterface";
     classConfig.setClassName(intfName);
 
     String source = "java.util.List method(java.util.Map map, java.util.Set set);";
@@ -146,7 +146,7 @@ public class TestJavassistUtils {
   @Test
   public void singleWrapperInt() throws Exception {
     ClassConfig classConfig = new ClassConfig();
-    classConfig.setClassName("cse.ut.single.IntWrapper");
+    classConfig.setClassName("servicecomb.ut.single.IntWrapper");
     classConfig.addField("intField", TypeFactory.defaultInstance().constructType(int.class));
 
     JavassistUtils.genSingleWrapperInterface(classConfig);
@@ -162,7 +162,7 @@ public class TestJavassistUtils {
   @Test
   public void multiWrapper() throws Exception {
     ClassConfig classConfig = new ClassConfig();
-    classConfig.setClassName("cse.ut.multi.Wrapper");
+    classConfig.setClassName("servicecomb.ut.multi.Wrapper");
     classConfig.addField("intField", int.class);
     classConfig.addField("strField", String.class);
 
@@ -190,7 +190,7 @@ public class TestJavassistUtils {
   @Test
   public void getOrCreateEnumWithClassName_create()
       throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-    String name = "cse.ut.EnumAbc";
+    String name = "servicecomb.ut.EnumAbc";
     Assert.assertNull(ClassPool.getDefault().getOrNull(name));
 
     @SuppressWarnings("rawtypes")
@@ -206,7 +206,7 @@ public class TestJavassistUtils {
   public void getOrCreateEnumWithPackageName()
       throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
     List<String> enums = Arrays.asList("a", "b");
-    String packageName = "cse.ut";
+    String packageName = "servicecomb.ut";
     String clsName =
         packageName + ".Enum_" + Hashing.sha256().hashString(enums.toString(), StandardCharsets.UTF_8).toString();
     Assert.assertNull(ClassPool.getDefault().getOrNull(clsName));
@@ -228,7 +228,7 @@ public class TestJavassistUtils {
 
   @Test
   public void testEnum() throws Exception {
-    String name = "cse.ut.EnumAbc2";
+    String name = "servicecomb.ut.EnumAbc2";
     @SuppressWarnings("rawtypes")
     Class<? extends Enum> cls = JavassistUtils.createEnum(name, "a", "b");
     checkEnum(name, cls);

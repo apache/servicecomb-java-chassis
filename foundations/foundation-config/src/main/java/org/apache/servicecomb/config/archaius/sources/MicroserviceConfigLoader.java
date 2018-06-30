@@ -28,7 +28,9 @@ import org.springframework.util.StringUtils;
 public class MicroserviceConfigLoader extends YAMLConfigLoader {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceConfigLoader.class);
 
-  private static final String ADDITIONAL_CONFIG_URL = "cse.configurationSource.additionalUrls";
+  private static final String ADDITIONAL_CONFIG_URL = "servicecomb.configurationSource.additionalUrls";
+
+  private static final String DEFAULT_FILE_NAME = "servicecomb.configurationSource.defaultFileName";
 
   /**
    * Default configuration file name to be used by default constructor. This file should
@@ -38,14 +40,13 @@ public class MicroserviceConfigLoader extends YAMLConfigLoader {
   private static final String DEFAULT_CONFIG_FILE_NAME = "microservice.yaml";
 
   public MicroserviceConfigLoader() {
-    setOrderKey("cse-config-order");
   }
 
   public void loadAndSort() {
     try {
       String configFileFromClasspath =
-          System.getProperty("cse.configurationSource.defaultFileName") == null ? DEFAULT_CONFIG_FILE_NAME
-              : System.getProperty("cse.configurationSource.defaultFileName");
+          System.getProperty(DEFAULT_FILE_NAME) == null ? DEFAULT_CONFIG_FILE_NAME
+              : System.getProperty(DEFAULT_FILE_NAME);
       super.load(configFileFromClasspath);
       loadAdditionalConfig();
 

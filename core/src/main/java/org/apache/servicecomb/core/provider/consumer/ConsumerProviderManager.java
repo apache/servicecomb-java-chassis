@@ -56,17 +56,17 @@ public class ConsumerProviderManager {
   }
 
   public ReferenceConfig createReferenceConfig(String microserviceName) {
-    String key = "cse.references." + microserviceName;
+    String key = "servicecomb.references." + microserviceName;
 
     String defaultVersionRule = DynamicPropertyFactory.getInstance()
-        .getStringProperty("cse.references.version-rule", DefinitionConst.VERSION_RULE_ALL)
+        .getStringProperty("servicecomb.references.version-rule", DefinitionConst.VERSION_RULE_ALL)
         .get();
     String versionRule = DynamicPropertyFactory.getInstance()
         .getStringProperty(key + ".version-rule", defaultVersionRule)
         .get();
 
     String defaultTransport = DynamicPropertyFactory.getInstance()
-        .getStringProperty("cse.references.transport", Const.ANY_TRANSPORT)
+        .getStringProperty("servicecomb.references.transport", Const.ANY_TRANSPORT)
         .get();
     String transport = DynamicPropertyFactory.getInstance()
         .getStringProperty(key + ".transport", defaultTransport)

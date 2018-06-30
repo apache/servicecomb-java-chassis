@@ -77,7 +77,6 @@ public class TestAbstractVertxHttpDispatcher {
 
   @Test
   public void createBodyHandlerUploadNull() {
-    //    config.setProperty("cse.uploads.directory", "");
     AbstractVertxHttpDispatcher dispatcher = new AbstractVertxHttpDispatcherForTest();
     RestBodyHandler bodyHandler = (RestBodyHandler) dispatcher.createBodyHandler();
 
@@ -87,7 +86,7 @@ public class TestAbstractVertxHttpDispatcher {
 
   @Test
   public void createBodyHandlerUploadNormal() {
-    config.setProperty("cse.uploads.directory", "/path");
+    config.setProperty("servicecomb.uploads.directory", "/path");
 
     AbstractVertxHttpDispatcher dispatcher = new AbstractVertxHttpDispatcherForTest();
     RestBodyHandler bodyHandler = (RestBodyHandler) dispatcher.createBodyHandler();

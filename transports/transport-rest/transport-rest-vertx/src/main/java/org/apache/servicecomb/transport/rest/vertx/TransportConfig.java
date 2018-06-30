@@ -57,33 +57,33 @@ public final class TransportConfig {
 
   public static String getAddress() {
     DynamicStringProperty address =
-        DynamicPropertyFactory.getInstance().getStringProperty("cse.rest.address", null);
+        DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.rest.address", null);
     return address.get();
   }
 
   public static int getThreadCount() {
     DynamicIntProperty address =
         DynamicPropertyFactory.getInstance()
-            .getIntProperty("cse.rest.server.thread-count", DEFAULT_SERVER_THREAD_COUNT);
+            .getIntProperty("servicecomb.rest.server.thread-count", DEFAULT_SERVER_THREAD_COUNT);
     return address.get();
   }
 
   public static int getConnectionIdleTimeoutInSeconds() {
     return DynamicPropertyFactory.getInstance()
-        .getIntProperty("cse.rest.server.connection.idleTimeoutInSeconds",
+        .getIntProperty("servicecomb.rest.server.connection.idleTimeoutInSeconds",
             DEFAULT_SERVER_CONNECTION_IDLE_TIMEOUT_SECOND)
         .get();
   }
 
   public static boolean getCompressed() {
     return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("cse.rest.server.compression", DEFAULT_SERVER_COMPRESSION_SUPPORT)
+        .getBooleanProperty("servicecomb.rest.server.compression", DEFAULT_SERVER_COMPRESSION_SUPPORT)
         .get();
   }
 
   public static int getMaxHeaderSize() {
     return DynamicPropertyFactory.getInstance()
-        .getIntProperty("cse.rest.server.maxHeaderSize", DEFAULT_SERVER_MAX_HEADER_SIZE)
+        .getIntProperty("servicecomb.rest.server.maxHeaderSize", DEFAULT_SERVER_MAX_HEADER_SIZE)
         .get();
   }
 

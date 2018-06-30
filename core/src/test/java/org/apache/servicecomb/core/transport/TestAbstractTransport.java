@@ -154,10 +154,10 @@ public class TestAbstractTransport {
    */
   @Test
   public void testRequestCfgService() throws Exception {
-    System.setProperty("cse.request.hello1.timeout", "3000");
+    System.setProperty("servicecomb.request.hello1.timeout", "3000");
     //check for service level timeout value
     Assert.assertEquals(3000, AbstractTransport.getReqTimeout("sayHello1", "sayHelloSchema1", "hello1"));
-    System.getProperties().remove("cse.request.hello1.timeout");
+    System.getProperties().remove("servicecomb.request.hello1.timeout");
   }
 
   /**
@@ -165,10 +165,10 @@ public class TestAbstractTransport {
    */
   @Test
   public void testRequestCfgSchema() throws Exception {
-    System.setProperty("cse.request.hello2.sayHelloSchema2.timeout", "2000");
+    System.setProperty("servicecomb.request.hello2.sayHelloSchema2.timeout", "2000");
 
     Assert.assertEquals(2000, AbstractTransport.getReqTimeout("sayHello2", "sayHelloSchema2", "hello2"));
-    System.getProperties().remove("cse.request.hello2.sayHelloSchema2.timeout");
+    System.getProperties().remove("servicecomb.request.hello2.sayHelloSchema2.timeout");
   }
 
   /**
@@ -176,10 +176,10 @@ public class TestAbstractTransport {
    */
   @Test
   public void testRequestCfgOperation() throws Exception {
-    System.setProperty("cse.request.hello3.sayHelloSchema3.sayHello3.timeout", "1000");
+    System.setProperty("servicecomb.request.hello3.sayHelloSchema3.sayHello3.timeout", "1000");
 
     Assert.assertEquals(1000, AbstractTransport.getReqTimeout("sayHello3", "sayHelloSchema3", "hello3"));
-    System.getProperties().remove("cse.request.hello3.sayHelloSchema3.sayHello3.timeout");
+    System.getProperties().remove("servicecomb.request.hello3.sayHelloSchema3.sayHello3.timeout");
   }
 
   /**
@@ -187,16 +187,16 @@ public class TestAbstractTransport {
    */
   @Test
   public void testRequestTimeoutCfgEvent() {
-    System.setProperty("cse.request.hello4.sayHelloSchema4.sayHello4.timeout", "1000");
+    System.setProperty("servicecomb.request.hello4.sayHelloSchema4.sayHello4.timeout", "1000");
     Invocation invocation = Mockito.mock(Invocation.class);
     Mockito.when(invocation.getOperationName()).thenReturn("sayHello4");
     Mockito.when(invocation.getSchemaId()).thenReturn("sayHelloSchema4");
     Mockito.when(invocation.getMicroserviceName()).thenReturn("hello4");
     Assert.assertEquals(1000, AbstractTransport.getReqTimeout("sayHello4", "sayHelloSchema4", "hello4"));
 
-    updateProperty("cse.request.hello4.sayHelloSchema4.sayHello4.timeout", 2000);
+    updateProperty("servicecomb.request.hello4.sayHelloSchema4.sayHello4.timeout", 2000);
 
     Assert.assertEquals(2000, AbstractTransport.getReqTimeout("sayHello4", "sayHelloSchema4", "hello4"));
-    System.getProperties().remove("cse.request.hello4.sayHelloSchema4.sayHello4.timeout");
+    System.getProperties().remove("servicecomb.request.hello4.sayHelloSchema4.sayHello4.timeout");
   }
 }
