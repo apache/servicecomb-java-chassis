@@ -188,7 +188,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
       TestMgr.check(false, true);
     } catch (Exception e) {
       TestMgr.check(((CseException) e.getCause()).getMessage(),
-          BizkeeperExceptionUtils.createBizkeeperException(BizkeeperExceptionUtils.CSE_HANDLER_BK_FALLBACK,
+          BizkeeperExceptionUtils.createBizkeeperException(BizkeeperExceptionUtils.SERVICECOMB_BIZKEEPER_FALLBACK,
               null,
               "springmvc.codeFirst.fallbackThrowException").getMessage());
     }

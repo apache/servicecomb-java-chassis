@@ -300,11 +300,11 @@ public class TestLoadBalancer {
 
     long time = Deencapsulation.getField(rule, "lastAccessedTime");
     Deencapsulation.setField(rule, "lastAccessedTime", time - 1000 * 10);
-    ArchaiusUtils.setProperty("cse.loadbalance.service.SessionStickinessRule.sessionTimeoutInSeconds", 9);
+    ArchaiusUtils.setProperty("servicecomb.loadbalance.service.SessionStickinessRule.sessionTimeoutInSeconds", 9);
     s = lb.chooseServer("test");
     Assert.assertEquals(server, s);
 
-    ArchaiusUtils.setProperty("cse.loadbalance.service.SessionStickinessRule.successiveFailedTimes", 5);
+    ArchaiusUtils.setProperty("servicecomb.loadbalance.service.SessionStickinessRule.successiveFailedTimes", 5);
     lb.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
     lb.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
     lb.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);

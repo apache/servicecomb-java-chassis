@@ -33,7 +33,7 @@ public class ThrowExceptionFallbackPolicy implements FallbackPolicy {
   public Response getFallbackResponse(Invocation invocation) {
     return Response.failResp(invocation.getInvocationType(),
         BizkeeperExceptionUtils
-            .createBizkeeperException(BizkeeperExceptionUtils.CSE_HANDLER_BK_FALLBACK,
+            .createBizkeeperException(BizkeeperExceptionUtils.SERVICECOMB_BIZKEEPER_FALLBACK,
                 null,
                 invocation.getOperationMeta().getMicroserviceQualifiedName()));
   }

@@ -25,14 +25,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
 
 public abstract class AbstractConfigLoader {
-  protected String orderKey = "config-order";
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConfigLoader.class);
 
-  public void setOrderKey(String orderKey) {
-    this.orderKey = orderKey;
-  }
+  private static final String ORDER_KEY = "servicecomb-config-order";
 
   protected final List<ConfigModel> configModels = new ArrayList<>();
 
@@ -63,7 +63,16 @@ public abstract class AbstractConfigLoader {
     ConfigModel configModel = new ConfigModel();
     configModel.setUrl(url);
     configModel.setConfig(config);
-    Object objOrder = config.get(orderKey);
+
+    Object objOrder = config.get(ORDER_KEY);
+    if (objOrder == null) {
+      // compatible check
+      objOrder = config.get("cse-config-order");
+      if (objOrder != null) {
+        LOGGER.error("cse-config-order will not be supported in future, please change it to servicecomb-config-order");
+      }
+    }
+
     if (objOrder != null) {
       if (Integer.class.isInstance(objOrder)) {
         configModel.setOrder((int) objOrder);

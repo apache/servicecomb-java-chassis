@@ -59,15 +59,15 @@ public final class RestConst {
 
   public static final String READ_STREAM_PART = "servicecomb-readStreamPart";
 
-  public static final String UPLOAD_DIR = "cse.uploads.directory";
+  public static final String UPLOAD_DIR = "servicecomb.uploads.directory";
 
   // limit of one upload file, only available for servlet rest transport
-  public static final String UPLOAD_MAX_FILE_SIZE = "cse.uploads.maxFileSize";
+  public static final String UPLOAD_MAX_FILE_SIZE = "servicecomb.uploads.maxFileSize";
 
   // limit of upload request body
-  public static final String UPLOAD_MAX_SIZE = "cse.uploads.maxSize";
+  public static final String UPLOAD_MAX_SIZE = "servicecomb.uploads.maxSize";
 
   // the size threshold after which files will be written to disk
   // only available for servlet rest transport
-  public static final String UPLOAD_FILE_SIZE_THRESHOLD = "cse.uploads.fileSizeThreshold";
+  public static final String UPLOAD_FILE_SIZE_THRESHOLD = "servicecomb.uploads.fileSizeThreshold";
 }

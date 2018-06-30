@@ -135,13 +135,13 @@ public class TestConfigUtil {
 
     assertThat(DynamicPropertyFactory
         .getInstance()
-        .getStringProperty("servicecomb.cse.servicecomb.file", null)
+        .getStringProperty("cse.cse.servicecomb.file", null)
         .get(),
-        equalTo(expected));
+        equalTo(null));
 
     assertThat(DynamicPropertyFactory
         .getInstance()
-        .getStringProperty("cse.cse.servicecomb.file", null)
+        .getStringProperty("servicecomb.cse.servicecomb.file", null)
         .get(),
         equalTo(expected));
   }
@@ -181,10 +181,10 @@ public class TestConfigUtil {
     List<String> list = Arrays.asList("a", "b");
 
     AbstractConfiguration config = new DynamicConfiguration();
-    config.addProperty("servicecomb.list", list);
-    Deencapsulation.invoke(ConfigUtil.class, "duplicateServiceCombConfigToCse", config);
+    config.addProperty("cse.list", list);
+    Deencapsulation.invoke(ConfigUtil.class, "duplicateCseConfigToServicecomb", config);
 
-    Object result = config.getProperty("cse.list");
+    Object result = config.getProperty("servicecomb.list");
     assertThat(result, instanceOf(List.class));
     assertThat(result, equalTo(list));
   }

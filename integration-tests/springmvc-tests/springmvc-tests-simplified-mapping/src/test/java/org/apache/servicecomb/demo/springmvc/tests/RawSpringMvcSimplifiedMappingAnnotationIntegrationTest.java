@@ -26,7 +26,7 @@ public class RawSpringMvcSimplifiedMappingAnnotationIntegrationTest extends Spri
   @BeforeClass
   public static void init() throws Exception {
     System.setProperty("spring.profiles.active", "SimplifiedMapping");
-    System.setProperty("cse.uploads.directory", "/tmp");
+    System.setProperty("servicecomb.uploads.directory", "/tmp");
     setUpLocalRegistry();
     SpringMvcTestMain.main(new String[0]);
   }

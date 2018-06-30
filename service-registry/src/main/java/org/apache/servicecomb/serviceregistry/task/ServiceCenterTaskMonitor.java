@@ -36,7 +36,7 @@ public class ServiceCenterTaskMonitor {
   public void beginCycle(int interval) {
     this.beginTime = System.currentTimeMillis();
     if (this.interval != interval) {
-      LOGGER.warn("sc task interval changed from {} to {}", this.interval, interval);
+      LOGGER.info("sc task interval changed from {} to {}", this.interval, interval);
       this.interval = interval;
     } else {
       if (this.beginTime - this.lastEndTime > interval * 1000 + MAX_TIME_TAKEN) {

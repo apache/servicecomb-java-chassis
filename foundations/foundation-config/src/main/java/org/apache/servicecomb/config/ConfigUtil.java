@@ -124,24 +124,24 @@ public final class ConfigUtil {
   public static ConcurrentCompositeConfiguration createLocalConfig(List<ConfigModel> configModelList) {
     ConcurrentCompositeConfiguration config = new ConcurrentCompositeConfiguration();
 
-    duplicateServiceCombConfigToCse(config,
+    duplicateCseConfigToServicecomb(config,
         new ConcurrentMapConfiguration(new SystemConfiguration()),
         "configFromSystem");
-    duplicateServiceCombConfigToCse(config,
+    duplicateCseConfigToServicecomb(config,
         convertEnvVariable(new ConcurrentMapConfiguration(new EnvironmentConfiguration())),
         "configFromEnvironment");
     // If there is extra configurations, add it into config.
     EXTRA_CONFIG_MAP.entrySet()
         .stream()
         .filter(mapEntry -> !mapEntry.getValue().isEmpty())
-        .forEachOrdered(configMapEntry -> duplicateServiceCombConfigToCse(config,
+        .forEachOrdered(configMapEntry -> duplicateCseConfigToServicecomb(config,
             new ConcurrentMapConfiguration(configMapEntry.getValue()),
             configMapEntry.getKey()));
-    duplicateServiceCombConfigToCse(config,
+    duplicateCseConfigToServicecomb(config,
         new DynamicConfiguration(
             new MicroserviceConfigurationSource(configModelList), new NeverStartPollingScheduler()),
         "configFromYamlFile");
-    duplicateServiceCombConfigToCseAtFront(config,
+    duplicateCseConfigToServicecombAtFront(config,
         new ConcurrentMapConfiguration(ConfigMapping.getConvertedMap(config)),
         "configFromMapping");
     return config;
@@ -161,39 +161,39 @@ public final class ConfigUtil {
     return source;
   }
 
-  //inject a copy of cse.xxx for servicecomb.xxx
-  private static void duplicateServiceCombConfigToCse(AbstractConfiguration source) {
+  //inject a copy of servicecomb.xxx for cse.xxx
+  private static void duplicateCseConfigToServicecomb(AbstractConfiguration source) {
     Iterator<String> keys = source.getKeys();
     while (keys.hasNext()) {
       String key = keys.next();
-      if (!key.startsWith(CONFIG_SERVICECOMB_PREFIX)) {
+      if (!key.startsWith(CONFIG_CSE_PREFIX)) {
         continue;
       }
 
-      String cseKey = CONFIG_CSE_PREFIX + key.substring(key.indexOf(".") + 1);
+      String cseKey = CONFIG_SERVICECOMB_PREFIX + key.substring(key.indexOf(".") + 1);
       if (!source.containsKey(cseKey)) {
         source.addProperty(cseKey, source.getProperty(key));
       } else {
         LOGGER
-            .warn(
+            .error(
                 "Key {} with an ambiguous item {} exists, please use the same prefix or will get unexpected merged value.",
                 key, cseKey);
       }
     }
   }
 
-  private static void duplicateServiceCombConfigToCse(ConcurrentCompositeConfiguration compositeConfiguration,
+  private static void duplicateCseConfigToServicecomb(ConcurrentCompositeConfiguration compositeConfiguration,
       AbstractConfiguration source,
       String sourceName) {
-    duplicateServiceCombConfigToCse(source);
+    duplicateCseConfigToServicecomb(source);
 
     compositeConfiguration.addConfiguration(source, sourceName);
   }
 
-  private static void duplicateServiceCombConfigToCseAtFront(ConcurrentCompositeConfiguration compositeConfiguration,
+  private static void duplicateCseConfigToServicecombAtFront(ConcurrentCompositeConfiguration compositeConfiguration,
       AbstractConfiguration source,
       String sourceName) {
-    duplicateServiceCombConfigToCse(source);
+    duplicateCseConfigToServicecomb(source);
 
     compositeConfiguration.addConfigurationAtFront(source, sourceName);
   }
@@ -224,7 +224,7 @@ public final class ConfigUtil {
 
     DynamicWatchedConfiguration configFromConfigCenter =
         new DynamicWatchedConfiguration(configCenterConfigurationSource);
-    duplicateServiceCombConfigToCse(configFromConfigCenter);
+    duplicateCseConfigToServicecomb(configFromConfigCenter);
     localConfiguration.addConfigurationAtFront(configFromConfigCenter, "configCenterConfig");
   }
 

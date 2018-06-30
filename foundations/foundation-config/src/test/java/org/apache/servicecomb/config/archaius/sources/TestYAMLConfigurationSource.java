@@ -56,7 +56,7 @@ public class TestYAMLConfigurationSource {
     ClassLoader loader = Thread.currentThread().getContextClassLoader();
     URL test1URL = loader.getResource("test1.yaml");
     URL test2URL = loader.getResource("test2.yaml");
-    System.setProperty("cse.configurationSource.additionalUrls", test1URL.toString() + "," + test2URL.toString());
+    System.setProperty("servicecomb.configurationSource.additionalUrls", test1URL.toString() + "," + test2URL.toString());
     MicroserviceConfigurationSource configSource = yamlConfigSource();
     PollResult result = configSource.poll(true, null);
     Map<String, Object> configMap = result.getComplete();

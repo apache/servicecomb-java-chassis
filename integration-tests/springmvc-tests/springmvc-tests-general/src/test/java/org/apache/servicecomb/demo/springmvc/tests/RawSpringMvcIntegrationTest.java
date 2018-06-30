@@ -25,7 +25,7 @@ public class RawSpringMvcIntegrationTest extends SpringMvcIntegrationTestBase {
 
   @BeforeClass
   public static void init() throws Exception {
-    System.setProperty("cse.uploads.directory", "/tmp");
+    System.setProperty("servicecomb.uploads.directory", "/tmp");
     setUpLocalRegistry();
     SpringMvcTestMain.main(new String[0]);
   }

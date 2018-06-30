@@ -108,12 +108,12 @@ public class TestLoadbalanceHandler {
     ConfigUtil.installDynamicConfig();
     AbstractConfiguration configuration =
         (AbstractConfiguration) DynamicPropertyFactory.getBackingConfigurationSource();
-    configuration.addProperty("cse.loadbalance.test.transactionControl.policy",
+    configuration.addProperty("servicecomb.loadbalance.test.transactionControl.policy",
         "org.apache.servicecomb.loadbalance.filter.SimpleTransactionControlFilter");
-    configuration.addProperty("cse.loadbalance.test.transactionControl.options.tag0", "value0");
-    configuration.addProperty("cse.loadbalance.test.isolation.enabled", "true");
-    configuration.addProperty("cse.loadbalance.serverListFilters", "a");
-    configuration.addProperty("cse.loadbalance.serverListFilter.a.className",
+    configuration.addProperty("servicecomb.loadbalance.test.transactionControl.options.tag0", "value0");
+    configuration.addProperty("servicecomb.loadbalance.test.isolation.enabled", "true");
+    configuration.addProperty("servicecomb.loadbalance.serverListFilters", "a");
+    configuration.addProperty("servicecomb.loadbalance.serverListFilter.a.className",
         "org.apache.servicecomb.loadbalance.MyServerListFilterExt");
 
     new MockUp<Invocation>(invocation) {
@@ -278,7 +278,7 @@ public class TestLoadbalanceHandler {
 
   @Test
   public void setTransactionControlFilter_InvalidPolicy() {
-    ArchaiusUtils.setProperty("cse.loadbalance.ms.transactionControl.policy", "InvalidPolicy");
+    ArchaiusUtils.setProperty("servicecomb.loadbalance.ms.transactionControl.policy", "InvalidPolicy");
 
     expectedException.expect(Error.class);
     expectedException.expectMessage(Matchers.is("Fail to create instance of class: InvalidPolicy"));

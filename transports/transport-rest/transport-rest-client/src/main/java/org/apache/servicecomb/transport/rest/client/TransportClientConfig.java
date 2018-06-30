@@ -34,26 +34,26 @@ public final class TransportClientConfig {
   }
 
   public static int getThreadCount() {
-    return DynamicPropertyFactory.getInstance().getIntProperty("cse.rest.client.thread-count", 1).get();
+    return DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.rest.client.thread-count", 1).get();
   }
 
   public static int getConnectionMaxPoolSize() {
-    return DynamicPropertyFactory.getInstance().getIntProperty("cse.rest.client.connection.maxPoolSize", 5).get();
+    return DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.rest.client.connection.maxPoolSize", 5).get();
   }
 
   public static int getConnectionIdleTimeoutInSeconds() {
     return DynamicPropertyFactory.getInstance()
-        .getIntProperty("cse.rest.client.connection.idleTimeoutInSeconds", 30)
+        .getIntProperty("servicecomb.rest.client.connection.idleTimeoutInSeconds", 30)
         .get();
   }
 
   public static boolean getConnectionKeepAlive() {
-    return DynamicPropertyFactory.getInstance().getBooleanProperty("cse.rest.client.connection.keepAlive", true).get();
+    return DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.rest.client.connection.keepAlive", true).get();
   }
 
   public static boolean getConnectionCompression() {
     return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("cse.rest.client.connection.compression", false)
+        .getBooleanProperty("servicecomb.rest.client.connection.compression", false)
         .get();
   }
 }

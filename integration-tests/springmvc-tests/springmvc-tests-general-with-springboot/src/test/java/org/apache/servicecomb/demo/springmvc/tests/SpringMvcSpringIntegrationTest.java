@@ -28,7 +28,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class SpringMvcSpringIntegrationTest extends SpringMvcIntegrationTestBase {
   @BeforeClass
   public static void init() {
-    System.setProperty("cse.uploads.directory", "/tmp");
+    System.setProperty("servicecomb.uploads.directory", "/tmp");
     setUpLocalRegistry();
     SpringApplication.run(SpringMvcSpringMain.class);
   }

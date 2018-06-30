@@ -54,17 +54,17 @@ public final class ServiceRegistryConfig {
 
   private static final int DEFAULT_CHECK_TIMES = 3;
 
-  public static final String AUTH_ENABLED = "cse.auth.enabled";
+  public static final String AUTH_ENABLED = "servicecomb.auth.enabled";
 
-  public static final String TENANT_ACCESS_KEY = "cse.auth.accessKey";
+  public static final String TENANT_ACCESS_KEY = "servicecomb.auth.accessKey";
 
-  public static final String TENANT_SECRET_KEY = "cse.auth.secretKey";
+  public static final String TENANT_SECRET_KEY = "servicecomb.auth.secretKey";
 
-  public static final String REGISTRY_API_VERSION = "cse.service.registry.api.version";
+  public static final String REGISTRY_API_VERSION = "servicecomb.service.registry.api.version";
 
-  public static final String TENANT_NAME = "cse.config.client.tenantName";
+  public static final String TENANT_NAME = "servicecomb.config.client.tenantName";
 
-  public static final String DOMAIN_NAME = "cse.config.client.domainName";
+  public static final String DOMAIN_NAME = "servicecomb.config.client.domainName";
 
   public static final String NO_TENANT = "default";
 
@@ -74,7 +74,7 @@ public final class ServiceRegistryConfig {
 
   private boolean ssl = true;
 
-  public static final String PROXY_PRE_NAME = "cse.proxy.";
+  public static final String PROXY_PRE_NAME = "servicecomb.proxy.";
 
   public static final String PROXY_ENABLE = PROXY_PRE_NAME + "enable";
 
@@ -99,12 +99,12 @@ public final class ServiceRegistryConfig {
   public HttpVersion getHttpVersion() {
     DynamicStringProperty property =
         DynamicPropertyFactory.getInstance()
-            .getStringProperty("cse.service.registry.client.httpVersion", "HTTP_1_1");
+            .getStringProperty("servicecomb.service.registry.client.httpVersion", "HTTP_1_1");
     return HttpVersion.valueOf(property.get());
   }
 
   public int getWorkerPoolSize() {
-    String workerPoolSizeKey = "cse.service.registry.client.workerPoolSize";
+    String workerPoolSizeKey = "servicecomb.service.registry.client.workerPoolSize";
     DynamicIntProperty property =
         DynamicPropertyFactory.getInstance()
             .getIntProperty(workerPoolSizeKey, 1);
@@ -127,7 +127,7 @@ public final class ServiceRegistryConfig {
   public ArrayList<IpPort> getIpPort() {
     DynamicStringProperty property =
         DynamicPropertyFactory.getInstance()
-            .getStringProperty("cse.service.registry.address", "https://127.0.0.1:30100");
+            .getStringProperty("servicecomb.service.registry.address", "https://127.0.0.1:30100");
     List<String> uriList = Arrays.asList(property.get().split(","));
     ArrayList<IpPort> ipPortList = new ArrayList<>();
     uriList.forEach(anUriList -> {
@@ -136,7 +136,7 @@ public final class ServiceRegistryConfig {
         this.ssl = "https".equals(uri.getScheme());
         ipPortList.add(NetUtils.parseIpPort(uri.getScheme(), uri.getAuthority()));
       } catch (Exception e) {
-        LOGGER.error("cse.service.registry.address invalid : {}", anUriList, e);
+        LOGGER.error("servicecomb.service.registry.address invalid : {}", anUriList, e);
       }
     });
     return ipPortList;
@@ -149,7 +149,7 @@ public final class ServiceRegistryConfig {
   public int getConnectionTimeout() {
     DynamicIntProperty property =
         DynamicPropertyFactory.getInstance()
-            .getIntProperty("cse.service.registry.client.timeout.connection", DEFAULT_TIMEOUT_IN_MS);
+            .getIntProperty("servicecomb.service.registry.client.timeout.connection", DEFAULT_TIMEOUT_IN_MS);
     int timeout = property.get();
     return timeout < 0 ? DEFAULT_TIMEOUT_IN_MS : timeout;
   }
@@ -158,7 +158,7 @@ public final class ServiceRegistryConfig {
     // connection pool idle timeout based on client heart beat interval. Heart beat default value is 30.
     DynamicIntProperty property =
         DynamicPropertyFactory.getInstance()
-            .getIntProperty("cse.service.registry.client.timeout.idle", DEFAULT_TIMEOUT_IN_SECONDS * 2);
+            .getIntProperty("servicecomb.service.registry.client.timeout.idle", DEFAULT_TIMEOUT_IN_SECONDS * 2);
     int timeout = property.get();
     return timeout < 1 ? DEFAULT_TIMEOUT_IN_SECONDS * 2 : timeout;
   }
@@ -167,7 +167,7 @@ public final class ServiceRegistryConfig {
     // watch idle timeout based on SC PING/PONG interval. SC default value is 30.
     DynamicIntProperty property =
         DynamicPropertyFactory.getInstance()
-            .getIntProperty("cse.service.registry.client.timeout.watch", DEFAULT_TIMEOUT_IN_SECONDS * 2);
+            .getIntProperty("servicecomb.service.registry.client.timeout.watch", DEFAULT_TIMEOUT_IN_SECONDS * 2);
     int timeout = property.get();
     return timeout < 1 ? DEFAULT_TIMEOUT_IN_SECONDS * 2 : timeout;
   }
@@ -175,7 +175,7 @@ public final class ServiceRegistryConfig {
   public int getRequestTimeout() {
     DynamicIntProperty property =
         DynamicPropertyFactory.getInstance()
-            .getIntProperty("cse.service.registry.client.timeout.request", DEFAULT_REQUEST_TIMEOUT_IN_MS);
+            .getIntProperty("servicecomb.service.registry.client.timeout.request", DEFAULT_REQUEST_TIMEOUT_IN_MS);
     int timeout = property.get();
     return timeout < 1 ? DEFAULT_REQUEST_TIMEOUT_IN_MS : timeout;
   }
@@ -184,7 +184,7 @@ public final class ServiceRegistryConfig {
   public int getHeartBeatRequestTimeout() {
     DynamicIntProperty property =
         DynamicPropertyFactory.getInstance()
-            .getIntProperty("cse.service.registry.client.timeout.heartbeat", DEFAULT_REQUEST_HEARTBEAT_TIMEOUT_IN_MS);
+            .getIntProperty("servicecomb.service.registry.client.timeout.heartbeat", DEFAULT_REQUEST_HEARTBEAT_TIMEOUT_IN_MS);
     int timeout = property.get();
     return timeout < 1 ? DEFAULT_REQUEST_HEARTBEAT_TIMEOUT_IN_MS : timeout;
   }
@@ -192,7 +192,7 @@ public final class ServiceRegistryConfig {
   public int getHeartbeatInterval() {
     DynamicIntProperty property =
         DynamicPropertyFactory.getInstance()
-            .getIntProperty("cse.service.registry.instance.healthCheck.interval",
+            .getIntProperty("servicecomb.service.registry.instance.healthCheck.interval",
                 DEFAULT_CHECK_INTERVAL_IN_S);
     int interval = property.get();
     return interval < 0 ? DEFAULT_CHECK_INTERVAL_IN_S : interval;
@@ -201,7 +201,7 @@ public final class ServiceRegistryConfig {
   public int getInstancePullInterval() {
     DynamicIntProperty property =
         DynamicPropertyFactory.getInstance()
-            .getIntProperty("cse.service.registry.instance.pull.interval",
+            .getIntProperty("servicecomb.service.registry.instance.pull.interval",
                 DEFAULT_CHECK_INTERVAL_IN_S);
     int interval = property.get();
     return interval < 0 ? DEFAULT_CHECK_INTERVAL_IN_S : interval;
@@ -210,7 +210,7 @@ public final class ServiceRegistryConfig {
   public boolean isRegistryAutoDiscovery() {
     DynamicBooleanProperty property =
         DynamicPropertyFactory.getInstance()
-            .getBooleanProperty("cse.service.registry.autodiscovery",
+            .getBooleanProperty("servicecomb.service.registry.autodiscovery",
                 false);
     return property.get();
   }
@@ -218,7 +218,7 @@ public final class ServiceRegistryConfig {
   public int getResendHeartBeatTimes() {
     DynamicIntProperty property =
         DynamicPropertyFactory.getInstance()
-            .getIntProperty("cse.service.registry.instance.healthCheck.times",
+            .getIntProperty("servicecomb.service.registry.instance.healthCheck.times",
                 DEFAULT_CHECK_TIMES);
     int times = property.get();
     return times < 0 ? DEFAULT_CHECK_TIMES : times;
@@ -235,7 +235,7 @@ public final class ServiceRegistryConfig {
   public boolean isPreferIpAddress() {
     DynamicBooleanProperty property =
         DynamicPropertyFactory.getInstance()
-            .getBooleanProperty("cse.service.registry.instance.preferIpAddress",
+            .getBooleanProperty("servicecomb.service.registry.instance.preferIpAddress",
                 false);
     return property.get();
   }
@@ -243,7 +243,7 @@ public final class ServiceRegistryConfig {
   public boolean isWatch() {
     DynamicBooleanProperty property =
         DynamicPropertyFactory.getInstance()
-            .getBooleanProperty("cse.service.registry.instance.watch",
+            .getBooleanProperty("servicecomb.service.registry.instance.watch",
                 true);
     return property.get();
   }

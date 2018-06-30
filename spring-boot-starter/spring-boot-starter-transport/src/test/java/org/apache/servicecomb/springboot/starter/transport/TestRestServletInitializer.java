@@ -69,7 +69,7 @@ public class TestRestServletInitializer {
   public void setUp() throws Exception {
     Configuration configuration = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
     configuration.clearProperty(ServletConfig.KEY_SERVLET_URL_PATTERN);
-    configuration.setProperty(ServletConfig.KEY_CSE_REST_ADDRESS, LISTEN_ADDRESS);
+    configuration.setProperty(ServletConfig.SERVICECOMB_REST_ADDRESS, LISTEN_ADDRESS);
 
     PowerMockito.mockStatic(NetUtils.class);
     PowerMockito.when(NetUtils.parseIpPortFromURI(anyString())).thenReturn(new IpPort(LISTEN_ADDRESS, TEST_PORT));

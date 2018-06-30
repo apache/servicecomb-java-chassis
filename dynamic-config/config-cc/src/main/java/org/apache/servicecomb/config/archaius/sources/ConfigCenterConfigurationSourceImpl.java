@@ -51,7 +51,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
 
   private ConfigCenterClient configCenterClient;
 
-  private static final String CONFIG_CENTER_URL_KEY = "cse.config.client.serverUri";
+  private static final String CONFIG_CENTER_URL_KEY = "servicecomb.config.client.serverUri";
 
   public ConfigCenterConfigurationSourceImpl() {
   }

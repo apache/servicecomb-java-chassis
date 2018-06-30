@@ -21,7 +21,7 @@ import com.netflix.config.DynamicPropertyFactory;
 
 public final class Configuration {
   //isolation
-  private static final String ISOLATION = "cse.isolation.";
+  private static final String ISOLATION = "servicecomb.isolation.";
 
   private static final String ISOLATION_TIMEOUT_IN_MILLISECONDS = "timeoutInMilliseconds";
 
@@ -33,7 +33,7 @@ public final class Configuration {
   private static final String ISOLATION_MAX_CONCURRENT_REQUESTS = "maxConcurrentRequests";
 
   //circuit breaker
-  private static final String CIRCUIT_BREAKER = "cse.circuitBreaker.";
+  private static final String CIRCUIT_BREAKER = "servicecomb.circuitBreaker.";
 
   private static final String CIRCUIT_BREAKER_ENABLED = "enabled";
 
@@ -49,7 +49,7 @@ public final class Configuration {
 
   // fallback
   // following items only supports consumer
-  private static final String FALLBACK = "cse.fallback.";
+  private static final String FALLBACK = "servicecomb.fallback.";
 
   private static final String FALLBACK_ENABLED = "enabled";
 
@@ -58,7 +58,7 @@ public final class Configuration {
   private static final String FALLBACK_MAX_CONCURRENT_REQUESTS = "maxConcurrentRequests";
 
   // fallbackpolicy
-  private static final String FALLBACKPOLICY = "cse.fallbackpolicy.";
+  private static final String FALLBACKPOLICY = "servicecomb.fallbackpolicy.";
 
   private static final String FALLBACKPOLICY_POLICY = "policy";
 

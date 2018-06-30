@@ -99,7 +99,7 @@ public class PojoClient {
       testEmpty(test);
       // This test case shows destroy of WeightedResponseTimeRule timer task. after test finished will not print:
       // "Weight adjusting job started" and thread "NFLoadBalancer-serverWeightTimer-unknown" destroyed.
-      ArchaiusUtils.setProperty("cse.loadbalance.strategy.name", "WeightedResponse");
+      ArchaiusUtils.setProperty("servicecomb.loadbalance.strategy.name", "WeightedResponse");
       testStringArray(test);
       boolean checkerStated = false;
       // Timer may not start thread very fast so check for 3 times.
@@ -115,7 +115,7 @@ public class PojoClient {
       }
       TestMgr.check(checkerStated, true);
 
-      ArchaiusUtils.setProperty("cse.loadbalance.strategy.name", "RoundRobin");
+      ArchaiusUtils.setProperty("servicecomb.loadbalance.strategy.name", "RoundRobin");
       testStringArray(test);
 
       boolean checkerDestroyed = true;

@@ -43,7 +43,7 @@ public class TestTransportConfig {
 
   @Test
   public void testGetAddressNormal() {
-    ArchaiusUtils.setProperty("cse.rest.address", "1.1.1.1");
+    ArchaiusUtils.setProperty("servicecomb.rest.address", "1.1.1.1");
     Assert.assertEquals("1.1.1.1", TransportConfig.getAddress());
   }
 
@@ -54,15 +54,15 @@ public class TestTransportConfig {
 
   @Test
   public void testGetThreadCountNormal() {
-    ArchaiusUtils.setProperty("cse.rest.server.thread-count", 10);
+    ArchaiusUtils.setProperty("servicecomb.rest.server.thread-count", 10);
     Assert.assertEquals(10, TransportConfig.getThreadCount());
   }
 
   @Test
   public void testGetCompressedAndHeaderSize() {
-    ArchaiusUtils.setProperty("cse.rest.server.compression", true);
+    ArchaiusUtils.setProperty("servicecomb.rest.server.compression", true);
     Assert.assertEquals(true, TransportConfig.getCompressed());
-    ArchaiusUtils.setProperty("cse.rest.server.maxHeaderSize", 2048);
+    ArchaiusUtils.setProperty("servicecomb.rest.server.maxHeaderSize", 2048);
     Assert.assertEquals(2048, TransportConfig.getMaxHeaderSize());
   }
 
