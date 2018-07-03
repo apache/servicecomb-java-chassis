@@ -44,7 +44,7 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
         value = request.getParameterValues(paramPath);
       } else {
         value = request.getParameter(paramPath);
-        if (value == null || value.equals("")) {
+        if (value == null) {
           Object defaultValue = getDefaultValue();
           if (defaultValue != null) {
             value = defaultValue;
