@@ -45,7 +45,7 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
     public Object getValue(HttpServletRequest request) {
       @SuppressWarnings("unchecked")
       Map<String, Object> forms = (Map<String, Object>) request.getAttribute(RestConst.FORM_PARAMETERS);
-      if (forms != null) {
+      if (forms != null && !forms.isEmpty()) {
         return convertValue(forms.get(paramPath), targetType);
       }
 
@@ -54,7 +54,7 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
       }
 
       Object value = request.getParameter(paramPath);
-      if (value == null || value.equals("")) {
+      if (value == null) {
         Object defaultValue = getDefaultValue();
         if (defaultValue != null) {
           value = defaultValue;

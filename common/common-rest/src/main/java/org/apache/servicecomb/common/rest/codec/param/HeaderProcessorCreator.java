@@ -56,7 +56,7 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator {
         value = Collections.list(headerValues);
       } else {
         value = request.getHeader(paramPath);
-        if (value == null || value.equals("")) {
+        if (value == null) {
           Object defaultValue = getDefaultValue();
           if (defaultValue != null) {
             value = defaultValue;

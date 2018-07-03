@@ -50,7 +50,7 @@ public class CookieProcessorCreator implements ParamValueProcessorCreator {
       for (Cookie cookie : cookies) {
         if (paramPath.equals(cookie.getName())) {
           value = cookie.getValue();
-          if (value == null || value.equals("")) {
+          if (value == null) {
             Object defaultValue = getDefaultValue();
             if (defaultValue != null) {
               value = defaultValue.toString();

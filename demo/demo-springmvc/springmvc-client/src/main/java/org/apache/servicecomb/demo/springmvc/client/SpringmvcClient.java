@@ -20,6 +20,7 @@ package org.apache.servicecomb.demo.springmvc.client;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.http.HttpStatus;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.TestMgr;
@@ -30,10 +31,15 @@ import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.provider.springmvc.reference.UrlWithServiceNameClientHttpRequestFactory;
+import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import com.netflix.config.DynamicPropertyFactory;
@@ -84,8 +90,7 @@ public class SpringmvcClient {
 
       testController();
 
-      testDefaultValues(templateUrlWithServiceName, microserviceName);
-      testRequiredBody(templateUrlWithServiceName, microserviceName);
+      testSpringMvcDefaultValues(templateUrlWithServiceName, microserviceName);
     }
     HttpHeaders headers = new HttpHeaders();
     headers.set("Accept-Encoding", "gzip");
@@ -220,53 +225,83 @@ public class SpringmvcClient {
         "newer");
   }
 
-  private static void testDefaultValues(RestTemplate template, String microserviceName) {
-    String prefix = "cse://" + microserviceName;
-    TestMgr.check("hi test your age is : 20",
-        template.getForObject(prefix + "/annotations/sayhi",
-            String.class));
+  private static void testSpringMvcDefaultValues(RestTemplate template, String microserviceName) {
+    String cseUrlPrefix = "cse://" + microserviceName + "/SpringMvcDefaultValues/";
+    //default values
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+    String result = template.postForObject(cseUrlPrefix + "/form", request, String.class);
+    TestMgr.check("Hello 20bobo", result);
 
-    TestMgr.check("20",
-        template.getForObject(prefix + "/annotations/add",
-            String.class));
+    headers = new HttpHeaders();
+    HttpEntity<String> entity = new HttpEntity<>(null, headers);
+    result = template.postForObject(cseUrlPrefix + "/header", entity, String.class);
+    TestMgr.check("Hello 20bobo30", result);
 
-    TestMgr.check("hei test",
-        template.getForObject(prefix + "/annotations/sayhei",
-            String.class));
-  }
+    result = template.getForObject(cseUrlPrefix + "/query?d=10", String.class);
+    TestMgr.check("Hello 20bobo4010", result);
+    boolean failed = false;
+    try {
+      result = template.getForObject(cseUrlPrefix + "/query2", String.class);
+    } catch (InvocationException e) {
+      failed = true;
+      TestMgr.check(e.getStatusCode(), ExceptionFactory.PRODUCER_INNER_STATUS_CODE);
+    }
 
-  private static void testRequiredBody(RestTemplate template, String microserviceName) {
-    String prefix = "cse://" + microserviceName;
-    Person user = new Person();
+    failed = false;
+    try {
+      result = template.getForObject(cseUrlPrefix + "/query2?d=2&e=2", String.class);
+    } catch (InvocationException e) {
+      failed = true;
+      TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+    }
+    TestMgr.check(failed, true);
 
-    TestMgr.check("No user data found",
-        template.postForObject(prefix + "/annotations/saysomething?prefix={prefix}",
-            user,
-            String.class,
-            "ha"));
+    failed = false;
+    try {
+      result = template.getForObject(cseUrlPrefix + "/query2?a=&d=2&e=2", String.class);
+    } catch (InvocationException e) {
+      failed = true;
+      TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+    }
+    TestMgr.check(failed, true);
 
-    user.setName("world");
-    TestMgr.check("ha world",
-        template.postForObject(prefix + "/annotations/saysomething?prefix={prefix}",
-            user,
-            String.class,
-            "ha"));
+    result = template.getForObject(cseUrlPrefix + "/query2?d=30&e=2", String.class);
+    TestMgr.check("Hello 20bobo40302", result);
 
-    TestMgr.check("No user data found",
-        template.postForObject(prefix + "/annotations/saysomething?prefix={prefix}",
-            null,
-            String.class,
-            "ha"));
+    failed = false;
+    try {
+      result = template.getForObject(cseUrlPrefix + "/query3?a=2&b=2", String.class);
+    } catch (InvocationException e) {
+      failed = true;
+      TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+    }
+    TestMgr.check(failed, true);
 
-    TestMgr.check("No user name found",
-        template.postForObject(prefix + "/annotations/say",
-            "",
-            String.class,
-            "ha"));
-    TestMgr.check("test",
-        template.postForObject(prefix + "/annotations/say",
-            "test",
-            String.class,
-            "ha"));
+    result = template.getForObject(cseUrlPrefix + "/query3?a=30&b=2", String.class);
+    TestMgr.check("Hello 302", result);
+
+    //input values
+    headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    HttpEntity<Map<String, String>> requestPara = new HttpEntity<>(null, headers);
+    result = template.postForObject(cseUrlPrefix + "/form?a=30&b=sam", requestPara, String.class);
+    TestMgr.check("Hello 30sam", result);
+
+    headers = new HttpHeaders();
+    headers.add("a", "30");
+    headers.add("b", "sam");
+    headers.add("c", "40");
+    entity = new HttpEntity<>(null, headers);
+    result = template.postForObject(cseUrlPrefix + "/header", entity, String.class);
+    TestMgr.check("Hello 30sam40", result);
+
+    result = template.getForObject(cseUrlPrefix + "/query?a=3&b=sam&c=5&d=30", String.class);
+    TestMgr.check("Hello 3sam530", result);
+
+    result = template.getForObject(cseUrlPrefix + "/query2?a=3&b=4&c=5&d=30&e=2", String.class);
+    TestMgr.check("Hello 345302", result);
   }
 }
