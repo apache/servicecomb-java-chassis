@@ -67,11 +67,7 @@ public class UnitTestMeta {
 
   private ConsumerSchemaFactory consumerSchemaFactory;
 
-  private SchemaLoader schemaLoader = new SchemaLoader() {
-    @Override
-    public void putSelfBasePathIfAbsent(String microserviceName, String basePath) {
-    }
-  };
+  private SchemaLoader schemaLoader = new SchemaLoader();
 
   private ServiceRegistry serviceRegistry;
 

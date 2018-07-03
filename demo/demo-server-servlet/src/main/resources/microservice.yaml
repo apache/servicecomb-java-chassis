@@ -15,7 +15,7 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-cse-config-order: 100
+servicecomb-config-order: 100
 
 servicecomb:
   rest:

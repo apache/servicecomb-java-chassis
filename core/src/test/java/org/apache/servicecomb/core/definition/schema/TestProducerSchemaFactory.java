@@ -78,11 +78,7 @@ public class TestProducerSchemaFactory {
     producerArgsMapperFactory.setConverterMgr(converterMgr);
 
     MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();
-    SchemaLoader schemaLoader = new SchemaLoader() {
-      @Override
-      public void putSelfBasePathIfAbsent(String microserviceName, String basePath) {
-      }
-    };
+    SchemaLoader schemaLoader = new SchemaLoader();
     CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext = new CompositeSwaggerGeneratorContext();
 
     producerSchemaFactory.setSwaggerEnv(swaggerEnv);
