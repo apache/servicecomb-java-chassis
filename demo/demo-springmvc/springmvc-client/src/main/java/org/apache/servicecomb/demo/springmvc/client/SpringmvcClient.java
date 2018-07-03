@@ -212,7 +212,7 @@ public class SpringmvcClient {
     TestMgr.check(DynamicPropertyFactory.getInstance().getStringProperty("cse.test.duplicate2", "wrong").get(),
         "newer");
     TestMgr.check(DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.test.duplicate2", "wrong").get(),
-        "older");
+        "newer");
     TestMgr.check(DynamicPropertyFactory.getInstance().getStringProperty("cse.test.duplicate1", "wrong").get(),
         "older");
     TestMgr.check(DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.test.duplicate1", "wrong").get(),
