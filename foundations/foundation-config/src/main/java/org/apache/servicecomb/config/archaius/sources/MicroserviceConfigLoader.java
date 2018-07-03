@@ -40,6 +40,15 @@ public class MicroserviceConfigLoader extends YAMLConfigLoader {
   private static final String DEFAULT_CONFIG_FILE_NAME = "microservice.yaml";
 
   public MicroserviceConfigLoader() {
+    // Help to resolve incompatible changes. Can be deleted in future.
+    if (!StringUtils.isEmpty(System.getProperty("cse.configurationSource.additionalUrls"))) {
+      throw new IllegalArgumentException("-Dcse.configurationSource.additionalUrls"
+          + " has been replaced with -D" + ADDITIONAL_CONFIG_URL + ", please change it and restart.");
+    }
+    if (!StringUtils.isEmpty(System.getProperty("cse.configurationSource.defaultFileName"))) {
+      throw new IllegalArgumentException("-Dcse.configurationSource.additionalUrls"
+          + " has been replaced with -D" + DEFAULT_FILE_NAME + ", please change it and restart.");
+    }
   }
 
   public void loadAndSort() {

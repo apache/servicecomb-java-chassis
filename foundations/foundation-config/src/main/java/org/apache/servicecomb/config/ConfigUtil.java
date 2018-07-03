@@ -170,14 +170,14 @@ public final class ConfigUtil {
         continue;
       }
 
-      String cseKey = CONFIG_SERVICECOMB_PREFIX + key.substring(key.indexOf(".") + 1);
-      if (!source.containsKey(cseKey)) {
-        source.addProperty(cseKey, source.getProperty(key));
+      String servicecombKey = CONFIG_SERVICECOMB_PREFIX + key.substring(key.indexOf(".") + 1);
+      if (!source.containsKey(servicecombKey)) {
+        source.addProperty(servicecombKey, source.getProperty(key));
       } else {
         LOGGER
-            .error(
-                "Key {} with an ambiguous item {} exists, please use the same prefix or will get unexpected merged value.",
-                key, cseKey);
+            .warn(
+                "Key {} with an ambiguous item {} exists, it's recommended to use only one of them.",
+                key, servicecombKey);
       }
     }
   }
