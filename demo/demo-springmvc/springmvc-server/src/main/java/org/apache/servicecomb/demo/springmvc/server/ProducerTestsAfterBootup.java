@@ -29,26 +29,24 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.google.common.base.Charsets;
-import com.google.common.hash.Hashing;
 
 import io.swagger.models.Swagger;
 import io.swagger.util.Yaml;
 
 /**
- * Testing schemas generation should be same for each boot up and accommodate swagger.
+ * Testing after bootup.
  */
 @Component
-public class ProducerSchemaFactoryHolder implements BootListener {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ProducerSchemaFactoryHolder.class);
+public class ProducerTestsAfterBootup implements BootListener {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProducerTestsAfterBootup.class);
 
   private ObjectWriter writer = Yaml.pretty();
 
   @Autowired
   private ProducerSchemaFactory factory;
 
-  public void test() {
-    LOGGER.info("ProducerSchemaFactoryHolder testing start");
+  public void testSchemaNotChange() {
+    LOGGER.info("ProducerTestsAfterBootup testing start");
     SchemaMeta meta =
         factory.getOrCreateProducerSchema("customer-service",
             "test1",
@@ -58,13 +56,11 @@ public class ProducerSchemaFactoryHolder implements BootListener {
     TestMgr.check("07a48acef4cc1a7f2387d695923c49e98951a974e4f51cf1356d6878db48888f",
         RegistryUtils.calcSchemaSummary(codeFirst));
     TestMgr.check(codeFirst.length(), 899);
-
-    if (!TestMgr.isSuccess()) {
-      TestMgr.summary();
-      throw new IllegalStateException("schema not the same. ");
-    }
   }
 
+  public void testRegisterPath() {
+    TestMgr.check(RegistryUtils.getMicroservice().getPaths().size(), 9);
+  }
   private String getSwaggerContent(Swagger swagger) {
     try {
       return writer.writeValueAsString(swagger);
@@ -76,7 +72,12 @@ public class ProducerSchemaFactoryHolder implements BootListener {
   @Override
   public void onBootEvent(BootEvent event) {
     if (event.getEventType() == BootListener.EventType.AFTER_REGISTRY) {
-      test();
+      testSchemaNotChange();
+      testRegisterPath();
+      if (!TestMgr.isSuccess()) {
+        TestMgr.summary();
+        throw new IllegalStateException("some tests are failed. ");
+      }
     }
   }
 }

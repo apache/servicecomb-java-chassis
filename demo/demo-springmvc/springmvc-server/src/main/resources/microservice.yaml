@@ -32,6 +32,7 @@ service_description:
 servicecomb:
   service:
     registry:
+      registerPath: true
       address: http://127.0.0.1:30100
       client:
         timeout:

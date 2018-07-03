@@ -15,7 +15,7 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-cse-config-order: 0
+servicecomb-config-order: 0
 
 dsf:
   serializer:

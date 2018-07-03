@@ -182,4 +182,6 @@ public final class Const {
   public static final String INSTANCE_PUBKEY_PRO = "publickey";
 
   public static final String SERVICECENTER_FRAMEWORK_VERSION = "1.0.0";
+
+  public static final String REGISTER_SERVICE_PATH = "servicecomb.service.registry.registerPath";
 }
