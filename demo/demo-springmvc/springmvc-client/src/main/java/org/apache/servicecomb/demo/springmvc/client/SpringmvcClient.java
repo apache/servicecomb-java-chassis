@@ -89,7 +89,7 @@ public class SpringmvcClient {
       testController(templateUrlWithServiceName, microserviceName);
 
       testController();
-
+      testRequiredBody(templateUrlWithServiceName, microserviceName);
       testSpringMvcDefaultValues(templateUrlWithServiceName, microserviceName);
     }
     HttpHeaders headers = new HttpHeaders();
@@ -223,6 +223,41 @@ public class SpringmvcClient {
         "older");
     TestMgr.check(DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.test.duplicate1", "wrong").get(),
         "newer");
+  }
+
+  private static void testRequiredBody(RestTemplate template, String microserviceName) {
+    String prefix = "cse://" + microserviceName;
+    Person user = new Person();
+
+    TestMgr.check("No user data found",
+        template.postForObject(prefix + "/annotations/saysomething?prefix={prefix}",
+            user,
+            String.class,
+            "ha"));
+
+    user.setName("world");
+    TestMgr.check("ha world",
+        template.postForObject(prefix + "/annotations/saysomething?prefix={prefix}",
+            user,
+            String.class,
+            "ha"));
+
+    TestMgr.check("No user data found",
+        template.postForObject(prefix + "/annotations/saysomething?prefix={prefix}",
+            null,
+            String.class,
+            "ha"));
+
+    TestMgr.check("No user name found",
+        template.postForObject(prefix + "/annotations/say",
+            "",
+            String.class,
+            "ha"));
+    TestMgr.check("test",
+        template.postForObject(prefix + "/annotations/say",
+            "test",
+            String.class,
+            "ha"));
   }
 
   private static void testSpringMvcDefaultValues(RestTemplate template, String microserviceName) {
