@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ResourceUtils;
@@ -88,7 +89,7 @@ public abstract class AbstractConfigLoader {
   protected List<URL> findURLFromClassPath(String resourceName) throws IOException {
     List<URL> urlList = new ArrayList<>();
 
-    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    ClassLoader loader = JvmUtils.findClassLoader();
     Enumeration<URL> urls = loader.getResources(resourceName);
     while (urls.hasMoreElements()) {
       urlList.add(urls.nextElement());

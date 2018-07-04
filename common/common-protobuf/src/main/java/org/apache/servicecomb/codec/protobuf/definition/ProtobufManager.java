@@ -20,6 +20,7 @@ package org.apache.servicecomb.codec.protobuf.definition;
 import org.apache.servicecomb.codec.protobuf.utils.ScopedProtobufSchemaManager;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -40,7 +41,7 @@ public final class ProtobufManager {
   private static final Object LOCK = new Object();
 
   private static ScopedProtobufSchemaManager defaultScopedProtobufSchemaManager = new ScopedProtobufSchemaManager(
-      Thread.currentThread().getContextClassLoader());
+      JvmUtils.findClassLoader());
 
   static {
     // 支持在idl中定义empty message
