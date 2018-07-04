@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.core.definition.classloader;
 
+import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +32,7 @@ public class MicroserviceClassLoader extends ClassLoader {
 
 
   public MicroserviceClassLoader(String appId, String microserviceName, String version) {
-    super(Thread.currentThread().getContextClassLoader());
+    super(JvmUtils.findClassLoader());
 
     this.appId = appId;
     this.microserviceName = microserviceName;

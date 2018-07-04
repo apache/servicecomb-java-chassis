@@ -50,4 +50,22 @@ public final class JvmUtils {
       return null;
     }
   }
+
+  /**
+   * find a property class loader to avoid null
+   */
+  public static ClassLoader correctClassLoader(ClassLoader classLoader) {
+    ClassLoader targetClassLoader = classLoader;
+    if (targetClassLoader == null) {
+      targetClassLoader = Thread.currentThread().getContextClassLoader();
+    }
+    if (targetClassLoader == null) {
+      targetClassLoader = JvmUtils.class.getClassLoader();
+    }
+    return targetClassLoader;
+  }
+
+  public static ClassLoader findClassLoader() {
+    return correctClassLoader(null);
+  }
 }

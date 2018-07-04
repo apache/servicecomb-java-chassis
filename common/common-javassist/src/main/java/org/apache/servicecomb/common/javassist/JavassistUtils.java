@@ -24,6 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,9 +91,7 @@ public final class JavassistUtils {
       throw new Error("values is not allowed empty.");
     }
 
-    if (classLoader == null) {
-      classLoader = Thread.currentThread().getContextClassLoader();
-    }
+    classLoader = JvmUtils.correctClassLoader(classLoader);
 
     ClassPool classPool = getOrCreateClassPool(classLoader);
     CtClass ctClass = classPool.makeClass(clsName);
@@ -140,9 +139,7 @@ public final class JavassistUtils {
   }
 
   public static CtClass createCtClass(ClassLoader classLoader, ClassConfig config) {
-    if (classLoader == null) {
-      classLoader = Thread.currentThread().getContextClassLoader();
-    }
+    classLoader = JvmUtils.correctClassLoader(classLoader);
 
     ClassPool classPool = getOrCreateClassPool(classLoader);
     CtClass ctClass = classPool.getOrNull(config.getClassName());
@@ -195,18 +192,14 @@ public final class JavassistUtils {
   }
 
   public static Class<?> createClass(ClassLoader classLoader, ClassConfig config) {
-    if (classLoader == null) {
-      classLoader = Thread.currentThread().getContextClassLoader();
-    }
+    classLoader = JvmUtils.correctClassLoader(classLoader);
 
     CtClass ctClass = createCtClass(classLoader, config);
     return createClass(classLoader, ctClass);
   }
 
   public static Class<?> createClass(ClassLoader classLoader, CtClass ctClass) {
-    if (classLoader == null) {
-      classLoader = Thread.currentThread().getContextClassLoader();
-    }
+    classLoader = JvmUtils.correctClassLoader(classLoader);
 
     String clsName = ctClass.getName();
     try {

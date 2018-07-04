@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +41,7 @@ public final class ConfigMapping {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigMapping.class);
 
   static {
-    ClassLoader loader = Thread.currentThread().getContextClassLoader();
+    ClassLoader loader = JvmUtils.findClassLoader();
     List<URL> urlList = new ArrayList<>();
     configMap = new HashMap<String, Object>();
     Enumeration<URL> urls;

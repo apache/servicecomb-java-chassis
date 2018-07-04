@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.servicecomb.foundation.common.RegisterManager;
+import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.Const;
 
@@ -53,7 +54,7 @@ public class MicroserviceMeta extends CommonService<OperationMeta> {
   private Map<String, Object> extData = new ConcurrentHashMap<>();
 
   public MicroserviceMeta(String microserviceName) {
-    classLoader = Thread.currentThread().getContextClassLoader();
+    classLoader = JvmUtils.findClassLoader();
     parseMicroserviceName(microserviceName);
     createOperationMgr("Operation meta mgr for microservice " + microserviceName);
     idSchemaMetaMgr = new RegisterManager<>("Schema meta id mgr for microservice " + microserviceName);

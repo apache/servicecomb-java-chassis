@@ -26,6 +26,7 @@ import org.apache.servicecomb.codec.protobuf.utils.schema.WrapSchemaFactory;
 import org.apache.servicecomb.common.javassist.JavassistUtils;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -39,10 +40,7 @@ public class ScopedProtobufSchemaManager {
   private Map<String, WrapSchema> schemaCache = new ConcurrentHashMapEx<>();
 
   public ScopedProtobufSchemaManager(ClassLoader classLoader) {
-    if (classLoader == null) {
-      classLoader = Thread.currentThread().getContextClassLoader();
-    }
-    this.classLoader = classLoader;
+    this.classLoader = JvmUtils.correctClassLoader(classLoader);
   }
 
   // 为了支持method args的场景，全部实现ProtobufMessageWrapper接口，有的场景有点浪费，不过无关紧要

@@ -26,6 +26,7 @@ import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.definition.SchemaUtils;
 import org.apache.servicecomb.core.definition.loader.SchemaLoader;
+import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
@@ -76,7 +77,7 @@ public abstract class AbstractSchemaFactory<CONTEXT extends SchemaContext> {
 
   protected Swagger loadSwagger(String microserviceName, String schemaId) {
     String path = generateSchemaPath(microserviceName, schemaId);
-    URL url = Thread.currentThread().getContextClassLoader().getResource(path);
+    URL url = JvmUtils.findClassLoader().getResource(path);
     if (url == null) {
       return null;
     }

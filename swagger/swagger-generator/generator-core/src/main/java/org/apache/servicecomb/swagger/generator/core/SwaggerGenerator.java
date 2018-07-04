@@ -30,6 +30,7 @@ import java.util.Set;
 
 import javax.ws.rs.core.MediaType;
 
+import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.springframework.util.StringUtils;
 
 import io.swagger.annotations.Api;
@@ -80,7 +81,7 @@ public class SwaggerGenerator {
     this.swagger = new Swagger();
     this.context = context;
     this.cls = cls;
-    this.classLoader = Thread.currentThread().getContextClassLoader();
+    this.classLoader = JvmUtils.findClassLoader();
     this.packageName = "gen.swagger";
   }
 

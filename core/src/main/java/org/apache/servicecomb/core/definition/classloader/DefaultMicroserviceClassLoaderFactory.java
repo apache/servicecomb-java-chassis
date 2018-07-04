@@ -17,11 +17,13 @@
 
 package org.apache.servicecomb.core.definition.classloader;
 
+import org.apache.servicecomb.foundation.common.utils.JvmUtils;
+
 public class DefaultMicroserviceClassLoaderFactory implements MicroserviceClassLoaderFactory {
   public static final MicroserviceClassLoaderFactory INSTANCE = new DefaultMicroserviceClassLoaderFactory();
 
   @Override
   public ClassLoader create(String appId, String microserviceName, String version) {
-    return Thread.currentThread().getContextClassLoader();
+    return JvmUtils.findClassLoader();
   }
 }
