@@ -68,7 +68,7 @@ public class PojoIntegrationTestBase {
 
     assertThat(result, is("Hello Message slow"));
     assertThat(elapsedTime,
-        is(both(greaterThan(5000L)).and(lessThan(6000L))));
+        is(both(greaterThan(4000L)).and(lessThan(7000L))));
   }
 
   @Test
