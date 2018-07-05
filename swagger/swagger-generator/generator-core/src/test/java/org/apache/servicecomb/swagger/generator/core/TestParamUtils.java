@@ -23,11 +23,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
+import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.swagger.models.parameters.Parameter;
+import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.MapProperty;
+import io.swagger.models.properties.ObjectProperty;
+import io.swagger.models.properties.Property;
+import io.swagger.models.properties.RefProperty;
+import io.swagger.models.properties.StringProperty;
 
 public class TestParamUtils {
   @Test
@@ -41,5 +48,22 @@ public class TestParamUtils {
 
     extensions.put(SwaggerConst.EXT_RAW_JSON_TYPE, "test");
     Assert.assertFalse(ClassUtils.isRawJsonType(param));
+  }
+
+  @Test
+  public void isComplexProperty() {
+    Property property = new RefProperty("ref");
+    Assert.assertTrue(ParamUtils.isComplexProperty(property));
+    property = new ObjectProperty();
+    Assert.assertTrue(ParamUtils.isComplexProperty(property));
+    property = new MapProperty();
+    Assert.assertTrue(ParamUtils.isComplexProperty(property));
+    property = new ArrayProperty(new ObjectProperty());
+    Assert.assertTrue(ParamUtils.isComplexProperty(property));
+
+    property = new ArrayProperty(new StringProperty());
+    Assert.assertFalse(ParamUtils.isComplexProperty(property));
+    property = new StringProperty();
+    Assert.assertFalse(ParamUtils.isComplexProperty(property));
   }
 }
