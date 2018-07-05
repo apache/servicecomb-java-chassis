@@ -23,6 +23,11 @@ import static org.apache.servicecomb.serviceregistry.api.Const.REGISTRY_SERVICE_
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.foundation.common.net.IpPort;
@@ -50,7 +55,17 @@ public class IpPortManager {
 
   private boolean autoDiscoveryInited = false;
 
+  private ScheduledThreadPoolExecutor taskPool;
+
+  private InstanceCache cache;
+
   private int maxRetryTimes;
+
+  private InstanceCacheTask instanceCacheTask = new InstanceCacheTask();
+
+  public void setAutoDiscoveryInited(boolean autoDiscoveryInited) {
+    this.autoDiscoveryInited = autoDiscoveryInited;
+  }
 
   public int getMaxRetryTimes() {
     return maxRetryTimes;
@@ -73,11 +88,45 @@ public class IpPortManager {
   // we have to do this operation after the first time setup has already done
   public void initAutoDiscovery() {
     if (!autoDiscoveryInited && this.serviceRegistryConfig.isRegistryAutoDiscovery()) {
-      instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
+      cache = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
           REGISTRY_SERVICE_NAME,
           DefinitionConst.VERSION_RULE_LATEST);
-      autoDiscoveryInited = true;
+      if (cache.getInstanceMap().size() > 0) {
+        autoDiscoveryInited = true;
+      } else {
+        setAutoDiscoveryInited(false);
+        taskPool = new ScheduledThreadPoolExecutor(1, new ThreadFactory() {
+          @Override
+          public Thread newThread(Runnable task) {
+            return new Thread(task, "Instance Cache Task");
+          }
+        }, new RejectedExecutionHandler() {
+          @Override
+          public void rejectedExecution(Runnable task, ThreadPoolExecutor executor) {
+            LOGGER.warn("Too many pending tasks, reject " + task.getClass().getName());
+          }
+        });
+        taskPool.scheduleAtFixedRate(instanceCacheTask,
+            ServiceRegistryConfig.getInstanceCacheInterval(),
+            ServiceRegistryConfig.getInstanceCacheInterval(),
+            TimeUnit.SECONDS);
+      }
     }
+  }
+
+  class InstanceCacheTask implements Runnable {
+
+    @Override
+    public void run() {
+      cache = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
+          REGISTRY_SERVICE_NAME,
+          DefinitionConst.VERSION_RULE_LATEST);
+      if (cache.getInstanceMap().size() > 0) {
+        setAutoDiscoveryInited(true);
+        taskPool.shutdownNow();
+      }
+    }
+
   }
 
   public IpPort getNextAvailableAddress(IpPort failedIpPort) {
