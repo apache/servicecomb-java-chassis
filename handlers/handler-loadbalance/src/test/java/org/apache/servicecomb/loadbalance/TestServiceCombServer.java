@@ -30,11 +30,11 @@ import org.mockito.Mockito;
  *
  *
  */
-public class TestCseServer {
+public class TestServiceCombServer {
 
   private Transport transport = Mockito.mock(Transport.class);
 
-  private CseServer cs = new CseServer(transport, new CacheEndpoint("abcd", null));
+  private ServiceCombServer cs = new ServiceCombServer(transport, new CacheEndpoint("abcd", null));
 
   @Test
   public void testCseServerObj() {
@@ -51,10 +51,10 @@ public class TestCseServer {
   public void testEqualsMethod() {
     Assert.assertFalse(cs.equals((Object) "abcd"));
 
-    CseServer other = new CseServer(transport, new CacheEndpoint("1234", null));
+    ServiceCombServer other = new ServiceCombServer(transport, new CacheEndpoint("1234", null));
     Assert.assertFalse(cs.equals(other));
 
-    other = new CseServer(transport, new CacheEndpoint("abcd", null));
+    other = new ServiceCombServer(transport, new CacheEndpoint("abcd", null));
     Assert.assertTrue(cs.equals(other));
   }
 

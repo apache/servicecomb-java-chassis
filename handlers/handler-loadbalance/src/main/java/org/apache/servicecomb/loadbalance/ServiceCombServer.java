@@ -31,7 +31,7 @@ import com.netflix.loadbalancer.Server;
  * LB模块不提供服务器状态监测，这块功能是由注册中心进行处理的。
  *
  */
-public class CseServer extends Server {
+public class ServiceCombServer extends Server {
   private final Endpoint endpoint;
 
   // 所属服务实例
@@ -52,12 +52,17 @@ public class CseServer extends Server {
     this.lastVisitTime = lastVisitTime;
   }
 
-  public CseServer(Transport transport, CacheEndpoint cacheEndpoint) {
+  public ServiceCombServer(Transport transport, CacheEndpoint cacheEndpoint) {
     super(null);
 
     endpoint = new Endpoint(transport, cacheEndpoint.getEndpoint(), cacheEndpoint.getInstance());
     instance = cacheEndpoint.getInstance();
 
+    // Different types of Robin Component Rule have different usages for server status and list.
+    // e.g. RoundRobinRule using getAllServers & alive & readyToServe
+    // RandomRule using getReachableServers & alive
+    // WeightedResponseTimeRule using getAllServers & alive
+    // To make all rules work only on "how to choose a server from alive servers", we do not rely on Robbin defined status
     this.setAlive(true);
     this.setReadyToServe(true);
   }
@@ -94,8 +99,8 @@ public class CseServer extends Server {
   }
 
   public boolean equals(Object o) {
-    if (o instanceof CseServer) {
-      return this.getHost().equals(((CseServer) o).getHost());
+    if (o instanceof ServiceCombServer) {
+      return this.getHost().equals(((ServiceCombServer) o).getHost());
     } else {
       return false;
     }

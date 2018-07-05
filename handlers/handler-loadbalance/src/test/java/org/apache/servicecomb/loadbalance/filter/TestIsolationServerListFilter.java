@@ -25,7 +25,8 @@ import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.event.AlarmEvent;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.loadbalance.CseServer;
+import org.apache.servicecomb.loadbalance.LoadBalancer;
+import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -37,6 +38,7 @@ import org.mockito.Mockito;
 import com.google.common.eventbus.Subscribe;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.loadbalancer.LoadBalancerStats;
+import com.netflix.loadbalancer.RandomRule;
 import com.netflix.loadbalancer.Server;
 
 public class TestIsolationServerListFilter {
@@ -90,38 +92,24 @@ public class TestIsolationServerListFilter {
   }
 
   @Test
-  public void testSetLoadBalancerStats() {
-    isolationServerListFilter.setLoadBalancerStats(loadBalancerStats);
-    Assert.assertNotNull(isolationServerListFilter.getLoadBalancerStats());
-    Assert.assertEquals(loadBalancerStats, isolationServerListFilter.getLoadBalancerStats());
-  }
-
-  @Test
-  public void testSetMicroserviceName() {
-    isolationServerListFilter.setMicroserviceName("microserviceName");
-    Assert.assertNotNull(isolationServerListFilter.getMicroserviceName());
-    Assert.assertEquals("microserviceName", isolationServerListFilter.getMicroserviceName());
-  }
-
-  @Test
   public void testGetFilteredListOfServers() {
     Invocation invocation = Mockito.mock(Invocation.class);
-    CseServer testServer = Mockito.mock(CseServer.class);
+    ServiceCombServer testServer = Mockito.mock(ServiceCombServer.class);
     Mockito.when(invocation.getMicroserviceName()).thenReturn("microserviceName");
     Mockito.when(testServer.getLastVisitTime()).thenReturn(System.currentTimeMillis());
 
     List<Server> serverList = new ArrayList<>();
     serverList.add(testServer);
-    isolationServerListFilter.setLoadBalancerStats(loadBalancerStats);
-    isolationServerListFilter.setInvocation(invocation);
-    List<Server> returnedServerList = isolationServerListFilter.getFilteredListOfServers(serverList);
+    LoadBalancer loadBalancer = new LoadBalancer(new RandomRule(), "microserviceName", loadBalancerStats);
+    isolationServerListFilter.setLoadBalancer(loadBalancer);
+    List<Server> returnedServerList = isolationServerListFilter.getFilteredListOfServers(serverList, null);
     Assert.assertEquals(returnedServerList.size(), 1);
 
     loadBalancerStats.incrementNumRequests(testServer);
     loadBalancerStats.incrementNumRequests(testServer);
     loadBalancerStats.incrementNumRequests(testServer);
     loadBalancerStats.incrementSuccessiveConnectionFailureCount(testServer);
-    returnedServerList = isolationServerListFilter.getFilteredListOfServers(serverList);
+    returnedServerList = isolationServerListFilter.getFilteredListOfServers(serverList, null);
     Assert.assertEquals(returnedServerList.size(), 0);
   }
 
@@ -131,7 +119,7 @@ public class TestIsolationServerListFilter {
         .addProperty("servicecomb.loadbalance.isolation.continuousFailureThreshold",
             "3");
     Invocation invocation = Mockito.mock(Invocation.class);
-    CseServer testServer = Mockito.mock(CseServer.class);
+    ServiceCombServer testServer = Mockito.mock(ServiceCombServer.class);
     Mockito.when(invocation.getMicroserviceName()).thenReturn("microserviceName");
     Mockito.when(testServer.getCountinuousFailureCount()).thenReturn(3);
     Mockito.when(testServer.getLastVisitTime()).thenReturn(System.currentTimeMillis());
@@ -142,9 +130,9 @@ public class TestIsolationServerListFilter {
 
     List<Server> serverList = new ArrayList<>();
     serverList.add(testServer);
-    isolationServerListFilter.setLoadBalancerStats(loadBalancerStats);
-    isolationServerListFilter.setInvocation(invocation);
-    List<Server> returnedServerList = isolationServerListFilter.getFilteredListOfServers(serverList);
+    LoadBalancer loadBalancer = new LoadBalancer(new RandomRule(), "microserviceName", loadBalancerStats);
+    isolationServerListFilter.setLoadBalancer(loadBalancer);
+    List<Server> returnedServerList = isolationServerListFilter.getFilteredListOfServers(serverList, null);
     Assert.assertEquals(0, returnedServerList.size());
     Assert.assertEquals(1, taskList.size());
   }
@@ -155,7 +143,7 @@ public class TestIsolationServerListFilter {
         .addProperty("servicecomb.loadbalance.isolation.continuousFailureThreshold",
             "3");
     Invocation invocation = Mockito.mock(Invocation.class);
-    CseServer testServer = Mockito.mock(CseServer.class);
+    ServiceCombServer testServer = Mockito.mock(ServiceCombServer.class);
     Mockito.when(invocation.getMicroserviceName()).thenReturn("microserviceName");
     Mockito.when(testServer.getCountinuousFailureCount()).thenReturn(2);
     Mockito.when(testServer.getLastVisitTime()).thenReturn(System.currentTimeMillis());
@@ -166,9 +154,9 @@ public class TestIsolationServerListFilter {
 
     List<Server> serverList = new ArrayList<>();
     serverList.add(testServer);
-    isolationServerListFilter.setLoadBalancerStats(loadBalancerStats);
-    isolationServerListFilter.setInvocation(invocation);
-    List<Server> returnedServerList = isolationServerListFilter.getFilteredListOfServers(serverList);
+    LoadBalancer loadBalancer = new LoadBalancer(new RandomRule(), "microserviceName", loadBalancerStats);
+    isolationServerListFilter.setLoadBalancer(loadBalancer);
+    List<Server> returnedServerList = isolationServerListFilter.getFilteredListOfServers(serverList, null);
     Assert.assertEquals(1, returnedServerList.size());
   }
 }

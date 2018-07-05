@@ -20,33 +20,53 @@ package org.apache.servicecomb.loadbalance.filter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.loadbalance.CseServer;
+import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.loadbalance.LoadBalancer;
+import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.loadbalance.ServerListFilterExt;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 
+import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.loadbalancer.Server;
 
 public class ZoneAwareServerListFilterExt implements ServerListFilterExt {
+  private LoadBalancer loadBalancer;
 
   @Override
-  public List<Server> getFilteredListOfServers(List<Server> list) {
+  public boolean enabled() {
+    return DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.loadbalance.filter.zoneaware.enabled", true).get();
+  }
+
+  @Override
+  public void setLoadBalancer(LoadBalancer loadBalancer) {
+    this.loadBalancer = loadBalancer;
+  }
+
+  @Override
+  public int getOrder() {
+    return 300;
+  }
+
+  @Override
+  public List<Server> getFilteredListOfServers(List<Server> list, Invocation invocation) {
     List<Server> result = new ArrayList<>();
     MicroserviceInstance myself = RegistryUtils.getMicroserviceInstance();
     boolean find = false;
     for (Server server : list) {
-      CseServer cseServer = (CseServer) server;
-      if (regionAndAZMatch(myself, cseServer.getInstance())) {
-        result.add(cseServer);
+      ServiceCombServer serviceCombServer = (ServiceCombServer) server;
+      if (regionAndAZMatch(myself, serviceCombServer.getInstance())) {
+        result.add(serviceCombServer);
         find = true;
       }
     }
 
     if (!find) {
       for (Server server : list) {
-        CseServer cseServer = (CseServer) server;
-        if (regionMatch(myself, cseServer.getInstance())) {
-          result.add(cseServer);
+        ServiceCombServer serviceCombServer = (ServiceCombServer) server;
+        if (regionMatch(myself, serviceCombServer.getInstance())) {
+          result.add(serviceCombServer);
           find = true;
         }
       }
