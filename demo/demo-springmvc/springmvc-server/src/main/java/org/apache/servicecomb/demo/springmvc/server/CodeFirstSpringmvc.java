@@ -47,6 +47,8 @@ import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.response.Headers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -80,6 +82,7 @@ import io.vertx.core.json.JsonObject;
 @RestSchema(schemaId = "codeFirst")
 @RequestMapping(path = "/codeFirstSpringmvc", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CodeFirstSpringmvc {
+  private static final Logger LOGGER = LoggerFactory.getLogger(CodeFirstSpringmvc.class);
 
   private String _fileUpload(MultipartFile file1, Part file2) {
     try (InputStream is1 = file1.getInputStream(); InputStream is2 = file2.getInputStream()) {
@@ -419,5 +422,46 @@ public class CodeFirstSpringmvc {
     Assert.isInstanceOf(Generic.class, input.value);
     Assert.isInstanceOf(User.class, input.value.value);
     return input;
+  }
+
+  private boolean testvoidInRPCSuccess = false;
+
+  @GetMapping(path = "/testvoidInRPC")
+  public void testvoidInRPC() {
+    LOGGER.info("testvoidInRPC() is called!");
+    testvoidInRPCSuccess = true;
+  }
+
+  private boolean testVoidInRPCSuccess = false;
+
+  @GetMapping(path = "/testVoidInRPC")
+  public Void testVoidInRPC() {
+    LOGGER.info("testVoidInRPC() is called!");
+    testVoidInRPCSuccess = true;
+    return null;
+  }
+
+  private boolean testvoidInRestTemplateSuccess = false;
+
+  @GetMapping(path = "/testvoidInRestTemplate")
+  public void testvoidInRestTemplate() {
+    LOGGER.info("testvoidInRestTemplate() is called!");
+    testvoidInRestTemplateSuccess = true;
+  }
+
+  private boolean testVoidInRestTemplateSuccess = false;
+
+  @GetMapping(path = "/testVoidInRestTemplate")
+  public Void testVoidInRestTemplate() {
+    LOGGER.info("testVoidInRestTemplate() is called!");
+    testVoidInRestTemplateSuccess = true;
+    return null;
+  }
+
+  @GetMapping(path = "/checkVoidResult")
+  public boolean checkVoidResult() {
+    LOGGER.info("checkVoidResult() is called!");
+    return testvoidInRPCSuccess && testVoidInRPCSuccess && testvoidInRestTemplateSuccess
+        && testVoidInRestTemplateSuccess;
   }
 }

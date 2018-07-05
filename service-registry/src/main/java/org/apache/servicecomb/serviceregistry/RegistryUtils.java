@@ -50,9 +50,9 @@ public final class RegistryUtils {
   private static ServiceRegistry serviceRegistry;
 
   // value is ip or {interface name}
-  public static final String PUBLISH_ADDRESS = "cse.service.publishAddress";
+  public static final String PUBLISH_ADDRESS = "servicecomb.service.publishAddress";
 
-  private static final String PUBLISH_PORT = "cse.{transport_name}.publishPort";
+  private static final String PUBLISH_PORT = "servicecomb.{transport_name}.publishPort";
 
   private RegistryUtils() {
   }

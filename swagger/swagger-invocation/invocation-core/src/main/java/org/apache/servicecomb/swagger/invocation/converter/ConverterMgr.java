@@ -140,11 +140,20 @@ public class ConverterMgr {
   }
 
   protected Converter findAssignable(Type src, Type target) {
-    if (TypeUtils.isAssignable(src, target)) {
+    if (isAssignable(src, target)) {
       return same;
     }
 
     return null;
+  }
+
+  boolean isAssignable(Type src, Type target) {
+    boolean assignable = TypeUtils.isAssignable(src, target);
+    if (!assignable) {
+      // void <--> java.lang.Void convert should be covered
+      assignable = (src == void.class || src == Void.class) && (target == void.class || target == Void.class);
+    }
+    return assignable;
   }
 
   protected Converter findCollectionToArray(Type src, Type target) {

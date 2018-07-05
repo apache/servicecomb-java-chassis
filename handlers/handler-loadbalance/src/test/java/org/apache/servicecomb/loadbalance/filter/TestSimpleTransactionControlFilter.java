@@ -46,9 +46,9 @@ public class TestSimpleTransactionControlFilter {
   @BeforeClass
   public static void beforeCls() {
     AbstractConfiguration configuration = new BaseConfiguration();
-    configuration.addProperty("cse.loadbalance.test.flowsplitFilter.policy",
+    configuration.addProperty("servicecomb.loadbalance.test.flowsplitFilter.policy",
         "org.apache.servicecomb.loadbalance.filter.SimpleFlowsplitFilter");
-    configuration.addProperty("cse.loadbalance.test.flowsplitFilter.options.tag0", "value0");
+    configuration.addProperty("servicecomb.loadbalance.test.flowsplitFilter.options.tag0", "value0");
   }
 
   @Before

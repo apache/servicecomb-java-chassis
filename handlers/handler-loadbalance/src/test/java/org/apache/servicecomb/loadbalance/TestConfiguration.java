@@ -34,7 +34,7 @@ public class TestConfiguration {
   @Test
   public void testConstants() {
 
-    assertEquals("cse.loadbalance.", Configuration.PROP_ROOT);
+    assertEquals("servicecomb.loadbalance.", Configuration.PROP_ROOT);
     assertEquals("NFLoadBalancerRuleClassName", Configuration.PROP_POLICY);
     assertEquals("ribbon.", Configuration.PROP_ROOT_20);
     assertEquals("retryEnabled", Configuration.PROP_RETRY_ENABLED);

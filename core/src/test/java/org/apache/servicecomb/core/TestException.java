@@ -36,23 +36,23 @@ public class TestException {
 
   @Test
   public void testExceptionUtils() {
-    CseException oExeception = ExceptionUtils.createCseException("cse.handler.ref.not.exist", new String("test"));
-    Assert.assertEquals("cse.handler.ref.not.exist", oExeception.getCode());
+    CseException oExeception = ExceptionUtils.createCseException("servicecomb.handler.ref.not.exist", new String("test"));
+    Assert.assertEquals("servicecomb.handler.ref.not.exist", oExeception.getCode());
 
     oExeception =
-        ExceptionUtils.createCseException("cse.handler.ref.not.exist", new Throwable(), new String("test"));
-    Assert.assertEquals("cse.handler.ref.not.exist", oExeception.getCode());
+        ExceptionUtils.createCseException("servicecomb.handler.ref.not.exist", new Throwable(), new String("test"));
+    Assert.assertEquals("servicecomb.handler.ref.not.exist", oExeception.getCode());
 
-    oExeception = ExceptionUtils.producerOperationNotExist("cse.error", "unit-testing");
-    Assert.assertEquals("cse.producer.operation.not.exist", oExeception.getCode());
+    oExeception = ExceptionUtils.producerOperationNotExist("servicecomb.error", "unit-testing");
+    Assert.assertEquals("servicecomb.producer.operation.not.exist", oExeception.getCode());
 
-    oExeception = ExceptionUtils.operationIdInvalid("cse.double.error", "what path are you talking about");
-    Assert.assertEquals("cse.schema.operation.id.invalid", oExeception.getCode());
+    oExeception = ExceptionUtils.operationIdInvalid("servicecomb.double.error", "what path are you talking about");
+    Assert.assertEquals("servicecomb.schema.operation.id.invalid", oExeception.getCode());
 
-    oExeception = ExceptionUtils.handlerRefNotExist("cse.double.error");
-    Assert.assertEquals("cse.handler.ref.not.exist", oExeception.getCode());
+    oExeception = ExceptionUtils.handlerRefNotExist("servicecomb.double.error");
+    Assert.assertEquals("servicecomb.handler.ref.not.exist", oExeception.getCode());
 
     oExeception = ExceptionUtils.lbAddressNotFound("microServiceName", "my rule my world", "transportChannel");
-    Assert.assertEquals("cse.lb.no.available.address", oExeception.getCode());
+    Assert.assertEquals("servicecomb.lb.no.available.address", oExeception.getCode());
   }
 }

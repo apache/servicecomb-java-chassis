@@ -33,7 +33,7 @@ public class TestServiceRegistryConfig {
   @BeforeClass
   public static void initClass() {
     ArchaiusUtils.resetConfig();
-    ArchaiusUtils.setProperty("cse.service.registry.address", "http://127.0.0.1, https://127.0.0.1");
+    ArchaiusUtils.setProperty("servicecomb.service.registry.address", "http://127.0.0.1, https://127.0.0.1");
   }
 
   @AfterClass

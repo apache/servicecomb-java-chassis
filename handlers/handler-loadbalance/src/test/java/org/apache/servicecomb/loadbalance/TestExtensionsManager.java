@@ -52,10 +52,10 @@ public class TestExtensionsManager {
 
   @Test
   public void testRuleName() {
-    System.setProperty("cse.loadbalance.mytest1.strategy.name", "RoundRobin");
-    System.setProperty("cse.loadbalance.mytest2.strategy.name", "Random");
-    System.setProperty("cse.loadbalance.mytest3.strategy.name", "WeightedResponse");
-    System.setProperty("cse.loadbalance.mytest4.strategy.name", "SessionStickiness");
+    System.setProperty("servicecomb.loadbalance.mytest1.strategy.name", "RoundRobin");
+    System.setProperty("servicecomb.loadbalance.mytest2.strategy.name", "Random");
+    System.setProperty("servicecomb.loadbalance.mytest3.strategy.name", "WeightedResponse");
+    System.setProperty("servicecomb.loadbalance.mytest4.strategy.name", "SessionStickiness");
 
     BeansHolder holder = new BeansHolder();
     List<ExtensionsFactory> extensionsFactories = new ArrayList<>();
@@ -74,21 +74,21 @@ public class TestExtensionsManager {
     Assert.assertEquals(SessionStickinessRule.class.getName(),
         ExtensionsManager.createLoadBalancerRule("mytest4").getClass().getName());
 
-    System.getProperties().remove("cse.loadbalance.mytest1.strategy.name");
-    System.getProperties().remove("cse.loadbalance.mytest2.strategy.name");
-    System.getProperties().remove("cse.loadbalance.mytest3.strategy.name");
-    System.getProperties().remove("cse.loadbalance.mytest4.strategy.name");
+    System.getProperties().remove("servicecomb.loadbalance.mytest1.strategy.name");
+    System.getProperties().remove("servicecomb.loadbalance.mytest2.strategy.name");
+    System.getProperties().remove("servicecomb.loadbalance.mytest3.strategy.name");
+    System.getProperties().remove("servicecomb.loadbalance.mytest4.strategy.name");
   }
 
 
   @Test
   public void testRuleClassName() {
-    System.setProperty("cse.loadbalance.mytest1.NFLoadBalancerRuleClassName",
+    System.setProperty("servicecomb.loadbalance.mytest1.NFLoadBalancerRuleClassName",
         "com.netflix.loadbalancer.RoundRobinRule");
-    System.setProperty("cse.loadbalance.mytest2.NFLoadBalancerRuleClassName",
+    System.setProperty("servicecomb.loadbalance.mytest2.NFLoadBalancerRuleClassName",
         "com.netflix.loadbalancer.WeightedResponseTimeRule");
-    System.setProperty("cse.loadbalance.mytest3.NFLoadBalancerRuleClassName", "com.netflix.loadbalancer.RandomRule");
-    System.setProperty("cse.loadbalance.mytest4.NFLoadBalancerRuleClassName",
+    System.setProperty("servicecomb.loadbalance.mytest3.NFLoadBalancerRuleClassName", "com.netflix.loadbalancer.RandomRule");
+    System.setProperty("servicecomb.loadbalance.mytest4.NFLoadBalancerRuleClassName",
         "org.apache.servicecomb.loadbalance.SessionStickinessRule");
 
     BeansHolder holder = new BeansHolder();
@@ -108,10 +108,10 @@ public class TestExtensionsManager {
     Assert.assertEquals(SessionStickinessRule.class.getName(),
         ExtensionsManager.createLoadBalancerRule("mytest4").getClass().getName());
 
-    System.getProperties().remove("cse.loadbalance.mytest1.NFLoadBalancerRuleClassName");
-    System.getProperties().remove("cse.loadbalance.mytest2.NFLoadBalancerRuleClassName");
-    System.getProperties().remove("cse.loadbalance.mytest3.NFLoadBalancerRuleClassName");
-    System.getProperties().remove("cse.loadbalance.mytest4.NFLoadBalancerRuleClassName");
+    System.getProperties().remove("servicecomb.loadbalance.mytest1.NFLoadBalancerRuleClassName");
+    System.getProperties().remove("servicecomb.loadbalance.mytest2.NFLoadBalancerRuleClassName");
+    System.getProperties().remove("servicecomb.loadbalance.mytest3.NFLoadBalancerRuleClassName");
+    System.getProperties().remove("servicecomb.loadbalance.mytest4.NFLoadBalancerRuleClassName");
 
     RetryHandler retryHandler = ExtensionsManager.createRetryHandler("mytest1");
     Assert.assertTrue(DefaultLoadBalancerRetryHandler.class.isInstance(retryHandler));

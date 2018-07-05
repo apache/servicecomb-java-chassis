@@ -130,8 +130,8 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
     Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName())
         .thenReturn("testHandleForceThrowException");
-    System.setProperty("cse.fallback.Group_Name.testHandleForceThrowException.force", "true");
-    System.setProperty("cse.fallbackpolicy.Group_Name.testHandleForceThrowException.policy", "throwexception");
+    System.setProperty("servicecomb.fallback.Group_Name.testHandleForceThrowException.force", "true");
+    System.setProperty("servicecomb.fallbackpolicy.Group_Name.testHandleForceThrowException.policy", "throwexception");
     bizkeeperHandler.handle(invocation, f -> {
       Assert.assertTrue(f.isFailed());
     });
@@ -143,8 +143,8 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     Mockito.when(invocation.getOperationMeta()).thenReturn(Mockito.mock(OperationMeta.class));
     Mockito.when(invocation.getOperationMeta().getMicroserviceQualifiedName())
         .thenReturn("testHandleForceReturnnull");
-    System.setProperty("cse.fallback.Group_Name.testHandleForceReturnnull.force", "true");
-    System.setProperty("cse.fallbackpolicy.Group_Name.testHandleForceReturnnull.policy", "returnnull");
+    System.setProperty("servicecomb.fallback.Group_Name.testHandleForceReturnnull.force", "true");
+    System.setProperty("servicecomb.fallbackpolicy.Group_Name.testHandleForceReturnnull.policy", "returnnull");
     bizkeeperHandler.handle(invocation, f -> {
       Assert.assertTrue(f.isSuccessed());
       Assert.assertNull(f.getResult());
@@ -161,7 +161,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     Mockito.when(policy.name()).thenReturn("throwException");
     Mockito.when(policy.getFallbackResponse(Mockito.any(Invocation.class))).thenThrow(new RuntimeException());
     FallbackPolicyManager.addPolicy(policy);
-    System.setProperty("cse.fallbackpolicy.groupname.testHandleInError.policy", "throwException");
+    System.setProperty("servicecomb.fallbackpolicy.groupname.testHandleInError.policy", "throwException");
     Mockito.doAnswer(new Answer<Void>() {
       @Override
       public Void answer(InvocationOnMock invocation) {

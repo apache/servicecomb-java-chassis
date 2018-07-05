@@ -46,7 +46,7 @@ public class TestYAMLConfigurationSource {
     PollResult result = configSource.poll(true, null);
     Map<String, Object> configMap = result.getComplete();
     assertNotNull(configMap);
-    assertEquals(20, configMap.size());
+    assertEquals(25, configMap.size());
     assertNotNull(configMap.get("trace.handler.sampler.percent"));
     assertEquals(0.5, configMap.get("trace.handler.sampler.percent"));
   }
@@ -56,18 +56,18 @@ public class TestYAMLConfigurationSource {
     ClassLoader loader = Thread.currentThread().getContextClassLoader();
     URL test1URL = loader.getResource("test1.yaml");
     URL test2URL = loader.getResource("test2.yaml");
-    System.setProperty("cse.configurationSource.additionalUrls", test1URL.toString() + "," + test2URL.toString());
+    System.setProperty("servicecomb.configurationSource.additionalUrls", test1URL.toString() + "," + test2URL.toString());
     MicroserviceConfigurationSource configSource = yamlConfigSource();
     PollResult result = configSource.poll(true, null);
     Map<String, Object> configMap = result.getComplete();
 
     assertEquals(3, configSource.getConfigModels().size());
     assertNotNull(configMap);
-    assertEquals(31, configMap.size());
+    assertEquals(36, configMap.size());
     assertNotNull(configMap.get("trace.handler.sampler.percent"));
     assertEquals(0.5, configMap.get("trace.handler.sampler.percent"));
 
-    System.getProperties().remove("cse.configurationSource.additionalUrls");
+    System.getProperties().remove("servicecomb.configurationSource.additionalUrls");
   }
 
   @Test

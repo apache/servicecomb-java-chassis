@@ -45,14 +45,14 @@ import io.vertx.core.Vertx;
 public abstract class AbstractTransport implements Transport {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTransport.class);
 
-  public static final String PROP_ROOT = "cse.request";
+  public static final String PROP_ROOT = "servicecomb.request";
 
   public static final String PROP_TIMEOUT = ".timeout";
 
   /*
    * 用于参数传递：比如向RestServerVerticle传递endpoint地址。
    */
-  public static final String ENDPOINT_KEY = "cse.endpoint";
+  public static final String ENDPOINT_KEY = "servicecomb.endpoint";
 
   private static final long REQUEST_TIMEOUT_CFG_FAIL = -1;
 

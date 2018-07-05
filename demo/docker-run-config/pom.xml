@@ -62,7 +62,7 @@
                 <run>
                   <env>
                     <JAVA_OPTS>
-                      ${demo.vm.options} -Dcse.service.registry.address=http://sc.servicecomb.io:30100 -Dcse.service.publishAddress=${docker.hostname}
+                      ${demo.vm.options} -Dservicecomb.service.registry.address=http://sc.servicecomb.io:30100 -Dservicecomb.service.publishAddress=${docker.hostname}
                     </JAVA_OPTS>
                     <JAR_PATH>/maven/${demo.service.name}-${project.version}.jar</JAR_PATH>
                   </env>
@@ -146,7 +146,7 @@
             <version>2.19.1</version>
             <configuration>
               <systemPropertyVariables>
-                <cse.service.registry.address>http://${docker.hostname}:${service.center.port}</cse.service.registry.address>
+                <servicecomb.service.registry.address>http://${docker.hostname}:${service.center.port}</servicecomb.service.registry.address>
               </systemPropertyVariables>
               <argLine>${jacoco.failsafe.argLine}</argLine>
             </configuration>

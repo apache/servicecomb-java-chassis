@@ -53,7 +53,15 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
         return convertValue(request.getParameterValues(paramPath), targetType);
       }
 
-      return convertValue(request.getParameter(paramPath), targetType);
+      Object value = request.getParameter(paramPath);
+      if (value == null || value.equals("")) {
+        Object defaultValue = getDefaultValue();
+        if (defaultValue != null) {
+          value = defaultValue;
+        }
+      }
+
+      return convertValue(value, targetType);
     }
 
     @Override
