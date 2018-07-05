@@ -51,6 +51,8 @@ public final class ServiceRegistryConfig {
   private static final int DEFAULT_REQUEST_HEARTBEAT_TIMEOUT_IN_MS = 3000;
 
   private static final int DEFAULT_CHECK_INTERVAL_IN_S = 30;
+  
+  private static final int DEFAULT_Cache_INTERVAL_IN_S = 30;
 
   private static final int DEFAULT_CHECK_TIMES = 3;
 
@@ -196,6 +198,15 @@ public final class ServiceRegistryConfig {
                 DEFAULT_CHECK_INTERVAL_IN_S);
     int interval = property.get();
     return interval < 0 ? DEFAULT_CHECK_INTERVAL_IN_S : interval;
+  }
+  
+  public static int getInstanceCacheInterval() {
+    DynamicIntProperty property =
+        DynamicPropertyFactory.getInstance()
+            .getIntProperty("servicecomb.service.registry.cache.interval",
+                DEFAULT_Cache_INTERVAL_IN_S);
+    int interval = property.get();
+    return interval < 0 ? DEFAULT_Cache_INTERVAL_IN_S : interval;
   }
 
   public int getInstancePullInterval() {
