@@ -56,7 +56,7 @@ import io.swagger.annotations.ResponseHeader;
 public class CodeFirstSpringmvc extends CodeFirstSpringmvcBase {
   @ResponseHeaders({@ResponseHeader(name = "h1", response = String.class),
       @ResponseHeader(name = "h2", response = String.class)})
-  @RequestMapping(path = "/responseEntity", method = RequestMethod.POST)
+  @RequestMapping(path = "/responseEntity", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
   @Override
   public ResponseEntity<Date> responseEntity(InvocationContext c1, @RequestAttribute("date") Date date) {
     return super.responseEntity(c1, date);
@@ -89,14 +89,14 @@ public class CodeFirstSpringmvc extends CodeFirstSpringmvcBase {
     return super.bytes(input);
   }
 
-  @RequestMapping(path = "/upload", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE)
+  @RequestMapping(path = "/upload", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @Override
   public String fileUpload(@RequestPart(name = "file1") MultipartFile file1,
       @RequestPart(name = "someFile") MultipartFile file2, @RequestAttribute("name") String name) {
     return super.fileUpload(file1, file2, name);
   }
 
-  @RequestMapping(path = "/uploadWithoutAnnotation", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE)
+  @RequestMapping(path = "/uploadWithoutAnnotation", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public String fileUploadWithoutAnnotation(MultipartFile file1, MultipartFile file2,
       @RequestAttribute("name") String name) {
     return super.fileUpload(file1, file2, name);
@@ -114,7 +114,7 @@ public class CodeFirstSpringmvc extends CodeFirstSpringmvcBase {
     return a;
   }
 
-  @RequestMapping(path = "/add", method = RequestMethod.POST)
+  @RequestMapping(path = "/add", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
   @Override
   public int add(@RequestAttribute("a") int a, @RequestAttribute("b") int b) {
     return super.add(a, b);

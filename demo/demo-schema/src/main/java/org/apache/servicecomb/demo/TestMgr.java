@@ -66,6 +66,18 @@ public class TestMgr {
     }
   }
 
+  public static void failed(String desc, Throwable e) {
+    Error error = new Error(msg + " | " + desc + ", method is " + getCaller());
+    if (e != null) {
+      error.setStackTrace(error.getStackTrace());
+    }
+    errorList.add(error);
+  }
+
+  public static boolean isSuccess() {
+    return errorList.isEmpty();
+  }
+
   public static void summary() {
     if (errorList.isEmpty()) {
       LOGGER.info("............. test finished ............");

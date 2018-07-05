@@ -16,22 +16,27 @@
  */
 package org.apache.servicecomb.serviceregistry.task;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.ws.rs.core.Response.Status;
+
+import org.apache.servicecomb.foundation.common.base.ServiceCombConstants;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import org.apache.servicecomb.serviceregistry.client.http.Holder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import com.google.common.base.Charsets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.google.common.hash.Hashing;
 
 public class MicroserviceRegisterTask extends AbstractRegisterTask {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceRegisterTask.class);
@@ -73,14 +78,15 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
         microservice.getVersion(),
         microservice.getEnvironment());
     if (!StringUtils.isEmpty(serviceId)) {
-      // 已经注册过了，不需要重新注册
+      // This microservice has been registered, so we just use the serviceId gotten from service center
       microservice.setServiceId(serviceId);
       LOGGER.info(
-          "Microservice exists in service center, no need to register. id={} appId={}, name={}, version={}",
+          "Microservice exists in service center, no need to register. id=[{}] appId=[{}], name=[{}], version=[{}], env=[{}]",
           serviceId,
           microservice.getAppId(),
           microservice.getServiceName(),
-          microservice.getVersion());
+          microservice.getVersion(),
+          microservice.getEnvironment());
 
       if (!checkSchemaIdSet()) {
         return false;
@@ -89,24 +95,25 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
       serviceId = srClient.registerMicroservice(microservice);
       if (StringUtils.isEmpty(serviceId)) {
         LOGGER.error(
-            "Registry microservice failed. appId={}, name={}, version={}",
+            "Registry microservice failed. appId=[{}], name=[{}], version=[{}], env=[{}]",
             microservice.getAppId(),
             microservice.getServiceName(),
-            microservice.getVersion());
+            microservice.getVersion(),
+            microservice.getEnvironment());
         return false;
       }
 
-      schemaIdSetMatch = true;
-      // 重新注册服务场景下，instanceId不应该缓存
+      // In re-register microservice case, the old instanceId should not be cached
       microservice.getInstance().setInstanceId(null);
 
       LOGGER.info(
-          "Registry Microservice successfully. id={} appId={}, name={}, version={}, schemaIds={}",
+          "Registry Microservice successfully. id=[{}] appId=[{}], name=[{}], version=[{}], schemaIds={}, env=[{}]",
           serviceId,
           microservice.getAppId(),
           microservice.getServiceName(),
           microservice.getVersion(),
-          microservice.getSchemas());
+          microservice.getSchemas(),
+          microservice.getEnvironment());
     }
 
     microservice.setServiceId(serviceId);
@@ -126,74 +133,210 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
     schemaIdSetMatch = existSchemas.equals(localSchemas);
 
     if (!schemaIdSetMatch) {
-      LOGGER.error(
-          "SchemaIds is different between local and service center. Please change microservice version. "
-              + "id={} appId={}, name={}, version={}, local schemaIds={}, service center schemaIds={}",
+      LOGGER.warn(
+          "SchemaIds is different between local and service center. "
+              + "serviceId=[{}] appId=[{}], name=[{}], version=[{}], env=[{}], local schemaIds={}, service center schemaIds={}",
           microservice.getServiceId(),
           microservice.getAppId(),
           microservice.getServiceName(),
           microservice.getVersion(),
+          microservice.getEnvironment(),
           localSchemas,
           existSchemas);
       return true;
     }
 
     LOGGER.info(
-        "SchemaIds is equals to service center. id={} appId={}, name={}, version={}, schemaIds={}",
+        "SchemaIds are equals to service center. serviceId=[{}], appId=[{}], name=[{}], version=[{}], env=[{}], schemaIds={}",
         microservice.getServiceId(),
         microservice.getAppId(),
         microservice.getServiceName(),
         microservice.getVersion(),
+        microservice.getEnvironment(),
         localSchemas);
     return true;
   }
 
   private boolean registerSchemas() {
-    List<GetSchemaResponse> existSchemas = srClient.getSchemas(microservice.getServiceId());
-    for (Entry<String, String> entry : microservice.getSchemaMap().entrySet()) {
-      String schemaId = entry.getKey();
-      String content = entry.getValue();
-      GetSchemaResponse existSchema = extractSchema(schemaId, existSchemas);
-      boolean exists = existSchema != null && existSchema.getSummary() != null;
-      LOGGER.info("schemaId [{}] exists {}", schemaId, exists);
-      if (!exists) {
-        if (!srClient.registerSchema(microservice.getServiceId(), schemaId, content)) {
-          return false;
-        }
-      } else {
-        String curSchemaSumary = existSchema.getSummary();
-        String schemaSummary = Hashing.sha256().newHasher().putString(content, Charsets.UTF_8).hash().toString();
-        if (!schemaSummary.equals(curSchemaSumary)) {
-          if (microservice.getInstance().getEnvironment().equalsIgnoreCase("development")) {
-            LOGGER.info(
-                "schemaId [{}]'s content changes and the current enviroment is development, so re-register it!",
-                schemaId);
-            if (!srClient.registerSchema(microservice.getServiceId(), schemaId, content)) {
-              return false;
-            }
-          } else {
-            throw new IllegalStateException("schemaId [" + schemaId
-                + "] exists in service center, but the content does not match the local content that means there are interface change "
-                + "and you need to increment microservice version before deploying. "
-                + "Or you can configure instance_description.environment=development to work in development enviroment and ignore this error");
-          }
-        }
+    Holder<List<GetSchemaResponse>> scSchemaHolder = srClient.getSchemas(microservice.getServiceId());
+    if (Status.OK.getStatusCode() != scSchemaHolder.getStatusCode()) {
+      LOGGER.error("failed to get schemas from service center, statusCode = [{}]", scSchemaHolder.getStatusCode());
+      return false;
+    }
+
+    Map<String, GetSchemaResponse> scSchemaMap = convertScSchemaMap(scSchemaHolder);
+    // CHECK: local > sc, local != sc
+    for (Entry<String, String> localSchemaEntry : microservice.getSchemaMap().entrySet()) {
+      if (!registerSchema(scSchemaMap, localSchemaEntry)) {
+        return false;
       }
     }
+
+    // CHECK: local < sc
+    checkRemainingSchema(scSchemaMap);
+
+    schemaIdSetMatch = true;
     return true;
   }
 
-  private GetSchemaResponse extractSchema(String schemaId, List<GetSchemaResponse> schemas) {
-    if (schemas == null || schemas.isEmpty()) {
-      return null;
+  /**
+   * Check whether a local schema is equal to a sc schema.
+   * @return true if the local schema is equal to a sc schema, or be registered to sc successfully;
+   * false if schema is registered to sc but failed.
+   * @throws IllegalStateException The environment is not modifiable, and the local schema is different from sc schema
+   * or not exist in sc.
+   */
+  private boolean registerSchema(Map<String, GetSchemaResponse> scSchemaMap,
+      Entry<String, String> localSchemaEntry) {
+    GetSchemaResponse scSchema = scSchemaMap.get(localSchemaEntry.getKey());
+
+    boolean onlineSchemaExists = scSchema != null;
+    LOGGER.info("schemaId [{}] exists [{}], summary exists [{}]", localSchemaEntry.getKey(), onlineSchemaExists,
+        scSchema != null && scSchema.getSummary() != null);
+    if (!onlineSchemaExists) {
+      // local > sc
+      return registerNewSchema(localSchemaEntry);
     }
-    GetSchemaResponse schema = null;
-    for (GetSchemaResponse tempSchema : schemas) {
-      if (tempSchema.getSchemaId().equals(schemaId)) {
-        schema = tempSchema;
-        break;
+
+    scSchemaMap.remove(localSchemaEntry.getKey());
+
+    // local != sc
+    return compareAndReRegisterSchema(localSchemaEntry, scSchema);
+  }
+
+  /**
+   * Try to register a new schema to service center, or throw exception if cannot register.
+   * @param localSchemaEntry local schema to be registered.
+   * @return whether local schema is registered successfully.
+   * @throws IllegalStateException The environment is unmodifiable.
+   */
+  private boolean registerNewSchema(Entry<String, String> localSchemaEntry) {
+    // The ids of schemas are contained by microservice registry request, which means once a microservice
+    // is registered in the service center, the schemas that it contains are determined.
+    // If we get a microservice but cannot find the given schemaId in it's schemaId list, this means that
+    // the schemas of this microservice has been changed, and we should decide whether to register this new
+    // schema according to it's environment configuration.
+    if (onlineSchemaIsModifiable()) {
+      return registerSingleSchema(localSchemaEntry.getKey(), localSchemaEntry.getValue());
+    }
+
+    throw new IllegalStateException(
+        "There is a schema only existing in local microservice: [" + localSchemaEntry.getKey()
+            + "], which means there are interfaces changed. "
+            + "You need to increment microservice version before deploying, "
+            + "or you can configure service_description.environment="
+            + ServiceCombConstants.DEVELOPMENT_SERVICECOMB_ENV
+            + " to work in development environment and ignore this error");
+  }
+
+  /**
+   * Compare schema summary and determine whether to re-register schema or throw exception.
+   * @param localSchemaEntry local schema
+   * @param scSchema schema in service center
+   * @return true if the two copies of schema are the same, or local schema is re-registered successfully,
+   * false if the local schema is re-registered to service center but failed.
+   * @throws IllegalStateException The two copies of schema are different and the environment is not modifiable.
+   */
+  private boolean compareAndReRegisterSchema(Entry<String, String> localSchemaEntry, GetSchemaResponse scSchema) {
+    String scSchemaSummary = getScSchemaSummary(scSchema);
+
+    if (null == scSchemaSummary) {
+      // cannot get scSchemaSummary, which means there is no schema content in sc, register schema directly
+      return registerSingleSchema(localSchemaEntry.getKey(), localSchemaEntry.getValue());
+    }
+
+    String localSchemaSummary = RegistryUtils.calcSchemaSummary(localSchemaEntry.getValue());
+    if (!localSchemaSummary.equals(scSchemaSummary)) {
+      if (onlineSchemaIsModifiable()) {
+        LOGGER.info(
+            "schema[{}]'s content is changed and the current environment is [{}], so re-register it!",
+            localSchemaEntry.getKey(), ServiceCombConstants.DEVELOPMENT_SERVICECOMB_ENV);
+        return registerSingleSchema(localSchemaEntry.getKey(), localSchemaEntry.getValue());
       }
+
+      // env is not development, throw an exception and break the init procedure
+      throw new IllegalStateException(
+          "The schema(id=[" + localSchemaEntry.getKey()
+              + "]) content held by this instance and the service center is different. "
+              + "You need to increment microservice version before deploying. "
+              + "Or you can configure service_description.environment="
+              + ServiceCombConstants.DEVELOPMENT_SERVICECOMB_ENV
+              + " to work in development environment and ignore this error");
     }
-    return schema;
+
+    // summaries are the same
+    return true;
+  }
+
+  /**
+   * Try to get or calculate scSchema summary.
+   * @return summary of scSchema,
+   * or null if there is no schema content in service center
+   */
+  private String getScSchemaSummary(GetSchemaResponse scSchema) {
+    String scSchemaSummary = scSchema.getSummary();
+    if (null != scSchemaSummary) {
+      return scSchemaSummary;
+    }
+
+    // if there is no online summery, query online schema content directly and calculate summary
+    String onlineSchemaContent = srClient.getSchema(microservice.getServiceId(), scSchema.getSchemaId());
+    if (null != onlineSchemaContent) {
+      scSchemaSummary = RegistryUtils.calcSchemaSummary(onlineSchemaContent);
+    }
+
+    return scSchemaSummary;
+  }
+
+  /**
+   * Check whether there are schemas remaining in service center but not exist in local microservice.
+   * @throws IllegalStateException There are schemas only existing in service center, and the environment is unmodifiable.
+   */
+  private void checkRemainingSchema(Map<String, GetSchemaResponse> scSchemaMap) {
+    if (!scSchemaMap.isEmpty()) {
+      // there are some schemas only exist in service center
+      if (!onlineSchemaIsModifiable()) {
+        // env is not development, throw an exception and break the init procedure
+        throw new IllegalStateException("There are schemas only existing in service center: " + scSchemaMap.keySet()
+            + ", which means there are interfaces changed. "
+            + "You need to increment microservice version before deploying, "
+            + "or if service_description.environment="
+            + ServiceCombConstants.DEVELOPMENT_SERVICECOMB_ENV
+            + ", you can delete microservice information in service center and restart this instance.");
+      }
+
+      // Currently nothing to do but print a warning
+      LOGGER.warn("There are schemas only existing in service center: {}, which means there are interfaces changed. "
+              + "It's recommended to increment microservice version before deploying.",
+          scSchemaMap.keySet());
+      LOGGER.warn("ATTENTION: The schemas in new version are less than the old version, "
+          + "which may cause compatibility problems.");
+    }
+  }
+
+  private boolean onlineSchemaIsModifiable() {
+    return ServiceCombConstants.DEVELOPMENT_SERVICECOMB_ENV.equalsIgnoreCase(microservice.getEnvironment());
+  }
+
+  /**
+   * Register a schema directly.
+   * @return true if register success, otherwise false
+   */
+  private boolean registerSingleSchema(String schemaId, String content) {
+    return srClient.registerSchema(microservice.getServiceId(), schemaId, content);
+  }
+
+  private Map<String, GetSchemaResponse> convertScSchemaMap(Holder<List<GetSchemaResponse>> scSchemaHolder) {
+    Map<String, GetSchemaResponse> scSchemaMap = new HashMap<>();
+    List<GetSchemaResponse> scSchemaList = scSchemaHolder.getValue();
+    if (null == scSchemaList) {
+      return scSchemaMap;
+    }
+
+    for (GetSchemaResponse scSchema : scSchemaList) {
+      scSchemaMap.put(scSchema.getSchemaId(), scSchema);
+    }
+
+    return scSchemaMap;
   }
 }

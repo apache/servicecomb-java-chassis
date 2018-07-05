@@ -19,6 +19,8 @@ springmvctest:
   - id: "001"
     version: "1.0"
     appid: myapp
+    schemaIds:
+      - springmvcHello
     instances:
       - endpoints:
         - rest://127.0.0.1:8080

@@ -33,7 +33,7 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
-      <artifactId>pojo-server</artifactId>
+      <artifactId>springmvc-server</artifactId>
     </dependency>
   </dependencies>
 

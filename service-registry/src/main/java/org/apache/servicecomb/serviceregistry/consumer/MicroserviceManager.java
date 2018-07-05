@@ -49,6 +49,7 @@ public class MicroserviceManager {
     if (!microserviceVersions.isValidated()) {
       // remove this microservice if it does not exist or not registered in order to get it back when access it again
       versionsByName.remove(microserviceName);
+      appManager.getEventBus().unregister(microserviceVersions);
     }
     return microserviceVersions;
   }

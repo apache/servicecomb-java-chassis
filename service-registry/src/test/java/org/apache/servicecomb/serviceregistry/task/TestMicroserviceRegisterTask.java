@@ -24,6 +24,7 @@ import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import org.apache.servicecomb.serviceregistry.client.http.Holder;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -82,12 +83,16 @@ public class TestMicroserviceRegisterTask {
 
   @Test
   public void testNewRegisterSuccess(@Mocked ServiceRegistryClient srClient) {
+    Holder<List<GetSchemaResponse>> onlineSchemasHolder = new Holder<>();
+    onlineSchemasHolder.setStatusCode(200);
     new Expectations() {
       {
         srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
         result = null;
         srClient.registerMicroservice((Microservice) any);
         result = "serviceId";
+        srClient.getSchemas("serviceId");
+        this.result = onlineSchemasHolder;
       }
     };
 
@@ -104,10 +109,23 @@ public class TestMicroserviceRegisterTask {
     Assert.assertEquals(1, taskList.size());
   }
 
+  /**
+   * Local schemaId set is consistent with online schemaId set, and schema contents are not registered.
+   * This service instance try to register schema content but failed.
+   */
   @Test
   public void testRegisterSchemaFailed(@Mocked ServiceRegistryClient srClient) {
     microservice.addSchema("s1", "");
     microservice.addSchema("exist", "");
+    Holder<List<GetSchemaResponse>> onlineSchemasHolder = new Holder<>();
+    onlineSchemasHolder.setStatusCode(200);
+    ArrayList<GetSchemaResponse> schemaResponses = new ArrayList<>();
+    onlineSchemasHolder.setValue(schemaResponses);
+    GetSchemaResponse schemaResponse = new GetSchemaResponse();
+    schemaResponse.setSchemaId("s1");
+    schemaResponses.add(schemaResponse);
+    schemaResponse.setSchemaId("exist");
+    schemaResponses.add(schemaResponse);
     new Expectations() {
       {
         srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
@@ -116,6 +134,8 @@ public class TestMicroserviceRegisterTask {
         result = "serviceId";
         srClient.registerSchema(anyString, anyString, anyString);
         result = false;
+        srClient.getSchemas("serviceId");
+        this.result = onlineSchemasHolder;
       }
     };
 
@@ -123,23 +143,35 @@ public class TestMicroserviceRegisterTask {
     registerTask.run();
 
     Assert.assertEquals(false, registerTask.isRegistered());
-    Assert.assertEquals(true, registerTask.isSchemaIdSetMatch());
+    Assert.assertEquals(false, registerTask.isSchemaIdSetMatch());
     Assert.assertEquals("serviceId", microservice.getServiceId());
     Assert.assertEquals("serviceId", microservice.getInstance().getServiceId());
     Assert.assertEquals(1, taskList.size());
   }
 
+  /**
+   * There is no microservice information in service center.
+   */
   @Test
   public void testRegisterSchemaSuccess(@Mocked ServiceRegistryClient srClient) {
-    microservice.addSchema("s1", "");
+    microservice.addSchema("s1", "s1Content");
+    Holder<List<GetSchemaResponse>> onlineSchemasHolder = new Holder<>();
+    onlineSchemasHolder.setStatusCode(200);
+    ArrayList<GetSchemaResponse> schemaResponseList = new ArrayList<>();
+    onlineSchemasHolder.setValue(schemaResponseList);
+    GetSchemaResponse schemaResponse = new GetSchemaResponse();
+    schemaResponseList.add(schemaResponse);
+    schemaResponse.setSchemaId("s1");
     new Expectations() {
       {
         srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
         result = null;
         srClient.registerMicroservice((Microservice) any);
         result = "serviceId";
-        srClient.registerSchema(anyString, anyString, anyString);
-        result = true;
+        srClient.getSchema("serviceId", "s1");
+        result = "s1Content";
+        srClient.getSchemas("serviceId");
+        result = onlineSchemasHolder;
       }
     };
 
@@ -155,12 +187,16 @@ public class TestMicroserviceRegisterTask {
 
   @Test
   public void testAlreadyRegisteredSchemaIdSetMatch(@Mocked ServiceRegistryClient srClient) {
+    Holder<List<GetSchemaResponse>> onlineSchemasHolder = new Holder<>();
+    onlineSchemasHolder.setStatusCode(200);
     new Expectations() {
       {
         srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
         result = "serviceId";
         srClient.getMicroservice(anyString);
         result = microservice;
+        srClient.getSchemas("serviceId");
+        result = onlineSchemasHolder;
       }
     };
 
@@ -175,30 +211,33 @@ public class TestMicroserviceRegisterTask {
     Assert.assertEquals(1, taskList.size());
   }
 
-  @Test
+  @Test(expected = IllegalStateException.class)
   public void testAlreadyRegisteredSchemaIdSetNotMatch(@Mocked ServiceRegistryClient srClient) {
     Microservice otherMicroservice = new Microservice();
     otherMicroservice.setAppId(microservice.getAppId());
     otherMicroservice.setServiceName("ms1");
     otherMicroservice.addSchema("s1", "");
+    Holder<List<GetSchemaResponse>> onlineSchemasHolder = new Holder<>();
+    onlineSchemasHolder.setStatusCode(200);
+    ArrayList<GetSchemaResponse> schemaResponseList = new ArrayList<>();
+    onlineSchemasHolder.setValue(schemaResponseList);
+    GetSchemaResponse schemaResponse = new GetSchemaResponse();
 
+    schemaResponseList.add(schemaResponse);
+    schemaResponse.setSchemaId("s1");
     new Expectations() {
       {
         srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
         result = "serviceId";
         srClient.getMicroservice(anyString);
         result = otherMicroservice;
+        srClient.getSchemas("serviceId");
+        result = onlineSchemasHolder;
       }
     };
 
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
     registerTask.run();
-
-    Assert.assertEquals(true, registerTask.isRegistered());
-    Assert.assertEquals(false, registerTask.isSchemaIdSetMatch());
-    Assert.assertEquals("serviceId", microservice.getServiceId());
-    Assert.assertEquals("serviceId", microservice.getInstance().getServiceId());
-    Assert.assertEquals(1, taskList.size());
   }
 
   @Test
@@ -229,7 +268,7 @@ public class TestMicroserviceRegisterTask {
   @Test
   public void testReRegisteredSetForDev(@Mocked ServiceRegistryClient srClient) {
     ArchaiusUtils.resetConfig();
-    ArchaiusUtils.setProperty("instance_description.environment", "development");
+    ArchaiusUtils.setProperty("service_description.environment", "development");
     Microservice otherMicroservice = new Microservice();
     otherMicroservice.setAppId(microservice.getAppId());
     otherMicroservice.setServiceName("ms1");
@@ -240,6 +279,8 @@ public class TestMicroserviceRegisterTask {
     resp.setSchemaId("s1");
     resp.setSummary("c1188d709631a9038874f9efc6eb894f");
     list.add(resp);
+    Holder<List<GetSchemaResponse>> onlineSchemasHolder = new Holder<>();
+    onlineSchemasHolder.setStatusCode(200).setValue(list);
 
     new Expectations() {
       {
@@ -248,14 +289,14 @@ public class TestMicroserviceRegisterTask {
         srClient.getMicroservice(anyString);
         result = otherMicroservice;
         srClient.getSchemas(anyString);
-        result = list;
+        result = onlineSchemasHolder;
         srClient.registerSchema(microservice.getServiceId(), anyString, anyString);
         result = true;
       }
     };
 
     microservice.addSchema("s1", "");
-    microservice.getInstance().setEnvironment("development");
+    microservice.setEnvironment("development");
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
     registerTask.run();
 
@@ -265,18 +306,22 @@ public class TestMicroserviceRegisterTask {
     Assert.assertEquals(1, taskList.size());
   }
 
+  /**
+   * There is microservice information but no schema in service center.
+   */
   @Test
   public void testFirstRegisterForProd(@Mocked ServiceRegistryClient srClient) {
     Microservice otherMicroservice = new Microservice();
     otherMicroservice.setAppId(microservice.getAppId());
     otherMicroservice.setServiceName("ms1");
-    otherMicroservice.addSchema("s1", "");
+    otherMicroservice.addSchema("s1", null);
 
     List<GetSchemaResponse> list = new ArrayList<>();
     GetSchemaResponse resp = new GetSchemaResponse();
     resp.setSchemaId("s1");
-    resp.setSummary(null);
     list.add(resp);
+    Holder<List<GetSchemaResponse>> onlineSchemasHolder = new Holder<>();
+    onlineSchemasHolder.setValue(list).setStatusCode(200);
 
     new Expectations() {
       {
@@ -285,14 +330,16 @@ public class TestMicroserviceRegisterTask {
         srClient.getMicroservice(anyString);
         result = otherMicroservice;
         srClient.getSchemas(anyString);
-        result = list;
-        srClient.registerSchema(microservice.getServiceId(), anyString, anyString);
+        result = onlineSchemasHolder;
+        srClient.getSchema("serviceId", "s1");
+        result = null;
+        srClient.registerSchema("serviceId", "s1", "s1Content");
         result = true;
       }
     };
 
-    microservice.addSchema("s1", "");
-    microservice.getInstance().setEnvironment("production");
+    microservice.addSchema("s1", "s1Content");
+    microservice.setEnvironment("production");
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
     registerTask.run();
 
@@ -302,6 +349,9 @@ public class TestMicroserviceRegisterTask {
     Assert.assertEquals(1, taskList.size());
   }
 
+  /**
+   * There is schema in service center which is different from local schema.
+   */
   @Test(expected = IllegalStateException.class)
   public void testReRegisteredSetForProd(@Mocked ServiceRegistryClient srClient) {
     Microservice otherMicroservice = new Microservice();
@@ -314,6 +364,8 @@ public class TestMicroserviceRegisterTask {
     resp.setSchemaId("s1");
     resp.setSummary("c1188d709631a9038874f9efc6eb894f");
     list.add(resp);
+    Holder<List<GetSchemaResponse>> onlineSchemasHolder = new Holder<>();
+    onlineSchemasHolder.setValue(list).setStatusCode(200);
 
     new Expectations() {
       {
@@ -322,13 +374,101 @@ public class TestMicroserviceRegisterTask {
         srClient.getMicroservice(anyString);
         result = otherMicroservice;
         srClient.getSchemas(anyString);
-        result = list;
+        result = onlineSchemasHolder;
       }
     };
 
     microservice.addSchema("s1", "");
-    microservice.getInstance().setEnvironment("prod");
+    microservice.setEnvironment("prod");
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
     registerTask.run();
+  }
+
+  /**
+   * env = production and there are schemas only existing in service center
+   */
+  @Test(expected = IllegalStateException.class)
+  public void testReRegisterForProductAndLocalSchemasAreLess(@Mocked ServiceRegistryClient srClient) {
+    Microservice otherMicroservice = new Microservice();
+    otherMicroservice.setAppId(microservice.getAppId());
+    otherMicroservice.setServiceName("ms1");
+    otherMicroservice.addSchema("s1", null);
+    otherMicroservice.addSchema("s2", null);
+
+    List<GetSchemaResponse> list = new ArrayList<>();
+    GetSchemaResponse resp = new GetSchemaResponse();
+    resp.setSchemaId("s1");
+    list.add(resp);
+    resp = new GetSchemaResponse();
+    resp.setSchemaId("s2");
+    list.add(resp);
+    Holder<List<GetSchemaResponse>> onlineSchemasHolder = new Holder<>();
+    onlineSchemasHolder.setValue(list).setStatusCode(200);
+
+    new Expectations() {
+      {
+        srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
+        result = "serviceId";
+        srClient.getMicroservice(anyString);
+        result = otherMicroservice;
+        srClient.getSchemas(anyString);
+        result = onlineSchemasHolder;
+        srClient.getSchema("serviceId", "s1");
+        result = null;
+        srClient.registerSchema("serviceId", "s1", "s1Content");
+        result = true;
+      }
+    };
+
+    microservice.addSchema("s1", "s1Content");
+    microservice.setEnvironment("production");
+    MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
+    registerTask.run();
+  }
+
+  @Test
+  public void testReRegisterForDevAndLocalSchemasAreLess(@Mocked ServiceRegistryClient srClient) {
+    Microservice otherMicroservice = new Microservice();
+    otherMicroservice.setAppId(microservice.getAppId());
+    otherMicroservice.setServiceName("ms1");
+    otherMicroservice.addSchema("s1", null);
+    otherMicroservice.addSchema("s2", null);
+
+    List<GetSchemaResponse> list = new ArrayList<>();
+    GetSchemaResponse resp = new GetSchemaResponse();
+    resp.setSchemaId("s1");
+    list.add(resp);
+    resp = new GetSchemaResponse();
+    resp.setSchemaId("s2");
+    list.add(resp);
+    Holder<List<GetSchemaResponse>> onlineSchemasHolder = new Holder<>();
+    onlineSchemasHolder.setValue(list).setStatusCode(200);
+    Holder<String> removeSchemaResult = new Holder<>();
+    removeSchemaResult.setStatusCode(200);
+
+    new Expectations() {
+      {
+        srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
+        result = "serviceId";
+        srClient.getMicroservice(anyString);
+        result = otherMicroservice;
+        srClient.getSchemas(anyString);
+        result = onlineSchemasHolder;
+        srClient.getSchema("serviceId", "s1");
+        result = null;
+        srClient.registerSchema("serviceId", "s1", "s1Content");
+        result = true;
+      }
+    };
+
+    microservice.addSchema("s1", "s1Content");
+    microservice.setEnvironment("development");
+    MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
+    registerTask.run();
+
+    Assert.assertEquals(true, registerTask.isRegistered());
+    Assert.assertEquals(true, registerTask.isSchemaIdSetMatch());
+    Assert.assertEquals("serviceId", microservice.getServiceId());
+    Assert.assertEquals(1, taskList.size());
   }
 }

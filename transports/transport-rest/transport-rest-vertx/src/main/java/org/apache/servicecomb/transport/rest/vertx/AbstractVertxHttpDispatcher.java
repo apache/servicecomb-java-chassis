@@ -17,16 +17,13 @@
 
 package org.apache.servicecomb.transport.rest.vertx;
 
-import static io.vertx.ext.web.handler.BodyHandler.DEFAULT_BODY_LIMIT;
-
 import java.util.List;
 
+import org.apache.servicecomb.common.rest.UploadConfig;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.ext.web.handler.BodyHandler;
 
@@ -38,13 +35,15 @@ public abstract class AbstractVertxHttpDispatcher implements VertxHttpDispatcher
   protected BodyHandler createBodyHandler() {
     RestBodyHandler bodyHandler = new RestBodyHandler();
 
-    String uploadsDirectory =
-        DynamicPropertyFactory.getInstance().getStringProperty("cse.uploads.directory", null).get();
-    bodyHandler.setUploadsDirectory(uploadsDirectory);
+    UploadConfig uploadConfig = new UploadConfig();
+
+    bodyHandler.setUploadsDirectory(uploadConfig.getLocation());
     bodyHandler.setDeleteUploadedFilesOnEnd(true);
-    bodyHandler.setBodyLimit(
-        DynamicPropertyFactory.getInstance().getLongProperty("cse.uploads.maxSize", DEFAULT_BODY_LIMIT).get());
-    LOGGER.info("set uploads directory to {}.", uploadsDirectory);
+    bodyHandler.setBodyLimit(uploadConfig.getMaxSize());
+
+    if (uploadConfig.toMultipartConfigElement() != null) {
+      LOGGER.info("set uploads directory to {}.", uploadConfig.getLocation());
+    }
 
     return bodyHandler;
   }

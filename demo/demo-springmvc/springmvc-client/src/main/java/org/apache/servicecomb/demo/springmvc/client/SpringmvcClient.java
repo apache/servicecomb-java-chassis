@@ -36,6 +36,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 public class SpringmvcClient {
   private static RestTemplate templateUrlWithServiceName = new CseRestTemplate();
 
@@ -53,6 +55,8 @@ public class SpringmvcClient {
   }
 
   public static void run() {
+    testConfigurationDuplicate();
+
     templateUrlWithServiceName.setRequestFactory(new UrlWithServiceNameClientHttpRequestFactory());
     restTemplate = RestTemplateBuilder.create();
     controller = BeanUtils.getBean("controller");
@@ -79,6 +83,9 @@ public class SpringmvcClient {
       testController(templateUrlWithServiceName, microserviceName);
 
       testController();
+
+      testDefaultValues(templateUrlWithServiceName, microserviceName);
+      testRequiredBody(templateUrlWithServiceName, microserviceName);
     }
     HttpHeaders headers = new HttpHeaders();
     headers.set("Accept-Encoding", "gzip");
@@ -99,12 +106,11 @@ public class SpringmvcClient {
     @SuppressWarnings("unchecked")
     Map<String, Double> metrics = restTemplate.getForObject(prefix + "/metrics", Map.class);
 
-//    TestMgr.check(true, metrics.get("jvm(name=heapUsed,statistic=gauge)") != 0);
+    //    TestMgr.check(true, metrics.get("jvm(name=heapUsed,statistic=gauge)") != 0);
     TestMgr.check(true, metrics.size() > 0);
     TestMgr.check(true,
         metrics.get(
-            "servicecomb.invocation(operation=springmvc.codeFirst.saySomething,role=PRODUCER,stage=total,statistic=count,status=200,transport=highway)")
-            >= 0);
+            "servicecomb.invocation(operation=springmvc.codeFirst.saySomething,role=PRODUCER,stage=total,statistic=count,status=200,transport=highway)") >= 0);
 
     //prometheus integration test
     try {
@@ -197,5 +203,70 @@ public class SpringmvcClient {
     Person user = new Person();
     user.setName("world");
     TestMgr.check("ha world", controller.saySomething("ha", user));
+  }
+
+  private static void testConfigurationDuplicate() {
+    // this configuration will give warning messages:
+    // Key servicecomb.test.duplicate2 with an ambiguous item cse.test.duplicate2 exists, please use the same prefix or will get unexpected merged value.
+    // Key servicecomb.test.duplicate1 with an ambiguous item cse.test.duplicate1 exists, please use the same prefix or will get unexpected merged value.
+    // and the expected value is not quite determined. But will not get wrong value like 'older,newer' or 'newer,older'
+    TestMgr.check(DynamicPropertyFactory.getInstance().getStringProperty("cse.test.duplicate2", "wrong").get(),
+        "newer");
+    TestMgr.check(DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.test.duplicate2", "wrong").get(),
+        "newer");
+    TestMgr.check(DynamicPropertyFactory.getInstance().getStringProperty("cse.test.duplicate1", "wrong").get(),
+        "older");
+    TestMgr.check(DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.test.duplicate1", "wrong").get(),
+        "newer");
+  }
+
+  private static void testDefaultValues(RestTemplate template, String microserviceName) {
+    String prefix = "cse://" + microserviceName;
+    TestMgr.check("hi test your age is : 20",
+        template.getForObject(prefix + "/annotations/sayhi",
+            String.class));
+
+    TestMgr.check("20",
+        template.getForObject(prefix + "/annotations/add",
+            String.class));
+
+    TestMgr.check("hei test",
+        template.getForObject(prefix + "/annotations/sayhei",
+            String.class));
+  }
+
+  private static void testRequiredBody(RestTemplate template, String microserviceName) {
+    String prefix = "cse://" + microserviceName;
+    Person user = new Person();
+
+    TestMgr.check("No user data found",
+        template.postForObject(prefix + "/annotations/saysomething?prefix={prefix}",
+            user,
+            String.class,
+            "ha"));
+
+    user.setName("world");
+    TestMgr.check("ha world",
+        template.postForObject(prefix + "/annotations/saysomething?prefix={prefix}",
+            user,
+            String.class,
+            "ha"));
+
+    TestMgr.check("No user data found",
+        template.postForObject(prefix + "/annotations/saysomething?prefix={prefix}",
+            null,
+            String.class,
+            "ha"));
+
+    TestMgr.check("No user name found",
+        template.postForObject(prefix + "/annotations/say",
+            "",
+            String.class,
+            "ha"));
+    TestMgr.check("test",
+        template.postForObject(prefix + "/annotations/say",
+            "test",
+            String.class,
+            "ha"));
   }
 }

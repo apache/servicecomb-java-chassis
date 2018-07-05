@@ -34,7 +34,7 @@ public class TestQueryProcessor {
   HttpServletRequest request;
 
   private ParamValueProcessor createProcessor(String name, Class<?> type) {
-    return new QueryProcessor(name, TypeFactory.defaultInstance().constructType(type));
+    return new QueryProcessor(name, TypeFactory.defaultInstance().constructType(type), null);
   }
 
   @Test

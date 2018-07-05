@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.swagger.generator.core.processor.parameter;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.ParameterAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
@@ -38,6 +39,7 @@ public abstract class AbstractParameterProcessor<T extends AbstractSerializableP
       T parameter) {
     setParameterName(annotation, operationGenerator, paramIdx, parameter);
     setParameterType(operationGenerator, paramIdx, parameter);
+    setParameterDefaultValue(annotation, operationGenerator, parameter);
   }
 
   protected void setParameterType(OperationGenerator operationGenerator, int paramIdx,
@@ -53,6 +55,23 @@ public abstract class AbstractParameterProcessor<T extends AbstractSerializableP
     String paramName = getAnnotationParameterName(annotation);
     paramName = ParamUtils.getParameterName(paramName, operationGenerator.getProviderMethod(), paramIdx);
     parameter.setName(paramName);
+  }
+
+  protected void setParameterDefaultValue(Object annotation, OperationGenerator operationGenerator, T parameter) {
+    String defaultValue = operationGenerator.getDefaultValue();
+    if (StringUtils.isNotEmpty(defaultValue)) {
+      parameter.setDefaultValue(defaultValue);
+    } else {
+      defaultValue = getAnnotationParameterDefaultValue(annotation);
+      if (StringUtils.isNotEmpty(defaultValue)) {
+        parameter.setDefaultValue(defaultValue);
+      }
+    }
+
+  }
+
+  protected String getAnnotationParameterDefaultValue(Object annotation) {
+    return "";
   }
 
   protected abstract T createParameter();

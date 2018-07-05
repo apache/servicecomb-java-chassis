@@ -53,8 +53,7 @@ public class CseXmlWebApplicationContext extends XmlWebApplicationContext {
     super.invokeBeanFactoryPostProcessors(beanFactory);
 
     // inject servlet after config installed and before transport init
-    RestServletInjector.defaultInject(getServletContext());
-    ServletUtils.saveUrlPrefix(getServletContext());
+    ServletUtils.init(getServletContext());
   }
 
   @Override

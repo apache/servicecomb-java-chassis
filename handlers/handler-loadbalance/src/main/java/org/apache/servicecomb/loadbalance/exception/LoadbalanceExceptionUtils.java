@@ -22,7 +22,7 @@ import org.apache.servicecomb.core.exception.ExceptionUtils;
 
 public class LoadbalanceExceptionUtils extends ExceptionUtils {
 
-  public static final String CSE_HANDLER_LB_WRONG_RULE = "cse.handler.lb.wrong.rule";
+  public static final String CSE_HANDLER_LB_WRONG_RULE = "servicecomb.handler.lb.wrong.rule";
 
   static {
     ERROR_DESC_MGR.register(CSE_HANDLER_LB_WRONG_RULE, "Configured rule name is wrong.");

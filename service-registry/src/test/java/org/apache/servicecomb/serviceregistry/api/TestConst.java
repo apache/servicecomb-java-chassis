@@ -25,15 +25,15 @@ import org.junit.Test;
 public class TestConst {
   @Before
   public void setUp() {
-    System.setProperty("cse.service.registry.api.version", "v4");
-    System.setProperty("cse.config.client.domainName", "testtenane");
+    System.setProperty("servicecomb.service.registry.api.version", "v4");
+    System.setProperty("servicecomb.config.client.domainName", "testtenane");
     ConfigUtil.createLocalConfig();
   }
 
   @After
   public void tearDown() {
-    System.getProperties().remove("cse.service.registry.api.version");
-    System.getProperties().remove("cse.config.client.domainName");
+    System.getProperties().remove("servicecomb.service.registry.api.version");
+    System.getProperties().remove("servicecomb.config.client.domainName");
   }
 
   @Test

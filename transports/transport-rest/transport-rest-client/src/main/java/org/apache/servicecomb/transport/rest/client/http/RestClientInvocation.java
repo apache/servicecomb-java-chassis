@@ -84,7 +84,7 @@ public class RestClientInvocation {
     createRequest(ipPort, path);
     clientRequest.putHeader(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE, invocation.getMicroserviceName());
     RestClientRequestImpl restClientRequest =
-        new RestClientRequestImpl(clientRequest, httpClientWithContext.context().owner(), asyncResp);
+        new RestClientRequestImpl(clientRequest, httpClientWithContext.context(), asyncResp);
     invocation.getHandlerContext().put(RestConst.INVOCATION_HANDLER_REQUESTCLIENT, restClientRequest);
 
     Buffer requestBodyBuffer = restClientRequest.getBodyBuffer();
@@ -116,7 +116,11 @@ public class RestClientInvocation {
     // 从业务线程转移到网络线程中去发送
     httpClientWithContext.runOnContext(httpClient -> {
       this.setCseContext();
-      clientRequest.setTimeout(AbstractTransport.getRequestTimeoutProperty().get());
+      //set the timeout based on priority. the priority is follows.
+      //high priotiry: 1) operational level 2)schema level 3) service level 4) global level : low priotiry.
+      clientRequest.setTimeout(AbstractTransport.getReqTimeout(invocation.getOperationName(),
+          invocation.getSchemaId(),
+          invocation.getMicroserviceName()));
       try {
         restClientRequest.end();
       } catch (Throwable e) {

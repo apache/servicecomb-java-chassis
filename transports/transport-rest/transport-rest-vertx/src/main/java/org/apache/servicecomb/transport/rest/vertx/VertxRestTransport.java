@@ -35,7 +35,7 @@ import io.vertx.core.DeploymentOptions;
 
 @Component
 public class VertxRestTransport extends AbstractTransport {
-  private static final Logger log = LoggerFactory.getLogger(VertxRestTransport.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(VertxRestTransport.class);
 
   private RestTransportClient restClient;
 
@@ -59,7 +59,9 @@ public class VertxRestTransport extends AbstractTransport {
     }
 
     if (!NetUtils.canTcpListen(ep.getSocketAddress().getAddress(), ep.getPort())) {
-      log.info("can not listen {}, skip {}.", ep.getSocketAddress(), this.getClass().getName());
+      LOGGER.warn(
+          "Can not start VertxRestTransport, the port:{} may have been occupied. You can ignore this message if you are using a web container like tomcat.",
+          ep.getPort());
       return false;
     }
 

@@ -65,7 +65,7 @@ public class CtType {
   }
 
   private void init(CtClass ctClass, boolean hasGenericTypes, String genericSignature) {
-    if (ctClass.isPrimitive()) {
+    if (ctClass.isPrimitive() && !void.class.getName().equals(ctClass.getName())) {
       try {
         ctClass = PRIMITIVE_CLASSPOOL.get(((CtPrimitiveType) ctClass).getWrapperName());
       } catch (NotFoundException e) {

@@ -19,9 +19,15 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog.parser;
 
 import java.util.List;
 
+import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
+
 /**
- * Parse the raw pattern, and generate a list of information about each access log item.
+ * This parser will parse the rawPattern of access log and generate a list of {@link AccessLogItem},
+ * which will be used in {@link org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogGenerator} to generate
+ * access log content.
+ * @param <T> the type of {@linkplain org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam#contextData
+ * AccessLogParam.contextData}, which usually depends on the transport way.
  */
-public interface AccessLogPatternParser {
-  List<AccessLogItemLocation> parsePattern(String rawPattern);
+public interface AccessLogPatternParser<T> {
+  List<AccessLogItem<T>> parsePattern(String rawPattern);
 }

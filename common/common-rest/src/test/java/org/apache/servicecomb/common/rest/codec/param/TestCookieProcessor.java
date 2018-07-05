@@ -45,7 +45,7 @@ public class TestCookieProcessor {
   RestClientRequest clientRequest;
 
   private CookieProcessor createProcessor(String name, Class<?> type) {
-    return new CookieProcessor(name, TypeFactory.defaultInstance().constructType(type));
+    return new CookieProcessor(name, TypeFactory.defaultInstance().constructType(type), null);
   }
 
   private void createClientRequest() {

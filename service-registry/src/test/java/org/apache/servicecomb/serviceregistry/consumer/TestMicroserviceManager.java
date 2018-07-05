@@ -19,11 +19,13 @@ package org.apache.servicecomb.serviceregistry.consumer;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
+import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.task.event.PeriodicPullEvent;
@@ -98,11 +100,23 @@ public class TestMicroserviceManager {
       }
     };
 
+    AtomicInteger triggerCount = new AtomicInteger();
+    new MockUp<MicroserviceVersions>() {
+      @Mock
+      void onMicroserviceInstanceChanged(MicroserviceInstanceChangedEvent changedEvent) {
+        triggerCount.incrementAndGet();
+      }
+    };
+
     MicroserviceVersionRule microserviceVersionRule =
         microserviceManager.getOrCreateMicroserviceVersionRule(serviceName, versionRule);
     Assert.assertEquals("0.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
     Assert.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
     Assert.assertEquals(0, cachedVersions.size());
+
+    MicroserviceInstanceChangedEvent changedEvent = new MicroserviceInstanceChangedEvent();
+    eventBus.post(changedEvent);
+    Assert.assertEquals(0, triggerCount.get());
   }
 
   @Test

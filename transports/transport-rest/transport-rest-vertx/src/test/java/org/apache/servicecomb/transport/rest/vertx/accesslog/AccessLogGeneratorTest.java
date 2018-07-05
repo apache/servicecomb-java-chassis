@@ -20,15 +20,12 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog;
 import static org.junit.Assert.assertEquals;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.TimeZone;
 
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.DatetimeConfigurableItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.HttpMethodItem;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.PlainTextItem;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogItemLocation;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.placeholder.AccessLogItemTypeEnum;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -40,16 +37,7 @@ import mockit.Deencapsulation;
 
 public class AccessLogGeneratorTest {
 
-  private static final AccessLogGenerator ACCESS_LOG_GENERATOR = new AccessLogGenerator("%m - %t",
-      rawPattern -> {
-        assertEquals("%m - %t", rawPattern);
-        return Arrays.asList(
-            new AccessLogItemLocation().setStart(0).setEnd(2).setPlaceHolder(AccessLogItemTypeEnum.HTTP_METHOD),
-            new AccessLogItemLocation().setStart(2).setEnd(5).setPlaceHolder(AccessLogItemTypeEnum.TEXT_PLAIN),
-            new AccessLogItemLocation().setStart(5)
-                .setEnd(7)
-                .setPlaceHolder(AccessLogItemTypeEnum.DATETIME_DEFAULT));
-      });
+  private static final AccessLogGenerator ACCESS_LOG_GENERATOR = new AccessLogGenerator("%m - %t");
 
   @Test
   public void testConstructor() {

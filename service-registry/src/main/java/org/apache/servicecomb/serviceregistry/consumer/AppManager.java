@@ -56,9 +56,7 @@ public class AppManager {
   }
 
   public MicroserviceManager getOrCreateMicroserviceManager(String appId) {
-    return apps.computeIfAbsent(appId, id -> {
-      return new MicroserviceManager(this, appId);
-    });
+    return apps.computeIfAbsent(appId, id -> new MicroserviceManager(this, appId));
   }
 
   public MicroserviceVersions getOrCreateMicroserviceVersions(String appId, String microserviceName) {

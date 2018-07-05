@@ -36,6 +36,7 @@ public class TestInvocationFactory {
     ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
     serviceRegistry.init();
     RegistryUtils.setServiceRegistry(serviceRegistry);
+    SCBEngine.getInstance().setStatus(SCBStatus.UP);
   }
 
   @Test

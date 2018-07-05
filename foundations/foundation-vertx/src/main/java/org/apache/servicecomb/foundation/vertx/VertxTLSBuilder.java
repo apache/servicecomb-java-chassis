@@ -23,6 +23,8 @@ import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLManager;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.vertx.core.http.ClientAuth;
 import io.vertx.core.http.HttpClientOptions;
@@ -34,6 +36,8 @@ import io.vertx.core.net.PfxOptions;
 import io.vertx.core.net.TCPSSLOptions;
 
 public final class VertxTLSBuilder {
+  private static final Logger LOGGER = LoggerFactory.getLogger(VertxTLSBuilder.class);
+
   private static final String STORE_PKCS12 = "PKCS12";
 
   private static final String STORE_JKS = "JKS";
@@ -93,7 +97,8 @@ public final class VertxTLSBuilder {
       options.setSessionCacheEnabled(true);
       tcpClientOptions.setOpenSslEngineOptions(new OpenSSLEngineOptions());
     }
-    if (isFileExists(sslCustom.getFullPath(sslOption.getKeyStore()))) {
+    String fullKeyStore = sslCustom.getFullPath(sslOption.getKeyStore());
+    if (isFileExists(fullKeyStore)) {
       if (STORE_PKCS12.equalsIgnoreCase(sslOption.getKeyStoreType())) {
         PfxOptions keyPfxOptions = new PfxOptions();
         keyPfxOptions.setPath(sslCustom.getFullPath(sslOption.getKeyStore()));
@@ -107,9 +112,11 @@ public final class VertxTLSBuilder {
       } else {
         throw new IllegalArgumentException("invalid key store type.");
       }
+    } else {
+      LOGGER.warn("keyStore [" + fullKeyStore + "] file not exist, please check!");
     }
-
-    if (isFileExists(sslCustom.getFullPath(sslOption.getTrustStore()))) {
+    String fullTrustStore = sslCustom.getFullPath(sslOption.getTrustStore());
+    if (isFileExists(fullTrustStore)) {
       if (STORE_PKCS12.equalsIgnoreCase(sslOption.getTrustStoreType())) {
         PfxOptions trustPfxOptions = new PfxOptions();
         trustPfxOptions.setPath(sslCustom.getFullPath(sslOption.getTrustStore()));
@@ -125,6 +132,8 @@ public final class VertxTLSBuilder {
       } else {
         throw new IllegalArgumentException("invalid trust store type.");
       }
+    } else {
+      LOGGER.warn("trustStore [" + fullTrustStore + "] file not exist, please check!");
     }
     for (String protocol : sslOption.getProtocols().split(",")) {
       tcpClientOptions.addEnabledSecureTransportProtocol(protocol);

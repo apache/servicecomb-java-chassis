@@ -48,7 +48,7 @@ public class TestFormProcessor {
   RestClientRequest clientRequest;
 
   private FormProcessor createProcessor(String name, Class<?> type) {
-    return new FormProcessor(name, TypeFactory.defaultInstance().constructType(type));
+    return new FormProcessor(name, TypeFactory.defaultInstance().constructType(type), null);
   }
 
   private void createClientRequest() {
@@ -147,7 +147,8 @@ public class TestFormProcessor {
     };
 
     ParamValueProcessor processor =
-        new FormProcessor("name", TypeFactory.defaultInstance().constructCollectionType(List.class, String.class));
+        new FormProcessor("name", TypeFactory.defaultInstance().constructCollectionType(List.class, String.class),
+            null);
     Object value = processor.getValue(request);
     Assert.assertThat((List<String>) value, Matchers.contains("value"));
   }
@@ -163,7 +164,7 @@ public class TestFormProcessor {
     };
 
     ParamValueProcessor processor =
-        new FormProcessor("name", TypeFactory.defaultInstance().constructCollectionType(Set.class, String.class));
+        new FormProcessor("name", TypeFactory.defaultInstance().constructCollectionType(Set.class, String.class), null);
     Object value = processor.getValue(request);
     Assert.assertThat((Set<String>) value, Matchers.contains("value"));
   }

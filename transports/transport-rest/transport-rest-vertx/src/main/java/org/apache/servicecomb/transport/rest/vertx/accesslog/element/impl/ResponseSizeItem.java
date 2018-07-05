@@ -41,4 +41,8 @@ public class ResponseSizeItem implements AccessLogItem<RoutingContext> {
     long bytesWritten = response.bytesWritten();
     return 0 == bytesWritten ? zeroBytes : String.valueOf(bytesWritten);
   }
+
+  public String getZeroBytes() {
+    return zeroBytes;
+  }
 }

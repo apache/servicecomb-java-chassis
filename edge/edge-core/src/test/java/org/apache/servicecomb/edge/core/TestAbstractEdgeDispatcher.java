@@ -20,6 +20,7 @@ package org.apache.servicecomb.edge.core;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -75,5 +76,21 @@ public class TestAbstractEdgeDispatcher {
 
     Assert.assertEquals(502, map.get("code"));
     Assert.assertEquals("Bad Gateway", map.get("msg"));
+
+    new Expectations() {
+      {
+        context.failure();
+        returns(new InvocationException(401, "unauthorized", "unauthorized"),
+            new InvocationException(401, "unauthorized", "unauthorized"));
+        context.response();
+        result = response;
+      }
+    };
+
+    dispatcher = new AbstractEdgeDispatcherForTest();
+    dispatcher.onFailure(context);
+
+    Assert.assertEquals(401, map.get("code"));
+    Assert.assertEquals("unauthorized", map.get("msg"));
   }
 }

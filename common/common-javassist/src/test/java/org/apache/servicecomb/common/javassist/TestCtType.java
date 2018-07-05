@@ -112,4 +112,13 @@ public class TestCtType {
     Assert.assertFalse(ctType.hasGenericTypes());
     Assert.assertEquals("Ljava/lang/String;", ctType.getGenericSignature());
   }
+
+  @Test
+  public void fromJavaType_void() {
+    final JavaType voidJavaType = TypeFactory.defaultInstance().constructType(void.class);
+    CtType voidCtType = new CtType(voidJavaType);
+
+    Assert.assertTrue(voidCtType.getCtClass().isPrimitive());
+    Assert.assertEquals("void", voidCtType.getCtClass().getName());
+  }
 }

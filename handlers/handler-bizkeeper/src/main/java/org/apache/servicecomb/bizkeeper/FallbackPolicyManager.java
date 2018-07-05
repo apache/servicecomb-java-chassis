@@ -43,7 +43,7 @@ public class FallbackPolicyManager {
     } else {
       return Response.failResp(invocation.getInvocationType(),
           BizkeeperExceptionUtils
-              .createBizkeeperException(BizkeeperExceptionUtils.CSE_HANDLER_BK_FALLBACK,
+              .createBizkeeperException(BizkeeperExceptionUtils.SERVICECOMB_BIZKEEPER_FALLBACK,
                   error,
                   invocation.getOperationMeta().getMicroserviceQualifiedName()));
     }

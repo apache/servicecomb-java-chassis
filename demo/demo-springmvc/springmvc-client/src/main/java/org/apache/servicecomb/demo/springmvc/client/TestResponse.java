@@ -40,6 +40,8 @@ public class TestResponse {
   public void runAllTransport() {
     testResponseEntity();
     testCseResponse();
+    testvoidResponse();
+    testVoidResponse();
   }
 
   private void testCseResponse() {
@@ -61,5 +63,13 @@ public class TestResponse {
     TestMgr.check("h2v " + srcName, responseEntity.getHeaders().getFirst("h2"));
 
     TestMgr.check(202, responseEntity.getStatusCode());
+  }
+
+  private void testvoidResponse() {
+    intf.testvoidInRPC();
+  }
+
+  private void testVoidResponse() {
+    intf.testVoidInRPC();
   }
 }

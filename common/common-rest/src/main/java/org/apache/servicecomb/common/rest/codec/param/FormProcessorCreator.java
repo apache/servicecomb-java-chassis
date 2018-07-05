@@ -37,12 +37,12 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
   public static final String PARAMTYPE = "formData";
 
   public static class FormProcessor extends AbstractParamProcessor {
-    public FormProcessor(String paramPath, JavaType targetType) {
-      super(paramPath, targetType);
+    public FormProcessor(String paramPath, JavaType targetType, Object defaultValue) {
+      super(paramPath, targetType, defaultValue);
     }
 
     @Override
-    public Object getValue(HttpServletRequest request) throws Exception {
+    public Object getValue(HttpServletRequest request) {
       @SuppressWarnings("unchecked")
       Map<String, Object> forms = (Map<String, Object>) request.getAttribute(RestConst.FORM_PARAMETERS);
       if (forms != null) {
@@ -53,11 +53,19 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
         return convertValue(request.getParameterValues(paramPath), targetType);
       }
 
-      return convertValue(request.getParameter(paramPath), targetType);
+      Object value = request.getParameter(paramPath);
+      if (value == null || value.equals("")) {
+        Object defaultValue = getDefaultValue();
+        if (defaultValue != null) {
+          value = defaultValue;
+        }
+      }
+
+      return convertValue(value, targetType);
     }
 
     @Override
-    public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
+    public void setValue(RestClientRequest clientRequest, Object arg) {
       clientRequest.addForm(paramPath, arg);
     }
 
@@ -76,9 +84,9 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
     JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
 
     if (isPart(parameter)) {
-      return new PartProcessor(parameter.getName(), targetType);
+      return new PartProcessor(parameter.getName(), targetType, ((FormParameter) parameter).getDefaultValue());
     }
-    return new FormProcessor(parameter.getName(), targetType);
+    return new FormProcessor(parameter.getName(), targetType, ((FormParameter) parameter).getDefaultValue());
   }
 
   private boolean isPart(Parameter parameter) {
@@ -86,8 +94,8 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
   }
 
   private static class PartProcessor extends AbstractParamProcessor {
-    PartProcessor(String paramPath, JavaType targetType) {
-      super(paramPath, targetType);
+    PartProcessor(String paramPath, JavaType targetType, Object defaultValue) {
+      super(paramPath, targetType, defaultValue);
     }
 
     @Override

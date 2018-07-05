@@ -158,7 +158,9 @@ public class HighwayServerInvoke {
           msgId);
       LOGGER.error(msg, e);
     } finally {
-      invocation.onFinish(response);
+      if (invocation != null) {
+        invocation.onFinish(response);
+      }
     }
   }
 
@@ -166,10 +168,14 @@ public class HighwayServerInvoke {
    * start time in queue.
    */
   public void execute() {
-    invocation = InvocationFactory.forProvider(endpoint,
-        operationProtobuf.getOperationMeta(),
-        null);
-    invocation.onStart();
-    operationMeta.getExecutor().execute(() -> runInExecutor());
+    try {
+      invocation = InvocationFactory.forProvider(endpoint,
+          operationProtobuf.getOperationMeta(),
+          null);
+      invocation.onStart();
+      operationMeta.getExecutor().execute(() -> runInExecutor());
+    } catch (IllegalStateException e) {
+      sendResponse(header.getContext(), Response.providerFailResp(e));
+    }
   }
 }

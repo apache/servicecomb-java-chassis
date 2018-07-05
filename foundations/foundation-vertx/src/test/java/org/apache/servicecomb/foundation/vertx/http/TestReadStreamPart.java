@@ -28,30 +28,20 @@ import javax.ws.rs.core.HttpHeaders;
 import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.foundation.vertx.stream.InputStreamToReadStream;
 import org.hamcrest.Matchers;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Context;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.file.AsyncFile;
-import io.vertx.core.file.FileSystem;
 import io.vertx.core.file.FileSystemException;
 import io.vertx.core.file.OpenOptions;
-import io.vertx.core.file.impl.AsyncFileUitls;
-import io.vertx.core.file.impl.FileSystemImpl;
-import io.vertx.core.file.impl.WindowsFileSystem;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.impl.ContextImpl;
-import io.vertx.core.impl.EventLoopContext;
-import io.vertx.core.impl.Utils;
-import io.vertx.core.impl.VertxInternal;
+import io.vertx.core.impl.SyncVertx;
 import io.vertx.core.streams.WriteStream;
 import mockit.Expectations;
 import mockit.Mock;
@@ -59,93 +49,30 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestReadStreamPart {
-  @Mocked
-  VertxInternal vertx;
+  static SyncVertx vertx = new SyncVertx();
 
-  //  @Mocked
-  ContextImpl context;
+  static ContextImpl context = vertx.getContext();
 
-  String src = "src";
+  static String src = "src";
 
-  InputStreamToReadStream readStream;
+  static InputStream inputStream = new ByteArrayInputStream(src.getBytes());
 
-  ReadStreamPart part;
+  InputStreamToReadStream readStream = new InputStreamToReadStream(context, inputStream, true);
 
-  InputStream inputStream = new ByteArrayInputStream(src.getBytes());
+  ReadStreamPart part = new ReadStreamPart(context, readStream);
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
-  FileSystem fileSystem;
-
-  protected FileSystem getFileSystem() {
-    return Utils.isWindows() ? new WindowsFileSystem(vertx) : new FileSystemImpl(vertx);
-  }
 
   @Before
-  public void setup() {
-    new MockUp<Vertx>(vertx) {
-      @Mock
-      FileSystem fileSystem() {
-        return fileSystem;
-      }
+  public void setup() throws IOException {
+    inputStream.reset();
+  }
 
-      @Mock
-      ContextImpl getContext() {
-        return context;
-      }
-
-      @Mock
-      ContextImpl getOrCreateContext() {
-        return context;
-      }
-
-      @Mock
-      <T> void executeBlocking(Handler<Future<T>> blockingCodeHandler, boolean ordered,
-          Handler<AsyncResult<T>> resultHandler) {
-        Future<T> future = Future.future();
-        blockingCodeHandler.handle(future);
-        future.setHandler(resultHandler);
-      }
-    };
-
-    context = new EventLoopContext(vertx, null, null, null, "id", null, null);
-    new MockUp<Context>(context) {
-      @Mock
-      Vertx owner() {
-        return vertx;
-      }
-
-      @Mock
-      void runOnContext(Handler<Void> task) {
-        task.handle(null);
-      }
-
-      @Mock
-      <T> void executeBlocking(Handler<Future<T>> blockingCodeHandler, Handler<AsyncResult<T>> resultHandler) {
-        Future<T> future = Future.future();
-        blockingCodeHandler.handle(future);
-        future.setHandler(resultHandler);
-      }
-    };
-
-    fileSystem = getFileSystem();
-
-    readStream = new InputStreamToReadStream(vertx, inputStream);
-    part = new ReadStreamPart(context, readStream);
-
-    new MockUp<FileSystem>(fileSystem) {
-      @Mock
-      FileSystem open(String path, OpenOptions options, Handler<AsyncResult<AsyncFile>> handler) {
-        try {
-          AsyncFile asyncFile = AsyncFileUitls.createAsyncFile(vertx, path, options, context);
-          handler.handle(Future.succeededFuture(asyncFile));
-        } catch (Exception e) {
-          handler.handle(Future.failedFuture(e));
-        }
-        return fileSystem;
-      }
-    };
+  @AfterClass
+  public static void teardown() {
+    vertx.close();
   }
 
   @Test

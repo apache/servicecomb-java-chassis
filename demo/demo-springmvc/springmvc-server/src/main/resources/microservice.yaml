@@ -21,6 +21,7 @@ APPLICATION_ID: springmvctest
 service_description:
   name: springmvc
   version: 0.0.3
+  environment: development
   paths:
     - path: /test1/testpath
       property:
@@ -28,7 +29,6 @@ service_description:
     - path: /test2/testpath
       property:
         checksession: true
-cse.uploads.directory: target
 servicecomb:
   service:
     registry:
@@ -49,7 +49,8 @@ servicecomb:
       serverUri: http://127.0.0.1:30103,http://127.0.0.2:30103
       refreshMode: 0
       refresh_interval: 5000
-
+  uploads:
+    directory: target
   rest:
     address: 0.0.0.0:8080?sslEnabled=true
     server:

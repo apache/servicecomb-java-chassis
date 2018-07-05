@@ -45,8 +45,11 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
   public static class BodyProcessor implements ParamValueProcessor {
     protected JavaType targetType;
 
-    public BodyProcessor(JavaType targetType) {
+    protected boolean isRequired;
+
+    public BodyProcessor(JavaType targetType, boolean isRequired) {
       this.targetType = targetType;
+      this.isRequired = isRequired;
     }
 
     @Override
@@ -64,6 +67,9 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
         return null;
       }
 
+      if (isRequired == false && inputStream.available() == 0) {
+        return null;
+      }
       String contentType = request.getContentType();
       if (contentType != null && !contentType.toLowerCase(Locale.US).startsWith(MediaType.APPLICATION_JSON)) {
         // TODO: we should consider body encoding
@@ -77,7 +83,10 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
       try (BufferOutputStream output = new BufferOutputStream()) {
         clientRequest.putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
         RestObjectMapper.INSTANCE.writeValue(output, arg);
-        clientRequest.write(output.getBuffer());
+        if (arg != null) {
+          clientRequest.write(output.getBuffer());
+        }
+
       }
     }
 
@@ -94,8 +103,8 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
 
   public static class RawJsonBodyProcessor extends BodyProcessor {
 
-    public RawJsonBodyProcessor(JavaType targetType) {
-      super(targetType);
+    public RawJsonBodyProcessor(JavaType targetType, boolean isRequired) {
+      super(targetType, isRequired);
     }
 
     @Override
@@ -130,9 +139,9 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
     JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
     boolean rawJson = ClassUtils.isRawJsonType(parameter);
     if (genericParamType.getTypeName().equals(String.class.getTypeName()) && rawJson) {
-      return new RawJsonBodyProcessor(targetType);
+      return new RawJsonBodyProcessor(targetType, parameter.getRequired());
     }
 
-    return new BodyProcessor(targetType);
+    return new BodyProcessor(targetType, parameter.getRequired());
   }
 }

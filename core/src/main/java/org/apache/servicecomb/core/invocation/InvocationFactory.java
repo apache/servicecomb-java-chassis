@@ -20,6 +20,7 @@ package org.apache.servicecomb.core.invocation;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
@@ -68,6 +69,7 @@ public final class InvocationFactory {
   public static Invocation forProvider(Endpoint endpoint,
       OperationMeta operationMeta,
       Object[] swaggerArguments) {
+    SCBEngine.getInstance().ensureStatusUp();
     return new Invocation(endpoint,
         operationMeta,
         swaggerArguments);

@@ -18,6 +18,7 @@
 APPLICATION_ID: springmvctest
 service_description:
   name: springmvcClient
+  environment: development
   version: 0.0.1
 servicecomb:
   service:
@@ -80,6 +81,12 @@ servicecomb:
     region: my-Region
     availableZone: my-Zone
 
+  test:
+    duplicate1: newer
+
+cse:
+  test:
+    duplicate2: newer
 #########SSL options
 ssl.protocols: TLSv1.2
 ssl.authPeer: true

@@ -24,6 +24,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.demo.CodeFirstRestTemplate;
 import org.apache.servicecomb.demo.DemoConst;
@@ -61,6 +62,8 @@ public class JaxrsClient {
     codeFirstClient.testCodeFirst(templateNew, "jaxrs", "/codeFirstJaxrs/");
     testCompute(templateNew);
     testValidator(templateNew);
+    testClientTimeOut(templateNew);
+    testDefaultValues(templateNew);
   }
 
   private static void testCompute(RestTemplate template) throws Exception {
@@ -94,6 +97,26 @@ public class JaxrsClient {
       testValidatorSayHiFail(template, cseUrlPrefix);
       testValidatorExchangeSuccess(template, cseUrlPrefix);
       testValidatorExchangeFail(template, cseUrlPrefix);
+    }
+  }
+
+  private static void testDefaultValues(RestTemplate template) throws Exception {
+    String microserviceName = "jaxrs";
+    for (String transport : DemoConst.transports) {
+      CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
+      TestMgr.setMsg(microserviceName, transport);
+
+      String cseUrlPrefix = "cse://" + microserviceName + "/default/";
+
+      TestMgr.check("40",
+          template.getForObject(cseUrlPrefix + "/add",
+              String.class));
+
+      TestMgr.check("hi test your age is : 20",
+          template.getForObject(cseUrlPrefix + "/sayhei",
+              String.class));
+
+
     }
   }
 
@@ -181,9 +204,13 @@ public class JaxrsClient {
       isExcep = true;
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
+      // Message dependends on locale, so just check the short part.
+      // 'must be greater than or equal to 20', propertyPath=add.arg1, rootBeanClass=class org.apache.servicecomb.demo.jaxrs.server.Validator, messageTemplate='{javax.validation.constraints.Min.message}'}]]
+      // ignored
       TestMgr.check(
-          "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage='must be greater than or equal to 20', propertyPath=add.arg1, rootBeanClass=class org.apache.servicecomb.demo.jaxrs.server.Validator, messageTemplate='{javax.validation.constraints.Min.message}'}]]",
-          e.getErrorData());
+          "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=",
+          e.getErrorData().toString().substring(0,
+              "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=".length()));
     }
 
     TestMgr.check(true, isExcep);
@@ -205,9 +232,11 @@ public class JaxrsClient {
       isExcep = true;
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
+      // Message dependends on locale, so just check the short part.
       TestMgr.check(
-          "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage='length must be between 3 and 2147483647', propertyPath=sayHi.arg0, rootBeanClass=class org.apache.servicecomb.demo.jaxrs.server.Validator, messageTemplate='{org.hibernate.validator.constraints.Length.message}'}]]",
-          e.getErrorData());
+          "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=",
+          e.getErrorData().toString().substring(0,
+              "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=".length()));
     }
     TestMgr.check(true, isExcep);
   }
@@ -236,9 +265,11 @@ public class JaxrsClient {
       isExcep = true;
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
+      // Message dependends on locale, so just check the short part.
       TestMgr.check(
-          "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage='must be less than or equal to 20', propertyPath=sayHello.arg0.age, rootBeanClass=class org.apache.servicecomb.demo.jaxrs.server.Validator, messageTemplate='{javax.validation.constraints.Max.message}'}]]",
-          e.getErrorData());
+          "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=",
+          e.getErrorData().toString().substring(0,
+              "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=".length()));
     }
     TestMgr.check(true, isExcep);
   }
@@ -249,5 +280,47 @@ public class JaxrsClient {
     student.setAge(15);
     Student result = template.postForObject(cseUrlPrefix + "sayhello", student, Student.class);
     TestMgr.check("hello test 15", result);
+  }
+
+  private static void testClientTimeOut(RestTemplate template) throws Exception {
+    String microserviceName = "jaxrs";
+    for (String transport : DemoConst.transports) {
+      if (transport.equals(Const.ANY_TRANSPORT)) {
+        continue;
+      }
+      CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
+      TestMgr.setMsg(microserviceName, transport);
+
+      String cseUrlPrefix = "cse://" + microserviceName + "/clientreqtimeout/";
+
+      testClientTimeoutSayHi(template, cseUrlPrefix);
+      testClientTimeoutAdd(template, cseUrlPrefix);
+    }
+  }
+
+  private static void testClientTimeoutSayHi(RestTemplate template, String cseUrlPrefix) {
+    Student student = new Student();
+    student.setName("timeout");
+    student.setAge(30);
+    Student result = template.postForObject(cseUrlPrefix + "sayhello", student, Student.class);
+    TestMgr.check("hello timeout 30", result);
+  }
+
+  private static void testClientTimeoutAdd(RestTemplate template, String cseUrlPrefix) {
+    Map<String, String> params = new HashMap<>();
+    params.put("a", "5");
+    params.put("b", "20");
+    boolean isExcep = false;
+    try {
+      template.postForObject(cseUrlPrefix + "add", params, Integer.class);
+    } catch (InvocationException e) {
+      isExcep = true;
+      TestMgr.check(490, e.getStatus().getStatusCode());
+      TestMgr.check(
+          "CommonExceptionData [message=Cse Internal Bad Request]",
+          e.getErrorData());
+    }
+
+    TestMgr.check(true, isExcep);
   }
 }

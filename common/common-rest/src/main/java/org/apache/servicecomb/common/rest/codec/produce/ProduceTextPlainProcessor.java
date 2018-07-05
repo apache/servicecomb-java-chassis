@@ -27,7 +27,7 @@ import org.apache.commons.io.IOUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 
-public class ProduceTextPlainProcessor extends AbstractProduceProcessor {
+public class ProduceTextPlainProcessor implements ProduceProcessor {
   @Override
   public String getName() {
     return MediaType.TEXT_PLAIN;
@@ -58,5 +58,10 @@ public class ProduceTextPlainProcessor extends AbstractProduceProcessor {
     //            return returnCls.getConstructor(new Class<?>[] {String.class})
     //                    .newInstance((String)result);
     //        }
+  }
+
+  @Override
+  public int getOrder() {
+    return 0;
   }
 }

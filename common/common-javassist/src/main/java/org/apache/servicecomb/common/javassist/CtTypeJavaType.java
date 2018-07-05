@@ -16,7 +16,10 @@
  */
 package org.apache.servicecomb.common.javassist;
 
+import java.util.Objects;
+
 import com.fasterxml.jackson.databind.type.SimpleType;
+import com.fasterxml.jackson.databind.type.TypeBindings;
 
 /**
  * just a wrapper for CtType
@@ -28,7 +31,9 @@ public class CtTypeJavaType extends SimpleType {
   private CtType type;
 
   public CtTypeJavaType(CtType type) {
-    super(CtTypeJavaType.class);
+    super(CtTypeJavaType.class, TypeBindings.emptyBindings(), null, null,
+        type == null ? 0 : type.getGenericSignature().hashCode(),
+        null, null, false);
     this.type = type;
   }
 
@@ -46,9 +51,20 @@ public class CtTypeJavaType extends SimpleType {
     return type.getGenericSignature();
   }
 
-
   @Override
   public StringBuilder getGenericSignature(StringBuilder sb) {
     return sb.append(type.getGenericSignature());
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || !this.getClass().isAssignableFrom(o.getClass())) {
+      return false;
+    }
+    CtTypeJavaType that = (CtTypeJavaType) o;
+    return Objects.equals(this.getGenericSignature(), that.getGenericSignature());
   }
 }

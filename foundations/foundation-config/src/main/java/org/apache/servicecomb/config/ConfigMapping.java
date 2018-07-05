@@ -17,9 +17,19 @@
 
 package org.apache.servicecomb.config;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.configuration.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by   on 2017/1/5.
@@ -27,10 +37,26 @@ import java.util.Map;
 public final class ConfigMapping {
   private static Map<String, Object> configMap = null;
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConfigMapping.class);
+
   static {
     ClassLoader loader = Thread.currentThread().getContextClassLoader();
-    InputStream is = loader.getResourceAsStream("mapping.yaml");
-    configMap = YAMLUtil.yaml2Properties(is);
+    List<URL> urlList = new ArrayList<>();
+    configMap = new HashMap<String, Object>();
+    Enumeration<URL> urls;
+    try {
+      urls = loader.getResources("mapping.yaml");
+      while (urls.hasMoreElements()) {
+        urlList.add(urls.nextElement());
+      }
+      for (URL url : urlList) {
+        try (InputStream in = url.openStream()) {
+          configMap.putAll(YAMLUtil.yaml2Properties(in));
+        }
+      }
+    } catch (IOException e) {
+      LOGGER.error("get config mapping file error!", e);
+    }
   }
 
   private ConfigMapping() {
@@ -54,9 +80,40 @@ public final class ConfigMapping {
       String key = entry.getKey();
       Object configValue = oldMap.get(key);
       if (configValue != null) {
-        String newKey = (String) entry.getValue();
-        retMap.put(newKey, configValue);
-        retMap.remove(key);
+        if (entry.getValue() instanceof List) {
+          @SuppressWarnings("unchecked")
+          List<String> newKeys = (List<String>) entry.getValue();
+          for (String newKey : newKeys) {
+            retMap.put(newKey, configValue);
+          }
+        } else {
+          String newKey = (String) entry.getValue();
+          retMap.put(newKey, configValue);
+        }
+      }
+    }
+    return retMap;
+  }
+
+  public static Map<String, Object> getConvertedMap(Configuration config) {
+    if (configMap == null) {
+      return new LinkedHashMap<>();
+    }
+    Map<String, Object> retMap = new LinkedHashMap<>();
+    for (Map.Entry<String, Object> entry : configMap.entrySet()) {
+      String key = entry.getKey();
+      Object configValue = config.getProperty(key);
+      if (configValue != null) {
+        if (entry.getValue() instanceof List) {
+          @SuppressWarnings("unchecked")
+          List<String> newKeys = (List<String>) entry.getValue();
+          for (String newKey : newKeys) {
+            retMap.put(newKey, configValue);
+          }
+        } else {
+          String newKey = (String) entry.getValue();
+          retMap.put(newKey, configValue);
+        }
       }
     }
     return retMap;

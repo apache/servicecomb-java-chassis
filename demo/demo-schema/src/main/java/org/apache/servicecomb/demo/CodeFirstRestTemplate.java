@@ -21,11 +21,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
 import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
+import org.apache.servicecomb.demo.jaxbbean.JAXBJob;
+import org.apache.servicecomb.demo.jaxbbean.JAXBPerson;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
@@ -34,6 +37,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -62,6 +66,7 @@ public class CodeFirstRestTemplate {
   protected void testAllTransport(String microserviceName, RestTemplate template, String cseUrlPrefix) {
     testCodeFirstUserMap(template, cseUrlPrefix);
     testCodeFirstTextPlain(template, cseUrlPrefix);
+    testCodeFirstAppXml(template, cseUrlPrefix);
     testCodeFirstBytes(template, cseUrlPrefix);
     testCseResponse(microserviceName, template, cseUrlPrefix);
     testCodeFirstAddDate(template, cseUrlPrefix);
@@ -121,6 +126,21 @@ public class CodeFirstRestTemplate {
         body,
         String.class);
     TestMgr.check(body, result);
+  }
+
+  private void testCodeFirstAppXml(RestTemplate template, String cseUrlPrefix) {
+    JAXBPerson person = new JAXBPerson("jake", 22, "it", "60kg");
+    person.setJob(new JAXBJob("developer", "coding"));
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Accept", MediaType.APPLICATION_XML_VALUE);
+    headers.add("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+    HttpEntity<JAXBPerson> requestEntity = new HttpEntity<>(person, headers);
+    ResponseEntity<JAXBPerson> resEntity = template.exchange(cseUrlPrefix + "appXml",
+        HttpMethod.POST,
+        requestEntity,
+        JAXBPerson.class);
+    TestMgr.check(-1, ProduceProcessorManager.INSTANCE.ensureFindValue(MediaType.APPLICATION_XML_VALUE).getOrder());
+    TestMgr.check(person, resEntity.getBody());
   }
 
   private void testCodeFirstBytes(RestTemplate template, String cseUrlPrefix) {
@@ -240,7 +260,7 @@ public class CodeFirstRestTemplate {
   protected void testModelFieldIgnore(RestTemplate template, String cseUrlPrefix) {
     InputModelForTestIgnore input = new InputModelForTestIgnore("input_id_rest", "input_id_content",
         new Person("inputSomeone"), new JsonObject("{\"InputJsonKey\" : \"InputJsonValue\"}"), () -> {
-    });
+        });
     OutputModelForTestIgnore output = template
         .postForObject(cseUrlPrefix + "ignore", input, OutputModelForTestIgnore.class);
 

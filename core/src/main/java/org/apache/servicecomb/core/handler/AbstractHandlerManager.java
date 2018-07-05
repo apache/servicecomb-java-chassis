@@ -44,7 +44,7 @@ public abstract class AbstractHandlerManager extends AbstractObjectManager<Strin
   protected abstract String getInnerDefaultChainDef();
 
   private void loadDefaultChainDef() {
-    String key = "cse.handler.chain." + getName() + ".default";
+    String key = "servicecomb.handler.chain." + getName() + ".default";
 
     defaultChainDef = DynamicPropertyFactory.getInstance()
         .getStringProperty(key, getInnerDefaultChainDef())
@@ -106,7 +106,7 @@ public abstract class AbstractHandlerManager extends AbstractObjectManager<Strin
   @Override
   protected List<Handler> create(String microserviceName) {
     String chainDef = DynamicPropertyFactory.getInstance()
-        .getStringProperty("cse.handler.chain." + getName() + ".service." + microserviceName,
+        .getStringProperty("servicecomb.handler.chain." + getName() + ".service." + microserviceName,
             defaultChainDef)
         .get();
     return createHandlerChain(chainDef);

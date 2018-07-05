@@ -30,20 +30,20 @@ public class ExceptionUtils {
 
   protected static final RegisterManager<String, String> ERROR_DESC_MGR = new RegisterManager<>(ERROR_DESC_MGR_MSG);
 
-  private static final String CSE_SCHEMA_OPERATION_ID_INVALID = "cse.schema.operation.id.invalid";
+  private static final String SERVICECOMB_SCHEMA_OPERATION_ID_INVALID = "servicecomb.schema.operation.id.invalid";
 
-  private static final String CSE_HANDLER_REF_NOT_EXIST = "cse.handler.ref.not.exist";
+  private static final String SERVICECOMB_HANDLER_REF_NOT_EXIST = "servicecomb.handler.ref.not.exist";
 
-  private static final String CSE_PRODUCER_OPERATION_NOT_EXIST = "cse.producer.operation.not.exist";
+  private static final String SERVICECOMB_PRODUCER_OPERATION_NOT_EXIST = "servicecomb.producer.operation.not.exist";
 
-  private static final String CSE_LB_NO_AVAILABLE_ADDRESS = "cse.lb.no.available.address";
+  private static final String SERVICECOMB_LB_NO_AVAILABLE_ADDRESS = "servicecomb.lb.no.available.address";
 
   static {
-    ERROR_DESC_MGR.register(CSE_HANDLER_REF_NOT_EXIST, "Handler not exist, id=%s");
-    ERROR_DESC_MGR.register(CSE_SCHEMA_OPERATION_ID_INVALID, "OperationId is invalid, schemaId=%s, path=%s");
-    ERROR_DESC_MGR.register(CSE_PRODUCER_OPERATION_NOT_EXIST,
+    ERROR_DESC_MGR.register(SERVICECOMB_HANDLER_REF_NOT_EXIST, "Handler not exist, id=%s");
+    ERROR_DESC_MGR.register(SERVICECOMB_SCHEMA_OPERATION_ID_INVALID, "OperationId is invalid, schemaId=%s, path=%s");
+    ERROR_DESC_MGR.register(SERVICECOMB_PRODUCER_OPERATION_NOT_EXIST,
         "Producer operation not exist, schemaId=%s, operationName=%s");
-    ERROR_DESC_MGR.register(CSE_LB_NO_AVAILABLE_ADDRESS,
+    ERROR_DESC_MGR.register(SERVICECOMB_LB_NO_AVAILABLE_ADDRESS,
         "No available address found. microserviceName=%s, version=%s, discoveryGroupName=%s");
   }
 
@@ -68,24 +68,24 @@ public class ExceptionUtils {
   }
 
   public static CseException producerOperationNotExist(String schemaId, String operationName) {
-    return createCseException(CSE_PRODUCER_OPERATION_NOT_EXIST,
+    return createCseException(SERVICECOMB_PRODUCER_OPERATION_NOT_EXIST,
         schemaId,
         operationName);
   }
 
   public static CseException operationIdInvalid(String schemaId, String path) {
-    return createCseException(CSE_SCHEMA_OPERATION_ID_INVALID,
+    return createCseException(SERVICECOMB_SCHEMA_OPERATION_ID_INVALID,
         schemaId,
         path);
   }
 
   public static CseException handlerRefNotExist(String id) {
-    return createCseException(CSE_HANDLER_REF_NOT_EXIST, id);
+    return createCseException(SERVICECOMB_HANDLER_REF_NOT_EXIST, id);
   }
 
   public static CseException lbAddressNotFound(String microserviceName, String microserviceVersionRule,
       String discoveryGroupName) {
-    return createCseException(CSE_LB_NO_AVAILABLE_ADDRESS,
+    return createCseException(SERVICECOMB_LB_NO_AVAILABLE_ADDRESS,
         microserviceName,
         microserviceVersionRule,
         discoveryGroupName);

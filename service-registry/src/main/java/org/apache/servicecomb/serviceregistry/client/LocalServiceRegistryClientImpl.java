@@ -31,6 +31,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
@@ -40,6 +42,7 @@ import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse
 import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
+import org.apache.servicecomb.serviceregistry.client.http.Holder;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.version.Version;
 import org.apache.servicecomb.serviceregistry.version.VersionRule;
@@ -115,14 +118,19 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
         String appId = (String) serviceConfig.get("appid");
         String version = (String) serviceConfig.get("version");
         String serviceId = (String) serviceConfig.get("id");
-
+        @SuppressWarnings("unchecked")
+        List<String> schemas = (List<String> ) serviceConfig.get("schemaIds");
+        	
         Microservice microservice = new Microservice();
         microservice.setAppId(appId == null ? DEFAULT_APPLICATION_ID : appId);
         microservice.setServiceName(name);
         microservice.setVersion(version);
         microservice.setServiceId(serviceId == null ? UUID.randomUUID().toString() : serviceId);
         microserviceIdMap.put(microservice.getServiceId(), microservice);
-
+        if (schemas != null) {
+            microservice.setSchemas(schemas);
+        }
+        	
         Map<String, MicroserviceInstance> instanceMap = new ConcurrentHashMap<>();
         for (Map<String, Object> instanceConfig : instancesConfig) {
           @SuppressWarnings("unchecked")
@@ -342,7 +350,7 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   @Override
-  public List<GetSchemaResponse> getSchemas(String microserviceId) {
+  public Holder<List<GetSchemaResponse>> getSchemas(String microserviceId) {
     Microservice microservice = microserviceIdMap.get(microserviceId);
     if (microservice == null) {
       throw new IllegalArgumentException("Invalid serviceId, serviceId=" + microserviceId);
@@ -355,7 +363,9 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
       schema.setSummary(Hashing.sha256().newHasher().putString(val, Charsets.UTF_8).hash().toString());
       schemas.add(schema);
     });
-    return schemas;
+    Holder<List<GetSchemaResponse>> resultHolder = new Holder<>();
+    resultHolder.setStatusCode(Status.OK.getStatusCode()).setValue(schemas);
+    return resultHolder;
   }
 
   @Override

@@ -17,12 +17,21 @@
 
 package org.apache.servicecomb.foundation.common.utils;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+
 public final class BeanUtils {
   public static final String DEFAULT_BEAN_RESOURCE = "classpath*:META-INF/spring/*.bean.xml";
+
+  public static final String SCB_SCAN_PACKAGE = "scb-scan-package";
+
+  private static final String SCB_PACKAGE = "org.apache.servicecomb";
 
   private static ApplicationContext context;
 
@@ -33,8 +42,39 @@ public final class BeanUtils {
     init(DEFAULT_BEAN_RESOURCE);
   }
 
+
   public static void init(String... configLocations) {
+    prepareServiceCombScanPackage();
+
     context = new ClassPathXmlApplicationContext(configLocations);
+  }
+
+  public static void prepareServiceCombScanPackage() {
+    Set<String> scanPackags = new LinkedHashSet<>();
+    // add exists settings
+    String exists = System.getProperty(SCB_SCAN_PACKAGE);
+    if (exists != null) {
+      for (String exist : exists.trim().split(",")) {
+        if (!exist.isEmpty()) {
+          scanPackags.add(exist.trim());
+        }
+      }
+    }
+
+    // ensure servicecomb package exist
+    scanPackags.add(SCB_PACKAGE);
+
+    // add main class package
+    Class<?> mainClass = JvmUtils.findMainClass();
+    if (mainClass != null) {
+      String pkg = mainClass.getPackage().getName();
+      if (!pkg.startsWith(SCB_PACKAGE)) {
+        scanPackags.add(pkg);
+      }
+    }
+
+    // finish
+    System.setProperty(SCB_SCAN_PACKAGE, StringUtils.join(scanPackags, ","));
   }
 
   public static ApplicationContext getContext() {
