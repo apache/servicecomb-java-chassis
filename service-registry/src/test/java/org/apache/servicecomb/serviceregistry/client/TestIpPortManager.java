@@ -60,7 +60,7 @@ public class TestIpPortManager {
     manager = serviceRegistry.getIpPortManager();
   }
 
-  @Test
+   @Test
   public void testGetAvailableAddress(@Injectable ServiceRegistryConfig config,
       @Injectable InstanceCacheManager cacheManager,
       @Injectable InstanceCache cache) {
@@ -122,39 +122,22 @@ public class TestIpPortManager {
     };
 
     manager.initAutoDiscovery();
+    manager.setAutoDiscoveryInited(true);
+    
     IpPort address4 = manager.getNextAvailableAddress(address3);
     if (address1.getPort() == 9980) {
       Assert.assertEquals("127.0.0.1", address4.getHostOrIp());
-      Assert.assertEquals(9980, address4.getPort());
+      Assert.assertEquals(9982, address4.getPort());
     } else {
       address4 = manager.getNextAvailableAddress(address1);
       Assert.assertEquals("127.0.0.1", address4.getHostOrIp());
-      Assert.assertEquals(9980, address4.getPort());
+      Assert.assertEquals(9982, address4.getPort());
     }
 
     IpPort address5 = manager.getNextAvailableAddress(address4);
     Assert.assertEquals("127.0.0.1", address5.getHostOrIp());
     Assert.assertEquals(9980, address5.getPort());
-    
-    manager.setAutoDiscoveryInited(true);
-    IpPort address6 = manager.getNextAvailableAddress(address3);
-    if (address1.getPort() == 9980) {
-      Assert.assertEquals("127.0.0.1", address6.getHostOrIp());
-      Assert.assertEquals(9980, address6.getPort());
-    } else if(address1.getPort() == 9981){
-      address6 = manager.getNextAvailableAddress(address1);
-      Assert.assertEquals("127.0.0.1", address6.getHostOrIp());
-      Assert.assertEquals(9980, address6.getPort());
-    }
-
-    IpPort address7 = manager.getNextAvailableAddress(address4);
-    Assert.assertEquals("127.0.0.1", address7.getHostOrIp());
-    Assert.assertEquals(9980, address7.getPort());
-    
   }
-
-  
-  
   
   
   @Test
