@@ -92,7 +92,7 @@ public class IpPortManager {
           REGISTRY_SERVICE_NAME,
           DefinitionConst.VERSION_RULE_LATEST);
       if (cache.getInstanceMap().size() > 0) {
-        autoDiscoveryInited = true;
+        setAutoDiscoveryInited(true);
       } else {
         setAutoDiscoveryInited(false);
         taskPool = new ScheduledThreadPoolExecutor(1, new ThreadFactory() {
