@@ -192,8 +192,8 @@ public class TestConfigUtil {
   @Test
   public void propertiesAddFromDynamicConfigSourceIsDuplicated() {
     String expected = uniquify("ran");
-    String someProperty = "servicecomb.cse.servicecomb.add";
-    String injectProperty = "cse.cse.servicecomb.add";
+    String someProperty = "cse.cse.servicecomb.add";
+    String injectProperty = "servicecomb.cse.servicecomb.add";
 
     configurationSource.addProperty(someProperty, expected);
 
@@ -211,8 +211,8 @@ public class TestConfigUtil {
         equalTo(changed));
 
     expected = uniquify("ran");
-    someProperty = "servicecomb.servicecomb.cse.add";
-    injectProperty = "cse.servicecomb.cse.add";
+    someProperty = "cse.servicecomb.cse.add";
+    injectProperty = "servicecomb.servicecomb.cse.add";
 
     configurationSource.addProperty(someProperty, expected);
 
@@ -233,8 +233,8 @@ public class TestConfigUtil {
   @Test
   public void propertiesChangeFromDynamicConfigSourceIsDuplicated() {
     String expected = uniquify("ran");
-    String someProperty = "servicecomb.cse.servicecomb.change";
-    String injectProperty = "cse.cse.servicecomb.change";
+    String someProperty = "cse.cse.servicecomb.change";
+    String injectProperty = "servicecomb.cse.servicecomb.change";
     configurationSource.addProperty(someProperty, expected);
 
     assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
@@ -251,8 +251,8 @@ public class TestConfigUtil {
         equalTo(changed));
 
     expected = uniquify("ran");
-    someProperty = "servicecomb.servicecomb.cse.change";
-    injectProperty = "cse.servicecomb.cse.change";
+    someProperty = "cse.servicecomb.cse.change";
+    injectProperty = "servicecomb.servicecomb.cse.change";
     configurationSource.addProperty(someProperty, expected);
     assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
         equalTo(expected));
@@ -271,8 +271,8 @@ public class TestConfigUtil {
   @Test
   public void propertiesDeleteFromDynamicConfigSourceIsDuplicated() {
     String expected = uniquify("ran");
-    String someProperty = "servicecomb.cse.servicecomb.delete";
-    String injectProperty = "cse.cse.servicecomb.delete";
+    String someProperty = "cse.cse.servicecomb.delete";
+    String injectProperty = "servicecomb.cse.servicecomb.delete";
     configurationSource.addProperty(someProperty, expected);
 
     assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
@@ -288,8 +288,8 @@ public class TestConfigUtil {
         equalTo(null));
 
     expected = uniquify("ran");
-    someProperty = "servicecomb.servicecomb.cse.delete";
-    injectProperty = "cse.servicecomb.cse.delete";
+    someProperty = "cse.servicecomb.cse.delete";
+    injectProperty = "servicecomb.servicecomb.cse.delete";
     configurationSource.addProperty(someProperty, expected);
 
     assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),

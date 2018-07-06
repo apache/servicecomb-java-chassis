@@ -289,8 +289,8 @@ public final class ConfigUtil {
       Map<String, Object> adds = watchedUpdateResult.getAdded();
       if (adds != null) {
         for (String add : adds.keySet()) {
-          if (add.startsWith(CONFIG_SERVICECOMB_PREFIX)) {
-            String key = CONFIG_CSE_PREFIX + add.substring(add.indexOf(".") + 1);
+          if (add.startsWith(CONFIG_CSE_PREFIX)) {
+            String key = CONFIG_SERVICECOMB_PREFIX + add.substring(add.indexOf(".") + 1);
             injectConfig.addProperty(key, adds.get(add));
           }
         }
@@ -299,8 +299,8 @@ public final class ConfigUtil {
       Map<String, Object> deletes = watchedUpdateResult.getDeleted();
       if (deletes != null) {
         for (String delete : deletes.keySet()) {
-          if (delete.startsWith(CONFIG_SERVICECOMB_PREFIX)) {
-            injectConfig.clearProperty(CONFIG_CSE_PREFIX + delete.substring(delete.indexOf(".") + 1));
+          if (delete.startsWith(CONFIG_CSE_PREFIX)) {
+            injectConfig.clearProperty(CONFIG_SERVICECOMB_PREFIX + delete.substring(delete.indexOf(".") + 1));
           }
         }
       }
@@ -308,8 +308,8 @@ public final class ConfigUtil {
       Map<String, Object> changes = watchedUpdateResult.getChanged();
       if (changes != null) {
         for (String change : changes.keySet()) {
-          if (change.startsWith(CONFIG_SERVICECOMB_PREFIX)) {
-            String key = CONFIG_CSE_PREFIX + change.substring(change.indexOf(".") + 1);
+          if (change.startsWith(CONFIG_CSE_PREFIX)) {
+            String key = CONFIG_SERVICECOMB_PREFIX + change.substring(change.indexOf(".") + 1);
             injectConfig.setProperty(key, changes.get(change));
           }
         }
