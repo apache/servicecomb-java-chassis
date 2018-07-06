@@ -32,6 +32,8 @@ import javax.ws.rs.DefaultValue;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.extend.parameter.ContextParameter;
 import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import io.swagger.models.HttpMethod;
@@ -45,6 +47,8 @@ import io.swagger.models.properties.Property;
 import io.swagger.util.ReflectionUtils;
 
 public class OperationGenerator {
+  private static final Logger LOGGER = LoggerFactory.getLogger(OperationGenerator.class);
+
   protected SwaggerGenerator swaggerGenerator;
 
   protected Swagger swagger;
@@ -139,7 +143,27 @@ public class OperationGenerator {
     methodAnnotationParameters.add(parameter);
   }
 
+  /**
+   * Add a parameter into {@linkplain #providerParameters},
+   * duplicated name params will be ignored(excepting for {@linkplain ContextParameter}s)
+   */
   public void addProviderParameter(Parameter parameter) {
+    if (ContextParameter.class.isInstance(parameter)) {
+      // ContextParameter has no name and is not written in schema,
+      // so just add it without checking
+      providerParameters.add(parameter);
+      return;
+    }
+    // check duplicated param according to param name
+    for (Parameter providerParameter : providerParameters) {
+      if (parameter.getName().equals(providerParameter.getName())) {
+        LOGGER.warn(
+            "Param name [{}] is duplicated which may cause ambiguous deserialization result. Please check you schema definition",
+            parameter.getName());
+        return;
+      }
+    }
+
     providerParameters.add(parameter);
   }
 
@@ -294,7 +318,6 @@ public class OperationGenerator {
     if (parameter instanceof AbstractSerializableParameter && defaultValue != null) {
       ((AbstractSerializableParameter<?>) parameter).setDefaultValue(defaultValue);
     }
-
   }
 
   protected void processByParameterType(Type parameterType, int paramIdx) {

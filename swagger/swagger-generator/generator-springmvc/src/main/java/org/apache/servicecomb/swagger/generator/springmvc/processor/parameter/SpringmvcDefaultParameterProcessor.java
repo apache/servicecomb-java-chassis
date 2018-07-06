@@ -17,24 +17,42 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.parameter;
 
+import java.lang.reflect.Type;
+
 import org.apache.servicecomb.swagger.generator.core.DefaultParameterProcessor;
 import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
 
-import io.swagger.models.parameters.QueryParameter;
+import io.swagger.converter.ModelConverters;
+import io.swagger.models.properties.Property;
+import io.swagger.models.properties.RefProperty;
 
 public class SpringmvcDefaultParameterProcessor implements DefaultParameterProcessor {
+  private SpringmvcDefaultSimpleParameterProcessor simpleParameterProcessor = new SpringmvcDefaultSimpleParameterProcessor();
+
+  private SpringmvcDefaultObjectParameterProcessor objectParameterProcessor = new SpringmvcDefaultObjectParameterProcessor();
 
   @Override
   public void process(OperationGenerator operationGenerator, int paramIdx) {
-    String paramName = ParamUtils.getParameterName(operationGenerator.getProviderMethod(), paramIdx);
+    Type paramType = ParamUtils.getGenericParameterType(operationGenerator.getProviderMethod(), paramIdx);
+    Property property = ModelConverters.getInstance().readAsProperty(paramType);
 
-    QueryParameter queryParameter = new QueryParameter();
-    queryParameter.setName(paramName);
-    ParamUtils.setParameterType(operationGenerator.getSwagger(),
-        operationGenerator.getProviderMethod(),
+    if (RefProperty.class.isInstance(property)) {
+      objectParameterProcessor.process(operationGenerator, paramIdx);
+      return;
+    }
+    if (!ParamUtils.isComplexProperty(property)) {
+      simpleParameterProcessor.process(operationGenerator, paramIdx);
+      return;
+    }
+
+    // unsupported param type
+    String msg = String.format("cannot process parameter [%s], method=%s:%s, paramIdx=%d, type=%s",
+        ParamUtils.getParameterName(operationGenerator.getProviderMethod(), paramIdx),
+        operationGenerator.getProviderMethod().getDeclaringClass().getName(),
+        operationGenerator.getProviderMethod().getName(),
         paramIdx,
-        queryParameter);
-    operationGenerator.addProviderParameter(queryParameter);
+        paramType.getTypeName());
+    throw new Error(msg);
   }
 }
