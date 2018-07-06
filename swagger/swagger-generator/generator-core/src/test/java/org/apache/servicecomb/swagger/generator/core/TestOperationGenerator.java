@@ -26,11 +26,16 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.servicecomb.foundation.test.scaffolding.spring.SpringUtils;
+import org.apache.servicecomb.swagger.extend.parameter.HttpRequestParameter;
 import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.util.StringValueResolver;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.parameters.BodyParameter;
+import io.swagger.models.parameters.Parameter;
+import io.swagger.models.parameters.QueryParameter;
 
 public class TestOperationGenerator {
   @Test
@@ -86,6 +91,34 @@ public class TestOperationGenerator {
 
     List<String> tagList = operationGenerator.getOperation().getTags();
     assertThat(tagList, contains("default0", "default1"));
+  }
+
+  @Test
+  public void addProviderParameter() throws NoSuchMethodException {
+    Method function = TestClass.class.getMethod("functionWithNoAnnotation");
+    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(new PojoSwaggerGeneratorContext(), TestClass.class);
+    OperationGenerator operationGenerator = new OperationGenerator(swaggerGenerator, function);
+
+    Parameter parameter = new BodyParameter();
+    parameter.setName("param0");
+    operationGenerator.addProviderParameter(parameter);
+    Assert.assertEquals(1, operationGenerator.getProviderParameters().size());
+    Assert.assertSame(parameter, operationGenerator.getProviderParameters().get(0));
+
+    parameter = new HttpRequestParameter();
+    operationGenerator.addProviderParameter(parameter);
+    Assert.assertSame(parameter, operationGenerator.getProviderParameters().get(1));
+
+    parameter = new QueryParameter();
+    parameter.setName("param1");
+    operationGenerator.addProviderParameter(parameter);
+    Assert.assertSame(parameter, operationGenerator.getProviderParameters().get(2));
+
+    parameter = new QueryParameter();
+    parameter.setName("param0");
+    operationGenerator.addProviderParameter(parameter);
+    Assert.assertEquals(3, operationGenerator.getProviderParameters().size());
+    Assert.assertNotSame(parameter, operationGenerator.getProviderParameters().get(2));
   }
 
   private static class TestClass {
