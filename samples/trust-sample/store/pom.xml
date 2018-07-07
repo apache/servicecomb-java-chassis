@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -14,44 +15,51 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.apache.servicecomb</groupId>
-    <artifactId>handlers</artifactId>
+    <groupId>org.apache.servicecomb.samples</groupId>
+    <artifactId>trust-sample</artifactId>
     <version>1.0.0-m2-SNAPSHOT</version>
   </parent>
-
-  <artifactId>handler-publickey-auth</artifactId>
-  <name>Java Chassis::Handlers::PublicKey Auth</name>
-
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
-
+  <artifactId>store</artifactId>
   <dependencies>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>java-chassis-core</artifactId>
+      <artifactId>handler-bizkeeper</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>handler-publickey-auth</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>handler-loadbalance</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>transport-highway</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>transport-rest-vertx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>handler-flowcontrol-qps</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>provider-pojo</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
-      <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <scope>test</scope>
+      <groupId>org.apache.servicecomb.samples</groupId>
+      <artifactId>common-schema</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>foundation-test-scaffolding</artifactId>
-      <scope>test</scope>
-    </dependency>
-
   </dependencies>
-
 </project>

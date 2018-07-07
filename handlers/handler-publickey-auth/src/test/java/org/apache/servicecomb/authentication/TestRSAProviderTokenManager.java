@@ -21,21 +21,35 @@ import java.util.Map;
 
 import org.apache.servicecomb.authentication.consumer.RSAConsumerTokenManager;
 import org.apache.servicecomb.authentication.provider.RSAProviderTokenManager;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.utils.RSAKeyPairEntry;
 import org.apache.servicecomb.foundation.common.utils.RSAUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.token.RSAKeypair4Auth;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.MicroserviceInstanceCache;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import mockit.Expectations;
 
 public class TestRSAProviderTokenManager {
 
+
+  @Before
+  public void setUp() throws Exception {
+    ConfigUtil.installDynamicConfig();
+  }
+
+  @After
+  public void tearDown() {
+    ArchaiusUtils.resetConfig();
+  }
 
   @Test
   public void testTokenExpried() {
@@ -84,6 +98,8 @@ public class TestRSAProviderTokenManager {
       {
         MicroserviceInstanceCache.getOrCreate(serviceId, instanceId);
         result = microserviceInstance;
+        MicroserviceInstanceCache.getOrCreate(serviceId);
+        result = microservice;
       }
     };
     RSAProviderTokenManager rsaProviderTokenManager = new RSAProviderTokenManager();
