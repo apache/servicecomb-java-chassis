@@ -122,6 +122,7 @@ public class TestIpPortManager {
     };
 
     manager.initAutoDiscovery();
+    manager.setAutoDiscoveryInited(true);
     IpPort address4 = manager.getNextAvailableAddress(address3);
     if (address1.getPort() == 9980) {
       Assert.assertEquals("127.0.0.1", address4.getHostOrIp());
