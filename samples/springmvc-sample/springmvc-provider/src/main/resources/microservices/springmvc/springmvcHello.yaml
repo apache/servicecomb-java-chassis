@@ -14,61 +14,52 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
-#这个契约是服务端 SchemaId= hello 使用的契约,同时你也可以把这个契约删掉,这样程序会自动生成隐式契约,还可以正常运行
+#这个契约是这个 示例使用的契约,同时你也可以把这个契约删掉,这样程序会自动生成隐式契约,还可以正常运行
 # 使用隐式契约的时候,可以注意 启动provider的 时候,命令行的输出.它会把自动生成的隐式契约打印出来.
 #内容和下面的一模一样
-swagger: '2.0'
+swagger: "2.0"
 info:
-  title: hello
-  version: 1.0.0
-  x-java-interface: org.apache.servicecomb.samples.pojo.Hello
-basePath: /pojo/rest/hello
+  version: "1.0.0"
+  title: "swagger definition for org.apache.servicecomb.samples.springmvc.provider.SpringmvcHelloImpl"
+  x-java-interface: "cse.gen.springmvc_sample.springmvc.springmvcHello.SpringmvcHelloImplIntf"
+basePath: "/springmvchello"
+consumes:
+- "application/json"
 produces:
-  - application/json
-
+- "application/json"
 paths:
-  /sayhi:
+  /sayhello:
     post:
-      operationId: sayHi
+      operationId: "sayHello"
       parameters:
-        - name: name
-          in: body
-          required: true
-          schema:
-            type: string
+      - in: "body"
+        name: "person"
+        required: true
+        schema:
+          $ref: "#/definitions/Person"
       responses:
         200:
-          description: 正确返回
+          description: "response of 200"
           schema:
-            type: string
-        default:
-          description: 默认返回
+            type: "string"
+  /sayhi:
+    post:
+      operationId: "sayHi"
+      parameters:
+      - name: "name"
+        in: "query"
+        required: false
+        type: "string"
+        default: "test"
+      responses:
+        200:
+          description: "response of 200"
           schema:
-            type: string
-  /sayhello:
-     post:
-          operationId: sayHello
-          parameters:
-            - name: person
-              in: body
-              required: true
-              schema:
-                $ref: "#/definitions/Person"
-          responses:
-            200:
-              description: 正确返回
-              schema:
-                type: string
-            default:
-              description: 默认返回
-              schema:
-                type: string
+            type: "string"
 definitions:
   Person:
     type: "object"
     properties:
       name:
         type: "string"
-        description: "person name"
-    xml:
-      name: "Person"
+    x-java-class: "org.apache.servicecomb.samples.common.schema.models.Person"
