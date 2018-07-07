@@ -176,6 +176,7 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
     checkRemainingSchema(scSchemaMap);
 
     schemaIdSetMatch = true;
+    this.registered = true;
     return true;
   }
 

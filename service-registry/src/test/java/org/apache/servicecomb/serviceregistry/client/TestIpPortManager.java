@@ -60,7 +60,7 @@ public class TestIpPortManager {
     manager = serviceRegistry.getIpPortManager();
   }
 
-  @Test
+   @Test
   public void testGetAvailableAddress(@Injectable ServiceRegistryConfig config,
       @Injectable InstanceCacheManager cacheManager,
       @Injectable InstanceCache cache) {
@@ -122,6 +122,8 @@ public class TestIpPortManager {
     };
 
     manager.initAutoDiscovery();
+    manager.setAutoDiscoveryInited(true);
+    
     IpPort address4 = manager.getNextAvailableAddress(address3);
     if (address1.getPort() == 9980) {
       Assert.assertEquals("127.0.0.1", address4.getHostOrIp());
@@ -136,7 +138,7 @@ public class TestIpPortManager {
     Assert.assertEquals("127.0.0.1", address5.getHostOrIp());
     Assert.assertEquals(9980, address5.getPort());
   }
-
+  
   @Test
   public void testCreateServiceRegistryCacheWithInstanceCache() {
 
