@@ -122,6 +122,7 @@ public class TestIpPortManager {
     };
 
     manager.initAutoDiscovery();
+    manager.setAutoDiscoveryInited(true);
     IpPort address4 = manager.getNextAvailableAddress(address3);
     if (address1.getPort() == 9980) {
       Assert.assertEquals("127.0.0.1", address4.getHostOrIp());
@@ -135,6 +136,22 @@ public class TestIpPortManager {
     IpPort address5 = manager.getNextAvailableAddress(address4);
     Assert.assertEquals("127.0.0.1", address5.getHostOrIp());
     Assert.assertEquals(9980, address5.getPort());
+    
+    manager.initAutoDiscovery();
+    manager.setAutoDiscoveryInited(false);
+    IpPort address6 = manager.getNextAvailableAddress(address3);
+    if (address1.getPort() == 9980) {
+      Assert.assertEquals("127.0.0.1", address6.getHostOrIp());
+      Assert.assertEquals(9982, address6.getPort());
+    } else {
+      address6 = manager.getNextAvailableAddress(address1);
+      Assert.assertEquals("127.0.0.1", address6.getHostOrIp());
+      Assert.assertEquals(9982, address6.getPort());
+    }
+
+    IpPort address7 = manager.getNextAvailableAddress(address6);
+    Assert.assertEquals("127.0.0.1", address7.getHostOrIp());
+    Assert.assertEquals(9980, address7.getPort());
   }
 
   @Test
