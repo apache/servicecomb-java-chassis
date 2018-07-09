@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.localregistry.localregistryserver;
+package org.apache.servicecomb.samples.localregistry.localregistryserver;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
@@ -23,7 +23,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.servicecomb.demo.validator.Student;
+import org.apache.servicecomb.samples.common.schema.models.Person;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 
 @RestSchema(schemaId = "localservregistry")
@@ -39,9 +39,8 @@ public class LocalServerApi {
 
   @Path("/sayhi")
   @POST
-  public Student sayHi(Student student) {
+  public Person sayHi(Person student) {
     student.setName("hello " + student.getName());
-    student.setAge(student.getAge());
     return student;
   }
 }

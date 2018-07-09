@@ -38,6 +38,7 @@
     <module>metrics-extend-healthcheck</module>
     <module>config-apollo-sample</module>
     <module>use-log4j2-sample</module>
+    <module>local-service-registry</module>
   </modules>
 
   <dependencyManagement>

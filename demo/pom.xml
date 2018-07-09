@@ -37,7 +37,6 @@
     <module>demo-server-servlet</module>
     <module>demo-pojo</module>
     <module>demo-jaxrs</module>
-    <module>demo-local-service-registry</module>
 
     <module>demo-springmvc</module>
     <module>demo-schema</module>

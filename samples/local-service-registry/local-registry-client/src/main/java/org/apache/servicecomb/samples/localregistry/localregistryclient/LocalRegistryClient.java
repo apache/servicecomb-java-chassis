@@ -15,18 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.localregistry.localregistryclient;
+package org.apache.servicecomb.samples.localregistry.localregistryclient;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.core.CseContext;
-import org.apache.servicecomb.demo.DemoConst;
-import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.demo.validator.Student;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.apache.servicecomb.samples.common.schema.models.Person;
 import org.springframework.web.client.RestTemplate;
 
 public class LocalRegistryClient {
@@ -38,7 +35,6 @@ public class LocalRegistryClient {
 
     run();
 
-    TestMgr.summary();
     System.clearProperty("local.registry.file");
   }
 
@@ -53,24 +49,22 @@ public class LocalRegistryClient {
 
   private static void testLocalRegistry(RestTemplate template) throws Exception {
     String microserviceName = "localserv";
-    for (String transport : DemoConst.transports) {
-      CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
-      TestMgr.setMsg(microserviceName, transport);
+    String cseUrlPrefix = "cse://" + microserviceName + "/localservregistry/";
 
-      String cseUrlPrefix = "cse://" + microserviceName + "/localservregistry/";
+    Map<String, String> params = new HashMap<>();
+    params.put("a", "5");
+    params.put("b", "20");
+    int result = template.postForObject(cseUrlPrefix + "add", params, Integer.class);
+    System.out.println(result);
 
-      Map<String, String> params = new HashMap<>();
-      params.put("a", "5");
-      params.put("b", "20");
-      int result = template.postForObject(cseUrlPrefix + "add", params, Integer.class);
-      TestMgr.check(25, result);
+    Person person = new Person();
+    person.setName("local registry test");
+    Person sayHiResult = template
+        .postForObject(
+            cseUrlPrefix + "sayhi",
+            person,
+            Person.class);
 
-      Student student = new Student();
-      student.setName("king");
-      student.setAge(30);
-      Student res = template.postForObject(cseUrlPrefix + "sayhi", student, Student.class);
-      TestMgr.check("hello king", res.getName());
-      TestMgr.check(30, res.getAge());
-    }
+    System.out.println(sayHiResult.getName());
   }
 }

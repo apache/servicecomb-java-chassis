@@ -21,34 +21,58 @@
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.apache.servicecomb.demo</groupId>
-    <artifactId>demo-local-service-registry</artifactId>
+    <groupId>org.apache.servicecomb.samples</groupId>
+    <artifactId>local-service-registry</artifactId>
     <version>1.0.0-m2-SNAPSHOT</version>
   </parent>
-  <artifactId>local-registry-client</artifactId>
-  <name>Java Chassis::Demo::LocalServiceRegistry::Client</name>
-
+  <artifactId>local-registry-server</artifactId>
+  <name>Java Chassis::Demo::LocalRegistry::Server</name>
   <dependencies>
     <dependency>
-      <groupId>org.apache.servicecomb.demo</groupId>
-      <artifactId>demo-schema</artifactId>
+      <groupId>org.apache.servicecomb.samples</groupId>
+      <artifactId>common-schema</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>provider-springmvc</artifactId>
+      <artifactId>provider-jaxrs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>transport-highway</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>transport-rest-vertx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>handler-bizkeeper</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
     </dependency>
   </dependencies>
 
-  <properties>
-    <demo.main>org.apache.servicecomb.demo.localregistry.LocalRegistryClient</demo.main>
-  </properties>
   <build>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
       </plugin>
+      <plugin>
+        <groupId>com.github.odavid.maven.plugins</groupId>
+        <artifactId>mixin-maven-plugin</artifactId>
+        <configuration>
+          <mixins>
+            <mixin>
+              <groupId>org.apache.servicecomb.demo</groupId>
+              <artifactId>docker-build-config</artifactId>
+              <version>1.0.0-m2-SNAPSHOT</version>
+            </mixin>
+          </mixins>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
-
 </project>
