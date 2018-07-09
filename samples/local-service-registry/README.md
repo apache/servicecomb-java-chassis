@@ -30,15 +30,16 @@ Please find the details as follows.
 
 * Add the following code at the beginning and end of the service consumer Main function
 
+```java
     public class xxxClient {
       public static void main(String[] args) {
-　　      System.setProperty("local.registry.file", "/yourpath/registry.yaml");
-        // your code
-　　      System.clearProperty("local.registry.file");
+　　    System.setProperty("local.registry.file", "/yourpath/registry.yaml");
+        //your code
+　　    System.clearProperty("local.registry.file");
+      }
     }
-
-    - If file present in this path "local.registry.file" then registry mode is Local registry mode. It will not connect to service center.
-
+```
+   If file present in this path "local.registry.file" then registry mode is Local registry mode. It will not connect to service center.
 
 * Add provider's schema file at below location of consumer side
 
