@@ -26,7 +26,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.servicecomb.samples.common.schema.models.Person;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 
-@RestSchema(schemaId = "localservregistry")
+@RestSchema(schemaId = "hello")
 @Path("/localservregistry")
 @Produces(MediaType.APPLICATION_JSON)
 public class LocalServerApi {

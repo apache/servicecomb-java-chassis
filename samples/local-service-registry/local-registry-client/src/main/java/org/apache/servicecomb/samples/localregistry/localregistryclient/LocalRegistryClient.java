@@ -34,8 +34,6 @@ public class LocalRegistryClient {
     init();
 
     run();
-
-    System.clearProperty("local.registry.file");
   }
 
   public static void init() throws Exception {

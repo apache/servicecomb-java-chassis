@@ -17,10 +17,8 @@
 
 localserv:
   - id: "100"
-    version: "0.0.1"
+    version: "0.0.2"
     appid: localservreg
-    schemaIds:
-      - hello
     instances:
       - endpoints:
         - rest://localhost:8080

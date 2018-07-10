@@ -22,6 +22,7 @@ import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 
 public class LocalRegistryServer {
   public static void main(String[] args) throws Exception {
+    System.setProperty("local.registry.file", "src/main/resources/registry.yaml");
     Log4jUtils.init();
     BeanUtils.init();
   }
