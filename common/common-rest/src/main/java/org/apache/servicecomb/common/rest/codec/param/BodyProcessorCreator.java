@@ -59,6 +59,14 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
         return convertValue(body, targetType);
       }
 
+      // edge support convert from form-data or x-www-form-urlencoded to json automatically
+      String contentType = request.getContentType();
+      contentType = contentType == null ? "" : contentType.toLowerCase(Locale.US);
+      if (contentType.startsWith(MediaType.MULTIPART_FORM_DATA)
+          || contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED)) {
+        return RestObjectMapper.INSTANCE.convertValue(request.getParameterMap(), targetType);
+      }
+
       // for standard HttpServletRequest, getInputStream will never return null
       // but for mocked HttpServletRequest, maybe get a null
       //  like org.apache.servicecomb.provider.springmvc.reference.ClientToHttpServletRequest
@@ -70,8 +78,8 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
       if (isRequired == false && inputStream.available() == 0) {
         return null;
       }
-      String contentType = request.getContentType();
-      if (contentType != null && !contentType.toLowerCase(Locale.US).startsWith(MediaType.APPLICATION_JSON)) {
+
+      if (!contentType.isEmpty() && !contentType.startsWith(MediaType.APPLICATION_JSON)) {
         // TODO: we should consider body encoding
         return IOUtils.toString(inputStream, "UTF-8");
       }
@@ -86,7 +94,6 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
         if (arg != null) {
           clientRequest.write(output.getBuffer());
         }
-
       }
     }
 
