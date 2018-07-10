@@ -22,12 +22,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.google.common.util.concurrent.UncheckedExecutionException;
 
 /**
  * 微服务实例缓存 key为：serviceId@instanceId 缓存limit：1000 缓存老化策略：30分钟没有访问就过期。
@@ -42,6 +44,26 @@ public class MicroserviceInstanceCache {
       .expireAfterAccess(30, TimeUnit.MINUTES)
       .build();
 
+  private static final Cache<String, Microservice> microservices = CacheBuilder.newBuilder()
+      .maximumSize(1000)
+      .expireAfterAccess(30, TimeUnit.MINUTES)
+      .build();
+
+  public static Microservice getOrCreate(String serviceId) {
+    try {
+      return microservices.get(serviceId, () -> {
+        Microservice microservice = RegistryUtils.getServiceRegistryClient().getMicroservice(serviceId);
+        if (microservice == null) {
+          throw new IllegalArgumentException("service id not exists.");
+        }
+        return microservice;
+      });
+    } catch (ExecutionException | UncheckedExecutionException e) {
+      logger.error("get microservice from cache failed, {}, {}", serviceId, e.getMessage());
+      return null;
+    }
+  }
+
   public static MicroserviceInstance getOrCreate(String serviceId, String instanceId) {
     try {
       String key = String.format("%s@%s", serviceId, instanceId);
@@ -49,17 +71,18 @@ public class MicroserviceInstanceCache {
 
         @Override
         public MicroserviceInstance call() throws Exception {
-          logger.debug("get microservice instance from SC");
-          return getMicroserviceInstanceFromSC(serviceId, instanceId);
+          MicroserviceInstance instance = RegistryUtils.getServiceRegistryClient()
+              .findServiceInstance(serviceId, instanceId);
+          if (instance == null) {
+            throw new IllegalArgumentException("instance id not exists.");
+          }
+          return instance;
         }
       });
-    } catch (ExecutionException e) {
-      logger.error("get microservice from cache failed:" + String.format("%s@%s", serviceId, instanceId));
+    } catch (ExecutionException | UncheckedExecutionException e) {
+      logger.error("get microservice instance from cache failed, {}, {}", String.format("%s@%s", serviceId, instanceId),
+          e.getMessage());
       return null;
     }
-  }
-
-  private static MicroserviceInstance getMicroserviceInstanceFromSC(String serviceId, String instanceId) {
-    return RegistryUtils.getServiceRegistryClient().findServiceInstance(serviceId, instanceId);
   }
 }

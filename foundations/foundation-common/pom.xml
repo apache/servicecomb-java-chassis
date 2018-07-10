@@ -20,7 +20,7 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.servicecomb</groupId>
-    <version>1.0.0-m2-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <artifactId>foundations</artifactId>
   </parent>
   <artifactId>foundation-common</artifactId>
