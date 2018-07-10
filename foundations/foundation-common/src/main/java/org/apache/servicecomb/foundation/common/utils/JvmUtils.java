@@ -16,6 +16,12 @@
  */
 package org.apache.servicecomb.foundation.common.utils;
 
+import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,17 +42,46 @@ public final class JvmUtils {
    * @return main class or null, never throw exception
    */
   public static Class<?> findMainClass() {
+    // 1.run with java -cp ......
+    //   command is main class and args
+    // 2.run with java -jar ......
+    //   command is jar file name and args
     String command = System.getProperty(SUN_JAVA_COMMAND);
     if (command == null || command.isEmpty()) {
       return null;
     }
 
-    // command is main class and args
-    String mainClass = command.trim().split(" ")[0];
+    String mainClassOrJar = command.trim().split(" ")[0];
+    String mainClass = readFromJar(mainClassOrJar);
+    if (mainClass == null || mainClass.isEmpty()) {
+      return null;
+    }
+
     try {
-      return Class.forName(mainClass);
+      Class<?> cls = Class.forName(mainClass);
+      LOGGER.info("Found main class \"{}\".", mainClass);
+      return cls;
     } catch (Throwable e) {
       LOGGER.warn("\"{}\" is not a valid class.", mainClass, e);
+      return null;
+    }
+  }
+
+  private static String readFromJar(String mainClassOrJar) {
+    if (!mainClassOrJar.endsWith(".jar")) {
+      return mainClassOrJar;
+    }
+
+    String manifestUri = "jar:file:/" + new File(mainClassOrJar).getAbsolutePath() + "!/" + JarFile.MANIFEST_NAME;
+
+    try {
+      URL url = new URL(manifestUri);
+      try (InputStream inputStream = url.openStream()) {
+        Manifest manifest = new Manifest(inputStream);
+        return manifest.getMainAttributes().getValue("Main-Class");
+      }
+    } catch (Throwable e) {
+      LOGGER.warn("Failed to read Main-Class from \"{}\".", manifestUri, e);
       return null;
     }
   }

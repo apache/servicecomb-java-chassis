@@ -16,12 +16,24 @@
  */
 package org.apache.servicecomb.foundation.common.utils;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.jar.JarFile;
+
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({JvmUtils.class})
 public class TestJvmUtils {
   static String orgCmd = System.getProperty(JvmUtils.SUN_JAVA_COMMAND);
 
@@ -63,9 +75,63 @@ public class TestJvmUtils {
   }
 
   @Test
-  public void findMainClass_normal() {
+  public void findMainClass_class_normal() {
     System.setProperty(JvmUtils.SUN_JAVA_COMMAND, TestJvmUtils.class.getName() + " arg");
 
     Assert.assertEquals(TestJvmUtils.class, JvmUtils.findMainClass());
+  }
+
+  @Test
+  public void findMainClass_jar_normal() throws Exception {
+    String content = String.format("Manifest-Version: 1.0\nMain-Class: %s\n", TestJvmUtils.class.getName());
+    InputStream inputStream = new ByteArrayInputStream(content.getBytes());
+
+    URL url = PowerMockito.mock(URL.class);
+
+    String command = "a.jar";
+    String manifestUri = "jar:file:/" + new File(command).getAbsolutePath() + "!/" + JarFile.MANIFEST_NAME;
+
+    PowerMockito.whenNew(URL.class).withParameterTypes(String.class)
+        .withArguments(manifestUri).thenReturn(url);
+    PowerMockito.when(url.openStream()).thenReturn(inputStream);
+
+    System.setProperty(JvmUtils.SUN_JAVA_COMMAND, command + " arg");
+
+    Assert.assertEquals(TestJvmUtils.class, JvmUtils.findMainClass());
+  }
+
+  @Test
+  public void findMainClass_jar_null() throws Exception {
+    String content = "Manifest-Version: 1.0\n";
+    InputStream inputStream = new ByteArrayInputStream(content.getBytes());
+
+    URL url = PowerMockito.mock(URL.class);
+
+    String command = "a.jar";
+    String manifestUri = "jar:file:/" + new File(command).getAbsolutePath() + "!/" + JarFile.MANIFEST_NAME;
+
+    PowerMockito.whenNew(URL.class).withParameterTypes(String.class)
+        .withArguments(manifestUri).thenReturn(url);
+    PowerMockito.when(url.openStream()).thenReturn(inputStream);
+
+    System.setProperty(JvmUtils.SUN_JAVA_COMMAND, command + " arg");
+
+    Assert.assertNull(JvmUtils.findMainClass());
+  }
+
+  @Test
+  public void findMainClass_jar_readFailed() throws Exception {
+    URL url = PowerMockito.mock(URL.class);
+
+    String command = "a.jar";
+    String manifestUri = "jar:file:/" + new File(command).getAbsolutePath() + "!/" + JarFile.MANIFEST_NAME;
+
+    PowerMockito.whenNew(URL.class).withParameterTypes(String.class)
+        .withArguments(manifestUri).thenReturn(url);
+    PowerMockito.when(url.openStream()).thenThrow(new Error());
+
+    System.setProperty(JvmUtils.SUN_JAVA_COMMAND, command + " arg");
+
+    Assert.assertNull(JvmUtils.findMainClass());
   }
 }
