@@ -232,4 +232,50 @@ public class TestBodyProcessor {
     Assert.assertEquals(MediaType.APPLICATION_JSON, headers.get(HttpHeaders.CONTENT_TYPE));
     Assert.assertEquals("value", outputBodyBuffer.toString());
   }
+
+  static class BodyModel {
+    public String name;
+
+    public int age;
+  }
+
+  @Test
+  public void convertFromFormData() throws Exception {
+    createProcessor(BodyModel.class);
+    Map<String, String[]> parameterMap = new HashMap<>();
+    parameterMap.put("name", new String[] {"n"});
+    parameterMap.put("age", new String[] {"10"});
+    new Expectations() {
+      {
+        request.getParameterMap();
+        result = parameterMap;
+        request.getContentType();
+        result = MediaType.MULTIPART_FORM_DATA + ";utf-8";
+      }
+    };
+
+    BodyModel bm = (BodyModel) processor.getValue(request);
+    Assert.assertEquals("n", bm.name);
+    Assert.assertEquals(10, bm.age);
+  }
+
+  @Test
+  public void convertFromUrlencoded() throws Exception {
+    createProcessor(BodyModel.class);
+    Map<String, String[]> parameterMap = new HashMap<>();
+    parameterMap.put("name", new String[] {"n"});
+    parameterMap.put("age", new String[] {"10"});
+    new Expectations() {
+      {
+        request.getParameterMap();
+        result = parameterMap;
+        request.getContentType();
+        result = MediaType.APPLICATION_FORM_URLENCODED + ";utf-8";
+      }
+    };
+
+    BodyModel bm = (BodyModel) processor.getValue(request);
+    Assert.assertEquals("n", bm.name);
+    Assert.assertEquals(10, bm.age);
+  }
 }

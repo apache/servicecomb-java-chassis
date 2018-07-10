@@ -52,6 +52,7 @@ public final class RestObjectMapper extends ObjectMapper {
     getFactory().disable(Feature.AUTO_CLOSE_SOURCE);
     disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+    enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);
   }
 
   public String convertToString(Object value) throws Exception {
