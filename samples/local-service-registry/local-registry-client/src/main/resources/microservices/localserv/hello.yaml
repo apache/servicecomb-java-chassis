@@ -1,0 +1,69 @@
+## ---------------------------------------------------------------------------
+## Licensed to the Apache Software Foundation (ASF) under one or more
+## contributor license agreements.  See the NOTICE file distributed with
+## this work for additional information regarding copyright ownership.
+## The ASF licenses this file to You under the Apache License, Version 2.0
+## (the "License"); you may not use this file except in compliance with
+## the License.  You may obtain a copy of the License at
+##
+##      http://www.apache.org/licenses/LICENSE-2.0
+##
+## Unless required by applicable law or agreed to in writing, software
+## distributed under the License is distributed on an "AS IS" BASIS,
+## WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+## See the License for the specific language governing permissions and
+## limitations under the License.
+## ---------------------------------------------------------------------------
+
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "swagger definition for org.apache.servicecomb.samples.localregistry.localregistryserver.LocalServerApi"
+  x-java-interface: "cse.gen.localservreg.localserv.localservregistry.LocalServerApiIntf"
+basePath: "/localservregistry"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+paths:
+  /add:
+    post:
+      operationId: "add"
+      parameters:
+      - name: "a"
+        in: "formData"
+        required: false
+        type: "integer"
+        format: "int32"
+      - name: "b"
+        in: "formData"
+        required: false
+        type: "integer"
+        format: "int32"
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "integer"
+            format: "int32"
+  /sayhi:
+    post:
+      operationId: "sayHi"
+      parameters:
+      - in: "body"
+        name: "student"
+        required: false
+        schema:
+          $ref: "#/definitions/Person"
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            $ref: "#/definitions/Person"
+definitions:
+  Person:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+    x-java-class: "org.apache.servicecomb.samples.common.schema.models.Person"
