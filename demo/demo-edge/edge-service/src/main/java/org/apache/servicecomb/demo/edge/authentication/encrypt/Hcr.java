@@ -14,26 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.demo.edge.authentication.encrypt;
 
-package org.apache.servicecomb.demo.edge.consumer;
+public class Hcr {
+  private String bodyKey;
 
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
+  private String signatureKey;
 
-public class ConsumerMain {
-  public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
+  public String getBodyKey() {
+    return bodyKey;
+  }
 
-    new Consumer().testEncrypt();
+  public void setBodyKey(String bodyKey) {
+    this.bodyKey = bodyKey;
+  }
 
-    System.out.println("Running api dispatcher.");
-    new Consumer().run("api");
-    System.out.println("Running rest dispatcher.");
-    new Consumer().run("rest");
-    System.out.println("Running url dispatcher.");
-    new Consumer().run("url");
+  public String getSignatureKey() {
+    return signatureKey;
+  }
 
-    System.out.println("All test case finished.");
+  public void setSignatureKey(String signatureKey) {
+    this.signatureKey = signatureKey;
   }
 }

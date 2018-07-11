@@ -15,25 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.edge.consumer;
+package org.apache.servicecomb.demo.edge.service.encrypt;
 
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
+import java.util.concurrent.CompletableFuture;
 
-public class ConsumerMain {
-  public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
+import org.apache.servicecomb.demo.edge.authentication.encrypt.Hcr;
 
-    new Consumer().testEncrypt();
+public interface Encrypt {
+  CompletableFuture<String> queryUserId(String serviceToken);
 
-    System.out.println("Running api dispatcher.");
-    new Consumer().run("api");
-    System.out.println("Running rest dispatcher.");
-    new Consumer().run("rest");
-    System.out.println("Running url dispatcher.");
-    new Consumer().run("url");
-
-    System.out.println("All test case finished.");
-  }
+  CompletableFuture<Hcr> queryHcr(String hcrId);
 }

@@ -22,6 +22,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
+import org.apache.servicecomb.demo.edge.service.EdgeConst;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
@@ -43,10 +44,13 @@ public class AuthHandler implements Handler {
   }
 
   @Override
-  public void handle(Invocation invocation, AsyncResponse asyncResp) {
-    auth.auth("").whenComplete((succ, e) -> {
-      doHandle(invocation, asyncResp, succ, e);
-    });
+  public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    if (invocation.getHandlerContext().get(EdgeConst.ENCRYPT_CONTEXT) != null) {
+      invocation.next(asyncResp);
+      return;
+    }
+
+    auth.auth("").whenComplete((succ, e) -> doHandle(invocation, asyncResp, succ, e));
   }
 
   protected void doHandle(Invocation invocation, AsyncResponse asyncResp, Boolean authSucc, Throwable authException) {

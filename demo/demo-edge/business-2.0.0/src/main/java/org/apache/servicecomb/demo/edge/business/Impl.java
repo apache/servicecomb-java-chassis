@@ -31,6 +31,7 @@ import org.apache.servicecomb.demo.edge.model.ChannelRequestBase;
 import org.apache.servicecomb.demo.edge.model.DependTypeA;
 import org.apache.servicecomb.demo.edge.model.RecursiveSelfType;
 import org.apache.servicecomb.demo.edge.model.ResultWithInstance;
+import org.apache.servicecomb.demo.edge.model.User;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -104,6 +105,11 @@ public class Impl {
 
   @PostMapping(path = "dependType")
   public DependTypeA dependType(@RequestBody DependTypeA value) {
+    return value;
+  }
+
+  @PostMapping(path = "encrypt")
+  public User encrypt(@RequestBody User value) {
     return value;
   }
 }

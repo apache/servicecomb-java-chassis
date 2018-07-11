@@ -14,26 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.demo.edge.service.encrypt;
 
-package org.apache.servicecomb.demo.edge.consumer;
+import org.apache.servicecomb.edge.core.EdgeInvocation;
 
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
+public class EncryptEdgeInvocation extends EdgeInvocation {
+  private EncryptContext encryptContext;
 
-public class ConsumerMain {
-  public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
+  public EncryptEdgeInvocation(EncryptContext encryptContext) {
+    this.encryptContext = encryptContext;
+  }
 
-    new Consumer().testEncrypt();
+  @Override
+  protected void createInvocation() {
+    super.createInvocation();
 
-    System.out.println("Running api dispatcher.");
-    new Consumer().run("api");
-    System.out.println("Running rest dispatcher.");
-    new Consumer().run("rest");
-    System.out.println("Running url dispatcher.");
-    new Consumer().run("url");
-
-    System.out.println("All test case finished.");
+    invocation.getHandlerContext().put("encryptContext", encryptContext);
   }
 }

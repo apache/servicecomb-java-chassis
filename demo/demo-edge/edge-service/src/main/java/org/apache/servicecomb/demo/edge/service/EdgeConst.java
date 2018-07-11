@@ -1,4 +1,4 @@
-/*
+package org.apache.servicecomb.demo.edge.service;/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -15,25 +15,6 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.edge.consumer;
-
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
-
-public class ConsumerMain {
-  public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
-
-    new Consumer().testEncrypt();
-
-    System.out.println("Running api dispatcher.");
-    new Consumer().run("api");
-    System.out.println("Running rest dispatcher.");
-    new Consumer().run("rest");
-    System.out.println("Running url dispatcher.");
-    new Consumer().run("url");
-
-    System.out.println("All test case finished.");
-  }
+public interface EdgeConst {
+  String ENCRYPT_CONTEXT = "encryptContext";
 }

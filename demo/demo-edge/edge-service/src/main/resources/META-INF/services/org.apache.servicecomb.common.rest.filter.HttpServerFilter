@@ -15,5 +15,7 @@
 # limitations under the License.
 #
 
-org.apache.servicecomb.demo.edge.service.EdgeDispatcher
-org.apache.servicecomb.demo.edge.service.encrypt.EncryptEdgeDispatcher
+org.apache.servicecomb.demo.edge.service.encrypt.filter.EdgeSignatureRequestFilter
+org.apache.servicecomb.demo.edge.service.encrypt.filter.DecodeBodyFilter
+org.apache.servicecomb.demo.edge.service.encrypt.filter.UserIdFilter
+org.apache.servicecomb.demo.edge.service.encrypt.filter.EdgeSignatureResponseFilter
