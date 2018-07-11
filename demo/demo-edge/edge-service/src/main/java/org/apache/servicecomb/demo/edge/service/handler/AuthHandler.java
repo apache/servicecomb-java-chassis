@@ -32,9 +32,9 @@ import org.slf4j.LoggerFactory;
 public class AuthHandler implements Handler {
   private static Logger LOGGER = LoggerFactory.getLogger(AuthHandler.class);
 
-  private Auth auth;
+  private static Auth auth;
 
-  public AuthHandler() {
+  static {
     auth = Invoker.createProxy("auth", "auth", Auth.class);
   }
 
@@ -43,13 +43,27 @@ public class AuthHandler implements Handler {
   }
 
   @Override
-  public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    if (!auth.auth("")) {
-      asyncResp.consumerFail(new InvocationException(Status.UNAUTHORIZED, (Object) "auth failed"));
+  public void handle(Invocation invocation, AsyncResponse asyncResp) {
+    auth.auth("").whenComplete((succ, e) -> {
+      doHandle(invocation, asyncResp, succ, e);
+    });
+  }
+
+  protected void doHandle(Invocation invocation, AsyncResponse asyncResp, Boolean authSucc, Throwable authException) {
+    if (authException != null) {
+      asyncResp.consumerFail(new InvocationException(Status.UNAUTHORIZED, (Object) authException.getMessage()));
       return;
     }
 
+    if (!authSucc) {
+      asyncResp.consumerFail(new InvocationException(Status.UNAUTHORIZED, (Object) "auth failed"));
+    }
+
     LOGGER.debug("auth success.");
-    invocation.next(asyncResp);
+    try {
+      invocation.next(asyncResp);
+    } catch (Throwable e) {
+      asyncResp.consumerFail(e);
+    }
   }
 }
