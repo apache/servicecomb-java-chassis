@@ -66,16 +66,24 @@ public class TestDiscoveryTree {
   }
 
   @Test
-  public void sort(@Mocked DiscoveryFilter f1, @Mocked DiscoveryFilter f2) {
+  public void sort(@Mocked DiscoveryFilter f1, @Mocked DiscoveryFilter f2, @Mocked DiscoveryFilter f3) {
     new Expectations() {
       {
         f1.getOrder();
         result = -1;
+        f1.enabled();
+        result = true;
         f2.getOrder();
         result = 0;
+        f2.enabled();
+        result = true;
+        f3.getOrder();
+        result = 0;
+        f3.enabled();
+        result = false;
       }
     };
-
+    discoveryTree.addFilter(f3);
     discoveryTree.addFilter(f2);
     discoveryTree.addFilter(f1);
     discoveryTree.sort();

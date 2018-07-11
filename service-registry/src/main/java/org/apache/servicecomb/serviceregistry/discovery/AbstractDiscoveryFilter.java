@@ -30,6 +30,9 @@ public abstract class AbstractDiscoveryFilter implements DiscoveryFilter {
     }
 
     String childName = findChildName(context, parent);
+    if (childName == null) {
+      return null;
+    }
     return parent.child(childName);
   }
 

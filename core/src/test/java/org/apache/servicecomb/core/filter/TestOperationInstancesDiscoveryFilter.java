@@ -184,8 +184,9 @@ public class TestOperationInstancesDiscoveryFilter {
   }
 
   @Test
-  public void isGroupingFilter() {
+  public void isGroupingFilterAndEnabled() {
     Assert.assertTrue(filter.isGroupingFilter());
+    Assert.assertTrue(filter.enabled());
   }
 
   @Test

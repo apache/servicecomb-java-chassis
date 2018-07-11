@@ -212,12 +212,6 @@ public class TestLoadbalanceHandler {
     CacheEndpoint cacheEndpoint = new CacheEndpoint("rest://localhost:8080", instance1);
     ServiceCombServer server = new ServiceCombServer(restTransport, cacheEndpoint);
     LoadBalancerStats stats = new LoadBalancerStats("test");
-    new MockUp<System>() {
-      @Mock
-      long currentTimeMillis() {
-        return 123;
-      }
-    };
     new Expectations(loadBalancer) {
       {
         loadBalancer.chooseServer(invocation);
@@ -226,8 +220,6 @@ public class TestLoadbalanceHandler {
         result = stats;
       }
     };
-//    int continuousFailureCount = server.getCountinuousFailureCount();
-
     sendResponse = Response.create(Status.BAD_REQUEST, "send failed");
 
     Holder<Throwable> result = new Holder<>();
@@ -235,12 +227,10 @@ public class TestLoadbalanceHandler {
       result.value = (Throwable) resp.getResult();
     }, loadBalancer);
 
-//    Assert.assertEquals(123, server.getLastVisitTime());
     Assert.assertEquals(1,
         loadBalancer.getLoadBalancerStats().getSingleServerStat(server).getSuccessiveConnectionFailureCount());
     Assert.assertEquals("InvocationException: code=400;msg=send failed",
         result.value.getMessage());
-//    Assert.assertEquals(continuousFailureCount + 1, server.getCountinuousFailureCount());
   }
 
   @Test
@@ -250,12 +240,6 @@ public class TestLoadbalanceHandler {
     CacheEndpoint cacheEndpoint = new CacheEndpoint("rest://localhost:8080", instance1);
     ServiceCombServer server = new ServiceCombServer(restTransport, cacheEndpoint);
     LoadBalancerStats stats = new LoadBalancerStats("test");
-    new MockUp<System>() {
-      @Mock
-      long currentTimeMillis() {
-        return 123;
-      }
-    };
     new Expectations(loadBalancer) {
       {
         loadBalancer.chooseServer(invocation);
@@ -264,8 +248,6 @@ public class TestLoadbalanceHandler {
         result = stats;
       }
     };
-//    server.incrementContinuousFailureCount();
-
     sendResponse = Response.ok("success");
 
     Holder<String> result = new Holder<>();
@@ -273,11 +255,9 @@ public class TestLoadbalanceHandler {
       result.value = resp.getResult();
     }, loadBalancer);
 
-//    Assert.assertEquals(123, server.getLastVisitTime());
     Assert.assertEquals(1,
         loadBalancer.getLoadBalancerStats().getSingleServerStat(server).getActiveRequestsCount());
     Assert.assertEquals("success", result.value);
-//    Assert.assertEquals(0, server.getCountinuousFailureCount());
   }
 
   @Test

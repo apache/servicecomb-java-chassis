@@ -56,7 +56,8 @@ public class TestLoadBalanceHandler2 {
   }
 
   @Test
-  public void testZoneAwareFilterWorks(@Injectable Invocation invocation, @Mocked RegistryUtils registryUtils,
+  public void testZoneAwareAndIsolationFilterWorks(@Injectable Invocation invocation,
+      @Mocked RegistryUtils registryUtils,
       @Injectable InstanceCacheManager instanceCacheManager, @Injectable ServiceRegistry serviceRegistry,
       @Injectable TransportManager transportManager,
       @Injectable Transport transport) {
@@ -79,6 +80,7 @@ public class TestLoadBalanceHandler2 {
     allMatchEndpoint.add("rest://localhost:9090");
     allmatchInstance.setEndpoints(allMatchEndpoint);
     allmatchInstance.setDataCenterInfo(info);
+    allmatchInstance.setInstanceId("allmatchInstance");
 
     MicroserviceInstance regionMatchInstance = new MicroserviceInstance();
     info = new DataCenterInfo();
@@ -89,6 +91,7 @@ public class TestLoadBalanceHandler2 {
     regionMatchEndpoint.add("rest://localhost:9091");
     regionMatchInstance.setEndpoints(regionMatchEndpoint);
     regionMatchInstance.setDataCenterInfo(info);
+    regionMatchInstance.setInstanceId("regionMatchInstance");
 
     MicroserviceInstance noneMatchInstance = new MicroserviceInstance();
     info = new DataCenterInfo();
@@ -99,6 +102,7 @@ public class TestLoadBalanceHandler2 {
     noMatchEndpoint.add("rest://localhost:9092");
     noneMatchInstance.setEndpoints(noMatchEndpoint);
     noneMatchInstance.setDataCenterInfo(info);
+    noneMatchInstance.setInstanceId("noneMatchInstance");
 
     Map<String, MicroserviceInstance> data = new HashMap<>();
     DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent").data(data);
@@ -160,5 +164,24 @@ public class TestLoadBalanceHandler2 {
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = (ServiceCombServer) loadBalancer.chooseServer();
     Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9090");
+
+    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
+    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
+    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
+    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
+    ServiceCombLoadBalancerStats.INSTANCE.markFailure(server);
+    ServiceCombServer server2 = server;
+    loadBalancer = handler.getOrCreateLoadBalancer(invocation);
+    server = (ServiceCombServer) loadBalancer.chooseServer();
+    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9091");
+    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server2);
+    loadBalancer = handler.getOrCreateLoadBalancer(invocation);
+    server = (ServiceCombServer) loadBalancer.chooseServer();
+    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9090");
+    ServiceCombLoadBalancerStats.INSTANCE.markFailure(server2);
+    ServiceCombLoadBalancerStats.INSTANCE.markFailure(server2);
+    loadBalancer = handler.getOrCreateLoadBalancer(invocation);
+    server = (ServiceCombServer) loadBalancer.chooseServer();
+    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9091");
   }
 }

@@ -106,8 +106,6 @@
     <module>metrics</module>
     <module>dynamic-config</module>
     <module>archetypes</module>
-    <module>demo</module>
-    <module>samples</module>
   </modules>
 
   <profiles>

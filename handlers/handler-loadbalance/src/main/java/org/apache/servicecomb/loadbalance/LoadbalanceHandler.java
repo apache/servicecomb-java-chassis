@@ -239,7 +239,7 @@ public class LoadbalanceHandler implements Handler {
             ServiceCombServer server = (ServiceCombServer) s;
             chosenLB.getLoadBalancerStats().incrementNumRequests(s);
             invocation.setHandlerIndex(currentHandler); // for retry
-            invocation.setEndpoint(((ServiceCombServer) s).getEndpoint());
+            invocation.setEndpoint(server.getEndpoint());
             invocation.next(resp -> {
               if (isFailedResponse(resp)) {
                 LOGGER.error("service {}, call error, msg is {}, server is {} ",
