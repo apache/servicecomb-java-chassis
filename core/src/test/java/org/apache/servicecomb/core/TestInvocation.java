@@ -135,4 +135,13 @@ public class TestInvocation {
     Invocation invocation = new Invocation(referenceConfig, operationMeta, swaggerArguments);
     Assert.assertTrue(invocation.isConsumer());
   }
+
+  @Test
+  public void localContext(@Mocked ReferenceConfig referenceConfig) {
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, swaggerArguments);
+
+    invocation.addLocalContext("k", 1);
+    Assert.assertSame(invocation.getHandlerContext(), invocation.getLocalContext());
+    Assert.assertEquals(1, (int) invocation.getLocalContext("k"));
+  }
 }

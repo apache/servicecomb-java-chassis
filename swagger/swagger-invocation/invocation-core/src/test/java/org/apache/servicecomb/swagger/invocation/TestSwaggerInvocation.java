@@ -21,16 +21,19 @@ import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.junit.Assert;
 import org.junit.Test;
 
-import mockit.Mocked;
-
 public class TestSwaggerInvocation {
   @Test
-  public void construct_withContext(@Mocked InvocationContext parentContext) {
+  public void construct_withContext() {
+    InvocationContext parentContext = new InvocationContext();
+    parentContext.addContext("k", "v");
+    parentContext.addLocalContext("k", 1);
     ContextUtils.setInvocationContext(parentContext);
 
     try {
       SwaggerInvocation invocation = new SwaggerInvocation();
       Assert.assertSame(parentContext, invocation.getParentContext());
+      Assert.assertEquals("v", invocation.getContext("k"));
+      Assert.assertEquals(1, (int) invocation.getLocalContext("k"));
     } finally {
       ContextUtils.removeInvocationContext();
     }

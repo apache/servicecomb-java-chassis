@@ -34,6 +34,8 @@ public class InvocationContext {
   // value只能是简单类型
   protected Map<String, String> context = new HashMap<>();
 
+  protected Map<String, Object> localContext = new HashMap<>();
+
   public InvocationContext() {
     httpStatus = Status.OK;
   }
@@ -50,9 +52,8 @@ public class InvocationContext {
     context.put(key, value);
   }
 
-  @SuppressWarnings("unchecked")
-  public <T> T getContext(String key) {
-    return (T) context.get(key);
+  public String getContext(String key) {
+    return context.get(key);
   }
 
   public void addContext(InvocationContext otherContext) {
@@ -65,6 +66,31 @@ public class InvocationContext {
     }
 
     context.putAll(otherContext);
+  }
+
+  public Map<String, Object> getLocalContext() {
+    return localContext;
+  }
+
+  public void setLocalContext(Map<String, Object> localContext) {
+    this.localContext = localContext;
+  }
+
+  public void addLocalContext(String key, Object value) {
+    localContext.put(key, value);
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T> T getLocalContext(String key) {
+    return (T) localContext.get(key);
+  }
+
+  public void addLocalContext(Map<String, Object> otherContext) {
+    if (otherContext == null) {
+      return;
+    }
+
+    localContext.putAll(otherContext);
   }
 
   public StatusType getStatus() {
