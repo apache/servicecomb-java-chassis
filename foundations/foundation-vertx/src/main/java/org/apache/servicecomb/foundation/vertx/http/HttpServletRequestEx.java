@@ -27,4 +27,8 @@ public interface HttpServletRequestEx extends HttpServletRequest, BodyBufferSupp
   default void addHeader(String name, String value) {
 
   }
+
+  default void setParameter(String name, String value) {
+
+  }
 }
