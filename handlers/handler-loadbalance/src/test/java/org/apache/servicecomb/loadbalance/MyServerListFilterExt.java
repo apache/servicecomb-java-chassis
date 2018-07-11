@@ -29,18 +29,11 @@ import com.netflix.loadbalancer.Server;
  *
  */
 public class MyServerListFilterExt implements ServerListFilterExt {
-  private Invocation invocation;
-
   @Override
-  public List<Server> getFilteredListOfServers(List<Server> serverList) {
+  public List<Server> getFilteredListOfServers(List<Server> serverList, Invocation invocation) {
     if (invocation.getAppId().equals("test")) {
       return new ArrayList<>();
     }
     return serverList;
-  }
-
-  @Override
-  public void setInvocation(Invocation invocation) {
-    this.invocation = invocation;
   }
 }

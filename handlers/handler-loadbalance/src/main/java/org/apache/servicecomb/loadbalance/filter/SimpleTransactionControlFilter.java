@@ -22,9 +22,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.loadbalance.Configuration;
-import org.apache.servicecomb.loadbalance.CseServer;
+import org.apache.servicecomb.loadbalance.ServiceCombServer;
 
+import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.loadbalancer.Server;
 
 /**
@@ -34,23 +36,36 @@ import com.netflix.loadbalancer.Server;
 public class SimpleTransactionControlFilter extends TransactionControlFilter {
 
   @Override
-  public List<Server> getFilteredListOfServers(List<Server> servers) {
+  public boolean enabled() {
+    return DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.loadbalance.filter.simple.enabled", true).get();
+  }
+
+  @Override
+  public int getOrder() {
+    return 200;
+  }
+
+  @Override
+  public List<Server> getFilteredListOfServers(List<Server> servers, Invocation invocation) {
     List<Server> filteredServers = new ArrayList<>();
     Map<String, String> filterOptions =
-        Configuration.INSTANCE.getFlowsplitFilterOptions(this.microserviceName);
+        Configuration.INSTANCE.getFlowsplitFilterOptions(this.loadBalancer.getMicroServiceName());
     for (Server server : servers) {
-      if (allowVisit((CseServer) server, filterOptions)) {
+      if (allowVisit(server, filterOptions)) {
         filteredServers.add(server);
       }
     }
     return filteredServers;
   }
 
-  protected boolean allowVisit(CseServer server, Map<String, String> filterOptions) {
-    Map<String, String> propertiesMap = server.getInstance().getProperties();
-    for (Entry<String, String> entry : filterOptions.entrySet()) {
-      if (!entry.getValue().equals(propertiesMap.get(entry.getKey()))) {
-        return false;
+  protected boolean allowVisit(Server server, Map<String, String> filterOptions) {
+    if(server instanceof ServiceCombServer) {
+      Map<String, String> propertiesMap = ((ServiceCombServer)server).getInstance().getProperties();
+      for (Entry<String, String> entry : filterOptions.entrySet()) {
+        if (!entry.getValue().equals(propertiesMap.get(entry.getKey()))) {
+          return false;
+        }
       }
     }
     return true;

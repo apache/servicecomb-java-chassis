@@ -19,6 +19,7 @@ package org.apache.servicecomb.serviceregistry.discovery;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
@@ -94,9 +95,13 @@ public class DiscoveryTree {
   public void sort() {
     filters.sort(Comparator.comparingInt(DiscoveryFilter::getOrder));
 
-    LOGGER.info("sort DiscoveryFilter:");
-    for (DiscoveryFilter filter : filters) {
-      LOGGER.info("DiscoveryFilter {}.", filter.getClass().getName());
+    Iterator<DiscoveryFilter> iterator = filters.iterator();
+    while (iterator.hasNext()) {
+      DiscoveryFilter filter = iterator.next();
+      if (!filter.enabled()) {
+        iterator.remove();
+      }
+      LOGGER.info("DiscoveryFilter {}, enabled {}.", filter.getClass().getName(), filter.enabled());
     }
   }
 

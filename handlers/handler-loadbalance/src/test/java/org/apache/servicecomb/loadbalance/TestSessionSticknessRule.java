@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
 import org.junit.Assert;
 import org.junit.Test;
@@ -44,7 +45,9 @@ public class TestSessionSticknessRule {
 
     LoadBalancer mockedLb = mock(LoadBalancer.class);
     Transport transport = mock(Transport.class);
-    CseServer mockedServer = new CseServer(transport, new CacheEndpoint("rest:127.0.0.1:8889", null));
+    MicroserviceInstance instance1 = new MicroserviceInstance();
+    instance1.setInstanceId("1234");
+    ServiceCombServer mockedServer = new ServiceCombServer(transport, new CacheEndpoint("rest:127.0.0.1:8889", instance1));
     Object key = Mockito.mock(Object.class);
     LoadBalancerStats stats = mock(LoadBalancerStats.class);
     Mockito.when(mockedLb.getLoadBalancerStats()).thenReturn(stats);

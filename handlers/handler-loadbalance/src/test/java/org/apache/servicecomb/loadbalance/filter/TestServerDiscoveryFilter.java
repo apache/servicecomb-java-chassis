@@ -21,7 +21,7 @@ import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.transport.TransportManager;
-import org.apache.servicecomb.loadbalance.CseServer;
+import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.junit.After;
 import org.junit.Assert;
@@ -31,8 +31,8 @@ import org.junit.Test;
 import mockit.Expectations;
 import mockit.Mocked;
 
-public class TestCseServerDiscoveryFilter {
-  CseServerDiscoveryFilter filter = new CseServerDiscoveryFilter();
+public class TestServerDiscoveryFilter {
+  ServerDiscoveryFilter filter = new ServerDiscoveryFilter();
 
   @Mocked
   TransportManager transportManager;
@@ -59,7 +59,7 @@ public class TestCseServerDiscoveryFilter {
       }
     };
 
-    CseServer server = (CseServer) filter.createEndpoint(Const.RESTFUL, null, null);
+    ServiceCombServer server = (ServiceCombServer) filter.createEndpoint(Const.RESTFUL, null, null);
     Assert.assertNull(server);
   }
 
@@ -73,7 +73,7 @@ public class TestCseServerDiscoveryFilter {
     };
     MicroserviceInstance instance = new MicroserviceInstance();
 
-    CseServer server = (CseServer) filter.createEndpoint(Const.RESTFUL, "rest://localhost:8080", instance);
+    ServiceCombServer server = (ServiceCombServer) filter.createEndpoint(Const.RESTFUL, "rest://localhost:8080", instance);
     Assert.assertSame(instance, server.getInstance());
     Assert.assertSame(trasport, server.getEndpoint().getTransport());
     Assert.assertEquals("rest://localhost:8080", server.getEndpoint().getEndpoint());
