@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.demo.edge.service.handler;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface Auth {
-  boolean auth(String info);
+  CompletableFuture<Boolean> auth(String info);
 }
