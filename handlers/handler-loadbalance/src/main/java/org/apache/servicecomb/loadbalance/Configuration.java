@@ -215,7 +215,7 @@ public final class Configuration {
 
   public int getSingleTestTime(String microservice) {
     final int defaultValue = 60000;
-    String p = getStringProperty("10000",
+    String p = getStringProperty("60000",
         PROP_ROOT + microservice + "." + FILTER_ISOLATION + FILTER_SINGLE_TEST,
         PROP_ROOT + FILTER_ISOLATION + FILTER_SINGLE_TEST);
     try {
