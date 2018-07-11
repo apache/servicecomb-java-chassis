@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -43,6 +44,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 public class Consumer {
@@ -109,6 +112,32 @@ public class Consumer {
     checkResult("v1/dec", decV1Result, "1.1.0");
     checkResult("v2/add", addV2Result, "2.0.0");
     checkResult("v2/dec", decV2Result, "2.0.0");
+  }
+
+  public void testEncrypt() {
+    prepareEdge("encryptApi");
+    String url = edgePrefix + "/v2/encrypt";
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+    MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+    form.add("name", "userName");
+    form.add("age", "10");
+    form.add("serviceToken", "serviceTokenTest");
+    form.add("hcrId", "hcrIdTest");
+    form.add("body", "bodyKey-hcrIdTest-{\"body1\":\"b1\",\"body2\":\"b2\",\"body3\":\"b3\"}");
+
+    HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(form, headers);
+
+    @SuppressWarnings("unchecked")
+    Map<String, Object> result = (Map<String, Object>) template.postForObject(url, entity, Map.class);
+    Assert.isTrue(result.containsKey("signature"), "must exist signature");
+    result.remove("signature");
+
+    String expected = "{name=userName, age=10, userId=serviceTokenTest-userId, body1=b1, body2=b2, body3=b3}";
+    Assert.isTrue(expected.equalsIgnoreCase(result.toString()),
+        String.format("expected: %s\nreal    : %s", expected, result.toString()));
   }
 
   protected void testRecursiveSelf() {

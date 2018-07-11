@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.edge.consumer;
+package org.apache.servicecomb.demo.edge.authentication.encrypt;
 
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
+import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-public class ConsumerMain {
-  public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
+@RestSchema(schemaId = "encrypt")
+@RequestMapping(path = "auth/v1")
+public class EncryptImpl {
+  @GetMapping(path = "/queryUserId")
+  public String queryUserId(String serviceToken) {
+    return serviceToken + "-userId";
+  }
 
-    new Consumer().testEncrypt();
-
-    System.out.println("Running api dispatcher.");
-    new Consumer().run("api");
-    System.out.println("Running rest dispatcher.");
-    new Consumer().run("rest");
-    System.out.println("Running url dispatcher.");
-    new Consumer().run("url");
-
-    System.out.println("All test case finished.");
+  @GetMapping(path = "/queryHcr")
+  public Hcr queryHcr(String hcrId) {
+    Hcr hcr = new Hcr();
+    hcr.setBodyKey("bodyKey-" + hcrId + "-");
+    hcr.setSignatureKey("signatureKey-" + hcrId + "-");
+    return hcr;
   }
 }
