@@ -107,7 +107,21 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
 
   @Override
   public String getParameter(String name) {
+    if (parameterMap != null) {
+      String[] values = parameterMap.get(name);
+      return values == null ? null : values[0];
+    }
+
     return this.vertxRequest.getParam(name);
+  }
+
+  @Override
+  public Enumeration<String> getParameterNames() {
+    if (parameterMap != null) {
+      return Collections.enumeration(parameterMap.keySet());
+    }
+
+    return Collections.enumeration(this.vertxRequest.params().names());
   }
 
   @Override
@@ -133,6 +147,16 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
     }
 
     return parameterMap;
+  }
+
+  @Override
+  public void setParameter(String name, String value) {
+    if (parameterMap != null) {
+      parameterMap.put(name, new String[] {value});
+      return;
+    }
+
+    vertxRequest.params().set(name, value);
   }
 
   @Override

@@ -169,4 +169,9 @@ public class StandardHttpServletRequestEx extends HttpServletRequestWrapper impl
 
     return parameterMap;
   }
+
+  @Override
+  public void setParameter(String name, String value) {
+    getParameterMap().put(name, new String[] {value});
+  }
 }
