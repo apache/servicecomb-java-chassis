@@ -173,7 +173,7 @@ public final class Configuration {
   }
 
   public boolean isIsolationFilterOpen(String microservice) {
-    String p = getStringProperty("false",
+    String p = getStringProperty("true",
         PROP_ROOT + microservice + "." + FILTER_ISOLATION + FILTER_OPEN,
         PROP_ROOT + FILTER_ISOLATION + FILTER_OPEN);
     return Boolean.parseBoolean(p);
@@ -197,8 +197,8 @@ public final class Configuration {
   }
 
   public int getEnableRequestThreshold(String microservice) {
-    final int defaultValue = 20;
-    String p = getStringProperty("20",
+    final int defaultValue = 5;
+    String p = getStringProperty("5",
         PROP_ROOT + microservice + "." + FILTER_ISOLATION + FILTER_ENABLE_REQUEST,
         PROP_ROOT + FILTER_ISOLATION + FILTER_ENABLE_REQUEST);
     try {
@@ -214,7 +214,7 @@ public final class Configuration {
   }
 
   public int getSingleTestTime(String microservice) {
-    final int defaultValue = 10000;
+    final int defaultValue = 60000;
     String p = getStringProperty("10000",
         PROP_ROOT + microservice + "." + FILTER_ISOLATION + FILTER_SINGLE_TEST,
         PROP_ROOT + FILTER_ISOLATION + FILTER_SINGLE_TEST);
@@ -256,8 +256,8 @@ public final class Configuration {
   }
 
   public int getContinuousFailureThreshold(String microservice) {
-    final int defaultValue = 0;
-    String p = getStringProperty("0",
+    final int defaultValue = 2;
+    String p = getStringProperty("2",
         PROP_ROOT + microservice + "." + FILTER_ISOLATION + FILTER_CONTINUOUS_FAILURE_THRESHOLD,
         PROP_ROOT + FILTER_ISOLATION + FILTER_CONTINUOUS_FAILURE_THRESHOLD);
     try {

@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.servicecomb.loadbalance;
 
 import java.util.concurrent.atomic.AtomicLong;
@@ -18,6 +35,8 @@ public class ServiceCombServerStats {
 
   private long lastVisitTime = System.currentTimeMillis();
 
+  private long lastActiveTime = System.currentTimeMillis();
+
   private AtomicLong totalRequests = new AtomicLong(0L);
 
   private AtomicLong successRequests = new AtomicLong(0L);
@@ -28,6 +47,7 @@ public class ServiceCombServerStats {
     long time = System.currentTimeMillis();
     ensureWindow(time);
     lastVisitTime = time;
+    lastActiveTime = time;
     totalRequests.incrementAndGet();
     successRequests.incrementAndGet();
     continuousFailureCount.set(0);
@@ -60,6 +80,10 @@ public class ServiceCombServerStats {
     return lastVisitTime;
   }
 
+  public long getLastActiveTime() {
+    return lastActiveTime;
+  }
+
   public long getCountinuousFailureCount() {
     return continuousFailureCount.get();
   }
@@ -77,10 +101,16 @@ public class ServiceCombServerStats {
   }
 
   public int getSuccessRate() {
-    return (int)(successRequests.get() * 100 / totalRequests.get());
+    if (totalRequests.get() == 0L) {
+      return 0;
+    }
+    return (int) (successRequests.get() * 100 / totalRequests.get());
   }
 
   public int getFailedRate() {
-    return (int)(failedRequests.get() * 100 / totalRequests.get());
+    if (totalRequests.get() == 0L) {
+      return 0;
+    }
+    return (int) (failedRequests.get() * 100 / totalRequests.get());
   }
 }

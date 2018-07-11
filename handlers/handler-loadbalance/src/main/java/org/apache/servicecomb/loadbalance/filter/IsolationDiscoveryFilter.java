@@ -1,3 +1,20 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.apache.servicecomb.loadbalance.filter;
 
 import java.util.HashMap;
@@ -88,16 +105,15 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
   }
 
   private boolean allowVisit(Invocation invocation, MicroserviceInstance instance) {
-    Settings settings = createSettings(invocation);
     ServiceCombServerStats serverStats = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance);
     if (serverStats == null) {
       // first time accessed.
       return true;
     }
-
+    Settings settings = createSettings(invocation);
     if (!checkThresholdAllowed(settings, serverStats)) {
       if ((System.currentTimeMillis() - serverStats.getLastVisitTime()) > settings.singleTestTime) {
-        LOGGER.info("The Service {}'s instance {} has been break, will give a single test opportunity.",
+        LOGGER.info("The Service {}'s instance {} has been Isolated for a while, give a single test opportunity.",
             invocation.getMicroserviceName(),
             instance.getInstanceId());
         eventBus.post(new IsolationServerEvent(invocation.getMicroserviceName(), serverStats.getTotalRequests(),
@@ -108,7 +124,7 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
         return true;
       }
 
-      LOGGER.warn("The Service {}'s instance {} has been break!", invocation.getMicroserviceName(),
+      LOGGER.warn("Isolate service {}'s instance {}.", invocation.getMicroserviceName(),
           instance.getInstanceId());
       eventBus.post(
           new IsolationServerEvent(invocation.getMicroserviceName(), serverStats.getTotalRequests(),
