@@ -61,7 +61,7 @@ public class LocalProducerInvoker implements InvocationHandler {
     return invocation.getSwaggerArgument(idx);
   }
 
-  public <T> T getContext(String key) {
+  public String getContext(String key) {
     return invocation.getContext(key);
   }
 

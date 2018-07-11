@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.core;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -47,7 +46,7 @@ public class Invocation extends SwaggerInvocation {
   private Endpoint endpoint;
 
   // 只用于handler之间传递数据，是本地数据
-  private Map<String, Object> handlerContext = new HashMap<>();
+  private Map<String, Object> handlerContext = localContext;
 
   // handler链，是arrayList，可以高效地通过index访问
   private List<Handler> handlerList;
