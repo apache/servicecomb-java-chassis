@@ -20,14 +20,14 @@ package org.apache.servicecomb.loadbalance.filter;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.filter.EndpointDiscoveryFilter;
-import org.apache.servicecomb.loadbalance.CseServer;
+import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CseServerDiscoveryFilter extends EndpointDiscoveryFilter {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CseServerDiscoveryFilter.class);
+public class ServerDiscoveryFilter extends EndpointDiscoveryFilter {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ServerDiscoveryFilter.class);
 
   @Override
   protected Object createEndpoint(String transportName, String endpoint, MicroserviceInstance instance) {
@@ -37,6 +37,6 @@ public class CseServerDiscoveryFilter extends EndpointDiscoveryFilter {
       return null;
     }
 
-    return new CseServer(transport, new CacheEndpoint(endpoint, instance));
+    return new ServiceCombServer(transport, new CacheEndpoint(endpoint, instance));
   }
 }

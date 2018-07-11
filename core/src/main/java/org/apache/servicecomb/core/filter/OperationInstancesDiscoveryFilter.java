@@ -39,12 +39,20 @@ import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTreeNode;
 import org.apache.servicecomb.serviceregistry.version.VersionRule;
 import org.apache.servicecomb.serviceregistry.version.VersionRuleUtils;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 public class OperationInstancesDiscoveryFilter extends AbstractDiscoveryFilter {
   private final static String VERSION_RULE = "versionRule";
 
   @Override
   public int getOrder() {
     return -10000;
+  }
+
+  @Override
+  public boolean enabled() {
+    return DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.loadbalance.filter.operation.enabled", true).get();
   }
 
   @Override

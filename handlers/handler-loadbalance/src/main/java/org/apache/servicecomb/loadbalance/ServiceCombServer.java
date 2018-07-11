@@ -31,33 +31,23 @@ import com.netflix.loadbalancer.Server;
  * LB模块不提供服务器状态监测，这块功能是由注册中心进行处理的。
  *
  */
-public class CseServer extends Server {
+public class ServiceCombServer extends Server {
   private final Endpoint endpoint;
 
   // 所属服务实例
   private final MicroserviceInstance instance;
 
-  private long lastVisitTime = System.currentTimeMillis();
-
-  /**
-   * Count the continuous invocation failure. Once invocation successes, set this to zero.
-   */
-  private AtomicInteger continuousFailureCount = new AtomicInteger(0);
-
-  public long getLastVisitTime() {
-    return lastVisitTime;
-  }
-
-  public void setLastVisitTime(long lastVisitTime) {
-    this.lastVisitTime = lastVisitTime;
-  }
-
-  public CseServer(Transport transport, CacheEndpoint cacheEndpoint) {
+  public ServiceCombServer(Transport transport, CacheEndpoint cacheEndpoint) {
     super(null);
 
     endpoint = new Endpoint(transport, cacheEndpoint.getEndpoint(), cacheEndpoint.getInstance());
     instance = cacheEndpoint.getInstance();
 
+    // Different types of Robin Component Rule have different usages for server status and list.
+    // e.g. RoundRobinRule using getAllServers & alive & readyToServe
+    // RandomRule using getReachableServers & alive
+    // WeightedResponseTimeRule using getAllServers & alive
+    // To make all rules work only on "how to choose a server from alive servers", we do not rely on Robbin defined status
     this.setAlive(true);
     this.setReadyToServe(true);
   }
@@ -79,29 +69,16 @@ public class CseServer extends Server {
     return endpoint.getEndpoint();
   }
 
-  public void clearContinuousFailure() {
-    continuousFailureCount.set(0);
-  }
-
-  public void incrementContinuousFailureCount() {
-    if (continuousFailureCount.get() < Integer.MAX_VALUE) {
-      continuousFailureCount.incrementAndGet();
-    }
-  }
-
-  public int getCountinuousFailureCount() {
-    return continuousFailureCount.get();
-  }
-
+  // take endpoints that belongs to same instance as same server
   public boolean equals(Object o) {
-    if (o instanceof CseServer) {
-      return this.getHost().equals(((CseServer) o).getHost());
+    if (o instanceof ServiceCombServer) {
+      return this.instance.getInstanceId().equals(((ServiceCombServer) o).instance.getInstanceId());
     } else {
       return false;
     }
   }
 
   public int hashCode() {
-    return this.getHost().hashCode();
+    return this.instance.getInstanceId().hashCode();
   }
 }

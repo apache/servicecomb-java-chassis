@@ -19,6 +19,10 @@ package org.apache.servicecomb.serviceregistry.discovery;
 
 // filter is stateless
 public interface DiscoveryFilter {
+  default boolean enabled() {
+    return true;
+  }
+
   int getOrder();
 
   // grouping filter, means grouping instances to some groups

@@ -17,12 +17,13 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -30,11 +31,18 @@ import org.mockito.Mockito;
  *
  *
  */
-public class TestCseServer {
+public class TestServiceCombServer {
 
   private Transport transport = Mockito.mock(Transport.class);
 
-  private CseServer cs = new CseServer(transport, new CacheEndpoint("abcd", null));
+  private ServiceCombServer cs;
+
+  @Before
+  public void setUp() {
+    MicroserviceInstance instance = new MicroserviceInstance();
+    instance.setInstanceId("123456");
+    cs = new ServiceCombServer(transport, new CacheEndpoint("abcd", instance));
+  }
 
   @Test
   public void testCseServerObj() {
@@ -51,10 +59,14 @@ public class TestCseServer {
   public void testEqualsMethod() {
     Assert.assertFalse(cs.equals((Object) "abcd"));
 
-    CseServer other = new CseServer(transport, new CacheEndpoint("1234", null));
+    MicroserviceInstance instance1 = new MicroserviceInstance();
+    instance1.setInstanceId("1234");
+    ServiceCombServer other = new ServiceCombServer(transport, new CacheEndpoint("1234", instance1));
     Assert.assertFalse(cs.equals(other));
 
-    other = new CseServer(transport, new CacheEndpoint("abcd", null));
+    MicroserviceInstance instance2 = new MicroserviceInstance();
+    instance2.setInstanceId("123456");
+    other = new ServiceCombServer(transport, new CacheEndpoint("abcd", instance2));
     Assert.assertTrue(cs.equals(other));
   }
 
@@ -74,20 +86,5 @@ public class TestCseServer {
   public void testHashCodeMethod() {
     cs.hashCode();
     assertNotNull(cs.hashCode());
-  }
-
-  @Test
-  public void testIncrementContinuousFailureCount() {
-    int countBefore = cs.getCountinuousFailureCount();
-    cs.incrementContinuousFailureCount();
-    int countAfter = cs.getCountinuousFailureCount();
-    assertEquals(countBefore + 1, countAfter);
-  }
-
-  @Test
-  public void testClearContinuousFailure() {
-    cs.incrementContinuousFailureCount();
-    cs.clearContinuousFailure();
-    assertEquals(0, cs.getCountinuousFailureCount());
   }
 }
