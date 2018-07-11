@@ -471,4 +471,39 @@ public class TestMicroserviceRegisterTask {
     Assert.assertEquals("serviceId", microservice.getServiceId());
     Assert.assertEquals(1, taskList.size());
   }
+
+  /**
+   * There is schema in service center which is different from local schema.
+   */
+  @Test(expected = IllegalStateException.class)
+  public void testLocalSchemaAndServiceCenterSchemaDiff(@Mocked ServiceRegistryClient srClient) {
+    Microservice otherMicroservice = new Microservice();
+    otherMicroservice.setAppId(microservice.getAppId());
+    otherMicroservice.setServiceName("ms1");
+    otherMicroservice.addSchema("s1", "abcd");
+
+    List<GetSchemaResponse> list = new ArrayList<>();
+    GetSchemaResponse resp = new GetSchemaResponse();
+    resp.setSchemaId("s1");
+    resp.setSummary("c1188d709631a9038874f9efc6eb894f");
+    list.add(resp);
+    Holder<List<GetSchemaResponse>> onlineSchemasHolder = new Holder<>();
+    onlineSchemasHolder.setValue(list).setStatusCode(200);
+
+    new Expectations() {
+      {
+        srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
+        result = "serviceId";
+        srClient.getMicroservice(anyString);
+        result = otherMicroservice;
+        srClient.getSchemas(anyString);
+        result = onlineSchemasHolder;
+      }
+    };
+
+    microservice.addSchema("s1", "abdc");
+    microservice.setEnvironment("prod");
+    MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
+    registerTask.run();
+  }
 }
