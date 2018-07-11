@@ -53,6 +53,7 @@ public final class RestObjectMapper extends ObjectMapper {
     disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
     enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);
+    enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
   }
 
   public String convertToString(Object value) throws Exception {
