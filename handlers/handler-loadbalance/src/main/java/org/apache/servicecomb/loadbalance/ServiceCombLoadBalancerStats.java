@@ -17,10 +17,16 @@
 
 package org.apache.servicecomb.loadbalance;
 
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceInstancePing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +43,8 @@ public class ServiceCombLoadBalancerStats {
   private final static Logger LOGGER = LoggerFactory.getLogger(ServiceCombLoadBalancerStats.class);
 
   private static final int SERVERSTATS_EXPIRE_MINUTES = 30;
+
+  private static final long TIMER_INTERVAL_MILLIS = 10000;
 
   private static final LoadingCache<ServiceCombServer, ServiceCombServerStats> SERVER_STATES_CACHE =
       CacheBuilder.newBuilder()
@@ -57,7 +65,29 @@ public class ServiceCombLoadBalancerStats {
   public static final ServiceCombLoadBalancerStats INSTANCE = new ServiceCombLoadBalancerStats();
 
   private ServiceCombLoadBalancerStats() {
+    Timer timer = new Timer("LoadBalancerStatsTimer", true);
+    timer.schedule(new TimerTask() {
+      private MicroserviceInstancePing ping = SPIServiceUtils.getPriorityHighestService(MicroserviceInstancePing.class);
 
+      @Override
+      public void run() {
+        try {
+          Map<ServiceCombServer, ServiceCombServerStats> allServers = SERVER_STATES_CACHE.asMap();
+          Iterator<ServiceCombServer> instances = allServers.keySet().iterator();
+          while (instances.hasNext()) {
+            ServiceCombServer server = instances.next();
+            // will not cause reload
+            ServiceCombServerStats stats = allServers.get(server);
+            if ((System.currentTimeMillis() - stats.getLastVisitTime() < TIMER_INTERVAL_MILLIS) && !ping
+                .ping(server.getInstance())) {
+              markFailure(server);
+            }
+          }
+        } catch (Throwable e) {
+          LOGGER.warn("LoadBalancerStatsTimer error.", e);
+        }
+      }
+    }, TIMER_INTERVAL_MILLIS, TIMER_INTERVAL_MILLIS);
   }
 
   public void markSuccess(ServiceCombServer server) {

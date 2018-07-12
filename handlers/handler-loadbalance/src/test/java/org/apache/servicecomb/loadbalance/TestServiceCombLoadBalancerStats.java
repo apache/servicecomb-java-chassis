@@ -83,5 +83,20 @@ public class TestServiceCombLoadBalancerStats {
         ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance).getLastVisitTime() <= System
             .currentTimeMillis()
             && ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance).getLastVisitTime() >= time);
+
+    // time consuming test for timers, taking about 20 seconds. ping timer will update instance status to failure
+    Assert.assertTrue(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance).getFailedRate() <= 50);
+    long beginTime = System.currentTimeMillis();
+    long rate = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance).getFailedRequests();
+    while (rate <= 20 &&
+        System.currentTimeMillis() - beginTime <= 30000) {
+      Thread.sleep(2000);
+      rate = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance).getFailedRequests();
+      System.out.println("XXXTTTTT1" + rate);
+    }
+
+    Assert.assertTrue(System.currentTimeMillis() - beginTime < 30000);
+    Assert
+        .assertTrue(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance).getFailedRequests() > 20);
   }
 }
