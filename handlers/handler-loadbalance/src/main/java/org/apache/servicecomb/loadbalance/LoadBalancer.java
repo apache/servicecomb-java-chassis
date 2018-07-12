@@ -41,7 +41,6 @@ public class LoadBalancer extends AbstractLoadBalancer {
       LoadBalancerStats stats) {
     this.microServiceName = microServiceName;
     this.rule = rule;
-    this.rule.setLoadBalancer(this);
     this.lbStats = stats;
   }
 
@@ -56,6 +55,9 @@ public class LoadBalancer extends AbstractLoadBalancer {
 
   @Override
   public Server chooseServer(Object key) {
+    // rule is shared across loadbalancers, so it will get concurrent access problems that it's owned loadbalancer is
+    // not 'this', but this is fine to use other loadbalancer instances only when serverList is correctly set
+    this.rule.setLoadBalancer(this);
     return rule.choose(key);
   }
 
