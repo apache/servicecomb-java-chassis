@@ -16,9 +16,18 @@
  */
 package org.apache.servicecomb.serviceregistry.task;
 
+import static org.junit.Assert.assertNotNull;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Appender;
+import org.apache.log4j.Layout;
+import org.apache.log4j.Logger;
+import org.apache.log4j.SimpleLayout;
+import org.apache.log4j.WriterAppender;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
@@ -475,8 +484,9 @@ public class TestMicroserviceRegisterTask {
   /**
    * There is schema in service center which is different from local schema.
    */
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void testLocalSchemaAndServiceCenterSchemaDiff(@Mocked ServiceRegistryClient srClient) {
+
     Microservice otherMicroservice = new Microservice();
     otherMicroservice.setAppId(microservice.getAppId());
     otherMicroservice.setServiceName("ms1");
@@ -498,12 +508,36 @@ public class TestMicroserviceRegisterTask {
         result = otherMicroservice;
         srClient.getSchemas(anyString);
         result = onlineSchemasHolder;
+        srClient.getSchema(anyString, anyString);
+        result = "abcdefghijklmn";
       }
     };
 
-    microservice.addSchema("s1", "abdc");
+    microservice.addSchema("s1", "abcdefghijklmnopqrstuvwxyz");
     microservice.setEnvironment("prod");
     MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
-    registerTask.run();
+
+    Logger logger = Logger.getLogger(MicroserviceRegisterTask.class);
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    Layout layout = new SimpleLayout();
+    Appender appender = new WriterAppender(layout, out);
+    logger.addAppender(appender);
+    Boolean isIlleagalException = false;
+
+    try {
+      registerTask.run();
+    } catch (IllegalStateException exception) {
+      isIlleagalException = true;
+      String logMsg = out.toString();
+      assertNotNull(logMsg);
+      Assert.assertTrue(logMsg.contains("service center schema:"));
+      Assert.assertTrue(logMsg.contains("abcdefghijklmn"));
+      Assert.assertTrue(logMsg.contains("local schema:"));
+      Assert.assertTrue(logMsg.contains("abcdefghijklmnopqrstuvwxyz"));
+      Assert.assertTrue(logMsg.contains("The difference in local schema:"));
+      Assert.assertTrue(logMsg.contains("opqrstuvwxyz"));
+    }
+
+    Assert.assertEquals(true, isIlleagalException);
   }
 }
