@@ -142,7 +142,7 @@ public class LoadbalanceHandler implements Handler {
     invocation.next(resp -> {
       // this stats is for WeightedResponseTimeRule
       chosenLB.getLoadBalancerStats().noteResponseTime(server, (System.currentTimeMillis() - time));
-      if (resp.isFailed()) {
+      if (isFailedResponse(resp)) {
         chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(server);
         ServiceCombLoadBalancerStats.INSTANCE.markFailure(server);
       } else {
