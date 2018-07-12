@@ -29,6 +29,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -39,6 +41,8 @@ import org.springframework.web.client.RestTemplate;
 import com.netflix.config.DynamicPropertyFactory;
 
 public class DynamicConfigurationIT {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DynamicConfigurationIT.class);
+
   private static String url;
 
   private static String token;
@@ -84,6 +88,7 @@ public class DynamicConfigurationIT {
 
   @Test
   public void testDynamicConfiguration() {
+    LOGGER.info("testDynamicConfiguration starting");
     //before
     Assert.assertEquals(DynamicPropertyFactory.getInstance().getStringProperty("loadbalcance", "default").getValue(),
         "default");
@@ -116,5 +121,7 @@ public class DynamicConfigurationIT {
     await().atMost(5, SECONDS).until(
         () -> DynamicPropertyFactory.getInstance().getStringProperty("loadbalance", "default").getValue()
             .equals("random"));
+
+    LOGGER.info("testDynamicConfiguration end");
   }
 }
