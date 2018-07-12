@@ -19,7 +19,6 @@ package org.apache.servicecomb.serviceregistry.task;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
