@@ -33,10 +33,10 @@ import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.Holder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.apache.commons.lang3.StringUtils;
 
 public class MicroserviceRegisterTask extends AbstractRegisterTask {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceRegisterTask.class);
@@ -191,7 +191,9 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
     GetSchemaResponse scSchema = scSchemaMap.get(localSchemaEntry.getKey());
 
     boolean onlineSchemaExists = scSchema != null;
-    LOGGER.info("schemaId [{}] exists [{}], summary exists [{}]", localSchemaEntry.getKey(), onlineSchemaExists,
+    LOGGER.info("schemaId [{}] exists [{}], summary exists [{}]",
+        localSchemaEntry.getKey(),
+        onlineSchemaExists,
         scSchema != null && scSchema.getSummary() != null);
     if (!onlineSchemaExists) {
       // local > sc
@@ -250,8 +252,24 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
       if (onlineSchemaIsModifiable()) {
         LOGGER.info(
             "schema[{}]'s content is changed and the current environment is [{}], so re-register it!",
-            localSchemaEntry.getKey(), ServiceCombConstants.DEVELOPMENT_SERVICECOMB_ENV);
+            localSchemaEntry.getKey(),
+            ServiceCombConstants.DEVELOPMENT_SERVICECOMB_ENV);
         return registerSingleSchema(localSchemaEntry.getKey(), localSchemaEntry.getValue());
+      }
+
+      //if local schema and service center schema is different then print the both schemas and print difference in local schema.
+      String scSchemaContent = srClient.getSchema(microservice.getServiceId(), scSchema.getSchemaId());
+      String localSchemaContent = localSchemaEntry.getValue();
+
+      LOGGER.warn(
+          "service center schema and local schema both are different:\n service center schema:\n[{}\n local schema:\n[{}]",
+          scSchemaContent,
+          localSchemaContent);
+      String diffStringLocal = StringUtils.difference(scSchemaContent, localSchemaContent);
+      if (diffStringLocal.equals("")) {
+        LOGGER.warn("Some APIs are deleted in local schema which are present in service center schema \n");
+      } else {
+        LOGGER.warn("The difference in local schema:\n[{}]", diffStringLocal);
       }
 
       // env is not development, throw an exception and break the init procedure
@@ -307,7 +325,7 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
 
       // Currently nothing to do but print a warning
       LOGGER.warn("There are schemas only existing in service center: {}, which means there are interfaces changed. "
-              + "It's recommended to increment microservice version before deploying.",
+          + "It's recommended to increment microservice version before deploying.",
           scSchemaMap.keySet());
       LOGGER.warn("ATTENTION: The schemas in new version are less than the old version, "
           + "which may cause compatibility problems.");

@@ -18,13 +18,17 @@ package org.apache.servicecomb.serviceregistry.task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.log4j.spi.LoggingEvent;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.Holder;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,8 +46,11 @@ public class TestMicroserviceRegisterTask {
 
   private List<MicroserviceRegisterTask> taskList;
 
+  LogCollector collector;
+
   @Before
   public void setup() {
+    collector = new LogCollector();
     eventBus = new EventBus();
 
     taskList = new ArrayList<>();
@@ -59,6 +66,11 @@ public class TestMicroserviceRegisterTask {
     microservice.setServiceName("ms");
 
     microservice.setInstance(new MicroserviceInstance());
+  }
+
+  @After
+  public void teardown() {
+    collector.teardown();
   }
 
   @Test
@@ -470,5 +482,227 @@ public class TestMicroserviceRegisterTask {
     Assert.assertEquals(true, registerTask.isSchemaIdSetMatch());
     Assert.assertEquals("serviceId", microservice.getServiceId());
     Assert.assertEquals(1, taskList.size());
+  }
+
+  /**
+   * There is schema in service center which is different from local schema.
+   */
+  @Test
+  public void testLocalSchemaAndServiceCenterSchemaDiff(@Mocked ServiceRegistryClient srClient) {
+
+    Microservice otherMicroservice = new Microservice();
+    otherMicroservice.setAppId(microservice.getAppId());
+    otherMicroservice.setServiceName("ms1");
+    otherMicroservice.addSchema("s1", "abcd");
+
+    List<GetSchemaResponse> list = new ArrayList<>();
+    GetSchemaResponse resp = new GetSchemaResponse();
+    resp.setSchemaId("s1");
+    resp.setSummary("c1188d709631a9038874f9efc6eb894f");
+    list.add(resp);
+    Holder<List<GetSchemaResponse>> onlineSchemasHolder = new Holder<>();
+    onlineSchemasHolder.setValue(list).setStatusCode(200);
+
+    new Expectations() {
+      {
+        srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
+        result = "serviceId";
+        srClient.getMicroservice(anyString);
+        result = otherMicroservice;
+        srClient.getSchemas(anyString);
+        result = onlineSchemasHolder;
+        srClient.getSchema(anyString, anyString);
+        result = "swagger: \"2.0\"\n" +
+            "info:\n" +
+            "  version: \"1.0.0\"\n" +
+            "  title: \"swagger definition for org.apache.servicecomb.demo.jaxrs.server.RequestClientTimeOut\"\n" +
+            "  x-java-interface: \"cse.gen.jaxrstest.jaxrs.clientreqtimeout.RequestClientTimeOutIntf\"\n" +
+            "basePath: \"/clientreqtimeout\"\n" +
+            "consumes:\n" +
+            "- \"application/json\"\n" +
+            "produces:\n" +
+            "- \"application/json\"\n" +
+            "paths:\n" +
+            "  /sayhello:\n" +
+            "    post:\n" +
+            "      operationId: \"sayHello\"\n" +
+            "      parameters:\n" +
+            "      - in: \"body\"\n" +
+            "        name: \"student\"\n" +
+            "        required: false\n" +
+            "        schema:\n" +
+            "          $ref: \"#/definitions/Student\"\n" +
+            "      responses:\n" +
+            "        200:\n" +
+            "          description: \"response of 200\"\n" +
+            "          schema:\n" +
+            "            $ref: \"#/definitions/Student\"\n" +
+            "definitions:\n" +
+            "  Student:\n" +
+            "    type: \"object\"\n" +
+            "    required:\n" +
+            "    - \"name\"\n" +
+            "    properties:\n" +
+            "      name:\n" +
+            "        type: \"string\"\n" +
+            "      age:\n" +
+            "        type: \"integer\"\n" +
+            "        format: \"int32\"\n" +
+            "        maximum: 20\n" +
+            "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"";
+      }
+    };
+
+    microservice.addSchema("s1",
+        "swagger: \"2.0\"\n" +
+            "info:\n" +
+            "  version: \"1.0.0\"\n" +
+            "  title: \"swagger definition for org.apache.servicecomb.demo.jaxrs.server.RequestClientTimeOut\"\n" +
+            "  x-java-interface: \"cse.gen.jaxrstest.jaxrs.clientreqtimeout.RequestClientTimeOutIntf\"\n" +
+            "basePath: \"/clientreqtimeout\"\n" +
+            "consumes:\n" +
+            "- \"application/json\"\n" +
+            "produces:\n" +
+            "- \"application/json\"\n" +
+            "paths:\n" +
+            "  /sayhello:\n" +
+            "    post:\n" +
+            "      operationId: \"sayHello\"\n" +
+            "      parameters:\n" +
+            "      - in: \"body\"\n" +
+            "        name: \"student\"\n" +
+            "        required: false\n" +
+            "        schema:\n" +
+            "          $ref: \"#/definitions/Student\"\n" +
+            "      responses:\n" +
+            "        200:\n" +
+            "          description: \"response of 200\"\n" +
+            "          schema:\n" +
+            "            type: \"string\"\n" +
+            "definitions:\n" +
+            "  Student:\n" +
+            "    type: \"object\"\n" +
+            "    required:\n" +
+            "    - \"name\"\n" +
+            "    properties:\n" +
+            "      name:\n" +
+            "        type: \"string\"\n" +
+            "      age:\n" +
+            "        type: \"integer\"\n" +
+            "        format: \"int32\"\n" +
+            "        maximum: 20\n" +
+            "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"");
+    microservice.setEnvironment("prod");
+    MicroserviceRegisterTask registerTask = new MicroserviceRegisterTask(eventBus, srClient, microservice);
+
+    Boolean isIlleagalException = false;
+
+    try {
+      registerTask.run();
+    } catch (IllegalStateException exception) {
+      isIlleagalException = true;
+      List<LoggingEvent> events = collector.getEvents().stream().filter(e -> {
+        return MicroserviceRegisterTask.class.getName().equals(e.getLoggerName());
+      }).collect(Collectors.toList());
+
+      Assert.assertEquals("service center schema and local schema both are different:\n" +
+          " service center schema:\n" +
+          "[swagger: \"2.0\"\n" +
+          "info:\n" +
+          "  version: \"1.0.0\"\n" +
+          "  title: \"swagger definition for org.apache.servicecomb.demo.jaxrs.server.RequestClientTimeOut\"\n" +
+          "  x-java-interface: \"cse.gen.jaxrstest.jaxrs.clientreqtimeout.RequestClientTimeOutIntf\"\n" +
+          "basePath: \"/clientreqtimeout\"\n" +
+          "consumes:\n" +
+          "- \"application/json\"\n" +
+          "produces:\n" +
+          "- \"application/json\"\n" +
+          "paths:\n" +
+          "  /sayhello:\n" +
+          "    post:\n" +
+          "      operationId: \"sayHello\"\n" +
+          "      parameters:\n" +
+          "      - in: \"body\"\n" +
+          "        name: \"student\"\n" +
+          "        required: false\n" +
+          "        schema:\n" +
+          "          $ref: \"#/definitions/Student\"\n" +
+          "      responses:\n" +
+          "        200:\n" +
+          "          description: \"response of 200\"\n" +
+          "          schema:\n" +
+          "            $ref: \"#/definitions/Student\"\n" +
+          "definitions:\n" +
+          "  Student:\n" +
+          "    type: \"object\"\n" +
+          "    required:\n" +
+          "    - \"name\"\n" +
+          "    properties:\n" +
+          "      name:\n" +
+          "        type: \"string\"\n" +
+          "      age:\n" +
+          "        type: \"integer\"\n" +
+          "        format: \"int32\"\n" +
+          "        maximum: 20\n" +
+          "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"\n" +
+          " local schema:\n" +
+          "[swagger: \"2.0\"\n" +
+          "info:\n" +
+          "  version: \"1.0.0\"\n" +
+          "  title: \"swagger definition for org.apache.servicecomb.demo.jaxrs.server.RequestClientTimeOut\"\n" +
+          "  x-java-interface: \"cse.gen.jaxrstest.jaxrs.clientreqtimeout.RequestClientTimeOutIntf\"\n" +
+          "basePath: \"/clientreqtimeout\"\n" +
+          "consumes:\n" +
+          "- \"application/json\"\n" +
+          "produces:\n" +
+          "- \"application/json\"\n" +
+          "paths:\n" +
+          "  /sayhello:\n" +
+          "    post:\n" +
+          "      operationId: \"sayHello\"\n" +
+          "      parameters:\n" +
+          "      - in: \"body\"\n" +
+          "        name: \"student\"\n" +
+          "        required: false\n" +
+          "        schema:\n" +
+          "          $ref: \"#/definitions/Student\"\n" +
+          "      responses:\n" +
+          "        200:\n" +
+          "          description: \"response of 200\"\n" +
+          "          schema:\n" +
+          "            type: \"string\"\n" +
+          "definitions:\n" +
+          "  Student:\n" +
+          "    type: \"object\"\n" +
+          "    required:\n" +
+          "    - \"name\"\n" +
+          "    properties:\n" +
+          "      name:\n" +
+          "        type: \"string\"\n" +
+          "      age:\n" +
+          "        type: \"integer\"\n" +
+          "        format: \"int32\"\n" +
+          "        maximum: 20\n" +
+          "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"]", events.get(4).getMessage());
+
+      Assert.assertEquals("The difference in local schema:\n" +
+          "[type: \"string\"\n" +
+          "definitions:\n" +
+          "  Student:\n" +
+          "    type: \"object\"\n" +
+          "    required:\n" +
+          "    - \"name\"\n" +
+          "    properties:\n" +
+          "      name:\n" +
+          "        type: \"string\"\n" +
+          "      age:\n" +
+          "        type: \"integer\"\n" +
+          "        format: \"int32\"\n" +
+          "        maximum: 20\n" +
+          "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"]", events.get(5).getMessage());
+
+    }
+
+    Assert.assertEquals(true, isIlleagalException);
   }
 }
