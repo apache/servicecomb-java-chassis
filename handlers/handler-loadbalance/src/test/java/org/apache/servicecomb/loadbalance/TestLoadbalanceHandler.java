@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.loadbalance;
 
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -206,7 +207,7 @@ public class TestLoadbalanceHandler {
   }
 
   @Test
-  public void send_failed(@Injectable LoadBalancer loadBalancer) {
+  public void send_failed2(@Injectable LoadBalancer loadBalancer) {
     MicroserviceInstance instance1 = new MicroserviceInstance();
     instance1.setInstanceId("1234");
     CacheEndpoint cacheEndpoint = new CacheEndpoint("rest://localhost:8080", instance1);
@@ -227,9 +228,38 @@ public class TestLoadbalanceHandler {
       result.value = (Throwable) resp.getResult();
     }, loadBalancer);
 
-    Assert.assertEquals(1,
+    // InvocationException is not taken as a failure
+    Assert.assertEquals(0,
         loadBalancer.getLoadBalancerStats().getSingleServerStat(server).getSuccessiveConnectionFailureCount());
     Assert.assertEquals("InvocationException: code=400;msg=send failed",
+        result.value.getMessage());
+  }
+
+  @Test
+  public void send_failed(@Injectable LoadBalancer loadBalancer) {
+    MicroserviceInstance instance1 = new MicroserviceInstance();
+    instance1.setInstanceId("1234");
+    CacheEndpoint cacheEndpoint = new CacheEndpoint("rest://localhost:8080", instance1);
+    ServiceCombServer server = new ServiceCombServer(restTransport, cacheEndpoint);
+    LoadBalancerStats stats = new LoadBalancerStats("test");
+    new Expectations(loadBalancer) {
+      {
+        loadBalancer.chooseServer(invocation);
+        result = server;
+        loadBalancer.getLoadBalancerStats();
+        result = stats;
+      }
+    };
+    sendResponse = Response.consumerFailResp(new SocketException());
+
+    Holder<Throwable> result = new Holder<>();
+    Deencapsulation.invoke(handler, "send", invocation, (AsyncResponse) resp -> {
+      result.value = (Throwable) resp.getResult();
+    }, loadBalancer);
+
+    Assert.assertEquals(1,
+        loadBalancer.getLoadBalancerStats().getSingleServerStat(server).getSuccessiveConnectionFailureCount());
+    Assert.assertEquals("InvocationException: code=490;msg=CommonExceptionData [message=Cse Internal Bad Request]",
         result.value.getMessage());
   }
 
