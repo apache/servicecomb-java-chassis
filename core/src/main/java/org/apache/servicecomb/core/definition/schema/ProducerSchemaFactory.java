@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.core.definition.schema;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -41,6 +43,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
 import io.swagger.util.Yaml;
 
@@ -79,7 +82,8 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
 
     SchemaMeta schemaMeta = getOrCreateSchema(context);
 
-    SwaggerProducer producer = swaggerEnv.createProducer(producerInstance, schemaMeta.getSwaggerIntf());
+    SwaggerProducer producer = swaggerEnv.createProducer(producerInstance, schemaMeta.getSwaggerIntf(),
+        convertSwaggerOperationMap(schemaMeta));
     Executor reactiveExecutor = BeanUtils.getBean(ExecutorManager.EXECUTOR_REACTIVE);
     for (OperationMeta operationMeta : schemaMeta.getOperations()) {
       SwaggerProducerOperation producerOperation = producer.findOperation(operationMeta.getOperationId());
@@ -91,6 +95,13 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
     }
 
     return schemaMeta;
+  }
+
+  private Map<String, Operation> convertSwaggerOperationMap(SchemaMeta schemaMeta) {
+    Map<String, Operation> operationMap = new LinkedHashMap<>(schemaMeta.getOperations().size());
+    schemaMeta.getOperations().forEach(
+        operationMeta -> operationMap.put(operationMeta.getOperationId(), operationMeta.getSwaggerOperation()));
+    return operationMap;
   }
 
   protected SchemaMeta createSchema(ProducerSchemaContext context) {

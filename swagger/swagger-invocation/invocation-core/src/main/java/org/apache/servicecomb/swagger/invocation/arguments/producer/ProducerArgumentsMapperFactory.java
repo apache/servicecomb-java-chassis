@@ -33,7 +33,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ProducerArgumentsMapperFactory extends ArgumentsMapperFactory {
+public class ProducerArgumentsMapperFactory extends ArgumentsMapperFactory<ProducerArgumentsMapper> {
   public ProducerArgumentsMapperFactory() {
     type = InvocationType.PRODUCER;
   }
@@ -46,8 +46,9 @@ public class ProducerArgumentsMapperFactory extends ArgumentsMapperFactory {
 
   @SuppressWarnings("unchecked")
   @Override
-  protected <T> T createArgumentsMapper(ArgumentsMapperConfig config) {
-    return (T) new ProducerArgumentsMapper(config.getArgumentMapperList(),
+  public ProducerArgumentsMapper createArgumentsMapper(ArgumentsMapperConfig config) {
+    collectArgumentsMapper(config);
+    return new ProducerArgumentsMapper(config.getArgumentMapperList(),
         config.getProviderMethod().getParameterCount());
   }
 

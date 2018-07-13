@@ -20,6 +20,7 @@ import java.util.Arrays;
 
 import org.apache.servicecomb.swagger.engine.SwaggerBootstrap;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
+import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapperFactory;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerInvocationContextMapperFactory;
 import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapperFactory;
@@ -43,6 +44,7 @@ public class BootstrapNormal implements SwaggerBootstrap {
     env.setConsumerArgumentsFactory(consumerArgumentsFactory);
 
     env.setConverterMgr(converterMgr);
+    env.setCompositeSwaggerGeneratorContext(new CompositeSwaggerGeneratorContext());
 
     return env;
   }
