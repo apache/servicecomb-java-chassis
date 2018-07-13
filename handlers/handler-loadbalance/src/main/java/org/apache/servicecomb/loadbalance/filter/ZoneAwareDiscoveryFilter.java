@@ -105,7 +105,11 @@ public class ZoneAwareDiscoveryFilter extends AbstractDiscoveryFilter {
   }
 
   private boolean regionAndAZMatch(MicroserviceInstance myself, MicroserviceInstance target) {
-    if (myself.getDataCenterInfo() != null && target.getDataCenterInfo() != null) {
+    if (myself.getDataCenterInfo() == null) {
+      // when instance have no datacenter info, it will match all other datacenters
+      return true;
+    }
+    if (target.getDataCenterInfo() != null) {
       return myself.getDataCenterInfo().getRegion().equals(target.getDataCenterInfo().getRegion()) &&
           myself.getDataCenterInfo().getAvailableZone().equals(target.getDataCenterInfo().getAvailableZone());
     }
@@ -113,7 +117,7 @@ public class ZoneAwareDiscoveryFilter extends AbstractDiscoveryFilter {
   }
 
   private boolean regionMatch(MicroserviceInstance myself, MicroserviceInstance target) {
-    if (myself.getDataCenterInfo() != null && target.getDataCenterInfo() != null) {
+    if (target.getDataCenterInfo() != null) {
       return myself.getDataCenterInfo().getRegion().equals(target.getDataCenterInfo().getRegion());
     }
     return false;
