@@ -42,7 +42,7 @@ import com.google.common.cache.RemovalNotification;
 public class ServiceCombLoadBalancerStats {
   private final static Logger LOGGER = LoggerFactory.getLogger(ServiceCombLoadBalancerStats.class);
 
-  private static final int SERVERSTATS_EXPIRE_MINUTES = 30;
+  private static final int SERVERSTATS_EXPIRE_MINUTES = 10;
 
   private static final long TIMER_INTERVAL_MILLIS = 10000;
 
@@ -80,6 +80,7 @@ public class ServiceCombLoadBalancerStats {
             ServiceCombServerStats stats = allServers.get(server);
             if ((System.currentTimeMillis() - stats.getLastVisitTime() < TIMER_INTERVAL_MILLIS) && !ping
                 .ping(server.getInstance())) {
+              LOGGER.info("ping mark server {} failure.", server.getInstance().getInstanceId());
               markFailure(server);
             }
           }
@@ -88,6 +89,14 @@ public class ServiceCombLoadBalancerStats {
         }
       }
     }, TIMER_INTERVAL_MILLIS, TIMER_INTERVAL_MILLIS);
+  }
+
+  public void markIsolated(ServiceCombServer server, boolean isolated) {
+    try {
+      SERVER_STATES_CACHE.get(server).markIsolated(isolated);
+    } catch (ExecutionException e) {
+      LOGGER.error("Not expected to happen, maybe a bug.", e);
+    }
   }
 
   public void markSuccess(ServiceCombServer server) {
@@ -106,14 +115,19 @@ public class ServiceCombLoadBalancerStats {
     }
   }
 
-  public ServiceCombServerStats getServiceCombServerStats(MicroserviceInstance instance) {
+  public ServiceCombServerStats getServiceCombServerStats(ServiceCombServer server) {
+    try {
+      return SERVER_STATES_CACHE.get(server);
+    } catch (ExecutionException e) {
+      LOGGER.error("Not expected to happen, maybe a bug.", e);
+      return null;
+    }
+  }
+
+  public ServiceCombServer getServiceCombServer(MicroserviceInstance instance) {
     for (ServiceCombServer server : SERVER_STATES_CACHE.asMap().keySet()) {
       if (server.getInstance().equals(instance)) {
-        try {
-          return SERVER_STATES_CACHE.get(server);
-        } catch (ExecutionException e) {
-          LOGGER.error("Not expected to happen, maybe a bug.", e);
-        }
+        return server;
       }
     }
     return null;

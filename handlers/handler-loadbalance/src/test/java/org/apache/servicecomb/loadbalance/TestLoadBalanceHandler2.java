@@ -26,7 +26,6 @@ import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.transport.TransportManager;
-import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
@@ -135,16 +134,11 @@ public class TestLoadBalanceHandler2 {
     LoadBalancer loadBalancer = null;
     ServiceCombServer server = null;
     boolean failed = false;
-    try {
-      handler = new LoadbalanceHandler();
-      loadBalancer = handler.getOrCreateLoadBalancer(invocation);
-      server = (ServiceCombServer) loadBalancer.chooseServer();
-    } catch (ServiceCombException e) {
-      failed = true;
-      Assert.assertEquals(e.getMessage(),
-          "org.apache.servicecomb.loadbalance.filter.ZoneAwareDiscoveryFilter discovery return null.");
-    }
-    Assert.assertTrue(failed);
+
+    handler = new LoadbalanceHandler();
+    loadBalancer = handler.getOrCreateLoadBalancer(invocation);
+    server = (ServiceCombServer) loadBalancer.chooseServer();
+    Assert.assertEquals(server, null);
 
     data.put("noneMatchInstance", noneMatchInstance);
     parent.cacheVersion(1);

@@ -39,19 +39,19 @@ public class TestServiceCombLoadBalancerStats {
     ServiceCombLoadBalancerStats.INSTANCE.markFailure(serviceCombServer);
     ServiceCombLoadBalancerStats.INSTANCE.markFailure(serviceCombServer);
     Assert.assertEquals(
-        ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance).getCountinuousFailureCount(), 2);
+        ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getCountinuousFailureCount(), 2);
     ServiceCombLoadBalancerStats.INSTANCE.markSuccess(serviceCombServer);
     Assert.assertEquals(
-        ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance).getCountinuousFailureCount(), 0);
+        ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getCountinuousFailureCount(), 0);
     ServiceCombLoadBalancerStats.INSTANCE.markSuccess(serviceCombServer);
     Assert
-        .assertEquals(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance).getTotalRequests(), 4);
-    Assert.assertEquals(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance).getFailedRate(), 50);
-    Assert.assertEquals(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance).getSuccessRate(), 50);
+        .assertEquals(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getTotalRequests(), 4);
+    Assert.assertEquals(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getFailedRate(), 50);
+    Assert.assertEquals(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getSuccessRate(), 50);
     Assert.assertTrue(
-        ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance).getLastVisitTime() <= System
+        ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getLastVisitTime() <= System
             .currentTimeMillis()
-            && ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance).getLastVisitTime() >= time);
+            && ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getLastVisitTime() >= time);
   }
 
   @Test
@@ -75,28 +75,29 @@ public class TestServiceCombLoadBalancerStats {
       }.start();
     }
     latch.await(30, TimeUnit.SECONDS);
-    Assert.assertEquals(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance).getTotalRequests(),
+    Assert.assertEquals(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getTotalRequests(),
         4 * 10);
-    Assert.assertEquals(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance).getFailedRate(), 50);
-    Assert.assertEquals(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance).getSuccessRate(), 50);
+    Assert.assertEquals(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getFailedRate(), 50);
+    Assert.assertEquals(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getSuccessRate(), 50);
+    Assert.assertEquals(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getSuccessRequests(), 20);
     Assert.assertTrue(
-        ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance).getLastVisitTime() <= System
+        ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getLastVisitTime() <= System
             .currentTimeMillis()
-            && ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance).getLastVisitTime() >= time);
+            && ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getLastVisitTime() >= time);
 
     // time consuming test for timers, taking about 20 seconds. ping timer will update instance status to failure
-    Assert.assertTrue(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance).getFailedRate() <= 50);
+    Assert.assertTrue(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getFailedRate() <= 50);
     long beginTime = System.currentTimeMillis();
-    long rate = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance).getFailedRequests();
+    long rate = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getFailedRequests();
     while (rate <= 20 &&
         System.currentTimeMillis() - beginTime <= 30000) {
       Thread.sleep(2000);
-      rate = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance).getFailedRequests();
+      rate = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getFailedRequests();
       System.out.println("XXXTTTTT1" + rate);
     }
 
     Assert.assertTrue(System.currentTimeMillis() - beginTime < 30000);
     Assert
-        .assertTrue(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance).getFailedRequests() > 20);
+        .assertTrue(ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getFailedRequests() > 20);
   }
 }

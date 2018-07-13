@@ -25,6 +25,7 @@ import org.apache.servicecomb.foundation.common.event.AlarmEvent.Type;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.loadbalance.Configuration;
 import org.apache.servicecomb.loadbalance.ServiceCombLoadBalancerStats;
+import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.loadbalance.ServiceCombServerStats;
 import org.apache.servicecomb.loadbalance.event.IsolationServerEvent;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
@@ -105,34 +106,45 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
   }
 
   private boolean allowVisit(Invocation invocation, MicroserviceInstance instance) {
-    ServiceCombServerStats serverStats = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(instance);
-    if (serverStats == null) {
+    ServiceCombServer server = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServer(instance);
+    if (server == null) {
       // first time accessed.
       return true;
     }
+    ServiceCombServerStats serverStats = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(server);
     Settings settings = createSettings(invocation);
     if (!checkThresholdAllowed(settings, serverStats)) {
       if ((System.currentTimeMillis() - serverStats.getLastVisitTime()) > settings.singleTestTime) {
-        LOGGER.info("The Service {}'s instance {} has been Isolated for a while, give a single test opportunity.",
+        // because we will ping server status, this logic may not be very likely to happen.
+        LOGGER.info("The Service {}'s instance {} has been isolated for a while, give a single test opportunity.",
             invocation.getMicroserviceName(),
             instance.getInstanceId());
-        eventBus.post(new IsolationServerEvent(invocation.getMicroserviceName(), serverStats.getTotalRequests(),
-            serverStats.getCountinuousFailureCount(),
-            serverStats.getFailedRate(),
-            settings.continuousFailureThreshold, settings.errorThresholdPercentage, settings.enableRequestThreshold,
-            settings.singleTestTime, Type.CLOSE));
         return true;
       }
 
-      LOGGER.warn("Isolate service {}'s instance {}.", invocation.getMicroserviceName(),
-          instance.getInstanceId());
-      eventBus.post(
-          new IsolationServerEvent(invocation.getMicroserviceName(), serverStats.getTotalRequests(),
-              serverStats.getCountinuousFailureCount(),
-              serverStats.getFailedRate(),
-              settings.continuousFailureThreshold, settings.errorThresholdPercentage, settings.enableRequestThreshold,
-              settings.singleTestTime, Type.OPEN));
+      if (!serverStats.isIsolated()) {
+        LOGGER.warn("Isolate service {}'s instance {}.", invocation.getMicroserviceName(),
+            instance.getInstanceId());
+        eventBus.post(
+            new IsolationServerEvent(invocation.getMicroserviceName(), serverStats.getTotalRequests(),
+                serverStats.getCountinuousFailureCount(),
+                serverStats.getFailedRate(),
+                settings.continuousFailureThreshold, settings.errorThresholdPercentage, settings.enableRequestThreshold,
+                settings.singleTestTime, Type.OPEN));
+        ServiceCombLoadBalancerStats.INSTANCE.markIsolated(server, true);
+      }
       return false;
+    }
+
+    if (serverStats.isIsolated()) {
+      LOGGER.warn("Recover service {}'s instance {} from isolation.", invocation.getMicroserviceName(),
+          instance.getInstanceId());
+      eventBus.post(new IsolationServerEvent(invocation.getMicroserviceName(), serverStats.getTotalRequests(),
+          serverStats.getCountinuousFailureCount(),
+          serverStats.getFailedRate(),
+          settings.continuousFailureThreshold, settings.errorThresholdPercentage, settings.enableRequestThreshold,
+          settings.singleTestTime, Type.CLOSE));
+      ServiceCombLoadBalancerStats.INSTANCE.markIsolated(server, false);
     }
     return true;
   }
