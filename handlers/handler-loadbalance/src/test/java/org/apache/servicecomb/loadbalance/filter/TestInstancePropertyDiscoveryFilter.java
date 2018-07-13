@@ -17,31 +17,28 @@
 
 package org.apache.servicecomb.loadbalance.filter;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.loadbalance.LoadBalancer;
-import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
+import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTreeNode;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import com.netflix.loadbalancer.RandomRule;
-import com.netflix.loadbalancer.Server;
+import mockit.Expectations;
+import mockit.Injectable;
 
-public class TestSimpleTransactionControlFilter {
+public class TestInstancePropertyDiscoveryFilter {
 
-  private SimpleTransactionControlFilter filter;
+  private InstancePropertyDiscoveryFilter filter;
 
-  private ServiceCombServer server;
+  MicroserviceInstance instance = new MicroserviceInstance();
 
   @BeforeClass
   public static void beforeCls() {
@@ -53,41 +50,47 @@ public class TestSimpleTransactionControlFilter {
 
   @Before
   public void setUp() {
-    filter = new SimpleTransactionControlFilter();
-    LoadBalancer loadBalancer = new LoadBalancer(new RandomRule(), "microserviceName", null);
-    filter.setLoadBalancer(loadBalancer);
+    filter = new InstancePropertyDiscoveryFilter();
     Map<String, String> properties = new HashMap<>();
     properties.put("tag0", "value0");
     properties.put("tag1", "value1");
-    MicroserviceInstance instance = new MicroserviceInstance();
+    instance.setInstanceId("instance111");
     instance.setProperties(properties);
-    server = Mockito.mock(ServiceCombServer.class);
-    Mockito.when(server.getInstance()).thenReturn(instance);
   }
 
   @Test
   public void testAllowVisit() {
     Map<String, String> filterOptions = new HashMap<>();
-    Assert.assertTrue(filter.allowVisit(server, filterOptions));
+    Assert.assertTrue(filter.allowVisit(instance, filterOptions));
 
     filterOptions.put("tag0", "value0");
-    Assert.assertTrue(filter.allowVisit(server, filterOptions));
+    Assert.assertTrue(filter.allowVisit(instance, filterOptions));
 
     filterOptions.put("tag2", "value2");
-    Assert.assertFalse(filter.allowVisit(server, filterOptions));
+    Assert.assertFalse(filter.allowVisit(instance, filterOptions));
 
     filterOptions.clear();
     filterOptions.put("tag0", "value1");
-    Assert.assertFalse(filter.allowVisit(server, filterOptions));
+    Assert.assertFalse(filter.allowVisit(instance, filterOptions));
   }
 
   @Test
-  public void testGetFilteredListOfServers() {
-    Invocation invocation = Mockito.mock(Invocation.class);
+  public void testGetFilteredListOfServers(@Injectable DiscoveryContext context, @Injectable DiscoveryTreeNode parent,
+      @Injectable Invocation invocation) {
+    Map<String, MicroserviceInstance> instances = new HashMap<>();
+    instances.put(instance.getInstanceId(), instance);
+    new Expectations() {
+      {
+        context.getInputParameters();
+        result = invocation;
+        parent.data();
+        result = instances;
+        parent.name();
+        result = "parent";
+      }
+    };
 
-    List<Server> servers = new ArrayList<>();
-    servers.add(server);
-    List<Server> filteredServers = filter.getFilteredListOfServers(servers, null);
-    Assert.assertEquals(1, filteredServers.size());
+    DiscoveryTreeNode node = filter.discovery(context, parent);
+    Assert.assertEquals(1, ((Map<String, MicroserviceInstance>) node.data()).keySet().size());
   }
 }

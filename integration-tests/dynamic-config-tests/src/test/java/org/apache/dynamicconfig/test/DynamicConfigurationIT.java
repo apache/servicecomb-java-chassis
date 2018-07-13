@@ -53,6 +53,7 @@ public class DynamicConfigurationIT {
 
   @BeforeClass
   public static void setUp() throws Exception {
+    LOGGER.info("testDynamicConfiguration set up");
     Log4jUtils.init();
     BeanUtils.init();
     url = DynamicPropertyFactory.getInstance().getStringProperty("apollo.config.serverUri", "missing").getValue();

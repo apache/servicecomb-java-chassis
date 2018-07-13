@@ -22,7 +22,6 @@ import static org.junit.Assert.assertNotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.loadbalance.filter.TransactionControlFilter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -129,8 +128,6 @@ public class TestLoadBalancer {
     servers.add(server);
     LoadBalancer loadBalancer = new LoadBalancer(rule, "test", null);
     loadBalancer.setServerList(servers);
-    TransactionControlFilter filter = Mockito.mock(TransactionControlFilter.class);
-    Mockito.when(filter.getFilteredListOfServers(servers, null)).thenReturn(servers);
     Assert.assertEquals(servers, loadBalancer.getAllServers());
   }
 }

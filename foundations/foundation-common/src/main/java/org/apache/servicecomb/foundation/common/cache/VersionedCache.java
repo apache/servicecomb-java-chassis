@@ -79,7 +79,7 @@ public class VersionedCache {
   }
 
   public <T extends VersionedCache> T subName(VersionedCache parent, String subName) {
-    Objects.requireNonNull(parent.name);
+    Objects.requireNonNull(parent.name());
     Objects.requireNonNull(subName);
 
     this.name = parent.name + "/" + subName;

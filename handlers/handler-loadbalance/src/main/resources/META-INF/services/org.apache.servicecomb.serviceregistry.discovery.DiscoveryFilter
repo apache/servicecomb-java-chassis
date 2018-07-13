@@ -17,3 +17,4 @@
 
 org.apache.servicecomb.loadbalance.filter.ZoneAwareDiscoveryFilter
 org.apache.servicecomb.loadbalance.filter.IsolationDiscoveryFilter
+org.apache.servicecomb.loadbalance.filter.InstancePropertyDiscoveryFilter
