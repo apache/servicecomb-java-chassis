@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.engine;
 
+import java.util.LinkedHashMap;
+
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
@@ -47,6 +49,7 @@ public class SwaggerEnvironmentForTest {
 
     SwaggerToClassGenerator swaggerToClassGenerator = new SwaggerToClassGenerator(classLoader, swagger,
         producerInstance.getClass().getPackage().getName());
-    return swaggerEnvironment.createProducer(producerInstance, swaggerToClassGenerator.convert());
+    return swaggerEnvironment.createProducer(producerInstance, swaggerToClassGenerator.convert(),
+        new LinkedHashMap<>());
   }
 }

@@ -25,6 +25,8 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
+import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
+import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapperConfig;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapperFactory;
 import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapper;
@@ -40,10 +42,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.Operation;
 
 @Component
 public class SwaggerEnvironment {
   private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerEnvironment.class);
+
+  @Inject
+  protected CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext;
 
   @Inject
   private ProducerArgumentsMapperFactory producerArgumentsFactory;
@@ -61,6 +67,15 @@ public class SwaggerEnvironment {
   public void setConverterMgr(ConverterMgr converterMgr) {
     consumerResponseMapperFactorys.setConverterMgr(converterMgr);
     producerResponseMapperFactorys.setConverterMgr(converterMgr);
+  }
+
+  public CompositeSwaggerGeneratorContext getCompositeSwaggerGeneratorContext() {
+    return compositeSwaggerGeneratorContext;
+  }
+
+  public void setCompositeSwaggerGeneratorContext(
+      CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext) {
+    this.compositeSwaggerGeneratorContext = compositeSwaggerGeneratorContext;
   }
 
   public ProducerArgumentsMapperFactory getProducerArgumentsFactory() {
@@ -101,8 +116,12 @@ public class SwaggerEnvironment {
         continue;
       }
 
+      ArgumentsMapperConfig config = new ArgumentsMapperConfig();
+      config.setSwaggerMethod(swaggerMethod);
+      config.setProviderMethod(consumerMethod);
+
       ConsumerArgumentsMapper argsMapper =
-          consumerArgumentsFactory.createArgumentsMapper(swaggerMethod, consumerMethod);
+          consumerArgumentsFactory.createArgumentsMapper(config);
       ConsumerResponseMapper responseMapper = consumerResponseMapperFactorys.createResponseMapper(
           swaggerMethod.getGenericReturnType(),
           consumerMethod.getGenericReturnType());
@@ -129,7 +148,8 @@ public class SwaggerEnvironment {
     return apiOperationAnnotation.nickname();
   }
 
-  public SwaggerProducer createProducer(Object producerInstance, Class<?> swaggerIntf) {
+  public SwaggerProducer createProducer(Object producerInstance, Class<?> swaggerIntf,
+      Map<String, Operation> swaggerOperationMap) {
     Class<?> producerCls = BeanUtils.getImplClassFromBean(producerInstance);
     Map<String, Method> visibleProducerMethods = retrieveVisibleMethods(producerCls);
 
@@ -148,8 +168,13 @@ public class SwaggerEnvironment {
         throw new Error(msg);
       }
 
-      ProducerArgumentsMapper argsMapper = producerArgumentsFactory.createArgumentsMapper(swaggerMethod,
-          producerMethod);
+      ArgumentsMapperConfig config = new ArgumentsMapperConfig();
+      config.setSwaggerMethod(swaggerMethod);
+      config.setProviderMethod(producerMethod);
+      config.setSwaggerOperation(swaggerOperationMap.get(methodName));
+      config.setSwaggerGeneratorContext(compositeSwaggerGeneratorContext.selectContext(producerCls));
+
+      ProducerArgumentsMapper argsMapper = producerArgumentsFactory.createArgumentsMapper(config);
       ProducerResponseMapper responseMapper = producerResponseMapperFactorys.createResponseMapper(
           swaggerMethod.getGenericReturnType(),
           producerMethod.getGenericReturnType());
