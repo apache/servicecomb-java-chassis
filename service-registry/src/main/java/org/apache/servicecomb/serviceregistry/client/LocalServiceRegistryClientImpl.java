@@ -119,8 +119,8 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
         String version = (String) serviceConfig.get("version");
         String serviceId = (String) serviceConfig.get("id");
         @SuppressWarnings("unchecked")
-        List<String> schemas = (List<String> ) serviceConfig.get("schemaIds");
-        	
+        List<String> schemas = (List<String>) serviceConfig.get("schemaIds");
+
         Microservice microservice = new Microservice();
         microservice.setAppId(appId == null ? DEFAULT_APPLICATION_ID : appId);
         microservice.setServiceName(name);
@@ -128,9 +128,9 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
         microservice.setServiceId(serviceId == null ? UUID.randomUUID().toString() : serviceId);
         microserviceIdMap.put(microservice.getServiceId(), microservice);
         if (schemas != null) {
-            microservice.setSchemas(schemas);
+          microservice.setSchemas(schemas);
         }
-        	
+
         Map<String, MicroserviceInstance> instanceMap = new ConcurrentHashMap<>();
         for (Map<String, Object> instanceConfig : instancesConfig) {
           @SuppressWarnings("unchecked")
@@ -278,7 +278,6 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
   @Override
   public MicroserviceInstances findServiceInstances(String selfMicroserviceId, String appId, String serviceName,
       String strVersionRule, String revision) {
-
     int currentRevision = this.revision.get();
     List<MicroserviceInstance> allInstances = new ArrayList<>();
     MicroserviceInstances microserviceInstances = new MicroserviceInstances();

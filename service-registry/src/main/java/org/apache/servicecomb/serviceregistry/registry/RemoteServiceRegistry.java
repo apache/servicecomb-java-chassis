@@ -16,10 +16,7 @@
  */
 package org.apache.servicecomb.serviceregistry.registry;
 
-import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
@@ -49,17 +46,10 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
   @Override
   public void init() {
     super.init();
-    taskPool = new ScheduledThreadPoolExecutor(2, new ThreadFactory() {
-      @Override
-      public Thread newThread(Runnable task) {
-        return new Thread(task, "Service Center Task");
-      }
-    }, new RejectedExecutionHandler() {
-      @Override
-      public void rejectedExecution(Runnable task, ThreadPoolExecutor executor) {
-        LOGGER.warn("Too many pending tasks, reject " + task.getClass().getName());
-      }
-    });
+    taskPool = new ScheduledThreadPoolExecutor(2,
+        task -> new Thread(task, "Service Center Task"),
+        (task, executor) -> LOGGER.warn("Too many pending tasks, reject " + task.getClass().getName())
+    );
   }
 
   @Override
@@ -88,7 +78,6 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
         serviceRegistryConfig.getInstancePullInterval(),
         TimeUnit.SECONDS);
   }
-
 
   @Subscribe
   public void onPullMicroserviceVersionsInstancesEvent(PullMicroserviceVersionsInstancesEvent event) {
