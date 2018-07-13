@@ -32,6 +32,7 @@ import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceC
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
+import org.apache.servicecomb.serviceregistry.task.event.MicroserviceNotExistEvent;
 import org.apache.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,6 +119,11 @@ public class MicroserviceVersions {
     if (microserviceInstances == null) {
       return;
     }
+    if (microserviceInstances.isMicroserviceNotExist()) {
+      appManager.getEventBus().post(new MicroserviceNotExistEvent(appId, microserviceName));
+      return;
+    }
+
     if (!microserviceInstances.isNeedRefresh()) {
       return;
     }
@@ -170,9 +176,7 @@ public class MicroserviceVersions {
       List<MicroserviceInstance> inUseInstances) {
     List<MicroserviceInstance> upInstances = pulledInstances
         .stream()
-        .filter(instance -> {
-          return MicroserviceInstanceStatus.UP.equals(instance.getStatus());
-        })
+        .filter(instance -> MicroserviceInstanceStatus.UP.equals(instance.getStatus()))
         .collect(Collectors.toList());
     if (upInstances.isEmpty() && inUseInstances != null && ServiceRegistryConfig.INSTANCE
         .isEmptyInstanceProtectionEnabled()) {

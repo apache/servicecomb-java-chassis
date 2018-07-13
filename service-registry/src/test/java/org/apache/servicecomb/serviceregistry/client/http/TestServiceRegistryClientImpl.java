@@ -39,6 +39,7 @@ import org.apache.servicecomb.serviceregistry.api.response.GetSchemasResponse;
 import org.apache.servicecomb.serviceregistry.client.ClientException;
 import org.apache.servicecomb.serviceregistry.client.IpPortManager;
 import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl.ResponseWrapper;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -375,6 +376,35 @@ public class TestServiceRegistryClientImpl {
     };
 
     Assert.assertNull(oClient.findServiceInstance(null, "appId", "serviceName", "1.0.0+"));
+  }
+
+  @Test
+  public void findServiceInstances_microserviceNotExist(@Mocked RequestContext requestContext) {
+    HttpClientResponse response = new MockUp<HttpClientResponse>() {
+      @Mock
+      int statusCode() {
+        return 400;
+      }
+
+      @Mock
+      HttpClientResponse bodyHandler(Handler<Buffer> bodyHandler) {
+        Buffer bodyBuffer = Buffer.buffer("{\"errorCode\":\"400012\"}");
+        bodyHandler.handle(bodyBuffer);
+        return null;
+      }
+    }.getMockInstance();
+    RestResponse restResponse = new RestResponse(requestContext, response);
+    new MockUp<RestUtils>() {
+      @Mock
+      void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+        responseHandler.handle(restResponse);
+      }
+    };
+    MicroserviceInstances microserviceInstances = oClient
+        .findServiceInstances("consumerId", "appId", "serviceName", DefinitionConst.VERSION_RULE_ALL, null);
+
+    Assert.assertTrue(microserviceInstances.isMicroserviceNotExist());
+    Assert.assertFalse(microserviceInstances.isNeedRefresh());
   }
 
   @Test

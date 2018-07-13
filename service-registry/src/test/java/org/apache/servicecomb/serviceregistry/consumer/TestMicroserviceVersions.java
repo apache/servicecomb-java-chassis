@@ -33,6 +33,7 @@ import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceS
 import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
+import org.apache.servicecomb.serviceregistry.task.event.MicroserviceNotExistEvent;
 import org.apache.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
 import org.apache.servicecomb.serviceregistry.version.Version;
 import org.junit.After;
@@ -191,6 +192,37 @@ public class TestMicroserviceVersions {
 
     // not throw exception
     microserviceVersions.pullInstances();
+  }
+
+  @Test
+  public void pullInstances_notExists() {
+    MicroserviceInstances microserviceInstances = new MicroserviceInstances();
+    microserviceInstances.setMicroserviceNotExist(true);
+
+    new MockUp<RegistryUtils>() {
+      @Mock
+      MicroserviceInstances findServiceInstances(String appId, String serviceName,
+          String versionRule, String revision) {
+        return microserviceInstances;
+      }
+    };
+
+    MicroserviceNotExistEvent microserviceNotExistEvent = new MicroserviceNotExistEvent(null, null);
+    eventBus.register(new Object() {
+      @Subscribe
+      public void onMicroserviceNotExistEvent(MicroserviceNotExistEvent event) {
+        microserviceNotExistEvent.setAppId(event.getAppId());
+        microserviceNotExistEvent.setMicroserviceName(event.getMicroserviceName());
+      }
+    });
+
+    pendingPullCount.set(1);
+
+    // not throw exception
+    microserviceVersions.pullInstances();
+
+    Assert.assertEquals(appId, microserviceNotExistEvent.getAppId());
+    Assert.assertEquals(microserviceName, microserviceNotExistEvent.getMicroserviceName());
   }
 
   @Test

@@ -20,12 +20,17 @@ package org.apache.servicecomb.serviceregistry.consumer;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.serviceregistry.task.event.MicroserviceNotExistEvent;
 import org.apache.servicecomb.serviceregistry.task.event.PeriodicPullEvent;
 import org.apache.servicecomb.serviceregistry.task.event.RecoveryEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.Subscribe;
 
 public class MicroserviceManager {
+  private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceManager.class);
+
   private AppManager appManager;
 
   private String appId;
@@ -48,10 +53,21 @@ public class MicroserviceManager {
     });
     if (!microserviceVersions.isValidated()) {
       // remove this microservice if it does not exist or not registered in order to get it back when access it again
-      versionsByName.remove(microserviceName);
-      appManager.getEventBus().unregister(microserviceVersions);
+      removeMicroservice(microserviceName);
     }
     return microserviceVersions;
+  }
+
+  protected void removeMicroservice(String microserviceName) {
+    // must use containsKey and then remove
+    // because removeMicroservice maybe invoked inside "versionsByName.computeIfAbsent"
+    //  in this time, containsKey will return false, and will not invoke remove
+    // otherwise, remove will block the thread forever
+    if (versionsByName.containsKey(microserviceName)) {
+      MicroserviceVersions microserviceVersions = versionsByName.remove(microserviceName);
+      appManager.getEventBus().unregister(microserviceVersions);
+      LOGGER.info("remove microservice, appId={}, microserviceName={}.", appId, microserviceName);
+    }
   }
 
   public MicroserviceVersionRule getOrCreateMicroserviceVersionRule(String microserviceName,
@@ -75,5 +91,14 @@ public class MicroserviceManager {
     for (MicroserviceVersions versions : versionsByName.values()) {
       versions.submitPull();
     }
+  }
+
+  @Subscribe
+  private void onMicroserviceNotExistEvent(MicroserviceNotExistEvent event) {
+    if (!appId.equals(event.getAppId())) {
+      return;
+    }
+
+    removeMicroservice(event.getMicroserviceName());
   }
 }

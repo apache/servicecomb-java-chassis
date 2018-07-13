@@ -28,6 +28,7 @@ import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
+import org.apache.servicecomb.serviceregistry.task.event.MicroserviceNotExistEvent;
 import org.apache.servicecomb.serviceregistry.task.event.PeriodicPullEvent;
 import org.apache.servicecomb.serviceregistry.task.event.RecoveryEvent;
 import org.junit.After;
@@ -117,6 +118,31 @@ public class TestMicroserviceManager {
     MicroserviceInstanceChangedEvent changedEvent = new MicroserviceInstanceChangedEvent();
     eventBus.post(changedEvent);
     Assert.assertEquals(0, triggerCount.get());
+  }
+
+  @Test
+  public void onMicroserviceNotExistEvent_otherApp() {
+    MicroserviceVersions microserviceVersions = new MicroserviceVersions(appManager, appId, serviceName);
+    cachedVersions.put(serviceName, microserviceVersions);
+
+    MicroserviceNotExistEvent microserviceNotExistEvent = new MicroserviceNotExistEvent("otherAppId", serviceName);
+
+    Assert.assertEquals(1, cachedVersions.size());
+    eventBus.post(microserviceNotExistEvent);
+    // nothing happened
+    Assert.assertEquals(1, cachedVersions.size());
+  }
+
+  @Test
+  public void onMicroserviceNotExistEvent_normal() {
+    MicroserviceVersions microserviceVersions = new MicroserviceVersions(appManager, appId, serviceName);
+    cachedVersions.put(serviceName, microserviceVersions);
+
+    MicroserviceNotExistEvent microserviceNotExistEvent = new MicroserviceNotExistEvent(appId, serviceName);
+
+    Assert.assertEquals(1, cachedVersions.size());
+    eventBus.post(microserviceNotExistEvent);
+    Assert.assertEquals(0, cachedVersions.size());
   }
 
   @Test
