@@ -20,6 +20,7 @@ package org.apache.servicecomb.loadbalance.filter;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.discovery.AbstractDiscoveryFilter;
@@ -52,13 +53,6 @@ public class ZoneAwareDiscoveryFilter extends AbstractDiscoveryFilter {
   @Override
   public boolean isGroupingFilter() {
     return true;
-  }
-
-  @Override
-  public DiscoveryTreeNode discovery(DiscoveryContext context, DiscoveryTreeNode parent) {
-    DiscoveryTreeNode node = super.discovery(context, parent);
-    context.pushRerunFilter();
-    return node;
   }
 
   @Override
@@ -97,12 +91,14 @@ public class ZoneAwareDiscoveryFilter extends AbstractDiscoveryFilter {
     String key = context.getContextParameter(KEY_ZONE_AWARE_STEP);
     if (key == null) {
       key = GROUP_RegionAndAZMatch;
+      context.pushRerunFilter();
     } else if (GROUP_RegionAndAZMatch.equals(key)) {
       key = GROUP_instancesAZMatch;
+      context.pushRerunFilter();
     } else if (GROUP_instancesAZMatch.equals(key)) {
       key = GROUP_instancesNoMatch;
     } else {
-      return null;
+      throw new ServiceCombException("not possible happen, maybe a bug.");
     }
     context.putContextParameter(KEY_ZONE_AWARE_STEP, key);
     return key;

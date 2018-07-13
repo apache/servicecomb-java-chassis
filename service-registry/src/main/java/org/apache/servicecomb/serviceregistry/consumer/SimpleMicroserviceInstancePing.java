@@ -17,6 +17,7 @@
 package org.apache.servicecomb.serviceregistry.consumer;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 import org.apache.servicecomb.foundation.common.net.IpPort;
@@ -36,7 +37,8 @@ public class SimpleMicroserviceInstancePing implements MicroserviceInstancePing 
   public boolean ping(MicroserviceInstance instance) {
     if (instance.getEndpoints() != null && instance.getEndpoints().size() > 0) {
       IpPort ipPort = NetUtils.parseIpPortFromURI(instance.getEndpoints().get(0));
-      try (Socket s = new Socket(ipPort.getHostOrIp(), ipPort.getPort())) {
+      try (Socket s = new Socket()) {
+        s.connect(new InetSocketAddress(ipPort.getHostOrIp(), ipPort.getPort()), 3000);
         return true;
       } catch (IOException e) {
         // ignore this error

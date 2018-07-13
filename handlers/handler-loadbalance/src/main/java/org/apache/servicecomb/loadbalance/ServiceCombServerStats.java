@@ -43,6 +43,12 @@ public class ServiceCombServerStats {
 
   private AtomicLong failedRequests = new AtomicLong(0L);
 
+  private boolean isolated = false;
+
+  public void markIsolated(boolean isolated) {
+    this.isolated = isolated;
+  }
+
   public void markSuccess() {
     long time = System.currentTimeMillis();
     ensureWindow(time);
@@ -57,19 +63,25 @@ public class ServiceCombServerStats {
     long time = System.currentTimeMillis();
     ensureWindow(time);
     lastVisitTime = time;
-    totalRequests.incrementAndGet();
-    failedRequests.incrementAndGet();
-    continuousFailureCount.incrementAndGet();
+
+    // when isolated, do not update any failure statistics, or we can not recover from failure very quickly
+    if (!isolated) {
+      totalRequests.incrementAndGet();
+      failedRequests.incrementAndGet();
+      continuousFailureCount.incrementAndGet();
+    }
   }
 
   private void ensureWindow(long time) {
     if (time - lastWindow > TIME_WINDOW_IN_MILLISECONDS) {
       synchronized (lock) {
         if (time - lastWindow > TIME_WINDOW_IN_MILLISECONDS) {
-          continuousFailureCount.set(0);
-          totalRequests.set(0);
-          successRequests.set(0);
-          failedRequests.set(0);
+          if (!isolated) {
+            continuousFailureCount.set(0);
+            totalRequests.set(0);
+            successRequests.set(0);
+            failedRequests.set(0);
+          }
           lastWindow = time;
         }
       }
@@ -112,5 +124,9 @@ public class ServiceCombServerStats {
       return 0;
     }
     return (int) (failedRequests.get() * 100 / totalRequests.get());
+  }
+
+  public boolean isIsolated() {
+    return isolated;
   }
 }
