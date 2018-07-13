@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 public final class RestObjectMapper extends ObjectMapper {
   public static final RestObjectMapper INSTANCE = new RestObjectMapper();
@@ -52,6 +53,7 @@ public final class RestObjectMapper extends ObjectMapper {
     getFactory().disable(Feature.AUTO_CLOSE_SOURCE);
     disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+    registerModule(new JavaTimeModule());
   }
 
   public String convertToString(Object value) throws Exception {
