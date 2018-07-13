@@ -177,7 +177,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     };
   }
 
-  private <T> Handler<RestResponse> syncHandlerForInstances(CountDownLatch countDownLatch,
+  private Handler<RestResponse> syncHandlerForInstances(CountDownLatch countDownLatch,
       MicroserviceInstances mInstances) {
     return restResponse -> {
       RequestContext requestContext = restResponse.getRequestContext();
@@ -203,8 +203,18 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
                   mInstances
                       .setInstancesResponse(JsonUtils.readValue(bodyBuffer.getBytes(), FindInstancesResponse.class));
                   break;
+                case 400: {
+                  @SuppressWarnings("unchecked")
+                  Map<String, Object> error = JsonUtils.readValue(bodyBuffer.getBytes(), Map.class);
+                  if ("400012".equals(error.get("errorCode"))) {
+                    mInstances.setMicroserviceNotExist(true);
+                    mInstances.setNeedRefresh(false);
+                  }
+                  LOGGER.warn("failed to findInstances: " + bodyBuffer.toString());
+                }
+                break;
                 default:
-                  LOGGER.warn(bodyBuffer.toString());
+                  LOGGER.warn("failed to findInstances: " + bodyBuffer.toString());
                   break;
               }
             } catch (Exception e) {

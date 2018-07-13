@@ -23,11 +23,21 @@ import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse
  * Created by on 2017/12/28.
  */
 public class MicroserviceInstances {
+  private boolean microserviceNotExist;
+
   private boolean needRefresh = true;
 
   private String revision;
 
   private FindInstancesResponse instancesResponse;
+
+  public boolean isMicroserviceNotExist() {
+    return microserviceNotExist;
+  }
+
+  public void setMicroserviceNotExist(boolean microserviceNotExist) {
+    this.microserviceNotExist = microserviceNotExist;
+  }
 
   public boolean isNeedRefresh() {
     return needRefresh;
