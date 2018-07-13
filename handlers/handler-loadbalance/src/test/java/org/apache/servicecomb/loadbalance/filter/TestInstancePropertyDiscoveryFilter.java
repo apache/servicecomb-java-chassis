@@ -75,6 +75,7 @@ public class TestInstancePropertyDiscoveryFilter {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void testGetFilteredListOfServers(@Injectable DiscoveryContext context, @Injectable DiscoveryTreeNode parent,
       @Injectable Invocation invocation) {
     Map<String, MicroserviceInstance> instances = new HashMap<>();
