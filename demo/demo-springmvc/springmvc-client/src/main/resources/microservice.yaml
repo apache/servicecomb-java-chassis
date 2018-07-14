@@ -35,6 +35,13 @@ servicecomb:
           interval: 90
         watch: false
       autodiscovery: true
+# can download config center from https://cse-bucket.obs.myhwclouds.com/LocalCSE/Local-CSE-1.0.0.zip to test dynamic config
+  config:
+    client:
+      serverUri: http://127.0.0.1:30113
+      refreshMode: 1
+      refresh_interval: 5000
+      refreshPort: 30114
   rest:
     client:
       connection:
@@ -80,6 +87,12 @@ servicecomb:
     region: my-Region
     availableZone: my-Zone
 
+  test:
+    duplicate1: newer
+
+cse:
+  test:
+    duplicate2: newer
 #########SSL options
 ssl.protocols: TLSv1.2
 ssl.authPeer: true

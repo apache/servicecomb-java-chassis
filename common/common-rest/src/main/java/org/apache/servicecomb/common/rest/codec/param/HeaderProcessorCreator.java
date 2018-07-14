@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import io.swagger.models.parameters.HeaderParameter;
 import io.swagger.models.parameters.Parameter;
 
 public class HeaderProcessorCreator implements ParamValueProcessorCreator {
@@ -39,8 +40,8 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator {
   public static final String PARAMTYPE = "header";
 
   public static class HeaderProcessor extends AbstractParamProcessor {
-    public HeaderProcessor(String paramPath, JavaType targetType) {
-      super(paramPath, targetType);
+    public HeaderProcessor(String paramPath, JavaType targetType, Object defaultValue) {
+      super(paramPath, targetType, defaultValue);
     }
 
     @Override
@@ -55,6 +56,12 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator {
         value = Collections.list(headerValues);
       } else {
         value = request.getHeader(paramPath);
+        if (value == null) {
+          Object defaultValue = getDefaultValue();
+          if (defaultValue != null) {
+            value = defaultValue;
+          }
+        }
       }
 
       return convertValue(value, targetType);
@@ -83,6 +90,6 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator {
   @Override
   public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
     JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
-    return new HeaderProcessor(parameter.getName(), targetType);
+    return new HeaderProcessor(parameter.getName(), targetType, ((HeaderParameter) parameter).getDefaultValue());
   }
 }

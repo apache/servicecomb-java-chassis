@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 import javax.inject.Inject;
 
@@ -83,7 +84,20 @@ public class PojoClient {
     TestMgr.summary();
   }
 
+  private static void testContextClassLoaderIsNull() {
+    IntStream.range(0, 100).parallel().forEach(item -> {
+      if (Thread.currentThread().getName().equals("main")) {
+        return;
+      }
+      // in web environment, this could be null, here we just mock a null class loader.
+      Thread.currentThread().setContextClassLoader(null);
+      TestMgr.check(null, test.postTestStatic(2));
+    });
+  }
+
   public static void run() throws Exception {
+    testContextClassLoaderIsNull();
+
     smartcare = BeanUtils.getBean("smartcare");
 
     String microserviceName = "pojo";
@@ -99,7 +113,7 @@ public class PojoClient {
       testEmpty(test);
       // This test case shows destroy of WeightedResponseTimeRule timer task. after test finished will not print:
       // "Weight adjusting job started" and thread "NFLoadBalancer-serverWeightTimer-unknown" destroyed.
-      ArchaiusUtils.setProperty("cse.loadbalance.strategy.name", "WeightedResponse");
+      ArchaiusUtils.setProperty("servicecomb.loadbalance.strategy.name", "WeightedResponse");
       testStringArray(test);
       boolean checkerStated = false;
       // Timer may not start thread very fast so check for 3 times.
@@ -115,7 +129,7 @@ public class PojoClient {
       }
       TestMgr.check(checkerStated, true);
 
-      ArchaiusUtils.setProperty("cse.loadbalance.strategy.name", "RoundRobin");
+      ArchaiusUtils.setProperty("servicecomb.loadbalance.strategy.name", "RoundRobin");
       testStringArray(test);
 
       boolean checkerDestroyed = true;

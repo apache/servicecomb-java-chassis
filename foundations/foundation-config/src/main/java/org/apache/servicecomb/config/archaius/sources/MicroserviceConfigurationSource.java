@@ -21,7 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.servicecomb.config.ConfigMapping;
 import org.apache.servicecomb.config.YAMLUtil;
 
 import com.netflix.config.PollResult;
@@ -45,7 +44,6 @@ public class MicroserviceConfigurationSource implements PolledConfigurationSourc
       configurations.putAll(YAMLUtil.retrieveItems("", configModel.getConfig()));
     }
 
-    configurations = ConfigMapping.getConvertedMap(configurations);
     return PollResult.createFull(configurations);
   }
 }

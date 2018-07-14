@@ -23,18 +23,20 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
   <context:annotation-config/>
   <!-- <context:spring-configured /> -->
-  <context:component-scan base-package="org.apache.servicecomb"/>
+  <context:component-scan base-package="${scb-scan-package:org.apache.servicecomb}"/>
 
   <bean class="org.apache.servicecomb.core.config.ConfigurationSpringInitializer">
     <property name="configId" value="config"/>
   </bean>
 
-  <bean class="org.apache.servicecomb.core.CseContext" factory-method="getInstance"></bean>
+  <bean class="org.apache.servicecomb.core.CseContext" factory-method="getInstance"/>
 
   <bean class="org.apache.servicecomb.core.CseApplicationListener">
   </bean>
 
-  <bean id="cse.executor.groupThreadPool" class="org.apache.servicecomb.core.executor.FixedThreadExecutor"></bean>
+  <bean id="cse.executor.groupThreadPool" class="org.apache.servicecomb.core.executor.FixedThreadExecutor"/>
   <alias name="cse.executor.groupThreadPool" alias="cse.executor.default"/>
-  <bean id="cse.executor.reactive" class="org.apache.servicecomb.core.executor.ReactiveExecutor"></bean>
+  <alias name="cse.executor.groupThreadPool" alias="servicecomb.executor.groupThreadPool"/>
+  <bean id="cse.executor.reactive" class="org.apache.servicecomb.core.executor.ReactiveExecutor"/>
+  <alias name="cse.executor.reactive" alias="servicecomb.executor.reactive"/>
 </beans>

@@ -40,7 +40,7 @@ import mockit.MockUp;
 
 public class AccessLogHandlerTest {
   private static final AccessLogHandler ACCESS_LOG_HANDLER = new AccessLogHandler(
-      "%h - - %s durationMillisecond=[%D] %{test-config}user-defined %{cookie-name}C");
+      "%h - - %s durationMillisecond=[%D] %{test-config}user-defined %{cookie-name}C %v");
 
   private LogCollector logCollector;
 
@@ -73,7 +73,8 @@ public class AccessLogHandlerTest {
       }
     }.getMockInstance();
     HttpServerRequest httpServerRequest = Mockito.mock(HttpServerRequest.class);
-    SocketAddress socketAddress = Mockito.mock(SocketAddress.class);
+    SocketAddress remoteSocketAddress = Mockito.mock(SocketAddress.class);
+    SocketAddress localSocketAddress = Mockito.mock(SocketAddress.class);
 
     Holder<Integer> counter = new Holder<>();
     counter.value = 0;
@@ -93,12 +94,14 @@ public class AccessLogHandlerTest {
     Mockito.when(routingContext.cookies()).thenReturn(cookies);
     Mockito.when(routingContext.response()).thenReturn(httpServerResponse);
     Mockito.when(routingContext.request()).thenReturn(httpServerRequest);
-    Mockito.when(httpServerRequest.remoteAddress()).thenReturn(socketAddress);
-    Mockito.when(socketAddress.host()).thenReturn("localhost");
-
+    Mockito.when(httpServerRequest.remoteAddress()).thenReturn(remoteSocketAddress);
+    Mockito.when(remoteSocketAddress.host()).thenReturn("192.168.0.22");
+    Mockito.when(httpServerRequest.localAddress()).thenReturn(localSocketAddress);
+    Mockito.when(localSocketAddress.host()).thenReturn("192.168.0.33");
     ACCESS_LOG_HANDLER.handle(routingContext);
 
-    Assert.assertEquals("localhost - - 200 durationMillisecond=[122] user-defined-test-config cookie-value",
+    Assert.assertEquals(
+        "192.168.0.22 - - 200 durationMillisecond=[122] user-defined-test-config cookie-value 192.168.0.33",
         logCollector.getEvents().get(0).getMessage());
   }
 }

@@ -17,9 +17,15 @@
 package org.apache.servicecomb.foundation.common.utils;
 
 import org.aspectj.lang.annotation.Aspect;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import mockit.Expectations;
+import mockit.Mocked;
 
 public class TestBeanUtils {
   static interface Intf {
@@ -34,6 +40,16 @@ public class TestBeanUtils {
   static class MyAspect {
   }
 
+  @BeforeClass
+  public static void setup() {
+    System.clearProperty(BeanUtils.SCB_SCAN_PACKAGE);
+  }
+
+  @AfterClass
+  public static void tearDown() {
+    System.clearProperty(BeanUtils.SCB_SCAN_PACKAGE);
+  }
+
   @Test
   public void test() {
     Intf target = new Impl();
@@ -44,5 +60,79 @@ public class TestBeanUtils {
 
     Assert.assertEquals(Impl.class, BeanUtils.getImplClassFromBean(proxy));
     Assert.assertEquals(Impl.class, BeanUtils.getImplClassFromBean(new Impl()));
+  }
+
+  @Test
+  public void prepareServiceCombScanPackage_noExist_noMain() {
+    System.clearProperty(BeanUtils.SCB_SCAN_PACKAGE);
+    new Expectations(JvmUtils.class) {
+      {
+        JvmUtils.findMainClass();
+        result = null;
+      }
+    };
+
+    BeanUtils.prepareServiceCombScanPackage();
+
+    Assert.assertEquals("org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
+  }
+
+  @Test
+  public void prepareServiceCombScanPackage_noExist_scbMain() {
+    System.clearProperty(BeanUtils.SCB_SCAN_PACKAGE);
+    new Expectations(JvmUtils.class) {
+      {
+        JvmUtils.findMainClass();
+        result = TestBeanUtils.class;
+      }
+    };
+
+    BeanUtils.prepareServiceCombScanPackage();
+
+    Assert.assertEquals("org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
+  }
+
+  @Test
+  public void prepareServiceCombScanPackage_noExist_otherMain() {
+    System.clearProperty(BeanUtils.SCB_SCAN_PACKAGE);
+    new Expectations(JvmUtils.class) {
+      {
+        JvmUtils.findMainClass();
+        result = String.class;
+      }
+    };
+
+    BeanUtils.prepareServiceCombScanPackage();
+
+    Assert.assertEquals("org.apache.servicecomb,java.lang", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
+  }
+
+  @Test
+  public void prepareServiceCombScanPackage_exist() {
+    System.setProperty(BeanUtils.SCB_SCAN_PACKAGE, "a.b,,c.d");
+    new Expectations(JvmUtils.class) {
+      {
+        JvmUtils.findMainClass();
+        result = null;
+      }
+    };
+
+    BeanUtils.prepareServiceCombScanPackage();
+
+    Assert.assertEquals("a.b,c.d,org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
+  }
+
+  @Test
+  public void init(@Mocked ClassPathXmlApplicationContext context) {
+    System.clearProperty(BeanUtils.SCB_SCAN_PACKAGE);
+    new Expectations(JvmUtils.class) {
+      {
+        JvmUtils.findMainClass();
+        result = TestBeanUtils.class;
+      }
+    };
+    BeanUtils.init();
+
+    Assert.assertEquals("org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
   }
 }

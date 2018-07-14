@@ -16,7 +16,9 @@
  */
 package org.apache.servicecomb.common.rest.codec.param;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.Part;
 import javax.ws.rs.core.MediaType;
@@ -140,5 +142,30 @@ public class TestRestClientRequestImpl {
 
     Map<String, Part> uploads = Deencapsulation.getField(restClientRequest, "uploads");
     Assert.assertTrue(uploads.isEmpty());
+  }
+
+  @Test
+  public void doEndWithUpload() {
+    Map<String, String> headers = new HashMap<>();
+    new MockUp<HttpClientRequest>(request) {
+      @Mock
+      HttpClientRequest putHeader(String name, String value) {
+        headers.put(name, value);
+        return request;
+      }
+    };
+
+    UUID uuid = new UUID(0, 0);
+    new Expectations(UUID.class) {
+      {
+        UUID.randomUUID();
+        result = uuid;
+      }
+    };
+    RestClientRequestImpl restClientRequest = new RestClientRequestImpl(request, null, null);
+    restClientRequest.doEndWithUpload();
+
+    Assert.assertEquals("multipart/form-data; charset=UTF-8; boundary=boundary00000000-0000-0000-0000-000000000000",
+        headers.get(HttpHeaders.CONTENT_TYPE.toString()));
   }
 }

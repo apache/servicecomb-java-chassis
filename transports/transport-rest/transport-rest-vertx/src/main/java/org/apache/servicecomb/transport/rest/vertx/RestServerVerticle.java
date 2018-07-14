@@ -18,6 +18,7 @@
 package org.apache.servicecomb.transport.rest.vertx;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.transport.AbstractTransport;
@@ -36,9 +37,11 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.CorsHandler;
 
 public class RestServerVerticle extends AbstractVerticle {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestServerVerticle.class);
@@ -68,6 +71,7 @@ public class RestServerVerticle extends AbstractVerticle {
       }
       Router mainRouter = Router.router(vertx);
       mountAccessLogHandler(mainRouter);
+      mountCorsHandler(mainRouter);
       initDispatcher(mainRouter);
       HttpServer httpServer = createHttpServer();
       httpServer.requestHandler(mainRouter::accept);
@@ -88,6 +92,40 @@ public class RestServerVerticle extends AbstractVerticle {
               pattern
           ));
     }
+  }
+
+  /**
+   * Support CORS
+   */
+  void mountCorsHandler(Router mainRouter) {
+    if (!TransportConfig.isCorsEnabled()) {
+      return;
+    }
+
+    CorsHandler corsHandler = getCorsHandler(TransportConfig.getCorsAllowedOrigin());
+    // Access-Control-Allow-Credentials
+    corsHandler.allowCredentials(TransportConfig.isCorsAllowCredentials());
+    // Access-Control-Allow-Headers
+    corsHandler.allowedHeaders(TransportConfig.getCorsAllowedHeaders());
+    // Access-Control-Allow-Methods
+    Set<String> allowedMethods = TransportConfig.getCorsAllowedMethods();
+    for (String method : allowedMethods) {
+      corsHandler.allowedMethod(HttpMethod.valueOf(method));
+    }
+    // Access-Control-Expose-Headers
+    corsHandler.exposedHeaders(TransportConfig.getCorsExposedHeaders());
+    // Access-Control-Max-Age
+    int maxAge = TransportConfig.getCorsMaxAge();
+    if (maxAge >= 0) {
+      corsHandler.maxAgeSeconds(maxAge);
+    }
+
+    LOGGER.info("mount CorsHandler");
+    mainRouter.route().handler(corsHandler);
+  }
+
+  private CorsHandler getCorsHandler(String corsAllowedOrigin) {
+    return CorsHandler.create(corsAllowedOrigin);
   }
 
   private void initDispatcher(Router mainRouter) {

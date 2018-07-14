@@ -31,6 +31,14 @@ public class AccessLogParam<T> {
 
   private long endMillisecond;
 
+  /**
+   * If client send request via a short-lived connection, the connection may be closed before the corresponding
+   * access log is generated, and then the
+   * {@linkplain org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl.LocalHostItem LocalHostItem}
+   * may get "0.0.0.0" as result. So we need to get local address before the connection is closed.
+   */
+  private String localAddress;
+
   public T getContextData() {
     return contextData;
   }
@@ -58,12 +66,22 @@ public class AccessLogParam<T> {
     return this;
   }
 
+  public String getLocalAddress() {
+    return localAddress;
+  }
+
+  public AccessLogParam<T> setLocalAddress(String localAddress) {
+    this.localAddress = localAddress;
+    return this;
+  }
+
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("AccessLogParam{");
     sb.append("contextData=").append(contextData);
     sb.append(", startMillisecond=").append(startMillisecond);
     sb.append(", endMillisecond=").append(endMillisecond);
+    sb.append(", localAddress='").append(localAddress).append('\'');
     sb.append('}');
     return sb.toString();
   }

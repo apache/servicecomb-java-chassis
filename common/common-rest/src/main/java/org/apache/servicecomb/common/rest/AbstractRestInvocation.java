@@ -108,7 +108,13 @@ public abstract class AbstractRestInvocation {
   }
 
   protected void scheduleInvocation() {
-    createInvocation();
+    try {
+      createInvocation();
+    } catch (IllegalStateException e) {
+      sendFailResponse(e);
+      return;
+    }
+
     invocation.onStart();
     OperationMeta operationMeta = restOperationMeta.getOperationMeta();
 
@@ -161,7 +167,6 @@ public abstract class AbstractRestInvocation {
 
   protected Response prepareInvoke() throws Throwable {
     this.initProduceProcessor();
-
     this.setContext();
     invocation.getHandlerContext().put(RestConst.REST_REQUEST, requestEx);
 
@@ -205,7 +210,8 @@ public abstract class AbstractRestInvocation {
     if (response.getHeaders().getHeaderMap() != null) {
       for (Entry<String, List<Object>> entry : response.getHeaders().getHeaderMap().entrySet()) {
         for (Object value : entry.getValue()) {
-          if (!entry.getKey().equalsIgnoreCase(HttpHeaders.CONTENT_LENGTH)) {
+          if (!entry.getKey().equalsIgnoreCase(HttpHeaders.CONTENT_LENGTH)
+              && !entry.getKey().equalsIgnoreCase("Transfer-Encoding")) {
             responseEx.addHeader(entry.getKey(), String.valueOf(value));
           }
         }

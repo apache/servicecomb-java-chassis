@@ -17,6 +17,12 @@
 
 package org.apache.servicecomb.transport.rest.vertx;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Stream;
+
+import org.springframework.util.StringUtils;
+
 import com.netflix.config.DynamicIntProperty;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
@@ -34,6 +40,8 @@ public final class TransportConfig {
   // 32K
   public static final int DEFAULT_SERVER_MAX_HEADER_SIZE = 32 * 1024;
 
+  public static final String SERVICECOMB_CORS_CONFIG_BASE = "servicecomb.cors";
+
   private static Class<? extends Verticle> restServerVerticle = RestServerVerticle.class;
 
   private TransportConfig() {
@@ -49,33 +57,88 @@ public final class TransportConfig {
 
   public static String getAddress() {
     DynamicStringProperty address =
-        DynamicPropertyFactory.getInstance().getStringProperty("cse.rest.address", null);
+        DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.rest.address", null);
     return address.get();
   }
 
   public static int getThreadCount() {
     DynamicIntProperty address =
         DynamicPropertyFactory.getInstance()
-            .getIntProperty("cse.rest.server.thread-count", DEFAULT_SERVER_THREAD_COUNT);
+            .getIntProperty("servicecomb.rest.server.thread-count", DEFAULT_SERVER_THREAD_COUNT);
     return address.get();
   }
 
   public static int getConnectionIdleTimeoutInSeconds() {
     return DynamicPropertyFactory.getInstance()
-        .getIntProperty("cse.rest.server.connection.idleTimeoutInSeconds",
+        .getIntProperty("servicecomb.rest.server.connection.idleTimeoutInSeconds",
             DEFAULT_SERVER_CONNECTION_IDLE_TIMEOUT_SECOND)
         .get();
   }
 
   public static boolean getCompressed() {
     return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("cse.rest.server.compression", DEFAULT_SERVER_COMPRESSION_SUPPORT)
+        .getBooleanProperty("servicecomb.rest.server.compression", DEFAULT_SERVER_COMPRESSION_SUPPORT)
         .get();
   }
 
   public static int getMaxHeaderSize() {
     return DynamicPropertyFactory.getInstance()
-        .getIntProperty("cse.rest.server.maxHeaderSize", DEFAULT_SERVER_MAX_HEADER_SIZE)
+        .getIntProperty("servicecomb.rest.server.maxHeaderSize", DEFAULT_SERVER_MAX_HEADER_SIZE)
         .get();
+  }
+
+  public static boolean isCorsEnabled() {
+    return DynamicPropertyFactory.getInstance()
+        .getBooleanProperty(SERVICECOMB_CORS_CONFIG_BASE + ".enabled", false)
+        .get();
+  }
+
+  public static String getCorsAllowedOrigin() {
+    return DynamicPropertyFactory.getInstance()
+        .getStringProperty(SERVICECOMB_CORS_CONFIG_BASE + ".origin", "*")
+        .get();
+  }
+
+  public static boolean isCorsAllowCredentials() {
+    return DynamicPropertyFactory.getInstance()
+        .getBooleanProperty(SERVICECOMB_CORS_CONFIG_BASE + ".allowCredentials", false)
+        .get();
+  }
+
+  public static Set<String> getCorsAllowedHeaders() {
+    String allowedHeaders = DynamicPropertyFactory.getInstance()
+        .getStringProperty(SERVICECOMB_CORS_CONFIG_BASE + ".allowedHeader", null)
+        .get();
+    return convertToSet(allowedHeaders);
+  }
+
+  public static Set<String> getCorsAllowedMethods() {
+    String allowedMethods = DynamicPropertyFactory.getInstance()
+        .getStringProperty(SERVICECOMB_CORS_CONFIG_BASE + ".allowedMethod", null)
+        .get();
+    return convertToSet(allowedMethods);
+  }
+
+  public static Set<String> getCorsExposedHeaders() {
+    String exposedHeaders = DynamicPropertyFactory.getInstance()
+        .getStringProperty(SERVICECOMB_CORS_CONFIG_BASE + ".exposedHeader", null)
+        .get();
+    return convertToSet(exposedHeaders);
+  }
+
+  public static int getCorsMaxAge() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty(SERVICECOMB_CORS_CONFIG_BASE + ".maxAge", -1)
+        .get();
+  }
+
+  private static Set<String> convertToSet(String setString) {
+    Set<String> resultSet = new HashSet<>();
+    if (!StringUtils.isEmpty(setString)) {
+      String[] arrString = setString.split(",");
+      Stream.of(arrString).map(String::trim).filter(str -> !StringUtils.isEmpty(str))
+          .forEach(resultSet::add);
+    }
+    return resultSet;
   }
 }

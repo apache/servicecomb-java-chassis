@@ -37,6 +37,8 @@ public class RSAProviderTokenManager {
 
   private Set<RSAAuthenticationToken> validatedToken = ConcurrentHashMap.newKeySet(1000);
 
+  private AccessController accessController = new AccessController();
+
   public boolean valid(String token) {
     try {
       RSAAuthenticationToken rsaToken = RSAAuthenticationToken.fromStr(token);
@@ -49,8 +51,7 @@ public class RSAProviderTokenManager {
         return false;
       }
       if (validatedToken.contains(rsaToken)) {
-        LOGGER.info("found vaildate token in vaildate pool");
-        return true;
+        return accessController.isAllowed(MicroserviceInstanceCache.getOrCreate(rsaToken.getServiceId()));
       }
 
       String sign = rsaToken.getSign();
@@ -59,10 +60,8 @@ public class RSAProviderTokenManager {
       boolean verify = RSAUtils.verify(publicKey, sign, content);
       if (verify && !tokenExprired(rsaToken)) {
         validatedToken.add(rsaToken);
-        return true;
+        return accessController.isAllowed(MicroserviceInstanceCache.getOrCreate(rsaToken.getServiceId()));
       }
-
-      LOGGER.error("token verify error");
       return false;
     } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | SignatureException e) {
       LOGGER.error("verfiy error", e);

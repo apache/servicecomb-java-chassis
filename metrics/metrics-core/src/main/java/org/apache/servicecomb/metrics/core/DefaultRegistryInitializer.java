@@ -50,8 +50,10 @@ public class DefaultRegistryInitializer implements MetricsInitializer {
 
   @Override
   public void destroy() {
-    DefaultMonitorRegistry.getInstance().unregister(registry);
-    globalRegistry.remove(registry);
+    if (registry != null) {
+      DefaultMonitorRegistry.getInstance().unregister(registry);
+      globalRegistry.remove(registry);
+    }
   }
 
   public Registry getRegistry() {

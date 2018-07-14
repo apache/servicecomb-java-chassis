@@ -19,6 +19,7 @@ package org.apache.servicecomb.loadbalance;
 import java.util.Collection;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -51,7 +52,7 @@ public class RuleClassNameExtentionsFactory implements ExtensionsFactory {
   public IRule createLoadBalancerRule(String ruleName) {
     IRule rule;
     try {
-      rule = (IRule) Class.forName(ruleName, true, Thread.currentThread().getContextClassLoader()).newInstance();
+      rule = (IRule) Class.forName(ruleName, true, JvmUtils.findClassLoader()).newInstance();
     } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
       LOGGER.warn("Loadbalance rule [{}] is incorrect, using default RoundRobinRule.", ruleName);
       rule = new RoundRobinRule();

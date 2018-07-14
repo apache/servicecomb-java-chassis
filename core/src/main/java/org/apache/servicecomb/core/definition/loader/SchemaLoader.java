@@ -40,6 +40,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 import io.swagger.models.Swagger;
 
 @Component
@@ -100,12 +102,18 @@ public class SchemaLoader {
 
     microserviceMeta.regSchemaMeta(schemaMeta);
 
-    putSelfBasePathIfAbsent(microserviceName, swagger.getBasePath());
+    addSchemaPath2Microservice(microserviceName, swagger.getBasePath());
 
     return schemaMeta;
   }
 
-  public void putSelfBasePathIfAbsent(String microserviceName, String basePath) {
+  void addSchemaPath2Microservice(String microserviceName, String basePath) {
+    if (DynamicPropertyFactory.getInstance().getBooleanProperty(Const.REGISTER_SERVICE_PATH, false).get()) {
+      putSelfBasePathIfAbsent(microserviceName, basePath);
+    }
+  }
+
+  void putSelfBasePathIfAbsent(String microserviceName, String basePath) {
     if (basePath == null || basePath.length() == 0) {
       return;
     }

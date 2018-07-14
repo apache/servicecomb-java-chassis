@@ -23,6 +23,7 @@ import java.util.Map;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.http.HttpStatus;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.CseContext;
@@ -34,11 +35,14 @@ import org.apache.servicecomb.demo.validator.Student;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 public class JaxrsClient {
@@ -63,6 +67,7 @@ public class JaxrsClient {
     testCompute(templateNew);
     testValidator(templateNew);
     testClientTimeOut(templateNew);
+    testJaxRSDefaultValues(templateNew);
   }
 
   private static void testCompute(RestTemplate template) throws Exception {
@@ -97,6 +102,98 @@ public class JaxrsClient {
       testValidatorExchangeSuccess(template, cseUrlPrefix);
       testValidatorExchangeFail(template, cseUrlPrefix);
     }
+  }
+
+
+  private static void testJaxRSDefaultValues(RestTemplate template) {
+    String microserviceName = "jaxrs";
+    for (String transport : DemoConst.transports) {
+      CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
+      TestMgr.setMsg(microserviceName, transport);
+
+      String cseUrlPrefix = "cse://" + microserviceName + "/JaxRSDefaultValues/";
+
+      //default values
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
+      MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+      HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+      String result = template.postForObject(cseUrlPrefix + "/form", request, String.class);
+      TestMgr.check("Hello 20bobo", result);
+
+      headers = new HttpHeaders();
+      HttpEntity<String> entity = new HttpEntity<>(null, headers);
+      result = template.postForObject(cseUrlPrefix + "/header", entity, String.class);
+      TestMgr.check("Hello 20bobo30", result);
+
+      result = template.getForObject(cseUrlPrefix + "/query?d=10", String.class);
+      TestMgr.check("Hello 20bobo4010", result);
+      boolean failed = false;
+      try {
+        result = template.getForObject(cseUrlPrefix + "/query2", String.class);
+      } catch (InvocationException e) {
+        failed = true;
+        TestMgr.check(e.getStatusCode(), ExceptionFactory.PRODUCER_INNER_STATUS_CODE);
+      }
+
+      failed = false;
+      try {
+        result = template.getForObject(cseUrlPrefix + "/query2?d=2&e=2", String.class);
+      } catch (InvocationException e) {
+        failed = true;
+        TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+      }
+      TestMgr.check(failed, true);
+
+      failed = false;
+      try {
+        result = template.getForObject(cseUrlPrefix + "/query2?a=&d=2&e=2", String.class);
+      } catch (InvocationException e) {
+        failed = true;
+        TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+      }
+      TestMgr.check(failed, true);
+
+      result = template.getForObject(cseUrlPrefix + "/query2?d=30&e=2", String.class);
+      TestMgr.check("Hello 20bobo40302", result);
+
+      failed = false;
+      try {
+        result = template.getForObject(cseUrlPrefix + "/query3?a=2&b=2", String.class);
+      } catch (InvocationException e) {
+        failed = true;
+        TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+      }
+      TestMgr.check(failed, true);
+
+      result = template.getForObject(cseUrlPrefix + "/query3?a=30&b=2", String.class);
+      TestMgr.check("Hello 302", result);
+
+      //input values
+      headers = new HttpHeaders();
+      headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
+      Map<String, String> params = new HashMap<String, String>();
+      params.put("a", "30");
+      params.put("b", "sam");
+      HttpEntity<Map<String, String>> requestPara = new HttpEntity<>(params, headers);
+      result = template.postForObject(cseUrlPrefix + "/form", requestPara, String.class);
+      TestMgr.check("Hello 30sam", result);
+
+      headers = new HttpHeaders();
+      headers.add("a", "30");
+      headers.add("b", "sam");
+      headers.add("c", "40");
+      entity = new HttpEntity<>(null, headers);
+      result = template.postForObject(cseUrlPrefix + "/header", entity, String.class);
+      TestMgr.check("Hello 30sam40", result);
+
+      result = template.getForObject(cseUrlPrefix + "/query?a=3&b=sam&c=5&d=30", String.class);
+      TestMgr.check("Hello 3sam530", result);
+
+      result = template.getForObject(cseUrlPrefix + "/query2?a=3&b=4&c=5&d=30&e=2", String.class);
+      TestMgr.check("Hello 345302", result);
+    }
+
   }
 
 
@@ -183,9 +280,13 @@ public class JaxrsClient {
       isExcep = true;
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
+      // Message dependends on locale, so just check the short part.
+      // 'must be greater than or equal to 20', propertyPath=add.arg1, rootBeanClass=class org.apache.servicecomb.demo.jaxrs.server.Validator, messageTemplate='{javax.validation.constraints.Min.message}'}]]
+      // ignored
       TestMgr.check(
-          "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage='must be greater than or equal to 20', propertyPath=add.arg1, rootBeanClass=class org.apache.servicecomb.demo.jaxrs.server.Validator, messageTemplate='{javax.validation.constraints.Min.message}'}]]",
-          e.getErrorData());
+          "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=",
+          e.getErrorData().toString().substring(0,
+              "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=".length()));
     }
 
     TestMgr.check(true, isExcep);
@@ -207,9 +308,11 @@ public class JaxrsClient {
       isExcep = true;
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
+      // Message dependends on locale, so just check the short part.
       TestMgr.check(
-          "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage='length must be between 3 and 2147483647', propertyPath=sayHi.arg0, rootBeanClass=class org.apache.servicecomb.demo.jaxrs.server.Validator, messageTemplate='{org.hibernate.validator.constraints.Length.message}'}]]",
-          e.getErrorData());
+          "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=",
+          e.getErrorData().toString().substring(0,
+              "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=".length()));
     }
     TestMgr.check(true, isExcep);
   }
@@ -238,9 +341,11 @@ public class JaxrsClient {
       isExcep = true;
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
+      // Message dependends on locale, so just check the short part.
       TestMgr.check(
-          "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage='must be less than or equal to 20', propertyPath=sayHello.arg0.age, rootBeanClass=class org.apache.servicecomb.demo.jaxrs.server.Validator, messageTemplate='{javax.validation.constraints.Max.message}'}]]",
-          e.getErrorData());
+          "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=",
+          e.getErrorData().toString().substring(0,
+              "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=".length()));
     }
     TestMgr.check(true, isExcep);
   }

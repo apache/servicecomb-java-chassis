@@ -162,10 +162,10 @@ public class TestFaultInjectHandler {
   @Test
   public void testFaultInjectHandlerConfigChangeGlobal() throws Exception {
 
-    System.setProperty("cse.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay", "5");
-    System.setProperty("cse.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", "10");
-    System.setProperty("cse.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", "10");
-    System.setProperty("cse.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus", "421");
+    System.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay", "5");
+    System.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", "10");
+    System.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", "10");
+    System.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus", "421");
 
     Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName3");
     Mockito.when(invocation.getTransport()).thenReturn(transport);
@@ -185,10 +185,10 @@ public class TestFaultInjectHandler {
     Assert.assertFalse(isDelay);
     Assert.assertFalse(isAbort);
 
-    System.getProperties().remove("cse.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay");
-    System.getProperties().remove("cse.governance.Consumer._global.policy.fault.protocols.rest.delay.percent");
-    System.getProperties().remove("cse.governance.Consumer._global.policy.fault.protocols.rest.abort.percent");
-    System.getProperties().remove("cse.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus");
+    System.getProperties().remove("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay");
+    System.getProperties().remove("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent");
+    System.getProperties().remove("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent");
+    System.getProperties().remove("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName3");
     assertEquals(2, count.get());
@@ -203,10 +203,10 @@ public class TestFaultInjectHandler {
   @Test
   public void testFaultInjectHandlerServiceCfgSuccess() throws Exception {
 
-    System.setProperty("cse.governance.Consumer.carts.policy.fault.protocols.rest.delay.fixedDelay", "1");
-    System.setProperty("cse.governance.Consumer.carts.policy.fault.protocols.rest.delay.percent", "10");
-    System.setProperty("cse.governance.Consumer.carts.policy.fault.protocols.rest.abort.percent", "10");
-    System.setProperty("cse.governance.Consumer.carts.policy.fault.protocols.rest.abort.httpStatus", "421");
+    System.setProperty("servicecomb.governance.Consumer.carts.policy.fault.protocols.rest.delay.fixedDelay", "1");
+    System.setProperty("servicecomb.governance.Consumer.carts.policy.fault.protocols.rest.delay.percent", "10");
+    System.setProperty("servicecomb.governance.Consumer.carts.policy.fault.protocols.rest.abort.percent", "10");
+    System.setProperty("servicecomb.governance.Consumer.carts.policy.fault.protocols.rest.abort.httpStatus", "421");
 
     Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName4");
     Mockito.when(invocation.getTransport()).thenReturn(transport);
@@ -226,10 +226,10 @@ public class TestFaultInjectHandler {
     Assert.assertFalse(isDelay);
     Assert.assertFalse(isAbort);
 
-    System.getProperties().remove("cse.governance.Consumer.carts.policy.fault.protocols.rest.delay.fixedDelay");
-    System.getProperties().remove("cse.governance.Consumer.carts.policy.fault.protocols.rest.delay.percent");
-    System.getProperties().remove("cse.governance.Consumer.carts.policy.fault.protocols.rest.abort.percent");
-    System.getProperties().remove("cse.governance.Consumer.carts.policy.fault.protocols.rest.abort.httpStatus");
+    System.getProperties().remove("servicecomb.governance.Consumer.carts.policy.fault.protocols.rest.delay.fixedDelay");
+    System.getProperties().remove("servicecomb.governance.Consumer.carts.policy.fault.protocols.rest.delay.percent");
+    System.getProperties().remove("servicecomb.governance.Consumer.carts.policy.fault.protocols.rest.abort.percent");
+    System.getProperties().remove("servicecomb.governance.Consumer.carts.policy.fault.protocols.rest.abort.httpStatus");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName4");
     assertEquals(2, count.get());
@@ -244,13 +244,13 @@ public class TestFaultInjectHandler {
   @Test
   public void testFaultInjectHandlerSchemaCfgSuccess() throws Exception {
 
-    System.setProperty("cse.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.delay.fixedDelay",
+    System.setProperty("servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.delay.fixedDelay",
         "1");
-    System.setProperty("cse.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.delay.percent",
+    System.setProperty("servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.delay.percent",
         "10");
-    System.setProperty("cse.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.abort.percent",
+    System.setProperty("servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.abort.percent",
         "10");
-    System.setProperty("cse.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.abort.httpStatus",
+    System.setProperty("servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.abort.httpStatus",
         "421");
 
     Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName5");
@@ -272,13 +272,13 @@ public class TestFaultInjectHandler {
     Assert.assertFalse(isAbort);
 
     System.getProperties()
-        .remove("cse.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.delay.fixedDelay");
+        .remove("servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.delay.fixedDelay");
     System.getProperties()
-        .remove("cse.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.delay.percent");
+        .remove("servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.delay.percent");
     System.getProperties()
-        .remove("cse.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.abort.percent");
+        .remove("servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.abort.percent");
     System.getProperties()
-        .remove("cse.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.abort.httpStatus");
+        .remove("servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.abort.httpStatus");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName5");
     assertEquals(2, count.get());
@@ -294,16 +294,16 @@ public class TestFaultInjectHandler {
   public void testFaultInjectHandlerOperationCfgSuccess() throws Exception {
 
     System.setProperty(
-        "cse.governance.Consumer.carts.schemas.testSchema.operations.sayHi.policy.fault.protocols.rest.delay.fixedDelay",
+        "servicecomb.governance.Consumer.carts.schemas.testSchema.operations.sayHi.policy.fault.protocols.rest.delay.fixedDelay",
         "1");
     System.setProperty(
-        "cse.governance.Consumer.carts.schemas.testSchema.operations.sayHi.policy.fault.protocols.rest.delay.percent",
+        "servicecomb.governance.Consumer.carts.schemas.testSchema.operations.sayHi.policy.fault.protocols.rest.delay.percent",
         "10");
     System.setProperty(
-        "cse.governance.Consumer.carts.schemas.testSchema.operations.sayHi.policy.fault.protocols.rest.abort.percent",
+        "servicecomb.governance.Consumer.carts.schemas.testSchema.operations.sayHi.policy.fault.protocols.rest.abort.percent",
         "10");
     System.setProperty(
-        "cse.governance.Consumer.carts.schemas.testSchema.operations.sayHi.policy.fault.protocols.rest.abort.httpStatus",
+        "servicecomb.governance.Consumer.carts.schemas.testSchema.operations.sayHi.policy.fault.protocols.rest.abort.httpStatus",
         "421");
 
     Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName6");
@@ -327,16 +327,16 @@ public class TestFaultInjectHandler {
 
     System.getProperties()
         .remove(
-            "cse.governance.Consumer.carts.schemas.testSchema.operations.sayHi.policy.fault.protocols.rest.delay.fixedDelay");
+            "servicecomb.governance.Consumer.carts.schemas.testSchema.operations.sayHi.policy.fault.protocols.rest.delay.fixedDelay");
     System.getProperties()
         .remove(
-            "cse.governance.Consumer.carts.schemas.testSchema.operations.sayHi.policy.fault.protocols.rest.delay.percent");
+            "servicecomb.governance.Consumer.carts.schemas.testSchema.operations.sayHi.policy.fault.protocols.rest.delay.percent");
     System.getProperties()
         .remove(
-            "cse.governance.Consumer.carts.schemas.testSchema.operations.sayHi.policy.fault.protocols.rest.abort.percent");
+            "servicecomb.governance.Consumer.carts.schemas.testSchema.operations.sayHi.policy.fault.protocols.rest.abort.percent");
     System.getProperties()
         .remove(
-            "cse.governance.Consumer.carts.schemas.testSchema.operations.sayHi.policy.fault.protocols.rest.abort.httpStatus");
+            "servicecomb.governance.Consumer.carts.schemas.testSchema.operations.sayHi.policy.fault.protocols.rest.abort.httpStatus");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName6");
     assertEquals(2, count.get());
@@ -351,16 +351,16 @@ public class TestFaultInjectHandler {
   public void testFaultInjectHandlerConfigChangeEvent1() throws Exception {
 
     System.setProperty(
-        "cse.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay",
+        "servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay",
         "1");
     System.setProperty(
-        "cse.governance.Consumer._global.policy.fault.protocols.rest.delay.percent",
+        "servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent",
         "100");
     System.setProperty(
-        "cse.governance.Consumer._global.policy.fault.protocols.rest.abort.percent",
+        "servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent",
         "100");
     System.setProperty(
-        "cse.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus",
+        "servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus",
         "420");
 
     Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName7");
@@ -382,9 +382,9 @@ public class TestFaultInjectHandler {
     }
     Assert.assertTrue(validAssert);
     TestFaultInjectUtil
-        .updateProperty("cse.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay", 500);
+        .updateProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay", 500);
     TestFaultInjectUtil
-        .updateProperty("cse.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus", 421);
+        .updateProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus", 421);
 
     handler.handle(invocation, ar -> {
       assertEquals(true, response.isFailed());
@@ -392,16 +392,16 @@ public class TestFaultInjectHandler {
 
     System.getProperties()
         .remove(
-            "cse.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay");
+            "servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay");
     System.getProperties()
         .remove(
-            "cse.governance.Consumer._global.policy.fault.protocols.rest.delay.percent");
+            "servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent");
     System.getProperties()
         .remove(
-            "cse.governance.Consumer._global.policy.fault.protocols.rest.abort.percent");
+            "servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent");
     System.getProperties()
         .remove(
-            "cse.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus");
+            "servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName7");
     assertEquals(3, count.get());
@@ -416,16 +416,16 @@ public class TestFaultInjectHandler {
   public void testFaultInjectHandlerConfigChangeEvent2() throws Exception {
 
     System.setProperty(
-        "cse.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.delay.fixedDelay",
+        "servicecomb.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.delay.fixedDelay",
         "1");
     System.setProperty(
-        "cse.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.delay.percent",
+        "servicecomb.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.delay.percent",
         "100");
     System.setProperty(
-        "cse.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.abort.percent",
+        "servicecomb.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.abort.percent",
         "100");
     System.setProperty(
-        "cse.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.abort.httpStatus",
+        "servicecomb.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.abort.httpStatus",
         "420");
 
     Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName8");
@@ -449,7 +449,7 @@ public class TestFaultInjectHandler {
     Assert.assertTrue(validAssert);
     TestFaultInjectUtil
         .updateProperty(
-            "cse.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.delay.fixedDelay",
+            "servicecomb.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.delay.fixedDelay",
             500);
 
     handler.handle(invocation, ar -> {
@@ -463,16 +463,16 @@ public class TestFaultInjectHandler {
 
     System.getProperties()
         .remove(
-            "cse.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.delay.fixedDelay");
+            "servicecomb.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.delay.fixedDelay");
     System.getProperties()
         .remove(
-            "cse.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.delay.percent");
+            "servicecomb.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.delay.percent");
     System.getProperties()
         .remove(
-            "cse.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.abort.percent");
+            "servicecomb.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.abort.percent");
     System.getProperties()
         .remove(
-            "cse.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.abort.httpStatus");
+            "servicecomb.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.abort.httpStatus");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName8");
     assertEquals(3, count.get());
@@ -487,16 +487,16 @@ public class TestFaultInjectHandler {
   public void testFaultInjectHandlerConfigChangeEvent3() throws Exception {
 
     System.setProperty(
-        "cse.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.delay.fixedDelay",
+        "servicecomb.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.delay.fixedDelay",
         "1");
     System.setProperty(
-        "cse.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.delay.percent",
+        "servicecomb.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.delay.percent",
         "100");
     System.setProperty(
-        "cse.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.abort.percent",
+        "servicecomb.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.abort.percent",
         "100");
     System.setProperty(
-        "cse.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.abort.httpStatus",
+        "servicecomb.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.abort.httpStatus",
         "421");
 
     Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName9");
@@ -520,7 +520,7 @@ public class TestFaultInjectHandler {
     Assert.assertTrue(validAssert);
     TestFaultInjectUtil
         .updateProperty(
-            "cse.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.delay.fixedDelay",
+            "servicecomb.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.delay.fixedDelay",
             500);
 
     handler.handle(invocation, ar -> {
@@ -533,13 +533,13 @@ public class TestFaultInjectHandler {
     });
 
     System.getProperties()
-        .remove("cse.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.delay.fixedDelay");
+        .remove("servicecomb.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.delay.fixedDelay");
     System.getProperties()
-        .remove("cse.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.delay.percent");
+        .remove("servicecomb.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.delay.percent");
     System.getProperties()
-        .remove("cse.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.abort.percent");
+        .remove("servicecomb.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.abort.percent");
     System.getProperties()
-        .remove("cse.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.abort.httpStatus");
+        .remove("servicecomb.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.abort.httpStatus");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName9");
     assertEquals(3, count.get());
@@ -552,16 +552,16 @@ public class TestFaultInjectHandler {
    */
   @Test
   public void testFaultInjectHandlerConfigChangeEvent4() throws Exception {
-    System.setProperty("cse.governance.Consumer.carts4.policy.fault.protocols.rest.delay.fixedDelay", "1");
+    System.setProperty("servicecomb.governance.Consumer.carts4.policy.fault.protocols.rest.delay.fixedDelay", "1");
 
     System.setProperty(
-        "cse.governance.Consumer.carts4.policy.fault.protocols.rest.delay.percent",
+        "servicecomb.governance.Consumer.carts4.policy.fault.protocols.rest.delay.percent",
         "100");
     System.setProperty(
-        "cse.governance.Consumer.carts4.policy.fault.protocols.rest.abort.percent",
+        "servicecomb.governance.Consumer.carts4.policy.fault.protocols.rest.abort.percent",
         "100");
     System.setProperty(
-        "cse.governance.Consumer.carts4.policy.fault.protocols.rest.abort.httpStatus",
+        "servicecomb.governance.Consumer.carts4.policy.fault.protocols.rest.abort.httpStatus",
         "421");
 
     Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName10");
@@ -584,7 +584,7 @@ public class TestFaultInjectHandler {
     }
     Assert.assertTrue(validAssert);
     TestFaultInjectUtil
-        .updateProperty("cse.governance.Consumer.carts4.policy.fault.protocols.rest.delay.fixedDelay", 500);
+        .updateProperty("servicecomb.governance.Consumer.carts4.policy.fault.protocols.rest.delay.fixedDelay", 500);
 
     handler.handle(invocation, ar -> {
       //check whether error code return,
@@ -596,13 +596,13 @@ public class TestFaultInjectHandler {
     });
 
     System.getProperties()
-        .remove("cse.governance.Consumer.carts4.policy.fault.protocols.rest.delay.fixedDelay");
+        .remove("servicecomb.governance.Consumer.carts4.policy.fault.protocols.rest.delay.fixedDelay");
     System.getProperties()
-        .remove("cse.governance.Consumer.carts4.policy.fault.protocols.rest.delay.percent");
+        .remove("servicecomb.governance.Consumer.carts4.policy.fault.protocols.rest.delay.percent");
     System.getProperties()
-        .remove("cse.governance.Consumer.carts4.policy.fault.protocols.rest.abort.percent");
+        .remove("servicecomb.governance.Consumer.carts4.policy.fault.protocols.rest.abort.percent");
     System.getProperties()
-        .remove("cse.governance.Consumer.carts4.policy.fault.protocols.rest.abort.httpStatus");
+        .remove("servicecomb.governance.Consumer.carts4.policy.fault.protocols.rest.abort.httpStatus");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName10");
     assertEquals(3, count.get());
@@ -616,10 +616,10 @@ public class TestFaultInjectHandler {
   @Test
   public void testFaultInjectHandlerConfigChangeEvent5() throws Exception {
     System.setProperty(
-        "cse.governance.Consumer.carts5.policy.fault.protocols.rest.delay.percent",
+        "servicecomb.governance.Consumer.carts5.policy.fault.protocols.rest.delay.percent",
         "100");
     System.setProperty(
-        "cse.governance.Consumer.carts5.policy.fault.protocols.rest.abort.percent",
+        "servicecomb.governance.Consumer.carts5.policy.fault.protocols.rest.abort.percent",
         "100");
 
     Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName11");
@@ -641,20 +641,20 @@ public class TestFaultInjectHandler {
     }
     Assert.assertTrue(validAssert);
     TestFaultInjectUtil
-        .updateProperty("cse.governance.Consumer.carts5.policy.fault.protocols.rest.abort.percent", 500);
+        .updateProperty("servicecomb.governance.Consumer.carts5.policy.fault.protocols.rest.abort.percent", 500);
 
     handler.handle(invocation, ar -> {
       assertEquals(true, response.isFailed());
     });
 
     System.getProperties()
-        .remove("cse.governance.Consumer.carts5.policy.fault.protocols.rest.delay.fixedDelay");
+        .remove("servicecomb.governance.Consumer.carts5.policy.fault.protocols.rest.delay.fixedDelay");
     System.getProperties()
-        .remove("cse.governance.Consumer.carts5.policy.fault.protocols.rest.delay.percent");
+        .remove("servicecomb.governance.Consumer.carts5.policy.fault.protocols.rest.delay.percent");
     System.getProperties()
-        .remove("cse.governance.Consumer.carts5.policy.fault.protocols.rest.abort.percent");
+        .remove("servicecomb.governance.Consumer.carts5.policy.fault.protocols.rest.abort.percent");
     System.getProperties()
-        .remove("cse.governance.Consumer.carts5.policy.fault.protocols.rest.abort.httpStatus");
+        .remove("servicecomb.governance.Consumer.carts5.policy.fault.protocols.rest.abort.httpStatus");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName11");
     assertEquals(3, count.get());
@@ -667,10 +667,10 @@ public class TestFaultInjectHandler {
    */
   @Test
   public void testFaultInjectHandlerConfigChangeEvent6() throws Exception {
-    System.setProperty("cse.governance.Consumer.carts6.policy.fault.protocols.rest.delay.fixedDelay", "1000");
+    System.setProperty("servicecomb.governance.Consumer.carts6.policy.fault.protocols.rest.delay.fixedDelay", "1000");
 
     System.setProperty(
-        "cse.governance.Consumer.carts6.policy.fault.protocols.rest.delay.percent",
+        "servicecomb.governance.Consumer.carts6.policy.fault.protocols.rest.delay.percent",
         "100");
 
     Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName12");
@@ -687,9 +687,9 @@ public class TestFaultInjectHandler {
 
     delayFault.injectFault(invocation, faultParam, ar);
     System.getProperties()
-        .remove("cse.governance.Consumer.carts6.policy.fault.protocols.rest.delay.fixedDelay");
+        .remove("servicecomb.governance.Consumer.carts6.policy.fault.protocols.rest.delay.fixedDelay");
     System.getProperties()
-        .remove("cse.governance.Consumer.carts6.policy.fault.protocols.rest.delay.percent");
+        .remove("servicecomb.governance.Consumer.carts6.policy.fault.protocols.rest.delay.percent");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
     assertEquals(1, count.get());

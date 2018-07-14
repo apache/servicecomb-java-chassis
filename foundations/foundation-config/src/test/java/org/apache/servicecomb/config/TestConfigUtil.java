@@ -71,6 +71,7 @@ public class TestConfigUtil {
     System.setProperty(systemPropertyName, systemExpected);
     try {
       setEnv(environmentPropertyName, environmentExpected);
+      setEnv("MY_SERVICES_ENDPOINT", "https://myhost:8888");
     } catch (Exception e) {
       throw new IllegalStateException(e);
     }
@@ -133,45 +134,45 @@ public class TestConfigUtil {
     String expected = "value";
 
     assertThat(DynamicPropertyFactory
-            .getInstance()
-            .getStringProperty("servicecomb.cse.servicecomb.file", null)
-            .get(),
-        equalTo(expected));
+        .getInstance()
+        .getStringProperty("cse.cse.servicecomb.file", null)
+        .get(),
+        equalTo(null));
 
     assertThat(DynamicPropertyFactory
-            .getInstance()
-            .getStringProperty("cse.cse.servicecomb.file", null)
-            .get(),
+        .getInstance()
+        .getStringProperty("servicecomb.cse.servicecomb.file", null)
+        .get(),
         equalTo(expected));
   }
 
   @Test
   public void propertiesFromSystemIsDuplicatedToCse() {
     assertThat(DynamicPropertyFactory
-            .getInstance()
-            .getStringProperty(systemPropertyName, null)
-            .get(),
+        .getInstance()
+        .getStringProperty(systemPropertyName, null)
+        .get(),
         equalTo(systemExpected));
 
     assertThat(DynamicPropertyFactory
-            .getInstance()
-            .getStringProperty("servicecomb.cse.servicecomb.system.setting", null)
-            .get(),
+        .getInstance()
+        .getStringProperty("servicecomb.cse.servicecomb.system.setting", null)
+        .get(),
         equalTo(systemExpected));
   }
 
   @Test
   public void propertiesFromEnvironmentIsDuplicatedToCse() {
     assertThat(DynamicPropertyFactory
-            .getInstance()
-            .getStringProperty(environmentPropertyName, null)
-            .get(),
+        .getInstance()
+        .getStringProperty(environmentPropertyName, null)
+        .get(),
         equalTo(environmentExpected));
 
     assertThat(DynamicPropertyFactory
-            .getInstance()
-            .getStringProperty("servicecomb.cse.servicecomb.environment.setting", null)
-            .get(),
+        .getInstance()
+        .getStringProperty("servicecomb.cse.servicecomb.environment.setting", null)
+        .get(),
         equalTo(environmentExpected));
   }
 
@@ -180,10 +181,10 @@ public class TestConfigUtil {
     List<String> list = Arrays.asList("a", "b");
 
     AbstractConfiguration config = new DynamicConfiguration();
-    config.addProperty("servicecomb.list", list);
-    Deencapsulation.invoke(ConfigUtil.class, "duplicateServiceCombConfigToCse", config);
+    config.addProperty("cse.list", list);
+    Deencapsulation.invoke(ConfigUtil.class, "duplicateCseConfigToServicecomb", config);
 
-    Object result = config.getProperty("cse.list");
+    Object result = config.getProperty("servicecomb.list");
     assertThat(result, instanceOf(List.class));
     assertThat(result, equalTo(list));
   }
@@ -191,8 +192,8 @@ public class TestConfigUtil {
   @Test
   public void propertiesAddFromDynamicConfigSourceIsDuplicated() {
     String expected = uniquify("ran");
-    String someProperty = "servicecomb.cse.servicecomb.add";
-    String injectProperty = "cse.cse.servicecomb.add";
+    String someProperty = "cse.cse.servicecomb.add";
+    String injectProperty = "servicecomb.cse.servicecomb.add";
 
     configurationSource.addProperty(someProperty, expected);
 
@@ -210,8 +211,8 @@ public class TestConfigUtil {
         equalTo(changed));
 
     expected = uniquify("ran");
-    someProperty = "servicecomb.servicecomb.cse.add";
-    injectProperty = "cse.servicecomb.cse.add";
+    someProperty = "cse.servicecomb.cse.add";
+    injectProperty = "servicecomb.servicecomb.cse.add";
 
     configurationSource.addProperty(someProperty, expected);
 
@@ -232,8 +233,8 @@ public class TestConfigUtil {
   @Test
   public void propertiesChangeFromDynamicConfigSourceIsDuplicated() {
     String expected = uniquify("ran");
-    String someProperty = "servicecomb.cse.servicecomb.change";
-    String injectProperty = "cse.cse.servicecomb.change";
+    String someProperty = "cse.cse.servicecomb.change";
+    String injectProperty = "servicecomb.cse.servicecomb.change";
     configurationSource.addProperty(someProperty, expected);
 
     assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
@@ -250,8 +251,8 @@ public class TestConfigUtil {
         equalTo(changed));
 
     expected = uniquify("ran");
-    someProperty = "servicecomb.servicecomb.cse.change";
-    injectProperty = "cse.servicecomb.cse.change";
+    someProperty = "cse.servicecomb.cse.change";
+    injectProperty = "servicecomb.servicecomb.cse.change";
     configurationSource.addProperty(someProperty, expected);
     assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
         equalTo(expected));
@@ -270,8 +271,8 @@ public class TestConfigUtil {
   @Test
   public void propertiesDeleteFromDynamicConfigSourceIsDuplicated() {
     String expected = uniquify("ran");
-    String someProperty = "servicecomb.cse.servicecomb.delete";
-    String injectProperty = "cse.cse.servicecomb.delete";
+    String someProperty = "cse.cse.servicecomb.delete";
+    String injectProperty = "servicecomb.cse.servicecomb.delete";
     configurationSource.addProperty(someProperty, expected);
 
     assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
@@ -287,8 +288,8 @@ public class TestConfigUtil {
         equalTo(null));
 
     expected = uniquify("ran");
-    someProperty = "servicecomb.servicecomb.cse.delete";
-    injectProperty = "cse.servicecomb.cse.delete";
+    someProperty = "cse.servicecomb.cse.delete";
+    injectProperty = "servicecomb.servicecomb.cse.delete";
     configurationSource.addProperty(someProperty, expected);
 
     assertThat(DynamicPropertyFactory.getInstance().getStringProperty(someProperty, null).get(),
@@ -322,6 +323,8 @@ public class TestConfigUtil {
     String overriddenConfigKey = "servicecomb.cse.servicecomb.file";
     extraConfig.put(extraConfigKey, extraConfigValue);
     final String propertyHigherPriority = "higher_priority";
+    String mapedKey1 = "servicecomb.service.mapping.address";
+    String mapedKey2 = "servicecomb.service1.mapping.address";
     extraConfig.put(overriddenConfigKey, propertyHigherPriority);
 
     ConfigUtil.addExtraConfig("testExtraConfig", extraConfig);
@@ -330,6 +333,9 @@ public class TestConfigUtil {
 
     Assert.assertEquals(extraConfigValue, localConfiguration.getProperty(extraConfigKey));
     Assert.assertEquals(propertyHigherPriority, localConfiguration.getString(overriddenConfigKey));
+    // Test mapping key/value from self mappfing.xml
+    Assert.assertEquals("https://myhost:8888", localConfiguration.getString(mapedKey1));
+    Assert.assertEquals("https://myhost:8888", localConfiguration.getString(mapedKey2));
   }
 
   @SuppressWarnings("unchecked")

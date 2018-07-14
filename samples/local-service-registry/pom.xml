@@ -16,10 +16,20 @@
   ~ limitations under the License.
   -->
 
-<beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="
-        http://www.springframework.org/schema/beans
-        classpath:/org/springframework/beans/factory/xml/spring-beans-3.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.servicecomb.samples</groupId>
+    <artifactId>samples</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>local-service-registry</artifactId>
+  <name>Java Chassis::Demo::Local service registry</name>
+  <packaging>pom</packaging>
+  <modules>
+    <module>local-registry-server</module>
+    <module>local-registry-client</module>
+  </modules>
 
-</beans>
+</project>

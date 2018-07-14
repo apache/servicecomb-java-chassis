@@ -38,7 +38,7 @@ public class TestWebsocketClientPool {
 
   @Test
   public void createHttpClientOptions_http2() {
-    ArchaiusUtils.setProperty("cse.service.registry.client.httpVersion", HttpVersion.HTTP_2.name());
+    ArchaiusUtils.setProperty("servicecomb.service.registry.client.httpVersion", HttpVersion.HTTP_2.name());
 
     HttpClientOptions httpClientOptions = WebsocketClientPool.INSTANCE.createHttpClientOptions();
 

@@ -61,7 +61,7 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestHighwayClient {
-  private static final String REQUEST_TIMEOUT_KEY = "cse.request.timeout";
+  private static final String REQUEST_TIMEOUT_KEY = "servicecomb.request.timeout";
 
   HighwayClient client = new HighwayClient();
 

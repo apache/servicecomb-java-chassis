@@ -15,10 +15,4 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: registry.client.serviceUrl.defaultZone
-
-service_description:
-  environment: SERVICECOMB_ENV
+SERVICECOMB_ENV: service_description.environment

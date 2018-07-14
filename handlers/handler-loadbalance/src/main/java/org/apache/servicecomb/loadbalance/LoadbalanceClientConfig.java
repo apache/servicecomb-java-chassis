@@ -24,7 +24,7 @@ import com.netflix.client.config.DefaultClientConfigImpl;
  *
  */
 public class LoadbalanceClientConfig extends DefaultClientConfigImpl {
-  private static final String PREFIX = "cse.loadbalance";
+  private static final String PREFIX = "servicecomb.loadbalance";
 
   public LoadbalanceClientConfig(String namespace) {
     super(namespace);

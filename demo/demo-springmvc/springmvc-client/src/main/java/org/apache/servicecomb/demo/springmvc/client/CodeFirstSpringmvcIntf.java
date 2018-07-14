@@ -55,4 +55,8 @@ public interface CodeFirstSpringmvcIntf {
   Generic<HttpStatus> testGenericEnum(Generic<HttpStatus> input);
 
   Generic<Generic<User>> testGenericGenericUser(Generic<Generic<User>> input);
+
+  void testvoidInRPC();
+
+  Void testVoidInRPC();
 }

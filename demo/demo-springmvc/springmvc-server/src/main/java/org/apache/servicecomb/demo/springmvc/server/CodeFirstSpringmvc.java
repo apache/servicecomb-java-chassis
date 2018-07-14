@@ -37,6 +37,7 @@ import org.apache.servicecomb.demo.Generic;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
 import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
+import org.apache.servicecomb.demo.jaxbbean.JAXBPerson;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
@@ -46,6 +47,8 @@ import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.response.Headers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -79,6 +82,7 @@ import io.vertx.core.json.JsonObject;
 @RestSchema(schemaId = "codeFirst")
 @RequestMapping(path = "/codeFirstSpringmvc", produces = MediaType.APPLICATION_JSON_VALUE)
 public class CodeFirstSpringmvc {
+  private static final Logger LOGGER = LoggerFactory.getLogger(CodeFirstSpringmvc.class);
 
   private String _fileUpload(MultipartFile file1, Part file2) {
     try (InputStream is1 = file1.getInputStream(); InputStream is2 = file2.getInputStream()) {
@@ -115,10 +119,10 @@ public class CodeFirstSpringmvc {
   @RequestMapping(path = "/responseEntity", method = RequestMethod.POST)
   public ResponseEntity<Date> responseEntity(InvocationContext c1, @RequestAttribute("date") Date date) {
     HttpHeaders headers = new HttpHeaders();
-    headers.add("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE).toString());
+    headers.add("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE));
 
     InvocationContext c2 = ContextUtils.getInvocationContext();
-    headers.add("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE).toString());
+    headers.add("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE));
 
     return new ResponseEntity<>(date, headers, HttpStatus.ACCEPTED);
   }
@@ -127,13 +131,7 @@ public class CodeFirstSpringmvc {
       @ResponseHeader(name = "h2", response = String.class)})
   @RequestMapping(path = "/responseEntity", method = RequestMethod.PATCH)
   public ResponseEntity<Date> responseEntityPATCH(InvocationContext c1, @RequestAttribute("date") Date date) {
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE).toString());
-
-    InvocationContext c2 = ContextUtils.getInvocationContext();
-    headers.add("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE).toString());
-
-    return new ResponseEntity<>(date, headers, HttpStatus.ACCEPTED);
+    return responseEntity(c1, date);
   }
 
   @ApiResponse(code = 200, response = User.class, message = "")
@@ -159,6 +157,11 @@ public class CodeFirstSpringmvc {
   @RequestMapping(path = "/textPlain", method = RequestMethod.POST, consumes = MediaType.TEXT_PLAIN_VALUE)
   public String textPlain(@RequestBody String body) {
     return body;
+  }
+
+  @RequestMapping(path = "/appXml", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_XML_VALUE)
+  public JAXBPerson appXml(@RequestBody JAXBPerson person) {
+    return person;
   }
 
   @RequestMapping(path = "/bytes", method = RequestMethod.POST)
@@ -419,5 +422,46 @@ public class CodeFirstSpringmvc {
     Assert.isInstanceOf(Generic.class, input.value);
     Assert.isInstanceOf(User.class, input.value.value);
     return input;
+  }
+
+  private boolean testvoidInRPCSuccess = false;
+
+  @GetMapping(path = "/testvoidInRPC")
+  public void testvoidInRPC() {
+    LOGGER.info("testvoidInRPC() is called!");
+    testvoidInRPCSuccess = true;
+  }
+
+  private boolean testVoidInRPCSuccess = false;
+
+  @GetMapping(path = "/testVoidInRPC")
+  public Void testVoidInRPC() {
+    LOGGER.info("testVoidInRPC() is called!");
+    testVoidInRPCSuccess = true;
+    return null;
+  }
+
+  private boolean testvoidInRestTemplateSuccess = false;
+
+  @GetMapping(path = "/testvoidInRestTemplate")
+  public void testvoidInRestTemplate() {
+    LOGGER.info("testvoidInRestTemplate() is called!");
+    testvoidInRestTemplateSuccess = true;
+  }
+
+  private boolean testVoidInRestTemplateSuccess = false;
+
+  @GetMapping(path = "/testVoidInRestTemplate")
+  public Void testVoidInRestTemplate() {
+    LOGGER.info("testVoidInRestTemplate() is called!");
+    testVoidInRestTemplateSuccess = true;
+    return null;
+  }
+
+  @GetMapping(path = "/checkVoidResult")
+  public boolean checkVoidResult() {
+    LOGGER.info("checkVoidResult() is called!");
+    return testvoidInRPCSuccess && testVoidInRPCSuccess && testvoidInRestTemplateSuccess
+        && testVoidInRestTemplateSuccess;
   }
 }

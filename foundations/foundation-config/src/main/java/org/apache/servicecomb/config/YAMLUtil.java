@@ -17,6 +17,9 @@
 
 package org.apache.servicecomb.config;
 
+import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_CSE_PREFIX;
+import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICECOMB_PREFIX;
+
 import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -30,6 +33,15 @@ public final class YAMLUtil {
   private YAMLUtil() {
   }
 
+  /**
+   * load a input {@link InputStream} to be a map {@link Map}, you have to close the inputStream by yourself, such as:<br>
+   * <p>try (InputStream in = url.openStream()) {<br>
+   *   &nbsp;&nbsp;&nbsp;&nbsp;    configMap.putAll(YAMLUtil.yaml2Properties(in));<br>
+   *     }<br>
+   * </p>
+   * @param input the stream to be loaded
+   * @return a config map
+   */
   @SuppressWarnings("unchecked")
   public static Map<String, Object> yaml2Properties(InputStream input) {
     Map<String, Object> configurations = new LinkedHashMap<>();
@@ -49,7 +61,12 @@ public final class YAMLUtil {
       if (entry.getValue() instanceof Map) {
         result.putAll(retrieveItems(prefix + entry.getKey(), (Map<String, Object>) entry.getValue()));
       } else {
-        result.put(prefix + entry.getKey(), entry.getValue());
+        String key = prefix + entry.getKey();
+        if (key.startsWith(CONFIG_CSE_PREFIX)) {
+          String servicecombKey = CONFIG_SERVICECOMB_PREFIX + key.substring(key.indexOf(".") + 1);
+          result.put(servicecombKey, entry.getValue());
+        }
+        result.put(key, entry.getValue());
       }
     }
     return result;

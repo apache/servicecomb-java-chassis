@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import javax.ws.rs.core.Response.StatusType;
 
+import io.vertx.core.http.HttpHeaders;
+
 public interface HttpServletResponseEx extends HttpServletResponse, BodyBufferSupport {
   StatusType getStatusType();
 
@@ -31,4 +33,8 @@ public interface HttpServletResponseEx extends HttpServletResponse, BodyBufferSu
   Object getAttribute(String key);
 
   CompletableFuture<Void> sendPart(Part body);
+
+  default void setChunked(boolean chunked) {
+    setHeader(HttpHeaders.TRANSFER_ENCODING.toString(), HttpHeaders.CHUNKED.toString());
+  }
 }

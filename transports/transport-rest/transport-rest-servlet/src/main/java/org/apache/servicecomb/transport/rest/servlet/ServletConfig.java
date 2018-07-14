@@ -26,7 +26,9 @@ public final class ServletConfig {
 
   public static final String KEY_SERVLET_URL_PATTERN = "servicecomb.rest.servlet.urlPattern";
 
-  public static final String KEY_CSE_REST_ADDRESS = "cse.rest.address";
+  public static final String SERVICECOMB_REST_ADDRESS = "servicecomb.rest.address";
+
+  public static final String KEY_SERVICECOMB_REST_SERVER_TIMEOUT = "servicecomb.rest.server.timeout";
 
   public static final String DEFAULT_URL_PATTERN = "/*";
 
@@ -35,13 +37,13 @@ public final class ServletConfig {
 
   public static long getServerTimeout() {
     DynamicLongProperty address =
-        DynamicPropertyFactory.getInstance().getLongProperty("cse.rest.server.timeout", DEFAULT_TIMEOUT);
+        DynamicPropertyFactory.getInstance().getLongProperty(KEY_SERVICECOMB_REST_SERVER_TIMEOUT, DEFAULT_TIMEOUT);
     return address.get();
   }
 
   public static String getLocalServerAddress() {
     DynamicStringProperty address =
-        DynamicPropertyFactory.getInstance().getStringProperty(KEY_CSE_REST_ADDRESS, null);
+        DynamicPropertyFactory.getInstance().getStringProperty(SERVICECOMB_REST_ADDRESS, null);
     return address.get();
   }
 

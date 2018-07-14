@@ -41,7 +41,7 @@ public class TestConsumer {
   public void testConsumerProviderManager() {
     ConsumerProviderManager oConsumerProviderManager = new ConsumerProviderManager();
     RegisterManager oRegisterManager = new RegisterManager("cse consumer provider manager");
-    oRegisterManager.register("cse.references.cse consumer provider manager",
+    oRegisterManager.register("servicecomb.references.cse consumer provider manager",
         "cse consumer provider manager");
     boolean validAssert = true;
     try {

@@ -27,6 +27,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+
 public class SpringTracingConfigurationTest {
 
   private AnnotationConfigApplicationContext context;

@@ -39,7 +39,7 @@ paths:
       parameters:
       - in: "body"
         name: "srcUser"
-        required: false
+        required: true
         schema:
           $ref: "#/definitions/User"
       - name: "header"
@@ -75,7 +75,7 @@ paths:
       parameters:
       - in: "body"
         name: "srcUser"
-        required: false
+        required: true
         schema:
           $ref: "#/definitions/User"
       - name: "header"
@@ -111,7 +111,7 @@ paths:
       parameters:
       - in: "body"
         name: "srcUser"
-        required: false
+        required: true
         schema:
           $ref: "#/definitions/User"
       - name: "header"
@@ -147,7 +147,7 @@ paths:
       parameters:
       - in: "body"
         name: "srcUser"
-        required: false
+        required: true
         schema:
           $ref: "#/definitions/User"
       - name: "header"
@@ -183,7 +183,7 @@ paths:
       parameters:
       - in: "body"
         name: "srcUser"
-        required: false
+        required: true
         schema:
           $ref: "#/definitions/User"
       - name: "header"
@@ -219,7 +219,7 @@ paths:
       parameters:
       - in: "body"
         name: "srcUser"
-        required: false
+        required: true
         schema:
           $ref: "#/definitions/User"
       - name: "header"

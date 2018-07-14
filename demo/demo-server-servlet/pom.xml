@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.servicecomb.demo</groupId>
     <artifactId>demo-parent</artifactId>
-    <version>1.0.0-m2-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>demo-server-servlet</artifactId>
   <name>Java Chassis::Demo::Server Servlet</name>
@@ -33,7 +33,7 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
-      <artifactId>pojo-server</artifactId>
+      <artifactId>springmvc-server</artifactId>
     </dependency>
   </dependencies>
 

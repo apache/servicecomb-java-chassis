@@ -150,7 +150,7 @@ paths:
       parameters:
         - name: TestRequest
           in: body
-          required: true
+          required: false
           schema: 
             $ref: '#/definitions/TestRequest'
       responses: 

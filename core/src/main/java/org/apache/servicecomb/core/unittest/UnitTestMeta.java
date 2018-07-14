@@ -61,13 +61,13 @@ public class UnitTestMeta {
 
   private ConsumerProviderManager consumerProviderManager;
 
+  public ConsumerProviderManager getConsumerProviderManager() {
+    return consumerProviderManager;
+  }
+
   private ConsumerSchemaFactory consumerSchemaFactory;
 
-  private SchemaLoader schemaLoader = new SchemaLoader() {
-    @Override
-    public void putSelfBasePathIfAbsent(String microserviceName, String basePath) {
-    }
-  };
+  private SchemaLoader schemaLoader = new SchemaLoader();
 
   private ServiceRegistry serviceRegistry;
 

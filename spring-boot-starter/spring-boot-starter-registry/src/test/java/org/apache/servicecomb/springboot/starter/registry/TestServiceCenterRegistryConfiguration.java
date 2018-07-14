@@ -38,7 +38,7 @@ public class TestServiceCenterRegistryConfiguration {
         result = microserviceInstance;
       }
     };
-    System.setProperty("cse.rest.address", "127.0.0.1:8081");
+    System.setProperty("servicecomb.rest.address", "127.0.0.1:8081");
     new ServiceCenterRegistryConfiguration();
     Assert.assertEquals("rest://127.0.0.1:8081", RegistryUtils.getPublishAddress("rest", "127.0.0.1:8081"));
   }

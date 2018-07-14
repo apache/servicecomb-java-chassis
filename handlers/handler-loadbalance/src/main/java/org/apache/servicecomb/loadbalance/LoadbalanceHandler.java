@@ -33,6 +33,7 @@ import org.apache.servicecomb.core.exception.ExceptionUtils;
 import org.apache.servicecomb.core.provider.consumer.SyncResponseExecutor;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.apache.servicecomb.loadbalance.filter.CseServerDiscoveryFilter;
 import org.apache.servicecomb.loadbalance.filter.IsolationServerListFilter;
 import org.apache.servicecomb.loadbalance.filter.TransactionControlFilter;
@@ -223,7 +224,8 @@ public class LoadbalanceHandler implements Handler {
       @Override
       public void onExceptionWithServer(ExecutionContext<Invocation> context, Throwable exception,
           ExecutionInfo info) {
-        LOGGER.error("onExceptionWithServer msg {}; server {}",
+        LOGGER.error("onExceptionWithServer operation {}; msg {}; server {}",
+            context.getRequest().getInvocationQualifiedName(),
             exception.getMessage(),
             context.getRequest().getEndpoint());
       }
@@ -274,7 +276,8 @@ public class LoadbalanceHandler implements Handler {
             invocation.setEndpoint(((CseServer) s).getEndpoint());
             invocation.next(resp -> {
               if (isFailedResponse(resp)) {
-                LOGGER.error("service call error, msg is {}, server is {} ",
+                LOGGER.error("service {}, call error, msg is {}, server is {} ",
+                    invocation.getInvocationQualifiedName(),
                     ((Throwable) resp.getResult()).getMessage(),
                     s);
                 chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
@@ -363,7 +366,7 @@ public class LoadbalanceHandler implements Handler {
         String.format(Configuration.SERVER_LIST_FILTER_CLASS_HOLDER, filter));
     if (!StringUtils.isEmpty(className)) {
       try {
-        Class<?> filterClass = Class.forName(className, true, Thread.currentThread().getContextClassLoader());
+        Class<?> filterClass = Class.forName(className, true, JvmUtils.findClassLoader());
         if (ServerListFilterExt.class.isAssignableFrom(filterClass)) {
           ServerListFilterExt ext = (ServerListFilterExt) filterClass.newInstance();
           ext.setName(filter);

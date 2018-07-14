@@ -24,7 +24,7 @@
   <artifactId>samples</artifactId>
   <name>Java Chassis::Samples</name>
   <packaging>pom</packaging>
-  <version>1.0.0-m2-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
   <modules>
     <module>codefirst-sample</module>
     <module>custom-handler-sample</module>
@@ -38,6 +38,8 @@
     <module>metrics-extend-healthcheck</module>
     <module>config-apollo-sample</module>
     <module>use-log4j2-sample</module>
+    <module>local-service-registry</module>
+    <module>trust-sample</module>
   </modules>
 
   <dependencyManagement>
@@ -45,14 +47,14 @@
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>java-chassis-dependencies</artifactId>
-        <version>1.0.0-m2-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb.samples</groupId>
         <artifactId>common-schema</artifactId>
-        <version>1.0.0-m2-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

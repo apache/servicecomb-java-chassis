@@ -17,9 +17,12 @@
 package org.apache.servicecomb.authentication;
 
 import org.apache.servicecomb.authentication.provider.ProviderAuthHanlder;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,11 +35,15 @@ public class TestProviderAuthHanlder {
 
   @Before
   public void setUp() throws Exception {
+    ConfigUtil.installDynamicConfig();
     invocation = Mockito.mock(Invocation.class);
     asyncResp = Mockito.mock(AsyncResponse.class);
     Mockito.when(invocation.getContext(Const.AUTH_TOKEN)).thenReturn("testtoken");
   }
-
+  @After
+  public void tearDown() {
+    ArchaiusUtils.resetConfig();
+  }
   @Test
   public void testHandle() throws Exception {
     ProviderAuthHanlder providerAuthHanlder = new ProviderAuthHanlder();

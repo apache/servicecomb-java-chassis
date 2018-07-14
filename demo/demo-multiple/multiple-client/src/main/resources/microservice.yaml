@@ -15,7 +15,7 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-cse-config-order: 1000
+servicecomb-config-order: 1000
 a-server.name: merged-server
 b-server.name: merged-server
 APPLICATION_ID: multiple

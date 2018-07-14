@@ -27,6 +27,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.ws.rs.DefaultValue;
+
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.extend.parameter.ContextParameter;
 import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
@@ -37,6 +39,7 @@ import io.swagger.models.Operation;
 import io.swagger.models.Path;
 import io.swagger.models.Response;
 import io.swagger.models.Swagger;
+import io.swagger.models.parameters.AbstractSerializableParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.Property;
 import io.swagger.util.ReflectionUtils;
@@ -273,13 +276,25 @@ public class OperationGenerator {
   }
 
   protected void processByParameterAnnotation(Annotation[] paramAnnotations, int paramIdx) {
+    String defaultValue = null;
+    Parameter parameter = null;
     for (Annotation annotation : paramAnnotations) {
-      ParameterAnnotationProcessor processor =
-          context.findParameterAnnotationProcessor(annotation.annotationType());
-      if (processor != null) {
-        processor.process(annotation, this, paramIdx);
+      //JAX-RS default value cannot be mapped to parameter name directly, stored it to map with the actual parameter
+      if (annotation instanceof DefaultValue) {
+        defaultValue = ((DefaultValue) annotation).value();
+      } else {
+        ParameterAnnotationProcessor processor =
+            context.findParameterAnnotationProcessor(annotation.annotationType());
+        if (processor != null) {
+          processor.process(annotation, this, paramIdx);
+          parameter = this.providerParameters.get(this.providerParameters.size() - 1);
+        }
       }
     }
+    if (parameter instanceof AbstractSerializableParameter && defaultValue != null) {
+      ((AbstractSerializableParameter<?>) parameter).setDefaultValue(defaultValue);
+    }
+
   }
 
   protected void processByParameterType(Type parameterType, int paramIdx) {

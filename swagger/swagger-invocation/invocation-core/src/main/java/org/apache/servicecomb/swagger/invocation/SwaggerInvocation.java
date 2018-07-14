@@ -32,6 +32,7 @@ public class SwaggerInvocation extends InvocationContext {
     parentContext = ContextUtils.getInvocationContext();
     if (parentContext != null) {
       addContext(parentContext.getContext());
+      addLocalContext(parentContext.getLocalContext());
     }
   }
 

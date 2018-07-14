@@ -23,7 +23,7 @@ import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 
 public class DiscoveryTreeNode extends VersionedCache {
-  private boolean childrenInited;
+  private volatile boolean childrenInited;
 
   private int level;
 

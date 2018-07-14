@@ -20,6 +20,7 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.ParameterAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import io.swagger.models.parameters.BodyParameter;
 
@@ -27,6 +28,7 @@ public class RequestBodyAnnotationProcessor implements ParameterAnnotationProces
   @Override
   public void process(Object annotation, OperationGenerator operationGenerator, int paramIdx) {
     BodyParameter bodyParameter = ParamUtils.createBodyParameter(operationGenerator, paramIdx);
+    bodyParameter.setRequired(((RequestBody) annotation).required());
     operationGenerator.addProviderParameter(bodyParameter);
   }
 }

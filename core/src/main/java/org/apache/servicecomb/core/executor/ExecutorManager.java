@@ -25,13 +25,13 @@ import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import com.netflix.config.DynamicPropertyFactory;
 
 public final class ExecutorManager {
-  public static final String KEY_EXECUTORS_PREFIX = "cse.executors.Provider.";
+  public static final String KEY_EXECUTORS_PREFIX = "servicecomb.executors.Provider.";
 
-  public static final String KEY_EXECUTORS_DEFAULT = "cse.executors.default";
+  public static final String KEY_EXECUTORS_DEFAULT = "servicecomb.executors.default";
 
-  public static final String EXECUTOR_GROUP_THREADPOOL = "cse.executor.groupThreadPool";
+  public static final String EXECUTOR_GROUP_THREADPOOL = "servicecomb.executor.groupThreadPool";
 
-  public static final String EXECUTOR_REACTIVE = "cse.executor.reactive";
+  public static final String EXECUTOR_REACTIVE = "servicecomb.executor.reactive";
 
   public static final String EXECUTOR_DEFAULT = EXECUTOR_GROUP_THREADPOOL;
 

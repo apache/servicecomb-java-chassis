@@ -14,11 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.foundation.common.event;
 
-package org.apache.servicecomb.common.rest.codec.produce;
+public class AlarmEvent {
 
-public abstract class AbstractProduceProcessor implements ProduceProcessor {
-  public AbstractProduceProcessor() {
-    ProduceProcessorManager.INSTANCE.register(getName(), this);
+  Type type;
+
+  public AlarmEvent(Type type) {
+    this.type = type;
   }
+
+  public Type getType() {
+    return this.type;
+  }
+
+  public enum Type {
+    OPEN,
+    CLOSE
+  };
 }

@@ -126,7 +126,7 @@ public class TestInvokerUtils {
 
     expectedException.expect(IllegalStateException.class);
     expectedException.expectMessage(
-        Matchers.is("System is starting and not ready for remote calls or shutting down in progress, STATUS = DOWN"));
+        Matchers.is("The request is rejected, as the service cannot process the request due to STATUS = DOWN"));
     InvokerUtils.syncInvoke("ms", "schemaId", "opName", null);
   }
 
@@ -136,7 +136,7 @@ public class TestInvokerUtils {
 
     expectedException.expect(IllegalStateException.class);
     expectedException.expectMessage(
-        Matchers.is("System is starting and not ready for remote calls or shutting down in progress, STATUS = DOWN"));
+        Matchers.is("The request is rejected, as the service cannot process the request due to STATUS = DOWN"));
 
     InvokerUtils.syncInvoke("ms", "latest", "rest", "schemaId", "opName", null);
   }

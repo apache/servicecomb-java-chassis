@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.servicecomb.demo</groupId>
     <artifactId>demo-springmvc</artifactId>
-    <version>1.0.0-m2-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
   </parent>
   <artifactId>springmvc-server</artifactId>
   <name>Java Chassis::Demo::Spring MVC::Server</name>
@@ -37,7 +37,10 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>provider-springmvc</artifactId>
     </dependency>
-
+     <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>swagger-invocation-validator</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>metrics-prometheus</artifactId>
@@ -66,7 +69,7 @@
             <mixin>
               <groupId>org.apache.servicecomb.demo</groupId>
               <artifactId>docker-build-config</artifactId>
-              <version>1.0.0-m2-SNAPSHOT</version>
+              <version>1.0.0-SNAPSHOT</version>
             </mixin>
           </mixins>
         </configuration>

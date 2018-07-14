@@ -28,10 +28,10 @@ service_description:
     - path: /test2/testpath
       property:
         checksession: true
-cse.uploads.directory: target
 servicecomb:
   service:
     registry:
+      registerPath: true
       address: http://127.0.0.1:30100
       client:
         timeout:
@@ -44,12 +44,15 @@ servicecomb:
           interval: 10
         watch: false
       autodiscovery: true
+# can download config center from https://cse-bucket.obs.myhwclouds.com/LocalCSE/Local-CSE-1.0.0.zip to test dynamic config
   config:
     client:
-      serverUri: http://127.0.0.1:30103,http://127.0.0.2:30103
+      serverUri: http://127.0.0.1:30113
       refreshMode: 0
       refresh_interval: 5000
-
+      refreshPort: 30114
+  uploads:
+    directory: target
   rest:
     address: 0.0.0.0:8080?sslEnabled=true
     server:

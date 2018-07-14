@@ -31,7 +31,7 @@ public class QpsController {
   private AtomicLong requestCount = new AtomicLong();
 
   // 本周期之前的请求数
-  private volatile long lastRequestCount = 0;
+  private volatile long lastRequestCount = 1;
 
   private static final int CYCLE_LENGTH = 1000;
 

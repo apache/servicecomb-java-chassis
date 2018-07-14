@@ -32,14 +32,14 @@ servicecomb:
       name: mycustomrule
     retryEnabled: true
     retryHandler: mycustomhandler
-cse:
+
   request:
-    timeout: 5000
+    timeout: 30000
     jaxrs:
-      timeout: 1000
+      timeout: 30000
       clientreqtimeout:
-        timeout: 150
+        timeout: 30000
         sayHello:
-          timeout: 100
+          timeout: 30000
         add:
-          timeout: 100
+          timeout: 1000

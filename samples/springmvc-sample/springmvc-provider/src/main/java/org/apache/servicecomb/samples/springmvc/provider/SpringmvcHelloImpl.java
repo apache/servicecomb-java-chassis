@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class SpringmvcHelloImpl implements Hello {
   @Override
   @RequestMapping(path = "/sayhi", method = RequestMethod.POST)
-  public String sayHi(@RequestParam(name = "name") String name) {
+  public String sayHi(@RequestParam(name = "name", defaultValue = "test") String name) {
     return "Hello " + name;
   }
 

@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.core.provider.consumer;
 
+import static org.junit.Assert.fail;
+
 import java.util.Collections;
 
 import org.apache.servicecomb.core.Const;
@@ -24,16 +26,21 @@ import org.apache.servicecomb.core.definition.schema.ConsumerSchemaFactory;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersion;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import com.google.common.eventbus.EventBus;
 
 import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestConsumerProviderManager {
@@ -71,6 +78,13 @@ public class TestConsumerProviderManager {
         result = Collections.emptyList();
       }
     };
+
+    new MockUp<MicroserviceVersionRule>() {
+      @Mock
+      MicroserviceVersion getLatestMicroserviceVersion() {
+        return Mockito.mock(MicroserviceVersion.class);
+      }
+    };
     return consumerProviderManager.createReferenceConfig("app:ms");
   }
 
@@ -86,8 +100,8 @@ public class TestConsumerProviderManager {
 
   @Test
   public void createReferenceConfig_config() {
-    ArchaiusUtils.setProperty("cse.references.app:ms.version-rule", "1.0.0+");
-    ArchaiusUtils.setProperty("cse.references.app:ms.transport", Const.RESTFUL);
+    ArchaiusUtils.setProperty("servicecomb.references.app:ms.version-rule", "1.0.0+");
+    ArchaiusUtils.setProperty("servicecomb.references.app:ms.transport", Const.RESTFUL);
 
     ReferenceConfig referenceConfig = mockCreateReferenceConfig();
 
@@ -95,5 +109,44 @@ public class TestConsumerProviderManager {
     Assert.assertEquals("app:ms", referenceConfig.getMicroserviceVersionRule().getMicroserviceName());
     Assert.assertEquals("1.0.0+", referenceConfig.getMicroserviceVersionRule().getVersionRule().getVersionRule());
     Assert.assertEquals(Const.RESTFUL, referenceConfig.getTransport());
+  }
+
+  @Test
+  public void createReferenceConfig_ProviderNotFound() {
+    EventBus eventBus = new EventBus();
+    AppManager appManager = new AppManager(eventBus);
+
+    ConsumerProviderManager consumerProviderManager = new ConsumerProviderManager();
+    consumerProviderManager.setAppManager(appManager);
+
+    new Expectations(RegistryUtils.class) {
+      {
+        RegistryUtils.findServiceInstances(anyString, anyString, DefinitionConst.VERSION_RULE_ALL, null);
+        result = Collections.emptyList();
+      }
+    };
+
+    new MockUp<MicroserviceVersionRule>() {
+      @Mock
+      String getAppId() {
+        return "aId";
+      }
+
+      @Mock
+      String getMicroserviceName() {
+        return "ms";
+      }
+    };
+
+    try {
+      consumerProviderManager.createReferenceConfig("app:ms");
+      fail("an IllegalStateException is expected!");
+    } catch (Exception e) {
+      Assert.assertEquals(IllegalStateException.class, e.getClass());
+      Assert.assertEquals(
+          "Probably invoke a service before it is registered, or no instance found for it, appId=aId, name=ms",
+          e.getMessage());
+      e.printStackTrace();
+    }
   }
 }

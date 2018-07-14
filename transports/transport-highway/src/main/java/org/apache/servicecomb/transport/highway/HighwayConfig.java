@@ -27,19 +27,19 @@ public final class HighwayConfig {
 
   public static String getAddress() {
     DynamicStringProperty address =
-        DynamicPropertyFactory.getInstance().getStringProperty("cse.highway.address", null);
+        DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.highway.address", null);
     return address.get();
   }
 
   public static int getServerThreadCount() {
     DynamicIntProperty address =
-        DynamicPropertyFactory.getInstance().getIntProperty("cse.highway.server.thread-count", 1);
+        DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.highway.server.thread-count", 1);
     return address.get();
   }
 
   public static int getClientThreadCount() {
     DynamicIntProperty address =
-        DynamicPropertyFactory.getInstance().getIntProperty("cse.highway.client.thread-count", 1);
+        DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.highway.client.thread-count", 1);
     return address.get();
   }
 }

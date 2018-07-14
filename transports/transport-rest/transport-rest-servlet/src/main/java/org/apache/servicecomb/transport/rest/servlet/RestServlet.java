@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.transport.rest.servlet;
 
-import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -45,8 +43,7 @@ public class RestServlet extends HttpServlet {
   }
 
   @Override
-  public void service(final HttpServletRequest request,
-      final HttpServletResponse response) throws ServletException, IOException {
+  public void service(final HttpServletRequest request, final HttpServletResponse response) {
     servletRestServer.service(request, response);
   }
 }
