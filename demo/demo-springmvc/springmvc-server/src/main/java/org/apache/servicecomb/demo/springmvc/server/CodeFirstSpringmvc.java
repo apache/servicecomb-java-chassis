@@ -34,6 +34,8 @@ import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.demo.EmptyObject;
 import org.apache.servicecomb.demo.Generic;
+import org.apache.servicecomb.demo.compute.GenericParam;
+import org.apache.servicecomb.demo.compute.GenericParamExtended;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
 import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
@@ -141,10 +143,10 @@ public class CodeFirstSpringmvc {
   public Response cseResponse(InvocationContext c1) {
     Response response = Response.createSuccess(Status.ACCEPTED, new User());
     Headers headers = response.getHeaders();
-    headers.addHeader("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE).toString());
+    headers.addHeader("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE));
 
     InvocationContext c2 = ContextUtils.getInvocationContext();
-    headers.addHeader("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE).toString());
+    headers.addHeader("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE));
 
     return response;
   }
@@ -463,5 +465,38 @@ public class CodeFirstSpringmvc {
     LOGGER.info("checkVoidResult() is called!");
     return testvoidInRPCSuccess && testVoidInRPCSuccess && testvoidInRestTemplateSuccess
         && testVoidInRestTemplateSuccess;
+  }
+
+  /**
+   * Simple query object test, users can use it mixed with InvocationContext and plain query param, RequestBody
+   */
+  @PostMapping(path = "/checkQueryObject")
+  public String checkQueryObject(Person person, @RequestParam(name = "otherName") String otherName,
+      InvocationContext invocationContext, @RequestParam(name = "name") String name, @RequestBody Person requestBody) {
+    LOGGER.info("checkQueryObject() is called!");
+    return "invocationContext_is_null=" + (null == invocationContext) + ",person="
+        + person + ",otherName=" + otherName + ",name=" + name + ",requestBody=" + requestBody;
+  }
+
+  /**
+   * For the nesting object params, including the generic params whose generic field is an object,
+   * the inner object field is not supported.
+   */
+  @PutMapping(path = "/checkQueryGenericObject")
+  public String checkQueryGenericObject(@RequestBody GenericParam<Person> requestBody,
+      GenericParam<Person> generic, String str) {
+    LOGGER.info("checkQueryGenericObject() is called!");
+    return "str=" + str + ",generic=" + generic + ",requestBody=" + requestBody;
+  }
+
+  /**
+   * If the generic field is simple type, it's supported to be deserialized.
+   * The same for those simple type field inherited from the parent class.
+   */
+  @PutMapping(path = "/checkQueryGenericString")
+  public String checkQueryGenericString(String str, @RequestBody GenericParam<Person> requestBody,
+      GenericParamExtended<String> generic) {
+    LOGGER.info("checkQueryGenericObject() is called!");
+    return "str=" + str + ",generic=" + generic + ",requestBody=" + requestBody;
   }
 }

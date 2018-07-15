@@ -88,6 +88,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     testResponse.runRest();
     testObject.runRest();
     testGeneric.runRest();
+    testRestTemplate.runRest();
 
     super.testOnlyRest(template, cseUrlPrefix);
   }
