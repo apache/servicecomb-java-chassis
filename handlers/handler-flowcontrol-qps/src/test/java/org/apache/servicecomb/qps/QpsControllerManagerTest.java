@@ -422,12 +422,12 @@ public class QpsControllerManagerTest {
   }
 
   public static void setConfig(String key, int value) {
-    Utils.updateProperty(key, value);
+    ArchaiusUtils.setProperty(key, value);
   }
 
   public static void setConfigWithDefaultPrefix(String key, int value) {
     String configKey = Config.CONSUMER_LIMIT_KEY_PREFIX + key;
-    Utils.updateProperty(configKey, value);
+    ArchaiusUtils.setProperty(configKey, value);
   }
 
   public static void clearState(QpsControllerManager qpsControllerManager) {
