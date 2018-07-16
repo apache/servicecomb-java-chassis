@@ -80,7 +80,7 @@ public class MicroserviceInstanceRegisterTask extends AbstractRegisterTask {
         instanceId,
         microserviceInstance.getEndpoints(),
         microserviceInstance.getHealthCheck().getTTL());
-
+    this.registered = true;
     return true;
   }
 }
