@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.serviceregistry.consumer;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -48,8 +49,15 @@ public class MicroserviceVersions {
 
   private String microserviceName;
 
+  // revision and pulledInstances directly equals to SC's response
   private String revision = null;
 
+  private List<MicroserviceInstance> pulledInstances;
+
+  // instances not always equals to pulledInstances
+  // in the future:
+  //  pulledInstances means all instance
+  //  instances means available instance
   private List<MicroserviceInstance> instances;
 
   // key is service id
@@ -101,6 +109,14 @@ public class MicroserviceVersions {
     return (T) versions.get(serviceId);
   }
 
+  public String getRevision() {
+    return revision;
+  }
+
+  public List<MicroserviceInstance> getPulledInstances() {
+    return pulledInstances;
+  }
+
   public void submitPull() {
     pendingPullCount.incrementAndGet();
 
@@ -127,7 +143,9 @@ public class MicroserviceVersions {
     if (!microserviceInstances.isNeedRefresh()) {
       return;
     }
-    List<MicroserviceInstance> pulledInstances = microserviceInstances.getInstancesResponse().getInstances();
+
+    pulledInstances = microserviceInstances.getInstancesResponse().getInstances();
+    pulledInstances.sort(Comparator.comparing(MicroserviceInstance::getInstanceId));
     String rev = microserviceInstances.getRevision();
 
     safeSetInstances(pulledInstances, rev);
