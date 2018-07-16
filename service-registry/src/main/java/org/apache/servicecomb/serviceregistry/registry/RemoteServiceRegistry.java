@@ -16,9 +16,11 @@
  */
 package org.apache.servicecomb.serviceregistry.registry;
 
+import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -37,6 +39,9 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
   private static final Logger LOGGER = LoggerFactory.getLogger(RemoteServiceRegistry.class);
 
   private ScheduledThreadPoolExecutor taskPool;
+
+  private List<ServiceRegistryTaskInitializer> taskInitializers = SPIServiceUtils
+      .getOrLoadSortedService(ServiceRegistryTaskInitializer.class);
 
   public RemoteServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
       MicroserviceDefinition microserviceDefinition) {
@@ -77,6 +82,10 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
         serviceRegistryConfig.getInstancePullInterval(),
         serviceRegistryConfig.getInstancePullInterval(),
         TimeUnit.SECONDS);
+
+    for (ServiceRegistryTaskInitializer initializer : taskInitializers) {
+      initializer.init(this);
+    }
   }
 
   @Subscribe
@@ -91,8 +100,7 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
     }
   }
 
-  // for testing
-  ScheduledThreadPoolExecutor getTaskPool() {
+  public ScheduledThreadPoolExecutor getTaskPool() {
     return this.taskPool;
   }
 }

@@ -17,12 +17,15 @@
 package org.apache.servicecomb.serviceregistry.registry;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.net.IpPort;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl;
@@ -65,12 +68,20 @@ public class TestRemoteServiceRegistry {
 
   @Test
   public void testLifeCycle(@Injectable ServiceRegistryConfig config, @Injectable MicroserviceDefinition definition,
-      @Injectable ServiceRegistry registry) {
+      @Injectable ServiceRegistry registry) throws InterruptedException {
     ArrayList<IpPort> ipPortList = new ArrayList<>();
     ipPortList.add(new IpPort("127.0.0.1", 9980));
     ipPortList.add(new IpPort("127.0.0.1", 9981));
 
-    new Expectations() {
+    CountDownLatch latch = new CountDownLatch(1);
+    ServiceRegistryTaskInitializer initializer = new MockUp<ServiceRegistryTaskInitializer>() {
+      @Mock
+      void init(RemoteServiceRegistry remoteServiceRegistry) {
+        latch.countDown();
+      }
+    }.getMockInstance();
+
+    new Expectations(SPIServiceUtils.class) {
       {
         definition.getConfiguration();
         result = ConfigUtil.createLocalConfig();
@@ -86,6 +97,8 @@ public class TestRemoteServiceRegistry {
         result = 30;
         config.isWatch();
         result = false;
+        SPIServiceUtils.getOrLoadSortedService(ServiceRegistryTaskInitializer.class);
+        result = Arrays.asList(initializer);
       }
     };
 
@@ -95,6 +108,10 @@ public class TestRemoteServiceRegistry {
     RemoteServiceRegistry remote = new TestingRemoteServiceRegistry(bus, config, definition);
     remote.init();
     remote.run();
+
+    // should not block
+    latch.await();
+
     Assert.assertTrue(2 <= remote.getTaskPool().getTaskCount()); // includes complete tasks
 
     bus.post(new ShutdownEvent());
@@ -102,7 +119,6 @@ public class TestRemoteServiceRegistry {
     remote.getTaskPool().schedule(new Runnable() {
       @Override
       public void run() {
-        // TODO Auto-generated method stub
 
       }
     }, 0, TimeUnit.SECONDS);
