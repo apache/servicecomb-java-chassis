@@ -14,7 +14,7 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
-
+#这个契约在这个例子没用
 swagger: '2.0'
 info:
   title: hello
