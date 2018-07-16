@@ -73,6 +73,7 @@ public class TestMicroserviceVersions {
 
   @Before
   public void setUp() throws Exception {
+    ArchaiusUtils.resetConfig();
     microserviceInstances = new MicroserviceInstances();
     findInstancesResponse = new FindInstancesResponse();
   }

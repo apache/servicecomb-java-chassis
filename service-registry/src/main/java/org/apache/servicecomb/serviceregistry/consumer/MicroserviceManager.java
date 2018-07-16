@@ -45,6 +45,10 @@ public class MicroserviceManager {
     appManager.getEventBus().register(this);
   }
 
+  public Map<String, MicroserviceVersions> getVersionsByName() {
+    return versionsByName;
+  }
+
   public MicroserviceVersions getOrCreateMicroserviceVersions(String microserviceName) {
     MicroserviceVersions microserviceVersions = versionsByName.computeIfAbsent(microserviceName, name -> {
       MicroserviceVersions instance = new MicroserviceVersions(appManager, appId, microserviceName);

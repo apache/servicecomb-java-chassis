@@ -43,6 +43,10 @@ public class AppManager {
     return microserviceVersionFactory;
   }
 
+  public Map<String, MicroserviceManager> getApps() {
+    return apps;
+  }
+
   public void setMicroserviceVersionFactory(MicroserviceVersionFactory microserviceVersionFactory) {
     this.microserviceVersionFactory = microserviceVersionFactory;
   }
