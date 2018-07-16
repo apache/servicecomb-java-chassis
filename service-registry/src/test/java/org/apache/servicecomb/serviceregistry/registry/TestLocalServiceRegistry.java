@@ -100,4 +100,20 @@ public class TestLocalServiceRegistry {
     String content = serviceRegistry.getServiceRegistryClient().getSchema(microservice.getServiceId(), "s1");
     Assert.assertEquals("s1-content", content);
   }
+
+  @Test
+  public void registerMicroservice() {
+    ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
+    serviceRegistry.init();
+    serviceRegistry.run();
+    
+    Microservice microservice = new Microservice();
+    microservice.setAppId("appId");
+    microservice.setServiceName("msName");
+
+    String serviceId = serviceRegistry.getServiceRegistryClient().registerMicroservice(microservice);
+    Microservice remoteMicroservice = serviceRegistry.getRemoteMicroservice(serviceId);
+
+    Assert.assertEquals(serviceId, remoteMicroservice.getServiceId());
+  }
 }

@@ -171,8 +171,11 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
 
   @Override
   public String registerMicroservice(Microservice microservice) {
-    String serviceId =
-        microservice.getServiceId() == null ? UUID.randomUUID().toString() : microservice.getServiceId();
+    String serviceId = microservice.getServiceId();
+    if (serviceId == null) {
+      serviceId = UUID.randomUUID().toString();
+      microservice.setServiceId(serviceId);
+    }
     microserviceIdMap.put(serviceId, microservice);
 
     microserviceInstanceMap.computeIfAbsent(serviceId, k -> new ConcurrentHashMap<>());
