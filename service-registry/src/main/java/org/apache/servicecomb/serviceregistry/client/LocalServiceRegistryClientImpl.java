@@ -272,6 +272,9 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
       String strVersionRule) {
     MicroserviceInstances instances =
         findServiceInstances(selfMicroserviceId, appId, serviceName, strVersionRule, null);
+    if(instances.isMicroserviceNotExist()) {
+      return null;
+    }
     return instances.getInstancesResponse().getInstances();
   }
 
@@ -291,8 +294,7 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
     VersionRule versionRule = VersionRuleUtils.getOrCreate(strVersionRule);
     Microservice latestMicroservice = findLatest(appId, serviceName, versionRule);
     if (latestMicroservice == null) {
-      response.setInstances(allInstances);
-      microserviceInstances.setInstancesResponse(response);
+      microserviceInstances.setMicroserviceNotExist(true);
       return microserviceInstances;
     }
 
