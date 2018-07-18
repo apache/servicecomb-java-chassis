@@ -53,6 +53,7 @@ public final class ConfigUtil {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigUtil.class);
 
   private static final String MICROSERVICE_CONFIG_LOADER_KEY = "cse-microservice-config-loader";
+  private static String DEFAULT_SOURCE_NAME = "CSE-DEFAULT-NAME";
 
   private static Map<String, Object> localConfig = new HashMap<>();
 
@@ -161,23 +162,29 @@ public final class ConfigUtil {
     return source;
   }
 
-  //inject a copy of servicecomb.xxx for cse.xxx
+  //主要是为了兼容老的版本
   private static void duplicateCseConfigToServicecomb(AbstractConfiguration source) {
-    Iterator<String> keys = source.getKeys();
-    while (keys.hasNext()) {
-      String key = keys.next();
-      if (!key.startsWith(CONFIG_CSE_PREFIX)) {
-        continue;
-      }
+    duplicateCseConfigToServicecombWithSourceName(source, DEFAULT_SOURCE_NAME);
+  }
 
-      String servicecombKey = CONFIG_SERVICECOMB_PREFIX + key.substring(key.indexOf(".") + 1);
-      if (!source.containsKey(servicecombKey)) {
-        source.addProperty(servicecombKey, source.getProperty(key));
-      } else {
-        LOGGER
-            .warn(
-                "Key {} with an ambiguous item {} exists, it's recommended to use only one of them.",
-                key, servicecombKey);
+
+  //inject a copy of servicecomb.xxx for cse.xxx
+  private static void duplicateCseConfigToServicecombWithSourceName(AbstractConfiguration source,String sourceName) {
+    if (sourceName.equals(DEFAULT_SOURCE_NAME)) {
+      Iterator<String> keys = source.getKeys();
+      while (keys.hasNext()) {
+        String key = keys.next();
+        if (!key.startsWith(CONFIG_CSE_PREFIX)) {
+          continue;
+        }
+
+        String servicecombKey = CONFIG_SERVICECOMB_PREFIX + key.substring(key.indexOf(".") + 1);
+        if (!source.containsKey(servicecombKey)) {
+          source.addProperty(servicecombKey, source.getProperty(key));
+        } else {
+          LOGGER.warn("Key {} with an ambiguous item {} exists, it's recommended to use only one of them.",
+                  key, servicecombKey);
+        }
       }
     }
   }
@@ -185,7 +192,12 @@ public final class ConfigUtil {
   private static void duplicateCseConfigToServicecomb(ConcurrentCompositeConfiguration compositeConfiguration,
       AbstractConfiguration source,
       String sourceName) {
-    duplicateCseConfigToServicecomb(source);
+
+    if (sourceName.equals("configFromYamlFile")) {
+      duplicateCseConfigToServicecombWithSourceName(source, sourceName);
+    } else {
+      duplicateCseConfigToServicecomb(source);
+    }
 
     compositeConfiguration.addConfiguration(source, sourceName);
   }
