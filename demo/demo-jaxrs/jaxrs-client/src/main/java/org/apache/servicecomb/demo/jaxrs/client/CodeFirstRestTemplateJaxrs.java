@@ -30,12 +30,15 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 public class CodeFirstRestTemplateJaxrs extends CodeFirstRestTemplate {
   @Override
   protected void testAllTransport(String microserviceName, RestTemplate template, String cseUrlPrefix) {
     testDefaultPath(template, cseUrlPrefix);
+    test404(template);
 
     super.testAllTransport(microserviceName, template, cseUrlPrefix);
   }
@@ -102,5 +105,18 @@ public class CodeFirstRestTemplateJaxrs extends CodeFirstRestTemplate {
         message);
     String result = template.postForObject(cseUrlPrefix + "/upload2", new HttpEntity<>(map, headers), String.class);
     TestMgr.check(expect, result);
+  }
+
+  private void test404(RestTemplate template) {
+    HttpClientErrorException exception = null;
+    try {
+      template.getForEntity("http://127.0.0.1:8080/aPathNotExist", String.class);
+    } catch (RestClientException e) {
+      if (e instanceof HttpClientErrorException) {
+        exception = (HttpClientErrorException) e;
+      }
+    }
+    TestMgr.check(404, exception.getRawStatusCode());
+    TestMgr.check("404 Not Found", exception.getMessage());
   }
 }
