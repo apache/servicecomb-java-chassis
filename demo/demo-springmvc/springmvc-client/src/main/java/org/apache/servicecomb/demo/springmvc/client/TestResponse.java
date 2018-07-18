@@ -89,7 +89,7 @@ public class TestResponse {
     requestBody.setNum(1).setStr("str1").setData(new Person("bodyPerson"));
     String result = intf.checkQueryGenericObject(requestBody, "str2", 2);
     TestMgr.check(
-        "str=str2,generic=GenericParam{str='str2', num=2, data=null},requestBody=GenericParam{str='str1', num=1, data=bodyPerson}",
+        "str=str2,generic=GenericParamWithJsonIgnore{str='str2', num=2, data=null},requestBody=GenericParam{str='str1', num=1, data=bodyPerson}",
         result);
   }
 

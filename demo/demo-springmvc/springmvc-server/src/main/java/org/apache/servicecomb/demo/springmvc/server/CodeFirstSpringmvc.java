@@ -36,6 +36,7 @@ import org.apache.servicecomb.demo.EmptyObject;
 import org.apache.servicecomb.demo.Generic;
 import org.apache.servicecomb.demo.compute.GenericParam;
 import org.apache.servicecomb.demo.compute.GenericParamExtended;
+import org.apache.servicecomb.demo.compute.GenericParamWithJsonIgnore;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
 import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
@@ -484,7 +485,7 @@ public class CodeFirstSpringmvc {
    */
   @PutMapping(path = "/checkQueryGenericObject")
   public String checkQueryGenericObject(@RequestBody GenericParam<Person> requestBody,
-      GenericParam<Person> generic, String str) {
+      GenericParamWithJsonIgnore<Person> generic, String str) {
     LOGGER.info("checkQueryGenericObject() is called!");
     return "str=" + str + ",generic=" + generic + ",requestBody=" + requestBody;
   }

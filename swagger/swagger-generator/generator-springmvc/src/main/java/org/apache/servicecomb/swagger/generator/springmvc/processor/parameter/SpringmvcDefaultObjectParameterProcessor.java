@@ -51,9 +51,9 @@ public class SpringmvcDefaultObjectParameterProcessor implements DefaultParamete
     Model paramModel = getParamModel(operationGenerator, paramIndex);
 
     if (null == paramModel) {
-      LOGGER.warn("cannot find param, provider method is [{}], paramIndex = [{}]",
-          operationGenerator.getProviderMethod().getName(), paramIndex);
-      return;
+      throw new Error(String.format("cannot find param, provider method is [%s], paramIndex = [%d]. "
+              + "Please check your parameter definition.",
+          operationGenerator.getProviderMethod().getName(), paramIndex));
     }
 
     LinkedHashMap<String, AbstractSerializableParameter<?>> resultParamMap = getFlattenParams(paramModel);
@@ -96,8 +96,9 @@ public class SpringmvcDefaultObjectParameterProcessor implements DefaultParamete
     // create simple parameters, nesting object param is ignored
     for (Entry<String, Property> propertyEntry : paramModel.getProperties().entrySet()) {
       if (ParamUtils.isComplexProperty(propertyEntry.getValue())) {
-        LOGGER.info("A nesting complex field is ignored, field name  = [{}]", propertyEntry.getKey());
-        continue;
+        throw new Error(
+            "A nesting complex field is found in the query object and this is not supported, field name  = ["
+                + propertyEntry.getKey() + "]. Please remove this field or tag @JsonIgnore on it.");
       }
       AbstractSerializableParameter<?> newParameter = createSimpleParam(propertyEntry);
       flattenParamMap.put(propertyEntry.getKey(), newParameter);
