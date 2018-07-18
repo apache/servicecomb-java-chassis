@@ -185,8 +185,11 @@ public final class ConfigUtil {
   private static void duplicateCseConfigToServicecomb(ConcurrentCompositeConfiguration compositeConfiguration,
       AbstractConfiguration source,
       String sourceName) {
-    duplicateCseConfigToServicecomb(source);
 
+    //do not duplicate copy cse config to serviceComb config
+    if (!"configFromYamlFile".equals(sourceName)) {
+      duplicateCseConfigToServicecomb(source);
+    }
     compositeConfiguration.addConfiguration(source, sourceName);
   }
 
