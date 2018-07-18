@@ -441,6 +441,26 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
+  public void sendResponseQuietlyExceptionOnNullInvocation(@Mocked Response response) {
+    restInvocation = new AbstractRestInvocationForTest() {
+      @Override
+      protected void doInvoke() {
+      }
+
+      @Override
+      protected void sendResponse(Response response) {
+        throw new Error("");
+      }
+    };
+    initRestInvocation();
+    restInvocation.invocation = null;
+
+    restInvocation.sendResponseQuietly(response);
+
+    // just log, check nothing, and should not throw NPE
+  }
+
+  @Test
   public void sendResponseStatusAndContentTypeAndHeader(@Mocked Response response) {
     new Expectations() {
       {
