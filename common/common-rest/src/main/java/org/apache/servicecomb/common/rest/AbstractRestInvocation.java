@@ -49,7 +49,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractRestInvocation {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRestInvocation.class);
+
+  public static final String UNKNOWN_OPERATION_ID = "UNKNOWN_OPERATION";
 
   protected RestOperationMeta restOperationMeta;
 
@@ -199,9 +202,8 @@ public abstract class AbstractRestInvocation {
     try {
       sendResponse(response);
     } catch (Throwable e) {
-      LOGGER.error("Failed to send rest response, operation:{}.",
-          invocation.getMicroserviceQualifiedName(),
-          e);
+      LOGGER.error("Failed to send rest response, operation:{}, request uri:{}",
+          getMicroserviceQualifiedName(), requestEx.getRequestURI(), e);
     }
   }
 
@@ -235,17 +237,15 @@ public abstract class AbstractRestInvocation {
 
   protected void onExecuteHttpServerFiltersFinish(Response response, Throwable e) {
     if (e != null) {
-      LOGGER.error("Failed to execute HttpServerFilters, operation:{}.",
-          invocation.getMicroserviceQualifiedName(),
-          e);
+      LOGGER.error("Failed to execute HttpServerFilters, operation:{}, request uri:{}",
+          getMicroserviceQualifiedName(), requestEx.getRequestURI(), e);
     }
 
     try {
       responseEx.flushBuffer();
     } catch (IOException flushException) {
-      LOGGER.error("Failed to flush rest response, operation:{}.",
-          invocation.getMicroserviceQualifiedName(),
-          flushException);
+      LOGGER.error("Failed to flush rest response, operation:{}, request uri:{}",
+          getMicroserviceQualifiedName(), requestEx.getRequestURI(), flushException);
     }
 
     requestEx.getAsyncContext().complete();
@@ -254,5 +254,9 @@ public abstract class AbstractRestInvocation {
     if (invocation != null) {
       invocation.onFinish(response);
     }
+  }
+
+  private String getMicroserviceQualifiedName() {
+    return null == invocation ? UNKNOWN_OPERATION_ID : invocation.getMicroserviceQualifiedName();
   }
 }
