@@ -111,12 +111,39 @@ public class SpringmvcDefaultParameterProcessorTest {
     }
   }
 
+  @Test
+  public void processOnMultiObjectParamsWithSameFieldName() throws NoSuchMethodException {
+    final OperationGenerator operationGenerator = mockOperationGenerator("testMultiObjParamsWithSameFiledName", "/test",
+        String.class, TestParam.class, TestParam.class, int.class);
+
+    final SpringmvcDefaultParameterProcessor springmvcDefaultParameterProcessor = new SpringmvcDefaultParameterProcessor();
+    springmvcDefaultParameterProcessor.process(operationGenerator, 0);
+    springmvcDefaultParameterProcessor.process(operationGenerator, 1);
+    springmvcDefaultParameterProcessor.process(operationGenerator, 2);
+    springmvcDefaultParameterProcessor.process(operationGenerator, 3);
+
+    final List<Parameter> providerParameters = operationGenerator.getProviderParameters();
+    Assert.assertEquals(2, providerParameters.size());
+    Parameter parameter = providerParameters.get(0);
+    Assert.assertEquals(QueryParameter.class, parameter.getClass());
+    Assert.assertEquals("name", parameter.getName());
+    Assert.assertEquals("query", parameter.getIn());
+    QueryParameter queryParameter = (QueryParameter) parameter;
+    Assert.assertEquals("string", queryParameter.getType());
+    parameter = providerParameters.get(1);
+    Assert.assertEquals(QueryParameter.class, parameter.getClass());
+    Assert.assertEquals("age", parameter.getName());
+    Assert.assertEquals("query", parameter.getIn());
+    queryParameter = (QueryParameter) parameter;
+    Assert.assertEquals("integer", queryParameter.getType());
+    Assert.assertEquals("int32", queryParameter.getFormat());
+  }
+
   private OperationGenerator mockOperationGenerator(String providerParamName, String path, Class<?>... classes)
       throws NoSuchMethodException {
     final SwaggerGenerator swaggerGenerator = new SwaggerGenerator(Mockito.mock(SwaggerGeneratorContext.class),
         TestProvider.class);
-    final Method providerMethod = TestProvider.class
-        .getDeclaredMethod(providerParamName, classes);
+    final Method providerMethod = TestProvider.class.getDeclaredMethod(providerParamName, classes);
     final OperationGenerator operationGenerator = new OperationGenerator(swaggerGenerator, providerMethod);
     Deencapsulation.setField(operationGenerator, "path", path);
     return operationGenerator;
@@ -133,6 +160,10 @@ public class SpringmvcDefaultParameterProcessorTest {
 
     public String testUnsupportedParamType(int i, List<TestParam> integerList, Map<String, String> stringMap) {
       return null;
+    }
+
+    public String testMultiObjParamsWithSameFiledName(String name, TestParam objParam0, TestParam objParam1, int age) {
+      return objParam0 + "-" + objParam1;
     }
   }
 

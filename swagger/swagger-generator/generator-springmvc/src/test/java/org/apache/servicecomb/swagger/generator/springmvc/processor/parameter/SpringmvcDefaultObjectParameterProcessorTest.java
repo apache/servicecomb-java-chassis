@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.parameter;
 
+import static org.junit.Assert.fail;
+
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -26,6 +28,8 @@ import org.apache.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.QueryParameter;
@@ -38,34 +42,6 @@ public class SpringmvcDefaultObjectParameterProcessorTest {
     final OperationGenerator operationGenerator = mockOperationGenerator("testObjectParam", "/test", TestParam.class);
 
     new SpringmvcDefaultObjectParameterProcessor().process(operationGenerator, 0);
-
-    final List<Parameter> providerParameters = operationGenerator.getProviderParameters();
-    Assert.assertEquals(2, providerParameters.size());
-    Parameter parameter = providerParameters.get(0);
-    Assert.assertEquals(QueryParameter.class, parameter.getClass());
-    Assert.assertEquals("name", parameter.getName());
-    Assert.assertEquals("query", parameter.getIn());
-    QueryParameter queryParameter = (QueryParameter) parameter;
-    Assert.assertEquals("string", queryParameter.getType());
-    parameter = providerParameters.get(1);
-    Assert.assertEquals(QueryParameter.class, parameter.getClass());
-    Assert.assertEquals("age", parameter.getName());
-    Assert.assertEquals("query", parameter.getIn());
-    queryParameter = (QueryParameter) parameter;
-    Assert.assertEquals("integer", queryParameter.getType());
-    Assert.assertEquals("int32", queryParameter.getFormat());
-  }
-
-  @Test
-  public void processOnMultiObjectParamsWithSameFieldName() throws NoSuchMethodException {
-    final OperationGenerator operationGenerator = mockOperationGenerator("testMultiObjParamsWithSameFiledName", "/test",
-        String.class, TestParam.class, TestParam.class, int.class);
-
-    final SpringmvcDefaultObjectParameterProcessor springmvcDefaultParameterProcessor = new SpringmvcDefaultObjectParameterProcessor();
-    springmvcDefaultParameterProcessor.process(operationGenerator, 0);
-    springmvcDefaultParameterProcessor.process(operationGenerator, 1);
-    springmvcDefaultParameterProcessor.process(operationGenerator, 2);
-    springmvcDefaultParameterProcessor.process(operationGenerator, 3);
 
     final List<Parameter> providerParameters = operationGenerator.getProviderParameters();
     Assert.assertEquals(2, providerParameters.size());
@@ -102,9 +78,43 @@ public class SpringmvcDefaultObjectParameterProcessorTest {
   }
 
   @Test
+  public void processOnRecursiveObjectParamWithNoJsonIgnore() throws NoSuchMethodException {
+    final OperationGenerator operationGenerator = mockOperationGenerator("testRecursiveParamWithNoJsonIgnore", "/test",
+        RecursiveParamB.class);
+
+    try {
+      new SpringmvcDefaultObjectParameterProcessor().process(operationGenerator, 0);
+      fail("an error is expected");
+    } catch (Throwable e) {
+      Assert.assertEquals(Error.class, e.getClass());
+      Assert.assertEquals(
+          "A nesting complex field is found in the query object and this is not supported,"
+              + " field name  = [recursiveParamA]. Please remove this field or tag @JsonIgnore on it.",
+          e.getMessage());
+    }
+  }
+
+  @Test
   public void processOnGenericObjectParam() throws NoSuchMethodException {
     final OperationGenerator operationGenerator = mockOperationGenerator("testGenericObjectParam", "/test",
         GenericParam.class);
+    try {
+      new SpringmvcDefaultObjectParameterProcessor().process(operationGenerator, 0);
+      fail("an error is expected");
+    } catch (Throwable e) {
+      Assert.assertEquals(Error.class, e.getClass());
+      Assert.assertEquals(
+          "A nesting complex field is found in the query object and this is not supported,"
+              + " field name  = [data]. Please remove this field or tag @JsonIgnore on it.",
+          e.getMessage());
+    }
+  }
+
+  @Test
+  public void processOnGenericObjectParamWithJsonIgnore() throws NoSuchMethodException {
+    final OperationGenerator operationGenerator = mockOperationGenerator("testGenericObjectParamWithJsonIgnore",
+        "/test",
+        GenericParamWithJsonIgnore.class);
 
     new SpringmvcDefaultObjectParameterProcessor().process(operationGenerator, 0);
 
@@ -159,8 +169,7 @@ public class SpringmvcDefaultObjectParameterProcessorTest {
       throws NoSuchMethodException {
     final SwaggerGenerator swaggerGenerator = new SwaggerGenerator(Mockito.mock(SwaggerGeneratorContext.class),
         TestProvider.class);
-    final Method providerMethod = TestProvider.class
-        .getDeclaredMethod(providerParamName, classes);
+    final Method providerMethod = TestProvider.class.getDeclaredMethod(providerParamName, classes);
     final OperationGenerator operationGenerator = new OperationGenerator(swaggerGenerator, providerMethod);
     Deencapsulation.setField(operationGenerator, "path", path);
     return operationGenerator;
@@ -171,15 +180,19 @@ public class SpringmvcDefaultObjectParameterProcessorTest {
       return objParam.toString();
     }
 
-    public String testMultiObjParamsWithSameFiledName(String name, TestParam objParam0, TestParam objParam1, int age) {
-      return objParam0 + "-" + objParam1;
-    }
-
     public String testRecursiveParam(RecursiveParamA recursiveParamA) {
       return null;
     }
 
+    public String testRecursiveParamWithNoJsonIgnore(RecursiveParamB recursiveParamB) {
+      return null;
+    }
+
     public String testGenericObjectParam(GenericParam<TestParam> genericParam) {
+      return genericParam.toString();
+    }
+
+    public String testGenericObjectParamWithJsonIgnore(GenericParamWithJsonIgnore<TestParam> genericParam) {
       return genericParam.toString();
     }
 
@@ -244,11 +257,46 @@ public class SpringmvcDefaultObjectParameterProcessorTest {
     }
   }
 
+  static class GenericParamWithJsonIgnore<T> {
+    private int num;
+
+    private String str;
+
+    @JsonIgnore
+    T data;
+
+    public int getNum() {
+      return num;
+    }
+
+    public void setNum(int num) {
+      this.num = num;
+    }
+
+    public String getStr() {
+      return str;
+    }
+
+    public void setStr(String str) {
+      this.str = str;
+    }
+
+    public T getData() {
+      return data;
+    }
+
+    public void setData(T data) {
+      this.data = data;
+    }
+  }
+
   static class RecursiveParamA {
     private String name;
 
+    @JsonIgnore
     private RecursiveParamB recursiveParamB;
 
+    @JsonIgnore
     private RecursiveParamC recursiveParamC;
 
     public String getName() {
