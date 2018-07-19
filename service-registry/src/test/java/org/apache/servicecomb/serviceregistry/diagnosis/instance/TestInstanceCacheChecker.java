@@ -83,13 +83,6 @@ public class TestInstanceCacheChecker {
     appId = "notExist";
     serviceRegistry.getAppManager().getOrCreateMicroserviceVersions(appId, microserviceName);
     InstanceCacheSummary instanceCacheSummary = checker.check();
-
-    InstanceCacheResult instanceCacheResult = new InstanceCacheResult();
-    instanceCacheResult.setAppId(appId);
-    instanceCacheResult.setMicroserviceName(microserviceName);
-    instanceCacheResult.setStatus(Status.NORMAL);
-    expectedSummary.getProducers().add(instanceCacheResult);
-
     Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
   }
 
