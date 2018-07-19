@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.transport.highway;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.Endpoint;
@@ -45,9 +47,9 @@ public class HighwayServerConnection extends TcpServerConnection implements TcpB
   }
 
   @Override
-  public void init(NetSocket netSocket) {
+  public void init(NetSocket netSocket, AtomicInteger connectedCounter) {
     splitter = new TcpParser(this);
-    super.init(netSocket);
+    super.init(netSocket, connectedCounter);
   }
 
   @Override

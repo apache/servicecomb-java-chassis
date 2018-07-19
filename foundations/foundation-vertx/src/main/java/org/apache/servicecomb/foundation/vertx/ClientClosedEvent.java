@@ -14,25 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.foundation.vertx.server;
 
-import java.util.concurrent.atomic.AtomicInteger;
+package org.apache.servicecomb.foundation.vertx;
 
-import org.junit.Assert;
-import org.junit.Test;
+public class ClientClosedEvent {
+  private final String address;
 
-import io.vertx.core.net.impl.NetSocketImpl;
-import mockit.Mocked;
+  private final int totalConnectedCount;
 
-public class TestTcpServerConnection {
-  @Test
-  public void test(@Mocked NetSocketImpl netSocket) {
-    TcpServerConnection connection = new TcpServerConnection();
-    connection.setProtocol("p");
-    connection.setZipName("z");
+  public String getAddress() {
+    return address;
+  }
 
-    connection.init(netSocket, new AtomicInteger());
+  public int getTotalConnectedCount() {
+    return totalConnectedCount;
+  }
 
-    Assert.assertEquals(netSocket, connection.getNetSocket());
+  public ClientClosedEvent(String address, int totalConnectedCount) {
+    this.address = address;
+    this.totalConnectedCount = totalConnectedCount;
   }
 }

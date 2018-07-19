@@ -17,30 +17,31 @@
 
 package org.apache.servicecomb.demo.pojo.test;
 
-import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.foundation.common.event.EventManager;
-import org.junit.AfterClass;
+import static org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY;
+import static org.junit.Assert.fail;
+
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = PojoSpringMain.class)
-public class PojoSpringIntegrationTest extends PojoIntegrationTestBase {
-
-  private static final ConnectionEventWatcher watcher = new ConnectionEventWatcher();
-
+public class PojoSpringConnectionLimitIntegrationTest {
   @BeforeClass
   public static void setUpClass() {
-    setUpLocalRegistry();
-    EventManager.register(watcher);
+    System.setProperty(LOCAL_REGISTRY_FILE_KEY, "notExistJustForceLocal");
   }
 
-  @AfterClass
-  public static void teardownClass() {
-    SCBEngine.getInstance().destroy();
-    Assert.assertArrayEquals("check connection count change", new Integer[] {1, 0}, watcher.getCounters().toArray());
+  @Test
+  public void remoteHelloPojo_sayHello() {
+    try {
+      PojoService.hello.SayHello("whatever");
+      fail("connection limit failed");
+    } catch (Exception e) {
+      Assert.assertEquals("java.io.IOException: socket closed", e.getCause().toString());
+    }
   }
 }

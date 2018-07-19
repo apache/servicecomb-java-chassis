@@ -16,6 +16,10 @@
  */
 package org.apache.servicecomb.foundation.vertx.server;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.foundation.vertx.ClientClosedEvent;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +32,7 @@ public class TcpServerConnection extends TcpConnection {
 
   protected TcpParser splitter;
 
-  public void init(NetSocket netSocket) {
+  public void init(NetSocket netSocket, AtomicInteger connectedCounter) {
     // currently, socket always be NetSocketImpl
     this.initNetSocket((NetSocketImpl) netSocket);
 
@@ -46,6 +50,9 @@ public class TcpServerConnection extends TcpConnection {
       LOGGER.error("disconected from {}, in thread {}",
           remoteAddress,
           Thread.currentThread().getName());
+
+      int connectedCount = connectedCounter.decrementAndGet();
+      EventManager.post(new ClientClosedEvent(remoteAddress, connectedCount));
     });
 
     netSocket.handler(splitter);
