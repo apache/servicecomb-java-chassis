@@ -41,6 +41,7 @@
     <module>spring-zuul-tracing-tests</module>
     <module>spring-pojo-tests</module>
     <module>dynamic-config-tests</module>
+    <module>spring-pojo-connection-limit-test</module>
   </modules>
 
   <dependencyManagement>

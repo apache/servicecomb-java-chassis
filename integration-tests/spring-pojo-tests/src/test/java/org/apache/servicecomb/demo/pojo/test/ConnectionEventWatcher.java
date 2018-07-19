@@ -14,25 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.foundation.vertx.server;
 
-import java.util.concurrent.atomic.AtomicInteger;
+package org.apache.servicecomb.demo.pojo.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import java.util.ArrayList;
+import java.util.List;
 
-import io.vertx.core.net.impl.NetSocketImpl;
-import mockit.Mocked;
+import org.apache.servicecomb.foundation.vertx.ClientClosedEvent;
+import org.apache.servicecomb.foundation.vertx.ClientConnectedEvent;
 
-public class TestTcpServerConnection {
-  @Test
-  public void test(@Mocked NetSocketImpl netSocket) {
-    TcpServerConnection connection = new TcpServerConnection();
-    connection.setProtocol("p");
-    connection.setZipName("z");
+import com.google.common.eventbus.Subscribe;
 
-    connection.init(netSocket, new AtomicInteger());
+public class ConnectionEventWatcher {
+  private final List<Integer> counters = new ArrayList<>();
 
-    Assert.assertEquals(netSocket, connection.getNetSocket());
+  public List<Integer> getCounters() {
+    return counters;
+  }
+
+  @Subscribe
+  public void onConnected(ClientConnectedEvent event) {
+    counters.add(event.getTotalConnectedCount());
+  }
+
+  @Subscribe
+  public void onClosed(ClientClosedEvent event) {
+    counters.add(event.getTotalConnectedCount());
   }
 }

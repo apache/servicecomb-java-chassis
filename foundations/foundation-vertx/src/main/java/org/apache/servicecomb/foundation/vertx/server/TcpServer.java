@@ -18,13 +18,18 @@
 package org.apache.servicecomb.foundation.vertx.server;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
+import org.apache.servicecomb.foundation.vertx.ClientConnectedEvent;
 import org.apache.servicecomb.foundation.vertx.VertxTLSBuilder;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.net.NetServer;
@@ -33,8 +38,15 @@ import io.vertx.core.net.NetServerOptions;
 public class TcpServer {
   private URIEndpointObject endpointObject;
 
+  private final AtomicInteger connectedCounter;
+
+  private final int connectionLimit;
+
   public TcpServer(URIEndpointObject endpointObject) {
     this.endpointObject = endpointObject;
+    this.connectedCounter = new AtomicInteger(0);
+    this.connectionLimit = DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.highway.server.connection-limit", Integer.MAX_VALUE).get();
   }
 
   public void init(Vertx vertx, String sslKey, AsyncResultCallback<InetSocketAddress> callback) {
@@ -57,8 +69,18 @@ public class TcpServer {
     }
 
     netServer.connectHandler(netSocket -> {
-      TcpServerConnection connection = createTcpServerConnection();
-      connection.init(netSocket);
+      if (connectedCounter.get() < connectionLimit) {
+        int connectedCount = connectedCounter.incrementAndGet();
+        if (connectedCount <= connectionLimit) {
+          TcpServerConnection connection = createTcpServerConnection();
+          connection.init(netSocket, connectedCounter);
+          EventManager.post(new ClientConnectedEvent(netSocket, connectedCount));
+          return;
+        } else {
+          connectedCounter.decrementAndGet();
+        }
+      }
+      netSocket.close();
     });
 
     InetSocketAddress socketAddress = endpointObject.getSocketAddress();

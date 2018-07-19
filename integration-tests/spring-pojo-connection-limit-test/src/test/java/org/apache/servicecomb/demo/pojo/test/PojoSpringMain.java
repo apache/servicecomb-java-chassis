@@ -14,25 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.foundation.vertx.server;
 
-import java.util.concurrent.atomic.AtomicInteger;
+package org.apache.servicecomb.demo.pojo.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.apache.servicecomb.springboot.starter.provider.EnableServiceComb;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import io.vertx.core.net.impl.NetSocketImpl;
-import mockit.Mocked;
+@SpringBootApplication
+@EnableServiceComb
+public class PojoSpringMain {
 
-public class TestTcpServerConnection {
-  @Test
-  public void test(@Mocked NetSocketImpl netSocket) {
-    TcpServerConnection connection = new TcpServerConnection();
-    connection.setProtocol("p");
-    connection.setZipName("z");
-
-    connection.init(netSocket, new AtomicInteger());
-
-    Assert.assertEquals(netSocket, connection.getNetSocket());
+  public static void main(final String[] args) {
+    SpringApplication.run(PojoSpringMain.class, args);
   }
 }

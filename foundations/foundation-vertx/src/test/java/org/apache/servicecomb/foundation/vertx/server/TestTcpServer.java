@@ -18,6 +18,7 @@
 package org.apache.servicecomb.foundation.vertx.server;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
@@ -41,8 +42,8 @@ public class TestTcpServer {
     protected TcpServerConnection createTcpServerConnection() {
       return new TcpServerConnection() {
         @Override
-        public void init(NetSocket netSocket) {
-          super.init(netSocket);
+        public void init(NetSocket netSocket, AtomicInteger connectedCounter) {
+          super.init(netSocket, connectedCounter);
         }
       };
     }
