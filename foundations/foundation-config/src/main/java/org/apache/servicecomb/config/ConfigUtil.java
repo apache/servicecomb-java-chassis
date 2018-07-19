@@ -137,8 +137,9 @@ public final class ConfigUtil {
         .forEachOrdered(configMapEntry -> duplicateCseConfigToServicecomb(config,
             new ConcurrentMapConfiguration(configMapEntry.getValue()),
             configMapEntry.getKey()));
-    duplicateCseConfigToServicecomb(config,
-        new DynamicConfiguration(
+    // we have already copy the cse config to the serviceComb config when we load the config from local yaml files
+    // hence, we do not need duplicate copy it.
+    config.addConfiguration( new DynamicConfiguration(
             new MicroserviceConfigurationSource(configModelList), new NeverStartPollingScheduler()),
         "configFromYamlFile");
     duplicateCseConfigToServicecombAtFront(config,
@@ -185,11 +186,8 @@ public final class ConfigUtil {
   private static void duplicateCseConfigToServicecomb(ConcurrentCompositeConfiguration compositeConfiguration,
       AbstractConfiguration source,
       String sourceName) {
+    duplicateCseConfigToServicecomb(source);
 
-    //do not duplicate copy cse config to serviceComb config
-    if (!"configFromYamlFile".equals(sourceName)) {
-      duplicateCseConfigToServicecomb(source);
-    }
     compositeConfiguration.addConfiguration(source, sourceName);
   }
 
