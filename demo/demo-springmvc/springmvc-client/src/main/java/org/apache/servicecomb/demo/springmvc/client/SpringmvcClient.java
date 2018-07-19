@@ -30,6 +30,7 @@ import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.apache.servicecomb.provider.springmvc.reference.UrlWithProviderPrefixClientHttpRequestFactory;
 import org.apache.servicecomb.provider.springmvc.reference.UrlWithServiceNameClientHttpRequestFactory;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -46,6 +47,8 @@ import com.netflix.config.DynamicPropertyFactory;
 
 public class SpringmvcClient {
   private static RestTemplate templateUrlWithServiceName = new CseRestTemplate();
+
+  private static RestTemplate templateUrlWithProviderPrefix = new CseRestTemplate();
 
   private static RestTemplate restTemplate;
 
@@ -65,6 +68,7 @@ public class SpringmvcClient {
 
     templateUrlWithServiceName.setRequestFactory(new UrlWithServiceNameClientHttpRequestFactory());
     restTemplate = RestTemplateBuilder.create();
+    templateUrlWithProviderPrefix.setRequestFactory(new UrlWithProviderPrefixClientHttpRequestFactory("/pojo/rest"));
     controller = BeanUtils.getBean("controller");
 
     String prefix = "cse://springmvc";
@@ -80,6 +84,7 @@ public class SpringmvcClient {
     CodeFirstRestTemplateSpringmvc codeFirstClient =
         BeanUtils.getContext().getBean(CodeFirstRestTemplateSpringmvc.class);
     codeFirstClient.testCodeFirst(restTemplate, "springmvc", "/codeFirstSpringmvc/");
+    codeFirstClient.testCodeFirst(templateUrlWithProviderPrefix, "springmvc", "/pojo/rest/codeFirstSpringmvc/");
 
     String microserviceName = "springmvc";
     for (String transport : DemoConst.transports) {
@@ -115,11 +120,13 @@ public class SpringmvcClient {
     TestMgr.check(true, metrics.size() > 0);
     TestMgr.check(true,
         metrics.get(
-            "servicecomb.invocation(operation=springmvc.codeFirst.saySomething,role=PRODUCER,stage=total,statistic=count,status=200,transport=highway)") >= 0);
+            "servicecomb.invocation(operation=springmvc.codeFirst.saySomething,role=PRODUCER,stage=total,statistic=count,status=200,transport=highway)")
+            >= 0);
 
     //prometheus integration test
     try {
-      String content = restTemplate.getForObject("cse://springmvc/codeFirstSpringmvc/prometheusForTest", String.class);
+      String content = restTemplate
+          .getForObject("cse://springmvc/codeFirstSpringmvc/prometheusForTest", String.class);
 
       TestMgr.check(true, content.contains("servicecomb_invocation{operation=\"springmvc.codeFirst.addDate"));
       TestMgr.check(true, content.contains("servicecomb_invocation{operation=\"springmvc.codeFirst.sayHello"));
