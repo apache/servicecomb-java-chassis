@@ -19,7 +19,7 @@ allprojects  {
     apply plugin: 'maven'
 
     group = 'org.apache.servicecomb.samples'
-    version = '1.0.0-m2-SNAPSHOT'
+    version = '1.0.0-SNAPSHOT'
 }
 
 buildscript {
