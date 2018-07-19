@@ -48,5 +48,5 @@ In console Interactive mode, input your GroupId, ArtifactId and Version of new p
 *Notice: We will publish these archetypes to maven center repository since 1.0.0-m2, if you would like to use an archetype from an unreleased version, must use `archetypeRepository` option in the version 2.4 of archetype-plugin in order to set maven repository to apache snapshot groups: *
 
 ```bash
-mvn org.apache.maven.plugins:maven-archetype-plugin:2.4:generate -DarchetypeGroupId=org.apache.servicecomb.archetypes -DarchetypeArtifactId=business-service-jaxrs-archetype -DarchetypeVersion=1.0.0-m2-SNAPSHOT -DarchetypeRepository=https://repository.apache.org/content/groups/snapshots-group
+mvn org.apache.maven.plugins:maven-archetype-plugin:2.4:generate -DarchetypeGroupId=org.apache.servicecomb.archetypes -DarchetypeArtifactId=business-service-jaxrs-archetype -DarchetypeVersion=1.0.0-SNAPSHOT -DarchetypeRepository=https://repository.apache.org/content/groups/snapshots-group
 ```

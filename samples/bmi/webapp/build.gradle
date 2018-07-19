@@ -44,6 +44,6 @@ apply plugin: 'io.spring.dependency-management'
 
 dependencyManagement {
     imports {
-        mavenBom 'org.apache.servicecomb:java-chassis-dependencies:1.0.0-m2-SNAPSHOT'
+        mavenBom 'org.apache.servicecomb:java-chassis-dependencies:1.0.0-SNAPSHOT'
     }
 }
