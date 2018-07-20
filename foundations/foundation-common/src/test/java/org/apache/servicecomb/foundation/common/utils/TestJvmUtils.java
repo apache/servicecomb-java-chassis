@@ -89,7 +89,7 @@ public class TestJvmUtils {
     URL url = PowerMockito.mock(URL.class);
 
     String command = "a.jar";
-    String manifestUri = "jar:file:/" + new File(command).getAbsolutePath() + "!/" + JarFile.MANIFEST_NAME;
+    String manifestUri = "jar:file:" + new File(command).getAbsolutePath() + "!/" + JarFile.MANIFEST_NAME;
 
     PowerMockito.whenNew(URL.class).withParameterTypes(String.class)
         .withArguments(manifestUri).thenReturn(url);
