@@ -117,7 +117,7 @@ public class TestInstanceCacheCheckTask {
   @Test
   public void autoTask_clearOldTask() {
     Holder<Boolean> cancelResult = new Holder<>();
-    ScheduledFuture<?> scheduledFuture = new MockUp<ScheduledFuture>() {
+    ScheduledFuture<?> scheduledFuture = new MockUp<ScheduledFuture<?>>() {
       @Mock
       boolean cancel(boolean mayInterruptIfRunning) {
         cancelResult.value = true;

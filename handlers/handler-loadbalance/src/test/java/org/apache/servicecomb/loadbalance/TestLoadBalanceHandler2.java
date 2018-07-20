@@ -133,7 +133,6 @@ public class TestLoadBalanceHandler2 {
     LoadbalanceHandler handler = null;
     LoadBalancer loadBalancer = null;
     ServiceCombServer server = null;
-    boolean failed = false;
 
     handler = new LoadbalanceHandler();
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);

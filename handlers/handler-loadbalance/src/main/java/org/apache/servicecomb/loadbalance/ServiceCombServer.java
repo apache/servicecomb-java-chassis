@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
