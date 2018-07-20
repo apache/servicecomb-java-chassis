@@ -68,6 +68,7 @@ public class JaxrsClient {
     testValidator(templateNew);
     testClientTimeOut(templateNew);
     testJaxRSDefaultValues(templateNew);
+    MultiErrorCodeServiceClient.runTest();
   }
 
   private static void testCompute(RestTemplate template) throws Exception {
