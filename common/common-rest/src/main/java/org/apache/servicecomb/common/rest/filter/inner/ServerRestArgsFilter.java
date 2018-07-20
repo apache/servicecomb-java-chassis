@@ -59,7 +59,7 @@ public class ServerRestArgsFilter implements HttpServerFilter {
     ProduceProcessor produceProcessor =
         (ProduceProcessor) responseEx.getAttribute(RestConst.INVOCATION_HANDLER_PROCESSOR);
     Object body = response.getResult();
-    if (response.isFailed()) {
+    if (response.isFailed() && InvocationException.class.isInstance(body)) {
       body = ((InvocationException) body).getErrorData();
     }
 

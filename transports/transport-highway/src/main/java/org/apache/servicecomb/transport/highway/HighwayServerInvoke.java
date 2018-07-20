@@ -144,7 +144,7 @@ public class HighwayServerInvoke {
 
     WrapSchema bodySchema = operationProtobuf.findResponseSchema(response.getStatusCode());
     Object body = response.getResult();
-    if (response.isFailed()) {
+    if (response.isFailed() && InvocationException.class.isInstance(body)) {
       body = ((InvocationException) body).getErrorData();
     }
 
