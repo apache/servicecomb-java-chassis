@@ -80,19 +80,6 @@ public class TestAbstractClientPool {
     HttpClientPool.INSTANCE.create();
 
     Assert.assertEquals("registry", vertxName);
-    Assert.assertEquals(
-        "{"
-            + "\"cacheMaxTimeToLive\":2147483647,"
-            + "\"cacheMinTimeToLive\":0,"
-            + "\"cacheNegativeTimeToLive\":0,"
-            + "\"maxQueries\":4,"
-            + "\"ndots\":0,"
-            + "\"optResourceEnabled\":true,"
-            + "\"queryTimeout\":5000,"
-            + "\"rdFlag\":true,"
-            + "\"rotateServers\":false"
-            + "}",
-        vertxOptions.getAddressResolverOptions().toJson().toString());
 
     Assert.assertEquals(ClientVerticle.class, verticleCls);
     Assert.assertEquals(ClientPoolManager.class,
