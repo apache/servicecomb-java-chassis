@@ -40,6 +40,6 @@ public class SimApolloServer extends AbstractVerticle {
       req.response()
           .putHeader("content-type", "application/json")
           .end(response);
-    }).listen(8080);
+    }).listen(23334);
   }
 }

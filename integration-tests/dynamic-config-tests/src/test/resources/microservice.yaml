@@ -23,7 +23,7 @@ service_description:
 
 apollo:
   config:
-    serverUri: http://localhost:8080
+    serverUri: http://localhost:23334
     serviceName: SampleApp
     env: DEV
     clusters: default
