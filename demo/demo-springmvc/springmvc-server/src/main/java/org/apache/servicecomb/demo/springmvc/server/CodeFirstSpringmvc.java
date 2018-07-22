@@ -500,4 +500,16 @@ public class CodeFirstSpringmvc {
     LOGGER.info("checkQueryGenericObject() is called!");
     return "str=" + str + ",generic=" + generic + ",requestBody=" + requestBody;
   }
+
+  @GetMapping(path = "/testDelay")
+  public String testDelay() {
+    LOGGER.info("testDelay() is called!");
+    return "OK";
+  }
+
+  @GetMapping(path = "/testAbort")
+  public String testAbort() {
+    LOGGER.info("testAbort() is called!");
+    return "OK";
+  }
 }

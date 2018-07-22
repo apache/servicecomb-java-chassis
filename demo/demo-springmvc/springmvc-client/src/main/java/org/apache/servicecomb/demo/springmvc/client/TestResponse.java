@@ -24,6 +24,7 @@ import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.http.ResponseEntity;
 
 public class TestResponse {
@@ -36,6 +37,8 @@ public class TestResponse {
   public void runRest() {
     checkQueryGenericObject();
     checkQueryGenericString();
+    testDelay();
+    testAbort();
   }
 
   public void runHighway() {
@@ -101,5 +104,30 @@ public class TestResponse {
         "str=str2,generic=GenericParamExtended{strExtended='strInSubclass', intExtended=33, super="
             + "GenericParam{str='str2', num=2, data=dataTest}},requestBody=GenericParam{str='str1', num=1, data=bodyPerson}",
         result);
+  }
+
+  private void testDelay() {
+    StringBuilder result = new StringBuilder();
+    for (int i = 0; i < 4; ++i) {
+      result.append(intf.testDelay()).append("|");
+    }
+    TestMgr.check("OK|OK|OK|OK|", result.toString());
+  }
+
+  private void testAbort() {
+    StringBuilder result = new StringBuilder();
+    for (int i = 0; i < 4; ++i) {
+      String response;
+      try {
+        response = intf.testAbort();
+      } catch (InvocationException e) {
+        response = e.getMessage();
+      }
+      result.append(response).append("|");
+    }
+    TestMgr.check(
+        "OK|InvocationException: code=421;msg=CommonExceptionData [message=aborted by fault inject]|"
+            + "OK|InvocationException: code=421;msg=CommonExceptionData [message=aborted by fault inject]|",
+        result.toString());
   }
 }

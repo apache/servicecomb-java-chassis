@@ -68,4 +68,8 @@ public interface CodeFirstSpringmvcIntf {
 
   String checkQueryGenericString(String str, GenericParam<Person> requestBody, long num, String data,
       String strExtended, int intExtended);
+
+  String testDelay();
+
+  String testAbort();
 }
