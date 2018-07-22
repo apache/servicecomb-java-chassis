@@ -51,7 +51,7 @@ servicecomb:
   handler:
     chain:
       Consumer:
-        default: loadbalance,bizkeeper-consumer
+        default: loadbalance,fault-injection-consumer,bizkeeper-consumer
   tracing:
     enabled: true
     samplingRate: 0.5
@@ -82,7 +82,28 @@ servicecomb:
     name: myDC
     region: my-Region
     availableZone: my-Zone
-
+  governance:
+    Consumer:
+      springmvc:
+        schemas:
+          codeFirst:
+            operations:
+              testDelay:
+                policy:
+                  fault:
+                    protocols:
+                      rest:
+                        delay:
+                          fixedDelay: 10
+                          percent: 50
+              testAbort:
+                policy:
+                  fault:
+                    protocols:
+                      rest:
+                        abort:
+                          httpStatus: 421
+                          percent: 50
   test:
     duplicate1: newer
 
