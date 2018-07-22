@@ -25,39 +25,41 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AbortFault extends AbstractFault {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(AbortFault.class);
 
-  @Override
-  public void injectFault(Invocation invocation, FaultParam faultParam, AsyncResponse asynResponse) {
-    // get the config values related to abort.
-    int abortPercent = FaultInjectionUtil.getFaultInjectionConfig(invocation,
-        "abort.percent");
+  public static final String ABORTED_ERROR_MSG = "aborted by fault inject";
 
+  @Override
+  public void injectFault(Invocation invocation, FaultParam faultParam, AsyncResponse asyncResponse) {
+    if (!shouldAbort(invocation, faultParam)) {
+      asyncResponse.success(SUCCESS_RESPONSE);
+      return;
+    }
+
+    // get the config values related to abort percentage.
+    int errorCode = FaultInjectionUtil.getFaultInjectionConfig(invocation, "abort.httpStatus");
+    if (errorCode == FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE) {
+      LOGGER.debug("Fault injection: Abort error code is not configured");
+      asyncResponse.success(SUCCESS_RESPONSE);
+      return;
+    }
+
+    // if request need to be abort then return failure with given error code
+    CommonExceptionData errorData = new CommonExceptionData(ABORTED_ERROR_MSG);
+    asyncResponse.consumerFail(new InvocationException(errorCode, ABORTED_ERROR_MSG, errorData));
+  }
+
+  private boolean shouldAbort(Invocation invocation, FaultParam faultParam) {
+    // get the config values related to abort.
+    int abortPercent = FaultInjectionUtil.getFaultInjectionConfig(invocation, "abort.percent");
     if (abortPercent == FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE) {
       LOGGER.debug("Fault injection: Abort percentage is not configured");
-      asynResponse.success("success");
-      return;
+      return false;
     }
 
     // check fault abort condition.
-    boolean isAbort = FaultInjectionUtil.isFaultNeedToInject(faultParam.getReqCount(), abortPercent);
-    if (isAbort) {
-      // get the config values related to abort percentage.
-      int errorCode = FaultInjectionUtil.getFaultInjectionConfig(invocation,
-          "abort.httpStatus");
-
-      if (errorCode == FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE) {
-        LOGGER.debug("Fault injection: Abort error code is not configured");
-        asynResponse.success("success");
-        return;
-      }
-      // if request need to be abort then return failure with given error code
-      CommonExceptionData errorData = new CommonExceptionData("aborted by fault inject");
-      asynResponse.consumerFail(new InvocationException(errorCode, "aborted by fault inject", errorData));
-      return;
-    }
-
-    asynResponse.success("success");
+    return FaultInjectionUtil.isFaultNeedToInject(faultParam.getReqCount(), abortPercent);
   }
 
   @Override

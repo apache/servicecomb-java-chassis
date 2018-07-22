@@ -22,7 +22,6 @@ import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 
 public class DelayFault extends AbstractFault {
@@ -35,44 +34,47 @@ public class DelayFault extends AbstractFault {
 
   @Override
   public void injectFault(Invocation invocation, FaultParam faultParam, AsyncResponse asynResponse) {
-    int delayPercent = FaultInjectionUtil.getFaultInjectionConfig(invocation,
-        "delay.percent");
-
-    if (delayPercent == FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE) {
-      LOGGER.debug("Fault injection: delay percentage is not configured");
-      asynResponse.success("success");
+    if (!shouldDelay(invocation, faultParam, asynResponse)) {
+      asynResponse.success(SUCCESS_RESPONSE);
       return;
     }
 
-    // check fault delay condition.
-    boolean isDelay = FaultInjectionUtil.isFaultNeedToInject(faultParam.getReqCount(), delayPercent);
-    if (isDelay) {
-      LOGGER.debug("Fault injection: delay is added for the request by fault inject handler");
-      long delay = FaultInjectionUtil.getFaultInjectionConfig(invocation,
-          "delay.fixedDelay");
-
-      if (delay == FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE) {
-        LOGGER.debug("Fault injection: delay is not configured");
-        asynResponse.success("success");
-        return;
-      }
-
-      Vertx vertx = faultParam.getVertx();
-      if (vertx != null) {
-        vertx.setTimer(delay, new Handler<Long>() {
-          @Override
-          public void handle(Long timeID) {
-            asynResponse.success("success");
-          }
-        });
-      } else {
-        try {
-          Thread.sleep(delay);
-        } catch (InterruptedException e) {
-          LOGGER.info("Interrupted exception is received");
-        }
-        asynResponse.success("success");
-      }
+    LOGGER.debug("Fault injection: delay is added for the request by fault inject handler");
+    long delay = FaultInjectionUtil.getFaultInjectionConfig(invocation,
+        "delay.fixedDelay");
+    if (delay == FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE) {
+      LOGGER.debug("Fault injection: delay is not configured");
+      asynResponse.success(SUCCESS_RESPONSE);
+      return;
     }
+
+    executeDelay(faultParam, asynResponse, delay);
+  }
+
+  private void executeDelay(FaultParam faultParam, AsyncResponse asynResponse, long delay) {
+    Vertx vertx = faultParam.getVertx();
+    if (vertx != null) {
+      vertx.setTimer(delay, timeID -> asynResponse.success(SUCCESS_RESPONSE));
+      return;
+    }
+
+    try {
+      Thread.sleep(delay);
+    } catch (InterruptedException e) {
+      LOGGER.info("Interrupted exception is received");
+    }
+    asynResponse.success(SUCCESS_RESPONSE);
+  }
+
+  private boolean shouldDelay(Invocation invocation, FaultParam faultParam, AsyncResponse asynResponse) {
+    int delayPercent = FaultInjectionUtil.getFaultInjectionConfig(invocation,
+        "delay.percent");
+    if (delayPercent == FaultInjectionConst.FAULT_INJECTION_DEFAULT_VALUE) {
+      LOGGER.debug("Fault injection: delay percentage is not configured");
+      return false;
+    }
+
+    // check fault delay condition.
+    return FaultInjectionUtil.isFaultNeedToInject(faultParam.getReqCount(), delayPercent);
   }
 }
