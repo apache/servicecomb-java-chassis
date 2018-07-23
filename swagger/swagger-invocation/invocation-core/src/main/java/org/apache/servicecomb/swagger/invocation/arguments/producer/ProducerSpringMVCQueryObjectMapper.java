@@ -29,7 +29,6 @@ import org.apache.servicecomb.swagger.invocation.converter.impl.ConverterCommon;
 
 /**
  * Argument mapper for object params.
- * <p/>
  * Collect all query swagger params as json and deserialize to object param.
  */
 public class ProducerSpringMVCQueryObjectMapper implements ArgumentMapper {
