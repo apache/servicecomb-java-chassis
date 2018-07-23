@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.servicecomb.samples</groupId>
     <artifactId>local-service-registry</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0-SNAPSHOT</version>
   </parent>
   <artifactId>local-registry-server</artifactId>
   <name>Java Chassis::Demo::LocalRegistry::Server</name>
@@ -68,7 +68,7 @@
             <mixin>
               <groupId>org.apache.servicecomb.demo</groupId>
               <artifactId>docker-build-config</artifactId>
-              <version>1.0.0</version>
+              <version>1.1.0-SNAPSHOT</version>
             </mixin>
           </mixins>
         </configuration>
