@@ -34,10 +34,11 @@ public class ConsumerBizkeeperCommand extends BizkeeperCommand {
       if (InvocationException.class.isInstance(resp.getResult())) {
         InvocationException e = (InvocationException) resp.getResult();
         return e.getStatusCode() == ExceptionFactory.CONSUMER_INNER_STATUS_CODE;
-      } else if (Throwable.class.isInstance(resp.getResult())) {
+      } else {
         return true;
       }
+    } else {
+      return false;
     }
-    return false;
   }
 }
