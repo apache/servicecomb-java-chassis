@@ -26,7 +26,7 @@ import com.netflix.loadbalancer.Server;
 /**
  *  Base interface for server list filters.
  *
- *  LoadBalancer.getAllServers ->  ServerListFilterExt.getFilteredListOfServers -> IRule.choose
+ *  LoadBalancer.getAllServers ServerListFilterExt.getFilteredListOfServers IRule.choose
  *
  *  Robin ServerListFilter can not support invocation based filter strategies, so we create a new one to
  *  support this.
