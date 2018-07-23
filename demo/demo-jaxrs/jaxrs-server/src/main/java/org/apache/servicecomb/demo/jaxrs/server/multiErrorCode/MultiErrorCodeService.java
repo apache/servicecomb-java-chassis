@@ -76,22 +76,66 @@ public class MultiErrorCodeService {
       r.setCode(400);
       r.setMessage("bad request");
       response.setStatus(Status.BAD_REQUEST);
-      response.setResult(r);
+      // If got many types for different status code, we can only using InvocationException for failed error code like 400-500.
+      // The result for Failed Family(e.g. 400-500), can not set return value as target type directly or will give exception.
+      response.setResult(new InvocationException(Status.BAD_REQUEST, r));
       response.getHeaders().addHeader("x-code", "400");
     } else if (request.getCode() == 500) {
       MultiResponse500 r = new MultiResponse500();
       r.setCode(500);
       r.setMessage("internal error");
       response.setStatus(Status.INTERNAL_SERVER_ERROR);
-      response.setResult(r);
+      response.setResult(new InvocationException(Status.INTERNAL_SERVER_ERROR, r));
       response.getHeaders().addHeader("x-code", "500");
     } else {
       MultiResponse200 r = new MultiResponse200();
       r.setCode(200);
       r.setMessage("success result");
       response.setStatus(Status.OK);
+      // If error code is OK family(like 200), we can use the target type.
       response.setResult(r);
       response.getHeaders().addHeader("x-code", "200");
+    }
+    return response;
+  }
+
+  // using JAX-RS providers, users need to add dependencies for implementations, see pom for an example.
+  @Path("/errorCodeWithHeaderJAXRS")
+  @POST
+  @ApiResponses({
+      @ApiResponse(code = 200, response = MultiResponse200.class, message = ""),
+      @ApiResponse(code = 400, response = MultiResponse400.class, message = ""),
+      @ApiResponse(code = 500, response = MultiResponse500.class, message = "")})
+  @ResponseHeaders({@ResponseHeader(name = "x-code", response = String.class)})
+  public javax.ws.rs.core.Response errorCodeWithHeaderJAXRS(MultiRequest request) {
+    javax.ws.rs.core.Response response;
+    if (request.getCode() == 400) {
+      MultiResponse400 r = new MultiResponse400();
+      r.setCode(400);
+      r.setMessage("bad request");
+      // If got many types for different status code, we can only using InvocationException for failed error code like 400-500.
+      // The result for Failed Family(e.g. 400-500), can not set return value as target type directly or will give exception.
+      response = javax.ws.rs.core.Response.status(Status.BAD_REQUEST)
+          .entity(new InvocationException(Status.BAD_REQUEST, r))
+          .header("x-code", "400")
+          .build();
+    } else if (request.getCode() == 500) {
+      MultiResponse500 r = new MultiResponse500();
+      r.setCode(500);
+      r.setMessage("internal error");
+      response = javax.ws.rs.core.Response.status(Status.INTERNAL_SERVER_ERROR)
+          .entity(new InvocationException(Status.INTERNAL_SERVER_ERROR, r))
+          .header("x-code", "500")
+          .build();
+    } else {
+      MultiResponse200 r = new MultiResponse200();
+      r.setCode(200);
+      r.setMessage("success result");
+      // If error code is OK family(like 200), we can use the target type.
+      response = javax.ws.rs.core.Response.status(Status.OK)
+          .entity(r)
+          .header("x-code", "200")
+          .build();
     }
     return response;
   }

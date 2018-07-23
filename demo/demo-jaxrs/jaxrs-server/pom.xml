@@ -36,6 +36,12 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>provider-jaxrs</artifactId>
     </dependency>
+    <!-- This is a demo, user can choose any implementation you want -->
+    <dependency>
+      <groupId>org.glassfish.jersey.core</groupId>
+      <artifactId>jersey-client</artifactId>
+      <version>2.25.1</version>
+    </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>swagger-invocation-validator</artifactId>
