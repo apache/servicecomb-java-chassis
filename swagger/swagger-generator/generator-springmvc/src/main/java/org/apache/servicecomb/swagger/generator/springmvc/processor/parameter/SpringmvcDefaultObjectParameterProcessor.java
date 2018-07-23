@@ -37,8 +37,7 @@ import io.swagger.models.properties.RefProperty;
 
 /**
  * Flatten a object parameter into a set of flatten simple parameters.
- * <p/>
- * <em>Nesting object params and generic Object params are NOT supported.</em>
+ * Nesting object params and generic Object params are NOT supported.
  * We support query object just for aggregating query params instead of transporting objects in query param.
  * So we don't support a generic param whose generic type is complex, but a simple generic type param can be supported.
  */
