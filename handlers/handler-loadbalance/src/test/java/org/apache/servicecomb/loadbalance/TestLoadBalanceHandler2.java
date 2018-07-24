@@ -36,10 +36,7 @@ import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTreeNode;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
-
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mocked;
+import org.mockito.Mockito;
 
 /**
  *
@@ -50,16 +47,16 @@ public class TestLoadBalanceHandler2 {
   @After
   public void teardown() {
     CseContext.getInstance().setTransportManager(null);
-    RegistryUtils.setServiceRegistry(null);
     ArchaiusUtils.resetConfig();
   }
 
   @Test
-  public void testZoneAwareAndIsolationFilterWorks(@Injectable Invocation invocation,
-      @Mocked RegistryUtils registryUtils,
-      @Injectable InstanceCacheManager instanceCacheManager, @Injectable ServiceRegistry serviceRegistry,
-      @Injectable TransportManager transportManager,
-      @Injectable Transport transport) {
+  public void testZoneAwareAndIsolationFilterWorks() {
+    Invocation invocation = Mockito.mock(Invocation.class);
+    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
+    ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
+    TransportManager transportManager = Mockito.mock(TransportManager.class);
+    Transport transport = Mockito.mock(Transport.class);
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
 
     // set up data
@@ -107,28 +104,17 @@ public class TestLoadBalanceHandler2 {
     DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent").data(data);
     CseContext.getInstance().setTransportManager(transportManager);
 
-    new Expectations() {
-      {
-        invocation.getAppId();
-        result = "testApp";
-        invocation.getMicroserviceName();
-        result = "testMicroserviceName";
-        invocation.getMicroserviceVersionRule();
-        result = "0.0.0+";
-        invocation.getConfigTransportName();
-        result = "rest";
-        RegistryUtils.getMicroserviceInstance();
-        result = myself;
-        RegistryUtils.getServiceRegistry();
-        result = serviceRegistry;
-        serviceRegistry.getInstanceCacheManager();
-        result = instanceCacheManager;
-        instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+");
-        result = parent;
-        transportManager.findTransport("rest");
-        result = transport;
-      }
-    };
+    RegistryUtils.setServiceRegistry(serviceRegistry);
+
+    Mockito.when(invocation.getAppId()).thenReturn("testApp");
+    Mockito.when(invocation.getMicroserviceName()).thenReturn("testMicroserviceName");
+    Mockito.when(invocation.getMicroserviceVersionRule()).thenReturn("0.0.0+");
+    Mockito.when(invocation.getConfigTransportName()).thenReturn("rest");
+    Mockito.when(serviceRegistry.getMicroserviceInstance()).thenReturn(myself);
+    Mockito.when(serviceRegistry.getInstanceCacheManager()).thenReturn(instanceCacheManager);
+    Mockito.when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
+        .thenReturn(parent);
+    Mockito.when(transportManager.findTransport("rest")).thenReturn(transport);
 
     LoadbalanceHandler handler = null;
     LoadBalancer loadBalancer = null;
