@@ -21,7 +21,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 
-import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.definition.RestParam;
 
 public class QueryVarParamWriter extends AbstractUrlParamWriter {
@@ -99,7 +99,7 @@ public class QueryVarParamWriter extends AbstractUrlParamWriter {
   }
 
   private String encodeNotNullValue(Object value) throws Exception {
-    String strValue = RestObjectMapper.INSTANCE.convertToString(value);
+    String strValue = RestObjectMapperFactory.getRestObjectMapper().convertToString(value);
     return URLEncoder.encode(strValue, StandardCharsets.UTF_8.name());
   }
 }

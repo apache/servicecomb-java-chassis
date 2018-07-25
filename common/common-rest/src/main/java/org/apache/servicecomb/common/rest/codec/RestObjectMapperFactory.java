@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.jaxrs.server;
+package org.apache.servicecomb.common.rest.codec;
 
-import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
-import org.apache.servicecomb.demo.RestObjectMapperWithStringMapper;
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
+/**
+ * Manage RestObjectMapper instances. Give users an option to specify custom mappers.
+ */
+public class RestObjectMapperFactory {
+  private static AbstractRestObjectMapper defaultMapper = new RestObjectMapper();
 
-public class JaxrsServer {
-  public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
-    RestObjectMapperFactory.setDefaultRestObjectMapper(new RestObjectMapperWithStringMapper());
+  public static AbstractRestObjectMapper getRestObjectMapper() {
+    return defaultMapper;
+  }
+
+  public static void setDefaultRestObjectMapper(AbstractRestObjectMapper customMapper) {
+    defaultMapper = customMapper;
   }
 }

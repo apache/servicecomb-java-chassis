@@ -15,36 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.common.rest.codec.produce;
+package org.apache.servicecomb.common.rest.codec;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+public class PojoModel {
+  private String name;
 
-import javax.ws.rs.core.MediaType;
+  private String desc;
 
-import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
-
-import com.fasterxml.jackson.databind.JavaType;
-
-public class ProduceJsonProcessor implements ProduceProcessor {
-
-  @Override
   public String getName() {
-    return MediaType.APPLICATION_JSON;
+    return name;
   }
 
-  @Override
-  public void doEncodeResponse(OutputStream output, Object result) throws Exception {
-    RestObjectMapperFactory.getRestObjectMapper().writeValue(output, result);
+  public void setName(String name) {
+    this.name = name;
   }
 
-  @Override
-  public Object doDecodeResponse(InputStream input, JavaType type) throws Exception {
-    return RestObjectMapperFactory.getRestObjectMapper().readValue(input, type);
+  public String getDesc() {
+    return desc;
   }
 
-  @Override
-  public int getOrder() {
-    return 0;
+  public void setDesc(String desc) {
+    this.desc = desc;
   }
 }

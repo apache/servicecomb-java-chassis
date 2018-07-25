@@ -24,7 +24,7 @@ import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
-import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +74,7 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator {
         LOGGER.debug("Header arg is null, will not be set into clientRequest. paramPath = [{}]", paramPath);
         return;
       }
-      clientRequest.putHeader(paramPath, RestObjectMapper.INSTANCE.convertToString(arg));
+      clientRequest.putHeader(paramPath, RestObjectMapperFactory.getRestObjectMapper().convertToString(arg));
     }
 
     @Override
