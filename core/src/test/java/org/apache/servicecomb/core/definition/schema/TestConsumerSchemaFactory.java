@@ -27,8 +27,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestConsumerSchemaFactory {
-  private static UnitTestMeta meta = new UnitTestMeta();
-
   class TestConsumerSchemaFactoryImpl {
     public int add(int x, int y) {
       return x + y;
@@ -37,6 +35,7 @@ public class TestConsumerSchemaFactory {
 
   @Test
   public void createConsumerSchema() {
+    UnitTestMeta meta = new UnitTestMeta();
     meta.registerSchema(new PojoSwaggerGeneratorContext(), TestConsumerSchemaFactoryImpl.class);
 
     MicroserviceVersionRule microserviceVersionRule = meta.getServiceRegistry().getAppManager()
