@@ -18,12 +18,10 @@ package org.apache.servicecomb.foundation.vertx.client.tcp;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
-import io.vertx.core.impl.VertxImpl;
-import mockit.Expectations;
-import mockit.Mocked;
 
 public class TestAbstractTcpClientPoolFactory {
   private TcpClientConfig normalClientConfig = new TcpClientConfig();
@@ -33,13 +31,10 @@ public class TestAbstractTcpClientPoolFactory {
   TcpClientPoolFactory factory = new TcpClientPoolFactory(normalClientConfig, sslClientConfig);
 
   @Test
-  public void createClientPool(@Mocked Vertx vertx, @Mocked Context context) {
-    new Expectations(VertxImpl.class) {
-      {
-        context.owner();
-        result = vertx;
-      }
-    };
+  public void createClientPool() {
+    Vertx vertx = Mockito.mock(Vertx.class);
+    Context context = Mockito.mock(Context.class);
+    Mockito.when(context.owner()).thenReturn(vertx);
     TcpClientConnectionPool pool = factory.createClientPool(context);
 
     Assert.assertSame(normalClientConfig, pool.netClientWrapper.getClientConfig(false));
