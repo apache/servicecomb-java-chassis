@@ -40,13 +40,9 @@ public class TcpServer {
 
   private final AtomicInteger connectedCounter;
 
-  private final int connectionLimit;
-
-  public TcpServer(URIEndpointObject endpointObject) {
+  public TcpServer(URIEndpointObject endpointObject, AtomicInteger connectedCounter) {
     this.endpointObject = endpointObject;
-    this.connectedCounter = new AtomicInteger(0);
-    this.connectionLimit = DynamicPropertyFactory.getInstance()
-        .getIntProperty("servicecomb.highway.server.connection-limit", Integer.MAX_VALUE).get();
+    this.connectedCounter = connectedCounter;
   }
 
   public void init(Vertx vertx, String sslKey, AsyncResultCallback<InetSocketAddress> callback) {
@@ -69,18 +65,18 @@ public class TcpServer {
     }
 
     netServer.connectHandler(netSocket -> {
-      if (connectedCounter.get() < connectionLimit) {
-        int connectedCount = connectedCounter.incrementAndGet();
-        if (connectedCount <= connectionLimit) {
-          TcpServerConnection connection = createTcpServerConnection();
-          connection.init(netSocket, connectedCounter);
-          EventManager.post(new ClientConnectedEvent(netSocket, connectedCount));
-          return;
-        } else {
-          connectedCounter.decrementAndGet();
-        }
+      int connectedCount = connectedCounter.incrementAndGet();
+      int connectionLimit = DynamicPropertyFactory.getInstance()
+          .getIntProperty("servicecomb.highway.server.connection-limit", Integer.MAX_VALUE).get();
+      if (connectedCount > connectionLimit) {
+        connectedCounter.decrementAndGet();
+        netSocket.close();
+        return;
       }
-      netSocket.close();
+
+      TcpServerConnection connection = createTcpServerConnection();
+      connection.init(netSocket, connectedCounter);
+      EventManager.post(new ClientConnectedEvent(netSocket, connectedCount));
     });
 
     InetSocketAddress socketAddress = endpointObject.getSocketAddress();

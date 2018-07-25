@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.transport.highway;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
@@ -39,12 +41,12 @@ public class TestHighwayVerticle {
   private HighwayServerVerticle highwayVerticle = null;
 
   @Before
-  public void setUp() throws Exception {
-    highwayVerticle = new HighwayServerVerticle();
+  public void setUp() {
+    highwayVerticle = new HighwayServerVerticle(new AtomicInteger());
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     highwayVerticle = null;
   }
 

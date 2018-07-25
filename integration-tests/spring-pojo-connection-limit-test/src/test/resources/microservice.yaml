@@ -17,7 +17,7 @@
 
 APPLICATION_ID: pojotest-it
 service_description:
-  name: pojo-connection-limit
+  name: pojo
   version: 0.0.4
 servicecomb:
   service:
