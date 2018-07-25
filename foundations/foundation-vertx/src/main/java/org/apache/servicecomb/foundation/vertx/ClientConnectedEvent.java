@@ -19,6 +19,9 @@ package org.apache.servicecomb.foundation.vertx;
 
 import io.vertx.core.net.NetSocket;
 
+/**
+ * Notice: this event will raised in vertx eventloop thread, so do not run any block code
+ */
 public class ClientConnectedEvent {
   private final NetSocket netSocket;
 

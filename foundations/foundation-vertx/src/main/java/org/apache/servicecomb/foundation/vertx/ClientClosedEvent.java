@@ -17,6 +17,9 @@
 
 package org.apache.servicecomb.foundation.vertx;
 
+/**
+ * Notice: this event will raised in vertx eventloop thread, so do not run any block code
+ */
 public class ClientClosedEvent {
   private final String address;
 

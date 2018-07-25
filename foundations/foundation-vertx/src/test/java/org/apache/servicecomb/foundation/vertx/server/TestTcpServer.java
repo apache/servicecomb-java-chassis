@@ -35,7 +35,7 @@ import mockit.Mocked;
 public class TestTcpServer {
   static class TcpServerForTest extends TcpServer {
     public TcpServerForTest(URIEndpointObject endpointObject) {
-      super(endpointObject);
+      super(endpointObject, new AtomicInteger());
     }
 
     @Override
