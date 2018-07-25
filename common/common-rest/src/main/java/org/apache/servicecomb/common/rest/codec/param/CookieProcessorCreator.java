@@ -23,7 +23,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
-import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -64,7 +64,7 @@ public class CookieProcessorCreator implements ParamValueProcessorCreator {
 
     @Override
     public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
-      clientRequest.addCookie(paramPath, RestObjectMapper.INSTANCE.convertToString(arg));
+      clientRequest.addCookie(paramPath, RestObjectMapperFactory.getRestObjectMapper().convertToString(arg));
     }
 
     @Override

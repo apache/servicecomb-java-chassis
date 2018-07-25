@@ -30,7 +30,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.xml.ws.Holder;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.demo.EmptyObject;
 import org.apache.servicecomb.demo.Generic;
@@ -207,7 +207,7 @@ public class CodeFirstSpringmvc {
   public String testRawJsonString(String jsonInput) {
     Map<String, String> person;
     try {
-      person = RestObjectMapper.INSTANCE.readValue(jsonInput.getBytes(), Map.class);
+      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(), Map.class);
     } catch (Exception e) {
       e.printStackTrace();
       return null;
@@ -325,7 +325,7 @@ public class CodeFirstSpringmvc {
   public String testRawJsonAnnotation(@RawJsonRequestBody String jsonInput) {
     Map<String, String> person;
     try {
-      person = RestObjectMapper.INSTANCE.readValue(jsonInput.getBytes(), Map.class);
+      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(), Map.class);
     } catch (Exception e) {
       e.printStackTrace();
       return null;

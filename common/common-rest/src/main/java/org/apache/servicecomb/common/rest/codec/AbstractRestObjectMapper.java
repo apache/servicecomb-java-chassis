@@ -15,17 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.jaxrs.server;
+package org.apache.servicecomb.common.rest.codec;
 
-import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
-import org.apache.servicecomb.demo.RestObjectMapperWithStringMapper;
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class JaxrsServer {
-  public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
-    RestObjectMapperFactory.setDefaultRestObjectMapper(new RestObjectMapperWithStringMapper());
-  }
+public abstract class AbstractRestObjectMapper extends ObjectMapper {
+  abstract public String convertToString(Object value) throws Exception;
 }

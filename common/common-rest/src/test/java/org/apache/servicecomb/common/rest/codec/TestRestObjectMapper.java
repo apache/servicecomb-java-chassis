@@ -22,16 +22,37 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
+import io.vertx.core.json.JsonObject;
 
 public class TestRestObjectMapper {
 
   @Test
   public void testAutoCloseSource() {
-    Assert.assertFalse(RestObjectMapper.INSTANCE.getFactory().isEnabled(Feature.AUTO_CLOSE_SOURCE));
+    Assert.assertFalse(RestObjectMapperFactory.getRestObjectMapper().getFactory().isEnabled(Feature.AUTO_CLOSE_SOURCE));
   }
 
   @Test
   public void testDeserializationFeature() {
-    Assert.assertFalse(RestObjectMapper.INSTANCE.isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES));
+    Assert.assertFalse(
+        RestObjectMapperFactory.getRestObjectMapper().isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES));
+  }
+
+  @Test
+  public void testJsonObjectWork() {
+    JsonObject obj = new JsonObject();
+    obj.put("name", "a");
+    obj.put("desc", "b");
+    PojoModel model = RestObjectMapperFactory.getRestObjectMapper()
+        .convertValue(obj, TypeFactory.defaultInstance().constructType(PojoModel.class));
+    Assert.assertEquals("a", model.getName());
+    Assert.assertEquals("b", model.getDesc());
+
+    RestObjectMapperFactory.setDefaultRestObjectMapper(new RestObjectMapper());
+    model = RestObjectMapperFactory.getRestObjectMapper()
+        .convertValue(obj, TypeFactory.defaultInstance().constructType(PojoModel.class));
+    Assert.assertEquals("a", model.getName());
+    Assert.assertEquals("b", model.getDesc());
   }
 }

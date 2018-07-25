@@ -17,25 +17,37 @@
 
 package org.apache.servicecomb.common.rest.codec;
 
+import java.io.IOException;
 import java.text.FieldPosition;
 import java.util.Date;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-public final class RestObjectMapper extends ObjectMapper {
-  public static final RestObjectMapper INSTANCE = new RestObjectMapper();
+import io.vertx.core.json.JsonObject;
+
+public class RestObjectMapper extends AbstractRestObjectMapper {
+  private static class JsonObjectSerializer extends JsonSerializer<JsonObject> {
+    @Override
+    public void serialize(JsonObject value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
+      jgen.writeObject(value.getMap());
+    }
+  }
 
   private static final long serialVersionUID = -8158869347066287575L;
 
   private static final JavaType STRING_JAVA_TYPE = TypeFactory.defaultInstance().constructType(String.class);
 
   @SuppressWarnings("deprecation")
-  private RestObjectMapper() {
+  public RestObjectMapper() {
     // swagger中要求date使用ISO8601格式传递，这里与之做了功能绑定，这在cse中是没有问题的
     setDateFormat(new com.fasterxml.jackson.databind.util.ISO8601DateFormat() {
       private static final long serialVersionUID = 7798938088541203312L;
@@ -54,9 +66,20 @@ public final class RestObjectMapper extends ObjectMapper {
     disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
     enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);
     enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+
+    SimpleModule module = new SimpleModule();
+    // custom types
+    module.addSerializer(JsonObject.class, new JsonObjectSerializer());
+    registerModule(module);
   }
 
+  @Override
   public String convertToString(Object value) throws Exception {
     return convertValue(value, STRING_JAVA_TYPE);
+  }
+
+  @Override
+  public <T> T convertValue(Object fromValue, JavaType toValueType) throws IllegalArgumentException {
+    return super.convertValue(fromValue, toValueType);
   }
 }

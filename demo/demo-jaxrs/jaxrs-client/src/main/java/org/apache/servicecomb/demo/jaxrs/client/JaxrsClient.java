@@ -24,11 +24,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.http.HttpStatus;
-import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.demo.CodeFirstRestTemplate;
 import org.apache.servicecomb.demo.DemoConst;
+import org.apache.servicecomb.demo.RestObjectMapperWithStringMapper;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.validator.Student;
@@ -59,6 +60,7 @@ public class JaxrsClient {
   public static void init() throws Exception {
     Log4jUtils.init();
     BeanUtils.init();
+    RestObjectMapperFactory.setDefaultRestObjectMapper(new RestObjectMapperWithStringMapper());
   }
 
   public static void run() throws Exception {
@@ -265,7 +267,7 @@ public class JaxrsClient {
   private static void testRawJsonParam(RestTemplate template, String cseUrlPrefix) throws Exception {
     Map<String, String> person = new HashMap<>();
     person.put("name", "Tom");
-    String jsonPerson = RestObjectMapper.INSTANCE.writeValueAsString(person);
+    String jsonPerson = RestObjectMapperFactory.getRestObjectMapper().writeValueAsString(person);
     TestMgr.check("hello Tom",
         template.postForObject(cseUrlPrefix + "/compute/testrawjson", jsonPerson, String.class));
   }
