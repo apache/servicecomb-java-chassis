@@ -17,13 +17,15 @@
 
 package org.apache.servicecomb.demo;
 
+import java.io.IOException;
+
 import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-
-import io.vertx.core.json.JsonObject;
 
 /**
  *  Demonstrate how to using String as raw type when using RestTemplate to invoke a service that use POJO. e.g.
@@ -43,6 +45,8 @@ import io.vertx.core.json.JsonObject;
  *  conversion change. You must write  convertValue to check possible types using.
  */
 public class RestObjectMapperWithStringMapper extends RestObjectMapper {
+  private static Logger LOGGER = LoggerFactory.getLogger(RestObjectMapperWithStringMapper.class);
+
   private static final long serialVersionUID = -8158869347066287575L;
 
   private static final JavaType STRING_JAVA_TYPE = TypeFactory.defaultInstance().constructType(String.class);
@@ -56,7 +60,11 @@ public class RestObjectMapperWithStringMapper extends RestObjectMapper {
   public <T> T convertValue(Object fromValue, JavaType toValueType) throws IllegalArgumentException {
     if (String.class.isInstance(fromValue)
         && !BeanUtils.isSimpleValueType(toValueType.getRawClass())) {
-      return super.convertValue(new JsonObject((String) fromValue), toValueType);
+      try {
+        return super.readValue((String) fromValue, toValueType);
+      } catch (IOException e) {
+        LOGGER.error("Failed to convert value for {}.", e.getMessage());
+      }
     }
     return super.convertValue(fromValue, toValueType);
   }
