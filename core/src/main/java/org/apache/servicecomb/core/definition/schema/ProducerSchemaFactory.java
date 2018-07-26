@@ -17,6 +17,9 @@
 
 package org.apache.servicecomb.core.definition.schema;
 
+import static org.apache.servicecomb.serviceregistry.api.Const.REGISTER_URL_PREFIX;
+import static org.apache.servicecomb.serviceregistry.api.Const.URL_PREFIX;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -39,9 +42,11 @@ import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
@@ -129,6 +134,13 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
           swaggerContent);
     }
 
+    String urlPrefix = System.getProperty(URL_PREFIX);
+    if (!StringUtils.isEmpty(urlPrefix) && !swagger.getBasePath().startsWith(urlPrefix)
+        && DynamicPropertyFactory.getInstance()
+        .getBooleanProperty(REGISTER_URL_PREFIX, false).get()) {
+      LOGGER.info("Add swagger base path prefix for {} with {}", swagger.getBasePath(), urlPrefix);
+      swagger.setBasePath(urlPrefix + swagger.getBasePath());
+    }
     // 注册契约
     return schemaLoader.registerSchema(context.getMicroserviceMeta(), context.getSchemaId(), swagger);
   }
