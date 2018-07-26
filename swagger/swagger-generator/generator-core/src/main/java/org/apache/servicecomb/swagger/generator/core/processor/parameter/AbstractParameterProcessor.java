@@ -69,7 +69,7 @@ public abstract class AbstractParameterProcessor<T extends AbstractSerializableP
     return "";
   }
 
-  protected abstract T createParameter();
+  public abstract T createParameter();
 
-  protected abstract String getAnnotationParameterName(Object annotation);
+  public abstract String getAnnotationParameterName(Object annotation);
 }

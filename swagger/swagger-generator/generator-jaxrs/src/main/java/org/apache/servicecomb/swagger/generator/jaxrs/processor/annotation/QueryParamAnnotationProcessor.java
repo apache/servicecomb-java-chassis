@@ -25,12 +25,12 @@ import io.swagger.models.parameters.QueryParameter;
 
 public class QueryParamAnnotationProcessor extends AbstractParameterProcessor<QueryParameter> {
   @Override
-  protected QueryParameter createParameter() {
+  public QueryParameter createParameter() {
     return new QueryParameter();
   }
 
   @Override
-  protected String getAnnotationParameterName(Object annotation) {
+  public String getAnnotationParameterName(Object annotation) {
     return ((QueryParam) annotation).value();
   }
 }

@@ -25,12 +25,12 @@ import io.swagger.models.parameters.CookieParameter;
 
 public class CookieParamAnnotationProcessor extends AbstractParameterProcessor<CookieParameter> {
   @Override
-  protected String getAnnotationParameterName(Object annotation) {
+  public String getAnnotationParameterName(Object annotation) {
     return ((CookieParam) annotation).value();
   }
 
   @Override
-  protected CookieParameter createParameter() {
+  public CookieParameter createParameter() {
     return new CookieParameter();
   }
 }
