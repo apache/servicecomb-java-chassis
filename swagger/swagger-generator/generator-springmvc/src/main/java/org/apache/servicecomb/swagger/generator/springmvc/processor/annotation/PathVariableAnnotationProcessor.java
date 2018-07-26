@@ -24,12 +24,12 @@ import io.swagger.models.parameters.PathParameter;
 
 public class PathVariableAnnotationProcessor extends AbstractParameterProcessor<PathParameter> {
   @Override
-  protected PathParameter createParameter() {
+  public PathParameter createParameter() {
     return new PathParameter();
   }
 
   @Override
-  protected String getAnnotationParameterName(Object annotation) {
+  public String getAnnotationParameterName(Object annotation) {
     return ((PathVariable) annotation).value();
   }
 }
