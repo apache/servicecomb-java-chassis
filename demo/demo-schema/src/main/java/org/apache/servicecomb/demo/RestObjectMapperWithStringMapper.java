@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 
 /**
  *  Demonstrate how to using String as raw type when using RestTemplate to invoke a service that use POJO. e.g.
@@ -46,10 +45,6 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
  */
 public class RestObjectMapperWithStringMapper extends RestObjectMapper {
   private static Logger LOGGER = LoggerFactory.getLogger(RestObjectMapperWithStringMapper.class);
-
-  private static final long serialVersionUID = -8158869347066287575L;
-
-  private static final JavaType STRING_JAVA_TYPE = TypeFactory.defaultInstance().constructType(String.class);
 
   @SuppressWarnings("deprecation")
   public RestObjectMapperWithStringMapper() {
