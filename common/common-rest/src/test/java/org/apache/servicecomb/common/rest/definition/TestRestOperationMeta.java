@@ -57,8 +57,6 @@ public class TestRestOperationMeta {
 
   private final OperationMeta meta = mock(OperationMeta.class);
 
-  private final RestOperationMeta operationMeta = new RestOperationMeta();
-
   @Before
   public void setUp() throws Exception {
     when(meta.getSchemaMeta()).thenReturn(schemaMeta);
@@ -70,6 +68,7 @@ public class TestRestOperationMeta {
 
   @Test
   public void testCreateProduceProcessorsNull() {
+    RestOperationMeta operationMeta = new RestOperationMeta();
     operationMeta.createProduceProcessors();
 
     Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
@@ -85,6 +84,7 @@ public class TestRestOperationMeta {
 
   @Test
   public void testCreateProduceProcessorsEmpty() {
+    RestOperationMeta operationMeta = new RestOperationMeta();
     operationMeta.produces = Arrays.asList();
     operationMeta.createProduceProcessors();
 
@@ -101,6 +101,7 @@ public class TestRestOperationMeta {
 
   @Test
   public void testCreateProduceProcessorsNormal() {
+    RestOperationMeta operationMeta = new RestOperationMeta();
     operationMeta.produces = Arrays.asList(MediaType.APPLICATION_JSON);
     operationMeta.createProduceProcessors();
 
@@ -116,6 +117,7 @@ public class TestRestOperationMeta {
 
   @Test
   public void testCreateProduceProcessorsNotSupported() {
+    RestOperationMeta operationMeta = new RestOperationMeta();
     operationMeta.produces = Arrays.asList("notSupport");
     operationMeta.createProduceProcessors();
 
@@ -131,6 +133,7 @@ public class TestRestOperationMeta {
 
   @Test
   public void testCreateProduceProcessorsTextAndWildcard() {
+    RestOperationMeta operationMeta = new RestOperationMeta();
     operationMeta.produces = Arrays.asList(MediaType.TEXT_PLAIN);
     operationMeta.createProduceProcessors();
 
@@ -146,6 +149,7 @@ public class TestRestOperationMeta {
 
   @Test
   public void testEnsureFindProduceProcessorRequest(@Mocked HttpServletRequestEx requestEx) {
+    RestOperationMeta operationMeta = new RestOperationMeta();
     new Expectations() {
       {
         requestEx.getHeader(HttpHeaders.ACCEPT);
@@ -159,6 +163,7 @@ public class TestRestOperationMeta {
 
   @Test
   public void testEnsureFindProduceProcessorAcceptFound() {
+    RestOperationMeta operationMeta = new RestOperationMeta();
     operationMeta.produces = Arrays.asList(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN);
     operationMeta.createProduceProcessors();
 
@@ -168,6 +173,7 @@ public class TestRestOperationMeta {
 
   @Test
   public void testEnsureFindProduceProcessorAcceptNotFound() {
+    RestOperationMeta operationMeta = new RestOperationMeta();
     operationMeta.produces = Arrays.asList(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN);
     operationMeta.createProduceProcessors();
 
@@ -176,6 +182,7 @@ public class TestRestOperationMeta {
 
   @Test
   public void generatesAbsolutePathWithRootBasePath() {
+    RestOperationMeta operationMeta = new RestOperationMeta();
     when(swagger.getBasePath()).thenReturn("/");
     when(meta.getOperationPath()).thenReturn("/sayHi/");
 
@@ -186,6 +193,7 @@ public class TestRestOperationMeta {
 
   @Test
   public void generatesAbsolutePathWithNonRootBasePath() {
+    RestOperationMeta operationMeta = new RestOperationMeta();
     when(swagger.getBasePath()).thenReturn("/rest");
     when(meta.getOperationPath()).thenReturn("/sayHi");
 
@@ -196,6 +204,7 @@ public class TestRestOperationMeta {
 
   @Test
   public void generatesAbsolutePathWithNullPath() {
+    RestOperationMeta operationMeta = new RestOperationMeta();
     when(swagger.getBasePath()).thenReturn(null);
     when(meta.getOperationPath()).thenReturn(null);
 
@@ -206,6 +215,7 @@ public class TestRestOperationMeta {
 
   @Test
   public void generatesAbsolutePathWithEmptyPath() {
+    RestOperationMeta operationMeta = new RestOperationMeta();
     when(swagger.getBasePath()).thenReturn("");
     when(meta.getOperationPath()).thenReturn("");
 
@@ -216,6 +226,7 @@ public class TestRestOperationMeta {
 
   @Test
   public void consecutiveSlashesAreRemoved() {
+    RestOperationMeta operationMeta = new RestOperationMeta();
     when(swagger.getBasePath()).thenReturn("//rest//");
     when(meta.getOperationPath()).thenReturn("//sayHi//");
 
@@ -226,6 +237,7 @@ public class TestRestOperationMeta {
 
   @Test
   public void testFormDataFlagTrue() {
+    RestOperationMeta operationMeta = new RestOperationMeta();
     when(meta.getMethod()).thenReturn(ReflectUtils.findMethod(SomeRestController.class, "form"));
     when(meta.getSwaggerOperation()).thenReturn(operation);
     List<Parameter> params = Arrays.asList(new FormParameter());
@@ -238,6 +250,7 @@ public class TestRestOperationMeta {
 
   @Test
   public void testFormDataFlagFalse() {
+    RestOperationMeta operationMeta = new RestOperationMeta();
     when(meta.getMethod()).thenReturn(ReflectUtils.findMethod(SomeRestController.class, "form"));
     when(meta.getSwaggerOperation()).thenReturn(operation);
     List<Parameter> params = Arrays.asList(new QueryParameter());
