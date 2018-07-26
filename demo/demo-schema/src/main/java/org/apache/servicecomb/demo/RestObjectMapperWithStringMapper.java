@@ -17,8 +17,8 @@
 
 package org.apache.servicecomb.demo;
 
-import org.apache.commons.lang3.ClassUtils;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.springframework.beans.BeanUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -55,9 +55,7 @@ public class RestObjectMapperWithStringMapper extends RestObjectMapper {
   @Override
   public <T> T convertValue(Object fromValue, JavaType toValueType) throws IllegalArgumentException {
     if (String.class.isInstance(fromValue)
-        && !String.class.equals(toValueType.getRawClass())
-        && !java.util.Date.class.equals(toValueType.getRawClass())
-        && !ClassUtils.isPrimitiveOrWrapper(toValueType.getRawClass())) {
+        && !BeanUtils.isSimpleValueType(toValueType.getRawClass())) {
       return super.convertValue(new JsonObject((String) fromValue), toValueType);
     }
     return super.convertValue(fromValue, toValueType);

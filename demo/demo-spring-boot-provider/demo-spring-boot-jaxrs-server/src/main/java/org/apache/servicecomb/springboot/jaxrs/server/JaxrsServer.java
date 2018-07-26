@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.springboot.jaxrs.server;
 
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.demo.RestObjectMapperWithStringMapper;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.springboot.starter.provider.EnableServiceComb;
 import org.springframework.boot.SpringApplication;
@@ -28,5 +30,6 @@ public class JaxrsServer {
   public static void main(final String[] args) throws Exception {
     Log4jUtils.init();
     SpringApplication.run(JaxrsServer.class, args);
+    RestObjectMapperFactory.setDefaultRestObjectMapper(new RestObjectMapperWithStringMapper());
   }
 }
