@@ -184,4 +184,6 @@ public final class Const {
   public static final String SERVICECENTER_FRAMEWORK_VERSION = "1.0.0";
 
   public static final String REGISTER_SERVICE_PATH = "servicecomb.service.registry.registerPath";
+
+  public static final String REGISTER_URL_PREFIX = "servicecomb.service.registry.registerUrlPrefix";
 }
