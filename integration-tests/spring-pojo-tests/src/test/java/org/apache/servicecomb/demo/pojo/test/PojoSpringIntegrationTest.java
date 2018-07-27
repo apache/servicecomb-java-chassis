@@ -23,19 +23,18 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = PojoSpringMain.class)
 public class PojoSpringIntegrationTest extends PojoIntegrationTestBase {
 
   private static final ConnectionEventWatcher watcher = new ConnectionEventWatcher();
 
   @BeforeClass
-  public static void setUpClass() {
+  public static void setUpClass() throws Exception {
     setUpLocalRegistry();
     EventManager.register(watcher);
+    PojoTestMain.main(null);
   }
 
   @AfterClass

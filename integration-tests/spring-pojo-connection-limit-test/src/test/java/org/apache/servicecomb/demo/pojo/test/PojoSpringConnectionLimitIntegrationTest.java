@@ -24,15 +24,14 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = PojoSpringMain.class)
 public class PojoSpringConnectionLimitIntegrationTest {
   @BeforeClass
-  public static void setUpClass() {
+  public static void setUpClass() throws Exception {
     System.setProperty(LOCAL_REGISTRY_FILE_KEY, "notExistJustForceLocal");
+    PojoTestMain.main(null);
   }
 
   @Test
