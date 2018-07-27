@@ -115,7 +115,70 @@ public class TestConfigCenterClient {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testConfigRefresh(@Mocked ClientPoolManager<HttpClientWithContext> clientMgr,
+  public void testConfigRefreshModeOne(@Mocked ClientPoolManager<HttpClientWithContext> clientMgr,@Mocked HttpClientWithContext httpClientWithContext) {
+    String version1 = refreshAndGetCurrentRevision(clientMgr, httpClientWithContext, 200, "huawei");
+    //test the sdk get and change the latestRevision
+    Assert.assertEquals("huawei", version1);
+    String version2 = refreshAndGetCurrentRevision(clientMgr, httpClientWithContext, 304, "rkd");
+    //test that when return code is 304, the sdk do not change the latestRevision
+    Assert.assertNotEquals("rkd", version2);
+  }
+  @SuppressWarnings("unchecked")
+  private String refreshAndGetCurrentRevision(ClientPoolManager<HttpClientWithContext> clientMgr,
+      HttpClientWithContext httpClientWithContext,int statusCode,String version) {
+
+    ConfigCenterConfigurationSourceImpl impl = new ConfigCenterConfigurationSourceImpl();
+    UpdateHandler updateHandler = impl.new UpdateHandler();
+    HttpClientRequest request = Mockito.mock(HttpClientRequest.class);
+    Mockito.when(request.headers()).thenReturn(MultiMap.caseInsensitiveMultiMap());
+    Buffer rsp = Mockito.mock(Buffer.class);
+    Mockito.when(rsp.toString())
+        .thenReturn(String.format("{\"application\":{\"3\":\"2\",\"aa\":\"1\"},\"vmalledge\":{\"aa\":\"3\"},\"revision\": { \"version\": \"%s\"} }",version));
+
+    HttpClientResponse httpClientResponse = Mockito.mock(HttpClientResponse.class);
+    Mockito.when(httpClientResponse.bodyHandler(Mockito.any(Handler.class))).then(invocation -> {
+      Handler<Buffer> handler = invocation.getArgumentAt(0, Handler.class);
+      handler.handle(rsp);
+      return null;
+    });
+    Mockito.when(httpClientResponse.statusCode()).thenReturn(statusCode);
+
+    HttpClient httpClient = Mockito.mock(HttpClient.class);
+    Mockito.when(
+        httpClient.get(Mockito.anyInt(), Mockito.anyString(), Mockito.anyString(), Mockito.any(Handler.class)))
+        .then(invocation -> {
+          Handler<HttpClientResponse> handler = invocation.getArgumentAt(3, Handler.class);
+          handler.handle(httpClientResponse);
+          return request;
+        });
+
+    new MockUp<HttpClientWithContext>() {
+      @Mock
+      public void runOnContext(RunHandler handler) {
+        handler.run(httpClient);
+      }
+    };
+    new Expectations() {
+      {
+        clientMgr.findThreadBindClientPool();
+        result = httpClientWithContext;
+      }
+    };
+
+    ConfigCenterClient cc = new ConfigCenterClient(updateHandler);
+    Deencapsulation.setField(cc, "clientMgr", clientMgr);
+    ParseConfigUtils parseConfigUtils = new ParseConfigUtils(updateHandler);
+    MemberDiscovery memberdis = new MemberDiscovery(Arrays.asList("http://configcentertest:30103"));
+    ConfigRefresh refresh = cc.new ConfigRefresh(parseConfigUtils, memberdis);
+    Deencapsulation.setField(cc, "refreshMode", 1);
+    refresh.run();
+    String currentVersionInfo = Deencapsulation.getField(parseConfigUtils, "CURRENT_VERSION_INFO").toString();
+    return currentVersionInfo;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void testConfigRefreshModeZero(@Mocked ClientPoolManager<HttpClientWithContext> clientMgr,
       @Mocked HttpClientWithContext httpClientWithContext) {
     ConfigCenterConfigurationSourceImpl impl = new ConfigCenterConfigurationSourceImpl();
     UpdateHandler updateHandler = impl.new UpdateHandler();

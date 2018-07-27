@@ -136,7 +136,7 @@ public class ConfigCenterClient {
     }
     refreshMembers(memberDiscovery);
     ConfigRefresh refreshTask = new ConfigRefresh(parseConfigUtils, memberDiscovery);
-    refreshTask.run(true);
+    refreshTask.run();
     executor.scheduleWithFixedDelay(refreshTask,
         firstRefreshInterval,
         refreshInterval,
@@ -234,16 +234,19 @@ public class ConfigCenterClient {
       this.memberdis = memberdis;
     }
 
-    public void run(boolean wait) {
+    @Override
+    public void run() {
       // this will be single threaded, so we don't care about concurrent
       // staffs
       try {
         String configCenter = memberdis.getConfigServer();
         if (refreshMode == 1) {
-          refreshConfig(configCenter, wait);
+          //make sure that there is only one thread is invoking refreshConfig method
+          refreshConfig(configCenter);
         } else if (!isWatching) {
           // 重新监听时需要先加载，避免在断开期间丢失变更
-          refreshConfig(configCenter, wait);
+          //make sure that there is only one thread is invoking refreshConfig method
+          refreshConfig(configCenter);
           doWatch(configCenter);
         }
       } catch (Exception e) {
@@ -251,11 +254,7 @@ public class ConfigCenterClient {
       }
     }
 
-    // 具体动作
-    @Override
-    public void run() {
-      run(false);
-    }
+
 
     // create watch and wait for done
     public void doWatch(String configCenter)
@@ -302,7 +301,7 @@ public class ConfigCenterClient {
                 LOGGER.info("watching config recieved {}", action);
                 Map<String, Object> mAction = action.toJsonObject().getMap();
                 if ("CREATE".equals(mAction.get("action"))) {
-                  refreshConfig(configCenter, false);
+                  refreshConfig(configCenter);
                 } else if ("MEMBER_CHANGE".equals(mAction.get("action"))) {
                   refreshMembers(memberdis);
                 } else {
@@ -348,7 +347,7 @@ public class ConfigCenterClient {
       }
     }
 
-    public void refreshConfig(String configcenter, boolean wait) {
+    public void  refreshConfig(String configcenter) {
       CountDownLatch latch = new CountDownLatch(1);
       String encodeServiceName = "";
       try {
@@ -357,7 +356,7 @@ public class ConfigCenterClient {
         LOGGER.error("encode failed. Error message: {}", e.getMessage());
         encodeServiceName = StringUtils.deleteWhitespace(serviceName);
       }
-      String path = uriConst.ITEMS + "?dimensionsInfo=" + encodeServiceName;
+      String path = uriConst.ITEMS + "?dimensionsInfo=" + encodeServiceName + "&revision="+ParseConfigUtils.CURRENT_VERSION_INFO;
       clientMgr.findThreadBindClientPool().runOnContext(client -> {
         IpPort ipPort = NetUtils.parseIpPortFromURI(configcenter);
         HttpClientRequest request = client.get(ipPort.getPort(), ipPort.getHostOrIp(), path, rsp -> {
@@ -375,7 +374,9 @@ public class ConfigCenterClient {
               }
               latch.countDown();
             });
-          } else {
+          }else if (rsp.statusCode() == HttpResponseStatus.NOT_MODIFIED.code()){
+            latch.countDown();
+          }else {
             rsp.bodyHandler(buf -> {
               LOGGER.error("Server error message is [{}].", buf);
               latch.countDown();
@@ -383,7 +384,7 @@ public class ConfigCenterClient {
             EventManager.post(new ConnFailEvent("fetch config fail"));
             LOGGER.error("Config refresh from {} failed.", configcenter);
           }
-        });
+        }).setTimeout((BOOTUP_WAIT_TIME -1 )* 1000);
         Map<String, String> headers = new HashMap<>();
         headers.put("x-domain-name", tenantName);
         if (ConfigCenterConfig.INSTANCE.getToken() != null) {
@@ -403,15 +404,13 @@ public class ConfigCenterClient {
         });
         request.end();
       });
-      if (wait) {
-        LOGGER.info("Refreshing remote config...");
-        try {
-          latch.await(BOOTUP_WAIT_TIME, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-          LOGGER.warn(e.getMessage());
-        }
-        LOGGER.info("Refreshing remote config is done.");
+      LOGGER.info("Refreshing remote config...");
+      try {
+        latch.await(BOOTUP_WAIT_TIME, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+        LOGGER.warn(e.getMessage());
       }
+      LOGGER.info("Refreshing remote config is done.");
     }
   }
 
