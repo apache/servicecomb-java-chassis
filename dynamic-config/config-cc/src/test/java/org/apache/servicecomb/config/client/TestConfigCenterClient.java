@@ -115,7 +115,7 @@ public class TestConfigCenterClient {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testConfigRefreshModeZero(@Mocked ClientPoolManager<HttpClientWithContext> clientMgr,@Mocked HttpClientWithContext httpClientWithContext) {
+  public void testConfigRefreshModeOne(@Mocked ClientPoolManager<HttpClientWithContext> clientMgr,@Mocked HttpClientWithContext httpClientWithContext) {
     String version1 = refreshAndGetCurrentRevision(clientMgr, httpClientWithContext, 200, "huawei");
     //test the sdk get and change the latestRevision
     Assert.assertEquals("huawei", version1);
@@ -178,7 +178,7 @@ public class TestConfigCenterClient {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testConfigRefreshModeOne(@Mocked ClientPoolManager<HttpClientWithContext> clientMgr,
+  public void testConfigRefreshModeZero(@Mocked ClientPoolManager<HttpClientWithContext> clientMgr,
       @Mocked HttpClientWithContext httpClientWithContext) {
     ConfigCenterConfigurationSourceImpl impl = new ConfigCenterConfigurationSourceImpl();
     UpdateHandler updateHandler = impl.new UpdateHandler();
