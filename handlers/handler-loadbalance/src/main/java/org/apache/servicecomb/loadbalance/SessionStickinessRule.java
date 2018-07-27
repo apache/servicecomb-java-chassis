@@ -135,7 +135,15 @@ public class SessionStickinessRule implements IRule {
       return chooseServerErrorThresholdMet(key);
     }
 
+    if (!isLastServerExists(lastServer)) {
+      return chooseNextServer(key);
+    }
+
     return lastServer;
+  }
+
+  private boolean isLastServerExists(Server lastServer2) {
+    return this.lb.getReachableServers().contains(lastServer2);
   }
 
   @Override
