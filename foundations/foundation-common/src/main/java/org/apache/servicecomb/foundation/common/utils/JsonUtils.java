@@ -21,14 +21,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonParseException;
+import javax.servlet.http.Part;
+
+import org.apache.servicecomb.foundation.common.utils.json.JavaxServletPartDeserializer;
+import org.apache.servicecomb.foundation.common.utils.json.JavaxServletPartSerializer;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 public final class JsonUtils {
   public static final ObjectMapper OBJ_MAPPER;
@@ -37,23 +41,27 @@ public final class JsonUtils {
     OBJ_MAPPER = new ObjectMapper();
     OBJ_MAPPER.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     OBJ_MAPPER.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+
+    SimpleModule partDeserializeModule = new SimpleModule("partDeserializeModule",
+        new Version(0, 0, 1, null, "javax.servlet", "javax.servlet-api")
+    );
+    partDeserializeModule.addSerializer(Part.class, new JavaxServletPartSerializer());
+    partDeserializeModule.addDeserializer(Part.class, new JavaxServletPartDeserializer());
+    OBJ_MAPPER.registerModule(partDeserializeModule);
   }
 
   private JsonUtils() {
   }
 
-  public static <T> T readValue(byte[] src,
-      Class<T> valueType) throws JsonParseException, JsonMappingException, IOException {
+  public static <T> T readValue(byte[] src, Class<T> valueType) throws IOException {
     return OBJ_MAPPER.readValue(src, valueType);
   }
 
-  public static <T> T readValue(InputStream is,
-      Class<T> valueType) throws JsonParseException, JsonMappingException, IOException {
+  public static <T> T readValue(InputStream is, Class<T> valueType) throws IOException {
     return OBJ_MAPPER.readValue(is, valueType);
   }
 
-  public static <T> T readValue(InputStream is,
-      JavaType valueType) throws JsonParseException, JsonMappingException, IOException {
+  public static <T> T readValue(InputStream is, JavaType valueType) throws IOException {
     return OBJ_MAPPER.readValue(is, valueType);
   }
 
@@ -69,8 +77,7 @@ public final class JsonUtils {
     return OBJ_MAPPER.convertValue(fromValue, toValueType);
   }
 
-  public static void writeValue(OutputStream out,
-      Object value) throws JsonGenerationException, JsonMappingException, IOException {
+  public static void writeValue(OutputStream out, Object value) throws IOException {
     OBJ_MAPPER.writeValue(out, value);
   }
 }
