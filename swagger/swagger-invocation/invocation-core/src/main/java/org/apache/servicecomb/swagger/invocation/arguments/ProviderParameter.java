@@ -16,7 +16,9 @@
  */
 package org.apache.servicecomb.swagger.invocation.arguments;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 
 public class ProviderParameter {
   private int index;
@@ -27,6 +29,8 @@ public class ProviderParameter {
    * the param name specified by param annotations(i.e. the param name in schema), or the param name defined in code
    */
   private String name;
+
+  private Annotation[] annotations;
 
   public ProviderParameter(int index, Type type, String name) {
     this.index = index;
@@ -61,12 +65,22 @@ public class ProviderParameter {
     return this;
   }
 
+  public Annotation[] getAnnotations() {
+    return annotations;
+  }
+
+  public ProviderParameter setAnnotations(Annotation[] annotations) {
+    this.annotations = annotations;
+    return this;
+  }
+
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("ProviderParameter{");
     sb.append("index=").append(index);
     sb.append(", type=").append(type);
     sb.append(", name='").append(name).append('\'');
+    sb.append(", annotations=").append(Arrays.toString(annotations));
     sb.append('}');
     return sb.toString();
   }
