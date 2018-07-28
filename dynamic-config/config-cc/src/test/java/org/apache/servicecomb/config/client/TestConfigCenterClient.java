@@ -124,7 +124,7 @@ public class TestConfigCenterClient {
     Assert.assertNotEquals("rkd", version2);
     String version3 = refreshAndGetCurrentRevision(clientMgr, httpClientWithContext, 200, "");
     //make sure the current version is not ""
-    Assert.assertNotEquals("", version1);
+    Assert.assertNotEquals("", version3);
   }
   @SuppressWarnings("unchecked")
   private String refreshAndGetCurrentRevision(ClientPoolManager<HttpClientWithContext> clientMgr,
