@@ -122,6 +122,9 @@ public class TestConfigCenterClient {
     String version2 = refreshAndGetCurrentRevision(clientMgr, httpClientWithContext, 304, "rkd");
     //test that when return code is 304, the sdk do not change the latestRevision
     Assert.assertNotEquals("rkd", version2);
+    String version3 = refreshAndGetCurrentRevision(clientMgr, httpClientWithContext, 200, "");
+    //make sure the current version is not ""
+    Assert.assertNotEquals("", version1);
   }
   @SuppressWarnings("unchecked")
   private String refreshAndGetCurrentRevision(ClientPoolManager<HttpClientWithContext> clientMgr,
