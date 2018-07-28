@@ -125,6 +125,7 @@ public abstract class ArgumentsMapperFactory<T> {
   protected List<ProviderParameter> collectContextArgumentsMapper(ArgumentsMapperConfig config) {
     List<ProviderParameter> providerNormalParams = new ArrayList<>();
 
+    final Annotation[][] parameterAnnotations = config.getProviderMethod().getParameterAnnotations();
     Type[] providerParameterTypes = config.getProviderMethod().getGenericParameterTypes();
     for (int providerIdx = 0; providerIdx < providerParameterTypes.length; providerIdx++) {
       Type parameterType = providerParameterTypes[providerIdx];
@@ -136,7 +137,8 @@ public abstract class ArgumentsMapperFactory<T> {
       }
 
       ProviderParameter pp = new ProviderParameter(providerIdx, parameterType,
-          retrieveVisibleParamName(config.getProviderMethod(), providerIdx));
+          retrieveVisibleParamName(config.getProviderMethod(), providerIdx))
+          .setAnnotations(parameterAnnotations[providerIdx]);
       providerNormalParams.add(pp);
     }
 

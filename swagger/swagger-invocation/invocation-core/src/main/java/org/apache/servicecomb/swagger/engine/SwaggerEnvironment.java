@@ -17,7 +17,9 @@
 package org.apache.servicecomb.swagger.engine;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -39,6 +41,7 @@ import org.apache.servicecomb.swagger.invocation.response.producer.ProducerRespo
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapperFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.swagger.annotations.ApiOperation;
@@ -51,8 +54,14 @@ public class SwaggerEnvironment {
   @Inject
   protected CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext;
 
+  /**
+   * default producerArgumentsFactory
+   */
   @Inject
   private ProducerArgumentsMapperFactory producerArgumentsFactory;
+
+  @Autowired
+  private List<ProducerArgumentsMapperFactory> producerArgumentsMapperFactoryList = new ArrayList<>(0);
 
   private ResponseMapperFactorys<ProducerResponseMapper> producerResponseMapperFactorys =
       new ResponseMapperFactorys<>(ProducerResponseMapperFactory.class);
@@ -174,7 +183,8 @@ public class SwaggerEnvironment {
       config.setSwaggerOperation(swaggerOperationMap.get(methodName));
       config.setSwaggerGeneratorContext(compositeSwaggerGeneratorContext.selectContext(producerCls));
 
-      ProducerArgumentsMapper argsMapper = producerArgumentsFactory.createArgumentsMapper(config);
+      ProducerArgumentsMapperFactory argumentsMapperFactory = selectProducerArgumentsMapperFactory(config);
+      ProducerArgumentsMapper argsMapper = argumentsMapperFactory.createArgumentsMapper(config);
       ProducerResponseMapper responseMapper = producerResponseMapperFactorys.createResponseMapper(
           swaggerMethod.getGenericReturnType(),
           producerMethod.getGenericReturnType());
@@ -192,6 +202,20 @@ public class SwaggerEnvironment {
     }
 
     return producer;
+  }
+
+  ProducerArgumentsMapperFactory selectProducerArgumentsMapperFactory(ArgumentsMapperConfig config) {
+    ProducerArgumentsMapperFactory argumentsMapperFactory = null;
+    for (ProducerArgumentsMapperFactory producerArgumentsMapperFactory : this.producerArgumentsMapperFactoryList) {
+      if (producerArgumentsMapperFactory.canProcess(config)) {
+        argumentsMapperFactory = producerArgumentsMapperFactory;
+        break;
+      }
+    }
+    if (null == argumentsMapperFactory) {
+      argumentsMapperFactory = this.producerArgumentsFactory;
+    }
+    return argumentsMapperFactory;
   }
 
   private Map<String, Method> retrieveVisibleMethods(Class<?> clazz) {

@@ -18,8 +18,8 @@
 package org.apache.servicecomb.swagger.invocation.arguments.producer;
 
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,7 +27,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
+import org.apache.servicecomb.swagger.generator.rest.RestSwaggerGeneratorContext;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapperConfig;
@@ -39,16 +39,15 @@ import org.apache.servicecomb.swagger.invocation.converter.Converter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
-import io.swagger.converter.ModelConverters;
 import io.swagger.models.parameters.Parameter;
-import io.swagger.models.parameters.QueryParameter;
-import io.swagger.models.properties.Property;
-import io.swagger.models.properties.RefProperty;
 
 @Component
+@Primary
 public class ProducerArgumentsMapperFactory extends ArgumentsMapperFactory<ProducerArgumentsMapper> {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(ProducerArgumentsMapperFactory.class);
 
   public ProducerArgumentsMapperFactory() {
@@ -69,46 +68,50 @@ public class ProducerArgumentsMapperFactory extends ArgumentsMapperFactory<Produ
         config.getProviderMethod().getParameterCount());
   }
 
+  public boolean canProcess(ArgumentsMapperConfig config) {
+    return false;
+  }
+
   @Override
   protected void collectSwaggerArgumentsMapper(ArgumentsMapperConfig config,
       List<ProviderParameter> providerNormalParams) {
-    if (!config.getSwaggerGeneratorContext().getClass().getCanonicalName().equals(
-        "org.apache.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGeneratorContext")) {
-      // if this is not a SpringMVC style provider operation, there is no need to consider query object param
+    if (!RestSwaggerGeneratorContext.class.isInstance(config.getSwaggerGeneratorContext())) {
+      // POJO style provider does not support aggregated param
       super.collectSwaggerArgumentsMapper(config, providerNormalParams);
       return;
     }
 
+    // JAX-RS and SpringMVC style provider support aggregated param, i.e. @BeanParam and query object, respectively
     Map<String, ProviderParameter> providerParamMap = getProviderParamMap(providerNormalParams);
     Map<String, ParamWrapper<Parameter>> swaggerParamMap = getSwaggerParamMap(config);
 
-    Set<String> queryObjectNames = findSpringMvcQueryObject(providerParamMap, swaggerParamMap);
-    if (queryObjectNames.isEmpty()) {
-      // there is no query object param, run as 1-to-1 param mapping mode
+    Set<String> aggregatedParamNames = findAggregatedParamNames(providerParamMap, swaggerParamMap);
+    if (aggregatedParamNames.isEmpty()) {
+      // there is no aggregated param, run as 1-to-1 param mapping mode
       super.collectSwaggerArgumentsMapper(config, providerNormalParams);
       return;
     }
 
-    // There is at lease one query object param, so the param mapping mode becomes to M-to-N
+    // There is at lease one aggregated param, so the param mapping mode becomes to M-to-N
     // try to map params by name
-    generateParamMapperByName(config, providerParamMap, swaggerParamMap, queryObjectNames);
+    generateParamMapperByName(config, providerParamMap, swaggerParamMap, aggregatedParamNames);
   }
 
   private void generateParamMapperByName(ArgumentsMapperConfig config, Map<String, ProviderParameter> providerParamMap,
-      Map<String, ParamWrapper<Parameter>> swaggerParamMap, Set<String> queryObjectNames) {
-    LOGGER.info("mapping query object params: [{}]", queryObjectNames);
-    generateObjectQueryParamMapper(config, providerParamMap, swaggerParamMap, queryObjectNames);
-    generateDefaultParamMapper(config, providerParamMap, swaggerParamMap, queryObjectNames);
+      Map<String, ParamWrapper<Parameter>> swaggerParamMap, Set<String> aggregatedParamNames) {
+    LOGGER.info("mapping aggregated params: [{}]", aggregatedParamNames);
+    generateAggregatedParamMapper(config, providerParamMap, swaggerParamMap, aggregatedParamNames);
+    generateDefaultParamMapper(config, providerParamMap, swaggerParamMap, aggregatedParamNames);
   }
 
   /**
    * Generate default argument mappers. One swagger argument is mapped to one producer argument.
    */
   private void generateDefaultParamMapper(ArgumentsMapperConfig config, Map<String, ProviderParameter> providerParamMap,
-      Map<String, ParamWrapper<Parameter>> swaggerParamMap, Set<String> queryObjectNames) {
+      Map<String, ParamWrapper<Parameter>> swaggerParamMap, Set<String> aggregatedParamNames) {
     Type[] swaggerParamTypes = config.getSwaggerMethod().getGenericParameterTypes();
     for (Entry<String, ProviderParameter> providerParamEntry : providerParamMap.entrySet()) {
-      if (queryObjectNames.contains(providerParamEntry.getKey())) {
+      if (aggregatedParamNames.contains(providerParamEntry.getKey())) {
         continue;
       }
 
@@ -122,29 +125,17 @@ public class ProducerArgumentsMapperFactory extends ArgumentsMapperFactory<Produ
   }
 
   /**
-   * Generate argument mappers for query object params. Collect all query params as json and map them to object param.
+   * Generate argument mappers for aggregated params.
+   * Collect related swagger params and map them to an aggregated param.
+   * It's implemented by SpringMVC and JAX-RS.
    */
-  private void generateObjectQueryParamMapper(ArgumentsMapperConfig config,
+  protected void generateAggregatedParamMapper(ArgumentsMapperConfig config,
       Map<String, ProviderParameter> providerParamMap, Map<String, ParamWrapper<Parameter>> swaggerParamMap,
-      Set<String> queryObjectNames) {
-    // collect all query params
-    Map<String, Integer> querySwaggerParamsIndex = new HashMap<>();
-    for (Entry<String, ParamWrapper<Parameter>> wrapperEntry : swaggerParamMap.entrySet()) {
-      if (wrapperEntry.getValue().getParam() instanceof QueryParameter) {
-        querySwaggerParamsIndex.put(wrapperEntry.getKey(), wrapperEntry.getValue().getIndex());
-      }
-    }
-    // create mapper for each query objects
-    for (String queryObjectName : queryObjectNames) {
-      final ProviderParameter providerParameter = providerParamMap.get(queryObjectName);
-      ArgumentMapper mapper = new ProducerSpringMVCQueryObjectMapper(querySwaggerParamsIndex,
-          providerParameter.getIndex(),
-          providerParameter.getType());
-      config.addArgumentMapper(mapper);
-    }
+      Set<String> aggregatedParamNames) {
+    // do nothing, not supported by default
   }
 
-  private Map<String, ParamWrapper<Parameter>> getSwaggerParamMap(ArgumentsMapperConfig config) {
+  protected Map<String, ParamWrapper<Parameter>> getSwaggerParamMap(ArgumentsMapperConfig config) {
     Map<String, ParamWrapper<Parameter>> swaggerParamMap =
         new HashMap<>(config.getSwaggerOperation().getParameters().size());
     List<Parameter> parameters = config.getSwaggerOperation().getParameters();
@@ -155,7 +146,7 @@ public class ProducerArgumentsMapperFactory extends ArgumentsMapperFactory<Produ
     return swaggerParamMap;
   }
 
-  private Map<String, ProviderParameter> getProviderParamMap(List<ProviderParameter> providerNormalParams) {
+  protected Map<String, ProviderParameter> getProviderParamMap(List<ProviderParameter> providerNormalParams) {
     Map<String, ProviderParameter> providerParamMap = new HashMap<>(providerNormalParams.size());
     providerNormalParams.forEach(
         providerParameter -> providerParamMap.put(providerParameter.getName(), providerParameter));
@@ -163,29 +154,12 @@ public class ProducerArgumentsMapperFactory extends ArgumentsMapperFactory<Produ
   }
 
   /**
-   * Find all query object params
-   * @return the names of the query object params
+   * Find all aggregated params
+   * @return the names of the aggregated params
    */
-  private Set<String> findSpringMvcQueryObject(Map<String, ProviderParameter> providerParamMap,
+  protected Set<String> findAggregatedParamNames(Map<String, ProviderParameter> providerParamMap,
       Map<String, ParamWrapper<Parameter>> swaggerParamMap) {
-    // find all reference type producer params, and exclude body param
-    Set<String> queryObjectSet = new HashSet<>();
-
-    for (Entry<String, ProviderParameter> paramEntry : providerParamMap.entrySet()) {
-      Type paramType = paramEntry.getValue().getType();
-      Property property = ModelConverters.getInstance().readAsProperty(paramType);
-      if (RefProperty.class.isInstance(property)) {
-        queryObjectSet.add(paramEntry.getKey());
-      }
-    }
-
-    for (Entry<String, ParamWrapper<Parameter>> paramEntry : swaggerParamMap.entrySet()) {
-      if (ParamUtils.isRealBodyParameter(paramEntry.getValue().getParam())) {
-        queryObjectSet.remove(paramEntry.getKey());
-      }
-    }
-
-    return queryObjectSet;
+    return Collections.emptySet();
   }
 
   @Override
