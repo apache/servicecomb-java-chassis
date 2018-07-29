@@ -136,8 +136,10 @@ public class ProducerArgumentsMapperFactory extends ArgumentsMapperFactory<Produ
   }
 
   protected Map<String, ParamWrapper<Parameter>> getSwaggerParamMap(ArgumentsMapperConfig config) {
-    Map<String, ParamWrapper<Parameter>> swaggerParamMap =
-        new HashMap<>(config.getSwaggerOperation().getParameters().size());
+    Map<String, ParamWrapper<Parameter>> swaggerParamMap = new HashMap<>();
+    if (null == config.getSwaggerOperation() || null == config.getSwaggerOperation().getParameters()) {
+      return swaggerParamMap;
+    }
     List<Parameter> parameters = config.getSwaggerOperation().getParameters();
     for (int i = 0; i < parameters.size(); i++) {
       Parameter parameter = parameters.get(i);
