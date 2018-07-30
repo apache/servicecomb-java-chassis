@@ -16,6 +16,9 @@
  */
 package org.apache.servicecomb.authentication;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.servicecomb.authentication.provider.AccessController;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
@@ -24,7 +27,6 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 public class TestAccessController {
   @Before
@@ -38,65 +40,65 @@ public class TestAccessController {
   }
 
   @Test
-  public void testIsValidOfWhite() {
+  public void testIsValidOfWhiteByServiceName() {
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.white.list1.propertyName", "serviceName");
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.white.list1.category", "property");
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.white.list1.rule", "trust*");
     AccessController controller = new AccessController();
-    Microservice service = Mockito.mock(Microservice.class);
+    Microservice service = new Microservice();
 
-    Mockito.when(service.getServiceName()).thenReturn("trustCustomer");
+    service.setServiceName("trustCustomer");
     Assert.assertTrue(controller.isAllowed(service));
 
-    Mockito.when(service.getServiceName()).thenReturn("nottrustCustomer");
+    service.setServiceName("nottrustCustomer");
     Assert.assertTrue(!controller.isAllowed(service));
 
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.white.list1.rule", "*trust");
-    Mockito.when(service.getServiceName()).thenReturn("Customer_trust");
+    service.setServiceName("Customer_trust");
     Assert.assertTrue(controller.isAllowed(service));
 
-    Mockito.when(service.getServiceName()).thenReturn("Customer_trust_not");
+    service.setServiceName("Customer_trust_not");
     Assert.assertTrue(!controller.isAllowed(service));
 
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.white.list1.rule", "trust");
-    Mockito.when(service.getServiceName()).thenReturn("trust");
+    service.setServiceName("trust");
     Assert.assertTrue(controller.isAllowed(service));
 
-    Mockito.when(service.getServiceName()).thenReturn("Customer_trust");
+    service.setServiceName("Customer_trust");
     Assert.assertTrue(!controller.isAllowed(service));
   }
 
   @Test
-  public void testIsValidOfBlack() {
+  public void testIsValidOfBlackByServiceName() {
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.propertyName", "serviceName");
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.category", "property");
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.rule", "trust*");
     AccessController controller = new AccessController();
-    Microservice service = Mockito.mock(Microservice.class);
+    Microservice service = new Microservice();
 
-    Mockito.when(service.getServiceName()).thenReturn("trustCustomer");
+    service.setServiceName("trustCustomer");
     Assert.assertTrue(!controller.isAllowed(service));
 
-    Mockito.when(service.getServiceName()).thenReturn("nottrustCustomer");
+    service.setServiceName("nottrustCustomer");
     Assert.assertTrue(controller.isAllowed(service));
 
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.rule", "*trust");
-    Mockito.when(service.getServiceName()).thenReturn("Customer_trust");
+    service.setServiceName("Customer_trust");
     Assert.assertTrue(!controller.isAllowed(service));
 
-    Mockito.when(service.getServiceName()).thenReturn("Customer_trust_not");
+    service.setServiceName("Customer_trust_not");
     Assert.assertTrue(controller.isAllowed(service));
 
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.rule", "trust");
-    Mockito.when(service.getServiceName()).thenReturn("trust");
+    service.setServiceName("trust");
     Assert.assertTrue(!controller.isAllowed(service));
 
-    Mockito.when(service.getServiceName()).thenReturn("Customer_trust");
+    service.setServiceName("Customer_trust");
     Assert.assertTrue(controller.isAllowed(service));
   }
 
   @Test
-  public void testIsValidOfBlackAndWhite() {
+  public void testIsValidOfBlackAndWhiteByServiceName() {
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.white.list1.propertyName", "serviceName");
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.white.list1.category", "property");
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.white.list1.rule", "trust*");
@@ -105,12 +107,65 @@ public class TestAccessController {
     ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.rule", "*hacker");
 
     AccessController controller = new AccessController();
-    Microservice service = Mockito.mock(Microservice.class);
+    Microservice service = new Microservice();
 
-    Mockito.when(service.getServiceName()).thenReturn("trustCustomer");
+    service.setServiceName("trustCustomer");
     Assert.assertTrue(controller.isAllowed(service));
 
-    Mockito.when(service.getServiceName()).thenReturn("trustCustomerhacker");
+    service.setServiceName("trustCustomerhacker");
+    Assert.assertTrue(!controller.isAllowed(service));
+  }
+
+  @Test
+  public void testIsValidOfBlackByProperties() {
+    ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.propertyName", "tag");
+    ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.category", "property");
+    ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.rule", "test");
+    AccessController controller = new AccessController();
+    Microservice service = new Microservice();
+    Map<String, String> map = new HashMap<>();
+    map.put("tag", "test");
+
+    service.setProperties(map);
+    Assert.assertTrue(!controller.isAllowed(service));
+
+    map.put("tag", "testa");
+    service.setProperties(map);
+    Assert.assertTrue(controller.isAllowed(service));
+  }
+
+  @Test
+  public void testIsValidOfWhiteByProperties() {
+    ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.white.list1.propertyName", "tag");
+    ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.white.list1.category", "property");
+    ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.white.list1.rule", "test");
+    AccessController controller = new AccessController();
+    Microservice service = new Microservice();
+    Map<String, String> map = new HashMap<>();
+    map.put("tag", "test");
+
+    service.setProperties(map);
+    Assert.assertTrue(controller.isAllowed(service));
+
+    map.put("tag", "testa");
+    service.setProperties(map);
+    Assert.assertTrue(!controller.isAllowed(service));
+  }
+
+  @Test
+  public void testIsValidOfBlackAndWhiteByServiceNameAndVersion() {
+    ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.white.list1.propertyName", "serviceName");
+    ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.white.list1.category", "property");
+    ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.white.list1.rule", "trust*");
+    ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.propertyName", "version");
+    ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.category", "property");
+    ArchaiusUtils.setProperty("servicecomb.publicKey.accessControl.black.list1.rule", "0.0.1");
+
+    AccessController controller = new AccessController();
+    Microservice service = new Microservice();
+    service.setServiceName("trustCustomer");
+    service.setVersion("0.0.1");
+
     Assert.assertTrue(!controller.isAllowed(service));
   }
 }

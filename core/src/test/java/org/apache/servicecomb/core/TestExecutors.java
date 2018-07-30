@@ -56,6 +56,7 @@ public class TestExecutors {
         strThreadTest = "thread Ran";
       }
     });
+    oReactiveExecutor.close();
     Assert.assertEquals("thread Ran", strThreadTest);
   }
 }

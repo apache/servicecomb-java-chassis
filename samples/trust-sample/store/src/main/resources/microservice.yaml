@@ -38,8 +38,9 @@ servicecomb:
       black:
         list01:
           category: property ## property, fixed value
-          propertyName: serviceName ## property name
-          rule: hacker ## property value match expression. only supports prefix match and postfix match and exactly match. e.g. hacker*, *hacker, hacker
+          propertyName: serviceName ## property name, e.g. serviceName, appId, environment, alias, version and so on, also support key in properties.
+          rule: hacker ## property value match expression. 
+##if propertyName is serviceName, only supports prefix match and postfix match and exactly match. e.g. hacker*, *hacker, hacker
       white:
         list02:
           category: property
