@@ -16,9 +16,12 @@
  */
 package org.apache.servicecomb.authentication.provider;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
@@ -54,6 +57,8 @@ public class AccessController {
 
   private static final String KEY_RULE_POSTFIX = ".rule";
 
+  private static final String TYPE_STRING_NAME = "java.lang.String";
+
   private Map<String, ConfigurationItem> whiteList = new HashMap<>();
 
   private Map<String, ConfigurationItem> blackList = new HashMap<>();
@@ -84,14 +89,39 @@ public class AccessController {
   private boolean matchFound(Microservice microservice, Map<String, ConfigurationItem> ruleList) {
     boolean matched = false;
     for (ConfigurationItem item : ruleList.values()) {
-      // TODO: Currently we only support property, not support tags. And we will support tags later.
       if (ConfigurationItem.CATEGORY_PROPERTY.equals(item.category)) {
-        // TODO: Currently we only support to configure serviceName. And we will support others later.
-        if ("serviceName".equals(item.propertyName)) {
-          if (isPatternMatch(microservice.getServiceName(), item.rule)) {
-            matched = true;
-            break;
+        // we support to configure properties, e.g. serviceName, appId, environment, alias, version and so on, also support key in properties.
+        Class<? extends Microservice> service = microservice.getClass();
+        for (Method method : service.getDeclaredMethods()) {
+          String methodName = method.getName();
+          if (!methodName.startsWith("get"))
+            continue;
+          if (!method.getGenericReturnType().getTypeName().equals(TYPE_STRING_NAME))
+            continue;
+          char[] charArray = methodName.toCharArray();
+          charArray[3] += 32;
+          String fieldName = String.valueOf(charArray, 3, charArray.length - 3);
+          if (fieldName.equals(item.propertyName)) {
+            Field field;
+            String fieldValue = null;
+            try {
+              field = service.getDeclaredField(fieldName);
+              field.setAccessible(true);
+              fieldValue = (String) field.get(microservice);
+            } catch (Exception e) {
+              LOG.error("get field by reflection failed, error message: {}", e.getMessage());
+              fieldValue = "";
+            }
+            if (isPatternMatch(fieldValue, item.rule))
+              return true;
           }
+        }
+        Map<String, String> properties = microservice.getProperties();
+        for (Entry<String, String> entry : properties.entrySet()) {
+          if (!entry.getKey().equals(item.propertyName))
+            continue;
+          if (isPatternMatch(entry.getValue(), item.rule))
+            return true;
         }
       }
     }
