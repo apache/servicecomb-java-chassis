@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.apache.servicecomb.samples</groupId>
     <artifactId>springmvc-sample</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0-SNAPSHOT</version>
   </parent>
   <artifactId>springmvc-consumer</artifactId>
   <dependencies>
