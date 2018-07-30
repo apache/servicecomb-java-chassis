@@ -47,6 +47,7 @@ import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.WebSocket;
 import io.vertx.core.json.JsonObject;
+
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mock;
@@ -115,7 +116,8 @@ public class TestConfigCenterClient {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testConfigRefreshModeOne(@Mocked ClientPoolManager<HttpClientWithContext> clientMgr,@Mocked HttpClientWithContext httpClientWithContext) {
+  public void testConfigRefreshModeOne(@Mocked ClientPoolManager<HttpClientWithContext> clientMgr,
+      @Mocked HttpClientWithContext httpClientWithContext) {
     String version1 = refreshAndGetCurrentRevision(clientMgr, httpClientWithContext, 200, "huawei");
     //test the sdk get and change the latestRevision
     Assert.assertEquals("huawei", version1);
@@ -126,9 +128,10 @@ public class TestConfigCenterClient {
     //make sure the current version is not ""
     Assert.assertNotEquals("", version3);
   }
+
   @SuppressWarnings("unchecked")
   private String refreshAndGetCurrentRevision(ClientPoolManager<HttpClientWithContext> clientMgr,
-      HttpClientWithContext httpClientWithContext,int statusCode,String version) {
+      HttpClientWithContext httpClientWithContext, int statusCode, String version) {
 
     ConfigCenterConfigurationSourceImpl impl = new ConfigCenterConfigurationSourceImpl();
     UpdateHandler updateHandler = impl.new UpdateHandler();
@@ -136,7 +139,9 @@ public class TestConfigCenterClient {
     Mockito.when(request.headers()).thenReturn(MultiMap.caseInsensitiveMultiMap());
     Buffer rsp = Mockito.mock(Buffer.class);
     Mockito.when(rsp.toString())
-        .thenReturn(String.format("{\"application\":{\"3\":\"2\",\"aa\":\"1\"},\"vmalledge\":{\"aa\":\"3\"},\"revision\": { \"version\": \"%s\"} }",version));
+        .thenReturn(String.format(
+            "{\"application\":{\"3\":\"2\",\"aa\":\"1\"},\"vmalledge\":{\"aa\":\"3\"},\"revision\": { \"version\": \"%s\"} }",
+            version));
 
     HttpClientResponse httpClientResponse = Mockito.mock(HttpClientResponse.class);
     Mockito.when(httpClientResponse.bodyHandler(Mockito.any(Handler.class))).then(invocation -> {

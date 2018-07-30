@@ -50,7 +50,8 @@ public class ParseConfigUtils {
 
   public void refreshConfigItems(Map<String, Map<String, Object>> remoteItems) {
 
-    CURRENT_VERSION_INFO = remoteItems.getOrDefault("revision",new HashMap<>()).getOrDefault("version","default").toString();
+    CURRENT_VERSION_INFO =
+        remoteItems.getOrDefault("revision", new HashMap<>()).getOrDefault("version", "default").toString();
     //make sure the CURRENT_VERSION_INFO != ""
     CURRENT_VERSION_INFO = CURRENT_VERSION_INFO.equals("") ? "default" : CURRENT_VERSION_INFO;
     remoteItems.remove("revision");//the key revision is not the config setting
