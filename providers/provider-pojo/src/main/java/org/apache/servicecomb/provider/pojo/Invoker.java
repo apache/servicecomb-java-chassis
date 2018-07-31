@@ -63,14 +63,14 @@ public class Invoker implements InvocationHandler {
   }
 
   // 原始数据
-  private String microserviceName;
+  protected String microserviceName;
 
-  private String schemaId;
+  protected String schemaId;
 
-  private Class<?> consumerIntf;
+  protected Class<?> consumerIntf;
 
   // 生成的数据
-  private InvokerMeta invokerMeta = new InvokerMeta(null, null, null, null);
+  protected InvokerMeta invokerMeta = new InvokerMeta(null, null, null, null);
 
   @SuppressWarnings("unchecked")
   public static <T> T createProxy(String microserviceName, String schemaId, Class<?> consumerIntf) {
@@ -85,7 +85,7 @@ public class Invoker implements InvocationHandler {
   }
 
   protected InvokerMeta createInvokerMeta() {
-    ReferenceConfig referenceConfig = SCBEngine.getInstance().getReferenceConfigForInvoke(microserviceName);
+    ReferenceConfig referenceConfig = findReferenceConfig();
     MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
 
     SchemaMeta schemaMeta;
@@ -113,6 +113,10 @@ public class Invoker implements InvocationHandler {
     SwaggerConsumer swaggerConsumer = CseContext.getInstance().getSwaggerEnvironment().createConsumer(consumerIntf,
         schemaMeta.getSwaggerIntf());
     return new InvokerMeta(referenceConfig, microserviceMeta, schemaMeta, swaggerConsumer);
+  }
+
+  protected ReferenceConfig findReferenceConfig() {
+    return SCBEngine.getInstance().getReferenceConfigForInvoke(microserviceName);
   }
 
   @Override
