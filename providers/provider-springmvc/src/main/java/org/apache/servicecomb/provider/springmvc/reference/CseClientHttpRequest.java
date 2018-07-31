@@ -149,7 +149,7 @@ public class CseClientHttpRequest implements ClientHttpRequest {
   protected RequestMeta createRequestMeta(String httpMethod, URI uri) {
     String microserviceName = uri.getAuthority();
 
-    ReferenceConfig referenceConfig = SCBEngine.getInstance().getReferenceConfigForInvoke(microserviceName);
+    ReferenceConfig referenceConfig = findReferenceConfig(microserviceName);
 
     MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
     ServicePathManager servicePathManager = ServicePathManager.getServicePathManager(microserviceMeta);
@@ -164,6 +164,10 @@ public class CseClientHttpRequest implements ClientHttpRequest {
 
     Map<String, String> pathParams = locator.getPathVarMap();
     return new RequestMeta(referenceConfig, swaggerRestOperation, pathParams);
+  }
+
+  protected ReferenceConfig findReferenceConfig(String microserviceName) {
+    return SCBEngine.getInstance().getReferenceConfigForInvoke(microserviceName);
   }
 
   protected String findUriPath(URI uri) {
