@@ -50,12 +50,12 @@ public class TestExecutors {
 
     ReactiveExecutor oReactiveExecutor = new ReactiveExecutor();
     oReactiveExecutor.execute(new Runnable() {
-
       @Override
       public void run() {
         strThreadTest = "thread Ran";
       }
     });
+    oReactiveExecutor.close();
     Assert.assertEquals("thread Ran", strThreadTest);
   }
 }
