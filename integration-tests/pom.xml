@@ -42,10 +42,24 @@
     <module>spring-pojo-tests</module>
     <module>dynamic-config-tests</module>
     <module>spring-pojo-connection-limit-test</module>
+
+    <module>it-common</module>
+    <module>it-producer</module>
+    <module>it-edge</module>
+    <module>it-common-service</module>
+
+    <!--must be the last one-->
+    <module>it-consumer</module>
   </modules>
 
   <dependencyManagement>
     <dependencies>
+      <dependency>
+        <groupId>org.apache.servicecomb.tests</groupId>
+        <artifactId>it-common</artifactId>
+        <version>1.1.0-SNAPSHOT</version>
+      </dependency>
+
       <dependency>
         <groupId>org.apache.servicecomb.demo</groupId>
         <artifactId>demo-schema</artifactId>
@@ -122,6 +136,27 @@
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>metrics-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-core</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-test-scaffolding</artifactId>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 
