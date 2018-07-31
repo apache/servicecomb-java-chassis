@@ -50,6 +50,12 @@
         <groupId>org.apache.servicecomb.demo</groupId>
         <artifactId>demo-schema</artifactId>
         <version>1.1.0-SNAPSHOT</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.servicecomb.demo</groupId>
+            <artifactId>demo-signature</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb.tests</groupId>
@@ -79,6 +85,22 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
+      <artifactId>transport-rest-vertx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>provider-springmvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>provider-pojo</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>provider-jaxrs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>handler-bizkeeper</artifactId>
     </dependency>
     <dependency>
@@ -99,28 +121,48 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>swagger-generator-springmvc</artifactId>
+      <artifactId>metrics-core</artifactId>
     </dependency>
   </dependencies>
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>3.0.2</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-    <plugins>
-      <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-          <skipStaging>true</skipStaging>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+
+  <profiles>
+    <profile>
+      <id>it-jar</id>
+      <activation>
+        <file>
+          <exists>enable-it-jar</exists>
+        </file>
+      </activation>
+
+      <!--must manage by profile, otherwise when "mvn install" will cause classpath problem-->
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.1.0</version>
+            <executions>
+              <execution>
+                <id>default-jar</id>
+                <phase>package</phase>
+              </execution>
+            </executions>
+            <configuration>
+              <archive>
+                <manifest>
+                  <classpathLayoutType>repository</classpathLayoutType>
+                  <addClasspath>true</addClasspath>
+                  <classpathPrefix>/${settings.localRepository}/</classpathPrefix>
+                  <mainClass>${it.main}</mainClass>
+                </manifest>
+                <manifestEntries>
+                  <Class-Path>. ..</Class-Path>
+                </manifestEntries>
+              </archive>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

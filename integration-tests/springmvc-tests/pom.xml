@@ -42,28 +42,6 @@
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-schema</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.servicecomb.demo</groupId>
-          <artifactId>demo-signature</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>provider-springmvc</artifactId>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <forkCount>1</forkCount>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>
