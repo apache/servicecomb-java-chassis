@@ -60,7 +60,6 @@ public class ProducerArgumentsMapperFactory extends ArgumentsMapperFactory<Produ
     createFactoryMap(factoryList);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public ProducerArgumentsMapper createArgumentsMapper(ArgumentsMapperConfig config) {
     collectArgumentsMapper(config);

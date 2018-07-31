@@ -44,7 +44,6 @@ public class ConsumerArgumentsMapperFactory extends ArgumentsMapperFactory<Consu
     createFactoryMap(factoryList);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public ConsumerArgumentsMapper createArgumentsMapper(ArgumentsMapperConfig config) {
     collectArgumentsMapper(config);

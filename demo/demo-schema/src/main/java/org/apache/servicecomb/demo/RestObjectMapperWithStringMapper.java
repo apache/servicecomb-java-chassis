@@ -44,9 +44,10 @@ import com.fasterxml.jackson.databind.JavaType;
  *  conversion change. You must write  convertValue to check possible types using.
  */
 public class RestObjectMapperWithStringMapper extends RestObjectMapper {
+  private static final long serialVersionUID = 4279371572149490568L;
+
   private static Logger LOGGER = LoggerFactory.getLogger(RestObjectMapperWithStringMapper.class);
 
-  @SuppressWarnings("deprecation")
   public RestObjectMapperWithStringMapper() {
     super();
   }
