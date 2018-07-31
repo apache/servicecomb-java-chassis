@@ -33,16 +33,6 @@
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-schema</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.servicecomb.demo</groupId>
-          <artifactId>demo-signature</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>provider-jaxrs</artifactId>
     </dependency>
   </dependencies>
 
