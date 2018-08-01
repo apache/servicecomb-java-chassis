@@ -236,24 +236,27 @@ public class ConfigCenterClient {
       this.memberdis = memberdis;
     }
 
-    @Override
-    public void run() {
-      // this will be single threaded, so we don't care about concurrent
-      // staffs
+    public void run(boolean wait) {
       try {
         String configCenter = memberdis.getConfigServer();
         if (refreshMode == 1) {
-          //make sure that there is only one thread is invoking refreshConfig method
-          refreshConfig(configCenter);
+          //must make sure there is only one thread is invoking refreshConfigMethod
+          //hence, we change wait parameter from false to true
+          refreshConfig(configCenter, true);
         } else if (!isWatching) {
           // 重新监听时需要先加载，避免在断开期间丢失变更
-          //make sure that there is only one thread is invoking refreshConfig method
-          refreshConfig(configCenter);
+          refreshConfig(configCenter, wait);
           doWatch(configCenter);
         }
       } catch (Exception e) {
         LOGGER.error("client refresh thread exception", e);
       }
+    }
+
+    // 具体动作
+    @Override
+    public void run() {
+      run(false);
     }
 
     // create watch and wait for done
@@ -301,7 +304,8 @@ public class ConfigCenterClient {
                 LOGGER.info("watching config recieved {}", action);
                 Map<String, Object> mAction = action.toJsonObject().getMap();
                 if ("CREATE".equals(mAction.get("action"))) {
-                  refreshConfig(configCenter);
+                  //event loop can not be blocked,we just keep nothing changed in push mode
+                  refreshConfig(configCenter, false);
                 } else if ("MEMBER_CHANGE".equals(mAction.get("action"))) {
                   refreshMembers(memberdis);
                 } else {
@@ -348,7 +352,7 @@ public class ConfigCenterClient {
       }
     }
 
-    public void refreshConfig(String configcenter) {
+    public void refreshConfig(String configcenter, boolean wait) {
       CountDownLatch latch = new CountDownLatch(1);
       String encodeServiceName = "";
       try {
@@ -413,13 +417,15 @@ public class ConfigCenterClient {
         });
         request.end();
       });
-      LOGGER.info("Refreshing remote config...");
-      try {
-        latch.await(BOOTUP_WAIT_TIME, TimeUnit.SECONDS);
-      } catch (InterruptedException e) {
-        LOGGER.warn(e.getMessage());
+      if (wait) {
+        LOGGER.info("Refreshing remote config...");
+        try {
+          latch.await(BOOTUP_WAIT_TIME, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+          LOGGER.warn(e.getMessage());
+        }
+        LOGGER.info("Refreshing remote config is done.");
       }
-      LOGGER.info("Refreshing remote config is done.");
     }
   }
 
