@@ -32,7 +32,6 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
 import org.junit.Assert;
@@ -120,15 +119,19 @@ public class TestDefaultHttpClientFilter {
         result = operationMeta;
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
         result = swaggerRestOperation;
+        responseEx.getStatus();
+        result = 401;
       }
     };
 
     Response response = filter.afterReceiveResponse(invocation, responseEx);
     InvocationException exception = response.getResult();
-    CommonExceptionData data = (CommonExceptionData) exception.getErrorData();
     Assert.assertEquals(
-        "method null, path null, statusCode 0, reasonPhrase null, response content-type null is not supported",
-        data.getMessage());
+        401,
+        exception.getStatusCode());
+    Assert.assertEquals(
+        "method null, path null, statusCode 401, reasonPhrase null, response content-type null is not supported",
+        exception.getErrorData());
   }
 
   @Test
