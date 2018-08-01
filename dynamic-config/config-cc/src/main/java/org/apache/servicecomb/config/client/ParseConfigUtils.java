@@ -40,6 +40,8 @@ public class ParseConfigUtils {
 
   public static final Map<String, Object> flatItems = new HashMap<>();
 
+  public static String CURRENT_VERSION_INFO = "default";
+
   private UpdateHandler updateHandler;
 
   public ParseConfigUtils(UpdateHandler updateHandler) {
@@ -47,6 +49,11 @@ public class ParseConfigUtils {
   }
 
   public void refreshConfigItems(Map<String, Map<String, Object>> remoteItems) {
+    CURRENT_VERSION_INFO =
+        remoteItems.getOrDefault("revision", new HashMap<>()).getOrDefault("version", "default").toString();
+    //make sure the CURRENT_VERSION_INFO != ""
+    CURRENT_VERSION_INFO = CURRENT_VERSION_INFO.equals("") ? "default" : CURRENT_VERSION_INFO;
+    remoteItems.remove("revision");//the key revision is not the config setting
     multiDimensionItems.clear();
     multiDimensionItems.putAll(remoteItems);
     doRefreshItems();
