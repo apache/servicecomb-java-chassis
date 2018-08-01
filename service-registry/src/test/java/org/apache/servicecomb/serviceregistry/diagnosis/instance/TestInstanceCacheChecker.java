@@ -26,6 +26,7 @@ import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.diagnosis.Status;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
@@ -216,8 +217,10 @@ public class TestInstanceCacheChecker {
 
     registerMicroservice(appId, microserviceName);
 
-    serviceRegistry.getAppManager()
-        .getOrCreateMicroserviceVersionRule(appId, microserviceName, DefinitionConst.VERSION_RULE_ALL);
+    MicroserviceVersions microserviceVersions = serviceRegistry.getAppManager()
+        .getOrCreateMicroserviceVersions(appId, microserviceName);
+    microserviceVersions.setRevision("first");
+    microserviceVersions.getOrCreateMicroserviceVersionRule(DefinitionConst.VERSION_RULE_ALL);
 
     Holder<MicroserviceInstances> newFindHolder = createFindServiceInstancesResult();
     newFindHolder.value.getInstancesResponse().getInstances().add(new MicroserviceInstance());
@@ -234,5 +237,6 @@ public class TestInstanceCacheChecker {
     expectedSummary.setStatus(Status.ABNORMAL);
 
     Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
+    Assert.assertNull(microserviceVersions.getRevision());
   }
 }

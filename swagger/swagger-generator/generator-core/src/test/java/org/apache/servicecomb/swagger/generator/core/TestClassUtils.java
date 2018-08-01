@@ -84,10 +84,10 @@ public class TestClassUtils {
 
   @Test
   public void testHasAnnotation() {
-    Assert.assertEquals(true, ClassUtils.hasAnnotation(TestClassUtils.class, SwaggerDefinition.class));
-    Assert.assertEquals(true, ClassUtils.hasAnnotation(TestClassUtils.class, Test.class));
+    Assert.assertTrue(ClassUtils.hasAnnotation(TestClassUtils.class, SwaggerDefinition.class));
+    Assert.assertTrue(ClassUtils.hasAnnotation(TestClassUtils.class, Test.class));
 
-    Assert.assertEquals(false, ClassUtils.hasAnnotation(TestClassUtils.class, Path.class));
+    Assert.assertFalse(ClassUtils.hasAnnotation(TestClassUtils.class, Path.class));
   }
 
   @Test

@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
@@ -203,10 +203,10 @@ public class SpringMvcIntegrationTestBase {
 
     byte[] result = restTemplate.postForObject(
         codeFirstUrl + "bytes",
-        jsonRequest(RestObjectMapper.INSTANCE.writeValueAsBytes(body)),
+        jsonRequest(RestObjectMapperFactory.getRestObjectMapper().writeValueAsBytes(body)),
         byte[].class);
 
-    result = RestObjectMapper.INSTANCE.readValue(result, byte[].class);
+    result = RestObjectMapperFactory.getRestObjectMapper().readValue(result, byte[].class);
 
     assertEquals(1, result[0]);
     assertEquals(1, result[1]);
@@ -215,10 +215,10 @@ public class SpringMvcIntegrationTestBase {
 
     ListenableFuture<ResponseEntity<byte[]>> listenableFuture = asyncRestTemplate
         .postForEntity(codeFirstUrl + "bytes",
-            jsonRequest(RestObjectMapper.INSTANCE.writeValueAsBytes(body)),
+            jsonRequest(RestObjectMapperFactory.getRestObjectMapper().writeValueAsBytes(body)),
             byte[].class);
     ResponseEntity<byte[]> responseEntity = listenableFuture.get();
-    result = RestObjectMapper.INSTANCE.readValue(responseEntity.getBody(), byte[].class);
+    result = RestObjectMapperFactory.getRestObjectMapper().readValue(responseEntity.getBody(), byte[].class);
     assertEquals(1, result[0]);
     assertEquals(1, result[1]);
     assertEquals(2, result[2]);
@@ -331,7 +331,7 @@ public class SpringMvcIntegrationTestBase {
   public void ableToPostDate() throws Exception {
     ZonedDateTime date = ZonedDateTime.now().truncatedTo(SECONDS);
     MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-    body.add("date", RestObjectMapper.INSTANCE.convertToString(Date.from(date.toInstant())));
+    body.add("date", RestObjectMapperFactory.getRestObjectMapper().convertToString(Date.from(date.toInstant())));
 
     HttpHeaders headers = new HttpHeaders();
     headers.add(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE);
@@ -671,7 +671,7 @@ public class SpringMvcIntegrationTestBase {
 
   private <T> T jsonOf(String json, Class<T> aClass) {
     try {
-      return RestObjectMapper.INSTANCE.readValue(json, aClass);
+      return RestObjectMapperFactory.getRestObjectMapper().readValue(json, aClass);
     } catch (IOException e) {
       throw new IllegalStateException(
           "Failed to read JSON from " + json + ", Exception is: " + e);

@@ -24,13 +24,16 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.http.HttpStatus;
-import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.demo.CodeFirstRestTemplate;
 import org.apache.servicecomb.demo.DemoConst;
+import org.apache.servicecomb.demo.RestObjectMapperWithStringMapper;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.compute.Person;
+import org.apache.servicecomb.demo.jaxrs.client.beanParam.BeanParamPojoClient;
+import org.apache.servicecomb.demo.jaxrs.client.beanParam.BeanParamRestTemplateClient;
 import org.apache.servicecomb.demo.validator.Student;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
@@ -59,6 +62,7 @@ public class JaxrsClient {
   public static void init() throws Exception {
     Log4jUtils.init();
     BeanUtils.init();
+    RestObjectMapperFactory.setDefaultRestObjectMapper(new RestObjectMapperWithStringMapper());
   }
 
   public static void run() throws Exception {
@@ -68,6 +72,12 @@ public class JaxrsClient {
     testValidator(templateNew);
     testClientTimeOut(templateNew);
     testJaxRSDefaultValues(templateNew);
+    MultiErrorCodeServiceClient.runTest();
+
+    BeanParamPojoClient beanParamPojoClient = new BeanParamPojoClient();
+    beanParamPojoClient.testAll();
+    BeanParamRestTemplateClient beanParamRestTemplateClient = new BeanParamRestTemplateClient();
+    beanParamRestTemplateClient.testAll();
   }
 
   private static void testCompute(RestTemplate template) throws Exception {
@@ -87,7 +97,7 @@ public class JaxrsClient {
     }
   }
 
-  private static void testValidator(RestTemplate template) throws Exception {
+  private static void testValidator(RestTemplate template) {
     String microserviceName = "jaxrs";
     for (String transport : DemoConst.transports) {
       CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
@@ -116,8 +126,8 @@ public class JaxrsClient {
       //default values
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
-      MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-      HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+      MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+      HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
       String result = template.postForObject(cseUrlPrefix + "/form", request, String.class);
       TestMgr.check("Hello 20bobo", result);
 
@@ -172,7 +182,7 @@ public class JaxrsClient {
       //input values
       headers = new HttpHeaders();
       headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
-      Map<String, String> params = new HashMap<String, String>();
+      Map<String, String> params = new HashMap<>();
       params.put("a", "30");
       params.put("b", "sam");
       HttpEntity<Map<String, String>> requestPara = new HttpEntity<>(params, headers);
@@ -193,7 +203,6 @@ public class JaxrsClient {
       result = template.getForObject(cseUrlPrefix + "/query2?a=3&b=4&c=5&d=30&e=2", String.class);
       TestMgr.check("Hello 345302", result);
     }
-
   }
 
 
@@ -264,7 +273,7 @@ public class JaxrsClient {
   private static void testRawJsonParam(RestTemplate template, String cseUrlPrefix) throws Exception {
     Map<String, String> person = new HashMap<>();
     person.put("name", "Tom");
-    String jsonPerson = RestObjectMapper.INSTANCE.writeValueAsString(person);
+    String jsonPerson = RestObjectMapperFactory.getRestObjectMapper().writeValueAsString(person);
     TestMgr.check("hello Tom",
         template.postForObject(cseUrlPrefix + "/compute/testrawjson", jsonPerson, String.class));
   }
@@ -358,7 +367,7 @@ public class JaxrsClient {
     TestMgr.check("hello test 15", result);
   }
 
-  private static void testClientTimeOut(RestTemplate template) throws Exception {
+  private static void testClientTimeOut(RestTemplate template) {
     String microserviceName = "jaxrs";
     for (String transport : DemoConst.transports) {
       if (transport.equals(Const.ANY_TRANSPORT)) {

@@ -22,6 +22,8 @@ import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 
 public interface Fault {
 
+  String SUCCESS_RESPONSE = "success";
+
   int getOrder();
 
   void injectFault(Invocation invocation, FaultParam faultAttributes, AsyncResponse asynResponse);

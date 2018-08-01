@@ -15,17 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.pojo.test;
+package org.apache.servicecomb.foundation.vertx;
 
-import org.apache.servicecomb.springboot.starter.provider.EnableServiceComb;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import io.vertx.core.net.NetSocket;
 
-@SpringBootApplication
-@EnableServiceComb
-public class PojoSpringMain {
+/**
+ * Notice: this event will raised in vertx eventloop thread, so do not run any block code
+ */
+public class ClientConnectedEvent {
+  private final NetSocket netSocket;
 
-  public static void main(final String[] args) throws Exception {
-    SpringApplication.run(PojoSpringMain.class, args);
+  private final int totalConnectedCount;
+
+  public NetSocket getNetSocket() {
+    return netSocket;
+  }
+
+  public int getTotalConnectedCount() {
+    return totalConnectedCount;
+  }
+
+  public ClientConnectedEvent(NetSocket netSocket, int totalConnectedCount) {
+    this.netSocket = netSocket;
+    this.totalConnectedCount = totalConnectedCount;
   }
 }

@@ -24,7 +24,7 @@ import com.netflix.hystrix.HystrixKey;
 import com.netflix.hystrix.util.InternMap;
 
 /**
- * 通过定制CommandGroupKey，目的是携带Invocation部分静态信息，便于CircutBreakerEvent获取。
+ * 閫氳繃瀹氬埗CommandGroupKey锛岀洰鐨勬槸鎼哄甫Invocation閮ㄥ垎闈欐�佷俊鎭紝渚夸簬CircutBreakerEvent鑾峰彇
  */
 public class CustomizeCommandGroupKey extends HystrixKey.HystrixKeyDefault implements HystrixCommandGroupKey {
 
@@ -34,13 +34,14 @@ public class CustomizeCommandGroupKey extends HystrixKey.HystrixKeyDefault imple
     super(key);
   }
 
-  private static final InternMap<String, CustomizeCommandGroupKey> intern = new InternMap<String, CustomizeCommandGroupKey>(
-      new InternMap.ValueConstructor<String, CustomizeCommandGroupKey>() {
-        @Override
-        public CustomizeCommandGroupKey create(String key) {
-          return new CustomizeCommandGroupKey(key);
-        }
-      });
+  private static final InternMap<String, CustomizeCommandGroupKey> intern =
+      new InternMap<String, CustomizeCommandGroupKey>(
+          new InternMap.ValueConstructor<String, CustomizeCommandGroupKey>() {
+            @Override
+            public CustomizeCommandGroupKey create(String key) {
+              return new CustomizeCommandGroupKey(key);
+            }
+          });
 
   public static HystrixCommandGroupKey asKey(String key, Invocation invocation) {
     CustomizeCommandGroupKey result = intern.interned(key);

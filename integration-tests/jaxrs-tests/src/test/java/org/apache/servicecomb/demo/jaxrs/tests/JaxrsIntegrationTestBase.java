@@ -37,7 +37,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.server.User;
 import org.junit.Ignore;
@@ -131,10 +131,10 @@ public class JaxrsIntegrationTestBase {
     for (String url : urls) {
       byte[] result = restTemplate.postForObject(
           url + "bytes",
-          jsonRequest(RestObjectMapper.INSTANCE.writeValueAsBytes(body)),
+          jsonRequest(RestObjectMapperFactory.getRestObjectMapper().writeValueAsBytes(body)),
           byte[].class);
 
-      result = RestObjectMapper.INSTANCE.readValue(result, byte[].class);
+      result = RestObjectMapperFactory.getRestObjectMapper().readValue(result, byte[].class);
 
       assertEquals(1, result[0]);
       assertEquals(1, result[1]);
@@ -161,7 +161,7 @@ public class JaxrsIntegrationTestBase {
   public void ableToPostDate() throws Exception {
     ZonedDateTime date = ZonedDateTime.now().truncatedTo(SECONDS);
     MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
-    body.add("date", RestObjectMapper.INSTANCE.convertToString(Date.from(date.toInstant())));
+    body.add("date", RestObjectMapperFactory.getRestObjectMapper().convertToString(Date.from(date.toInstant())));
 
     HttpHeaders headers = new HttpHeaders();
     headers.add(CONTENT_TYPE, APPLICATION_FORM_URLENCODED_VALUE);
@@ -338,7 +338,7 @@ public class JaxrsIntegrationTestBase {
 
   private <T> T jsonBodyOf(ResponseEntity<String> entity, Class<T> aClass) {
     try {
-      return RestObjectMapper.INSTANCE.readValue(entity.getBody(), aClass);
+      return RestObjectMapperFactory.getRestObjectMapper().readValue(entity.getBody(), aClass);
     } catch (IOException e) {
       throw new IllegalStateException("Failed to read JSON from response " + entity.getBody(), e);
     }

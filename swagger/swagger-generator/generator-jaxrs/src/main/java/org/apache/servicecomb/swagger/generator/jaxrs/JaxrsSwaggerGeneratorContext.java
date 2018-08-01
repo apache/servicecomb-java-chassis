@@ -20,6 +20,7 @@ package org.apache.servicecomb.swagger.generator.jaxrs;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DELETE;
@@ -35,6 +36,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
 import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
+import org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.BeanParamAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.ConsumesAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.CookieParamAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.FormParamAnnotationProcessor;
@@ -110,5 +112,6 @@ public class JaxrsSwaggerGeneratorContext extends RestSwaggerGeneratorContext {
 
     parameterAnnotationMgr.register(HeaderParam.class, new HeaderParamAnnotationProcessor());
     parameterAnnotationMgr.register(QueryParam.class, new QueryParamAnnotationProcessor());
+    parameterAnnotationMgr.register(BeanParam.class, new BeanParamAnnotationProcessor());
   }
 }

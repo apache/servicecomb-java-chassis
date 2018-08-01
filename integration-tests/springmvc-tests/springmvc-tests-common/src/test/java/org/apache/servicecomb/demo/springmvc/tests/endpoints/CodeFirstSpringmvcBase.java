@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.demo.controller.Person;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -110,7 +110,7 @@ public class CodeFirstSpringmvcBase {
   public String testRawJsonString(String jsonInput) {
     Map<String, String> person;
     try {
-      person = RestObjectMapper.INSTANCE.readValue(jsonInput.getBytes(), Map.class);
+      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(), Map.class);
     } catch (Exception e) {
       e.printStackTrace();
       return null;

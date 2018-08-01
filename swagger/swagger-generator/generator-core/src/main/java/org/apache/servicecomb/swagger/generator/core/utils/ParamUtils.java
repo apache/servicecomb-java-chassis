@@ -27,8 +27,6 @@ import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 
-import com.fasterxml.jackson.databind.ser.std.MapProperty;
-
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.Model;
 import io.swagger.models.Swagger;
@@ -36,6 +34,7 @@ import io.swagger.models.parameters.AbstractSerializableParameter;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.ObjectProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.PropertyBuilder;
@@ -114,7 +113,7 @@ public final class ParamUtils {
     Property property = ModelConverters.getInstance().readAsProperty(paramType);
 
     if (isComplexProperty(property)) {
-      // 简单参数不可以是复杂类型
+      // cannot set a simple parameter(header, query, etc.) as complex type
       String msg = String.format("not allow complex type for %s parameter, method=%s:%s, paramIdx=%d, type=%s",
           parameter.getIn(),
           method.getDeclaringClass().getName(),
@@ -122,6 +121,27 @@ public final class ParamUtils {
           paramIdx,
           paramType.getTypeName());
       throw new Error(msg);
+    }
+    parameter.setProperty(property);
+  }
+
+  /**
+   * Set param type info. For {@linkplain javax.ws.rs.BeanParam BeanParam} scenario.
+   *
+   * @param paramType type of the swagger parameter
+   * @param parameter swagger parameter
+   */
+  public static void setParameterType(Type paramType, AbstractSerializableParameter<?> parameter) {
+    Property property = ModelConverters.getInstance().readAsProperty(paramType);
+
+    if (isComplexProperty(property)) {
+      // cannot set a simple parameter(header, query, etc.) as complex type
+      throw new IllegalArgumentException(
+          String.format(
+              "not allow such type of param:[%s], param name is [%s]",
+              property.getClass(),
+              parameter.getName())
+      );
     }
     parameter.setProperty(property);
   }

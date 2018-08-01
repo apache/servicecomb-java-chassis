@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.foundation.vertx.server;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -29,7 +31,7 @@ public class TestTcpServerConnection {
     connection.setProtocol("p");
     connection.setZipName("z");
 
-    connection.init(netSocket);
+    connection.init(netSocket, new AtomicInteger());
 
     Assert.assertEquals(netSocket, connection.getNetSocket());
   }

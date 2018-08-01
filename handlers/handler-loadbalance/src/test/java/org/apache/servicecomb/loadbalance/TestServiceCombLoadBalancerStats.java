@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.loadbalance;
 
+import static org.awaitility.Awaitility.await;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -29,6 +31,25 @@ import org.junit.Test;
 import mockit.Injectable;
 
 public class TestServiceCombLoadBalancerStats {
+  @Test
+  public void testServiceExpire(@Injectable Transport transport) throws Exception {
+    ServiceCombLoadBalancerStats serviceCombLoadBalancerStats = new ServiceCombLoadBalancerStats();
+    serviceCombLoadBalancerStats.setServerExpireInSeconds(2);
+    serviceCombLoadBalancerStats.setTimerIntervalInMilis(500);
+    serviceCombLoadBalancerStats.init();
+    MicroserviceInstance instance = new MicroserviceInstance();
+    instance.setInstanceId("instance1");
+    ServiceCombServer serviceCombServer = new ServiceCombServer(transport,
+        new CacheEndpoint("rest://localhost:8080", instance));
+    serviceCombLoadBalancerStats.markSuccess(serviceCombServer);
+    Assert.assertEquals(serviceCombLoadBalancerStats.getPingView().size(), 1);
+    await().atMost(5, TimeUnit.SECONDS)
+        .until(() -> {
+          return serviceCombLoadBalancerStats.getPingView().size() <= 0;
+        });
+    Assert.assertEquals(serviceCombLoadBalancerStats.getPingView().size(), 0);
+  }
+
   @Test
   public void testSimpleThread(@Injectable Transport transport) {
     long time = System.currentTimeMillis();

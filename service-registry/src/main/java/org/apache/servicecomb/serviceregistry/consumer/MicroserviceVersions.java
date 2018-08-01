@@ -113,6 +113,10 @@ public class MicroserviceVersions {
     return revision;
   }
 
+  public void setRevision(String revision) {
+    this.revision = revision;
+  }
+
   public List<MicroserviceInstance> getPulledInstances() {
     return pulledInstances;
   }

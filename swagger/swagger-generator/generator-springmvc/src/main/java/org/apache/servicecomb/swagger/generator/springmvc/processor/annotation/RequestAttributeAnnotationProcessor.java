@@ -24,12 +24,12 @@ import io.swagger.models.parameters.FormParameter;
 
 public class RequestAttributeAnnotationProcessor extends AbstractParameterProcessor<FormParameter> {
   @Override
-  protected FormParameter createParameter() {
+  public FormParameter createParameter() {
     return new FormParameter();
   }
 
   @Override
-  protected String getAnnotationParameterName(Object annotation) {
+  public String getAnnotationParameterName(Object annotation) {
     return ((RequestAttribute) annotation).name();
   }
 }

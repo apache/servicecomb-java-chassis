@@ -17,6 +17,11 @@
 
 package org.apache.servicecomb.core.definition.schema;
 
+import static org.apache.servicecomb.serviceregistry.api.Const.REGISTER_URL_PREFIX;
+import static org.apache.servicecomb.serviceregistry.api.Const.URL_PREFIX;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -37,10 +42,13 @@ import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.netflix.config.DynamicPropertyFactory;
 
+import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
 import io.swagger.util.Yaml;
 
@@ -79,7 +87,8 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
 
     SchemaMeta schemaMeta = getOrCreateSchema(context);
 
-    SwaggerProducer producer = swaggerEnv.createProducer(producerInstance, schemaMeta.getSwaggerIntf());
+    SwaggerProducer producer = swaggerEnv.createProducer(producerInstance, schemaMeta.getSwaggerIntf(),
+        convertSwaggerOperationMap(schemaMeta));
     Executor reactiveExecutor = BeanUtils.getBean(ExecutorManager.EXECUTOR_REACTIVE);
     for (OperationMeta operationMeta : schemaMeta.getOperations()) {
       SwaggerProducerOperation producerOperation = producer.findOperation(operationMeta.getOperationId());
@@ -91,6 +100,13 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
     }
 
     return schemaMeta;
+  }
+
+  private Map<String, Operation> convertSwaggerOperationMap(SchemaMeta schemaMeta) {
+    Map<String, Operation> operationMap = new LinkedHashMap<>(schemaMeta.getOperations().size());
+    schemaMeta.getOperations().forEach(
+        operationMeta -> operationMap.put(operationMeta.getOperationId(), operationMeta.getSwaggerOperation()));
+    return operationMap;
   }
 
   protected SchemaMeta createSchema(ProducerSchemaContext context) {
@@ -118,6 +134,13 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
           swaggerContent);
     }
 
+    String urlPrefix = System.getProperty(URL_PREFIX);
+    if (!StringUtils.isEmpty(urlPrefix) && !swagger.getBasePath().startsWith(urlPrefix)
+        && DynamicPropertyFactory.getInstance()
+        .getBooleanProperty(REGISTER_URL_PREFIX, false).get()) {
+      LOGGER.info("Add swagger base path prefix for {} with {}", swagger.getBasePath(), urlPrefix);
+      swagger.setBasePath(urlPrefix + swagger.getBasePath());
+    }
     // 注册契约
     return schemaLoader.registerSchema(context.getMicroserviceMeta(), context.getSchemaId(), swagger);
   }

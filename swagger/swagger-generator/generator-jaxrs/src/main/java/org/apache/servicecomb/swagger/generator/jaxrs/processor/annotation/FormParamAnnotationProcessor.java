@@ -25,12 +25,12 @@ import io.swagger.models.parameters.FormParameter;
 
 public class FormParamAnnotationProcessor extends AbstractParameterProcessor<FormParameter> {
   @Override
-  protected String getAnnotationParameterName(Object annotation) {
+  public String getAnnotationParameterName(Object annotation) {
     return ((FormParam) annotation).value();
   }
 
   @Override
-  protected FormParameter createParameter() {
+  public FormParameter createParameter() {
     return new FormParameter();
   }
 }

@@ -33,6 +33,7 @@ import org.apache.servicecomb.core.executor.ReactiveExecutor;
 import org.apache.servicecomb.core.unittest.UnitTestMeta;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
@@ -49,6 +50,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.swagger.models.Swagger;
 import mockit.Mock;
 import mockit.MockUp;
 
@@ -56,8 +58,6 @@ public class TestProducerSchemaFactory {
   private static SwaggerEnvironment swaggerEnv = new BootstrapNormal().boot();
 
   private static ProducerSchemaFactory producerSchemaFactory = new ProducerSchemaFactory();
-
-  private static SchemaMeta schemaMeta;
 
   public static class TestProducerSchemaFactoryImpl {
     public int add(int x, int y) {
@@ -102,11 +102,6 @@ public class TestProducerSchemaFactory {
         return (T) normalExecutor;
       }
     };
-
-    schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("app:ms",
-        "schema",
-        TestProducerSchemaFactoryImpl.class,
-        new TestProducerSchemaFactoryImpl());
   }
 
   @AfterClass
@@ -116,6 +111,12 @@ public class TestProducerSchemaFactory {
 
   @Test
   public void testGetOrCreateProducer() throws Exception {
+    SchemaMeta schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("app:ms",
+        "schema",
+        TestProducerSchemaFactoryImpl.class,
+        new TestProducerSchemaFactoryImpl());
+    Swagger swagger = schemaMeta.getSwagger();
+    Assert.assertEquals(swagger.getBasePath(), "/TestProducerSchemaFactoryImpl");
     OperationMeta operationMeta = schemaMeta.ensureFindOperation("add");
     Assert.assertEquals("add", operationMeta.getOperationId());
 
@@ -147,7 +148,29 @@ public class TestProducerSchemaFactory {
   }
 
   @Test
+  public void testGetOrCreateProducerWithPrefix() throws Exception {
+    ArchaiusUtils.setProperty(org.apache.servicecomb.serviceregistry.api.Const.REGISTER_URL_PREFIX, "true");
+    System.setProperty(org.apache.servicecomb.serviceregistry.api.Const.URL_PREFIX, "/pojo/test");
+
+    SchemaMeta schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("app:ms",
+        "schema2",
+        TestProducerSchemaFactoryImpl.class,
+        new TestProducerSchemaFactoryImpl());
+    OperationMeta operationMeta = schemaMeta.ensureFindOperation("add");
+    Assert.assertEquals("add", operationMeta.getOperationId());
+    Swagger swagger = schemaMeta.getSwagger();
+    Assert.assertEquals(swagger.getBasePath(), "/pojo/test/TestProducerSchemaFactoryImpl");
+
+    ArchaiusUtils.resetConfig();
+    System.getProperties().remove(org.apache.servicecomb.serviceregistry.api.Const.URL_PREFIX);
+  }
+
+  @Test
   public void testCompletableFuture() {
+    SchemaMeta schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("app:ms",
+        "schema3",
+        TestProducerSchemaFactoryImpl.class,
+        new TestProducerSchemaFactoryImpl());
     OperationMeta operationMeta = schemaMeta.ensureFindOperation("async");
     Assert.assertThat(operationMeta.getExecutor(), Matchers.instanceOf(ReactiveExecutor.class));
   }

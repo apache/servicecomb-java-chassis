@@ -28,7 +28,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
-import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
 
@@ -64,7 +64,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
       contentType = contentType == null ? "" : contentType.toLowerCase(Locale.US);
       if (contentType.startsWith(MediaType.MULTIPART_FORM_DATA)
           || contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED)) {
-        return RestObjectMapper.INSTANCE.convertValue(request.getParameterMap(), targetType);
+        return RestObjectMapperFactory.getRestObjectMapper().convertValue(request.getParameterMap(), targetType);
       }
 
       // for standard HttpServletRequest, getInputStream will never return null
@@ -83,14 +83,14 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
         // TODO: we should consider body encoding
         return IOUtils.toString(inputStream, "UTF-8");
       }
-      return RestObjectMapper.INSTANCE.readValue(inputStream, targetType);
+      return RestObjectMapperFactory.getRestObjectMapper().readValue(inputStream, targetType);
     }
 
     @Override
     public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
       try (BufferOutputStream output = new BufferOutputStream()) {
         clientRequest.putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
-        RestObjectMapper.INSTANCE.writeValue(output, arg);
+        RestObjectMapperFactory.getRestObjectMapper().writeValue(output, arg);
         if (arg != null) {
           clientRequest.write(output.getBuffer());
         }

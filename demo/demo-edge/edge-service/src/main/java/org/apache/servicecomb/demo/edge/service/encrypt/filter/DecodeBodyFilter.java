@@ -18,7 +18,7 @@ package org.apache.servicecomb.demo.edge.service.encrypt.filter;
 
 import java.util.Map;
 
-import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.demo.edge.authentication.encrypt.Hcr;
@@ -54,7 +54,8 @@ public class DecodeBodyFilter implements HttpServerFilter {
     encodedBody = encodedBody.substring(hcr.getBodyKey().length());
 
     try {
-      Map<String, String[]> decodedBody = RestObjectMapper.INSTANCE.readValue(encodedBody, bodyType);
+      Map<String, String[]> decodedBody = RestObjectMapperFactory.getRestObjectMapper()
+          .readValue(encodedBody, bodyType);
       requestEx.getParameterMap().putAll(decodedBody);
     } catch (Throwable e) {
       // should be a meaning exception response

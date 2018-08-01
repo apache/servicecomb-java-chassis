@@ -28,7 +28,7 @@ import org.junit.Test;
 public class SpringMvcIT {
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     TestMgr.errors().clear();
   }
 

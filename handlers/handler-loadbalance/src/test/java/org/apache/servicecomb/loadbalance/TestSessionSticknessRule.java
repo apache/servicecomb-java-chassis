@@ -47,7 +47,8 @@ public class TestSessionSticknessRule {
     Transport transport = mock(Transport.class);
     MicroserviceInstance instance1 = new MicroserviceInstance();
     instance1.setInstanceId("1234");
-    ServiceCombServer mockedServer = new ServiceCombServer(transport, new CacheEndpoint("rest:127.0.0.1:8889", instance1));
+    ServiceCombServer mockedServer =
+        new ServiceCombServer(transport, new CacheEndpoint("rest:127.0.0.1:8889", instance1));
     Object key = Mockito.mock(Object.class);
     LoadBalancerStats stats = mock(LoadBalancerStats.class);
     Mockito.when(mockedLb.getLoadBalancerStats()).thenReturn(stats);
@@ -192,6 +193,14 @@ public class TestSessionSticknessRule {
       }
     };
 
+    new MockUp<SessionStickinessRule>() {
+
+      @Mock
+      private boolean isLastServerExists(Server server) {
+        return true;
+      }
+    };
+
     try {
       ss.choose(key);
     } catch (Exception e) {
@@ -232,5 +241,42 @@ public class TestSessionSticknessRule {
       status = false;
     }
     Assert.assertTrue(status);
+  }
+
+  @Test
+  public void testLastServerNotExist() {
+    SessionStickinessRule rule = new SessionStickinessRule();
+
+    Transport transport = mock(Transport.class);
+    MicroserviceInstance instance1 = new MicroserviceInstance();
+    instance1.setInstanceId("1234");
+    ServiceCombServer mockedServer =
+        new ServiceCombServer(transport, new CacheEndpoint("rest:127.0.0.1:8890", instance1));
+    mockedServer.setAlive(true);
+    mockedServer.setReadyToServe(true);
+    mockedServer.setId("mockedServer");
+    List<Server> allServers = Arrays.asList(mockedServer);
+    LoadBalancer lb = new LoadBalancer(rule, "mockedServer", null);
+    lb.setServerList(allServers);
+
+    rule.setLoadBalancer(lb);
+    Assert.assertEquals(lb, rule.getLoadBalancer());
+    Server server = new Server("test");
+    Deencapsulation.setField(rule, "lastServer", server);
+
+    new MockUp<SessionStickinessRule>(rule) {
+      @Mock
+      private boolean isTimeOut() {
+        return false;
+      }
+
+      @Mock
+      private boolean isErrorThresholdMet() {
+        return false;
+      }
+    };
+    Object key = Mockito.mock(Object.class);
+    Server s = rule.choose(key);
+    Assert.assertEquals(mockedServer, s);
   }
 }

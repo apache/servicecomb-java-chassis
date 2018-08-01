@@ -30,8 +30,8 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
 
 public class DefaultHttpClientFilter implements HttpClientFilter {
@@ -79,7 +79,7 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
               responseEx.getStatus(),
               responseEx.getStatusType().getReasonPhrase(),
               responseEx.getHeader(HttpHeaders.CONTENT_TYPE));
-      return ExceptionFactory.createConsumerException(new CommonExceptionData(msg));
+      return ExceptionFactory.createConsumerException(new InvocationException(responseEx.getStatus(), responseEx.getStatusType().getReasonPhrase(), msg));
     }
 
     try {

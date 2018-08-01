@@ -125,6 +125,10 @@ public class InstanceCacheChecker {
         remote);
     instanceCacheResult.setStatus(Status.ABNORMAL);
     instanceCacheResult.setDetail("instance cache not match");
+
+    // auto fix, will do a full pull request when invoke MicroserviceVersions.pullInstances
+    microserviceVersions.setRevision(null);
+
     return instanceCacheResult;
   }
 
