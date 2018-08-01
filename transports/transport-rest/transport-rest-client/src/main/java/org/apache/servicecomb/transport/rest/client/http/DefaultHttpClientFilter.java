@@ -79,7 +79,7 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
               responseEx.getStatus(),
               responseEx.getStatusType().getReasonPhrase(),
               responseEx.getHeader(HttpHeaders.CONTENT_TYPE));
-      return ExceptionFactory.createConsumerException(new InvocationException(responseEx.getStatus(), "", msg));
+      return ExceptionFactory.createConsumerException(new InvocationException(responseEx.getStatus(), responseEx.getStatusType().getReasonPhrase(), msg));
     }
 
     try {
