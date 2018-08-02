@@ -57,7 +57,7 @@ public class TestRestServerVerticle {
 
   @Before
   public void setUp() {
-    instance = new RestServerVerticle();
+    instance = new RestServerVerticle(new AtomicInteger());
     startFuture = Future.future();
 
     CseContext.getInstance().setTransportManager(new TransportManager());
@@ -90,7 +90,7 @@ public class TestRestServerVerticle {
         result = endpiont;
       }
     };
-    RestServerVerticle server = new RestServerVerticle();
+    RestServerVerticle server = new RestServerVerticle(new AtomicInteger());
     // process stuff done by Expectations
     server.init(vertx, context);
     server.start(startFuture);
@@ -117,7 +117,7 @@ public class TestRestServerVerticle {
         result = endpiont;
       }
     };
-    RestServerVerticle server = new RestServerVerticle();
+    RestServerVerticle server = new RestServerVerticle(new AtomicInteger());
     // process stuff done by Expectations
     server.init(vertx, context);
     server.start(startFuture);
@@ -144,7 +144,7 @@ public class TestRestServerVerticle {
         result = endpiont;
       }
     };
-    RestServerVerticle server = new RestServerVerticle();
+    RestServerVerticle server = new RestServerVerticle(new AtomicInteger());
     boolean status = false;
     try {
       server.init(vertx, context);
@@ -240,7 +240,7 @@ public class TestRestServerVerticle {
     Router router = Mockito.mock(Router.class);
     Mockito.when(router.route()).thenReturn(Mockito.mock(Route.class));
 
-    RestServerVerticle server = new RestServerVerticle();
+    RestServerVerticle server = new RestServerVerticle(new AtomicInteger());
 
     Deencapsulation.invoke(server, "mountCorsHandler", router);
     Assert.assertEquals(7, counter.get());
