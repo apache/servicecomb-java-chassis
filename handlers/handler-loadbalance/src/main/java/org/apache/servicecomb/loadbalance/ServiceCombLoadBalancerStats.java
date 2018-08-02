@@ -37,6 +37,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
+import com.netflix.config.DynamicPropertyFactory;
 
 /**
  *  Add special stats that com.netflix.loadbalancer.LoadBalancerStats not provided
@@ -46,9 +47,11 @@ public class ServiceCombLoadBalancerStats {
 
   private final Map<ServiceCombServer, ServiceCombServerStats> pingView = new ConcurrentHashMap<>();
 
-  private int serverExpireInSeconds = 10 * 60;
+  private int serverExpireInSeconds = DynamicPropertyFactory.getInstance()
+      .getIntProperty(Configuration.RPOP_SERVER_EXPIRED_IN_SECONDS, 300).get();
 
-  private long timerIntervalInMilis = 10000;
+  private long timerIntervalInMilis = DynamicPropertyFactory.getInstance()
+      .getLongProperty(Configuration.RPOP_TIMER_INTERVAL_IN_MINIS, 10000).get();
 
   private LoadingCache<ServiceCombServer, ServiceCombServerStats> serverStatsCache;
 
@@ -154,7 +157,7 @@ public class ServiceCombLoadBalancerStats {
           while (instances.hasNext()) {
             ServiceCombServer server = instances.next();
             ServiceCombServerStats stats = allServers.get(server);
-            if ((System.currentTimeMillis() - stats.getLastVisitTime() < timerIntervalInMilis) && !ping
+            if ((System.currentTimeMillis() - stats.getLastVisitTime() > timerIntervalInMilis) && !ping
                 .ping(server.getInstance())) {
               LOGGER.info("ping mark server {} failure.", server.getInstance().getInstanceId());
               stats.markFailure();
