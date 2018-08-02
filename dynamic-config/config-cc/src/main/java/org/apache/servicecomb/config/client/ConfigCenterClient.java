@@ -387,6 +387,7 @@ public class ConfigCenterClient {
             });
           } else if (rsp.statusCode() == HttpResponseStatus.NOT_MODIFIED.code()) {
             //nothing changed
+            EventManager.post(new ConnSuccEvent());
             latch.countDown();
           } else {
             rsp.bodyHandler(buf -> {
