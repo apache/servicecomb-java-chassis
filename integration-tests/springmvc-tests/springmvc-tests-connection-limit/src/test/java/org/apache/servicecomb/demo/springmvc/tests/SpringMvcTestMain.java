@@ -15,28 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.foundation.vertx;
+package org.apache.servicecomb.demo.springmvc.tests;
 
-import io.vertx.core.net.NetSocket;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 
-/**
- * Notice: this event will raised in vertx eventloop thread, so do not run any block code
- */
-public class ClientConnectedEvent {
-  private final NetSocket netSocket;
+public class SpringMvcTestMain {
 
-  private final int totalConnectedCount;
-
-  public NetSocket getNetSocket() {
-    return netSocket;
-  }
-
-  public int getTotalConnectedCount() {
-    return totalConnectedCount;
-  }
-
-  public ClientConnectedEvent(NetSocket netSocket, int totalConnectedCount) {
-    this.netSocket = netSocket;
-    this.totalConnectedCount = totalConnectedCount;
+  public static void main(String[] args) throws Exception {
+    Log4jUtils.init();
+    BeanUtils.init();
   }
 }

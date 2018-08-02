@@ -17,28 +17,44 @@
 
 package org.apache.servicecomb.demo.springmvc.tests;
 
+import static org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY;
+import static org.junit.Assert.fail;
+
 import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Test;
+import org.springframework.web.client.RestTemplate;
 
-public class RawSpringMvcIntegrationTest extends SpringMvcIntegrationTestBase {
+public class RawSpringMvcIntegrationTest {
 
-  private static final ConnectionEventWatcher watcher = new ConnectionEventWatcher();
+  private RestTemplate restTemplate = RestTemplateBuilder.create();
+
+  private final String baseUrl = "http://127.0.0.1:8080/";
+
+  private final String controllerUrl = baseUrl + "springmvc/controller/";
 
   @BeforeClass
   public static void init() throws Exception {
     System.setProperty("servicecomb.uploads.directory", "/tmp");
-    setUpLocalRegistry();
-    EventManager.register(watcher);
+    System.setProperty(LOCAL_REGISTRY_FILE_KEY, "notExistJustForceLocal");
     SpringMvcTestMain.main(new String[0]);
+  }
+
+  @Test
+  public void ensureServerWorksFine() {
+    try {
+      String result = restTemplate.getForObject(controllerUrl + "sayhi?name=world", String.class);
+      fail("connection limit failed");
+    } catch (Exception ex) {
+      Assert.assertEquals("java.net.SocketException: Unexpected end of file from server", ex.getCause().toString());
+    }
   }
 
   @AfterClass
   public static void shutdown() {
     SCBEngine.getInstance().destroy();
-    Assert.assertArrayEquals("check connection count change", new Integer[] {1, 2, 1, 0},
-        watcher.getCounters().toArray());
   }
 }

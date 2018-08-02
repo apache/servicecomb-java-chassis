@@ -17,24 +17,7 @@
 
 package org.apache.servicecomb.foundation.vertx;
 
-/**
- * Notice: this event will raised in vertx eventloop thread, so do not run any block code
- */
-public class ClientClosedEvent {
-  private final String address;
-
-  private final int totalConnectedCount;
-
-  public String getAddress() {
-    return address;
-  }
-
-  public int getTotalConnectedCount() {
-    return totalConnectedCount;
-  }
-
-  public ClientClosedEvent(String address, int totalConnectedCount) {
-    this.address = address;
-    this.totalConnectedCount = totalConnectedCount;
-  }
+public enum EventType {
+  Connected,
+  Closed
 }

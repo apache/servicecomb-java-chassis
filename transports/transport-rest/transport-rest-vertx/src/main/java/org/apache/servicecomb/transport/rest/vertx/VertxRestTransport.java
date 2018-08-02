@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.transport.rest.vertx;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.transport.AbstractTransport;
@@ -38,6 +40,12 @@ public class VertxRestTransport extends AbstractTransport {
   private static final Logger LOGGER = LoggerFactory.getLogger(VertxRestTransport.class);
 
   private RestTransportClient restClient;
+
+  private final AtomicInteger connectedCounter = new AtomicInteger(0);
+
+  public AtomicInteger getConnectedCounter() {
+    return connectedCounter;
+  }
 
   @Override
   public String getName() {
