@@ -15,27 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.pojo.test;
+package org.apache.servicecomb.foundation.vertx;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.servicecomb.foundation.vertx.ClientEvent;
-import org.apache.servicecomb.foundation.vertx.ServerType;
-
-import com.google.common.eventbus.Subscribe;
-
-public class ConnectionEventWatcher {
-  private final List<Integer> counters = new ArrayList<>();
-
-  public List<Integer> getCounters() {
-    return counters;
-  }
-
-  @Subscribe
-  public void getEvent(ClientEvent event) {
-    if (ServerType.Highway.equals(event.getServerType())) {
-      counters.add(event.getTotalConnectedCount());
-    }
-  }
+public enum ServerType {
+  Highway,
+  Rest
 }

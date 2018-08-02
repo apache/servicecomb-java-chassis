@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.pojo.test;
+package org.apache.servicecomb.demo.springmvc.tests;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +34,7 @@ public class ConnectionEventWatcher {
 
   @Subscribe
   public void getEvent(ClientEvent event) {
-    if (ServerType.Highway.equals(event.getServerType())) {
+    if (ServerType.Rest.equals(event.getServerType())) {
       counters.add(event.getTotalConnectedCount());
     }
   }

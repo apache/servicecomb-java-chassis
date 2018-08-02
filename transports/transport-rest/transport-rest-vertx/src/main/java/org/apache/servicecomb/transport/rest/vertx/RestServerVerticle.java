@@ -19,19 +19,27 @@ package org.apache.servicecomb.transport.rest.vertx;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.transport.AbstractTransport;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
+import org.apache.servicecomb.foundation.vertx.ClientEvent;
+import org.apache.servicecomb.foundation.vertx.EventType;
+import org.apache.servicecomb.foundation.vertx.ServerType;
 import org.apache.servicecomb.foundation.vertx.VertxTLSBuilder;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogConfiguration;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.impl.AccessLogHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
@@ -51,6 +59,16 @@ public class RestServerVerticle extends AbstractVerticle {
   private Endpoint endpoint;
 
   private URIEndpointObject endpointObject;
+
+  private final AtomicInteger connectedCounter;
+
+  public RestServerVerticle() {
+    this(((VertxRestTransport) BeanUtils.getBean("vertxRestTransport")).getConnectedCounter());
+  }
+
+  public RestServerVerticle(AtomicInteger connectedCounter) {
+    this.connectedCounter = connectedCounter;
+  }
 
   @Override
   public void init(Vertx vertx, Context context) {
@@ -75,6 +93,21 @@ public class RestServerVerticle extends AbstractVerticle {
       initDispatcher(mainRouter);
       HttpServer httpServer = createHttpServer();
       httpServer.requestHandler(mainRouter::accept);
+      httpServer.connectionHandler(connection -> {
+        int connectedCount = connectedCounter.incrementAndGet();
+        int connectionLimit = DynamicPropertyFactory.getInstance()
+            .getIntProperty("servicecomb.rest.server.connection-limit", Integer.MAX_VALUE).get();
+        if (connectedCount > connectionLimit) {
+          connectedCounter.decrementAndGet();
+          connection.close();
+        } else {
+          EventManager.post(new ClientEvent(connection.remoteAddress().toString(),
+              EventType.Connected, ServerType.Rest, connectedCount));
+          connection.closeHandler(event -> EventManager.post(new ClientEvent(connection.remoteAddress().toString(),
+              EventType.Closed, ServerType.Rest, connectedCounter.decrementAndGet())));
+        }
+      });
+
       startListen(httpServer, startFuture);
     } catch (Throwable e) {
       // vert.x got some states that not print error and execute call back in VertexUtils.blockDeploy, we add a log our self.
