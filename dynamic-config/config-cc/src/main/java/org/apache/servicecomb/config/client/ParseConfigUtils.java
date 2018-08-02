@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.servicecomb.config.archaius.sources.ConfigCenterConfigurationSourceImpl.UpdateHandler;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
@@ -44,35 +46,52 @@ public class ParseConfigUtils {
 
   private UpdateHandler updateHandler;
 
+  private Lock configLock = new ReentrantLock();
+
   public ParseConfigUtils(UpdateHandler updateHandler) {
     this.updateHandler = updateHandler;
   }
 
+  /*
+    as the data is returned, we can block the thread at a short time. consider that if the multiple verticle is deployed
+    and if we use pull mode and push mode at the same time , we must share a common lock with all methods which would
+    change the config setting
+   */
   public void refreshConfigItems(Map<String, Map<String, Object>> remoteItems) {
-    CURRENT_VERSION_INFO =
-        remoteItems.getOrDefault("revision", new HashMap<>()).getOrDefault("version", "default").toString();
-    //make sure the CURRENT_VERSION_INFO != ""
-    CURRENT_VERSION_INFO = CURRENT_VERSION_INFO.equals("") ? "default" : CURRENT_VERSION_INFO;
-    remoteItems.remove("revision");//the key revision is not the config setting
-    multiDimensionItems.clear();
-    multiDimensionItems.putAll(remoteItems);
-    doRefreshItems();
-    LOGGER.debug("refresh config success");
+    try {
+      configLock.lock();
+      CURRENT_VERSION_INFO =
+          remoteItems.getOrDefault("revision", new HashMap<>()).getOrDefault("version", "default").toString();
+      //make sure the CURRENT_VERSION_INFO != ""
+      CURRENT_VERSION_INFO = CURRENT_VERSION_INFO.equals("") ? "default" : CURRENT_VERSION_INFO;
+      remoteItems.remove("revision");//the key revision is not the config setting
+      multiDimensionItems.clear();
+      multiDimensionItems.putAll(remoteItems);
+      doRefreshItems();
+      LOGGER.debug("refresh config success");
+    } finally {
+      configLock.unlock();
+    }
   }
 
   public void refreshConfigItemsIncremental(Map<String, Object> action) {
-    if ("UPDATE".equals(action.get("action"))) {
-      try {
-        multiDimensionItems.put((String) action.get("key"), JsonUtils.OBJ_MAPPER
-            .readValue(action.get("value").toString(), new TypeReference<Map<String, Object>>() {
-            }));
-      } catch (IOException e) {
-        LOGGER.error("parse config change action fail");
+    try {
+      configLock.lock();
+      if ("UPDATE".equals(action.get("action"))) {
+        try {
+          multiDimensionItems.put((String) action.get("key"), JsonUtils.OBJ_MAPPER
+              .readValue(action.get("value").toString(), new TypeReference<Map<String, Object>>() {
+              }));
+        } catch (IOException e) {
+          LOGGER.error("parse config change action fail");
+        }
+        doRefreshItems();
+      } else if ("DELETE".equals(action.get("action"))) {
+        multiDimensionItems.remove(action.get("key"));
+        doRefreshItems();
       }
-      doRefreshItems();
-    } else if ("DELETE".equals(action.get("action"))) {
-      multiDimensionItems.remove(action.get("key"));
-      doRefreshItems();
+    } finally {
+      configLock.unlock();
     }
   }
 
