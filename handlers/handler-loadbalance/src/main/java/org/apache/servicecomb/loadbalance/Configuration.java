@@ -31,6 +31,10 @@ public final class Configuration {
   //// 2.1 configuration items
   public static final String PROP_ROOT = "servicecomb.loadbalance.";
 
+  public static final String RPOP_SERVER_EXPIRED_IN_SECONDS = "servicecomb.loadbalance.stats.serverExpiredInSeconds";
+
+  public static final String RPOP_TIMER_INTERVAL_IN_MINIS = "servicecomb.loadbalance.stats.timerIntervalInMilis";
+
   public static final String PROP_POLICY = "NFLoadBalancerRuleClassName";
 
   public static final String PROP_RULE_STRATEGY_NAME = "strategy.name";
