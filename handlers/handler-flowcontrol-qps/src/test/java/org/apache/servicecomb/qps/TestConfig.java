@@ -40,6 +40,8 @@ public class TestConfig {
 
   @Test
   public void testEnabled() {
+    Config.INSTANCE = new Config();
+
     Assert.assertEquals(true, Config.INSTANCE.isProviderEnabled());
     ArchaiusUtils.updateProperty(Config.PROVIDER_ENABLED, false);
     Assert.assertEquals(false, Config.INSTANCE.isProviderEnabled());

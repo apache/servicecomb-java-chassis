@@ -18,9 +18,12 @@
 package org.apache.servicecomb.faultinjection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.xml.ws.Holder;
@@ -37,12 +40,19 @@ import org.mockito.Mockito;
 import com.netflix.config.DynamicProperty;
 
 import io.vertx.core.Vertx;
+import mockit.Deencapsulation;
 
 public class DelayFaultTest {
   private Invocation invocation;
 
+  @SuppressWarnings("unchecked")
   @Before
   public void before() {
+    ArchaiusUtils.resetConfig();
+    ((Map<String, String>) Deencapsulation.getField(FaultInjectionConfig.class, "cfgCallback")).clear();
+    ((Map<String, AtomicLong>) Deencapsulation.getField(FaultInjectionUtil.class, "requestCount")).clear();
+    ((Map<String, AtomicInteger>) Deencapsulation.getField(FaultInjectionUtil.class, "configCenterValue")).clear();
+
     invocation = Mockito.mock(Invocation.class);
     Transport transport = Mockito.mock(Transport.class);
     Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName12");
@@ -55,17 +65,22 @@ public class DelayFaultTest {
 
   @After
   public void after() {
-    System.getProperties()
-        .remove("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay");
-    System.getProperties()
-        .remove("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent");
     ArchaiusUtils.resetConfig();
   }
 
   @Test
   public void injectFaultVertxDelay() throws InterruptedException {
-    System.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay", "10");
-    System.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", "100");
+    ArchaiusUtils
+        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay", "10");
+    ArchaiusUtils
+        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", "100");
+
+    assertEquals("10", DynamicProperty
+        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay")
+        .getString());
+    assertEquals("100", DynamicProperty
+        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
+        .getString());
 
     DelayFault delayFault = new DelayFault();
     FaultParam faultParam = new FaultParam(1);
@@ -81,20 +96,23 @@ public class DelayFaultTest {
 
     latch.await(10, TimeUnit.SECONDS);
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
-    assertEquals("10", DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay")
-        .getString());
-    assertEquals("100", DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
-        .getString());
     assertEquals(1, count.get());
     assertEquals("success", resultHolder.value);
   }
 
   @Test
   public void injectFaultSystemDelay() throws InterruptedException {
-    System.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay", "10");
-    System.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", "100");
+    ArchaiusUtils
+        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay", "10");
+    ArchaiusUtils
+        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", "100");
+
+    assertEquals("10", DynamicProperty
+        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay")
+        .getString());
+    assertEquals("100", DynamicProperty
+        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
+        .getString());
 
     DelayFault delayFault = new DelayFault();
     FaultParam faultParam = new FaultParam(1);
@@ -108,20 +126,22 @@ public class DelayFaultTest {
 
     latch.await(10, TimeUnit.SECONDS);
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
-    assertEquals("10", DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay")
-        .getString());
-    assertEquals("100", DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
-        .getString());
     assertEquals(1, count.get());
     assertEquals("success", resultHolder.value);
   }
 
   @Test
   public void injectFaultNotDelay() throws InterruptedException {
-    System.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay", "10");
-    System.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", "0");
+    ArchaiusUtils
+        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay", "10");
+    ArchaiusUtils.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", "0");
+
+    assertEquals("10", DynamicProperty
+        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay")
+        .getString());
+    assertEquals("0", DynamicProperty
+        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
+        .getString());
 
     DelayFault delayFault = new DelayFault();
     FaultParam faultParam = new FaultParam(1);
@@ -137,18 +157,19 @@ public class DelayFaultTest {
 
     latch.await(3, TimeUnit.SECONDS);
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
-    assertEquals("10", DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay")
-        .getString());
-    assertEquals("0", DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
-        .getString());
     assertEquals(1, count.get());
     assertEquals("success", resultHolder.value);
   }
 
   @Test
   public void injectFaultNoPercentageConfig() {
+    ArchaiusUtils
+        .updateProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", null);
+
+    assertNull(DynamicProperty
+        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
+        .getString());
+
     DelayFault delayFault = new DelayFault();
     FaultParam faultParam = new FaultParam(1);
     Vertx vertx = VertxUtils.getOrCreateVertxByName("faultinjectionTest", null);
@@ -164,7 +185,13 @@ public class DelayFaultTest {
 
   @Test
   public void injectFaultNoDelayMsConfig() {
-    System.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", "10");
+    ArchaiusUtils
+        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", "10");
+
+    assertEquals("10", DynamicProperty
+        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")
+        .getString());
+
     DelayFault delayFault = new DelayFault();
     FaultParam faultParam = new FaultParam(10);
     Vertx vertx = VertxUtils.getOrCreateVertxByName("faultinjectionTest", null);

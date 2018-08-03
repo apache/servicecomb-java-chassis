@@ -18,7 +18,10 @@
 package org.apache.servicecomb.faultinjection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.xml.ws.Holder;
@@ -36,12 +39,19 @@ import org.mockito.Mockito;
 import com.netflix.config.DynamicProperty;
 
 import io.vertx.core.Vertx;
+import mockit.Deencapsulation;
 
 public class AbortFaultTest {
   private Invocation invocation;
 
+  @SuppressWarnings("unchecked")
   @Before
   public void before() {
+    ArchaiusUtils.resetConfig();
+    ((Map<String, String>) Deencapsulation.getField(FaultInjectionConfig.class, "cfgCallback")).clear();
+    ((Map<String, AtomicLong>) Deencapsulation.getField(FaultInjectionUtil.class, "requestCount")).clear();
+    ((Map<String, AtomicInteger>) Deencapsulation.getField(FaultInjectionUtil.class, "configCenterValue")).clear();
+
     invocation = Mockito.mock(Invocation.class);
     Transport transport = Mockito.mock(Transport.class);
     Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName12");
@@ -54,17 +64,22 @@ public class AbortFaultTest {
 
   @After
   public void after() {
-    System.getProperties()
-        .remove("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent");
-    System.getProperties()
-        .remove("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus");
     ArchaiusUtils.resetConfig();
   }
 
   @Test
   public void injectFaultError() {
-    System.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus", "421");
-    System.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", "100");
+    ArchaiusUtils
+        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus", "421");
+    ArchaiusUtils
+        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", "100");
+
+    assertEquals("421", DynamicProperty
+        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus")
+        .getString());
+    assertEquals("100", DynamicProperty
+        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent")
+        .getString());
 
     AbortFault abortFault = new AbortFault();
     FaultParam faultParam = new FaultParam(1);
@@ -75,12 +90,6 @@ public class AbortFaultTest {
     abortFault.injectFault(invocation, faultParam, response -> resultHolder.value = response.getResult());
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
-    assertEquals("421", DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus")
-        .getString());
-    assertEquals("100", DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent")
-        .getString());
     assertEquals(1, count.get());
     assertEquals(421, resultHolder.value.getStatusCode());
     assertEquals("aborted by fault inject", resultHolder.value.getReasonPhrase());
@@ -89,8 +98,16 @@ public class AbortFaultTest {
 
   @Test
   public void injectFaultNoError() {
-    System.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus", "421");
-    System.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", "0");
+    ArchaiusUtils
+        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus", "421");
+    ArchaiusUtils.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", "0");
+
+    assertEquals("421", DynamicProperty
+        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus")
+        .getString());
+    assertEquals("0", DynamicProperty
+        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent")
+        .getString());
 
     AbortFault abortFault = new AbortFault();
     FaultParam faultParam = new FaultParam(1);
@@ -101,18 +118,19 @@ public class AbortFaultTest {
     abortFault.injectFault(invocation, faultParam, response -> resultHolder.value = response.getResult());
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName12");
-    assertEquals("421", DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus")
-        .getString());
-    assertEquals("0", DynamicProperty
-        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent")
-        .getString());
     assertEquals(1, count.get());
     assertEquals("success", resultHolder.value);
   }
 
   @Test
   public void injectFaultNoPercentageConfig() {
+    ArchaiusUtils
+        .updateProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", null);
+
+    assertNull(DynamicProperty
+        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent")
+        .getString());
+
     AbortFault abortFault = new AbortFault();
     FaultParam faultParam = new FaultParam(1);
     Vertx vertx = VertxUtils.getOrCreateVertxByName("faultinjectionTest", null);
@@ -128,7 +146,13 @@ public class AbortFaultTest {
 
   @Test
   public void injectFaultNoErrorCodeConfig() {
-    System.setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", "10");
+    ArchaiusUtils
+        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", "10");
+
+    assertEquals("10", DynamicProperty
+        .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent")
+        .getString());
+
     AbortFault abortFault = new AbortFault();
     FaultParam faultParam = new FaultParam(10);
     Vertx vertx = VertxUtils.getOrCreateVertxByName("faultinjectionTest", null);

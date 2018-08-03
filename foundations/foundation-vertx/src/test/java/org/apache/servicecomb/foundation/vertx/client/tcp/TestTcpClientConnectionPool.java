@@ -21,12 +21,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import io.vertx.core.Context;
+import io.vertx.core.impl.ContextImpl;
 import mockit.Mocked;
 
 public class TestTcpClientConnectionPool {
   @Mocked
-  Context context;
+  ContextImpl context;
 
   @Mocked
   NetClientWrapper netClientWrapper;
