@@ -18,8 +18,10 @@
 package org.apache.servicecomb.serviceregistry.consumer;
 
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -191,7 +193,28 @@ public class MicroserviceVersions {
         microserviceVersionRule.setInstances(instances);
       }
       revision = rev;
+      // Clean up down versions in case of rollback and other interface not compatible scenarios. Users should ensure running versions are compatible.
+      pack();
     }
+  }
+
+  private void pack() {
+    Set<String> microservices = new HashSet<>(instances.size());
+    instances.forEach(item -> {
+      microservices.add(item.getServiceId());
+    });
+    Set<String> downSet = new HashSet<>(instances.size());
+    versions.keySet().forEach(item -> {
+      if (!microservices.contains(item)) {
+        downSet.add(item);
+      }
+    });
+    downSet.forEach(item -> {
+      MicroserviceVersion version = versions.remove(item);
+      for (MicroserviceVersionRule microserviceVersionRule : versionRules.values()) {
+        microserviceVersionRule.deleteMicroserviceVersion(version);
+      }
+    });
   }
 
   private List<MicroserviceInstance> mergeInstances(List<MicroserviceInstance> pulledInstances,
