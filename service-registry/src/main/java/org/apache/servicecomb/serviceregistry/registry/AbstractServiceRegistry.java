@@ -101,8 +101,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
       srClient = createServiceRegistryClient();
     }
 
-    serviceCenterInfo = srClient.getServiceCenterInfo();
-
     createServiceCenterTask();
 
     eventBus.register(this);
