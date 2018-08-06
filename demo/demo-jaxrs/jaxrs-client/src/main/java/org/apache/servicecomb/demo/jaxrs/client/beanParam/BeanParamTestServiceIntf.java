@@ -20,8 +20,8 @@ package org.apache.servicecomb.demo.jaxrs.client.beanParam;
 import java.io.InputStream;
 
 public interface BeanParamTestServiceIntf {
-  String beanParameterTest(String querySwaggerStr, long cookieSwaggerLong, Integer headerSwaggerInt,
-      String pathSwaggerStr, String extraQuery);
+  String beanParameterTest(String querySwaggerStr, Integer headerSwaggerInt, String pathSwaggerStr,
+      long cookieSwaggerLong, String extraQuery);
 
   String beanParameterTestUpload(InputStream up0, String query, InputStream up1, InputStream up2, String extraQuery);
 }

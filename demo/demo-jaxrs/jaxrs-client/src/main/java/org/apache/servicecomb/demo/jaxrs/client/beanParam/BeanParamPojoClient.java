@@ -24,7 +24,7 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.pojo.Invoker;
 
 public class BeanParamPojoClient {
-  BeanParamTestServiceIntf beanParamTestServiceIntf;
+  private BeanParamTestServiceIntf beanParamTestServiceIntf;
 
   public BeanParamPojoClient() {
     beanParamTestServiceIntf = Invoker.createProxy("jaxrs", "beanParamTest", BeanParamTestServiceIntf.class);
@@ -35,15 +35,15 @@ public class BeanParamPojoClient {
     testUpload();
   }
 
-  public void testBeanParam() {
-    String result = beanParamTestServiceIntf.beanParameterTest("querySwaggerValue", 10, 2, "pathSwaggerValue", "extra");
+  private void testBeanParam() {
+    String result = beanParamTestServiceIntf.beanParameterTest("querySwaggerValue", 2, "pathSwaggerValue", 10, "extra");
     TestMgr.check(
         "invocationContextConsistency=true|testBeanParameter=TestBeanParameter{queryStr='querySwaggerValue', headerInt=2, "
             + "pathStr='pathSwaggerValue', cookieLong=10}|extraQuery=extra",
         result);
   }
 
-  public void testUpload() {
+  private void testUpload() {
     BufferedInputStream bufferedInputStream0 = new BufferedInputStream(new ByteArrayInputStream("up0".getBytes()));
     BufferedInputStream bufferedInputStream1 = new BufferedInputStream(new ByteArrayInputStream("up1".getBytes()));
     BufferedInputStream bufferedInputStream2 = new BufferedInputStream(new ByteArrayInputStream("up2".getBytes()));

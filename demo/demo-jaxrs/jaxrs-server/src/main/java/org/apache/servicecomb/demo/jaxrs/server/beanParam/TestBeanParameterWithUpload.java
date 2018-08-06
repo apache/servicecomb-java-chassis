@@ -34,18 +34,16 @@ public class TestBeanParameterWithUpload {
     return queryStr;
   }
 
-  public TestBeanParameterWithUpload setQueryStr(String queryStr) {
+  public void setQueryStr(String queryStr) {
     this.queryStr = queryStr;
-    return this;
   }
 
   public Part getUp1() {
     return up1;
   }
 
-  public TestBeanParameterWithUpload setUp1(Part up1) {
+  public void setUp1(Part up1) {
     this.up1 = up1;
-    return this;
   }
 
   public Part getUp2() {
@@ -53,9 +51,8 @@ public class TestBeanParameterWithUpload {
   }
 
   @FormParam("up2")
-  public TestBeanParameterWithUpload setUp2(Part up2) {
+  public void setUp2(Part up2) {
     this.up2 = up2;
-    return this;
   }
 
   @Override
