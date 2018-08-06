@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.provider.pojo.RpcSchema;
 import org.apache.servicecomb.provider.rest.common.InvocationToHttpServletRequest;
-import org.apache.servicecomb.transport.highway.HighwayTransport;
 
 import io.swagger.annotations.SwaggerDefinition;
 
@@ -29,8 +28,8 @@ import io.swagger.annotations.SwaggerDefinition;
 @SwaggerDefinition(basePath = "/v1/dataTypePojo")
 public class DataTypePojo {
   public String checkTransport(HttpServletRequest request) {
-    if (InvocationToHttpServletRequest.class.isInstance(request)) {
-      return HighwayTransport.NAME;
+    if (request instanceof InvocationToHttpServletRequest) {
+      return Const.HIGHWAY;
     }
 
     return Const.RESTFUL;

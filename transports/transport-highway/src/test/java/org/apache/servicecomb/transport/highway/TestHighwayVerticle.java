@@ -17,15 +17,15 @@
 
 package org.apache.servicecomb.transport.highway;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.transport.common.MockUtil;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -37,22 +37,10 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestHighwayVerticle {
-
-  private HighwayServerVerticle highwayVerticle = null;
-
-  @Before
-  public void setUp() {
-    highwayVerticle = new HighwayServerVerticle(new AtomicInteger());
-  }
-
-  @After
-  public void tearDown() {
-    highwayVerticle = null;
-  }
-
   @Test
   public void testHighwayVerticle(@Mocked Transport transport, @Mocked Vertx vertx, @Mocked Context context,
       @Mocked JsonObject json) {
+    HighwayServerVerticle highwayVerticle = new HighwayServerVerticle(new AtomicInteger());
     URIEndpointObject endpiontObject = new URIEndpointObject("highway://127.0.0.1:9090");
     new Expectations() {
       {
@@ -79,9 +67,9 @@ public class TestHighwayVerticle {
     MockUtil.getInstance().mockHighwayConfig();
     try {
       highwayVerticle.startListen(startFuture);
-      Assert.assertTrue(true);
+      assertTrue(true);
     } catch (Exception e) {
-      Assert.assertTrue(false);
+      Assert.fail();
     }
   }
 }

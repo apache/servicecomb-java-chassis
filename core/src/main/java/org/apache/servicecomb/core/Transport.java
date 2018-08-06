@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.core;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 
 // TODO:感觉要拆成显式的client、server才好些
@@ -49,4 +51,6 @@ public interface Transport {
   Endpoint getPublishEndpoint() throws Exception;
 
   void send(Invocation invocation, AsyncResponse asyncResp) throws Exception;
+
+  AtomicInteger getConnectedCounter();
 }

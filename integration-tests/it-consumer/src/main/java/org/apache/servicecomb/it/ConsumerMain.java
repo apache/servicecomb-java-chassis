@@ -27,7 +27,6 @@ import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.it.testcase.base.TestDataTypePojo;
 import org.apache.servicecomb.it.testcase.base.TestDataTypeRest;
 import org.apache.servicecomb.it.testcase.support.ProducerDevMode;
-import org.apache.servicecomb.transport.highway.HighwayTransport;
 
 
 public class ConsumerMain {
@@ -69,7 +68,7 @@ public class ConsumerMain {
     //   run rest
     //   run native restTemplate to edge/zuul
     // stop standalone base-producer
-    transports = Arrays.asList(HighwayTransport.NAME, Const.RESTFUL);
+    transports = Arrays.asList(Const.HIGHWAY, Const.RESTFUL);
     testStandalone();
 
     transports = Arrays.asList(Const.RESTFUL);

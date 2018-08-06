@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.core.endpoint.EndpointsCache;
 import org.apache.servicecomb.core.transport.TransportManager;
@@ -43,7 +44,12 @@ public class TestTransport {
     Endpoint oEndpoint = new Endpoint(new Transport() {
 
       @Override
-      public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+      public void send(Invocation invocation, AsyncResponse asyncResp) {
+      }
+
+      @Override
+      public AtomicInteger getConnectedCounter() {
+        return new AtomicInteger(0);
       }
 
       @Override
@@ -52,7 +58,7 @@ public class TestTransport {
       }
 
       @Override
-      public boolean init() throws Exception {
+      public boolean init() {
         return true;
       }
 
@@ -67,7 +73,7 @@ public class TestTransport {
       }
 
       @Override
-      public Endpoint getPublishEndpoint() throws Exception {
+      public Endpoint getPublishEndpoint() {
         return (new Endpoint(this, "testEndpoint"));
       }
     }, "rest://127.0.0.1:8080");
@@ -75,14 +81,13 @@ public class TestTransport {
     Assert.assertEquals("rest://127.0.0.1:8080", oEndpoint.getEndpoint());
     Assert.assertEquals("127.0.0.1", oEndpoint.getAddress());
     Assert.assertEquals("test", oEndpoint.getTransport().getName());
-    Assert.assertEquals("rest://127.0.0.1:8080", oEndpoint.getEndpoint().toString());
+    Assert.assertEquals("rest://127.0.0.1:8080", oEndpoint.getEndpoint());
   }
 
   @Test
   public void testAbstractTransport(@Mocked Microservice microservice,
       @Injectable InstanceCacheManager instanceCacheManager, @Injectable TransportManager transportManager,
-      @Mocked InstanceCache instanceCache, @Injectable MicroserviceInstance instance)
-      throws Exception {
+      @Mocked InstanceCache instanceCache, @Injectable MicroserviceInstance instance) {
     EndpointsCache.init(instanceCacheManager, transportManager);
     EndpointsCache oEndpointsCache = new EndpointsCache("app", "testname", "test", "rest");
 
