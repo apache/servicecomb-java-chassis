@@ -31,8 +31,8 @@ import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
 import org.apache.servicecomb.foundation.vertx.ClientEvent;
-import org.apache.servicecomb.foundation.vertx.EventType;
-import org.apache.servicecomb.foundation.vertx.ServerType;
+import org.apache.servicecomb.foundation.vertx.ConnectionEvent;
+import org.apache.servicecomb.foundation.vertx.TransportType;
 import org.apache.servicecomb.foundation.vertx.VertxTLSBuilder;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogConfiguration;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.impl.AccessLogHandler;
@@ -102,9 +102,9 @@ public class RestServerVerticle extends AbstractVerticle {
           connection.close();
         } else {
           EventManager.post(new ClientEvent(connection.remoteAddress().toString(),
-              EventType.Connected, ServerType.Rest, connectedCount));
+              ConnectionEvent.Connected, TransportType.Rest, connectedCount));
           connection.closeHandler(event -> EventManager.post(new ClientEvent(connection.remoteAddress().toString(),
-              EventType.Closed, ServerType.Rest, connectedCounter.decrementAndGet())));
+              ConnectionEvent.Closed, TransportType.Rest, connectedCounter.decrementAndGet())));
         }
       });
 

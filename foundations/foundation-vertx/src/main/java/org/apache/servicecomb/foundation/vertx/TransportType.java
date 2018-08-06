@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.foundation.vertx;
 
-public enum EventType {
-  Connected,
-  Closed
+public enum TransportType {
+  Highway,
+  Rest
 }
