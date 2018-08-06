@@ -39,10 +39,10 @@ public class ParseConfigUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(ParseConfigUtils.class);
 
   private static LinkedHashMap<String, Map<String, Object>> multiDimensionItems = new LinkedHashMap<>();
+  //it's dangerous that makes flatItems public
+  private static final Map<String, Object> flatItems = new HashMap<>();
 
-  public static final Map<String, Object> flatItems = new HashMap<>();
-
-  public static String CURRENT_VERSION_INFO = "default";
+  private static String currentVersionInfo = "default";
 
   private UpdateHandler updateHandler;
 
@@ -60,10 +60,10 @@ public class ParseConfigUtils {
   public void refreshConfigItems(Map<String, Map<String, Object>> remoteItems) {
     try {
       configLock.lock();
-      CURRENT_VERSION_INFO =
+      currentVersionInfo =
           remoteItems.getOrDefault("revision", new HashMap<>()).getOrDefault("version", "default").toString();
-      //make sure the CURRENT_VERSION_INFO != ""
-      CURRENT_VERSION_INFO = CURRENT_VERSION_INFO.equals("") ? "default" : CURRENT_VERSION_INFO;
+      //make sure the currentVersionInfo != ""
+      currentVersionInfo = currentVersionInfo.equals("") ? "default" : currentVersionInfo;
       remoteItems.remove("revision");//the key revision is not the config setting
       multiDimensionItems.clear();
       multiDimensionItems.putAll(remoteItems);
@@ -72,6 +72,10 @@ public class ParseConfigUtils {
     } finally {
       configLock.unlock();
     }
+  }
+
+  public static String getCurrentVersionInfo() {
+    return currentVersionInfo;
   }
 
   public void refreshConfigItemsIncremental(Map<String, Object> action) {
