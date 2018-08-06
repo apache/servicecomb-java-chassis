@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.foundation.vertx;
 
-public enum ServerType {
-  Highway,
-  Rest
+public enum ConnectionEvent {
+  Connected,
+  Closed
 }

@@ -27,8 +27,8 @@ import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
 import org.apache.servicecomb.foundation.vertx.ClientEvent;
-import org.apache.servicecomb.foundation.vertx.EventType;
-import org.apache.servicecomb.foundation.vertx.ServerType;
+import org.apache.servicecomb.foundation.vertx.ConnectionEvent;
+import org.apache.servicecomb.foundation.vertx.TransportType;
 import org.apache.servicecomb.foundation.vertx.VertxTLSBuilder;
 
 import com.netflix.config.DynamicPropertyFactory;
@@ -79,7 +79,7 @@ public class TcpServer {
       TcpServerConnection connection = createTcpServerConnection();
       connection.init(netSocket, connectedCounter);
       EventManager.post(new ClientEvent(netSocket.remoteAddress().toString(),
-          EventType.Connected, ServerType.Highway, connectedCount));
+          ConnectionEvent.Connected, TransportType.Highway, connectedCount));
     });
 
     InetSocketAddress socketAddress = endpointObject.getSocketAddress();

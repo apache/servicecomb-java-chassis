@@ -23,9 +23,9 @@ package org.apache.servicecomb.foundation.vertx;
 public class ClientEvent {
   private final String address;
 
-  private final EventType eventType;
+  private final ConnectionEvent connectionEvent;
 
-  private final ServerType serverType;
+  private final TransportType transportType;
 
   private final int totalConnectedCount;
 
@@ -33,22 +33,23 @@ public class ClientEvent {
     return address;
   }
 
-  public EventType getEventType() {
-    return eventType;
+  public ConnectionEvent getConnectionEvent() {
+    return connectionEvent;
   }
 
-  public ServerType getServerType() {
-    return serverType;
+  public TransportType getTransportType() {
+    return transportType;
   }
 
   public int getTotalConnectedCount() {
     return totalConnectedCount;
   }
 
-  public ClientEvent(String address, EventType eventType, ServerType serverType, int totalConnectedCount) {
+  public ClientEvent(String address, ConnectionEvent connectionEvent, TransportType transportType,
+      int totalConnectedCount) {
     this.address = address;
-    this.eventType = eventType;
-    this.serverType = serverType;
+    this.connectionEvent = connectionEvent;
+    this.transportType = transportType;
     this.totalConnectedCount = totalConnectedCount;
   }
 }

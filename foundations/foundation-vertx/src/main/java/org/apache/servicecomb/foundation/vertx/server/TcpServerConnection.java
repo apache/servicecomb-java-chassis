@@ -20,8 +20,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.vertx.ClientEvent;
-import org.apache.servicecomb.foundation.vertx.EventType;
-import org.apache.servicecomb.foundation.vertx.ServerType;
+import org.apache.servicecomb.foundation.vertx.ConnectionEvent;
+import org.apache.servicecomb.foundation.vertx.TransportType;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +54,7 @@ public class TcpServerConnection extends TcpConnection {
           Thread.currentThread().getName());
 
       int connectedCount = connectedCounter.decrementAndGet();
-      EventManager.post(new ClientEvent(remoteAddress, EventType.Closed, ServerType.Highway, connectedCount));
+      EventManager.post(new ClientEvent(remoteAddress, ConnectionEvent.Closed, TransportType.Highway, connectedCount));
     });
 
     netSocket.handler(splitter);

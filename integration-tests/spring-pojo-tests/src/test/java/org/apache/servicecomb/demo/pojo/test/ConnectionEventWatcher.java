@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.foundation.vertx.ClientEvent;
-import org.apache.servicecomb.foundation.vertx.ServerType;
+import org.apache.servicecomb.foundation.vertx.TransportType;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -34,7 +34,7 @@ public class ConnectionEventWatcher {
 
   @Subscribe
   public void getEvent(ClientEvent event) {
-    if (ServerType.Highway.equals(event.getServerType())) {
+    if (TransportType.Highway.equals(event.getTransportType())) {
       counters.add(event.getTotalConnectedCount());
     }
   }
