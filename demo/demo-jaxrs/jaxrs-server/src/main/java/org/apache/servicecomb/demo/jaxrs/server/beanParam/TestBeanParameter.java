@@ -23,6 +23,8 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class TestBeanParameter {
   @DefaultValue("defaultQueryValue")
   @QueryParam("querySwaggerStr")
@@ -35,13 +37,15 @@ public class TestBeanParameter {
   @CookieParam("cookieSwaggerLong")
   private long cookieLong;
 
+  @JsonIgnore
+  private String ignoredField;
+
   public String getQueryStr() {
     return queryStr;
   }
 
-  public TestBeanParameter setQueryStr(String queryStr) {
+  public void setQueryStr(String queryStr) {
     this.queryStr = queryStr;
-    return this;
   }
 
   public Integer getHeaderInt() {
@@ -50,9 +54,8 @@ public class TestBeanParameter {
 
   @DefaultValue("12")
   @HeaderParam("headerSwaggerInt")
-  public TestBeanParameter setHeaderInt(Integer headerInt) {
+  public void setHeaderInt(Integer headerInt) {
     this.headerInt = headerInt;
-    return this;
   }
 
   public String getPathStr() {
@@ -60,18 +63,25 @@ public class TestBeanParameter {
   }
 
   @PathParam("pathSwaggerStr")
-  public TestBeanParameter setPathStr(String pathStr) {
+  public void setPathStr(String pathStr) {
     this.pathStr = pathStr;
-    return this;
   }
 
   public long getCookieLong() {
     return cookieLong;
   }
 
-  public TestBeanParameter setCookieLong(long cookieLong) {
+  public void
+  setCookieLong(long cookieLong) {
     this.cookieLong = cookieLong;
-    return this;
+  }
+
+  public String getIgnoredField() {
+    return ignoredField;
+  }
+
+  public void setIgnoredField(String ignoredField) {
+    this.ignoredField = ignoredField;
   }
 
   @Override
