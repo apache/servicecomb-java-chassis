@@ -364,7 +364,7 @@ public class ConfigCenterClient {
         encodeServiceName = StringUtils.deleteWhitespace(serviceName);
       }
       String path = uriConst.ITEMS + "?dimensionsInfo=" + encodeServiceName + "&revision="
-          + ParseConfigUtils.CURRENT_VERSION_INFO;
+          + ParseConfigUtils.getCurrentVersionInfo();
       clientMgr.findThreadBindClientPool().runOnContext(client -> {
         IpPort ipPort = NetUtils.parseIpPortFromURI(configcenter);
         HttpClientRequest request = client.get(ipPort.getPort(), ipPort.getHostOrIp(), path, rsp -> {

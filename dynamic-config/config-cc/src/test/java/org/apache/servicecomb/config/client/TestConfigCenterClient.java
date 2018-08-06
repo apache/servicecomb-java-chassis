@@ -179,7 +179,7 @@ public class TestConfigCenterClient {
     ConfigRefresh refresh = cc.new ConfigRefresh(parseConfigUtils, memberdis);
     Deencapsulation.setField(cc, "refreshMode", 1);
     refresh.run();
-    String currentVersionInfo = Deencapsulation.getField(parseConfigUtils, "CURRENT_VERSION_INFO").toString();
+    String currentVersionInfo = Deencapsulation.getField(parseConfigUtils, "currentVersionInfo").toString();
     return currentVersionInfo;
   }
 
