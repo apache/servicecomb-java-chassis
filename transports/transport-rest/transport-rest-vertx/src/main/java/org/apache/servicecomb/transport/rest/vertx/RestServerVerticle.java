@@ -21,11 +21,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
@@ -63,7 +64,7 @@ public class RestServerVerticle extends AbstractVerticle {
   private final AtomicInteger connectedCounter;
 
   public RestServerVerticle() {
-    this(((VertxRestTransport) BeanUtils.getBean("vertxRestTransport")).getConnectedCounter());
+    this(CseContext.getInstance().getTransportManager().findTransport(Const.RESTFUL).getConnectedCounter());
   }
 
   public RestServerVerticle(AtomicInteger connectedCounter) {

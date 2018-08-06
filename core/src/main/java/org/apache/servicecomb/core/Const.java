@@ -27,6 +27,8 @@ public final class Const {
 
   public static final String RESTFUL = "rest";
 
+  public static final String HIGHWAY = "highway";
+
   public static final String ANY_TRANSPORT = "";
 
   public static final String VERSION_RULE_LATEST = DefinitionConst.VERSION_RULE_LATEST;

@@ -24,6 +24,7 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -92,7 +93,7 @@ public class TestHighwayClient {
       @Mock
       <VERTICLE extends AbstractVerticle> boolean blockDeploy(Vertx vertx,
           Class<VERTICLE> cls,
-          DeploymentOptions options) throws InterruptedException {
+          DeploymentOptions options) {
         return true;
       }
     };
@@ -109,7 +110,7 @@ public class TestHighwayClient {
       @Mock
       <VERTICLE extends AbstractVerticle> boolean blockDeploy(Vertx vertx,
           Class<VERTICLE> cls,
-          DeploymentOptions options) throws InterruptedException {
+          DeploymentOptions options) {
         return true;
       }
     };
@@ -123,7 +124,7 @@ public class TestHighwayClient {
 
     new MockUp<ProtobufManager>() {
       @Mock
-      public OperationProtobuf getOrCreateOperation(OperationMeta operationMeta) throws Exception {
+      public OperationProtobuf getOrCreateOperation(OperationMeta operationMeta) {
         return operationProtobuf;
       }
     };
@@ -138,14 +139,14 @@ public class TestHighwayClient {
     new MockUp<HighwayCodec>() {
       @Mock
       public Buffer encodeRequest(Invocation invocation, OperationProtobuf operationProtobuf,
-          long msgId) throws Exception {
+          long msgId) {
         return null;
       }
 
       @Mock
       Response decodeResponse(Invocation invocation, OperationProtobuf operationProtobuf,
           TcpData tcpData, ProtobufFeature protobufFeature) throws Throwable {
-        if (Response.class.isInstance(decodedResponse)) {
+        if (decodedResponse instanceof Response) {
           return (Response) decodedResponse;
         }
 
@@ -243,6 +244,6 @@ public class TestHighwayClient {
     Assert.assertEquals(MsgType.LOGIN, header.getMsgType());
 
     LoginRequest login = LoginRequest.readObject(bodyBuffer);
-    Assert.assertEquals(HighwayTransport.NAME, login.getProtocol());
+    Assert.assertEquals(Const.HIGHWAY, login.getProtocol());
   }
 }

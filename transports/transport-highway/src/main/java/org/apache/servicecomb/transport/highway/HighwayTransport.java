@@ -18,8 +18,8 @@
 package org.apache.servicecomb.transport.highway;
 
 import java.util.Collections;
-import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.vertx.SimpleJsonObject;
@@ -32,19 +32,12 @@ import io.vertx.core.DeploymentOptions;
 
 @Component
 public class HighwayTransport extends AbstractTransport {
-  public static final String NAME = "highway";
 
   private HighwayClient highwayClient = new HighwayClient();
 
-  private final AtomicInteger connectedCounter = new AtomicInteger(0);
-
-  public AtomicInteger getConnectedCounter() {
-    return connectedCounter;
-  }
-
   @Override
   public String getName() {
-    return NAME;
+    return Const.HIGHWAY;
   }
 
   public boolean init() throws Exception {

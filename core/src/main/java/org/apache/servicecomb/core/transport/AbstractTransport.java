@@ -23,6 +23,7 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -65,6 +66,8 @@ public abstract class AbstractTransport implements Transport {
 
   protected Endpoint publishEndpoint;
 
+  private final AtomicInteger connectedCounter = new AtomicInteger(0);
+
   @Override
   public Endpoint getPublishEndpoint() {
     return publishEndpoint;
@@ -73,6 +76,11 @@ public abstract class AbstractTransport implements Transport {
   @Override
   public Endpoint getEndpoint() {
     return endpoint;
+  }
+
+  @Override
+  public AtomicInteger getConnectedCounter() {
+    return connectedCounter;
   }
 
   protected void setListenAddressWithoutSchema(String addressWithoutSchema) {

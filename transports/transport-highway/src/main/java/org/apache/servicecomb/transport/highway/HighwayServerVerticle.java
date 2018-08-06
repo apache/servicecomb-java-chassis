@@ -20,10 +20,11 @@ package org.apache.servicecomb.transport.highway;
 import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +45,7 @@ public class HighwayServerVerticle extends AbstractVerticle {
   private final AtomicInteger connectedCounter;
 
   public HighwayServerVerticle() {
-    this(((HighwayTransport) BeanUtils.getBean("highwayTransport")).getConnectedCounter());
+    this(CseContext.getInstance().getTransportManager().findTransport(Const.HIGHWAY).getConnectedCounter());
   }
 
   public HighwayServerVerticle(AtomicInteger connectedCounter) {
@@ -89,7 +90,7 @@ public class HighwayServerVerticle extends AbstractVerticle {
         return;
       }
 
-      LOGGER.error(HighwayTransport.NAME, ar.cause());
+      LOGGER.error(Const.HIGHWAY, ar.cause());
       startFuture.fail(ar.cause());
     });
   }
