@@ -16,8 +16,7 @@
  */
 package org.apache.servicecomb.authentication.provider;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
+import java.beans.PropertyDescriptor;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -57,8 +56,6 @@ public class AccessController {
 
   private static final String KEY_RULE_POSTFIX = ".rule";
 
-  private static final String TYPE_STRING_NAME = "java.lang.String";
-
   private Map<String, ConfigurationItem> whiteList = new HashMap<>();
 
   private Map<String, ConfigurationItem> blackList = new HashMap<>();
@@ -91,41 +88,34 @@ public class AccessController {
     for (ConfigurationItem item : ruleList.values()) {
       if (ConfigurationItem.CATEGORY_PROPERTY.equals(item.category)) {
         // we support to configure properties, e.g. serviceName, appId, environment, alias, version and so on, also support key in properties.
-        Class<? extends Microservice> service = microservice.getClass();
-        for (Method method : service.getDeclaredMethods()) {
-          String methodName = method.getName();
-          if (!methodName.startsWith("get"))
-            continue;
-          if (!method.getGenericReturnType().getTypeName().equals(TYPE_STRING_NAME))
-            continue;
-          char[] charArray = methodName.toCharArray();
-          charArray[3] += 32;
-          String fieldName = String.valueOf(charArray, 3, charArray.length - 3);
-          if (fieldName.equals(item.propertyName)) {
-            Field field;
-            String fieldValue = null;
-            try {
-              field = service.getDeclaredField(fieldName);
-              field.setAccessible(true);
-              fieldValue = (String) field.get(microservice);
-            } catch (Exception e) {
-              LOG.error("get field by reflection failed, error message: {}", e.getMessage());
-              fieldValue = "";
-            }
-            if (isPatternMatch(fieldValue, item.rule))
-              return true;
-          }
-        }
-        Map<String, String> properties = microservice.getProperties();
-        for (Entry<String, String> entry : properties.entrySet()) {
-          if (!entry.getKey().equals(item.propertyName))
-            continue;
-          if (isPatternMatch(entry.getValue(), item.rule))
-            return true;
-        }
+        if (matchMicroserviceField(microservice, item) || matchMicroserviceProperties(microservice, item))
+          return true;
       }
     }
     return matched;
+  }
+
+  private boolean matchMicroserviceProperties(Microservice microservice, ConfigurationItem item) {
+    Map<String, String> properties = microservice.getProperties();
+    for (Entry<String, String> entry : properties.entrySet()) {
+      if (!entry.getKey().equals(item.propertyName))
+        continue;
+      return isPatternMatch(entry.getValue(), item.rule);
+    }
+    return false;
+  }
+
+  private boolean matchMicroserviceField(Microservice microservice, ConfigurationItem item) {
+    Object fieldValue = null;
+    try {
+      fieldValue = new PropertyDescriptor(item.propertyName, Microservice.class).getReadMethod().invoke(microservice);
+    } catch (Exception e) {
+      LOG.warn("can't find propertyname: {} in microservice field, will search in microservice properties.", item.propertyName);
+      return false;
+    }
+    if (fieldValue.getClass().getName().equals(String.class.getName()))
+      return isPatternMatch((String) fieldValue, item.rule);
+    return false;
   }
 
   private boolean isPatternMatch(String value, String pattern) {
