@@ -32,6 +32,7 @@ import org.mockito.Mockito;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
+import io.vertx.core.impl.ConcurrentHashSet;
 import io.vertx.core.json.JsonObject;
 import mockit.Expectations;
 import mockit.Mocked;
@@ -40,7 +41,7 @@ public class TestHighwayVerticle {
   @Test
   public void testHighwayVerticle(@Mocked Transport transport, @Mocked Vertx vertx, @Mocked Context context,
       @Mocked JsonObject json) {
-    HighwayServerVerticle highwayVerticle = new HighwayServerVerticle(new AtomicInteger());
+    HighwayServerVerticle highwayVerticle = new HighwayServerVerticle(new AtomicInteger(), new ConcurrentHashSet<>());
     URIEndpointObject endpiontObject = new URIEndpointObject("highway://127.0.0.1:9090");
     new Expectations() {
       {

@@ -39,6 +39,7 @@ import org.junit.Test;
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtobufOutput;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.impl.ConcurrentHashSet;
 import io.vertx.core.net.NetSocket;
 import io.vertx.core.net.impl.NetSocketImpl;
 import io.vertx.core.net.impl.SocketAddressImpl;
@@ -76,7 +77,7 @@ public class TestHighwayServerConnection {
       }
     };
     connection = new HighwayServerConnection(endpoint);
-    connection.init(netSocket, new AtomicInteger());
+    connection.init(netSocket, new AtomicInteger(), new ConcurrentHashSet<>());
 
     header = new RequestHeader();
   }
@@ -87,6 +88,7 @@ public class TestHighwayServerConnection {
     Buffer headerBuffer = createBuffer(requestHeaderSchema, header);
 
     try {
+      connection.getConnectedAddresses().add(connection.getNetSocket().remoteAddress().toString());
       connection.handle(0, headerBuffer, null);
       throw new Error("must error");
     } catch (Throwable e) {
@@ -101,10 +103,11 @@ public class TestHighwayServerConnection {
 
     headerBuffer.setByte(0, (byte) 100);
 
+    connection.getConnectedAddresses().add(connection.getNetSocket().remoteAddress().toString());
     connection.handle(0, headerBuffer, null);
 
-    Assert.assertEquals(null, connection.getProtocol());
-    Assert.assertEquals(null, connection.getZipName());
+    Assert.assertNull(connection.getProtocol());
+    Assert.assertNull(connection.getZipName());
   }
 
   @Test
@@ -117,6 +120,7 @@ public class TestHighwayServerConnection {
     body.setZipName("z");
     Buffer bodyBuffer = createBuffer(setParameterRequestSchema, body);
 
+    connection.getConnectedAddresses().add(connection.getNetSocket().remoteAddress().toString());
     connection.handle(0, headerBuffer, bodyBuffer);
 
     Assert.assertEquals("p", connection.getProtocol());
@@ -136,8 +140,8 @@ public class TestHighwayServerConnection {
 
     connection.handle(0, headerBuffer, bodyBuffer);
 
-    Assert.assertEquals(null, connection.getProtocol());
-    Assert.assertEquals(null, connection.getZipName());
+    Assert.assertNull(connection.getProtocol());
+    Assert.assertNull(connection.getZipName());
   }
 
   @Test
@@ -182,10 +186,11 @@ public class TestHighwayServerConnection {
       }
     };
 
+    connection.getConnectedAddresses().add(connection.getNetSocket().remoteAddress().toString());
     connection.handle(0, headerBuffer, bodyBuffer);
 
-    Assert.assertEquals(null, connection.getProtocol());
-    Assert.assertEquals(null, connection.getZipName());
+    Assert.assertNull(connection.getProtocol());
+    Assert.assertNull(connection.getZipName());
     Assert.assertEquals(true, holder.value);
   }
 
@@ -207,8 +212,8 @@ public class TestHighwayServerConnection {
 
     connection.handle(0, headerBuffer, bodyBuffer);
 
-    Assert.assertEquals(null, connection.getProtocol());
-    Assert.assertEquals(null, connection.getZipName());
+    Assert.assertNull(connection.getProtocol());
+    Assert.assertNull(connection.getZipName());
     Assert.assertEquals(false, holder.value);
   }
 

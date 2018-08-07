@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.core;
 
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
@@ -53,4 +54,6 @@ public interface Transport {
   void send(Invocation invocation, AsyncResponse asyncResp) throws Exception;
 
   AtomicInteger getConnectedCounter();
+
+  Set<String> getConnectedAddresses();
 }

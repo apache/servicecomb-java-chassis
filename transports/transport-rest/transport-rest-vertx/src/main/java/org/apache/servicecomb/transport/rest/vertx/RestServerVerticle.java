@@ -63,12 +63,16 @@ public class RestServerVerticle extends AbstractVerticle {
 
   private final AtomicInteger connectedCounter;
 
+  private final Set<String> connectedAddresses;
+
   public RestServerVerticle() {
-    this(CseContext.getInstance().getTransportManager().findTransport(Const.RESTFUL).getConnectedCounter());
+    this(CseContext.getInstance().getTransportManager().findTransport(Const.RESTFUL).getConnectedCounter(),
+        CseContext.getInstance().getTransportManager().findTransport(Const.RESTFUL).getConnectedAddresses());
   }
 
-  public RestServerVerticle(AtomicInteger connectedCounter) {
+  public RestServerVerticle(AtomicInteger connectedCounter, Set<String> connectedAddresses) {
     this.connectedCounter = connectedCounter;
+    this.connectedAddresses = connectedAddresses;
   }
 
   @Override
@@ -95,6 +99,7 @@ public class RestServerVerticle extends AbstractVerticle {
       HttpServer httpServer = createHttpServer();
       httpServer.requestHandler(mainRouter::accept);
       httpServer.connectionHandler(connection -> {
+        String address = connection.remoteAddress().toString();
         int connectedCount = connectedCounter.incrementAndGet();
         int connectionLimit = DynamicPropertyFactory.getInstance()
             .getIntProperty("servicecomb.rest.server.connection-limit", Integer.MAX_VALUE).get();
@@ -102,10 +107,13 @@ public class RestServerVerticle extends AbstractVerticle {
           connectedCounter.decrementAndGet();
           connection.close();
         } else {
-          EventManager.post(new ClientEvent(connection.remoteAddress().toString(),
-              ConnectionEvent.Connected, TransportType.Rest, connectedCount));
-          connection.closeHandler(event -> EventManager.post(new ClientEvent(connection.remoteAddress().toString(),
-              ConnectionEvent.Closed, TransportType.Rest, connectedCounter.decrementAndGet())));
+          connectedAddresses.add(address);
+          EventManager.post(new ClientEvent(address, ConnectionEvent.Connected, TransportType.Rest, connectedCount));
+          connection.closeHandler(event -> {
+            connectedAddresses.remove(address);
+            EventManager.post(new ClientEvent(address,
+                ConnectionEvent.Closed, TransportType.Rest, connectedCounter.decrementAndGet()));
+          });
         }
       });
 

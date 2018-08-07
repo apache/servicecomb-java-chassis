@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.transport.rest.vertx;
 
+import static org.mockito.Mockito.when;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +31,7 @@ import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.RestProducerInvocation;
 import org.apache.servicecomb.common.rest.VertxRestInvocation;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.transport.TransportManager;
@@ -40,6 +43,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
 import io.vertx.core.AsyncResult;
@@ -50,6 +54,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.impl.ConcurrentHashSet;
 import io.vertx.core.impl.VertxImpl;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.net.SocketAddress;
@@ -64,9 +69,6 @@ import mockit.Mocked;
 public class TestVertxRestDispatcher {
   @Mocked
   Router mainRouter;
-
-  @Mocked
-  TransportManager transportManager;
 
   VertxRestDispatcher dispatcher;
 
@@ -91,6 +93,15 @@ public class TestVertxRestDispatcher {
         invoked = true;
       }
     };
+
+    Transport t = Mockito.mock(Transport.class);
+    when(t.getName()).thenReturn(Const.RESTFUL);
+
+    when(t.getConnectedAddresses()).thenReturn(new ConcurrentHashSet<>());
+
+    TransportManager transportManager = Mockito.mock(TransportManager.class);
+
+    when(transportManager.findTransport(Const.RESTFUL)).thenReturn(t);
 
     CseContext.getInstance().setTransportManager(transportManager);
   }
@@ -298,6 +309,9 @@ public class TestVertxRestDispatcher {
         result = context;
       }
     };
+
+    CseContext.getInstance().getTransportManager().findTransport(org.apache.servicecomb.core.Const.RESTFUL)
+        .getConnectedAddresses().add(request.connection().remoteAddress().toString());
     Deencapsulation.invoke(dispatcher, "onRequest", routingContext);
 
     Assert.assertEquals(VertxRestInvocation.class, map.get(RestConst.REST_PRODUCER_INVOCATION).getClass());

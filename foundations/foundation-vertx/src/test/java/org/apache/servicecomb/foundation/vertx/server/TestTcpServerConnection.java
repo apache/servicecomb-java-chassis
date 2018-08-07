@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.vertx.core.impl.ConcurrentHashSet;
 import io.vertx.core.net.impl.NetSocketImpl;
 import mockit.Mocked;
 
@@ -31,7 +32,7 @@ public class TestTcpServerConnection {
     connection.setProtocol("p");
     connection.setZipName("z");
 
-    connection.init(netSocket, new AtomicInteger());
+    connection.init(netSocket, new AtomicInteger(), new ConcurrentHashSet<>());
 
     Assert.assertEquals(netSocket, connection.getNetSocket());
   }
