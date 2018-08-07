@@ -38,25 +38,39 @@ public class ParseConfigUtils {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ParseConfigUtils.class);
 
-  private static LinkedHashMap<String, Map<String, Object>> multiDimensionItems = new LinkedHashMap<>();
-  //it's dangerous that makes flatItems public
-  private static final Map<String, Object> flatItems = new HashMap<>();
+  private static final ParseConfigUtils INSTANCE = new ParseConfigUtils();
 
-  private static String currentVersionInfo = "default";
+  private LinkedHashMap<String, Map<String, Object>> multiDimensionItems = new LinkedHashMap<>();
+
+  //it's dangerous to make flatItems public
+  private final Map<String, Object> flatItems = new HashMap<>();
+
+  private String currentVersionInfo = "default";
 
   private UpdateHandler updateHandler;
 
   private Lock configLock = new ReentrantLock();
 
+  //for compatibility with other modules and JunitTest
   public ParseConfigUtils(UpdateHandler updateHandler) {
     this.updateHandler = updateHandler;
   }
 
+  private ParseConfigUtils() {
+  }
+
+  public void initWithUpdateHandler(UpdateHandler updateHandler) {
+    if (updateHandler == null) {
+      LOGGER.error("when init ParseConfigUtils, updateHandler can not be null");
+    }
+    this.updateHandler = updateHandler;
+  }
+
   /*
-    as the data is returned, we can block the thread at a short time. consider that if the multiple verticle is deployed
-    and if we use pull mode and push mode at the same time , we must share a common lock with all methods which would
-    change the config setting
-   */
+      as the data is returned, we can block the thread at a short time. consider that if the multiple verticle is deployed
+      and if we use pull mode and push mode at the same time , we must share a common lock with all methods which would
+      change the config setting
+     */
   public void refreshConfigItems(Map<String, Map<String, Object>> remoteItems) {
     try {
       configLock.lock();
@@ -74,8 +88,12 @@ public class ParseConfigUtils {
     }
   }
 
-  public static String getCurrentVersionInfo() {
-    return currentVersionInfo;
+  public static ParseConfigUtils getInstance() {
+    return INSTANCE;
+  }
+
+  public String getCurrentVersionInfo() {
+    return this.currentVersionInfo;
   }
 
   public void refreshConfigItemsIncremental(Map<String, Object> action) {
