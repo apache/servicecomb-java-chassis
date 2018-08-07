@@ -128,14 +128,14 @@ public class ConfigCenterClient {
       LOGGER.error("refreshMode must be 0 or 1.");
       return;
     }
-    ParseConfigUtils parseConfigUtils = new ParseConfigUtils(updateHandler);
+    ParseConfigUtils.getInstance().initWithUpdateHandler(updateHandler);
     try {
       deployConfigClient();
     } catch (InterruptedException e) {
       throw new IllegalStateException(e);
     }
     refreshMembers(memberDiscovery);
-    ConfigRefresh refreshTask = new ConfigRefresh(parseConfigUtils, memberDiscovery);
+    ConfigRefresh refreshTask = new ConfigRefresh(ParseConfigUtils.getInstance(), memberDiscovery);
     refreshTask.run(true);
     executor.scheduleWithFixedDelay(refreshTask,
         firstRefreshInterval,
@@ -364,7 +364,7 @@ public class ConfigCenterClient {
         encodeServiceName = StringUtils.deleteWhitespace(serviceName);
       }
       String path = uriConst.ITEMS + "?dimensionsInfo=" + encodeServiceName + "&revision="
-          + ParseConfigUtils.getCurrentVersionInfo();
+          + ParseConfigUtils.getInstance().getCurrentVersionInfo();
       clientMgr.findThreadBindClientPool().runOnContext(client -> {
         IpPort ipPort = NetUtils.parseIpPortFromURI(configcenter);
         HttpClientRequest request = client.get(ipPort.getPort(), ipPort.getHostOrIp(), path, rsp -> {
