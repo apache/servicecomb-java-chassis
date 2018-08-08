@@ -64,4 +64,28 @@ public class SpringMvcDefaultValues {
     return "Hello " + a + b;
   }
 
+  @PostMapping("/javaprimitive1")
+  public String springJavaPrim1(@RequestParam(name = "a") int a,
+      @RequestParam(name = "b", defaultValue = "bobo") String b) {
+    return "Hello " + a + b;
+  }
+
+  @PostMapping("/javaprimitive2")
+  public String springJavaPrim2(@RequestParam(name = "a") float a, @RequestParam(name = "b") boolean b) {
+    return "Hello " + a + b;
+  }
+
+  @PostMapping("/javaprimitive3")
+  public String springJavaPrim3(@RequestParam(name = "a") int a, @RequestParam(name = "b") String b) {
+    if (b == null || b.equals("")) {
+      return "Hello";
+    }
+    return "Hello " + b + a;
+
+  }
+
+  @PostMapping("/javaprimitive4")
+  public String springJavaPrim4(@RequestParam(name = "a") Integer a, @RequestParam(name = "b") Float b) {
+    return "Hello " + a + b;
+  }
 }

@@ -72,6 +72,7 @@ public class JaxrsClient {
     testValidator(templateNew);
     testClientTimeOut(templateNew);
     testJaxRSDefaultValues(templateNew);
+    testSpringMvcDefaultValuesJavaPrimitive(templateNew);
     MultiErrorCodeServiceClient.runTest();
 
     BeanParamPojoClient beanParamPojoClient = new BeanParamPojoClient();
@@ -143,7 +144,7 @@ public class JaxrsClient {
         result = template.getForObject(cseUrlPrefix + "/query2", String.class);
       } catch (InvocationException e) {
         failed = true;
-        TestMgr.check(e.getStatusCode(), ExceptionFactory.PRODUCER_INNER_STATUS_CODE);
+        TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
       }
 
       failed = false;
@@ -407,5 +408,28 @@ public class JaxrsClient {
     }
 
     TestMgr.check(true, isExcep);
+  }
+
+  private static void testSpringMvcDefaultValuesJavaPrimitive(RestTemplate template) {
+    String microserviceName = "jaxrs";
+    String cseUrlPrefix = "cse://" + microserviceName + "/JaxRSDefaultValues/";
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
+    MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+    //default values with primitive
+    String result = template.postForObject(cseUrlPrefix + "/javaprimitive1", request, String.class);
+    TestMgr.check("Hello 0bobo", result);
+
+    result = template.postForObject(cseUrlPrefix + "/javaprimitive2", request, String.class);
+    TestMgr.check("Hello 0.0false", result);
+
+    result = template.postForObject(cseUrlPrefix + "/javaprimitive3", request, String.class);
+    TestMgr.check("Hello", result);
+
+    result = template.postForObject(cseUrlPrefix + "/javaprimitive4", request, String.class);
+    TestMgr.check("Hello 00.0", result);
   }
 }

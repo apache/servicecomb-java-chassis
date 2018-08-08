@@ -96,6 +96,7 @@ public class SpringmvcClient {
       testController();
       testRequiredBody(templateUrlWithServiceName, microserviceName);
       testSpringMvcDefaultValues(templateUrlWithServiceName, microserviceName);
+      testSpringMvcDefaultValuesJavaPrimitive(templateUrlWithServiceName, microserviceName);
     }
     HttpHeaders headers = new HttpHeaders();
     headers.set("Accept-Encoding", "gzip");
@@ -289,7 +290,7 @@ public class SpringmvcClient {
       result = template.getForObject(cseUrlPrefix + "/query2", String.class);
     } catch (InvocationException e) {
       failed = true;
-      TestMgr.check(e.getStatusCode(), ExceptionFactory.PRODUCER_INNER_STATUS_CODE);
+      TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
     }
 
     failed = false;
@@ -345,5 +346,21 @@ public class SpringmvcClient {
 
     result = template.getForObject(cseUrlPrefix + "/query2?a=3&b=4&c=5&d=30&e=2", String.class);
     TestMgr.check("Hello 345302", result);
+  }
+
+  private static void testSpringMvcDefaultValuesJavaPrimitive(RestTemplate template, String microserviceName) {
+    String cseUrlPrefix = "cse://" + microserviceName + "/SpringMvcDefaultValues/";
+    //default values with primitive
+    String result = template.postForObject(cseUrlPrefix + "/javaprimitive1", null, String.class);
+    TestMgr.check("Hello 0bobo", result);
+
+    result = template.postForObject(cseUrlPrefix + "/javaprimitive2", null, String.class);
+    TestMgr.check("Hello 0.0false", result);
+
+    result = template.postForObject(cseUrlPrefix + "/javaprimitive3", null, String.class);
+    TestMgr.check("Hello", result);
+
+    result = template.postForObject(cseUrlPrefix + "/javaprimitive4", null, String.class);
+    TestMgr.check("Hello 00.0", result);
   }
 }
