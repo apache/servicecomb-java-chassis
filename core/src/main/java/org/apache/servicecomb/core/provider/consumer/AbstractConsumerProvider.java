@@ -17,14 +17,9 @@
 
 package org.apache.servicecomb.core.provider.consumer;
 
-import javax.inject.Inject;
-
 import org.apache.servicecomb.core.ConsumerProvider;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 
 public abstract class AbstractConsumerProvider implements ConsumerProvider {
-  @Inject
-  protected MicroserviceMetaManager microserviceMetaManager;
 
   @Override
   public void init() throws Exception {

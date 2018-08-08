@@ -22,9 +22,8 @@ import java.util.Map.Entry;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.FixedThreadExecutor;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
@@ -71,14 +70,11 @@ public class ThreadPoolMetersInitializer implements MetricsInitializer {
 
   protected Map<Executor, Executor> collectionOperationExecutors() {
     Map<Executor, Executor> operationExecutors = new IdentityHashMap<>();
-
-    MicroserviceMetaManager microserviceMetaManager = CseContext.getInstance().getMicroserviceMetaManager();
-    for (MicroserviceMeta microserviceMeta : microserviceMetaManager.values()) {
-      for (OperationMeta operationMeta : microserviceMeta.getOperations()) {
-        operationExecutors.put(operationMeta.getExecutor(), operationMeta.getExecutor());
-      }
+    //only one instance in the values
+    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroMeta();
+    for (OperationMeta operationMeta : microserviceMeta.getOperations()) {
+      operationExecutors.put(operationMeta.getExecutor(), operationMeta.getExecutor());
     }
-
     return operationExecutors;
   }
 

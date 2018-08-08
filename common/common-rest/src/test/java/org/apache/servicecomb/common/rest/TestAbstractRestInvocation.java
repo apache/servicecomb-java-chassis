@@ -17,14 +17,13 @@
 
 package org.apache.servicecomb.common.rest;
 
+import javax.ws.rs.core.Response.Status;
+import javax.xml.ws.Holder;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
-
-import javax.ws.rs.core.Response.Status;
-import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
@@ -39,7 +38,6 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.SCBStatus;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
@@ -68,13 +66,13 @@ import org.junit.rules.ExpectedException;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-
-import io.vertx.core.buffer.Buffer;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
+
+import io.vertx.core.buffer.Buffer;
 
 public class TestAbstractRestInvocation {
   @Mocked
@@ -85,9 +83,6 @@ public class TestAbstractRestInvocation {
 
   @Mocked
   ReferenceConfig endpoint;
-
-  @Mocked
-  MicroserviceMetaManager microserviceMetaManager;
 
   @Mocked
   SchemaMeta schemaMeta;
@@ -691,8 +686,6 @@ public class TestAbstractRestInvocation {
       {
         requestEx.getHeader(Const.TARGET_MICROSERVICE);
         result = "ms";
-        microserviceMetaManager.ensureFindValue("ms");
-        result = microserviceMeta;
         ServicePathManager.getServicePathManager(microserviceMeta);
         result = null;
       }

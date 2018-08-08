@@ -133,7 +133,7 @@ public class TestHighwayServerInvoke {
     operationMeta.setExecutor(new ReactiveExecutor());
 
     HighwayServerInvoke highwayServerInvoke = new HighwayServerInvoke();
-    highwayServerInvoke.setMicroserviceMetaManager(unitTestMeta.getMicroserviceMetaManager());
+//    highwayServerInvoke.setMicroserviceMetaManager(unitTestMeta.getMicroserviceMetaManager());
 
     RequestHeader requestHeader = MockUtil.getInstance().requestHeader;
 
