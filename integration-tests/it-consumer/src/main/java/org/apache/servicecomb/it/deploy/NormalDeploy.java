@@ -23,7 +23,6 @@ import java.io.OutputStreamWriter;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,13 +43,17 @@ public class NormalDeploy {
 
   public void deploy() throws Throwable {
     String[] cmds = createCmds();
-    cmds = ArrayUtils.addAll(cmds, deployDefinition.getArgs());
-    cmds = ArrayUtils.addAll(cmds,
-        "-DselfController=" + RegistryUtils.getMicroserviceInstance().getInstanceId());
+    cmds = addArgs(cmds);
 
     subProcess = createProcessBuilder(cmds).start();
     subProcessCommandWriter = new BufferedWriter(new OutputStreamWriter(subProcess.getOutputStream()));
-    subProcessLogger = new SubProcessLogger(deployDefinition.getDisplayName(), subProcess.getInputStream());
+    subProcessLogger = new SubProcessLogger(deployDefinition.getDisplayName(), subProcess.getInputStream(),
+        deployDefinition.getStartCompleteLog());
+  }
+
+  protected String[] addArgs(String[] cmds) {
+    cmds = ArrayUtils.addAll(cmds, deployDefinition.getArgs());
+    return cmds;
   }
 
   protected String[] createCmds() {
@@ -59,6 +62,10 @@ public class NormalDeploy {
 
   protected ProcessBuilder createProcessBuilder(String[] cmds) {
     return new ProcessBuilder(cmds).redirectErrorStream(true);
+  }
+
+  public void waitStartComplete() {
+    subProcessLogger.waitStartComplete();
   }
 
   public void sendCommand(Object command) {
@@ -82,7 +89,7 @@ public class NormalDeploy {
 
   public void waitStop() {
     if (subProcess == null) {
-      LOGGER.info("Ignore, already stop, displayName={}.", deployDefinition.getDisplayName());
+      LOGGER.info("Ignore, already stop or reusing exist instance, displayName={}.", deployDefinition.getDisplayName());
       return;
     }
 
@@ -98,17 +105,18 @@ public class NormalDeploy {
     subProcess = null;
     afterStop();
 
-    LOGGER.info("finished stop {}.", deployDefinition.getDisplayName());
+    LOGGER.info("stop complete, displayName={}.", deployDefinition.getDisplayName());
   }
 
   public void stop() {
     if (subProcess == null) {
-      LOGGER.info("Ignore, already stop, displayName={}.", deployDefinition.getDisplayName());
+      LOGGER.info("Ignore, already stop or reusing exist instance, displayName={}.", deployDefinition.getDisplayName());
       return;
     }
 
     subProcess.destroy();
     subProcess = null;
     afterStop();
+    LOGGER.info("stop complete, displayName={}.", deployDefinition.getDisplayName());
   }
 }

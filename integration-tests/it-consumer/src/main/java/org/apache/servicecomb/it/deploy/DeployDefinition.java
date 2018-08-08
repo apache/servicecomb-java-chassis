@@ -23,6 +23,8 @@ public class DeployDefinition {
 
   protected String displayName;
 
+  protected String startCompleteLog;
+
   /**
    * <pre>
    * edge as the example:
@@ -55,6 +57,14 @@ public class DeployDefinition {
 
   public void setDisplayName(String displayName) {
     this.displayName = displayName;
+  }
+
+  public String getStartCompleteLog() {
+    return startCompleteLog;
+  }
+
+  public void setStartCompleteLog(String startCompleteLog) {
+    this.startCompleteLog = startCompleteLog;
   }
 
   public String getCmd() {

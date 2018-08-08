@@ -22,7 +22,9 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.servicecomb.it.ITUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +37,13 @@ public class SubProcessLogger implements Closeable {
 
   private Thread thread;
 
-  public SubProcessLogger(String displayName, InputStream inputStream) {
+  private String startCompleteLog;
+
+  private volatile boolean startCompleted;
+
+  public SubProcessLogger(String displayName, InputStream inputStream, String startCompleteLog) {
     this.displayName = displayName;
+    this.startCompleteLog = startCompleteLog;
 
     BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
     this.reader = new BufferedReader(new InputStreamReader(bufferedInputStream));
@@ -58,6 +65,37 @@ public class SubProcessLogger implements Closeable {
     while ((line = reader.readLine()) != null) {
       System.out.print(String.format("[%s] ", displayName));
       System.out.println(line);
+
+      checkStartComplete(line);
+    }
+  }
+
+  private void checkStartComplete(String line) {
+    if (startCompleted || startCompleteLog == null) {
+      return;
+    }
+
+    startCompleted = line.contains(startCompleteLog);
+  }
+
+  public boolean isStartCompleted() {
+    return startCompleted;
+  }
+
+  public void waitStartComplete() {
+    if (startCompleteLog == null) {
+      throw new IllegalStateException(
+          String.format("[%s] not set startCompleteLog, can not wait start complete.", displayName));
+    }
+
+    LOGGER.info("waiting {} start.", displayName);
+    for (; ; ) {
+      if (startCompleted) {
+        LOGGER.info("{} start completed.", displayName);
+        return;
+      }
+
+      ITUtils.forceWait(TimeUnit.MILLISECONDS, 500);
     }
   }
 
