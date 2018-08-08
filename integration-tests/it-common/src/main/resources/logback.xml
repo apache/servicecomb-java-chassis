@@ -23,7 +23,7 @@
       <pattern>%d [%level] [%thread] - %msg (%F:%L\)%n</pattern>
     </encoder>
   </appender>
-  <root level="WARN">
+  <root level="INFO">
     <appender-ref ref="STDOUT"/>
   </root>
 </configuration>

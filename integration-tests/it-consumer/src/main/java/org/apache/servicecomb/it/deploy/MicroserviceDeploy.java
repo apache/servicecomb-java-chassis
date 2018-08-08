@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.it.deploy;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.servicecomb.it.ITUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
@@ -30,16 +31,19 @@ public class MicroserviceDeploy extends NormalDeploy {
   public MicroserviceDeploy(DeployDefinition deployDefinition) {
     super(deployDefinition);
     this.microserviceDeployDefinition = (MicroserviceDeployDefinition) deployDefinition;
-  }
 
-  @Override
-  public void deploy() throws Throwable {
-    super.deploy();
+    this.microserviceDeployDefinition.setStartCompleteLog("ServiceComb is ready.");
   }
 
   @Override
   protected String[] createCmds() {
     return new String[] {"java", "-jar", deployDefinition.getCmd()};
+  }
+
+  @Override
+  protected String[] addArgs(String[] cmds) {
+    return ArrayUtils.addAll(super.addArgs(cmds),
+        "-DselfController=" + RegistryUtils.getMicroserviceInstance().getInstanceId());
   }
 
   public void ensureReady() throws Throwable {
@@ -53,6 +57,7 @@ public class MicroserviceDeploy extends NormalDeploy {
     }
 
     deploy();
+    waitStartComplete();
     ITUtils.waitMicroserviceReady(microserviceDeployDefinition.getAppId(),
         microserviceDeployDefinition.getMicroserviceName(),
         microserviceDeployDefinition.getVersion(),
