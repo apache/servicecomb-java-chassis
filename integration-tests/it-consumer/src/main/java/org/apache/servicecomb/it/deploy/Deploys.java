@@ -32,11 +32,17 @@ public class Deploys {
 
   private String pomVersion;
 
-  public MicroserviceDeploy edge;
+  private ServiceCenterDeploy serviceCenter;
 
-  public MicroserviceDeploy baseProducer;
+  private MicroserviceDeploy edge;
 
-  public MicroserviceDeploy zuul;
+  private MicroserviceDeploy baseProducer;
+
+  private MicroserviceDeploy zuul;
+
+  public ServiceCenterDeploy getServiceCenter() {
+    return serviceCenter;
+  }
 
   public MicroserviceDeploy getEdge() {
     return edge;
@@ -54,6 +60,7 @@ public class Deploys {
     initPomVersion();
     LOGGER.info("test version: {}", pomVersion);
 
+    serviceCenter = new ServiceCenterDeploy();
     initEdge();
     initBaseProducer();
 //    initZuul();

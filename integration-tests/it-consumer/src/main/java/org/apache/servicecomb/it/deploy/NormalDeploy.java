@@ -18,6 +18,7 @@ package org.apache.servicecomb.it.deploy;
 
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.OutputStreamWriter;
 
 import org.apache.commons.io.IOUtils;
@@ -61,7 +62,11 @@ public class NormalDeploy {
   }
 
   protected ProcessBuilder createProcessBuilder(String[] cmds) {
-    return new ProcessBuilder(cmds).redirectErrorStream(true);
+    ProcessBuilder processBuilder = new ProcessBuilder(cmds).redirectErrorStream(true);
+    if (deployDefinition.getWorkDir() != null) {
+      processBuilder.directory(new File(deployDefinition.getWorkDir()));
+    }
+    return processBuilder;
   }
 
   public void waitStartComplete() {

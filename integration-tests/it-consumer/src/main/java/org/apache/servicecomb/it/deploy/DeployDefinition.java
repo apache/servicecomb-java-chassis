@@ -25,6 +25,8 @@ public class DeployDefinition {
 
   protected String startCompleteLog;
 
+  protected String workDir;
+
   /**
    * <pre>
    * edge as the example:
@@ -65,6 +67,14 @@ public class DeployDefinition {
 
   public void setStartCompleteLog(String startCompleteLog) {
     this.startCompleteLog = startCompleteLog;
+  }
+
+  public String getWorkDir() {
+    return workDir;
+  }
+
+  public void setWorkDir(String workDir) {
+    this.workDir = workDir;
   }
 
   public String getCmd() {
