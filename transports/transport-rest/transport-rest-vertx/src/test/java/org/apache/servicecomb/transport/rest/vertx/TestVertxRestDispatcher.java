@@ -319,6 +319,34 @@ public class TestVertxRestDispatcher {
   }
 
   @Test
+  public void onRequestButConnectionClosed(@Mocked Context context, @Mocked HttpServerRequest request,
+      @Mocked SocketAddress socketAdrress) {
+    Map<String, Object> map = new HashMap<>();
+    RoutingContext routingContext = new MockUp<RoutingContext>() {
+      @Mock
+      RoutingContext put(String key, Object obj) {
+        map.put(key, obj);
+        return null;
+      }
+
+      @Mock
+      HttpServerRequest request() {
+        return request;
+      }
+    }.getMockInstance();
+
+    new Expectations(VertxImpl.class) {
+      {
+        VertxImpl.context();
+        result = context;
+      }
+    };
+
+    Deencapsulation.invoke(dispatcher, "onRequest", routingContext);
+    Assert.assertFalse(invoked);
+  }
+
+  @Test
   public void testWrapResponseBody() {
     VertxRestDispatcher vertxRestDispatcher = new VertxRestDispatcher();
     String message = "abcd";

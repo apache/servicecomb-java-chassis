@@ -96,6 +96,7 @@ public class TestHighwayServerConnection {
     }
   }
 
+
   @Test
   public void testReqeustHeaderError() throws Exception {
     header.setMsgType(MsgType.LOGIN);
@@ -192,6 +193,32 @@ public class TestHighwayServerConnection {
     Assert.assertNull(connection.getProtocol());
     Assert.assertNull(connection.getZipName());
     Assert.assertEquals(true, holder.value);
+  }
+
+  @Test
+  public void testConnectionClosed(@Mocked MicroserviceMeta microserviceMeta, @Mocked OperationMeta operationMeta,
+      @Mocked SchemaMeta schemaMeta) throws Exception {
+    header.setMsgType(MsgType.REQUEST);
+    Buffer headerBuffer = createBuffer(requestHeaderSchema, header);
+
+    Buffer bodyBuffer = Buffer.buffer();
+
+    Holder<Boolean> holder = new Holder<>();
+    new MockUp<HighwayServerInvoke>() {
+      @Mock
+      public boolean init(NetSocket netSocket, long msgId,
+          RequestHeader header, Buffer bodyBuffer) {
+        return true;
+      }
+
+      @Mock
+      public void execute() {
+        holder.value = true;
+      }
+    };
+
+    connection.handle(0, headerBuffer, bodyBuffer);
+    Assert.assertNull(holder.value);
   }
 
   @Test
