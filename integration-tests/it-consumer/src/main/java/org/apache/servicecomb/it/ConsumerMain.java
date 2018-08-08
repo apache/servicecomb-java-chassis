@@ -39,13 +39,17 @@ public class ConsumerMain {
   public static boolean autoExit = true;
 
   public static void main(String[] args) throws Throwable {
+    deploys.init();
+    deploys.getServiceCenter().ensureReady();
+
     BeanUtils.init();
     ITUtils.waitBootFinished();
 
-    deploys.init();
     run();
 
     SCBEngine.getInstance().destroy();
+    deploys.getServiceCenter().stop();
+
     resultPrinter.print();
 
     if (autoExit) {
