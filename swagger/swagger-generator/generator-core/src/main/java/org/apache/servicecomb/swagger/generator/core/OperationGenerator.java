@@ -315,8 +315,30 @@ public class OperationGenerator {
         }
       }
     }
-    if (parameter instanceof AbstractSerializableParameter && defaultValue != null) {
-      ((AbstractSerializableParameter<?>) parameter).setDefaultValue(defaultValue);
+    if (parameter instanceof AbstractSerializableParameter) {
+      if (defaultValue != null) {
+        ((AbstractSerializableParameter<?>) parameter).setDefaultValue(defaultValue);
+      } else if ((((AbstractSerializableParameter<?>) parameter).getDefaultValue() == null)
+          && (false == ((AbstractSerializableParameter<?>) parameter).getRequired())) { //if required false then only take java primitive values as defaults
+        String type = ((AbstractSerializableParameter<?>) parameter).getType();
+        switch (type) {
+          case "integer":
+            defaultValue = "0";
+            break;
+          case "number":
+            defaultValue = "0.0";
+            break;
+          case "string":
+            defaultValue = "";
+            break;
+          case "boolean":
+            defaultValue = "false";
+            break;
+          default:
+            defaultValue = null;
+        }
+        ((AbstractSerializableParameter<?>) parameter).setDefaultValue(defaultValue);
+      }
     }
   }
 
