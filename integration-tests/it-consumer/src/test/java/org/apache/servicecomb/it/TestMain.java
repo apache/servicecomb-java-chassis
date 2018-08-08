@@ -16,13 +16,15 @@
  */
 package org.apache.servicecomb.it;
 
+import org.apache.servicecomb.it.junit.ITJUnitUtils;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class TestMain {
   @Test
-  public void testMain() {
-//    ConsumerMain.autoExit = false;
-//    ConsumerMain.main(new String[] {});
-//    Assert.assertTrue(ITJUnitUtils.getFailures().isEmpty());
+  public void testMain() throws Throwable {
+    ConsumerMain.autoExit = false;
+    ConsumerMain.main(new String[] {});
+    Assert.assertTrue(ITJUnitUtils.getFailures().isEmpty());
   }
 }
