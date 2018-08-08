@@ -22,6 +22,8 @@ import java.util.List;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.netflix.loadbalancer.IRule;
@@ -43,6 +45,8 @@ import com.netflix.loadbalancer.WeightedResponseTimeRule;
  *  on the result of ServerListFilter, they should not contain operation level state information in instance fields.
  */
 public class LoadBalancerCreator {
+  private static final Logger LOGGER = LoggerFactory.getLogger(LoadBalancerCreator.class);
+
   private List<Server> serverList = Collections.emptyList();
 
   private IRule rule;
@@ -72,6 +76,9 @@ public class LoadBalancerCreator {
   // serverList almost not changed for different invocation
   // so every invocation will call setServerList, this is no problem
   public void setServerList(List<Server> serverList) {
+    if (serverList.isEmpty()) {
+      LOGGER.warn("Set empty server list.");
+    }
     this.serverList = Collections.unmodifiableList(serverList);
   }
 
@@ -86,6 +93,9 @@ public class LoadBalancerCreator {
     for (ServerListFilterExt filter : this.filters) {
       filter.setLoadBalancer(loadBalancer);
       servers = filter.getFilteredListOfServers(servers, invocation);
+      if (servers.isEmpty()) {
+        LOGGER.warn("Filter {} get empty list.", filter.getClass().getName());
+      }
     }
     loadBalancer.setServerList(servers);
     return loadBalancer;
