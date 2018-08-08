@@ -22,8 +22,8 @@ import java.util.List;
 
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Handler;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.PrivateMicroserviceVersionMetaFactory;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
@@ -47,15 +47,15 @@ import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUti
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 
-import io.swagger.models.Swagger;
 import mockit.Mock;
 import mockit.MockUp;
+
+import io.swagger.models.Swagger;
 
 /**
  * when SCBEngine finished, UnitTestMeta will be deleted
  */
 public class UnitTestMeta {
-  private MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();
 
   private SchemaListenerManager schemaListenerManager = new SchemaListenerManager();
 
@@ -68,6 +68,8 @@ public class UnitTestMeta {
   private ConsumerSchemaFactory consumerSchemaFactory;
 
   private SchemaLoader schemaLoader = new SchemaLoader();
+
+  private MicroserviceMeta microserviceMeta;
 
   private ServiceRegistry serviceRegistry;
 
@@ -85,13 +87,12 @@ public class UnitTestMeta {
     serviceRegistry.init();
     serviceRegistry.getAppManager().setMicroserviceVersionFactory(new PrivateMicroserviceVersionMetaFactory());
     RegistryUtils.setServiceRegistry(serviceRegistry);
-
-    schemaLoader.setMicroserviceMetaManager(microserviceMetaManager);
-
+    microserviceMeta = new MicroserviceMeta(RegistryUtils.getMicroservice().getServiceName());
+    SCBEngine.getInstance().setProducerMicroMeta(microserviceMeta);
     consumerProviderManager = new ConsumerProviderManager();
 
     consumerSchemaFactory = new ConsumerSchemaFactory();
-    consumerSchemaFactory.setMicroserviceMetaManager(microserviceMetaManager);
+
     consumerSchemaFactory.setSchemaLoader(schemaLoader);
 
     consumerProviderManager.setAppManager(RegistryUtils.getServiceRegistry().getAppManager());
@@ -128,18 +129,13 @@ public class UnitTestMeta {
     init();
   }
 
-
-  public MicroserviceMetaManager getMicroserviceMetaManager() {
-    return microserviceMetaManager;
-  }
-
   public SchemaMeta getOrCreateSchemaMeta(Class<?> impl) {
     return getOrCreateSchemaMeta("app", "test", impl.getName(), impl);
   }
 
   public SchemaMeta getOrCreateSchemaMeta(String appId, String microserviceName, String schemaId, Class<?> impl) {
     String longName = appId + ":" + microserviceName;
-    MicroserviceMeta microserviceMeta = microserviceMetaManager.getOrCreateMicroserviceMeta(longName);
+    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroMeta();
     SchemaMeta schemaMeta = microserviceMeta.findSchemaMeta(schemaId);
     if (schemaMeta != null) {
       return schemaMeta;

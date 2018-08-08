@@ -25,6 +25,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
+import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
 import org.apache.servicecomb.core.endpoint.AbstractEndpointsCache;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
@@ -55,6 +56,8 @@ public class SCBEngine {
 
   private ConsumerProviderManager consumerProviderManager;
 
+  private MicroserviceMeta producerMicroMeta;
+
   private TransportManager transportManager;
 
   private SchemaListenerManager schemaListenerManager;
@@ -66,6 +69,7 @@ public class SCBEngine {
   private final AtomicLong invocationFinishedCounter = new AtomicLong();
 
   private volatile SCBStatus status = SCBStatus.DOWN;
+
 
   public void setStatus(SCBStatus status) {
     this.status = status;
@@ -297,5 +301,13 @@ public class SCBEngine {
     ensureStatusUp();
 
     return consumerProviderManager.getReferenceConfig(microserviceName);
+  }
+
+  public MicroserviceMeta getProducerMicroMeta() {
+    return producerMicroMeta;
+  }
+
+  public void setProducerMicroMeta(MicroserviceMeta producerMicroMeta) {
+    this.producerMicroMeta = producerMicroMeta;
   }
 }

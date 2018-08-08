@@ -20,15 +20,15 @@ package org.apache.servicecomb.core.definition.schema;
 import static org.apache.servicecomb.serviceregistry.api.Const.REGISTER_URL_PREFIX;
 import static org.apache.servicecomb.serviceregistry.api.Const.URL_PREFIX;
 
+import javax.inject.Inject;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-import javax.inject.Inject;
-
 import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
@@ -77,7 +77,14 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
   public SchemaMeta getOrCreateProducerSchema(String microserviceName, String schemaId,
       Class<?> producerClass,
       Object producerInstance) {
-    MicroserviceMeta microserviceMeta = microserviceMetaManager.getOrCreateMicroserviceMeta(microserviceName);
+
+    if (!RegistryUtils.getMicroservice().getServiceName().equals(microserviceName)) {
+      LOGGER.error("miroserviceName : {} is different from the default microserviceName :{}",
+          microserviceName,
+          RegistryUtils.getMicroservice().getServiceName());
+    }
+
+    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroMeta();
 
     ProducerSchemaContext context = new ProducerSchemaContext();
     context.setMicroserviceMeta(microserviceMeta);

@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.core;
 
+import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
 import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
@@ -64,6 +65,10 @@ public class CseApplicationListener
       }
 
       if (SCBEngine.getInstance().getBootListenerList() == null) {
+        //SCBEngine init first, hence we do not worry that when other bean class using the
+        //producer microserviceMeta, the SCBEngine is not inited.
+        String serviceName = RegistryUtils.getMicroservice().getServiceName();
+        SCBEngine.getInstance().setProducerMicroMeta(new MicroserviceMeta(serviceName));
         SCBEngine.getInstance().setProducerProviderManager(applicationContext.getBean(ProducerProviderManager.class));
         SCBEngine.getInstance().setConsumerProviderManager(applicationContext.getBean(ConsumerProviderManager.class));
         SCBEngine.getInstance().setTransportManager(applicationContext.getBean(TransportManager.class));

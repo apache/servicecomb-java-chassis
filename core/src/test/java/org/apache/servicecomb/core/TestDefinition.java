@@ -19,13 +19,8 @@ package org.apache.servicecomb.core;
 
 import org.apache.servicecomb.core.definition.CommonService;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
-import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
 import org.junit.Assert;
 import org.junit.Test;
-
-import io.swagger.models.Info;
-import io.swagger.models.Swagger;
 
 public class TestDefinition {
   @Test
@@ -67,24 +62,5 @@ public class TestDefinition {
     } catch (Exception e) {
       Assert.assertNotNull(e);
     }
-  }
-
-  @Test
-  public void testMicroserviceMetaManager() throws Exception {
-    MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();
-    microserviceMetaManager.getOrCreateMicroserviceMeta("app:testname");
-
-    Assert.assertEquals("microservice meta manager", microserviceMetaManager.getName());
-    Assert.assertEquals("Not allow register repeat data, name=%s, key=%s",
-        microserviceMetaManager.getRegisterErrorFmt());
-    Assert.assertEquals(0, microserviceMetaManager.getAllSchemaMeta("app:testname").size());
-
-    Swagger oSwagger = new Swagger();
-    Info oInfo = new Info();
-    oInfo.setVendorExtension("x-java-interface", "java.lang.String");
-    oSwagger.setInfo(oInfo);
-    Assert.assertEquals("java.lang.String",
-        (ClassUtils.getInterfaceName(oSwagger.getInfo().getVendorExtensions())));
-    oInfo.setVendorExtension("x-java-class", "java.lang.String");
   }
 }

@@ -23,11 +23,10 @@ import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
 import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
@@ -44,8 +43,6 @@ import io.vertx.core.buffer.Buffer;
 
 public class HighwayServerInvoke {
   private static final Logger LOGGER = LoggerFactory.getLogger(HighwayServerInvoke.class);
-
-  private MicroserviceMetaManager microserviceMetaManager = CseContext.getInstance().getMicroserviceMetaManager();
 
   private ProtobufFeature protobufFeature;
 
@@ -74,10 +71,6 @@ public class HighwayServerInvoke {
     this.protobufFeature = protobufFeature;
   }
 
-  public void setMicroserviceMetaManager(MicroserviceMetaManager microserviceMetaManager) {
-    this.microserviceMetaManager = microserviceMetaManager;
-  }
-
   public boolean init(TcpConnection connection, long msgId,
       RequestHeader header, Buffer bodyBuffer) {
     try {
@@ -103,7 +96,7 @@ public class HighwayServerInvoke {
     this.msgId = msgId;
     this.header = header;
 
-    MicroserviceMeta microserviceMeta = microserviceMetaManager.ensureFindValue(header.getDestMicroservice());
+    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroMeta();
     SchemaMeta schemaMeta = microserviceMeta.ensureFindSchemaMeta(header.getSchemaId());
     this.operationMeta = schemaMeta.ensureFindOperation(header.getOperationName());
     this.operationProtobuf = ProtobufManager.getOrCreateOperation(operationMeta);

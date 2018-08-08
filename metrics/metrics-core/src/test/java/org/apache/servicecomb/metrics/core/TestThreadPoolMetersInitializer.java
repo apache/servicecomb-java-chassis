@@ -28,8 +28,8 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.FixedThreadExecutor;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
@@ -43,7 +43,6 @@ import org.springframework.context.ApplicationContext;
 import com.netflix.spectator.api.DefaultRegistry;
 import com.netflix.spectator.api.ManualClock;
 import com.netflix.spectator.api.Registry;
-
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
@@ -72,8 +71,6 @@ public class TestThreadPoolMetersInitializer {
   @Mocked
   ApplicationContext applicationContext;
 
-  @Mocked
-  MicroserviceMetaManager microserviceMetaManager;
 
   @Mocked
   MicroserviceMeta microserviceMeta;
@@ -89,6 +86,12 @@ public class TestThreadPoolMetersInitializer {
 
   @Test
   public void init() {
+    new Expectations(SCBEngine.class) {
+      {
+        SCBEngine.getInstance().getProducerMicroMeta();
+        result = microserviceMeta;
+      }
+    };
     new Expectations(SPIServiceUtils.class) {
       {
         SPIServiceUtils.getTargetService(MetricsInitializer.class, DefaultRegistryInitializer.class);
@@ -97,7 +100,6 @@ public class TestThreadPoolMetersInitializer {
         result = registry;
       }
     };
-
     Map<String, Executor> beanExecutors = new HashMap<>();
     beanExecutors.put("executor", executor);
     beanExecutors.put("fixedThreadExecutor", fixedThreadExecutor);
@@ -113,10 +115,6 @@ public class TestThreadPoolMetersInitializer {
 
     new Expectations(CseContext.getInstance()) {
       {
-        CseContext.getInstance().getMicroserviceMetaManager();
-        result = microserviceMetaManager;
-        microserviceMetaManager.values();
-        result = Arrays.asList(microserviceMeta);
         microserviceMeta.getOperations();
         result = Arrays.asList(operationMetaExecutor, operationMetaSameExecutor, operationMetaFixedThreadExecutor);
         operationMetaExecutor.getExecutor();

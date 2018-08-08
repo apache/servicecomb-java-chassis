@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.provider.common;
 
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
@@ -26,7 +25,6 @@ import mockit.Mock;
 import mockit.MockUp;
 
 public class MockUtil {
-  MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();
 
   private static MockUtil instance = new MockUtil();
 

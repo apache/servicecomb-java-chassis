@@ -16,15 +16,13 @@
  */
 package org.apache.servicecomb.core.definition.schema;
 
+import javax.xml.ws.Holder;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-
-import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.definition.loader.SchemaLoader;
@@ -50,9 +48,10 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import io.swagger.models.Swagger;
 import mockit.Mock;
 import mockit.MockUp;
+
+import io.swagger.models.Swagger;
 
 public class TestProducerSchemaFactory {
   private static SwaggerEnvironment swaggerEnv = new BootstrapNormal().boot();
@@ -77,12 +76,10 @@ public class TestProducerSchemaFactory {
     ProducerArgumentsMapperFactory producerArgsMapperFactory = new ProducerArgumentsMapperFactory();
     producerArgsMapperFactory.setConverterMgr(converterMgr);
 
-    MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();
     SchemaLoader schemaLoader = new SchemaLoader();
     CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext = new CompositeSwaggerGeneratorContext();
 
     producerSchemaFactory.setSwaggerEnv(swaggerEnv);
-    ReflectUtils.setField(producerSchemaFactory, "microserviceMetaManager", microserviceMetaManager);
     ReflectUtils.setField(producerSchemaFactory, "schemaLoader", schemaLoader);
     ReflectUtils.setField(producerSchemaFactory,
         "compositeSwaggerGeneratorContext",
@@ -93,8 +90,7 @@ public class TestProducerSchemaFactory {
     };
     new MockUp<BeanUtils>() {
       @SuppressWarnings("unchecked")
-      @Mock
-      <T> T getBean(String name) {
+      @Mock <T> T getBean(String name) {
         if (ExecutorManager.EXECUTOR_REACTIVE.equals(name)) {
           return (T) reactiveExecutor;
         }
@@ -111,8 +107,7 @@ public class TestProducerSchemaFactory {
 
   @Test
   public void testGetOrCreateProducer() throws Exception {
-    SchemaMeta schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("app:ms",
-        "schema",
+    SchemaMeta schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("app:ms", "schema",
         TestProducerSchemaFactoryImpl.class,
         new TestProducerSchemaFactoryImpl());
     Swagger swagger = schemaMeta.getSwagger();
@@ -121,8 +116,8 @@ public class TestProducerSchemaFactory {
     Assert.assertEquals("add", operationMeta.getOperationId());
 
     SwaggerProducerOperation producerOperation = operationMeta.getExtData(Const.PRODUCER_OPERATION);
-
-    Object addBody = Class.forName("cse.gen.app.ms.schema.addBody").newInstance();
+    //we can not set microserviceName any more,use the default name
+    Object addBody = Class.forName("cse.gen.app.perfClient.schema.addBody").newInstance();
     ReflectUtils.setField(addBody, "x", 1);
     ReflectUtils.setField(addBody, "y", 2);
     Invocation invocation = new Invocation((Endpoint) null, operationMeta, new Object[] {addBody}) {
@@ -152,8 +147,7 @@ public class TestProducerSchemaFactory {
     ArchaiusUtils.setProperty(org.apache.servicecomb.serviceregistry.api.Const.REGISTER_URL_PREFIX, "true");
     System.setProperty(org.apache.servicecomb.serviceregistry.api.Const.URL_PREFIX, "/pojo/test");
 
-    SchemaMeta schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("app:ms",
-        "schema2",
+    SchemaMeta schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("app:ms", "schema2",
         TestProducerSchemaFactoryImpl.class,
         new TestProducerSchemaFactoryImpl());
     OperationMeta operationMeta = schemaMeta.ensureFindOperation("add");
@@ -167,8 +161,7 @@ public class TestProducerSchemaFactory {
 
   @Test
   public void testCompletableFuture() {
-    SchemaMeta schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("app:ms",
-        "schema3",
+    SchemaMeta schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("app:ms", "schema3",
         TestProducerSchemaFactoryImpl.class,
         new TestProducerSchemaFactoryImpl());
     OperationMeta operationMeta = schemaMeta.ensureFindOperation("async");

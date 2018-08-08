@@ -26,7 +26,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.FixedThreadExecutor;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
@@ -42,9 +41,8 @@ import mockit.Mocked;
 
 public class TestProducerProviderManager {
   @Test
-  public void allowedNoProvider(@Mocked MicroserviceMetaManager microserviceMetaManager) {
+  public void allowedNoProvider() {
     AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-    context.getBeanFactory().registerSingleton(microserviceMetaManager.getClass().getName(), microserviceMetaManager);
     context.register(ProducerProviderManager.class);
     // must not throw exception
     context.refresh();

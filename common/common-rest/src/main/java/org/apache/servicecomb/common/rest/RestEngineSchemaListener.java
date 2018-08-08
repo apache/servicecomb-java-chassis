@@ -20,25 +20,16 @@ package org.apache.servicecomb.common.rest;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.core.BootListener;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.definition.loader.SchemaListener;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.springframework.stereotype.Component;
 
 @Component
 public class RestEngineSchemaListener implements SchemaListener, BootListener {
-  private MicroserviceMetaManager microserviceMetaManager;
-
-  @Inject
-  public void setMicroserviceMetaManager(MicroserviceMetaManager microserviceMetaManager) {
-    this.microserviceMetaManager = microserviceMetaManager;
-  }
 
   @Override
   public void onBootEvent(BootEvent event) {
@@ -46,8 +37,7 @@ public class RestEngineSchemaListener implements SchemaListener, BootListener {
       return;
     }
 
-    MicroserviceMeta microserviceMeta =
-        microserviceMetaManager.getOrCreateMicroserviceMeta(RegistryUtils.getMicroservice());
+    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroMeta();
     ServicePathManager servicePathManager = ServicePathManager.getServicePathManager(microserviceMeta);
     if (servicePathManager != null) {
       servicePathManager.buildProducerPaths();

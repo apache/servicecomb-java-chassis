@@ -19,7 +19,6 @@ package org.apache.servicecomb.core.definition.loader;
 
 import java.util.Arrays;
 
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,7 +46,6 @@ public class TestSchemaListenerManager {
 
     SchemaListenerManager mgr = new SchemaListenerManager();
     mgr.setSchemaListenerList(Arrays.asList(listener));
-    mgr.setMicroserviceMetaManager(new MicroserviceMetaManager());
 
     mgr.notifySchemaListener(schemaMeta);
   }

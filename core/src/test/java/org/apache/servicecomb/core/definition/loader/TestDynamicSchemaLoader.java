@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import org.apache.servicecomb.core.CseContext;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.unittest.UnitTestMeta;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
@@ -35,7 +35,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestDynamicSchemaLoader {
-  private static MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();
 
   private static SchemaLoader loader = new SchemaLoader();
 
@@ -44,7 +43,6 @@ public class TestDynamicSchemaLoader {
   @BeforeClass
   public static void init() {
     new UnitTestMeta();
-    loader.setMicroserviceMetaManager(microserviceMetaManager);
 
     SchemaListenerManager schemaListenerManager = new SchemaListenerManager();
     schemaListenerManager.setSchemaListenerList(Collections.emptyList());
@@ -69,16 +67,21 @@ public class TestDynamicSchemaLoader {
   @Test
   public void testRegisterSchemas() {
     DynamicSchemaLoader.INSTANCE.registerSchemas("classpath*:test/test/schema.yaml");
-    SchemaMeta schemaMeta = microserviceMetaManager.ensureFindSchemaMeta("perfClient", "schema");
+    SchemaMeta schemaMeta = SCBEngine.getInstance().getProducerMicroMeta().ensureFindSchemaMeta("schema");
     Assert.assertEquals("cse.gen.app.perfClient.schema", schemaMeta.getPackageName());
   }
 
   @SuppressWarnings("deprecation")
   @Test
   public void testRegisterShemasAcrossApp() {
+    //we can not register repeat data
+    init();
+    //as we can not set microserviceName any more, hence we should use the default name
     DynamicSchemaLoader.INSTANCE.registerSchemas("CSE:as", "classpath*:test/test/schema.yaml");
-    SchemaMeta schemaMeta = microserviceMetaManager.ensureFindSchemaMeta("CSE:as", "schema");
-    Assert.assertEquals("cse.gen.CSE.as.schema", schemaMeta.getPackageName());
+    SchemaMeta schemaMeta =
+        SCBEngine.getInstance().getProducerMicroMeta().ensureFindSchemaMeta("schema");
+    System.out.println(schemaMeta.getPackageName());
+    Assert.assertEquals("cse.gen.app.perfClient.schema", schemaMeta.getPackageName());
   }
 
   @Test

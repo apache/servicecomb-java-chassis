@@ -28,9 +28,9 @@ import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -63,7 +63,7 @@ public class TestRestProducerInvocation {
   RestOperationMeta restOperationMeta;
 
   @Mocked
-  MicroserviceMetaManager microserviceMetaManager;
+  MicroserviceMeta microserviceMeta;
 
   List<HttpServerFilter> httpServerFilters = Collections.emptyList();
 
@@ -80,11 +80,6 @@ public class TestRestProducerInvocation {
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
-  @Before
-  public void setup() {
-    CseContext.getInstance().setMicroserviceMetaManager(microserviceMetaManager);
-  }
-
   private void initRestProducerInvocation() {
     restProducerInvocation.transport = transport;
     restProducerInvocation.requestEx = requestEx;
@@ -93,9 +88,14 @@ public class TestRestProducerInvocation {
     restProducerInvocation.httpServerFilters = httpServerFilters;
   }
 
+  @Before
+  public void setup() {
+    SCBEngine.getInstance().setProducerMicroMeta(microserviceMeta);
+  }
+
   @After
   public void teardown() {
-    CseContext.getInstance().setMicroserviceMetaManager(null);
+    SCBEngine.getInstance().setProducerMicroMeta(null);
   }
 
   @Test
@@ -149,28 +149,32 @@ public class TestRestProducerInvocation {
     Microservice microservice = new Microservice();
     microservice.setServiceName("ms");
 
-    Exception e = new Exception("stop");
     new Expectations(RegistryUtils.class) {
       {
         requestEx.getHeader(Const.TARGET_MICROSERVICE);
         result = null;
         RegistryUtils.getMicroservice();
         result = microservice;
-        microserviceMetaManager.ensureFindValue("ms");
-        result = e;
+      }
+    };
+    new Expectations(ServicePathManager.class) {
+      {
+        //just make the method throw Exception
+        ServicePathManager.getServicePathManager(microserviceMeta);
+        result = null;
       }
     };
     restProducerInvocation = new RestProducerInvocation();
     initRestProducerInvocation();
 
     expectedException.expect(Exception.class);
-    expectedException.expectMessage("stop");
+    expectedException.expectMessage("[message=Not Found]");
     restProducerInvocation.findRestOperation();
   }
 
   @Test
-  public void findRestOperationNormal(@Mocked MicroserviceMeta microserviceMeta,
-      @Mocked ServicePathManager servicePathManager, @Mocked OperationLocator locator) {
+  public void findRestOperationNormal(@Mocked ServicePathManager servicePathManager,
+      @Mocked OperationLocator locator) {
     requestEx = new AbstractHttpServletRequest() {
       @Override
       public String getRequestURI() {
@@ -190,8 +194,6 @@ public class TestRestProducerInvocation {
     Map<String, String> pathVars = new HashMap<>();
     new Expectations(ServicePathManager.class) {
       {
-        microserviceMetaManager.ensureFindValue("ms");
-        result = microserviceMeta;
         ServicePathManager.getServicePathManager(microserviceMeta);
         result = servicePathManager;
         servicePathManager.producerLocateOperation(anyString, anyString);

@@ -16,17 +16,16 @@
  */
 package org.apache.servicecomb.transport.highway;
 
+import javax.xml.ws.Holder;
 import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Endpoint;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
@@ -36,16 +35,17 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
+import mockit.Mocked;
+
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtobufOutput;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetSocket;
 import io.vertx.core.net.impl.NetSocketImpl;
 import io.vertx.core.net.impl.SocketAddressImpl;
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
 
 public class TestHighwayServerConnection {
   private static WrapSchema requestHeaderSchema =
@@ -55,9 +55,6 @@ public class TestHighwayServerConnection {
       ProtobufManager.getDefaultScopedProtobufSchemaManager().getOrCreateSchema(LoginRequest.class);
 
   HighwayServerConnection connection;
-
-  @Mocked
-  MicroserviceMetaManager microserviceMetaManager;
 
   @Mocked
   Endpoint endpoint;
@@ -147,15 +144,14 @@ public class TestHighwayServerConnection {
     Buffer headerBuffer = createBuffer(requestHeaderSchema, header);
 
     Buffer bodyBuffer = Buffer.buffer();
-
+    new Expectations(SCBEngine.class) {
+      {
+        SCBEngine.getInstance().getProducerMicroMeta();
+        result = microserviceMeta;
+      }
+    };
     new Expectations(CseContext.getInstance()) {
       {
-        CseContext.getInstance().getMicroserviceMetaManager();
-        result = microserviceMetaManager;
-
-        microserviceMetaManager.ensureFindValue(null);
-        result = microserviceMeta;
-
         microserviceMeta.ensureFindSchemaMeta(header.getSchemaId());
         result = schemaMeta;
       }

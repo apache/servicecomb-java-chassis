@@ -47,20 +47,22 @@ public class ProducerTestsAfterBootup implements BootListener {
 
   public void testSchemaNotChange() {
     LOGGER.info("ProducerTestsAfterBootup testing start");
+    //we can not set microserviceName any more
     SchemaMeta meta =
-        factory.getOrCreateProducerSchema("customer-service",
-            "test1",
+        factory.getOrCreateProducerSchema("customer-service", "test1",
             CodeFirstSpringmvcForSchema.class,
             new CodeFirstSpringmvcForSchema());
     String codeFirst = getSwaggerContent(meta.getSwagger());
-    TestMgr.check("4d18e9b339136d68c7e5e83f4f302664c91465d9747a36334841e082d336516e",
+    TestMgr.check("2986daa46b229ec125443122dd7b51ee9a64879f1750d0996f948ce0718685c7",
         RegistryUtils.calcSchemaSummary(codeFirst));
-    TestMgr.check(codeFirst.length(), 896);
+    TestMgr.check(codeFirst.length(), 889);
+
   }
 
   public void testRegisterPath() {
     TestMgr.check(RegistryUtils.getMicroservice().getPaths().size(), 10);
   }
+
   private String getSwaggerContent(Swagger swagger) {
     try {
       return writer.writeValueAsString(swagger);
