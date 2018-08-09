@@ -27,6 +27,7 @@ import org.apache.servicecomb.demo.Generic;
 import org.apache.servicecomb.demo.compute.GenericParam;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.server.User;
+import org.apache.servicecomb.demo.springmvc.decoderesponse.DecodeTestResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -72,4 +73,6 @@ public interface CodeFirstSpringmvcIntf {
   String testDelay();
 
   String testAbort();
+
+  DecodeTestResponse testDecodeResponseError();
 }

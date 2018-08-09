@@ -44,6 +44,7 @@ import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
 import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
 import org.apache.servicecomb.demo.jaxbbean.JAXBPerson;
 import org.apache.servicecomb.demo.server.User;
+import org.apache.servicecomb.demo.springmvc.decoderesponse.DecodeTestResponse;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
 import org.apache.servicecomb.swagger.extend.annotations.ResponseHeaders;
@@ -523,5 +524,12 @@ public class CodeFirstSpringmvc {
   public String testAbort() {
     LOGGER.info("testAbort() is called!");
     return "OK";
+  }
+
+  @GetMapping(path = "/testDecodeResponseError")
+  public DecodeTestResponse testDecodeResponseError() {
+    DecodeTestResponse response = new DecodeTestResponse();
+    response.setContent("returnOK");
+    return response;
   }
 }
