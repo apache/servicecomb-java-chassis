@@ -47,7 +47,7 @@ public class ClientSignature implements HttpClientFilter {
     String serverSignature = responseEx.getHeader("signature");
 
     if (serverSignature != null) {
-      LOGGER.info("check response signature, client: {}, server: {}.", signature, serverSignature);
+      LOGGER.debug("check response signature, client: {}, server: {}.", signature, serverSignature);
       if (!signature.equals(serverSignature)) {
         LOGGER.error("check response signature failed");
         return Response.create(Status.UNAUTHORIZED, "check response signature failed");
