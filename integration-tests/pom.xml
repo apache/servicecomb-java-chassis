@@ -187,7 +187,7 @@
                 <manifest>
                   <classpathLayoutType>repository</classpathLayoutType>
                   <addClasspath>true</addClasspath>
-                  <classpathPrefix>/${settings.localRepository}/</classpathPrefix>
+                  <classpathPrefix>file:///${settings.localRepository}/</classpathPrefix>
                   <mainClass>${it.main}</mainClass>
                 </manifest>
                 <manifestEntries>
