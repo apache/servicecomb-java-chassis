@@ -17,7 +17,9 @@
 package org.apache.servicecomb.demo.springmvc.client;
 
 import java.util.Date;
+import java.util.Objects;
 
+import org.apache.servicecomb.core.exception.CseException;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.compute.GenericParam;
 import org.apache.servicecomb.demo.compute.Person;
@@ -26,6 +28,8 @@ import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.http.ResponseEntity;
+
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 public class TestResponse {
   private CodeFirstSpringmvcIntf intf;
@@ -39,6 +43,7 @@ public class TestResponse {
     checkQueryGenericString();
     testDelay();
     testAbort();
+    testDecodeResponseError();
   }
 
   public void runHighway() {
@@ -129,5 +134,31 @@ public class TestResponse {
         "OK|InvocationException: code=421;msg=CommonExceptionData [message=aborted by fault inject]|"
             + "OK|InvocationException: code=421;msg=CommonExceptionData [message=aborted by fault inject]|",
         result.toString());
+  }
+
+  private void testDecodeResponseError() {
+    InvocationException exception = null;
+    try {
+      intf.testDecodeResponseError();
+    } catch (InvocationException e) {
+      // 1. InvocationException: wrapper exception
+      exception = e;
+    }
+    Objects.requireNonNull(exception);
+    // 2. CseException: bizKeeper exception
+    Throwable wrappedException = exception.getCause();
+    TestMgr.check(CseException.class, wrappedException.getClass());
+    // 3. InvocationException: decoder wrapping exception
+    wrappedException = wrappedException.getCause();
+    TestMgr.check(InvocationException.class, wrappedException.getClass());
+    // 4. InvalidFormatException: decode exception
+    Object errorData = ((InvocationException) wrappedException).getErrorData();
+    TestMgr.check(InvalidFormatException.class, errorData.getClass());
+    TestMgr.check(
+        "Cannot deserialize value of type `java.util.Date` from String \"returnOK\": not a valid representation "
+            + "(error: Failed to parse Date value 'returnOK': Failed to parse date \"returnOK\": Invalid number: retu)\n"
+            + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 12] "
+            + "(through reference chain: org.apache.servicecomb.demo.springmvc.decoderesponse.DecodeTestResponse[\"content\"])",
+        ((InvalidFormatException) errorData).getMessage());
   }
 }
