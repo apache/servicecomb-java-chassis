@@ -25,6 +25,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.vertx.core.buffer.Buffer;
@@ -51,8 +52,13 @@ public class TestProduceJsonProcessor {
     Assert.assertNull(result);
 
     ByteArrayInputStream is = new ByteArrayInputStream(new byte[] {});
-    result = pp.decodeResponse(is, resultType);
-    Assert.assertNull(result);
+    try {
+      pp.decodeResponse(is, resultType);
+      Assert.fail();
+    } catch (Exception e) {
+      Assert.assertTrue(e instanceof MismatchedInputException);
+    }
+
   }
 
   @Test
