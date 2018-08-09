@@ -17,7 +17,10 @@
 
 package org.apache.servicecomb.transport.rest.client.http;
 
+import static org.junit.Assert.fail;
+
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,6 +28,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.RestConst;
+import org.apache.servicecomb.common.rest.codec.produce.ProduceJsonProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.core.Invocation;
@@ -37,10 +41,16 @@ import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.type.SimpleType;
+
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.buffer.impl.BufferImpl;
 import io.vertx.core.http.CaseInsensitiveHeaders;
 import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestDefaultHttpClientFilter {
@@ -105,14 +115,57 @@ public class TestDefaultHttpClientFilter {
       }
     };
 
-    Assert.assertSame(part, filter.extractResult(invocation, null));
+    Assert.assertSame(part, filter.extractResponse(invocation, null));
+  }
+
+  @Test
+  public void extractResult_decodeError(@Mocked Invocation invocation, @Mocked ReadStreamPart part,
+      @Mocked OperationMeta operationMeta, @Mocked ResponseMeta responseMeta,
+      @Mocked RestOperationMeta swaggerRestOperation,
+      @Mocked HttpServletResponseEx responseEx) {
+    Map<String, Object> handlerContext = new HashMap<>();
+    new Expectations() {
+      {
+        invocation.getHandlerContext();
+        result = handlerContext;
+        invocation.getOperationMeta();
+        result = operationMeta;
+        operationMeta.findResponseMeta(200);
+        result = responseMeta;
+        operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
+        result = swaggerRestOperation;
+        responseMeta.getJavaType();
+        result = SimpleType.constructUnsafe(Date.class);
+        responseEx.getStatus();
+        result = 200;
+        responseEx.getBodyBuffer();
+        result = new BufferImpl().appendString("abc");
+      }
+    };
+    new MockUp<DefaultHttpClientFilter>() {
+      @Mock
+      ProduceProcessor findProduceProcessor(RestOperationMeta restOperation, HttpServletResponseEx responseEx) {
+        return new ProduceJsonProcessor();
+      }
+    };
+    try {
+      filter.extractResponse(invocation, responseEx);
+      fail("an exception is expected!");
+    } catch (Exception e) {
+      Assert.assertEquals(InvocationException.class, e.getClass());
+      Assert.assertEquals(JsonParseException.class, ((InvocationException) e).getErrorData().getClass());
+      JsonParseException jsonParseException = (JsonParseException) ((InvocationException) e).getErrorData();
+      Assert.assertEquals("Unrecognized token 'abc': was expecting ('true', 'false' or 'null')\n"
+              + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 7]",
+          jsonParseException.getMessage());
+    }
   }
 
   @Test
   public void testAfterReceiveResponseNullProduceProcessor(@Mocked Invocation invocation,
       @Mocked HttpServletResponseEx responseEx,
       @Mocked OperationMeta operationMeta,
-      @Mocked RestOperationMeta swaggerRestOperation) throws Exception {
+      @Mocked RestOperationMeta swaggerRestOperation) {
     new Expectations() {
       {
         invocation.getOperationMeta();
