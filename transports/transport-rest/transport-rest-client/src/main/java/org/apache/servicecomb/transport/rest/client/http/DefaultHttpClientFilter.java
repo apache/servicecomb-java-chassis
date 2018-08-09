@@ -33,8 +33,11 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultHttpClientFilter implements HttpClientFilter {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultHttpClientFilter.class);
 
   @Override
   public int getOrder() {
@@ -61,7 +64,7 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
     return restOperation.findProduceProcessor(contentTypeForFind);
   }
 
-  protected Object extractResult(Invocation invocation, HttpServletResponseEx responseEx) {
+  protected Object extractResponse(Invocation invocation, HttpServletResponseEx responseEx) {
     Object result = invocation.getHandlerContext().get(RestConst.READ_STREAM_PART);
     if (result != null) {
       return result;
@@ -79,19 +82,21 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
               responseEx.getStatus(),
               responseEx.getStatusType().getReasonPhrase(),
               responseEx.getHeader(HttpHeaders.CONTENT_TYPE));
+      LOGGER.error(msg);
       return ExceptionFactory.createConsumerException(new InvocationException(responseEx.getStatus(), responseEx.getStatusType().getReasonPhrase(), msg));
     }
 
     try {
       return produceProcessor.decodeResponse(responseEx.getBodyBuffer(), responseMeta.getJavaType());
     } catch (Exception e) {
-      return ExceptionFactory.createConsumerException(e);
+      LOGGER.error("failed to decode response body", e);
+      throw ExceptionFactory.createConsumerException(e);
     }
   }
 
   @Override
   public Response afterReceiveResponse(Invocation invocation, HttpServletResponseEx responseEx) {
-    Object result = extractResult(invocation, responseEx);
+    Object result = extractResponse(invocation, responseEx);
 
     Response response =
         Response.create(responseEx.getStatusType(), result);
