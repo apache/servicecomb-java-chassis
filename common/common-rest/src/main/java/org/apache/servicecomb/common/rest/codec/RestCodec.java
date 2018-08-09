@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.definition.RestParam;
-import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +66,8 @@ public final class RestCodec {
       LOG.error("Parameter is not valid for operation {}. ",
           restOperation.getOperationMeta().getMicroserviceQualifiedName(),
           e);
-      throw ExceptionFactory.convertProducerException(e, "Parameter is not valid.");
+      // give standard http error code for invalid parameter
+      throw new InvocationException(400, "", "Parameter is not valid.");
     }
   }
 }

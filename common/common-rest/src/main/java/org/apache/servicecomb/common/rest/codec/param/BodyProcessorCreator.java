@@ -31,14 +31,18 @@ import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.parameters.Parameter;
 import io.vertx.core.buffer.Buffer;
 
 public class BodyProcessorCreator implements ParamValueProcessorCreator {
+  private static final Logger LOGGER = LoggerFactory.getLogger(BodyProcessorCreator.class);
 
   public static final String PARAMTYPE = "body";
 
@@ -75,15 +79,21 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
         return null;
       }
 
-      if (isRequired == false && inputStream.available() == 0) {
-        return null;
-      }
-
       if (!contentType.isEmpty() && !contentType.startsWith(MediaType.APPLICATION_JSON)) {
         // TODO: we should consider body encoding
         return IOUtils.toString(inputStream, "UTF-8");
       }
-      return RestObjectMapperFactory.getRestObjectMapper().readValue(inputStream, targetType);
+
+      try {
+        return RestObjectMapperFactory.getRestObjectMapper().readValue(inputStream, targetType);
+      } catch (MismatchedInputException e) {
+        // there is no way to detect InputStream is empty, so have to catch the exception
+        if (!isRequired) {
+          LOGGER.warn("Mismatched content and required is false, taken as null. Msg=" + e.getMessage());
+          return null;
+        }
+        throw e;
+      }
     }
 
     @Override

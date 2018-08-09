@@ -17,11 +17,15 @@
 
 package org.apache.servicecomb.common.rest.codec;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.vertx.core.json.JsonObject;
@@ -54,5 +58,15 @@ public class TestRestObjectMapper {
         .convertValue(obj, TypeFactory.defaultInstance().constructType(PojoModel.class));
     Assert.assertEquals("a", model.getName());
     Assert.assertEquals("b", model.getDesc());
+
+    InputStream inputStream = new ByteArrayInputStream(new byte[0]);
+    try {
+      RestObjectMapperFactory.getRestObjectMapper().readValue(inputStream, PojoModel.class);
+      Assert.fail();
+    } catch (MismatchedInputException e) {
+      // right place, nothing to do.
+    } catch (Exception e) {
+      Assert.fail();
+    }
   }
 }

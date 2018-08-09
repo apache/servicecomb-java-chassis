@@ -52,7 +52,7 @@ public class TestProduceTextPlainProcessor {
 
     ByteArrayInputStream is = new ByteArrayInputStream(new byte[] {});
     result = pp.decodeResponse(is, resultType);
-    Assert.assertNull(result);
+    Assert.assertEquals(result, "");
   }
 
   @Test
