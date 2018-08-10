@@ -22,6 +22,8 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
@@ -87,6 +89,8 @@ import io.vertx.core.json.JsonObject;
 public class CodeFirstSpringmvc {
   private static final Logger LOGGER = LoggerFactory.getLogger(CodeFirstSpringmvc.class);
 
+  private AtomicInteger firstInovcation = new AtomicInteger(2);
+
   private String _fileUpload(MultipartFile file1, Part file2) {
     try (InputStream is1 = file1.getInputStream(); InputStream is2 = file2.getInputStream()) {
       String content1 = IOUtils.toString(is1);
@@ -102,6 +106,14 @@ public class CodeFirstSpringmvc {
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
     }
+  }
+
+  @GetMapping(path = "/retrySuccess")
+  public int retrySuccess(@RequestParam("a") int a, @RequestParam("b") int b) {
+    if (firstInovcation.getAndDecrement() > 0) {
+      throw new InvocationException(Status.SERVICE_UNAVAILABLE, "try again later.");
+    }
+    return a + b;
   }
 
   @PostMapping(path = "/upload1", produces = MediaType.TEXT_PLAIN_VALUE)

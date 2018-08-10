@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.loadbalance;
 
+import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
@@ -117,9 +118,11 @@ public class TestExtensionsManager {
     Assert.assertTrue(DefaultLoadBalancerRetryHandler.class.isInstance(retryHandler));
     Assert.assertFalse(retryHandler.isRetriableException(new InvocationException(400, "", ""), false));
     Assert.assertFalse(retryHandler.isRetriableException(new InvocationException(400, "", ""), true));
+    Assert.assertTrue(retryHandler.isRetriableException(new InvocationException(503, "", ""), true));
     Assert.assertTrue(retryHandler.isRetriableException(new ConnectException(), false));
     Assert.assertTrue(retryHandler.isRetriableException(new ConnectException(), true));
     Assert.assertTrue(retryHandler.isRetriableException(new SocketTimeoutException(), false));
     Assert.assertTrue(retryHandler.isRetriableException(new SocketTimeoutException(), true));
+    Assert.assertTrue(retryHandler.isRetriableException(new IOException(), true));
   }
 }

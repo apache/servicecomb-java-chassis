@@ -44,6 +44,7 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.IRule;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.reactive.ExecutionContext;
@@ -59,6 +60,60 @@ import rx.Observable;
  *
  */
 public class LoadbalanceHandler implements Handler {
+  // just a wrapper to make sure in retry mode to choose a different server.
+  class RetryLoadBalancer implements ILoadBalancer {
+    // Enough times to make sure to choose a different server in high volume.
+    static final int COUNT = 17;
+
+    Server lastServer = null;
+
+    ILoadBalancer delegate;
+
+    RetryLoadBalancer(ILoadBalancer delegate) {
+      this.delegate = delegate;
+    }
+
+    @Override
+    public void addServers(List<Server> newServers) {
+      delegate.addServers(newServers);
+    }
+
+    @Override
+    public Server chooseServer(Object key) {
+      for (int i = 0; i < COUNT; i++) {
+        Server s = delegate.chooseServer(key);
+        if (s != null && !s.equals(lastServer)) {
+          lastServer = s;
+          break;
+        }
+      }
+
+      return lastServer;
+    }
+
+
+    @Override
+    public void markServerDown(Server server) {
+      delegate.markServerDown(server);
+    }
+
+    @Override
+    @Deprecated
+    public List<Server> getServerList(boolean availableOnly) {
+      return delegate.getServerList(availableOnly);
+    }
+
+    @Override
+    public List<Server> getReachableServers() {
+      return delegate.getReachableServers();
+    }
+
+    @Override
+    public List<Server> getAllServers() {
+      return delegate.getAllServers();
+    }
+  }
+
   private static final Logger LOGGER = LoggerFactory.getLogger(LoadbalanceHandler.class);
 
   private static final ExecutorService RETRY_POOL = Executors.newCachedThreadPool(new ThreadFactory() {
@@ -190,15 +245,22 @@ public class LoadbalanceHandler implements Handler {
       @Override
       public void onExceptionWithServer(ExecutionContext<Invocation> context, Throwable exception,
           ExecutionInfo info) {
-        LOGGER.error("onExceptionWithServer operation {}; msg {}; server {}",
+        LOGGER.error("Invoke server failed. Operation {}; server {}; {}-{} msg {}",
             context.getRequest().getInvocationQualifiedName(),
-            exception.getMessage(),
-            context.getRequest().getEndpoint());
+            context.getRequest().getEndpoint(),
+            info.getNumberOfPastServersAttempted(),
+            info.getNumberOfPastAttemptsOnServer(),
+            exception.getMessage());
       }
 
       @Override
       public void onExecutionSuccess(ExecutionContext<Invocation> context, Response response,
           ExecutionInfo info) {
+        if (info.getNumberOfPastServersAttempted() > 0 || info.getNumberOfPastAttemptsOnServer() > 0) {
+          LOGGER.error("Invoke server success. Operation {}; server {}",
+              context.getRequest().getInvocationQualifiedName(),
+              context.getRequest().getEndpoint());
+        }
         if (orginExecutor != null) {
           orginExecutor.execute(() -> {
             asyncResp.complete(response);
@@ -225,7 +287,7 @@ public class LoadbalanceHandler implements Handler {
     ExecutionContext<Invocation> context = new ExecutionContext<>(invocation, null, null, null);
 
     LoadBalancerCommand<Response> command = LoadBalancerCommand.<Response>builder()
-        .withLoadBalancer(chosenLB)
+        .withLoadBalancer(new RetryLoadBalancer(chosenLB))
         .withServerLocator(invocation)
         .withRetryHandler(ExtensionsManager.createRetryHandler(invocation.getMicroserviceName()))
         .withListeners(listeners)
@@ -276,7 +338,8 @@ public class LoadbalanceHandler implements Handler {
     if (resp.isFailed()) {
       if (InvocationException.class.isInstance(resp.getResult())) {
         InvocationException e = (InvocationException) resp.getResult();
-        return e.getStatusCode() == ExceptionFactory.CONSUMER_INNER_STATUS_CODE;
+        return e.getStatusCode() == ExceptionFactory.CONSUMER_INNER_STATUS_CODE
+            || e.getStatusCode() == 503;
       } else {
         return true;
       }

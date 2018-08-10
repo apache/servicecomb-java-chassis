@@ -124,9 +124,10 @@ public class TestInvokerUtils {
   public void testSyncInvoke_4param_NotReady() {
     scbEngine.setStatus(SCBStatus.DOWN);
 
-    expectedException.expect(IllegalStateException.class);
+    expectedException.expect(InvocationException.class);
     expectedException.expectMessage(
-        Matchers.is("The request is rejected, as the service cannot process the request due to STATUS = DOWN"));
+        Matchers
+            .is("InvocationException: code=503;msg=CommonExceptionData [message=The request is rejected. Cannot process the request due to STATUS = DOWN]"));
     InvokerUtils.syncInvoke("ms", "schemaId", "opName", null);
   }
 
@@ -134,9 +135,10 @@ public class TestInvokerUtils {
   public void testSyncInvoke_6param_NotReady() {
     scbEngine.setStatus(SCBStatus.DOWN);
 
-    expectedException.expect(IllegalStateException.class);
+    expectedException.expect(InvocationException.class);
     expectedException.expectMessage(
-        Matchers.is("The request is rejected, as the service cannot process the request due to STATUS = DOWN"));
+        Matchers
+            .is("InvocationException: code=503;msg=CommonExceptionData [message=The request is rejected. Cannot process the request due to STATUS = DOWN]"));
 
     InvokerUtils.syncInvoke("ms", "latest", "rest", "schemaId", "opName", null);
   }
