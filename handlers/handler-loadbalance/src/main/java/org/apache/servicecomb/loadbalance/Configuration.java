@@ -184,8 +184,8 @@ public final class Configuration {
   }
 
   public int getErrorThresholdPercentage(String microservice) {
-    final int defaultValue = 20;
-    String p = getStringProperty("20",
+    final int defaultValue = 0;
+    String p = getStringProperty("0",
         PROP_ROOT + microservice + "." + FILTER_ISOLATION + FILTER_ERROR_PERCENTAGE,
         PROP_ROOT + FILTER_ISOLATION + FILTER_ERROR_PERCENTAGE);
     try {

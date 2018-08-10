@@ -161,6 +161,9 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
       }
     }
 
+    if (settings.errorThresholdPercentage == 0) {
+      return true;
+    }
     if (serverStats.getFailedRate() >= settings.errorThresholdPercentage) {
       return false;
     }
