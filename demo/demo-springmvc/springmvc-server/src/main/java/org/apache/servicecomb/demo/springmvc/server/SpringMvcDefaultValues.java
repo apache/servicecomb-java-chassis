@@ -52,10 +52,10 @@ public class SpringMvcDefaultValues {
   }
 
   @GetMapping("/query2")
-  public String query2(@RequestParam("e") int e, @RequestParam(name = "a", defaultValue = "20") int a,
+  public String query2(@RequestParam(name = "e", required = false) int e, @RequestParam(name = "a", defaultValue = "20") int a,
       @RequestParam(name = "b", defaultValue = "bobo") String b,
       @RequestParam(name = "c", defaultValue = "40") Integer c,
-      @Min(value = 20) @Max(value = 30) @RequestParam("d") int d) {
+      @Min(value = 20) @Max(value = 30) @RequestParam(name = "d", required = false) int d) {
     return "Hello " + a + b + c + d + e;
   }
 
