@@ -20,6 +20,7 @@ package org.apache.servicecomb.common.rest.codec;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.definition.RestParam;
@@ -67,7 +68,7 @@ public final class RestCodec {
           restOperation.getOperationMeta().getMicroserviceQualifiedName(),
           e);
       // give standard http error code for invalid parameter
-      throw new InvocationException(400, "", "Parameter is not valid.");
+      throw new InvocationException(Status.BAD_REQUEST, "Parameter is not valid.");
     }
   }
 }
