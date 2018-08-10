@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
+import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
 import org.springframework.web.bind.annotation.RequestPart;
 
@@ -31,5 +32,14 @@ public class RequestPartAnnotationProcessor extends AbstractParameterProcessor<F
   @Override
   public String getAnnotationParameterName(Object annotation) {
     return ((RequestPart) annotation).name();
+  }
+
+  @Override
+  protected void fillParameter(Object annotation, OperationGenerator operationGenerator, int paramIdx,
+      FormParameter parameter) {
+    super.fillParameter(annotation, operationGenerator, paramIdx, parameter);
+
+    RequestPart requestPart = (RequestPart) annotation;
+    parameter.setRequired(requestPart.required());
   }
 }

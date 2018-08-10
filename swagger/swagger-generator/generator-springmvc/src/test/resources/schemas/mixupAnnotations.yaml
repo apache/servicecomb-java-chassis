@@ -52,11 +52,11 @@ paths:
         type: "string"
       - name: "word"
         in: "query"
-        required: false
+        required: true
         type: "string"
       - name: "form"
         in: "formData"
-        required: false
+        required: true
         type: "string"
       responses:
         200:
@@ -88,11 +88,11 @@ paths:
         type: "string"
       - name: "word"
         in: "query"
-        required: false
+        required: true
         type: "string"
       - name: "form"
         in: "formData"
-        required: false
+        required: true
         type: "string"
       responses:
         200:
@@ -124,11 +124,11 @@ paths:
         type: "string"
       - name: "word"
         in: "query"
-        required: false
+        required: true
         type: "string"
       - name: "form"
         in: "formData"
-        required: false
+        required: true
         type: "string"
       responses:
         200:
@@ -160,11 +160,11 @@ paths:
         type: "string"
       - name: "word"
         in: "query"
-        required: false
+        required: true
         type: "string"
       - name: "form"
         in: "formData"
-        required: false
+        required: true
         type: "string"
       responses:
         200:
@@ -196,11 +196,11 @@ paths:
         type: "string"
       - name: "word"
         in: "query"
-        required: false
+        required: true
         type: "string"
       - name: "form"
         in: "formData"
-        required: false
+        required: true
         type: "string"
       responses:
         200:
@@ -232,11 +232,11 @@ paths:
         type: "string"
       - name: "word"
         in: "query"
-        required: false
+        required: true
         type: "string"
       - name: "form"
         in: "formData"
-        required: false
+        required: true
         type: "string"
       responses:
         200:

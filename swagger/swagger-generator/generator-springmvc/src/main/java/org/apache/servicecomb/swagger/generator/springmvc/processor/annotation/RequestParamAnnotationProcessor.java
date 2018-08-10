@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
+import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ValueConstants;
@@ -32,6 +33,15 @@ public class RequestParamAnnotationProcessor extends AbstractParameterProcessor<
   @Override
   public String getAnnotationParameterName(Object annotation) {
     return ((RequestParam) annotation).name();
+  }
+
+  @Override
+  protected void fillParameter(Object annotation, OperationGenerator operationGenerator, int paramIdx,
+      QueryParameter parameter) {
+    super.fillParameter(annotation, operationGenerator, paramIdx, parameter);
+
+    RequestParam requestParam = (RequestParam) annotation;
+    parameter.setRequired(requestParam.required());
   }
 
   @Override

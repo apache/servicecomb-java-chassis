@@ -319,7 +319,7 @@ public class OperationGenerator {
       if (defaultValue != null) {
         ((AbstractSerializableParameter<?>) parameter).setDefaultValue(defaultValue);
       } else if ((((AbstractSerializableParameter<?>) parameter).getDefaultValue() == null)
-          && (false == ((AbstractSerializableParameter<?>) parameter).getRequired())) { //if required false then only take java primitive values as defaults
+          && (!((AbstractSerializableParameter<?>) parameter).getRequired())) { //if required false then only take java primitive values as defaults
         String type = ((AbstractSerializableParameter<?>) parameter).getType();
         switch (type) {
           case "integer":
