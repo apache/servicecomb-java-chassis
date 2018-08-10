@@ -137,17 +137,13 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     String result = testRestTemplateUpload(template, cseUrlPrefix, file1, someFile);
     TestMgr.check(expect, result);
 
-    {
-      MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-      map.add("file1", new FileSystemResource(file1));
+    MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+    map.add("file1", new FileSystemResource(file1));
 
-      result = template.postForObject(
-          cseUrlPrefix + "/upload1",
-          new HttpEntity<>(map),
-          String.class);
-
-      System.out.println(result);
-    }
+    result = template.postForObject(
+        cseUrlPrefix + "/upload1",
+        new HttpEntity<>(map),
+        String.class);
 
     result = uploadPartAndFile.fileUpload(new FilePart(null, file1), someFile);
     TestMgr.check(expect, result);
@@ -228,6 +224,9 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     TestMgr.check("h1v " + srcName, responseEntity.getHeaders().getFirst("h1"));
     TestMgr.check("h2v " + srcName, responseEntity.getHeaders().getFirst("h2"));
     checkStatusCode(microserviceName, 202, responseEntity.getStatusCode());
+
+    int retryResult = template.getForObject(cseUrlPrefix + "retrySuccess?a=2&b=3", Integer.class);
+    TestMgr.check(retryResult, 5);
   }
 
   protected void testCodeFirstTestForm(RestTemplate template, String cseUrlPrefix) {

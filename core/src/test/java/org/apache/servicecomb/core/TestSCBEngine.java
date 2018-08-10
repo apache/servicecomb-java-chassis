@@ -29,6 +29,7 @@ import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -104,9 +105,10 @@ public class TestSCBEngine {
     engine.setStatus(SCBStatus.DOWN);
     engine.setConsumerProviderManager(consumerProviderManager);
 
-    expectedException.expect(IllegalStateException.class);
+    expectedException.expect(InvocationException.class);
     expectedException.expectMessage(
-        Matchers.is("The request is rejected, as the service cannot process the request due to STATUS = DOWN"));
+        Matchers
+            .is("InvocationException: code=503;msg=CommonExceptionData [message=The request is rejected. Cannot process the request due to STATUS = DOWN]"));
     engine.createReferenceConfigForInvoke(null, null, null);
   }
 
@@ -126,9 +128,10 @@ public class TestSCBEngine {
     engine.setStatus(SCBStatus.DOWN);
     engine.setConsumerProviderManager(consumerProviderManager);
 
-    expectedException.expect(IllegalStateException.class);
+    expectedException.expect(InvocationException.class);
     expectedException.expectMessage(
-        Matchers.is("The request is rejected, as the service cannot process the request due to STATUS = DOWN"));
+        Matchers
+            .is("InvocationException: code=503;msg=CommonExceptionData [message=The request is rejected. Cannot process the request due to STATUS = DOWN]"));
     engine.getReferenceConfigForInvoke(null);
   }
 }

@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
@@ -36,6 +38,7 @@ import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceRegisterTask;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -277,8 +280,10 @@ public class SCBEngine {
   public void ensureStatusUp() {
     SCBStatus currentStatus = getStatus();
     if (!SCBStatus.UP.equals(currentStatus)) {
-      throw new IllegalStateException(
-          "The request is rejected, as the service cannot process the request due to STATUS = " + currentStatus);
+      String message =
+          "The request is rejected. Cannot process the request due to STATUS = " + currentStatus;
+      LOGGER.warn(message);
+      throw new InvocationException(Status.SERVICE_UNAVAILABLE, message);
     }
   }
 

@@ -171,9 +171,9 @@ public class SwaggerEnvironment {
       Method producerMethod = visibleProducerMethods.getOrDefault(methodName, null);
       if (producerMethod == null) {
         // producer未实现契约，非法
-        String msg = String.format("swagger method %s:%s not exist in producer.",
-            swaggerIntf.getClass().getName(),
-            methodName);
+        String msg = String.format("swagger method %s not exist in producer %s.",
+            methodName,
+            producerInstance.getClass().getName());
         throw new Error(msg);
       }
 

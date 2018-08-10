@@ -16,8 +16,13 @@
  */
 package org.apache.servicecomb.loadbalance;
 
+import java.io.IOException;
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.util.Collection;
+import java.util.List;
 
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
@@ -44,9 +49,25 @@ public class DefaultRetryExtensionsFactory implements ExtensionsFactory {
     RetryHandler handler = new DefaultLoadBalancerRetryHandler(
         Configuration.INSTANCE.getRetryOnSame(microservice),
         Configuration.INSTANCE.getRetryOnNext(microservice), true) {
+      private List<Class<? extends Throwable>> retriable = Lists
+          .newArrayList(new Class[] {ConnectException.class, SocketTimeoutException.class, IOException.class});
+
       @Override
       public boolean isRetriableException(Throwable e, boolean sameServer) {
-        return Utils.isPresentAsCause(e, getRetriableExceptions());
+        boolean retriable = Utils.isPresentAsCause(e, getRetriableExceptions());
+        if (!retriable) {
+          if (e instanceof InvocationException) {
+            if (((InvocationException) e).getStatusCode() == 503) {
+              return true;
+            }
+          }
+        }
+        return retriable;
+      }
+
+      @Override
+      protected List<Class<? extends Throwable>> getRetriableExceptions() {
+        return this.retriable;
       }
     };
     return handler;
