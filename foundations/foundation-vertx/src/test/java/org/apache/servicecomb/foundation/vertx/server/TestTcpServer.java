@@ -18,6 +18,7 @@
 package org.apache.servicecomb.foundation.vertx.server;
 
 import java.net.InetSocketAddress;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
@@ -26,6 +27,7 @@ import org.junit.Test;
 
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.impl.ConcurrentHashSet;
 import io.vertx.core.net.NetServer;
 import io.vertx.core.net.NetServerOptions;
 import io.vertx.core.net.NetSocket;
@@ -35,15 +37,15 @@ import mockit.Mocked;
 public class TestTcpServer {
   static class TcpServerForTest extends TcpServer {
     public TcpServerForTest(URIEndpointObject endpointObject) {
-      super(endpointObject, new AtomicInteger());
+      super(endpointObject, new AtomicInteger(), new ConcurrentHashSet<>());
     }
 
     @Override
     protected TcpServerConnection createTcpServerConnection() {
       return new TcpServerConnection() {
         @Override
-        public void init(NetSocket netSocket, AtomicInteger connectedCounter) {
-          super.init(netSocket, connectedCounter);
+        public void init(NetSocket netSocket, AtomicInteger connectedCounter, Set<String> connectedAddresses) {
+          super.init(netSocket, connectedCounter, connectedAddresses);
         }
       };
     }

@@ -18,6 +18,7 @@
 package org.apache.servicecomb.foundation.vertx.server;
 
 import java.net.InetSocketAddress;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.foundation.common.event.EventManager;
@@ -42,9 +43,12 @@ public class TcpServer {
 
   private final AtomicInteger connectedCounter;
 
-  public TcpServer(URIEndpointObject endpointObject, AtomicInteger connectedCounter) {
+  private final Set<String> connectedAddresses;
+
+  public TcpServer(URIEndpointObject endpointObject, AtomicInteger connectedCounter, Set<String> connectedAddresses) {
     this.endpointObject = endpointObject;
     this.connectedCounter = connectedCounter;
+    this.connectedAddresses = connectedAddresses;
   }
 
   public void init(Vertx vertx, String sslKey, AsyncResultCallback<InetSocketAddress> callback) {
@@ -76,10 +80,11 @@ public class TcpServer {
         return;
       }
 
+      String address = netSocket.remoteAddress().toString();
+      connectedAddresses.add(address);
       TcpServerConnection connection = createTcpServerConnection();
-      connection.init(netSocket, connectedCounter);
-      EventManager.post(new ClientEvent(netSocket.remoteAddress().toString(),
-          ConnectionEvent.Connected, TransportType.Highway, connectedCount));
+      connection.init(netSocket, connectedCounter, connectedAddresses);
+      EventManager.post(new ClientEvent(address, ConnectionEvent.Connected, TransportType.Highway, connectedCount));
     });
 
     InetSocketAddress socketAddress = endpointObject.getSocketAddress();

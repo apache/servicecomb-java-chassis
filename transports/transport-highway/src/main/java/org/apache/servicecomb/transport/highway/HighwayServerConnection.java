@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.transport.highway;
 
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.ws.rs.core.Response.Status;
@@ -42,14 +43,24 @@ public class HighwayServerConnection extends TcpServerConnection implements TcpB
 
   private ProtobufFeature protobufFeature = new ProtobufFeature();
 
+  private Set<String> connectedAddresses;
+
+  private NetSocket netSocket;
+
+  public Set<String> getConnectedAddresses() {
+    return connectedAddresses;
+  }
+
   public HighwayServerConnection(Endpoint endpoint) {
     this.endpoint = endpoint;
   }
 
   @Override
-  public void init(NetSocket netSocket, AtomicInteger connectedCounter) {
+  public void init(NetSocket netSocket, AtomicInteger connectedCounter, Set<String> connectedAddresses) {
     splitter = new TcpParser(this);
-    super.init(netSocket, connectedCounter);
+    this.netSocket = netSocket;
+    this.connectedAddresses = connectedAddresses;
+    super.init(netSocket, connectedCounter, connectedAddresses);
   }
 
   @Override
@@ -59,21 +70,24 @@ public class HighwayServerConnection extends TcpServerConnection implements TcpB
       return;
     }
 
-    switch (requestHeader.getMsgType()) {
-      case MsgType.REQUEST:
-        onRequest(msgId, requestHeader, bodyBuffer);
-        break;
-      case MsgType.LOGIN:
-        onLogin(msgId, requestHeader, bodyBuffer);
-        break;
+    //if connection closed no need invoke
+    if (connectedAddresses.contains(netSocket.remoteAddress().toString())) {
+      switch (requestHeader.getMsgType()) {
+        case MsgType.REQUEST:
+          onRequest(msgId, requestHeader, bodyBuffer);
+          break;
+        case MsgType.LOGIN:
+          onLogin(msgId, requestHeader, bodyBuffer);
+          break;
 
-      default:
-        throw new Error("Unknown tcp msgType " + requestHeader.getMsgType());
+        default:
+          throw new Error("Unknown tcp msgType " + requestHeader.getMsgType());
+      }
     }
   }
 
   protected RequestHeader decodeRequestHeader(long msgId, Buffer headerBuffer) {
-    RequestHeader requestHeader = null;
+    RequestHeader requestHeader;
     try {
       requestHeader = HighwayCodec.readRequestHeader(headerBuffer, protobufFeature);
     } catch (Exception e) {
@@ -89,7 +103,7 @@ public class HighwayServerConnection extends TcpServerConnection implements TcpB
   }
 
   protected void onLogin(long msgId, RequestHeader header, Buffer bodyBuffer) {
-    LoginRequest request = null;
+    LoginRequest request;
     try {
       request = LoginRequest.readObject(bodyBuffer);
     } catch (Exception e) {

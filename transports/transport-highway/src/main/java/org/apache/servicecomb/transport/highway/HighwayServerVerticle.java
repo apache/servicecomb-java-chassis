@@ -18,6 +18,7 @@
 package org.apache.servicecomb.transport.highway;
 
 import java.net.InetSocketAddress;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.core.Const;
@@ -44,12 +45,16 @@ public class HighwayServerVerticle extends AbstractVerticle {
 
   private final AtomicInteger connectedCounter;
 
+  private final Set<String> connectedAddresses;
+
   public HighwayServerVerticle() {
-    this(CseContext.getInstance().getTransportManager().findTransport(Const.HIGHWAY).getConnectedCounter());
+    this(CseContext.getInstance().getTransportManager().findTransport(Const.HIGHWAY).getConnectedCounter(),
+        CseContext.getInstance().getTransportManager().findTransport(Const.HIGHWAY).getConnectedAddresses());
   }
 
-  public HighwayServerVerticle(AtomicInteger connectedCounter) {
+  public HighwayServerVerticle(AtomicInteger connectedCounter, Set<String> connectedAddresses) {
     this.connectedCounter = connectedCounter;
+    this.connectedAddresses = connectedAddresses;
   }
 
   @Override
@@ -79,7 +84,7 @@ public class HighwayServerVerticle extends AbstractVerticle {
       return;
     }
 
-    HighwayServer server = new HighwayServer(endpoint, connectedCounter);
+    HighwayServer server = new HighwayServer(endpoint, connectedCounter, connectedAddresses);
     server.init(vertx, SSL_KEY, ar -> {
       if (ar.succeeded()) {
         InetSocketAddress socketAddress = ar.result();

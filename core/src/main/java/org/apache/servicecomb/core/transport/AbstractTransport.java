@@ -23,6 +23,7 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -42,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.Vertx;
+import io.vertx.core.impl.ConcurrentHashSet;
 
 public abstract class AbstractTransport implements Transport {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTransport.class);
@@ -68,6 +70,8 @@ public abstract class AbstractTransport implements Transport {
 
   private final AtomicInteger connectedCounter = new AtomicInteger(0);
 
+  private final Set<String> connectedAddresses = new ConcurrentHashSet<>();
+
   @Override
   public Endpoint getPublishEndpoint() {
     return publishEndpoint;
@@ -81,6 +85,11 @@ public abstract class AbstractTransport implements Transport {
   @Override
   public AtomicInteger getConnectedCounter() {
     return connectedCounter;
+  }
+
+  @Override
+  public Set<String> getConnectedAddresses() {
+    return connectedAddresses;
   }
 
   protected void setListenAddressWithoutSchema(String addressWithoutSchema) {
@@ -116,9 +125,9 @@ public abstract class AbstractTransport implements Transport {
       addressWithoutSchema += "&";
     }
 
-    String encodedQuery = URLEncodedUtils.format(pairs.entrySet().stream().map(entry -> {
-      return new BasicNameValuePair(entry.getKey(), entry.getValue());
-    }).collect(Collectors.toList()), StandardCharsets.UTF_8.name());
+    String encodedQuery = URLEncodedUtils.format(
+        pairs.entrySet().stream().map(entry -> new BasicNameValuePair(entry.getKey(), entry.getValue()))
+            .collect(Collectors.toList()), StandardCharsets.UTF_8.name());
 
     if (!RegistryUtils.getServiceRegistry().getFeatures().isCanEncodeEndpoint()) {
       addressWithoutSchema = genAddressWithoutSchemaForOldSC(addressWithoutSchema, encodedQuery);

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.core.endpoint.EndpointsCache;
@@ -34,6 +35,7 @@ import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.vertx.core.impl.ConcurrentHashSet;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
@@ -50,6 +52,11 @@ public class TestTransport {
       @Override
       public AtomicInteger getConnectedCounter() {
         return new AtomicInteger(0);
+      }
+
+      @Override
+      public Set<String> getConnectedAddresses() {
+        return new ConcurrentHashSet<>();
       }
 
       @Override
