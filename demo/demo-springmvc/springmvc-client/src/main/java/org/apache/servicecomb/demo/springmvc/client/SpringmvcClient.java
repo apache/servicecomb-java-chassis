@@ -32,7 +32,6 @@ import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.provider.springmvc.reference.UrlWithProviderPrefixClientHttpRequestFactory;
 import org.apache.servicecomb.provider.springmvc.reference.UrlWithServiceNameClientHttpRequestFactory;
-import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -351,16 +350,16 @@ public class SpringmvcClient {
   private static void testSpringMvcDefaultValuesJavaPrimitive(RestTemplate template, String microserviceName) {
     String cseUrlPrefix = "cse://" + microserviceName + "/SpringMvcDefaultValues/";
     //default values with primitive
-    String result = template.postForObject(cseUrlPrefix + "/javaprimitive1", null, String.class);
+    String result = template.postForObject(cseUrlPrefix + "/javaprimitiveint", null, String.class);
     TestMgr.check("Hello 0bobo", result);
 
-    result = template.postForObject(cseUrlPrefix + "/javaprimitive2", null, String.class);
+    result = template.postForObject(cseUrlPrefix + "/javaprimitivenumber", null, String.class);
     TestMgr.check("Hello 0.0false", result);
 
-    result = template.postForObject(cseUrlPrefix + "/javaprimitive3", null, String.class);
+    result = template.postForObject(cseUrlPrefix + "/javaprimitivestr", null, String.class);
     TestMgr.check("Hello", result);
 
-    result = template.postForObject(cseUrlPrefix + "/javaprimitive4", null, String.class);
+    result = template.postForObject(cseUrlPrefix + "/javaprimitivecomb", null, String.class);
     TestMgr.check("Hello 00.0", result);
   }
 }
