@@ -24,8 +24,9 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.it.deploy.Deploys;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
+import org.apache.servicecomb.it.testcase.base.TestDataTypeJaxrs;
 import org.apache.servicecomb.it.testcase.base.TestDataTypePojo;
-import org.apache.servicecomb.it.testcase.base.TestDataTypeRest;
+import org.apache.servicecomb.it.testcase.base.TestDataTypeSpringmvc;
 import org.apache.servicecomb.it.testcase.support.ProducerDevMode;
 
 
@@ -111,8 +112,8 @@ public class ConsumerMain {
 
   private static void testDataType() {
     testDataType(ProducerDevMode.Pojo, TestDataTypePojo.class);
-    testDataType(ProducerDevMode.Jaxrs, TestDataTypeRest.class);
-    testDataType(ProducerDevMode.Springmvc, TestDataTypeRest.class);
+    testDataType(ProducerDevMode.Jaxrs, TestDataTypeJaxrs.class);
+    testDataType(ProducerDevMode.Springmvc, TestDataTypeSpringmvc.class);
 
     ITJUnitUtils.getParents().push("edge");
 //    runEdge();

@@ -27,4 +27,30 @@ public interface DataTypeRestIntf {
   int intCookie(int input);
 
   int intBody(int input);
+
+  int intForm(int a);
+
+  int intAttribute(int a);
+
+  int intAdd(int a, int b);
+
+  int intPostAdd(int a, int b);
+
+  int defaultPath();
+
+  int intPathWithMinMax(int input);
+
+  int intQueryWithMinMax(int input);
+
+  int intHeaderWithMinMax(int input);
+
+  int intCookieWithMinMax(int input);
+
+  int intFormWithMinMax(int input);
+
+  int intAttributeWithMinMax(int input);
+
+  int intBodyWithMinMax(int input);
+
+  String intMulti(int a, int b, int c, int d, int e);
 }

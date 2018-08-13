@@ -19,11 +19,15 @@ package org.apache.servicecomb.it.schema;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.CookieParam;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 
@@ -66,9 +70,56 @@ public class DataTypeJaxrs {
     return pojo.intBody(input);
   }
 
+  @Path("intForm")
+  @POST
+  public int intForm(@FormParam("a") int a) {
+    return pojo.intBody(a);
+  }
+
+
   @Path("intBody")
-  @GET
+  @POST
   public int intBody(int input) {
     return pojo.intBody(input);
+  }
+
+  @GET
+  public int defaultPath() {
+    return pojo.intBody(100);
+  }
+
+
+  @Path("intQueryWithDefault")
+  @GET
+  public int intQueryWithDefault(@QueryParam("input") @DefaultValue("13") int input) {
+    return pojo.intBody(input);
+  }
+
+  @Path("intHeaderWithDefault")
+  @GET
+  public int intHeaderWithDefault(@HeaderParam(value = "input") @DefaultValue("13") int input) {
+    return pojo.intBody(input);
+  }
+
+  //暂时不支持 cookie设置默认值,但是不影响先放这里
+  @Path("intCookieWithDefault")
+  @GET
+  public int intCookieWithDefault(@CookieParam(value = "input") @DefaultValue("13") int input) {
+    return pojo.intBody(input);
+  }
+
+  @Path("intFormWithDefault")
+  @POST
+  public int intFormWithDefault(@FormParam("a") @DefaultValue("13") int a) {
+    return pojo.intBody(a);
+  }
+
+  //这个是伪契约,不支持 highway
+  @Path("request")
+  @GET
+  public int request(@Context HttpServletRequest request) {
+    int a = Integer.parseInt(request.getParameter("a"));
+    int b = Integer.parseInt(request.getParameter("b"));
+    return a - b;
   }
 }
