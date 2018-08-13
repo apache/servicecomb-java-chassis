@@ -38,4 +38,8 @@ public class DataTypePojo {
   public int intBody(int input) {
     return input;
   }
+
+  public int reduce(int a, int b) {
+    return a - b;
+  }
 }

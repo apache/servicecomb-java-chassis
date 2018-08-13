@@ -19,4 +19,6 @@ public interface DataTypePojoIntf {
   String checkTransport();
 
   int intBody(int input);
+
+  int reduce(int a, int b);
 }
