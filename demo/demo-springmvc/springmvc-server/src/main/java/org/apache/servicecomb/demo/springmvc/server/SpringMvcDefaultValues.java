@@ -64,19 +64,19 @@ public class SpringMvcDefaultValues {
     return "Hello " + a + b;
   }
 
-  @PostMapping("/javaprimitive1")
-  public String springJavaPrim1(@RequestParam(name = "a", required = false) int a,
+  @PostMapping("/javaprimitiveint")
+  public String springJavaPrimitiveInt(@RequestParam(name = "a", required = false) int a,
       @RequestParam(name = "b", defaultValue = "bobo") String b) {
     return "Hello " + a + b;
   }
 
-  @PostMapping("/javaprimitive2")
-  public String springJavaPrim2(@RequestParam(name = "a", required = false) float a, @RequestParam(name = "b", required = false) boolean b) {
+  @PostMapping("/javaprimitivenumber")
+  public String springJavaPrimitiveNumber(@RequestParam(name = "a", required = false) float a, @RequestParam(name = "b", required = false) boolean b) {
     return "Hello " + a + b;
   }
 
-  @PostMapping("/javaprimitive3")
-  public String springJavaPrim3(@RequestParam(name = "a", required = false) int a, @RequestParam(name = "b", required = false) String b) {
+  @PostMapping("/javaprimitivestr")
+  public String springJavaPrimitiveStr(@RequestParam(name = "a", required = false) int a, @RequestParam(name = "b", required = false) String b) {
     if (b == null || b.equals("")) {
       return "Hello";
     }
@@ -84,8 +84,8 @@ public class SpringMvcDefaultValues {
 
   }
 
-  @PostMapping("/javaprimitive4")
-  public String springJavaPrim4(@RequestParam(name = "a", required = false) Integer a, @RequestParam(name = "b", required = false) Float b) {
+  @PostMapping("/javaprimitivecomb")
+  public String springJavaPrimitiveCombination(@RequestParam(name = "a", required = false) Integer a, @RequestParam(name = "b", required = false) Float b) {
     return "Hello " + a + b;
   }
 }

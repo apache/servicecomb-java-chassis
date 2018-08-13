@@ -88,34 +88,34 @@ public class JaxRSDefaultValues {
     return "" + appType;
   }
 
-  @Path("/javaprimitive1")
+  @Path("/javaprimitiveint")
   @POST
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-  public String jaxRsJavaPrim1(@FormParam("a") int a, @DefaultValue("bobo") @FormParam("b") String b) {
+  public String jaxRsJavaPrimitiveInt(@FormParam("a") int a, @DefaultValue("bobo") @FormParam("b") String b) {
     return "Hello " + a + b;
   }
 
-  @Path("/javaprimitive2")
+  @Path("/javaprimitivenumber")
   @POST
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-  public String jaxRsJavaPrim2(@QueryParam("a") float a, @QueryParam("b") boolean b) {
+  public String jaxRsJavaPrimitiveNumber(@QueryParam("a") float a, @QueryParam("b") boolean b) {
     return "Hello " + a + b;
   }
 
-  @Path("/javaprimitive3")
+  @Path("/javaprimitivestr")
   @POST
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-  public String jaxRsJavaPrim3(@FormParam("b") int b, @FormParam("a") String a) {
+  public String jaxRsJavaPrimitiveStr(@FormParam("b") int b, @FormParam("a") String a) {
     if (a == null || a.equals("")) {
       return "Hello";
     }
     return "Hello " + b + a;
   }
 
-  @Path("/javaprimitive4")
+  @Path("/javaprimitivecomb")
   @POST
   @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-  public String jaxRsJavaPrim4(@QueryParam("a") Integer a, @QueryParam("b") Float b) {
+  public String jaxRsJavaPrimitiveCombnation(@QueryParam("a") Integer a, @QueryParam("b") Float b) {
     return "Hello " + a + b;
   }
 }

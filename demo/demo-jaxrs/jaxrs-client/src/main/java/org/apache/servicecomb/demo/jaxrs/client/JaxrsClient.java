@@ -38,7 +38,6 @@ import org.apache.servicecomb.demo.validator.Student;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
-import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -420,16 +419,16 @@ public class JaxrsClient {
     HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
 
     //default values with primitive
-    String result = template.postForObject(cseUrlPrefix + "/javaprimitive1", request, String.class);
+    String result = template.postForObject(cseUrlPrefix + "/javaprimitiveint", request, String.class);
     TestMgr.check("Hello 0bobo", result);
 
-    result = template.postForObject(cseUrlPrefix + "/javaprimitive2", request, String.class);
+    result = template.postForObject(cseUrlPrefix + "/javaprimitivenumber", request, String.class);
     TestMgr.check("Hello 0.0false", result);
 
-    result = template.postForObject(cseUrlPrefix + "/javaprimitive3", request, String.class);
+    result = template.postForObject(cseUrlPrefix + "/javaprimitivestr", request, String.class);
     TestMgr.check("Hello", result);
 
-    result = template.postForObject(cseUrlPrefix + "/javaprimitive4", request, String.class);
+    result = template.postForObject(cseUrlPrefix + "/javaprimitivecomb", request, String.class);
     TestMgr.check("Hello 00.0", result);
   }
 }
