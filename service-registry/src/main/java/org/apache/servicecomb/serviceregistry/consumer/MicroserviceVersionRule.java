@@ -20,6 +20,7 @@ package org.apache.servicecomb.serviceregistry.consumer;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -111,9 +112,18 @@ public class MicroserviceVersionRule {
   }
 
   protected void resetLatestVersion() {
+    Map<String, MicroserviceVersion> tempVersions = new HashMap<>();
+    instances.values().forEach(item -> {
+      MicroserviceVersion version = versions.get(item.getServiceId());
+      if (version != null) {
+        tempVersions.put(item.getServiceId(), version);
+      }
+    });
+
     MicroserviceVersion lastLatestVersion = latestVersion;
-    latestVersion = null;
-    if (!versions.isEmpty()) {
+    if (!tempVersions.isEmpty()) {
+      latestVersion = tempVersions.values().stream().max(Comparator.comparing(MicroserviceVersion::getVersion)).get();
+    } else if (!versions.isEmpty()) {
       latestVersion = versions.values().stream().max(Comparator.comparing(MicroserviceVersion::getVersion)).get();
     }
 
@@ -172,5 +182,6 @@ public class MicroserviceVersionRule {
     instances = Collections.unmodifiableMap(tmpInstances);
 
     resetInstanceCache();
+    resetLatestVersion();
   }
 }

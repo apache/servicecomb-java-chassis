@@ -78,7 +78,8 @@ public class TestMicroserviceVersionRule {
     microserviceVersionRule.addMicroserviceVersion(v2);
 
     microserviceVersionRule.deleteMicroserviceVersion(v2);
-    Assert.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
+    // keep a latest version always, event no versions.
+    Assert.assertEquals(microserviceVersionRule.getLatestMicroserviceVersion(), v2);
   }
 
   @Test
@@ -110,5 +111,12 @@ public class TestMicroserviceVersionRule {
         microserviceVersionRule.getInstanceCache().getInstanceMap());
     Assert.assertSame(microserviceVersionRule.getInstances(),
         microserviceVersionRule.getVersionedCache().data());
+    Assert.assertEquals(microserviceVersionRule.getLatestMicroserviceVersion(), v2);
+    microserviceVersionRule.setInstances(Arrays.asList(instance2));
+    Assert.assertEquals(microserviceVersionRule.getLatestMicroserviceVersion(), v2);
+
+    MicroserviceVersion v3 = MicroserviceVersionTestUtils.createMicroserviceVersion("3", "3.0.0");
+    microserviceVersionRule.addMicroserviceVersion(v3);
+    Assert.assertEquals(microserviceVersionRule.getLatestMicroserviceVersion(), v2);
   }
 }
