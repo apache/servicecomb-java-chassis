@@ -24,9 +24,6 @@ import java.util.List;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,8 +32,6 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class SchemaListenerManager {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(SchemaListenerManager.class);
 
   @Autowired(required = false)
   private List<SchemaListener> schemaListenerList = new ArrayList<>();
@@ -55,7 +50,7 @@ public class SchemaListenerManager {
 
   public void notifySchemaListener() {
     //only one instance
-    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroMeta();
+    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     notifySchemaListener(microserviceMeta);
   }
 
@@ -70,23 +65,13 @@ public class SchemaListenerManager {
     notifySchemaListener(schemaMetas);
   }
 
-  public SchemaMeta ensureFindSchemaMeta(String microserviceName, String schemaId) {
-    if (!RegistryUtils.getMicroservice().getServiceName().equals(microserviceName)) {
-      LOGGER.error("miroserviceName : {} is different from the default microserviceName :{}",
-          microserviceName,
-          RegistryUtils.getMicroservice().getServiceName());
-    }
-    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroMeta();
+  public SchemaMeta ensureFindSchemaMeta(String schemaId) {
+    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     return microserviceMeta.ensureFindSchemaMeta(schemaId);
   }
 
-  public Collection<SchemaMeta> getAllSchemaMeta(String microserviceName) {
-    if (!RegistryUtils.getMicroservice().getServiceName().equals(microserviceName)) {
-      LOGGER.error("miroserviceName : {} is different from the default microserviceName :{}",
-          microserviceName,
-          RegistryUtils.getMicroservice().getServiceName());
-    }
-    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroMeta();
+  public Collection<SchemaMeta> getAllSchemaMeta() {
+    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     return microserviceMeta.getSchemaMetas();
   }
 }

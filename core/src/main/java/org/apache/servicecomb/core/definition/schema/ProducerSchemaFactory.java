@@ -20,12 +20,13 @@ package org.apache.servicecomb.core.definition.schema;
 import static org.apache.servicecomb.serviceregistry.api.Const.REGISTER_URL_PREFIX;
 import static org.apache.servicecomb.serviceregistry.api.Const.URL_PREFIX;
 
-import javax.inject.Inject;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+
+import javax.inject.Inject;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.SCBEngine;
@@ -74,18 +75,10 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
   }
 
   // 只会在启动流程中调用
-  public SchemaMeta getOrCreateProducerSchema(String microserviceName, String schemaId,
+  public SchemaMeta getOrCreateProducerSchema( String schemaId,
       Class<?> producerClass,
       Object producerInstance) {
-
-    if (!RegistryUtils.getMicroservice().getServiceName().equals(microserviceName)) {
-      LOGGER.error("miroserviceName : {} is different from the default microserviceName :{}",
-          microserviceName,
-          RegistryUtils.getMicroservice().getServiceName());
-    }
-
-    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroMeta();
-
+    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     ProducerSchemaContext context = new ProducerSchemaContext();
     context.setMicroserviceMeta(microserviceMeta);
     context.setSchemaId(schemaId);

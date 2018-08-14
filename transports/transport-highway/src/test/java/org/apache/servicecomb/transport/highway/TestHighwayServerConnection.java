@@ -146,7 +146,7 @@ public class TestHighwayServerConnection {
     Buffer bodyBuffer = Buffer.buffer();
     new Expectations(SCBEngine.class) {
       {
-        SCBEngine.getInstance().getProducerMicroMeta();
+        SCBEngine.getInstance().getProducerMicroserviceMeta();
         result = microserviceMeta;
       }
     };

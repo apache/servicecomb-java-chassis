@@ -363,6 +363,10 @@ public class ConfigCenterClient {
         LOGGER.error("encode failed. Error message: {}", e.getMessage());
         encodeServiceName = StringUtils.deleteWhitespace(serviceName);
       }
+      //just log in the debug level
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Updating remote config...");
+      }
       String path = uriConst.ITEMS + "?dimensionsInfo=" + encodeServiceName + "&revision="
           + ParseConfigUtils.getInstance().getCurrentVersionInfo();
       clientMgr.findThreadBindClientPool().runOnContext(client -> {
@@ -371,15 +375,18 @@ public class ConfigCenterClient {
           if (rsp.statusCode() == HttpResponseStatus.OK.code()) {
             rsp.bodyHandler(buf -> {
               try {
+                String oldRevision = ParseConfigUtils.getInstance().getCurrentVersionInfo();
                 parseConfigUtils
                     .refreshConfigItems(JsonUtils.OBJ_MAPPER.readValue(buf.toString(),
                         new TypeReference<LinkedHashMap<String, Map<String, String>>>() {
                         }));
                 EventManager.post(new ConnSuccEvent());
+                LOGGER.info("Updating remote config is done.,revision has changed from {} to {}", oldRevision,
+                    ParseConfigUtils.getInstance().getCurrentVersionInfo());
               } catch (IOException e) {
                 EventManager.post(new ConnFailEvent(
-                    "config refresh result parse fail " + e.getMessage()));
-                LOGGER.error("Config refresh from {} failed. Error message is [{}].",
+                    "config update result parse fail " + e.getMessage()));
+                LOGGER.error("Config update from {} failed. Error message is [{}].",
                     configcenter,
                     e.getMessage());
               }
@@ -388,6 +395,10 @@ public class ConfigCenterClient {
           } else if (rsp.statusCode() == HttpResponseStatus.NOT_MODIFIED.code()) {
             //nothing changed
             EventManager.post(new ConnSuccEvent());
+            if (LOGGER.isDebugEnabled()) {
+              LOGGER.debug("Updating remote config is done. the revision {} has no change",
+                  ParseConfigUtils.getInstance().getCurrentVersionInfo());
+            }
             latch.countDown();
           } else {
             rsp.bodyHandler(buf -> {
@@ -395,7 +406,7 @@ public class ConfigCenterClient {
               latch.countDown();
             });
             EventManager.post(new ConnFailEvent("fetch config fail"));
-            LOGGER.error("Config refresh from {} failed.", configcenter);
+            LOGGER.error("Config update from {} failed.", configcenter);
           }
         }).setTimeout((BOOTUP_WAIT_TIME - 1) * 1000);
         Map<String, String> headers = new HashMap<>();
@@ -412,7 +423,7 @@ public class ConfigCenterClient {
                 null))));
         request.exceptionHandler(e -> {
           EventManager.post(new ConnFailEvent("fetch config fail"));
-          LOGGER.error("Config refresh from {} failed. Error message is [{}].",
+          LOGGER.error("Config update from {} failed. Error message is [{}].",
               configcenter,
               e.getMessage());
           latch.countDown();
@@ -420,13 +431,11 @@ public class ConfigCenterClient {
         request.end();
       });
       if (wait) {
-        LOGGER.info("Refreshing remote config...");
         try {
           latch.await(BOOTUP_WAIT_TIME, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
           LOGGER.warn(e.getMessage());
         }
-        LOGGER.info("Refreshing remote config is done.");
       }
     }
   }

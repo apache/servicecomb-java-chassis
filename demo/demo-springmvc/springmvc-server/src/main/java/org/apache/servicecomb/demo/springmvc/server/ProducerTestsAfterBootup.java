@@ -49,7 +49,7 @@ public class ProducerTestsAfterBootup implements BootListener {
     LOGGER.info("ProducerTestsAfterBootup testing start");
     //we can not set microserviceName any more
     SchemaMeta meta =
-        factory.getOrCreateProducerSchema("customer-service", "test1",
+        factory.getOrCreateProducerSchema("test1",
             CodeFirstSpringmvcForSchema.class,
             new CodeFirstSpringmvcForSchema());
     String codeFirst = getSwaggerContent(meta.getSwagger());

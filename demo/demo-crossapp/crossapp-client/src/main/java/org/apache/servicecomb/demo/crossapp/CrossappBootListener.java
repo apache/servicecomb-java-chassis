@@ -18,6 +18,7 @@
 package org.apache.servicecomb.demo.crossapp;
 
 import org.apache.servicecomb.core.BootListener;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -27,8 +28,10 @@ public class CrossappBootListener implements BootListener {
   public void onBootEvent(BootEvent event) {
     if (EventType.BEFORE_CONSUMER_PROVIDER.equals(event.getEventType())) {
       // 动态注册schemas目录下面的契约到当前服务
-      org.apache.servicecomb.core.definition.loader.DynamicSchemaLoader.INSTANCE.registerSchemas("appServer:appService",
-          "classpath*:schemas/*.yaml");
+      org.apache.servicecomb.core.definition.loader.DynamicSchemaLoader.INSTANCE
+          .registerSchemas(RegistryUtils.getMicroservice().getServiceName(),
+              "classpath*:schemas/*.yaml");
     }
   }
+
 }

@@ -68,18 +68,12 @@ public class SchemaLoader {
       throw new Error(String.format("Parse the swagger for %s:%s failed", microserviceName, schemaId));
     }
 
-    return registerSchema(microserviceName, schemaId, swagger);
+    return registerSchema(schemaId, swagger);
   }
 
-  public SchemaMeta registerSchema(String microserviceName, String schemaId,
+  public SchemaMeta registerSchema(String schemaId,
       Swagger swagger) {
-    //check whether the microserviceName is right
-    if (!RegistryUtils.getMicroservice().getServiceName().equals(microserviceName)) {
-      LOGGER.error("miroserviceName : {} is different from the default microserviceName :{}",
-          microserviceName,
-          RegistryUtils.getMicroservice().getServiceName());
-    }
-    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroMeta();
+    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     return registerSchema(microserviceMeta, schemaId, swagger);
   }
 

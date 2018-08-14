@@ -52,7 +52,7 @@ public class RestProducerInvocation extends AbstractRestInvocation {
   }
 
   protected void findRestOperation() {
-    MicroserviceMeta selfMicroserviceMeta = SCBEngine.getInstance().getProducerMicroMeta();
+    MicroserviceMeta selfMicroserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     findRestOperation(selfMicroserviceMeta);
   }
 

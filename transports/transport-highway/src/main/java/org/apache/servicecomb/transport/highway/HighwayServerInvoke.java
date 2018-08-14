@@ -96,7 +96,7 @@ public class HighwayServerInvoke {
     this.msgId = msgId;
     this.header = header;
 
-    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroMeta();
+    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     SchemaMeta schemaMeta = microserviceMeta.ensureFindSchemaMeta(header.getSchemaId());
     this.operationMeta = schemaMeta.ensureFindOperation(header.getOperationName());
     this.operationProtobuf = ProtobufManager.getOrCreateOperation(operationMeta);

@@ -27,7 +27,6 @@ import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
@@ -90,12 +89,12 @@ public class TestRestProducerInvocation {
 
   @Before
   public void setup() {
-    SCBEngine.getInstance().setProducerMicroMeta(microserviceMeta);
+    SCBEngine.getInstance().setProducerMicroserviceMeta(microserviceMeta);
   }
 
   @After
   public void teardown() {
-    SCBEngine.getInstance().setProducerMicroMeta(null);
+    SCBEngine.getInstance().setProducerMicroserviceMeta(null);
   }
 
   @Test

@@ -51,7 +51,7 @@ public class ProducerProviderManager implements BootListener {
       provider.init();
     }
     Microservice microservice = RegistryUtils.getMicroservice();
-    microserviceMeta = SCBEngine.getInstance().getProducerMicroMeta();
+    microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     for (SchemaMeta schemaMeta : microserviceMeta.getSchemaMetas()) {
       String content = SchemaUtils.swaggerToString(schemaMeta.getSwagger());
       microservice.addSchema(schemaMeta.getSchemaId(), content);

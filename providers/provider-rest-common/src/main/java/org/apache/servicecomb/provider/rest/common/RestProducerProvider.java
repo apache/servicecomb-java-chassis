@@ -23,8 +23,6 @@ import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.core.definition.schema.ProducerSchemaFactory;
 import org.apache.servicecomb.core.provider.producer.AbstractProducerProvider;
 import org.apache.servicecomb.core.provider.producer.ProducerMeta;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -44,9 +42,7 @@ public class RestProducerProvider extends AbstractProducerProvider {
   @Override
   public void init() throws Exception {
     for (ProducerMeta producerMeta : restProducers.getProducerMetaList()) {
-      Microservice microservice = RegistryUtils.getMicroservice();
       producerSchemaFactory.getOrCreateProducerSchema(
-          microservice.getServiceName(),
           producerMeta.getSchemaId(),
           producerMeta.getInstanceClass(),
           producerMeta.getInstance());

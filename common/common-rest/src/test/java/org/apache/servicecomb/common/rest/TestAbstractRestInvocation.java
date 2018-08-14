@@ -17,13 +17,14 @@
 
 package org.apache.servicecomb.common.rest;
 
-import javax.ws.rs.core.Response.Status;
-import javax.xml.ws.Holder;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
+
+import javax.ws.rs.core.Response.Status;
+import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
@@ -66,13 +67,13 @@ import org.junit.rules.ExpectedException;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+
+import io.vertx.core.buffer.Buffer;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
-
-import io.vertx.core.buffer.Buffer;
 
 public class TestAbstractRestInvocation {
   @Mocked

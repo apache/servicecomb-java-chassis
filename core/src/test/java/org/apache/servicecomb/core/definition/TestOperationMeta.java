@@ -51,9 +51,9 @@ public class TestOperationMeta {
     Assert.assertEquals(schemaMeta, operationMeta.getSchemaMeta());
     Assert.assertEquals(Impl.class.getName() + ".test",
         operationMeta.getSchemaQualifiedName());
-    Assert.assertEquals("app:test." + Impl.class.getName() + ".test",
+    Assert.assertEquals("perfClient." + Impl.class.getName() + ".test",
         operationMeta.getMicroserviceQualifiedName());
-    Assert.assertEquals("app:test", operationMeta.getMicroserviceName());
+    Assert.assertEquals("perfClient", operationMeta.getMicroserviceName());
     Assert.assertEquals("test", operationMeta.getOperationId());
     Assert.assertEquals("x", operationMeta.getParamName(0));
 

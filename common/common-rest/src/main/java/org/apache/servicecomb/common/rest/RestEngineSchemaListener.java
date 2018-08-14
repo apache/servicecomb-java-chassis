@@ -37,7 +37,7 @@ public class RestEngineSchemaListener implements SchemaListener, BootListener {
       return;
     }
 
-    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroMeta();
+    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     ServicePathManager servicePathManager = ServicePathManager.getServicePathManager(microserviceMeta);
     if (servicePathManager != null) {
       servicePathManager.buildProducerPaths();
