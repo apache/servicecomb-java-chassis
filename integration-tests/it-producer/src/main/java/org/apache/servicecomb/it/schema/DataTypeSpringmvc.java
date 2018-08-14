@@ -99,6 +99,14 @@ public class DataTypeSpringmvc {
     return pojo.intBody(input);
   }
 
+  @PostMapping(path = "intFormWithDefault")
+  @ApiImplicitParams({
+      @ApiImplicitParam(name = "form1", dataType = "integer", format = "int32", paramType = "form", value = "a required form param", defaultValue = "13",
+          required = true)})
+  public int intFormWithDefault(int form1) {
+    return pojo.intBody(form1);
+  }
+
   //这里算是 jaxrs 和 springmvc 的一个混用,按道理是不能这么使用的,不过这样确实跑通了
   //也算是增加了功能,就不删了
   @RequestMapping(path = "intAttributeWithDefault", method = RequestMethod.POST)
