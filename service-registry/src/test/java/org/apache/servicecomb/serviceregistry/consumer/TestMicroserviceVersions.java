@@ -25,7 +25,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.MicroserviceKey;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
@@ -47,7 +46,6 @@ import com.google.common.eventbus.Subscribe;
 
 import mockit.Deencapsulation;
 import mockit.Expectations;
-import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
@@ -386,34 +384,5 @@ public class TestMicroserviceVersions {
     microserviceVersions =
         new MicroserviceVersions(appManager, appId, "false" + appId + Const.APP_SERVICE_SEPARATOR + microserviceName);
     checkIsEventAccept(key, false);
-  }
-
-  @Test
-  public void testPack(@Injectable MicroserviceInstance instance, @Injectable Microservice microservice) {
-    ServiceRegistry serviceRegistry = new MockUp<ServiceRegistry>() {
-      @Mock
-      Microservice getRemoteMicroservice(String microserviceId) {
-        return microservice;
-      }
-    }.getMockInstance();
-    RegistryUtils.setServiceRegistry(serviceRegistry);
-
-    new Expectations() {
-      {
-        instance.getStatus();
-        result = MicroserviceInstanceStatus.UP;
-        instance.getServiceId();
-        result = microserviceName;
-        microservice.getVersion();
-        result = "0.3.0";
-      }
-    };
-    List<MicroserviceInstance> instances = new ArrayList<>();
-    instances.add(instance);
-    MicroserviceVersions testVersions = new MicroserviceVersions(appManager, appId, microserviceName);
-    testVersions.safeSetInstances(instances, "100");
-    Assert.assertEquals(testVersions.getVersions().size(), 1);
-    testVersions.safeSetInstances(new ArrayList<>(), "120");
-    Assert.assertEquals(testVersions.getVersions().size(), 0);
   }
 }
