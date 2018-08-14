@@ -16,9 +16,10 @@
  */
 package org.apache.servicecomb.transport.highway;
 
-import javax.xml.ws.Holder;
 import java.net.InetSocketAddress;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
@@ -35,17 +36,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
-
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtobufOutput;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetSocket;
 import io.vertx.core.net.impl.NetSocketImpl;
 import io.vertx.core.net.impl.SocketAddressImpl;
+import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
+import mockit.Mocked;
 
 public class TestHighwayServerConnection {
   private static WrapSchema requestHeaderSchema =

@@ -27,13 +27,11 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
 import org.apache.servicecomb.metrics.core.publish.MetricsRestPublisher;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.junit.Assert;
 import org.junit.Test;
 
 import mockit.Deencapsulation;
-import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 
@@ -46,10 +44,10 @@ public class TestMetricsBootListener {
 
     ProducerSchemaFactory producerSchemaFactory = new MockUp<ProducerSchemaFactory>() {
       @Mock
-      SchemaMeta getOrCreateProducerSchema(String microserviceName, String schemaId,
+      SchemaMeta getOrCreateProducerSchema(String schemaId,
           Class<?> producerClass,
           Object producerInstance) {
-        argsList.add(new Object[] {microserviceName, schemaId, producerClass, producerInstance});
+        argsList.add(new Object[] {schemaId, producerClass, producerInstance});
         return null;
       }
     }.getMockInstance();
@@ -57,29 +55,23 @@ public class TestMetricsBootListener {
 
     Microservice microservice = new Microservice();
     microservice.setServiceName("name");
-    new Expectations(RegistryUtils.class) {
-      {
-        RegistryUtils.getMicroservice();
-        result = microservice;
-      }
-    };
 
     BootEvent event = new BootEvent();
     event.setEventType(EventType.BEFORE_PRODUCER_PROVIDER);
     listener.onBootEvent(event);
 
     Object[] args = argsList.get(0);
-    Assert.assertEquals("name", args[0]);
-    Assert.assertEquals("healthEndpoint", args[1]);
-    Assert.assertEquals(HealthCheckerRestPublisher.class, args[2]);
-    Assert.assertEquals(HealthCheckerRestPublisher.class, args[3].getClass());
+    //we have remove parameter microserviceName
+    Assert.assertEquals("healthEndpoint", args[0]);
+    Assert.assertEquals(HealthCheckerRestPublisher.class, args[1]);
+    Assert.assertEquals(HealthCheckerRestPublisher.class, args[2].getClass());
 
     MetricsRestPublisher metricsRestPublisher =
         SPIServiceUtils.getTargetService(MetricsInitializer.class, MetricsRestPublisher.class);
     args = argsList.get(1);
-    Assert.assertEquals("name", args[0]);
-    Assert.assertEquals("metricsEndpoint", args[1]);
-    Assert.assertEquals(MetricsRestPublisher.class, args[2]);
-    Assert.assertSame(metricsRestPublisher, args[3]);
+    //we have remove parameter microserviceName
+    Assert.assertEquals("metricsEndpoint", args[0]);
+    Assert.assertEquals(MetricsRestPublisher.class, args[1]);
+    Assert.assertSame(metricsRestPublisher, args[2]);
   }
 }
