@@ -151,14 +151,16 @@ public class TestResponse {
     // 3. InvocationException: decoder wrapping exception
     wrappedException = wrappedException.getCause();
     TestMgr.check(InvocationException.class, wrappedException.getClass());
+    TestMgr.check("InvocationException: code=490;msg=CommonExceptionData [message=Cse Internal Bad Request]",
+        wrappedException.getMessage());
     // 4. InvalidFormatException: decode exception
-    Object errorData = ((InvocationException) wrappedException).getErrorData();
-    TestMgr.check(InvalidFormatException.class, errorData.getClass());
+    Object cause = wrappedException.getCause();
+    TestMgr.check(InvalidFormatException.class, cause.getClass());
     TestMgr.check(
         "Cannot deserialize value of type `java.util.Date` from String \"returnOK\": not a valid representation "
             + "(error: Failed to parse Date value 'returnOK': Failed to parse date \"returnOK\": Invalid number: retu)\n"
             + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 12] "
             + "(through reference chain: org.apache.servicecomb.demo.springmvc.decoderesponse.DecodeTestResponse[\"content\"])",
-        ((InvalidFormatException) errorData).getMessage());
+        ((InvalidFormatException) cause).getMessage());
   }
 }
