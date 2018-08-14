@@ -67,7 +67,7 @@ public class ParseConfigUtils {
   }
 
   /*
-      as the data is returned, we can block the thread at a short time. consider that if the multiple verticle is deployed
+      as the data is returned, we can block the thread at a short time. consider that if the multiple verticles were deployed
       and if we use pull mode and push mode at the same time , we must share a common lock with all methods which would
       change the config setting
      */
@@ -82,7 +82,6 @@ public class ParseConfigUtils {
       multiDimensionItems.clear();
       multiDimensionItems.putAll(remoteItems);
       doRefreshItems();
-      LOGGER.debug("refresh config success");
     } finally {
       configLock.unlock();
     }

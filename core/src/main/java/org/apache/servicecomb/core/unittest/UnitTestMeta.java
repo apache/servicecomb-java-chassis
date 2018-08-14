@@ -47,10 +47,9 @@ import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUti
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 
+import io.swagger.models.Swagger;
 import mockit.Mock;
 import mockit.MockUp;
-
-import io.swagger.models.Swagger;
 
 /**
  * when SCBEngine finished, UnitTestMeta will be deleted
@@ -88,7 +87,7 @@ public class UnitTestMeta {
     serviceRegistry.getAppManager().setMicroserviceVersionFactory(new PrivateMicroserviceVersionMetaFactory());
     RegistryUtils.setServiceRegistry(serviceRegistry);
     microserviceMeta = new MicroserviceMeta(RegistryUtils.getMicroservice().getServiceName());
-    SCBEngine.getInstance().setProducerMicroMeta(microserviceMeta);
+    SCBEngine.getInstance().setProducerMicroserviceMeta(microserviceMeta);
     consumerProviderManager = new ConsumerProviderManager();
 
     consumerSchemaFactory = new ConsumerSchemaFactory();
@@ -135,7 +134,7 @@ public class UnitTestMeta {
 
   public SchemaMeta getOrCreateSchemaMeta(String appId, String microserviceName, String schemaId, Class<?> impl) {
     String longName = appId + ":" + microserviceName;
-    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroMeta();
+    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     SchemaMeta schemaMeta = microserviceMeta.findSchemaMeta(schemaId);
     if (schemaMeta != null) {
       return schemaMeta;

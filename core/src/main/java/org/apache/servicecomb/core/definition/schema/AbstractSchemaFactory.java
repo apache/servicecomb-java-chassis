@@ -17,8 +17,9 @@
 
 package org.apache.servicecomb.core.definition.schema;
 
-import javax.inject.Inject;
 import java.net.URL;
+
+import javax.inject.Inject;
 
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;

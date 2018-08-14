@@ -16,9 +16,10 @@
  */
 package org.apache.servicecomb.core.definition.schema;
 
-import javax.xml.ws.Holder;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+
+import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
@@ -48,10 +49,9 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.swagger.models.Swagger;
 import mockit.Mock;
 import mockit.MockUp;
-
-import io.swagger.models.Swagger;
 
 public class TestProducerSchemaFactory {
   private static SwaggerEnvironment swaggerEnv = new BootstrapNormal().boot();
@@ -90,7 +90,8 @@ public class TestProducerSchemaFactory {
     };
     new MockUp<BeanUtils>() {
       @SuppressWarnings("unchecked")
-      @Mock <T> T getBean(String name) {
+      @Mock
+      <T> T getBean(String name) {
         if (ExecutorManager.EXECUTOR_REACTIVE.equals(name)) {
           return (T) reactiveExecutor;
         }
@@ -107,7 +108,7 @@ public class TestProducerSchemaFactory {
 
   @Test
   public void testGetOrCreateProducer() throws Exception {
-    SchemaMeta schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("app:ms", "schema",
+    SchemaMeta schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("schema",
         TestProducerSchemaFactoryImpl.class,
         new TestProducerSchemaFactoryImpl());
     Swagger swagger = schemaMeta.getSwagger();
@@ -146,8 +147,7 @@ public class TestProducerSchemaFactory {
   public void testGetOrCreateProducerWithPrefix() throws Exception {
     ArchaiusUtils.setProperty(org.apache.servicecomb.serviceregistry.api.Const.REGISTER_URL_PREFIX, "true");
     System.setProperty(org.apache.servicecomb.serviceregistry.api.Const.URL_PREFIX, "/pojo/test");
-
-    SchemaMeta schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("app:ms", "schema2",
+    SchemaMeta schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("schema2",
         TestProducerSchemaFactoryImpl.class,
         new TestProducerSchemaFactoryImpl());
     OperationMeta operationMeta = schemaMeta.ensureFindOperation("add");
@@ -161,7 +161,7 @@ public class TestProducerSchemaFactory {
 
   @Test
   public void testCompletableFuture() {
-    SchemaMeta schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("app:ms", "schema3",
+    SchemaMeta schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("schema3",
         TestProducerSchemaFactoryImpl.class,
         new TestProducerSchemaFactoryImpl());
     OperationMeta operationMeta = schemaMeta.ensureFindOperation("async");

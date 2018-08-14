@@ -88,7 +88,7 @@ public class TestThreadPoolMetersInitializer {
   public void init() {
     new Expectations(SCBEngine.class) {
       {
-        SCBEngine.getInstance().getProducerMicroMeta();
+        SCBEngine.getInstance().getProducerMicroserviceMeta();
         result = microserviceMeta;
       }
     };

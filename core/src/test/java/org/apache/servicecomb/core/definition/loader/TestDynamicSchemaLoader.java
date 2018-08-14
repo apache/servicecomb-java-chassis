@@ -67,7 +67,7 @@ public class TestDynamicSchemaLoader {
   @Test
   public void testRegisterSchemas() {
     DynamicSchemaLoader.INSTANCE.registerSchemas("classpath*:test/test/schema.yaml");
-    SchemaMeta schemaMeta = SCBEngine.getInstance().getProducerMicroMeta().ensureFindSchemaMeta("schema");
+    SchemaMeta schemaMeta = SCBEngine.getInstance().getProducerMicroserviceMeta().ensureFindSchemaMeta("schema");
     Assert.assertEquals("cse.gen.app.perfClient.schema", schemaMeta.getPackageName());
   }
 
@@ -77,10 +77,10 @@ public class TestDynamicSchemaLoader {
     //we can not register repeat data
     init();
     //as we can not set microserviceName any more, hence we should use the default name
-    DynamicSchemaLoader.INSTANCE.registerSchemas("CSE:as", "classpath*:test/test/schema.yaml");
+    DynamicSchemaLoader.INSTANCE
+        .registerSchemas(RegistryUtils.getMicroservice().getServiceName(), "classpath*:test/test/schema.yaml");
     SchemaMeta schemaMeta =
-        SCBEngine.getInstance().getProducerMicroMeta().ensureFindSchemaMeta("schema");
-    System.out.println(schemaMeta.getPackageName());
+        SCBEngine.getInstance().getProducerMicroserviceMeta().ensureFindSchemaMeta("schema");
     Assert.assertEquals("cse.gen.app.perfClient.schema", schemaMeta.getPackageName());
   }
 

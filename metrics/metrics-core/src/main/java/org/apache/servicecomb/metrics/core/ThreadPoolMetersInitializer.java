@@ -71,7 +71,7 @@ public class ThreadPoolMetersInitializer implements MetricsInitializer {
   protected Map<Executor, Executor> collectionOperationExecutors() {
     Map<Executor, Executor> operationExecutors = new IdentityHashMap<>();
     //only one instance in the values
-    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroMeta();
+    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     for (OperationMeta operationMeta : microserviceMeta.getOperations()) {
       operationExecutors.put(operationMeta.getExecutor(), operationMeta.getExecutor());
     }

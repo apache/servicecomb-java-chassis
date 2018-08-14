@@ -65,10 +65,10 @@ public class CseApplicationListener
       }
 
       if (SCBEngine.getInstance().getBootListenerList() == null) {
-        //SCBEngine init first, hence we do not worry that when other bean class using the
+        //SCBEngine init first, hence we do not need worry that when other beans need use the
         //producer microserviceMeta, the SCBEngine is not inited.
         String serviceName = RegistryUtils.getMicroservice().getServiceName();
-        SCBEngine.getInstance().setProducerMicroMeta(new MicroserviceMeta(serviceName));
+        SCBEngine.getInstance().setProducerMicroserviceMeta(new MicroserviceMeta(serviceName));
         SCBEngine.getInstance().setProducerProviderManager(applicationContext.getBean(ProducerProviderManager.class));
         SCBEngine.getInstance().setConsumerProviderManager(applicationContext.getBean(ConsumerProviderManager.class));
         SCBEngine.getInstance().setTransportManager(applicationContext.getBean(TransportManager.class));

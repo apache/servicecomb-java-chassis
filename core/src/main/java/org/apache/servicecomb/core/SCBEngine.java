@@ -56,7 +56,7 @@ public class SCBEngine {
 
   private ConsumerProviderManager consumerProviderManager;
 
-  private MicroserviceMeta producerMicroMeta;
+  private MicroserviceMeta producerMicroserviceMeta;
 
   private TransportManager transportManager;
 
@@ -303,11 +303,11 @@ public class SCBEngine {
     return consumerProviderManager.getReferenceConfig(microserviceName);
   }
 
-  public MicroserviceMeta getProducerMicroMeta() {
-    return producerMicroMeta;
+  public MicroserviceMeta getProducerMicroserviceMeta() {
+    return producerMicroserviceMeta;
   }
 
-  public void setProducerMicroMeta(MicroserviceMeta producerMicroMeta) {
-    this.producerMicroMeta = producerMicroMeta;
+  public void setProducerMicroserviceMeta(MicroserviceMeta producerMicroserviceMeta) {
+    this.producerMicroserviceMeta = producerMicroserviceMeta;
   }
 }

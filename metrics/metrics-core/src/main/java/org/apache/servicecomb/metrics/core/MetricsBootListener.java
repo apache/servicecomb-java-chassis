@@ -26,8 +26,6 @@ import org.apache.servicecomb.foundation.metrics.MetricsBootstrap;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
 import org.apache.servicecomb.metrics.core.publish.MetricsRestPublisher;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.springframework.stereotype.Component;
 
 import com.netflix.spectator.api.Spectator;
@@ -56,17 +54,13 @@ public class MetricsBootListener implements BootListener {
   }
 
   private void registerSchemas() {
-    Microservice microservice = RegistryUtils.getMicroservice();
-
-    producerSchemaFactory.getOrCreateProducerSchema(microservice.getServiceName(),
-        "healthEndpoint",
+    producerSchemaFactory.getOrCreateProducerSchema("healthEndpoint",
         HealthCheckerRestPublisher.class,
         new HealthCheckerRestPublisher());
 
     MetricsRestPublisher metricsRestPublisher =
         SPIServiceUtils.getTargetService(MetricsInitializer.class, MetricsRestPublisher.class);
-    producerSchemaFactory.getOrCreateProducerSchema(microservice.getServiceName(),
-        "metricsEndpoint",
+    producerSchemaFactory.getOrCreateProducerSchema("metricsEndpoint",
         metricsRestPublisher.getClass(),
         metricsRestPublisher);
   }
