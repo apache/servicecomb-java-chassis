@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.transport.rest.client.http;
 
-import static org.junit.Assert.fail;
-
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,12 +34,13 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.type.SimpleType;
 
 import io.vertx.core.MultiMap;
@@ -105,17 +104,22 @@ public class TestDefaultHttpClientFilter {
   }
 
   @Test
-  public void extractResult_readStreamPart(@Mocked Invocation invocation, @Mocked ReadStreamPart part) {
+  public void extractResult_readStreamPart(@Mocked Invocation invocation, @Mocked ReadStreamPart part,
+      @Mocked HttpServletResponseEx responseEx) {
     Map<String, Object> handlerContext = new HashMap<>();
     handlerContext.put(RestConst.READ_STREAM_PART, part);
     new Expectations() {
       {
         invocation.getHandlerContext();
         result = handlerContext;
+        responseEx.getStatusType();
+        result = Status.OK;
       }
     };
 
-    Assert.assertSame(part, filter.extractResponse(invocation, null));
+    Response response = filter.extractResponse(invocation, responseEx);
+    Assert.assertSame(part, response.getResult());
+    Assert.assertEquals(Status.OK, response.getStatus());
   }
 
   @Test
@@ -148,17 +152,20 @@ public class TestDefaultHttpClientFilter {
         return new ProduceJsonProcessor();
       }
     };
-    try {
-      filter.extractResponse(invocation, responseEx);
-      fail("an exception is expected!");
-    } catch (Exception e) {
-      Assert.assertEquals(InvocationException.class, e.getClass());
-      Assert.assertEquals(JsonParseException.class, ((InvocationException) e).getErrorData().getClass());
-      JsonParseException jsonParseException = (JsonParseException) ((InvocationException) e).getErrorData();
-      Assert.assertEquals("Unrecognized token 'abc': was expecting ('true', 'false' or 'null')\n"
-              + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 7]",
-          jsonParseException.getMessage());
-    }
+
+    Response response = filter.extractResponse(invocation, responseEx);
+    Assert.assertEquals(490, response.getStatusCode());
+    Assert.assertEquals(ExceptionFactory.CONSUMER_INNER_REASON_PHRASE, response.getReasonPhrase());
+    Assert.assertEquals(InvocationException.class, response.<InvocationException>getResult().getClass());
+    InvocationException invocationException = response.getResult();
+    Assert.assertEquals("InvocationException: code=490;msg=CommonExceptionData [message=Cse Internal Bad Request]",
+        invocationException.getMessage());
+    Assert.assertEquals("Unrecognized token 'abc': was expecting ('true', 'false' or 'null')\n"
+            + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 7]",
+        invocationException.getCause().getMessage());
+    Assert.assertEquals(CommonExceptionData.class, invocationException.getErrorData().getClass());
+    CommonExceptionData commonExceptionData = (CommonExceptionData) invocationException.getErrorData();
+    Assert.assertEquals("Cse Internal Bad Request", commonExceptionData.getMessage());
   }
 
   @Test
@@ -173,18 +180,22 @@ public class TestDefaultHttpClientFilter {
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
         result = swaggerRestOperation;
         responseEx.getStatus();
-        result = 401;
+        result = 200;
       }
     };
 
     Response response = filter.afterReceiveResponse(invocation, responseEx);
-    InvocationException exception = response.getResult();
+    Assert.assertEquals(490, response.getStatusCode());
+    Assert.assertEquals(ExceptionFactory.CONSUMER_INNER_REASON_PHRASE, response.getReasonPhrase());
+    Assert.assertEquals(InvocationException.class, response.<InvocationException>getResult().getClass());
+    InvocationException invocationException = response.getResult();
     Assert.assertEquals(
-        401,
-        exception.getStatusCode());
+        490,
+        invocationException.getStatusCode());
     Assert.assertEquals(
-        "method null, path null, statusCode 401, reasonPhrase null, response content-type null is not supported",
-        exception.getErrorData());
+        "CommonExceptionData [message=method null, path null, statusCode 200, reasonPhrase null, "
+            + "response content-type null is not supported]",
+        invocationException.getErrorData().toString());
   }
 
   @Test

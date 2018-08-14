@@ -29,9 +29,8 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
-import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,10 +63,10 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
     return restOperation.findProduceProcessor(contentTypeForFind);
   }
 
-  protected Object extractResponse(Invocation invocation, HttpServletResponseEx responseEx) {
+  protected Response extractResponse(Invocation invocation, HttpServletResponseEx responseEx) {
     Object result = invocation.getHandlerContext().get(RestConst.READ_STREAM_PART);
     if (result != null) {
-      return result;
+      return Response.create(responseEx.getStatusType(), result);
     }
 
     OperationMeta operationMeta = invocation.getOperationMeta();
@@ -83,23 +82,22 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
               responseEx.getStatusType().getReasonPhrase(),
               responseEx.getHeader(HttpHeaders.CONTENT_TYPE));
       LOGGER.error(msg);
-      return ExceptionFactory.createConsumerException(new InvocationException(responseEx.getStatus(), responseEx.getStatusType().getReasonPhrase(), msg));
+      return Response.createFail(InvocationType.CONSUMER, msg);
     }
 
     try {
-      return produceProcessor.decodeResponse(responseEx.getBodyBuffer(), responseMeta.getJavaType());
+      result = produceProcessor.decodeResponse(responseEx.getBodyBuffer(), responseMeta.getJavaType());
+      return Response.create(responseEx.getStatusType(), result);
     } catch (Exception e) {
-      LOGGER.error("failed to decode response body", e);
-      throw ExceptionFactory.createConsumerException(e);
+      LOGGER.error("failed to decode response body, exception type is [{}]", e.getClass());
+      return Response.createConsumerFail(e);
     }
   }
 
   @Override
   public Response afterReceiveResponse(Invocation invocation, HttpServletResponseEx responseEx) {
-    Object result = extractResponse(invocation, responseEx);
+    Response response = extractResponse(invocation, responseEx);
 
-    Response response =
-        Response.create(responseEx.getStatusType(), result);
     for (String headerName : responseEx.getHeaderNames()) {
       Collection<String> headerValues = responseEx.getHeaders(headerName);
       for (String headerValue : headerValues) {
