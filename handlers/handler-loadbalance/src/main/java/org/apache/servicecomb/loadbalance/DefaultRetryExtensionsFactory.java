@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.loadbalance;
 
-import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.Collection;
@@ -51,7 +50,7 @@ public class DefaultRetryExtensionsFactory implements ExtensionsFactory {
         Configuration.INSTANCE.getRetryOnSame(microservice),
         Configuration.INSTANCE.getRetryOnNext(microservice), true) {
       private List<Class<? extends Throwable>> retriable = Lists
-          .newArrayList(new Class[] {ConnectException.class, SocketTimeoutException.class, IOException.class});
+          .newArrayList(new Class[] {ConnectException.class, SocketTimeoutException.class});
 
       @Override
       public boolean isRetriableException(Throwable e, boolean sameServer) {

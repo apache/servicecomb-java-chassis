@@ -123,6 +123,6 @@ public class TestExtensionsManager {
     Assert.assertTrue(retryHandler.isRetriableException(new ConnectException(), true));
     Assert.assertTrue(retryHandler.isRetriableException(new SocketTimeoutException(), false));
     Assert.assertTrue(retryHandler.isRetriableException(new SocketTimeoutException(), true));
-    Assert.assertTrue(retryHandler.isRetriableException(new IOException(), true));
+    Assert.assertFalse(retryHandler.isRetriableException(new IOException(), true));
   }
 }
