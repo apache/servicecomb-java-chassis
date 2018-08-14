@@ -235,6 +235,19 @@ public class TestDataTypeSpringmvc {
   }
 
   @Test
+  public void intFormWithDefault_rt() {
+    HttpHeaders formHeaders = new HttpHeaders();
+    formHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    Map<String, Integer> map = new HashMap<>();
+//    map.put("form1", 13);
+    HttpEntity<Map<String, Integer>> formEntiry = new HttpEntity<>(map, formHeaders);
+
+    assertEquals(13, (int) restTemplate.postForEntity(urlPrefix + "/intFormWithDefault", formEntiry, int.class).getBody());
+    //两种调用方式都可以
+    assertEquals(13, (int) restTemplate.postForEntity(urlPrefix + "/intFormWithDefault", map, int.class).getBody());
+  }
+
+  @Test
   public void intAdd_intf() {
     int i = dataTypeIntf.intAdd(2, 3);
     assertEquals(5, i);
