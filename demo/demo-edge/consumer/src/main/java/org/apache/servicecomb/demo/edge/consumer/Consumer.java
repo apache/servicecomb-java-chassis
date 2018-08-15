@@ -46,6 +46,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 public class Consumer {
@@ -88,6 +90,7 @@ public class Consumer {
     testDependType();
     testDownload();
     testDownloadBigFile();
+    testErrorCode();
 
     invoke("/v1/add", 2, 1, addV1Result);
     invoke("/v1/add", 3, 1, addV1Result);
@@ -156,6 +159,31 @@ public class Consumer {
     Assert.isTrue(response.getValue() == 0, "default must be 0");
     Assert.isTrue(response.getField().getValue() == 10, "must be 10");
     Assert.isNull(response.getField().getField(), "must be null");
+  }
+
+  protected void testErrorCode() {
+    String url = edgePrefix + "/v2/error/add";
+
+    int response = template.getForObject(url + "?x=2&y=3", Integer.class);
+    Assert.isTrue(response == 5, "not get 5.");
+
+    Map raw = template.getForObject(url + "?x=99&y=3", Map.class);
+    Assert.isTrue(raw.get("message").equals("Cse Internal Server Error"), "x99");
+
+    try {
+      raw = template.getForObject(url + "?x=88&y=3", Map.class);
+      Assert.isTrue(false, "x88");
+    } catch (HttpClientErrorException e) {
+      Assert.isTrue(e.getRawStatusCode() == 403, "x88");
+      Assert.isTrue(e.getResponseBodyAsString().equals("{\"id\":12,\"message\":\"not allowed id.\"}"), "x88");
+    }
+    try {
+      raw = template.getForObject(url + "?x=77&y=3", Map.class);
+      Assert.isTrue(false, "x77");
+    } catch (HttpServerErrorException e) {
+      Assert.isTrue(e.getRawStatusCode() == 500, "x77");
+      Assert.isTrue(e.getResponseBodyAsString().equals("{\"id\":500,\"message\":\"77\",\"state\":\"77\"}"), "x77");
+    }
   }
 
   protected void testDependType() {
