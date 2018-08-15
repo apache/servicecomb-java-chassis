@@ -375,14 +375,11 @@ public class ConfigCenterClient {
           if (rsp.statusCode() == HttpResponseStatus.OK.code()) {
             rsp.bodyHandler(buf -> {
               try {
-                String oldRevision = ParseConfigUtils.getInstance().getCurrentVersionInfo();
                 parseConfigUtils
                     .refreshConfigItems(JsonUtils.OBJ_MAPPER.readValue(buf.toString(),
                         new TypeReference<LinkedHashMap<String, Map<String, String>>>() {
                         }));
                 EventManager.post(new ConnSuccEvent());
-                LOGGER.info("Updating remote config is done.,revision has changed from {} to {}", oldRevision,
-                    ParseConfigUtils.getInstance().getCurrentVersionInfo());
               } catch (IOException e) {
                 EventManager.post(new ConnFailEvent(
                     "config update result parse fail " + e.getMessage()));
