@@ -106,10 +106,16 @@ public class ReadStreamPart extends AbstractPart {
     CompletableFuture<T> future = new CompletableFuture<>();
     Buffer buffer = Buffer.buffer();
 
-    readStream.exceptionHandler(future::completeExceptionally);
-    readStream.handler(buffer::appendBuffer);
-    readStream.endHandler(v -> future.complete(converter.apply(buffer)));
-    readStream.resume();
+    // if readStream.resume() not run on correct eventloop, will:
+    //  1.create a context task to save last chunk data to buffer
+    //  2.activate connection to read new data
+    //  but maybe 2 will run before 1, that will cause lost data or get incorrect data
+    context.runOnContext(V -> {
+      readStream.exceptionHandler(future::completeExceptionally);
+      readStream.handler(buffer::appendBuffer);
+      readStream.endHandler(v -> future.complete(converter.apply(buffer)));
+      readStream.resume();
+    });
 
     return future;
   }
