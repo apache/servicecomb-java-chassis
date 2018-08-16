@@ -31,6 +31,7 @@ import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -48,6 +49,7 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.buffer.impl.BufferImpl;
 import io.vertx.core.http.CaseInsensitiveHeaders;
 import mockit.Expectations;
+import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
@@ -172,29 +174,38 @@ public class TestDefaultHttpClientFilter {
   public void testAfterReceiveResponseNullProduceProcessor(@Mocked Invocation invocation,
       @Mocked HttpServletResponseEx responseEx,
       @Mocked OperationMeta operationMeta,
-      @Mocked RestOperationMeta swaggerRestOperation) {
+      @Mocked RestOperationMeta swaggerRestOperation,
+      @Injectable ResponseMeta responseMeta) throws Exception {
+    CommonExceptionData data = new CommonExceptionData("abcd");
     new Expectations() {
       {
         invocation.getOperationMeta();
         result = operationMeta;
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
         result = swaggerRestOperation;
+        operationMeta.findResponseMeta(403);
+        result = responseMeta;
+        responseMeta.getJavaType();
+        result = SimpleType.constructUnsafe(CommonExceptionData.class);
         responseEx.getStatus();
-        result = 200;
+        result = 403;
+        responseEx.getStatusType();
+        result = Status.FORBIDDEN;
+        responseEx.getBodyBuffer();
+        result = Buffer.buffer(JsonUtils.writeValueAsString(data).getBytes());
       }
     };
 
     Response response = filter.afterReceiveResponse(invocation, responseEx);
-    Assert.assertEquals(490, response.getStatusCode());
-    Assert.assertEquals(ExceptionFactory.CONSUMER_INNER_REASON_PHRASE, response.getReasonPhrase());
+    Assert.assertEquals(403, response.getStatusCode());
+    Assert.assertEquals("Forbidden", response.getReasonPhrase());
     Assert.assertEquals(InvocationException.class, response.<InvocationException>getResult().getClass());
     InvocationException invocationException = response.getResult();
     Assert.assertEquals(
-        490,
+        403,
         invocationException.getStatusCode());
     Assert.assertEquals(
-        "CommonExceptionData [message=method null, path null, statusCode 200, reasonPhrase null, "
-            + "response content-type null is not supported]",
+        "CommonExceptionData [message=abcd]",
         invocationException.getErrorData().toString());
   }
 
