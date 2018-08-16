@@ -52,7 +52,8 @@ public class SpringMvcDefaultValues {
   }
 
   @GetMapping("/query2")
-  public String query2(@RequestParam(name = "e", required = false) int e, @RequestParam(name = "a", defaultValue = "20") int a,
+  public String query2(@RequestParam(name = "e", required = false) int e,
+      @RequestParam(name = "a", defaultValue = "20") int a,
       @RequestParam(name = "b", defaultValue = "bobo") String b,
       @RequestParam(name = "c", defaultValue = "40") Integer c,
       @Min(value = 20) @Max(value = 30) @RequestParam(name = "d", required = false) int d) {
@@ -71,21 +72,44 @@ public class SpringMvcDefaultValues {
   }
 
   @PostMapping("/javaprimitivenumber")
-  public String springJavaPrimitiveNumber(@RequestParam(name = "a", required = false) float a, @RequestParam(name = "b", required = false) boolean b) {
+  public String springJavaPrimitiveNumber(@RequestParam(name = "a", required = false) float a,
+      @RequestParam(name = "b", required = false) boolean b) {
     return "Hello " + a + b;
   }
 
   @PostMapping("/javaprimitivestr")
-  public String springJavaPrimitiveStr(@RequestParam(name = "a", required = false) int a, @RequestParam(name = "b", required = false) String b) {
+  public String springJavaPrimitiveStr(@RequestParam(name = "a", required = false) int a,
+      @RequestParam(name = "b", required = false) String b) {
     if (b == null || b.equals("")) {
       return "Hello";
     }
     return "Hello " + b + a;
-
   }
 
   @PostMapping("/javaprimitivecomb")
-  public String springJavaPrimitiveCombination(@RequestParam(name = "a", required = false) Integer a, @RequestParam(name = "b", required = false) Float b) {
+  public String springJavaPrimitiveCombination(@RequestParam(name = "a", required = false) Integer a,
+      @RequestParam(name = "b", required = false) Float b) {
     return "Hello " + a + b;
+  }
+
+  @PostMapping("/allprimitivetypes")
+  public String allprimitivetypes(@RequestParam(name = "pBoolean", required = false) boolean pBoolean,
+      @RequestParam(name = "pChar", required = false) char pChar,
+      @RequestParam(name = "pByte", required = false) byte pByte,
+      @RequestParam(name = "pShort", required = false) short pShort,
+      @RequestParam(name = "pInt", required = false) int pInt,
+      @RequestParam(name = "pLong", required = false) long pLong,
+      @RequestParam(name = "pFloat", required = false) float pFloat,
+      @RequestParam(name = "pDouble", required = false) double pDouble,
+      @RequestParam(name = "pDoubleWrap", required = false) Double pDoubleWrap) {
+    return "Hello " + pBoolean + ","
+        + pChar + ","
+        + pByte + ","
+        + pShort + ","
+        + pInt + ","
+        + pLong + ","
+        + pFloat + ","
+        + pDouble + ","
+        + pDoubleWrap;
   }
 }

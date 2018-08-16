@@ -296,7 +296,7 @@ public class JaxrsClient {
       // Message dependends on locale, so just check the short part.
       // 'must be greater than or equal to 20', propertyPath=add.arg1, rootBeanClass=class org.apache.servicecomb.demo.jaxrs.server.Validator, messageTemplate='{javax.validation.constraints.Min.message}'}]]
       // ignored
-      Map data = (Map)e.getErrorData();
+      Map data = (Map) e.getErrorData();
       TestMgr.check(
           "[ConstraintViolationImpl{interpolatedMessage=",
           data.get("message").toString().substring(0,
@@ -324,7 +324,7 @@ public class JaxrsClient {
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
       // Message dependends on locale, so just check the short part.
-      Map data = (Map)e.getErrorData();
+      Map data = (Map) e.getErrorData();
       TestMgr.check(
           "[ConstraintViolationImpl{interpolatedMessage=",
           data.get("message").toString().substring(0,
@@ -359,7 +359,7 @@ public class JaxrsClient {
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
       // Message dependends on locale, so just check the short part.
-      Map data = (Map)e.getErrorData();
+      Map data = (Map) e.getErrorData();
       TestMgr.check(
           "[ConstraintViolationImpl{interpolatedMessage",
           data.get("message").toString().substring(0,
@@ -438,6 +438,9 @@ public class JaxrsClient {
     TestMgr.check("Hello", result);
 
     result = template.postForObject(cseUrlPrefix + "/javaprimitivecomb", request, String.class);
-    TestMgr.check("Hello 00.0", result);
+    TestMgr.check("Hello nullnull", result);
+
+    result = template.postForObject(cseUrlPrefix + "/allprimitivetypes", null, String.class);
+    TestMgr.check("Hello false,0,0,0,0,0,0.0,0.0,null", result);
   }
 }

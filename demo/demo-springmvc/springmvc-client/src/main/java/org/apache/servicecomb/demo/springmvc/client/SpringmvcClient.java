@@ -363,6 +363,9 @@ public class SpringmvcClient {
     TestMgr.check("Hello", result);
 
     result = template.postForObject(cseUrlPrefix + "/javaprimitivecomb", null, String.class);
-    TestMgr.check("Hello 00.0", result);
+    TestMgr.check("Hello nullnull", result);
+
+    result = template.postForObject(cseUrlPrefix + "/allprimitivetypes", null, String.class);
+    TestMgr.check("Hello false,0,0,0,0,0,0.0,0.0,null", result);
   }
 }

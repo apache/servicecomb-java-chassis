@@ -277,13 +277,13 @@ public class OperationGenerator {
     Type[] parameterTypes = providerMethod.getGenericParameterTypes();
     for (int paramIdx = 0; paramIdx < parameterTypes.length; paramIdx++) {
       int swaggerParamCount = providerParameters.size();
+      Type type = parameterTypes[paramIdx];
 
       // 根据annotation处理
       Annotation[] paramAnnotations = allAnnotations[paramIdx];
-      processByParameterAnnotation(paramAnnotations, paramIdx);
+      processByParameterAnnotation(paramAnnotations, paramIdx, type);
 
       if (isArgumentNotProcessed(swaggerParamCount)) {
-        Type type = parameterTypes[paramIdx];
         // 是否需要根据参数类型处理，目标场景：httpRequest之类
         processByParameterType(type, paramIdx);
       }
@@ -299,7 +299,8 @@ public class OperationGenerator {
     return swaggerParamCount == providerParameters.size();
   }
 
-  protected void processByParameterAnnotation(Annotation[] paramAnnotations, int paramIdx) {
+  @SuppressWarnings({"rawtypes", "unckecked"})
+  protected void processByParameterAnnotation(Annotation[] paramAnnotations, int paramIdx, Type parameterType) {
     String defaultValue = null;
     Parameter parameter = null;
     for (Annotation annotation : paramAnnotations) {
@@ -319,20 +320,16 @@ public class OperationGenerator {
       if (defaultValue != null) {
         ((AbstractSerializableParameter<?>) parameter).setDefaultValue(defaultValue);
       } else if ((((AbstractSerializableParameter<?>) parameter).getDefaultValue() == null)
-          && (!((AbstractSerializableParameter<?>) parameter).getRequired())) { //if required false then only take java primitive values as defaults
-        String type = ((AbstractSerializableParameter<?>) parameter).getType();
-        switch (type) {
-          case "integer":
-            defaultValue = "0";
-            break;
-          case "number":
-            defaultValue = "0.0";
-            break;
-          case "boolean":
-            defaultValue = "false";
-            break;
-          default:
-            defaultValue = null;
+          && (!((AbstractSerializableParameter<?>) parameter)
+          .getRequired())) { //if required false then only take java primitive values as defaults
+        if (parameterType instanceof Class && ((Class) parameterType).isPrimitive()) {
+          switch (parameterType.getTypeName()) {
+            case "boolean":
+              defaultValue = "false";
+              break;
+            default:
+              defaultValue = "0";
+          }
         }
         ((AbstractSerializableParameter<?>) parameter).setDefaultValue(defaultValue);
       }

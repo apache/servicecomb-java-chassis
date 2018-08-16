@@ -118,4 +118,26 @@ public class JaxRSDefaultValues {
   public String jaxRsJavaPrimitiveCombnation(@QueryParam("a") Integer a, @QueryParam("b") Float b) {
     return "Hello " + a + b;
   }
+
+  @Path("/allprimitivetypes")
+  @POST
+  public String allprimitivetypes(@QueryParam("pBoolean") boolean pBoolean,
+      @QueryParam("pChar") char pChar,
+      @QueryParam("pByte") byte pByte,
+      @QueryParam("pShort") short pShort,
+      @QueryParam("pInt") int pInt,
+      @QueryParam("pLong") long pLong,
+      @QueryParam("pFloat") float pFloat,
+      @QueryParam("pDouble") double pDouble,
+      @QueryParam("pDoubleWrap") Double pDoubleWrap) {
+    return "Hello " + pBoolean + ","
+        + pChar + ","
+        + pByte + ","
+        + pShort + ","
+        + pInt + ","
+        + pLong + ","
+        + pFloat + ","
+        + pDouble + ","
+        + pDoubleWrap;
+  }
 }
