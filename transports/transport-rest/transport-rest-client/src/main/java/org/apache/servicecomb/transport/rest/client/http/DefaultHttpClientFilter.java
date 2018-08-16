@@ -23,13 +23,13 @@ import javax.ws.rs.core.HttpHeaders;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
+import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
 import org.slf4j.Logger;
@@ -74,6 +74,8 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
     RestOperationMeta swaggerRestOperation = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
     ProduceProcessor produceProcessor = findProduceProcessor(swaggerRestOperation, responseEx);
     if (produceProcessor == null) {
+      // This happens outside the runtime such as Servlet filter response. Here we give a default json parser to it
+      // and keep user data not get lose.
       String msg =
           String.format("method %s, path %s, statusCode %d, reasonPhrase %s, response content-type %s is not supported",
               swaggerRestOperation.getHttpMethod(),
@@ -81,8 +83,8 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
               responseEx.getStatus(),
               responseEx.getStatusType().getReasonPhrase(),
               responseEx.getHeader(HttpHeaders.CONTENT_TYPE));
-      LOGGER.error(msg);
-      return Response.createFail(InvocationType.CONSUMER, msg);
+      LOGGER.warn(msg);
+      produceProcessor = ProduceProcessorManager.DEFAULT_PROCESSOR;
     }
 
     try {
