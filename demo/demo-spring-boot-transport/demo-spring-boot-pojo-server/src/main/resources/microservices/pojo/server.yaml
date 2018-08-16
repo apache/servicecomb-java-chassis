@@ -194,3 +194,4 @@ definitions:
         type: number
       index:
         type: number
+    x-java-class: "org.apache.servicecomb.demo.server.User"
