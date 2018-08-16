@@ -36,6 +36,7 @@ import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.jaxrs.client.beanParam.BeanParamPojoClient;
 import org.apache.servicecomb.demo.jaxrs.client.beanParam.BeanParamRestTemplateClient;
 import org.apache.servicecomb.demo.jaxrs.client.pojoDefault.DefaultModelServiceClient;
+import org.apache.servicecomb.demo.jaxrs.client.validation.ValidationServiceClient;
 import org.apache.servicecomb.demo.validator.Student;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
@@ -85,6 +86,7 @@ public class JaxrsClient {
     BeanParamRestTemplateClient beanParamRestTemplateClient = new BeanParamRestTemplateClient();
     beanParamRestTemplateClient.testAll();
     DefaultModelServiceClient.run();
+    ValidationServiceClient.run();
   }
 
   private static void testCompute(RestTemplate template) throws Exception {
