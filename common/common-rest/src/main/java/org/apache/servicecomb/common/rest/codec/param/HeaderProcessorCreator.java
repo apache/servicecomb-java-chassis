@@ -74,7 +74,8 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator {
         LOGGER.debug("Header arg is null, will not be set into clientRequest. paramPath = [{}]", paramPath);
         return;
       }
-      clientRequest.putHeader(paramPath, RestObjectMapperFactory.getRestObjectMapper().convertToString(arg));
+      clientRequest.putHeader(paramPath,
+          RestObjectMapperFactory.getRestObjectMapper(RestObjectMapperFactory.KEY_CONSUMER_WRITE).convertToString(arg));
     }
 
     @Override

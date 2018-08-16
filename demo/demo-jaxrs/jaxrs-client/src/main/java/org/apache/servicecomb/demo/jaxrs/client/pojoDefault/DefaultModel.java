@@ -15,26 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.common.rest.codec.param;
+package org.apache.servicecomb.demo.jaxrs.client.pojoDefault;
 
-import javax.servlet.http.HttpServletRequest;
+public class DefaultModel {
+  private int index;
 
-import org.apache.servicecomb.common.rest.codec.RestClientRequest;
-import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
-
-import com.fasterxml.jackson.databind.JavaType;
-
-public interface ParamValueProcessor {
-  Object getValue(HttpServletRequest request) throws Exception;
-
-  void setValue(RestClientRequest clientRequest, Object arg) throws Exception;
-
-  default Object convertValue(Object value, JavaType targetType) {
-    return RestObjectMapperFactory.getRestObjectMapper(RestObjectMapperFactory.KEY_PROVIDER_READ_OR_CONSUMER_READ)
-        .convertValue(value, targetType);
+  public int getIndex() {
+    return index;
   }
 
-  String getParameterPath();
-
-  String getProcessorType();
+  public void setIndex(int index) {
+    this.index = index;
+  }
 }

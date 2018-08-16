@@ -17,11 +17,30 @@
 
 package org.apache.servicecomb.common.rest.codec;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Manage RestObjectMapper instances. Give users an option to specify custom mappers.
  */
 public class RestObjectMapperFactory {
+  public static final String KEY_PROVIDER_READ_OR_CONSUMER_READ = "provider.consumer.read";
+
+  public static final String KEY_PROVIDER_WRITE = "provider.write";
+
+  public static final String KEY_CONSUMER_WRITE = "consumer.write";
+
   private static AbstractRestObjectMapper defaultMapper = new RestObjectMapper();
+
+  private static Map<String, AbstractRestObjectMapper> allMappers = new HashMap<>();
+
+  public static AbstractRestObjectMapper getRestObjectMapper(String key) {
+    AbstractRestObjectMapper mapper = allMappers.get(key);
+    if (mapper != null) {
+      return mapper;
+    }
+    return defaultMapper;
+  }
 
   public static AbstractRestObjectMapper getRestObjectMapper() {
     return defaultMapper;
@@ -29,5 +48,9 @@ public class RestObjectMapperFactory {
 
   public static void setDefaultRestObjectMapper(AbstractRestObjectMapper customMapper) {
     defaultMapper = customMapper;
+  }
+
+  public static void setCustomMapper(String key, AbstractRestObjectMapper mapper) {
+    allMappers.put(key, mapper);
   }
 }

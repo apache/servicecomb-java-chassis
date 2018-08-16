@@ -15,26 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.common.rest.codec.param;
+package org.apache.servicecomb.demo.jaxrs.server.pojoDefault;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
 
-import org.apache.servicecomb.common.rest.codec.RestClientRequest;
-import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.provider.rest.common.RestSchema;
 
-import com.fasterxml.jackson.databind.JavaType;
-
-public interface ParamValueProcessor {
-  Object getValue(HttpServletRequest request) throws Exception;
-
-  void setValue(RestClientRequest clientRequest, Object arg) throws Exception;
-
-  default Object convertValue(Object value, JavaType targetType) {
-    return RestObjectMapperFactory.getRestObjectMapper(RestObjectMapperFactory.KEY_PROVIDER_READ_OR_CONSUMER_READ)
-        .convertValue(value, targetType);
+@RestSchema(schemaId = "DefaultModelService")
+@Path("DefaultModelService")
+public class DefaultModelService {
+  @Path("/model")
+  @POST
+  public DefaultResponseModel errorCode(DefaultRequestModel request) {
+    DefaultResponseModel model = new DefaultResponseModel();
+    model.setIndex(request.getIndex());
+    model.setAge(request.getAge());
+    model.setName(request.getName());
+    model.setDesc(null);
+    return model;
   }
-
-  String getParameterPath();
-
-  String getProcessorType();
 }

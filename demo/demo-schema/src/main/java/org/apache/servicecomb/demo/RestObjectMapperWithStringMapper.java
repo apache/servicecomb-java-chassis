@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.JavaType;
 
 /**
@@ -50,6 +51,7 @@ public class RestObjectMapperWithStringMapper extends RestObjectMapper {
 
   public RestObjectMapperWithStringMapper() {
     super();
+    setSerializationInclusion(Include.NON_NULL);
   }
 
   @Override
