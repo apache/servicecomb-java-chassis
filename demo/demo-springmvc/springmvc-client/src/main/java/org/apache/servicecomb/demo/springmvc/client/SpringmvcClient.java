@@ -325,6 +325,9 @@ public class SpringmvcClient {
     result = template.getForObject(cseUrlPrefix + "/query3?a=30&b=2", String.class);
     TestMgr.check("Hello 302", result);
 
+    result = template.getForObject(cseUrlPrefix + "/query3?a=30", String.class);
+    TestMgr.check("Hello 30null", result);
+
     //input values
     headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);

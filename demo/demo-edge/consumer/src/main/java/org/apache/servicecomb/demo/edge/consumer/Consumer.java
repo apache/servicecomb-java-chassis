@@ -161,6 +161,7 @@ public class Consumer {
     Assert.isNull(response.getField().getField(), "must be null");
   }
 
+  @SuppressWarnings({"unckecked", "rawtypes"})
   protected void testErrorCode() {
     String url = edgePrefix + "/v2/error/add";
 
@@ -171,14 +172,14 @@ public class Consumer {
     Assert.isTrue(raw.get("message").equals("Cse Internal Server Error"), "x99");
 
     try {
-      raw = template.getForObject(url + "?x=88&y=3", Map.class);
+      template.getForObject(url + "?x=88&y=3", Map.class);
       Assert.isTrue(false, "x88");
     } catch (HttpClientErrorException e) {
       Assert.isTrue(e.getRawStatusCode() == 403, "x88");
       Assert.isTrue(e.getResponseBodyAsString().equals("{\"id\":12,\"message\":\"not allowed id.\"}"), "x88");
     }
     try {
-      raw = template.getForObject(url + "?x=77&y=3", Map.class);
+      template.getForObject(url + "?x=77&y=3", Map.class);
       Assert.isTrue(false, "x77");
     } catch (HttpServerErrorException e) {
       Assert.isTrue(e.getRawStatusCode() == 500, "x77");

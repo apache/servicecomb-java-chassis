@@ -179,6 +179,9 @@ public class JaxrsClient {
       result = template.getForObject(cseUrlPrefix + "/query3?a=30&b=2", String.class);
       TestMgr.check("Hello 302", result);
 
+      result = template.getForObject(cseUrlPrefix + "/query3?a=30", String.class);
+      TestMgr.check("Hello 30null", result);
+
       //input values
       headers = new HttpHeaders();
       headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
@@ -278,6 +281,7 @@ public class JaxrsClient {
         template.postForObject(cseUrlPrefix + "/compute/testrawjson", jsonPerson, String.class));
   }
 
+  @SuppressWarnings({"unckecked", "rawtypes"})
   private static void testValidatorAddFail(RestTemplate template, String cseUrlPrefix) {
     Map<String, String> params = new HashMap<>();
     params.put("a", "5");
@@ -292,10 +296,11 @@ public class JaxrsClient {
       // Message dependends on locale, so just check the short part.
       // 'must be greater than or equal to 20', propertyPath=add.arg1, rootBeanClass=class org.apache.servicecomb.demo.jaxrs.server.Validator, messageTemplate='{javax.validation.constraints.Min.message}'}]]
       // ignored
+      Map data = (Map)e.getErrorData();
       TestMgr.check(
-          "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=",
-          e.getErrorData().toString().substring(0,
-              "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=".length()));
+          "[ConstraintViolationImpl{interpolatedMessage=",
+          data.get("message").toString().substring(0,
+              "[ConstraintViolationImpl{interpolatedMessage=".length()));
     }
 
     TestMgr.check(true, isExcep);
@@ -309,6 +314,7 @@ public class JaxrsClient {
     TestMgr.check(25, result);
   }
 
+  @SuppressWarnings({"unckecked", "rawtypes"})
   private static void testValidatorSayHiFail(RestTemplate template, String cseUrlPrefix) {
     boolean isExcep = false;
     try {
@@ -318,10 +324,11 @@ public class JaxrsClient {
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
       // Message dependends on locale, so just check the short part.
+      Map data = (Map)e.getErrorData();
       TestMgr.check(
-          "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=",
-          e.getErrorData().toString().substring(0,
-              "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=".length()));
+          "[ConstraintViolationImpl{interpolatedMessage=",
+          data.get("message").toString().substring(0,
+              "[ConstraintViolationImpl{interpolatedMessage=".length()));
     }
     TestMgr.check(true, isExcep);
   }
@@ -333,6 +340,7 @@ public class JaxrsClient {
     TestMgr.check("world sayhi", responseEntity.getBody());
   }
 
+  @SuppressWarnings({"unckecked", "rawtypes"})
   private static void testValidatorExchangeFail(RestTemplate template, String cseUrlPrefix) {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Accept", MediaType.APPLICATION_JSON);
@@ -351,10 +359,11 @@ public class JaxrsClient {
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
       // Message dependends on locale, so just check the short part.
+      Map data = (Map)e.getErrorData();
       TestMgr.check(
-          "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=",
-          e.getErrorData().toString().substring(0,
-              "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=".length()));
+          "[ConstraintViolationImpl{interpolatedMessage",
+          data.get("message").toString().substring(0,
+              "[ConstraintViolationImpl{interpolatedMessage".length()));
     }
     TestMgr.check(true, isExcep);
   }
