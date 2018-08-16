@@ -328,9 +328,6 @@ public class OperationGenerator {
           case "number":
             defaultValue = "0.0";
             break;
-          case "string":
-            defaultValue = "";
-            break;
           case "boolean":
             defaultValue = "false";
             break;

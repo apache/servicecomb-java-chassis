@@ -197,3 +197,4 @@ definitions:
     properties:
       name:
         type: string
+    x-java-class: "org.apache.servicecomb.demo.compute.Person"
