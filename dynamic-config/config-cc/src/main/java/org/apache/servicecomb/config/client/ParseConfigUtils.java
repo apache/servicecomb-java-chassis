@@ -75,15 +75,12 @@ public class ParseConfigUtils {
     try {
       configLock.lock();
       String oldRevision = currentVersionInfo;
-      boolean newVersion = false;
       currentVersionInfo =
           remoteItems.getOrDefault("revision", new HashMap<>()).getOrDefault("version", "default").toString();
       //make sure the currentVersionInfo != ""
       currentVersionInfo = currentVersionInfo.equals("") ? "default" : currentVersionInfo;
-      if (remoteItems.containsKey("revision")) {
-        remoteItems.remove("revision");//the key revision is not the config setting
-        newVersion = true;
-      }
+      //the key revision is not the config setting
+      boolean newVersion = (remoteItems.remove("revision") != null);
       multiDimensionItems.clear();
       multiDimensionItems.putAll(remoteItems);
       doRefreshItems();
