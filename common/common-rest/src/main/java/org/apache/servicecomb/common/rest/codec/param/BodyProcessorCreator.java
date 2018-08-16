@@ -68,7 +68,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
       contentType = contentType == null ? "" : contentType.toLowerCase(Locale.US);
       if (contentType.startsWith(MediaType.MULTIPART_FORM_DATA)
           || contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED)) {
-        return RestObjectMapperFactory.getRestObjectMapper().convertValue(request.getParameterMap(), targetType);
+        return convertValue(request.getParameterMap(), targetType);
       }
 
       // for standard HttpServletRequest, getInputStream will never return null
@@ -85,7 +85,8 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
       }
 
       try {
-        return RestObjectMapperFactory.getRestObjectMapper().readValue(inputStream, targetType);
+        return RestObjectMapperFactory.getRestObjectMapper(RestObjectMapperFactory.KEY_PROVIDER_READ_OR_CONSUMER_READ)
+            .readValue(inputStream, targetType);
       } catch (MismatchedInputException e) {
         // there is no way to detect InputStream is empty, so have to catch the exception
         if (!isRequired) {
@@ -100,7 +101,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
     public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
       try (BufferOutputStream output = new BufferOutputStream()) {
         clientRequest.putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
-        RestObjectMapperFactory.getRestObjectMapper().writeValue(output, arg);
+        RestObjectMapperFactory.getRestObjectMapper(RestObjectMapperFactory.KEY_CONSUMER_WRITE).writeValue(output, arg);
         if (arg != null) {
           clientRequest.write(output.getBuffer());
         }

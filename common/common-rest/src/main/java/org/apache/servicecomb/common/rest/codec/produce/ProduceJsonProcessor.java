@@ -35,12 +35,13 @@ public class ProduceJsonProcessor implements ProduceProcessor {
 
   @Override
   public void doEncodeResponse(OutputStream output, Object result) throws Exception {
-    RestObjectMapperFactory.getRestObjectMapper().writeValue(output, result);
+    RestObjectMapperFactory.getRestObjectMapper(RestObjectMapperFactory.KEY_PROVIDER_WRITE).writeValue(output, result);
   }
 
   @Override
   public Object doDecodeResponse(InputStream input, JavaType type) throws Exception {
-    return RestObjectMapperFactory.getRestObjectMapper().readValue(input, type);
+    return RestObjectMapperFactory.getRestObjectMapper(RestObjectMapperFactory.KEY_PROVIDER_READ_OR_CONSUMER_READ)
+        .readValue(input, type);
   }
 
   @Override

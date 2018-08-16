@@ -24,6 +24,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.http.HttpStatus;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.CseContext;
@@ -34,6 +35,7 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.jaxrs.client.beanParam.BeanParamPojoClient;
 import org.apache.servicecomb.demo.jaxrs.client.beanParam.BeanParamRestTemplateClient;
+import org.apache.servicecomb.demo.jaxrs.client.pojoDefault.DefaultModelServiceClient;
 import org.apache.servicecomb.demo.validator.Student;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
@@ -61,7 +63,11 @@ public class JaxrsClient {
   public static void init() throws Exception {
     Log4jUtils.init();
     BeanUtils.init();
-    RestObjectMapperFactory.setDefaultRestObjectMapper(new RestObjectMapperWithStringMapper());
+    RestObjectMapperFactory
+        .setCustomMapper(RestObjectMapperFactory.KEY_CONSUMER_WRITE, new RestObjectMapperWithStringMapper());
+    RestObjectMapperFactory.setCustomMapper(RestObjectMapperFactory.KEY_PROVIDER_WRITE, new RestObjectMapper());
+    RestObjectMapperFactory.setCustomMapper(RestObjectMapperFactory.KEY_PROVIDER_READ_OR_CONSUMER_READ,
+        new RestObjectMapperWithStringMapper());
   }
 
   public static void run() throws Exception {
@@ -78,6 +84,7 @@ public class JaxrsClient {
     beanParamPojoClient.testAll();
     BeanParamRestTemplateClient beanParamRestTemplateClient = new BeanParamRestTemplateClient();
     beanParamRestTemplateClient.testAll();
+    DefaultModelServiceClient.run();
   }
 
   private static void testCompute(RestTemplate template) throws Exception {

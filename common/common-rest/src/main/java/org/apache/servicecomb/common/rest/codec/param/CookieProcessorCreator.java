@@ -64,7 +64,8 @@ public class CookieProcessorCreator implements ParamValueProcessorCreator {
 
     @Override
     public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
-      clientRequest.addCookie(paramPath, RestObjectMapperFactory.getRestObjectMapper().convertToString(arg));
+      clientRequest.addCookie(paramPath,
+          RestObjectMapperFactory.getRestObjectMapper(RestObjectMapperFactory.KEY_CONSUMER_WRITE).convertToString(arg));
     }
 
     @Override

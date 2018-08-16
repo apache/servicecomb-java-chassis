@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.demo.jaxrs.server;
 
+import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.demo.RestObjectMapperWithStringMapper;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
@@ -26,6 +27,10 @@ public class JaxrsServer {
   public static void main(String[] args) throws Exception {
     Log4jUtils.init();
     BeanUtils.init();
-    RestObjectMapperFactory.setDefaultRestObjectMapper(new RestObjectMapperWithStringMapper());
+    RestObjectMapperFactory
+        .setCustomMapper(RestObjectMapperFactory.KEY_CONSUMER_WRITE, new RestObjectMapperWithStringMapper());
+    RestObjectMapperFactory.setCustomMapper(RestObjectMapperFactory.KEY_PROVIDER_WRITE, new RestObjectMapper());
+    RestObjectMapperFactory.setCustomMapper(RestObjectMapperFactory.KEY_PROVIDER_READ_OR_CONSUMER_READ,
+        new RestObjectMapperWithStringMapper());
   }
 }
