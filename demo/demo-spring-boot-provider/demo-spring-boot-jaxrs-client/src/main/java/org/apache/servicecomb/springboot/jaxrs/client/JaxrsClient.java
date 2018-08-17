@@ -17,9 +17,9 @@
 
 package org.apache.servicecomb.springboot.jaxrs.client;
 
-import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.demo.RestObjectMapperWithStringMapper;
+import org.apache.servicecomb.demo.RestObjectMapperWithStringMapperNotWriteNull;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.springboot.starter.provider.EnableServiceComb;
@@ -31,11 +31,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class JaxrsClient {
 
   public static void main(String[] args) throws Exception {
-    RestObjectMapperFactory
-        .setCustomMapper(RestObjectMapperFactory.KEY_CONSUMER_WRITE, new RestObjectMapperWithStringMapper());
-    RestObjectMapperFactory.setCustomMapper(RestObjectMapperFactory.KEY_PROVIDER_WRITE, new RestObjectMapper());
-    RestObjectMapperFactory.setCustomMapper(RestObjectMapperFactory.KEY_PROVIDER_READ_OR_CONSUMER_READ,
-        new RestObjectMapperWithStringMapper());
+    RestObjectMapperFactory.setDefaultRestObjectMapper(new RestObjectMapperWithStringMapper());
+    RestObjectMapperFactory.setConsumerWriterMapper(new RestObjectMapperWithStringMapperNotWriteNull());
     Log4jUtils.init();
     SpringApplication.run(JaxrsClient.class, args);
     org.apache.servicecomb.demo.jaxrs.client.JaxrsClient.run();
