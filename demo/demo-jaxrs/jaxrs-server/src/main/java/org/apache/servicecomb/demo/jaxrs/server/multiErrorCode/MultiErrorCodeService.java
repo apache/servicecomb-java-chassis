@@ -17,6 +17,9 @@
 
 package org.apache.servicecomb.demo.jaxrs.server.multiErrorCode;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response.Status;
@@ -138,5 +141,28 @@ public class MultiErrorCodeService {
           .build();
     }
     return response;
+  }
+
+  @Path("/noClientErrorCode")
+  @POST
+  @ApiResponses({
+      @ApiResponse(code = 400, response = NoClientErrorCode400.class, message = "")})
+  public List<NoClientErrorCode200> noClientErrorCode(MultiRequest request) {
+    javax.ws.rs.core.Response response;
+    if (request.getCode() == 400) {
+      NoClientErrorCode400 r = new NoClientErrorCode400();
+      r.setCode(request.getCode());
+      r.setMessage(request.getMessage());
+      r.setT400(400);
+      throw new InvocationException(Status.BAD_REQUEST, r);
+    } else {
+      NoClientErrorCode200 r = new NoClientErrorCode200();
+      r.setCode(request.getCode());
+      r.setMessage(request.getMessage());
+      r.setT200(200);
+      List<NoClientErrorCode200> result = new ArrayList<>();
+      result.add(r);
+      return result;
+    }
   }
 }
