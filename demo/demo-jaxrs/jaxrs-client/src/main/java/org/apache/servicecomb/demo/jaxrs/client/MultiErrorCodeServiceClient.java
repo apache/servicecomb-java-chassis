@@ -16,8 +16,12 @@
  */
 package org.apache.servicecomb.demo.jaxrs.client;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.TestMgr;
@@ -46,6 +50,7 @@ public class MultiErrorCodeServiceClient {
       testErrorCodeWithHeader();
       testErrorCodeWithHeaderJAXRS();
       testErrorCodeWithHeaderJAXRSUsingRowType();
+      testNoClientErrorCode();
     }
   }
 
@@ -185,5 +190,31 @@ public class MultiErrorCodeServiceClient {
     TestMgr.check(result.getBody().getMessage(), "test message");
     TestMgr.check(result.getBody().getCode(), 200);
     TestMgr.check(result.getHeaders().getFirst("x-code"), 200);
+  }
+
+  private static void testNoClientErrorCode() {
+    JsonObject requestJson = new JsonObject();
+    requestJson.put("code", 200);
+    requestJson.put("message", "test message");
+
+    ResponseEntity<List> listResult = template
+        .postForEntity(SERVER + "/MultiErrorCodeService/noClientErrorCode", requestJson, List.class);
+    TestMgr.check(listResult.getStatusCode(), 200);
+    Map mapResult = RestObjectMapperFactory.getRestObjectMapper().convertValue(listResult.getBody().get(0), Map.class);
+    TestMgr.check(mapResult.get("message"), "test message");
+    TestMgr.check(mapResult.get("code"), 200);
+    TestMgr.check(mapResult.get("t200"), 200);
+
+    try {
+      requestJson.put("code", 400);
+      template
+          .postForEntity(SERVER + "/MultiErrorCodeService/noClientErrorCode", requestJson, Object.class);
+    } catch (InvocationException e) {
+      TestMgr.check(e.getStatusCode(), 400);
+      mapResult = RestObjectMapperFactory.getRestObjectMapper().convertValue(e.getErrorData(), Map.class);
+      TestMgr.check(mapResult.get("message"), "test message");
+      TestMgr.check(mapResult.get("code"), 400);
+      TestMgr.check(mapResult.get("t400"), 400);
+    }
   }
 }

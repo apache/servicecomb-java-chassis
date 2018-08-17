@@ -54,13 +54,13 @@ public class TestResponsesMeta {
     meta.init(swaggerToClassGenerator, operation, int.class);
 
     ResponseMeta resp = meta.findResponseMeta(200);
-    // Response is based on swagger type and is Integer type.
-    Assert.assertEquals(Integer.class, resp.getJavaType().getRawClass());
+    // Response currently is based on return type not swagger type
+    Assert.assertEquals(int.class, resp.getJavaType().getRawClass());
 
     resp = meta.findResponseMeta(201);
-    // Response is based on swagger type and is Integer type. For this test case there is one problem need to discuss.
+    // Response currently is based on return type not swagger type. For this test case there is one problem need to discuss.
     // If SUCCESS family, do we should use OK response type?
-    Assert.assertEquals(Integer.class, resp.getJavaType().getRawClass());
+    Assert.assertEquals(int.class, resp.getJavaType().getRawClass());
 
     resp = meta.findResponseMeta(400);
     Assert.assertEquals(String.class, resp.getJavaType().getRawClass());
