@@ -30,7 +30,7 @@ public interface ParamValueProcessor {
   void setValue(RestClientRequest clientRequest, Object arg) throws Exception;
 
   default Object convertValue(Object value, JavaType targetType) {
-    return RestObjectMapperFactory.getRestObjectMapper(RestObjectMapperFactory.KEY_PROVIDER_READ_OR_CONSUMER_READ)
+    return RestObjectMapperFactory.getRestObjectMapper()
         .convertValue(value, targetType);
   }
 

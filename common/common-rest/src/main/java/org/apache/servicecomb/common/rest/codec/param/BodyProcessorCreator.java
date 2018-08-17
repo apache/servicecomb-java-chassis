@@ -85,7 +85,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
       }
 
       try {
-        return RestObjectMapperFactory.getRestObjectMapper(RestObjectMapperFactory.KEY_PROVIDER_READ_OR_CONSUMER_READ)
+        return RestObjectMapperFactory.getRestObjectMapper()
             .readValue(inputStream, targetType);
       } catch (MismatchedInputException e) {
         // there is no way to detect InputStream is empty, so have to catch the exception
@@ -101,7 +101,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
     public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
       try (BufferOutputStream output = new BufferOutputStream()) {
         clientRequest.putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
-        RestObjectMapperFactory.getRestObjectMapper(RestObjectMapperFactory.KEY_CONSUMER_WRITE).writeValue(output, arg);
+        RestObjectMapperFactory.getConsumerWriterMapper().writeValue(output, arg);
         if (arg != null) {
           clientRequest.write(output.getBuffer());
         }
