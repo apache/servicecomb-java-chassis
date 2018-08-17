@@ -75,7 +75,7 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator {
         return;
       }
       clientRequest.putHeader(paramPath,
-          RestObjectMapperFactory.getRestObjectMapper(RestObjectMapperFactory.KEY_CONSUMER_WRITE).convertToString(arg));
+          RestObjectMapperFactory.getConsumerWriterMapper().convertToString(arg));
     }
 
     @Override
