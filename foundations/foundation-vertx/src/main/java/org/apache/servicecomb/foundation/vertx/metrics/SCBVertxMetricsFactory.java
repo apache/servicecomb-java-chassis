@@ -14,23 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.foundation.vertx.server;
 
-import org.junit.Assert;
-import org.junit.Test;
+package org.apache.servicecomb.foundation.vertx.metrics;
 
-import io.vertx.core.net.impl.NetSocketImpl;
-import mockit.Mocked;
+import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
+import io.vertx.core.spi.VertxMetricsFactory;
+import io.vertx.core.spi.metrics.VertxMetrics;
 
-public class TestTcpServerConnection {
-  @Test
-  public void test(@Mocked NetSocketImpl netSocket) {
-    TcpServerConnection connection = new TcpServerConnection();
-    connection.setProtocol("p");
-    connection.setZipName("z");
-
-    connection.init(netSocket);
-
-    Assert.assertEquals(netSocket, connection.getNetSocket());
+public class SCBVertxMetricsFactory implements VertxMetricsFactory {
+  @Override
+  public VertxMetrics metrics(Vertx vertx, VertxOptions vertxOptions) {
+    return new SCBVertxMetrics();
   }
 }
