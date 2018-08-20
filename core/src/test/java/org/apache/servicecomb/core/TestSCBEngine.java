@@ -18,6 +18,7 @@
 package org.apache.servicecomb.core;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.servicecomb.config.ConfigUtil;
@@ -26,6 +27,7 @@ import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.core.transport.TransportManager;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
@@ -133,5 +135,24 @@ public class TestSCBEngine {
         Matchers
             .is("InvocationException: code=503;msg=CommonExceptionData [message=The request is rejected. Cannot process the request due to STATUS = DOWN]"));
     engine.getReferenceConfigForInvoke(null);
+  }
+
+  @Test
+  public void setBootListenerList(@Mocked BootListener beanListener, @Mocked BootListener spiListener) {
+    new Expectations(SPIServiceUtils.class) {
+      {
+        beanListener.getOrder();
+        result = 1;
+        spiListener.getOrder();
+        result = 0;
+        SPIServiceUtils.getOrLoadSortedService(BootListener.class);
+        result = Arrays.asList(spiListener);
+      }
+    };
+
+    SCBEngine engine = new SCBEngine();
+    engine.setBootListenerList(Arrays.asList(beanListener));
+
+    Assert.assertThat(engine.getBootListenerList(), Matchers.contains(spiListener, beanListener));
   }
 }

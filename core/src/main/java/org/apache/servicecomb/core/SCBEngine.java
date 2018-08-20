@@ -16,7 +16,10 @@
  */
 package org.apache.servicecomb.core;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -36,6 +39,7 @@ import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceRegisterTask;
@@ -69,7 +73,6 @@ public class SCBEngine {
   private final AtomicLong invocationFinishedCounter = new AtomicLong();
 
   private volatile SCBStatus status = SCBStatus.DOWN;
-
 
   public void setStatus(SCBStatus status) {
     this.status = status;
@@ -115,7 +118,12 @@ public class SCBEngine {
   }
 
   public void setBootListenerList(Collection<BootListener> bootListenerList) {
-    this.bootListenerList = bootListenerList;
+    List<BootListener> tmp = new ArrayList<>();
+    tmp.addAll(bootListenerList);
+    tmp.addAll(SPIServiceUtils.getOrLoadSortedService(BootListener.class));
+    tmp.sort(Comparator.comparingInt(BootListener::getOrder));
+
+    this.bootListenerList = tmp;
   }
 
   protected void triggerEvent(EventType eventType) {
