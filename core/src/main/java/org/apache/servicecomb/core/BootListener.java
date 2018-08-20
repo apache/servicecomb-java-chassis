@@ -45,5 +45,9 @@ public interface BootListener {
     }
   }
 
+  default int getOrder() {
+    return 0;
+  }
+
   void onBootEvent(BootEvent event);
 }
