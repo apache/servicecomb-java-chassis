@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.base.ServiceCombConstants;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
@@ -36,7 +37,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.apache.commons.lang3.StringUtils;
 
 public class MicroserviceRegisterTask extends AbstractRegisterTask {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceRegisterTask.class);
@@ -73,10 +73,15 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
   @Override
   protected boolean doRegister() {
     LOGGER.info("running microservice register task.");
-    String serviceId = srClient.getMicroserviceId(microservice.getAppId(),
+    Holder<String> serviceIdHolder = srClient.getMicroserviceId(microservice.getAppId(),
         microservice.getServiceName(),
         microservice.getVersion(),
         microservice.getEnvironment());
+    if (Status.OK.getStatusCode() != serviceIdHolder.getStatusCode()) {
+      LOGGER.error("failed to query serviceId, status code is [{}]", serviceIdHolder.getStatusCode());
+      return false;
+    }
+    String serviceId = serviceIdHolder.getValue();
     if (!StringUtils.isEmpty(serviceId)) {
       // This microservice has been registered, so we just use the serviceId gotten from service center
       microservice.setServiceId(serviceId);
@@ -325,7 +330,7 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
 
       // Currently nothing to do but print a warning
       LOGGER.warn("There are schemas only existing in service center: {}, which means there are interfaces changed. "
-          + "It's recommended to increment microservice version before deploying.",
+              + "It's recommended to increment microservice version before deploying.",
           scSchemaMap.keySet());
       LOGGER.warn("ATTENTION: The schemas in new version are less than the old version, "
           + "which may cause compatibility problems.");

@@ -69,18 +69,16 @@ public class TestMicroserviceRegisterTask {
   }
 
   @After
-  public void teardown() {
+  public void tearDown() {
     collector.teardown();
   }
 
   @Test
-  public void testNewRegisterFailed(@Mocked ServiceRegistryClient srClient) {
+  public void testNewRegisterGetServiceIdFailed(@Mocked ServiceRegistryClient srClient) {
     new Expectations() {
       {
         srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
-        result = null;
-        srClient.registerMicroservice((Microservice) any);
-        result = null;
+        result = new Holder<String>();
       }
     };
 
@@ -91,16 +89,19 @@ public class TestMicroserviceRegisterTask {
     Assert.assertEquals(false, registerTask.isSchemaIdSetMatch());
     Assert.assertEquals(null, microservice.getServiceId());
     Assert.assertEquals(1, taskList.size());
+    Assert.assertSame(registerTask, taskList.get(0));
   }
 
   @Test
   public void testNewRegisterSuccess(@Mocked ServiceRegistryClient srClient) {
     Holder<List<GetSchemaResponse>> onlineSchemasHolder = new Holder<>();
     onlineSchemasHolder.setStatusCode(200);
+    Holder<String> serviceIdHolder = new Holder<>();
+    serviceIdHolder.setValue(null).setStatusCode(200);
     new Expectations() {
       {
         srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
-        result = null;
+        result = serviceIdHolder;
         srClient.registerMicroservice((Microservice) any);
         result = "serviceId";
         srClient.getSchemas("serviceId");
@@ -141,7 +142,7 @@ public class TestMicroserviceRegisterTask {
     new Expectations() {
       {
         srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
-        result = null;
+        result = new Holder<String>().setStatusCode(200);
         srClient.registerMicroservice((Microservice) any);
         result = "serviceId";
         srClient.registerSchema(anyString, anyString, anyString);
@@ -177,7 +178,7 @@ public class TestMicroserviceRegisterTask {
     new Expectations() {
       {
         srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
-        result = null;
+        result = new Holder<String>().setStatusCode(200).setValue(null);
         srClient.registerMicroservice((Microservice) any);
         result = "serviceId";
         srClient.getSchema("serviceId", "s1");
@@ -204,7 +205,7 @@ public class TestMicroserviceRegisterTask {
     new Expectations() {
       {
         srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
-        result = "serviceId";
+        result = new Holder<String>().setStatusCode(200).setValue("serviceId");
         srClient.getMicroservice(anyString);
         result = microservice;
         srClient.getSchemas("serviceId");
@@ -240,7 +241,7 @@ public class TestMicroserviceRegisterTask {
     new Expectations() {
       {
         srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
-        result = "serviceId";
+        result = new Holder<String>().setStatusCode(200).setValue("serviceId");
         srClient.getMicroservice(anyString);
         result = otherMicroservice;
         srClient.getSchemas("serviceId");
@@ -262,7 +263,7 @@ public class TestMicroserviceRegisterTask {
     new Expectations() {
       {
         srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
-        result = "serviceId";
+        result = new Holder<String>().setStatusCode(200).setValue("serviceId");
         srClient.getMicroservice(anyString);
         result = null;
       }
@@ -297,7 +298,7 @@ public class TestMicroserviceRegisterTask {
     new Expectations() {
       {
         srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
-        result = "serviceId";
+        result = new Holder<String>().setStatusCode(200).setValue("serviceId");
         srClient.getMicroservice(anyString);
         result = otherMicroservice;
         srClient.getSchemas(anyString);
@@ -338,7 +339,7 @@ public class TestMicroserviceRegisterTask {
     new Expectations() {
       {
         srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
-        result = "serviceId";
+        result = new Holder<String>().setStatusCode(200).setValue("serviceId");
         srClient.getMicroservice(anyString);
         result = otherMicroservice;
         srClient.getSchemas(anyString);
@@ -382,7 +383,7 @@ public class TestMicroserviceRegisterTask {
     new Expectations() {
       {
         srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
-        result = "serviceId";
+        result = new Holder<String>().setStatusCode(200).setValue("serviceId");
         srClient.getMicroservice(anyString);
         result = otherMicroservice;
         srClient.getSchemas(anyString);
@@ -420,7 +421,7 @@ public class TestMicroserviceRegisterTask {
     new Expectations() {
       {
         srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
-        result = "serviceId";
+        result = new Holder<String>().setStatusCode(200).setValue("serviceId");
         srClient.getMicroservice(anyString);
         result = otherMicroservice;
         srClient.getSchemas(anyString);
@@ -461,7 +462,7 @@ public class TestMicroserviceRegisterTask {
     new Expectations() {
       {
         srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
-        result = "serviceId";
+        result = new Holder<String>().setStatusCode(200).setValue("serviceId");
         srClient.getMicroservice(anyString);
         result = otherMicroservice;
         srClient.getSchemas(anyString);
@@ -506,7 +507,7 @@ public class TestMicroserviceRegisterTask {
     new Expectations() {
       {
         srClient.getMicroserviceId(anyString, anyString, anyString, anyString);
-        result = "serviceId";
+        result = new Holder<String>().setStatusCode(200).setValue("serviceId");
         srClient.getMicroservice(anyString);
         result = otherMicroservice;
         srClient.getSchemas(anyString);
@@ -700,7 +701,6 @@ public class TestMicroserviceRegisterTask {
           "        format: \"int32\"\n" +
           "        maximum: 20\n" +
           "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"]", events.get(5).getMessage());
-
     }
 
     Assert.assertEquals(true, isIlleagalException);
