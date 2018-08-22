@@ -36,7 +36,6 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
-import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
 import org.junit.Assert;
@@ -136,6 +135,54 @@ public class TestDefaultHttpClientFilter {
         result = handlerContext;
         invocation.getOperationMeta();
         result = operationMeta;
+        operationMeta.findResponseMeta(400);
+        result = responseMeta;
+        operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
+        result = swaggerRestOperation;
+        responseMeta.getJavaType();
+        result = SimpleType.constructUnsafe(Date.class);
+        responseEx.getStatus();
+        result = 400;
+        responseEx.getBodyBuffer();
+        result = new BufferImpl().appendString("abc");
+      }
+    };
+    new MockUp<DefaultHttpClientFilter>() {
+      @Mock
+      ProduceProcessor findProduceProcessor(RestOperationMeta restOperation, HttpServletResponseEx responseEx) {
+        return new ProduceJsonProcessor();
+      }
+    };
+
+    Response response = filter.extractResponse(invocation, responseEx);
+    Assert.assertEquals(400, response.getStatusCode());
+    Assert.assertEquals(InvocationException.class, response.<InvocationException>getResult().getClass());
+    InvocationException invocationException = response.getResult();
+    Assert.assertEquals(
+        "InvocationException: code=400;msg=CommonExceptionData [message=method null, path null, statusCode 400, reasonPhrase null, response content-type null is not supported]",
+        invocationException.getMessage());
+    Assert.assertEquals("Unrecognized token 'abc': was expecting ('true', 'false' or 'null')\n"
+            + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 7]",
+        invocationException.getCause().getMessage());
+    Assert.assertEquals(CommonExceptionData.class, invocationException.getErrorData().getClass());
+    CommonExceptionData commonExceptionData = (CommonExceptionData) invocationException.getErrorData();
+    Assert.assertEquals(
+        "method null, path null, statusCode 400, reasonPhrase null, response content-type null is not supported",
+        commonExceptionData.getMessage());
+  }
+
+  @Test
+  public void extractResult_decodeError200(@Mocked Invocation invocation, @Mocked ReadStreamPart part,
+      @Mocked OperationMeta operationMeta, @Mocked ResponseMeta responseMeta,
+      @Mocked RestOperationMeta swaggerRestOperation,
+      @Mocked HttpServletResponseEx responseEx) {
+    Map<String, Object> handlerContext = new HashMap<>();
+    new Expectations() {
+      {
+        invocation.getHandlerContext();
+        result = handlerContext;
+        invocation.getOperationMeta();
+        result = operationMeta;
         operationMeta.findResponseMeta(200);
         result = responseMeta;
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
@@ -156,18 +203,20 @@ public class TestDefaultHttpClientFilter {
     };
 
     Response response = filter.extractResponse(invocation, responseEx);
-    Assert.assertEquals(490, response.getStatusCode());
-    Assert.assertEquals(ExceptionFactory.CONSUMER_INNER_REASON_PHRASE, response.getReasonPhrase());
+    Assert.assertEquals(400, response.getStatusCode());
     Assert.assertEquals(InvocationException.class, response.<InvocationException>getResult().getClass());
     InvocationException invocationException = response.getResult();
-    Assert.assertEquals("InvocationException: code=490;msg=CommonExceptionData [message=Cse Internal Bad Request]",
+    Assert.assertEquals(
+        "InvocationException: code=400;msg=CommonExceptionData [message=method null, path null, statusCode 200, reasonPhrase null, response content-type null is not supported]",
         invocationException.getMessage());
     Assert.assertEquals("Unrecognized token 'abc': was expecting ('true', 'false' or 'null')\n"
             + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 7]",
         invocationException.getCause().getMessage());
     Assert.assertEquals(CommonExceptionData.class, invocationException.getErrorData().getClass());
     CommonExceptionData commonExceptionData = (CommonExceptionData) invocationException.getErrorData();
-    Assert.assertEquals("Cse Internal Bad Request", commonExceptionData.getMessage());
+    Assert.assertEquals(
+        "method null, path null, statusCode 200, reasonPhrase null, response content-type null is not supported",
+        commonExceptionData.getMessage());
   }
 
   @Test

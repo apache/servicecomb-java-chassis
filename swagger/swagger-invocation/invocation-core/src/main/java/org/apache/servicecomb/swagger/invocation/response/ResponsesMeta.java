@@ -53,7 +53,6 @@ public class ResponsesMeta {
   // 如果不传return类型进来，完全以swagger为标准，会导致生成的class不等于return
   public void init(SwaggerToClassGenerator swaggerToClassGenerator, Operation operation, Type returnType) {
     initSuccessResponse(returnType);
-    initInternalErrorResponse();
     initGlobalDefaultMapper();
 
     for (Entry<String, Response> entry : operation.getResponses().entrySet()) {
@@ -67,6 +66,8 @@ public class ResponsesMeta {
       ResponseMeta responseMeta = responseMap.computeIfAbsent(statusCode, k -> new ResponseMeta());
       responseMeta.init(swaggerToClassGenerator, entry.getValue());
     }
+
+    initInternalErrorResponse();
 
     if (defaultResponse == null) {
       // swagger中没有定义default，加上default专用于处理exception
@@ -86,8 +87,8 @@ public class ResponsesMeta {
   protected void initInternalErrorResponse() {
     ResponseMeta internalErrorResponse = new ResponseMeta();
     internalErrorResponse.setJavaType(COMMON_EXCEPTION_JAVA_TYPE);
-    responseMap.put(ExceptionFactory.CONSUMER_INNER_STATUS_CODE, internalErrorResponse);
-    responseMap.put(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, internalErrorResponse);
+    responseMap.putIfAbsent(ExceptionFactory.CONSUMER_INNER_STATUS_CODE, internalErrorResponse);
+    responseMap.putIfAbsent(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, internalErrorResponse);
   }
 
   protected void initGlobalDefaultMapper() {
