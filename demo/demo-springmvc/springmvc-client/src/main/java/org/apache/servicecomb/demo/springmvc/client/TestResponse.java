@@ -146,15 +146,7 @@ public class TestResponse {
     }
     Objects.requireNonNull(exception);
     // 2. CseException: bizKeeper exception
-    Throwable wrappedException = exception.getCause();
-    TestMgr.check(CseException.class, wrappedException.getClass());
-    // 3. InvocationException: decoder wrapping exception
-    wrappedException = wrappedException.getCause();
-    TestMgr.check(InvocationException.class, wrappedException.getClass());
-    TestMgr.check("InvocationException: code=490;msg=CommonExceptionData [message=Cse Internal Bad Request]",
-        wrappedException.getMessage());
-    // 4. InvalidFormatException: decode exception
-    Object cause = wrappedException.getCause();
+    Throwable cause = exception.getCause();
     TestMgr.check(InvalidFormatException.class, cause.getClass());
     TestMgr.check(
         "Cannot deserialize value of type `java.util.Date` from String \"returnOK\": not a valid representation "

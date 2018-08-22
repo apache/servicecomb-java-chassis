@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,6 +50,7 @@ import org.apache.servicecomb.swagger.extend.annotations.ResponseHeaders;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.response.Headers;
 import org.slf4j.Logger;
@@ -270,42 +270,44 @@ public class CodeFirstSpringmvc {
     return result;
   }
 
+  // Using 490, 590 error code, the response type should be CommonExceptionData. Or we need
+  // complex ExceptionConverters to deal with exceptions thrown by Hanlders, etc.
   @RequestMapping(path = "/fallback/returnnull/{name}", method = RequestMethod.GET)
   @ApiResponses(value = {@ApiResponse(code = 200, response = String.class, message = "xxx"),
-      @ApiResponse(code = 490, response = String.class, message = "xxx")})
+      @ApiResponse(code = 490, response = CommonExceptionData.class, message = "xxx")})
   public String fallbackReturnNull(@PathVariable(name = "name") String name) {
     if ("throwexception".equals(name)) {
-      throw new InvocationException(490, "490", "xxx");
+      throw new InvocationException(490, "490", new CommonExceptionData("xxx"));
     }
     return name;
   }
 
   @RequestMapping(path = "/fallback/throwexception/{name}", method = RequestMethod.GET)
   @ApiResponses(value = {@ApiResponse(code = 200, response = String.class, message = "xxx"),
-      @ApiResponse(code = 490, response = String.class, message = "xxx")})
+      @ApiResponse(code = 490, response = CommonExceptionData.class, message = "xxx")})
   public String fallbackThrowException(@PathVariable(name = "name") String name) {
     if ("throwexception".equals(name)) {
-      throw new InvocationException(490, "490", "xxx");
+      throw new InvocationException(490, "490", new CommonExceptionData("xxx"));
     }
     return name;
   }
 
   @RequestMapping(path = "/fallback/fromcache/{name}", method = RequestMethod.GET)
   @ApiResponses(value = {@ApiResponse(code = 200, response = String.class, message = "xxx"),
-      @ApiResponse(code = 490, response = String.class, message = "xxx")})
+      @ApiResponse(code = 490, response = CommonExceptionData.class, message = "xxx")})
   public String fallbackFromCache(@PathVariable(name = "name") String name) {
     if ("throwexception".equals(name)) {
-      throw new InvocationException(490, "490", "xxx");
+      throw new InvocationException(490, "490", new CommonExceptionData("xxx"));
     }
     return name;
   }
 
   @RequestMapping(path = "/fallback/force/{name}", method = RequestMethod.GET)
   @ApiResponses(value = {@ApiResponse(code = 200, response = String.class, message = "xxx"),
-      @ApiResponse(code = 490, response = String.class, message = "xxx")})
+      @ApiResponse(code = 490, response = CommonExceptionData.class, message = "xxx")})
   public String fallbackForce(@PathVariable(name = "name") String name) {
     if ("throwexception".equals(name)) {
-      throw new InvocationException(490, "490", "xxx");
+      throw new InvocationException(490, "490", new CommonExceptionData("xxx"));
     }
     return name;
   }
@@ -317,7 +319,7 @@ public class CodeFirstSpringmvc {
 
   @RequestMapping(path = "/testenum/{name}", method = RequestMethod.GET)
   @ApiResponses(value = {@ApiResponse(code = 200, response = String.class, message = "200 normal"),
-      @ApiResponse(code = 490, response = String.class, message = "490 exception")})
+      @ApiResponse(code = 490, response = CommonExceptionData.class, message = "490 exception")})
   public String testEnum(@RequestParam(name = "username") String username,
       @PathVariable(value = "name") NameType nameType) {
     return nameType.toString();

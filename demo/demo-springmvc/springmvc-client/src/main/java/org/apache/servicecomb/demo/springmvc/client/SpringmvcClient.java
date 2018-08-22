@@ -54,12 +54,19 @@ public class SpringmvcClient {
   private static Controller controller;
 
   public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
+    try {
+      Log4jUtils.init();
+      BeanUtils.init();
 
-    run();
+      run();
 
-    TestMgr.summary();
+      TestMgr.summary();
+    } catch (Throwable e) {
+      TestMgr.check("success", "failed");
+      System.err.println("-------------- test failed -------------");
+      e.printStackTrace();
+      System.err.println("-------------- test failed -------------");
+    }
   }
 
   public static void run() {

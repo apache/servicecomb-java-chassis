@@ -173,6 +173,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
   }
 
   private void testFallback(RestTemplate template, String cseUrlPrefix) {
+    long start = System.currentTimeMillis();
     String result = template.getForObject(cseUrlPrefix + "/fallback/returnnull/hello", String.class);
     TestMgr.check(result, "hello");
     result = template.getForObject(cseUrlPrefix + "/fallback/returnnull/throwexception", String.class);
@@ -199,6 +200,10 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
 
     result = template.getForObject(cseUrlPrefix + "/fallback/force/hello", String.class);
     TestMgr.check(result, "mockedreslut");
+
+    // This test case is fallback testing and will return null if failed.
+    // In order to check if failed due to some unexpected timeout exception, check the time.
+    TestMgr.check(System.currentTimeMillis() - start < 10000, true);
   }
 
   private void testResponseEntity(String microserviceName, RestTemplate template, String cseUrlPrefix) {

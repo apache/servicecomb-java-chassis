@@ -31,6 +31,9 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,8 +94,22 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
       result = produceProcessor.decodeResponse(responseEx.getBodyBuffer(), responseMeta.getJavaType());
       return Response.create(responseEx.getStatusType(), result);
     } catch (Exception e) {
-      LOGGER.error("failed to decode response body, exception type is [{}]", e.getClass());
-      return Response.createConsumerFail(e);
+      LOGGER.error("failed to decode response body, exception is [{}]", e.getMessage());
+      String msg =
+          String.format("method %s, path %s, statusCode %d, reasonPhrase %s, response content-type %s is not supported",
+              swaggerRestOperation.getHttpMethod(),
+              swaggerRestOperation.getAbsolutePath(),
+              responseEx.getStatus(),
+              responseEx.getStatusType().getReasonPhrase(),
+              responseEx.getHeader(HttpHeaders.CONTENT_TYPE));
+      if (HttpStatus.isSuccess(responseEx.getStatus())) {
+        return Response.createConsumerFail(
+            new InvocationException(400, responseEx.getStatusType().getReasonPhrase(),
+                new CommonExceptionData(msg), e));
+      }
+      return Response.createConsumerFail(
+          new InvocationException(responseEx.getStatus(), responseEx.getStatusType().getReasonPhrase(),
+              new CommonExceptionData(msg), e));
     }
   }
 
