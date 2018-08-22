@@ -100,6 +100,7 @@ public class SCBHttpServerMetrics implements HttpServerMetrics<Void, Void, SCBSo
   }
 
   @Override
+  @Deprecated
   public boolean isEnabled() {
     return true;
   }

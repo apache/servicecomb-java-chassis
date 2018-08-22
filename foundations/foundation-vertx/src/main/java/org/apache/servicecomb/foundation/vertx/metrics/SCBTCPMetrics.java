@@ -60,6 +60,7 @@ public class SCBTCPMetrics implements TCPMetrics<SCBSocketMetrics> {
   }
 
   @Override
+  @Deprecated
   public boolean isEnabled() {
     return true;
   }
