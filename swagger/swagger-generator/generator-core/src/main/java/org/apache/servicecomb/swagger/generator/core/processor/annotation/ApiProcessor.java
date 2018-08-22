@@ -17,11 +17,16 @@
 
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.apache.servicecomb.swagger.generator.core.ClassAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
 import org.springframework.util.StringUtils;
 
 import io.swagger.annotations.Api;
+import io.swagger.models.Swagger;
 
 public class ApiProcessor implements ClassAnnotationProcessor {
   @Override
@@ -29,6 +34,52 @@ public class ApiProcessor implements ClassAnnotationProcessor {
     Api api = (Api) annotation;
 
     setTags(api, swaggerGenerator);
+    // except for @Api, @RequestMapping can also set consumes and produces
+    // @RequestMapping takes HIGHER priority than @Api for legacy reason
+    processConsumes(api, swaggerGenerator.getSwagger());
+    processProduces(api, swaggerGenerator.getSwagger());
+  }
+
+  private void processProduces(Api api, Swagger swagger) {
+    List<String> validProducesList = getValidStringList(api.produces());
+    if (isBlank(swagger.getProduces()) && !validProducesList.isEmpty()) {
+      swagger.setProduces(validProducesList);
+    }
+  }
+
+  private void processConsumes(Api api, Swagger swagger) {
+    List<String> validConsumesList = getValidStringList(api.consumes());
+    if (isBlank(swagger.getConsumes()) && !validConsumesList.isEmpty()) {
+      swagger.setConsumes(validConsumesList);
+    }
+  }
+
+  /**
+   * Split {@link Api#consumes} and {@link Api#produces}, and filter empty items.
+   */
+  private List<String> getValidStringList(String rawString) {
+    return Stream.of(rawString.split(","))
+        .filter(s -> !StringUtils.isEmpty(s))
+        .map(String::trim)
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * @return true if {@code stringList} is empty or each element of {@code stringList} is empty;
+   * otherwise false.
+   */
+  private boolean isBlank(List<String> stringList) {
+    boolean isEmpty = null == stringList || stringList.isEmpty();
+    if (isEmpty) {
+      return true;
+    }
+
+    for (String s : stringList) {
+      if (StringUtils.isEmpty(s)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private void setTags(Api api, SwaggerGenerator swaggerGenerator) {
