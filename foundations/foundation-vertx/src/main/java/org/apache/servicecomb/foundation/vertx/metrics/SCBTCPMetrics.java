@@ -17,36 +17,55 @@
 
 package org.apache.servicecomb.foundation.vertx.metrics;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.servicecomb.foundation.common.event.EventManager;
-import org.apache.servicecomb.foundation.vertx.ClientEvent;
-import org.apache.servicecomb.foundation.vertx.ConnectionEvent;
-import org.apache.servicecomb.foundation.vertx.TransportType;
+import org.apache.servicecomb.foundation.vertx.ServerEvent;
+import org.apache.servicecomb.foundation.vertx.ConnectionEventType;
 
-import io.vertx.core.metrics.impl.DummyVertxMetrics.DummyTCPMetrics;
 import io.vertx.core.net.SocketAddress;
+import io.vertx.core.spi.metrics.TCPMetrics;
 
-public class SCBTCPMetrics extends DummyTCPMetrics {
-  private final AtomicInteger connectedCounter = new AtomicInteger();
+public class SCBTCPMetrics implements TCPMetrics<SCBSocketMetrics> {
 
-  public AtomicInteger getConnectedCounter() {
-    return connectedCounter;
+  private final SCBSocketMetrics metrics;
+
+  public SCBTCPMetrics() {
+    this.metrics = new SCBSocketMetrics();
+  }
+
+  public SCBSocketMetrics connected(SocketAddress remoteAddress, String remoteName) {
+    int connectedCount = metrics.getCounter().incrementAndGet();
+    EventManager.post(new ServerEvent(remoteAddress, ConnectionEventType.TCPConnected, connectedCount));
+    return metrics;
   }
 
   @Override
-  public Void connected(SocketAddress remoteAddress, String remoteName) {
-    int connectedCount = connectedCounter.incrementAndGet();
-    EventManager.post(new ClientEvent(remoteAddress.toString(),
-        ConnectionEvent.Connected, TransportType.Highway, connectedCount));
-    return super.connected(remoteAddress, remoteName);
+  public void disconnected(SCBSocketMetrics socketMetric, SocketAddress remoteAddress) {
+    int connectedCount = socketMetric.getCounter().decrementAndGet();
+    EventManager.post(new ServerEvent(remoteAddress, ConnectionEventType.TCPClosed, connectedCount));
   }
 
   @Override
-  public void disconnected(Void socketMetric, SocketAddress remoteAddress) {
-    int connectedCount = connectedCounter.decrementAndGet();
-    EventManager.post(new ClientEvent(remoteAddress.toString(),
-        ConnectionEvent.Closed, TransportType.Highway, connectedCount));
-    super.disconnected(socketMetric, remoteAddress);
+  public void bytesRead(SCBSocketMetrics socketMetric, SocketAddress remoteAddress, long numberOfBytes) {
+
+  }
+
+  @Override
+  public void bytesWritten(SCBSocketMetrics socketMetric, SocketAddress remoteAddress, long numberOfBytes) {
+
+  }
+
+  @Override
+  public void exceptionOccurred(SCBSocketMetrics socketMetric, SocketAddress remoteAddress, Throwable t) {
+
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return true;
+  }
+
+  @Override
+  public void close() {
+
   }
 }

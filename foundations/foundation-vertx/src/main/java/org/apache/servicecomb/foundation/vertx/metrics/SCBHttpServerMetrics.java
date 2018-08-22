@@ -17,37 +17,95 @@
 
 package org.apache.servicecomb.foundation.vertx.metrics;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.servicecomb.foundation.common.event.EventManager;
-import org.apache.servicecomb.foundation.vertx.ClientEvent;
-import org.apache.servicecomb.foundation.vertx.ConnectionEvent;
-import org.apache.servicecomb.foundation.vertx.TransportType;
+import org.apache.servicecomb.foundation.vertx.ServerEvent;
+import org.apache.servicecomb.foundation.vertx.ConnectionEventType;
 
-import io.vertx.core.metrics.impl.DummyVertxMetrics.DummyHttpServerMetrics;
+import io.vertx.core.http.HttpMethod;
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.http.ServerWebSocket;
 import io.vertx.core.net.SocketAddress;
+import io.vertx.core.spi.metrics.HttpServerMetrics;
 
-public class SCBHttpServerMetrics extends DummyHttpServerMetrics {
+public class SCBHttpServerMetrics implements HttpServerMetrics<Void, Void, SCBSocketMetrics> {
+  private final SCBSocketMetrics metrics;
 
-  private final AtomicInteger connectedCounter = new AtomicInteger();
-
-  public AtomicInteger getConnectedCounter() {
-    return connectedCounter;
+  public SCBHttpServerMetrics() {
+    this.metrics = new SCBSocketMetrics();
   }
 
   @Override
-  public Void connected(SocketAddress remoteAddress, String remoteName) {
-    int connectedCount = connectedCounter.incrementAndGet();
-    EventManager.post(new ClientEvent(remoteAddress.toString(),
-        ConnectionEvent.Connected, TransportType.Rest, connectedCount));
-    return super.connected(remoteAddress, remoteName);
+  public Void requestBegin(SCBSocketMetrics socketMetric, HttpServerRequest request) {
+    return null;
   }
 
   @Override
-  public void disconnected(Void socketMetric, SocketAddress remoteAddress) {
-    int connectedCount = connectedCounter.decrementAndGet();
-    EventManager.post(new ClientEvent(remoteAddress.toString(),
-        ConnectionEvent.Closed, TransportType.Rest, connectedCount));
-    super.disconnected(socketMetric, remoteAddress);
+  public void requestReset(Void requestMetric) {
+
+  }
+
+  @Override
+  public Void responsePushed(SCBSocketMetrics socketMetric, HttpMethod method, String uri,
+      HttpServerResponse response) {
+    return null;
+  }
+
+  @Override
+  public void responseEnd(Void requestMetric, HttpServerResponse response) {
+
+  }
+
+  @Override
+  public Void upgrade(Void requestMetric, ServerWebSocket serverWebSocket) {
+    return null;
+  }
+
+  @Override
+  public Void connected(SCBSocketMetrics socketMetric, ServerWebSocket serverWebSocket) {
+    return null;
+  }
+
+  @Override
+  public void disconnected(Void serverWebSocketMetric) {
+
+  }
+
+  @Override
+  public SCBSocketMetrics connected(SocketAddress remoteAddress, String remoteName) {
+    int connectedCount = metrics.getCounter().incrementAndGet();
+    EventManager.post(new ServerEvent(remoteAddress, ConnectionEventType.HTTPConnected, connectedCount));
+    return metrics;
+  }
+
+  @Override
+  public void disconnected(SCBSocketMetrics socketMetric, SocketAddress remoteAddress) {
+    int connectedCount = socketMetric.getCounter().decrementAndGet();
+    EventManager.post(new ServerEvent(remoteAddress, ConnectionEventType.HTTPClosed, connectedCount));
+  }
+
+  @Override
+  public void bytesRead(SCBSocketMetrics socketMetric, SocketAddress remoteAddress, long numberOfBytes) {
+
+  }
+
+  @Override
+  public void bytesWritten(SCBSocketMetrics socketMetric, SocketAddress remoteAddress, long numberOfBytes) {
+
+  }
+
+  @Override
+  public void exceptionOccurred(SCBSocketMetrics socketMetric, SocketAddress remoteAddress, Throwable t) {
+
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return true;
+  }
+
+  @Override
+  public void close() {
+
   }
 }

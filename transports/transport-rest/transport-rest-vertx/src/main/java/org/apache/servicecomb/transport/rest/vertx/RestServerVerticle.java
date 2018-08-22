@@ -28,7 +28,7 @@ import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
 import org.apache.servicecomb.foundation.vertx.VertxTLSBuilder;
-import org.apache.servicecomb.foundation.vertx.metrics.SCBHttpServerMetrics;
+import org.apache.servicecomb.foundation.vertx.metrics.SCBSocketMetrics;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogConfiguration;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.impl.AccessLogHandler;
 import org.slf4j.Logger;
@@ -82,8 +82,7 @@ public class RestServerVerticle extends AbstractVerticle {
       httpServer.connectionHandler(connection -> {
         int connectionLimit = DynamicPropertyFactory.getInstance()
             .getIntProperty("servicecomb.rest.server.connection-limit", Integer.MAX_VALUE).get();
-        int connectedCount = ((SCBHttpServerMetrics) ((ServerConnection) connection).metrics())
-            .getConnectedCounter().get();
+        int connectedCount = ((SCBSocketMetrics) ((ServerConnection) connection).metric()).getCounter().get();
         if (connectedCount > connectionLimit) {
           connection.close();
         }

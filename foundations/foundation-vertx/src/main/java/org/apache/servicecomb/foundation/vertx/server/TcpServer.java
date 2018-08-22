@@ -25,7 +25,7 @@ import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
 import org.apache.servicecomb.foundation.vertx.VertxTLSBuilder;
-import org.apache.servicecomb.foundation.vertx.metrics.SCBTCPMetrics;
+import org.apache.servicecomb.foundation.vertx.metrics.SCBSocketMetrics;
 
 import com.netflix.config.DynamicPropertyFactory;
 
@@ -61,7 +61,7 @@ public class TcpServer {
     }
 
     netServer.connectHandler(netSocket -> {
-      int connectedCount = ((SCBTCPMetrics) ((NetSocketImpl) netSocket).metrics()).getConnectedCounter().get();
+      int connectedCount = ((SCBSocketMetrics) ((NetSocketImpl) netSocket).metric()).getCounter().get();
       int connectionLimit = DynamicPropertyFactory.getInstance()
           .getIntProperty("servicecomb.highway.server.connection-limit", Integer.MAX_VALUE).get();
       if (connectedCount > connectionLimit) {
