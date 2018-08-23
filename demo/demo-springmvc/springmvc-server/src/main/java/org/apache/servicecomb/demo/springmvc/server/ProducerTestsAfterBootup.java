@@ -56,11 +56,10 @@ public class ProducerTestsAfterBootup implements BootListener {
     TestMgr.check("2986daa46b229ec125443122dd7b51ee9a64879f1750d0996f948ce0718685c7",
         RegistryUtils.calcSchemaSummary(codeFirst));
     TestMgr.check(codeFirst.length(), 889);
-
   }
 
-  public void testRegisterPath() {
-    TestMgr.check(RegistryUtils.getMicroservice().getPaths().size(), 10);
+  public void testRegisteredBasePath() {
+    TestMgr.check(12, RegistryUtils.getMicroservice().getPaths().size());
   }
 
   private String getSwaggerContent(Swagger swagger) {
@@ -75,7 +74,7 @@ public class ProducerTestsAfterBootup implements BootListener {
   public void onBootEvent(BootEvent event) {
     if (event.getEventType() == BootListener.EventType.AFTER_REGISTRY) {
       testSchemaNotChange();
-      testRegisterPath();
+      testRegisteredBasePath();
       if (!TestMgr.isSuccess()) {
         TestMgr.summary();
         throw new IllegalStateException("some tests are failed. ");

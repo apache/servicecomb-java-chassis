@@ -30,7 +30,6 @@ import javax.servlet.http.Part;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.bizkeeper.BizkeeperExceptionUtils;
-import org.apache.servicecomb.core.exception.CseException;
 import org.apache.servicecomb.demo.CodeFirstRestTemplate;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.part.FilePart;
@@ -75,6 +74,8 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
 
   private TestRestTemplate testRestTemplate = new TestRestTemplate();
 
+  private TestContentType testContentType = new TestContentType();
+
   @Override
   protected void testOnlyRest(RestTemplate template, String cseUrlPrefix) {
     testDownload.runRest();
@@ -89,6 +90,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     testObject.runRest();
     testGeneric.runRest();
     testRestTemplate.runRest();
+    testContentType.runAllTest();
 
     super.testOnlyRest(template, cseUrlPrefix);
   }
@@ -185,7 +187,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
       result = template.getForObject(cseUrlPrefix + "/fallback/throwexception/throwexception", String.class);
       TestMgr.check(false, true);
     } catch (Exception e) {
-      TestMgr.check(((CseException) e.getCause()).getMessage(),
+      TestMgr.check(e.getCause().getMessage(),
           BizkeeperExceptionUtils.createBizkeeperException(BizkeeperExceptionUtils.SERVICECOMB_BIZKEEPER_FALLBACK,
               null,
               "springmvc.codeFirst.fallbackThrowException").getMessage());
