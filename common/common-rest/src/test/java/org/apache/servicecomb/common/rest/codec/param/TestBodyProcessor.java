@@ -17,8 +17,11 @@
 
 package org.apache.servicecomb.common.rest.codec.param;
 
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,13 +35,16 @@ import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.BodyP
 import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.RawJsonBodyProcessor;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.impl.headers.VertxHttpHeaders;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
@@ -48,7 +54,7 @@ public class TestBodyProcessor {
   @Mocked
   HttpServletRequest request;
 
-  Map<String, String> headers = new HashMap<>();
+  MultiMap headers;
 
   RestClientRequest clientRequest;
 
@@ -72,12 +78,17 @@ public class TestBodyProcessor {
     clientRequest = new MockUp<RestClientRequest>() {
       @Mock
       void putHeader(String name, String value) {
-        headers.put(name, value);
+        headers.add(name, value);
       }
 
       @Mock
       void write(Buffer bodyBuffer) {
         outputBodyBuffer = bodyBuffer;
+      }
+
+      @Mock
+      MultiMap getHeaders() {
+        return headers;
       }
     }.getMockInstance();
   }
@@ -94,6 +105,11 @@ public class TestBodyProcessor {
   private void setupGetValue(Class<?> type) throws IOException {
     createProcessor(type);
     initInputStream();
+  }
+
+  @Before
+  public void before() {
+    headers = new VertxHttpHeaders();
   }
 
   @Test
@@ -122,7 +138,7 @@ public class TestBodyProcessor {
     };
 
     Object result = processor.getValue(request);
-    Assert.assertEquals(null, result);
+    Assert.assertNull(result);
   }
 
   @Test
@@ -174,6 +190,32 @@ public class TestBodyProcessor {
   }
 
   @Test
+  public void testSetValueTextPlain() throws Exception {
+    createClientRequest();
+    createProcessor(String.class);
+    headers.add(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN);
+
+    processor.setValue(clientRequest, "value");
+    Assert.assertEquals(MediaType.TEXT_PLAIN, headers.get(HttpHeaders.CONTENT_TYPE));
+    Assert.assertEquals("value", outputBodyBuffer.toString());
+  }
+
+  @Test
+  public void testSetValueTextPlainTypeMismatch() {
+    createClientRequest();
+    createProcessor(String.class);
+    headers.add(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN);
+
+    try {
+      processor.setValue(clientRequest, new Date());
+      fail("an exception is expected!");
+    } catch (Exception e) {
+      Assert.assertEquals(IllegalArgumentException.class, e.getClass());
+      Assert.assertEquals("Content-Type is text/plain while arg type is not String", e.getMessage());
+    }
+  }
+
+  @Test
   public void testGetParameterPath() {
     createProcessor(String.class);
     Assert.assertEquals("", processor.getParameterPath());
@@ -220,7 +262,7 @@ public class TestBodyProcessor {
     };
 
     Object result = processor.getValue(request);
-    Assert.assertEquals(null, result);
+    Assert.assertNull(result);
   }
 
   @Test
