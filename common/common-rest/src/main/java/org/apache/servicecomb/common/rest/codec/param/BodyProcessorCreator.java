@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.common.rest.codec.param;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.Locale;
@@ -33,6 +34,7 @@ import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
@@ -40,6 +42,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.parameters.Parameter;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.buffer.impl.BufferImpl;
 
 public class BodyProcessorCreator implements ParamValueProcessorCreator {
   private static final Logger LOGGER = LoggerFactory.getLogger(BodyProcessorCreator.class);
@@ -99,12 +102,44 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
 
     @Override
     public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
-      try (BufferOutputStream output = new BufferOutputStream()) {
-        clientRequest.putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
-        RestObjectMapperFactory.getConsumerWriterMapper().writeValue(output, arg);
-        if (arg != null) {
-          clientRequest.write(output.getBuffer());
+      ensureContentType(clientRequest);
+      if (arg != null) {
+        Buffer buffer = createBodyBuffer(
+            clientRequest.getHeaders().get(HttpHeaders.CONTENT_TYPE),
+            arg);
+        clientRequest.write(buffer);
+      }
+    }
+
+    /**
+     * Deserialize body object into body buffer, according to the Content-Type.
+     *
+     * @param contentType the Content-Type of request
+     * @param arg body param object
+     * @return the deserialized body buffer
+     * @throws IOException
+     */
+    private Buffer createBodyBuffer(String contentType, Object arg) throws IOException {
+      if (MediaType.TEXT_PLAIN.equals(contentType)) {
+        if (!String.class.isInstance(arg)) {
+          throw new IllegalArgumentException("Content-Type is text/plain while arg type is not String");
         }
+        return new BufferImpl().appendBytes(((String) arg).getBytes());
+      }
+
+      try (BufferOutputStream output = new BufferOutputStream()) {
+        RestObjectMapperFactory.getConsumerWriterMapper().writeValue(output, arg);
+        return output.getBuffer();
+      }
+    }
+
+    /**
+     * If the Content-Type has not been set yet, set application/json as default value.
+     */
+    private void ensureContentType(RestClientRequest clientRequest) {
+      if (null == clientRequest.getHeaders()
+          || StringUtils.isEmpty(clientRequest.getHeaders().get(HttpHeaders.CONTENT_TYPE))) {
+        clientRequest.putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
       }
     }
 
