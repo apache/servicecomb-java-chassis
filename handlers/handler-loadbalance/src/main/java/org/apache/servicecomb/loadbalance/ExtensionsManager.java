@@ -23,8 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.netflix.client.RetryHandler;
-import com.netflix.loadbalancer.IRule;
-import com.netflix.loadbalancer.RoundRobinRule;
 
 public class ExtensionsManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionsManager.class);
@@ -35,15 +33,11 @@ public class ExtensionsManager {
     extentionFactories.add(factory);
   }
 
-  public static IRule createLoadBalancerRule(String microservice) {
-    IRule rule = null;
+  public static RuleExt createLoadBalancerRule(String microservice) {
+    RuleExt rule = null;
 
     for (ExtensionsFactory factory : extentionFactories) {
-      if (factory.isSupport(Configuration.PROP_POLICY, Configuration.INSTANCE.getPolicy(microservice))) {
-        rule = factory.createLoadBalancerRule(
-            Configuration.INSTANCE.getPolicy(microservice));
-        break;
-      } else if (factory.isSupport(Configuration.PROP_RULE_STRATEGY_NAME,
+      if (factory.isSupport(Configuration.PROP_RULE_STRATEGY_NAME,
           Configuration.INSTANCE.getRuleStrategyName(microservice))) {
         rule = factory.createLoadBalancerRule(
             Configuration.INSTANCE.getRuleStrategyName(microservice));
@@ -52,7 +46,7 @@ public class ExtensionsManager {
     }
 
     if (rule == null) {
-      rule = new RoundRobinRule();
+      rule = new RoundRobinRuleExt();
     }
 
     LOGGER.info("Using load balance rule {} for microservice {}.", rule.getClass().getName(), microservice);

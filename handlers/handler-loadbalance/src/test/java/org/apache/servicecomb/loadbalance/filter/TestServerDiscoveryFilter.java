@@ -72,6 +72,7 @@ public class TestServerDiscoveryFilter {
       }
     };
     MicroserviceInstance instance = new MicroserviceInstance();
+    instance.setInstanceId("0000001");
 
     ServiceCombServer server = (ServiceCombServer) filter.createEndpoint(Const.RESTFUL, "rest://localhost:8080", instance);
     Assert.assertSame(instance, server.getInstance());

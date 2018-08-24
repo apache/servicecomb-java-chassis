@@ -17,23 +17,16 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.core.Invocation;
 
-import com.netflix.loadbalancer.Server;
-
 /**
- * @author l00168639
- *
+ * Load balance rule to support invocation based filters.
  */
-public class MyServerListFilterExt implements ServerListFilterExt {
-  @Override
-  public List<ServiceCombServer> getFilteredListOfServers(List<ServiceCombServer> serverList, Invocation invocation) {
-    if (invocation.getAppId().equals("test")) {
-      return new ArrayList<>();
-    }
-    return serverList;
+public interface RuleExt {
+  default void setLoadBalancer(LoadBalancer loadBalancer) {
   }
+
+  ServiceCombServer choose(List<ServiceCombServer> servers, Invocation invocation);
 }

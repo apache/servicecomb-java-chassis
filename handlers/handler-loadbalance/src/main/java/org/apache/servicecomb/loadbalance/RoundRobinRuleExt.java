@@ -17,23 +17,23 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.core.Invocation;
 
-import com.netflix.loadbalancer.Server;
-
 /**
- * @author l00168639
- *
+ * A round robin rule
  */
-public class MyServerListFilterExt implements ServerListFilterExt {
+public class RoundRobinRuleExt implements RuleExt {
+  private AtomicInteger counter = new AtomicInteger(0);
+
   @Override
-  public List<ServiceCombServer> getFilteredListOfServers(List<ServiceCombServer> serverList, Invocation invocation) {
-    if (invocation.getAppId().equals("test")) {
-      return new ArrayList<>();
+  public ServiceCombServer choose(List<ServiceCombServer> servers, Invocation invocation) {
+    if (servers.size() == 0) {
+      return null;
     }
-    return serverList;
+    int index = Math.abs(counter.getAndIncrement()) % servers.size();
+    return servers.get(index);
   }
 }

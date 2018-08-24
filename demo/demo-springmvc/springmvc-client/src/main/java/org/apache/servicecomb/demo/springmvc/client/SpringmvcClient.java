@@ -167,6 +167,18 @@ public class SpringmvcClient {
   private static void testController(RestTemplate template, String microserviceName) {
     String prefix = "cse://" + microserviceName;
 
+    TestMgr.check(7,
+        template.getForObject(prefix + "/controller/add?a=3&b=4",
+            Integer.class));
+
+    try {
+      template.getForObject(prefix + "/controller/add",
+          Integer.class);
+      TestMgr.check("failed", "success");
+    } catch (InvocationException e) {
+      TestMgr.check(e.getStatusCode(), 400);
+    }
+
     TestMgr.check("hi world [world]",
         template.getForObject(prefix + "/controller/sayhi?name=world",
             String.class));

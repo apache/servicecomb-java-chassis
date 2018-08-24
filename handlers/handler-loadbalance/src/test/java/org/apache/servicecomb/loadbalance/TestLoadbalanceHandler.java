@@ -137,7 +137,6 @@ public class TestLoadbalanceHandler {
 
     BeansHolder holder = new BeansHolder();
     List<ExtensionsFactory> extensionsFactories = new ArrayList<>();
-    extensionsFactories.add(new RuleClassNameExtentionsFactory());
     extensionsFactories.add(new RuleNameExtentionsFactory());
     extensionsFactories.add(new DefaultRetryExtensionsFactory());
     Deencapsulation.setField(holder, "extentionsFactories", extensionsFactories);
@@ -179,7 +178,7 @@ public class TestLoadbalanceHandler {
 
     LoadBalancer lb = handler.getOrCreateLoadBalancer(invocation);
 
-    Assert.assertEquals("[rest://localhost:8080]", Deencapsulation.getField(lb, "serverList").toString());
+    Assert.assertEquals("[rest://localhost:8080]", Deencapsulation.getField(lb, "servers").toString());
   }
 
   @Test

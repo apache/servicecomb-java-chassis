@@ -21,27 +21,23 @@ import java.util.List;
 
 import org.apache.servicecomb.core.Invocation;
 
-import com.netflix.loadbalancer.Server;
-
 /**
  *  Base interface for server list filters.
- *
- *  LoadBalancer.getAllServers ServerListFilterExt.getFilteredListOfServers IRule.choose
  *
  *  Robin ServerListFilter can not support invocation based filter strategies, so we create a new one to
  *  support this.
  */
 public interface ServerListFilterExt {
-  public default int getOrder() {
+  default int getOrder() {
     return 0;
   }
 
-  public default boolean enabled() {
+  default boolean enabled() {
     return true;
   }
 
-  public default void setLoadBalancer(LoadBalancer loadBalancer) {
+  default void setLoadBalancer(LoadBalancer loadBalancer) {
   }
 
-  public List<Server> getFilteredListOfServers(List<Server> servers, Invocation invocation);
+  List<ServiceCombServer> getFilteredListOfServers(List<ServiceCombServer> servers, Invocation invocation);
 }
