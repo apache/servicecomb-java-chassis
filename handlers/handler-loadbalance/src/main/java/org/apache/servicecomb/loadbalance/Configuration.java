@@ -35,8 +35,6 @@ public final class Configuration {
 
   public static final String RPOP_TIMER_INTERVAL_IN_MINIS = "servicecomb.loadbalance.stats.timerIntervalInMilis";
 
-  public static final String PROP_POLICY = "NFLoadBalancerRuleClassName";
-
   public static final String PROP_RULE_STRATEGY_NAME = "strategy.name";
 
   // 2.0 configuration items
@@ -89,14 +87,6 @@ public final class Configuration {
   public static final Configuration INSTANCE = new Configuration();
 
   private Configuration() {
-  }
-
-  public String getPolicy(String microservice) {
-    return getStringProperty(null,
-        PROP_ROOT + microservice + "." + PROP_POLICY,
-        PROP_ROOT_20 + microservice + "." + PROP_POLICY,
-        PROP_ROOT + PROP_POLICY,
-        PROP_ROOT_20 + PROP_POLICY);
   }
 
   public String getRuleStrategyName(String microservice) {

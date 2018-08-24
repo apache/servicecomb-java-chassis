@@ -22,6 +22,7 @@ import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.netflix.loadbalancer.Server;
 
 /**
@@ -34,6 +35,21 @@ public class ServiceCombServer extends Server {
 
   // 所属服务实例
   private final MicroserviceInstance instance;
+
+  @VisibleForTesting
+  ServiceCombServer(Endpoint endpoint, MicroserviceInstance instance) {
+    super(null);
+    this.endpoint = endpoint;
+    this.instance = instance;
+
+    // Different types of Robin Component Rule have different usages for server status and list.
+    // e.g. RoundRobinRule using getAllServers & alive & readyToServe
+    // RandomRule using getReachableServers & alive
+    // WeightedResponseTimeRule using getAllServers & alive
+    // To make all rules work only on "how to choose a server from alive servers", we do not rely on Robbin defined status
+    this.setAlive(true);
+    this.setReadyToServe(true);
+  }
 
   public ServiceCombServer(Transport transport, CacheEndpoint cacheEndpoint) {
     super(null);

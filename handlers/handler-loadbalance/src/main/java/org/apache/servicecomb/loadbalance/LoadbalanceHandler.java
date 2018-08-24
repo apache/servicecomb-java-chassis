@@ -45,7 +45,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.netflix.loadbalancer.ILoadBalancer;
-import com.netflix.loadbalancer.IRule;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.reactive.ExecutionContext;
 import com.netflix.loadbalancer.reactive.ExecutionInfo;
@@ -56,8 +55,7 @@ import com.netflix.loadbalancer.reactive.ServerOperation;
 import rx.Observable;
 
 /**
- * 负载均衡处理链
- *
+ *  Load balance handler.
  */
 public class LoadbalanceHandler implements Handler {
   // just a wrapper to make sure in retry mode to choose a different server.
@@ -67,21 +65,23 @@ public class LoadbalanceHandler implements Handler {
 
     Server lastServer = null;
 
-    ILoadBalancer delegate;
+    LoadBalancer delegate;
 
-    RetryLoadBalancer(ILoadBalancer delegate) {
+    Invocation invocation;
+
+    RetryLoadBalancer(LoadBalancer delegate, Invocation invocation) {
       this.delegate = delegate;
     }
 
     @Override
     public void addServers(List<Server> newServers) {
-      delegate.addServers(newServers);
+      throw new UnsupportedOperationException("Not implemented.");
     }
 
     @Override
     public Server chooseServer(Object key) {
       for (int i = 0; i < COUNT; i++) {
-        Server s = delegate.chooseServer(key);
+        Server s = delegate.chooseServer(invocation);
         if (s != null && !s.equals(lastServer)) {
           lastServer = s;
           break;
@@ -94,23 +94,23 @@ public class LoadbalanceHandler implements Handler {
 
     @Override
     public void markServerDown(Server server) {
-      delegate.markServerDown(server);
+      throw new UnsupportedOperationException("Not implemented.");
     }
 
     @Override
     @Deprecated
     public List<Server> getServerList(boolean availableOnly) {
-      return delegate.getServerList(availableOnly);
+      throw new UnsupportedOperationException("Not implemented.");
     }
 
     @Override
     public List<Server> getReachableServers() {
-      return delegate.getReachableServers();
+      throw new UnsupportedOperationException("Not implemented.");
     }
 
     @Override
     public List<Server> getAllServers() {
-      return delegate.getAllServers();
+      throw new UnsupportedOperationException("Not implemented.");
     }
   }
 
@@ -135,8 +135,6 @@ public class LoadbalanceHandler implements Handler {
 
   private final Object lock = new Object();
 
-  private String policy = null;
-
   private String strategy = null;
 
 
@@ -148,16 +146,13 @@ public class LoadbalanceHandler implements Handler {
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    String policy = Configuration.INSTANCE.getPolicy(invocation.getMicroserviceName());
     String strategy = Configuration.INSTANCE.getRuleStrategyName(invocation.getMicroserviceName());
-    boolean isRuleNotChanged = isEqual(policy, this.policy) && isEqual(strategy, this.strategy);
-    if (!isRuleNotChanged) {
+    if (!isEqual(strategy, this.strategy)) {
       //配置变化，需要重新生成所有的lb实例
       synchronized (lock) {
         clearLoadBalancer();
       }
     }
-    this.policy = policy;
     this.strategy = strategy;
     LoadBalancer loadBalancer = getOrCreateLoadBalancer(invocation);
 
@@ -199,10 +194,10 @@ public class LoadbalanceHandler implements Handler {
       chosenLB.getLoadBalancerStats().noteResponseTime(server, (System.currentTimeMillis() - time));
       if (isFailedResponse(resp)) {
         chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(server);
-        ServiceCombLoadBalancerStats.INSTANCE.markFailure(server);
+        ServiceCombLoadBalancerStats.INSTANCE.markFailure(server, System.currentTimeMillis() - time);
       } else {
         chosenLB.getLoadBalancerStats().incrementActiveRequestsCount(server);
-        ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
+        ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server, (System.currentTimeMillis() - time));
       }
       asyncResp.handle(resp);
     });
@@ -287,7 +282,7 @@ public class LoadbalanceHandler implements Handler {
     ExecutionContext<Invocation> context = new ExecutionContext<>(invocation, null, null, null);
 
     LoadBalancerCommand<Response> command = LoadBalancerCommand.<Response>builder()
-        .withLoadBalancer(new RetryLoadBalancer(chosenLB))
+        .withLoadBalancer(new RetryLoadBalancer(chosenLB, invocation))
         .withServerLocator(invocation)
         .withRetryHandler(ExtensionsManager.createRetryHandler(invocation.getMicroserviceName()))
         .withListeners(listeners)
@@ -309,13 +304,13 @@ public class LoadbalanceHandler implements Handler {
                     ((Throwable) resp.getResult()).getMessage(),
                     s);
                 chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
-                ServiceCombLoadBalancerStats.INSTANCE.markFailure(server);
+                ServiceCombLoadBalancerStats.INSTANCE.markFailure(server, System.currentTimeMillis() - time);
                 f.onError(resp.getResult());
               } else {
                 chosenLB.getLoadBalancerStats().incrementActiveRequestsCount(s);
                 chosenLB.getLoadBalancerStats().noteResponseTime(s,
                     (System.currentTimeMillis() - time));
-                ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
+                ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server, (System.currentTimeMillis() - time));
                 f.onNext(resp);
                 f.onCompleted();
               }
@@ -359,15 +354,16 @@ public class LoadbalanceHandler implements Handler {
     LoadBalancerCreator loadBalancerCreator = loadBalancerMap.computeIfAbsent(serversVersionedCache.name(), name -> {
       return createLoadBalancerCreator(invocation.getMicroserviceName());
     });
-    loadBalancerCreator.setServerList(serversVersionedCache.data());
-    // help users to deal with incompatible changes.
+
+    // Nothing to do just help users to deal with incompatible changes.
     setTransactionControlFilter(invocation.getMicroserviceName());
     loadServerListFilters();
-    return loadBalancerCreator.createLoadBalancer(invocation);
+
+    return loadBalancerCreator.createLoadBalancer(serversVersionedCache.data());
   }
 
   private LoadBalancerCreator createLoadBalancerCreator(String microserviceName) {
-    IRule rule = ExtensionsManager.createLoadBalancerRule(microserviceName);
+    RuleExt rule = ExtensionsManager.createLoadBalancerRule(microserviceName);
     LoadBalancerCreator creator = new LoadBalancerCreator(rule, microserviceName);
     return creator;
   }

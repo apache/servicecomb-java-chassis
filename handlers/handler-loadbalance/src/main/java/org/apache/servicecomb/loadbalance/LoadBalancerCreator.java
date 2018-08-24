@@ -17,19 +17,12 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import java.util.Collections;
 import java.util.List;
 
-import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.netflix.loadbalancer.IRule;
 import com.netflix.loadbalancer.LoadBalancerStats;
-import com.netflix.loadbalancer.Server;
-import com.netflix.loadbalancer.WeightedResponseTimeRule;
 
 /**
  *  Create a suitable load balancer for each invocation.
@@ -45,11 +38,7 @@ import com.netflix.loadbalancer.WeightedResponseTimeRule;
  *  on the result of ServerListFilter, they should not contain operation level state information in instance fields.
  */
 public class LoadBalancerCreator {
-  private static final Logger LOGGER = LoggerFactory.getLogger(LoadBalancerCreator.class);
-
-  private List<Server> serverList = Collections.emptyList();
-
-  private IRule rule;
+  private RuleExt rule;
 
   private LoadBalancerStats lbStats;
 
@@ -57,7 +46,7 @@ public class LoadBalancerCreator {
 
   private String microServiceName;
 
-  public LoadBalancerCreator(IRule rule, String microServiceName) {
+  public LoadBalancerCreator(RuleExt rule, String microServiceName) {
     this.rule = rule;
     this.microServiceName = microServiceName;
     this.lbStats = new LoadBalancerStats(null);
@@ -66,20 +55,7 @@ public class LoadBalancerCreator {
   }
 
   public void shutdown() {
-    // netflix components does not have a proper way to shutdown laodbalancers so we do it in a not quite elegant way.
-    if (this.rule instanceof WeightedResponseTimeRule) {
-      ((WeightedResponseTimeRule) this.rule).shutdown();
-    }
-  }
-
-  // every filter group has a loadBalancer instance
-  // serverList almost not changed for different invocation
-  // so every invocation will call setServerList, this is no problem
-  public void setServerList(List<Server> serverList) {
-    if (serverList.isEmpty()) {
-      LOGGER.warn("Set empty server list.");
-    }
-    this.serverList = Collections.unmodifiableList(serverList);
+    // nothing to do now
   }
 
   @VisibleForTesting
@@ -87,17 +63,7 @@ public class LoadBalancerCreator {
     this.filters = filters;
   }
 
-  public LoadBalancer createLoadBalancer(Invocation invocation) {
-    LoadBalancer loadBalancer = new LoadBalancer(rule, microServiceName, lbStats);
-    List<Server> servers = this.serverList;
-    for (ServerListFilterExt filter : this.filters) {
-      filter.setLoadBalancer(loadBalancer);
-      servers = filter.getFilteredListOfServers(servers, invocation);
-      if (servers.isEmpty()) {
-        LOGGER.warn("Filter {} get empty list.", filter.getClass().getName());
-      }
-    }
-    loadBalancer.setServerList(servers);
-    return loadBalancer;
+  public LoadBalancer createLoadBalancer(List<ServiceCombServer> servers) {
+    return new LoadBalancer(rule, microServiceName, lbStats, filters, servers);
   }
 }

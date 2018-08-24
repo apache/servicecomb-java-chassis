@@ -57,6 +57,8 @@ public class ServiceCombLoadBalancerStats {
 
   public static final ServiceCombLoadBalancerStats INSTANCE;
 
+  private Timer timer;
+
   static {
     INSTANCE = new ServiceCombLoadBalancerStats();
     INSTANCE.init();
@@ -76,17 +78,17 @@ public class ServiceCombLoadBalancerStats {
     }
   }
 
-  public void markSuccess(ServiceCombServer server) {
+  public void markSuccess(ServiceCombServer server, long execTime) {
     try {
-      serverStatsCache.get(server).markSuccess();
+      serverStatsCache.get(server).markSuccess(execTime);
     } catch (ExecutionException e) {
       LOGGER.error("Not expected to happen, maybe a bug.", e);
     }
   }
 
-  public void markFailure(ServiceCombServer server) {
+  public void markFailure(ServiceCombServer server, long execTime) {
     try {
-      serverStatsCache.get(server).markFailure();
+      serverStatsCache.get(server).markFailure(execTime);
     } catch (ExecutionException e) {
       LOGGER.error("Not expected to happen, maybe a bug.", e);
     }
@@ -126,6 +128,14 @@ public class ServiceCombLoadBalancerStats {
   }
 
   void init() {
+    // for testing
+    if (timer != null) {
+      timer.cancel();
+    }
+    if (serverStatsCache != null) {
+      serverStatsCache.cleanUp();
+    }
+
     serverStatsCache =
         CacheBuilder.newBuilder()
             .expireAfterAccess(serverExpireInSeconds, TimeUnit.SECONDS)
@@ -145,7 +155,7 @@ public class ServiceCombLoadBalancerStats {
                   }
                 });
 
-    Timer timer = new Timer("LoadBalancerStatsTimer", true);
+    timer = new Timer("LoadBalancerStatsTimer", true);
     timer.schedule(new TimerTask() {
       private MicroserviceInstancePing ping = SPIServiceUtils.getPriorityHighestService(MicroserviceInstancePing.class);
 
@@ -157,10 +167,11 @@ public class ServiceCombLoadBalancerStats {
           while (instances.hasNext()) {
             ServiceCombServer server = instances.next();
             ServiceCombServerStats stats = allServers.get(server);
+            long startTime = System.currentTimeMillis();
             if ((System.currentTimeMillis() - stats.getLastVisitTime() > timerIntervalInMilis) && !ping
                 .ping(server.getInstance())) {
               LOGGER.info("ping mark server {} failure.", server.getInstance().getInstanceId());
-              stats.markFailure();
+              stats.markFailure(System.currentTimeMillis() - startTime);
             }
           }
           serverStatsCache.cleanUp();

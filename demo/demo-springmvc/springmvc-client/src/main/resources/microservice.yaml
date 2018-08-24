@@ -56,7 +56,8 @@ servicecomb:
     enabled: true
     samplingRate: 0.5
   loadbalance:
-    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.WeightedResponseTimeRule
+    strategy:
+      name: WeightedResponse
     retryEnabled: true
     retryOnSame: 1
     retryOnNext: 1

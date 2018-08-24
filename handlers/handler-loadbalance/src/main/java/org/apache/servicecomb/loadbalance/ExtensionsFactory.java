@@ -25,7 +25,7 @@ import com.netflix.loadbalancer.IRule;
 public interface ExtensionsFactory {
   boolean isSupport(String key, String value);
 
-  default IRule createLoadBalancerRule(String ruleName) {
+  default RuleExt createLoadBalancerRule(String ruleName) {
     return null;
   }
 
