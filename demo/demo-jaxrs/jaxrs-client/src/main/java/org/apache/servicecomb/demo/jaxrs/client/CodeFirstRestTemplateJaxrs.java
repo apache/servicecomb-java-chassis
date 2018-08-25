@@ -110,7 +110,7 @@ public class CodeFirstRestTemplateJaxrs extends CodeFirstRestTemplate {
   private void test404(RestTemplate template) {
     HttpClientErrorException exception = null;
     try {
-      template.getForEntity("http://127.0.0.1:8086/aPathNotExist", String.class);
+      template.getForEntity("http://127.0.0.1:8080/aPathNotExist", String.class);
     } catch (RestClientException e) {
       if (e instanceof HttpClientErrorException) {
         exception = (HttpClientErrorException) e;
