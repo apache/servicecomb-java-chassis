@@ -71,6 +71,6 @@ public class TestRoundRobinRuleExt {
     }
     long taken = System.currentTimeMillis() - begin;
     System.out.println("taken " + taken);
-    Assert.assertEquals(taken < 10 * 2, true);  // 2 * times make slow machine happy
+    Assert.assertEquals("actual token " + taken, taken < 10 * 5, true);  // 5 * times make slow machine happy
   }
 }
