@@ -74,7 +74,7 @@ public class TestLoadbalanceHandler {
 
   LoadbalanceHandler handler;
 
-  Map<String, LoadBalancerCreator> loadBalancerMap;
+  Map<String, LoadBalancer> loadBalancerMap;
 
   @Injectable
   Invocation invocation;
@@ -151,34 +151,6 @@ public class TestLoadbalanceHandler {
     CseContext.getInstance().setTransportManager(null);
     RegistryUtils.setServiceRegistry(null);
     ArchaiusUtils.resetConfig();
-  }
-
-  @Test
-  public void getOrCreateLoadBalancer() throws Exception {
-    LoadbalanceHandler handler = new LoadbalanceHandler();
-
-    MicroserviceInstance instance = new MicroserviceInstance();
-    instance.setInstanceId("id");
-    instance.getEndpoints().add("rest://localhost:8080");
-
-    Map<String, MicroserviceInstance> instanceMap = new HashMap<>();
-    instanceMap.put(instance.getInstanceId(), instance);
-
-    VersionedCache instanceVersionedCache =
-        new VersionedCache().autoCacheVersion().name("instanceCache").data(instanceMap);
-
-    new Expectations() {
-      {
-        invocation.getConfigTransportName();
-        result = "rest";
-        instanceCacheManager.getOrCreateVersionedCache(anyString, anyString, anyString);
-        result = instanceVersionedCache;
-      }
-    };
-
-    LoadBalancer lb = handler.getOrCreateLoadBalancer(invocation);
-
-    Assert.assertEquals("[rest://localhost:8080]", Deencapsulation.getField(lb, "servers").toString());
   }
 
   @Test

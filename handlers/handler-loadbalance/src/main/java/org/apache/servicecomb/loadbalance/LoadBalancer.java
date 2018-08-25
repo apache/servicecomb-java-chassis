@@ -20,7 +20,9 @@ package org.apache.servicecomb.loadbalance;
 import java.util.List;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.netflix.loadbalancer.LoadBalancerStats;
 
 /**
@@ -35,25 +37,22 @@ public class LoadBalancer {
 
   private List<ServerListFilterExt> filters;
 
-  private List<ServiceCombServer> servers;
-
-  public LoadBalancer(RuleExt rule, String microServiceName,
-      LoadBalancerStats stats, List<ServerListFilterExt> filters, List<ServiceCombServer> servers) {
+  public LoadBalancer(RuleExt rule, String microServiceName) {
     this.microServiceName = microServiceName;
     this.rule = rule;
-    this.lbStats = stats;
-    this.filters = filters;
-    this.servers = servers;
+    this.lbStats = new LoadBalancerStats(null);
+    // load new instances, because filters work on service information
+    this.filters = SPIServiceUtils.loadSortedService(ServerListFilterExt.class);
     this.rule.setLoadBalancer(this);
     this.filters.forEach((item) -> item.setLoadBalancer(this));
   }
 
   public ServiceCombServer chooseServer(Invocation invocation) {
-    List<ServiceCombServer> temp = this.servers;
+    List<ServiceCombServer> servers = invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST);
     for (ServerListFilterExt filterExt : filters) {
-      temp = filterExt.getFilteredListOfServers(temp, invocation);
+      servers = filterExt.getFilteredListOfServers(servers, invocation);
     }
-    return rule.choose(temp, invocation);
+    return rule.choose(servers, invocation);
   }
 
   public LoadBalancerStats getLoadBalancerStats() {
@@ -62,5 +61,10 @@ public class LoadBalancer {
 
   public String getMicroServiceName() {
     return microServiceName;
+  }
+
+  @VisibleForTesting
+  void setFilters(List<ServerListFilterExt> filters) {
+    this.filters = filters;
   }
 }

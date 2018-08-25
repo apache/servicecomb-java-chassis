@@ -255,8 +255,8 @@ public class TestSessionSticknessRule {
     mockedServer.setReadyToServe(true);
     mockedServer.setId("mockedServer");
     List<ServiceCombServer> allServers = Arrays.asList(mockedServer);
-    LoadBalancer lb = new LoadBalancer(rule, "mockedServer", null, new ArrayList<>(), allServers);
-
+    LoadBalancer lb = new LoadBalancer(rule, "mockedServer");
+    when(invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST)).thenReturn(allServers);
     rule.setLoadBalancer(lb);
     ServiceCombServer server = new ServiceCombServer(transport, new CacheEndpoint("rest:127.0.0.1:8890", instance1));
     Deencapsulation.setField(rule, "lastServer", server);

@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.loadbalance;
 
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,14 +36,14 @@ public class TestLoadBalancer {
     ServiceCombServer server = Mockito.mock(ServiceCombServer.class);
     Invocation invocation = Mockito.mock(Invocation.class);
     newServers.add(server);
-    List<ServerListFilterExt> filterExts = new ArrayList<>();
-    LoadBalancer loadBalancer = new LoadBalancer(rule, "test", null, filterExts, newServers);
+    when(invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST)).thenReturn(newServers);
+    LoadBalancer loadBalancer = new LoadBalancer(rule, "test");
     loadBalancer.chooseServer(invocation);
 
-    Mockito.when(rule.choose(newServers, invocation)).thenReturn(server);
+    when(rule.choose(newServers, invocation)).thenReturn(server);
 
     Assert.assertEquals(server, loadBalancer.chooseServer(invocation));
-    Assert.assertEquals(null, loadBalancer.getLoadBalancerStats());
+    Assert.assertNotNull(loadBalancer.getLoadBalancerStats());
     Assert.assertEquals("test", loadBalancer.getMicroServiceName());
   }
 }

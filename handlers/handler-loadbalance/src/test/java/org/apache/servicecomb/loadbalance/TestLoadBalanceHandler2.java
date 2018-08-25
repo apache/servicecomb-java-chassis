@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.loadbalance;
 
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +27,10 @@ import java.util.Map;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.core.definition.MicroserviceMeta;
+import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
@@ -58,7 +64,18 @@ public class TestLoadBalanceHandler2 {
 
   @Test
   public void testZoneAwareAndIsolationFilterWorks() {
-    Invocation invocation = Mockito.mock(Invocation.class);
+    ReferenceConfig referenceConfig = Mockito.mock(ReferenceConfig.class);
+    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
+    when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
+    MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
+    when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
+    when(schemaMeta.getMicroserviceName()).thenReturn("testMicroserviceName");
+    when(microserviceMeta.getAppId()).thenReturn("testApp");
+    when(referenceConfig.getVersionRule()).thenReturn("0.0.0+");
+    when(referenceConfig.getTransport()).thenReturn("rest");
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, new Object[0]);
+
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
     ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
     TransportManager transportManager = Mockito.mock(TransportManager.class);
@@ -112,15 +129,11 @@ public class TestLoadBalanceHandler2 {
 
     RegistryUtils.setServiceRegistry(serviceRegistry);
 
-    Mockito.when(invocation.getAppId()).thenReturn("testApp");
-    Mockito.when(invocation.getMicroserviceName()).thenReturn("testMicroserviceName");
-    Mockito.when(invocation.getMicroserviceVersionRule()).thenReturn("0.0.0+");
-    Mockito.when(invocation.getConfigTransportName()).thenReturn("rest");
-    Mockito.when(serviceRegistry.getMicroserviceInstance()).thenReturn(myself);
-    Mockito.when(serviceRegistry.getInstanceCacheManager()).thenReturn(instanceCacheManager);
-    Mockito.when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
+    when(serviceRegistry.getMicroserviceInstance()).thenReturn(myself);
+    when(serviceRegistry.getInstanceCacheManager()).thenReturn(instanceCacheManager);
+    when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
         .thenReturn(parent);
-    Mockito.when(transportManager.findTransport("rest")).thenReturn(transport);
+    when(transportManager.findTransport("rest")).thenReturn(transport);
 
     LoadbalanceHandler handler = null;
     LoadBalancer loadBalancer = null;
