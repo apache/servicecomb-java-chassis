@@ -205,10 +205,10 @@ public class LoadbalanceHandler implements Handler {
       chosenLB.getLoadBalancerStats().noteResponseTime(server, (System.currentTimeMillis() - time));
       if (isFailedResponse(resp)) {
         chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(server);
-        ServiceCombLoadBalancerStats.INSTANCE.markFailure(server, System.currentTimeMillis() - time);
+        ServiceCombLoadBalancerStats.INSTANCE.markFailure(server);
       } else {
         chosenLB.getLoadBalancerStats().incrementActiveRequestsCount(server);
-        ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server, (System.currentTimeMillis() - time));
+        ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
       }
       asyncResp.handle(resp);
     });
@@ -315,13 +315,13 @@ public class LoadbalanceHandler implements Handler {
                     ((Throwable) resp.getResult()).getMessage(),
                     s);
                 chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
-                ServiceCombLoadBalancerStats.INSTANCE.markFailure(server, System.currentTimeMillis() - time);
+                ServiceCombLoadBalancerStats.INSTANCE.markFailure(server);
                 f.onError(resp.getResult());
               } else {
                 chosenLB.getLoadBalancerStats().incrementActiveRequestsCount(s);
                 chosenLB.getLoadBalancerStats().noteResponseTime(s,
                     (System.currentTimeMillis() - time));
-                ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server, (System.currentTimeMillis() - time));
+                ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
                 f.onNext(resp);
                 f.onCompleted();
               }
