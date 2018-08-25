@@ -24,9 +24,9 @@ servicecomb:
     registry:
       address: http://127.0.0.1:30100
   rest:
-    address: 0.0.0.0:8080?protocol=http2
+    address: 0.0.0.0:8086?protocol=http2
   highway:
-    address: 0.0.0.0:7070
+    address: 0.0.0.0:7076
   #executors:
     #default: test
     #Provider:
