@@ -58,6 +58,8 @@ import rx.Observable;
  *  Load balance handler.
  */
 public class LoadbalanceHandler implements Handler {
+  public static final String CONTEXT_KEY_SERVER_LIST = "x-context-server-list";
+
   // just a wrapper to make sure in retry mode to choose a different server.
   class RetryLoadBalancer implements ILoadBalancer {
     // Enough times to make sure to choose a different server in high volume.
@@ -67,9 +69,7 @@ public class LoadbalanceHandler implements Handler {
 
     LoadBalancer delegate;
 
-    Invocation invocation;
-
-    RetryLoadBalancer(LoadBalancer delegate, Invocation invocation) {
+    RetryLoadBalancer(LoadBalancer delegate) {
       this.delegate = delegate;
     }
 
@@ -81,7 +81,7 @@ public class LoadbalanceHandler implements Handler {
     @Override
     public Server chooseServer(Object key) {
       for (int i = 0; i < COUNT; i++) {
-        Server s = delegate.chooseServer(invocation);
+        Server s = delegate.chooseServer((Invocation) key);
         if (s != null && !s.equals(lastServer)) {
           lastServer = s;
           break;
@@ -131,7 +131,7 @@ public class LoadbalanceHandler implements Handler {
   private DiscoveryTree discoveryTree = new DiscoveryTree();
 
   // key为grouping filter qualified name
-  private volatile Map<String, LoadBalancerCreator> loadBalancerMap = new ConcurrentHashMapEx<>();
+  private volatile Map<String, LoadBalancer> loadBalancerMap = new ConcurrentHashMapEx<>();
 
   private final Object lock = new Object();
 
@@ -154,6 +154,7 @@ public class LoadbalanceHandler implements Handler {
       }
     }
     this.strategy = strategy;
+
     LoadBalancer loadBalancer = getOrCreateLoadBalancer(invocation);
 
     if (!Configuration.INSTANCE.isRetryEnabled(invocation.getMicroserviceName())) {
@@ -164,9 +165,6 @@ public class LoadbalanceHandler implements Handler {
   }
 
   private void clearLoadBalancer() {
-    for (LoadBalancerCreator creator : loadBalancerMap.values()) {
-      creator.shutdown();
-    }
     loadBalancerMap.clear();
   }
 
@@ -282,7 +280,7 @@ public class LoadbalanceHandler implements Handler {
     ExecutionContext<Invocation> context = new ExecutionContext<>(invocation, null, null, null);
 
     LoadBalancerCommand<Response> command = LoadBalancerCommand.<Response>builder()
-        .withLoadBalancer(new RetryLoadBalancer(chosenLB, invocation))
+        .withLoadBalancer(new RetryLoadBalancer(chosenLB))
         .withServerLocator(invocation)
         .withRetryHandler(ExtensionsManager.createRetryHandler(invocation.getMicroserviceName()))
         .withListeners(listeners)
@@ -350,22 +348,23 @@ public class LoadbalanceHandler implements Handler {
         invocation.getAppId(),
         invocation.getMicroserviceName(),
         invocation.getMicroserviceVersionRule());
+    invocation.addLocalContext(CONTEXT_KEY_SERVER_LIST, serversVersionedCache.data());
 
-    LoadBalancerCreator loadBalancerCreator = loadBalancerMap.computeIfAbsent(serversVersionedCache.name(), name -> {
-      return createLoadBalancerCreator(invocation.getMicroserviceName());
-    });
+    LoadBalancer loadBalancer = loadBalancerMap
+        .computeIfAbsent(serversVersionedCache.name(), name -> {
+          return createLoadBalancer(invocation.getMicroserviceName());
+        });
 
     // Nothing to do just help users to deal with incompatible changes.
     setTransactionControlFilter(invocation.getMicroserviceName());
     loadServerListFilters();
 
-    return loadBalancerCreator.createLoadBalancer(serversVersionedCache.data());
+    return loadBalancer;
   }
 
-  private LoadBalancerCreator createLoadBalancerCreator(String microserviceName) {
+  private LoadBalancer createLoadBalancer(String microserviceName) {
     RuleExt rule = ExtensionsManager.createLoadBalancerRule(microserviceName);
-    LoadBalancerCreator creator = new LoadBalancerCreator(rule, microserviceName);
-    return creator;
+    return new LoadBalancer(rule, microserviceName);
   }
 
   private void loadServerListFilters() {

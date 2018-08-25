@@ -33,7 +33,6 @@ import com.netflix.loadbalancer.Server;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Injectable;
-import mockit.Mocked;
 
 public class TestLoadBalanceCreator {
   @Test
@@ -54,7 +53,7 @@ public class TestLoadBalanceCreator {
 
     servers.add(server);
     servers.add(server2);
-    LoadBalancerCreator lbCreator = new LoadBalancerCreator(rule, "test");
+    LoadBalancer lb = new LoadBalancer(rule, "test");
 
     List<ServerListFilterExt> filters = new ArrayList<>();
 
@@ -72,9 +71,14 @@ public class TestLoadBalanceCreator {
         return filteredServers;
       }
     });
-    lbCreator.setFilters(filters);
+    lb.setFilters(filters);
 
-    LoadBalancer lb = lbCreator.createLoadBalancer(servers);
+    new Expectations() {
+      {
+        invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST);
+        result = servers;
+      }
+    };
     Server s = lb.chooseServer(invocation);
     Assert.assertEquals(server2, s);
     s = lb.chooseServer(invocation);
@@ -88,7 +92,7 @@ public class TestLoadBalanceCreator {
       @Injectable Transport transport) {
     // Robin components implementations require getReachableServers & getServerList have the same size, we add a test case for this.
     RandomRuleExt rule = new RandomRuleExt();
-    LoadBalancerCreator lbCreator = new LoadBalancerCreator(rule, "service");
+    LoadBalancer lb = new LoadBalancer(rule, "service");
 
     List<ServiceCombServer> servers = new ArrayList<>();
     Endpoint host1 = new Endpoint(transport, "host1");
@@ -119,8 +123,13 @@ public class TestLoadBalanceCreator {
         return filteredServers;
       }
     });
-    lbCreator.setFilters(filters);
-    LoadBalancer lb = lbCreator.createLoadBalancer(servers);
+    lb.setFilters(filters);
+    new Expectations() {
+      {
+        invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST);
+        result = servers;
+      }
+    };
     Server s = lb.chooseServer(invocation);
     Assert.assertEquals(server2, s);
     s = lb.chooseServer(invocation);
@@ -130,11 +139,11 @@ public class TestLoadBalanceCreator {
   }
 
   @Test
-  public void testLoadBalanceWithWeightedResponseTimeRuleAndFilter(@Injectable Endpoint endpoint1, @Injectable Endpoint endpoint2, @Injectable Invocation invocation) {
+  public void testLoadBalanceWithWeightedResponseTimeRuleAndFilter(@Injectable Endpoint endpoint1,
+      @Injectable Endpoint endpoint2, @Injectable Invocation invocation) {
     // Robin components implementations require getReachableServers & getServerList have the same size, we add a test case for this.
     WeightedResponseTimeRuleExt rule = new WeightedResponseTimeRuleExt();
-    LoadBalancerCreator lbCreator = new LoadBalancerCreator(rule, "service");
-
+    LoadBalancer lb = new LoadBalancer(rule, "service");
 
     List<ServiceCombServer> servers = new ArrayList<>();
     MicroserviceInstance instance1 = new MicroserviceInstance();
@@ -170,8 +179,13 @@ public class TestLoadBalanceCreator {
         return filteredServers;
       }
     });
-    lbCreator.setFilters(filters);
-    LoadBalancer lb = lbCreator.createLoadBalancer(servers);
+    lb.setFilters(filters);
+    new Expectations() {
+      {
+        invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST);
+        result = servers;
+      }
+    };
     Server s = lb.chooseServer(invocation);
     Assert.assertEquals(server2, s);
     s = lb.chooseServer(invocation);
@@ -184,7 +198,7 @@ public class TestLoadBalanceCreator {
   public void testLoadBalanceWithSessionSticknessRule(@Injectable Invocation invocation,
       @Injectable Transport transport) {
     SessionStickinessRule rule = new SessionStickinessRule();
-    LoadBalancerCreator lbCreator = new LoadBalancerCreator(rule, "service");
+    LoadBalancer lb = new LoadBalancer(rule, "service");
 
     List<ServiceCombServer> servers = new ArrayList<>();
     Endpoint host1 = new Endpoint(transport, "host1");
@@ -200,8 +214,14 @@ public class TestLoadBalanceCreator {
     servers.add(server);
     servers.add(server2);
 
-    lbCreator.setFilters(new ArrayList<>());
-    LoadBalancer lb = lbCreator.createLoadBalancer(servers);
+    lb.setFilters(new ArrayList<>());
+    new Expectations() {
+      {
+        invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST);
+        result = servers;
+      }
+    };
+
     Server s = lb.chooseServer(invocation);
     Assert.assertEquals(server, s);
     s = lb.chooseServer(invocation);
