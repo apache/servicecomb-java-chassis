@@ -31,12 +31,12 @@ public class TestServiceCombServerStats {
   public void testSimpleThread() {
     long time = System.currentTimeMillis();
     ServiceCombServerStats stats = new ServiceCombServerStats();
-    stats.markFailure(0);
-    stats.markFailure(0);
+    stats.markFailure();
+    stats.markFailure();
     Assert.assertEquals(stats.getCountinuousFailureCount(), 2);
-    stats.markSuccess(0);
+    stats.markSuccess();
     Assert.assertEquals(stats.getCountinuousFailureCount(), 0);
-    stats.markSuccess(0);
+    stats.markSuccess();
     Assert.assertEquals(stats.getTotalRequests(), 4);
     Assert.assertEquals(stats.getFailedRate(), 50);
     Assert.assertEquals(stats.getSuccessRate(), 50);
@@ -52,10 +52,10 @@ public class TestServiceCombServerStats {
     for (int i = 0; i < 10; i++) {
       new Thread() {
         public void run() {
-          stats.markFailure(0);
-          stats.markFailure(0);
-          stats.markSuccess(0);
-          stats.markSuccess(0);
+          stats.markFailure();
+          stats.markFailure();
+          stats.markSuccess();
+          stats.markSuccess();
           latch.countDown();
         }
       }.start();
@@ -78,8 +78,8 @@ public class TestServiceCombServerStats {
     };
     ServiceCombServerStats stats = new ServiceCombServerStats();
     Assert.assertEquals(stats.getLastVisitTime(), 1000);
-    stats.markSuccess(0);
-    stats.markFailure(0);
+    stats.markSuccess();
+    stats.markFailure();
     Assert.assertEquals(stats.getTotalRequests(), 2);
     Assert.assertEquals(stats.getFailedRate(), 50);
     Assert.assertEquals(stats.getSuccessRate(), 50);
@@ -89,7 +89,7 @@ public class TestServiceCombServerStats {
         return 60000 + 2000;
       }
     };
-    stats.markSuccess(0);
+    stats.markSuccess();
     Assert.assertEquals(stats.getTotalRequests(), 1);
     Assert.assertEquals(stats.getFailedRate(), 0);
     Assert.assertEquals(stats.getSuccessRate(), 100);

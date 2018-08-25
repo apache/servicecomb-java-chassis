@@ -18,6 +18,7 @@
 package org.apache.servicecomb.loadbalance;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
@@ -29,6 +30,8 @@ import com.netflix.loadbalancer.LoadBalancerStats;
  *  A load balancer with RuleExt and ServerListFilterExt
  */
 public class LoadBalancer {
+  private static AtomicInteger id = new AtomicInteger(0);
+
   private RuleExt rule;
 
   private LoadBalancerStats lbStats;
@@ -40,7 +43,7 @@ public class LoadBalancer {
   public LoadBalancer(RuleExt rule, String microServiceName) {
     this.microServiceName = microServiceName;
     this.rule = rule;
-    this.lbStats = new LoadBalancerStats(null);
+    this.lbStats = new LoadBalancerStats(microServiceName + id.getAndDecrement());
     // load new instances, because filters work on service information
     this.filters = SPIServiceUtils.loadSortedService(ServerListFilterExt.class);
     this.rule.setLoadBalancer(this);

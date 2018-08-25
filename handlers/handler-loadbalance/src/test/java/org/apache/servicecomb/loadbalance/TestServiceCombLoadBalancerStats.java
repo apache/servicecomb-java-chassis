@@ -64,7 +64,7 @@ public class TestServiceCombLoadBalancerStats {
 
     ServiceCombServer serviceCombServer = new ServiceCombServer(transport,
         new CacheEndpoint("rest://localhost:8080", instance));
-    serviceCombLoadBalancerStats.markSuccess(serviceCombServer, 0);
+    serviceCombLoadBalancerStats.markSuccess(serviceCombServer);
     ServiceCombServerStats stats = serviceCombLoadBalancerStats.getServiceCombServerStats(serviceCombServer);
     Assert.assertEquals(serviceCombLoadBalancerStats.getPingView().size(), 1);
     await().atMost(5, TimeUnit.SECONDS)
@@ -83,16 +83,16 @@ public class TestServiceCombLoadBalancerStats {
     instance.setInstanceId("instance1");
     ServiceCombServer serviceCombServer = new ServiceCombServer(transport,
         new CacheEndpoint("rest://localhost:8080", instance));
-    ServiceCombLoadBalancerStats.INSTANCE.markFailure(serviceCombServer, 0);
-    ServiceCombLoadBalancerStats.INSTANCE.markFailure(serviceCombServer, 0);
+    ServiceCombLoadBalancerStats.INSTANCE.markFailure(serviceCombServer);
+    ServiceCombLoadBalancerStats.INSTANCE.markFailure(serviceCombServer);
     Assert.assertEquals(
         ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getCountinuousFailureCount(),
         2);
-    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(serviceCombServer, 0);
+    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(serviceCombServer);
     Assert.assertEquals(
         ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getCountinuousFailureCount(),
         0);
-    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(serviceCombServer, 0);
+    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(serviceCombServer);
     Assert
         .assertEquals(
             ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer).getTotalRequests(), 4);
@@ -119,10 +119,10 @@ public class TestServiceCombLoadBalancerStats {
     for (int i = 0; i < 10; i++) {
       new Thread() {
         public void run() {
-          ServiceCombLoadBalancerStats.INSTANCE.markFailure(serviceCombServer, 0);
-          ServiceCombLoadBalancerStats.INSTANCE.markFailure(serviceCombServer, 0);
-          ServiceCombLoadBalancerStats.INSTANCE.markSuccess(serviceCombServer, 0);
-          ServiceCombLoadBalancerStats.INSTANCE.markSuccess(serviceCombServer, 0);
+          ServiceCombLoadBalancerStats.INSTANCE.markFailure(serviceCombServer);
+          ServiceCombLoadBalancerStats.INSTANCE.markFailure(serviceCombServer);
+          ServiceCombLoadBalancerStats.INSTANCE.markSuccess(serviceCombServer);
+          ServiceCombLoadBalancerStats.INSTANCE.markSuccess(serviceCombServer);
           latch.countDown();
         }
       }.start();

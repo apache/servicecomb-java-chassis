@@ -78,17 +78,17 @@ public class ServiceCombLoadBalancerStats {
     }
   }
 
-  public void markSuccess(ServiceCombServer server, long execTime) {
+  public void markSuccess(ServiceCombServer server) {
     try {
-      serverStatsCache.get(server).markSuccess(execTime);
+      serverStatsCache.get(server).markSuccess();
     } catch (ExecutionException e) {
       LOGGER.error("Not expected to happen, maybe a bug.", e);
     }
   }
 
-  public void markFailure(ServiceCombServer server, long execTime) {
+  public void markFailure(ServiceCombServer server) {
     try {
-      serverStatsCache.get(server).markFailure(execTime);
+      serverStatsCache.get(server).markFailure();
     } catch (ExecutionException e) {
       LOGGER.error("Not expected to happen, maybe a bug.", e);
     }
@@ -167,11 +167,10 @@ public class ServiceCombLoadBalancerStats {
           while (instances.hasNext()) {
             ServiceCombServer server = instances.next();
             ServiceCombServerStats stats = allServers.get(server);
-            long startTime = System.currentTimeMillis();
             if ((System.currentTimeMillis() - stats.getLastVisitTime() > timerIntervalInMilis) && !ping
                 .ping(server.getInstance())) {
               LOGGER.info("ping mark server {} failure.", server.getInstance().getInstanceId());
-              stats.markFailure(System.currentTimeMillis() - startTime);
+              stats.markFailure();
             }
           }
           serverStatsCache.cleanUp();

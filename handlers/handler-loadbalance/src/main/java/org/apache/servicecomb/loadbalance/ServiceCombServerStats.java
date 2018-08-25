@@ -45,45 +45,31 @@ public class ServiceCombServerStats {
 
   private boolean isolated = false;
 
-  private long averageResponseTime = 0;
-
-  public long getAverageResponseTime() {
-    return averageResponseTime;
-  }
-
   public void markIsolated(boolean isolated) {
     this.isolated = isolated;
   }
 
-  public void markSuccess(long execTime) {
+  public void markSuccess() {
     long time = System.currentTimeMillis();
     ensureWindow(time);
     lastVisitTime = time;
     lastActiveTime = time;
-    updateAvgTime(execTime);
     totalRequests.incrementAndGet();
     successRequests.incrementAndGet();
     continuousFailureCount.set(0);
   }
 
-  public void markFailure(long execTime) {
+  public void markFailure() {
     long time = System.currentTimeMillis();
     ensureWindow(time);
     lastVisitTime = time;
 
     // when isolated, do not update any failure statistics, or we can not recover from failure very quickly
     if (!isolated) {
-      updateAvgTime(execTime);
       totalRequests.incrementAndGet();
       failedRequests.incrementAndGet();
       continuousFailureCount.incrementAndGet();
     }
-  }
-
-  private void updateAvgTime(long execTime) {
-    // There maybe concurrent problems. But we do not care.
-    long total = totalRequests.get();
-    averageResponseTime = (averageResponseTime * total + execTime) / (total + 1);
   }
 
   private void ensureWindow(long time) {
@@ -95,7 +81,6 @@ public class ServiceCombServerStats {
             totalRequests.set(0);
             successRequests.set(0);
             failedRequests.set(0);
-            averageResponseTime = 0;
           }
           lastWindow = time;
         }

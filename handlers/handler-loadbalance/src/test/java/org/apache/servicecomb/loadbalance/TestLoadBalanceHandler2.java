@@ -163,11 +163,11 @@ public class TestLoadBalanceHandler2 {
     server = (ServiceCombServer) loadBalancer.chooseServer(invocation);
     Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9090");
 
-    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server, 0);
-    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server, 0);
-    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server, 0);
-    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server, 0);
-    ServiceCombLoadBalancerStats.INSTANCE.markFailure(server, 0);
+    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
+    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
+    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
+    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
+    ServiceCombLoadBalancerStats.INSTANCE.markFailure(server);
 
     //if errorThresholdPercentage is 0,that means errorThresholdPercentage is not active.
     ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.errorThresholdPercentage", "0");
@@ -181,12 +181,12 @@ public class TestLoadBalanceHandler2 {
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = (ServiceCombServer) loadBalancer.chooseServer(invocation);
     Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9091");
-    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server2, 0);
+    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server2);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = (ServiceCombServer) loadBalancer.chooseServer(invocation);
     Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9090");
-    ServiceCombLoadBalancerStats.INSTANCE.markFailure(server2, 0);
-    ServiceCombLoadBalancerStats.INSTANCE.markFailure(server2, 0);
+    ServiceCombLoadBalancerStats.INSTANCE.markFailure(server2);
+    ServiceCombLoadBalancerStats.INSTANCE.markFailure(server2);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = (ServiceCombServer) loadBalancer.chooseServer(invocation);
     Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9091");
