@@ -54,17 +54,6 @@ public final class Configuration {
 
   public static final String SUCCESSIVE_FAILED_TIMES = "SessionStickinessRule.successiveFailedTimes";
 
-  // Begin: ServerListFilters configurations
-  //Enabled filter lists, e.g servicecomb.loadbalance.serverListFilters=a,b,c
-  public static final String SERVER_LIST_FILTERS = "servicecomb.loadbalance.serverListFilters";
-
-  //Class name of each filter: e.g servicecomb.loadbalance.serverListFilter.a.className=org.apache.servicecomb.MyServerListFilterExt
-  public static final String SERVER_LIST_FILTER_CLASS_HOLDER = "servicecomb.loadbalance.serverListFilter.%s.className";
-
-  //Property of the class: e.g servicecomb.loadbalance.serverListFilter.a.myproperty=sample
-  public static final String SERVER_LIST_FILTER_PROPERTY_HOLDER = "servicecomb.loadbalance.serverListFilter.%s.%s";
-  //End: ServerListFilters configurations
-
   private static final double PERCENT = 100;
 
   public static final String FILTER_ISOLATION = "isolation.";
@@ -81,8 +70,6 @@ public final class Configuration {
 
   public static final String TRANSACTIONCONTROL_OPTIONS_PREFIX_PATTERN =
       "servicecomb.loadbalance.%s.transactionControl.options";
-
-  public static final String TRANSACTIONCONTROL_POLICY_KEY_PATTERN = "servicecomb.loadbalance.%s.transactionControl.policy";
 
   public static final Configuration INSTANCE = new Configuration();
 
@@ -222,10 +209,6 @@ public final class Configuration {
     } catch (NumberFormatException e) {
       return defaultValue;
     }
-  }
-
-  public String getFlowsplitFilterPolicy(String microservice) {
-    return getStringProperty("", String.format(TRANSACTIONCONTROL_POLICY_KEY_PATTERN, microservice));
   }
 
   public Map<String, String> getFlowsplitFilterOptions(String microservice) {

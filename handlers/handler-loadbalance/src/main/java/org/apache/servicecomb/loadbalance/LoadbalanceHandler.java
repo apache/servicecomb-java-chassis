@@ -44,6 +44,7 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.loadbalancer.ILoadBalancer;
 import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.reactive.ExecutionContext;
@@ -139,9 +140,29 @@ public class LoadbalanceHandler implements Handler {
 
 
   public LoadbalanceHandler() {
+    preCheck();
     discoveryTree.loadFromSPI(DiscoveryFilter.class);
     discoveryTree.addFilter(new ServerDiscoveryFilter());
     discoveryTree.sort();
+  }
+
+  private void preCheck() {
+    // Old configurations check.Just print an error, because configurations may given in dynamic and fail on runtime.
+
+    String policyName = DynamicPropertyFactory.getInstance()
+        .getStringProperty("servicecomb.loadbalance.NFLoadBalancerRuleClassName", null).get();
+    if (!StringUtils.isEmpty(policyName)) {
+      LOGGER.error("[servicecomb.loadbalance.NFLoadBalancerRuleClassName] is not supported anymore." +
+          "use [servicecomb.loadbalance.strategy.name] instead.");
+    }
+
+    String filterNames = Configuration.getStringProperty(null, "servicecomb.loadbalance.serverListFilters");
+    if (!StringUtils.isEmpty(filterNames)) {
+      LOGGER.error(
+          "Server list implementation changed to SPI. Configuration [servicecomb.loadbalance.serverListFilters]" +
+              " is not used any more. For ServiceComb defined filters, you do not need config and can "
+              + "remove this configuration safely. If you define your own filter, need to change it to SPI to make it work.");
+    }
   }
 
   @Override
@@ -166,14 +187,6 @@ public class LoadbalanceHandler implements Handler {
 
   private void clearLoadBalancer() {
     loadBalancerMap.clear();
-  }
-
-  protected void setTransactionControlFilter(String microserviceName) {
-    String policyClsName = Configuration.INSTANCE.getFlowsplitFilterPolicy(microserviceName);
-    if (!policyClsName.isEmpty()) {
-      LOGGER.error(Configuration.TRANSACTIONCONTROL_POLICY_KEY_PATTERN + " is not supported anymore." +
-          "You can change this class to SPI, and filters will be loaded by SPI.");
-    }
   }
 
   private void send(Invocation invocation, AsyncResponse asyncResp, final LoadBalancer chosenLB) throws Exception {
@@ -350,30 +363,15 @@ public class LoadbalanceHandler implements Handler {
         invocation.getMicroserviceVersionRule());
     invocation.addLocalContext(CONTEXT_KEY_SERVER_LIST, serversVersionedCache.data());
 
-    LoadBalancer loadBalancer = loadBalancerMap
+    return loadBalancerMap
         .computeIfAbsent(serversVersionedCache.name(), name -> {
           return createLoadBalancer(invocation.getMicroserviceName());
         });
-
-    // Nothing to do just help users to deal with incompatible changes.
-    setTransactionControlFilter(invocation.getMicroserviceName());
-    loadServerListFilters();
-
-    return loadBalancer;
   }
 
   private LoadBalancer createLoadBalancer(String microserviceName) {
     RuleExt rule = ExtensionsManager.createLoadBalancerRule(microserviceName);
     return new LoadBalancer(rule, microserviceName);
-  }
-
-  private void loadServerListFilters() {
-    String filterNames = Configuration.getStringProperty(null, Configuration.SERVER_LIST_FILTERS);
-    if (!StringUtils.isEmpty(filterNames)) {
-      LOGGER.error("Server list implementation changed to SPI. Configuration " + Configuration.SERVER_LIST_FILTERS +
-          " is not used any more. For ServiceComb defined filters, you do not need config and can "
-          + "remove this configuration safely. If you define your own filter, need to change it to SPI to make it work.");
-    }
   }
 
   public boolean isEqual(String str1, String str2) {
