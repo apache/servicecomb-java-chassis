@@ -52,7 +52,7 @@ public class ValidationServiceClient {
       template.postForObject(urlPrefix + "/validate", model, ValidationModel.class);
       TestMgr.check(false, true);
     } catch (InvocationException e) {
-      TestMgr.check(e.getErrorData().toString().contains("age"), true);
+      TestMgr.check(e.getErrorData().toString().contains("propertyPath=errorCode.request.age"), true);
     }
 
     try {
@@ -61,7 +61,7 @@ public class ValidationServiceClient {
       template.postForObject(urlPrefix + "/validate", model, ValidationModel.class);
       TestMgr.check(false, true);
     } catch (InvocationException e) {
-      TestMgr.check(e.getErrorData().toString().contains("member"), true);
+      TestMgr.check(e.getErrorData().toString().contains("propertyPath=errorCode.request.members"), true);
     }
 
     String strResult = template.getForObject(urlPrefix + "/validateQuery?name=", String.class);
@@ -71,7 +71,7 @@ public class ValidationServiceClient {
       template.getForObject(urlPrefix + "/validateQuery", String.class);
       TestMgr.check(false, true);
     } catch (InvocationException e) {
-      TestMgr.check(e.getErrorData().toString().contains("null"), true);
+      TestMgr.check(e.getErrorData().toString().contains("propertyPath=queryValidate.name"), true);
     }
   }
 }

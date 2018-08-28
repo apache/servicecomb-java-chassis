@@ -304,9 +304,7 @@ public class JaxrsClient {
       // ignored
       Map data = (Map) e.getErrorData();
       TestMgr.check(
-          "[ConstraintViolationImpl{interpolatedMessage=",
-          data.get("message").toString().substring(0,
-              "[ConstraintViolationImpl{interpolatedMessage=".length()));
+          true, data.get("message").toString().contains("propertyPath=add.b"));
     }
 
     TestMgr.check(true, isExcep);
@@ -332,9 +330,7 @@ public class JaxrsClient {
       // Message dependends on locale, so just check the short part.
       Map data = (Map) e.getErrorData();
       TestMgr.check(
-          "[ConstraintViolationImpl{interpolatedMessage=",
-          data.get("message").toString().substring(0,
-              "[ConstraintViolationImpl{interpolatedMessage=".length()));
+          true, data.get("message").toString().contains("propertyPath=sayHi.name"));
     }
     TestMgr.check(true, isExcep);
   }
@@ -367,9 +363,7 @@ public class JaxrsClient {
       // Message dependends on locale, so just check the short part.
       Map data = (Map) e.getErrorData();
       TestMgr.check(
-          "[ConstraintViolationImpl{interpolatedMessage",
-          data.get("message").toString().substring(0,
-              "[ConstraintViolationImpl{interpolatedMessage".length()));
+          true, data.get("message").toString().contains("propertyPath=sayHello.student.age"));
     }
     TestMgr.check(true, isExcep);
   }
