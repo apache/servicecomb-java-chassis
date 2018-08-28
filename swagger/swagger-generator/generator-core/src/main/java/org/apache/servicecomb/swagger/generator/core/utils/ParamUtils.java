@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.swagger.generator.core.utils;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -56,8 +57,17 @@ public final class ParamUtils {
     return existName;
   }
 
+  public static String getParameterName(Constructor<?> constructor, int paramIdx) {
+    MethodParameter methodParameter = new MethodParameter(constructor, paramIdx);
+    return getParameterName(methodParameter, paramIdx);
+  }
+
   public static String getParameterName(Method method, int paramIdx) {
     MethodParameter methodParameter = new MethodParameter(method, paramIdx);
+    return getParameterName(methodParameter, paramIdx);
+  }
+
+  public static String getParameterName(MethodParameter methodParameter, int paramIdx) {
     methodParameter.initParameterNameDiscovery(parameterNameDiscoverer);
 
     String paramName = methodParameter.getParameterName();
@@ -140,8 +150,7 @@ public final class ParamUtils {
           String.format(
               "not allow such type of param:[%s], param name is [%s]",
               property.getClass(),
-              parameter.getName())
-      );
+              parameter.getName()));
     }
     parameter.setProperty(property);
   }
