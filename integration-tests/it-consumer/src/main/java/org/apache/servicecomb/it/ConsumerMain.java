@@ -24,6 +24,8 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.it.deploy.Deploys;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
+import org.apache.servicecomb.it.testcase.TestTrace;
+import org.apache.servicecomb.it.testcase.TestTraceEdge;
 import org.apache.servicecomb.it.testcase.base.TestDataTypeJaxrs;
 import org.apache.servicecomb.it.testcase.base.TestDataTypePojo;
 import org.apache.servicecomb.it.testcase.base.TestDataTypeSpringmvc;
@@ -105,6 +107,8 @@ public class ConsumerMain {
     ITJUnitUtils.addParent("standalone");
 
     testDataType();
+    ITJUnitUtils.runWithHighwayAndRest(TestTrace.class);
+    ITJUnitUtils.run(TestTraceEdge.class);
 
     ITJUnitUtils.getParents().pop();
     deploys.getBaseProducer().stop();
