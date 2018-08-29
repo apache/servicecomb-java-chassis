@@ -22,7 +22,7 @@ servicecomb:
   handler:
     chain:
       Consumer:
-        default: auth,loadbalance
+        default: loadbalance
         service:
           it-auth: loadbalance
   http:
@@ -32,7 +32,7 @@ servicecomb:
           enabled: true
           prefix: rest
           withVersion: true
-          prefixSegmentCount: 1
+          prefixSegmentCount: 2
         url:
           enabled: true
           mappings:

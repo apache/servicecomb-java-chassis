@@ -18,10 +18,12 @@ package org.apache.servicecomb.it.junit;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
@@ -40,6 +42,8 @@ public final class ITJUnitUtils {
   private static List<SCBFailure> failures = new ArrayList<>();
 
   private static AtomicInteger runCount = new AtomicInteger();
+
+  private static String transport;
 
   static {
     jUnitCore.addListener(new RunListener() {
@@ -61,6 +65,20 @@ public final class ITJUnitUtils {
 
   public static Stack<String> getParents() {
     return parents;
+  }
+
+  public static void pushTransport(String transport) {
+    ITJUnitUtils.transport = transport;
+    addParent(transport);
+  }
+
+  public static String getTransport() {
+    return transport;
+  }
+
+  public static void popTransport() {
+    ITJUnitUtils.transport = null;
+    popParent();
   }
 
   public static void addParent(String name) {
@@ -97,6 +115,24 @@ public final class ITJUnitUtils {
           .toArray(Class[]::new);
     } catch (IOException e) {
       throw new IllegalStateException("failed to find all classes in package " + packageName, e);
+    }
+  }
+
+  public static void runWithHighwayAndRest(Class<?> classes) {
+    runWithTransports(Arrays.asList(Const.HIGHWAY, Const.RESTFUL), classes);
+  }
+
+  public static void runWithRest(Class<?> classes) {
+    runWithTransports(Arrays.asList(Const.RESTFUL), classes);
+  }
+
+  public static void runWithTransports(List<String> transports, Class<?> classes) {
+    for (String transport : transports) {
+      ITJUnitUtils.pushTransport(transport);
+
+      ITJUnitUtils.run(classes);
+
+      ITJUnitUtils.popTransport();
     }
   }
 }
