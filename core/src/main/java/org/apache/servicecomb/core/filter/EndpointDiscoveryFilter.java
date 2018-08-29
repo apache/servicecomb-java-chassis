@@ -25,8 +25,12 @@ import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.discovery.AbstractEndpointDiscoveryFilter;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTreeNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EndpointDiscoveryFilter extends AbstractEndpointDiscoveryFilter {
+  private static final Logger LOGGER = LoggerFactory.getLogger(EndpointDiscoveryFilter.class);
+
   @Override
   public int getOrder() {
     return (int) Short.MAX_VALUE;
@@ -42,6 +46,7 @@ public class EndpointDiscoveryFilter extends AbstractEndpointDiscoveryFilter {
   protected Object createEndpoint(String transportName, String endpoint, MicroserviceInstance instance) {
     Transport transport = CseContext.getInstance().getTransportManager().findTransport(transportName);
     if (transport == null) {
+      LOGGER.info("not deployed transport {}, ignore {}.", transportName, endpoint);
       return null;
     }
 
