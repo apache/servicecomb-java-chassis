@@ -17,22 +17,33 @@
 
 package org.apache.servicecomb.core;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
+import org.apache.servicecomb.core.tracing.TraceIdGenerator;
 import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 
 public class Invocation extends SwaggerInvocation {
+  private static final Collection<TraceIdGenerator> TRACE_ID_GENERATORS = loadTraceIdGenerators();
+
+  static Collection<TraceIdGenerator> loadTraceIdGenerators() {
+    return SPIServiceUtils.getPriorityHighestServices(generator -> generator.getName(), TraceIdGenerator.class);
+  }
+
   private ReferenceConfig referenceConfig;
 
   // 本次调用对应的schemaMeta
@@ -62,6 +73,20 @@ public class Invocation extends SwaggerInvocation {
   private long startExecutionTime;
 
   private boolean sync = true;
+
+  private HttpServletRequestEx requestEx;
+
+  public HttpServletRequestEx getRequestEx() {
+    return requestEx;
+  }
+
+  public String getTraceId() {
+    return getContext(Const.TRACE_ID_NAME);
+  }
+
+  public String getTraceId(String traceIdName) {
+    return getContext(traceIdName);
+  }
 
   public long getStartTime() {
     return startTime;
@@ -188,9 +213,44 @@ public class Invocation extends SwaggerInvocation {
     return operationMeta.getMicroserviceQualifiedName();
   }
 
+  protected void initTraceId() {
+    for (TraceIdGenerator traceIdGenerator : TRACE_ID_GENERATORS) {
+      initTraceId(traceIdGenerator);
+    }
+  }
+
+  protected void initTraceId(TraceIdGenerator traceIdGenerator) {
+    if (!StringUtils.isEmpty(getTraceId(traceIdGenerator.getTraceIdKeyName()))) {
+      // if invocation context contains traceId, nothing needed to do
+      return;
+    }
+
+    if (requestEx == null) {
+      // it's a new consumer invocation, must generate a traceId
+      addContext(traceIdGenerator.getTraceIdKeyName(), traceIdGenerator.generate());
+      return;
+    }
+
+    String traceId = requestEx.getHeader(traceIdGenerator.getTraceIdKeyName());
+    if (!StringUtils.isEmpty(traceId)) {
+      // if request header contains traceId, save traceId into invocation context
+      addContext(traceIdGenerator.getTraceIdKeyName(), traceId);
+      return;
+    }
+
+    // if traceId not found, generate a traceId
+    addContext(traceIdGenerator.getTraceIdKeyName(), traceIdGenerator.generate());
+  }
+
   public void onStart() {
     this.startTime = System.nanoTime();
+    initTraceId();
     EventManager.post(new InvocationStartEvent(this));
+  }
+
+  public void onStart(HttpServletRequestEx requestEx) {
+    this.requestEx = requestEx;
+    onStart();
   }
 
   public void onStartExecute() {

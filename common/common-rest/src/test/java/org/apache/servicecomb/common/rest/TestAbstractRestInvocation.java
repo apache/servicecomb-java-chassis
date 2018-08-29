@@ -102,6 +102,13 @@ public class TestAbstractRestInvocation {
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
+  class AbstractHttpServletRequestForTest extends AbstractHttpServletRequest {
+    @Override
+    public String getHeader(String name) {
+      return null;
+    }
+  }
+
   class AbstractRestInvocationForTest extends AbstractRestInvocation {
     @Override
     protected OperationLocator locateOperation(ServicePathManager servicePathManager) {
@@ -730,8 +737,7 @@ public class TestAbstractRestInvocation {
   @Test
   public void scheduleInvocationException(@Mocked OperationMeta operationMeta) {
     Executor executor = new ReactiveExecutor();
-    requestEx = new AbstractHttpServletRequest() {
-    };
+    requestEx = new AbstractHttpServletRequestForTest();
     requestEx.setAttribute(RestConst.REST_REQUEST, requestEx);
     new Expectations() {
       {
@@ -778,8 +784,7 @@ public class TestAbstractRestInvocation {
       }
     };
 
-    requestEx = new AbstractHttpServletRequest() {
-    };
+    requestEx = new AbstractHttpServletRequestForTest();
 
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
@@ -818,15 +823,16 @@ public class TestAbstractRestInvocation {
     EventManager.register(subscriber);
 
     Executor executor = new ReactiveExecutor();
-    requestEx = new AbstractHttpServletRequest() {
-    };
+    requestEx = new AbstractHttpServletRequestForTest();
     requestEx.setAttribute(RestConst.REST_REQUEST, requestEx);
-    new Expectations() {
+    new Expectations(requestEx) {
       {
         restOperation.getOperationMeta();
         result = operationMeta;
         operationMeta.getExecutor();
         result = executor;
+        requestEx.getHeader(Const.TRACE_ID_NAME);
+        result = "tid";
       }
     };
 
@@ -846,6 +852,7 @@ public class TestAbstractRestInvocation {
     Assert.assertTrue(result.value);
     Assert.assertEquals(time, invocation.getStartTime());
     Assert.assertSame(invocation, eventHolder.value.getInvocation());
+    Assert.assertEquals("tid", invocation.getTraceId());
   }
 
   @Test

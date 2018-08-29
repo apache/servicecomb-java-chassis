@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.servicecomb.common.rest.filter.inner.ServerRestArgsFilter
+org.apache.servicecomb.core.tracing.BraveTraceIdGenerator

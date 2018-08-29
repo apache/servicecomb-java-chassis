@@ -18,5 +18,29 @@
 package org.apache.servicecomb.core.tracing;
 
 public interface TraceIdGenerator {
-  String generateStringId();
+  default int getOrder() {
+    return 1000;
+  }
+
+  /**
+   * <pre>
+   *   for generators have the same name, will only use the minimum order instance
+   *   not use getTraceIdKeyName to control this logic, because most customers not want to generate multiple traceIds
+   * </pre>
+   * @return generator name
+   */
+  default String getName() {
+    return "default";
+  }
+
+  /**
+   *
+   * @return trance id key name
+   * <pre>
+   * default value is X-B3-TraceId to work with zipkin
+   * </pre>
+   */
+  String getTraceIdKeyName();
+
+  String generate();
 }

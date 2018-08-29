@@ -26,10 +26,10 @@ public class BraveTraceIdGeneratorTest {
 
   @Test
   public void generateStringId() {
-    TraceIdGenerator traceIdGenerator = BraveTraceIdGenerator.INSTANCE;
-    assertNotEquals(traceIdGenerator.generateStringId(), traceIdGenerator.generateStringId());
+    TraceIdGenerator traceIdGenerator = new BraveTraceIdGenerator();
+    assertNotEquals(traceIdGenerator.generate(), traceIdGenerator.generate());
 
-    String traceId = traceIdGenerator.generateStringId();
+    String traceId = traceIdGenerator.generate();
     try {
       Long.parseLong(traceId, 16);
     } catch (NumberFormatException e) {
