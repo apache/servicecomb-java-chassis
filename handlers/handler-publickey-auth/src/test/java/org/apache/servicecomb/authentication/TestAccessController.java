@@ -20,20 +20,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.authentication.provider.AccessController;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 public class TestAccessController {
-  @Before
-  public void setUp() throws Exception {
-    Log4jUtils.init();
-  }
-
   @After
   public void tearDown() {
     ArchaiusUtils.resetConfig();
