@@ -93,4 +93,65 @@ public class TestSPIServiceUtils {
   public void getPriorityHighestService_null() {
     Assert.assertNull(SPIServiceUtils.getPriorityHighestService(SPIServiceDef0.class));
   }
+
+  interface PriorityIntf {
+    String getName();
+
+    int getOrder();
+  }
+
+  public class PriorityImpl implements PriorityIntf {
+    private final String name;
+
+    private final int order;
+
+    public PriorityImpl(String name, int order) {
+      this.name = name;
+      this.order = order;
+    }
+
+    @Override
+    public String getName() {
+      return name;
+    }
+
+    @Override
+    public int getOrder() {
+      return order;
+    }
+
+    @Override
+    public String toString() {
+      return "PriorityImpl{" +
+          "name='" + name + '\'' +
+          ", order=" + order +
+          '}';
+    }
+  }
+
+  @Test
+  public void getPriorityHighestServices() {
+    Map<String, PriorityIntf> instances = new LinkedHashMap<>();
+    instances.putIfAbsent("1", new PriorityImpl("n1", 0));
+    instances.putIfAbsent("2", new PriorityImpl("n1", -1));
+    instances.putIfAbsent("3", new PriorityImpl("n1", 1));
+    instances.putIfAbsent("4", new PriorityImpl("n2", 0));
+    instances.putIfAbsent("5", new PriorityImpl("n2", -1));
+    instances.putIfAbsent("6", new PriorityImpl("n2", 1));
+
+    ServiceLoader<PriorityIntf> serviceLoader = ServiceLoader.load(PriorityIntf.class);
+    Deencapsulation.setField(serviceLoader, "providers", instances);
+    new Expectations(ServiceLoader.class) {
+      {
+        ServiceLoader.load(PriorityIntf.class);
+        result = serviceLoader;
+      }
+    };
+
+    Assert.assertThat(SPIServiceUtils.getPriorityHighestServices(inst -> inst.getName(), PriorityIntf.class),
+        Matchers.containsInAnyOrder(instances.get("2"), instances.get("5")));
+
+    Map<Class<?>, List<Object>> cache = Deencapsulation.getField(SPIServiceUtils.class, "cache");
+    cache.clear();
+  }
 }

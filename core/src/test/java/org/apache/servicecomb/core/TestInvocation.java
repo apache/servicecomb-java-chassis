@@ -16,14 +16,21 @@
  */
 package org.apache.servicecomb.core;
 
+import java.util.Arrays;
+
 import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
+import org.apache.servicecomb.core.tracing.BraveTraceIdGenerator;
+import org.apache.servicecomb.core.tracing.TraceIdGenerator;
 import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.hamcrest.Matchers;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -32,6 +39,7 @@ import org.junit.Test;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
+import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
@@ -143,5 +151,91 @@ public class TestInvocation {
     invocation.addLocalContext("k", 1);
     Assert.assertSame(invocation.getHandlerContext(), invocation.getLocalContext());
     Assert.assertEquals(1, (int) invocation.getLocalContext("k"));
+  }
+
+  @Test
+  public void traceId_fromContext(@Mocked ReferenceConfig referenceConfig) {
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, swaggerArguments);
+    invocation.addContext(Const.TRACE_ID_NAME, "abc");
+
+    invocation.onStart();
+
+    Assert.assertEquals("abc", invocation.getTraceId());
+    Assert.assertEquals("abc", invocation.getTraceId(Const.TRACE_ID_NAME));
+  }
+
+  @Test
+  public void traceId_consumerCreateTraceId(@Mocked ReferenceConfig referenceConfig) {
+    TraceIdGenerator generator = SPIServiceUtils.getTargetService(TraceIdGenerator.class, BraveTraceIdGenerator.class);
+    new Expectations(generator) {
+      {
+        generator.generate();
+        result = "abc";
+      }
+    };
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, swaggerArguments);
+
+    invocation.onStart();
+
+    Assert.assertEquals("abc", invocation.getTraceId());
+    Assert.assertEquals("abc", invocation.getTraceId(Const.TRACE_ID_NAME));
+  }
+
+  @Test
+  public void traceId_fromRequest(@Mocked Endpoint endpoint, @Mocked HttpServletRequestEx requestEx) {
+    new Expectations() {
+      {
+        requestEx.getHeader(Const.TRACE_ID_NAME);
+        result = "abc";
+      }
+    };
+    Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
+
+    invocation.onStart(requestEx);
+
+    Assert.assertEquals("abc", invocation.getTraceId());
+    Assert.assertEquals("abc", invocation.getTraceId(Const.TRACE_ID_NAME));
+  }
+
+  @Test
+  public void traceId_producerCreateTraceId(@Mocked Endpoint endpoint, @Mocked HttpServletRequestEx requestEx) {
+    TraceIdGenerator generator = SPIServiceUtils.getTargetService(TraceIdGenerator.class, BraveTraceIdGenerator.class);
+    new Expectations(generator) {
+      {
+        generator.generate();
+        result = "abc";
+      }
+    };
+    Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
+
+    invocation.onStart(requestEx);
+
+    Assert.assertEquals("abc", invocation.getTraceId());
+    Assert.assertEquals("abc", invocation.getTraceId(Const.TRACE_ID_NAME));
+  }
+
+  @Test
+  public void traceIdGeneratorInit(@Mocked TraceIdGenerator gen1, @Mocked TraceIdGenerator gen2,
+      @Mocked TraceIdGenerator gen3, @Mocked TraceIdGenerator gen4) {
+    new Expectations(SPIServiceUtils.class) {
+      {
+        gen1.getName();
+        result = "zipkin";
+
+        gen3.getName();
+        result = "apm";
+
+        gen2.getName();
+        result = "zipkin";
+
+        gen4.getName();
+        result = "apm";
+
+        SPIServiceUtils.getOrLoadSortedService(TraceIdGenerator.class);
+        result = Arrays.asList(gen1, gen3, gen2, gen4);
+      }
+    };
+
+    Assert.assertThat(Invocation.loadTraceIdGenerators(), Matchers.contains(gen1, gen3));
   }
 }
