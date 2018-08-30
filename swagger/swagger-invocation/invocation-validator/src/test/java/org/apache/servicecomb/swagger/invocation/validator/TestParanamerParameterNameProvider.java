@@ -1,16 +1,28 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.servicecomb.swagger.invocation.validator;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class TestDefaultParameterNameProviderEx {
+public class TestParanamerParameterNameProvider {
   static class ValidatorForTest {
     static class Student {
       private String name;
@@ -74,30 +86,30 @@ public class TestDefaultParameterNameProviderEx {
 
   Class<ValidatorForTest> validatorForTest = ValidatorForTest.class;
 
-  DefaultParameterNameProviderEx parameterNameProviderEx = new DefaultParameterNameProviderEx();
+  ParanamerParameterNameProvider parameterNameProvider = new ParanamerParameterNameProvider();
 
   @Test
   public void testMethod() throws NoSuchMethodException {
     Method method = validatorForTest.getMethod("add", int.class, int.class);
-    Assert.assertThat(parameterNameProviderEx.getParameterNames(method), Matchers.contains("a", "b"));
+    Assert.assertThat(parameterNameProvider.getParameterNames(method), Matchers.contains("a", "b"));
     method = validatorForTest.getMethod("sayHi", String.class);
-    Assert.assertThat(parameterNameProviderEx.getParameterNames(method), Matchers.contains("hi"));
+    Assert.assertThat(parameterNameProvider.getParameterNames(method), Matchers.contains("hi"));
     method = validatorForTest.getMethod("sayHello", ValidatorForTest.Student.class);
-    Assert.assertThat(parameterNameProviderEx.getParameterNames(method), Matchers.contains("student"));
+    Assert.assertThat(parameterNameProvider.getParameterNames(method), Matchers.contains("student"));
     method = validatorForTest.getMethod("setTest", String.class);
-    Assert.assertThat(parameterNameProviderEx.getParameterNames(method), Matchers.contains("grade"));
+    Assert.assertThat(parameterNameProvider.getParameterNames(method), Matchers.contains("grade"));
     method = validatorForTest.getMethod("getNumber");
-    Assert.assertTrue(parameterNameProviderEx.getParameterNames(method).isEmpty());
+    Assert.assertTrue(parameterNameProvider.getParameterNames(method).isEmpty());
     method = validatorForTest.getMethod("setNumber", int.class);
-    Assert.assertThat(parameterNameProviderEx.getParameterNames(method), Matchers.contains("number"));
+    Assert.assertThat(parameterNameProvider.getParameterNames(method), Matchers.contains("number"));
   }
 
   @Test
   public void testConstructor() throws NoSuchMethodException {
     Constructor<ValidatorForTest> constructor = validatorForTest.getConstructor(String.class, int.class);
-    Assert.assertThat(parameterNameProviderEx.getParameterNames(constructor), Matchers.contains("grade", "number"));
+    Assert.assertThat(parameterNameProvider.getParameterNames(constructor), Matchers.contains("grade", "number"));
     constructor = validatorForTest.getConstructor();
-    Assert.assertTrue(parameterNameProviderEx.getParameterNames(constructor).isEmpty());
+    Assert.assertTrue(parameterNameProvider.getParameterNames(constructor).isEmpty());
 
   }
 }

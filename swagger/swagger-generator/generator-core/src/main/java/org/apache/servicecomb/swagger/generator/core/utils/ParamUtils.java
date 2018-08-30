@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.swagger.generator.core.utils;
 
-import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -57,9 +57,9 @@ public final class ParamUtils {
     return existName;
   }
 
-  public static String getParameterName(Constructor<?> constructor, int paramIdx) {
-    MethodParameter methodParameter = new MethodParameter(constructor, paramIdx);
-    return getParameterName(methodParameter, paramIdx);
+  public static String getParameterName(Executable methodOrConstructor, int parameterIndex) {
+    MethodParameter methodParameter = MethodParameter.forMethodOrConstructor(methodOrConstructor, parameterIndex);
+    return getParameterName(methodParameter, parameterIndex);
   }
 
   public static String getParameterName(Method method, int paramIdx) {
