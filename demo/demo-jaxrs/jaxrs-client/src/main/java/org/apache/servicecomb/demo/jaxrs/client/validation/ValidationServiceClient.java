@@ -19,6 +19,8 @@ package org.apache.servicecomb.demo.jaxrs.client.validation;
 
 import java.util.ArrayList;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.jaxrs.server.validation.ValidationModel;
@@ -52,6 +54,8 @@ public class ValidationServiceClient {
       template.postForObject(urlPrefix + "/validate", model, ValidationModel.class);
       TestMgr.check(false, true);
     } catch (InvocationException e) {
+      TestMgr.check(400, e.getStatus().getStatusCode());
+      TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
       TestMgr.check(e.getErrorData().toString().contains("propertyPath=errorCode.request.age"), true);
     }
 
@@ -61,6 +65,8 @@ public class ValidationServiceClient {
       template.postForObject(urlPrefix + "/validate", model, ValidationModel.class);
       TestMgr.check(false, true);
     } catch (InvocationException e) {
+      TestMgr.check(400, e.getStatus().getStatusCode());
+      TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
       TestMgr.check(e.getErrorData().toString().contains("propertyPath=errorCode.request.members"), true);
     }
 
@@ -71,6 +77,8 @@ public class ValidationServiceClient {
       template.getForObject(urlPrefix + "/validateQuery", String.class);
       TestMgr.check(false, true);
     } catch (InvocationException e) {
+      TestMgr.check(400, e.getStatus().getStatusCode());
+      TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
       TestMgr.check(e.getErrorData().toString().contains("propertyPath=queryValidate.name"), true);
     }
   }

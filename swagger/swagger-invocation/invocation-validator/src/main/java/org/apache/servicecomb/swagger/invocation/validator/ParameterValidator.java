@@ -46,7 +46,7 @@ public class ParameterValidator implements ProducerInvokeExtension {
       ValidatorFactory factory =
           Validation.byDefaultProvider()
               .configure()
-              .parameterNameProvider(new DefaultParameterNameProviderEx())
+              .parameterNameProvider(new ParanamerParameterNameProvider())
               .buildValidatorFactory();
       executableValidator = factory.getValidator().forExecutables();
     }
