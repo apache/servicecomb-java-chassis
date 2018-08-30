@@ -93,7 +93,7 @@ public class TestClientHttp {
         oClient.getMicroserviceId(microservice.getAppId(),
             microservice.getServiceName(),
             microservice.getVersion(),
-            microservice.getEnvironment()));
+            microservice.getEnvironment()).getValue());
     Assert.assertEquals(null,
         oClient.heartbeat(microservice.getServiceId(),
             microservice.getInstance().getInstanceId()));

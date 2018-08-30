@@ -105,25 +105,23 @@ public class TestServiceRegistryClientImpl {
   public void testException() {
     MicroserviceFactory microserviceFactory = new MicroserviceFactory();
     Microservice microservice = microserviceFactory.create("app", "ms");
-    Assert.assertEquals(null, oClient.registerMicroservice(microservice));
-    Assert.assertEquals(null, oClient.registerMicroserviceInstance(microservice.getInstance()));
+    Assert.assertNull(oClient.registerMicroservice(microservice));
+    Assert.assertNull(oClient.registerMicroserviceInstance(microservice.getInstance()));
     oClient.init();
-    Assert.assertEquals(null,
-        oClient.getMicroserviceId(microservice.getAppId(),
-            microservice.getServiceName(),
-            microservice.getVersion(),
-            microservice.getEnvironment()));
+    Holder<String> microserviceIdHolder = oClient.getMicroserviceId(microservice.getAppId(),
+        microservice.getServiceName(),
+        microservice.getVersion(),
+        microservice.getEnvironment());
+    Assert.assertNull(microserviceIdHolder.getValue());
+    Assert.assertEquals(0, microserviceIdHolder.getStatusCode());
     Assert.assertThat(oClient.getAllMicroservices().isEmpty(), is(true));
-    Assert.assertEquals(null, oClient.registerMicroservice(microservice));
-    Assert.assertEquals(null, oClient.getMicroservice("microserviceId"));
-    Assert.assertEquals(null, oClient.getMicroserviceInstance("consumerId", "providerId"));
-    Assert.assertEquals(false,
-        oClient.unregisterMicroserviceInstance("microserviceId", "microserviceInstanceId"));
-    Assert.assertEquals(null, oClient.heartbeat("microserviceId", "microserviceInstanceId"));
-    Assert.assertEquals(null,
-        oClient.findServiceInstance("selfMicroserviceId", "appId", "serviceName", "versionRule"));
-    Assert.assertEquals(null,
-        oClient.findServiceInstances("selfMicroserviceId", "appId", "serviceName", "versionRule", "0"));
+    Assert.assertNull(oClient.registerMicroservice(microservice));
+    Assert.assertNull(oClient.getMicroservice("microserviceId"));
+    Assert.assertNull(oClient.getMicroserviceInstance("consumerId", "providerId"));
+    Assert.assertFalse(oClient.unregisterMicroserviceInstance("microserviceId", "microserviceInstanceId"));
+    Assert.assertNull(oClient.heartbeat("microserviceId", "microserviceInstanceId"));
+    Assert.assertNull(oClient.findServiceInstance("selfMicroserviceId", "appId", "serviceName", "versionRule"));
+    Assert.assertNull(oClient.findServiceInstances("selfMicroserviceId", "appId", "serviceName", "versionRule", "0"));
 
     Assert.assertEquals("a", new ClientException("a").getMessage());
   }
@@ -281,6 +279,7 @@ public class TestServiceRegistryClientImpl {
     bodyHandlerHolder.value.handle(bodyBuffer);
 
     Assert.assertNull(holder.value);
+    Assert.assertEquals(400, holder.getStatusCode());
   }
 
   @Test
@@ -403,6 +402,7 @@ public class TestServiceRegistryClientImpl {
     MicroserviceInstances microserviceInstances = oClient
         .findServiceInstances("consumerId", "appId", "serviceName", DefinitionConst.VERSION_RULE_ALL, null);
 
+    Assert.assertNotNull(microserviceInstances);
     Assert.assertTrue(microserviceInstances.isMicroserviceNotExist());
     Assert.assertFalse(microserviceInstances.isNeedRefresh());
   }
@@ -424,6 +424,7 @@ public class TestServiceRegistryClientImpl {
       }
     };
     ServiceCenterInfo info = oClient.getServiceCenterInfo();
+    Assert.assertNotNull(info);
     Assert.assertEquals("x.x.x", info.getVersion());
     Assert.assertEquals("xxx", info.getBuildTag());
     Assert.assertEquals("dev", info.getRunMode());
@@ -449,5 +450,107 @@ public class TestServiceRegistryClientImpl {
         Assert.assertEquals(e, events.get(0).getThrowableInformation().getThrowable());
       }
     }.run();
+  }
+
+  @Test
+  public void getMicroserviceId() {
+    RestResponse restResponse = Mockito.mock(RestResponse.class);
+    Holder<HttpClientResponse> httpClientResponseHolder = new Holder<>();
+    HttpClientResponse httpClientResponse = new MockUp<HttpClientResponse>() {
+      @Mock
+      HttpClientResponse bodyHandler(io.vertx.core.Handler<io.vertx.core.buffer.Buffer> bodyHandler) {
+        bodyHandler.handle(Buffer.buffer("{\"serviceId\":\"testServiceId\",\"schemaId\":\"testSchemaId\"}"));
+        return httpClientResponseHolder.getValue();
+      }
+
+      @Mock
+      int statusCode() {
+        return 200;
+      }
+    }.getMockInstance();
+    httpClientResponseHolder.setValue(httpClientResponse);
+    Mockito.when(restResponse.getResponse()).thenReturn(httpClientResponse);
+    new MockUp<RestUtils>() {
+      @Mock
+      void get(IpPort ipPort, String uri, RequestParam requestParam, Handler<RestResponse> responseHandler) {
+        Assert.assertEquals("microservice", requestParam.getQueryParamsMap().get("type")[0]);
+        Assert.assertEquals("appId00", requestParam.getQueryParamsMap().get("appId")[0]);
+        Assert.assertEquals("testService00", requestParam.getQueryParamsMap().get("serviceName")[0]);
+        Assert.assertEquals("0.0.1+", requestParam.getQueryParamsMap().get("version")[0]);
+        Assert.assertEquals("", requestParam.getQueryParamsMap().get("env")[0]);
+        responseHandler.handle(restResponse);
+      }
+    };
+
+    Holder<String> microserviceIdHolder = oClient.getMicroserviceId("appId00", "testService00", "0.0.1+", "");
+    Assert.assertEquals(200, microserviceIdHolder.getStatusCode());
+    Assert.assertEquals("testServiceId", microserviceIdHolder.getValue());
+  }
+
+  @Test
+  public void getMicroserviceId_ServiceNotFound() {
+    RestResponse restResponse = Mockito.mock(RestResponse.class);
+    Holder<HttpClientResponse> httpClientResponseHolder = new Holder<>();
+    HttpClientResponse httpClientResponse = new MockUp<HttpClientResponse>() {
+      @Mock
+      HttpClientResponse bodyHandler(io.vertx.core.Handler<io.vertx.core.buffer.Buffer> bodyHandler) {
+        bodyHandler.handle(Buffer.buffer("{\"errorCode\":\"400012\",\"errorMessage\":\"Micro-service does not exist\","
+            + "\"detail\":\"service does not exist.\"}"));
+        return httpClientResponseHolder.getValue();
+      }
+
+      @Mock
+      int statusCode() {
+        return 400;
+      }
+    }.getMockInstance();
+    httpClientResponseHolder.setValue(httpClientResponse);
+    Mockito.when(restResponse.getResponse()).thenReturn(httpClientResponse);
+    new MockUp<RestUtils>() {
+      @Mock
+      void get(IpPort ipPort, String uri, RequestParam requestParam, Handler<RestResponse> responseHandler) {
+        responseHandler.handle(restResponse);
+      }
+    };
+
+    Holder<String> microserviceIdHolder = oClient.getMicroserviceId("appId00", "testService00", "0.0.1+", "");
+    Assert.assertEquals(200, microserviceIdHolder.getStatusCode());
+    Assert.assertNull(microserviceIdHolder.getValue());
+    Assert.assertEquals("{\"errorCode\":\"400012\",\"errorMessage\":\"Micro-service does not exist\","
+            + "\"detail\":\"service does not exist.\"}",
+        microserviceIdHolder.getRawResponseBody().toString());
+  }
+
+  @Test
+  public void getMicroserviceId_QueryResponseError() {
+    RestResponse restResponse = Mockito.mock(RestResponse.class);
+    Holder<HttpClientResponse> httpClientResponseHolder = new Holder<>();
+    HttpClientResponse httpClientResponse = new MockUp<HttpClientResponse>() {
+      @Mock
+      HttpClientResponse bodyHandler(io.vertx.core.Handler<io.vertx.core.buffer.Buffer> bodyHandler) {
+        bodyHandler.handle(Buffer.buffer("{\"errorCode\":\"xxxxxx\",\"errorMessage\":\"test Error\","
+            + "\"detail\":\"test Error.\"}"));
+        return httpClientResponseHolder.getValue();
+      }
+
+      @Mock
+      int statusCode() {
+        return 401;
+      }
+    }.getMockInstance();
+    httpClientResponseHolder.setValue(httpClientResponse);
+    Mockito.when(restResponse.getResponse()).thenReturn(httpClientResponse);
+    new MockUp<RestUtils>() {
+      @Mock
+      void get(IpPort ipPort, String uri, RequestParam requestParam, Handler<RestResponse> responseHandler) {
+        responseHandler.handle(restResponse);
+      }
+    };
+
+    Holder<String> microserviceIdHolder = oClient.getMicroserviceId("appId00", "testService00", "0.0.1+", "");
+    Assert.assertEquals(401, microserviceIdHolder.getStatusCode());
+    Assert.assertNull(microserviceIdHolder.getValue());
+    Assert.assertEquals("{\"errorCode\":\"xxxxxx\",\"errorMessage\":\"test Error\",\"detail\":\"test Error.\"}",
+        microserviceIdHolder.getRawResponseBody().toString());
   }
 }

@@ -163,10 +163,15 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   @Override
-  public String getMicroserviceId(String appId, String microserviceName, String strVersionRule, String environment) {
+  public Holder<String> getMicroserviceId(String appId, String microserviceName, String strVersionRule,
+      String environment) {
     VersionRule versionRule = VersionRuleUtils.getOrCreate(strVersionRule);
     Microservice latest = findLatest(appId, microserviceName, versionRule);
-    return latest != null ? latest.getServiceId() : null;
+    Holder<String> serviceIdHolder = new Holder<>();
+    serviceIdHolder
+        .setStatusCode(Status.OK.getStatusCode())
+        .setValue(latest != null ? latest.getServiceId() : null);
+    return serviceIdHolder;
   }
 
   @Override
@@ -275,7 +280,7 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
       String strVersionRule) {
     MicroserviceInstances instances =
         findServiceInstances(selfMicroserviceId, appId, serviceName, strVersionRule, null);
-    if(instances.isMicroserviceNotExist()) {
+    if (instances.isMicroserviceNotExist()) {
       return null;
     }
     return instances.getInstancesResponse().getInstances();

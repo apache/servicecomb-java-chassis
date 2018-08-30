@@ -81,20 +81,23 @@ public class LocalServiceRegistryClientImplTest {
   public void getMicroserviceId_appNotMatch() {
     mockRegisterMicroservice("otherApp", microserviceName, "1.0.0");
 
-    Assert.assertNull(registryClient.getMicroserviceId(appId, microserviceName, "1.0.0", ""));
+    Assert.assertEquals(200, registryClient.getMicroserviceId(appId, microserviceName, "1.0.0", "").getStatusCode());
+    Assert.assertNull(registryClient.getMicroserviceId(appId, microserviceName, "1.0.0", "").getValue());
   }
 
   @Test
   public void getMicroserviceId_nameNotMatch() {
     mockRegisterMicroservice(appId, "otherName", "1.0.0");
 
-    Assert.assertNull(registryClient.getMicroserviceId(appId, microserviceName, "1.0.0", ""));
+    Assert.assertEquals(200, registryClient.getMicroserviceId(appId, microserviceName, "1.0.0", "").getStatusCode());
+    Assert.assertNull(registryClient.getMicroserviceId(appId, microserviceName, "1.0.0", "").getValue());
   }
 
   @Test
   public void getMicroserviceId_versionNotMatch() {
     mockRegisterMicroservice(appId, microserviceName, "1.0.0");
-    Assert.assertNull(registryClient.getMicroserviceId(appId, microserviceName, "2.0.0", ""));
+    Assert.assertEquals(200, registryClient.getMicroserviceId(appId, microserviceName, "2.0.0", "").getStatusCode());
+    Assert.assertNull(registryClient.getMicroserviceId(appId, microserviceName, "2.0.0", "").getValue());
   }
 
   @Test
@@ -102,9 +105,10 @@ public class LocalServiceRegistryClientImplTest {
     Microservice v2 = mockRegisterMicroservice(appId, microserviceName, "2.0.0");
     mockRegisterMicroservice(appId, microserviceName, "1.0.0");
 
-    String serviceId =
-        registryClient.getMicroserviceId(appId, microserviceName, DefinitionConst.VERSION_RULE_LATEST, "");
-    Assert.assertEquals(v2.getServiceId(), serviceId);
+    Holder<String> serviceIdHolder = registryClient
+        .getMicroserviceId(appId, microserviceName, DefinitionConst.VERSION_RULE_LATEST, "");
+    Assert.assertEquals(200, serviceIdHolder.getStatusCode());
+    Assert.assertEquals(v2.getServiceId(), serviceIdHolder.getValue());
   }
 
   @Test
@@ -112,7 +116,7 @@ public class LocalServiceRegistryClientImplTest {
     Microservice v1 = mockRegisterMicroservice(appId, microserviceName, "1.0.0");
     mockRegisterMicroservice(appId, microserviceName, "2.0.0");
 
-    String serviceId = registryClient.getMicroserviceId(appId, microserviceName, "1.0.0", "");
+    String serviceId = registryClient.getMicroserviceId(appId, microserviceName, "1.0.0", "").getValue();
     Assert.assertEquals(v1.getServiceId(), serviceId);
   }
 

@@ -65,9 +65,17 @@ import io.netty.handler.codec.http.HttpStatusClass;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientResponse;
+import io.vertx.core.json.JsonObject;
 
 public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRegistryClientImpl.class);
+
+  public static final int MICROSERVICE_NOT_FOUND_STATUS_CODE = 400;
+
+  public static final String MICROSERVICE_NOT_FOUND_ERROR_CODE = "400012";
+
+  public static final String SC_RESPONSE_KEY_ERROR_CODE = "errorCode";
 
   private IpPortManager ipPortManager;
 
@@ -102,6 +110,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         if (requestContext.getRetryTimes() <= ipPortManager.getMaxRetryTimes()) {
           retry(requestContext, syncHandler(countDownLatch, cls, holder));
         } else {
+          holder.setStatusCode(0);
           countDownLatch.countDown();
         }
         return;
@@ -109,6 +118,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
       holder.setStatusCode(response.statusCode());
       response.bodyHandler(
           bodyBuffer -> {
+            holder.setRawResponseBody(bodyBuffer);
             if (cls.getName().equals(HttpClientResponse.class.getName())) {
               holder.value = (T) response;
               countDownLatch.countDown();
@@ -206,7 +216,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
                 case 400: {
                   @SuppressWarnings("unchecked")
                   Map<String, Object> error = JsonUtils.readValue(bodyBuffer.getBytes(), Map.class);
-                  if ("400012".equals(error.get("errorCode"))) {
+                  if (MICROSERVICE_NOT_FOUND_ERROR_CODE.equals(error.get(SC_RESPONSE_KEY_ERROR_CODE))) {
                     mInstances.setMicroserviceNotExist(true);
                     mInstances.setNeedRefresh(false);
                   }
@@ -247,7 +257,8 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   @Override
-  public String getMicroserviceId(String appId, String microserviceName, String versionRule, String environment) {
+  public Holder<String> getMicroserviceId(String appId, String microserviceName, String versionRule,
+      String environment) {
     Holder<GetExistenceResponse> holder = new Holder<>();
     IpPort ipPort = ipPortManager.getAvailableAddress();
 
@@ -260,19 +271,41 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
             .addQueryParam("version", versionRule)
             .addQueryParam("env", environment),
         syncHandler(countDownLatch, GetExistenceResponse.class, holder));
+
+    Holder<String> responseHolder = new Holder<>();
     try {
       countDownLatch.await();
-      if (holder.value != null) {
-        return holder.value.getServiceId();
+      responseHolder.copyFrom(holder)
+          .setValue(null == holder.value ? null : holder.value.getServiceId());
+      if (null == responseHolder.getValue() && serviceIdNotFoundInSC(responseHolder)) {
+        // In fact this query does not fail, so we set it's status code to 200
+        responseHolder.setStatusCode(Status.OK.getStatusCode());
       }
+      return responseHolder;
     } catch (Exception e) {
       LOGGER.error("query microservice id {}/{}/{} fail",
           appId,
           microserviceName,
           versionRule,
           e);
+      responseHolder.setThrowable(e);
     }
-    return null;
+    return responseHolder;
+  }
+
+  /**
+   * @return true if the query success and the response indicates that the microservice is not registered yet;
+   * otherwise false.
+   */
+  private boolean serviceIdNotFoundInSC(Holder<String> serviceIdHolder) {
+    if (null == serviceIdHolder.getRawResponseBody()) {
+      return false;
+    }
+
+    JsonObject responseJson = new JsonObject(serviceIdHolder.getRawResponseBody());
+    // HttpStatusCode is 400 and errorCode is 400012, which means the microservice hasn't been registered before.
+    return MICROSERVICE_NOT_FOUND_STATUS_CODE == serviceIdHolder.getStatusCode()
+        && MICROSERVICE_NOT_FOUND_ERROR_CODE.equals(responseJson.getString(SC_RESPONSE_KEY_ERROR_CODE));
   }
 
   @Override
@@ -388,7 +421,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
           microserviceId,
           e);
     }
-    resultHolder.setStatusCode(holder.getStatusCode()).setThrowable(holder.getThrowable());
+    resultHolder.copyFrom(holder);
     if (holder.value != null) {
       return resultHolder.setValue(
           holder.value.getSchema() != null ?
@@ -593,7 +626,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
                 callback);
             onClose.success(null);
           }, bodyBuffer -> {
-            MicroserviceInstanceChangedEvent response = null;
+            MicroserviceInstanceChangedEvent response;
             try {
               response = JsonUtils.readValue(bodyBuffer.getBytes(),
                   MicroserviceInstanceChangedEvent.class);
@@ -613,9 +646,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
           }, e -> {
             watchErrorHandler(e, selfMicroserviceId, callback);
             onClose.success(null);
-          }, f -> {
-            watchErrorHandler(f, selfMicroserviceId, callback);
-          });
+          }, f -> watchErrorHandler(f, selfMicroserviceId, callback));
         }
       }
     }

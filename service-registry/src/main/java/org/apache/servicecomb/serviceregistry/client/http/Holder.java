@@ -17,16 +17,39 @@
 
 package org.apache.servicecomb.serviceregistry.client.http;
 
+import io.vertx.core.buffer.Buffer;
+
 /**
  * To carry the rest response information.
  * @param <T> Type of response body
  */
 public class Holder<T> {
+  /**
+   * The deserialized response body
+   */
   T value;
 
   int statusCode;
 
   Throwable throwable;
+
+  /**
+   * In error situation, response body cannot be deserialized to expected response type,
+   * so we record raw body.
+   */
+  Buffer rawResponseBody;
+
+  /**
+   * Copy inner state from another holder object, except for {@link #value}
+   * @param fromHolder copy from {@code fromHolder}
+   * @return reference of this holder itself
+   */
+  public Holder<T> copyFrom(Holder<?> fromHolder) {
+    this.statusCode = fromHolder.statusCode;
+    this.throwable = fromHolder.throwable;
+    this.rawResponseBody = fromHolder.rawResponseBody;
+    return this;
+  }
 
   public T getValue() {
     return value;
@@ -55,12 +78,22 @@ public class Holder<T> {
     return this;
   }
 
+  public Buffer getRawResponseBody() {
+    return rawResponseBody;
+  }
+
+  public Holder<T> setRawResponseBody(Buffer rawResponseBody) {
+    this.rawResponseBody = rawResponseBody;
+    return this;
+  }
+
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("Holder{");
     sb.append("value=").append(value);
     sb.append(", statusCode=").append(statusCode);
     sb.append(", throwable=").append(throwable);
+    sb.append(", rawResponseBody=").append(rawResponseBody);
     sb.append('}');
     return sb.toString();
   }
