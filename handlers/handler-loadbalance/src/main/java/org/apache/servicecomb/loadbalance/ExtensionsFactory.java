@@ -17,7 +17,6 @@
 package org.apache.servicecomb.loadbalance;
 
 import com.netflix.client.RetryHandler;
-import com.netflix.loadbalancer.IRule;
 
 /**
  * By implements ExtensionsFactory, users can add new extends for rules, filters, etc.

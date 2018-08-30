@@ -161,7 +161,7 @@ public class Consumer {
     Assert.isNull(response.getField().getField(), "must be null");
   }
 
-  @SuppressWarnings({"unckecked", "rawtypes"})
+  @SuppressWarnings({"rawtypes"})
   protected void testErrorCode() {
     String url = edgePrefix + "/v2/error/add";
 

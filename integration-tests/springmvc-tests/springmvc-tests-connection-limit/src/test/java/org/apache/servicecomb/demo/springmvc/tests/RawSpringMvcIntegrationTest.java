@@ -46,7 +46,7 @@ public class RawSpringMvcIntegrationTest {
   @Test
   public void ensureServerWorksFine() {
     try {
-      String result = restTemplate.getForObject(controllerUrl + "sayhi?name=world", String.class);
+      restTemplate.getForObject(controllerUrl + "sayhi?name=world", String.class);
       fail("connection limit failed");
     } catch (Exception ex) {
       Assert.assertEquals("java.net.SocketException: Unexpected end of file from server", ex.getCause().toString());

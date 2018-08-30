@@ -32,9 +32,6 @@ import org.junit.Test;
 
 import com.netflix.client.DefaultLoadBalancerRetryHandler;
 import com.netflix.client.RetryHandler;
-import com.netflix.loadbalancer.RandomRule;
-import com.netflix.loadbalancer.RoundRobinRule;
-import com.netflix.loadbalancer.WeightedResponseTimeRule;
 
 import mockit.Deencapsulation;
 

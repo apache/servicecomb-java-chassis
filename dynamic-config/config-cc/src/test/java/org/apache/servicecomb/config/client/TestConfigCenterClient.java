@@ -113,7 +113,6 @@ public class TestConfigCenterClient {
     Assert.assertFalse(status);
   }
 
-  @SuppressWarnings("unchecked")
   @Test
   public void testConfigRefreshModeOne(@Mocked ClientPoolManager<HttpClientWithContext> clientMgr,
       @Mocked HttpClientWithContext httpClientWithContext) {

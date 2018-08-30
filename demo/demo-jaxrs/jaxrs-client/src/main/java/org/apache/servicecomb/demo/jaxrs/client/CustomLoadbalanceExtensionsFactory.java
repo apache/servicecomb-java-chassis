@@ -25,8 +25,6 @@ import org.springframework.stereotype.Component;
 import com.netflix.client.DefaultLoadBalancerRetryHandler;
 import com.netflix.client.RetryHandler;
 import com.netflix.client.Utils;
-import com.netflix.loadbalancer.IRule;
-import com.netflix.loadbalancer.RoundRobinRule;
 
 @Component
 public class CustomLoadbalanceExtensionsFactory implements ExtensionsFactory {

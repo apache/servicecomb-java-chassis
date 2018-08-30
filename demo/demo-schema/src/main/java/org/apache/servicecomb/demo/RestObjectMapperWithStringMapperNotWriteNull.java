@@ -17,9 +17,6 @@
 
 package org.apache.servicecomb.demo;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
@@ -41,8 +38,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
  */
 public class RestObjectMapperWithStringMapperNotWriteNull extends RestObjectMapperWithStringMapper {
   private static final long serialVersionUID = 4279371572149490560L;
-
-  private static Logger LOGGER = LoggerFactory.getLogger(RestObjectMapperWithStringMapper.class);
 
   public RestObjectMapperWithStringMapperNotWriteNull() {
     super();

@@ -148,7 +148,6 @@ public class MultiErrorCodeService {
   @ApiResponses({
       @ApiResponse(code = 400, response = NoClientErrorCode400.class, message = "")})
   public List<NoClientErrorCode200> noClientErrorCode(MultiRequest request) {
-    javax.ws.rs.core.Response response;
     if (request.getCode() == 400) {
       NoClientErrorCode400 r = new NoClientErrorCode400();
       r.setCode(request.getCode());
