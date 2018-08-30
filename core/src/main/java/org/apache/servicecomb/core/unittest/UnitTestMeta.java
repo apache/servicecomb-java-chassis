@@ -133,7 +133,6 @@ public class UnitTestMeta {
   }
 
   public SchemaMeta getOrCreateSchemaMeta(String appId, String microserviceName, String schemaId, Class<?> impl) {
-    String longName = appId + ":" + microserviceName;
     MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     SchemaMeta schemaMeta = microserviceMeta.findSchemaMeta(schemaId);
     if (schemaMeta != null) {

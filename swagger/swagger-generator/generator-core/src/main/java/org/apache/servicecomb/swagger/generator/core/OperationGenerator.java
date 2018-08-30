@@ -299,7 +299,7 @@ public class OperationGenerator {
     return swaggerParamCount == providerParameters.size();
   }
 
-  @SuppressWarnings({"rawtypes", "unckecked"})
+  @SuppressWarnings({"rawtypes"})
   protected void processByParameterAnnotation(Annotation[] paramAnnotations, int paramIdx, Type parameterType) {
     String defaultValue = null;
     Parameter parameter = null;

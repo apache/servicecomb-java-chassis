@@ -287,7 +287,7 @@ public class JaxrsClient {
         template.postForObject(cseUrlPrefix + "/compute/testrawjson", jsonPerson, String.class));
   }
 
-  @SuppressWarnings({"unckecked", "rawtypes"})
+  @SuppressWarnings({"rawtypes"})
   private static void testValidatorAddFail(RestTemplate template, String cseUrlPrefix) {
     Map<String, String> params = new HashMap<>();
     params.put("a", "5");
@@ -320,7 +320,7 @@ public class JaxrsClient {
     TestMgr.check(25, result);
   }
 
-  @SuppressWarnings({"unckecked", "rawtypes"})
+  @SuppressWarnings({"rawtypes"})
   private static void testValidatorSayHiFail(RestTemplate template, String cseUrlPrefix) {
     boolean isExcep = false;
     try {
@@ -346,7 +346,7 @@ public class JaxrsClient {
     TestMgr.check("world sayhi", responseEntity.getBody());
   }
 
-  @SuppressWarnings({"unckecked", "rawtypes"})
+  @SuppressWarnings({"rawtypes"})
   private static void testValidatorExchangeFail(RestTemplate template, String cseUrlPrefix) {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Accept", MediaType.APPLICATION_JSON);

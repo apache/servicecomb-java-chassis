@@ -19,7 +19,6 @@ package org.apache.servicecomb.demo.springmvc.client;
 import java.util.Date;
 import java.util.Objects;
 
-import org.apache.servicecomb.core.exception.CseException;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.compute.GenericParam;
 import org.apache.servicecomb.demo.compute.Person;

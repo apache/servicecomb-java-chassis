@@ -22,8 +22,6 @@ import java.util.List;
 
 import org.apache.servicecomb.core.Invocation;
 
-import com.netflix.loadbalancer.Server;
-
 /**
  * @author l00168639
  *

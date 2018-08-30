@@ -33,7 +33,6 @@ import org.apache.servicecomb.serviceregistry.api.registry.FrameworkVersions;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManagerNew;
 import org.apache.servicecomb.serviceregistry.client.IpPortManager;
@@ -244,7 +243,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     if (microserviceInstances.isMicroserviceNotExist()) {
       return microserviceInstances;
     }
-    
+
     if (!microserviceInstances.isNeedRefresh()) {
       LOGGER.debug("instances revision is not changed, service={}/{}/{}", appId, serviceName, versionRule);
       return microserviceInstances;

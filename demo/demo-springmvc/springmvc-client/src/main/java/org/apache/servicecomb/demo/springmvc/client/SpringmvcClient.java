@@ -291,8 +291,8 @@ public class SpringmvcClient {
     //default values
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-    MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+    MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
     String result = template.postForObject(cseUrlPrefix + "/form", request, String.class);
     TestMgr.check("Hello 20bobo", result);
 

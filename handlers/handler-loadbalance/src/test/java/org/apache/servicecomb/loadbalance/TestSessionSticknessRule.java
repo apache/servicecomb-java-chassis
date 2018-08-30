@@ -75,8 +75,6 @@ public class TestSessionSticknessRule {
 
     SessionStickinessRule ss = new SessionStickinessRule();
 
-    Object key = new Object();
-
     Invocation invocation = mock(Invocation.class);
     ServiceCombServer server = mock(ServiceCombServer.class);
     List<ServiceCombServer> servers = new ArrayList<>();
@@ -146,8 +144,6 @@ public class TestSessionSticknessRule {
 
     SessionStickinessRule ss = new SessionStickinessRule();
 
-    Object key = new Object();
-
     Invocation invocation = mock(Invocation.class);
     ServiceCombServer server = mock(ServiceCombServer.class);
     List<ServiceCombServer> servers = new ArrayList<>();
@@ -177,8 +173,6 @@ public class TestSessionSticknessRule {
     boolean status = true;
 
     SessionStickinessRule ss = new SessionStickinessRule();
-
-    Object key = new Object();
 
     Invocation invocation = mock(Invocation.class);
     ServiceCombServer server = mock(ServiceCombServer.class);
@@ -225,8 +219,6 @@ public class TestSessionSticknessRule {
     boolean status = true;
     SessionStickinessRule ss = new SessionStickinessRule();
 
-    Object key = new Object();
-
     Invocation invocation = mock(Invocation.class);
     ServiceCombServer server = mock(ServiceCombServer.class);
     List<ServiceCombServer> servers = new ArrayList<>();
@@ -272,7 +264,6 @@ public class TestSessionSticknessRule {
         return false;
       }
     };
-    Object key = Mockito.mock(Object.class);
     Server s = rule.choose(allServers, invocation);
     Assert.assertEquals(mockedServer, s);
   }

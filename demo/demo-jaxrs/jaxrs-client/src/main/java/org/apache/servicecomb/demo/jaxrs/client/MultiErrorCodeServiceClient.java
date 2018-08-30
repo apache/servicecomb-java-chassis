@@ -197,10 +197,12 @@ public class MultiErrorCodeServiceClient {
     requestJson.put("code", 200);
     requestJson.put("message", "test message");
 
+    @SuppressWarnings("rawtypes")
     ResponseEntity<List> listResult = template
         .postForEntity(SERVER + "/MultiErrorCodeService/noClientErrorCode", requestJson, List.class);
     TestMgr.check(listResult.getStatusCode(), 200);
-    Map mapResult = RestObjectMapperFactory.getRestObjectMapper().convertValue(listResult.getBody().get(0), Map.class);
+    Map<?, ?> mapResult =
+        RestObjectMapperFactory.getRestObjectMapper().convertValue(listResult.getBody().get(0), Map.class);
     TestMgr.check(mapResult.get("message"), "test message");
     TestMgr.check(mapResult.get("code"), 200);
     TestMgr.check(mapResult.get("t200"), 200);
