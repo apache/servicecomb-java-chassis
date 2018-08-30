@@ -21,10 +21,12 @@ import java.lang.reflect.Type;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.QueryParameter;
@@ -44,6 +46,13 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
         value = request.getParameterValues(paramPath);
       } else {
         value = request.getParameter(paramPath);
+        // make some old systems happy
+        if (DynamicPropertyFactory.getInstance()
+            .getBooleanProperty("servicecomb.rest.parameter.query.emptyAsNull", false).get()) {
+          if (StringUtils.isEmpty((String) value)) {
+            value = null;
+          }
+        }
         if (value == null) {
           Object defaultValue = getDefaultValue();
           if (defaultValue != null) {
