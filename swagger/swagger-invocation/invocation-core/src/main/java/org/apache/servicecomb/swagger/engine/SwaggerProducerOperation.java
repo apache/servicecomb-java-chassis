@@ -164,9 +164,10 @@ public class SwaggerProducerOperation {
       Object result = producerMethod.invoke(producerInstance, args);
       response = responseMapper.mapResponse(invocation.getStatus(), result);
     } catch (IllegalArgumentException ae) {
+      // ae.getMessage() is always null. Give a custom error message.
       response = processException(invocation,
           new InvocationException(Status.BAD_REQUEST.getStatusCode(), "",
-              new CommonExceptionData(ae.getMessage()), ae));
+              new CommonExceptionData("Parameters not valid or types not match."), ae));
     } catch (Throwable e) {
       response = processException(invocation, e);
     }
