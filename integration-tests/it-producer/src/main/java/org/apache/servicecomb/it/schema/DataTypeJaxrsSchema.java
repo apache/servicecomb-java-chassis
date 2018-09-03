@@ -16,10 +16,7 @@
  */
 package org.apache.servicecomb.it.schema;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.CookieParam;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -27,19 +24,51 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 
 @RestSchema(schemaId = "dataTypeJaxrs")
 @Path("/v1/dataTypeJaxrs")
-public class DataTypeJaxrs {
-  //这个是伪契约,不支持 highway
-  @Path("request")
+public class DataTypeJaxrsSchema {
+  @Path("intPath/{input}")
   @GET
-  public int request(@Context HttpServletRequest request) {
-    int a = Integer.parseInt(request.getParameter("a"));
-    int b = Integer.parseInt(request.getParameter("b"));
-    return a - b;
+  public int intPath(@PathParam("input") int input) {
+    return input;
+  }
+
+  @Path("intQuery")
+  @GET
+  public int intQuery(@QueryParam("input") int input) {
+    return input;
+  }
+
+  @Path("intHeader")
+  @GET
+  public int intHeader(@HeaderParam("input") int input) {
+    return input;
+  }
+
+  @Path("intCookie")
+  @GET
+  public int intCookie(@CookieParam("input") int input) {
+    return input;
+  }
+
+  @Path("intForm")
+  @POST
+  public int intForm(@FormParam("input") int input) {
+    return input;
+  }
+
+  @Path("intBody")
+  @POST
+  public int intBody(int input) {
+    return input;
+  }
+
+  @Path("add")
+  @GET
+  public int add(@QueryParam("a") int a, @QueryParam("b") int b) {
+    return a + b;
   }
 }

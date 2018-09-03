@@ -40,49 +40,6 @@ import io.swagger.annotations.ApiOperation;
 public class DataTypeSpringmvc {
   private DataTypePojo pojo = new DataTypePojo();
 
-  @GetMapping("intPath/{input}")
-  public int intPath(@PathVariable("input") int input) {
-    return pojo.intBody(input);
-  }
-
-  @GetMapping("intQuery")
-  public int intQuery(@RequestParam("input") int input) {
-    return pojo.intBody(input);
-  }
-
-  @GetMapping("intHeader")
-  public int intHeader(@RequestHeader("input") int input) {
-    return pojo.intBody(input);
-  }
-
-  @GetMapping("intCookie")
-  public int intCookie(@CookieValue("input") int input) {
-    return pojo.intBody(input);
-  }
-
-  @PostMapping("intBody")
-  public int intBody(@RequestBody int input) {
-    return pojo.intBody(input);
-  }
-
-  @PostMapping(path = "intForm")
-  @ApiImplicitParams({
-      @ApiImplicitParam(name = "form1", dataType = "integer", format = "int32", paramType = "form", value = "a required form param",
-          required = true)})
-  public int intForm(int form1) {
-    return pojo.intBody(form1);
-  }
-
-  @RequestMapping(path = "intAttribute", method = RequestMethod.POST)
-  public int intAttribute(@RequestAttribute("a") int a) {
-    return pojo.intBody(a);
-  }
-
-  @RequestMapping(path = "add", method = RequestMethod.POST)
-  public int intAdd(@RequestAttribute("a") int a, @RequestAttribute("b") int b) {
-    return a + b;
-  }
-
   @PostMapping(path = "intMulti/{e}")
   @ApiImplicitParams({
       @ApiImplicitParam(name = "a", dataType = "integer", format = "int32", paramType = "query"),

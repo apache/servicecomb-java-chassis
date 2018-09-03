@@ -16,22 +16,18 @@
  */
 package org.apache.servicecomb.it.schema;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.provider.pojo.RpcSchema;
-import org.apache.servicecomb.provider.rest.common.InvocationToHttpServletRequest;
 
 import io.swagger.annotations.SwaggerDefinition;
 
 @RpcSchema(schemaId = "dataTypePojo")
 @SwaggerDefinition(basePath = "/v1/dataTypePojo")
-public class DataTypePojo {
+public class DataTypePojoSchema {
   public int intBody(int input) {
     return input;
   }
 
-  public int reduce(int a, int b) {
-    return a - b;
+  public int add(int a, int b) {
+    return a + b;
   }
 }
