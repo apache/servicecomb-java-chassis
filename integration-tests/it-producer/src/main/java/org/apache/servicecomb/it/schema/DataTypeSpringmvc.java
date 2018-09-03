@@ -114,13 +114,6 @@ public class DataTypeSpringmvc {
     return pojo.intBody(a);
   }
 
-  // this should be ignored as it's hidden
-  //服务端是不允许重载的,但是因为 这里设置 hidden = true,所以上面的可以正常运行
-  @ApiOperation(value = "", hidden = true, httpMethod = "POST")
-  public int intAdd(@RequestParam("a") int a) {
-    return pojo.intBody(a);
-  }
-
   @RequestMapping(path = "add", method = RequestMethod.POST)
   public int intAdd(@RequestAttribute("a") int a, @RequestAttribute("b") int b) {
     return a + b;

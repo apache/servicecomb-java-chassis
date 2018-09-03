@@ -66,6 +66,8 @@ public class ConsumerMain {
     deploys.getEdge().ensureReady();
     // deploys.getZuul().ensureReady(zuul);
 
+    ITJUnitUtils.run(TestIgnoreMethod.class);
+
     // 1.base test case
     //   include all extension point abnormal scenes test case
 
