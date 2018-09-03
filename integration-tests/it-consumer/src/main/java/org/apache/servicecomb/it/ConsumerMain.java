@@ -110,6 +110,10 @@ public class ConsumerMain {
 
     ITJUnitUtils.runWithHighwayAndRest(TestChangeTransport.class);
     testDataType();
+
+    // only rest support default value feature
+    ITJUnitUtils.runWithRest(TestDefaultValue.class);
+
     ITJUnitUtils.runWithHighwayAndRest(TestTrace.class);
     ITJUnitUtils.run(TestTraceEdge.class);
     ITJUnitUtils.runWithHighwayAndRest(TestParamCodec.class);

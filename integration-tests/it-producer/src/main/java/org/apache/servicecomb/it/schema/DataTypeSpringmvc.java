@@ -78,37 +78,6 @@ public class DataTypeSpringmvc {
     return pojo.intBody(a);
   }
 
-  @GetMapping("intQueryWithDefault")
-  public int intQueryWithDefault(@RequestParam(value = "input", defaultValue = "13") int input) {
-    return pojo.intBody(input);
-  }
-
-  @GetMapping("intHeaderWithDefault")
-  public int intHeaderWithDefault(@RequestHeader(value = "input", defaultValue = "13") int input) {
-    return pojo.intBody(input);
-  }
-
-  //暂时不支持cookie默认值,不过以后会修复,先放这里,不影响
-  @GetMapping("intCookieWithDefault")
-  public int intCookieWithDefault(@CookieValue(value = "input", defaultValue = "13") int input) {
-    return pojo.intBody(input);
-  }
-
-  @PostMapping(path = "intFormWithDefault")
-  @ApiImplicitParams({
-      @ApiImplicitParam(name = "form1", dataType = "integer", format = "int32", paramType = "form", value = "a required form param", defaultValue = "13",
-          required = true)})
-  public int intFormWithDefault(int form1) {
-    return pojo.intBody(form1);
-  }
-
-  //这里算是 jaxrs 和 springmvc 的一个混用,按道理是不能这么使用的,不过这样确实跑通了
-  //也算是增加了功能,就不删了
-  @RequestMapping(path = "intAttributeWithDefault", method = RequestMethod.POST)
-  public int intAttributeWithDefault(@RequestAttribute("a") @DefaultValue("13") int a) {
-    return pojo.intBody(a);
-  }
-
   @RequestMapping(path = "add", method = RequestMethod.POST)
   public int intAdd(@RequestAttribute("a") int a, @RequestAttribute("b") int b) {
     return a + b;
