@@ -18,13 +18,13 @@
 package org.apache.servicecomb.common.rest.codec.param;
 
 import java.lang.reflect.Type;
-import java.net.URLDecoder;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
+import org.apache.servicecomb.foundation.common.http.HttpUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -52,7 +52,7 @@ public class PathProcessorCreator implements ParamValueProcessorCreator {
       if (value == null) {
         return null;
       }
-      return convertValue(URLDecoder.decode(value, "UTF-8"), targetType);
+      return convertValue(HttpUtils.uriDecodePath(value), targetType);
     }
 
     @Override
