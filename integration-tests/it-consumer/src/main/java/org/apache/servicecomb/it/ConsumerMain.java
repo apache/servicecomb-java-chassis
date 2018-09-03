@@ -16,28 +16,22 @@
  */
 package org.apache.servicecomb.it;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.it.deploy.Deploys;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
+import org.apache.servicecomb.it.testcase.TestChangeTransport;
+import org.apache.servicecomb.it.testcase.TestDataTypePrimitive;
+import org.apache.servicecomb.it.testcase.TestDefaultValue;
+import org.apache.servicecomb.it.testcase.TestIgnoreMethod;
 import org.apache.servicecomb.it.testcase.TestTrace;
 import org.apache.servicecomb.it.testcase.TestTraceEdge;
-import org.apache.servicecomb.it.testcase.base.TestDataTypeJaxrs;
-import org.apache.servicecomb.it.testcase.base.TestDataTypePojo;
-import org.apache.servicecomb.it.testcase.base.TestDataTypeSpringmvc;
 import org.apache.servicecomb.it.testcase.base.TestParamCodec;
-import org.apache.servicecomb.it.testcase.support.ProducerDevMode;
 
 public class ConsumerMain {
   private static ResultPrinter resultPrinter = new ResultPrinter();
 
   private static Deploys deploys = new Deploys();
-
-  private static List<String> transports;
 
   public static boolean autoExit = true;
 
@@ -77,10 +71,8 @@ public class ConsumerMain {
     //   run rest
     //   run native restTemplate to edge/zuul
     // stop standalone base-producer
-    transports = Arrays.asList(Const.HIGHWAY, Const.RESTFUL);
     testStandalone();
 
-    transports = Arrays.asList(Const.RESTFUL);
     // deploy tomcat base-producer
     //   run vertx-servlet
     //   run native restTemplate to edge/zuul
@@ -109,43 +101,17 @@ public class ConsumerMain {
     ITJUnitUtils.addParent("standalone");
 
     ITJUnitUtils.runWithHighwayAndRest(TestChangeTransport.class);
-    testDataType();
+    ITJUnitUtils.runWithHighwayAndRest(TestDataTypePrimitive.class);
 
     // only rest support default value feature
     ITJUnitUtils.runWithRest(TestDefaultValue.class);
 
     ITJUnitUtils.runWithHighwayAndRest(TestTrace.class);
     ITJUnitUtils.run(TestTraceEdge.class);
+
     ITJUnitUtils.runWithHighwayAndRest(TestParamCodec.class);
 
     ITJUnitUtils.getParents().pop();
     deploys.getBaseProducer().stop();
-  }
-
-  private static void testDataType() {
-    testDataType(ProducerDevMode.Pojo, TestDataTypePojo.class);
-    testDataType(ProducerDevMode.Jaxrs, TestDataTypeJaxrs.class);
-    testDataType(ProducerDevMode.Springmvc, TestDataTypeSpringmvc.class);
-
-    ITJUnitUtils.getParents().push("edge");
-//    runEdge();
-    ITJUnitUtils.getParents().pop();
-
-    ITJUnitUtils.getParents().push("zuul");
-//    runEdge();
-    ITJUnitUtils.getParents().pop();
-  }
-
-  private static void testDataType(ProducerDevMode producerDevMode, Class<?>... classes) {
-    ITJUnitUtils.addParent(producerDevMode.name());
-    for (String transport : transports) {
-      ITJUnitUtils.addParent(transport);
-
-      ITUtils.invokeExactStaticMethod(classes, "init", transport, producerDevMode);
-      ITJUnitUtils.run(classes);
-
-      ITJUnitUtils.getParents().pop();
-    }
-    ITJUnitUtils.getParents().pop();
   }
 }
