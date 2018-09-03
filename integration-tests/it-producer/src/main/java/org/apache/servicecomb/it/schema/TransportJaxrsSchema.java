@@ -17,21 +17,19 @@
 package org.apache.servicecomb.it.schema;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
 
 import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.provider.pojo.RpcSchema;
 import org.apache.servicecomb.provider.rest.common.InvocationToHttpServletRequest;
+import org.apache.servicecomb.provider.rest.common.RestSchema;
 
-import io.swagger.annotations.SwaggerDefinition;
-
-@RpcSchema(schemaId = "dataTypePojo")
-@SwaggerDefinition(basePath = "/v1/dataTypePojo")
-public class DataTypePojo {
-  public int intBody(int input) {
-    return input;
-  }
-
-  public int reduce(int a, int b) {
-    return a - b;
+@RestSchema(schemaId = "transportJaxrs")
+@Path("/v1/transportJaxrs")
+public class TransportJaxrsSchema {
+  @Path("checkTransport")
+  @GET
+  public String checkTransport(HttpServletRequest request) {
+    return request instanceof InvocationToHttpServletRequest ? Const.HIGHWAY : Const.RESTFUL;
   }
 }

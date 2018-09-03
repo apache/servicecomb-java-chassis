@@ -40,12 +40,6 @@ public class DataTypeJaxrs {
 
   }
 
-  @Path("checkTransport")
-  @GET
-  public String checkTransport(HttpServletRequest request) {
-    return pojo.checkTransport(request);
-  }
-
   @Path("intPath/{input}")
   @GET
   public int intPath(@PathParam("input") int input) {

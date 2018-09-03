@@ -24,14 +24,10 @@ import org.apache.servicecomb.provider.rest.common.InvocationToHttpServletReques
 
 import io.swagger.annotations.SwaggerDefinition;
 
-@RpcSchema(schemaId = "dataTypePojo")
-@SwaggerDefinition(basePath = "/v1/dataTypePojo")
-public class DataTypePojo {
-  public int intBody(int input) {
-    return input;
-  }
-
-  public int reduce(int a, int b) {
-    return a - b;
+@RpcSchema(schemaId = "transportPojo")
+@SwaggerDefinition(basePath = "/v1/transportPojo")
+public class TransportPojoSchema {
+  public String checkTransport(HttpServletRequest request) {
+    return request instanceof InvocationToHttpServletRequest ? Const.HIGHWAY : Const.RESTFUL;
   }
 }

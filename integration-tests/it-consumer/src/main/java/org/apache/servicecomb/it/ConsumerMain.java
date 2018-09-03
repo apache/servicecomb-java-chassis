@@ -108,6 +108,7 @@ public class ConsumerMain {
     deploys.getBaseProducer().ensureReady();
     ITJUnitUtils.addParent("standalone");
 
+    ITJUnitUtils.runWithHighwayAndRest(TestChangeTransport.class);
     testDataType();
     ITJUnitUtils.runWithHighwayAndRest(TestTrace.class);
     ITJUnitUtils.run(TestTraceEdge.class);
