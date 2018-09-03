@@ -26,7 +26,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-
 public class TestHttpUtils {
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
@@ -85,6 +84,13 @@ public class TestHttpUtils {
     expectedException.expectCause(Matchers.instanceOf(URISyntaxException.class));
 
     HttpUtils.uriEncodePath(":");
+  }
+
+  @Test
+  public void uriEncode_plus() {
+    String encoded = HttpUtils.uriEncodePath("a+b");
+    Assert.assertEquals("a+b", encoded);
+    Assert.assertEquals("a+b", HttpUtils.uriDecodePath(encoded));
   }
 
   @Test

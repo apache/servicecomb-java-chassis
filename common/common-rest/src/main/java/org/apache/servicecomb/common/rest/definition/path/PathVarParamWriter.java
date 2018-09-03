@@ -18,6 +18,7 @@
 package org.apache.servicecomb.common.rest.definition.path;
 
 import org.apache.servicecomb.common.rest.definition.RestParam;
+import org.apache.servicecomb.foundation.common.http.HttpUtils;
 
 /**
  * 处理动态path
@@ -29,6 +30,8 @@ public class PathVarParamWriter extends AbstractUrlParamWriter {
 
   @Override
   public void write(StringBuilder builder, Object[] args) throws Exception {
-    builder.append(getParamValue(args));
+    String paramValue = getParamValue(args).toString();
+    String encodedPathParam = HttpUtils.uriEncodePath(paramValue);
+    builder.append(encodedPathParam);
   }
 }
