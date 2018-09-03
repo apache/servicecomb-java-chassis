@@ -61,16 +61,6 @@ public class TestDataTypeJaxrs {
   }
 
   @Test
-  public void checkTransport_intf() {
-    assertEquals(transport, dataTypeIntf.checkTransport());
-  }
-
-  @Test
-  public void checkTransport_rt() {
-    assertEquals(transport, restTemplate.getForObject(urlPrefix + "/checkTransport", String.class));
-  }
-
-  @Test
   public void intPath_intf() {
     int expect = 10;
     assertEquals(expect, dataTypeIntf.intPath(expect));

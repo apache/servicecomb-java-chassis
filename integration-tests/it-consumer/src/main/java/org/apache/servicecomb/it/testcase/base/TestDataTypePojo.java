@@ -54,16 +54,6 @@ public class TestDataTypePojo {
   }
 
   @Test
-  public void checkTransport_intf() {
-    assertEquals(transport, dataTypePojoIntf.checkTransport());
-  }
-
-  @Test
-  public void checkTransport_rt() {
-    assertEquals(transport, restTemplate.postForObject(urlPrefix + "/checkTransport", "", String.class));
-  }
-
-  @Test
   public void intBody_intf() {
     assertEquals(10, dataTypePojoIntf.intBody(10));
   }

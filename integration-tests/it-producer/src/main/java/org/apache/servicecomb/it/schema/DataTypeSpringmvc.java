@@ -40,11 +40,6 @@ import io.swagger.annotations.ApiOperation;
 public class DataTypeSpringmvc {
   private DataTypePojo pojo = new DataTypePojo();
 
-  @GetMapping(path = "checkTransport")
-  public String checkTransport(HttpServletRequest request) {
-    return pojo.checkTransport(request);
-  }
-
   @GetMapping("intPath/{input}")
   public int intPath(@PathVariable("input") int input) {
     return pojo.intBody(input);
