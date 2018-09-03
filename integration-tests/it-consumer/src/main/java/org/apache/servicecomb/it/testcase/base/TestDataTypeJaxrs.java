@@ -149,78 +149,6 @@ public class TestDataTypeJaxrs {
     assertEquals(5, (int) restTemplate.postForEntity(urlPrefix + "/intForm", params, int.class).getBody());
   }
 
-  @Test
-  public void intQueryWithDefault_rt() {
-    int expect = 10;
-    assertEquals(expect,
-        (int) restTemplate.getForObject(urlPrefix + "/intQueryWithDefault?input=" + expect, int.class));
-    assertEquals(13, (int) restTemplate.getForObject(urlPrefix + "/intQueryWithDefault", int.class));
-  }
-
-  @Test
-  public void intHeaderWithDefault_rt() {
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("input", "11");
-    @SuppressWarnings("rawtypes")
-    HttpEntity entity = new HttpEntity<>(null, headers);
-    ResponseEntity<Integer> response = restTemplate.exchange(urlPrefix + "/intHeaderWithDefault",
-        HttpMethod.GET,
-        entity,
-        int.class);
-    assertEquals(11, (int) response.getBody());
-    headers.remove("input");
-    @SuppressWarnings("rawtypes")
-    HttpEntity<Object> entity1 = new HttpEntity<>(null, headers);
-    ResponseEntity<Integer> response1 = restTemplate.exchange(urlPrefix + "/intHeaderWithDefault",
-        HttpMethod.GET,
-        entity1,
-        int.class);
-    assertEquals(13, (int) response1.getBody());
-  }
-
-//  @Test
-//  public void intCookieWithDefault_rt() {
-//    HttpHeaders headers = new HttpHeaders();
-////    headers.add("Cookie", "input=10");
-////    @SuppressWarnings("rawtypes")
-////    HttpEntity entity = new HttpEntity<>( headers);
-////    ResponseEntity<Integer> response = restTemplate.exchange(urlPrefix + "/intCookieWithDefault",
-////        HttpMethod.GET,
-////        entity,
-////        int.class);
-////    assertEquals(10, (int) response.getBody());
-////    headers.remove("Cookie");
-//    headers.add("Cookie", "input=10");
-//
-//    @SuppressWarnings("rawtypes")
-//    HttpEntity entity1 = new HttpEntity<>(headers);
-//    ResponseEntity<Integer> response1 = restTemplate.exchange(urlPrefix + "/intCookieWithDefault",
-//        HttpMethod.GET,
-//        entity1,
-//        Integer.class);
-//    assertEquals(10, (int) response1.getBody());
-//  }
-
-  @Test
-  public void intFormWithDefault_rt() {
-    HttpHeaders formHeaders = new HttpHeaders();
-    formHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-    Map<String, Integer> map = new HashMap<>();
-
-    map.put("a", 10);
-    HttpEntity<Map<String, Integer>> formEntiry = new HttpEntity<>(map, formHeaders);
-
-    assertEquals(10,
-        (int) restTemplate.postForEntity(urlPrefix + "/intFormWithDefault", formEntiry, int.class).getBody());
-
-    map.remove("a");
-
-    HttpEntity<Map<String, Integer>> formEntiry1 = new HttpEntity<>(map, formHeaders);
-
-    assertEquals(13,
-        (int) restTemplate.postForEntity(urlPrefix + "/intFormWithDefault", formEntiry1, int.class).getBody());
-  }
-
   //伪契约不支持 highway
   @Test
   public void testRequest_rt() {
@@ -232,17 +160,5 @@ public class TestDataTypeJaxrs {
       int result = restTemplate.getForObject(urlPrefix + "/request?a={a}&b={b}", Integer.class, 5, 4);
       assertEquals(1, result);
     }
-  }
-
-  @Test
-  public void testDefault_intf() {
-    int result = dataTypeIntf.defaultPath();
-    assertEquals(result, 100);
-  }
-
-  @Test
-  public void testDefault_rt() {
-    Integer result = restTemplate.getForObject(urlPrefix, Integer.class);
-    assertEquals((int) result, 100);
   }
 }

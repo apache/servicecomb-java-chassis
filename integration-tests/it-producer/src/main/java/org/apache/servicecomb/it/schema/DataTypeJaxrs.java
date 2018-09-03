@@ -77,37 +77,6 @@ public class DataTypeJaxrs {
     return pojo.intBody(input);
   }
 
-  @GET
-  public int defaultPath() {
-    return pojo.intBody(100);
-  }
-
-
-  @Path("intQueryWithDefault")
-  @GET
-  public int intQueryWithDefault(@QueryParam("input") @DefaultValue("13") int input) {
-    return pojo.intBody(input);
-  }
-
-  @Path("intHeaderWithDefault")
-  @GET
-  public int intHeaderWithDefault(@HeaderParam(value = "input") @DefaultValue("13") int input) {
-    return pojo.intBody(input);
-  }
-
-  //暂时不支持 cookie设置默认值,但是不影响先放这里
-  @Path("intCookieWithDefault")
-  @GET
-  public int intCookieWithDefault(@CookieParam(value = "input") @DefaultValue("13") int input) {
-    return pojo.intBody(input);
-  }
-
-  @Path("intFormWithDefault")
-  @POST
-  public int intFormWithDefault(@FormParam("a") @DefaultValue("13") int a) {
-    return pojo.intBody(a);
-  }
-
   //这个是伪契约,不支持 highway
   @Path("request")
   @GET
