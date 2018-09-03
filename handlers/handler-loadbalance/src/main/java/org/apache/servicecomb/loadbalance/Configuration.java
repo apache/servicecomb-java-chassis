@@ -128,9 +128,8 @@ public final class Configuration {
       int result = Integer.parseInt(p);
       if (result > 0) {
         return result;
-      } else {
-        return defaultValue;
       }
+      return defaultValue;
     } catch (NumberFormatException e) {
       return defaultValue;
     }
@@ -145,9 +144,8 @@ public final class Configuration {
       int result = Integer.parseInt(p);
       if (result > 0) {
         return result;
-      } else {
-        return defaultValue;
       }
+      return defaultValue;
     } catch (NumberFormatException e) {
       return defaultValue;
     }
@@ -169,9 +167,8 @@ public final class Configuration {
       int result = Integer.parseInt(p);
       if (result <= PERCENT && result > 0) {
         return result;
-      } else {
-        return defaultValue;
       }
+      return defaultValue;
     } catch (NumberFormatException e) {
       return defaultValue;
     }
@@ -186,9 +183,8 @@ public final class Configuration {
       int result = Integer.parseInt(p);
       if (result > 0) {
         return result;
-      } else {
-        return defaultValue;
       }
+      return defaultValue;
     } catch (NumberFormatException e) {
       return defaultValue;
     }
@@ -203,9 +199,9 @@ public final class Configuration {
       int result = Integer.parseInt(p);
       if (result > 0) {
         return result;
-      } else {
-        return defaultValue;
       }
+      return defaultValue;
+
     } catch (NumberFormatException e) {
       return defaultValue;
     }
@@ -221,15 +217,11 @@ public final class Configuration {
     for (String key : keys) {
       property = DynamicPropertyFactory.getInstance().getStringProperty(key, null).get();
       if (property != null) {
-        break;
+        return property;
       }
     }
 
-    if (property != null) {
-      return property;
-    } else {
-      return defaultValue;
-    }
+    return defaultValue;
   }
 
   public int getContinuousFailureThreshold(String microservice) {
@@ -241,9 +233,8 @@ public final class Configuration {
       int result = Integer.parseInt(p);
       if (result > 0) {
         return result;
-      } else {
-        return defaultValue;
       }
+      return defaultValue;
     } catch (NumberFormatException e) {
       return defaultValue;
     }
