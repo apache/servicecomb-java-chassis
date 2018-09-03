@@ -43,6 +43,11 @@ public class RestTemplateCopyHeaderFilter implements HttpClientFilter {
     }
 
     httpHeaders.forEach((key, values) -> {
+      if (HttpHeaders.CONTENT_LENGTH.equalsIgnoreCase(key)) {
+        LOGGER.debug("skip copy content-length into request");
+        return;
+      }
+
       for (String value : values) {
         // null args should not be set to requestEx to avoid NullPointerException in Netty.
         if (null == value) {
