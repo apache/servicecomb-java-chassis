@@ -23,7 +23,6 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.http.client.utils.URLEncodedUtils;
@@ -42,6 +41,8 @@ import org.slf4j.LoggerFactory;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
+import io.vertx.core.metrics.MetricsOptions;
 
 public abstract class AbstractTransport implements Transport {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTransport.class);
@@ -60,13 +61,12 @@ public abstract class AbstractTransport implements Transport {
   private static final long DEFAULT_TIMEOUT_MILLIS = 30000;
 
   // 所有transport使用同一个vertx实例，避免创建太多的线程
-  protected Vertx transportVertx = VertxUtils.getOrCreateVertxByName("transport", null);
+  protected Vertx transportVertx = VertxUtils.getOrCreateVertxByName("transport",
+      new VertxOptions().setMetricsOptions(new MetricsOptions().setEnabled(true)));
 
   protected Endpoint endpoint;
 
   protected Endpoint publishEndpoint;
-
-  private final AtomicInteger connectedCounter = new AtomicInteger(0);
 
   @Override
   public Endpoint getPublishEndpoint() {
@@ -76,11 +76,6 @@ public abstract class AbstractTransport implements Transport {
   @Override
   public Endpoint getEndpoint() {
     return endpoint;
-  }
-
-  @Override
-  public AtomicInteger getConnectedCounter() {
-    return connectedCounter;
   }
 
   protected void setListenAddressWithoutSchema(String addressWithoutSchema) {
@@ -179,7 +174,7 @@ public abstract class AbstractTransport implements Transport {
 
   /**
    * Handles the request timeout configurations. 
-   * @param defaultValue
+   * @param defaultValue default value if missing
    * @param keys list of keys
    * @return configured value
    */

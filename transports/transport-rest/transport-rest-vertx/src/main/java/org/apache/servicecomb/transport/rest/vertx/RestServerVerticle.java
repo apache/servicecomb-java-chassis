@@ -19,22 +19,16 @@ package org.apache.servicecomb.transport.rest.vertx;
 
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.transport.AbstractTransport;
-import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
-import org.apache.servicecomb.foundation.vertx.ClientEvent;
-import org.apache.servicecomb.foundation.vertx.ConnectionEvent;
-import org.apache.servicecomb.foundation.vertx.TransportType;
 import org.apache.servicecomb.foundation.vertx.VertxTLSBuilder;
+import org.apache.servicecomb.foundation.vertx.metrics.SCBSocketMetrics;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogConfiguration;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.impl.AccessLogHandler;
 import org.slf4j.Logger;
@@ -49,6 +43,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.http.impl.ServerConnection;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.CorsHandler;
 
@@ -60,16 +55,6 @@ public class RestServerVerticle extends AbstractVerticle {
   private Endpoint endpoint;
 
   private URIEndpointObject endpointObject;
-
-  private final AtomicInteger connectedCounter;
-
-  public RestServerVerticle() {
-    this(CseContext.getInstance().getTransportManager().findTransport(Const.RESTFUL).getConnectedCounter());
-  }
-
-  public RestServerVerticle(AtomicInteger connectedCounter) {
-    this.connectedCounter = connectedCounter;
-  }
 
   @Override
   public void init(Vertx vertx, Context context) {
@@ -95,17 +80,11 @@ public class RestServerVerticle extends AbstractVerticle {
       HttpServer httpServer = createHttpServer();
       httpServer.requestHandler(mainRouter::accept);
       httpServer.connectionHandler(connection -> {
-        int connectedCount = connectedCounter.incrementAndGet();
         int connectionLimit = DynamicPropertyFactory.getInstance()
             .getIntProperty("servicecomb.rest.server.connection-limit", Integer.MAX_VALUE).get();
+        int connectedCount = ((SCBSocketMetrics) ((ServerConnection) connection).metric()).getCounter().get();
         if (connectedCount > connectionLimit) {
-          connectedCounter.decrementAndGet();
           connection.close();
-        } else {
-          EventManager.post(new ClientEvent(connection.remoteAddress().toString(),
-              ConnectionEvent.Connected, TransportType.Rest, connectedCount));
-          connection.closeHandler(event -> EventManager.post(new ClientEvent(connection.remoteAddress().toString(),
-              ConnectionEvent.Closed, TransportType.Rest, connectedCounter.decrementAndGet())));
         }
       });
 

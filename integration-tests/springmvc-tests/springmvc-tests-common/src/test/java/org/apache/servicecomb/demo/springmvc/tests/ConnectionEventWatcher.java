@@ -20,8 +20,8 @@ package org.apache.servicecomb.demo.springmvc.tests;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.foundation.vertx.ClientEvent;
-import org.apache.servicecomb.foundation.vertx.TransportType;
+import org.apache.servicecomb.foundation.vertx.ServerEvent;
+import org.apache.servicecomb.foundation.vertx.ConnectionEventType;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -33,8 +33,9 @@ public class ConnectionEventWatcher {
   }
 
   @Subscribe
-  public void getEvent(ClientEvent event) {
-    if (TransportType.Rest.equals(event.getTransportType())) {
+  public void getEvent(ServerEvent event) {
+    if (ConnectionEventType.HTTPConnected.equals(event.getConnectionEventType()) ||
+        ConnectionEventType.HTTPClosed.equals(event.getConnectionEventType())) {
       counters.add(event.getTotalConnectedCount());
     }
   }

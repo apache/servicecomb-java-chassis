@@ -17,7 +17,6 @@
 package org.apache.servicecomb.transport.highway;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.ws.Holder;
 
@@ -73,7 +72,7 @@ public class TestHighwayServerConnection {
       }
     };
     connection = new HighwayServerConnection(endpoint);
-    connection.init(netSocket, new AtomicInteger());
+    connection.init(netSocket);
 
     header = new RequestHeader();
   }
@@ -100,8 +99,8 @@ public class TestHighwayServerConnection {
 
     connection.handle(0, headerBuffer, null);
 
-    Assert.assertEquals(null, connection.getProtocol());
-    Assert.assertEquals(null, connection.getZipName());
+    Assert.assertNull(connection.getProtocol());
+    Assert.assertNull(connection.getZipName());
   }
 
   @Test
@@ -133,8 +132,8 @@ public class TestHighwayServerConnection {
 
     connection.handle(0, headerBuffer, bodyBuffer);
 
-    Assert.assertEquals(null, connection.getProtocol());
-    Assert.assertEquals(null, connection.getZipName());
+    Assert.assertNull(connection.getProtocol());
+    Assert.assertNull(connection.getZipName());
   }
 
   @Test
@@ -180,8 +179,8 @@ public class TestHighwayServerConnection {
 
     connection.handle(0, headerBuffer, bodyBuffer);
 
-    Assert.assertEquals(null, connection.getProtocol());
-    Assert.assertEquals(null, connection.getZipName());
+    Assert.assertNull(connection.getProtocol());
+    Assert.assertNull(connection.getZipName());
     Assert.assertEquals(true, holder.value);
   }
 
@@ -203,8 +202,8 @@ public class TestHighwayServerConnection {
 
     connection.handle(0, headerBuffer, bodyBuffer);
 
-    Assert.assertEquals(null, connection.getProtocol());
-    Assert.assertEquals(null, connection.getZipName());
+    Assert.assertNull(connection.getProtocol());
+    Assert.assertNull(connection.getZipName());
     Assert.assertEquals(false, holder.value);
   }
 

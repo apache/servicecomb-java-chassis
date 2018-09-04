@@ -15,28 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.pojo.test;
+package org.apache.servicecomb.foundation.vertx.metrics;
 
-import java.util.ArrayList;
-import java.util.List;
+import io.vertx.core.http.HttpServer;
+import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.metrics.impl.DummyVertxMetrics;
+import io.vertx.core.net.NetServerOptions;
+import io.vertx.core.net.SocketAddress;
+import io.vertx.core.spi.metrics.HttpServerMetrics;
+import io.vertx.core.spi.metrics.TCPMetrics;
 
-import org.apache.servicecomb.foundation.vertx.ServerEvent;
-import org.apache.servicecomb.foundation.vertx.ConnectionEventType;
+public class SCBVertxMetrics extends DummyVertxMetrics {
 
-import com.google.common.eventbus.Subscribe;
-
-public class ConnectionEventWatcher {
-  private final List<Integer> counters = new ArrayList<>();
-
-  public List<Integer> getCounters() {
-    return counters;
+  @Override
+  public HttpServerMetrics createMetrics(HttpServer server, SocketAddress localAddress, HttpServerOptions options) {
+    return new SCBHttpServerMetrics();
   }
 
-  @Subscribe
-  public void getEvent(ServerEvent event) {
-    if (ConnectionEventType.TCPConnected.equals(event.getConnectionEventType()) ||
-        ConnectionEventType.TCPClosed.equals(event.getConnectionEventType())) {
-      counters.add(event.getTotalConnectedCount());
-    }
+  @Override
+  public TCPMetrics createMetrics(SocketAddress localAddress, NetServerOptions options) {
+    return new SCBTCPMetrics();
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return true;
   }
 }

@@ -17,39 +17,33 @@
 
 package org.apache.servicecomb.foundation.vertx;
 
+import io.vertx.core.net.SocketAddress;
+
 /**
  * Notice: this event will raised in vertx eventloop thread, so do not run any block code
  */
-public class ClientEvent {
-  private final String address;
+public class ServerEvent {
+  private final SocketAddress address;
 
-  private final ConnectionEvent connectionEvent;
-
-  private final TransportType transportType;
+  private final ConnectionEventType connectionEventType;
 
   private final int totalConnectedCount;
 
-  public String getAddress() {
+  public SocketAddress getAddress() {
     return address;
   }
 
-  public ConnectionEvent getConnectionEvent() {
-    return connectionEvent;
-  }
-
-  public TransportType getTransportType() {
-    return transportType;
+  public ConnectionEventType getConnectionEventType() {
+    return connectionEventType;
   }
 
   public int getTotalConnectedCount() {
     return totalConnectedCount;
   }
 
-  public ClientEvent(String address, ConnectionEvent connectionEvent, TransportType transportType,
-      int totalConnectedCount) {
+  public ServerEvent(SocketAddress address, ConnectionEventType connectionEventType, int totalConnectedCount) {
     this.address = address;
-    this.connectionEvent = connectionEvent;
-    this.transportType = transportType;
+    this.connectionEventType = connectionEventType;
     this.totalConnectedCount = totalConnectedCount;
   }
 }

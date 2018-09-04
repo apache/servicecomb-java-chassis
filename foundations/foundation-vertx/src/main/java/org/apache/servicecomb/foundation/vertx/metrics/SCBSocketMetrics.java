@@ -15,9 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.foundation.vertx;
+package org.apache.servicecomb.foundation.vertx.metrics;
 
-public enum TransportType {
-  Highway,
-  Rest
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class SCBSocketMetrics {
+  private final AtomicInteger counter;
+
+  public AtomicInteger getCounter() {
+    return counter;
+  }
+
+  public SCBSocketMetrics() {
+    this.counter = new AtomicInteger(0);
+  }
 }

@@ -15,28 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.pojo.test;
+package org.apache.servicecomb.foundation.vertx.metrics;
 
-import java.util.ArrayList;
-import java.util.List;
+import io.vertx.core.Vertx;
+import io.vertx.core.VertxOptions;
+import io.vertx.core.spi.VertxMetricsFactory;
+import io.vertx.core.spi.metrics.VertxMetrics;
 
-import org.apache.servicecomb.foundation.vertx.ServerEvent;
-import org.apache.servicecomb.foundation.vertx.ConnectionEventType;
-
-import com.google.common.eventbus.Subscribe;
-
-public class ConnectionEventWatcher {
-  private final List<Integer> counters = new ArrayList<>();
-
-  public List<Integer> getCounters() {
-    return counters;
-  }
-
-  @Subscribe
-  public void getEvent(ServerEvent event) {
-    if (ConnectionEventType.TCPConnected.equals(event.getConnectionEventType()) ||
-        ConnectionEventType.TCPClosed.equals(event.getConnectionEventType())) {
-      counters.add(event.getTotalConnectedCount());
-    }
+public class SCBVertxMetricsFactory implements VertxMetricsFactory {
+  @Override
+  public VertxMetrics metrics(Vertx vertx, VertxOptions vertxOptions) {
+    return new SCBVertxMetrics();
   }
 }

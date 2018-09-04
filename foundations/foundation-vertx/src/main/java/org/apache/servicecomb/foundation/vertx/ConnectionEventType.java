@@ -17,7 +17,9 @@
 
 package org.apache.servicecomb.foundation.vertx;
 
-public enum ConnectionEvent {
-  Connected,
-  Closed
+public enum ConnectionEventType {
+  HTTPConnected,
+  HTTPClosed,
+  TCPConnected,
+  TCPClosed
 }
