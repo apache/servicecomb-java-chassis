@@ -31,6 +31,7 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class RestProducerInvocation extends AbstractRestInvocation {
+
   protected Transport transport;
 
   public void invoke(Transport transport, HttpServletRequestEx requestEx, HttpServletResponseEx responseEx,
@@ -40,7 +41,6 @@ public class RestProducerInvocation extends AbstractRestInvocation {
     this.responseEx = responseEx;
     this.httpServerFilters = httpServerFilters;
     requestEx.setAttribute(RestConst.REST_REQUEST, requestEx);
-    requestEx.setAttribute(RestConst.REST_REQUEST_IN_QUEUE_TIME, System.currentTimeMillis());
 
     try {
       findRestOperation();

@@ -146,13 +146,8 @@ public abstract class AbstractRestInvocation {
   }
 
   private boolean isInQueueTimeout() {
-    Object timeout = requestEx.getAttribute(RestConst.REST_REQUEST_IN_QUEUE_TIME);
-    if (timeout != null) {
-      if (System.currentTimeMillis() - (Long) timeout
-          > CommonRestConfig
-          .getRequestWaitInPoolTimeout()) {
-        return true;
-      }
+    if (System.nanoTime() - invocation.getStartTime() > CommonRestConfig.getRequestWaitInPoolTimeout() * 1_000_000) {
+      return true;
     }
     return false;
   }

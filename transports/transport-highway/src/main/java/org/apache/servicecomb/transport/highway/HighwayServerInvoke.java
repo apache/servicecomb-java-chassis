@@ -19,6 +19,8 @@ package org.apache.servicecomb.transport.highway;
 
 import java.util.Map;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
@@ -106,6 +108,9 @@ public class HighwayServerInvoke {
 
   private void runInExecutor() {
     try {
+      if (isInQueueTimeout()) {
+        throw new InvocationException(Status.INTERNAL_SERVER_ERROR, "Timeout when processing the request.");
+      }
       doRunInExecutor();
     } catch (Throwable e) {
       String msg = String.format("handle request error, %s, msgId=%d",
@@ -115,6 +120,13 @@ public class HighwayServerInvoke {
 
       sendResponse(header.getContext(), Response.providerFailResp(e));
     }
+  }
+
+  private boolean isInQueueTimeout() {
+    if (System.nanoTime() - invocation.getStartTime() > HighwayConfig.getRequestWaitInPoolTimeout() * 1_000_000) {
+      return true;
+    }
+    return false;
   }
 
   private void doRunInExecutor() throws Exception {
