@@ -20,7 +20,5 @@ package org.apache.servicecomb.serviceregistry.cache;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 
 public interface InstanceCacheManager {
-  InstanceCache getOrCreate(String appId, String microserviceName, String microserviceVersionRule);
-
   VersionedCache getOrCreateVersionedCache(String appId, String microserviceName, String microserviceVersionRule);
 }

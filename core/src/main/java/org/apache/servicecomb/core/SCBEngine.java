@@ -30,7 +30,6 @@ import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
-import org.apache.servicecomb.core.endpoint.AbstractEndpointsCache;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.handler.HandlerConfigUtils;
@@ -208,7 +207,6 @@ public class SCBEngine {
     eventBus.register(this);
 
     consumerProviderManager.setAppManager(RegistryUtils.getServiceRegistry().getAppManager());
-    AbstractEndpointsCache.init(RegistryUtils.getInstanceCacheManager(), transportManager);
 
     triggerEvent(EventType.BEFORE_HANDLER);
     HandlerConfigUtils.init();

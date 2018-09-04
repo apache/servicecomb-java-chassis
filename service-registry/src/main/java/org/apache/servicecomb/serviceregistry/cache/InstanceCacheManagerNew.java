@@ -28,12 +28,6 @@ public class InstanceCacheManagerNew implements InstanceCacheManager {
   }
 
   @Override
-  public InstanceCache getOrCreate(String appId, String microserviceName, String microserviceVersionRule) {
-    return appManager.getOrCreateMicroserviceVersionRule(appId, microserviceName, microserviceVersionRule)
-        .getInstanceCache();
-  }
-
-  @Override
   public VersionedCache getOrCreateVersionedCache(String appId, String microserviceName,
       String microserviceVersionRule) {
     return appManager.getOrCreateMicroserviceVersionRule(appId, microserviceName, microserviceVersionRule)

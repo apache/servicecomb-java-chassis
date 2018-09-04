@@ -29,25 +29,6 @@ import mockit.Mocked;
 
 public class TestInstanceCacheManagerNew {
   @Test
-  public void getOrCreate(@Mocked AppManager appManager, @Mocked MicroserviceVersionRule microserviceVersionRule,
-      @Mocked InstanceCache instanceCache) {
-    InstanceCacheManagerNew mgr = new InstanceCacheManagerNew(appManager);
-    String appId = "app";
-    String microserviceName = "ms";
-    String versionRule = DefinitionConst.VERSION_RULE_ALL;
-    new Expectations() {
-      {
-        appManager.getOrCreateMicroserviceVersionRule(appId, microserviceName, versionRule);
-        result = microserviceVersionRule;
-        microserviceVersionRule.getInstanceCache();
-        result = instanceCache;
-      }
-    };
-
-    Assert.assertSame(instanceCache, mgr.getOrCreate(appId, microserviceName, versionRule));
-  }
-
-  @Test
   public void getOrCreateVersionedCache(@Mocked AppManager appManager,
       @Mocked MicroserviceVersionRule microserviceVersionRule,
       @Mocked VersionedCache versionedCache) {

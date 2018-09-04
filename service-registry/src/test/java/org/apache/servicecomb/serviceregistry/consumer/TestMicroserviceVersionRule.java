@@ -20,7 +20,6 @@ package org.apache.servicecomb.serviceregistry.consumer;
 import java.util.Arrays;
 
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.cache.InstanceCache;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -102,13 +101,9 @@ public class TestMicroserviceVersionRule {
     instance3.setServiceId("3");
     instance3.setInstanceId("i3");
 
-    InstanceCache orgCache = microserviceVersionRule.getInstanceCache();
     microserviceVersionRule.setInstances(Arrays.asList(instance1, instance2, instance3));
 
     Assert.assertThat(microserviceVersionRule.getInstances().values(), Matchers.contains(instance2));
-    Assert.assertNotSame(orgCache, microserviceVersionRule.getInstanceCache());
-    Assert.assertSame(microserviceVersionRule.getInstances(),
-        microserviceVersionRule.getInstanceCache().getInstanceMap());
     Assert.assertSame(microserviceVersionRule.getInstances(),
         microserviceVersionRule.getVersionedCache().data());
     Assert.assertEquals(microserviceVersionRule.getLatestMicroserviceVersion(), v2);

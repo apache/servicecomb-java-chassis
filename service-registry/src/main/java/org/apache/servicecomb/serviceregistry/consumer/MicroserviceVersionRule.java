@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.cache.InstanceCache;
 import org.apache.servicecomb.serviceregistry.version.VersionRule;
 import org.apache.servicecomb.serviceregistry.version.VersionRuleUtils;
 import org.slf4j.Logger;
@@ -51,8 +50,6 @@ public class MicroserviceVersionRule {
   // key is instanceId
   private Map<String, MicroserviceInstance> instances = Collections.emptyMap();
 
-  private InstanceCache instanceCache;
-
   private VersionedCache versionedCache;
 
   public MicroserviceVersionRule(String appId, String microserviceName, String strVersionRule) {
@@ -60,7 +57,7 @@ public class MicroserviceVersionRule {
     this.microserviceName = microserviceName;
     this.versionRule = VersionRuleUtils.getOrCreate(strVersionRule);
 
-    resetInstanceCache();
+    resetVersionedCache();
   }
 
   public String getAppId() {
@@ -71,8 +68,7 @@ public class MicroserviceVersionRule {
     return microserviceName;
   }
 
-  private void resetInstanceCache() {
-    instanceCache = new InstanceCache(appId, microserviceName, versionRule.getVersionRule(), instances);
+  private void resetVersionedCache() {
     versionedCache = new VersionedCache()
         .name(versionRule.getVersionRule())
         .autoCacheVersion()
@@ -150,10 +146,6 @@ public class MicroserviceVersionRule {
     return instances;
   }
 
-  public InstanceCache getInstanceCache() {
-    return instanceCache;
-  }
-
   public VersionedCache getVersionedCache() {
     return versionedCache;
   }
@@ -181,7 +173,7 @@ public class MicroserviceVersionRule {
     }).collect(Collectors.toMap(MicroserviceInstance::getInstanceId, Function.identity()));
     instances = Collections.unmodifiableMap(tmpInstances);
 
-    resetInstanceCache();
+    resetVersionedCache();
     resetLatestVersion();
   }
 }

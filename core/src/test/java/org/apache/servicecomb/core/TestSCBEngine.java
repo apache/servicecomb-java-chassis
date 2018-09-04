@@ -57,7 +57,6 @@ public class TestSCBEngine {
     new Expectations(RegistryUtils.class) {
       {
         RegistryUtils.getServiceRegistry().getAppManager();
-        RegistryUtils.getInstanceCacheManager();
         RegistryUtils.run();
         RegistryUtils.destroy();
       }
