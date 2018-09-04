@@ -40,6 +40,7 @@ public class RestProducerInvocation extends AbstractRestInvocation {
     this.responseEx = responseEx;
     this.httpServerFilters = httpServerFilters;
     requestEx.setAttribute(RestConst.REST_REQUEST, requestEx);
+    requestEx.setAttribute(RestConst.REST_REQUEST_IN_QUEUE_TIME, System.currentTimeMillis());
 
     try {
       findRestOperation();

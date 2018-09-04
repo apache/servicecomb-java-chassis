@@ -124,6 +124,9 @@ public abstract class AbstractRestInvocation {
     operationMeta.getExecutor().execute(() -> {
       synchronized (this.requestEx) {
         try {
+          if (isInQueueTimeout()) {
+            throw new InvocationException(Status.INTERNAL_SERVER_ERROR, "Timeout when processing the request.");
+          }
           if (requestEx.getAttribute(RestConst.REST_REQUEST) != requestEx) {
             // already timeout
             // in this time, request maybe recycled and reused by web container, do not use requestEx
@@ -140,6 +143,18 @@ public abstract class AbstractRestInvocation {
         }
       }
     });
+  }
+
+  private boolean isInQueueTimeout() {
+    Object timeout = requestEx.getAttribute(RestConst.REST_REQUEST_IN_QUEUE_TIME);
+    if (timeout != null) {
+      if (System.currentTimeMillis() - (Long) timeout
+          > CommonRestConfig
+          .getRequestWaitInPoolTimeout()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   protected void runOnExecutor() {

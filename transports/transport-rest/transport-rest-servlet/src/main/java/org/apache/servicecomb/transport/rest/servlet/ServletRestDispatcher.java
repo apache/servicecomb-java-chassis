@@ -48,7 +48,7 @@ public class ServletRestDispatcher {
     // 异步场景
     final AsyncContext asyncCtx = request.startAsync();
     asyncCtx.addListener(restAsyncListener);
-    asyncCtx.setTimeout(ServletConfig.getServerTimeout());
+    asyncCtx.setTimeout(ServletConfig.getAsyncServletTimeout());
 
     HttpServletRequestEx requestEx = new StandardHttpServletRequestEx(request);
     HttpServletResponseEx responseEx = new StandardHttpServletResponseEx(response);
