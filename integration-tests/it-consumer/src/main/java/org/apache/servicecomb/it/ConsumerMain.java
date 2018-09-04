@@ -29,8 +29,8 @@ import org.apache.servicecomb.it.testcase.TestTraceEdge;
 import org.apache.servicecomb.it.testcase.base.TestDataTypeJaxrs;
 import org.apache.servicecomb.it.testcase.base.TestDataTypePojo;
 import org.apache.servicecomb.it.testcase.base.TestDataTypeSpringmvc;
+import org.apache.servicecomb.it.testcase.base.TestParamCodec;
 import org.apache.servicecomb.it.testcase.support.ProducerDevMode;
-
 
 public class ConsumerMain {
   private static ResultPrinter resultPrinter = new ResultPrinter();
@@ -109,6 +109,7 @@ public class ConsumerMain {
     testDataType();
     ITJUnitUtils.runWithHighwayAndRest(TestTrace.class);
     ITJUnitUtils.run(TestTraceEdge.class);
+    ITJUnitUtils.runWithHighwayAndRest(TestParamCodec.class);
 
     ITJUnitUtils.getParents().pop();
     deploys.getBaseProducer().stop();
