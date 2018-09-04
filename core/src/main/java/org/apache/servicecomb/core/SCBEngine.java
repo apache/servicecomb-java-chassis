@@ -90,6 +90,10 @@ public class SCBEngine {
     return INSTANCE;
   }
 
+  public EventBus getEventBus() {
+    return eventBus;
+  }
+
   public void setProducerProviderManager(
       ProducerProviderManager producerProviderManager) {
     this.producerProviderManager = producerProviderManager;
@@ -128,6 +132,7 @@ public class SCBEngine {
 
   protected void triggerEvent(EventType eventType) {
     BootEvent event = new BootEvent();
+    event.setScbEngine(this);
     event.setEventType(eventType);
 
     for (BootListener listener : bootListenerList) {
@@ -137,6 +142,7 @@ public class SCBEngine {
 
   protected void safeTriggerEvent(EventType eventType) {
     BootEvent event = new BootEvent();
+    event.setScbEngine(this);
     event.setEventType(eventType);
 
     for (BootListener listener : bootListenerList) {
