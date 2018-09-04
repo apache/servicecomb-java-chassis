@@ -21,7 +21,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.xml.ws.Holder;
+
 import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
 import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
@@ -157,5 +160,15 @@ public class TestSCBEngine {
     engine.setBootListenerList(Arrays.asList(beanListener));
 
     Assert.assertThat(engine.getBootListenerList(), Matchers.contains(spiListener, beanListener));
+  }
+
+  @Test
+  public void bootEvent_refEngine() {
+    Holder<SCBEngine> eventEngine = new Holder<>();
+    SCBEngine engine = new SCBEngine();
+    engine.setBootListenerList(Arrays.asList(event -> eventEngine.value = event.getScbEngine()));
+    engine.triggerEvent(EventType.AFTER_REGISTRY);
+    
+    Assert.assertNotNull(eventEngine.value);
   }
 }

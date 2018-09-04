@@ -34,7 +34,17 @@ public interface BootListener {
   }
 
   class BootEvent {
+    private SCBEngine scbEngine;
+
     private EventType eventType;
+
+    public SCBEngine getScbEngine() {
+      return scbEngine;
+    }
+
+    public void setScbEngine(SCBEngine scbEngine) {
+      this.scbEngine = scbEngine;
+    }
 
     public EventType getEventType() {
       return eventType;
