@@ -24,7 +24,7 @@ import org.junit.Test;
 
 public class TestCommonRestConfig {
   @After
-  public void teanDown() {
+  public void tearDown() {
     ArchaiusUtils.resetConfig();
   }
 

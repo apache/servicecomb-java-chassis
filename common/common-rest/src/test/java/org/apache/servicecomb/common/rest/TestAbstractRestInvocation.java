@@ -733,7 +733,6 @@ public class TestAbstractRestInvocation {
     requestEx = new AbstractHttpServletRequest() {
     };
     requestEx.setAttribute(RestConst.REST_REQUEST, requestEx);
-    requestEx.setAttribute(RestConst.REST_REQUEST_IN_QUEUE_TIME, System.currentTimeMillis());
     new Expectations() {
       {
         restOperation.getOperationMeta();
