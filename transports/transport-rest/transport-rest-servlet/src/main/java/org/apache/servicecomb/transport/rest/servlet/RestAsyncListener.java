@@ -26,6 +26,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
@@ -44,7 +45,7 @@ public class RestAsyncListener implements AsyncListener {
 
   static {
     try {
-      TIMEOUT_MESSAGE = JsonUtils.writeValueAsString(new CommonExceptionData("TimeOut in Processing"));
+      TIMEOUT_MESSAGE = JsonUtils.writeValueAsString(new CommonExceptionData("Timeout when processing the request."));
     } catch (JsonProcessingException e) {
       LOGGER.error("Failed to init timeout message.", e);
     }
@@ -63,17 +64,19 @@ public class RestAsyncListener implements AsyncListener {
     // to avoid concurrent, must lock request
     ServletRequest request = event.getSuppliedRequest();
     HttpServletRequestEx requestEx = (HttpServletRequestEx) request.getAttribute(RestConst.REST_REQUEST);
+    LOGGER.error("Rest request timeout, method {}, path {}.", requestEx.getMethod(), requestEx.getRequestURI());
 
+    // Waiting till executing in executor done. This operation may block container pool and make timeout requests in executor's
+    // queue getting executed, and will cause bad performance. So default timeout is setting to -1 to disable timeout.
     synchronized (requestEx) {
       ServletResponse response = event.getAsyncContext().getResponse();
       if (!response.isCommitted()) {
-        LOGGER.error("Rest request timeout, method {}, path {}.", requestEx.getMethod(), requestEx.getRequestURI());
         // invocation in executor's queue
         response.setContentType(MediaType.APPLICATION_JSON);
 
         // we don't know if developers declared one statusCode in contract
         // so we use cse inner statusCode here
-        ((HttpServletResponse) response).setStatus(ExceptionFactory.PRODUCER_INNER_STATUS_CODE);
+        ((HttpServletResponse) response).setStatus(Status.INTERNAL_SERVER_ERROR.getStatusCode());
         PrintWriter out = response.getWriter();
         out.write(TIMEOUT_MESSAGE);
         response.flushBuffer();
@@ -81,6 +84,8 @@ public class RestAsyncListener implements AsyncListener {
 
       request.removeAttribute(RestConst.REST_REQUEST);
     }
+
+    LOGGER.error("Rest request timeout committed, method {}, path {}.", requestEx.getMethod(), requestEx.getRequestURI());
   }
 
   @Override

@@ -62,6 +62,7 @@ public class EdgeInvocation extends AbstractRestInvocation {
     this.routingContext = context;
     this.httpServerFilters = httpServerFilters;
     requestEx.setAttribute(RestConst.REST_REQUEST, requestEx);
+    requestEx.setAttribute(RestConst.REST_REQUEST_IN_QUEUE_TIME, System.currentTimeMillis());
   }
 
   public void edgeInvoke() {

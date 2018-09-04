@@ -126,8 +126,8 @@ public class TestRestAsyncListener {
 
     Assert.assertNull(request.getAttribute(RestConst.REST_REQUEST));
     Assert.assertEquals(MediaType.APPLICATION_JSON, contentType);
-    Assert.assertEquals(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, statusCode);
+    Assert.assertEquals(500, statusCode);
     Assert.assertTrue(flushed);
-    Assert.assertEquals("{\"message\":\"TimeOut in Processing\"}", writer.toString());
+    Assert.assertEquals("{\"message\":\"Timeout when processing the request.\"}", writer.toString());
   }
 }

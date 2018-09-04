@@ -22,23 +22,25 @@ import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
 public final class ServletConfig {
-  static final long DEFAULT_TIMEOUT = 3000;
+  public static final long DEFAULT_ASYN_SERVLET_TIMEOUT = -1;
 
   public static final String KEY_SERVLET_URL_PATTERN = "servicecomb.rest.servlet.urlPattern";
 
   public static final String SERVICECOMB_REST_ADDRESS = "servicecomb.rest.address";
 
-  public static final String KEY_SERVICECOMB_REST_SERVER_TIMEOUT = "servicecomb.rest.server.timeout";
+  public static final String KEY_SERVICECOMB_ASYC_SERVLET_TIMEOUT = "servicecomb.rest.server.timeout";
 
   public static final String DEFAULT_URL_PATTERN = "/*";
+
+  private static final DynamicLongProperty asyncServletTimeoutProperty =
+      DynamicPropertyFactory.getInstance().getLongProperty(KEY_SERVICECOMB_ASYC_SERVLET_TIMEOUT,
+          DEFAULT_ASYN_SERVLET_TIMEOUT);
 
   private ServletConfig() {
   }
 
-  public static long getServerTimeout() {
-    DynamicLongProperty address =
-        DynamicPropertyFactory.getInstance().getLongProperty(KEY_SERVICECOMB_REST_SERVER_TIMEOUT, DEFAULT_TIMEOUT);
-    return address.get();
+  public static long getAsyncServletTimeout() {
+    return asyncServletTimeoutProperty.get();
   }
 
   public static String getLocalServerAddress() {
