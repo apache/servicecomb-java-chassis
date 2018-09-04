@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.ws.rs.core.Response.Status;
@@ -51,10 +52,15 @@ import org.springframework.util.StringUtils;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.netflix.config.DynamicPropertyFactory;
 
 // TODO: should not depend on spring, that will make integration more flexible
 public class SCBEngine {
   private static final Logger LOGGER = LoggerFactory.getLogger(SCBEngine.class);
+
+  static final String CFG_KEY_WAIT_UP_TIMEOUT = "servicecomb.boot.waitUp.timeoutInMilliseconds";
+
+  static final long DEFAULT_WAIT_UP_TIMEOUT = 10_000;
 
   private ProducerProviderManager producerProviderManager;
 
@@ -192,15 +198,16 @@ public class SCBEngine {
     if (SCBStatus.DOWN.equals(status)) {
       try {
         doInit();
-        status = SCBStatus.UP;
-      } catch (Exception e) {
+        waitStatusUp();
+      } catch (TimeoutException e) {
+        LOGGER.warn("{}", e.getMessage());
+      } catch (Throwable e) {
         destroy();
         status = SCBStatus.FAILED;
         throw new IllegalStateException("ServiceComb init failed.", e);
       }
     }
   }
-
 
   private void doInit() throws Exception {
     status = SCBStatus.STARTING;
@@ -242,7 +249,7 @@ public class SCBEngine {
    * even some step throw exception, must catch it and go on, otherwise shutdown process will be broken.
    */
   public synchronized void destroy() {
-    if (SCBStatus.UP.equals(status)) {
+    if (SCBStatus.UP.equals(status) || SCBStatus.STARTING.equals(status)) {
       LOGGER.info("ServiceComb is closing now...");
       doDestroy();
       status = SCBStatus.DOWN;
@@ -317,5 +324,48 @@ public class SCBEngine {
 
   public void setProducerMicroserviceMeta(MicroserviceMeta producerMicroserviceMeta) {
     this.producerMicroserviceMeta = producerMicroserviceMeta;
+  }
+
+  /**
+   * better to subscribe EventType.AFTER_REGISTRY by BootListener<br>
+   * but in some simple scenes, just block and wait is enough.
+   */
+  public void waitStatusUp() throws InterruptedException, TimeoutException {
+    long msWait = DynamicPropertyFactory.getInstance().getLongProperty(CFG_KEY_WAIT_UP_TIMEOUT, DEFAULT_WAIT_UP_TIMEOUT)
+        .get();
+    waitStatusUp(msWait);
+  }
+
+  /**
+   * better to subscribe EventType.AFTER_REGISTRY by BootListener<br>
+   * but in some simple scenes, just block and wait is enough.
+   */
+  public void waitStatusUp(long msWait) throws InterruptedException, TimeoutException {
+    if (msWait <= 0) {
+      LOGGER.info("Give up waiting for status up, wait timeout milliseconds={}.", msWait);
+      return;
+    }
+
+    LOGGER.info("Waiting for status up. timeout: {}ms", msWait);
+    long start = System.currentTimeMillis();
+    for (; ; ) {
+      SCBStatus currentStatus = getStatus();
+      switch (currentStatus) {
+        case DOWN:
+        case FAILED:
+          throw new IllegalStateException("Failed to wait status up, real status: " + currentStatus);
+        case UP:
+          LOGGER.info("Status already changed to up.");
+          return;
+        default:
+          break;
+      }
+
+      TimeUnit.MILLISECONDS.sleep(100);
+      if (System.currentTimeMillis() - start > msWait) {
+        throw new TimeoutException(
+            String.format("Timeout to wait status up, timeout: %dms, last status: %s", msWait, currentStatus));
+      }
+    }
   }
 }

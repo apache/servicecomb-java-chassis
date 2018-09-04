@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.demo.jaxrs.tests;
 
+import static org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY;
+
 import org.apache.servicecomb.springboot.starter.provider.EnableServiceComb;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -25,6 +27,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @EnableServiceComb
 public class JaxrsSpringMain {
   public static void main(final String[] args) throws Exception {
+    System.setProperty(LOCAL_REGISTRY_FILE_KEY, "notExistJustForceLocal");
     SpringApplication.run(JaxrsSpringMain.class, args);
   }
 }

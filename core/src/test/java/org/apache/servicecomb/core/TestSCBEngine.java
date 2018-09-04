@@ -28,6 +28,7 @@ import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
@@ -81,9 +82,11 @@ public class TestSCBEngine {
     engine.setTransportManager(transportManager);
     engine.setSchemaListenerManager(schemaListenerManager);
 
+    ArchaiusUtils.setProperty(SCBEngine.CFG_KEY_WAIT_UP_TIMEOUT, 0);
     engine.init();
+    ArchaiusUtils.updateProperty(SCBEngine.CFG_KEY_WAIT_UP_TIMEOUT, null);
 
-    Assert.assertEquals(SCBStatus.UP, engine.getStatus());
+    Assert.assertEquals(SCBStatus.STARTING, engine.getStatus());
 
     engine.destroy();
 

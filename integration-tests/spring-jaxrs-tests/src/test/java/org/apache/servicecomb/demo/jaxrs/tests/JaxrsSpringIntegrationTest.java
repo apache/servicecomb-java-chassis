@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.demo.jaxrs.tests;
 
+import static org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.AfterClass;
@@ -34,6 +35,7 @@ public class JaxrsSpringIntegrationTest extends JaxrsIntegrationTestBase {
   @BeforeClass
   public static void setUp() {
     System.setProperty("property.test5", "from_system_property");
+    System.setProperty(LOCAL_REGISTRY_FILE_KEY, "notExistJustForceLocal");
   }
 
   @AfterClass
