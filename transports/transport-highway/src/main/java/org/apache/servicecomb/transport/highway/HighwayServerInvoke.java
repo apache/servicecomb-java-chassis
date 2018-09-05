@@ -123,10 +123,8 @@ public class HighwayServerInvoke {
   }
 
   private boolean isInQueueTimeout() {
-    if (System.nanoTime() - invocation.getStartTime() > HighwayConfig.getRequestWaitInPoolTimeout() * 1_000_000) {
-      return true;
-    }
-    return false;
+    return System.nanoTime() - invocation.getStartTime() >
+        HighwayConfig.getRequestWaitInPoolTimeout() * 1_000_000;
   }
 
   private void doRunInExecutor() throws Exception {
