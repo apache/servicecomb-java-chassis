@@ -50,6 +50,11 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>config-cc</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>org.apache.servicecomb.demo</groupId>
+      <artifactId>demo-signature</artifactId>
+    </dependency>
   </dependencies>
 
   <properties>

@@ -92,10 +92,11 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
             .readValue(inputStream, targetType);
       } catch (MismatchedInputException e) {
         // there is no way to detect InputStream is empty, so have to catch the exception
-        if (!isRequired) {
-          LOGGER.warn("Mismatched content and required is false, taken as null. Msg=" + e.getMessage());
+        if (!isRequired && e.getMessage().contains("No content to map due to end-of-input")) {
+          LOGGER.info("Empty content and required is false, taken as null");
           return null;
         }
+        LOGGER.warn("Mismatched content. Msg=" + e.getMessage());
         throw e;
       }
     }
