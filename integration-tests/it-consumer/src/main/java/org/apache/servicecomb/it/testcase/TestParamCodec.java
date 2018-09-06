@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.it.testcase.base;
+package org.apache.servicecomb.it.testcase;
 
 import static org.junit.Assert.assertEquals;
 
