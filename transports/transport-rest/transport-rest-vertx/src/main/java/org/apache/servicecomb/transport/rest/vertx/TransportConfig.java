@@ -28,6 +28,7 @@ import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
 import io.vertx.core.Verticle;
+import io.vertx.core.http.HttpServerOptions;
 
 public final class TransportConfig {
 
@@ -140,5 +141,12 @@ public final class TransportConfig {
           .forEach(resultSet::add);
     }
     return resultSet;
+  }
+
+  public static int getMaxInitialLineLength() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.rest.server.maxInitialLineLength",
+            HttpServerOptions.DEFAULT_MAX_INITIAL_LINE_LENGTH)
+        .get();
   }
 }

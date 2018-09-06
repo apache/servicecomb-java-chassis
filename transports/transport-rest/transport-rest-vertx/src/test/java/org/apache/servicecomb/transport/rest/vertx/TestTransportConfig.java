@@ -140,4 +140,11 @@ public class TestTransportConfig {
     ArchaiusUtils.setProperty("servicecomb.cors.maxAge", 3600);
     Assert.assertEquals(3600, TransportConfig.getCorsMaxAge());
   }
+
+  @Test
+  public void testGetMaxInitialLineLength() {
+    Assert.assertEquals(4096, TransportConfig.getMaxInitialLineLength());
+    ArchaiusUtils.setProperty("servicecomb.rest.server.maxInitialLineLength", 8000);
+    Assert.assertEquals(8000, TransportConfig.getMaxInitialLineLength());
+  }
 }
