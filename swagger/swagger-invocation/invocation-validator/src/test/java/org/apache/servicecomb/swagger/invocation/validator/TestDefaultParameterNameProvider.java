@@ -22,7 +22,7 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class TestParanamerParameterNameProvider {
+public class TestDefaultParameterNameProvider {
   static class ValidatorForTest {
     static class Student {
       private String name;
@@ -86,7 +86,7 @@ public class TestParanamerParameterNameProvider {
 
   Class<ValidatorForTest> validatorForTest = ValidatorForTest.class;
 
-  ParanamerParameterNameProvider parameterNameProvider = new ParanamerParameterNameProvider();
+  DefaultParameterNameProvider parameterNameProvider = new DefaultParameterNameProvider();
 
   @Test
   public void testMethod() throws NoSuchMethodException {

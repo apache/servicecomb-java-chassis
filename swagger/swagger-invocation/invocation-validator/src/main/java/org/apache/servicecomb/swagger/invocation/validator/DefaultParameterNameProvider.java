@@ -30,7 +30,7 @@ import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
 
 
-public class ParanamerParameterNameProvider implements ParameterNameProvider {
+public class DefaultParameterNameProvider implements ParameterNameProvider {
   private final Map<AccessibleObject, List<String>> methodCache = new ConcurrentHashMapEx<>();
 
   @Override
