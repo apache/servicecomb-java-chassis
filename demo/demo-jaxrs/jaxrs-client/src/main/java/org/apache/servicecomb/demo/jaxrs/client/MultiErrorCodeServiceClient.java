@@ -29,9 +29,18 @@ import org.apache.servicecomb.demo.multiErrorCode.MultiRequest;
 import org.apache.servicecomb.demo.multiErrorCode.MultiResponse200;
 import org.apache.servicecomb.demo.multiErrorCode.MultiResponse400;
 import org.apache.servicecomb.demo.multiErrorCode.MultiResponse500;
+import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import io.vertx.core.json.Json;
@@ -39,6 +48,8 @@ import io.vertx.core.json.JsonObject;
 
 public class MultiErrorCodeServiceClient {
   private static final String SERVER = "cse://jaxrs";
+
+  private static String serverDirectURL;
 
   private static RestTemplate template = RestTemplateBuilder.create();
 
@@ -52,6 +63,51 @@ public class MultiErrorCodeServiceClient {
       testErrorCodeWithHeaderJAXRSUsingRowType();
       testNoClientErrorCode();
     }
+
+    prepareServerDirectURL();
+    testErrorCodeWrongType();
+  }
+
+  private static void prepareServerDirectURL() {
+    Microservice microservice = RegistryUtils.getMicroservice();
+    MicroserviceInstance microserviceInstance = (MicroserviceInstance) RegistryUtils.getServiceRegistry()
+        .getAppManager()
+        .getOrCreateMicroserviceVersionRule(microservice.getAppId(), "jaxrs", DefinitionConst.VERSION_RULE_ALL)
+        .getVersionedCache()
+        .mapData()
+        .values()
+        .stream()
+        .findFirst()
+        .get();
+    URIEndpointObject edgeAddress = new URIEndpointObject(microserviceInstance.getEndpoints().get(0));
+    serverDirectURL = String.format("http://%s:%d/", edgeAddress.getHostOrIp(), edgeAddress.getPort());
+  }
+
+  private static void testErrorCodeWrongType() {
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    String body = "{\"message\":\"hello\",\"code\":\"wrongType\"";
+    HttpEntity<String> entity = new HttpEntity<>(body, headers);
+    ResponseEntity<MultiResponse200> result;
+    try {
+      template
+          .postForEntity(serverDirectURL + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
+    } catch (HttpClientErrorException e) {
+      TestMgr.check(e.getStatusCode(), 400);
+      TestMgr.check(e.getMessage(), "400 Bad Request");
+    }
+
+    entity = new HttpEntity<>(null, headers);
+    result = template
+        .postForEntity(serverDirectURL + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
+    TestMgr.check(result.getStatusCodeValue(), 590);
+
+    body = "{\"message\":\"hello\",\"code\":\"200\"}";
+    entity = new HttpEntity<>(body, headers);
+    result = template
+        .postForEntity(serverDirectURL + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
+    TestMgr.check(result.getStatusCode(), 200);
+    TestMgr.check(result.getBody().getMessage(), "success result");
   }
 
   private static void testErrorCode() {

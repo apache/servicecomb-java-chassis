@@ -61,10 +61,6 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>swagger-generator-springmvc</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb.demo</groupId>
-      <artifactId>demo-signature</artifactId>
-    </dependency>
   </dependencies>
   <build>
     <plugins>
