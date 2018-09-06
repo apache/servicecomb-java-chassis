@@ -18,3 +18,7 @@
 service_description:
   name: it-producer
 
+servicecomb:
+  rest:
+    server:
+      maxInitialLineLength: 5000
