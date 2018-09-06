@@ -27,6 +27,7 @@ import org.apache.servicecomb.it.testcase.TestIgnoreMethod;
 import org.apache.servicecomb.it.testcase.TestParamCodec;
 import org.apache.servicecomb.it.testcase.TestTrace;
 import org.apache.servicecomb.it.testcase.TestTraceEdge;
+import org.apache.servicecomb.it.testcase.base.TestParamCodecEdge;
 
 public class ConsumerMain {
   private static ResultPrinter resultPrinter = new ResultPrinter();
@@ -110,6 +111,7 @@ public class ConsumerMain {
     ITJUnitUtils.run(TestTraceEdge.class);
 
     ITJUnitUtils.runWithHighwayAndRest(TestParamCodec.class);
+    ITJUnitUtils.run(TestParamCodecEdge.class);
 
     ITJUnitUtils.getParents().pop();
     deploys.getBaseProducer().stop();
