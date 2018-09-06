@@ -25,7 +25,7 @@ import javax.ws.rs.QueryParam;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 
 @RestSchema(schemaId = "paramCodec")
-@Path("/base/v1/paramCodec")
+@Path("/v1/paramCodec")
 public class ParamCodecSchema {
   /**
    * Test path param and query param encode&decode

@@ -24,9 +24,9 @@ import org.apache.servicecomb.it.testcase.TestChangeTransport;
 import org.apache.servicecomb.it.testcase.TestDataTypePrimitive;
 import org.apache.servicecomb.it.testcase.TestDefaultValue;
 import org.apache.servicecomb.it.testcase.TestIgnoreMethod;
+import org.apache.servicecomb.it.testcase.TestParamCodec;
 import org.apache.servicecomb.it.testcase.TestTrace;
 import org.apache.servicecomb.it.testcase.TestTraceEdge;
-import org.apache.servicecomb.it.testcase.base.TestParamCodec;
 
 public class ConsumerMain {
   private static ResultPrinter resultPrinter = new ResultPrinter();
