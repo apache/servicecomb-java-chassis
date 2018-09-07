@@ -154,6 +154,6 @@ public class TestHighwayServerInvoke {
     Assert.assertEquals(true, Buffer.buffer(netSocketBuffer).toString().startsWith("CSE.TCP"));
     Assert.assertSame(highwayServerInvoke.invocation, startHolder.value.getInvocation());
     Assert.assertSame(highwayServerInvoke.invocation, finishHolder.value.getInvocation());
-    Assert.assertTrue(highwayServerInvoke.invocation.getStartExecutionTime() != 0);
+    Assert.assertTrue(highwayServerInvoke.invocation.getInvocationStageTrace().getStartExecution() != 0);
   }
 }

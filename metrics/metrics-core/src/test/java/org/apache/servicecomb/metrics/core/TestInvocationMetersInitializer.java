@@ -79,7 +79,7 @@ public class TestInvocationMetersInitializer {
         result = Const.RESTFUL;
         invocation.getMicroserviceQualifiedName();
         result = "m.s.o";
-        invocation.getStartTime();
+        invocation.getInvocationStageTrace().getStart();
         result = 1;
         event.getInvocation();
         result = invocation;
@@ -111,9 +111,9 @@ public class TestInvocationMetersInitializer {
         result = Const.RESTFUL;
         invocation.getMicroserviceQualifiedName();
         result = "m.s.o";
-        invocation.getStartTime();
+        invocation.getInvocationStageTrace().getStart();
         result = 1;
-        invocation.getStartExecutionTime();
+        invocation.getInvocationStageTrace().getStartExecution();
         result = 3;
         event.getNanoCurrent();
         result = 10;

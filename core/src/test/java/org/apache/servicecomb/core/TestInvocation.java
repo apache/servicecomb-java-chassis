@@ -93,8 +93,8 @@ public class TestInvocation {
     Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
     invocation.onStart();
 
-    Assert.assertEquals(currentNanoTime, result.value.getStartTime());
     Assert.assertSame(invocation, result.value);
+    Assert.assertEquals(currentNanoTime, invocation.getInvocationStageTrace().getStart());
 
     EventManager.unregister(subscriber);
   }
@@ -104,9 +104,9 @@ public class TestInvocation {
     mockNonaTime();
 
     Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
-    invocation.onStartExecute();
+    invocation.onExecuteStart();
 
-    Assert.assertEquals(currentNanoTime, invocation.getStartExecutionTime());
+    Assert.assertEquals(currentNanoTime, invocation.getInvocationStageTrace().getStartExecution());
   }
 
   @Test

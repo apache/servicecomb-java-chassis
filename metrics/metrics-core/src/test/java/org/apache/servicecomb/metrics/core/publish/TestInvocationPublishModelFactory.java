@@ -19,6 +19,7 @@ package org.apache.servicecomb.metrics.core.publish;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
+import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
@@ -37,6 +38,7 @@ import com.netflix.spectator.api.DefaultRegistry;
 import com.netflix.spectator.api.ManualClock;
 import com.netflix.spectator.api.Registry;
 
+import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
@@ -54,6 +56,8 @@ public class TestInvocationPublishModelFactory {
 
   @Mocked
   Invocation invocation;
+
+  InvocationStageTrace invocationStageTrace = new InvocationStageTrace(invocation);
 
   @Mocked
   Response response;
@@ -85,12 +89,9 @@ public class TestInvocationPublishModelFactory {
   }
 
   protected void prepareInvocation() {
-    new MockUp<System>() {
-      @Mock
-      long nanoTime() {
-        return 10;
-      }
-    };
+    Deencapsulation.setField(invocationStageTrace, "start", 0L);
+    Deencapsulation.setField(invocationStageTrace, "finish", 10L);
+    Deencapsulation.setField(invocationStageTrace, "startExecution", 5L);
 
     invocationType = InvocationType.CONSUMER;
     new MockUp<Invocation>() {
@@ -115,8 +116,8 @@ public class TestInvocationPublishModelFactory {
       }
 
       @Mock
-      long getStartExecutionTime() {
-        return 5;
+      InvocationStageTrace getInvocationStageTrace() {
+        return invocationStageTrace;
       }
     };
 

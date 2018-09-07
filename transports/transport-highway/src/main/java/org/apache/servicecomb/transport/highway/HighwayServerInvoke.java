@@ -123,12 +123,12 @@ public class HighwayServerInvoke {
   }
 
   private boolean isInQueueTimeout() {
-    return System.nanoTime() - invocation.getStartTime() >
+    return System.nanoTime() - invocation.getInvocationStageTrace().getStart() >
         HighwayConfig.getRequestWaitInPoolTimeout() * 1_000_000;
   }
 
   private void doRunInExecutor() throws Exception {
-    invocation.onStartExecute();
+    invocation.onExecuteStart();
 
     HighwayCodec.decodeRequest(invocation, header, operationProtobuf, bodyBuffer, protobufFeature);
     invocation.getHandlerContext().put(Const.REMOTE_ADDRESS, this.connection.getNetSocket().remoteAddress());
