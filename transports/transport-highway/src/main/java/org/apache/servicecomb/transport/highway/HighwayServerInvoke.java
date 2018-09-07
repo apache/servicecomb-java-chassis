@@ -136,12 +136,15 @@ public class HighwayServerInvoke {
     HighwayCodec.decodeRequest(invocation, header, operationProtobuf, bodyBuffer, protobufFeature);
     invocation.getHandlerContext().put(Const.REMOTE_ADDRESS, this.connection.getNetSocket().remoteAddress());
 
+    invocation.getInvocationStageTrace().startHandlersRequest();
     invocation.next(response -> {
       sendResponse(invocation.getContext(), response);
     });
   }
 
   private void sendResponse(Map<String, String> context, Response response) {
+    invocation.getInvocationStageTrace().finishHandlersResponse();
+
     ResponseHeader header = new ResponseHeader();
     header.setStatusCode(response.getStatusCode());
     header.setReasonPhrase(response.getReasonPhrase());

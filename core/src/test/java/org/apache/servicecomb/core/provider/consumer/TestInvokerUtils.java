@@ -133,6 +133,9 @@ public class TestInvokerUtils {
     invokeResult = 1;
     Assert.assertEquals(1, (int) InvokerUtils.syncInvoke(invocation));
     Assert.assertEquals(1, invocation.getInvocationStageTrace().getStart());
+    Assert.assertEquals(1, invocation.getInvocationStageTrace().getStartHandlersRequest());
+    Assert.assertEquals(1, invocation.getInvocationStageTrace().getFinishHandlersResponse());
+    Assert.assertEquals(1, invocation.getInvocationStageTrace().getFinish());
   }
 
   @Test
@@ -155,6 +158,28 @@ public class TestInvokerUtils {
     Assert.assertNull(ContextUtils.getInvocationContext());
     Assert.assertSame(parentContext, holder.value);
     Assert.assertEquals(1, invocation.getInvocationStageTrace().getStart());
+    Assert.assertEquals(1, invocation.getInvocationStageTrace().getStartHandlersRequest());
+    Assert.assertEquals(1, invocation.getInvocationStageTrace().getFinishHandlersResponse());
+    Assert.assertEquals(1, invocation.getInvocationStageTrace().getFinish());
+  }
+
+  @Test
+  public void reactiveInvokeException() {
+    new MockUp<Invocation>(invocation) {
+      @Mock
+      void next(AsyncResponse asyncResp) {
+        throw new Error();
+      }
+    };
+
+    Holder<Response> holder = new Holder<>();
+    InvokerUtils.reactiveInvoke(invocation, ar -> holder.value = ar);
+
+    Assert.assertFalse(holder.value.isSuccessed());
+    Assert.assertEquals(1, invocation.getInvocationStageTrace().getStart());
+    Assert.assertEquals(1, invocation.getInvocationStageTrace().getStartHandlersRequest());
+    Assert.assertEquals(1, invocation.getInvocationStageTrace().getFinishHandlersResponse());
+    Assert.assertEquals(1, invocation.getInvocationStageTrace().getFinish());
   }
 
   @SuppressWarnings("deprecation")

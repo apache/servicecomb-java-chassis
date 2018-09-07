@@ -69,9 +69,11 @@ public final class InvokerUtils {
       SyncResponseExecutor respExecutor = new SyncResponseExecutor();
       invocation.setResponseExecutor(respExecutor);
 
+      invocation.getInvocationStageTrace().startHandlersRequest();
       invocation.next(respExecutor::setResponse);
 
       Response response = respExecutor.waitResponse();
+      invocation.getInvocationStageTrace().finishHandlersResponse();
       invocation.onFinish(response);
       return response;
     } catch (Throwable e) {
@@ -98,9 +100,11 @@ public final class InvokerUtils {
       ReactiveResponseExecutor respExecutor = new ReactiveResponseExecutor();
       invocation.setResponseExecutor(respExecutor);
 
+      invocation.getInvocationStageTrace().startHandlersRequest();
       invocation.next(ar -> {
         ContextUtils.setInvocationContext(invocation.getParentContext());
         try {
+          invocation.getInvocationStageTrace().finishHandlersResponse();
           invocation.onFinish(ar);
           asyncResp.handle(ar);
         } finally {
@@ -108,6 +112,7 @@ public final class InvokerUtils {
         }
       });
     } catch (Throwable e) {
+      invocation.getInvocationStageTrace().finishHandlersResponse();
       //if throw exception,we can use 500 for status code ?
       Response response = Response.createConsumerFail(e);
       invocation.onFinish(response);
