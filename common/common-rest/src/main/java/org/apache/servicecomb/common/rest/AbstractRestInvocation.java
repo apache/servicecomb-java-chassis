@@ -49,10 +49,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractRestInvocation {
-
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRestInvocation.class);
 
   public static final String UNKNOWN_OPERATION_ID = "UNKNOWN_OPERATION";
+
+  protected long start;
 
   protected RestOperationMeta restOperationMeta;
 
@@ -65,6 +66,10 @@ public abstract class AbstractRestInvocation {
   protected ProduceProcessor produceProcessor;
 
   protected List<HttpServerFilter> httpServerFilters = Collections.emptyList();
+
+  public AbstractRestInvocation() {
+    this.start = System.nanoTime();
+  }
 
   public void setHttpServerFilters(List<HttpServerFilter> httpServerFilters) {
     this.httpServerFilters = httpServerFilters;
@@ -118,7 +123,7 @@ public abstract class AbstractRestInvocation {
       return;
     }
 
-    invocation.onStart(requestEx);
+    invocation.onStart(requestEx, start);
     OperationMeta operationMeta = restOperationMeta.getOperationMeta();
 
     operationMeta.getExecutor().execute(() -> {

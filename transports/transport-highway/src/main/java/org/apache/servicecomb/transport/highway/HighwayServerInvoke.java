@@ -64,11 +64,14 @@ public class HighwayServerInvoke {
 
   Invocation invocation;
 
+  protected long start;
+
   public HighwayServerInvoke() {
     this(null, null);
   }
 
   public HighwayServerInvoke(Endpoint endpoint, ProtobufFeature protobufFeature) {
+    this.start = System.nanoTime();
     this.endpoint = endpoint;
     this.protobufFeature = protobufFeature;
   }
@@ -175,7 +178,7 @@ public class HighwayServerInvoke {
       invocation = InvocationFactory.forProvider(endpoint,
           operationProtobuf.getOperationMeta(),
           null);
-      invocation.onStart();
+      invocation.onStart(null, start);
       operationMeta.getExecutor().execute(() -> runInExecutor());
     } catch (IllegalStateException e) {
       sendResponse(header.getContext(), Response.providerFailResp(e));

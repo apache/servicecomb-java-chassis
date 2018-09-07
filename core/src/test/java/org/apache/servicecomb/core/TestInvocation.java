@@ -91,7 +91,7 @@ public class TestInvocation {
     EventManager.register(subscriber);
 
     Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
-    invocation.onStart();
+    invocation.onStart(currentNanoTime);
 
     Assert.assertSame(invocation, result.value);
     Assert.assertEquals(currentNanoTime, invocation.getInvocationStageTrace().getStart());
@@ -158,7 +158,7 @@ public class TestInvocation {
     Invocation invocation = new Invocation(referenceConfig, operationMeta, swaggerArguments);
     invocation.addContext(Const.TRACE_ID_NAME, "abc");
 
-    invocation.onStart();
+    invocation.onStart(0);
 
     Assert.assertEquals("abc", invocation.getTraceId());
     Assert.assertEquals("abc", invocation.getTraceId(Const.TRACE_ID_NAME));
@@ -175,7 +175,7 @@ public class TestInvocation {
     };
     Invocation invocation = new Invocation(referenceConfig, operationMeta, swaggerArguments);
 
-    invocation.onStart();
+    invocation.onStart(0);
 
     Assert.assertEquals("abc", invocation.getTraceId());
     Assert.assertEquals("abc", invocation.getTraceId(Const.TRACE_ID_NAME));
@@ -191,7 +191,7 @@ public class TestInvocation {
     };
     Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
 
-    invocation.onStart(requestEx);
+    invocation.onStart(requestEx, 0);
 
     Assert.assertEquals("abc", invocation.getTraceId());
     Assert.assertEquals("abc", invocation.getTraceId(Const.TRACE_ID_NAME));
@@ -208,7 +208,7 @@ public class TestInvocation {
     };
     Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
 
-    invocation.onStart(requestEx);
+    invocation.onStart(requestEx, 0);
 
     Assert.assertEquals("abc", invocation.getTraceId());
     Assert.assertEquals("abc", invocation.getTraceId(Const.TRACE_ID_NAME));
