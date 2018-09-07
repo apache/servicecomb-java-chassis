@@ -24,12 +24,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
+import org.apache.servicecomb.foundation.common.cache.VersionedCache;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
+import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,9 +47,16 @@ public class IpPortManager {
 
   private ServiceRegistryConfig serviceRegistryConfig;
 
+  private InstanceCacheManager instanceCacheManager;
+
   private String defaultTransport = "rest";
 
   private ArrayList<IpPort> defaultIpPort;
+
+  private Object lockObj = new Object();
+
+   // 缓存CacheEndpoint
+  private volatile Map<String, List<CacheEndpoint>> transportMap;
 
   private AtomicInteger currentAvailableIndex;
 
@@ -52,7 +68,7 @@ public class IpPortManager {
     return maxRetryTimes;
   }
 
-  public IpPortManager(ServiceRegistryConfig serviceRegistryConfig) {
+  public IpPortManager(ServiceRegistryConfig serviceRegistryConfig, InstanceCacheManager instanceCacheManager) {
     this.serviceRegistryConfig = serviceRegistryConfig;
 
     defaultTransport = serviceRegistryConfig.getTransport();
@@ -68,6 +84,9 @@ public class IpPortManager {
   // we have to do this operation after the first time setup has already done
   public void initAutoDiscovery() {
     if (!autoDiscoveryInited && this.serviceRegistryConfig.isRegistryAutoDiscovery()) {
+      instanceCacheManager.getOrCreateVersionedCache(REGISTRY_APP_ID,
+          REGISTRY_SERVICE_NAME,
+          DefinitionConst.VERSION_RULE_LATEST);
       autoDiscoveryInited = true;
     }
   }
@@ -92,7 +111,59 @@ public class IpPortManager {
     if (index < defaultIpPort.size()) {
       return defaultIpPort.get(index);
     }
-    currentAvailableIndex.set(0);
-    return defaultIpPort.get(0);
+
+    List<CacheEndpoint> endpoints = getDiscoveredIpPort();
+    if (endpoints == null || (index >= defaultIpPort.size() + endpoints.size())) {
+      currentAvailableIndex.set(0);
+      return defaultIpPort.get(0);
+    }
+    maxRetryTimes = defaultIpPort.size() + endpoints.size();
+    CacheEndpoint nextEndpoint = endpoints.get(index - defaultIpPort.size());
+    return new URIEndpointObject(nextEndpoint.getEndpoint());
+  }
+
+  private List<CacheEndpoint> getDiscoveredIpPort() {
+    if (!autoDiscoveryInited || !this.serviceRegistryConfig.isRegistryAutoDiscovery()) {
+      return null;
+    }
+
+    VersionedCache versionedCache = instanceCacheManager.getOrCreateVersionedCache(REGISTRY_APP_ID,
+        REGISTRY_SERVICE_NAME,
+        DefinitionConst.VERSION_RULE_LATEST);
+    return getOrCreateTransportMap(versionedCache).get(defaultTransport);
+  }
+
+  public Map<String, List<CacheEndpoint>> getOrCreateTransportMap(VersionedCache versionedCache) {
+    if (transportMap == null) {
+      synchronized (lockObj) {
+        if (transportMap == null) {
+          transportMap = createTransportMap(versionedCache);
+        }
+      }
+    }
+    return transportMap;
+  }
+
+  private Map<String, List<CacheEndpoint>> createTransportMap(VersionedCache versionedCache) {
+    Map<String, List<CacheEndpoint>> transportMap = new HashMap<>();
+    Map<String, MicroserviceInstance> instances = versionedCache.data();
+
+    for (MicroserviceInstance instance : instances.values()) {
+      // 过滤到不可用实例
+      if (instance.getStatus() != MicroserviceInstanceStatus.UP) {
+        continue;
+      }
+      for (String endpoint : instance.getEndpoints()) {
+        try {
+          URI uri = URI.create(endpoint);
+          String transportName = uri.getScheme();
+           List<CacheEndpoint> cacheEndpointList = transportMap.computeIfAbsent(transportName, k -> new ArrayList<>());
+          cacheEndpointList.add(new CacheEndpoint(endpoint, instance));
+        } catch (Exception e) {
+          LOGGER.warn("unrecognized address find, ignore " + endpoint);
+        }
+      }
+    }
+    return transportMap;
   }
 }

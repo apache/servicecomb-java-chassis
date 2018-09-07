@@ -94,7 +94,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
     initCacheManager();
 
-    ipPortManager = new IpPortManager(serviceRegistryConfig);
+    ipPortManager = new IpPortManager(serviceRegistryConfig, instanceCacheManager);
     if (srClient == null) {
       srClient = createServiceRegistryClient();
     }
