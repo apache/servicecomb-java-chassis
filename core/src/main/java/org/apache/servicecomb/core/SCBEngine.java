@@ -80,6 +80,10 @@ public class SCBEngine {
 
   private volatile SCBStatus status = SCBStatus.DOWN;
 
+  private EventBus eventBus = EventManager.getEventBus();
+
+  private static final SCBEngine INSTANCE = new SCBEngine();
+
   public void setStatus(SCBStatus status) {
     this.status = status;
   }
@@ -87,10 +91,6 @@ public class SCBEngine {
   public SCBStatus getStatus() {
     return status;
   }
-
-  private EventBus eventBus = EventManager.getEventBus();
-
-  private static final SCBEngine INSTANCE = new SCBEngine();
 
   public static SCBEngine getInstance() {
     return INSTANCE;

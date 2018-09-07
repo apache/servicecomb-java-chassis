@@ -127,6 +127,7 @@ public class EdgeInvocation extends AbstractRestInvocation {
         restOperationMeta.getOperationMeta(),
         null);
     this.invocation.setSync(false);
+    this.invocation.setEdge(true);
     this.invocation.getHandlerContext().put(EDGE_INVOCATION_CONTEXT, Vertx.currentContext());
     this.invocation.setResponseExecutor(new ReactiveResponseExecutor());
     this.routingContext.put(RestConst.REST_INVOCATION_CONTEXT, invocation);

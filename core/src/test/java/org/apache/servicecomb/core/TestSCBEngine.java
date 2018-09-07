@@ -168,7 +168,7 @@ public class TestSCBEngine {
     SCBEngine engine = new SCBEngine();
     engine.setBootListenerList(Arrays.asList(event -> eventEngine.value = event.getScbEngine()));
     engine.triggerEvent(EventType.AFTER_REGISTRY);
-    
+
     Assert.assertNotNull(eventEngine.value);
   }
 }
