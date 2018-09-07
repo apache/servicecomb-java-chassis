@@ -60,8 +60,46 @@ public class DataTypeSpringmvcSchema {
     return input;
   }
 
-  @GetMapping(path = "/add")
-  public int add(int a, int b) {
-    return a + b;
+  @GetMapping(path = "add")
+  public int add(int num1, int num2) {
+    return num1 + num2;
+  }
+
+  //String
+
+  @GetMapping("stringPath/{input}")
+  public String stringPath(@PathVariable("input") String input) {
+    return input;
+  }
+
+  @GetMapping("stringQuery")
+  public String stringQuery(@RequestParam("input") String input) {
+    return input;
+  }
+
+  @GetMapping("stringHeader")
+  public String stringHeader(@RequestHeader("input") String input) {
+    return input;
+  }
+
+  @GetMapping("stringCookie")
+  public String stringCookie(@CookieValue("input") String input) {
+    return input;
+  }
+
+  @PostMapping("stringBody")
+  public String stringBody(@RequestBody String input) {
+    return input;
+  }
+
+  @PostMapping("stringForm")
+  public String stringForm(@RequestAttribute("input") String input) {
+    return input;
+  }
+
+
+  @GetMapping(path = "stringConcat")
+  public String stringConcat(String str1, String str2) {
+    return str1 + str2;
   }
 }

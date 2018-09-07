@@ -30,6 +30,12 @@ public class TestDefaultValue {
     int intHeader(Integer input);
 
     int intForm(Integer input);
+
+    String stringQuery(String input);
+
+    String stringHeader(String input);
+
+    String stringForm(String input);
   }
 
   interface DefaultValueRequireIntf extends DefaultValueIntf {
@@ -38,7 +44,17 @@ public class TestDefaultValue {
     int intHeaderRequire(Integer input);
 
     int intFormRequire(Integer input);
+
+    String stringQueryRequire(String input);
+
+    String stringHeaderRequire(String input);
+
+    String stringFormRequire(String input);
   }
+
+  private String defaultStr = "string";
+
+  private int defaultInt = 13;
 
   private static Consumers<DefaultValueIntf> consumersJaxrs = new Consumers<>("defaultValueJaxrs",
       DefaultValueIntf.class);
@@ -54,91 +70,193 @@ public class TestDefaultValue {
 
   @Test
   public void intQuery_jaxrs_intf() {
-    assertEquals(13, consumersJaxrs.getIntf().intQuery(null));
+    assertEquals(defaultInt, consumersJaxrs.getIntf().intQuery(null));
+  }
+
+  @Test
+  public void stringQuery_jaxrs_intf() {
+    assertEquals(defaultStr, consumersJaxrs.getIntf().stringQuery(null));
   }
 
   @Test
   public void intQuery_jaxrs_rt() {
-    assertEquals(13, (int) consumersJaxrs.getSCBRestTemplate().getForObject("/intQuery", int.class));
+    assertEquals(defaultInt, (int) consumersJaxrs.getSCBRestTemplate().getForObject("/intQuery", int.class));
+  }
+
+  @Test
+  public void stringQuery_jaxrs_rt() {
+    assertEquals(defaultStr, (String) consumersJaxrs.getSCBRestTemplate().getForObject("/stringQuery", String.class));
   }
 
   @Test
   public void intHeader_jaxrs_intf() {
-    assertEquals(13, consumersJaxrs.getIntf().intHeader(null));
+    assertEquals(defaultInt, consumersJaxrs.getIntf().intHeader(null));
+  }
+
+  @Test
+  public void stringHeader_jaxrs_intf() {
+    assertEquals(defaultStr, consumersJaxrs.getIntf().stringHeader(null));
   }
 
   @Test
   public void intHeader_jaxrs_rt() {
-    assertEquals(13, (int) consumersJaxrs.getSCBRestTemplate().getForObject("/intHeader", int.class));
+    assertEquals(defaultInt, (int) consumersJaxrs.getSCBRestTemplate().getForObject("/intHeader", int.class));
+  }
+
+  @Test
+  public void stringHeader_jaxrs_rt() {
+    assertEquals(defaultStr,
+        (String) consumersJaxrs.getSCBRestTemplate().getForObject("/stringHeader", String.class));
   }
 
   @Test
   public void intForm_jaxrs_intf() {
-    assertEquals(13, consumersJaxrs.getIntf().intForm(null));
+    assertEquals(defaultInt, consumersJaxrs.getIntf().intForm(null));
+  }
+
+  @Test
+  public void stringForm_jaxrs_intf() {
+    assertEquals(defaultStr, consumersJaxrs.getIntf().stringForm(null));
   }
 
   @Test
   public void intForm_jaxrs_rt() {
-    assertEquals(13, (int) consumersJaxrs.getSCBRestTemplate().postForObject("/intForm", null, int.class));
+    assertEquals(defaultInt, (int) consumersJaxrs.getSCBRestTemplate().postForObject("/intForm", null, int.class));
+  }
+
+  @Test
+  public void stringForm_jaxrs_rt() {
+    assertEquals(defaultStr,
+        (String) consumersJaxrs.getSCBRestTemplate().postForObject("/stringForm", null, String.class));
   }
 
   @Test
   public void intQuery_springmvc_intf() {
-    assertEquals(13, consumersSpringmvc.getIntf().intQuery(null));
+    assertEquals(defaultInt, consumersSpringmvc.getIntf().intQuery(null));
+  }
+
+  @Test
+  public void stringQuery_springmvc_intf() {
+    assertEquals(defaultStr, consumersSpringmvc.getIntf().stringQuery(null));
   }
 
   @Test
   public void intQuery_springmvc_rt() {
-    assertEquals(13, (int) consumersSpringmvc.getSCBRestTemplate().getForObject("/intQuery", int.class));
+    assertEquals(defaultInt, (int) consumersSpringmvc.getSCBRestTemplate().getForObject("/intQuery", int.class));
+  }
+
+  @Test
+  public void stringQuery_springmvc_rt() {
+    assertEquals(defaultStr,
+        (String) consumersSpringmvc.getSCBRestTemplate().getForObject("/stringQuery", String.class));
   }
 
   @Test
   public void intHeader_springmvc_intf() {
-    assertEquals(13, consumersSpringmvc.getIntf().intHeader(null));
+    assertEquals(defaultInt, consumersSpringmvc.getIntf().intHeader(null));
+  }
+
+  @Test
+  public void stringHeader_springmvc_intf() {
+    assertEquals(defaultStr, consumersSpringmvc.getIntf().stringHeader(null));
   }
 
   @Test
   public void intHeader_springmvc_rt() {
-    assertEquals(13, (int) consumersSpringmvc.getSCBRestTemplate().getForObject("/intHeader", int.class));
+    assertEquals(defaultInt, (int) consumersSpringmvc.getSCBRestTemplate().getForObject("/intHeader", int.class));
+  }
+
+  @Test
+  public void stringHeader_springmvc_rt() {
+    assertEquals(defaultStr,
+        (String) consumersSpringmvc.getSCBRestTemplate().getForObject("/stringHeader", String.class));
   }
 
   @Test
   public void intForm_springmvc_intf() {
-    assertEquals(13, consumersSpringmvc.getIntf().intForm(null));
+    assertEquals(defaultInt, consumersSpringmvc.getIntf().intForm(null));
+  }
+
+  @Test
+  public void stringForm_springmvc_intf() {
+    assertEquals(defaultStr, consumersSpringmvc.getIntf().stringForm(null));
   }
 
   @Test
   public void intForm_springmvc_rt() {
-    assertEquals(13, (int) consumersSpringmvc.getSCBRestTemplate().postForObject("/intForm", null, int.class));
+    assertEquals(defaultInt,
+        (int) consumersSpringmvc.getSCBRestTemplate().postForObject("/intForm", null, int.class));
+  }
+
+  @Test
+  public void stringForm_springmvc_rt() {
+    assertEquals(defaultStr,
+        (String) consumersSpringmvc.getSCBRestTemplate().postForObject("/stringForm", null, String.class));
   }
 
   @Test
   public void intQuery_require_springmvc_intf() {
-    assertEquals(13, consumersSpringmvc.getIntf().intQueryRequire(null));
+    assertEquals(defaultInt, consumersSpringmvc.getIntf().intQueryRequire(null));
+  }
+
+  @Test
+  public void stringQuery_require_springmvc_intf() {
+    assertEquals(defaultStr, consumersSpringmvc.getIntf().stringQueryRequire(null));
   }
 
   @Test
   public void intQuery_require_springmvc_rt() {
-    assertEquals(13, (int) consumersSpringmvc.getSCBRestTemplate().getForObject("/intQueryRequire", int.class));
+    assertEquals(defaultInt,
+        (int) consumersSpringmvc.getSCBRestTemplate().getForObject("/intQueryRequire", int.class));
+  }
+
+  @Test
+  public void stringQuery_require_springmvc_rt() {
+    assertEquals(defaultStr,
+        (String) consumersSpringmvc.getSCBRestTemplate().getForObject("/stringQueryRequire", String.class));
   }
 
   @Test
   public void intHeader_require_springmvc_intf() {
-    assertEquals(13, consumersSpringmvc.getIntf().intHeaderRequire(null));
+    assertEquals(defaultInt, consumersSpringmvc.getIntf().intHeaderRequire(null));
+  }
+
+  @Test
+  public void stringHeader_require_springmvc_intf() {
+    assertEquals(defaultStr, consumersSpringmvc.getIntf().stringHeaderRequire(null));
   }
 
   @Test
   public void intHeader_require_springmvc_rt() {
-    assertEquals(13, (int) consumersSpringmvc.getSCBRestTemplate().getForObject("/intHeaderRequire", int.class));
+    assertEquals(defaultInt,
+        (int) consumersSpringmvc.getSCBRestTemplate().getForObject("/intHeaderRequire", int.class));
+  }
+
+  @Test
+  public void stringHeader_require_springmvc_rt() {
+    assertEquals(defaultStr,
+        (String) consumersSpringmvc.getSCBRestTemplate().getForObject("/stringHeaderRequire", String.class));
   }
 
   @Test
   public void intForm_require_springmvc_intf() {
-    assertEquals(13, consumersSpringmvc.getIntf().intFormRequire(null));
+    assertEquals(defaultInt, consumersSpringmvc.getIntf().intFormRequire(null));
+  }
+
+  @Test
+  public void stringForm_require_springmvc_intf() {
+    assertEquals(defaultStr, consumersSpringmvc.getIntf().stringFormRequire(null));
   }
 
   @Test
   public void intForm_require_springmvc_rt() {
-    assertEquals(13, (int) consumersSpringmvc.getSCBRestTemplate().postForObject("/intFormRequire", null, int.class));
+    assertEquals(defaultInt,
+        (int) consumersSpringmvc.getSCBRestTemplate().postForObject("/intFormRequire", null, int.class));
+  }
+
+  @Test
+  public void stringForm_require_springmvc_rt() {
+    assertEquals(defaultStr,
+        (String) consumersSpringmvc.getSCBRestTemplate().postForObject("/stringFormRequire", null, String.class));
   }
 }

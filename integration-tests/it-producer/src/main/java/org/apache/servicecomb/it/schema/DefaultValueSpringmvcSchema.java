@@ -64,4 +64,43 @@ public class DefaultValueSpringmvcSchema {
   public int intFormRequire(int input) {
     return input;
   }
+
+  //string
+  @GetMapping("stringQuery")
+  public String stringQuery(@RequestParam(value = "input", defaultValue = "string") String input) {
+    return input;
+  }
+
+  @GetMapping("stringHeader")
+  public String stringHeader(@RequestHeader(value = "input", defaultValue = "string") String input) {
+    return input;
+  }
+
+  @ApiImplicitParams({
+      @ApiImplicitParam(name = "input", dataType = "string", paramType = "form", value = "", defaultValue = "string", required = false)})
+  @PostMapping(path = "stringForm")
+  public String stringForm(String input) {
+    return input;
+  }
+
+  // springmvc rule: required should be false because defaultValue have value
+  @GetMapping(path = "stringQueryRequire")
+  public String stringQueryRequire(
+      @RequestParam(name = "input", required = true, defaultValue = "string") String input) {
+    return input;
+  }
+
+  // springmvc rule: required should be false because defaultValue have value
+  @GetMapping(path = "stringHeaderRequire")
+  public String stringHeaderRequire(
+      @RequestHeader(name = "input", required = true, defaultValue = "string") String input) {
+    return input;
+  }
+
+  @ApiImplicitParams({
+      @ApiImplicitParam(name = "input", dataType = "string", paramType = "form", value = "a required form param", required = true, defaultValue = "string")})
+  @PostMapping(path = "stringFormRequire")
+  public String stringFormRequire(String input) {
+    return input;
+  }
 }
