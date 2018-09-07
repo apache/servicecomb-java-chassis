@@ -76,6 +76,10 @@ public class Invocation extends SwaggerInvocation {
 
   private HttpServletRequestEx requestEx;
 
+  // not extend InvocationType
+  // because isEdge() only affect to apm/metrics output, no need to change so many logic
+  private boolean edge;
+
   public HttpServletRequestEx getRequestEx() {
     return requestEx;
   }
@@ -274,5 +278,13 @@ public class Invocation extends SwaggerInvocation {
 
   public boolean isConsumer() {
     return InvocationType.CONSUMER.equals(invocationType);
+  }
+
+  public boolean isEdge() {
+    return edge;
+  }
+
+  public void setEdge(boolean edge) {
+    this.edge = edge;
   }
 }

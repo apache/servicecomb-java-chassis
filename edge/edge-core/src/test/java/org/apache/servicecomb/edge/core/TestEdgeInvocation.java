@@ -235,6 +235,7 @@ public class TestEdgeInvocation {
     Invocation invocation = Deencapsulation.getField(edgeInvocation, "invocation");
     Assert.assertThat(invocation.getResponseExecutor(), Matchers.instanceOf(ReactiveResponseExecutor.class));
     Assert.assertFalse(invocation.isSync());
+    Assert.assertTrue(invocation.isEdge());
     Assert.assertSame(context, invocation.getHandlerContext().get(EdgeInvocation.EDGE_INVOCATION_CONTEXT));
   }
 
