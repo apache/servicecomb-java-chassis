@@ -850,7 +850,7 @@ public class TestAbstractRestInvocation {
     EventManager.unregister(subscriber);
 
     Assert.assertTrue(result.value);
-    Assert.assertEquals(time, invocation.getStartTime());
+    Assert.assertEquals(time, invocation.getInvocationStageTrace().getStart());
     Assert.assertSame(invocation, eventHolder.value.getInvocation());
     Assert.assertEquals("tid", invocation.getTraceId());
   }
@@ -880,7 +880,7 @@ public class TestAbstractRestInvocation {
 
     Assert.assertTrue(result.value);
     Assert.assertSame(invocation, restInvocation.invocation);
-    Assert.assertEquals(time, invocation.getStartExecutionTime());
+    Assert.assertEquals(time, invocation.getInvocationStageTrace().getStartExecution());
   }
 
   @Test

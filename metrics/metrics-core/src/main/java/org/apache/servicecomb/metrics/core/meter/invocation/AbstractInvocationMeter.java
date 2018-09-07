@@ -34,6 +34,7 @@ public abstract class AbstractInvocationMeter {
   }
 
   public void onInvocationFinish(InvocationFinishEvent event) {
-    totalTimer.record(event.getNanoCurrent() - event.getInvocation().getStartTime(), TimeUnit.NANOSECONDS);
+    totalTimer.record(event.getNanoCurrent() - event.getInvocation().getInvocationStageTrace().getStart(),
+        TimeUnit.NANOSECONDS);
   }
 }

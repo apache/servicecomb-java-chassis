@@ -17,10 +17,12 @@
 package org.apache.servicecomb.core.event;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.Assert;
 import org.junit.Test;
 
+import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
@@ -30,6 +32,7 @@ public class TestInvocationFinishEvent {
 
   @Test
   public void construct(@Mocked Invocation invocation, @Mocked Response response) {
+    InvocationStageTrace stageTrace = new InvocationStageTrace(invocation);
     long time = 123;
     new MockUp<System>() {
       @Mock
@@ -37,6 +40,13 @@ public class TestInvocationFinishEvent {
         return time;
       }
     };
+    new Expectations() {
+      {
+        invocation.getInvocationStageTrace();
+        result = stageTrace;
+      }
+    };
+    stageTrace.finish();
 
     event = new InvocationFinishEvent(invocation, response);
 

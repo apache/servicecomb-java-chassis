@@ -45,7 +45,10 @@ public class ProducerInvocationMeter extends AbstractInvocationMeter {
     super.onInvocationFinish(event);
 
     Invocation invocation = event.getInvocation();
-    executorQueueTimer.record(invocation.getStartExecutionTime() - invocation.getStartTime(), TimeUnit.NANOSECONDS);
-    executionTimer.record(event.getNanoCurrent() - invocation.getStartExecutionTime(), TimeUnit.NANOSECONDS);
+    executorQueueTimer.record(
+        invocation.getInvocationStageTrace().getStartExecution() - invocation.getInvocationStageTrace().getStart(),
+        TimeUnit.NANOSECONDS);
+    executionTimer.record(event.getNanoCurrent() - invocation.getInvocationStageTrace().getStartExecution(),
+        TimeUnit.NANOSECONDS);
   }
 }

@@ -27,7 +27,7 @@ public class InvocationFinishEvent {
   private Response response;
 
   public InvocationFinishEvent(Invocation invocation, Response response) {
-    this.nanoCurrent = System.nanoTime();
+    this.nanoCurrent = invocation.getInvocationStageTrace().getFinish();
     this.invocation = invocation;
     this.response = response;
   }

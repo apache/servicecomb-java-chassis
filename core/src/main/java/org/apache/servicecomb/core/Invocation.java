@@ -27,6 +27,7 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
+import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.core.tracing.TraceIdGenerator;
 import org.apache.servicecomb.foundation.common.event.EventManager;
@@ -68,11 +69,9 @@ public class Invocation extends SwaggerInvocation {
   // 同步模式：避免应答在网络线程中处理解码等等业务级逻辑
   private Executor responseExecutor;
 
-  private long startTime;
-
-  private long startExecutionTime;
-
   private boolean sync = true;
+
+  private InvocationStageTrace invocationStageTrace = new InvocationStageTrace(this);
 
   private HttpServletRequestEx requestEx;
 
@@ -84,6 +83,10 @@ public class Invocation extends SwaggerInvocation {
     return requestEx;
   }
 
+  public InvocationStageTrace getInvocationStageTrace() {
+    return invocationStageTrace;
+  }
+
   public String getTraceId() {
     return getContext(Const.TRACE_ID_NAME);
   }
@@ -92,12 +95,14 @@ public class Invocation extends SwaggerInvocation {
     return getContext(traceIdName);
   }
 
+  @Deprecated
   public long getStartTime() {
-    return startTime;
+    return invocationStageTrace.getStart();
   }
 
+  @Deprecated
   public long getStartExecutionTime() {
-    return startExecutionTime;
+    return invocationStageTrace.getStartExecution();
   }
 
   public Invocation(ReferenceConfig referenceConfig, OperationMeta operationMeta, Object[] swaggerArguments) {
@@ -247,7 +252,7 @@ public class Invocation extends SwaggerInvocation {
   }
 
   public void onStart() {
-    this.startTime = System.nanoTime();
+    invocationStageTrace.start(System.nanoTime());
     initTraceId();
     EventManager.post(new InvocationStartEvent(this));
   }
@@ -257,11 +262,12 @@ public class Invocation extends SwaggerInvocation {
     onStart();
   }
 
-  public void onStartExecute() {
-    this.startExecutionTime = System.nanoTime();
+  public void onExecuteStart() {
+    invocationStageTrace.startExecution();
   }
 
   public void onFinish(Response response) {
+    invocationStageTrace.finish();
     EventManager.post(new InvocationFinishEvent(this, response));
   }
 
