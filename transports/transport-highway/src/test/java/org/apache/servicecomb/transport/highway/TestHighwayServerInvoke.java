@@ -165,5 +165,7 @@ public class TestHighwayServerInvoke {
     Assert.assertSame(highwayServerInvoke.invocation, finishHolder.value.getInvocation());
     Assert.assertTrue(highwayServerInvoke.invocation.getInvocationStageTrace().getStartExecution() != 0);
     Assert.assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getStart());
+    Assert.assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getStartHandlersRequest());
+    Assert.assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getFinishHandlersResponse());
   }
 }

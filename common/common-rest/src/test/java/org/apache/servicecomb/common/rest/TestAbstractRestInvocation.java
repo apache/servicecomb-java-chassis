@@ -123,10 +123,19 @@ public class TestAbstractRestInvocation {
 
   AbstractRestInvocation restInvocation = new AbstractRestInvocationForTest();
 
+  static long nanoTime = 123;
+
   @BeforeClass
   public static void classSetup() {
     EventManager.eventBus = new EventBus();
     SCBEngine.getInstance().setStatus(SCBStatus.UP);
+
+    new MockUp<System>() {
+      @Mock
+      long nanoTime() {
+        return nanoTime;
+      }
+    };
   }
 
   @AfterClass
@@ -806,13 +815,6 @@ public class TestAbstractRestInvocation {
 
   @Test
   public void scheduleInvocationNormal(@Mocked OperationMeta operationMeta) {
-    long time = 123;
-    new MockUp<System>() {
-      @Mock
-      long nanoTime() {
-        return time;
-      }
-    };
     Holder<InvocationStartEvent> eventHolder = new Holder<>();
     Object subscriber = new Object() {
       @Subscribe
@@ -850,7 +852,7 @@ public class TestAbstractRestInvocation {
     EventManager.unregister(subscriber);
 
     Assert.assertTrue(result.value);
-    Assert.assertEquals(time, invocation.getInvocationStageTrace().getStart());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStart());
     Assert.assertSame(invocation, eventHolder.value.getInvocation());
     Assert.assertEquals("tid", invocation.getTraceId());
   }
@@ -899,7 +901,7 @@ public class TestAbstractRestInvocation {
     Holder<Response> result = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
-      protected void sendResponseQuietly(Response response) {
+      protected void sendResponse(Response response) {
         result.value = response;
       }
     };
@@ -908,5 +910,7 @@ public class TestAbstractRestInvocation {
     restInvocation.doInvoke();
 
     Assert.assertSame(response, result.value);
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartHandlersRequest());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishHandlersResponse());
   }
 }

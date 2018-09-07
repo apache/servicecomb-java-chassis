@@ -197,6 +197,7 @@ public abstract class AbstractRestInvocation {
   }
 
   protected void doInvoke() throws Throwable {
+    invocation.getInvocationStageTrace().startHandlersRequest();
     invocation.next(resp -> {
       sendResponseQuietly(resp);
     });
@@ -212,6 +213,9 @@ public abstract class AbstractRestInvocation {
   }
 
   protected void sendResponseQuietly(Response response) {
+    if (invocation != null) {
+      invocation.getInvocationStageTrace().finishHandlersResponse();
+    }
     try {
       sendResponse(response);
     } catch (Throwable e) {
