@@ -46,4 +46,22 @@ public class DefaultValueJaxrsSchema {
   public int intForm(@FormParam("input") @DefaultValue("13") int input) {
     return input;
   }
+
+  @Path("stringQuery")
+  @GET
+  public String stringQuery(@QueryParam("input") @DefaultValue("string") String input) {
+    return input;
+  }
+
+  @Path("stringHeader")
+  @GET
+  public String stringHeader(@HeaderParam(value = "input") @DefaultValue("string") String input) {
+    return input;
+  }
+
+  @Path("stringForm")
+  @POST
+  public String stringForm(@FormParam("input") @DefaultValue("string") String input) {
+    return input;
+  }
 }

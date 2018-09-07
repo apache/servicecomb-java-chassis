@@ -68,7 +68,50 @@ public class DataTypeJaxrsSchema {
 
   @Path("add")
   @GET
-  public int add(@QueryParam("a") int a, @QueryParam("b") int b) {
-    return a + b;
+  public int add(@QueryParam("num1") int num1, @QueryParam("num2") int num2) {
+    return num1 + num2;
+  }
+
+  //strinnum1
+  @Path("stringPath/{input}")
+  @GET
+  public String stringPath(@PathParam("input") String input) {
+    return input;
+  }
+
+  @Path("stringQuery")
+  @GET
+  public String stringQuery(@QueryParam("input") String input) {
+    return input;
+  }
+
+  @Path("stringHeader")
+  @GET
+  public String stringHeader(@HeaderParam("input") String input) {
+    return input;
+  }
+
+  @Path("stringCookie")
+  @GET
+  public String stringCookie(@CookieParam("input") String input) {
+    return input;
+  }
+
+  @Path("stringForm")
+  @POST
+  public String stringForm(@FormParam("input") String input) {
+    return input;
+  }
+
+  @Path("stringBody")
+  @POST
+  public String stringBody(String input) {
+    return input;
+  }
+
+  @Path("stringConcat")
+  @GET
+  public String stringConcat(@QueryParam("str1") String str1, @QueryParam("str2") String str2) {
+    return str1 + str2;
   }
 }
