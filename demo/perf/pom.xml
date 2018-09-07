@@ -52,7 +52,7 @@
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-redis-client</artifactId>
-      <version>3.5.0</version>
+      <version>${vertx.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>

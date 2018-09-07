@@ -64,10 +64,19 @@ public class TestHighwayServerInvoke {
 
   private SocketAddress socketAddress;
 
+  static long nanoTime = 1;
+
   @BeforeClass
   public static void classSetup() {
     EventManager.eventBus = new EventBus();
     SCBEngine.getInstance().setStatus(SCBStatus.UP);
+
+    new MockUp<System>() {
+      @Mock
+      long nanoTime() {
+        return nanoTime;
+      }
+    };
   }
 
   @AfterClass
@@ -155,5 +164,6 @@ public class TestHighwayServerInvoke {
     Assert.assertSame(highwayServerInvoke.invocation, startHolder.value.getInvocation());
     Assert.assertSame(highwayServerInvoke.invocation, finishHolder.value.getInvocation());
     Assert.assertTrue(highwayServerInvoke.invocation.getInvocationStageTrace().getStartExecution() != 0);
+    Assert.assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getStart());
   }
 }

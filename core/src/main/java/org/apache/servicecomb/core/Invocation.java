@@ -254,15 +254,15 @@ public class Invocation extends SwaggerInvocation {
     addContext(traceIdGenerator.getTraceIdKeyName(), traceIdGenerator.generate());
   }
 
-  public void onStart() {
-    invocationStageTrace.start(System.nanoTime());
+  public void onStart(long start) {
+    invocationStageTrace.start(start);
     initTraceId();
     EventManager.post(new InvocationStartEvent(this));
   }
 
-  public void onStart(HttpServletRequestEx requestEx) {
+  public void onStart(HttpServletRequestEx requestEx, long start) {
     this.requestEx = requestEx;
-    onStart();
+    onStart(start);
   }
 
   public void onExecuteStart() {

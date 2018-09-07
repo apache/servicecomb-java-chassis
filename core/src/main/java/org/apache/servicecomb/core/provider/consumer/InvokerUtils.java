@@ -65,7 +65,7 @@ public final class InvokerUtils {
    */
   public static Response innerSyncInvoke(Invocation invocation) {
     try {
-      invocation.onStart();
+      invocation.onStart(null, System.nanoTime());
       SyncResponseExecutor respExecutor = new SyncResponseExecutor();
       invocation.setResponseExecutor(respExecutor);
 
@@ -92,7 +92,7 @@ public final class InvokerUtils {
    */
   public static void reactiveInvoke(Invocation invocation, AsyncResponse asyncResp) {
     try {
-      invocation.onStart();
+      invocation.onStart(null, System.nanoTime());
       invocation.setSync(false);
 
       ReactiveResponseExecutor respExecutor = new ReactiveResponseExecutor();
