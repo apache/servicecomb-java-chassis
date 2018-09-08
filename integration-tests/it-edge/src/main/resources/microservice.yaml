@@ -17,8 +17,19 @@
 
 service_description:
   name: it-edge
+  environment: development
 
 servicecomb:
+  service:
+    registry:
+      instance:
+        healthCheck:
+          interval: 5
+          times: 3
+  rest:
+    parameter:
+      allowQuotedNumber: true
+
   handler:
     chain:
       Consumer:

@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.json.JsonObject;
 
@@ -44,6 +45,9 @@ public class RestObjectMapper extends AbstractRestObjectMapper {
   private static final long serialVersionUID = -8158869347066287575L;
 
   private static final JavaType STRING_JAVA_TYPE = TypeFactory.defaultInstance().constructType(String.class);
+
+  private boolean allowQuotedNumber = DynamicPropertyFactory.getInstance()
+      .getBooleanProperty("servicecomb.rest.parameter.allowQuotedNumber", false).get();
 
   @SuppressWarnings("deprecation")
   public RestObjectMapper() {
@@ -81,6 +85,23 @@ public class RestObjectMapper extends AbstractRestObjectMapper {
 
   @Override
   public <T> T convertValue(Object fromValue, JavaType toValueType) throws IllegalArgumentException {
+    if (allowQuotedNumber && needProcessNumber(fromValue, toValueType)) {
+      String strValue = (String) fromValue;
+      fromValue = strValue.substring(1, fromValue.toString().length() - 1);
+    }
     return super.convertValue(fromValue, toValueType);
+  }
+
+  private boolean needProcessNumber(Object fromValue, JavaType toValueType) {
+    if (fromValue instanceof String) {
+      String strValue = (String) fromValue;
+      if (toValueType.getRawClass() == int.class || toValueType.getRawClass() == long.class
+          || toValueType.getRawClass() == Integer.class || toValueType.getRawClass() == Long.class) {
+        if (strValue.length() > 2 && strValue.startsWith("\"") && strValue.endsWith("\"")) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }

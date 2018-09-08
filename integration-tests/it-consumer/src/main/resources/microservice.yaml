@@ -16,4 +16,17 @@
 ## ---------------------------------------------------------------------------
 
 service_description:
+  environment: development
   name: it-consumer
+
+servicecomb:
+  service:
+    registry:
+      instance:
+        healthCheck:
+          interval: 5
+          times: 3
+
+  rest:
+    parameter:
+      allowQuotedNumber: true
