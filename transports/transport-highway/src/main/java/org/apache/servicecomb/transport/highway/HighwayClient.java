@@ -77,6 +77,7 @@ public class HighwayClient {
   }
 
   public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    invocation.getInvocationStageTrace().startClientFiltersRequest();
     HighwayClientConnectionPool tcpClientPool = clientMgr.findClientPool(invocation.isSync());
 
     OperationMeta operationMeta = invocation.getOperationMeta();
@@ -99,8 +100,10 @@ public class HighwayClient {
     tcpClient.send(clientPackage, ar -> {
       // 此时是在网络线程中，转换线程
       invocation.getResponseExecutor().execute(() -> {
+        invocation.getInvocationStageTrace().startClientFiltersResponse();
         if (ar.failed()) {
           // 只会是本地异常
+          invocation.getInvocationStageTrace().finishClientFiltersResponse();
           asyncResp.consumerFail(ar.cause());
           return;
         }
@@ -112,8 +115,10 @@ public class HighwayClient {
                   operationProtobuf,
                   ar.result(),
                   tcpClient.getProtobufFeature());
+          invocation.getInvocationStageTrace().finishClientFiltersResponse();
           asyncResp.complete(response);
         } catch (Throwable e) {
+          invocation.getInvocationStageTrace().finishClientFiltersResponse();
           asyncResp.consumerFail(e);
         }
       });

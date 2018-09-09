@@ -29,6 +29,7 @@ import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.ReactiveExecutor;
+import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
@@ -68,11 +69,15 @@ public class TestHighwayClient {
 
   Invocation invocation = Mockito.mock(Invocation.class);
 
+  InvocationStageTrace invocationStageTrace = new InvocationStageTrace(invocation);
+
   OperationProtobuf operationProtobuf = Mockito.mock(OperationProtobuf.class);
 
   OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
 
   Endpoint endpoint = Mockito.mock(Endpoint.class);
+
+  static long nanoTime = 123;
 
   @BeforeClass
   public static void beforeCls() {
@@ -80,6 +85,13 @@ public class TestHighwayClient {
     AbstractConfiguration configuration =
         (AbstractConfiguration) DynamicPropertyFactory.getBackingConfigurationSource();
     configuration.addProperty(REQUEST_TIMEOUT_KEY, 2000);
+
+    new MockUp<System>() {
+      @Mock
+      long nanoTime() {
+        return nanoTime;
+      }
+    };
   }
 
   @Test
@@ -160,6 +172,7 @@ public class TestHighwayClient {
     Mockito.when(invocation.getEndpoint()).thenReturn(endpoint);
     Mockito.when(invocation.getEndpoint().getEndpoint()).thenReturn("endpoint");
     Mockito.when(invocation.getResponseExecutor()).thenReturn(new ReactiveExecutor());
+    Mockito.when(invocation.getInvocationStageTrace()).thenReturn(invocationStageTrace);
 
     Holder<Object> result = new Holder<>();
     client.send(invocation, ar -> {
@@ -182,6 +195,9 @@ public class TestHighwayClient {
     Object result = doTestSend(vertx, pool, tcpClient, Response.ok("ok"));
 
     Assert.assertEquals("ok", result);
+    Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersRequest());
+    Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersResponse());
+    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishClientFiltersResponse());
   }
 
   @Test
@@ -197,6 +213,9 @@ public class TestHighwayClient {
     Object result = doTestSend(vertx, pool, tcpClient, new InvocationException(Status.BAD_REQUEST, (Object) "failed"));
 
     Assert.assertEquals("failed", ((InvocationException) result).getErrorData());
+    Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersRequest());
+    Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersResponse());
+    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishClientFiltersResponse());
   }
 
   @Test
@@ -215,6 +234,9 @@ public class TestHighwayClient {
         null);
 
     Assert.assertEquals("failed", ((InvocationException) result).getErrorData());
+    Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersRequest());
+    Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersResponse());
+    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishClientFiltersResponse());
   }
 
   @Test

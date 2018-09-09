@@ -40,6 +40,7 @@ import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.ReactiveExecutor;
+import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
@@ -52,6 +53,7 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -87,6 +89,8 @@ public class TestRestClientInvocation {
 
   Invocation invocation = mock(Invocation.class);
 
+  InvocationStageTrace invocationStageTrace = new InvocationStageTrace(invocation);
+
   Response response;
 
   AsyncResponse asyncResp = resp -> {
@@ -109,6 +113,18 @@ public class TestRestClientInvocation {
 
   Map<String, Object> handlerContext = new HashMap<>();
 
+  static long nanoTime = 123;
+
+  @BeforeClass
+  public static void classSetup() {
+    new MockUp<System>() {
+      @Mock
+      long nanoTime() {
+        return nanoTime;
+      }
+    };
+  }
+
   @SuppressWarnings("unchecked")
   @Before
   public void setup() {
@@ -123,6 +139,7 @@ public class TestRestClientInvocation {
     when(invocation.getEndpoint()).thenReturn(endpoint);
     when(endpoint.getAddress()).thenReturn(address);
     when(invocation.getHandlerContext()).then(answer -> handlerContext);
+    when(invocation.getInvocationStageTrace()).thenReturn(invocationStageTrace);
     when(httpClient.request((HttpMethod) Mockito.any(), (RequestOptions) Mockito.any(), Mockito.any()))
         .thenReturn(request);
     doAnswer(a -> {
@@ -148,6 +165,7 @@ public class TestRestClientInvocation {
     restClientInvocation.invoke(invocation, asyncResp);
 
     Assert.assertSame(resp, response);
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
   }
 
   @Test
@@ -156,6 +174,8 @@ public class TestRestClientInvocation {
     restClientInvocation.invoke(invocation, asyncResp);
 
     Assert.assertThat(((InvocationException) response.getResult()).getCause(), Matchers.instanceOf(Error.class));
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishClientFiltersResponse());
   }
 
   @Test
@@ -169,6 +189,8 @@ public class TestRestClientInvocation {
     restClientInvocation.invoke(invocation, asyncResp);
 
     Assert.assertThat(((InvocationException) response.getResult()).getCause(), Matchers.sameInstance(t));
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishClientFiltersResponse());
   }
 
   @Test
@@ -281,6 +303,8 @@ public class TestRestClientInvocation {
     restClientInvocation.processResponseBody(null);
 
     Assert.assertSame(resp, response);
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersResponse());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishClientFiltersResponse());
   }
 
   @SuppressWarnings("unchecked")
@@ -300,6 +324,8 @@ public class TestRestClientInvocation {
     restClientInvocation.processResponseBody(null);
 
     Assert.assertThat(((InvocationException) response.getResult()).getCause(), Matchers.instanceOf(Error.class));
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersResponse());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishClientFiltersResponse());
   }
 
   @Test
