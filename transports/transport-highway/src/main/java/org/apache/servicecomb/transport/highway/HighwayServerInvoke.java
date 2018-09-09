@@ -182,6 +182,7 @@ public class HighwayServerInvoke {
           operationProtobuf.getOperationMeta(),
           null);
       invocation.onStart(null, start);
+      invocation.getInvocationStageTrace().startSchedule();
       operationMeta.getExecutor().execute(() -> runInExecutor());
     } catch (IllegalStateException e) {
       sendResponse(header.getContext(), Response.providerFailResp(e));
