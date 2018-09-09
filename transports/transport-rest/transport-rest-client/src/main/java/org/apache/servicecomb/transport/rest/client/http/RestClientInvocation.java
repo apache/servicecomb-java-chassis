@@ -27,6 +27,7 @@ import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
 import org.apache.servicecomb.foundation.common.net.IpPort;
@@ -89,13 +90,14 @@ public class RestClientInvocation {
 
     Buffer requestBodyBuffer = restClientRequest.getBodyBuffer();
     HttpServletRequestEx requestEx = new VertxClientRequestToHttpServletRequest(clientRequest, requestBodyBuffer);
+    invocation.getInvocationStageTrace().startClientFiltersRequest();
     for (HttpClientFilter filter : httpClientFilters) {
       filter.beforeSendRequest(invocation, requestEx);
     }
 
     clientRequest.exceptionHandler(e -> {
       LOGGER.error("Failed to send request to {}.", ipPort.getSocketAddress(), e);
-      asyncResp.fail(invocation.getInvocationType(), e);
+      fail(e);
     });
     clientRequest.connectionHandler(connection -> {
       LOGGER.debug("http connection connected, local:{}, remote:{}.",
@@ -125,7 +127,7 @@ public class RestClientInvocation {
         restClientRequest.end();
       } catch (Throwable e) {
         LOGGER.error("send http request failed,", e);
-        asyncResp.fail(invocation.getInvocationType(), e);
+        fail(e);
       }
     });
   }
@@ -167,7 +169,7 @@ public class RestClientInvocation {
 
     httpClientResponse.exceptionHandler(e -> {
       LOGGER.error("Failed to receive response from {}.", httpClientResponse.netSocket().remoteAddress(), e);
-      asyncResp.fail(invocation.getInvocationType(), e);
+      fail(e);
     });
 
     clientResponse.bodyHandler(responseBuf -> {
@@ -178,19 +180,36 @@ public class RestClientInvocation {
   protected void processResponseBody(Buffer responseBuf) {
     invocation.getResponseExecutor().execute(() -> {
       try {
+        invocation.getInvocationStageTrace().startClientFiltersResponse();
         HttpServletResponseEx responseEx =
             new VertxClientResponseToHttpServletResponse(clientResponse, responseBuf);
         for (HttpClientFilter filter : httpClientFilters) {
           Response response = filter.afterReceiveResponse(invocation, responseEx);
           if (response != null) {
-            asyncResp.complete(response);
+            complete(response);
             return;
           }
         }
       } catch (Throwable e) {
-        asyncResp.fail(invocation.getInvocationType(), e);
+        fail(e);
       }
     });
+  }
+
+  protected void complete(Response response) {
+    invocation.getInvocationStageTrace().finishClientFiltersResponse();
+    asyncResp.complete(response);
+  }
+
+  protected void fail(Throwable e) {
+    if (invocation.isFinished()) {
+      return;
+    }
+
+    InvocationStageTrace stageTrace = invocation.getInvocationStageTrace();
+
+    stageTrace.finishClientFiltersResponse();
+    asyncResp.fail(invocation.getInvocationType(), e);
   }
 
   protected void setCseContext() {

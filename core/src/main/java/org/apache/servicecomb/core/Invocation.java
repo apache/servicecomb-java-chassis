@@ -75,6 +75,8 @@ public class Invocation extends SwaggerInvocation {
 
   private HttpServletRequestEx requestEx;
 
+  private boolean finished;
+
   // not extend InvocationType
   // because isEdge() only affect to apm/metrics output, no need to change so many logic
   private boolean edge;
@@ -267,8 +269,18 @@ public class Invocation extends SwaggerInvocation {
   }
 
   public void onFinish(Response response) {
+    if (finished) {
+      // avoid to post repeated event
+      return;
+    }
+
     invocationStageTrace.finish();
     EventManager.post(new InvocationFinishEvent(this, response));
+    finished = true;
+  }
+
+  public boolean isFinished() {
+    return finished;
   }
 
   public boolean isSync() {

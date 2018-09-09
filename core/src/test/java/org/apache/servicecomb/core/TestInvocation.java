@@ -110,7 +110,7 @@ public class TestInvocation {
   }
 
   @Test
-  public void onFinish(@Mocked Response response) {
+  public void onFinish() {
     mockNonaTime();
 
     Holder<InvocationFinishEvent> result = new Holder<>();
@@ -123,11 +123,19 @@ public class TestInvocation {
     EventManager.register(subscriber);
 
     Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
+    Assert.assertFalse(invocation.isFinished());
+    Response response = Response.succResp(null);
     invocation.onFinish(response);
 
     Assert.assertEquals(currentNanoTime, result.value.getNanoCurrent());
     Assert.assertSame(invocation, result.value.getInvocation());
     Assert.assertSame(response, result.value.getResponse());
+    Assert.assertTrue(invocation.isFinished());
+
+    // should not post event again
+    InvocationFinishEvent oldEvent = result.value;
+    invocation.onFinish(null);
+    Assert.assertSame(oldEvent, result.value);
 
     EventManager.unregister(subscriber);
   }
