@@ -187,6 +187,7 @@ public abstract class AbstractRestInvocation {
     this.setContext();
     invocation.getHandlerContext().put(RestConst.REST_REQUEST, requestEx);
 
+    invocation.getInvocationStageTrace().startServerFiltersRequest();
     for (HttpServerFilter filter : httpServerFilters) {
       Response response = filter.afterReceiveRequest(invocation, requestEx);
       if (response != null) {
@@ -249,6 +250,10 @@ public abstract class AbstractRestInvocation {
         new HttpServerFilterBeforeSendResponseExecutor(httpServerFilters, invocation, responseEx);
     CompletableFuture<Void> future = exec.run();
     future.whenComplete((v, e) -> {
+      if (invocation != null) {
+        invocation.getInvocationStageTrace().finishServerFiltersResponse();
+      }
+
       onExecuteHttpServerFiltersFinish(response, e);
     });
   }

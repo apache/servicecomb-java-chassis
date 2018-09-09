@@ -368,6 +368,8 @@ public class TestAbstractRestInvocation {
     restInvocation.httpServerFilters = Arrays.asList(filter);
 
     restInvocation.invoke();
+
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartServerFiltersRequest());
   }
 
   @Test
@@ -470,6 +472,24 @@ public class TestAbstractRestInvocation {
     restInvocation.sendResponseQuietly(response);
 
     // just log, check nothing, and should not throw NPE
+  }
+
+  @Test
+  public void executeHttpServerFiltersNullInvocation(@Mocked Response response) {
+    Holder<Boolean> flag = new Holder<>();
+    restInvocation = new AbstractRestInvocationForTest() {
+      @Override
+      protected void onExecuteHttpServerFiltersFinish(Response response, Throwable e) {
+        super.onExecuteHttpServerFiltersFinish(response, e);
+        flag.value = true;
+      }
+    };
+    initRestInvocation();
+    restInvocation.invocation = null;
+
+    restInvocation.executeHttpServerFilters(response);
+
+    Assert.assertTrue(flag.value);
   }
 
   @Test
@@ -642,6 +662,7 @@ public class TestAbstractRestInvocation {
 
     restInvocation.sendResponse(response);
     Assert.assertEquals("\"ok\"", buffer.toString());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishServerFiltersResponse());
   }
 
   @Test
