@@ -168,5 +168,7 @@ public class TestHighwayServerInvoke {
     Assert.assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getStartHandlersRequest());
     Assert.assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getFinishHandlersResponse());
     Assert.assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getStartSchedule());
+    Assert.assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getStartHandlersRequest());
+    Assert.assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getFinishHandlersResponse());
   }
 }

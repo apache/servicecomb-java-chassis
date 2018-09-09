@@ -133,6 +133,7 @@ public class HighwayServerInvoke {
   private void doRunInExecutor() throws Exception {
     invocation.onExecuteStart();
 
+    invocation.getInvocationStageTrace().startServerFiltersRequest();
     HighwayCodec.decodeRequest(invocation, header, operationProtobuf, bodyBuffer, protobufFeature);
     invocation.getHandlerContext().put(Const.REMOTE_ADDRESS, this.connection.getNetSocket().remoteAddress());
 
@@ -159,6 +160,7 @@ public class HighwayServerInvoke {
 
     try {
       Buffer respBuffer = HighwayCodec.encodeResponse(msgId, header, bodySchema, body, protobufFeature);
+      invocation.getInvocationStageTrace().finishServerFiltersResponse();
       connection.write(respBuffer.getByteBuf());
     } catch (Exception e) {
       // 没招了，直接打日志
