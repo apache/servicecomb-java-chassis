@@ -853,6 +853,7 @@ public class TestAbstractRestInvocation {
 
     Assert.assertTrue(result.value);
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStart());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartSchedule());
     Assert.assertSame(invocation, eventHolder.value.getInvocation());
     Assert.assertEquals("tid", invocation.getTraceId());
   }

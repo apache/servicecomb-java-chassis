@@ -124,6 +124,7 @@ public abstract class AbstractRestInvocation {
     }
 
     invocation.onStart(requestEx, start);
+    invocation.getInvocationStageTrace().startSchedule();
     OperationMeta operationMeta = restOperationMeta.getOperationMeta();
 
     operationMeta.getExecutor().execute(() -> {
