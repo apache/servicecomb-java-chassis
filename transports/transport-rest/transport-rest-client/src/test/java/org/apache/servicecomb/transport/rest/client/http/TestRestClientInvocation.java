@@ -46,6 +46,8 @@ import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
+import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMetric;
+import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultHttpSocketMetric;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -63,10 +65,13 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
+import io.vertx.core.http.HttpConnection;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.RequestOptions;
+import io.vertx.core.http.impl.VertxImplTestUtils;
 import io.vertx.core.net.NetSocket;
 import io.vertx.core.net.SocketAddress;
+import io.vertx.core.net.impl.ConnectionBase;
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
@@ -142,6 +147,16 @@ public class TestRestClientInvocation {
     when(invocation.getInvocationStageTrace()).thenReturn(invocationStageTrace);
     when(httpClient.request((HttpMethod) Mockito.any(), (RequestOptions) Mockito.any(), Mockito.any()))
         .thenReturn(request);
+
+    ConnectionBase connectionBase = VertxImplTestUtils.mockClientConnection();
+    when(connectionBase.metric()).thenReturn(Mockito.mock(DefaultHttpSocketMetric.class));
+    when(request.connection()).thenReturn((HttpConnection) connectionBase);
+
+    DefaultHttpSocketMetric httpSocketMetric = new DefaultHttpSocketMetric(Mockito.mock(DefaultEndpointMetric.class));
+    httpSocketMetric.requestBegin();
+    httpSocketMetric.requestEnd();
+    when(connectionBase.metric()).thenReturn(httpSocketMetric);
+
     doAnswer(a -> {
       exceptionHandler = (Handler<Throwable>) a.getArguments()[0];
       return request;
@@ -166,6 +181,7 @@ public class TestRestClientInvocation {
 
     Assert.assertSame(resp, response);
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartSend());
   }
 
   @Test
@@ -305,6 +321,9 @@ public class TestRestClientInvocation {
     Assert.assertSame(resp, response);
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersResponse());
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishClientFiltersResponse());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishReceiveResponse());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishGetConnection());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishWriteToBuffer());
   }
 
   @SuppressWarnings("unchecked")
@@ -326,6 +345,9 @@ public class TestRestClientInvocation {
     Assert.assertThat(((InvocationException) response.getResult()).getCause(), Matchers.instanceOf(Error.class));
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersResponse());
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishClientFiltersResponse());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishReceiveResponse());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishGetConnection());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishWriteToBuffer());
   }
 
   @Test

@@ -78,6 +78,8 @@ public class HighwayClient {
 
   public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
     invocation.getInvocationStageTrace().startClientFiltersRequest();
+    invocation.getInvocationStageTrace().startSend();
+
     HighwayClientConnectionPool tcpClientPool = clientMgr.findClientPool(invocation.isSync());
 
     OperationMeta operationMeta = invocation.getOperationMeta();
@@ -85,6 +87,8 @@ public class HighwayClient {
 
     HighwayClientConnection tcpClient =
         tcpClientPool.findOrCreateClient(invocation.getEndpoint().getEndpoint());
+
+    invocation.getInvocationStageTrace().finishGetConnection(System.nanoTime());
 
     //set the timeout based on priority. the priority is follows.
     //high priotiry: 1) operational level 2)schema level 3) service level 4) global level : low priotiry.
@@ -98,6 +102,8 @@ public class HighwayClient {
         invocation.getMicroserviceQualifiedName(),
         invocation.getEndpoint().getEndpoint());
     tcpClient.send(clientPackage, ar -> {
+      invocation.getInvocationStageTrace().finishWriteToBuffer(clientPackage.getFinishWriteToBuffer());
+      invocation.getInvocationStageTrace().finishReceiveResponse();
       // 此时是在网络线程中，转换线程
       invocation.getResponseExecutor().execute(() -> {
         invocation.getInvocationStageTrace().startClientFiltersResponse();
