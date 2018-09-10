@@ -76,6 +76,8 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
 
   private TestContentType testContentType = new TestContentType();
 
+  private TestBizkeeper testBizkeeper = new TestBizkeeper();
+
   @Override
   protected void testOnlyRest(RestTemplate template, String cseUrlPrefix) {
     testDownload.runRest();
@@ -110,6 +112,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     testObject.runAllTransport();
     testGeneric.runAllTransport();
     testRestTemplate.runAllTest();
+    testBizkeeper.runAllTest();
 
     testResponseEntity("springmvc", template, cseUrlPrefix);
     testCodeFirstTestForm(template, cseUrlPrefix);
