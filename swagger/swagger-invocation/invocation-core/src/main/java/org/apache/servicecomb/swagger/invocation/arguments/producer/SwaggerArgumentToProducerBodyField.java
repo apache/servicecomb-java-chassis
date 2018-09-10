@@ -50,6 +50,8 @@ public class SwaggerArgumentToProducerBodyField implements ArgumentMapper {
         Object producerParam = info.getConverter().convert(fieldValue);
         producerArguments[entry.getKey()] = producerParam;
       }
+    } catch (IllegalArgumentException e) {
+      throw e;
     } catch (Throwable e) {
       throw new Error(e);
     }
