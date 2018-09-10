@@ -109,6 +109,20 @@ servicecomb:
     duplicate1: newer
 
 cse:
+  fallback:
+    Consumer:
+      springmvc:
+        codeFirstBizkeeperTest:
+          testTimeout:
+            enabled: false
+  isolation:
+    Consumer:
+      springmvc:
+        codeFirstBizkeeperTest:
+          testTimeout:
+            timeout:
+              enabled: true
+            timeoutInMilliseconds: 1000
   test:
     duplicate2: newer
 #########SSL options
