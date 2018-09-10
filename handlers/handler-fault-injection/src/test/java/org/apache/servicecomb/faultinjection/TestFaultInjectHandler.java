@@ -34,6 +34,7 @@ import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -95,6 +96,11 @@ public class TestFaultInjectHandler {
     operationMeta = null;
     transport = null;
     ArchaiusUtils.resetConfig();
+  }
+
+  @AfterClass
+  public static void classTeardown() {
+    VertxUtils.closeVertxByName("faultinjectionTest");
   }
 
   /**

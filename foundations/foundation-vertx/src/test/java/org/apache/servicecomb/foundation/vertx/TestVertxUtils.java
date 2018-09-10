@@ -48,7 +48,7 @@ public class TestVertxUtils {
     latch.await();
 
     Assert.assertEquals(name.value, "ut-vert.x-eventloop-thread-0");
-    vertx.close();
+    VertxUtils.closeVertxByName("ut");
   }
 
   @Test
