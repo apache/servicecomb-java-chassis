@@ -42,6 +42,12 @@ public class DataTypeJaxrsSchema {
     return input;
   }
 
+  @Path("integerQuery")
+  @GET
+  public Integer integerQuery(@QueryParam("input") Integer input) {
+    return input;
+  }
+
   @Path("intHeader")
   @GET
   public int intHeader(@HeaderParam("input") int input) {
@@ -70,5 +76,23 @@ public class DataTypeJaxrsSchema {
   @GET
   public int add(@QueryParam("a") int a, @QueryParam("b") int b) {
     return a + b;
+  }
+
+  @Path("longQuery")
+  @GET
+  public long longQuery(@QueryParam("input") long input) {
+    return input;
+  }
+
+  @Path("longWrapperQuery")
+  @GET
+  public Long longWrapperQuery(@QueryParam("input") Long input) {
+    return input;
+  }
+
+  @Path("stringQuery")
+  @GET
+  public String stringQuery(@QueryParam("input") String input) {
+    return input;
   }
 }

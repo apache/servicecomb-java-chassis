@@ -111,6 +111,30 @@ public class TestDataTypePrimitive {
   @Test
   public void intQuery_jaxrs_rt() {
     assertEquals(10, (int) consumersJaxrs.getSCBRestTemplate().getForObject("/intQuery?input=10", int.class));
+    assertEquals(10, (int) consumersJaxrs.getSCBRestTemplate().getForObject("/intQuery?input=\"10\"", int.class));
+    assertEquals(10, (int) consumersJaxrs.getEdgeRestTemplate().getForObject("/intQuery?input=\"10\"", int.class));
+    assertEquals(0, (int) consumersJaxrs.getEdgeRestTemplate().getForObject("/intQuery", int.class));
+  }
+
+  @Test
+  public void integerQuery_jaxrs_rt() {
+    assertEquals(10, (int) consumersJaxrs.getSCBRestTemplate().getForObject("/integerQuery?input=10", int.class));
+    assertEquals(10, (int) consumersJaxrs.getSCBRestTemplate().getForObject("/integerQuery?input=\"10\"", int.class));
+    assertEquals(10, (int) consumersJaxrs.getEdgeRestTemplate().getForObject("/integerQuery?input=\"10\"", int.class));
+  }
+
+  @Test
+  public void longQuery_jaxrs_rt() {
+    assertEquals(10, consumersJaxrs.getSCBRestTemplate().getForObject("/longQuery?input=10", long.class).intValue());
+    assertEquals(10, consumersJaxrs.getSCBRestTemplate().getForObject("/longQuery?input=\"10\"", long.class).intValue());
+    assertEquals(10, consumersJaxrs.getEdgeRestTemplate().getForObject("/longQuery?input=\"10\"", long.class).intValue());
+  }
+
+  @Test
+  public void longWrapperQuery_jaxrs_rt() {
+    assertEquals(10, consumersJaxrs.getSCBRestTemplate().getForObject("/longWrapperQuery?input=10", Long.class).intValue());
+    assertEquals(10, consumersJaxrs.getSCBRestTemplate().getForObject("/longWrapperQuery?input=\"10\"", Long.class).intValue());
+    assertEquals(10, consumersJaxrs.getEdgeRestTemplate().getForObject("/longWrapperQuery?input=\"10\"", Long.class).intValue());
   }
 
   @Test
@@ -194,6 +218,14 @@ public class TestDataTypePrimitive {
   @Test
   public void add_jaxrs_rt() {
     assertEquals(12, (int) consumersJaxrs.getSCBRestTemplate().getForObject("/add?a=10&b=2", int.class));
+  }
+
+  @Test
+  public void stringQuery_jaxrs_rt() {
+    assertEquals("abcdefg",
+        consumersJaxrs.getSCBRestTemplate().getForObject("/stringQuery?input=abcdefg", String.class));
+    assertEquals("\"abcdefg\"",
+        consumersJaxrs.getSCBRestTemplate().getForObject("/stringQuery?input=\"abcdefg\"", String.class));
   }
 
   @Test

@@ -21,10 +21,15 @@ APPLICATION_ID: integration-test
 service_description:
   name: $invalid-name-must-be-overridden
   version: 1.0.0
+  environment: development
 servicecomb:
   service:
     registry:
       address: http://127.0.0.1:30100
+      instance:
+        healthCheck:
+          interval: 5
+          times: 3
   request:
     # 10 minute
     timeout: 600000
@@ -36,6 +41,8 @@ servicecomb:
       thread-count: 8
       connection:
         maxPoolSize: 30
+    parameter:
+      allowQuotedNumber: true
   highway:
     address: 0.0.0.0:0
     server:
