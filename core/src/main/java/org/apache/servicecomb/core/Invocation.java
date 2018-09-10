@@ -25,6 +25,8 @@ import java.util.concurrent.Executor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.core.event.InvocationBusinessMethodFinishEvent;
+import org.apache.servicecomb.core.event.InvocationBusinessMethodStartEvent;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
@@ -266,6 +268,22 @@ public class Invocation extends SwaggerInvocation {
 
   public void onExecuteStart() {
     invocationStageTrace.startExecution();
+  }
+
+  @Override
+  public void onBusinessMethodStart() {
+    invocationStageTrace.startBusinessMethod();
+    EventManager.post(new InvocationBusinessMethodStartEvent(this));
+  }
+
+  @Override
+  public void onBusinessMethodFinish() {
+    EventManager.post(new InvocationBusinessMethodFinishEvent(this));
+  }
+
+  @Override
+  public void onBusinessFinish() {
+    invocationStageTrace.finishBusiness();
   }
 
   public void onFinish(Response response) {

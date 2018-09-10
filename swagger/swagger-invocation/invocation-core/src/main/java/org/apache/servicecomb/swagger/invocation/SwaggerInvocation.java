@@ -64,4 +64,13 @@ public class SwaggerInvocation extends InvocationContext {
   public String getInvocationQualifiedName() {
     return invocationType.name();
   }
+
+  public void onBusinessMethodStart() {
+  }
+
+  public void onBusinessMethodFinish() {
+  }
+
+  public void onBusinessFinish() {
+  }
 }
