@@ -33,6 +33,7 @@ import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -66,6 +67,11 @@ public class DelayFaultTest {
   @After
   public void after() {
     ArchaiusUtils.resetConfig();
+  }
+
+  @AfterClass
+  public static void classTeardown() {
+    VertxUtils.closeVertxByName("faultinjectionTest");
   }
 
   @Test

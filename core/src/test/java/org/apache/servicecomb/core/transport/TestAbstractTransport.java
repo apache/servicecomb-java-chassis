@@ -26,10 +26,12 @@ import java.util.Collections;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.net.IpPort;
+import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.registry.AbstractServiceRegistry;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,6 +81,11 @@ public class TestAbstractTransport {
   @After
   public void teardown() {
     RegistryUtils.setServiceRegistry(null);
+  }
+
+  @AfterClass
+  public static void classTeardown() {
+    VertxUtils.closeVertxByName("transport");
   }
 
   @Test
