@@ -30,14 +30,4 @@ public class TransportPojoSchema {
   public String checkTransport(HttpServletRequest request) {
     return request instanceof InvocationToHttpServletRequest ? Const.HIGHWAY : Const.RESTFUL;
   }
-
-  //string
-
-  public String stringBody(String input) {
-    return input;
-  }
-
-  public String stringConcat(String str1, String str2) {
-    return str1 + str2;
-  }
 }
