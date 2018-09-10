@@ -17,20 +17,8 @@
 
 service_description:
   name: it-producer
-  environment: development
 
 servicecomb:
-
-  service:
-    registry:
-      instance:
-        healthCheck:
-          interval: 5
-          times: 3
-
   rest:
     server:
       maxInitialLineLength: 5000
-
-    parameter:
-      allowQuotedNumber: true
