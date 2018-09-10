@@ -118,15 +118,15 @@ public final class ITJUnitUtils {
     }
   }
 
-  public static void runWithHighwayAndRest(Class<?> classes) {
+  public static void runWithHighwayAndRest(Class<?>... classes) {
     runWithTransports(Arrays.asList(Const.HIGHWAY, Const.RESTFUL), classes);
   }
 
-  public static void runWithRest(Class<?> classes) {
+  public static void runWithRest(Class<?>... classes) {
     runWithTransports(Arrays.asList(Const.RESTFUL), classes);
   }
 
-  public static void runWithTransports(List<String> transports, Class<?> classes) {
+  public static void runWithTransports(List<String> transports, Class<?>... classes) {
     for (String transport : transports) {
       ITJUnitUtils.pushTransport(transport);
 
