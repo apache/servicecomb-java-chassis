@@ -39,6 +39,7 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.foundation.vertx.http.VertxClientRequestToHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.VertxClientResponseToHttpServletResponse;
+import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultHttpSocketMetric;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -51,6 +52,7 @@ import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.RequestOptions;
+import io.vertx.core.net.impl.ConnectionBase;
 
 public class RestClientInvocation {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestClientInvocation.class);
@@ -115,7 +117,9 @@ public class RestClientInvocation {
             e);
       });
     });
+
     // 从业务线程转移到网络线程中去发送
+    invocation.getInvocationStageTrace().startSend();
     httpClientWithContext.runOnContext(httpClient -> {
       this.setCseContext();
       //set the timeout based on priority. the priority is follows.
@@ -177,7 +181,12 @@ public class RestClientInvocation {
     });
   }
 
+  /**
+   *
+   * @param responseBuf response body buffer, when download, responseBuf is null, because download data by ReadStreamPart
+   */
   protected void processResponseBody(Buffer responseBuf) {
+    invocation.getInvocationStageTrace().finishReceiveResponse();
     invocation.getResponseExecutor().execute(() -> {
       try {
         invocation.getInvocationStageTrace().startClientFiltersResponse();
@@ -197,6 +206,11 @@ public class RestClientInvocation {
   }
 
   protected void complete(Response response) {
+    DefaultHttpSocketMetric httpSocketMetric = (DefaultHttpSocketMetric) ((ConnectionBase) clientRequest.connection())
+        .metric();
+    invocation.getInvocationStageTrace().finishGetConnection(httpSocketMetric.getRequestBeginTime());
+    invocation.getInvocationStageTrace().finishWriteToBuffer(httpSocketMetric.getRequestEndTime());
+
     invocation.getInvocationStageTrace().finishClientFiltersResponse();
     asyncResp.complete(response);
   }
@@ -207,6 +221,10 @@ public class RestClientInvocation {
     }
 
     InvocationStageTrace stageTrace = invocation.getInvocationStageTrace();
+    DefaultHttpSocketMetric httpSocketMetric = (DefaultHttpSocketMetric) ((ConnectionBase) clientRequest.connection())
+        .metric();
+    stageTrace.finishGetConnection(httpSocketMetric.getRequestBeginTime());
+    stageTrace.finishWriteToBuffer(httpSocketMetric.getRequestEndTime());
 
     stageTrace.finishClientFiltersResponse();
     asyncResp.fail(invocation.getInvocationType(), e);

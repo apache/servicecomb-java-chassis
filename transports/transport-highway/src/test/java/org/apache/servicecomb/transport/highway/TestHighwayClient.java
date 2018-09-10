@@ -191,13 +191,23 @@ public class TestHighwayClient {
         callback.success(null);
       }
     };
-
+    new MockUp<HighwayClientPackage>() {
+      @Mock
+      public long getFinishWriteToBuffer() {
+        return nanoTime;
+      }
+    };
     Object result = doTestSend(vertx, pool, tcpClient, Response.ok("ok"));
 
     Assert.assertEquals("ok", result);
     Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersRequest());
     Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersResponse());
     Assert.assertEquals(nanoTime, invocationStageTrace.getFinishClientFiltersResponse());
+
+    Assert.assertEquals(nanoTime, invocationStageTrace.getStartSend());
+    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishGetConnection());
+    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishWriteToBuffer());
+    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishReceiveResponse());
   }
 
   @Test

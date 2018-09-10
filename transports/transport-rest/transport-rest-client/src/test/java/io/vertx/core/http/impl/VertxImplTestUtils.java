@@ -14,34 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.foundation.vertx.client.tcp;
+package io.vertx.core.http.impl;
 
-import java.util.concurrent.atomic.AtomicLong;
+import org.mockito.Mockito;
 
-import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
-
-public abstract class AbstractTcpClientPackage {
-  private static AtomicLong reqId = new AtomicLong();
-
-  public static long getAndIncRequestId() {
-    return reqId.getAndIncrement();
+public class VertxImplTestUtils {
+  public static ClientConnection mockClientConnection() {
+    return Mockito.mock(ClientConnection.class);
   }
-
-  private long finishWriteToBuffer;
-
-  protected long msgId = getAndIncRequestId();
-
-  public long getMsgId() {
-    return msgId;
-  }
-
-  public long getFinishWriteToBuffer() {
-    return finishWriteToBuffer;
-  }
-
-  public void finishWriteToBuffer() {
-    this.finishWriteToBuffer = System.nanoTime();
-  }
-
-  public abstract TcpOutputStream createStream();
 }
