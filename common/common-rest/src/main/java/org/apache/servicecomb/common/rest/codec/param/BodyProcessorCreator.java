@@ -38,7 +38,9 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
+import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.models.parameters.Parameter;
 import io.vertx.core.buffer.Buffer;
@@ -48,6 +50,11 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
   private static final Logger LOGGER = LoggerFactory.getLogger(BodyProcessorCreator.class);
 
   public static final String PARAMTYPE = "body";
+
+  private static final JavaType OBJECT_TYPE = SimpleType.constructUnsafe(Object.class);
+
+  private static boolean decodeAsObject = DynamicPropertyFactory.getInstance()
+      .getBooleanProperty("servicecomb.rest.parameter.decodeAsObject", false).get();
 
   public static class BodyProcessor implements ParamValueProcessor {
     protected JavaType targetType;
@@ -88,6 +95,10 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
       }
 
       try {
+        if (decodeAsObject) {
+          return RestObjectMapperFactory.getRestObjectMapper()
+              .readValue(inputStream, OBJECT_TYPE);
+        }
         return RestObjectMapperFactory.getRestObjectMapper()
             .readValue(inputStream, targetType);
       } catch (MismatchedInputException e) {

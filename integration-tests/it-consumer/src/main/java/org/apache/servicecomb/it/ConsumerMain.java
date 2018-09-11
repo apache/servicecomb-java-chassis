@@ -22,6 +22,7 @@ import org.apache.servicecomb.it.deploy.Deploys;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.it.testcase.TestChangeTransport;
 import org.apache.servicecomb.it.testcase.TestDataTypePrimitive;
+import org.apache.servicecomb.it.testcase.TestDefaultJsonValueJaxrsSchema;
 import org.apache.servicecomb.it.testcase.TestDefaultValue;
 import org.apache.servicecomb.it.testcase.TestIgnoreMethod;
 import org.apache.servicecomb.it.testcase.TestParamCodec;
@@ -44,6 +45,9 @@ public class ConsumerMain {
     BeanUtils.init();
     ITUtils.waitBootFinished();
 
+    // run 3 times to test transport choosing.
+    run();
+    run();
     run();
 
     SCBEngine.getInstance().destroy();
@@ -113,6 +117,7 @@ public class ConsumerMain {
 
     ITJUnitUtils.runWithHighwayAndRest(TestParamCodec.class);
     ITJUnitUtils.run(TestParamCodecEdge.class);
+    ITJUnitUtils.run(TestDefaultJsonValueJaxrsSchema.class);
 
     ITJUnitUtils.runWithRest(TestRestServerConfig.class);
 
