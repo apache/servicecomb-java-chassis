@@ -133,7 +133,7 @@ public class DownloadSchema implements BootListener {
   @ApiResponses({
       @ApiResponse(code = 200, response = File.class, message = ""),
   })
-  public Resource resource(String content) throws IOException {
+  public Resource resource(String content) {
     return new ByteArrayResource(content.getBytes(StandardCharsets.UTF_8)) {
       @Override
       public String getFilename() {
@@ -146,7 +146,7 @@ public class DownloadSchema implements BootListener {
   @ApiResponses({
       @ApiResponse(code = 200, response = File.class, message = ""),
   })
-  public ResponseEntity<Resource> entityResource(String content) throws IOException {
+  public ResponseEntity<Resource> entityResource(String content) {
     return ResponseEntity
         .ok()
         .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE)
@@ -158,7 +158,7 @@ public class DownloadSchema implements BootListener {
   @ApiResponses({
       @ApiResponse(code = 200, response = File.class, message = ""),
   })
-  public ResponseEntity<InputStream> entityInputStream(String content) throws IOException {
+  public ResponseEntity<InputStream> entityInputStream(String content) {
     return ResponseEntity
         .ok()
         .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE)
@@ -170,7 +170,7 @@ public class DownloadSchema implements BootListener {
   @ApiResponses({
       @ApiResponse(code = 200, response = File.class, message = ""),
   })
-  public ResponseEntity<byte[]> bytes(String content) throws IOException {
+  public ResponseEntity<byte[]> bytes(String content) {
     return ResponseEntity
         .ok()
         .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE)
@@ -186,10 +186,12 @@ public class DownloadSchema implements BootListener {
     URL url = new URL("http://localhost:9000/download/netInputStream?content="
         + URLEncoder.encode(content, StandardCharsets.UTF_8.name()));
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-    return ResponseEntity
+    ResponseEntity<InputStream> responseEntity = ResponseEntity
         .ok()
         .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE)
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=netInputStream.txt")
         .body(conn.getInputStream());
+    conn.disconnect();
+    return responseEntity;
   }
 }

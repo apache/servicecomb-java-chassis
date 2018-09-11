@@ -26,10 +26,11 @@ import org.apache.servicecomb.it.testcase.TestDefaultJsonValueJaxrsSchema;
 import org.apache.servicecomb.it.testcase.TestDefaultValue;
 import org.apache.servicecomb.it.testcase.TestIgnoreMethod;
 import org.apache.servicecomb.it.testcase.TestParamCodec;
+import org.apache.servicecomb.it.testcase.TestParamCodecEdge;
+import org.apache.servicecomb.it.testcase.TestRestServerConfig;
+import org.apache.servicecomb.it.testcase.TestRestServerConfigEdge;
 import org.apache.servicecomb.it.testcase.TestTrace;
 import org.apache.servicecomb.it.testcase.TestTraceEdge;
-import org.apache.servicecomb.it.testcase.base.TestParamCodecEdge;
-import org.apache.servicecomb.it.testcase.base.TestRestServerConfig;
 
 public class ConsumerMain {
   private static ResultPrinter resultPrinter = new ResultPrinter();
@@ -118,6 +119,7 @@ public class ConsumerMain {
     ITJUnitUtils.run(TestDefaultJsonValueJaxrsSchema.class);
 
     ITJUnitUtils.runWithRest(TestRestServerConfig.class);
+    ITJUnitUtils.run(TestRestServerConfigEdge.class);
 
     ITJUnitUtils.getParents().pop();
     deploys.getBaseProducer().stop();
