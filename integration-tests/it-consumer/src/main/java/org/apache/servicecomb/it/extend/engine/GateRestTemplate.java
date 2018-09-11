@@ -51,6 +51,17 @@ public class GateRestTemplate extends RestTemplate {
   }
 
   public GateRestTemplate(String gateName, String producerName, String schemaId) {
+    String urlPrefix = getUrlPrefix(gateName, producerName, schemaId);
+
+    setUriTemplateHandler(new ITUriTemplateHandler(urlPrefix));
+
+    setMessageConverters(Arrays.asList(
+        new MappingJackson2HttpMessageConverter(),
+        new StringHttpMessageConverter()
+    ));
+  }
+
+  public String getUrlPrefix(String gateName, String producerName, String schemaId) {
     MicroserviceVersionRule microserviceVersionRule = RegistryUtils.getServiceRegistry().getAppManager()
         .getOrCreateMicroserviceVersionRule(RegistryUtils.getAppId(), gateName,
             DefinitionConst.VERSION_RULE_ALL);
@@ -68,15 +79,8 @@ public class GateRestTemplate extends RestTemplate {
             DefinitionConst.VERSION_RULE_ALL);
     MicroserviceVersionMeta microserviceVersionMeta = microserviceVersionRule.getLatestMicroserviceVersion();
     SchemaMeta schemaMeta = microserviceVersionMeta.getMicroserviceMeta().ensureFindSchemaMeta(schemaId);
-    String urlPrefix = String
+    return String
         .format("%s://%s:%d/rest/%s%s", urlSchema, edgeAddress.getHostOrIp(), edgeAddress.getPort(), producerName,
             schemaMeta.getSwagger().getBasePath());
-
-    setUriTemplateHandler(new ITUriTemplateHandler(urlPrefix));
-
-    setMessageConverters(Arrays.asList(
-        new MappingJackson2HttpMessageConverter(),
-        new StringHttpMessageConverter()
-    ));
   }
 }

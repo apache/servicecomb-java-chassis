@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.it.testcase.base;
+package org.apache.servicecomb.it.testcase;
 
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
@@ -58,7 +58,7 @@ public class TestRestServerConfig {
   public void testMaxInitialLineLength5001() {
     String q = Strings.repeat("q", 5001 - INITIAL_LINE_PREFIX.length() - INITIAL_LINE_SUFFIX.length());
     try {
-      consumers.getIntf().testMaxInitialLineLength(q.toString());
+      consumers.getIntf().testMaxInitialLineLength(q);
       Assert.fail("an exception is expected!");
     } catch (InvocationException e) {
       Assert.assertEquals(414, e.getStatusCode());

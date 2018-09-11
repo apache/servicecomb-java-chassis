@@ -19,6 +19,7 @@ package org.apache.servicecomb.it.schema;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
 import org.apache.servicecomb.provider.rest.common.RestSchema;
@@ -30,5 +31,11 @@ public class RestServerConfigSchema {
   @GET
   public String testMaxInitialLineLength(@QueryParam("q") String q) {
     return "OK";
+  }
+
+  @Path("/testIntPathParam/{intPathParam}")
+  @GET
+  public String testIntPathParam(@PathParam("intPathParam") int intPathParam) {
+    return "OK, intPathParam=" + intPathParam;
   }
 }
