@@ -21,6 +21,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.xml.ws.Holder;
+
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Transport;
@@ -37,11 +39,14 @@ import org.mockito.Mockito;
 
 import io.vertx.core.Context;
 import io.vertx.core.Future;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Route;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.CorsHandler;
 import mockit.Deencapsulation;
 import mockit.Expectations;
@@ -244,5 +249,41 @@ public class TestRestServerVerticle {
 
     Deencapsulation.invoke(server, "mountCorsHandler", router);
     Assert.assertEquals(7, counter.get());
+  }
+
+  @Test
+  public void mountGlobalRestFailureHandler() {
+    Router mainRouter = Mockito.mock(Router.class);
+    Holder<Handler<RoutingContext>> handlerHolder = new Holder<>();
+    Holder<Route> routeHolder = new Holder<>();
+    Route route = new MockUp<Route>() {
+      @Mock
+      Route failureHandler(Handler<RoutingContext> failureHandler) {
+        handlerHolder.value = failureHandler;
+        return null;
+      }
+
+      @Mock
+      Route handler(io.vertx.core.Handler<io.vertx.ext.web.RoutingContext> requestHandler) {
+        return routeHolder.value;
+      }
+    }.getMockInstance();
+    routeHolder.value = route;
+
+    Mockito.when(mainRouter.route()).thenReturn(route);
+
+    RestServerVerticle restServerVerticle = new RestServerVerticle(new AtomicInteger());
+
+    Deencapsulation.invoke(restServerVerticle, "mountGlobalRestFailureHandler", mainRouter);
+    Assert.assertNotNull(handlerHolder.value);
+
+    RoutingContext routingContext = Mockito.mock(RoutingContext.class);
+    HttpServerResponse response = Mockito.mock(HttpServerResponse.class);
+    Mockito.when(response.setStatusCode(500)).thenReturn(response);
+    Mockito.when(response.putHeader("Content-Type", "text/plain")).thenReturn(response);
+    Mockito.when(routingContext.response()).thenReturn(response);
+
+    handlerHolder.value.handle(routingContext);
+    Mockito.verify(response).end("unknown error");
   }
 }

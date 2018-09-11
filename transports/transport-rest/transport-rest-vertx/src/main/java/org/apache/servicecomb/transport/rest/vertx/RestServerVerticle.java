@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.ws.rs.core.MediaType;
+
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Endpoint;
@@ -39,17 +41,20 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogConfigurat
 import org.apache.servicecomb.transport.rest.vertx.accesslog.impl.AccessLogHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.CorsHandler;
 
 public class RestServerVerticle extends AbstractVerticle {
@@ -89,6 +94,7 @@ public class RestServerVerticle extends AbstractVerticle {
         return;
       }
       Router mainRouter = Router.router(vertx);
+      mountGlobalRestFailureHandler(mainRouter);
       mountAccessLogHandler(mainRouter);
       mountCorsHandler(mainRouter);
       initDispatcher(mainRouter);
@@ -115,6 +121,23 @@ public class RestServerVerticle extends AbstractVerticle {
       LOGGER.error("", e);
       throw e;
     }
+  }
+
+  private void mountGlobalRestFailureHandler(Router mainRouter) {
+    GlobalRestFailureHandler globalRestFailureHandler =
+        SPIServiceUtils.getPriorityHighestService(GlobalRestFailureHandler.class);
+    Handler<RoutingContext> failureHandler = null == globalRestFailureHandler ?
+        ctx -> {
+          LOGGER.error("unexpected failure happened", ctx.failure());
+          ctx.response().setStatusCode(500).putHeader(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN)
+              .end("unknown error");
+        }
+        : globalRestFailureHandler;
+
+    mainRouter.route()
+        // this handler does nothing, just ensure the failure handler can catch exception
+        .handler(RoutingContext::next)
+        .failureHandler(failureHandler);
   }
 
   private void mountAccessLogHandler(Router mainRouter) {
