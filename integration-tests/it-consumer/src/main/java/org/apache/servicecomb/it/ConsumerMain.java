@@ -45,9 +45,6 @@ public class ConsumerMain {
     BeanUtils.init();
     ITUtils.waitBootFinished();
 
-    // run 3 times to test transport choosing.
-    run();
-    run();
     run();
 
     SCBEngine.getInstance().destroy();
@@ -104,23 +101,25 @@ public class ConsumerMain {
 
   private static void testStandalone() throws Throwable {
     deploys.getBaseProducer().ensureReady();
+
     ITJUnitUtils.addParent("standalone");
+    // run 3 times to test transport choose
+    for(int i=0; i < 3; i++) {
+      ITJUnitUtils.runWithHighwayAndRest(TestChangeTransport.class);
+      ITJUnitUtils.runWithHighwayAndRest(TestDataTypePrimitive.class);
 
-    ITJUnitUtils.runWithHighwayAndRest(TestChangeTransport.class);
-    ITJUnitUtils.runWithHighwayAndRest(TestDataTypePrimitive.class);
+      // only rest support default value feature
+      ITJUnitUtils.runWithRest(TestDefaultValue.class);
 
-    // only rest support default value feature
-    ITJUnitUtils.runWithRest(TestDefaultValue.class);
+      ITJUnitUtils.runWithHighwayAndRest(TestTrace.class);
+      ITJUnitUtils.run(TestTraceEdge.class);
 
-    ITJUnitUtils.runWithHighwayAndRest(TestTrace.class);
-    ITJUnitUtils.run(TestTraceEdge.class);
+      ITJUnitUtils.runWithHighwayAndRest(TestParamCodec.class);
+      ITJUnitUtils.run(TestParamCodecEdge.class);
+      ITJUnitUtils.run(TestDefaultJsonValueJaxrsSchema.class);
 
-    ITJUnitUtils.runWithHighwayAndRest(TestParamCodec.class);
-    ITJUnitUtils.run(TestParamCodecEdge.class);
-    ITJUnitUtils.run(TestDefaultJsonValueJaxrsSchema.class);
-
-    ITJUnitUtils.runWithRest(TestRestServerConfig.class);
-
+      ITJUnitUtils.runWithRest(TestRestServerConfig.class);
+    }
     ITJUnitUtils.getParents().pop();
     deploys.getBaseProducer().stop();
   }
