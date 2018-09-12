@@ -35,9 +35,9 @@ servicecomb:
     it-producer:
       defaultJsonValueJaxrs:
         jsonInput:
-          preferredTransport: rest
+          transport: rest
         queryInput:
-          preferredTransport: rest
+          transport: rest
   http:
     dispatcher:
       edge:
