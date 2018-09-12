@@ -40,6 +40,7 @@
     <module>use-log4j2-sample</module>
     <module>local-service-registry</module>
     <module>trust-sample</module>
+    <module>apm-agent</module>
   </modules>
 
   <dependencyManagement>
