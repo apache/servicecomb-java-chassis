@@ -20,7 +20,6 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
 import org.springframework.web.bind.annotation.RequestAttribute;
-
 import io.swagger.models.parameters.FormParameter;
 
 public class RequestAttributeAnnotationProcessor extends AbstractParameterProcessor<FormParameter> {
@@ -31,9 +30,13 @@ public class RequestAttributeAnnotationProcessor extends AbstractParameterProces
 
   @Override
   public String getAnnotationParameterName(Object annotation) {
-    return ((RequestAttribute) annotation).name();
+    String value = ((RequestAttribute) annotation).value();
+    if (value.isEmpty()) {
+      value = ((RequestAttribute) annotation).name();
+    }
+    return value;
   }
-  
+
   @Override
   protected void fillParameter(Object annotation, OperationGenerator operationGenerator, int paramIdx,
       FormParameter parameter) {

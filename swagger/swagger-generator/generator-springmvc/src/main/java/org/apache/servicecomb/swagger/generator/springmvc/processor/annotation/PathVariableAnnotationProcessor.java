@@ -31,7 +31,11 @@ public class PathVariableAnnotationProcessor extends AbstractParameterProcessor<
 
   @Override
   public String getAnnotationParameterName(Object annotation) {
-    return ((PathVariable) annotation).value();
+    String value = ((PathVariable) annotation).value();
+    if (value.isEmpty()) {
+      value = ((PathVariable) annotation).name();
+    }
+    return value;
   }
   
   @Override
