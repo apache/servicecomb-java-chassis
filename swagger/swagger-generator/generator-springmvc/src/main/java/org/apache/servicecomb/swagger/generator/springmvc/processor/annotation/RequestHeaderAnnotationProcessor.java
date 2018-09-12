@@ -32,11 +32,11 @@ public class RequestHeaderAnnotationProcessor extends AbstractParameterProcessor
 
   @Override
   public String getAnnotationParameterName(Object annotation) {
-    String name = ((RequestHeader) annotation).name();
-    if (name == null || name.isEmpty()) {
-      name = ((RequestHeader) annotation).value();
+    String value = ((RequestHeader) annotation).value();
+    if (value.isEmpty()) {
+      value = ((RequestHeader) annotation).name();
     }
-    return name;
+    return value;
   }
 
   @Override

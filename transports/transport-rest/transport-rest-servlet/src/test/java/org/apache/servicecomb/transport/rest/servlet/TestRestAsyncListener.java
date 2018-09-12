@@ -32,7 +32,6 @@ import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.StandardHttpServletRequestEx;
-import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

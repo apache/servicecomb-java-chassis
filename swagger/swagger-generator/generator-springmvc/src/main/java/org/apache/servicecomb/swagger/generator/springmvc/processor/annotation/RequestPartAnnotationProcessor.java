@@ -31,7 +31,11 @@ public class RequestPartAnnotationProcessor extends AbstractParameterProcessor<F
 
   @Override
   public String getAnnotationParameterName(Object annotation) {
-    return ((RequestPart) annotation).name();
+    String value = ((RequestPart) annotation).value();
+    if (value.isEmpty()) {
+      value = ((RequestPart) annotation).name();
+    }
+    return value;
   }
 
   @Override

@@ -32,7 +32,6 @@ import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
-import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
