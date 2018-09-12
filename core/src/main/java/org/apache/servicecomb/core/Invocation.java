@@ -185,8 +185,8 @@ public class Invocation extends SwaggerInvocation {
   }
 
   public String getConfigTransportName() {
-    if (operationMeta.getPreferredTransport() != null) {
-      return operationMeta.getPreferredTransport();
+    if (operationMeta.getTransport() != null) {
+      return operationMeta.getTransport();
     }
     return referenceConfig.getTransport();
   }

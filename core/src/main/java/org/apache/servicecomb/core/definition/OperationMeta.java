@@ -58,7 +58,7 @@ public class OperationMeta {
   // 为避免每个地方都做复杂的层次管理，直接在这里保存扩展数据
   private Map<String, Object> extData = new ConcurrentHashMap<>();
 
-  private String preferredTransport = null;
+  private String transport = null;
 
   public void init(SchemaMeta schemaMeta, Method method, String operationPath, String httpMethod,
       Operation swaggerOperation) {
@@ -76,13 +76,13 @@ public class OperationMeta {
         swaggerOperation,
         method.getGenericReturnType());
 
-    preferredTransport = DynamicPropertyFactory.getInstance()
+    transport = DynamicPropertyFactory.getInstance()
         .getStringProperty("servicecomb.operation."
-            + microserviceQualifiedName + ".preferredTransport", null).get();
+            + microserviceQualifiedName + ".transport", null).get();
   }
 
-  public String getPreferredTransport() {
-    return preferredTransport;
+  public String getTransport() {
+    return transport;
   }
 
   public String getHttpMethod() {
