@@ -37,6 +37,8 @@
     <module>springmvc-tests-general-with-springboot</module>
     <module>springmvc-tests-simplified-mapping-with-springboot</module>
     <module>springmvc-tests-connection-limit</module>
+    <module>springmvc-tests-general-with-springboot2</module>
+    <module>springmvc-tests-general-with-springboot2-servlet</module>
   </modules>
 
   <dependencies>
