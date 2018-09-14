@@ -19,6 +19,7 @@ package org.apache.servicecomb.bizkeeper;
 
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
@@ -51,7 +52,7 @@ public abstract class BizkeeperHandler implements Handler {
       HystrixPlugins.getInstance().registerCommandExecutionHook(new HystrixCommandExecutionHook() {
         @Override
         public <T> Exception onExecutionError(HystrixInvokable<T> commandInstance, Exception e) {
-          LOG.warn("bizkeeper execution error", e);
+          LOG.warn("bizkeeper execution error, info={}", ExceptionUtils.getExceptionMessageWithoutTrace(e));
           return e; //by default, just pass through
         }
       });
