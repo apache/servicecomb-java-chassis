@@ -16,7 +16,10 @@
  */
 package org.apache.servicecomb.swagger.invocation.exception;
 
+import java.io.IOException;
 import java.util.Arrays;
+
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -34,8 +37,7 @@ public class TestExceptionToResponseConverters {
       @Mocked Response r1,
       @Mocked ExceptionToResponseConverter c2,
       @Mocked Response r2,
-      @Mocked ExceptionToResponseConverter cDef,
-      @Mocked Response rDef) {
+      @Mocked ExceptionToResponseConverter cDef) {
     new Expectations(SPIServiceUtils.class) {
       {
         SPIServiceUtils.getSortedService(ExceptionToResponseConverter.class);
@@ -53,8 +55,6 @@ public class TestExceptionToResponseConverters {
 
         cDef.getExceptionClass();
         result = null;
-        cDef.convert((SwaggerInvocation) any, (Throwable) any);
-        result = rDef;
       }
     };
 
@@ -64,8 +64,54 @@ public class TestExceptionToResponseConverters {
         exceptionToResponseConverters.convertExceptionToResponse((SwaggerInvocation) null, new Throwable()));
     Assert.assertSame(r2,
         exceptionToResponseConverters.convertExceptionToResponse((SwaggerInvocation) null, new Exception()));
-    Assert.assertSame(rDef,
+    Assert.assertSame(r2,
         exceptionToResponseConverters.convertExceptionToResponse((SwaggerInvocation) null,
             new IllegalStateException()));
+  }
+
+  @SuppressWarnings({"rawtypes", "unchecked"})
+  @Test
+  public void convertExceptionToResponse2(@Mocked ExceptionToResponseConverter c1,
+      @Mocked Response r1,
+      @Mocked ExceptionToResponseConverter c2,
+      @Mocked Response r2,
+      @Mocked ExceptionToResponseConverter cDef,
+      @Mocked Response rDef,
+      @Mocked ExceptionToResponseConverter cDef2) {
+    new Expectations(SPIServiceUtils.class) {
+      {
+        SPIServiceUtils.getSortedService(ExceptionToResponseConverter.class);
+        result = Arrays.asList(c1, c2, cDef, cDef2);
+
+        c1.getExceptionClass();
+        result = RuntimeException.class;
+        c1.convert((SwaggerInvocation) any, (Throwable) any);
+        result = r1;
+
+        c2.getExceptionClass();
+        result = InvocationException.class;
+        c2.convert((SwaggerInvocation) any, (Throwable) any);
+        result = r2;
+
+        cDef.getExceptionClass();
+        result = null;
+        cDef.convert((SwaggerInvocation) any, (Throwable) any);
+        result = rDef;
+
+        cDef2.getExceptionClass();
+        result = null;
+      }
+    };
+
+    ExceptionToResponseConverters exceptionToResponseConverters = new ExceptionToResponseConverters();
+
+    Assert.assertSame(r2,
+        exceptionToResponseConverters
+            .convertExceptionToResponse((SwaggerInvocation) null, new InvocationException(Status.UNAUTHORIZED, "")));
+    Assert.assertSame(r1,
+        exceptionToResponseConverters.convertExceptionToResponse((SwaggerInvocation) null, new RuntimeException()));
+    Assert.assertSame(rDef,
+        exceptionToResponseConverters.convertExceptionToResponse((SwaggerInvocation) null,
+            new IOException()));
   }
 }
