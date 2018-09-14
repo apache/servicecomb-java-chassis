@@ -33,7 +33,9 @@ public class ExceptionToResponseConverters {
   public ExceptionToResponseConverters() {
     SPIServiceUtils.getSortedService(ExceptionToResponseConverter.class).forEach(converter -> {
       if (converter.getExceptionClass() == null) {
-        defaultConverter = converter;
+        if (defaultConverter == null) {
+          defaultConverter = converter;
+        }
         return;
       }
 
@@ -42,8 +44,18 @@ public class ExceptionToResponseConverters {
   }
 
   public Response convertExceptionToResponse(SwaggerInvocation swaggerInvocation, Throwable e) {
-    ExceptionToResponseConverter<Throwable> converter =
-        exceptionToResponseConverters.getOrDefault(e.getClass(), defaultConverter);
+    ExceptionToResponseConverter<Throwable> converter = null;
+    Class<?> clazz = e.getClass();
+    while (converter == null) {
+      converter = exceptionToResponseConverters.get(clazz);
+      if (clazz == Throwable.class) {
+        break;
+      }
+      clazz = clazz.getSuperclass();
+    }
+    if (converter == null) {
+      converter = defaultConverter;
+    }
     return converter.convert(swaggerInvocation, e);
   }
 }
