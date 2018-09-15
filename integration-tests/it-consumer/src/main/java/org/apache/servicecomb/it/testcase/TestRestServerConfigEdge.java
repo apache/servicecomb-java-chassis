@@ -28,14 +28,13 @@ import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
 import org.junit.Test;
 
 public class TestRestServerConfigEdge {
-  static GateRestTemplate rt = (GateRestTemplate) GateRestTemplate.createEdgeRestTemplate("restServerConfig");
+  static GateRestTemplate rt = (GateRestTemplate) GateRestTemplate.createEdgeRestTemplate("dataTypeJaxrs");
 
   @Test
   public void testIllegalPathParam() throws IOException {
     String paramString = "%%A";
     String requestUri =
-        rt.getUrlPrefix("it-edge", "it-producer", "restServerConfig")
-            + "/testIntPathParam/" + paramString;
+        rt.getUrlPrefix() + "/intPath/" + paramString;
 
     URL url = new URL(requestUri);
     HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
@@ -52,6 +51,6 @@ public class TestRestServerConfigEdge {
 
     assertEquals(500, responseCode);
     assertEquals("Internal Server Error", responseMessage);
-    assertEquals("unknown error", errorBody);
+    assertEquals("{\"message\":\"unknown error\"}", errorBody);
   }
 }

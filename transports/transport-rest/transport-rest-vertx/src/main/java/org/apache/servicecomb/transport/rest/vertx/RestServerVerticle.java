@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.ws.rs.core.MediaType;
 
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Endpoint;
@@ -37,6 +38,7 @@ import org.apache.servicecomb.foundation.vertx.ClientEvent;
 import org.apache.servicecomb.foundation.vertx.ConnectionEvent;
 import org.apache.servicecomb.foundation.vertx.TransportType;
 import org.apache.servicecomb.foundation.vertx.VertxTLSBuilder;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogConfiguration;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.impl.AccessLogHandler;
 import org.slf4j.Logger;
@@ -129,8 +131,13 @@ public class RestServerVerticle extends AbstractVerticle {
     Handler<RoutingContext> failureHandler = null == globalRestFailureHandler ?
         ctx -> {
           LOGGER.error("unexpected failure happened", ctx.failure());
-          ctx.response().setStatusCode(500).putHeader(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN)
-              .end("unknown error");
+          CommonExceptionData unknownError = new CommonExceptionData("unknown error");
+          try {
+            ctx.response().setStatusCode(500).putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .end(RestObjectMapperFactory.getRestObjectMapper().writeValueAsString(unknownError));
+          } catch (Exception e) {
+            LOGGER.error("failed to send error response!");
+          }
         }
         : globalRestFailureHandler;
 

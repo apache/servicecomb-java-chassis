@@ -280,10 +280,10 @@ public class TestRestServerVerticle {
     RoutingContext routingContext = Mockito.mock(RoutingContext.class);
     HttpServerResponse response = Mockito.mock(HttpServerResponse.class);
     Mockito.when(response.setStatusCode(500)).thenReturn(response);
-    Mockito.when(response.putHeader("Content-Type", "text/plain")).thenReturn(response);
+    Mockito.when(response.putHeader("Content-Type", "application/json")).thenReturn(response);
     Mockito.when(routingContext.response()).thenReturn(response);
 
     handlerHolder.value.handle(routingContext);
-    Mockito.verify(response).end("unknown error");
+    Mockito.verify(response).end("{\"message\":\"unknown error\"}");
   }
 }
