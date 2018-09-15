@@ -48,6 +48,8 @@
     <module>it-edge</module>
     <module>it-common-service</module>
 
+    <module>it-producer-deploy-springboot2-standalone</module>
+
     <!--must be the last one-->
     <module>it-consumer</module>
   </modules>
