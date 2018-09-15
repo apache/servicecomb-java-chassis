@@ -30,6 +30,9 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.RestTemplate;
 
 public class GateRestTemplate extends RestTemplate {
+
+  private String urlPrefix;
+
   public static RestTemplate createEdgeRestTemplate(String schemaId) {
     return createEdgeRestTemplate("it-producer", schemaId);
   }
@@ -51,7 +54,7 @@ public class GateRestTemplate extends RestTemplate {
   }
 
   public GateRestTemplate(String gateName, String producerName, String schemaId) {
-    String urlPrefix = getUrlPrefix(gateName, producerName, schemaId);
+    urlPrefix = getUrlPrefix(gateName, producerName, schemaId);
 
     setUriTemplateHandler(new ITUriTemplateHandler(urlPrefix));
 
@@ -61,7 +64,11 @@ public class GateRestTemplate extends RestTemplate {
     ));
   }
 
-  public String getUrlPrefix(String gateName, String producerName, String schemaId) {
+  public String getUrlPrefix() {
+    return urlPrefix;
+  }
+
+  private String getUrlPrefix(String gateName, String producerName, String schemaId) {
     MicroserviceVersionRule microserviceVersionRule = RegistryUtils.getServiceRegistry().getAppManager()
         .getOrCreateMicroserviceVersionRule(RegistryUtils.getAppId(), gateName,
             DefinitionConst.VERSION_RULE_ALL);
