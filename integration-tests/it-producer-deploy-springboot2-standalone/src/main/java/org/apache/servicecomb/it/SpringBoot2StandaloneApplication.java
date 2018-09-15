@@ -15,26 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.springmvc.tests;
+package org.apache.servicecomb.it;
 
-import org.apache.servicecomb.core.SCBEngine;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
+import org.apache.servicecomb.springboot.starter.provider.EnableServiceComb;
 import org.springframework.boot.SpringApplication;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@RunWith(SpringRunner.class)
-public class SpringMvcSpringIntegrationTest extends SpringMvcIntegrationTestBase {
-  @BeforeClass
-  public static void init() {
-    System.setProperty("servicecomb.uploads.directory", "/tmp");
-    setUpLocalRegistry();
-    SpringApplication.run(SpringMvcSpringMain.class);
-  }
-
-  @AfterClass
-  public static void shutdown() {
-    SCBEngine.getInstance().destroy();
+@SpringBootApplication
+@EnableServiceComb
+public class SpringBoot2StandaloneApplication {
+  public static void main(String[] args) {
+    SpringApplication.run(SpringBoot2StandaloneApplication.class, args);
   }
 }

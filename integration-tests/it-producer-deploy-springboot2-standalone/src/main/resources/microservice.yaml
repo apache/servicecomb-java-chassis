@@ -15,17 +15,12 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-APPLICATION_ID: springmvctest-it
 service_description:
-  name: springmvc-tests
-  version: 0.0.2
+  name: it-producer-deploy-springboot2-standalone
+  version: 0.0.1
 servicecomb:
   service:
     registry:
       address: http://127.0.0.1:30100
   rest:
     address: 0.0.0.0:8080
-  handler:
-    chain:
-      Provider:
-        default: bizkeeper-provider
