@@ -17,11 +17,14 @@
 
 package org.apache.servicecomb.swagger.generator.pojo.extend.parameter;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import io.swagger.models.ModelImpl;
 import io.swagger.models.RefModel;
@@ -29,6 +32,7 @@ import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.PropertyBuilder;
 import io.swagger.models.properties.RefProperty;
+import io.swagger.util.Json;
 
 //
 // 备选body
@@ -39,10 +43,13 @@ import io.swagger.models.properties.RefProperty;
 // jaxrs、springmvc这种模式，要求符合模式本身的定义场景，不允许随意组合
 //
 public class PendingBodyParameter extends BodyParameter {
+  @JsonIgnore
   private OperationGenerator operationGenerator;
 
+  @JsonIgnore
   private Property property;
 
+  @JsonIgnore
   private Type type;
 
   public void setOperationGenerator(OperationGenerator operationGenerator) {
@@ -65,6 +72,7 @@ public class PendingBodyParameter extends BodyParameter {
     this.type = type;
   }
 
+  @JsonIgnore
   public Method getMethod() {
     return operationGenerator.getProviderMethod();
   }
@@ -73,11 +81,14 @@ public class PendingBodyParameter extends BodyParameter {
     String modelType = ParamUtils.generateBodyParameterName(operationGenerator.getProviderMethod());
     RefModel model = toRefModel(modelType);
 
-    BodyParameter bodyParameter = new BodyParameter();
-    bodyParameter.setName(paramName);
-    bodyParameter.setSchema(model);
+    setName(paramName);
+    setSchema(model);
 
-    return bodyParameter;
+    try {
+      return Json.mapper().readValue(Json.mapper().writeValueAsString(this), BodyParameter.class);
+    } catch (IOException e) {
+      throw new IllegalStateException("failed to createBodyParameter.", e);
+    }
   }
 
   // swagger中的body只能是ref，不能是简单类型
