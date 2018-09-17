@@ -37,7 +37,6 @@
     </dependencies>
   </dependencyManagement>
 
-
   <dependencies>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
@@ -46,17 +45,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>spring-boot-starter-provider</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.logging.log4j</groupId>
-          <artifactId>log4j-to-slf4j</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernate</groupId>
-      <artifactId>hibernate-validator</artifactId>
+      <artifactId>spring-boot2-starter-standalone</artifactId>
     </dependency>
   </dependencies>
 

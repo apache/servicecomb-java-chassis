@@ -14,17 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.springboot2.starter;
 
-package org.apache.servicecomb.it;
+import javax.inject.Inject;
 
-import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.apache.servicecomb.core.CseApplicationListener;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 
-@SpringBootApplication
-@EnableServiceComb
-public class SpringBoot2StandaloneApplication {
-  public static void main(String[] args) {
-    SpringApplication.run(SpringBoot2StandaloneApplication.class, args);
+@Configuration
+@ImportResource(BeanUtils.DEFAULT_BEAN_RESOURCE)
+class ServiceCombSpringConfiguration {
+  @Inject
+  public void setCseApplicationListener(CseApplicationListener cseApplicationListener) {
+    cseApplicationListener.setInitEventClass(ApplicationReadyEvent.class);
   }
 }
