@@ -21,6 +21,7 @@ import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.it.deploy.Deploys;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.it.testcase.TestAnnotatedAttribute;
+import org.apache.servicecomb.it.testcase.TestApiParam;
 import org.apache.servicecomb.it.testcase.TestChangeTransport;
 import org.apache.servicecomb.it.testcase.TestDataTypePrimitive;
 import org.apache.servicecomb.it.testcase.TestDefaultJsonValueJaxrsSchema;
@@ -66,6 +67,7 @@ public class ConsumerMain {
     // deploys.getZuul().ensureReady(zuul);
 
     ITJUnitUtils.run(TestIgnoreMethod.class);
+    ITJUnitUtils.run(TestApiParam.class);
 
     // 1.base test case
     //   include all extension point abnormal scenes test case
