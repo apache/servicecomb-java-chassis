@@ -14,17 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.springboot2.starter;
 
-package org.apache.servicecomb.it;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Import;
 
-@SpringBootApplication
-@EnableServiceComb
-public class SpringBoot2StandaloneApplication {
-  public static void main(String[] args) {
-    SpringApplication.run(SpringBoot2StandaloneApplication.class, args);
-  }
+/**
+ * This annotation enables auto-configuration of Spring beans to integrate with ServiceComb modules.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@Import(ServiceCombSpringConfiguration.class)
+public @interface EnableServiceComb {
+
 }

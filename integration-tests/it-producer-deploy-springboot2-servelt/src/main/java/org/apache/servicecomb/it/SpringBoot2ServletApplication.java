@@ -23,8 +23,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @EnableServiceComb
-public class SpringBoot2StandaloneApplication {
+public class SpringBoot2ServletApplication {
   public static void main(String[] args) {
-    SpringApplication.run(SpringBoot2StandaloneApplication.class, args);
+    SpringApplication.run(SpringBoot2ServletApplication.class, args);
   }
 }
