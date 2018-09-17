@@ -18,6 +18,7 @@
 package org.apache.servicecomb.it.testcase;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -25,7 +26,10 @@ import java.net.URL;
 import java.util.Scanner;
 
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
+import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 
 public class TestRestServerConfigEdge {
   static GateRestTemplate rt = (GateRestTemplate) GateRestTemplate.createEdgeRestTemplate("dataTypeJaxrs");
@@ -52,5 +56,18 @@ public class TestRestServerConfigEdge {
     assertEquals(500, responseCode);
     assertEquals("Internal Server Error", responseMessage);
     assertEquals("{\"message\":\"unknown error\"}", errorBody);
+  }
+
+  @Test
+  public void test404ThrownByServicCombNotConvertedTo500() {
+    String notFoundRequestUri = rt.getUrlPrefix() + "/intPath2/123";
+
+    try {
+      rt.getForEntity(notFoundRequestUri, int.class);
+      fail("an exception is expected!");
+    } catch (RestClientException e) {
+      Assert.assertEquals(404, ((HttpClientErrorException) e).getRawStatusCode());
+      Assert.assertEquals("CommonExceptionData [message=Not Found]", ((HttpClientErrorException) e).getStatusText());
+    }
   }
 }
