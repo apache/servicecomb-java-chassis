@@ -39,6 +39,7 @@ import org.apache.servicecomb.foundation.vertx.ConnectionEvent;
 import org.apache.servicecomb.foundation.vertx.TransportType;
 import org.apache.servicecomb.foundation.vertx.VertxTLSBuilder;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogConfiguration;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.impl.AccessLogHandler;
 import org.slf4j.Logger;
@@ -55,6 +56,7 @@ import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.CorsHandler;
@@ -130,13 +132,29 @@ public class RestServerVerticle extends AbstractVerticle {
         SPIServiceUtils.getPriorityHighestService(GlobalRestFailureHandler.class);
     Handler<RoutingContext> failureHandler = null == globalRestFailureHandler ?
         ctx -> {
+          if (ctx.response().closed()) {
+            // response has been sent, do nothing
+            LOGGER.error("get a failure with closed response", ctx.failure());
+            ctx.next();
+          }
+          HttpServerResponse response = ctx.response();
+          if (ctx.failure() instanceof InvocationException) {
+            // ServiceComb defined exception
+            InvocationException exception = (InvocationException) ctx.failure();
+            response.setStatusCode(exception.getStatusCode());
+            response.setStatusMessage(exception.getErrorData().toString());
+            response.end();
+            return;
+          }
+
           LOGGER.error("unexpected failure happened", ctx.failure());
-          CommonExceptionData unknownError = new CommonExceptionData("unknown error");
           try {
+            // unknown exception
+            CommonExceptionData unknownError = new CommonExceptionData("unknown error");
             ctx.response().setStatusCode(500).putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                 .end(RestObjectMapperFactory.getRestObjectMapper().writeValueAsString(unknownError));
           } catch (Exception e) {
-            LOGGER.error("failed to send error response!");
+            LOGGER.error("failed to send error response!", e);
           }
         }
         : globalRestFailureHandler;
