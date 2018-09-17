@@ -31,6 +31,7 @@ import javax.ws.rs.DefaultValue;
 
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.extend.parameter.ContextParameter;
+import org.apache.servicecomb.swagger.generator.core.processor.annotation.AnnotationUtils;
 import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -291,6 +292,11 @@ public class OperationGenerator {
       if (isArgumentNotProcessed(swaggerParamCount)) {
         // 没有用于描述契约的标注，根据函数原型来反射生成
         context.getDefaultParamProcessor().process(this, paramIdx);
+      }
+
+      if (!isArgumentNotProcessed(swaggerParamCount)) {
+        Parameter parameter = providerParameters.get(this.providerParameters.size() - 1);
+        AnnotationUtils.processApiParam(paramAnnotations, parameter);
       }
     }
   }
