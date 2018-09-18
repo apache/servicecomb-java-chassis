@@ -17,5 +17,5 @@
 package org.apache.servicecomb.foundation.common.utils.bean;
 
 public interface Setter {
-  void set(Object instance, Object value) throws Throwable;
+  void set(Object instance, Object value);
 }

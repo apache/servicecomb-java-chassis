@@ -16,6 +16,18 @@
  */
 package org.apache.servicecomb.foundation.common.utils.bean;
 
-public interface Getter {
-  Object get(Object instance);
+import java.util.Map;
+
+public class MapSetter implements Setter {
+  private Object key;
+
+  public MapSetter(Object key) {
+    this.key = key;
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public void set(Object instance, Object value) {
+    ((Map<Object, Object>) instance).put(key, value);
+  }
 }

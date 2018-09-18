@@ -93,7 +93,13 @@ public final class LambdaMetafactoryUtils {
   // slower than reflect directly
   public static Getter createGetter(Field field) {
     field.setAccessible(true);
-    return instance -> field.get(instance);
+    return instance -> {
+      try {
+        return field.get(instance);
+      } catch (IllegalAccessException e) {
+        throw new RuntimeException(e);
+      }
+    };
   }
 
   public static Setter createSetter(Method setMethod) throws Throwable {
@@ -103,6 +109,12 @@ public final class LambdaMetafactoryUtils {
   // slower than reflect directly
   public static Setter createSetter(Field field) {
     field.setAccessible(true);
-    return (instance, value) -> field.set(instance, value);
+    return (instance, value) -> {
+      try {
+        field.set(instance, value);
+      } catch (IllegalAccessException e) {
+        throw new RuntimeException(e);
+      }
+    };
   }
 }
