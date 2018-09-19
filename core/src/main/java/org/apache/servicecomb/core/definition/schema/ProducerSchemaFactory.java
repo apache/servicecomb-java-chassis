@@ -45,13 +45,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
-import io.swagger.util.Yaml;
 
 @Component
 public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaContext> {
@@ -60,22 +57,12 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
   @Inject
   private SwaggerEnvironment swaggerEnv;
 
-  private ObjectWriter writer = Yaml.pretty();
-
-  private String getSwaggerContent(Swagger swagger) {
-    try {
-      return writer.writeValueAsString(swagger);
-    } catch (JsonProcessingException e) {
-      throw new Error(e);
-    }
-  }
-
   public void setSwaggerEnv(SwaggerEnvironment swaggerEnv) {
     this.swaggerEnv = swaggerEnv;
   }
 
   // 只会在启动流程中调用
-  public SchemaMeta getOrCreateProducerSchema( String schemaId,
+  public SchemaMeta getOrCreateProducerSchema(String schemaId,
       Class<?> producerClass,
       Object producerInstance) {
     MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
