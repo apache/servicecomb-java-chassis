@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 
 import javax.ws.rs.core.MediaType;
 
@@ -204,7 +205,7 @@ public class SwaggerGenerator {
   }
 
   protected void setJavaInterface(Info info, Class<?> cls) {
-    if (cls.isInterface()) {
+    if (cls.isInterface() && !isInterfaceReactive(cls)) {
       info.setVendorExtension(SwaggerConst.EXT_JAVA_INTF, cls.getName());
       return;
     }
@@ -219,6 +220,26 @@ public class SwaggerGenerator {
     info.setVendorExtension(SwaggerConst.EXT_JAVA_INTF, intfName);
   }
 
+  /**
+   * Whether this interface class is reactive.
+   * This is used for the situation that the {@code interfaceCls} may be used as swagger interface directly
+   */
+  private boolean isInterfaceReactive(Class<?> interfaceCls) {
+    for (Method method : interfaceCls.getDeclaredMethods()) {
+      if (isSkipMethod(method)) {
+        continue;
+      }
+      if (CompletableFuture.class.isAssignableFrom(method.getReturnType())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Whether this method should be processed as a swagger operation
+   * @return true if this isn't a swagger operation; otherwise, false.
+   */
   protected boolean isSkipMethod(Method method) {
     if (method.getDeclaringClass().getName().equals(Object.class.getName())) {
       return true;
