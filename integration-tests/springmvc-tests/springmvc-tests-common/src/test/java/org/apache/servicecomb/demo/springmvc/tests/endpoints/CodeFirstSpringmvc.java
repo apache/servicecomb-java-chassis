@@ -98,7 +98,7 @@ public class CodeFirstSpringmvc extends CodeFirstSpringmvcBase {
 
   @RequestMapping(path = "/uploadWithoutAnnotation", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public String fileUploadWithoutAnnotation(MultipartFile file1, MultipartFile file2,
-      @RequestAttribute("name") String name) {
+      @RequestAttribute(name = "name", required = false) String name) {
     return super.fileUpload(file1, file2, name);
   }
 

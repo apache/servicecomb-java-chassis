@@ -47,8 +47,12 @@ public class TestFormProcessor {
 
   RestClientRequest clientRequest;
 
-  private FormProcessor createProcessor(String name, Class<?> type) {
-    return new FormProcessor(name, TypeFactory.defaultInstance().constructType(type), null);
+  private FormProcessor createProcessor(String name, boolean required, Class<?> type) {
+    return new FormProcessor(name, required, TypeFactory.defaultInstance().constructType(type), null);
+  }
+
+  private FormProcessor createProcessor(String name, boolean required, Class<?> type, String defaultValue) {
+    return new FormProcessor(name, required, TypeFactory.defaultInstance().constructType(type), defaultValue);
   }
 
   private void createClientRequest() {
@@ -71,7 +75,7 @@ public class TestFormProcessor {
       }
     };
 
-    ParamValueProcessor processor = createProcessor("name", String.class);
+    ParamValueProcessor processor = createProcessor("name", true, String.class);
     Object value = processor.getValue(request);
     Assert.assertEquals("value", value);
   }
@@ -85,7 +89,7 @@ public class TestFormProcessor {
       }
     };
 
-    ParamValueProcessor processor = createProcessor("name", String.class);
+    ParamValueProcessor processor = createProcessor("name", true, String.class);
     Object value = processor.getValue(request);
     Assert.assertEquals("value", value);
   }
@@ -103,7 +107,7 @@ public class TestFormProcessor {
       }
     };
 
-    ParamValueProcessor processor = createProcessor("name", Date.class);
+    ParamValueProcessor processor = createProcessor("name", true, Date.class);
     Object value = processor.getValue(request);
     Assert.assertEquals(strDate, com.fasterxml.jackson.databind.util.ISO8601Utils.format((Date) value));
   }
@@ -117,9 +121,41 @@ public class TestFormProcessor {
       }
     };
 
-    ParamValueProcessor processor = createProcessor("name", String[].class);
+    ParamValueProcessor processor = createProcessor("name", true, String[].class);
     String[] value = (String[]) processor.getValue(request);
     Assert.assertNull(value);
+  }
+
+  @Test
+  public void testGetValueRequiredTrue() throws Exception {
+    new Expectations() {
+      {
+        request.getParameter("name");
+        result = null;
+      }
+    };
+
+    ParamValueProcessor processor = createProcessor("name", true, String.class);
+    try {
+      processor.getValue(request);
+      Assert.assertEquals("required is true, throw exception", "not throw exception");
+    } catch (Exception e) {
+      Assert.assertTrue(e.getMessage().contains("Parameter is not valid, required is true"));
+    }
+  }
+
+  @Test
+  public void testGetValueRequiredFalse() throws Exception {
+    new Expectations() {
+      {
+        request.getParameter("name");
+        result = null;
+      }
+    };
+
+    ParamValueProcessor processor = createProcessor("name", false, String.class, "test");
+    Object result = processor.getValue(request);
+    Assert.assertEquals("test", result);
   }
 
   @Test
@@ -131,7 +167,7 @@ public class TestFormProcessor {
       }
     };
 
-    ParamValueProcessor processor = createProcessor("name", String[].class);
+    ParamValueProcessor processor = createProcessor("name", true, String[].class);
     String[] value = (String[]) processor.getValue(request);
     Assert.assertThat(value, Matchers.arrayContaining("value"));
   }
@@ -147,7 +183,7 @@ public class TestFormProcessor {
     };
 
     ParamValueProcessor processor =
-        new FormProcessor("name", TypeFactory.defaultInstance().constructCollectionType(List.class, String.class),
+        new FormProcessor("name", true, TypeFactory.defaultInstance().constructCollectionType(List.class, String.class),
             null);
     Object value = processor.getValue(request);
     Assert.assertThat((List<String>) value, Matchers.contains("value"));
@@ -164,7 +200,8 @@ public class TestFormProcessor {
     };
 
     ParamValueProcessor processor =
-        new FormProcessor("name", TypeFactory.defaultInstance().constructCollectionType(Set.class, String.class), null);
+        new FormProcessor("name", true, TypeFactory.defaultInstance().constructCollectionType(Set.class, String.class),
+            null);
     Object value = processor.getValue(request);
     Assert.assertThat((Set<String>) value, Matchers.contains("value"));
   }
@@ -173,7 +210,7 @@ public class TestFormProcessor {
   public void testSetValue() throws Exception {
     createClientRequest();
 
-    ParamValueProcessor processor = createProcessor("name", String.class);
+    ParamValueProcessor processor = createProcessor("name", true, String.class);
     processor.setValue(clientRequest, "value");
     Assert.assertEquals("value", forms.get("name"));
   }
@@ -184,14 +221,14 @@ public class TestFormProcessor {
 
     createClientRequest();
 
-    ParamValueProcessor processor = createProcessor("name", Date.class);
+    ParamValueProcessor processor = createProcessor("name", true, Date.class);
     processor.setValue(clientRequest, date);
     Assert.assertSame(date, forms.get("name"));
   }
 
   @Test
   public void testGetProcessorType() {
-    ParamValueProcessor processor = createProcessor("name", String.class);
+    ParamValueProcessor processor = createProcessor("name", true, String.class);
     Assert.assertEquals("formData", processor.getProcessorType());
   }
 }

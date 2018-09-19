@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -44,6 +45,11 @@ public class RequestParamAnnotationProcessor extends AbstractParameterProcessor<
       QueryParameter parameter) {
     super.fillParameter(annotation, operationGenerator, paramIdx, parameter);
 
+    String defaultValue = getAnnotationParameterDefaultValue(annotation);
+    if (StringUtils.isNotEmpty(defaultValue)) {
+      parameter.setRequired(false);
+      return;
+    }
     RequestParam requestParam = (RequestParam) annotation;
     parameter.setRequired(requestParam.required());
   }

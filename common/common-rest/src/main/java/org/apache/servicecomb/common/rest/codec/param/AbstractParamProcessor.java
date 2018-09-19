@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.JavaType;
 public abstract class AbstractParamProcessor implements ParamValueProcessor {
   protected String paramPath;
 
+  protected boolean required = false;
+
   protected JavaType targetType;
 
   protected Object defaultValue;
@@ -30,13 +32,18 @@ public abstract class AbstractParamProcessor implements ParamValueProcessor {
     return defaultValue;
   }
 
-  public AbstractParamProcessor(String paramPath, JavaType targetType, Object defaultValue) {
+  public AbstractParamProcessor(String paramPath, boolean required, JavaType targetType, Object defaultValue) {
     this.paramPath = paramPath;
+    this.required = required;
     this.targetType = targetType;
     this.defaultValue = defaultValue;
   }
 
   public String getParameterPath() {
     return paramPath;
+  }
+
+  public boolean isRequired() {
+    return required;
   }
 }

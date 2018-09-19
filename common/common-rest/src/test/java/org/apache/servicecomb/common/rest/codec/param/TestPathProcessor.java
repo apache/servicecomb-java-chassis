@@ -40,12 +40,12 @@ public class TestPathProcessor {
 
   ParamValueProcessor processor;
 
-  private void createProcessor(String name, Class<?> type) {
-    processor = new PathProcessor(name, TypeFactory.defaultInstance().constructType(type), null);
+  private void createProcessor(String name, boolean required, Class<?> type) {
+    processor = new PathProcessor(name, required, TypeFactory.defaultInstance().constructType(type), null);
   }
 
   private void prepareGetValue(String name, Class<?> type) {
-    createProcessor(name, type);
+    createProcessor(name, true, type);
     new Expectations() {
       {
         request.getAttribute(RestConst.PATH_PARAMETERS);
@@ -56,7 +56,7 @@ public class TestPathProcessor {
 
   @Test
   public void testGetValueNoPathVars() throws Exception {
-    createProcessor("name", String.class);
+    createProcessor("name", true, String.class);
 
     Assert.assertEquals(null, processor.getValue(request));
   }
@@ -102,7 +102,7 @@ public class TestPathProcessor {
 
   @Test
   public void testGetProcessorType() {
-    createProcessor("name", String.class);
+    createProcessor("name", true, String.class);
     Assert.assertEquals("path", processor.getProcessorType());
   }
 }

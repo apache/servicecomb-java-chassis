@@ -48,8 +48,12 @@ public class TestHeaderProcessor {
 
   RestClientRequest clientRequest;
 
-  private HeaderProcessor createProcessor(String name, Class<?> type) {
-    return new HeaderProcessor(name, TypeFactory.defaultInstance().constructType(type), null);
+  private HeaderProcessor createProcessor(String name, boolean required, Class<?> type) {
+    return new HeaderProcessor(name, required, TypeFactory.defaultInstance().constructType(type), null);
+  }
+
+  private HeaderProcessor createProcessor(String name, boolean required, Class<?> type, String defaultValue) {
+    return new HeaderProcessor(name, required, TypeFactory.defaultInstance().constructType(type), defaultValue);
   }
 
   private void createClientRequest() {
@@ -70,7 +74,7 @@ public class TestHeaderProcessor {
       }
     };
 
-    HeaderProcessor processor = createProcessor("h1", String.class);
+    HeaderProcessor processor = createProcessor("h1", true, String.class);
     Object value = processor.getValue(request);
     Assert.assertEquals("h1v", value);
   }
@@ -88,7 +92,7 @@ public class TestHeaderProcessor {
       }
     };
 
-    HeaderProcessor processor = createProcessor("h1", Date.class);
+    HeaderProcessor processor = createProcessor("h1", true, Date.class);
     Object value = processor.getValue(request);
     Assert.assertEquals(strDate, com.fasterxml.jackson.databind.util.ISO8601Utils.format((Date) value));
   }
@@ -102,9 +106,42 @@ public class TestHeaderProcessor {
       }
     };
 
-    HeaderProcessor processor = createProcessor("h1", String[].class);
+    HeaderProcessor processor = createProcessor("h1", true, String[].class);
     String[] value = (String[]) processor.getValue(request);
     Assert.assertNull(value);
+  }
+
+  @Test
+  public void testGetValueRequiredTrue() throws Exception {
+    new Expectations() {
+      {
+        request.getHeader("h1");
+        result = null;
+      }
+    };
+
+    HeaderProcessor processor = createProcessor("h1", true, String.class);
+    try {
+      processor.getValue(request);
+      Assert.assertEquals("required is true, throw exception", "not throw exception");
+    } catch (Exception e) {
+      Assert.assertTrue(e.getMessage().contains("Parameter is not valid, required is true"));
+    }
+
+  }
+
+  @Test
+  public void testGetValueRequiredFalse() throws Exception {
+    new Expectations() {
+      {
+        request.getHeader("h1");
+        result = null;
+      }
+    };
+
+    HeaderProcessor processor = createProcessor("h1", false, String.class, "test");
+    Object value = processor.getValue(request);
+    Assert.assertEquals("test", value);
   }
 
   @Test
@@ -116,7 +153,7 @@ public class TestHeaderProcessor {
       }
     };
 
-    HeaderProcessor processor = createProcessor("h1", String[].class);
+    HeaderProcessor processor = createProcessor("h1", true, String[].class);
     String[] value = (String[]) processor.getValue(request);
     Assert.assertThat(value, Matchers.arrayContaining("h1v"));
   }
@@ -132,7 +169,7 @@ public class TestHeaderProcessor {
     };
 
     HeaderProcessor processor =
-        new HeaderProcessor("h1", TypeFactory.defaultInstance().constructCollectionType(List.class, String.class),
+        new HeaderProcessor("h1", true, TypeFactory.defaultInstance().constructCollectionType(List.class, String.class),
             null);
     Object value = processor.getValue(request);
     Assert.assertThat((List<String>) value, Matchers.contains("h1v"));
@@ -149,7 +186,8 @@ public class TestHeaderProcessor {
     };
 
     HeaderProcessor processor =
-        new HeaderProcessor("h1", TypeFactory.defaultInstance().constructCollectionType(Set.class, String.class), null);
+        new HeaderProcessor("h1", true, TypeFactory.defaultInstance().constructCollectionType(Set.class, String.class),
+            null);
     Object value = processor.getValue(request);
     Assert.assertThat((Set<String>) value, Matchers.contains("h1v"));
   }
@@ -158,7 +196,7 @@ public class TestHeaderProcessor {
   public void testSetValue() throws Exception {
     createClientRequest();
 
-    HeaderProcessor processor = createProcessor("h1", String.class);
+    HeaderProcessor processor = createProcessor("h1", true, String.class);
     processor.setValue(clientRequest, "h1v");
     Assert.assertEquals("h1v", headers.get("h1"));
   }
@@ -166,7 +204,7 @@ public class TestHeaderProcessor {
   @Test
   public void testSetValueNull() throws Exception {
     createClientRequest();
-    HeaderProcessor processor = createProcessor("h1", String.class);
+    HeaderProcessor processor = createProcessor("h1", true, String.class);
     processor.setValue(clientRequest, null);
     Assert.assertEquals(0, headers.size());
   }
@@ -179,14 +217,14 @@ public class TestHeaderProcessor {
 
     createClientRequest();
 
-    HeaderProcessor processor = createProcessor("h1", Date.class);
+    HeaderProcessor processor = createProcessor("h1", true, Date.class);
     processor.setValue(clientRequest, date);
     Assert.assertEquals(strDate, headers.get("h1"));
   }
 
   @Test
   public void testGetProcessorType() {
-    HeaderProcessor processor = createProcessor("h1", String.class);
+    HeaderProcessor processor = createProcessor("h1", true, String.class);
     Assert.assertEquals("header", processor.getProcessorType());
   }
 }
