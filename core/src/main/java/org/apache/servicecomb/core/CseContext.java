@@ -22,6 +22,7 @@ import javax.inject.Inject;
 import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
 import org.apache.servicecomb.core.definition.loader.SchemaLoader;
 import org.apache.servicecomb.core.definition.schema.ConsumerSchemaFactory;
+import org.apache.servicecomb.core.definition.schema.StaticSchemaFactory;
 import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.core.transport.TransportManager;
@@ -39,6 +40,8 @@ public class CseContext {
   private SchemaLoader schemaLoader;
 
   private ConsumerSchemaFactory consumerSchemaFactory;
+
+  private StaticSchemaFactory staticSchemaFactory;
 
   private ConsumerProviderManager consumerProviderManager;
 
@@ -76,6 +79,10 @@ public class CseContext {
     return swaggerEnvironment;
   }
 
+  public StaticSchemaFactory getStaticSchemaFactory() {
+    return staticSchemaFactory;
+  }
+
   @Inject
   public void setSwaggerEnvironment(SwaggerEnvironment swaggerEnvironment) {
     this.swaggerEnvironment = swaggerEnvironment;
@@ -109,5 +116,10 @@ public class CseContext {
   @Inject
   public void setTransportManager(TransportManager transportManager) {
     this.transportManager = transportManager;
+  }
+
+  @Inject
+  public void setStaticSchemaFactory(StaticSchemaFactory staticSchemaFactory) {
+    this.staticSchemaFactory = staticSchemaFactory;
   }
 }

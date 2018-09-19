@@ -17,17 +17,27 @@
 
 package org.apache.servicecomb.core.definition;
 
+import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.definition.classloader.MicroserviceClassLoaderFactory;
-import org.apache.servicecomb.core.definition.classloader.PrivateMicroserviceClassLoaderFactory;
+import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.registry.StaticMicroservice;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersion;
-import org.apache.servicecomb.serviceregistry.consumer.StaticMicroserviceVersionFactory;
 
-public class StaticMicroserviceVersionMetaFactory implements StaticMicroserviceVersionFactory {
-  private final MicroserviceClassLoaderFactory classLoaderFactory = PrivateMicroserviceClassLoaderFactory.INSTANCE;
+public class StaticMicroserviceVersionMeta extends MicroserviceVersionMeta {
 
-  @Override
-  public MicroserviceVersion create(StaticMicroservice microservice) {
-    return new StaticMicroserviceVersionMeta(microservice, classLoaderFactory);
+  public StaticMicroserviceVersionMeta(StaticMicroservice microservice,
+      MicroserviceClassLoaderFactory classLoaderFactory) {
+    super(microservice);
+
+    this.microserviceMeta = new MicroserviceMeta(microservice.getServiceName());
+    this.microserviceMeta.setClassLoader(
+        classLoaderFactory.create(microservice.getAppId(), microservice.getServiceName(), microservice.getVersion()));
+    if (Const.REGISTRY_APP_ID.equals(microservice.getAppId())
+        && Const.REGISTRY_SERVICE_NAME.equals(microservice.getServiceName())) {
+      // do not load service center schemas
+      return;
+    }
+
+    CseContext.getInstance().getStaticSchemaFactory().loadSchema(microserviceMeta, microservice);
+    CseContext.getInstance().getSchemaListenerManager().notifySchemaListener(microserviceMeta);
   }
 }
