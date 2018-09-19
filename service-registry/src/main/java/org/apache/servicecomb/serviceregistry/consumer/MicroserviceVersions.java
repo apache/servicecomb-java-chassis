@@ -74,7 +74,7 @@ public class MicroserviceVersions {
   // only pendingPullCount is 0, then do a real pull 
   private AtomicInteger pendingPullCount = new AtomicInteger();
 
-  private boolean validated = false;
+  boolean validated = false;
 
   public MicroserviceVersions(AppManager appManager, String appId, String microserviceName) {
     this.appManager = appManager;
