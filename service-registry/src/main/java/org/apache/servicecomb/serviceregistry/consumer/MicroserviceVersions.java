@@ -43,7 +43,7 @@ import com.google.common.eventbus.Subscribe;
 public class MicroserviceVersions {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceVersions.class);
 
-  private AppManager appManager;
+  AppManager appManager;
 
   private String appId;
 
@@ -58,13 +58,13 @@ public class MicroserviceVersions {
   // in the future:
   //  pulledInstances means all instance
   //  instances means available instance
-  private List<MicroserviceInstance> instances;
+  List<MicroserviceInstance> instances;
 
   // key is service id
-  private Map<String, MicroserviceVersion> versions = new ConcurrentHashMapEx<>();
+  Map<String, MicroserviceVersion> versions = new ConcurrentHashMapEx<>();
 
   // key is version rule
-  private Map<String, MicroserviceVersionRule> versionRules = new ConcurrentHashMapEx<>();
+  Map<String, MicroserviceVersionRule> versionRules = new ConcurrentHashMapEx<>();
 
   // process pulled instances and create versionRule must be protected by lock
   // otherwise maybe lost instance or version in versionRule

@@ -31,6 +31,8 @@ public class AppManager {
   // key: appId
   private Map<String, MicroserviceManager> apps = new ConcurrentHashMapEx<>();
 
+  private StaticMicroserviceVersionFactory staticMicroserviceVersionFactory;
+
   public AppManager(EventBus eventBus) {
     this.eventBus = eventBus;
   }
@@ -66,5 +68,13 @@ public class AppManager {
   public MicroserviceVersions getOrCreateMicroserviceVersions(String appId, String microserviceName) {
     MicroserviceManager microserviceManager = getOrCreateMicroserviceManager(appId);
     return microserviceManager.getOrCreateMicroserviceVersions(microserviceName);
+  }
+
+  public StaticMicroserviceVersionFactory getStaticMicroserviceVersionFactory() {
+    return staticMicroserviceVersionFactory;
+  }
+
+  public void setStaticMicroserviceVersionFactory(StaticMicroserviceVersionFactory staticMicroserviceVersionFactory) {
+    this.staticMicroserviceVersionFactory = staticMicroserviceVersionFactory;
   }
 }
