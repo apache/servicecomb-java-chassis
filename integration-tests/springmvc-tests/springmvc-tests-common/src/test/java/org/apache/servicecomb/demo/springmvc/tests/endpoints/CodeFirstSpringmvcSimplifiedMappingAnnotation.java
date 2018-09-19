@@ -101,7 +101,7 @@ public class CodeFirstSpringmvcSimplifiedMappingAnnotation extends CodeFirstSpri
 
   @PostMapping(path = "/uploadWithoutAnnotation", produces = MediaType.TEXT_PLAIN_VALUE)
   public String fileUploadWithoutAnnotation(MultipartFile file1, MultipartFile file2,
-      @RequestAttribute("name") String name) {
+      @RequestAttribute(name = "name", required = false) String name) {
     return super.fileUpload(file1, file2, name);
   }
 

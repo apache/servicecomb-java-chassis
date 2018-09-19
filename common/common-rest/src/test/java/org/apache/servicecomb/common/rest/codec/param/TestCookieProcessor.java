@@ -44,8 +44,12 @@ public class TestCookieProcessor {
 
   RestClientRequest clientRequest;
 
-  private CookieProcessor createProcessor(String name, Class<?> type) {
-    return new CookieProcessor(name, TypeFactory.defaultInstance().constructType(type), null);
+  private CookieProcessor createProcessor(String name, boolean required, Class<?> type) {
+    return new CookieProcessor(name, required, TypeFactory.defaultInstance().constructType(type), null);
+  }
+
+  private CookieProcessor createProcessor(String name, boolean required, Class<?> type, String defaultValue) {
+    return new CookieProcessor(name, required, TypeFactory.defaultInstance().constructType(type), defaultValue);
   }
 
   private void createClientRequest() {
@@ -66,7 +70,7 @@ public class TestCookieProcessor {
       }
     };
 
-    CookieProcessor processor = createProcessor("c1", String.class);
+    CookieProcessor processor = createProcessor("c1", true, String.class);
     Object value = processor.getValue(request);
     Assert.assertNull(value);
   }
@@ -81,7 +85,7 @@ public class TestCookieProcessor {
       }
     };
 
-    CookieProcessor processor = createProcessor("c2", String.class);
+    CookieProcessor processor = createProcessor("c2", true, String.class);
     Object value = processor.getValue(request);
     Assert.assertNull(value);
   }
@@ -96,9 +100,43 @@ public class TestCookieProcessor {
       }
     };
 
-    CookieProcessor processor = createProcessor("c1", String.class);
+    CookieProcessor processor = createProcessor("c1", true, String.class);
     Object value = processor.getValue(request);
     Assert.assertEquals("c1v", value);
+  }
+
+  @Test
+  public void testGetValueRequiredTrue() throws Exception {
+    Cookie[] cookies = new Cookie[] {new Cookie("c1", null)};
+    new Expectations() {
+      {
+        request.getCookies();
+        result = cookies;
+      }
+    };
+
+    CookieProcessor processor = createProcessor("c1", true, String.class);
+    try {
+      processor.getValue(request);
+      Assert.assertEquals("required is true, throw exception", "not throw exception");
+    } catch (Exception e) {
+      Assert.assertTrue(e.getMessage().contains("Parameter is not valid, required is true"));
+    }
+  }
+
+  @Test
+  public void testGetValueRequiredFalse() throws Exception {
+    Cookie[] cookies = new Cookie[] {new Cookie("c1", null)};
+    new Expectations() {
+      {
+        request.getCookies();
+        result = cookies;
+      }
+    };
+
+    CookieProcessor processor = createProcessor("c1", false, String.class, "test");
+    Object result = processor.getValue(request);
+    Assert.assertEquals("test", result);
   }
 
   @SuppressWarnings("deprecation")
@@ -114,7 +152,7 @@ public class TestCookieProcessor {
       }
     };
 
-    CookieProcessor processor = createProcessor("c1", Date.class);
+    CookieProcessor processor = createProcessor("c1", true, Date.class);
     Object value = processor.getValue(request);
     Assert.assertEquals(strDate, com.fasterxml.jackson.databind.util.ISO8601Utils.format((Date) value));
   }
@@ -123,7 +161,7 @@ public class TestCookieProcessor {
   public void testSetValue() throws Exception {
     createClientRequest();
 
-    CookieProcessor processor = createProcessor("c1", String.class);
+    CookieProcessor processor = createProcessor("c1", true, String.class);
     processor.setValue(clientRequest, "c1v");
     Assert.assertEquals("c1v", cookies.get("c1"));
   }
@@ -136,14 +174,14 @@ public class TestCookieProcessor {
 
     createClientRequest();
 
-    CookieProcessor processor = createProcessor("h1", Date.class);
+    CookieProcessor processor = createProcessor("h1", true, Date.class);
     processor.setValue(clientRequest, date);
     Assert.assertEquals(strDate, cookies.get("h1"));
   }
 
   @Test
   public void testGetProcessorType() {
-    CookieProcessor processor = createProcessor("c1", String.class);
+    CookieProcessor processor = createProcessor("c1", true, String.class);
     Assert.assertEquals("cookie", processor.getProcessorType());
   }
 }

@@ -36,8 +36,8 @@ public class PathProcessorCreator implements ParamValueProcessorCreator {
   public static final String PARAMTYPE = "path";
 
   public static class PathProcessor extends AbstractParamProcessor {
-    public PathProcessor(String paramPath, JavaType targetType, Object defaultValue) {
-      super(paramPath, targetType, defaultValue);
+    public PathProcessor(String paramPath, boolean required, JavaType targetType, Object defaultValue) {
+      super(paramPath, required, targetType, defaultValue);
     }
 
     @Override
@@ -73,6 +73,6 @@ public class PathProcessorCreator implements ParamValueProcessorCreator {
   @Override
   public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
     JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
-    return new PathProcessor(parameter.getName(), targetType, ((PathParameter) parameter).getDefaultValue());
+    return new PathProcessor(parameter.getName(), parameter.getRequired(), targetType, ((PathParameter) parameter).getDefaultValue());
   }
 }
