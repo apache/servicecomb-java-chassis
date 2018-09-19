@@ -356,7 +356,8 @@ Commons IO (http://commons.apache.org/io/) commons-io:commons-io:jar:2.4
 Commons Lang (http://commons.apache.org/lang/) commons-lang:commons-lang:jar:2.6
 ezmorph (http://ezmorph.sourceforge.net) net.sf.ezmorph:ezmorph:jar:1.0.6
 FindBugs-jsr305 (http://findbugs.sourceforge.net/) com.google.code.findbugs:jsr305:jar:3.0.1
-Guava: Google Core Libraries for Java (http://code.google.com/p/guava-libraries/guava) com.google.guava:guava:bundle:19.0
+Guava: Google Core Libraries for Java (http://code.google.com/p/guava-libraries/guava) com.google.guava:guava:bundle:21.0
+Guice (https://github.com/google/guice) com.google.inject:guice:jar:4.1.0
 Hibernate Validator Engine (http://hibernate.org/validator/hibernate-validator) org.hibernate:hibernate-validator:jar:6.0.2.Final
 hystrix-core (https://github.com/Netflix/Hystrix) com.netflix.hystrix:hystrix-core:jar:1.5.10
 hystrix-javanica (https://github.com/Netflix/Hystrix) com.netflix.hystrix:hystrix-javanica:jar:1.5.12
@@ -400,6 +401,7 @@ protostuff :: api (http://protostuff.io/protostuff-api) io.protostuff:protostuff
 protostuff :: collectionschema (http://protostuff.io/protostuff-collectionschema) io.protostuff:protostuff-collectionschema:jar:1.5.2
 protostuff :: core (http://protostuff.io/protostuff-core) io.protostuff:protostuff-core:jar:1.5.2
 protostuff :: runtime (http://protostuff.io/protostuff-runtime) io.protostuff:protostuff-runtime:jar:1.5.2
+protostuff :: parser (https://github.com/protostuff/protostuff-compiler/tree/master/protostuff-parser) io.protostuff:protostuff-parser:jar:2.2.25
 ribbon (https://github.com/Netflix/ribbon) com.netflix.ribbon:ribbon:jar:2.2.2
 ribbon-core (https://github.com/Netflix/ribbon) com.netflix.ribbon:ribbon-core:jar:2.2.2
 ribbon-httpclient (https://github.com/Netflix/ribbon) com.netflix.ribbon:ribbon-httpclient:jar:2.2.5
