@@ -35,6 +35,7 @@ import org.apache.servicecomb.it.testcase.TestRestServerConfig;
 import org.apache.servicecomb.it.testcase.TestRestServerConfigEdge;
 import org.apache.servicecomb.it.testcase.TestTrace;
 import org.apache.servicecomb.it.testcase.TestTraceEdge;
+import org.apache.servicecomb.it.testcase.thirdparty.Test3rdPartyInvocation;
 
 public class ConsumerMain {
   private static ResultPrinter resultPrinter = new ResultPrinter();
@@ -133,6 +134,7 @@ public class ConsumerMain {
     ITJUnitUtils.run(TestRestServerConfigEdge.class);
 
     ITJUnitUtils.run(TestRequestBodySpringMvcSchema.class);
+    ITJUnitUtils.run(Test3rdPartyInvocation.class);
 
     ITJUnitUtils.getParents().pop();
     deploys.getBaseProducer().stop();
