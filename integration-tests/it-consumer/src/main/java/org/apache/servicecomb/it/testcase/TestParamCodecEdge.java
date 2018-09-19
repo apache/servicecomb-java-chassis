@@ -20,16 +20,28 @@ package org.apache.servicecomb.it.testcase;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
+import org.apache.servicecomb.it.junit.ITJUnitUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.web.client.RestTemplate;
 
 public class TestParamCodecEdge {
-  static RestTemplate rt = GateRestTemplate.createEdgeRestTemplate("paramCodec");
+  private static RestTemplate client;
+
+  private static String producerName;
+
+  @Before
+  public void prepare() {
+    if (!ITJUnitUtils.getProducerName().equals(producerName)) {
+      producerName = ITJUnitUtils.getProducerName();
+      client = new GateRestTemplate("it-edge", producerName, "paramCodec");
+    }
+  }
 
   @Test
   public void spaceCharEncode() {
     String paramString = "a%2B+%20b%% %20c";
-    String result = rt.getForObject("/spaceCharCodec/" + paramString + "?q=" + paramString, String.class);
+    String result = client.getForObject("/spaceCharCodec/" + paramString + "?q=" + paramString, String.class);
     assertEquals(paramString + " +%20%% " + paramString + " true", result);
   }
 }

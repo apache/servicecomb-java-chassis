@@ -26,19 +26,30 @@ import java.net.URL;
 import java.util.Scanner;
 
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
+import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
 public class TestRestServerConfigEdge {
-  static GateRestTemplate rt = (GateRestTemplate) GateRestTemplate.createEdgeRestTemplate("dataTypeJaxrs");
+  private static GateRestTemplate client;
+
+  private static String producerName;
+
+  @Before
+  public void prepare() {
+    if (!ITJUnitUtils.getProducerName().equals(producerName)) {
+      producerName = ITJUnitUtils.getProducerName();
+      client = new GateRestTemplate("it-edge", producerName, "dataTypeJaxrs");
+    }
+  }
 
   @Test
   public void testIllegalPathParam() throws IOException {
     String paramString = "%%A";
-    String requestUri =
-        rt.getUrlPrefix() + "/intPath/" + paramString;
+    String requestUri = client.getUrlPrefix() + "/intPath/" + paramString;
 
     URL url = new URL(requestUri);
     HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
@@ -60,10 +71,10 @@ public class TestRestServerConfigEdge {
 
   @Test
   public void test404ThrownByServicCombNotConvertedTo500() {
-    String notFoundRequestUri = rt.getUrlPrefix() + "/intPath2/123";
+    String notFoundRequestUri = client.getUrlPrefix() + "/intPath2/123";
 
     try {
-      rt.getForEntity(notFoundRequestUri, int.class);
+      client.getForEntity(notFoundRequestUri, int.class);
       fail("an exception is expected!");
     } catch (RestClientException e) {
       Assert.assertEquals(404, ((HttpClientErrorException) e).getRawStatusCode());

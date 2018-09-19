@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -37,12 +37,17 @@ public class TestAnnotatedAttribute {
     String fromHeader(String inputs);
   }
 
-  private static Consumers<AnnotatedAttributeIntf> consumersSpringmvc =
-      new Consumers<>("annotatedAttributeSpringmvc", AnnotatedAttributeIntf.class);
+  private static Consumers<AnnotatedAttributeIntf> consumersSpringmvc;
 
-  @BeforeClass
-  public static void classSetup() {
-    consumersSpringmvc.init(ITJUnitUtils.getTransport());
+  private static String producerName;
+
+  @Before
+  public void prepare() {
+    if (!ITJUnitUtils.getProducerName().equals(producerName)) {
+      producerName = ITJUnitUtils.getProducerName();
+      consumersSpringmvc = new Consumers<>(producerName, "annotatedAttributeSpringmvc", AnnotatedAttributeIntf.class);
+      consumersSpringmvc.init(ITJUnitUtils.getTransport());
+    }
   }
 
   @Test

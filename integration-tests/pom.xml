@@ -49,7 +49,7 @@
     <module>it-common-service</module>
 
     <module>it-producer-deploy-springboot2-standalone</module>
-    <module>it-producer-deploy-springboot2-servelt</module>
+    <module>it-producer-deploy-springboot2-servlet</module>
 
     <!--must be the last one-->
     <module>it-consumer</module>

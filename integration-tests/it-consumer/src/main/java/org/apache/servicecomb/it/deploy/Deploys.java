@@ -38,6 +38,10 @@ public class Deploys {
 
   private MicroserviceDeploy baseProducer;
 
+  private MicroserviceDeploy springBoot2StandaloneProducer;
+
+  private MicroserviceDeploy springBoot2ServletProducer;
+
   private MicroserviceDeploy zuul;
 
   public ServiceCenterDeploy getServiceCenter() {
@@ -56,6 +60,14 @@ public class Deploys {
     return baseProducer;
   }
 
+  public MicroserviceDeploy getSpringBoot2StandaloneProducer() {
+    return springBoot2StandaloneProducer;
+  }
+
+  public MicroserviceDeploy getSpringBoot2ServletProducer() {
+    return springBoot2ServletProducer;
+  }
+
   public void init() throws Throwable {
     initPomVersion();
     LOGGER.info("test version: {}", pomVersion);
@@ -63,6 +75,8 @@ public class Deploys {
     serviceCenter = new ServiceCenterDeploy();
     initEdge();
     initBaseProducer();
+    initSpringBoot2StandaloneProducer();
+    initSpringBoot2ServletProducer();
 //    initZuul();
   }
 
@@ -160,31 +174,59 @@ public class Deploys {
   }
 
   private void initBaseProducer() {
-    MicroserviceDeployDefinition baseProducerDefinition = new MicroserviceDeployDefinition();
-    baseProducerDefinition.setDeployName("baseProducer");
-    baseProducerDefinition.setCmd("it-producer");
-    baseProducerDefinition.setArgs(new String[] {});
-    baseProducerDefinition.setAppId("integration-test");
-    baseProducerDefinition.setMicroserviceName("it-producer");
-    baseProducerDefinition.setVersion(DEFAULT_MICROSERVICE_VERSION);
+    MicroserviceDeployDefinition definition = new MicroserviceDeployDefinition();
+    definition.setDeployName("baseProducer");
+    definition.setCmd("it-producer");
+    definition.setArgs(new String[] {});
+    definition.setAppId("integration-test");
+    definition.setMicroserviceName("it-producer");
+    definition.setVersion(DEFAULT_MICROSERVICE_VERSION);
 
-    initDeployDefinition(baseProducerDefinition);
+    initDeployDefinition(definition);
 
-    baseProducer = new MicroserviceDeploy(baseProducerDefinition);
+    baseProducer = new MicroserviceDeploy(definition);
+  }
+
+  private void initSpringBoot2ServletProducer() {
+    MicroserviceDeployDefinition definition = new MicroserviceDeployDefinition();
+    definition.setDeployName("springBoot2ServletProducer");
+    definition.setCmd("it-producer-deploy-springboot2-servlet");
+    definition.setArgs(new String[] {});
+    definition.setAppId("integration-test");
+    definition.setMicroserviceName("it-producer-deploy-springboot2-servlet");
+    definition.setVersion(DEFAULT_MICROSERVICE_VERSION);
+
+    initDeployDefinition(definition);
+
+    springBoot2ServletProducer = new MicroserviceDeploy(definition);
+  }
+
+  private void initSpringBoot2StandaloneProducer() {
+    MicroserviceDeployDefinition definition = new MicroserviceDeployDefinition();
+    definition.setDeployName("springBoot2StandaloneProducer");
+    definition.setCmd("it-producer-deploy-springboot2-standalone");
+    definition.setArgs(new String[] {});
+    definition.setAppId("integration-test");
+    definition.setMicroserviceName("it-producer-deploy-springboot2-standalone");
+    definition.setVersion(DEFAULT_MICROSERVICE_VERSION);
+
+    initDeployDefinition(definition);
+
+    springBoot2StandaloneProducer = new MicroserviceDeploy(definition);
   }
 
   private void initEdge() {
-    MicroserviceDeployDefinition edgeDefinition = new MicroserviceDeployDefinition();
-    edgeDefinition.setDeployName("edge");
-    edgeDefinition.setCmd("it-edge");
-    edgeDefinition.setArgs(new String[] {});
-    edgeDefinition.setAppId("integration-test");
-    edgeDefinition.setMicroserviceName("it-edge");
-    edgeDefinition.setVersion(DEFAULT_MICROSERVICE_VERSION);
+    MicroserviceDeployDefinition definition = new MicroserviceDeployDefinition();
+    definition.setDeployName("edge");
+    definition.setCmd("it-edge");
+    definition.setArgs(new String[] {});
+    definition.setAppId("integration-test");
+    definition.setMicroserviceName("it-edge");
+    definition.setVersion(DEFAULT_MICROSERVICE_VERSION);
 
-    initDeployDefinition(edgeDefinition);
+    initDeployDefinition(definition);
 
-    edge = new MicroserviceDeploy(edgeDefinition);
+    edge = new MicroserviceDeploy(definition);
   }
 
   //  private void initZuul() {

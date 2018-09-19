@@ -92,6 +92,10 @@ public class CommandReceiver {
         }
         ITUtils.forceWait(TimeUnit.SECONDS, 1);
       }
+
+      //make sure kill for servlet
+      System.exit(0);
+
     }, "it-stop").start();
   }
 }

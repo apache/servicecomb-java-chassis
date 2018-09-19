@@ -14,13 +14,12 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
+servicecomb-config-order: 1
 
 service_description:
   name: it-producer-deploy-springboot2-standalone
-  version: 0.0.1
+
 servicecomb:
-  service:
-    registry:
-      address: http://127.0.0.1:30100
   rest:
-    address: 0.0.0.0:8080
+    server:
+      maxInitialLineLength: 5000

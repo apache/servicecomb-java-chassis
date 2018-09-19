@@ -22,8 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
+import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -31,11 +32,18 @@ import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
 public class TestDefaultJsonValueJaxrsSchema {
-  static RestTemplate client = GateRestTemplate.createEdgeRestTemplate("defaultJsonValueJaxrs");
+  private static RestTemplate client;
 
-  @BeforeClass
-  public static void classSetup() {
+  private static String producerName;
+
+  @Before
+  public void prepare() {
+    if (!ITJUnitUtils.getProducerName().equals(producerName)) {
+      producerName = ITJUnitUtils.getProducerName();
+      client = new GateRestTemplate("it-edge", producerName, "defaultJsonValueJaxrs");
+    }
   }
+
 
   @Test
   public void invokeFromEdgeWithQuery() {

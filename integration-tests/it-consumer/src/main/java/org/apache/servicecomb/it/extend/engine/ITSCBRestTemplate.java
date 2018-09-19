@@ -24,10 +24,6 @@ import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 
 public class ITSCBRestTemplate extends CseRestTemplate {
-  public ITSCBRestTemplate(String schemaId) {
-    this("it-producer", schemaId);
-  }
-
   public ITSCBRestTemplate(String producerName, String schemaId) {
     MicroserviceVersionRule microserviceVersionRule = RegistryUtils.getServiceRegistry().getAppManager()
         .getOrCreateMicroserviceVersionRule(RegistryUtils.getAppId(), producerName,

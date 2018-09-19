@@ -33,26 +33,6 @@ public class GateRestTemplate extends RestTemplate {
 
   private String urlPrefix;
 
-  public static RestTemplate createEdgeRestTemplate(String schemaId) {
-    return createEdgeRestTemplate("it-producer", schemaId);
-  }
-
-  public static RestTemplate createEdgeRestTemplate(String producerName, String schemaId) {
-    return new GateRestTemplate("it-edge", schemaId);
-  }
-
-  public static RestTemplate createZuulRestTemplate(String schemaId) {
-    return createZuulRestTemplate("it-producer", schemaId);
-  }
-
-  public static RestTemplate createZuulRestTemplate(String producerName, String schemaId) {
-    return new GateRestTemplate("it-zuul", schemaId);
-  }
-
-  public GateRestTemplate(String gateName, String schemaId) {
-    this(gateName, "it-producer", schemaId);
-  }
-
   public GateRestTemplate(String gateName, String producerName, String schemaId) {
     urlPrefix = getUrlPrefix(gateName, producerName, schemaId);
 

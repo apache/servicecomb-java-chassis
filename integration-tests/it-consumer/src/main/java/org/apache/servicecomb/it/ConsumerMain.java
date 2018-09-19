@@ -98,11 +98,16 @@ public class ConsumerMain {
     // 3.deploy development mode producer
     // ......
 
+    testSpringBoot2Standalone();
+    testSpringBoot2Servlet();
+
     deploys.getEdge().stop();
   }
 
   private static void testStandalone() throws Throwable {
     deploys.getBaseProducer().ensureReady();
+
+    ITJUnitUtils.setProducerName("it-producer");
 
     ITJUnitUtils.addParent("standalone");
 
@@ -125,5 +130,62 @@ public class ConsumerMain {
 
     ITJUnitUtils.getParents().pop();
     deploys.getBaseProducer().stop();
+  }
+
+  private static void testSpringBoot2Standalone() throws Throwable {
+    deploys.getSpringBoot2StandaloneProducer().ensureReady();
+
+    ITJUnitUtils.setProducerName("it-producer-deploy-springboot2-standalone");
+
+    ITJUnitUtils.addParent("springBoot2Standalone");
+
+    ITJUnitUtils.runWithHighwayAndRest(TestChangeTransport.class);
+    ITJUnitUtils.runWithHighwayAndRest(TestDataTypePrimitive.class);
+    ITJUnitUtils.runWithHighwayAndRest(TestAnnotatedAttribute.class);
+
+    ITJUnitUtils.runWithRest(TestDefaultValue.class);
+
+    ITJUnitUtils.runWithHighwayAndRest(TestTrace.class);
+    ITJUnitUtils.run(TestTraceEdge.class);
+
+    ITJUnitUtils.runWithHighwayAndRest(TestParamCodec.class);
+    ITJUnitUtils.run(TestParamCodecEdge.class);
+
+    //ITJUnitUtils.run(TestDefaultJsonValueJaxrsSchema.class);
+
+    ITJUnitUtils.runWithRest(TestRestServerConfig.class);
+    ITJUnitUtils.run(TestRestServerConfigEdge.class);
+
+    ITJUnitUtils.getParents().pop();
+
+    deploys.getSpringBoot2StandaloneProducer().stop();
+  }
+
+  private static void testSpringBoot2Servlet() throws Throwable {
+    deploys.getSpringBoot2ServletProducer().ensureReady();
+
+    ITJUnitUtils.setProducerName("it-producer-deploy-springboot2-servlet");
+
+    ITJUnitUtils.addParent("springBoot2Servlet");
+
+    ITJUnitUtils.runWithHighwayAndRest(TestChangeTransport.class);
+    ITJUnitUtils.runWithHighwayAndRest(TestDataTypePrimitive.class);
+
+    ITJUnitUtils.runWithRest(TestDefaultValue.class);
+
+    ITJUnitUtils.runWithHighwayAndRest(TestTrace.class);
+    ITJUnitUtils.run(TestTraceEdge.class);
+
+    ITJUnitUtils.runWithHighwayAndRest(TestParamCodec.class);
+    ITJUnitUtils.run(TestParamCodecEdge.class);
+
+    //ITJUnitUtils.run(TestDefaultJsonValueJaxrsSchema.class);
+
+    //config by embedded tomcat
+    //ITJUnitUtils.runWithRest(TestRestServerConfig.class);
+
+    ITJUnitUtils.getParents().pop();
+
+    deploys.getSpringBoot2ServletProducer().stop();
   }
 }

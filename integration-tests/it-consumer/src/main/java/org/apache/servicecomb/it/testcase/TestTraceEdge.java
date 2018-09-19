@@ -18,7 +18,9 @@ package org.apache.servicecomb.it.testcase;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
+import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -26,7 +28,17 @@ import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
 public class TestTraceEdge {
-  static RestTemplate rt = GateRestTemplate.createEdgeRestTemplate("trace");
+  private static RestTemplate client;
+
+  private static String producerName;
+
+  @Before
+  public void prepare() {
+    if (!ITJUnitUtils.getProducerName().equals(producerName)) {
+      producerName = ITJUnitUtils.getProducerName();
+      client = new GateRestTemplate("it-edge", producerName, "trace");
+    }
+  }
 
   @Test
   public void echo() {
@@ -35,7 +47,7 @@ public class TestTraceEdge {
 
     HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
 
-    String traceId = rt.exchange("/echo-proxy", HttpMethod.GET, requestEntity, String.class).getBody();
+    String traceId = client.exchange("/echo-proxy", HttpMethod.GET, requestEntity, String.class).getBody();
     Assert.assertEquals("testId", traceId);
   }
 }

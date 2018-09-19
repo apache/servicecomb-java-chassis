@@ -22,6 +22,7 @@ import java.util.concurrent.ExecutionException;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +34,7 @@ public class TraceSchema {
     CompletableFuture<String> echo();
   }
 
-  TraceSchemaIntf intf = Invoker.createProxy("it-producer", "trace", TraceSchemaIntf.class);
+  TraceSchemaIntf intf;
 
   @GetMapping(path = "echo")
   public String echo(InvocationContext context) {
@@ -42,6 +43,13 @@ public class TraceSchema {
 
   @GetMapping(path = "echo-proxy")
   public String echoProxy() throws ExecutionException, InterruptedException {
+    initTraceSchemaIntf();
     return intf.echo().get();
+  }
+
+  private void initTraceSchemaIntf() {
+    if (intf == null) {
+      intf = Invoker.createProxy(RegistryUtils.getMicroservice().getServiceName(), "trace", TraceSchemaIntf.class);
+    }
   }
 }
