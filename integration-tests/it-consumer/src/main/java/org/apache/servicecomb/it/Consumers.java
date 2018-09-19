@@ -22,7 +22,7 @@ import org.apache.servicecomb.it.extend.engine.ITSCBRestTemplate;
 import org.springframework.web.client.RestTemplate;
 
 public class Consumers<INTF> {
-  private String producerName = "it-producer";
+  private String producerName;
 
   private String schemaId;
 
@@ -38,12 +38,13 @@ public class Consumers<INTF> {
 
   private String transport;
 
-  public Consumers(String schemaId, Class<INTF> intfCls) {
+  public Consumers(String producerName, String schemaId, Class<INTF> intfCls) {
+    this.producerName = producerName;
     this.schemaId = schemaId;
     this.intfCls = intfCls;
 
     scbRestTemplate = new ITSCBRestTemplate(producerName, schemaId);
-    edgeRestTemplate = GateRestTemplate.createEdgeRestTemplate(producerName, schemaId);
+    edgeRestTemplate = new GateRestTemplate("it-edge", producerName, schemaId);
     zuulRestTemplate = null;// GateRestTemplate.createZuulRestTemplate(producerName, schemaId);
   }
 

@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -72,19 +72,25 @@ public class TestDataTypePrimitive {
     String stringConcat(String str1, String str2);
   }
 
-  private static Consumers<DataTypePojoIntf> consumersPojo = new Consumers<>("dataTypePojo", DataTypePojoIntf.class);
+  private static Consumers<DataTypePojoIntf> consumersPojo;
 
-  private static Consumers<DataTypeRestIntf> consumersJaxrs =
-      new Consumers<>("dataTypeJaxrs", DataTypeRestIntf.class);
+  private static Consumers<DataTypeRestIntf> consumersJaxrs;
 
-  private static Consumers<DataTypeRestIntf> consumersSpringmvc = new Consumers<>("dataTypeSpringmvc",
-      DataTypeRestIntf.class);
+  private static Consumers<DataTypeRestIntf> consumersSpringmvc;
 
-  @BeforeClass
-  public static void classSetup() {
-    consumersPojo.init(ITJUnitUtils.getTransport());
-    consumersJaxrs.init(ITJUnitUtils.getTransport());
-    consumersSpringmvc.init(ITJUnitUtils.getTransport());
+  private static String producerName;
+
+  @Before
+  public void prepare() {
+    if (!ITJUnitUtils.getProducerName().equals(producerName)) {
+      producerName = ITJUnitUtils.getProducerName();
+      consumersPojo = new Consumers<>(producerName, "dataTypePojo", DataTypePojoIntf.class);
+      consumersJaxrs = new Consumers<>(producerName, "dataTypeJaxrs", DataTypeRestIntf.class);
+      consumersSpringmvc = new Consumers<>(producerName, "dataTypeSpringmvc", DataTypeRestIntf.class);
+      consumersPojo.init(ITJUnitUtils.getTransport());
+      consumersJaxrs.init(ITJUnitUtils.getTransport());
+      consumersSpringmvc.init(ITJUnitUtils.getTransport());
+    }
   }
 
   @Test

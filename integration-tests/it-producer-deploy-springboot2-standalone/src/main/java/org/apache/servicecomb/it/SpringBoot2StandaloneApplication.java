@@ -25,6 +25,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @EnableServiceComb
 public class SpringBoot2StandaloneApplication {
   public static void main(String[] args) {
+    new CommandReceiver();
+
     SpringApplication.run(SpringBoot2StandaloneApplication.class, args);
   }
 }

@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestParamCodec {
@@ -29,11 +29,17 @@ public class TestParamCodec {
     String spaceCharCodec(String pathVal, String q);
   }
 
-  static Consumers<ParamCodecSchemaIntf> consumers = new Consumers<>("paramCodec", ParamCodecSchemaIntf.class);
+  private static Consumers<ParamCodecSchemaIntf> consumers;
 
-  @BeforeClass
-  public static void classSetup() {
-    consumers.init(ITJUnitUtils.getTransport());
+  private static String producerName;
+
+  @Before
+  public void prepare() {
+    if (!ITJUnitUtils.getProducerName().equals(producerName)) {
+      producerName = ITJUnitUtils.getProducerName();
+      consumers = new Consumers<>(producerName, "paramCodec", ParamCodecSchemaIntf.class);
+      consumers.init(ITJUnitUtils.getTransport());
+    }
   }
 
   @Test

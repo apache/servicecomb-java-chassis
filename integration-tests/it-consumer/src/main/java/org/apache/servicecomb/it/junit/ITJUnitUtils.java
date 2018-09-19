@@ -45,6 +45,16 @@ public final class ITJUnitUtils {
 
   private static String transport;
 
+  private static String producerName;
+
+  public static String getProducerName() {
+    return producerName;
+  }
+
+  public static void setProducerName(String producerName) {
+    ITJUnitUtils.producerName = producerName;
+  }
+
   static {
     jUnitCore.addListener(new RunListener() {
       @Override

@@ -20,7 +20,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestDefaultValue {
@@ -56,16 +56,21 @@ public class TestDefaultValue {
 
   private int defaultInt = 13;
 
-  private static Consumers<DefaultValueIntf> consumersJaxrs = new Consumers<>("defaultValueJaxrs",
-      DefaultValueIntf.class);
+  private static Consumers<DefaultValueIntf> consumersJaxrs;
 
-  private static Consumers<DefaultValueRequireIntf> consumersSpringmvc = new Consumers<>("defaultValueSpringmvc",
-      DefaultValueRequireIntf.class);
+  private static Consumers<DefaultValueRequireIntf> consumersSpringmvc;
 
-  @BeforeClass
-  public static void classSetup() {
-    consumersJaxrs.init(ITJUnitUtils.getTransport());
-    consumersSpringmvc.init(ITJUnitUtils.getTransport());
+  private static String producerName;
+
+  @Before
+  public void prepare() {
+    if (!ITJUnitUtils.getProducerName().equals(producerName)) {
+      producerName = ITJUnitUtils.getProducerName();
+      consumersJaxrs = new Consumers<>(producerName, "defaultValueJaxrs", DefaultValueIntf.class);
+      consumersSpringmvc = new Consumers<>(producerName, "defaultValueSpringmvc", DefaultValueRequireIntf.class);
+      consumersJaxrs.init(ITJUnitUtils.getTransport());
+      consumersSpringmvc.init(ITJUnitUtils.getTransport());
+    }
   }
 
   @Test

@@ -24,9 +24,9 @@ import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
-import org.junit.AfterClass;
+import org.junit.After;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestTrace {
@@ -34,19 +34,26 @@ public class TestTrace {
     CompletableFuture<String> echoProxy();
   }
 
-  static Consumers<TraceSchemaIntf> consumers = new Consumers<>("trace", TraceSchemaIntf.class);
+  private static Consumers<TraceSchemaIntf> consumers;
 
-  @BeforeClass
-  public static void classSetup() {
-    consumers.init(ITJUnitUtils.getTransport());
+
+  private static String producerName;
+
+  @Before
+  public void prepare() {
+    if (!ITJUnitUtils.getProducerName().equals(producerName)) {
+      producerName = ITJUnitUtils.getProducerName();
+      consumers = new Consumers<>(producerName, "trace", TraceSchemaIntf.class);
+      consumers.init(ITJUnitUtils.getTransport());
+    }
 
     InvocationContext context = new InvocationContext();
     context.addContext(Const.TRACE_ID_NAME, "testId");
     ContextUtils.setInvocationContext(context);
   }
 
-  @AfterClass
-  public static void classTeardown() {
+  @After
+  public void teardown() {
     ContextUtils.removeInvocationContext();
   }
 
