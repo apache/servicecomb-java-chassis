@@ -36,6 +36,7 @@ import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
@@ -113,7 +114,7 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
     if (swagger == null) {
       SwaggerGenerator generator = generateSwagger(context);
       swagger = generator.getSwagger();
-      String swaggerContent = getSwaggerContent(swagger);
+      String swaggerContent = SwaggerUtils.swaggerToString(swagger);
       LOGGER.info("generate swagger for {}/{}/{}, swagger: {}",
           context.getMicroserviceMeta().getAppId(),
           context.getMicroserviceName(),

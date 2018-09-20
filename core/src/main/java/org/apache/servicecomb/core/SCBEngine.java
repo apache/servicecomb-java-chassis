@@ -31,6 +31,7 @@ import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
+import org.apache.servicecomb.core.definition.schema.StaticSchemaFactory;
 import org.apache.servicecomb.core.endpoint.AbstractEndpointsCache;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
@@ -81,6 +82,8 @@ public class SCBEngine {
   private volatile SCBStatus status = SCBStatus.DOWN;
 
   private EventBus eventBus = EventManager.getEventBus();
+
+  private StaticSchemaFactory staticSchemaFactory;
 
   private static final SCBEngine INSTANCE = new SCBEngine();
 
@@ -373,5 +376,13 @@ public class SCBEngine {
             String.format("Timeout to wait status up, timeout: %dms, last status: %s", msWait, currentStatus));
       }
     }
+  }
+
+  public StaticSchemaFactory getStaticSchemaFactory() {
+    return staticSchemaFactory;
+  }
+
+  public void setStaticSchemaFactory(StaticSchemaFactory staticSchemaFactory) {
+    this.staticSchemaFactory = staticSchemaFactory;
   }
 }

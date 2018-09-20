@@ -62,13 +62,18 @@ public interface ServiceRegistry {
 
   /**
    * <p>
-   * Register a third party service if not registered before, and add it's instances into
+   * Register a third party service if not registered before, and set it's instances into
    * {@linkplain org.apache.servicecomb.serviceregistry.consumer.StaticMicroserviceVersions StaticMicroserviceVersions}.
    * </p>
    * <p>
    * The registered third party service has the same {@code appId} and {@code environment} as this microservice instance has,
    * and there is only one schema represented by {@code schemaIntfCls}, whose name is the same as {@code microserviceName}.
    * </p>
+   * <em>
+   *   This method is for initializing 3rd party service endpoint config.
+   *   i.e. If this service has not been registered before, this service will be registered and the instances will be set;
+   *   otherwise, NOTHING will happen.
+   * </em>
    *
    * @param microserviceName name of the 3rd party service, and this param also specifies the schemaId
    * @param version version of this 3rd party service
@@ -77,13 +82,15 @@ public interface ServiceRegistry {
    * @param instances the instances of this 3rd party service. Users only need to specify the endpoint information, other
    * necessary information will be generate and set in the implementation of this method.
    */
-  void registryMicroserviceMapping(String microserviceName, String version, Class<?> schemaIntfCls,
+  void registerMicroserviceMapping(String microserviceName, String version, Class<?> schemaIntfCls,
       List<MicroserviceInstance> instances);
 
   /**
-   * @see #registryMicroserviceMapping(String, String, Class, List)
+   * @see #registerMicroserviceMapping(String, String, Class, List)
    * @param endpoints the endpoints of 3rd party service. Each of endpoints will be treated as a separated instance.
+   * Format of the endpoints is the same as the endpoints that ServiceComb microservices register in service-center,
+   * like {@code rest://127.0.0.1:8080}
    */
-  void registryMicroserviceMappingByEndpoints(String microserviceName, String version,
+  void registerMicroserviceMappingByEndpoints(String microserviceName, String version,
       Class<?> schemaIntfCls, List<String> endpoints);
 }

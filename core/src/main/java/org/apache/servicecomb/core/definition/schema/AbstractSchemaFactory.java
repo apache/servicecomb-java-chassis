@@ -31,11 +31,7 @@ import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorCo
 import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectWriter;
-
 import io.swagger.models.Swagger;
-import io.swagger.util.Yaml;
 
 /**
  * 由consumer或producer发起的契约注册
@@ -48,8 +44,6 @@ public abstract class AbstractSchemaFactory<CONTEXT extends SchemaContext> {
 
   @Inject
   protected CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext;
-
-  private ObjectWriter writer = Yaml.pretty();
 
   @Inject
   public void setSchemaLoader(SchemaLoader schemaLoader) {
@@ -108,13 +102,5 @@ public abstract class AbstractSchemaFactory<CONTEXT extends SchemaContext> {
     generator.generate();
 
     return generator;
-  }
-
-  protected String getSwaggerContent(Swagger swagger) {
-    try {
-      return writer.writeValueAsString(swagger);
-    } catch (JsonProcessingException e) {
-      throw new Error(e);
-    }
   }
 }
