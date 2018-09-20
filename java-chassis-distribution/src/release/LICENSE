@@ -450,10 +450,10 @@ tomcat-embed-core (http://tomcat.apache.org/) org.apache.tomcat.embed:tomcat-emb
 tomcat-embed-el (http://tomcat.apache.org/) org.apache.tomcat.embed:tomcat-embed-el:jar:8.0.33
 tomcat-embed-logging-juli (http://tomcat.apache.org/) org.apache.tomcat.embed:tomcat-embed-logging-juli:jar:8.0.33
 tomcat-embed-websocket (http://tomcat.apache.org/) org.apache.tomcat.embed:tomcat-embed-websocket:jar:8.0.33
-Vert.x Bridge Common (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-bridge-common) io.vertx:vertx-bridge-common:jar:3.5.0
-Vert.x Core (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-core) io.vertx:vertx-core:jar:3.5.0
-vertx-auth-common (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-auth/vertx-auth-common) io.vertx:vertx-auth-common:jar:3.5.0
-vertx-web (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-web-parent/vertx-web) io.vertx:vertx-web:jar:3.5.0
+Vert.x Bridge Common (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-bridge-common) io.vertx:vertx-bridge-common:jar:3.5.3
+Vert.x Core (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-core) io.vertx:vertx-core:jar:3.5.3
+vertx-auth-common (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-auth/vertx-auth-common) io.vertx:vertx-auth-common:jar:3.5.3
+vertx-web (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-web-parent/vertx-web) io.vertx:vertx-web:jar:3.5.3
 Woodstox (https://github.com/FasterXML/woodstox) com.fasterxml.woodstox:woodstox-core:bundle:5.0.3
 Zipkin Reporter Spring Factory Beans (https://github.com/openzipkin/zipkin-reporter-java/zipkin-reporter-spring-beans) io.zipkin.reporter2:zipkin-reporter-spring-beans:jar:2.2.2
 Zipkin Reporter: Core (https://github.com/openzipkin/zipkin-reporter-java/zipkin-reporter) io.zipkin.reporter2:zipkin-reporter:jar:2.5.0
