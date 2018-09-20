@@ -66,14 +66,14 @@ public class Test3rdPartyInvocation {
     int endIndex = urlPrefix.indexOf("/", beginIndex + 3);
     String endpoint = "rest:" + urlPrefix.substring(beginIndex, endIndex);
     RegistryUtils.getServiceRegistry()
-        .registryMicroserviceMappingByEndpoints(
+        .registerMicroserviceMappingByEndpoints(
             THIRD_PARTY_MICROSERVICE_NAME, "1.2.1", DataTypeJaxrsSchemaIntf.class,
             Collections.singletonList(endpoint));
 
     MicroserviceInstance instance = new MicroserviceInstance();
     instance.setEndpoints(Collections.singletonList(endpoint));
     RegistryUtils.getServiceRegistry()
-        .registryMicroserviceMapping(
+        .registerMicroserviceMapping(
             ASYNC_THIRD_PARTY_MICROSERVICE_NAME, "1.1.1", DataTypeJaxrsSchemaAsyncIntf.class,
             Collections.singletonList(instance)
         );

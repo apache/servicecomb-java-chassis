@@ -309,20 +309,22 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   }
 
   @Override
-  public void registryMicroserviceMapping(String microserviceName, String version, Class<?> schemaIntfCls,
+  public void registerMicroserviceMapping(String microserviceName, String version, Class<?> schemaIntfCls,
       List<MicroserviceInstance> instances) {
     String app = RegistryUtils.getAppId();
     MicroserviceManager microserviceManager = appManager.getOrCreateMicroserviceManager(app);
-    StaticMicroserviceVersions microserviceVersions =
-        (StaticMicroserviceVersions) microserviceManager.getVersionsByName()
-            .computeIfAbsent(microserviceName,
-                svcName -> new StaticMicroserviceVersions(this.appManager, app, microserviceName, schemaIntfCls));
-
-    microserviceVersions.addInstances(version, instances);
+    microserviceManager.getVersionsByName()
+        .computeIfAbsent(microserviceName,
+            svcName -> {
+              StaticMicroserviceVersions microserviceVersions = new StaticMicroserviceVersions(this.appManager,
+                  app, microserviceName, schemaIntfCls);
+              microserviceVersions.addInstances(version, instances);
+              return microserviceVersions;
+            });
   }
 
   @Override
-  public void registryMicroserviceMappingByEndpoints(String microserviceName, String version,
+  public void registerMicroserviceMappingByEndpoints(String microserviceName, String version,
       Class<?> schemaIntfCls, List<String> endpoints) {
     ArrayList<MicroserviceInstance> microserviceInstances = new ArrayList<>();
     for (String endpoint : endpoints) {
@@ -331,6 +333,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
       microserviceInstances.add(instance);
     }
 
-    registryMicroserviceMapping(microserviceName, version, schemaIntfCls, microserviceInstances);
+    registerMicroserviceMapping(microserviceName, version, schemaIntfCls, microserviceInstances);
   }
 }

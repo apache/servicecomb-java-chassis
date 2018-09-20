@@ -31,6 +31,7 @@ import org.apache.servicecomb.core.definition.loader.SchemaLoader;
 import org.apache.servicecomb.core.unittest.UnitTestMeta;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.StaticMicroservice;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -73,7 +74,7 @@ public class StaticSchemaFactoryTest {
 
     SchemaMeta schemaMeta = microserviceMeta.findSchemaMeta(serviceAndSchemaName);
     Assert.assertEquals(EXPECTED_SCHEMA_CONTENT,
-        staticSchemaFactory.getSwaggerContent(schemaMeta.getSwagger()));
+        SwaggerUtils.swaggerToString(schemaMeta.getSwagger()));
 
     Assert.assertEquals(2, schemaMeta.getOperations().size());
     OperationMeta operationMeta = schemaMeta.ensureFindOperation("add");

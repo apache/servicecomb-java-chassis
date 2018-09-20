@@ -20,6 +20,7 @@ package org.apache.servicecomb.core.definition;
 import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.classloader.MicroserviceClassLoaderFactory;
 import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
 import org.apache.servicecomb.core.definition.schema.StaticSchemaFactory;
@@ -62,7 +63,7 @@ public class StaticMicroserviceVersionMetaTest {
     Mockito.when(classLoaderFactory.create(appId, serviceName, version)).thenReturn(classLoader);
 
     Holder<Boolean> schemaLoaded = new Holder<>(false);
-    CseContext.getInstance().setStaticSchemaFactory(new MockUp<StaticSchemaFactory>() {
+    SCBEngine.getInstance().setStaticSchemaFactory(new MockUp<StaticSchemaFactory>() {
       @Mock
       void loadSchema(MicroserviceMeta microserviceMeta, StaticMicroservice microservice) {
         Assert.assertSame(classLoader, microserviceMeta.getClassLoader());

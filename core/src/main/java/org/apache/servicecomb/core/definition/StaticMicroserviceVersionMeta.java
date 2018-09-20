@@ -18,6 +18,7 @@
 package org.apache.servicecomb.core.definition;
 
 import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.classloader.MicroserviceClassLoaderFactory;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.registry.StaticMicroservice;
@@ -37,7 +38,7 @@ public class StaticMicroserviceVersionMeta extends MicroserviceVersionMeta {
       return;
     }
 
-    CseContext.getInstance().getStaticSchemaFactory().loadSchema(microserviceMeta, microservice);
+    SCBEngine.getInstance().getStaticSchemaFactory().loadSchema(microserviceMeta, microservice);
     CseContext.getInstance().getSchemaListenerManager().notifySchemaListener(microserviceMeta);
   }
 }

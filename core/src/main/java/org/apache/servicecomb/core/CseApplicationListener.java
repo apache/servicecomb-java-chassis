@@ -19,6 +19,7 @@ package org.apache.servicecomb.core;
 
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
+import org.apache.servicecomb.core.definition.schema.StaticSchemaFactory;
 import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.core.transport.TransportManager;
@@ -74,6 +75,7 @@ public class CseApplicationListener
         SCBEngine.getInstance().setTransportManager(applicationContext.getBean(TransportManager.class));
         SCBEngine.getInstance().setSchemaListenerManager(applicationContext.getBean(SchemaListenerManager.class));
         SCBEngine.getInstance().setBootListenerList(applicationContext.getBeansOfType(BootListener.class).values());
+        SCBEngine.getInstance().setStaticSchemaFactory(applicationContext.getBean(StaticSchemaFactory.class));
       }
 
       SCBEngine.getInstance().init();

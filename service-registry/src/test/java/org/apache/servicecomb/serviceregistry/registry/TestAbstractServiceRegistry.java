@@ -22,8 +22,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import javax.xml.ws.Holder;
-
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
@@ -31,8 +29,9 @@ import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.consumer.DefaultMicroserviceVersionFactory;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceManager;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersion;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
-import org.apache.servicecomb.serviceregistry.consumer.StaticMicroserviceVersions;
+import org.apache.servicecomb.serviceregistry.consumer.StaticMicroserviceVersionFactory;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -46,9 +45,8 @@ import org.mockito.Mockito;
 
 import com.google.common.eventbus.EventBus;
 
+import mockit.Deencapsulation;
 import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestAbstractServiceRegistry {
@@ -143,26 +141,27 @@ public class TestAbstractServiceRegistry {
     String testServiceName = "testService";
     final String testVersion = "1.0.1";
 
-    registry.appManager = Mockito.mock(AppManager.class);
-    MicroserviceManager microserviceManager = Mockito.mock(MicroserviceManager.class);
-    Mockito.when(registry.appManager.getOrCreateMicroserviceManager(this.appId)).thenReturn(microserviceManager);
-    HashMap<String, MicroserviceVersions> versionsByName = new HashMap<>();
-    Mockito.when(microserviceManager.getVersionsByName()).thenReturn(versionsByName);
+    HashMap<String, MicroserviceVersions> versionsByName = prepareForMicroserviceMappingRegistry();
 
     ArrayList<MicroserviceInstance> instancesParam = new ArrayList<>();
-    Holder<Boolean> checked = new Holder<>(false);
-    StaticMicroserviceVersions microserviceVersions = new MockUp<StaticMicroserviceVersions>() {
-      @Mock
-      void addInstances(String version, List<MicroserviceInstance> instances) {
-        Assert.assertEquals(version, version);
-        Assert.assertSame(instancesParam, instances);
-        checked.value = true;
-      }
-    }.getMockInstance();
-    versionsByName.put(testServiceName, microserviceVersions);
+    instancesParam.add(new MicroserviceInstance());
+    registry.registerMicroserviceMapping(testServiceName, testVersion, Test3rdPartyServiceIntf.class, instancesParam);
 
-    registry.registryMicroserviceMapping(testServiceName, testVersion, Test3rdPartyServiceIntf.class, instancesParam);
-    Assert.assertTrue(checked.value);
+    MicroserviceVersions microserviceVersions = versionsByName.get(testServiceName);
+    List<MicroserviceInstance> instances = Deencapsulation.getField(microserviceVersions, "instances");
+    Assert.assertEquals(1, instances.size());
+    Assert.assertSame(instancesParam.get(0), instances.get(0));
+
+    // nothing will happen if register repeatedly
+    List<MicroserviceInstance> newInstancesParam = new ArrayList<>();
+    newInstancesParam.add(new MicroserviceInstance());
+    registry.registerMicroserviceMapping(
+        testServiceName, testVersion, Test3rdPartyServiceIntf.class, newInstancesParam);
+
+    microserviceVersions = versionsByName.get(testServiceName);
+    instances = Deencapsulation.getField(microserviceVersions, "instances");
+    Assert.assertEquals(1, instances.size());
+    Assert.assertSame(instancesParam.get(0), instances.get(0));
   }
 
   @Test
@@ -170,31 +169,34 @@ public class TestAbstractServiceRegistry {
     String testServiceName = "testService";
     final String testVersion = "1.0.1";
 
+    HashMap<String, MicroserviceVersions> versionByName = prepareForMicroserviceMappingRegistry();
+
+    registry.registerMicroserviceMappingByEndpoints(testServiceName, testVersion, Test3rdPartyServiceIntf.class,
+        Arrays.asList("cse://127.0.0.1:8080", "cse://127.0.0.1:8081"));
+
+    MicroserviceVersions microserviceVersions = versionByName.get(testServiceName);
+    List<MicroserviceInstance> instances = Deencapsulation.getField(microserviceVersions, "instances");
+    Assert.assertEquals(2, instances.size());
+    Assert.assertEquals("cse://127.0.0.1:8080", instances.get(0).getEndpoints().get(0));
+    Assert.assertEquals("cse://127.0.0.1:8081", instances.get(1).getEndpoints().get(0));
+  }
+
+  private HashMap<String, MicroserviceVersions> prepareForMicroserviceMappingRegistry() {
     registry.appManager = Mockito.mock(AppManager.class);
     MicroserviceManager microserviceManager = Mockito.mock(MicroserviceManager.class);
-    Mockito.when(registry.appManager.getOrCreateMicroserviceManager(this.appId)).thenReturn(microserviceManager);
+    StaticMicroserviceVersionFactory staticMicroserviceVersionFactory =
+        Mockito.mock(StaticMicroserviceVersionFactory.class);
     HashMap<String, MicroserviceVersions> versionsByName = new HashMap<>();
+
+    Mockito.when(registry.appManager.getOrCreateMicroserviceManager(this.appId)).thenReturn(microserviceManager);
+    Mockito.when(registry.appManager.getEventBus()).thenReturn(Mockito.mock(EventBus.class));
+    Mockito.when(registry.appManager.getStaticMicroserviceVersionFactory())
+        .thenReturn(staticMicroserviceVersionFactory);
+    Mockito.when(staticMicroserviceVersionFactory.create(Mockito.any()))
+        .thenReturn(Mockito.mock(MicroserviceVersion.class));
+
     Mockito.when(microserviceManager.getVersionsByName()).thenReturn(versionsByName);
-
-    ArrayList<MicroserviceInstance> instancesParam = new ArrayList<>();
-    Holder<Boolean> checked = new Holder<>(false);
-    StaticMicroserviceVersions microserviceVersions = new MockUp<StaticMicroserviceVersions>() {
-      @Mock
-      void addInstances(String version, List<MicroserviceInstance> instances) {
-        Assert.assertEquals("1.0.1", version);
-        Assert.assertEquals(2, instances.size());
-        Assert.assertEquals(1, instances.get(0).getEndpoints().size());
-        Assert.assertEquals("http://127.0.0.1:8080", instances.get(0).getEndpoints().get(0));
-        Assert.assertEquals(1, instances.get(1).getEndpoints().size());
-        Assert.assertEquals("http://127.0.0.1:8081", instances.get(1).getEndpoints().get(0));
-        checked.value = true;
-      }
-    }.getMockInstance();
-    versionsByName.put(testServiceName, microserviceVersions);
-
-    registry.registryMicroserviceMappingByEndpoints("testService", "1.0.1", Test3rdPartyServiceIntf.class,
-        Arrays.asList("http://127.0.0.1:8080", "http://127.0.0.1:8081"));
-    Assert.assertTrue(checked.value);
+    return versionsByName;
   }
 
   private interface Test3rdPartyServiceIntf {
