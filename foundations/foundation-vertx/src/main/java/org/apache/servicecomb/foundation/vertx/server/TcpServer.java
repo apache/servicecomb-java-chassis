@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
@@ -30,6 +31,8 @@ import org.apache.servicecomb.foundation.vertx.ClientEvent;
 import org.apache.servicecomb.foundation.vertx.ConnectionEvent;
 import org.apache.servicecomb.foundation.vertx.TransportType;
 import org.apache.servicecomb.foundation.vertx.VertxTLSBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.netflix.config.DynamicPropertyFactory;
 
@@ -38,6 +41,8 @@ import io.vertx.core.net.NetServer;
 import io.vertx.core.net.NetServerOptions;
 
 public class TcpServer {
+  private static final Logger LOGGER = LoggerFactory.getLogger(TcpServer.class);
+
   private URIEndpointObject endpointObject;
 
   private final AtomicInteger connectedCounter;
@@ -81,7 +86,9 @@ public class TcpServer {
       EventManager.post(new ClientEvent(netSocket.remoteAddress().toString(),
           ConnectionEvent.Connected, TransportType.Highway, connectedCount));
     });
-
+    netServer.exceptionHandler(e -> {
+      LOGGER.error("Unexpected error in server.{}", ExceptionUtils.getExceptionMessageWithoutTrace(e));
+    });
     InetSocketAddress socketAddress = endpointObject.getSocketAddress();
     netServer.listen(socketAddress.getPort(), socketAddress.getHostString(), ar -> {
       if (ar.succeeded()) {

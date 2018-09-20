@@ -221,10 +221,13 @@ public class RestClientInvocation {
     }
 
     InvocationStageTrace stageTrace = invocation.getInvocationStageTrace();
-    DefaultHttpSocketMetric httpSocketMetric = (DefaultHttpSocketMetric) ((ConnectionBase) clientRequest.connection())
-        .metric();
-    stageTrace.finishGetConnection(httpSocketMetric.getRequestBeginTime());
-    stageTrace.finishWriteToBuffer(httpSocketMetric.getRequestEndTime());
+    ConnectionBase connection = (ConnectionBase) clientRequest.connection();
+    // connection maybe null when exception happens such as ssl handshake failure
+    if (connection != null) {
+      DefaultHttpSocketMetric httpSocketMetric = (DefaultHttpSocketMetric) connection.metric();
+      stageTrace.finishGetConnection(httpSocketMetric.getRequestBeginTime());
+      stageTrace.finishWriteToBuffer(httpSocketMetric.getRequestEndTime());
+    }
 
     stageTrace.finishClientFiltersResponse();
     asyncResp.fail(invocation.getInvocationType(), e);

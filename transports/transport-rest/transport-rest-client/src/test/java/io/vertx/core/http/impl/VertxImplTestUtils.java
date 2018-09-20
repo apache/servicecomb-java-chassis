@@ -19,7 +19,7 @@ package io.vertx.core.http.impl;
 import org.mockito.Mockito;
 
 public class VertxImplTestUtils {
-  public static ClientConnection mockClientConnection() {
-    return Mockito.mock(ClientConnection.class);
+  public static Http1xConnectionBase mockClientConnection() {
+    return Mockito.mock(Http1xConnectionBase.class);
   }
 }
