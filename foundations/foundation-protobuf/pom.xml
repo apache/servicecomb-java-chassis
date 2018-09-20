@@ -13,6 +13,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-common</artifactId>
+    </dependency>
+    <dependency>
       <groupId>io.protostuff</groupId>
       <artifactId>protostuff-parser</artifactId>
     </dependency>
