@@ -57,7 +57,8 @@ public class QpsController {
   public boolean isLimitNewRequest() {
     long newCount = requestCount.incrementAndGet();
     long msNow = System.currentTimeMillis();
-    if (msNow - msCycleBegin > CYCLE_LENGTH) {
+    //Time jump cause the new request injected
+    if (msNow - msCycleBegin > CYCLE_LENGTH || msNow < msCycleBegin) {
       // 新周期
       // 会有多线程竞争，互相覆盖的问题，不过无所谓，不会有什么后果
       lastRequestCount = newCount;
