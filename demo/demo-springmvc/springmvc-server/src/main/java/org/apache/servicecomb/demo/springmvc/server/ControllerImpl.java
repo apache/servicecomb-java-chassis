@@ -20,6 +20,7 @@ package org.apache.servicecomb.demo.springmvc.server;
 import java.util.Arrays;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Min;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.demo.controller.Person;
@@ -37,7 +38,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping(path = "/springmvc/controller", produces = MediaType.APPLICATION_JSON)
 public class ControllerImpl {
   @GetMapping(path = "/add")
-  public int add(@RequestParam("a") int a, @RequestParam("b") int b) {
+  public int add(@Min(1) @RequestParam("a") int a, @Min(1) @RequestParam("b") int b) {
     return a + b;
   }
 

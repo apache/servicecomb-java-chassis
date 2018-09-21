@@ -29,6 +29,7 @@ import org.apache.servicecomb.it.testcase.TestDefaultValue;
 import org.apache.servicecomb.it.testcase.TestIgnoreMethod;
 import org.apache.servicecomb.it.testcase.TestParamCodec;
 import org.apache.servicecomb.it.testcase.TestParamCodecEdge;
+import org.apache.servicecomb.it.testcase.TestRequestBodySpringMvcSchema;
 import org.apache.servicecomb.it.testcase.TestRestServerConfig;
 import org.apache.servicecomb.it.testcase.TestRestServerConfigEdge;
 import org.apache.servicecomb.it.testcase.TestTrace;
@@ -129,6 +130,8 @@ public class ConsumerMain {
 
     ITJUnitUtils.runWithRest(TestRestServerConfig.class);
     ITJUnitUtils.run(TestRestServerConfigEdge.class);
+
+    ITJUnitUtils.run(TestRequestBodySpringMvcSchema.class);
 
     ITJUnitUtils.getParents().pop();
     deploys.getBaseProducer().stop();
