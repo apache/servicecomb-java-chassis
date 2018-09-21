@@ -60,7 +60,7 @@ public class QpsController {
     //Time jump cause the new request injected
     if (msNow - msCycleBegin > CYCLE_LENGTH || msNow < msCycleBegin) {
      
-      //no need worry about concurrency porbleam
+      //no need worry about concurrency porbleam  
       lastRequestCount = newCount;
       msCycleBegin = msNow;
     }
