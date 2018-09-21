@@ -24,13 +24,13 @@ public class QpsController {
 
   private Integer qpsLimit;
 
-  // 本周期的开始时间
+  // Interval begin time
   private volatile long msCycleBegin;
 
-  // 到目前为止的请求数
+  // Request count between Interval begin and now in one interval
   private AtomicLong requestCount = new AtomicLong();
 
-  // 本周期之前的请求数
+  // request count  before an interval
   private volatile long lastRequestCount = 1;
 
   private static final int CYCLE_LENGTH = 1000;
@@ -53,20 +53,21 @@ public class QpsController {
     this.qpsLimit = qpsLimit;
   }
 
-  // 返回true，表示需要被控制
+  // return true means new request need to be rejected
   public boolean isLimitNewRequest() {
     long newCount = requestCount.incrementAndGet();
     long msNow = System.currentTimeMillis();
-    if (msNow - msCycleBegin > CYCLE_LENGTH) {
-      // 新周期
-      // 会有多线程竞争，互相覆盖的问题，不过无所谓，不会有什么后果
+    //Time jump cause the new request injected
+    if (msNow - msCycleBegin > CYCLE_LENGTH || msNow < msCycleBegin) {
+     
+      //no need worry about concurrency porbleam  
       lastRequestCount = newCount;
       msCycleBegin = msNow;
     }
 
-    // 配置更新与配置使用是多线程并发的
-    // 所以可能operation级别刚刚更新为null
-    // 还没来得及修改为引用schema级别或是microservice级别，其他线程还在使用，所以需要规避
+    // Configuration update and use is at the situation of multi-threaded concurrency
+    // It is possible that operation level updated to null,but schema level or microservice level does not updated
+    
     int limitValue = (qpsLimit == null) ? Integer.MAX_VALUE : qpsLimit;
     return newCount - lastRequestCount >= limitValue;
   }
