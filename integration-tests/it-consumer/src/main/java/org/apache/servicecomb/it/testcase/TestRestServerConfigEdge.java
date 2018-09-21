@@ -64,9 +64,9 @@ public class TestRestServerConfigEdge {
     }
     urlConnection.disconnect();
 
-    assertEquals(500, responseCode);
-    assertEquals("Internal Server Error", responseMessage);
-    assertEquals("{\"message\":\"unknown error\"}", errorBody);
+    assertEquals(400, responseCode);
+    assertEquals("Bad Request", responseMessage);
+    assertEquals("Bad Request", errorBody);
   }
 
   @Test
