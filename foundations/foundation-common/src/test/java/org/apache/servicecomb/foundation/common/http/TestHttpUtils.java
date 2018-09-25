@@ -94,6 +94,30 @@ public class TestHttpUtils {
   }
 
   @Test
+  public void uriEncode_encodeEntirePath() {
+    String encoded = HttpUtils.uriEncodePath("a%%'+b/def");
+    Assert.assertEquals("a%25%25'+b/def", encoded);
+  }
+
+  @Test
+  public void pathParamEncode() {
+    Assert.assertEquals("a+b", HttpUtils.encodePathParam("a+b"));
+    Assert.assertEquals("a%25b", HttpUtils.encodePathParam("a%b"));
+    Assert.assertEquals("a%25%25b", HttpUtils.encodePathParam("a%%b"));
+    Assert.assertEquals("%3C%20%3E'%22%EF%BC%88)&%2F%20%20", HttpUtils.encodePathParam("< >'\"（)&/  "));
+    Assert.assertEquals("%E6%B5%8B%20%E8%AF%95", HttpUtils.encodePathParam("测 试"));
+  }
+
+  /**
+   * SafeChar: the characters that are not encoded.
+   * This test is to show those safe chars excepting 0..9, a..z and A..Z
+   */
+  @Test
+  public void pathParamEncode_SafeChar() {
+    Assert.assertEquals("-._~!$'()*,;&=@:+", HttpUtils.encodePathParam("-._~!$'()*,;&=@:+"));
+  }
+
+  @Test
   public void uriDecode_failed() {
     expectedException.expect(IllegalArgumentException.class);
     expectedException
