@@ -18,4 +18,6 @@
 <configuration>
   <include resource="org/springframework/boot/logging/logback/base.xml"/>
   <logger name="org.springframework" level="ERROR"/>
+  <logger name="org.apache.servicecomb.core.definition.schema.ProducerSchemaFactory" level="OFF"/>
+  <logger name="org.apache.servicecomb.core.definition.schema.StaticSchemaFactory" level="OFF"/>
 </configuration>

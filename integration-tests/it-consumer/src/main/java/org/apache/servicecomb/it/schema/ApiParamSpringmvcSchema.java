@@ -47,7 +47,7 @@ public class ApiParamSpringmvcSchema {
       readOnly = true,
       allowEmptyValue = true,
       name = "inputEx",
-      example = "example",
+      example = "10",
       collectionFormat = "fmt") int input) {
 
   }

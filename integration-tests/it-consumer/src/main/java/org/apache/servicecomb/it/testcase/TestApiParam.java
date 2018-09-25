@@ -97,7 +97,7 @@ public class TestApiParam {
     Assert.assertTrue(parameter.isReadOnly());
     Assert.assertTrue(parameter.getAllowEmptyValue());
     Assert.assertEquals("inputEx", parameter.getName());
-    Assert.assertEquals("example", ((QueryParameter) parameter).getExample());
+    Assert.assertEquals(10L, ((QueryParameter) parameter).getExample());
     Assert.assertEquals("fmt", ((QueryParameter) parameter).getCollectionFormat());
   }
 
