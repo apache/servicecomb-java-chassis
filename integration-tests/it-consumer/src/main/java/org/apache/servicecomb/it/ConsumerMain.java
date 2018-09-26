@@ -27,6 +27,7 @@ import org.apache.servicecomb.it.testcase.TestDataTypePrimitive;
 import org.apache.servicecomb.it.testcase.TestDefaultJsonValueJaxrsSchema;
 import org.apache.servicecomb.it.testcase.TestDefaultValue;
 import org.apache.servicecomb.it.testcase.TestIgnoreMethod;
+import org.apache.servicecomb.it.testcase.TestIgnoreStaticMethod;
 import org.apache.servicecomb.it.testcase.TestParamCodec;
 import org.apache.servicecomb.it.testcase.TestParamCodecEdge;
 import org.apache.servicecomb.it.testcase.TestRestServerConfig;
@@ -116,6 +117,7 @@ public class ConsumerMain {
     ITJUnitUtils.runWithHighwayAndRest(TestChangeTransport.class);
     ITJUnitUtils.runWithHighwayAndRest(TestDataTypePrimitive.class);
     ITJUnitUtils.runWithHighwayAndRest(TestAnnotatedAttribute.class);
+    ITJUnitUtils.runWithHighwayAndRest(TestIgnoreStaticMethod.class);
 
     // only rest support default value feature
     ITJUnitUtils.runWithRest(TestDefaultValue.class);
