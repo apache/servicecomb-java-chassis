@@ -19,6 +19,7 @@ package org.apache.servicecomb.swagger.generator.core;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -222,6 +223,11 @@ public class SwaggerGenerator {
     if (method.getDeclaringClass().getName().equals(Object.class.getName())) {
       return true;
     }
+    // skip static method
+    int modifiers = method.getModifiers();
+    if (Modifier.isStatic(modifiers)) {
+      return true;
+    }
 
     ApiOperation apiOperation = method.getAnnotation(ApiOperation.class);
     if (apiOperation != null && apiOperation.hidden()) {
@@ -239,7 +245,6 @@ public class SwaggerGenerator {
       if (isSkipMethod(method)) {
         continue;
       }
-
       OperationGenerator operationGenerator = new OperationGenerator(this, method);
       operationGenerator.setHttpMethod(httpMethod);
       try {
