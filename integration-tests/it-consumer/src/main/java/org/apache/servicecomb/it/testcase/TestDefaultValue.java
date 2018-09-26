@@ -36,6 +36,12 @@ public class TestDefaultValue {
     String stringHeader(String input);
 
     String stringForm(String input);
+
+    double doubleQuery(Double input);
+
+    double doubleHeader(Double input);
+
+    double doubleForm(Double input);
   }
 
   interface DefaultValueRequireIntf extends DefaultValueIntf {
@@ -50,11 +56,19 @@ public class TestDefaultValue {
     String stringHeaderRequire(String input);
 
     String stringFormRequire(String input);
+
+    double doubleQueryRequire(Double input);
+
+    double doubleHeaderRequire(Double input);
+
+    double doubleFormRequire(Double input);
   }
 
   private String defaultStr = "string";
 
   private int defaultInt = 13;
+
+  private double defaultDouble = 10.2;
 
   private static Consumers<DefaultValueIntf> consumersJaxrs;
 
@@ -79,6 +93,11 @@ public class TestDefaultValue {
   }
 
   @Test
+  public void doubleQuery_jaxrs_intf() {
+    assertEquals(defaultDouble, consumersJaxrs.getIntf().doubleQuery(null), 0.0);
+  }
+
+  @Test
   public void stringQuery_jaxrs_intf() {
     assertEquals(defaultStr, consumersJaxrs.getIntf().stringQuery(null));
   }
@@ -86,6 +105,12 @@ public class TestDefaultValue {
   @Test
   public void intQuery_jaxrs_rt() {
     assertEquals(defaultInt, (int) consumersJaxrs.getSCBRestTemplate().getForObject("/intQuery", int.class));
+  }
+
+  @Test
+  public void doubleQuery_jaxrs_rt() {
+    assertEquals(defaultDouble, (double) consumersJaxrs.getSCBRestTemplate().getForObject("/doubleQuery", double.class),
+        0.0);
   }
 
   @Test
@@ -99,6 +124,11 @@ public class TestDefaultValue {
   }
 
   @Test
+  public void doubleHeader_jaxrs_intf() {
+    assertEquals(defaultDouble, consumersJaxrs.getIntf().doubleHeader(null), 0.0);
+  }
+
+  @Test
   public void stringHeader_jaxrs_intf() {
     assertEquals(defaultStr, consumersJaxrs.getIntf().stringHeader(null));
   }
@@ -106,6 +136,12 @@ public class TestDefaultValue {
   @Test
   public void intHeader_jaxrs_rt() {
     assertEquals(defaultInt, (int) consumersJaxrs.getSCBRestTemplate().getForObject("/intHeader", int.class));
+  }
+
+  @Test
+  public void doubleHeader_jaxrs_rt() {
+    assertEquals(defaultDouble,
+        (double) consumersJaxrs.getSCBRestTemplate().getForObject("/doubleHeader", double.class), 0.0);
   }
 
   @Test
@@ -120,6 +156,11 @@ public class TestDefaultValue {
   }
 
   @Test
+  public void doubleForm_jaxrs_intf() {
+    assertEquals(defaultDouble, consumersJaxrs.getIntf().doubleForm(null), 0.0);
+  }
+
+  @Test
   public void stringForm_jaxrs_intf() {
     assertEquals(defaultStr, consumersJaxrs.getIntf().stringForm(null));
   }
@@ -127,6 +168,12 @@ public class TestDefaultValue {
   @Test
   public void intForm_jaxrs_rt() {
     assertEquals(defaultInt, (int) consumersJaxrs.getSCBRestTemplate().postForObject("/intForm", null, int.class));
+  }
+
+  @Test
+  public void doubleForm_jaxrs_rt() {
+    assertEquals(defaultDouble,
+        (double) consumersJaxrs.getSCBRestTemplate().postForObject("/doubleForm", null, double.class), 0.0);
   }
 
   @Test
@@ -141,6 +188,11 @@ public class TestDefaultValue {
   }
 
   @Test
+  public void doubleQuery_springmvc_intf() {
+    assertEquals(defaultDouble, consumersSpringmvc.getIntf().doubleQuery(null), 0.0);
+  }
+
+  @Test
   public void stringQuery_springmvc_intf() {
     assertEquals(defaultStr, consumersSpringmvc.getIntf().stringQuery(null));
   }
@@ -148,6 +200,12 @@ public class TestDefaultValue {
   @Test
   public void intQuery_springmvc_rt() {
     assertEquals(defaultInt, (int) consumersSpringmvc.getSCBRestTemplate().getForObject("/intQuery", int.class));
+  }
+
+  @Test
+  public void doubleQuery_springmvc_rt() {
+    assertEquals(defaultDouble,
+        (double) consumersSpringmvc.getSCBRestTemplate().getForObject("/doubleQuery", double.class), 0.0);
   }
 
   @Test
@@ -162,6 +220,11 @@ public class TestDefaultValue {
   }
 
   @Test
+  public void doubleHeader_springmvc_intf() {
+    assertEquals(defaultDouble, consumersSpringmvc.getIntf().doubleHeader(null), 0.0);
+  }
+
+  @Test
   public void stringHeader_springmvc_intf() {
     assertEquals(defaultStr, consumersSpringmvc.getIntf().stringHeader(null));
   }
@@ -169,6 +232,12 @@ public class TestDefaultValue {
   @Test
   public void intHeader_springmvc_rt() {
     assertEquals(defaultInt, (int) consumersSpringmvc.getSCBRestTemplate().getForObject("/intHeader", int.class));
+  }
+
+  @Test
+  public void doubleHeader_springmvc_rt() {
+    assertEquals(defaultDouble,
+        (double) consumersSpringmvc.getSCBRestTemplate().getForObject("/doubleHeader", double.class), 0.0);
   }
 
   @Test
@@ -183,6 +252,11 @@ public class TestDefaultValue {
   }
 
   @Test
+  public void doubleForm_springmvc_intf() {
+    assertEquals(defaultDouble, consumersSpringmvc.getIntf().doubleForm(null), 0.0);
+  }
+
+  @Test
   public void stringForm_springmvc_intf() {
     assertEquals(defaultStr, consumersSpringmvc.getIntf().stringForm(null));
   }
@@ -191,6 +265,12 @@ public class TestDefaultValue {
   public void intForm_springmvc_rt() {
     assertEquals(defaultInt,
         (int) consumersSpringmvc.getSCBRestTemplate().postForObject("/intForm", null, int.class));
+  }
+
+  @Test
+  public void doubleForm_springmvc_rt() {
+    assertEquals(defaultDouble,
+        (double) consumersSpringmvc.getSCBRestTemplate().postForObject("/doubleForm", null, double.class), 0.0);
   }
 
   @Test
@@ -205,6 +285,11 @@ public class TestDefaultValue {
   }
 
   @Test
+  public void doubleQuery_require_springmvc_intf() {
+    assertEquals(defaultDouble, consumersSpringmvc.getIntf().doubleQueryRequire(null), 0.0);
+  }
+
+  @Test
   public void stringQuery_require_springmvc_intf() {
     assertEquals(defaultStr, consumersSpringmvc.getIntf().stringQueryRequire(null));
   }
@@ -213,6 +298,12 @@ public class TestDefaultValue {
   public void intQuery_require_springmvc_rt() {
     assertEquals(defaultInt,
         (int) consumersSpringmvc.getSCBRestTemplate().getForObject("/intQueryRequire", int.class));
+  }
+
+  @Test
+  public void doubleQuery_require_springmvc_rt() {
+    assertEquals(defaultDouble,
+        (double) consumersSpringmvc.getSCBRestTemplate().getForObject("/doubleQueryRequire", double.class), 0.0);
   }
 
   @Test
@@ -227,6 +318,11 @@ public class TestDefaultValue {
   }
 
   @Test
+  public void doubleHeader_require_springmvc_intf() {
+    assertEquals(defaultDouble, consumersSpringmvc.getIntf().doubleHeaderRequire(null), 0.0);
+  }
+
+  @Test
   public void stringHeader_require_springmvc_intf() {
     assertEquals(defaultStr, consumersSpringmvc.getIntf().stringHeaderRequire(null));
   }
@@ -235,6 +331,12 @@ public class TestDefaultValue {
   public void intHeader_require_springmvc_rt() {
     assertEquals(defaultInt,
         (int) consumersSpringmvc.getSCBRestTemplate().getForObject("/intHeaderRequire", int.class));
+  }
+
+  @Test
+  public void doubleHeader_require_springmvc_rt() {
+    assertEquals(defaultDouble,
+        (double) consumersSpringmvc.getSCBRestTemplate().getForObject("/doubleHeaderRequire", double.class), 0.0);
   }
 
   @Test
@@ -249,6 +351,11 @@ public class TestDefaultValue {
   }
 
   @Test
+  public void doubleForm_require_springmvc_intf() {
+    assertEquals(defaultDouble, consumersSpringmvc.getIntf().doubleFormRequire(null), 0.0);
+  }
+
+  @Test
   public void stringForm_require_springmvc_intf() {
     assertEquals(defaultStr, consumersSpringmvc.getIntf().stringFormRequire(null));
   }
@@ -257,6 +364,12 @@ public class TestDefaultValue {
   public void intForm_require_springmvc_rt() {
     assertEquals(defaultInt,
         (int) consumersSpringmvc.getSCBRestTemplate().postForObject("/intFormRequire", null, int.class));
+  }
+
+  @Test
+  public void doubleForm_require_springmvc_rt() {
+    assertEquals(defaultDouble,
+        (double) consumersSpringmvc.getSCBRestTemplate().postForObject("/doubleFormRequire", null, double.class), 0.0);
   }
 
   @Test

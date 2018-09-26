@@ -60,8 +60,8 @@ public class DataTypeSpringmvcSchema {
     return input;
   }
 
-  @GetMapping(path = "add")
-  public int add(int num1, int num2) {
+  @GetMapping(path = "intAdd")
+  public int intAdd(int num1, int num2) {
     return num1 + num2;
   }
 
@@ -101,5 +101,41 @@ public class DataTypeSpringmvcSchema {
   @GetMapping(path = "stringConcat")
   public String stringConcat(String str1, String str2) {
     return str1 + str2;
+  }
+
+  //double
+  @GetMapping("doublePath/{input}")
+  public double doublePath(@PathVariable("input") double input) {
+    return input;
+  }
+
+  @GetMapping("doubleQuery")
+  public double doubleQuery(@RequestParam("input") double input) {
+    return input;
+  }
+
+  @GetMapping("doubleHeader")
+  public double doubleHeader(@RequestHeader("input") double input) {
+    return input;
+  }
+
+  @GetMapping("doubleCookie")
+  public double doubleCookie(@CookieValue("input") double input) {
+    return input;
+  }
+
+  @PostMapping("doubleForm")
+  public double doubleForm(@RequestAttribute("input") double input) {
+    return input;
+  }
+
+  @PostMapping("doubleBody")
+  public double doubleBody(@RequestBody double input) {
+    return input;
+  }
+
+  @GetMapping(path = "doubleAdd")
+  public double doubleAdd(double num1, double num2) {
+    return num1 + num2;
   }
 }
