@@ -145,7 +145,7 @@ public class TestAbstractServiceRegistry {
 
     ArrayList<MicroserviceInstance> instancesParam = new ArrayList<>();
     instancesParam.add(new MicroserviceInstance());
-    registry.registerMicroserviceMapping(testServiceName, testVersion, Test3rdPartyServiceIntf.class, instancesParam);
+    registry.registerMicroserviceMapping(testServiceName, testVersion, instancesParam, Test3rdPartyServiceIntf.class);
 
     MicroserviceVersions microserviceVersions = versionsByName.get(testServiceName);
     List<MicroserviceInstance> instances = Deencapsulation.getField(microserviceVersions, "instances");
@@ -156,7 +156,7 @@ public class TestAbstractServiceRegistry {
     List<MicroserviceInstance> newInstancesParam = new ArrayList<>();
     newInstancesParam.add(new MicroserviceInstance());
     registry.registerMicroserviceMapping(
-        testServiceName, testVersion, Test3rdPartyServiceIntf.class, newInstancesParam);
+        testServiceName, testVersion, newInstancesParam, Test3rdPartyServiceIntf.class);
 
     microserviceVersions = versionsByName.get(testServiceName);
     instances = Deencapsulation.getField(microserviceVersions, "instances");
@@ -171,8 +171,8 @@ public class TestAbstractServiceRegistry {
 
     HashMap<String, MicroserviceVersions> versionByName = prepareForMicroserviceMappingRegistry();
 
-    registry.registerMicroserviceMappingByEndpoints(testServiceName, testVersion, Test3rdPartyServiceIntf.class,
-        Arrays.asList("cse://127.0.0.1:8080", "cse://127.0.0.1:8081"));
+    registry.registerMicroserviceMappingByEndpoints(testServiceName, testVersion,
+        Arrays.asList("cse://127.0.0.1:8080", "cse://127.0.0.1:8081"), Test3rdPartyServiceIntf.class);
 
     MicroserviceVersions microserviceVersions = versionByName.get(testServiceName);
     List<MicroserviceInstance> instances = Deencapsulation.getField(microserviceVersions, "instances");

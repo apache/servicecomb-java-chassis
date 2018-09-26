@@ -67,15 +67,17 @@ public class Test3rdPartyInvocation {
     String endpoint = "rest:" + urlPrefix.substring(beginIndex, endIndex);
     RegistryUtils.getServiceRegistry()
         .registerMicroserviceMappingByEndpoints(
-            THIRD_PARTY_MICROSERVICE_NAME, "1.2.1", DataTypeJaxrsSchemaIntf.class,
-            Collections.singletonList(endpoint));
+            THIRD_PARTY_MICROSERVICE_NAME, "1.2.1",
+            Collections.singletonList(endpoint),
+            DataTypeJaxrsSchemaIntf.class);
 
     MicroserviceInstance instance = new MicroserviceInstance();
     instance.setEndpoints(Collections.singletonList(endpoint));
     RegistryUtils.getServiceRegistry()
         .registerMicroserviceMapping(
-            ASYNC_THIRD_PARTY_MICROSERVICE_NAME, "1.1.1", DataTypeJaxrsSchemaAsyncIntf.class,
-            Collections.singletonList(instance)
+            ASYNC_THIRD_PARTY_MICROSERVICE_NAME, "1.1.1",
+            Collections.singletonList(instance),
+            DataTypeJaxrsSchemaAsyncIntf.class
         );
 
     dataTypeJaxrsSchema = Invoker.createProxy(
