@@ -189,9 +189,11 @@ public abstract class AbstractRestInvocation {
 
     invocation.getInvocationStageTrace().startServerFiltersRequest();
     for (HttpServerFilter filter : httpServerFilters) {
-      Response response = filter.afterReceiveRequest(invocation, requestEx);
-      if (response != null) {
-        return response;
+      if (filter.enabled()) {
+        Response response = filter.afterReceiveRequest(invocation, requestEx);
+        if (response != null) {
+          return response;
+        }
       }
     }
 

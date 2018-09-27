@@ -28,6 +28,10 @@ import org.apache.servicecomb.swagger.invocation.Response;
 public interface HttpServerFilter {
   int getOrder();
 
+  default boolean enabled() {
+    return true;
+  }
+
   default boolean needCacheRequest(OperationMeta operationMeta) {
     return false;
   }
