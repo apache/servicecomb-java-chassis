@@ -66,7 +66,7 @@ public class ConsumerMain {
     // if not ready, will start a new instance and wait for ready
     deploys.getEdge().ensureReady();
     // deploys.getZuul().ensureReady(zuul);
-
+    ITJUnitUtils.run(TestIgnoreStaticMethod.class);
     ITJUnitUtils.run(TestIgnoreMethod.class);
     ITJUnitUtils.run(TestApiParam.class);
 
@@ -117,7 +117,6 @@ public class ConsumerMain {
     ITJUnitUtils.runWithHighwayAndRest(TestChangeTransport.class);
     ITJUnitUtils.runWithHighwayAndRest(TestDataTypePrimitive.class);
     ITJUnitUtils.runWithHighwayAndRest(TestAnnotatedAttribute.class);
-    ITJUnitUtils.runWithHighwayAndRest(TestIgnoreStaticMethod.class);
 
     // only rest support default value feature
     ITJUnitUtils.runWithRest(TestDefaultValue.class);
