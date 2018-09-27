@@ -306,11 +306,13 @@ public class TestRestClientInvocation {
     {
       HttpClientFilter filter = mock(HttpClientFilter.class);
       when(filter.afterReceiveResponse(any(), any())).thenReturn(null);
+      when(filter.enabled()).thenReturn(true);
       httpClientFilters.add(filter);
     }
     {
       HttpClientFilter filter = mock(HttpClientFilter.class);
       when(filter.afterReceiveResponse(any(), any())).thenReturn(resp);
+      when(filter.enabled()).thenReturn(true);
       httpClientFilters.add(filter);
     }
 
@@ -335,6 +337,7 @@ public class TestRestClientInvocation {
     {
       HttpClientFilter filter = mock(HttpClientFilter.class);
       when(filter.afterReceiveResponse(any(), any())).thenThrow(Error.class);
+      when(filter.enabled()).thenReturn(true);
       httpClientFilters.add(filter);
     }
 

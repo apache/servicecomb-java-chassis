@@ -35,13 +35,22 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 import io.netty.buffer.Unpooled;
 
 public class ServerRestArgsFilter implements HttpServerFilter {
+  private static final boolean enabled = DynamicPropertyFactory.getInstance().getBooleanProperty
+      ("servicecomb.http.filter.server.serverRestArgs.enabled", true).get();
 
   @Override
   public int getOrder() {
     return -100;
+  }
+
+  @Override
+  public boolean enabled() {
+    return enabled;
   }
 
   @Override

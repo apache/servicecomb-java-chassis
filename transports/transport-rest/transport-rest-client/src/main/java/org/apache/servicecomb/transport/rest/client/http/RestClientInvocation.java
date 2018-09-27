@@ -94,7 +94,9 @@ public class RestClientInvocation {
     HttpServletRequestEx requestEx = new VertxClientRequestToHttpServletRequest(clientRequest, requestBodyBuffer);
     invocation.getInvocationStageTrace().startClientFiltersRequest();
     for (HttpClientFilter filter : httpClientFilters) {
-      filter.beforeSendRequest(invocation, requestEx);
+      if (filter.enabled()) {
+        filter.beforeSendRequest(invocation, requestEx);
+      }
     }
 
     clientRequest.exceptionHandler(e -> {
@@ -193,10 +195,12 @@ public class RestClientInvocation {
         HttpServletResponseEx responseEx =
             new VertxClientResponseToHttpServletResponse(clientResponse, responseBuf);
         for (HttpClientFilter filter : httpClientFilters) {
-          Response response = filter.afterReceiveResponse(invocation, responseEx);
-          if (response != null) {
-            complete(response);
-            return;
+          if (filter.enabled()) {
+            Response response = filter.afterReceiveResponse(invocation, responseEx);
+            if (response != null) {
+              complete(response);
+              return;
+            }
           }
         }
       } catch (Throwable e) {

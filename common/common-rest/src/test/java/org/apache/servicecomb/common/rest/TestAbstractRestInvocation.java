@@ -266,6 +266,8 @@ public class TestAbstractRestInvocation {
     Response response = Response.ok("");
     new Expectations() {
       {
+        filter.enabled();
+        result = true;
         filter.afterReceiveRequest(invocation, requestEx);
         result = response;
       }
@@ -295,8 +297,34 @@ public class TestAbstractRestInvocation {
   public void invokeFilterNoResponse(@Mocked HttpServerFilter filter) {
     new Expectations() {
       {
+        filter.enabled();
+        result = true;
         filter.afterReceiveRequest(invocation, requestEx);
         result = null;
+      }
+    };
+
+    Holder<Boolean> result = new Holder<>();
+    restInvocation = new AbstractRestInvocationForTest() {
+      @Override
+      protected void doInvoke() {
+        result.value = true;
+      }
+    };
+    initRestInvocation();
+    restInvocation.httpServerFilters = Arrays.asList(filter);
+
+    restInvocation.invoke();
+
+    Assert.assertTrue(result.value);
+  }
+
+  @Test
+  public void invokeFilterNoResponseDisableFilter(@Mocked HttpServerFilter filter) {
+    new Expectations() {
+      {
+        filter.enabled();
+        result = false;
       }
     };
 
@@ -320,6 +348,8 @@ public class TestAbstractRestInvocation {
     Error error = new Error();
     new Expectations() {
       {
+        filter.enabled();
+        result = true;
         filter.afterReceiveRequest(invocation, requestEx);
         result = error;
       }
@@ -349,6 +379,8 @@ public class TestAbstractRestInvocation {
   public void invokeNormal(@Mocked HttpServerFilter filter) {
     new Expectations() {
       {
+        filter.enabled();
+        result = true;
         filter.afterReceiveRequest(invocation, requestEx);
         result = null;
       }

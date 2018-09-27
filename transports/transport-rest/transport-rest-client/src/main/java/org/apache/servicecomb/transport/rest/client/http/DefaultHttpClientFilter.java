@@ -38,12 +38,22 @@ import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 public class DefaultHttpClientFilter implements HttpClientFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultHttpClientFilter.class);
+
+  private static final boolean enabled = DynamicPropertyFactory.getInstance().getBooleanProperty
+      ("servicecomb.http.filter.client.default.enabled", true).get();
 
   @Override
   public int getOrder() {
     return Integer.MAX_VALUE;
+  }
+
+  @Override
+  public boolean enabled() {
+    return enabled;
   }
 
   @Override

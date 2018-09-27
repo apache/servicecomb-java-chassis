@@ -23,6 +23,10 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
 
 public interface HttpClientFilter {
+  default boolean enabled() {
+    return true;
+  }
+
   int getOrder();
 
   void beforeSendRequest(Invocation invocation, HttpServletRequestEx requestEx);
