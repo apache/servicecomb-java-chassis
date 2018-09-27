@@ -109,13 +109,13 @@ public class TestDefaultValue {
 
   @Test
   public void doubleQuery_jaxrs_rt() {
-    assertEquals(defaultDouble, (double) consumersJaxrs.getSCBRestTemplate().getForObject("/doubleQuery", double.class),
+    assertEquals(defaultDouble, consumersJaxrs.getSCBRestTemplate().getForObject("/doubleQuery", double.class),
         0.0);
   }
 
   @Test
   public void stringQuery_jaxrs_rt() {
-    assertEquals(defaultStr, (String) consumersJaxrs.getSCBRestTemplate().getForObject("/stringQuery", String.class));
+    assertEquals(defaultStr, consumersJaxrs.getSCBRestTemplate().getForObject("/stringQuery", String.class));
   }
 
   @Test
@@ -141,13 +141,13 @@ public class TestDefaultValue {
   @Test
   public void doubleHeader_jaxrs_rt() {
     assertEquals(defaultDouble,
-        (double) consumersJaxrs.getSCBRestTemplate().getForObject("/doubleHeader", double.class), 0.0);
+        consumersJaxrs.getSCBRestTemplate().getForObject("/doubleHeader", double.class), 0.0);
   }
 
   @Test
   public void stringHeader_jaxrs_rt() {
     assertEquals(defaultStr,
-        (String) consumersJaxrs.getSCBRestTemplate().getForObject("/stringHeader", String.class));
+        consumersJaxrs.getSCBRestTemplate().getForObject("/stringHeader", String.class));
   }
 
   @Test
@@ -173,13 +173,13 @@ public class TestDefaultValue {
   @Test
   public void doubleForm_jaxrs_rt() {
     assertEquals(defaultDouble,
-        (double) consumersJaxrs.getSCBRestTemplate().postForObject("/doubleForm", null, double.class), 0.0);
+        consumersJaxrs.getSCBRestTemplate().postForObject("/doubleForm", null, double.class), 0.0);
   }
 
   @Test
   public void stringForm_jaxrs_rt() {
     assertEquals(defaultStr,
-        (String) consumersJaxrs.getSCBRestTemplate().postForObject("/stringForm", null, String.class));
+        consumersJaxrs.getSCBRestTemplate().postForObject("/stringForm", null, String.class));
   }
 
   @Test
@@ -205,13 +205,13 @@ public class TestDefaultValue {
   @Test
   public void doubleQuery_springmvc_rt() {
     assertEquals(defaultDouble,
-        (double) consumersSpringmvc.getSCBRestTemplate().getForObject("/doubleQuery", double.class), 0.0);
+        consumersSpringmvc.getSCBRestTemplate().getForObject("/doubleQuery", double.class), 0.0);
   }
 
   @Test
   public void stringQuery_springmvc_rt() {
     assertEquals(defaultStr,
-        (String) consumersSpringmvc.getSCBRestTemplate().getForObject("/stringQuery", String.class));
+        consumersSpringmvc.getSCBRestTemplate().getForObject("/stringQuery", String.class));
   }
 
   @Test
@@ -237,13 +237,13 @@ public class TestDefaultValue {
   @Test
   public void doubleHeader_springmvc_rt() {
     assertEquals(defaultDouble,
-        (double) consumersSpringmvc.getSCBRestTemplate().getForObject("/doubleHeader", double.class), 0.0);
+        consumersSpringmvc.getSCBRestTemplate().getForObject("/doubleHeader", double.class), 0.0);
   }
 
   @Test
   public void stringHeader_springmvc_rt() {
     assertEquals(defaultStr,
-        (String) consumersSpringmvc.getSCBRestTemplate().getForObject("/stringHeader", String.class));
+        consumersSpringmvc.getSCBRestTemplate().getForObject("/stringHeader", String.class));
   }
 
   @Test
@@ -270,13 +270,13 @@ public class TestDefaultValue {
   @Test
   public void doubleForm_springmvc_rt() {
     assertEquals(defaultDouble,
-        (double) consumersSpringmvc.getSCBRestTemplate().postForObject("/doubleForm", null, double.class), 0.0);
+        consumersSpringmvc.getSCBRestTemplate().postForObject("/doubleForm", null, double.class), 0.0);
   }
 
   @Test
   public void stringForm_springmvc_rt() {
     assertEquals(defaultStr,
-        (String) consumersSpringmvc.getSCBRestTemplate().postForObject("/stringForm", null, String.class));
+        consumersSpringmvc.getSCBRestTemplate().postForObject("/stringForm", null, String.class));
   }
 
   @Test
@@ -303,13 +303,13 @@ public class TestDefaultValue {
   @Test
   public void doubleQuery_require_springmvc_rt() {
     assertEquals(defaultDouble,
-        (double) consumersSpringmvc.getSCBRestTemplate().getForObject("/doubleQueryRequire", double.class), 0.0);
+        consumersSpringmvc.getSCBRestTemplate().getForObject("/doubleQueryRequire", double.class), 0.0);
   }
 
   @Test
   public void stringQuery_require_springmvc_rt() {
     assertEquals(defaultStr,
-        (String) consumersSpringmvc.getSCBRestTemplate().getForObject("/stringQueryRequire", String.class));
+        consumersSpringmvc.getSCBRestTemplate().getForObject("/stringQueryRequire", String.class));
   }
 
   @Test
@@ -336,13 +336,13 @@ public class TestDefaultValue {
   @Test
   public void doubleHeader_require_springmvc_rt() {
     assertEquals(defaultDouble,
-        (double) consumersSpringmvc.getSCBRestTemplate().getForObject("/doubleHeaderRequire", double.class), 0.0);
+        consumersSpringmvc.getSCBRestTemplate().getForObject("/doubleHeaderRequire", double.class), 0.0);
   }
 
   @Test
   public void stringHeader_require_springmvc_rt() {
     assertEquals(defaultStr,
-        (String) consumersSpringmvc.getSCBRestTemplate().getForObject("/stringHeaderRequire", String.class));
+        consumersSpringmvc.getSCBRestTemplate().getForObject("/stringHeaderRequire", String.class));
   }
 
   @Test
@@ -369,12 +369,12 @@ public class TestDefaultValue {
   @Test
   public void doubleForm_require_springmvc_rt() {
     assertEquals(defaultDouble,
-        (double) consumersSpringmvc.getSCBRestTemplate().postForObject("/doubleFormRequire", null, double.class), 0.0);
+        consumersSpringmvc.getSCBRestTemplate().postForObject("/doubleFormRequire", null, double.class), 0.0);
   }
 
   @Test
   public void stringForm_require_springmvc_rt() {
     assertEquals(defaultStr,
-        (String) consumersSpringmvc.getSCBRestTemplate().postForObject("/stringFormRequire", null, String.class));
+        consumersSpringmvc.getSCBRestTemplate().postForObject("/stringFormRequire", null, String.class));
   }
 }
