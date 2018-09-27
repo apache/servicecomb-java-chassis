@@ -44,6 +44,10 @@ public class TestDataTypePrimitive {
     double doubleBody(double input);
 
     double doubleAdd(double num1, double num2);
+
+    float floatBody(float input);
+
+    float floatAdd(float num1, float num2);
   }
 
   public interface DataTypeRestIntf {
@@ -90,6 +94,21 @@ public class TestDataTypePrimitive {
     double doubleForm(double input);
 
     double doubleAdd(double num1, double num2);
+
+    //float
+    float floatPath(float input);
+
+    float floatQuery(float input);
+
+    float floatHeader(float input);
+
+    float floatCookie(float input);
+
+    float floatBody(float input);
+
+    float floatForm(float input);
+
+    float floatAdd(float num1, float num2);
   }
 
   private static Consumers<DataTypePojoIntf> consumersPojo = new Consumers<>("dataTypePojo", DataTypePojoIntf.class);
@@ -792,5 +811,224 @@ public class TestDataTypePrimitive {
     assertEquals("serviceComb",
         consumersSpringmvc.getSCBRestTemplate()
             .getForObject("/stringConcat?str1=service&str2=Comb", String.class));
+  }
+
+  //float
+  @Test
+  public void float_pojo_intf() {
+    assertEquals(10.2f, consumersPojo.getIntf().floatBody(10.2f), 0.0f);
+  }
+
+  @Test
+  public void float_pojo_rt() {
+    Map<String, Float> map = new HashMap<>();
+    map.put("input", 10.2f);
+    assertEquals(10.2f, consumersPojo.getSCBRestTemplate().postForObject("/floatBody", map, float.class),
+        0.0f);
+  }
+
+  @Test
+  public void floatAdd_pojo_intf() {
+    assertEquals(20.5f, consumersPojo.getIntf().floatAdd(10.2f, 10.3f), 0.0f);
+  }
+
+  @Test
+  public void floatAdd_pojo_rt() {
+    Map<String, Float> map = new HashMap<>();
+    map.put("num1", 10.2f);
+    map.put("num2", 10.3f);
+    assertEquals(20.5f, consumersPojo.getSCBRestTemplate().postForObject("/floatAdd", map, float.class), 0.0f);
+  }
+
+  @Test
+  public void floatPath_jaxrs_intf() {
+    assertEquals(10.2f, consumersJaxrs.getIntf().floatPath(10.2f), 0.0f);
+  }
+
+  @Test
+  public void floatPath_jaxrs_rt() {
+    assertEquals(10.2f, consumersJaxrs.getSCBRestTemplate().getForObject("/floatPath/10.2f", float.class),
+        0.0f);
+  }
+
+  @Test
+  public void floatQuery_jaxrs_intf() {
+    assertEquals(10.2f, consumersJaxrs.getIntf().floatQuery(10.2f), 0.0f);
+  }
+
+  @Test
+  public void floatQuery_jaxrs_rt() {
+    assertEquals(10.2f,
+        consumersJaxrs.getSCBRestTemplate().getForObject("/floatQuery?input=10.2f", float.class), 0.0f);
+  }
+
+  @Test
+  public void floatHeader_jaxrs_intf() {
+    assertEquals(10.2f, consumersJaxrs.getIntf().floatHeader(10.2f), 0.0f);
+  }
+
+  @Test
+  public void floatHeader_jaxrs_rt() {
+    floatHeader_rt(consumersJaxrs);
+  }
+
+  protected void floatHeader_rt(Consumers<DataTypeRestIntf> consumers) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("input", "10.2f");
+
+    @SuppressWarnings("rawtypes")
+    HttpEntity entity = new HttpEntity<>(null, headers);
+    ResponseEntity<Float> response = consumers.getSCBRestTemplate()
+        .exchange("/floatHeader",
+            HttpMethod.GET,
+            entity,
+            float.class);
+    assertEquals(10.2f, response.getBody(), 0.0f);
+  }
+
+  @Test
+  public void floatCookie_jaxrs_intf() {
+    assertEquals(10.2f, consumersJaxrs.getIntf().floatCookie(10.2f), 0.0f);
+  }
+
+  @Test
+  public void floatCookie_jaxrs_rt() {
+    floatCookie_rt(consumersJaxrs);
+  }
+
+  void floatCookie_rt(Consumers<DataTypeRestIntf> consumers) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Cookie", "input=10.2f");
+
+    @SuppressWarnings("rawtypes")
+    HttpEntity entity = new HttpEntity<>(null, headers);
+    ResponseEntity<Float> response = consumers.getSCBRestTemplate()
+        .exchange("/floatCookie",
+            HttpMethod.GET,
+            entity,
+            float.class);
+    assertEquals(10.2f, response.getBody(), 0.0f);
+  }
+
+  @Test
+  public void floatForm_jaxrs_intf() {
+    assertEquals(10.2f, consumersJaxrs.getIntf().floatForm(10.2f), 0.0f);
+  }
+
+  @Test
+  public void floatForm_jaxrs_rt() {
+    Map<String, Float> map = new HashMap<>();
+    map.put("input", 10.2f);
+    HttpEntity<Map<String, Float>> formEntiry = new HttpEntity<>(map);
+
+    assertEquals(10.2f,
+        consumersJaxrs.getSCBRestTemplate().postForEntity("/floatForm", formEntiry, float.class).getBody(),
+        0.0f);
+    //just use map is ok
+    assertEquals(10.2f,
+        consumersJaxrs.getSCBRestTemplate().postForEntity("/floatForm", map, float.class).getBody(), 0.0f);
+  }
+
+  @Test
+  public void floatBody_jaxrs_intf() {
+    assertEquals(10.2f, consumersJaxrs.getIntf().floatBody(10.2f), 0.0f);
+  }
+
+  @Test
+  public void floatBody_jaxrs_rt() {
+    assertEquals(10.2f, consumersJaxrs.getSCBRestTemplate().postForObject("/floatBody", 10.2f, float.class),
+        0.0f);
+  }
+
+  @Test
+  public void floatAdd_jaxrs_intf() {
+    assertEquals(20.5f, consumersJaxrs.getIntf().floatAdd(10.2f, 10.3f), 0.0f);
+  }
+
+  @Test
+  public void floatAdd_jaxrs_rt() {
+    assertEquals(20.5f,
+        consumersJaxrs.getSCBRestTemplate().getForObject("/floatAdd?num1=10.2f&num2=10.3f", float.class), 0.0f);
+  }
+
+  @Test
+  public void floatPath_springmvc_intf() {
+    assertEquals(10.2f, consumersSpringmvc.getIntf().floatPath(10.2f), 0.0f);
+  }
+
+  @Test
+  public void floatPath_springmvc_rt() {
+    assertEquals(10.2f, consumersSpringmvc.getSCBRestTemplate().getForObject("/floatPath/10.2f", float.class),
+        0.0f);
+  }
+
+  @Test
+  public void floatQuery_springmvc_intf() {
+    assertEquals(10.2f, consumersSpringmvc.getIntf().floatQuery(10.2f), 0.0f);
+  }
+
+  @Test
+  public void floatQuery_springmvc_rt() {
+    assertEquals(10.2f,
+        consumersSpringmvc.getSCBRestTemplate().getForObject("/floatQuery?input=10.2f", float.class), 0.0f);
+  }
+
+  @Test
+  public void floatHeader_springmvc_intf() {
+    assertEquals(10.2f, consumersSpringmvc.getIntf().floatHeader(10.2f), 0.0f);
+  }
+
+  @Test
+  public void floatHeader_springmvc_rt() {
+    floatHeader_rt(consumersSpringmvc);
+  }
+
+  @Test
+  public void floatCookie_springmvc_intf() {
+    assertEquals(10.2f, consumersSpringmvc.getIntf().floatCookie(10.2f), 0.0f);
+  }
+
+  @Test
+  public void floatCookie_springmvc_rt() {
+    floatCookie_rt(consumersSpringmvc);
+  }
+
+  @Test
+  public void floatForm_springmvc_intf() {
+    assertEquals(10.2f, consumersSpringmvc.getIntf().floatForm(10.2f), 0.0f);
+  }
+
+  @Test
+  public void floatForm_springmvc_rt() {
+    Map<String, Float> map = new HashMap<>();
+    map.put("input", 10.2f);
+    HttpEntity<Map<String, Float>> formEntiry = new HttpEntity<>(map);
+
+    assertEquals(10.2f,
+        consumersSpringmvc.getSCBRestTemplate().postForEntity("/floatForm", formEntiry, float.class)
+            .getBody(), 0.0f);
+  }
+
+  @Test
+  public void floatBody_springmvc_intf() {
+    assertEquals(10.2f, consumersSpringmvc.getIntf().floatBody(10.2f), 0.0f);
+  }
+
+  @Test
+  public void floatBody_springmvc_rt() {
+    assertEquals(10.2f,
+        consumersSpringmvc.getSCBRestTemplate().postForObject("/floatBody", 10.2f, float.class), 0.0f);
+  }
+
+  @Test
+  public void floatAdd_springmvc_intf() {
+    assertEquals(20.5f, consumersSpringmvc.getIntf().floatAdd(10.2f, 10.3f), 0.0f);
+  }
+
+  @Test
+  public void floatAdd_springmvc_rt() {
+    assertEquals(20.5f,
+        consumersSpringmvc.getSCBRestTemplate().getForObject("/floatAdd?num1=10.2f&num2=10.3f", float.class),
+        0.0f);
   }
 }

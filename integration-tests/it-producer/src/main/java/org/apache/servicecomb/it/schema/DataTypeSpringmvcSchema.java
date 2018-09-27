@@ -138,4 +138,40 @@ public class DataTypeSpringmvcSchema {
   public double doubleAdd(double num1, double num2) {
     return num1 + num2;
   }
+
+  //float
+  @GetMapping("floatPath/{input}")
+  public float floatPath(@PathVariable("input") float input) {
+    return input;
+  }
+
+  @GetMapping("floatQuery")
+  public float floatQuery(@RequestParam("input") float input) {
+    return input;
+  }
+
+  @GetMapping("floatHeader")
+  public float floatHeader(@RequestHeader("input") float input) {
+    return input;
+  }
+
+  @GetMapping("floatCookie")
+  public float floatCookie(@CookieValue("input") float input) {
+    return input;
+  }
+
+  @PostMapping("floatForm")
+  public float floatForm(@RequestAttribute("input") float input) {
+    return input;
+  }
+
+  @PostMapping("floatBody")
+  public float floatBody(@RequestBody float input) {
+    return input;
+  }
+
+  @GetMapping(path = "floatAdd")
+  public float floatAdd(float num1, float num2) {
+    return num1 + num2;
+  }
 }

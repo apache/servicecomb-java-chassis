@@ -158,4 +158,46 @@ public class DataTypeJaxrsSchema {
     return num1 + num2;
   }
 
+  // float
+  @Path("floatPath/{input}")
+  @GET
+  public float floatPath(@PathParam("input") float input) {
+    return input;
+  }
+
+  @Path("floatQuery")
+  @GET
+  public float floatQuery(@QueryParam("input") float input) {
+    return input;
+  }
+
+  @Path("floatHeader")
+  @GET
+  public float floatHeader(@HeaderParam("input") float input) {
+    return input;
+  }
+
+  @Path("floatCookie")
+  @GET
+  public float floatCookie(@CookieParam("input") float input) {
+    return input;
+  }
+
+  @Path("floatForm")
+  @POST
+  public float floatForm(@FormParam("input") float input) {
+    return input;
+  }
+
+  @Path("floatBody")
+  @POST
+  public float floatBody(float input) {
+    return input;
+  }
+
+  @Path("floatAdd")
+  @GET
+  public float floatAdd(@QueryParam("num1") float num1, @QueryParam("num2") float num2) {
+    return num1 + num2;
+  }
 }
