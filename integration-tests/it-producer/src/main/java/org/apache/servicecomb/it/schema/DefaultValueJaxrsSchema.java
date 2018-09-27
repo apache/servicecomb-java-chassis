@@ -82,4 +82,23 @@ public class DefaultValueJaxrsSchema {
   public double doubleForm(@FormParam("input") @DefaultValue("10.2") double input) {
     return input;
   }
+
+  // float
+  @Path("floatQuery")
+  @GET
+  public float floatQuery(@QueryParam("input") @DefaultValue("10.2") float input) {
+    return input;
+  }
+
+  @Path("floatHeader")
+  @GET
+  public float floatHeader(@HeaderParam(value = "input") @DefaultValue("10.2") float input) {
+    return input;
+  }
+
+  @Path("floatForm")
+  @POST
+  public float floatForm(@FormParam("input") @DefaultValue("10.2") float input) {
+    return input;
+  }
 }

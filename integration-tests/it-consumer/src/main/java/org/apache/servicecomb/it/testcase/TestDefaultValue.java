@@ -40,6 +40,13 @@ public class TestDefaultValue {
     double doubleHeader(Double input);
 
     double doubleForm(Double input);
+
+    // float
+    float floatQuery(Float input);
+
+    float floatHeader(Float input);
+
+    float floatForm(Float input);
   }
 
   interface DefaultValueRequireIntf extends DefaultValueIntf {
@@ -60,6 +67,12 @@ public class TestDefaultValue {
     double doubleHeaderRequire(Double input);
 
     double doubleFormRequire(Double input);
+
+    float floatQueryRequire(Float input);
+
+    float floatHeaderRequire(Float input);
+
+    float floatFormRequire(Float input);
   }
 
   private String defaultStr = "string";
@@ -67,6 +80,8 @@ public class TestDefaultValue {
   private int defaultInt = 13;
 
   private double defaultDouble = 10.2;
+
+  private float defaultFloat = 10.2f;
 
   private static Consumers<DefaultValueIntf> consumersJaxrs = new Consumers<>("defaultValueJaxrs",
       DefaultValueIntf.class);
@@ -363,5 +378,106 @@ public class TestDefaultValue {
   public void stringForm_require_springmvc_rt() {
     assertEquals(defaultStr,
         consumersSpringmvc.getSCBRestTemplate().postForObject("/stringFormRequire", null, String.class));
+  }
+
+  //float
+  @Test
+  public void floatQuery_jaxrs_intf() {
+    assertEquals(defaultFloat, consumersJaxrs.getIntf().floatQuery(null), 0.0f);
+  }
+
+  @Test
+  public void floatQuery_jaxrs_rt() {
+    assertEquals(defaultFloat, consumersJaxrs.getSCBRestTemplate().getForObject("/floatQuery", float.class),
+        0.0f);
+  }
+
+  @Test
+  public void floatHeader_jaxrs_intf() {
+    assertEquals(defaultFloat, consumersJaxrs.getIntf().floatHeader(null), 0.0f);
+  }
+
+  @Test
+  public void floatHeader_jaxrs_rt() {
+    assertEquals(defaultFloat,
+        consumersJaxrs.getSCBRestTemplate().getForObject("/floatHeader", float.class), 0.0f);
+  }
+
+  @Test
+  public void floatForm_jaxrs_intf() {
+    assertEquals(defaultFloat, consumersJaxrs.getIntf().floatForm(null), 0.0f);
+  }
+
+  @Test
+  public void floatForm_jaxrs_rt() {
+    assertEquals(defaultFloat,
+        consumersJaxrs.getSCBRestTemplate().postForObject("/floatForm", null, float.class), 0.0f);
+  }
+
+  @Test
+  public void floatQuery_springmvc_intf() {
+    assertEquals(defaultFloat, consumersSpringmvc.getIntf().floatQuery(null), 0.0f);
+  }
+
+  @Test
+  public void floatQuery_springmvc_rt() {
+    assertEquals(defaultFloat,
+        consumersSpringmvc.getSCBRestTemplate().getForObject("/floatQuery", float.class), 0.0f);
+  }
+
+  @Test
+  public void floatHeader_springmvc_intf() {
+    assertEquals(defaultFloat, consumersSpringmvc.getIntf().floatHeader(null), 0.0f);
+  }
+
+  @Test
+  public void floatHeader_springmvc_rt() {
+    assertEquals(defaultFloat,
+        consumersSpringmvc.getSCBRestTemplate().getForObject("/floatHeader", float.class), 0.0f);
+  }
+
+  @Test
+  public void floatForm_springmvc_intf() {
+    assertEquals(defaultFloat, consumersSpringmvc.getIntf().floatForm(null), 0.0f);
+  }
+
+  @Test
+  public void floatForm_springmvc_rt() {
+    assertEquals(defaultFloat,
+        consumersSpringmvc.getSCBRestTemplate().postForObject("/floatForm", null, float.class), 0.0f);
+  }
+
+  @Test
+  public void floatQuery_require_springmvc_intf() {
+    assertEquals(defaultFloat, consumersSpringmvc.getIntf().floatQueryRequire(null), 0.0f);
+  }
+
+  @Test
+  public void floatQuery_require_springmvc_rt() {
+    assertEquals(defaultFloat,
+        consumersSpringmvc.getSCBRestTemplate().getForObject("/floatQueryRequire", float.class), 0.0f);
+  }
+
+  @Test
+  public void floatHeader_require_springmvc_intf() {
+    assertEquals(defaultFloat, consumersSpringmvc.getIntf().floatHeaderRequire(null), 0.0f);
+  }
+
+
+  @Test
+  public void floatHeader_require_springmvc_rt() {
+    assertEquals(defaultFloat,
+        consumersSpringmvc.getSCBRestTemplate().getForObject("/floatHeaderRequire", float.class), 0.0f);
+  }
+
+  @Test
+  public void floatForm_require_springmvc_intf() {
+    assertEquals(defaultFloat, consumersSpringmvc.getIntf().floatFormRequire(null), 0.0f);
+  }
+
+  @Test
+  public void floatForm_require_springmvc_rt() {
+    assertEquals(defaultFloat,
+        consumersSpringmvc.getSCBRestTemplate().postForObject("/floatFormRequire", null, float.class), 0.0f);
   }
 }

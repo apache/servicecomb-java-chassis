@@ -117,11 +117,11 @@ public class DefaultValueSpringmvcSchema {
 
   @ApiImplicitParams({
       @ApiImplicitParam(name = "input", dataType = "number", format = "double", paramType = "form", value = "", defaultValue = "10.2", required = false)})
-
   @PostMapping(path = "doubleForm")
   public double doubleForm(double input) {
     return input;
   }
+
   // springmvc rule: required should be false because defaultValue have value
   @GetMapping(path = "doubleQueryRequire")
   public double doubleQueryRequire(
@@ -140,6 +140,44 @@ public class DefaultValueSpringmvcSchema {
       @ApiImplicitParam(name = "input", dataType = "number", format = "double", paramType = "form", value = "a required form param", required = true, defaultValue = "10.2")})
   @PostMapping(path = "doubleFormRequire")
   public double doubleFormRequire(double input) {
+    return input;
+  }
+
+
+  //float
+  @GetMapping(path = "floatQuery")
+  public float floatQuery(@RequestParam(name = "input", required = false, defaultValue = "10.2") float input) {
+    return input;
+  }
+
+  @GetMapping(path = "floatHeader")
+  public float floatHeader(@RequestHeader(name = "input", required = false, defaultValue = "10.2") float input) {
+    return input;
+  }
+
+  @ApiImplicitParams({
+      @ApiImplicitParam(name = "input", dataType = "number", format = "float", paramType = "form", value = "", defaultValue = "10.2", required = false)})
+  @PostMapping(path = "floatForm")
+  public float floatForm(float input) {
+    return input;
+  }
+
+  // springmvc rule: required should be false because defaultValue have value
+  @GetMapping(path = "floatQueryRequire")
+  public float floatQueryRequire(@RequestParam(name = "input", required = true, defaultValue = "10.2") float input) {
+    return input;
+  }
+
+  // springmvc rule: required should be false because defaultValue have value
+  @GetMapping(path = "floatHeaderRequire")
+  public float floatHeaderRequire(@RequestHeader(name = "input", required = true, defaultValue = "10.2") float input) {
+    return input;
+  }
+
+  @ApiImplicitParams({
+      @ApiImplicitParam(name = "input", dataType = "number", format = "float", paramType = "form", value = "a required form param", required = true, defaultValue = "10.2")})
+  @PostMapping(path = "floatFormRequire")
+  public float floatFormRequire(float input) {
     return input;
   }
 }

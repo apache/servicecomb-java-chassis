@@ -46,4 +46,12 @@ public class DataTypePojoSchema {
   public double doubleAdd(double num1, double num2) {
     return num1 + num2;
   }
+
+  public float floatBody(float input) {
+    return input;
+  }
+
+  public float floatAdd(float num1, float num2) {
+    return num1 + num2;
+  }
 }
