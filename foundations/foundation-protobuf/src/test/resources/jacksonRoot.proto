@@ -15,40 +15,31 @@
   limitations under the License.
  */
 
-syntax = "proto3";
-import "google/protobuf/any.proto";
+syntax = "proto2";
 package org.apache.servicecomb.foundation.protobuf.internal.model;
 
 message Root {
-  int32 int32 = 1;
-  int64 int64 = 2;
-  uint32 uint32 = 3;
-  uint64 uint64 = 4;
-  sint32 sint32 = 5;
-  sint64 sint64 = 6;
-  fixed32 fixed32 = 7;
-  fixed64 fixed64 = 8;
-  sfixed32 sfixed32 = 9;
-  sfixed64 sfixed64 = 10;
-  float floatValue = 11;
-  double doubleValue = 12;
-  bool bool = 13;
-  string string = 14;
-  bytes bytes = 15;
-  Color color = 16;
+  optional int32 int32 = 1;
+  optional int64 int64 = 2;
+  optional uint32 uint32 = 3;
+  optional uint64 uint64 = 4;
+  optional sint32 sint32 = 5;
+  optional sint64 sint64 = 6;
+  optional fixed32 fixed32 = 7;
+  optional fixed64 fixed64 = 8;
+  optional sfixed32 sfixed32 = 9;
+  optional sfixed64 sfixed64 = 10;
+  optional float floatValue = 11;
+  optional double doubleValue = 12;
+  optional bool bool = 13;
+  optional string string = 14;
+  optional bytes bytes = 15;
+  optional Color color = 16;
 
-  User user = 17;
-
-  map<string, string> ssMap = 18;
-  map<string, User> spMap = 19;
+  optional User user = 17;
 
   repeated string sList = 20;
   repeated User pList = 21;
-
-  google.protobuf.Any any = 22;
-  repeated google.protobuf.Any anys = 23;
-
-  Root typeRecursive = 24;
 }
 enum Color {
   RED = 0;
@@ -57,7 +48,5 @@ enum Color {
 }
 
 message User {
-  string name = 1;
-
-  Root typeRecursive = 2;
+  optional string name = 1;
 }
