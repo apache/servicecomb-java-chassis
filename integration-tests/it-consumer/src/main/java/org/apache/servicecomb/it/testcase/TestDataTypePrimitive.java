@@ -139,7 +139,7 @@ public class TestDataTypePrimitive {
   public void double_pojo_rt() {
     Map<String, Double> map = new HashMap<>();
     map.put("input", 10.2);
-    assertEquals(10.2, (double) consumersPojo.getSCBRestTemplate().postForObject("/doubleBody", map, double.class),
+    assertEquals(10.2, consumersPojo.getSCBRestTemplate().postForObject("/doubleBody", map, double.class),
         0.0);
   }
 
@@ -149,7 +149,7 @@ public class TestDataTypePrimitive {
     String expect = "serviceComb";
     Map<String, String> map = new HashMap<>();
     map.put("input", expect);
-    assertEquals(expect, (String) consumersPojo.getSCBRestTemplate().postForObject("/stringBody", map, String.class));
+    assertEquals(expect, consumersPojo.getSCBRestTemplate().postForObject("/stringBody", map, String.class));
   }
 
   @Test
@@ -180,7 +180,7 @@ public class TestDataTypePrimitive {
     Map<String, Double> map = new HashMap<>();
     map.put("num1", 10.2);
     map.put("num2", 10.3);
-    assertEquals(20.5, (double) consumersPojo.getSCBRestTemplate().postForObject("/doubleAdd", map, double.class), 0.0);
+    assertEquals(20.5, consumersPojo.getSCBRestTemplate().postForObject("/doubleAdd", map, double.class), 0.0);
   }
 
   @Test
@@ -189,7 +189,7 @@ public class TestDataTypePrimitive {
     map.put("str1", "service");
     map.put("str2", "Comb");
     assertEquals("serviceComb",
-        (String) consumersPojo.getSCBRestTemplate().postForObject("/stringConcat", map, String.class));
+        consumersPojo.getSCBRestTemplate().postForObject("/stringConcat", map, String.class));
   }
 
   @Test
@@ -215,7 +215,7 @@ public class TestDataTypePrimitive {
 
   @Test
   public void doublePath_jaxrs_rt() {
-    assertEquals(10.2, (double) consumersJaxrs.getSCBRestTemplate().getForObject("/doublePath/10.2", double.class),
+    assertEquals(10.2, consumersJaxrs.getSCBRestTemplate().getForObject("/doublePath/10.2", double.class),
         0.0);
   }
 
@@ -223,7 +223,7 @@ public class TestDataTypePrimitive {
   public void stringPath_jaxrs_rt() {
     String expect = "serviceComb";
     assertEquals(expect,
-        (String) consumersJaxrs.getSCBRestTemplate().getForObject("/stringPath/" + expect, String.class));
+        consumersJaxrs.getSCBRestTemplate().getForObject("/stringPath/" + expect, String.class));
   }
 
   @Test
@@ -250,14 +250,14 @@ public class TestDataTypePrimitive {
   @Test
   public void doubleQuery_jaxrs_rt() {
     assertEquals(10.2,
-        (double) consumersJaxrs.getSCBRestTemplate().getForObject("/doubleQuery?input=10.2", double.class), 0.0);
+        consumersJaxrs.getSCBRestTemplate().getForObject("/doubleQuery?input=10.2", double.class), 0.0);
   }
 
   @Test
   public void stringQuery_jaxrs_rt() {
     String expect = "serviceComb";
     assertEquals(expect,
-        (String) consumersJaxrs.getSCBRestTemplate().getForObject("/stringQuery?input=" + expect, String.class));
+        consumersJaxrs.getSCBRestTemplate().getForObject("/stringQuery?input=" + expect, String.class));
   }
 
   @Test
@@ -311,7 +311,7 @@ public class TestDataTypePrimitive {
             HttpMethod.GET,
             entity,
             double.class);
-    assertEquals(10.2, (double) response.getBody(), 0.0);
+    assertEquals(10.2, response.getBody(), 0.0);
   }
 
   @Test
@@ -331,7 +331,7 @@ public class TestDataTypePrimitive {
             HttpMethod.GET,
             entity,
             String.class);
-    assertEquals(expect, (String) response.getBody());
+    assertEquals(expect, response.getBody());
   }
 
   @Test
@@ -385,7 +385,7 @@ public class TestDataTypePrimitive {
             HttpMethod.GET,
             entity,
             double.class);
-    assertEquals(10.2, (double) response.getBody(), 0.0);
+    assertEquals(10.2, response.getBody(), 0.0);
   }
 
   @Test
@@ -405,7 +405,7 @@ public class TestDataTypePrimitive {
             HttpMethod.GET,
             entity,
             String.class);
-    assertEquals(expect, (String) response.getBody());
+    assertEquals(expect, response.getBody());
   }
 
   @Test
@@ -436,6 +436,7 @@ public class TestDataTypePrimitive {
     assertEquals(10,
         (int) consumersJaxrs.getSCBRestTemplate().postForEntity("/intForm", map, int.class).getBody());
   }
+
   @Test
   public void doubleForm_jaxrs_rt() {
     Map<String, Double> map = new HashMap<>();
@@ -443,11 +444,11 @@ public class TestDataTypePrimitive {
     HttpEntity<Map<String, Double>> formEntiry = new HttpEntity<>(map);
 
     assertEquals(10.2,
-        (double) consumersJaxrs.getSCBRestTemplate().postForEntity("/doubleForm", formEntiry, double.class).getBody(),
+        consumersJaxrs.getSCBRestTemplate().postForEntity("/doubleForm", formEntiry, double.class).getBody(),
         0.0);
     //just use map is ok
     assertEquals(10.2,
-        (double) consumersJaxrs.getSCBRestTemplate().postForEntity("/doubleForm", map, double.class).getBody(), 0.0);
+        consumersJaxrs.getSCBRestTemplate().postForEntity("/doubleForm", map, double.class).getBody(), 0.0);
   }
 
   @Test
@@ -458,19 +459,20 @@ public class TestDataTypePrimitive {
     HttpEntity<Map<String, String>> formEntiry = new HttpEntity<>(map);
 
     assertEquals(expect,
-        (String) consumersJaxrs.getSCBRestTemplate()
+        consumersJaxrs.getSCBRestTemplate()
             .postForEntity("/stringForm", formEntiry, String.class)
             .getBody());
 
     //you can use another method to invoke it
     assertEquals(expect,
-        (String) consumersJaxrs.getSCBRestTemplate().postForEntity("/stringForm", map, String.class).getBody());
+        consumersJaxrs.getSCBRestTemplate().postForEntity("/stringForm", map, String.class).getBody());
   }
 
   @Test
   public void intBody_jaxrs_intf() {
     assertEquals(10, consumersJaxrs.getIntf().intBody(10));
   }
+
   @Test
   public void doubleBody_jaxrs_intf() {
     assertEquals(10.2, consumersJaxrs.getIntf().doubleBody(10.2), 0.0);
@@ -489,7 +491,7 @@ public class TestDataTypePrimitive {
 
   @Test
   public void doubleBody_jaxrs_rt() {
-    assertEquals(10.2, (double) consumersJaxrs.getSCBRestTemplate().postForObject("/doubleBody", 10.2, double.class),
+    assertEquals(10.2, consumersJaxrs.getSCBRestTemplate().postForObject("/doubleBody", 10.2, double.class),
         0.0);
   }
 
@@ -497,13 +499,14 @@ public class TestDataTypePrimitive {
   public void stringBody_jaxrs_rt() {
     String expect = "serviceComb";
     assertEquals(expect,
-        (String) consumersJaxrs.getSCBRestTemplate().postForObject("/stringBody", expect, String.class));
+        consumersJaxrs.getSCBRestTemplate().postForObject("/stringBody", expect, String.class));
   }
 
   @Test
   public void intAdd_jaxrs_intf() {
     assertEquals(12, consumersJaxrs.getIntf().intAdd(10, 2));
   }
+
   @Test
   public void doubleAdd_jaxrs_intf() {
     assertEquals(20.5, consumersJaxrs.getIntf().doubleAdd(10.2, 10.3), 0.0);
@@ -522,12 +525,12 @@ public class TestDataTypePrimitive {
   @Test
   public void doubleAdd_jaxrs_rt() {
     assertEquals(20.5,
-        (double) consumersJaxrs.getSCBRestTemplate().getForObject("/doubleAdd?num1=10.2&num2=10.3", double.class), 0.0);
+        consumersJaxrs.getSCBRestTemplate().getForObject("/doubleAdd?num1=10.2&num2=10.3", double.class), 0.0);
   }
 
   @Test
   public void string_concat_jaxrs_rt() {
-    assertEquals("serviceComb", (String) consumersJaxrs.getSCBRestTemplate()
+    assertEquals("serviceComb", consumersJaxrs.getSCBRestTemplate()
         .getForObject("/stringConcat?str1=service&str2=Comb", String.class));
   }
 
@@ -535,6 +538,7 @@ public class TestDataTypePrimitive {
   public void intPath_springmvc_intf() {
     assertEquals(10, consumersSpringmvc.getIntf().intPath(10));
   }
+
   @Test
   public void doublePath_springmvc_intf() {
     assertEquals(10.2, consumersSpringmvc.getIntf().doublePath(10.2), 0.0);
@@ -548,7 +552,7 @@ public class TestDataTypePrimitive {
 
   @Test
   public void doublePath_springmvc_rt() {
-    assertEquals(10.2, (double) consumersSpringmvc.getSCBRestTemplate().getForObject("/doublePath/10.2", double.class),
+    assertEquals(10.2, consumersSpringmvc.getSCBRestTemplate().getForObject("/doublePath/10.2", double.class),
         0.0);
   }
 
@@ -561,7 +565,7 @@ public class TestDataTypePrimitive {
   public void stringPath_springmvc_rt() {
     String expect = "serviceComb";
     assertEquals(expect,
-        (String) consumersSpringmvc.getSCBRestTemplate().getForObject("/stringPath/" + expect, String.class));
+        consumersSpringmvc.getSCBRestTemplate().getForObject("/stringPath/" + expect, String.class));
   }
 
   @Test
@@ -588,14 +592,14 @@ public class TestDataTypePrimitive {
   @Test
   public void doubleQuery_springmvc_rt() {
     assertEquals(10.2,
-        (double) consumersSpringmvc.getSCBRestTemplate().getForObject("/doubleQuery?input=10.2", double.class), 0.0);
+        consumersSpringmvc.getSCBRestTemplate().getForObject("/doubleQuery?input=10.2", double.class), 0.0);
   }
 
   @Test
   public void stringQuery_springmvc_rt() {
     String expect = "serviceComb";
     assertEquals(expect,
-        (String) consumersSpringmvc.getSCBRestTemplate().getForObject("/stringQuery?input=" + expect, String.class));
+        consumersSpringmvc.getSCBRestTemplate().getForObject("/stringQuery?input=" + expect, String.class));
   }
 
   @Test
@@ -633,6 +637,7 @@ public class TestDataTypePrimitive {
   public void intCookie_springmvc_intf() {
     assertEquals(10, consumersSpringmvc.getIntf().intCookie(10));
   }
+
   @Test
   public void doubleCookie_springmvc_intf() {
     assertEquals(10.2, consumersSpringmvc.getIntf().doubleCookie(10.2), 0.0);
@@ -667,7 +672,6 @@ public class TestDataTypePrimitive {
   @Test
   public void doubleForm_springmvc_intf() {
     assertEquals(10.2, consumersSpringmvc.getIntf().doubleForm(10.2), 0.0);
-
   }
 
   @Test
@@ -693,7 +697,7 @@ public class TestDataTypePrimitive {
     HttpEntity<Map<String, Double>> formEntiry = new HttpEntity<>(map);
 
     assertEquals(10.2,
-        (double) consumersSpringmvc.getSCBRestTemplate().postForEntity("/doubleForm", formEntiry, double.class)
+        consumersSpringmvc.getSCBRestTemplate().postForEntity("/doubleForm", formEntiry, double.class)
             .getBody(), 0.0);
   }
 
@@ -705,11 +709,11 @@ public class TestDataTypePrimitive {
     HttpEntity<Map<String, String>> formEntiry = new HttpEntity<>(map);
 
     assertEquals(expect,
-        (String) consumersSpringmvc.getSCBRestTemplate().postForEntity("/stringForm", formEntiry, String.class)
+        consumersSpringmvc.getSCBRestTemplate().postForEntity("/stringForm", formEntiry, String.class)
             .getBody());
 
     assertEquals(expect,
-        (String) consumersSpringmvc.getSCBRestTemplate().postForEntity("/stringForm", map, String.class)
+        consumersSpringmvc.getSCBRestTemplate().postForEntity("/stringForm", map, String.class)
             .getBody());
   }
 
@@ -737,14 +741,14 @@ public class TestDataTypePrimitive {
   @Test
   public void doubleBody_springmvc_rt() {
     assertEquals(10.2,
-        (double) consumersSpringmvc.getSCBRestTemplate().postForObject("/doubleBody", 10.2, double.class), 0.0);
+        consumersSpringmvc.getSCBRestTemplate().postForObject("/doubleBody", 10.2, double.class), 0.0);
   }
 
   @Test
   public void stringBody_springmvc_rt() {
     String expect = "serviceComb";
     assertEquals(expect,
-        (String) consumersSpringmvc.getSCBRestTemplate().postForObject("/stringBody", expect, String.class));
+        consumersSpringmvc.getSCBRestTemplate().postForObject("/stringBody", expect, String.class));
   }
 
   @Test
@@ -755,7 +759,6 @@ public class TestDataTypePrimitive {
   @Test
   public void doubleAdd_springmvc_intf() {
     assertEquals(20.5, consumersSpringmvc.getIntf().doubleAdd(10.2, 10.3), 0.0);
-
   }
 
   @Test
@@ -771,14 +774,14 @@ public class TestDataTypePrimitive {
   @Test
   public void doubleAdd_springmvc_rt() {
     assertEquals(20.5,
-        (double) consumersSpringmvc.getSCBRestTemplate().getForObject("/doubleAdd?num1=10.2&num2=10.3", double.class),
+        consumersSpringmvc.getSCBRestTemplate().getForObject("/doubleAdd?num1=10.2&num2=10.3", double.class),
         0.0);
   }
 
   @Test
   public void string_concat_springmvc_rt() {
     assertEquals("serviceComb",
-        (String) consumersSpringmvc.getSCBRestTemplate()
+        consumersSpringmvc.getSCBRestTemplate()
             .getForObject("/stringConcat?str1=service&str2=Comb", String.class));
   }
 }
