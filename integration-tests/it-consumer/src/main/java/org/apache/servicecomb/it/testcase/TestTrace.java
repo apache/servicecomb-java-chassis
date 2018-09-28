@@ -21,12 +21,11 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.it.Consumers;
-import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestTrace {
@@ -34,26 +33,17 @@ public class TestTrace {
     CompletableFuture<String> echoProxy();
   }
 
-  private static Consumers<TraceSchemaIntf> consumers;
+  static Consumers<TraceSchemaIntf> consumers = new Consumers<>("trace", TraceSchemaIntf.class);
 
-
-  private static String producerName;
-
-  @Before
-  public void prepare() {
-    if (!ITJUnitUtils.getProducerName().equals(producerName)) {
-      producerName = ITJUnitUtils.getProducerName();
-      consumers = new Consumers<>(producerName, "trace", TraceSchemaIntf.class);
-      consumers.init(ITJUnitUtils.getTransport());
-    }
-
+  @BeforeClass
+  public static void classSetup() {
     InvocationContext context = new InvocationContext();
     context.addContext(Const.TRACE_ID_NAME, "testId");
     ContextUtils.setInvocationContext(context);
   }
 
-  @After
-  public void teardown() {
+  @AfterClass
+  public static void classTeardown() {
     ContextUtils.removeInvocationContext();
   }
 

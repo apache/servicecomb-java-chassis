@@ -26,25 +26,13 @@ import java.net.URL;
 import java.util.Scanner;
 
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
-import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
 public class TestRestServerConfigEdge {
-  private static GateRestTemplate client;
-
-  private static String producerName;
-
-  @Before
-  public void prepare() {
-    if (!ITJUnitUtils.getProducerName().equals(producerName)) {
-      producerName = ITJUnitUtils.getProducerName();
-      client = new GateRestTemplate("it-edge", producerName, "dataTypeJaxrs");
-    }
-  }
+  static GateRestTemplate client = (GateRestTemplate) GateRestTemplate.createEdgeRestTemplate("dataTypeJaxrs");
 
   @Test
   public void testIllegalPathParam() throws IOException {

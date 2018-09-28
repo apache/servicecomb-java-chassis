@@ -24,8 +24,6 @@ import java.util.Map;
 
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.extend.engine.ITSCBRestTemplate;
-import org.apache.servicecomb.it.junit.ITJUnitUtils;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -94,24 +92,13 @@ public class TestDataTypePrimitive {
     double doubleAdd(double num1, double num2);
   }
 
-  private static Consumers<DataTypePojoIntf> consumersPojo;
+  private static Consumers<DataTypePojoIntf> consumersPojo = new Consumers<>("dataTypePojo", DataTypePojoIntf.class);
 
-  private static Consumers<DataTypeRestIntf> consumersJaxrs;
+  private static Consumers<DataTypeRestIntf> consumersJaxrs =
+      new Consumers<>("dataTypeJaxrs", DataTypeRestIntf.class);
 
-  private static Consumers<DataTypeRestIntf> consumersSpringmvc;
-
-  private static String producerName;
-
-  @BeforeClass
-  public static void beforeClass() {
-    producerName = ITJUnitUtils.getProducerName();
-    consumersPojo = new Consumers<>(producerName, "dataTypePojo", DataTypePojoIntf.class);
-    consumersJaxrs = new Consumers<>(producerName, "dataTypeJaxrs", DataTypeRestIntf.class);
-    consumersSpringmvc = new Consumers<>(producerName, "dataTypeSpringmvc", DataTypeRestIntf.class);
-    consumersPojo.init(ITJUnitUtils.getTransport());
-    consumersJaxrs.init(ITJUnitUtils.getTransport());
-    consumersSpringmvc.init(ITJUnitUtils.getTransport());
-  }
+  private static Consumers<DataTypeRestIntf> consumersSpringmvc = new Consumers<>("dataTypeSpringmvc",
+      DataTypeRestIntf.class);
 
   @Test
   public void int_pojo_intf() {

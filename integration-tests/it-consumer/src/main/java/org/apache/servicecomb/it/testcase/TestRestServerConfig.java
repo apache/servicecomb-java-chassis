@@ -18,10 +18,8 @@
 package org.apache.servicecomb.it.testcase;
 
 import org.apache.servicecomb.it.Consumers;
-import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.base.Strings;
@@ -36,18 +34,8 @@ public class TestRestServerConfig {
     String testMaxInitialLineLength(String q);
   }
 
-  private static String producerName;
-
-  private static Consumers<RestServerConfigSchemaIntf> consumers;
-
-  @Before
-  public void prepare() {
-    if (!ITJUnitUtils.getProducerName().equals(producerName)) {
-      producerName = ITJUnitUtils.getProducerName();
-      consumers = new Consumers<>(producerName, "restServerConfig", RestServerConfigSchemaIntf.class);
-      consumers.init(ITJUnitUtils.getTransport());
-    }
-  }
+  static Consumers<RestServerConfigSchemaIntf> consumers = new Consumers<>("restServerConfig",
+      RestServerConfigSchemaIntf.class);
 
   /**
    * Max initial line length is set to 5000
