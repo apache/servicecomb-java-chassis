@@ -94,7 +94,7 @@ public class Test3rdPartyInvocation {
     Assert.assertEquals(4, dataTypeJaxrsSchema.intCookie(4));
     Assert.assertEquals(5, dataTypeJaxrsSchema.intForm(5));
     Assert.assertEquals(6, dataTypeJaxrsSchema.intBody(6));
-    Assert.assertEquals(7, dataTypeJaxrsSchema.add(3, 4));
+    Assert.assertEquals(7, dataTypeJaxrsSchema.intAdd(3, 4));
     Assert.assertEquals("abc", dataTypeJaxrsSchema.stringPath("abc"));
     Assert.assertEquals("def", dataTypeJaxrsSchema.stringQuery("def"));
     Assert.assertEquals("ghi", dataTypeJaxrsSchema.stringHeader("ghi"));
@@ -107,7 +107,7 @@ public class Test3rdPartyInvocation {
   @Test
   public void testAsyncInvoke_RPC() throws ExecutionException, InterruptedException {
     Holder<Boolean> addChecked = new Holder<>(false);
-    dataTypeJaxrsSchemaAsync.add(5, 6).whenComplete((result, t) -> {
+    dataTypeJaxrsSchemaAsync.intAdd(5, 6).whenComplete((result, t) -> {
       Assert.assertEquals(11, result.intValue());
       Assert.assertNull(t);
       addChecked.value = true;
@@ -136,7 +136,7 @@ public class Test3rdPartyInvocation {
     RestTemplate restTemplate = RestTemplateBuilder.create();
     ResponseEntity<Integer> responseEntity = restTemplate
         .getForEntity(
-            "cse://" + THIRD_PARTY_MICROSERVICE_NAME + "/rest/it-producer/v1/dataTypeJaxrs/add?num1=11&num2=22",
+            "cse://" + THIRD_PARTY_MICROSERVICE_NAME + "/rest/it-producer/v1/dataTypeJaxrs/intAdd?num1=11&num2=22",
             int.class);
     Assert.assertEquals(200, responseEntity.getStatusCodeValue());
     Assert.assertEquals(33, responseEntity.getBody().intValue());
@@ -154,7 +154,8 @@ public class Test3rdPartyInvocation {
     CseAsyncRestTemplate cseAsyncRestTemplate = new CseAsyncRestTemplate();
     ListenableFuture<ResponseEntity<Integer>> responseFuture = cseAsyncRestTemplate
         .getForEntity(
-            "cse://" + ASYNC_THIRD_PARTY_MICROSERVICE_NAME + "/rest/it-producer/v1/dataTypeJaxrs/add?num1=11&num2=22",
+            "cse://" + ASYNC_THIRD_PARTY_MICROSERVICE_NAME
+                + "/rest/it-producer/v1/dataTypeJaxrs/intAdd?num1=11&num2=22",
             Integer.class);
     ResponseEntity<Integer> responseEntity = responseFuture.get();
     Assert.assertEquals(200, responseEntity.getStatusCodeValue());
@@ -195,9 +196,9 @@ public class Test3rdPartyInvocation {
     @POST
     int intBody(int input);
 
-    @Path("add")
+    @Path("intAdd")
     @GET
-    int add(@QueryParam("num1") int num1, @QueryParam("num2") int num2);
+    int intAdd(@QueryParam("num1") int num1, @QueryParam("num2") int num2);
 
     //strinnum1
     @Path("stringPath/{input}")
@@ -231,9 +232,9 @@ public class Test3rdPartyInvocation {
 
   @Path("/rest/it-producer/v1/dataTypeJaxrs")
   interface DataTypeJaxrsSchemaAsyncIntf {
-    @Path("add")
+    @Path("intAdd")
     @GET
-    CompletableFuture<Integer> add(@QueryParam("num1") int num1, @QueryParam("num2") int num2);
+    CompletableFuture<Integer> intAdd(@QueryParam("num1") int num1, @QueryParam("num2") int num2);
 
     @Path("stringBody")
     @POST
