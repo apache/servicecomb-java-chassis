@@ -19,6 +19,7 @@ package org.apache.servicecomb.it;
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
 import org.apache.servicecomb.it.extend.engine.ITInvoker;
 import org.apache.servicecomb.it.extend.engine.ITSCBRestTemplate;
+import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.springframework.web.client.RestTemplate;
 
 public class Consumers<INTF> {
@@ -38,21 +39,18 @@ public class Consumers<INTF> {
 
   private String transport;
 
-  public Consumers(String producerName, String schemaId, Class<INTF> intfCls) {
-    this.producerName = producerName;
+  public Consumers(String schemaId, Class<INTF> intfCls) {
     this.schemaId = schemaId;
     this.intfCls = intfCls;
-
-    scbRestTemplate = new ITSCBRestTemplate(producerName, schemaId);
-    edgeRestTemplate = new GateRestTemplate("it-edge", producerName, schemaId);
-    zuulRestTemplate = null;// GateRestTemplate.createZuulRestTemplate(producerName, schemaId);
   }
 
-  public void init(String transport) {
-    this.transport = transport;
+  public void init() {
+    this.producerName = ITJUnitUtils.getProducerName();
+    this.transport = ITJUnitUtils.getTransport();
     intf = ITInvoker.createProxy(producerName, schemaId, transport, intfCls);
-
-    scbRestTemplate.setTransport(transport);
+    scbRestTemplate = new ITSCBRestTemplate(schemaId).init();
+    edgeRestTemplate = GateRestTemplate.createEdgeRestTemplate(schemaId).init();
+    zuulRestTemplate = null;// GateRestTemplate.createZuulRestTemplate(schemaId).init();
   }
 
   public String getSchemaId() {

@@ -18,16 +18,23 @@ package org.apache.servicecomb.it.extend.engine;
 
 import org.apache.servicecomb.core.definition.MicroserviceVersionMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 
 public class ITSCBRestTemplate extends CseRestTemplate {
-
   private String urlPrefix;
 
-  public ITSCBRestTemplate(String producerName, String schemaId) {
+  private String schemaId;
+
+  public ITSCBRestTemplate(String schemaId) {
+    this.schemaId = schemaId;
+  }
+
+  public ITSCBRestTemplate init() {
+    String producerName = ITJUnitUtils.getProducerName();
     MicroserviceVersionRule microserviceVersionRule = RegistryUtils.getServiceRegistry().getAppManager()
         .getOrCreateMicroserviceVersionRule(RegistryUtils.getAppId(), producerName,
             DefinitionConst.VERSION_RULE_ALL);
@@ -37,10 +44,8 @@ public class ITSCBRestTemplate extends CseRestTemplate {
 
     setUriTemplateHandler(new ITUriTemplateHandler(urlPrefix));
     setRequestFactory(new ITClientHttpRequestFactory());
-  }
 
-  public void setTransport(String transport) {
-    ((ITClientHttpRequestFactory) getRequestFactory()).setTransport(transport);
+    return this;
   }
 
   public String getUrlPrefix() {

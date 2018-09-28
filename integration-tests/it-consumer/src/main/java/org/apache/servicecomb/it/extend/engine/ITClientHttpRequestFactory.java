@@ -18,6 +18,7 @@ package org.apache.servicecomb.it.extend.engine;
 
 import java.net.URI;
 
+import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.provider.springmvc.reference.CseClientHttpRequestFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
@@ -25,8 +26,8 @@ import org.springframework.http.client.ClientHttpRequest;
 public class ITClientHttpRequestFactory extends CseClientHttpRequestFactory {
   private String transport;
 
-  public void setTransport(String transport) {
-    this.transport = transport;
+  public ITClientHttpRequestFactory() {
+    this.transport = ITJUnitUtils.getTransport();
   }
 
   @Override
