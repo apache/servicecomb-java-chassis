@@ -17,8 +17,9 @@
 
 package org.apache.servicecomb.serviceregistry.consumer;
 
-
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.serviceregistry.version.Version;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -50,5 +51,16 @@ public class TestMicroserviceVersion {
     MicroserviceVersion microserviceVersion = MicroserviceVersionTestUtils.createMicroserviceVersion("1", "1.0.0");
     Assert.assertEquals("1", microserviceVersion.getMicroservice().getServiceId());
     Assert.assertEquals("1.0.0", microserviceVersion.getVersion().getVersion());
+  }
+
+  @Test
+  public void constructByMicroservice() {
+    Microservice microservice = new Microservice();
+    String version = "1.2.1";
+    microservice.setVersion(version);
+    MicroserviceVersion microserviceVersion = new MicroserviceVersion(microservice);
+
+    Assert.assertSame(microservice, microserviceVersion.getMicroservice());
+    Assert.assertEquals(new Version(version), microserviceVersion.getVersion());
   }
 }

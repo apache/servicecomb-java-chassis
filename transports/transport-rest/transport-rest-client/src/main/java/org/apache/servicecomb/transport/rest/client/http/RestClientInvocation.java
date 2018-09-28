@@ -94,7 +94,9 @@ public class RestClientInvocation {
     HttpServletRequestEx requestEx = new VertxClientRequestToHttpServletRequest(clientRequest, requestBodyBuffer);
     invocation.getInvocationStageTrace().startClientFiltersRequest();
     for (HttpClientFilter filter : httpClientFilters) {
-      filter.beforeSendRequest(invocation, requestEx);
+      if (filter.enabled()) {
+        filter.beforeSendRequest(invocation, requestEx);
+      }
     }
 
     clientRequest.exceptionHandler(e -> {
@@ -193,10 +195,12 @@ public class RestClientInvocation {
         HttpServletResponseEx responseEx =
             new VertxClientResponseToHttpServletResponse(clientResponse, responseBuf);
         for (HttpClientFilter filter : httpClientFilters) {
-          Response response = filter.afterReceiveResponse(invocation, responseEx);
-          if (response != null) {
-            complete(response);
-            return;
+          if (filter.enabled()) {
+            Response response = filter.afterReceiveResponse(invocation, responseEx);
+            if (response != null) {
+              complete(response);
+              return;
+            }
           }
         }
       } catch (Throwable e) {
@@ -221,10 +225,13 @@ public class RestClientInvocation {
     }
 
     InvocationStageTrace stageTrace = invocation.getInvocationStageTrace();
-    DefaultHttpSocketMetric httpSocketMetric = (DefaultHttpSocketMetric) ((ConnectionBase) clientRequest.connection())
-        .metric();
-    stageTrace.finishGetConnection(httpSocketMetric.getRequestBeginTime());
-    stageTrace.finishWriteToBuffer(httpSocketMetric.getRequestEndTime());
+    ConnectionBase connection = (ConnectionBase) clientRequest.connection();
+    // connection maybe null when exception happens such as ssl handshake failure
+    if (connection != null) {
+      DefaultHttpSocketMetric httpSocketMetric = (DefaultHttpSocketMetric) connection.metric();
+      stageTrace.finishGetConnection(httpSocketMetric.getRequestBeginTime());
+      stageTrace.finishWriteToBuffer(httpSocketMetric.getRequestEndTime());
+    }
 
     stageTrace.finishClientFiltersResponse();
     asyncResp.fail(invocation.getInvocationType(), e);

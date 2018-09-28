@@ -20,10 +20,15 @@ package org.apache.servicecomb.core.definition;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.definition.classloader.MicroserviceClassLoaderFactory;
 import org.apache.servicecomb.serviceregistry.api.Const;
+import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersion;
 
 public class MicroserviceVersionMeta extends MicroserviceVersion {
-  private MicroserviceMeta microserviceMeta;
+  MicroserviceMeta microserviceMeta;
+
+  MicroserviceVersionMeta(Microservice microservice) {
+    super(microservice);
+  }
 
   public MicroserviceVersionMeta(String microserviceName, String microserviceId,
       MicroserviceClassLoaderFactory classLoaderFactory) {

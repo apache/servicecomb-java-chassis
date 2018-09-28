@@ -17,5 +17,5 @@
 package org.apache.servicecomb.foundation.common.utils.bean;
 
 public interface Getter {
-  Object get(Object instance) throws Throwable;
+  Object get(Object instance);
 }

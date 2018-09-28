@@ -35,6 +35,11 @@ public class MicroserviceVersion {
     this.version = new Version(microservice.getVersion());
   }
 
+  public MicroserviceVersion(Microservice microservice) {
+    this.microservice = microservice;
+    this.version = new Version(microservice.getVersion());
+  }
+
   public Microservice getMicroservice() {
     return microservice;
   }

@@ -66,13 +66,13 @@ public class DataTypeJaxrsSchema {
     return input;
   }
 
-  @Path("add")
+  @Path("intAdd")
   @GET
-  public int add(@QueryParam("num1") int num1, @QueryParam("num2") int num2) {
+  public int intAdd(@QueryParam("num1") int num1, @QueryParam("num2") int num2) {
     return num1 + num2;
   }
 
-  //strinnum1
+  //string
   @Path("stringPath/{input}")
   @GET
   public String stringPath(@PathParam("input") String input) {
@@ -114,4 +114,48 @@ public class DataTypeJaxrsSchema {
   public String stringConcat(@QueryParam("str1") String str1, @QueryParam("str2") String str2) {
     return str1 + str2;
   }
+
+  //double
+  @Path("doublePath/{input}")
+  @GET
+  public double doublePath(@PathParam("input") double input) {
+    return input;
+  }
+
+  @Path("doubleQuery")
+  @GET
+  public double doubleQuery(@QueryParam("input") double input) {
+    return input;
+  }
+
+  @Path("doubleHeader")
+  @GET
+  public double doubleHeader(@HeaderParam("input") double input) {
+    return input;
+  }
+
+  @Path("doubleCookie")
+  @GET
+  public double doubleCookie(@CookieParam("input") double input) {
+    return input;
+  }
+
+  @Path("doubleForm")
+  @POST
+  public double doubleForm(@FormParam("input") double input) {
+    return input;
+  }
+
+  @Path("doubleBody")
+  @POST
+  public double doubleBody(double input) {
+    return input;
+  }
+
+  @Path("doubleAdd")
+  @GET
+  public double doubleAdd(@QueryParam("num1") double num1, @QueryParam("num2") double num2) {
+    return num1 + num2;
+  }
+
 }

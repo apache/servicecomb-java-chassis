@@ -103,4 +103,43 @@ public class DefaultValueSpringmvcSchema {
   public String stringFormRequire(String input) {
     return input;
   }
+
+  //double
+  @GetMapping("doubleQuery")
+  public double doubleQuery(@RequestParam(value = "input", defaultValue = "10.2") double input) {
+    return input;
+  }
+
+  @GetMapping("doubleHeader")
+  public double doubleHeader(@RequestHeader(value = "input", defaultValue = "10.2") double input) {
+    return input;
+  }
+
+  @ApiImplicitParams({
+      @ApiImplicitParam(name = "input", dataType = "number", format = "double", paramType = "form", value = "", defaultValue = "10.2", required = false)})
+
+  @PostMapping(path = "doubleForm")
+  public double doubleForm(double input) {
+    return input;
+  }
+  // springmvc rule: required should be false because defaultValue have value
+  @GetMapping(path = "doubleQueryRequire")
+  public double doubleQueryRequire(
+      @RequestParam(name = "input", required = true, defaultValue = "10.2") double input) {
+    return input;
+  }
+
+  // springmvc rule: required should be false because defaultValue have value
+  @GetMapping(path = "doubleHeaderRequire")
+  public double doubleHeaderRequire(
+      @RequestHeader(name = "input", required = true, defaultValue = "10.2") double input) {
+    return input;
+  }
+
+  @ApiImplicitParams({
+      @ApiImplicitParam(name = "input", dataType = "number", format = "double", paramType = "form", value = "a required form param", required = true, defaultValue = "10.2")})
+  @PostMapping(path = "doubleFormRequire")
+  public double doubleFormRequire(double input) {
+    return input;
+  }
 }

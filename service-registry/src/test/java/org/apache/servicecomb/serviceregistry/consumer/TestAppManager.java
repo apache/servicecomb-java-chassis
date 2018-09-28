@@ -20,8 +20,10 @@ package org.apache.servicecomb.serviceregistry.consumer;
 import java.util.Collections;
 
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.api.registry.StaticMicroservice;
 import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
+import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.junit.After;
 import org.junit.Assert;
@@ -30,7 +32,10 @@ import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
 
+import mockit.Deencapsulation;
 import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestAppManager {
@@ -96,5 +101,27 @@ public class TestAppManager {
     appManager.setMicroserviceVersionFactory(microserviceVersionFactory);
 
     Assert.assertSame(microserviceVersionFactory, appManager.getMicroserviceVersionFactory());
+  }
+
+  @Test
+  public void getStaticMicroserviceVersionFactory() {
+    new MockUp<ServiceRegistryConfig>() {
+      @Mock
+      String getStaticMicroserviceVersionFactory() {
+        return TestStaticMicroserviceVersionFactory.class.getName();
+      }
+    };
+
+    Assert.assertNull(Deencapsulation.getField(appManager, "staticMicroserviceVersionFactory"));
+
+    Assert.assertEquals(TestStaticMicroserviceVersionFactory.class,
+        appManager.getStaticMicroserviceVersionFactory().getClass());
+  }
+
+  static class TestStaticMicroserviceVersionFactory implements StaticMicroserviceVersionFactory {
+    @Override
+    public MicroserviceVersion create(StaticMicroservice microservice) {
+      return null;
+    }
   }
 }

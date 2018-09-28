@@ -27,7 +27,7 @@ public class DataTypePojoSchema {
     return input;
   }
 
-  public int add(int num1, int num2) {
+  public int intAdd(int num1, int num2) {
     return num1 + num2;
   }
 
@@ -37,5 +37,13 @@ public class DataTypePojoSchema {
 
   public String stringConcat(String str1, String str2) {
     return str1 + str2;
+  }
+
+  public double doubleBody(double input) {
+    return input;
+  }
+
+  public double doubleAdd(double num1, double num2) {
+    return num1 + num2;
   }
 }

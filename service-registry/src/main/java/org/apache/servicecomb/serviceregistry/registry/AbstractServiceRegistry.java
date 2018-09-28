@@ -19,12 +19,15 @@ package org.apache.servicecomb.serviceregistry.registry;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_DEFAULT_REGISTER_BY;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_FRAMEWORK_DEFAULT_NAME;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.servicecomb.serviceregistry.Features;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.registry.BasePath;
@@ -40,7 +43,9 @@ import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionFactory;
+import org.apache.servicecomb.serviceregistry.consumer.StaticMicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceServiceCenterTask;
 import org.apache.servicecomb.serviceregistry.task.ServiceCenterTask;
@@ -181,7 +186,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     microservice.setRegisterBy(CONFIG_DEFAULT_REGISTER_BY);
   }
 
-
   private void loadStaticConfiguration() {
     // TODO 如果yaml定义了paths规则属性，替换默认值，现需要DynamicPropertyFactory支持数组获取
     List<BasePath> paths = microservice.getPaths();
@@ -302,5 +306,33 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   public void destroy() {
     eventBus.post(new ShutdownEvent());
     unregisterInstance();
+  }
+
+  @Override
+  public void registerMicroserviceMapping(String microserviceName, String version,
+      List<MicroserviceInstance> instances, Class<?> schemaIntfCls) {
+    String app = RegistryUtils.getAppId();
+    MicroserviceManager microserviceManager = appManager.getOrCreateMicroserviceManager(app);
+    microserviceManager.getVersionsByName()
+        .computeIfAbsent(microserviceName,
+            svcName -> {
+              StaticMicroserviceVersions microserviceVersions = new StaticMicroserviceVersions(this.appManager,
+                  app, microserviceName, schemaIntfCls);
+              microserviceVersions.addInstances(version, instances);
+              return microserviceVersions;
+            });
+  }
+
+  @Override
+  public void registerMicroserviceMappingByEndpoints(String microserviceName, String version,
+      List<String> endpoints, Class<?> schemaIntfCls) {
+    ArrayList<MicroserviceInstance> microserviceInstances = new ArrayList<>();
+    for (String endpoint : endpoints) {
+      MicroserviceInstance instance = new MicroserviceInstance();
+      instance.setEndpoints(Collections.singletonList(endpoint));
+      microserviceInstances.add(instance);
+    }
+
+    registerMicroserviceMapping(microserviceName, version, microserviceInstances, schemaIntfCls);
   }
 }

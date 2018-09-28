@@ -32,7 +32,7 @@
 
   <properties>
     <jackson.version>2.9.6</jackson.version>
-    <vertx.version>3.5.0</vertx.version>
+    <vertx.version>3.5.3</vertx.version>
     <tec.zkclient.version>0.8</tec.zkclient.version>
     <spring.version>4.3.16.RELEASE</spring.version>
     <slf4j.version>1.7.7</slf4j.version>

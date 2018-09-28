@@ -61,12 +61,12 @@ public class RestObjectMapper extends AbstractRestObjectMapper {
     });
 
     getFactory().disable(Feature.AUTO_CLOSE_SOURCE);
+    // Enable features that can tolerance errors and not enable those make more constraints for compatible reasons.
+    // Developers can use validation api to do more checks.
     disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
     enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);
     enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
-    // If required=true, need to fail, while required=false, default values is given.
-    enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES);
 
     SimpleModule module = new SimpleModule();
     // custom types

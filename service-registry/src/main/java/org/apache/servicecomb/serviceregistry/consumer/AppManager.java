@@ -20,16 +20,24 @@ package org.apache.servicecomb.serviceregistry.consumer;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
 
 public class AppManager {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(AppManager.class);
+
   private EventBus eventBus;
 
   private MicroserviceVersionFactory microserviceVersionFactory = new DefaultMicroserviceVersionFactory();
 
   // key: appId
   private Map<String, MicroserviceManager> apps = new ConcurrentHashMapEx<>();
+
+  private volatile StaticMicroserviceVersionFactory staticMicroserviceVersionFactory;
 
   public AppManager(EventBus eventBus) {
     this.eventBus = eventBus;
@@ -66,5 +74,34 @@ public class AppManager {
   public MicroserviceVersions getOrCreateMicroserviceVersions(String appId, String microserviceName) {
     MicroserviceManager microserviceManager = getOrCreateMicroserviceManager(appId);
     return microserviceManager.getOrCreateMicroserviceVersions(microserviceName);
+  }
+
+  public StaticMicroserviceVersionFactory getStaticMicroserviceVersionFactory() {
+    if (null == staticMicroserviceVersionFactory) {
+      synchronized (this) {
+        if (null == staticMicroserviceVersionFactory) {
+          loadStaticMicroserviceVersionFactory();
+        }
+      }
+    }
+    return staticMicroserviceVersionFactory;
+  }
+
+  public void setStaticMicroserviceVersionFactory(StaticMicroserviceVersionFactory staticMicroserviceVersionFactory) {
+    this.staticMicroserviceVersionFactory = staticMicroserviceVersionFactory;
+  }
+
+  private void loadStaticMicroserviceVersionFactory() {
+    String staticMicroserviceVersionFactoryClass = ServiceRegistryConfig.INSTANCE
+        .getStaticMicroserviceVersionFactory();
+    try {
+      staticMicroserviceVersionFactory = (StaticMicroserviceVersionFactory) Class
+          .forName(staticMicroserviceVersionFactoryClass).newInstance();
+    } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+      LOGGER.info("unable to load StaticMicroserviceVersionFactory", e);
+      // interrupt this loading process because this error cannot be covered by us.
+      throw new IllegalStateException("unable to load StaticMicroserviceVersionFactory", e);
+    }
+    LOGGER.info("staticMicroserviceVersionFactory is {}.", staticMicroserviceVersionFactoryClass);
   }
 }
