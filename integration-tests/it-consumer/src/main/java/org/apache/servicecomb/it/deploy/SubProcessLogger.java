@@ -22,6 +22,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.it.ITUtils;
@@ -40,6 +42,8 @@ public class SubProcessLogger implements Closeable {
   private String startCompleteLog;
 
   private volatile boolean startCompleted;
+
+  private List<String> logs = new ArrayList<>();
 
   public SubProcessLogger(String displayName, InputStream inputStream, String startCompleteLog) {
     this.displayName = displayName;
@@ -63,11 +67,16 @@ public class SubProcessLogger implements Closeable {
   private void doRun() throws IOException {
     String line;
     while ((line = reader.readLine()) != null) {
-      System.out.print(String.format("[%s] ", displayName));
-      System.out.println(line);
+      logs.add(String.format("[%s] %s", displayName, line));
 
       checkStartComplete(line);
     }
+  }
+
+  public List<String> getAndClearLog() {
+    List<String> old = logs;
+    logs = new ArrayList<>();
+    return old;
   }
 
   private void checkStartComplete(String line) {

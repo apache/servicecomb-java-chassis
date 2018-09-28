@@ -20,10 +20,13 @@ package org.apache.servicecomb.it.deploy;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.OutputStreamWriter;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
+import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +41,8 @@ public class NormalDeploy {
 
   protected SubProcessLogger subProcessLogger;
 
+  private int prevFailCount;
+
   public NormalDeploy(DeployDefinition deployDefinition) {
     this.deployDefinition = deployDefinition;
   }
@@ -45,6 +50,8 @@ public class NormalDeploy {
   public void deploy() throws Throwable {
     String[] cmds = createCmds();
     cmds = addArgs(cmds);
+
+    this.prevFailCount = ITJUnitUtils.getFailures().size();
 
     subProcess = createProcessBuilder(cmds).start();
     subProcessCommandWriter = new BufferedWriter(new OutputStreamWriter(subProcess.getOutputStream()));
@@ -88,8 +95,16 @@ public class NormalDeploy {
     IOUtils.closeQuietly(subProcessCommandWriter);
     subProcessCommandWriter = null;
 
+    SubProcessLogger old = subProcessLogger;
     IOUtils.closeQuietly(subProcessLogger);
     subProcessLogger = null;
+
+    if (prevFailCount != ITJUnitUtils.getFailures().size()) {
+      List<String> logs = old.getAndClearLog();
+      for (String line : logs) {
+        System.out.println(line);
+      }
+    }
   }
 
   public void waitStop() {
@@ -123,5 +138,14 @@ public class NormalDeploy {
     subProcess = null;
     afterStop();
     LOGGER.info("stop complete, displayName={}.", deployDefinition.getDisplayName());
+  }
+
+  public List<String> getAndClearLog() {
+    SubProcessLogger logger = subProcessLogger;
+    if (logger != null) {
+      return logger.getAndClearLog();
+    }
+
+    return Collections.emptyList();
   }
 }
