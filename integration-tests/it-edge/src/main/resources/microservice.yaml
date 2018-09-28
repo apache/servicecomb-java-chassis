@@ -39,6 +39,18 @@ servicecomb:
           transport: rest
         queryInput:
           transport: rest
+    it-producer-deploy-springboot2-servlet:
+      defaultJsonValueJaxrs:
+        jsonInput:
+          transport: rest
+        queryInput:
+          transport: rest
+    it-producer-deploy-springboot2-standalone:
+      defaultJsonValueJaxrs:
+        jsonInput:
+          transport: rest
+        queryInput:
+          transport: rest
   http:
     dispatcher:
       edge:

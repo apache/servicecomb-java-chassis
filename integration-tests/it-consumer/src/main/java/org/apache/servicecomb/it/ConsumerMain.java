@@ -109,13 +109,7 @@ public class ConsumerMain {
     deploys.getEdge().stop();
   }
 
-  private static void testStandalone() throws Throwable {
-    deploys.getBaseProducer().ensureReady();
-
-    ITJUnitUtils.setProducerName("it-producer");
-
-    ITJUnitUtils.addParent("standalone");
-
+  private static void runShareTestCases() throws Throwable {
     ITJUnitUtils.runWithHighwayAndRest(TestChangeTransport.class);
     ITJUnitUtils.runWithHighwayAndRest(TestDataTypePrimitive.class);
     ITJUnitUtils.runWithHighwayAndRest(TestAnnotatedAttribute.class);
@@ -128,72 +122,48 @@ public class ConsumerMain {
 
     ITJUnitUtils.runWithHighwayAndRest(TestParamCodec.class);
     ITJUnitUtils.run(TestParamCodecEdge.class);
-    ITJUnitUtils.run(TestDefaultJsonValueJaxrsSchema.class);
 
+    ITJUnitUtils.run(TestRequestBodySpringMvcSchema.class);
+    ITJUnitUtils.run(TestDefaultJsonValueJaxrsSchema.class);
+  }
+
+  private static void testStandalone() throws Throwable {
+    deploys.getBaseProducer().ensureReady();
+
+    ITJUnitUtils.addProducer("it-producer");
+
+    runShareTestCases();
+
+    // currently not support update 3rd url, so only test once
+    ITJUnitUtils.run(Test3rdPartyInvocation.class);
+
+    // about url len, different deploy have different url len, so only test standalone
     ITJUnitUtils.runWithRest(TestRestServerConfig.class);
     ITJUnitUtils.run(TestRestServerConfigEdge.class);
 
-    ITJUnitUtils.run(TestRequestBodySpringMvcSchema.class);
-    ITJUnitUtils.run(Test3rdPartyInvocation.class);
-
-    ITJUnitUtils.getParents().pop();
+    ITJUnitUtils.popProducer();
     deploys.getBaseProducer().stop();
   }
 
   private static void testSpringBoot2Standalone() throws Throwable {
     deploys.getSpringBoot2StandaloneProducer().ensureReady();
 
-    ITJUnitUtils.setProducerName("it-producer-deploy-springboot2-standalone");
+    ITJUnitUtils.addProducer("it-producer-deploy-springboot2-standalone");
 
-    ITJUnitUtils.addParent("springBoot2Standalone");
+    runShareTestCases();
 
-    ITJUnitUtils.runWithHighwayAndRest(TestChangeTransport.class);
-    ITJUnitUtils.runWithHighwayAndRest(TestDataTypePrimitive.class);
-    ITJUnitUtils.runWithHighwayAndRest(TestAnnotatedAttribute.class);
-
-    ITJUnitUtils.runWithRest(TestDefaultValue.class);
-
-    ITJUnitUtils.runWithHighwayAndRest(TestTrace.class);
-    ITJUnitUtils.run(TestTraceEdge.class);
-
-    ITJUnitUtils.runWithHighwayAndRest(TestParamCodec.class);
-    ITJUnitUtils.run(TestParamCodecEdge.class);
-
-    //ITJUnitUtils.run(TestDefaultJsonValueJaxrsSchema.class);
-
-    ITJUnitUtils.runWithRest(TestRestServerConfig.class);
-    ITJUnitUtils.run(TestRestServerConfigEdge.class);
-
-    ITJUnitUtils.getParents().pop();
-
+    ITJUnitUtils.popProducer();
     deploys.getSpringBoot2StandaloneProducer().stop();
   }
 
   private static void testSpringBoot2Servlet() throws Throwable {
     deploys.getSpringBoot2ServletProducer().ensureReady();
 
-    ITJUnitUtils.setProducerName("it-producer-deploy-springboot2-servlet");
+    ITJUnitUtils.addProducer("it-producer-deploy-springboot2-servlet");
 
-    ITJUnitUtils.addParent("springBoot2Servlet");
+    runShareTestCases();
 
-    ITJUnitUtils.runWithHighwayAndRest(TestChangeTransport.class);
-    ITJUnitUtils.runWithHighwayAndRest(TestDataTypePrimitive.class);
-
-    ITJUnitUtils.runWithRest(TestDefaultValue.class);
-
-    ITJUnitUtils.runWithHighwayAndRest(TestTrace.class);
-    ITJUnitUtils.run(TestTraceEdge.class);
-
-    ITJUnitUtils.runWithHighwayAndRest(TestParamCodec.class);
-    ITJUnitUtils.run(TestParamCodecEdge.class);
-
-    //ITJUnitUtils.run(TestDefaultJsonValueJaxrsSchema.class);
-
-    //config by embedded tomcat
-    //ITJUnitUtils.runWithRest(TestRestServerConfig.class);
-
-    ITJUnitUtils.getParents().pop();
-
+    ITJUnitUtils.popProducer();
     deploys.getSpringBoot2ServletProducer().stop();
   }
 }
