@@ -18,17 +18,20 @@ package org.apache.servicecomb.it.testcase;
 
 import static org.junit.Assert.assertEquals;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.it.Consumers;
+import org.apache.servicecomb.it.extend.engine.ITSCBRestTemplate;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.util.UriComponentsBuilder;
 
 public class TestDataTypePrimitive {
   interface DataTypePojoIntf {
@@ -99,17 +102,15 @@ public class TestDataTypePrimitive {
 
   private static String producerName;
 
-  @Before
-  public void prepare() {
-    if (!ITJUnitUtils.getProducerName().equals(producerName)) {
-      producerName = ITJUnitUtils.getProducerName();
-      consumersPojo = new Consumers<>(producerName, "dataTypePojo", DataTypePojoIntf.class);
-      consumersJaxrs = new Consumers<>(producerName, "dataTypeJaxrs", DataTypeRestIntf.class);
-      consumersSpringmvc = new Consumers<>(producerName, "dataTypeSpringmvc", DataTypeRestIntf.class);
-      consumersPojo.init(ITJUnitUtils.getTransport());
-      consumersJaxrs.init(ITJUnitUtils.getTransport());
-      consumersSpringmvc.init(ITJUnitUtils.getTransport());
-    }
+  @BeforeClass
+  public static void beforeClass() {
+    producerName = ITJUnitUtils.getProducerName();
+    consumersPojo = new Consumers<>(producerName, "dataTypePojo", DataTypePojoIntf.class);
+    consumersJaxrs = new Consumers<>(producerName, "dataTypeJaxrs", DataTypeRestIntf.class);
+    consumersSpringmvc = new Consumers<>(producerName, "dataTypeSpringmvc", DataTypeRestIntf.class);
+    consumersPojo.init(ITJUnitUtils.getTransport());
+    consumersJaxrs.init(ITJUnitUtils.getTransport());
+    consumersSpringmvc.init(ITJUnitUtils.getTransport());
   }
 
   @Test
@@ -204,7 +205,7 @@ public class TestDataTypePrimitive {
 
   @Test
   public void stringPath_jaxrs_intf() {
-    String expect = "serviceComb";
+    String expect = "serviceComb/serviceComb";
     assertEquals(expect, consumersJaxrs.getIntf().stringPath(expect));
   }
 
@@ -224,6 +225,19 @@ public class TestDataTypePrimitive {
     String expect = "serviceComb";
     assertEquals(expect,
         consumersJaxrs.getSCBRestTemplate().getForObject("/stringPath/" + expect, String.class));
+  }
+
+  @Test
+  public void stringPath_jaxrs_rt_with_encoded_slash() {
+    String requestPathParam = "serviceComb%2FserviceComb";
+    String expectResponse = "serviceComb/serviceComb";
+    // build request uri to avoid Spring's encoding path
+    URI requestUri = UriComponentsBuilder
+        .fromUriString(((ITSCBRestTemplate) consumersJaxrs.getSCBRestTemplate()).getUrlPrefix()
+            + "/stringPath/" + requestPathParam)
+        .build(true).toUri();
+    assertEquals(expectResponse,
+        consumersJaxrs.getSCBRestTemplate().getForObject(requestUri, String.class));
   }
 
   @Test
@@ -290,8 +304,7 @@ public class TestDataTypePrimitive {
     HttpHeaders headers = new HttpHeaders();
     headers.add("input", "10");
 
-    @SuppressWarnings("rawtypes")
-    HttpEntity entity = new HttpEntity<>(null, headers);
+    HttpEntity<?> entity = new HttpEntity<>(null, headers);
     ResponseEntity<Integer> response = consumers.getSCBRestTemplate()
         .exchange("/intHeader",
             HttpMethod.GET,
@@ -324,8 +337,7 @@ public class TestDataTypePrimitive {
     HttpHeaders headers = new HttpHeaders();
     headers.add("input", expect);
 
-    @SuppressWarnings("rawtypes")
-    HttpEntity entity = new HttpEntity<>(null, headers);
+    HttpEntity<?> entity = new HttpEntity<>(null, headers);
     ResponseEntity<String> response = consumers.getSCBRestTemplate()
         .exchange("/stringHeader",
             HttpMethod.GET,
@@ -364,8 +376,7 @@ public class TestDataTypePrimitive {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Cookie", "input=10");
 
-    @SuppressWarnings("rawtypes")
-    HttpEntity entity = new HttpEntity<>(null, headers);
+    HttpEntity<?> entity = new HttpEntity<>(null, headers);
     ResponseEntity<Integer> response = consumers.getSCBRestTemplate()
         .exchange("/intCookie",
             HttpMethod.GET,
@@ -398,8 +409,7 @@ public class TestDataTypePrimitive {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Cookie", "input=" + expect);
 
-    @SuppressWarnings("rawtypes")
-    HttpEntity entity = new HttpEntity<>(null, headers);
+    HttpEntity<?> entity = new HttpEntity<>(null, headers);
     ResponseEntity<String> response = consumers.getSCBRestTemplate()
         .exchange("/stringCookie",
             HttpMethod.GET,
@@ -546,7 +556,7 @@ public class TestDataTypePrimitive {
 
   @Test
   public void stringPath_springmvc_intf() {
-    String expect = "serviceComb";
+    String expect = "serviceComb/serviceComb";
     assertEquals(expect, consumersSpringmvc.getIntf().stringPath(expect));
   }
 
@@ -566,6 +576,18 @@ public class TestDataTypePrimitive {
     String expect = "serviceComb";
     assertEquals(expect,
         consumersSpringmvc.getSCBRestTemplate().getForObject("/stringPath/" + expect, String.class));
+  }
+
+  @Test
+  public void stringPath_springmvc_rt_with_encoded_slash() {
+    String requestPathParam = "serviceComb%2FserviceComb";
+    String expectResponse = "serviceComb/serviceComb";
+    URI requestUri = UriComponentsBuilder
+        .fromUriString(((ITSCBRestTemplate) consumersSpringmvc.getSCBRestTemplate()).getUrlPrefix()
+            + "/stringPath/" + requestPathParam)
+        .build(true).toUri();
+    assertEquals(expectResponse,
+        consumersSpringmvc.getSCBRestTemplate().getForObject(requestUri, String.class));
   }
 
   @Test

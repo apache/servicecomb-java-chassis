@@ -22,6 +22,8 @@ import java.net.URISyntaxException;
 
 import org.springframework.util.StringUtils;
 
+import com.google.common.net.UrlEscapers;
+
 public final class HttpUtils {
   private HttpUtils() {
   }
@@ -50,6 +52,25 @@ public final class HttpUtils {
     return null;
   }
 
+  /**
+   * <pre>
+   *          foo://example.com:8042/over/there?name=ferret#nose
+   *          \_/   \______________/\_________/ \_________/ \__/
+   *           |           |            |            |        |
+   *        scheme     authority       path        query   fragment
+   *           |   _____________________|__
+   *          / \ /                        \
+   *          urn:example:animal:ferret:nose
+   * </pre>
+   * <p>the URI syntax components above is referred from <a href="https://tools.ietf.org/html/rfc3986#page-16">RFC3986</a>.
+   * This method is used to encode the entire path part(e.g. /over/there in the example).</p>
+   * <em>In order to keep the structure of path, slash '/' will not be encoded. If you want to encode '/' into {@code %2F},
+   * please consider the {@link #encodePathParam(String)}
+   * </em>
+   *
+   * @param path the entire url path
+   * @return the encoded url path
+   */
   public static String uriEncodePath(String path) {
     try {
       URI uri = new URI(null, null, path, null);
@@ -57,6 +78,20 @@ public final class HttpUtils {
     } catch (URISyntaxException e) {
       throw new IllegalArgumentException(String.format("uriEncode failed, path=\"%s\".", path), e);
     }
+  }
+
+  /**
+   * Encode path params. For example, if the path of an operation is {@code /over/there/{pathParam}/tail}, this method
+   * should be used to encoded {@code {pathParam}}. In order to keep the path structure, the slash '/' will be encoded
+   * into {@code %2F} to avoid path matching problem.
+   *
+   * @see UrlEscapers#urlPathSegmentEscaper()
+   *
+   * @param pathParam the path param to be encoded
+   * @return the encoded path param
+   */
+  public static String encodePathParam(String pathParam) {
+    return UrlEscapers.urlPathSegmentEscaper().escape(pathParam);
   }
 
   public static String uriDecodePath(String path) {

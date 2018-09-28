@@ -54,6 +54,15 @@ public class PathVarParamWriterTest {
   }
 
   @Test
+  public void writePathParamWithSlash() throws Exception {
+    PathVarParamWriter pathVarParamWriter = createPathVarParamWriter();
+    StringBuilder pathBuilder = new StringBuilder();
+    pathBuilder.append("/api/");
+    pathVarParamWriter.write(pathBuilder, new String[] {"a/bc"});
+    Assert.assertEquals("/api/a%2Fbc", pathBuilder.toString());
+  }
+
+  @Test
   public void writeIntegerParam() throws Exception {
     PathVarParamWriter pathVarParamWriter = createPathVarParamWriter();
     StringBuilder pathBuilder = new StringBuilder();

@@ -29,7 +29,7 @@ public final class AccessLogConfiguration {
 
   public static final AccessLogConfiguration INSTANCE = new AccessLogConfiguration();
 
-  public static final String DEFAULT_PATTERN = "%h - - %t %r %s %B";
+  public static final String DEFAULT_PATTERN = "%h - - %t %r %s %B %D";
 
   private AccessLogConfiguration() {
 

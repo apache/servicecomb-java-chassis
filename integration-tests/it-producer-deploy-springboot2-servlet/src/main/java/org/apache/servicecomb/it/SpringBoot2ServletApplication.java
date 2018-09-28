@@ -24,9 +24,18 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 @EnableServiceComb
 public class SpringBoot2ServletApplication {
+
+  /**
+   * Allow encoded slash in path param(%2F).
+   * This property is set for {@code stringPath} tests in {@code TestDataTypePrimitive}
+   */
+  private static final String TOMCAT_ALLOW_ENCODED_SLASH = "org.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH";
+
   public static void main(String[] args) {
     new CommandReceiver();
 
+    System.setProperty(TOMCAT_ALLOW_ENCODED_SLASH, "true");
     SpringApplication.run(SpringBoot2ServletApplication.class, args);
+    System.clearProperty(TOMCAT_ALLOW_ENCODED_SLASH);
   }
 }
