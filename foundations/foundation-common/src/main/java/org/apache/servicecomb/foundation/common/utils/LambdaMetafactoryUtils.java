@@ -45,7 +45,6 @@ public final class LambdaMetafactoryUtils {
     return null;
   }
 
-  @SuppressWarnings("unchecked")
   public static <T> T createLambda(Object instance, Method instanceMethod, Class<?> functionalIntfCls)
       throws Throwable {
     Method intfMethod = findAbstractMethod(functionalIntfCls);
@@ -60,13 +59,12 @@ public final class LambdaMetafactoryUtils {
         MethodType.methodType(functionalIntfCls, instance.getClass()),
         intfMethodType,
         methodHandle,
-        instanceMethodType
-    );
+        instanceMethodType);
 
+    //noinspection unchecked
     return (T) callSite.getTarget().bindTo(instance).invoke();
   }
 
-  @SuppressWarnings("unchecked")
   public static <T> T createLambda(Method instanceMethod, Class<?> functionalIntfCls)
       throws Throwable {
     Method intfMethod = findAbstractMethod(functionalIntfCls);
@@ -80,9 +78,9 @@ public final class LambdaMetafactoryUtils {
         MethodType.methodType(functionalIntfCls),
         intfMethodType,
         methodHandle,
-        instanceMethodType
-    );
+        instanceMethodType);
 
+    //noinspection unchecked
     return (T) callSite.getTarget().invoke();
   }
 

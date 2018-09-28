@@ -54,7 +54,8 @@ public class TestRequestBodySpringMvcSchema {
     request.put("extendedMessage", "hi");
 
     HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
-    Map result =
+    @SuppressWarnings("unchecked")
+    Map<String, Object> result =
         edgeClient.postForObject("/base", entity, Map.class);
     Assert.assertEquals(result.size(), 6);
     Assert.assertEquals(result.get("type"), 0);
@@ -77,7 +78,8 @@ public class TestRequestBodySpringMvcSchema {
     request.put("extendedMessage", "hi");
 
     HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
-    Map result =
+    @SuppressWarnings("unchecked")
+    Map<String, Object> result =
         edgeClient.postForObject("/base", entity, Map.class);
     Assert.assertEquals(result.size(), request.size());
     Assert.assertEquals(result.get("type"), request.get("type"));

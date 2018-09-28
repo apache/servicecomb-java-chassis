@@ -43,6 +43,7 @@ public class TestDefaultJsonValueJaxrsSchema {
     Assert.assertEquals(result, "expected:0:null");
   }
 
+  @SuppressWarnings("unchecked")
   @Test
   public void invokeFromEdgeWithRawJson() {
     HttpHeaders headers = new HttpHeaders();
@@ -50,7 +51,7 @@ public class TestDefaultJsonValueJaxrsSchema {
     Map<String, Object> body = new HashMap<>();
     body.put("type", 100);
     HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
-    Map result =
+    Map<String, Object> result =
         client.postForObject("/jsonInput", entity, Map.class);
     Assert.assertEquals(result.get("type"), 100);
     Assert.assertEquals(result.get("message"), "expected:null:null");

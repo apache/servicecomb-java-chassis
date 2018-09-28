@@ -16,8 +16,7 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <artifactId>java-chassis</artifactId>
@@ -32,6 +31,12 @@
   <packaging>pom</packaging>
 
   <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.version>1.8</java.version>
+
+    <argLine>-Dfile.encoding=UTF-8</argLine>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
     <spring.version>5.0.4.RELEASE</spring.version>
     <spring.boot.version>2.0.0.RELEASE</spring.boot.version>
     <spring.data.version>2.0.5.RELEASE</spring.data.version>
@@ -170,4 +175,36 @@
     </dependencies>
   </dependencyManagement>
 
+  <build>
+    <pluginManagement>
+      <plugins>
+        <!-- Fixed the m2e warning of remote resources plugin -->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-remote-resources-plugin</artifactId>
+                    <versionRange>[1.0,)</versionRange>
+                    <goals>
+                      <goal>process</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore>
+                    </ignore>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 </project>
