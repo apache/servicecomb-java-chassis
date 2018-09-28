@@ -20,23 +20,10 @@ package org.apache.servicecomb.it.testcase;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
-import org.apache.servicecomb.it.junit.ITJUnitUtils;
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.web.client.RestTemplate;
 
 public class TestParamCodecEdge {
-  private static RestTemplate client;
-
-  private static String producerName;
-
-  @Before
-  public void prepare() {
-    if (!ITJUnitUtils.getProducerName().equals(producerName)) {
-      producerName = ITJUnitUtils.getProducerName();
-      client = new GateRestTemplate("it-edge", producerName, "paramCodec");
-    }
-  }
+  static GateRestTemplate client = GateRestTemplate.createEdgeRestTemplate("paramCodec");
 
   @Test
   public void spaceCharEncode() {

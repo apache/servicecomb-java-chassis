@@ -17,9 +17,7 @@
 package org.apache.servicecomb.it.testcase;
 
 import org.apache.servicecomb.it.Consumers;
-import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 public class TestChangeTransport {
@@ -27,26 +25,12 @@ public class TestChangeTransport {
     String checkTransport();
   }
 
-  private static Consumers<ChangeTranportIntf> consumersPojo;
+  static Consumers<ChangeTranportIntf> consumersPojo = new Consumers<>("transportPojo", ChangeTranportIntf.class);
 
-  private static Consumers<ChangeTranportIntf> consumersJaxrs;
+  static Consumers<ChangeTranportIntf> consumersJaxrs = new Consumers<>("transportJaxrs", ChangeTranportIntf.class);
 
-  private static Consumers<ChangeTranportIntf> consumersSpringmvc;
-
-  private static String producerName;
-
-  @Before
-  public void prepare() {
-    if (!ITJUnitUtils.getProducerName().equals(producerName)) {
-      producerName = ITJUnitUtils.getProducerName();
-      consumersPojo = new Consumers<>(producerName, "transportPojo", ChangeTranportIntf.class);
-      consumersJaxrs = new Consumers<>(producerName, "transportJaxrs", ChangeTranportIntf.class);
-      consumersSpringmvc = new Consumers<>(producerName, "transportSpringmvc", ChangeTranportIntf.class);
-      consumersPojo.init(ITJUnitUtils.getTransport());
-      consumersJaxrs.init(ITJUnitUtils.getTransport());
-      consumersSpringmvc.init(ITJUnitUtils.getTransport());
-    }
-  }
+  static Consumers<ChangeTranportIntf> consumersSpringmvc = new Consumers<>("transportSpringmvc",
+      ChangeTranportIntf.class);
 
   void checkTransport_intf(Consumers<ChangeTranportIntf> consumers) {
     Assert.assertEquals(consumers.getTransport(), consumers.getIntf().checkTransport());

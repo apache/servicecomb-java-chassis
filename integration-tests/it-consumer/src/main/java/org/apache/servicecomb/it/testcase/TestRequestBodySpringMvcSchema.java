@@ -21,27 +21,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
-import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.web.client.RestTemplate;
 
 public class TestRequestBodySpringMvcSchema {
-  private static RestTemplate edgeClient;
-
-  private static String producerName;
-
-  @Before
-  public void prepare() {
-    if (!ITJUnitUtils.getProducerName().equals(producerName)) {
-      producerName = ITJUnitUtils.getProducerName();
-      edgeClient = new GateRestTemplate("it-edge", producerName, "requestBodySpringMvcSchema");
-    }
-  }
+  private static GateRestTemplate edgeClient = GateRestTemplate.createEdgeRestTemplate("requestBodySpringMvcSchema");
 
   @Test
   public void basicRequestResponse() {

@@ -53,7 +53,7 @@ public class Test3rdPartyInvocation {
   private static final String ASYNC_THIRD_PARTY_MICROSERVICE_NAME = THIRD_PARTY_MICROSERVICE_NAME + "Async";
 
   // to get endpoint from urlPrefix
-  static GateRestTemplate rt = new GateRestTemplate("it-edge", "it-producer", "dataTypeJaxrs");
+  static GateRestTemplate rt = GateRestTemplate.createEdgeRestTemplate("dataTypeJaxrs");
 
   private static DataTypeJaxrsSchemaIntf dataTypeJaxrsSchema;
 

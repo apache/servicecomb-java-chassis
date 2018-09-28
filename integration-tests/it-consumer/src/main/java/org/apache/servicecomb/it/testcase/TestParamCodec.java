@@ -20,8 +20,6 @@ package org.apache.servicecomb.it.testcase;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.servicecomb.it.Consumers;
-import org.apache.servicecomb.it.junit.ITJUnitUtils;
-import org.junit.Before;
 import org.junit.Test;
 
 public class TestParamCodec {
@@ -29,18 +27,7 @@ public class TestParamCodec {
     String spaceCharCodec(String pathVal, String q);
   }
 
-  private static Consumers<ParamCodecSchemaIntf> consumers;
-
-  private static String producerName;
-
-  @Before
-  public void prepare() {
-    if (!ITJUnitUtils.getProducerName().equals(producerName)) {
-      producerName = ITJUnitUtils.getProducerName();
-      consumers = new Consumers<>(producerName, "paramCodec", ParamCodecSchemaIntf.class);
-      consumers.init(ITJUnitUtils.getTransport());
-    }
-  }
+  static Consumers<ParamCodecSchemaIntf> consumers = new Consumers<>("paramCodec", ParamCodecSchemaIntf.class);
 
   @Test
   public void spaceCharEncode_intf() {
