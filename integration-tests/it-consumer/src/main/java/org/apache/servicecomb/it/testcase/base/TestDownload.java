@@ -16,14 +16,12 @@
  */
 package org.apache.servicecomb.it.testcase.base;
 
-import org.apache.servicecomb.it.testcase.support.DownloadSchemaIntf;
-import org.apache.servicecomb.provider.pojo.Invoker;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class TestDownload {
-  private static DownloadSchemaIntf intf = Invoker
-      .createProxy("it-producer", "download", DownloadSchemaIntf.class);
+  //  private static DownloadSchemaIntf intf = Invoker
+  //      .createProxy("it-producer", "download", DownloadSchemaIntf.class);
 
   static int x;
 

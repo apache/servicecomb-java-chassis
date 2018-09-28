@@ -20,7 +20,6 @@ package org.apache.servicecomb.foundation.vertx;
 import java.io.File;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLManager;
