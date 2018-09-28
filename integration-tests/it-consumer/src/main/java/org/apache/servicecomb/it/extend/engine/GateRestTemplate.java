@@ -21,6 +21,7 @@ import java.util.Arrays;
 import org.apache.servicecomb.core.definition.MicroserviceVersionMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
@@ -30,11 +31,27 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.RestTemplate;
 
 public class GateRestTemplate extends RestTemplate {
+  private final String gateName;
+
+  private final String schemaId;
 
   private String urlPrefix;
 
-  public GateRestTemplate(String gateName, String producerName, String schemaId) {
-    urlPrefix = getUrlPrefix(gateName, producerName, schemaId);
+  public static GateRestTemplate createEdgeRestTemplate(String schemaId) {
+    return new GateRestTemplate("it-edge", schemaId);
+  }
+
+  public static GateRestTemplate createZuulRestTemplate(String schemaId) {
+    return new GateRestTemplate("it-zuul", schemaId);
+  }
+
+  public GateRestTemplate(String gateName, String schemaId) {
+    this.gateName = gateName;
+    this.schemaId = schemaId;
+  }
+
+  public GateRestTemplate init() {
+    urlPrefix = getUrlPrefix(gateName, ITJUnitUtils.getProducerName(), schemaId);
 
     setUriTemplateHandler(new ITUriTemplateHandler(urlPrefix));
 
@@ -42,6 +59,8 @@ public class GateRestTemplate extends RestTemplate {
         new MappingJackson2HttpMessageConverter(),
         new StringHttpMessageConverter()
     ));
+
+    return this;
   }
 
   public String getUrlPrefix() {

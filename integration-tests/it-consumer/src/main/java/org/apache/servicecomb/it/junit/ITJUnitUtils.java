@@ -17,14 +17,20 @@
 package org.apache.servicecomb.it.junit;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
+import org.apache.servicecomb.it.Consumers;
+import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
+import org.apache.servicecomb.it.extend.engine.ITSCBRestTemplate;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
@@ -91,6 +97,16 @@ public final class ITJUnitUtils {
     popParent();
   }
 
+  public static void addProducer(String producerName) {
+    ITJUnitUtils.setProducerName(producerName);
+    parents.add(producerName);
+  }
+
+  public static void popProducer() {
+    ITJUnitUtils.setProducerName(null);
+    parents.pop();
+  }
+
   public static void addParent(String name) {
     parents.add(name);
   }
@@ -107,14 +123,28 @@ public final class ITJUnitUtils {
     return failures;
   }
 
-  public static void runFromPackage(String packageName) {
+  public static void runFromPackage(String packageName) throws Throwable {
     Class<?>[] classes = findAllClassInPackage(packageName);
     run(classes);
   }
 
-  public static void run(Class<?>... classes) {
+  public static void run(Class<?>... classes) throws Throwable {
+    initClasses(classes);
     Result result = jUnitCore.run(classes);
     runCount.addAndGet(result.getRunCount());
+  }
+
+  private static void initClasses(Class<?>[] classes) throws Throwable {
+    for (Class<?> cls : classes) {
+      for (Field field : FieldUtils.getAllFieldsList(cls)) {
+        if (Consumers.class.isAssignableFrom(field.getType())
+            || GateRestTemplate.class.isAssignableFrom(field.getType())
+            || ITSCBRestTemplate.class.isAssignableFrom(field.getType())) {
+          Object target = FieldUtils.readStaticField(field, true);
+          MethodUtils.invokeMethod(target, "init");
+        }
+      }
+    }
   }
 
   public static Class<?>[] findAllClassInPackage(String packageName) {
@@ -128,15 +158,15 @@ public final class ITJUnitUtils {
     }
   }
 
-  public static void runWithHighwayAndRest(Class<?>... classes) {
+  public static void runWithHighwayAndRest(Class<?>... classes) throws Throwable {
     runWithTransports(Arrays.asList(Const.HIGHWAY, Const.RESTFUL), classes);
   }
 
-  public static void runWithRest(Class<?>... classes) {
+  public static void runWithRest(Class<?>... classes) throws Throwable {
     runWithTransports(Arrays.asList(Const.RESTFUL), classes);
   }
 
-  public static void runWithTransports(List<String> transports, Class<?>... classes) {
+  public static void runWithTransports(List<String> transports, Class<?>... classes) throws Throwable {
     for (String transport : transports) {
       ITJUnitUtils.pushTransport(transport);
 
