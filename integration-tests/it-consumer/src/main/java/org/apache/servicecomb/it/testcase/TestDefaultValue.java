@@ -361,7 +361,11 @@ public class TestDefaultValue {
 
   @Test
   public void stringForm_require_springmvc_rt() {
-    assertEquals(defaultStr,
-        consumersSpringmvc.getSCBRestTemplate().postForObject("/stringFormRequire", null, String.class));
+    try {
+      consumersSpringmvc.getSCBRestTemplate().postForObject("/stringFormRequire", null, String.class);
+      assertEquals("required is true, throw exception", "but not throw exception");
+    } catch (Exception e) {
+      assertEquals(true, e.getMessage().contains("Parameter is not valid"));
+    }
   }
 }

@@ -20,9 +20,11 @@ package org.apache.servicecomb.common.rest.codec.param;
 import java.lang.reflect.Type;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -42,8 +44,8 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
     private boolean ignoreDefaultValue = DynamicPropertyFactory.getInstance()
         .getBooleanProperty("servicecomb.rest.parameter.query.ignoreDefaultValue", false).get();
 
-    public QueryProcessor(String paramPath, JavaType targetType, Object defaultValue) {
-      super(paramPath, targetType, defaultValue);
+    public QueryProcessor(String paramPath, boolean required, JavaType targetType, Object defaultValue) {
+      super(paramPath, required, targetType, defaultValue);
     }
 
     @Override
@@ -60,6 +62,9 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
           }
         }
         if (value == null) {
+          if (isRequired()) {
+            throw new InvocationException(Status.BAD_REQUEST, "Parameter is not valid, required is true");
+          }
           Object defaultValue = getDefaultValue();
           if (!ignoreDefaultValue && defaultValue != null) {
             value = defaultValue;
@@ -88,6 +93,6 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
   @Override
   public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
     JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
-    return new QueryProcessor(parameter.getName(), targetType, ((QueryParameter) parameter).getDefaultValue());
+    return new QueryProcessor(parameter.getName(), parameter.getRequired(), targetType, ((QueryParameter) parameter).getDefaultValue());
   }
 }

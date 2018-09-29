@@ -21,9 +21,11 @@ import java.lang.reflect.Type;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -35,8 +37,8 @@ public class CookieProcessorCreator implements ParamValueProcessorCreator {
   public static final String PARAMTYPE = "cookie";
 
   public static class CookieProcessor extends AbstractParamProcessor {
-    public CookieProcessor(String paramPath, JavaType targetType, Object defaultValue) {
-      super(paramPath, targetType, defaultValue);
+    public CookieProcessor(String paramPath, boolean required, JavaType targetType, Object defaultValue) {
+      super(paramPath, required, targetType, defaultValue);
     }
 
     @Override
@@ -51,6 +53,9 @@ public class CookieProcessorCreator implements ParamValueProcessorCreator {
         if (paramPath.equals(cookie.getName())) {
           value = cookie.getValue();
           if (value == null) {
+            if (isRequired()) {
+              throw new InvocationException(Status.BAD_REQUEST, "Parameter is not valid, required is true");
+            }
             Object defaultValue = getDefaultValue();
             if (defaultValue != null) {
               value = defaultValue.toString();
@@ -81,6 +86,6 @@ public class CookieProcessorCreator implements ParamValueProcessorCreator {
   @Override
   public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
     JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
-    return new CookieProcessor(parameter.getName(), targetType, ((CookieParameter) parameter).getDefaultValue());
+    return new CookieProcessor(parameter.getName(), parameter.getRequired(), targetType, ((CookieParameter) parameter).getDefaultValue());
   }
 }

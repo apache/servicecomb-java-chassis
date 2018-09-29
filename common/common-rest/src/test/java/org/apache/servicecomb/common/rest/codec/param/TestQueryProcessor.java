@@ -33,8 +33,12 @@ public class TestQueryProcessor {
   @Mocked
   HttpServletRequest request;
 
-  private ParamValueProcessor createProcessor(String name, Class<?> type) {
-    return new QueryProcessor(name, TypeFactory.defaultInstance().constructType(type), null);
+  private ParamValueProcessor createProcessor(String name, boolean required, Class<?> type) {
+    return new QueryProcessor(name, required, TypeFactory.defaultInstance().constructType(type), null);
+  }
+
+  private ParamValueProcessor createProcessor(String name, boolean required, Class<?> type, String defaultValue) {
+    return new QueryProcessor(name, required, TypeFactory.defaultInstance().constructType(type), defaultValue);
   }
 
   @Test
@@ -46,7 +50,7 @@ public class TestQueryProcessor {
       }
     };
 
-    ParamValueProcessor processor = createProcessor("name", String.class);
+    ParamValueProcessor processor = createProcessor("name", true, String.class);
     Object value = processor.getValue(request);
     Assert.assertEquals("value", value);
   }
@@ -60,14 +64,46 @@ public class TestQueryProcessor {
       }
     };
 
-    ParamValueProcessor processor = createProcessor("name", String[].class);
+    ParamValueProcessor processor = createProcessor("name", true, String[].class);
     String[] value = (String[]) processor.getValue(request);
     Assert.assertThat(value, Matchers.arrayContaining("value"));
   }
 
   @Test
   public void testGetProcessorType() {
-    ParamValueProcessor processor = createProcessor("name", String.class);
+    ParamValueProcessor processor = createProcessor("name", true, String.class);
     Assert.assertEquals("query", processor.getProcessorType());
+  }
+
+  @Test
+  public void testGetValueRequiredTrue() throws Exception {
+    new Expectations() {
+      {
+        request.getParameter("name");
+        result = null;
+      }
+    };
+
+    ParamValueProcessor processor = createProcessor("name", true, String.class);
+    try {
+      processor.getValue(request);
+      Assert.assertEquals("required is true, throw exception", "not throw exception");
+    } catch (Exception e) {
+      Assert.assertTrue(e.getMessage().contains("Parameter is not valid, required is true"));
+    }
+  }
+
+  @Test
+  public void testGetValueRequiredFalse() throws Exception {
+    new Expectations() {
+      {
+        request.getParameter("name");
+        result = null;
+      }
+    };
+
+    ParamValueProcessor processor = createProcessor("name", false, String.class, "test");
+    Object result = processor.getValue(request);
+    Assert.assertEquals("test", result);
   }
 }
