@@ -22,19 +22,8 @@ import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.dataformat.protobuf.ProtobufMapper;
-
 public final class ProtobufManager {
   private static ProtobufManager instance = new ProtobufManager();
-
-  private static ProtobufMapper mapper = new ProtobufMapper();
-
-  private static ObjectWriter writer = mapper.writer();
-
-  private static ObjectReader reader = mapper.reader();
 
   public static final String EXT_ID = "protobuf";
 
@@ -42,11 +31,6 @@ public final class ProtobufManager {
 
   private static ScopedProtobufSchemaManager defaultScopedProtobufSchemaManager = new ScopedProtobufSchemaManager(
       JvmUtils.findClassLoader());
-
-  static {
-    // 支持在idl中定义empty message
-    mapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
-  }
 
   private ProtobufManager() {
   }
@@ -83,17 +67,5 @@ public final class ProtobufManager {
 
   public static ProtobufManager getInstance() {
     return instance;
-  }
-
-  public static ProtobufMapper getMapper() {
-    return mapper;
-  }
-
-  public static ObjectWriter getWriter() {
-    return writer;
-  }
-
-  public static ObjectReader getReader() {
-    return reader;
   }
 }
