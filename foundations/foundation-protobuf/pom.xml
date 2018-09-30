@@ -49,12 +49,12 @@
       <artifactId>jsr305</artifactId>
     </dependency>
 
+    <!-- only for provide any.proto/empty.proto and so on -->
     <dependency>
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
-      <version>3.6.1</version>
-      <scope>test</scope>
     </dependency>
+
     <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-protobuf</artifactId>

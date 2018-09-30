@@ -32,23 +32,15 @@
       <artifactId>java-chassis-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.protostuff</groupId>
-      <artifactId>protostuff-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.protostuff</groupId>
-      <artifactId>protostuff-runtime</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>common-javassist</artifactId>
     </dependency>
+
     <dependency>
-      <groupId>com.google.protobuf</groupId>
-      <artifactId>protobuf-java</artifactId>
-      <version>3.3.0</version>
-      <scope>test</scope>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-protobuf</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
