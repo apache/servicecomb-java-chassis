@@ -154,4 +154,9 @@ public class TestSPIServiceUtils {
     Map<Class<?>, List<Object>> cache = Deencapsulation.getField(SPIServiceUtils.class, "cache");
     cache.clear();
   }
+  
+  @Test
+  public void testGetTargetService() {
+    Assert.assertEquals(-1, SPIServiceUtils.getTargetService(TestPriority.class, TestSubPriotiryImpl.class).getOrder());
+  }
 }
