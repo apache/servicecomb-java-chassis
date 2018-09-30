@@ -25,7 +25,7 @@ import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
-import org.apache.servicecomb.serviceregistry.task.MicroserviceRegisterTask;
+import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceHeartbeatTask;
 import org.apache.servicecomb.serviceregistry.task.event.PeriodicPullEvent;
 import org.apache.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
 import org.apache.servicecomb.serviceregistry.task.event.ShutdownEvent;
@@ -94,10 +94,8 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
   }
 
   @Subscribe
-  public void onMicroserviceRegistryTask(MicroserviceRegisterTask event) {
-    if (event.isRegistered()) {
+  public void onMicroserviceRegistryTask(MicroserviceInstanceHeartbeatTask event) {
       ipPortManager.initAutoDiscovery();
-    }
   }
 
   public ScheduledThreadPoolExecutor getTaskPool() {
