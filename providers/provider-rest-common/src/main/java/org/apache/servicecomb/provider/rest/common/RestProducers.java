@@ -49,6 +49,9 @@ public class RestProducers implements BeanPostProcessor {
     // aop后，新的实例的父类可能是原class，也可能只是个proxy，父类不是原class
     // 所以，需要先取出原class，再取标注
     Class<?> beanCls = BeanUtils.getImplClassFromBean(bean);
+    if(beanCls == null) {
+    	return;
+    }
     RestSchema restSchema = beanCls.getAnnotation(RestSchema.class);
     if (restSchema == null) {
       return;
