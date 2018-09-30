@@ -312,6 +312,14 @@ For details, see http://asm.ow2.org/
 You can find a copy of the License at licenses/LICENSE-asm
 
 ================================================================
+For protobuf-java com.google.protobuf:protobuf-java:jar:3.5.1
+================================================================
+This product bundles protobuf which is licensed under the
+3-Clause BSD license.
+For details, see https://github.com/protocolbuffers/protobuf
+You can find a copy of the License at https://github.com/protocolbuffers/protobuf/blob/master/LICENSE
+
+================================================================
 For foundations/foundation-vertx/src/main/java/io/vertx/ext/web/impl/MimeTypesUtils.java
 transports/transport-rest/transport-rest-vertx/src/main/java/org/apache/servicecomb/transport/rest/vertx/RestBodyHandler.java
 ================================================================
