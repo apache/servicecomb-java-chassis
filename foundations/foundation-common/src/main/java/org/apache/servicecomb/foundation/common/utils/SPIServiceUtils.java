@@ -149,7 +149,7 @@ public final class SPIServiceUtils {
     List<T> services = getOrLoadSortedService(serviceType);
     return (IMPL) services
         .stream()
-        .filter(service -> service.getClass().equals(implType))
+        .filter(service -> implType.isAssignableFrom(service.getClass()))
         .findFirst()
         .orElse(null);
   }
