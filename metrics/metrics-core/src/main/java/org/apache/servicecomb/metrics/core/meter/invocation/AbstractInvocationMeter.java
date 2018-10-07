@@ -53,6 +53,7 @@ public abstract class AbstractInvocationMeter {
 
     totalTimer.record((long) event.getInvocation().getInvocationStageTrace().calcTotalTime(),
         TimeUnit.NANOSECONDS);
+
     handlersRequestTimer
         .record((long) event.getInvocation().getInvocationStageTrace().calcHandlersRequestTime(),
             TimeUnit.NANOSECONDS);
