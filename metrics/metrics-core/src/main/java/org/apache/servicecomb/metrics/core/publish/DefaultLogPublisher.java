@@ -31,6 +31,8 @@ import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPer
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroup;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroups;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.PerfInfo;
+import org.apache.servicecomb.metrics.core.publish.statistics.MeterStatisticsManager;
+import org.apache.servicecomb.metrics.core.publish.statistics.MeterStatisticsMeterType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +48,14 @@ public class DefaultLogPublisher implements MetricsInitializer {
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultLogPublisher.class);
 
   public static final String ENABLED = "servicecomb.metrics.publisher.defaultLog.enabled";
+
+  private static final String SIMPLE_HEADER = "%s:\n  simple:\n"
+      + "    status          tps           latency                                    operation\n";
+
+  private static final String FIRST_LINE_SIMPLE_FORMAT = "    %-15s %-13s %-42s %s\n";
+
+  private static final String SIMPLE_FORMAT = "                    %-13s %-42s %s\n";
+
 
   @Override
   public void init(CompositeRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
@@ -81,6 +91,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
 
     printConsumerLog(model, sb);
     printProducerLog(model, sb);
+    printEdgeLog(model, sb);
 
     LOGGER.info(sb.toString());
   }
@@ -106,82 +117,116 @@ public class DefaultLogPublisher implements MetricsInitializer {
     }
   }
 
+  protected void printEdgeLog(DefaultPublishModel model, StringBuilder sb) {
+    OperationPerfGroups edgePerf = model.getEdge().getOperationPerfGroups();
+    if (edgePerf == null) {
+      return;
+    }
+    sb.append(String.format(SIMPLE_HEADER, "edge"));
+    //clear old data
+    MeterStatisticsManager.statisticsOperationMap.clear();
+
+    StringBuilder sampleBuilder = new StringBuilder();
+    //print sample
+    for (Map<String, OperationPerfGroup> statusMap : edgePerf.getGroups().values()) {
+      for (OperationPerfGroup perfGroup : statusMap.values()) {
+        //append sample
+        sampleBuilder.append(printSamplePerf(perfGroup));
+        //load details
+        MeterStatisticsManager
+            .loadMeterDetailStatisticsModelFromPerfGroup(perfGroup, MeterStatisticsMeterType.EDGE);
+      }
+    }
+    sb.append(sampleBuilder)
+        .append("  details:\n");
+    MeterStatisticsManager.statisticsOperationMap.values()
+        .forEach(details -> sb.append(details.getFormatDetails()));
+  }
+
+
   protected void printConsumerLog(DefaultPublishModel model, StringBuilder sb) {
     OperationPerfGroups consumerPerf = model.getConsumer().getOperationPerfGroups();
     if (consumerPerf == null) {
       return;
     }
 
-    sb.append("consumer:\n");
-    printConsumerPerfLog(consumerPerf, sb);
-  }
+    sb.append(String.format(SIMPLE_HEADER, "consumer"));
+    //clear old data
+    MeterStatisticsManager.statisticsOperationMap.clear();
 
-  protected void printConsumerPerfLog(OperationPerfGroups consumerPerf, StringBuilder sb) {
-    sb.append("  tps     latency(ms) max-latency(ms) operation\n");
+    StringBuilder sampleBuilder = new StringBuilder();
+    //print sample
     for (Map<String, OperationPerfGroup> statusMap : consumerPerf.getGroups().values()) {
       for (OperationPerfGroup perfGroup : statusMap.values()) {
-        sb.append("  ")
-            .append(perfGroup.getTransport())
-            .append(".")
-            .append(perfGroup.getStatus())
-            .append(":\n");
-        for (OperationPerf operationPerf : perfGroup.getOperationPerfs()) {
-          printConsumerOperationPerf(operationPerf, sb);
-        }
-
-        printConsumerOperationPerf(perfGroup.getSummary(), sb);
+        //append sample
+        sampleBuilder.append(printSamplePerf(perfGroup));
+        //load details
+        MeterStatisticsManager
+            .loadMeterDetailStatisticsModelFromPerfGroup(perfGroup, MeterStatisticsMeterType.CONSUMER);
       }
     }
+    sb.append(sampleBuilder)
+        .append("  details:\n");
+    MeterStatisticsManager.statisticsOperationMap.values()
+        .forEach(details -> sb.append(details.getFormatDetails()));
   }
 
-  protected void printConsumerOperationPerf(OperationPerf operationPerf, StringBuilder sb) {
-    PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
-    sb.append(String.format("  %-7d %-11.3f %-15.3f %s\n",
-        stageTotal.getTps(),
-        stageTotal.calcMsLatency(),
-        stageTotal.getMsMaxLatency(),
-        operationPerf.getOperation()));
-  }
 
   protected void printProducerLog(DefaultPublishModel model, StringBuilder sb) {
     OperationPerfGroups producerPerf = model.getProducer().getOperationPerfGroups();
+
     if (producerPerf == null) {
       return;
     }
+    sb.append(String.format(SIMPLE_HEADER, "producer"));
+    //clear old data
+    MeterStatisticsManager.statisticsOperationMap.clear();
 
-    sb.append("producer:\n");
-    sb.append(
-        "  tps     latency(ms) max-latency(ms) queue(ms) max-queue(ms) execute(ms) max-execute(ms) operation\n");
+    StringBuilder sampleBuilder = new StringBuilder();
+    //print sample
     for (Map<String, OperationPerfGroup> statusMap : producerPerf.getGroups().values()) {
       for (OperationPerfGroup perfGroup : statusMap.values()) {
-        sb.append("  ")
-            .append(perfGroup.getTransport())
-            .append(".")
-            .append(perfGroup.getStatus())
-            .append(":\n");
-        for (OperationPerf operationPerf : perfGroup.getOperationPerfs()) {
-          printProducerOperationPerf(operationPerf, sb);
-        }
-
-        printProducerOperationPerf(perfGroup.getSummary(), sb);
+        //append sample
+        sampleBuilder.append(printSamplePerf(perfGroup));
+        //load details
+        MeterStatisticsManager
+            .loadMeterDetailStatisticsModelFromPerfGroup(perfGroup, MeterStatisticsMeterType.PRODUCER);
       }
     }
+    //print details
+    sb.append(sampleBuilder)
+        .append("  details:\n");
+    MeterStatisticsManager.statisticsOperationMap.values()
+        .forEach(details -> sb.append(details.getFormatDetails()));
   }
 
-  protected void printProducerOperationPerf(OperationPerf operationPerf, StringBuilder sb) {
-    PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
-    PerfInfo stageQueue = operationPerf.findStage(MeterInvocationConst.STAGE_EXECUTOR_QUEUE);
-    PerfInfo stageExecution = operationPerf.findStage(MeterInvocationConst.STAGE_EXECUTION);
-    sb.append(String.format("  %-7d %-11.3f %-15.3f %-9.3f %-13.3f %-11.3f %-15.3f %s\n",
-        stageTotal.getTps(),
-        stageTotal.calcMsLatency(),
-        stageTotal.getMsMaxLatency(),
-        stageQueue.calcMsLatency(),
-        stageQueue.getMsMaxLatency(),
-        stageExecution.calcMsLatency(),
-        stageExecution.getMsMaxLatency(),
-        operationPerf.getOperation()));
+
+  private StringBuilder printSamplePerf(OperationPerfGroup perfGroup) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < perfGroup.getOperationPerfs().size(); i++) {
+      OperationPerf operationPerf = perfGroup.getOperationPerfs().get(i);
+      PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
+      if (i == 0) {
+        // first line
+        String status = perfGroup.getTransport() + "." + perfGroup.getStatus();
+        sb.append(String.format(FIRST_LINE_SIMPLE_FORMAT, status, stageTotal.getTps(),
+            MeterStatisticsManager.getDetailsFromPerf(stageTotal),
+            operationPerf.getOperation()));
+      } else {
+        sb.append(String
+            .format(SIMPLE_FORMAT, stageTotal.getTps(), MeterStatisticsManager.getDetailsFromPerf(stageTotal),
+                operationPerf.getOperation()));
+      }
+    }
+    //print summary
+    OperationPerf summaryOperation = perfGroup.getSummary();
+    PerfInfo stageSummaryTotal = summaryOperation.findStage(MeterInvocationConst.STAGE_TOTAL);
+    sb.append(
+        String.format(SIMPLE_FORMAT, stageSummaryTotal.getTps(),
+            MeterStatisticsManager.getDetailsFromPerf(stageSummaryTotal), "(summary)"));
+    return sb;
   }
+
 
   protected void printVertxMetrics(StringBuilder sb) {
     sb.append("vertx:\n")

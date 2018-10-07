@@ -24,6 +24,8 @@ public class DefaultPublishModel {
 
   private ProducerPublishModel producer = new ProducerPublishModel();
 
+  private EdgePublishModel edge = new EdgePublishModel();
+
   private Map<String, ThreadPoolPublishModel> threadPools = new HashMap<>();
 
   public ConsumerPublishModel getConsumer() {
@@ -36,6 +38,14 @@ public class DefaultPublishModel {
 
   public ProducerPublishModel getProducer() {
     return producer;
+  }
+
+  public EdgePublishModel getEdge() {
+    return edge;
+  }
+
+  public void setEdge(EdgePublishModel edge) {
+    this.edge = edge;
   }
 
   public void setProducer(ProducerPublishModel producer) {

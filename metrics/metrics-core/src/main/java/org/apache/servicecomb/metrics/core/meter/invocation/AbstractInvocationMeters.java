@@ -42,8 +42,16 @@ public abstract class AbstractInvocationMeters {
   protected AbstractInvocationMeter getOrCreateMeters(Invocation invocation, Response response) {
     // build string key is faster then use Id to locate timer directly
     StringBuilder keyBuilder = new StringBuilder(maxKeyLen);
+    String invocationName;
+    //check edge
+    if (invocation.isConsumer() && invocation.isEdge()) {
+      invocationName = MeterInvocationConst.EDGE_INVOCATION_NAME;
+    } else {
+      invocationName = invocation.getInvocationType().name();
+    }
+
     keyBuilder
-        .append(invocation.getInvocationType().name())
+        .append(invocationName)
         .append(invocation.getRealTransportName())
         .append(invocation.getMicroserviceQualifiedName())
         .append(response.getStatusCode());
@@ -54,7 +62,7 @@ public abstract class AbstractInvocationMeters {
     return metersMap.computeIfAbsent(keyBuilder.toString(), k -> {
       Id id = registry.createId(MeterInvocationConst.INVOCATION_NAME,
           MeterInvocationConst.TAG_ROLE,
-          invocation.getInvocationType().name(),
+          invocationName,
           MeterInvocationConst.TAG_TRANSPORT,
           invocation.getRealTransportName(),
           MeterInvocationConst.TAG_OPERATION,
@@ -65,6 +73,8 @@ public abstract class AbstractInvocationMeters {
       return createMeter(id, invocation, response);
     });
   }
+
+
 
   protected abstract AbstractInvocationMeter createMeter(Id id, Invocation invocation,
       Response response);

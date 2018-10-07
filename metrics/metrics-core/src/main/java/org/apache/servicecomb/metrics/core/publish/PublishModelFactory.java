@@ -84,8 +84,12 @@ public class PublishModelFactory {
 
     model.getConsumer()
         .setOperationPerfGroups(generateOperationPerfGroups(tree, InvocationType.CONSUMER.name()));
+
     model.getProducer()
         .setOperationPerfGroups(generateOperationPerfGroups(tree, InvocationType.PRODUCER.name()));
+    //edge
+    model.getEdge()
+        .setOperationPerfGroups(generateOperationPerfGroups(tree, MeterInvocationConst.EDGE_INVOCATION_NAME));
 
     ThreadPoolMonitorPublishModelFactory.create(tree, model.getThreadPools());
 

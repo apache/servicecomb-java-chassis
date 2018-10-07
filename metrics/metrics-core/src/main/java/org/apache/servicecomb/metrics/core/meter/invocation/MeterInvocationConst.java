@@ -36,7 +36,39 @@ public interface MeterInvocationConst {
 
   final String STAGE_TOTAL = "total";
 
+  final String STAGE_PREPARE = "prepare";
+
   final String STAGE_EXECUTOR_QUEUE = "queue";
 
   final String STAGE_EXECUTION = "execution";
+
+  final String EDGE_INVOCATION_NAME = "EDGE";
+
+  final String STAGE_HANDLERS_REQUEST = "handlers_request";
+
+  final String STAGE_HANDLERS_RESPONSE = "handlers_response";
+
+  // producer only
+  final String STAGE_SERVER_FILTERS_REQUEST = "server_filters_request";
+
+  final String STAGE_SERVER_FILTERS_RESPONSE = "server_filters_response";
+
+  final String STAGE_PRODUCER_SEND_RESPONSE = "producer_send_response";
+
+  //consumer only
+
+  final String STAGE_CLIENT_FILTERS_REQUEST = "client_filters_request";
+
+  final String STAGE_CONSUMER_SEND_REQUEST = "consumer_send_request";
+
+  final String STAGE_CONSUMER_GET_CONNECTION = "consumer_get_connection";
+
+  final String STAGE_CONSUMER_WRITE_TO_BUF = "consumer_write_to_buf";
+
+  final String STAGE_CONSUMER_WAIT_RESPONSE = "consumer_wait_response";
+
+  final String STAGE_CONSUMER_WAKE_CONSUMER = "consumer_wake_consumer";
+
+  final String STAGE_CLIENT_FILTERS_RESPONSE = "client_filters_response";
+
 }

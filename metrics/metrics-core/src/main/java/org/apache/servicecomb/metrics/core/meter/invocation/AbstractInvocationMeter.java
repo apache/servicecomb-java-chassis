@@ -27,14 +27,40 @@ import com.netflix.spectator.api.Registry;
 import com.netflix.spectator.api.Timer;
 
 public abstract class AbstractInvocationMeter {
+  //total time
   private Timer totalTimer;
 
+  // prepare time
+  private Timer prepareTimer;
+
+  // handler request
+  private Timer handlersRequestTimer;
+
+  // handler response
+  private Timer handlersResponseTimer;
+
   public AbstractInvocationMeter(Registry registry, Id id, Invocation invocation, Response response) {
+
     totalTimer = registry.timer(id.withTag(MeterInvocationConst.TAG_STAGE, MeterInvocationConst.STAGE_TOTAL));
+    prepareTimer = registry.timer(id.withTag(MeterInvocationConst.TAG_STAGE, MeterInvocationConst.STAGE_PREPARE));
+    handlersRequestTimer =
+        registry.timer(id.withTag(MeterInvocationConst.TAG_STAGE, MeterInvocationConst.STAGE_HANDLERS_REQUEST));
+    handlersResponseTimer =
+        registry.timer(id.withTag(MeterInvocationConst.TAG_STAGE, MeterInvocationConst.STAGE_HANDLERS_RESPONSE));
   }
 
   public void onInvocationFinish(InvocationFinishEvent event) {
-    totalTimer.record(event.getNanoCurrent() - event.getInvocation().getInvocationStageTrace().getStart(),
+
+    totalTimer.record((long) event.getInvocation().getInvocationStageTrace().calcTotalTime(),
         TimeUnit.NANOSECONDS);
+    handlersRequestTimer
+        .record((long) event.getInvocation().getInvocationStageTrace().calcHandlersRequestTime(),
+            TimeUnit.NANOSECONDS);
+    handlersResponseTimer
+        .record((long) event.getInvocation().getInvocationStageTrace().calcHandlersResponseTime(),
+            TimeUnit.NANOSECONDS);
+    prepareTimer
+        .record((long) event.getInvocation().getInvocationStageTrace().calcInvocationPrepareTime(),
+            TimeUnit.NANOSECONDS);
   }
 }
