@@ -16,14 +16,70 @@
  */
 package org.apache.servicecomb.metrics.core.meter.invocation;
 
+import java.util.concurrent.TimeUnit;
+
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.event.InvocationFinishEvent;
+import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.swagger.invocation.Response;
 
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Registry;
+import com.netflix.spectator.api.Timer;
 
 public class ConsumerInvocationMeter extends AbstractInvocationMeter {
+
+  private Timer clientFiltersRequestTimer;
+
+  private Timer consumerSendRequestTimer;
+
+  private Timer consumerGetConnectionTimer;
+
+  private Timer consumerWriteToBufTimer;
+
+  private Timer consumerWaitResponseTimer;
+
+  private Timer consumerWakeConsumerTimer;
+
+  private Timer clientFiltersResponseTimer;
+
+
   public ConsumerInvocationMeter(Registry registry, Id id, Invocation invocation, Response response) {
     super(registry, id, invocation, response);
+    clientFiltersRequestTimer =
+        registry.timer(id.withTag(MeterInvocationConst.TAG_STAGE, MeterInvocationConst.STAGE_CLIENT_FILTERS_REQUEST));
+    consumerSendRequestTimer =
+        registry.timer(id.withTag(MeterInvocationConst.TAG_STAGE, MeterInvocationConst.STAGE_CONSUMER_SEND_REQUEST));
+    consumerGetConnectionTimer =
+        registry.timer(id.withTag(MeterInvocationConst.TAG_STAGE, MeterInvocationConst.STAGE_CONSUMER_GET_CONNECTION));
+    consumerWriteToBufTimer =
+        registry.timer(id.withTag(MeterInvocationConst.TAG_STAGE, MeterInvocationConst.STAGE_CONSUMER_WRITE_TO_BUF));
+    consumerWakeConsumerTimer =
+        registry.timer(id.withTag(MeterInvocationConst.TAG_STAGE, MeterInvocationConst.STAGE_CONSUMER_WAKE_CONSUMER));
+    clientFiltersResponseTimer =
+        registry.timer(id.withTag(MeterInvocationConst.TAG_STAGE, MeterInvocationConst.STAGE_CLIENT_FILTERS_RESPONSE));
+    consumerWaitResponseTimer =
+        registry.timer(id.withTag(MeterInvocationConst.TAG_STAGE, MeterInvocationConst.STAGE_CONSUMER_WAIT_RESPONSE));
+  }
+
+  @Override
+  public void onInvocationFinish(InvocationFinishEvent event) {
+    super.onInvocationFinish(event);
+    InvocationStageTrace invocationStageTrace = event.getInvocation().getInvocationStageTrace();
+
+    clientFiltersRequestTimer.record((long) invocationStageTrace.calcClientFiltersRequestTime(),
+        TimeUnit.NANOSECONDS);
+    consumerSendRequestTimer.record((long) invocationStageTrace.calcSendRequestTime(),
+        TimeUnit.NANOSECONDS);
+    consumerGetConnectionTimer.record((long) invocationStageTrace.calcGetConnectionTime(),
+        TimeUnit.NANOSECONDS);
+    consumerWriteToBufTimer.record((long) invocationStageTrace.calcWriteToBufferTime(),
+        TimeUnit.NANOSECONDS);
+    consumerWaitResponseTimer.record((long) invocationStageTrace.calcReceiveResponseTime(),
+        TimeUnit.NANOSECONDS);
+    consumerWakeConsumerTimer.record((long) invocationStageTrace.calcWakeConsumer(),
+        TimeUnit.NANOSECONDS);
+    clientFiltersResponseTimer.record((long) invocationStageTrace.calcClientFiltersResponseTime(),
+        TimeUnit.NANOSECONDS);
   }
 }

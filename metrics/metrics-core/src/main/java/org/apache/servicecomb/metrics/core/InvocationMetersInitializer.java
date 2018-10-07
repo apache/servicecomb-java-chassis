@@ -23,6 +23,7 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.metrics.core.meter.ConsumerMeters;
+import org.apache.servicecomb.metrics.core.meter.EdgeMeters;
 import org.apache.servicecomb.metrics.core.meter.ProducerMeters;
 import org.apache.servicecomb.metrics.core.meter.invocation.AbstractInvocationMeters;
 
@@ -37,6 +38,8 @@ public class InvocationMetersInitializer implements MetricsInitializer {
 
   private ProducerMeters producerMeters;
 
+  private EdgeMeters edgeMeters;
+
   @Override
   public void init(CompositeRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
     DefaultRegistryInitializer defaultRegistryInitializer =
@@ -45,13 +48,18 @@ public class InvocationMetersInitializer implements MetricsInitializer {
 
     consumerMeters = new ConsumerMeters(registry);
     producerMeters = new ProducerMeters(registry);
+    edgeMeters = new EdgeMeters(registry);
 
     eventBus.register(this);
   }
 
   protected AbstractInvocationMeters findInvocationMeters(Invocation invocation) {
     if (invocation.isConsumer()) {
-      return consumerMeters.getInvocationMeters();
+      if (invocation.isEdge()) {
+        return edgeMeters.getInvocationMeters();
+      } else {
+        return consumerMeters.getInvocationMeters();
+      }
     }
     return producerMeters.getInvocationMeters();
   }
