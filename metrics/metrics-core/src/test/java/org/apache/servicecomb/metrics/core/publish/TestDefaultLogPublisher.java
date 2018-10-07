@@ -148,6 +148,19 @@ public class TestDefaultLogPublisher {
     operationPerf.getStages().put(MeterInvocationConst.STAGE_TOTAL, perfTotal);
     operationPerf.getStages().put(MeterInvocationConst.STAGE_EXECUTOR_QUEUE, perfTotal);
     operationPerf.getStages().put(MeterInvocationConst.STAGE_EXECUTION, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_PREPARE, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_HANDLERS_REQUEST, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_HANDLERS_RESPONSE, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_CLIENT_FILTERS_REQUEST, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_CLIENT_FILTERS_RESPONSE, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_CONSUMER_SEND_REQUEST, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_PRODUCER_SEND_RESPONSE, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_CONSUMER_GET_CONNECTION, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_CONSUMER_WRITE_TO_BUF, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_CONSUMER_WAIT_RESPONSE, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_CONSUMER_WAKE_CONSUMER, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_SERVER_FILTERS_REQUEST, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_SERVER_FILTERS_RESPONSE, perfTotal);
 
     OperationPerfGroup operationPerfGroup = new OperationPerfGroup(Const.RESTFUL, Status.OK.name());
     operationPerfGroup.addOperationPerf(operationPerf);
@@ -182,16 +195,26 @@ public class TestDefaultLogPublisher {
             "  corePoolSize maxThreads poolSize currentThreadsBusy queueSize taskCount completedTaskCount name\n" +
             "  0            0          0        0                  0         0.0       0.0                test\n" +
             "consumer:\n" +
-            "  tps     latency(ms) max-latency(ms) operation\n" +
-            "  rest.OK:\n" +
-            "  10      10.000      0.000           op\n" +
-            "  10      10.000      0.000           \n" +
-            "producer:\n" +
-            "  tps     latency(ms) max-latency(ms) queue(ms) max-queue(ms) execute(ms) max-execute(ms) operation\n" +
-            "  rest.OK:\n" +
-            "  10      10.000      0.000           10.000    0.000         10.000      0.000           op\n" +
-            "  10      10.000      0.000           10.000    0.000         10.000      0.000           \n" +
-            "",
+            "  simple:\n"
+            + "    status          tps           latency                                    operation\n"
+            + "    rest.OK         10            10.000/0.000                               op\n"
+            + "                    10            10.000/0.000                               (summary)\n"
+            + "  details:\n"
+            + "    op:\n"
+            + "      rest.OK:\n"
+            + "        prepare          : 10.000/0.000           handlersReq : 10.000/0.000           clientFiltersReq: 10.000/0.000           sendReq     : 10.000/0.000\n"
+            + "        getConnect       : 10.000/0.000           writeBuf    : 10.000/0.000           waitResp        : 10.000/0.000           wakeConsumer: 10.000/0.000\n"
+            + "        clientFiltersResp: 10.000/0.000           handlersResp: 10.000/0.000\n"
+            + "producer:\n"
+            + "  simple:\n"
+            + "    status          tps           latency                                    operation\n"
+            + "    rest.OK         10            10.000/0.000                               op\n"
+            + "                    10            10.000/0.000                               (summary)\n"
+            + "  details:\n"
+            + "    op:\n"
+            + "      rest.OK:\n"
+            + "        prepare: 10.000/0.000           queue       : 10.000/0.000           filtersReq : 10.000/0.000           handlersReq: 10.000/0.000\n"
+            + "        execute: 10.000/0.000           handlersResp: 10.000/0.000           filtersResp: 10.000/0.000           sendResp   : 10.000/0.000\n",
         event.getMessage());
   }
 }

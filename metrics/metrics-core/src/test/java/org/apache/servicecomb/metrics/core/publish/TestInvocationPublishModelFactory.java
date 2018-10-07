@@ -81,17 +81,33 @@ public class TestInvocationPublishModelFactory {
     DefaultPublishModel model = factory.createDefaultPublishModel();
 
     Assert.assertEquals(
-        "{\"operationPerfGroups\":{\"groups\":{\"rest\":{\"200\":{\"transport\":\"rest\",\"status\":\"200\",\"operationPerfs\":[{\"operation\":\"m.s.o\",\"stages\":{\"total\":{\"tps\":1,\"msTotalTime\":10000.0,\"msMaxLatency\":0.0}}}],\"summary\":{\"operation\":\"\",\"stages\":{\"total\":{\"tps\":1,\"msTotalTime\":10000.0,\"msMaxLatency\":0.0}}}}}}}}",
+        "{\"operationPerfGroups\":{\"groups\":{\"rest\":{\"200\":{\"transport\":\"rest\",\"status\":\"200\",\"operationPerfs\":[{\"operation\":\"m.s.o\",\"stages\":{\"client_filters_request\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"prepare\":{\"tps\":1,\"msTotalTime\":2000.0,\"msMaxLatency\":0.0},\"consumer_send_request\":{\"tps\":1,\"msTotalTime\":2000.0,\"msMaxLatency\":0.0},\"total\":{\"tps\":1,\"msTotalTime\":15000.0,\"msMaxLatency\":0.0},\"handlers_request\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"consumer_wait_response\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"client_filters_response\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"handlers_response\":{\"tps\":1,\"msTotalTime\":3000.0,\"msMaxLatency\":0.0},\"consumer_get_connection\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"consumer_wake_consumer\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"consumer_write_to_buf\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0}}}],\"summary\":{\"operation\":\"\",\"stages\":{\"prepare\":{\"tps\":1,\"msTotalTime\":2000.0,\"msMaxLatency\":0.0},\"client_filters_request\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"total\":{\"tps\":1,\"msTotalTime\":15000.0,\"msMaxLatency\":0.0},\"consumer_send_request\":{\"tps\":1,\"msTotalTime\":2000.0,\"msMaxLatency\":0.0},\"handlers_request\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"handlers_response\":{\"tps\":1,\"msTotalTime\":3000.0,\"msMaxLatency\":0.0},\"client_filters_response\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"consumer_wait_response\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"consumer_get_connection\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"consumer_write_to_buf\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"consumer_wake_consumer\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0}}}}}}}}",
         JsonUtils.writeValueAsString(model.getConsumer()));
     Assert.assertEquals(
-        "{\"operationPerfGroups\":{\"groups\":{\"rest\":{\"200\":{\"transport\":\"rest\",\"status\":\"200\",\"operationPerfs\":[{\"operation\":\"m.s.o\",\"stages\":{\"execution\":{\"tps\":1,\"msTotalTime\":5000.0,\"msMaxLatency\":0.0},\"total\":{\"tps\":1,\"msTotalTime\":10000.0,\"msMaxLatency\":0.0},\"queue\":{\"tps\":1,\"msTotalTime\":5000.0,\"msMaxLatency\":0.0}}}],\"summary\":{\"operation\":\"\",\"stages\":{\"execution\":{\"tps\":1,\"msTotalTime\":5000.0,\"msMaxLatency\":0.0},\"total\":{\"tps\":1,\"msTotalTime\":10000.0,\"msMaxLatency\":0.0},\"queue\":{\"tps\":1,\"msTotalTime\":5000.0,\"msMaxLatency\":0.0}}}}}}}}",
+        "{\"operationPerfGroups\":{\"groups\":{\"rest\":{\"200\":{\"transport\":\"rest\",\"status\":\"200\",\"operationPerfs\":[{\"operation\":\"m.s.o\",\"stages\":{\"server_filters_request\":{\"tps\":1,\"msTotalTime\":2000.0,\"msMaxLatency\":0.0},\"prepare\":{\"tps\":1,\"msTotalTime\":6000.0,\"msMaxLatency\":0.0},\"execution\":{\"tps\":1,\"msTotalTime\":3000.0,\"msMaxLatency\":0.0},\"producer_send_response\":{\"tps\":1,\"msTotalTime\":2000.0,\"msMaxLatency\":0.0},\"total\":{\"tps\":1,\"msTotalTime\":15000.0,\"msMaxLatency\":0.0},\"handlers_request\":{\"tps\":1,\"msTotalTime\":6000.0,\"msMaxLatency\":0.0},\"handlers_response\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"queue\":{\"tps\":0,\"msTotalTime\":0.0,\"msMaxLatency\":0.0},\"server_filters_response\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0}}}],\"summary\":{\"operation\":\"\",\"stages\":{\"server_filters_request\":{\"tps\":1,\"msTotalTime\":2000.0,\"msMaxLatency\":0.0},\"execution\":{\"tps\":1,\"msTotalTime\":3000.0,\"msMaxLatency\":0.0},\"prepare\":{\"tps\":1,\"msTotalTime\":6000.0,\"msMaxLatency\":0.0},\"total\":{\"tps\":1,\"msTotalTime\":15000.0,\"msMaxLatency\":0.0},\"producer_send_response\":{\"tps\":1,\"msTotalTime\":2000.0,\"msMaxLatency\":0.0},\"handlers_request\":{\"tps\":1,\"msTotalTime\":6000.0,\"msMaxLatency\":0.0},\"handlers_response\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"queue\":{\"tps\":0,\"msTotalTime\":0.0,\"msMaxLatency\":0.0},\"server_filters_response\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0}}}}}}}}",
         JsonUtils.writeValueAsString(model.getProducer()));
   }
 
   protected void prepareInvocation() {
+
     Deencapsulation.setField(invocationStageTrace, "start", 0L);
-    Deencapsulation.setField(invocationStageTrace, "finish", 10L);
+    Deencapsulation.setField(invocationStageTrace, "startHandlersRequest", 2L);
+    Deencapsulation.setField(invocationStageTrace, "startClientFiltersRequest", 3L);
+    Deencapsulation.setField(invocationStageTrace, "startSend", 4L);
+    Deencapsulation.setField(invocationStageTrace, "finishGetConnection", 5L);
+    Deencapsulation.setField(invocationStageTrace, "finishWriteToBuffer", 6L);
+    Deencapsulation.setField(invocationStageTrace, "finishReceiveResponse", 7L);
+    Deencapsulation.setField(invocationStageTrace, "startClientFiltersResponse", 8L);
+    Deencapsulation.setField(invocationStageTrace, "finishClientFiltersResponse", 9L);
+    Deencapsulation.setField(invocationStageTrace, "finishHandlersResponse", 14L);
+    Deencapsulation.setField(invocationStageTrace, "finish", 15L);
     Deencapsulation.setField(invocationStageTrace, "startExecution", 5L);
+    Deencapsulation.setField(invocationStageTrace, "startSchedule", 6L);
+    Deencapsulation.setField(invocationStageTrace, "startBusinessMethod", 8L);
+    Deencapsulation.setField(invocationStageTrace, "finishBusiness", 11L);
+    Deencapsulation.setField(invocationStageTrace, "finishHandlersResponse", 12L);
+    Deencapsulation.setField(invocationStageTrace, "finishServerFiltersResponse", 13L);
+    Deencapsulation.setField(invocationStageTrace, "invocation", invocation);
 
     invocationType = InvocationType.CONSUMER;
     new MockUp<Invocation>() {
@@ -132,5 +148,6 @@ public class TestInvocationPublishModelFactory {
 
     invocationType = InvocationType.PRODUCER;
     eventBus.post(finishEvent);
+
   }
 }
