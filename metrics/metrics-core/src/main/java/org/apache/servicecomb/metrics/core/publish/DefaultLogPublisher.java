@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.metrics.core.publish;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -31,6 +32,7 @@ import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPer
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroup;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroups;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.PerfInfo;
+import org.apache.servicecomb.metrics.core.publish.statistics.MeterDetailStatisticsModel;
 import org.apache.servicecomb.metrics.core.publish.statistics.MeterStatisticsManager;
 import org.apache.servicecomb.metrics.core.publish.statistics.MeterStatisticsMeterType;
 import org.slf4j.Logger;
@@ -123,8 +125,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
       return;
     }
     sb.append(String.format(SIMPLE_HEADER, "edge"));
-    //clear old data
-    MeterStatisticsManager.statisticsOperationMap.clear();
+    Map<String, MeterDetailStatisticsModel> statisticsModelMap = new HashMap<>();
 
     StringBuilder sampleBuilder = new StringBuilder();
     //print sample
@@ -134,12 +135,12 @@ public class DefaultLogPublisher implements MetricsInitializer {
         sampleBuilder.append(printSamplePerf(perfGroup));
         //load details
         MeterStatisticsManager
-            .loadMeterDetailStatisticsModelFromPerfGroup(perfGroup, MeterStatisticsMeterType.EDGE);
+            .loadMeterDetailStatisticsModelFromPerfGroup(perfGroup, MeterStatisticsMeterType.EDGE, statisticsModelMap);
       }
     }
     sb.append(sampleBuilder)
         .append("  details:\n");
-    MeterStatisticsManager.statisticsOperationMap.values()
+    statisticsModelMap.values()
         .forEach(details -> sb.append(details.getFormatDetails()));
   }
 
@@ -151,8 +152,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
     }
 
     sb.append(String.format(SIMPLE_HEADER, "consumer"));
-    //clear old data
-    MeterStatisticsManager.statisticsOperationMap.clear();
+    Map<String, MeterDetailStatisticsModel> statisticsModelMap = new HashMap<>();
 
     StringBuilder sampleBuilder = new StringBuilder();
     //print sample
@@ -162,12 +162,13 @@ public class DefaultLogPublisher implements MetricsInitializer {
         sampleBuilder.append(printSamplePerf(perfGroup));
         //load details
         MeterStatisticsManager
-            .loadMeterDetailStatisticsModelFromPerfGroup(perfGroup, MeterStatisticsMeterType.CONSUMER);
+            .loadMeterDetailStatisticsModelFromPerfGroup(perfGroup, MeterStatisticsMeterType.CONSUMER,
+                statisticsModelMap);
       }
     }
     sb.append(sampleBuilder)
         .append("  details:\n");
-    MeterStatisticsManager.statisticsOperationMap.values()
+    statisticsModelMap.values()
         .forEach(details -> sb.append(details.getFormatDetails()));
   }
 
@@ -179,8 +180,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
       return;
     }
     sb.append(String.format(SIMPLE_HEADER, "producer"));
-    //clear old data
-    MeterStatisticsManager.statisticsOperationMap.clear();
+    Map<String, MeterDetailStatisticsModel> statisticsModelMap = new HashMap<>();
 
     StringBuilder sampleBuilder = new StringBuilder();
     //print sample
@@ -190,14 +190,14 @@ public class DefaultLogPublisher implements MetricsInitializer {
         sampleBuilder.append(printSamplePerf(perfGroup));
         //load details
         MeterStatisticsManager
-            .loadMeterDetailStatisticsModelFromPerfGroup(perfGroup, MeterStatisticsMeterType.PRODUCER);
+            .loadMeterDetailStatisticsModelFromPerfGroup(perfGroup, MeterStatisticsMeterType.PRODUCER,
+                statisticsModelMap);
       }
     }
     //print details
     sb.append(sampleBuilder)
         .append("  details:\n");
-    MeterStatisticsManager.statisticsOperationMap.values()
-        .forEach(details -> sb.append(details.getFormatDetails()));
+    statisticsModelMap.values().forEach(details -> sb.append(details.getFormatDetails()));
   }
 
 

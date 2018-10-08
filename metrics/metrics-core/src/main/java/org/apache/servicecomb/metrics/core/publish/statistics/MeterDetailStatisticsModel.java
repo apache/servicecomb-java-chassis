@@ -38,7 +38,7 @@ public class MeterDetailStatisticsModel {
   //key : status .  tag -> value
   private Map<String, Map<String, String>> detailsStatistics = new HashMap<>();
 
-  //keep the sort
+  //keep the order
   private static Map<String, String> producerKeys = new LinkedHashMap<>();
 
   private static Map<String, String> consumersKeys = new LinkedHashMap<>();
