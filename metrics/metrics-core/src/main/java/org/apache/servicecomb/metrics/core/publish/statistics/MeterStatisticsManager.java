@@ -1,6 +1,5 @@
 package org.apache.servicecomb.metrics.core.publish.statistics;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,11 +9,9 @@ import org.apache.servicecomb.metrics.core.publish.model.invocation.PerfInfo;
 
 public class MeterStatisticsManager {
 
-  public static Map<String, MeterDetailStatisticsModel> statisticsOperationMap = new HashMap<>();
-
-
-  public static void loadMeterDetailStatisticsModelFromPerfGroup(OperationPerfGroup perfGroup,
-      MeterStatisticsMeterType type) {
+  public static void loadMeterDetailStatisticsModelFromPerfGroup(
+      OperationPerfGroup perfGroup,
+      MeterStatisticsMeterType type, Map<String, MeterDetailStatisticsModel> statisticsOperationMap) {
     List<OperationPerf> operationPerfs = perfGroup.getOperationPerfs();
 
     String status = perfGroup.getTransport() + "." + perfGroup.getStatus();
@@ -29,11 +26,6 @@ public class MeterStatisticsManager {
   }
 
 
-  /**
-   * 从 perfInfo 中获取 保留三位小数的字符串
-   * @param perfInfo
-   * @return
-   */
   public static String getDetailsFromPerf(PerfInfo perfInfo) {
     String result = "";
     if (perfInfo != null) {
