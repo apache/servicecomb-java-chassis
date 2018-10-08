@@ -200,8 +200,8 @@ public class TestDefaultLogPublisher {
             + "    rest.OK         10            10.000/0.000                               op\n"
             + "                    10            10.000/0.000                               (summary)\n"
             + "  details:\n"
-            + "    op:\n"
-            + "      rest.OK:\n"
+            + "    rest.OK:\n"
+            + "      op:\n"
             + "        prepare          : 10.000/0.000           handlersReq : 10.000/0.000           clientFiltersReq: 10.000/0.000           sendReq     : 10.000/0.000\n"
             + "        getConnect       : 10.000/0.000           writeBuf    : 10.000/0.000           waitResp        : 10.000/0.000           wakeConsumer: 10.000/0.000\n"
             + "        clientFiltersResp: 10.000/0.000           handlersResp: 10.000/0.000\n"
@@ -211,8 +211,8 @@ public class TestDefaultLogPublisher {
             + "    rest.OK         10            10.000/0.000                               op\n"
             + "                    10            10.000/0.000                               (summary)\n"
             + "  details:\n"
-            + "    op:\n"
-            + "      rest.OK:\n"
+            + "    rest.OK:\n"
+            + "      op:\n"
             + "        prepare: 10.000/0.000           queue       : 10.000/0.000           filtersReq : 10.000/0.000           handlersReq: 10.000/0.000\n"
             + "        execute: 10.000/0.000           handlersResp: 10.000/0.000           filtersResp: 10.000/0.000           sendResp   : 10.000/0.000\n",
         event.getMessage());
