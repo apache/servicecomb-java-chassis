@@ -268,7 +268,7 @@ public class InvocationStageTrace {
   }
 
   private double calc(long finish, long start) {
-    if (finish == 0) {
+    if (finish == 0 || start == 0) {
       return Double.NaN;
     }
 
