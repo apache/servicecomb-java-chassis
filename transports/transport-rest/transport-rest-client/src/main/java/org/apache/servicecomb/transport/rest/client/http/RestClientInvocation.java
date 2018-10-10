@@ -233,6 +233,15 @@ public class RestClientInvocation {
       stageTrace.finishWriteToBuffer(httpSocketMetric.getRequestEndTime());
     }
 
+    // even failed and did not received response, still set time for it
+    // that will help to know the real timeout time
+    if (stageTrace.getFinishReceiveResponse() == 0) {
+      stageTrace.finishReceiveResponse();
+    }
+    if (stageTrace.getStartClientFiltersResponse() == 0) {
+      stageTrace.startClientFiltersResponse();
+    }
+
     stageTrace.finishClientFiltersResponse();
     asyncResp.fail(invocation.getInvocationType(), e);
   }
