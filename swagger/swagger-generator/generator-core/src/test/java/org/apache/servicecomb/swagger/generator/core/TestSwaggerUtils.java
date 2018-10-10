@@ -23,7 +23,7 @@ import java.util.Date;
 
 import org.apache.servicecomb.common.javassist.JavassistUtils;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
-import org.apache.servicecomb.swagger.generator.core.schema.Color;
+import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.swagger.generator.core.schema.InvalidResponseHeader;
 import org.apache.servicecomb.swagger.generator.core.schema.RepeatOperation;
 import org.apache.servicecomb.swagger.generator.core.schema.Schema;

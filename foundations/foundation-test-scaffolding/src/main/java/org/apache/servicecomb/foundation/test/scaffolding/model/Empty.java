@@ -15,8 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.swagger.generator.jaxrs;
+package org.apache.servicecomb.foundation.test.scaffolding.model;
 
-public class User {
-  public String name;
+public class Empty {
 }

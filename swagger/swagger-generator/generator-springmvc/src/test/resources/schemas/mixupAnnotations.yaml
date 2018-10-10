@@ -27,9 +27,9 @@ consumes:
 produces:
 - "application/json"
 paths:
-  /usingRequestMapping/{targetName}:
-    post:
-      operationId: "usingRequestMapping"
+  /usingDeleteMapping/{targetName}:
+    delete:
+      operationId: "usingDeleteMapping"
       consumes:
       - "text/plain"
       - "application/*"
@@ -99,9 +99,9 @@ paths:
           description: "response of 200"
           schema:
             type: "string"
-  /usingPutMapping/{targetName}:
-    put:
-      operationId: "usingPutMapping"
+  /usingPatchMapping/{targetName}:
+    patch:
+      operationId: "usingPatchMapping"
       consumes:
       - "text/plain"
       - "application/*"
@@ -171,9 +171,9 @@ paths:
           description: "response of 200"
           schema:
             type: "string"
-  /usingPatchMapping/{targetName}:
-    patch:
-      operationId: "usingPatchMapping"
+  /usingPutMapping/{targetName}:
+    put:
+      operationId: "usingPutMapping"
       consumes:
       - "text/plain"
       - "application/*"
@@ -207,9 +207,9 @@ paths:
           description: "response of 200"
           schema:
             type: "string"
-  /usingDeleteMapping/{targetName}:
-    delete:
-      operationId: "usingDeleteMapping"
+  /usingRequestMapping/{targetName}:
+    post:
+      operationId: "usingRequestMapping"
       consumes:
       - "text/plain"
       - "application/*"
@@ -249,4 +249,8 @@ definitions:
     properties:
       name:
         type: "string"
-    x-java-class: "org.apache.servicecomb.swagger.generator.springmvc.User"
+      friends:
+        type: "array"
+        items:
+          $ref: "#/definitions/User"
+    x-java-class: "org.apache.servicecomb.foundation.test.scaffolding.model.User"

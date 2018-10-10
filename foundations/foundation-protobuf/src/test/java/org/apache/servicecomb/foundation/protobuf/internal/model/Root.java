@@ -19,6 +19,8 @@ package org.apache.servicecomb.foundation.protobuf.internal.model;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
+
 public class Root {
   private int int32;
 

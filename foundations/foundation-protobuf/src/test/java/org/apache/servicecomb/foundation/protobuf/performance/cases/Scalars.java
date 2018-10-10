@@ -16,8 +16,8 @@
  */
 package org.apache.servicecomb.foundation.protobuf.performance.cases;
 
-import org.apache.servicecomb.foundation.protobuf.internal.model.Color;
 import org.apache.servicecomb.foundation.protobuf.performance.TestBase;
+import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 
 public class Scalars extends TestBase {
   public Scalars() {

@@ -46,13 +46,15 @@ definitions:
       color:
         type: "string"
         enum:
-        - "WHITE"
-        - "BLACK"
-        x-java-class: "org.apache.servicecomb.swagger.generator.core.schema.Color"
+        - "RED"
+        - "YELLOW"
+        - "BLUE"
+        x-java-class: "org.apache.servicecomb.foundation.test.scaffolding.model.Color"
       color1:
         type: "string"
         enum:
-        - "WHITE"
-        - "BLACK"
-        x-java-class: "org.apache.servicecomb.swagger.generator.core.schema.Color"
+        - "RED"
+        - "YELLOW"
+        - "BLUE"
+        x-java-class: "org.apache.servicecomb.foundation.test.scaffolding.model.Color"
     x-java-class: "gen.cse.ms.ut.testEnumBody"

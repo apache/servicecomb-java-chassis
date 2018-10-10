@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
+import org.apache.servicecomb.foundation.test.scaffolding.model.User;
+
 public class AllType {
   public boolean bValue;
 
