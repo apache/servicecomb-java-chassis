@@ -37,8 +37,19 @@ public final class TransportClientConfig {
     return DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.rest.client.thread-count", 1).get();
   }
 
+  public static int getHttp2ConnectionMaxPoolSize() {
+    return DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.rest.client.http2.maxPoolSize", 3)
+        .get();
+  }
+
+  public static int getHttp2MultiplexingLimit() {
+    return DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.rest.client.http2.multiplexingLimit", -1)
+        .get();
+  }
+
   public static int getConnectionMaxPoolSize() {
-    return DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.rest.client.connection.maxPoolSize", 5).get();
+    return DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.rest.client.connection.maxPoolSize", 5)
+        .get();
   }
 
   public static int getConnectionIdleTimeoutInSeconds() {
@@ -48,7 +59,8 @@ public final class TransportClientConfig {
   }
 
   public static boolean getConnectionKeepAlive() {
-    return DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.rest.client.connection.keepAlive", true).get();
+    return DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.rest.client.connection.keepAlive", true)
+        .get();
   }
 
   public static boolean getConnectionCompression() {
