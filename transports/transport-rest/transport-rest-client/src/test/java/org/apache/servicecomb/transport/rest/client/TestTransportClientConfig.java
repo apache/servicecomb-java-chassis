@@ -37,9 +37,20 @@ public class TestTransportClientConfig {
   }
 
   @Test
+  public void getHttp2MultiplexingLimit() {
+    Assert.assertEquals(-1, TransportClientConfig.getHttp2MultiplexingLimit());
+  }
+
+  @Test
+  public void getHttp2ConnectionMaxPoolSize() {
+    Assert.assertEquals(3, TransportClientConfig.getHttp2ConnectionMaxPoolSize());
+  }
+
+  @Test
   public void getConnectionKeepAlive() {
     Assert.assertTrue(TransportClientConfig.getConnectionKeepAlive());
   }
+
 
   @Test
   public void getConnectionCompression() {
