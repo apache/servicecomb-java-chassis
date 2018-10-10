@@ -38,6 +38,8 @@ public final class TransportConfig {
 
   public static final boolean DEFAULT_SERVER_COMPRESSION_SUPPORT = false;
 
+  public static final long DEFAULT_MAX_CONCURRENT_STREAMS = 200L;
+
   // 32K
   public static final int DEFAULT_SERVER_MAX_HEADER_SIZE = 32 * 1024;
 
@@ -81,7 +83,11 @@ public final class TransportConfig {
         .getBooleanProperty("servicecomb.rest.server.compression", DEFAULT_SERVER_COMPRESSION_SUPPORT)
         .get();
   }
-
+  public static long getMaxConcurrentStreams() {
+    return DynamicPropertyFactory.getInstance()
+        .getLongProperty("servicecomb.rest.server.http2.concurrentStreams", DEFAULT_MAX_CONCURRENT_STREAMS)
+        .get();
+  }
   public static int getMaxHeaderSize() {
     return DynamicPropertyFactory.getInstance()
         .getIntProperty("servicecomb.rest.server.maxHeaderSize", DEFAULT_SERVER_MAX_HEADER_SIZE)
