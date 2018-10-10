@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.it.schema;
 
+import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.provider.pojo.RpcSchema;
 
 import io.swagger.annotations.SwaggerDefinition;
@@ -53,5 +54,9 @@ public class DataTypePojoSchema {
 
   public float floatAdd(float num1, float num2) {
     return num1 + num2;
+  }
+
+  public Color enumBody(Color color) {
+    return color;
   }
 }
