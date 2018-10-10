@@ -54,6 +54,7 @@ import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.Http2Settings;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
@@ -253,7 +254,8 @@ public class RestServerVerticle extends AbstractVerticle {
     serverOptions.setMaxHeaderSize(TransportConfig.getMaxHeaderSize());
     serverOptions.setMaxInitialLineLength(TransportConfig.getMaxInitialLineLength());
     if (endpointObject.isHttp2Enabled()) {
-      serverOptions.setUseAlpn(true);
+      serverOptions.setUseAlpn(true)
+          .setInitialSettings(new Http2Settings().setMaxConcurrentStreams(TransportConfig.getMaxConcurrentStreams()));
     }
     if (endpointObject.isSslEnabled()) {
       SSLOptionFactory factory =
