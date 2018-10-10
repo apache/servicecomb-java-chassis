@@ -62,7 +62,7 @@ public class DownloadSchema implements BootListener {
     // for download from net stream case
     server = ServerBootstrap
         .bootstrap()
-        .setListenerPort(9000)
+        .setListenerPort(0)
         .registerHandler("/download/netInputStream", (req, resp, context) -> {
           String uri = req.getRequestLine().getUri();
           String query = URI.create(uri).getQuery();
@@ -183,7 +183,7 @@ public class DownloadSchema implements BootListener {
       @ApiResponse(code = 200, response = File.class, message = ""),
   })
   public ResponseEntity<InputStream> netInputStream(String content) throws IOException {
-    URL url = new URL("http://localhost:9000/download/netInputStream?content="
+    URL url = new URL("http://localhost:" + server.getLocalPort() + "/download/netInputStream?content="
         + URLEncoder.encode(content, StandardCharsets.UTF_8.name()));
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     ResponseEntity<InputStream> responseEntity = ResponseEntity
