@@ -25,6 +25,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
+import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 
 @RestSchema(schemaId = "dataTypeJaxrs")
@@ -199,5 +200,11 @@ public class DataTypeJaxrsSchema {
   @GET
   public float floatAdd(@QueryParam("num1") float num1, @QueryParam("num2") float num2) {
     return num1 + num2;
+  }
+
+  @Path("enumBody")
+  @POST
+  public Color enumBody(Color color) {
+    return color;
   }
 }

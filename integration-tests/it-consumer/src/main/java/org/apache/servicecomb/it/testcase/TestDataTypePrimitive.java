@@ -22,6 +22,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.extend.engine.ITSCBRestTemplate;
 import org.junit.Test;
@@ -48,6 +49,8 @@ public class TestDataTypePrimitive {
     float floatBody(float input);
 
     float floatAdd(float num1, float num2);
+
+    Color enumBody(Color color);
   }
 
   public interface DataTypeRestIntf {
@@ -109,6 +112,9 @@ public class TestDataTypePrimitive {
     float floatForm(float input);
 
     float floatAdd(float num1, float num2);
+
+    // enum
+    Color enumBody(Color color);
   }
 
   private static Consumers<DataTypePojoIntf> consumersPojo = new Consumers<>("dataTypePojo", DataTypePojoIntf.class);
@@ -197,6 +203,19 @@ public class TestDataTypePrimitive {
     map.put("str2", "Comb");
     assertEquals("serviceComb",
         consumersPojo.getSCBRestTemplate().postForObject("/stringConcat", map, String.class));
+  }
+
+  @Test
+  public void enumBody_pojo_intf() {
+    assertEquals(Color.BLUE, consumersPojo.getIntf().enumBody(Color.BLUE));
+  }
+
+  @Test
+  public void enumBody_pojo_rt() {
+    Map<String, Color> body = new HashMap<>();
+    body.put("color", Color.BLUE);
+    assertEquals(Color.BLUE,
+        consumersPojo.getSCBRestTemplate().postForObject("/enumBody", body, Color.class));
   }
 
   @Test
@@ -548,6 +567,17 @@ public class TestDataTypePrimitive {
   public void string_concat_jaxrs_rt() {
     assertEquals("serviceComb", consumersJaxrs.getSCBRestTemplate()
         .getForObject("/stringConcat?str1=service&str2=Comb", String.class));
+  }
+
+  @Test
+  public void enumBody_jaxrs_intf() {
+    assertEquals(Color.BLUE, consumersJaxrs.getIntf().enumBody(Color.BLUE));
+  }
+
+  @Test
+  public void enumBody_jaxrs_rt() {
+    assertEquals(Color.BLUE,
+        consumersJaxrs.getSCBRestTemplate().postForObject("/enumBody", Color.BLUE, Color.class));
   }
 
   @Test
@@ -1030,5 +1060,16 @@ public class TestDataTypePrimitive {
     assertEquals(20.5f,
         consumersSpringmvc.getSCBRestTemplate().getForObject("/floatAdd?num1=10.2f&num2=10.3f", float.class),
         0.0f);
+  }
+
+  @Test
+  public void enumBody_springmvc_intf() {
+    assertEquals(Color.BLUE, consumersSpringmvc.getIntf().enumBody(Color.BLUE));
+  }
+
+  @Test
+  public void enumBody_springmvc_rt() {
+    assertEquals(Color.BLUE,
+        consumersSpringmvc.getSCBRestTemplate().postForObject("/enumBody", Color.BLUE, Color.class));
   }
 }

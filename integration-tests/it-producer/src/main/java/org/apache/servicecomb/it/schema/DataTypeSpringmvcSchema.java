@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.it.schema;
 
+import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -173,5 +174,10 @@ public class DataTypeSpringmvcSchema {
   @GetMapping(path = "floatAdd")
   public float floatAdd(float num1, float num2) {
     return num1 + num2;
+  }
+
+  @PostMapping(path = "enumBody")
+  public Color enumBody(@RequestBody Color color) {
+    return color;
   }
 }

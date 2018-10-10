@@ -46,6 +46,11 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>spring-boot2-starter-servlet</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-test-scaffolding</artifactId>
+      <scope>compile</scope>
+    </dependency>
   </dependencies>
 
   <build>
