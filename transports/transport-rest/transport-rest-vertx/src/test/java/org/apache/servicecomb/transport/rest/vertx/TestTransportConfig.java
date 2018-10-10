@@ -142,6 +142,14 @@ public class TestTransportConfig {
   }
 
   @Test
+  public void testMaxConcurrentStreams() {
+    Assert.assertEquals(200L, TransportConfig.getMaxConcurrentStreams());
+    ArchaiusUtils.setProperty("servicecomb.rest.server.http2.concurrentStreams", 100L);
+    Assert.assertEquals(100L, TransportConfig.getMaxConcurrentStreams());
+  }
+
+
+  @Test
   public void testGetMaxInitialLineLength() {
     Assert.assertEquals(4096, TransportConfig.getMaxInitialLineLength());
     ArchaiusUtils.setProperty("servicecomb.rest.server.maxInitialLineLength", 8000);
