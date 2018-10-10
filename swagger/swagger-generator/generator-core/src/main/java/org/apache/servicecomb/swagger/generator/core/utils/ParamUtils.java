@@ -30,6 +30,7 @@ import org.springframework.core.MethodParameter;
 
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.Model;
+import io.swagger.models.ModelImpl;
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.AbstractSerializableParameter;
 import io.swagger.models.parameters.BodyParameter;
@@ -40,6 +41,7 @@ import io.swagger.models.properties.ObjectProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.PropertyBuilder;
 import io.swagger.models.properties.RefProperty;
+import io.swagger.models.properties.StringProperty;
 
 public final class ParamUtils {
   private static DefaultParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
@@ -99,6 +101,9 @@ public final class ParamUtils {
 
     Property property = ModelConverters.getInstance().readAsProperty(paramType);
     Model model = PropertyBuilder.toModel(property);
+    if (model instanceof ModelImpl && property instanceof StringProperty) {
+      ((ModelImpl) model).setEnum(((StringProperty) property).getEnum());
+    }
 
     BodyParameter bodyParameter = new BodyParameter();
     bodyParameter.setName(paramName);

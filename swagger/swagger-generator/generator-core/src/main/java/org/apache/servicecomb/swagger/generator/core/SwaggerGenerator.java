@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -75,7 +75,7 @@ public class SwaggerGenerator {
    */
   protected Set<String> defaultTags = new LinkedHashSet<>();
 
-  private Map<String, OperationGenerator> operationGeneratorMap = new HashMap<>();
+  private Map<String, OperationGenerator> operationGeneratorMap = new LinkedHashMap<>();
 
   private String httpMethod;
 
