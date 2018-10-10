@@ -19,12 +19,15 @@ package org.apache.servicecomb.foundation.vertx.metrics;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientEndpointMetric;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientEndpointMetricManager;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultHttpSocketMetric;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.WebSocket;
+import io.vertx.core.http.impl.HttpClientImpl;
 import io.vertx.core.net.SocketAddress;
 import io.vertx.core.net.impl.SocketAddressImpl;
 import io.vertx.core.spi.metrics.HttpClientMetrics;
@@ -34,6 +37,9 @@ import io.vertx.core.spi.metrics.HttpClientMetrics;
  */
 public class DefaultHttpClientMetrics implements
     HttpClientMetrics<DefaultHttpSocketMetric, Object, DefaultHttpSocketMetric, DefaultClientEndpointMetric, Object> {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultHttpClientMetrics.class);
+
   private final DefaultClientEndpointMetricManager clientEndpointMetricManager;
 
   private final HttpClient client;
@@ -77,8 +83,13 @@ public class DefaultHttpClientMetrics implements
 
   @Override
   public void endpointConnected(DefaultClientEndpointMetric endpointMetric, DefaultHttpSocketMetric socketMetric) {
-    socketMetric.setEndpointMetric(endpointMetric);
-    endpointMetric.onConnect();
+    //only http1.1 will invoke this method, just make a check
+    if (endpointMetric != null) {
+      if (endpointMetric != socketMetric.getEndpointMetric()) {
+        socketMetric.setEndpointMetric(endpointMetric);
+      }
+      endpointMetric.onConnect();
+    }
   }
 
   @Override
@@ -133,7 +144,18 @@ public class DefaultHttpClientMetrics implements
 
   @Override
   public DefaultHttpSocketMetric connected(SocketAddress remoteAddress, String remoteName) {
-    return new DefaultHttpSocketMetric(null);
+
+    DefaultHttpSocketMetric socketMetric = new DefaultHttpSocketMetric(null);
+    try {
+      DefaultHttpClientMetrics clientMetrics = (DefaultHttpClientMetrics) ((HttpClientImpl) client).getMetrics();
+      DefaultClientEndpointMetric clientEndpointMetric = clientMetrics.clientEndpointMetricManager
+          .getClientEndpointMetricMap().get(remoteAddress);
+      // set endPointMetric when use http2
+      socketMetric.setEndpointMetric(clientEndpointMetric);
+    } catch (Exception e) {
+      LOGGER.warn("if you use http2, there may cause a null pointer exception. {}/{}", remoteAddress, remoteName);
+    }
+    return socketMetric;
   }
 
   @Override
