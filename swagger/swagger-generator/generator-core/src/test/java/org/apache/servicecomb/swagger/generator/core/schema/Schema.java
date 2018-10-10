@@ -24,6 +24,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
+import org.apache.servicecomb.foundation.test.scaffolding.model.User;
+
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ResponseHeader;

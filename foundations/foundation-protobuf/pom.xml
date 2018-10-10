@@ -60,5 +60,10 @@
       <artifactId>jackson-dataformat-protobuf</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-test-scaffolding</artifactId>
+    </dependency>
+
   </dependencies>
 </project>

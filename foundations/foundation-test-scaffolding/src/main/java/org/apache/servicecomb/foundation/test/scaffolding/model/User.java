@@ -1,4 +1,4 @@
-package org.apache.servicecomb.foundation.protobuf.internal.model;/*
+/*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
@@ -15,8 +15,12 @@ package org.apache.servicecomb.foundation.protobuf.internal.model;/*
  * limitations under the License.
  */
 
-public enum Color {
-  RED,
-  YELLOW,
-  BLUE
+package org.apache.servicecomb.foundation.test.scaffolding.model;
+
+import java.util.List;
+
+public class User {
+  public String name;
+
+  public List<User> friends;
 }

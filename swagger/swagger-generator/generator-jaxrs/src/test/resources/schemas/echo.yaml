@@ -65,4 +65,8 @@ definitions:
     properties:
       name:
         type: "string"
-    x-java-class: "org.apache.servicecomb.swagger.generator.jaxrs.User"
+      friends:
+        type: "array"
+        items:
+          $ref: "#/definitions/User"
+    x-java-class: "org.apache.servicecomb.foundation.test.scaffolding.model.User"

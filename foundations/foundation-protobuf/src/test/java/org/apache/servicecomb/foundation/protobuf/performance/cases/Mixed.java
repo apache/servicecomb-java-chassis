@@ -19,9 +19,9 @@ package org.apache.servicecomb.foundation.protobuf.performance.cases;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import org.apache.servicecomb.foundation.protobuf.internal.model.Color;
 import org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User;
 import org.apache.servicecomb.foundation.protobuf.performance.TestBase;
+import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 
 public class Mixed extends TestBase {
   public Mixed() {

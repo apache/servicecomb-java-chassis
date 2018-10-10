@@ -15,8 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.swagger.generator.springmvc;
+package org.apache.servicecomb.foundation.test.scaffolding.model;
 
-public class User {
-  public String name;
+public enum Color {
+  RED,
+  YELLOW,
+  BLUE
 }

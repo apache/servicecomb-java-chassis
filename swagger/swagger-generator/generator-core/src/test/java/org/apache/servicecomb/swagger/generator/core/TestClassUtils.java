@@ -28,7 +28,7 @@ import javax.lang.model.SourceVersion;
 import javax.ws.rs.Path;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
-import org.apache.servicecomb.swagger.generator.core.schema.User;
+import org.apache.servicecomb.foundation.test.scaffolding.model.User;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
 import org.hamcrest.Matchers;
@@ -78,7 +78,7 @@ public class TestClassUtils {
     Class<?> cls = ClassUtils.getOrCreateBodyClass(operationGenerator, null);
     Assert.assertEquals("gen.swagger.getUserBody", cls.getName());
     Assert.assertEquals("java.util.List<java.lang.String>", cls.getField("p1").getGenericType().getTypeName());
-    Assert.assertEquals("java.util.List<org.apache.servicecomb.swagger.generator.core.schema.User>",
+    Assert.assertEquals("java.util.List<org.apache.servicecomb.foundation.test.scaffolding.model.User>",
         cls.getField("p2").getGenericType().getTypeName());
   }
 

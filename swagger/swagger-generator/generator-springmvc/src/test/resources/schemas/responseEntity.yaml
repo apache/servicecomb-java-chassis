@@ -27,9 +27,9 @@ consumes:
 produces:
 - "application/json"
 paths:
-  /usingRequestMapping:
-    put:
-      operationId: "usingRequestMapping"
+  /usingDeleteMapping:
+    delete:
+      operationId: "usingDeleteMapping"
       parameters: []
       responses:
         200:
@@ -49,9 +49,9 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/User"
-  /usingPutMapping:
-    put:
-      operationId: "usingPutMapping"
+  /usingPatchMapping:
+    patch:
+      operationId: "usingPatchMapping"
       parameters: []
       responses:
         200:
@@ -71,9 +71,9 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/User"
-  /usingPatchMapping:
-    patch:
-      operationId: "usingPatchMapping"
+  /usingPutMapping:
+    put:
+      operationId: "usingPutMapping"
       parameters: []
       responses:
         200:
@@ -82,9 +82,9 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/User"
-  /usingDeleteMapping:
-    delete:
-      operationId: "usingDeleteMapping"
+  /usingRequestMapping:
+    put:
+      operationId: "usingRequestMapping"
       parameters: []
       responses:
         200:
@@ -99,4 +99,8 @@ definitions:
     properties:
       name:
         type: "string"
-    x-java-class: "org.apache.servicecomb.swagger.generator.springmvc.User"
+      friends:
+        type: "array"
+        items:
+          $ref: "#/definitions/User"
+    x-java-class: "org.apache.servicecomb.foundation.test.scaffolding.model.User"
