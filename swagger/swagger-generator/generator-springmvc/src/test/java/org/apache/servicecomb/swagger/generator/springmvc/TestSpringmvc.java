@@ -193,4 +193,10 @@ public class TestSpringmvc {
 
     Assert.assertEquals(SpringmvcSwaggerGeneratorContext.class, context.getClass());
   }
+
+  @Test
+  public void testEnumBody() {
+    UnitTestSwaggerUtils
+        .testSwagger(classLoader, "schemas/enumBody.yaml", context, Echo.class, "enumBody");
+  }
 }

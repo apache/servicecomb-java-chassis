@@ -122,4 +122,10 @@ public class TestJaxrs {
     UnitTestSwaggerUtils
         .testSwagger(classLoader, "schemas/rawJsonStringMethod.yaml", context, Echo.class, "rawJsonStringMethod");
   }
+
+  @Test
+  public void testEnumBody() {
+    UnitTestSwaggerUtils
+        .testSwagger(classLoader, "schemas/enumBody.yaml", context, Echo.class, "enumBody");
+  }
 }
