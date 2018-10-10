@@ -98,10 +98,15 @@ public class SubProcessLogger implements Closeable {
     }
 
     LOGGER.info("waiting {} start.", displayName);
+    long startTime = System.currentTimeMillis();
     for (; ; ) {
       if (startCompleted) {
         LOGGER.info("{} start completed.", displayName);
         return;
+      }
+
+      if (System.currentTimeMillis() - startTime > TimeUnit.MINUTES.toMillis(1)) {
+        throw new IllegalStateException(String.format("[%s] timeout to wait for start complete.", displayName));
       }
 
       ITUtils.forceWait(TimeUnit.MILLISECONDS, 500);
