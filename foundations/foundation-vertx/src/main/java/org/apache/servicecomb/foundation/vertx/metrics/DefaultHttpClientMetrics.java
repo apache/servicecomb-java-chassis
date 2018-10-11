@@ -85,6 +85,10 @@ public class DefaultHttpClientMetrics implements
     // as http2 client will not invoke this method, the endpointMetric info will lost.
     // you can get more details from https://github.com/eclipse-vertx/vert.x/issues/2660
     // hence, we will set endpointMetric info in the method connected(SocketAddress remoteAddress, String remoteName)
+    if (endpointMetric != null && socketMetric.getEndpointMetric() == null) {
+      socketMetric.setEndpointMetric(endpointMetric);
+      endpointMetric.onConnect();
+    }
   }
 
   @Override
@@ -142,7 +146,9 @@ public class DefaultHttpClientMetrics implements
     //we can get endpointMetric info here, so set the endpointMetric info directly
     DefaultClientEndpointMetric clientEndpointMetric = this.clientEndpointMetricManager
         .getClientEndpointMetric(remoteAddress);
-    clientEndpointMetric.onConnect();
+    if (clientEndpointMetric != null) {
+      clientEndpointMetric.onConnect();
+    }
     return new DefaultHttpSocketMetric(clientEndpointMetric);
   }
 
