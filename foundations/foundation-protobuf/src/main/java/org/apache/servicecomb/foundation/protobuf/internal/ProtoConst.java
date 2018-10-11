@@ -18,15 +18,43 @@ package org.apache.servicecomb.foundation.protobuf.internal;
 
 import java.util.LinkedHashMap;
 
+import org.apache.servicecomb.foundation.protobuf.internal.parser.ProtoParser;
+
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-public interface ProtoConst {
-  String PACK_SCHEMA = "type.googleapis.com/";
+import io.protostuff.compiler.model.Message;
+import io.protostuff.compiler.model.Proto;
 
-  String JSON_SCHEMA = "json/";
+public final class ProtoConst {
+  private ProtoConst() {
+  }
 
-  String JSON_ID_NAME = "@type";
+  public static String OP_HINT = " scb:";
 
-  JavaType MAP_TYPE = TypeFactory.defaultInstance().constructType(LinkedHashMap.class);
+  public static String PACK_SCHEMA = "type.googleapis.com/";
+
+  public static String JSON_SCHEMA = "json/";
+
+  public static String JSON_ID_NAME = "@type";
+
+  public static JavaType MAP_TYPE = TypeFactory.defaultInstance().constructType(LinkedHashMap.class);
+
+  public static Proto ANY_PROTO;
+
+  public static Message ANY;
+
+  public static Proto EMPTY_PROTO;
+
+  public static Message EMPTY;
+
+  static {
+    ProtoParser protoParser = new ProtoParser();
+
+    ANY_PROTO = protoParser.parse("google/protobuf/any.proto");
+    ANY = ANY_PROTO.getMessage("Any");
+
+    EMPTY_PROTO = protoParser.parse("google/protobuf/empty.proto");
+    EMPTY = EMPTY_PROTO.getMessage("Empty");
+  }
 }

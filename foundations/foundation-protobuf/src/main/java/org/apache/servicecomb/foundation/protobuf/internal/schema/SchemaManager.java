@@ -17,6 +17,7 @@
 package org.apache.servicecomb.foundation.protobuf.internal.schema;
 
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
+import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.scalar.BoolSchema;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.scalar.BytesSchema;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.scalar.DoubleSchema;
@@ -48,7 +49,7 @@ public class SchemaManager {
   }
 
   protected boolean isAnyField(Field protoField, boolean repeated) {
-    return !repeated && protoField.getType().getCanonicalName().equals("google.protobuf.Any");
+    return !repeated && protoField.getType().getCanonicalName().equals(ProtoConst.ANY.getCanonicalName());
   }
 
   protected FieldSchema createScalarField(Field protoField) {
