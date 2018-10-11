@@ -63,11 +63,6 @@ public class RuntimeMapFieldProtobuf<T> extends RuntimeMapField<T, Object, Objec
   @SuppressWarnings("unchecked")
   @Override
   protected void mergeFrom(Input input, T message) throws IOException {
-    if (!ProtobufFeatureUtils.isUseProtobufMapCodec()) {
-      runtimeMapField.mergeFrom(input, message);
-      return;
-    }
-
     Map<Object, Object> value = null;
     try {
       value = (Map<Object, Object>) field.get(message);
@@ -95,7 +90,7 @@ public class RuntimeMapFieldProtobuf<T> extends RuntimeMapField<T, Object, Objec
       throw new ProtostuffException(
           "The map was incorrectly serialized, expect key number 1, but be " + keyNumber);
     }
-    Object key = kFrom(input, null);
+    Object key = kFrom(input, mapWrapper);
 
     int valueNumber = input.readFieldNumber(schema);
     if (valueNumber != 2) {
@@ -108,11 +103,6 @@ public class RuntimeMapFieldProtobuf<T> extends RuntimeMapField<T, Object, Objec
   @Override
   @SuppressWarnings("unchecked")
   protected void writeTo(Output output, T message) throws IOException {
-    if (!ProtobufFeatureUtils.isUseProtobufMapCodec()) {
-      runtimeMapField.writeTo(output, message);
-      return;
-    }
-
     final Map<Object, Object> existing;
     try {
       existing = (Map<Object, Object>) field.get(message);

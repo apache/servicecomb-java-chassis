@@ -22,13 +22,11 @@ import java.nio.ByteBuffer;
 import io.protostuff.ByteBufferInput;
 import io.protostuff.Input;
 import io.protostuff.Output;
-import io.protostuff.runtime.ProtobufFeature;
-import io.protostuff.runtime.ProtobufFeatureUtils;
 import io.vertx.core.buffer.Buffer;
 
 public interface WrapSchema {
   @SuppressWarnings("unchecked")
-  default <T> T readObject(Buffer buffer, ProtobufFeature protobufFeature) throws Exception {
+  default <T> T readObject(Buffer buffer) throws Exception {
     if (buffer == null || buffer.length() == 0) {
       // void以及函数入参为null的场景
       // 空串时,protobuf至少为编码为1字节
@@ -38,21 +36,7 @@ public interface WrapSchema {
     ByteBuffer nioBuffer = buffer.getByteBuf().nioBuffer();
     Input input = new ByteBufferInput(nioBuffer, false);
 
-    ProtobufFeatureUtils.setProtobufFeature(protobufFeature);
-    try {
-      return (T) readObject(input);
-    } finally {
-      ProtobufFeatureUtils.removeProtobufFeature();
-    }
-  }
-
-  default void writeObject(Output output, Object value, ProtobufFeature protobufFeature) throws Exception {
-    ProtobufFeatureUtils.setProtobufFeature(protobufFeature);
-    try {
-      writeObject(output, value);
-    } finally {
-      ProtobufFeatureUtils.removeProtobufFeature();
-    }
+    return (T) readObject(input);
   }
 
   Object readFromEmpty();

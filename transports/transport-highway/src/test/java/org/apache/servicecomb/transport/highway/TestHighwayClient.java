@@ -52,7 +52,6 @@ import com.netflix.config.DynamicPropertyFactory;
 
 import io.netty.buffer.ByteBuf;
 import io.protostuff.runtime.ProtobufCompatibleUtils;
-import io.protostuff.runtime.ProtobufFeature;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
@@ -156,8 +155,8 @@ public class TestHighwayClient {
       }
 
       @Mock
-      Response decodeResponse(Invocation invocation, OperationProtobuf operationProtobuf,
-          TcpData tcpData, ProtobufFeature protobufFeature) throws Throwable {
+      Response decodeResponse(Invocation invocation, OperationProtobuf operationProtobuf, TcpData tcpData)
+          throws Throwable {
         if (decodedResponse instanceof Response) {
           return (Response) decodedResponse;
         }
@@ -272,7 +271,7 @@ public class TestHighwayClient {
     start += headerLen;
     Buffer bodyBuffer = os.getBuffer().slice(start, end);
 
-    RequestHeader header = RequestHeader.readObject(headerBuffer, connection.getProtobufFeature());
+    RequestHeader header = RequestHeader.readObject(headerBuffer);
     Assert.assertEquals(MsgType.LOGIN, header.getMsgType());
 
     LoginRequest login = LoginRequest.readObject(bodyBuffer);

@@ -40,13 +40,10 @@ import org.apache.servicecomb.transport.highway.message.ResponseHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.protostuff.runtime.ProtobufFeature;
 import io.vertx.core.buffer.Buffer;
 
 public class HighwayServerInvoke {
   private static final Logger LOGGER = LoggerFactory.getLogger(HighwayServerInvoke.class);
-
-  private ProtobufFeature protobufFeature;
 
   private RequestHeader header;
 
@@ -67,13 +64,12 @@ public class HighwayServerInvoke {
   protected long start;
 
   public HighwayServerInvoke() {
-    this(null, null);
+    this(null);
   }
 
-  public HighwayServerInvoke(Endpoint endpoint, ProtobufFeature protobufFeature) {
+  public HighwayServerInvoke(Endpoint endpoint) {
     this.start = System.nanoTime();
     this.endpoint = endpoint;
-    this.protobufFeature = protobufFeature;
   }
 
   public boolean init(TcpConnection connection, long msgId,
@@ -134,7 +130,7 @@ public class HighwayServerInvoke {
     invocation.onExecuteStart();
 
     invocation.getInvocationStageTrace().startServerFiltersRequest();
-    HighwayCodec.decodeRequest(invocation, header, operationProtobuf, bodyBuffer, protobufFeature);
+    HighwayCodec.decodeRequest(invocation, header, operationProtobuf, bodyBuffer);
     invocation.getHandlerContext().put(Const.REMOTE_ADDRESS, this.connection.getNetSocket().remoteAddress());
 
     invocation.getInvocationStageTrace().startHandlersRequest();
@@ -159,7 +155,7 @@ public class HighwayServerInvoke {
     }
 
     try {
-      Buffer respBuffer = HighwayCodec.encodeResponse(msgId, header, bodySchema, body, protobufFeature);
+      Buffer respBuffer = HighwayCodec.encodeResponse(msgId, header, bodySchema, body);
       invocation.getInvocationStageTrace().finishServerFiltersResponse();
       connection.write(respBuffer.getByteBuf());
     } catch (Exception e) {

@@ -25,7 +25,6 @@ import org.apache.servicecomb.swagger.invocation.response.Headers;
 
 import io.protostuff.ProtobufOutput;
 import io.protostuff.Tag;
-import io.protostuff.runtime.ProtobufFeature;
 import io.vertx.core.buffer.Buffer;
 
 public class ResponseHeader {
@@ -36,8 +35,8 @@ public class ResponseHeader {
     return responseHeaderSchema;
   }
 
-  public static ResponseHeader readObject(Buffer bodyBuffer, ProtobufFeature protobufFeature) throws Exception {
-    return responseHeaderSchema.readObject(bodyBuffer, protobufFeature);
+  public static ResponseHeader readObject(Buffer bodyBuffer) throws Exception {
+    return responseHeaderSchema.readObject(bodyBuffer);
   }
 
   // 运行时必须的数据，比如body是否压缩

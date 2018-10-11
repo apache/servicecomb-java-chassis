@@ -49,7 +49,6 @@ import org.mockito.Mockito;
 import io.netty.buffer.ByteBuf;
 import io.protostuff.Input;
 import io.protostuff.runtime.ProtobufCompatibleUtils;
-import io.protostuff.runtime.ProtobufFeature;
 import io.vertx.core.buffer.Buffer;
 import mockit.Mock;
 import mockit.MockUp;
@@ -132,11 +131,11 @@ public class TestHighwayCodec {
     commonMock();
     Mockito.when(schemaMeta.getProviderHandlerChain()).thenReturn(Collections.emptyList());
     Object[] args = new Object[] {};
-    Mockito.when(schema.readObject(bodyBuffer, null)).thenReturn(args);
+    Mockito.when(schema.readObject(bodyBuffer)).thenReturn(args);
 
     Invocation invocation = new Invocation(endpoint, operationMeta, null);
 
-    HighwayCodec.decodeRequest(invocation, header, operationProtobuf, bodyBuffer, null);
+    HighwayCodec.decodeRequest(invocation, header, operationProtobuf, bodyBuffer);
 
     Assert.assertSame(args, invocation.getSwaggerArguments());
   }
@@ -158,10 +157,10 @@ public class TestHighwayCodec {
     header.setStatusCode(200);
     header.setContext(new HashMap<>());
     header.getContext().put("a", "10");
-    Buffer responseBuf = HighwayCodec.encodeResponse(0, header, null, null, new ProtobufFeature());
+    Buffer responseBuf = HighwayCodec.encodeResponse(0, header, null, null);
 
     TcpData tcp = new TcpData(responseBuf.slice(23, responseBuf.length()), null);
-    Response response = HighwayCodec.decodeResponse(invocation, operationProtobuf, tcp, null);
+    Response response = HighwayCodec.decodeResponse(invocation, operationProtobuf, tcp);
     Assert.assertEquals("10", invocation.getContext().get("a"));
     Assert.assertEquals(200, response.getStatusCode());
   }
@@ -172,7 +171,7 @@ public class TestHighwayCodec {
     WrapSchema bodySchema = Mockito.mock(WrapSchema.class);
     try {
       commonMock();
-      HighwayCodec.encodeResponse(23432142, null, bodySchema, new Object(), new ProtobufFeature());
+      HighwayCodec.encodeResponse(23432142, null, bodySchema, new Object());
     } catch (Exception e) {
       status = false;
     }
@@ -184,7 +183,7 @@ public class TestHighwayCodec {
     boolean status = true;
     try {
       commonMock();
-      TcpOutputStream os = HighwayCodec.encodeRequest(0, invocation, operationProtobuf, null);
+      TcpOutputStream os = HighwayCodec.encodeRequest(0, invocation, operationProtobuf);
       Assert.assertNotNull(os);
       Assert.assertArrayEquals(TcpParser.TCP_MAGIC, os.getBuffer().getBytes(0, 7));
     } catch (Exception e) {
@@ -204,7 +203,7 @@ public class TestHighwayCodec {
         }
       };
       bodyBuffer = Buffer.buffer("\"abc\"");
-      RequestHeader requestHeader = HighwayCodec.readRequestHeader(bodyBuffer, null);
+      RequestHeader requestHeader = HighwayCodec.readRequestHeader(bodyBuffer);
       Assert.assertNotNull(requestHeader);
       Assert.assertEquals(0, requestHeader.getFlags());
     } catch (Exception e) {

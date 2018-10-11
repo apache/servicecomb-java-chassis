@@ -27,22 +27,15 @@ import org.apache.servicecomb.transport.highway.message.RequestHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.protostuff.runtime.ProtobufFeature;
 import io.vertx.core.Context;
 import io.vertx.core.buffer.Buffer;
 
 public class HighwayClientConnection extends TcpClientConnection {
   private static final Logger LOGGER = LoggerFactory.getLogger(HighwayClientConnection.class);
 
-  private ProtobufFeature protobufFeature = new ProtobufFeature();
-
   public HighwayClientConnection(Context context, NetClientWrapper netClientWrapper, String endpoint) {
     super(context, netClientWrapper, endpoint);
     setLocalSupportLogin(true);
-  }
-
-  public ProtobufFeature getProtobufFeature() {
-    return protobufFeature;
   }
 
   @Override
@@ -53,9 +46,8 @@ public class HighwayClientConnection extends TcpClientConnection {
 
       LoginRequest login = new LoginRequest();
       login.setProtocol(Const.HIGHWAY);
-      login.setUseProtobufMapCodec(true);
 
-      HighwayOutputStream os = new HighwayOutputStream(AbstractTcpClientPackage.getAndIncRequestId(), null);
+      HighwayOutputStream os = new HighwayOutputStream(AbstractTcpClientPackage.getAndIncRequestId());
       os.write(header, LoginRequest.getLoginRequestSchema(), login);
       return os;
     } catch (Throwable e) {
@@ -67,7 +59,6 @@ public class HighwayClientConnection extends TcpClientConnection {
   protected boolean onLoginResponse(Buffer bodyBuffer) {
     try {
       LoginResponse response = LoginResponse.readObject(bodyBuffer);
-      protobufFeature.setUseProtobufMapCodec(response.isUseProtobufMapCodec());
       return true;
     } catch (Throwable e) {
       LOGGER.error("decode login response failed.", e);
