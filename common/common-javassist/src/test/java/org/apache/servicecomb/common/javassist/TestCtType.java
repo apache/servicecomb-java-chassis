@@ -17,7 +17,6 @@
 package org.apache.servicecomb.common.javassist;
 
 import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -120,5 +119,21 @@ public class TestCtType {
 
     Assert.assertTrue(voidCtType.getCtClass().isPrimitive());
     Assert.assertEquals("void", voidCtType.getCtClass().getName());
+  }
+
+  class Inner {
+    Inner() {
+    }
+  }
+
+  @Test
+  public void fromJavaType_innerClass() throws NotFoundException {
+    Class<?> cls = Inner.class;
+    JavaType javaType = TypeFactory.defaultInstance().constructType(cls);
+    ctType = new CtType(javaType);
+    Assert.assertSame(JavassistUtils.getOrCreateClassPool(cls.getClassLoader())
+        .get(cls.getName()), ctType.getCtClass());
+    Assert.assertFalse(ctType.hasGenericTypes());
+    Assert.assertEquals("Lorg/apache/servicecomb/common/javassist/TestCtType$Inner;", ctType.getGenericSignature());
   }
 }

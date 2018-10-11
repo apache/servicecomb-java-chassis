@@ -52,7 +52,7 @@ public class CtType {
     ClassLoader classLoader = javaType.getRawClass().getClassLoader();
     try {
       ClassPool classPool = JavassistUtils.getOrCreateClassPool(classLoader);
-      init(classPool.get(javaType.getRawClass().getCanonicalName()), javaType.hasGenericTypes(),
+      init(classPool.get(javaType.getRawClass().getName()), javaType.hasGenericTypes(),
           javaType.getGenericSignature()
       );
     } catch (NotFoundException e) {
