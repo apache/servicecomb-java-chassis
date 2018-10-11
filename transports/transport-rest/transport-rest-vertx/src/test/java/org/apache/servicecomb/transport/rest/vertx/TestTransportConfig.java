@@ -143,9 +143,16 @@ public class TestTransportConfig {
 
   @Test
   public void testMaxConcurrentStreams() {
-    Assert.assertEquals(200L, TransportConfig.getMaxConcurrentStreams());
-    ArchaiusUtils.setProperty("servicecomb.rest.server.http2.concurrentStreams", 100L);
     Assert.assertEquals(100L, TransportConfig.getMaxConcurrentStreams());
+    ArchaiusUtils.setProperty("servicecomb.rest.server.http2.concurrentStreams", 200L);
+    Assert.assertEquals(200L, TransportConfig.getMaxConcurrentStreams());
+  }
+
+  @Test
+  public void testUseAlpn() {
+    Assert.assertTrue(TransportConfig.getUseAlpn());
+    ArchaiusUtils.setProperty("servicecomb.rest.server.http2.useAlpnEnabled", false);
+    Assert.assertFalse(TransportConfig.getUseAlpn());
   }
 
 

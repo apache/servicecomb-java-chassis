@@ -139,9 +139,22 @@ public class DefaultHttpClientMetrics implements
 
   @Override
   public DefaultHttpSocketMetric connected(SocketAddress remoteAddress, String remoteName) {
-    //we can get endpointMetric info here, so set the endpointMetric info directly
+    // when host of createEndpoint is not ip but a hostName
+    // get from remoteAddress will return null
+    // in this time need to try again with remoteName
+    // connected is a low frequency method, this try logic will not cause performance problem
+
     DefaultClientEndpointMetric clientEndpointMetric = this.clientEndpointMetricManager
         .getClientEndpointMetric(remoteAddress);
+    if (clientEndpointMetric == null) {
+      LOGGER.warn("can not find endpointMetric directly by remoteAddress {}, try again with remoteName {}",
+          remoteAddress, remoteName);
+      SocketAddressImpl address = new SocketAddressImpl(remoteAddress.port(), remoteName);
+      clientEndpointMetric = this.clientEndpointMetricManager.getClientEndpointMetric(address);
+    }
+    // it's better to be done in endpointConnected
+    // but there is bug before vertx 3.6.0 vertx not invoke endpointConnected for http2
+    // to avoid this bug, we move the logic here
     clientEndpointMetric.onConnect();
     return new DefaultHttpSocketMetric(clientEndpointMetric);
   }

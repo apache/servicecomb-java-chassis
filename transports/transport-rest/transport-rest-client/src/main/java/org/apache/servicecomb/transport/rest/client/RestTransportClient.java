@@ -88,12 +88,12 @@ public class RestTransportClient {
   private static HttpClientOptions createHttp2ClientOptions() {
     HttpClientOptions httpClientOptions = new HttpClientOptions();
     httpClientOptions.setMaxPoolSize(TransportClientConfig.getConnectionMaxPoolSize())
-        .setUseAlpn(true)
-        .setIdleTimeout(TransportClientConfig.getConnectionIdleTimeoutInSeconds())
+        .setUseAlpn(TransportClientConfig.getUseAlpn())
+        .setHttp2ClearTextUpgrade(false)
+        .setProtocolVersion(HttpVersion.HTTP_2)
+        .setIdleTimeout(TransportClientConfig.getHttp2ConnectionIdleTimeoutInSeconds())
         .setHttp2MultiplexingLimit(TransportClientConfig.getHttp2MultiplexingLimit())
         .setHttp2MaxPoolSize(TransportClientConfig.getHttp2ConnectionMaxPoolSize())
-        .setProtocolVersion(HttpVersion.HTTP_2)
-        .setHttp2ClearTextUpgrade(false)
         .setTryUseCompression(TransportClientConfig.getConnectionCompression());
 
     VertxTLSBuilder.buildHttpClientOptions(SSL_KEY, httpClientOptions);

@@ -254,7 +254,7 @@ public class RestServerVerticle extends AbstractVerticle {
     serverOptions.setMaxHeaderSize(TransportConfig.getMaxHeaderSize());
     serverOptions.setMaxInitialLineLength(TransportConfig.getMaxInitialLineLength());
     if (endpointObject.isHttp2Enabled()) {
-      serverOptions.setUseAlpn(true)
+      serverOptions.setUseAlpn(TransportConfig.getUseAlpn())
           .setInitialSettings(new Http2Settings().setMaxConcurrentStreams(TransportConfig.getMaxConcurrentStreams()));
     }
     if (endpointObject.isSslEnabled()) {

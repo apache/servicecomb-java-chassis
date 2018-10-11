@@ -43,7 +43,17 @@ public class TestTransportClientConfig {
 
   @Test
   public void getHttp2ConnectionMaxPoolSize() {
-    Assert.assertEquals(3, TransportClientConfig.getHttp2ConnectionMaxPoolSize());
+    Assert.assertEquals(1, TransportClientConfig.getHttp2ConnectionMaxPoolSize());
+  }
+
+  @Test
+  public void getHttp2ConnectionIdleTimeoutInSeconds() {
+    Assert.assertEquals(0, TransportClientConfig.getHttp2ConnectionIdleTimeoutInSeconds());
+  }
+
+  @Test
+  public void getUseAplnEnabled() {
+    Assert.assertTrue(TransportClientConfig.getUseAlpn());
   }
 
   @Test
