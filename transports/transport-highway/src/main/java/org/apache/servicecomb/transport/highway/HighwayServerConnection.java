@@ -31,7 +31,6 @@ import org.apache.servicecomb.transport.highway.message.ResponseHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.protostuff.runtime.ProtobufFeature;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetSocket;
 
@@ -39,8 +38,6 @@ public class HighwayServerConnection extends TcpServerConnection implements TcpB
   private static final Logger LOGGER = LoggerFactory.getLogger(HighwayServerConnection.class);
 
   private Endpoint endpoint;
-
-  private ProtobufFeature protobufFeature = new ProtobufFeature();
 
   public HighwayServerConnection(Endpoint endpoint) {
     this.endpoint = endpoint;
@@ -75,7 +72,7 @@ public class HighwayServerConnection extends TcpServerConnection implements TcpB
   protected RequestHeader decodeRequestHeader(long msgId, Buffer headerBuffer) {
     RequestHeader requestHeader = null;
     try {
-      requestHeader = HighwayCodec.readRequestHeader(headerBuffer, protobufFeature);
+      requestHeader = HighwayCodec.readRequestHeader(headerBuffer);
     } catch (Exception e) {
       String msg = String.format("decode request header error, msgId=%d",
           msgId);
@@ -103,15 +100,13 @@ public class HighwayServerConnection extends TcpServerConnection implements TcpB
     if (request != null) {
       this.setProtocol(request.getProtocol());
       this.setZipName(request.getZipName());
-      this.protobufFeature.setUseProtobufMapCodec(request.isUseProtobufMapCodec());
     }
 
-    try (HighwayOutputStream os = new HighwayOutputStream(msgId, protobufFeature)) {
+    try (HighwayOutputStream os = new HighwayOutputStream(msgId)) {
       ResponseHeader responseHeader = new ResponseHeader();
       responseHeader.setStatusCode(Status.OK.getStatusCode());
 
       LoginResponse response = new LoginResponse();
-      response.setUseProtobufMapCodec(protobufFeature.isUseProtobufMapCodec());
 
       os.write(ResponseHeader.getResponseHeaderSchema(),
           responseHeader,
@@ -124,7 +119,7 @@ public class HighwayServerConnection extends TcpServerConnection implements TcpB
   }
 
   protected void onRequest(long msgId, RequestHeader header, Buffer bodyBuffer) {
-    HighwayServerInvoke invoke = new HighwayServerInvoke(endpoint, protobufFeature);
+    HighwayServerInvoke invoke = new HighwayServerInvoke(endpoint);
     if (invoke.init(this, msgId, header, bodyBuffer)) {
       invoke.execute();
     }

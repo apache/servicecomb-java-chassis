@@ -119,8 +119,7 @@ public class HighwayClient {
           Response response =
               HighwayCodec.decodeResponse(invocation,
                   operationProtobuf,
-                  ar.result(),
-                  tcpClient.getProtobufFeature());
+                  ar.result());
           invocation.getInvocationStageTrace().finishClientFiltersResponse();
           asyncResp.complete(response);
         } catch (Throwable e) {

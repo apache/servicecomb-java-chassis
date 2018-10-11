@@ -23,14 +23,10 @@ import org.apache.servicecomb.transport.highway.message.ResponseHeader;
 
 import io.protostuff.LinkedBuffer;
 import io.protostuff.ProtobufOutput;
-import io.protostuff.runtime.ProtobufFeature;
 
 public class HighwayOutputStream extends TcpOutputStream {
-  private ProtobufFeature protobufFeature;
-
-  public HighwayOutputStream(long msgId, ProtobufFeature protobufFeature) {
+  public HighwayOutputStream(long msgId) {
     super(msgId);
-    this.protobufFeature = protobufFeature;
   }
 
   public void write(RequestHeader header, WrapSchema bodySchema, Object body) throws Exception {
@@ -48,14 +44,14 @@ public class HighwayOutputStream extends TcpOutputStream {
 
     // 写header
     if (headerSchema != null) {
-      headerSchema.writeObject(output, header, protobufFeature);
+      headerSchema.writeObject(output, header);
     }
     int headerSize = output.getSize();
 
     // 写body
     // void时bodySchema为null
     if (bodySchema != null) {
-      bodySchema.writeObject(output, body, protobufFeature);
+      bodySchema.writeObject(output, body);
     }
 
     writeLength(output.getSize(), headerSize);

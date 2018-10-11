@@ -24,7 +24,6 @@ import org.apache.servicecomb.transport.highway.HighwayConfig;
 import org.apache.servicecomb.transport.highway.message.RequestHeader;
 import org.mockito.Mockito;
 
-import io.protostuff.runtime.ProtobufFeature;
 import io.vertx.core.buffer.Buffer;
 import mockit.Mock;
 import mockit.MockUp;
@@ -64,8 +63,8 @@ public class MockUtil {
       }
 
       @Mock
-      public Invocation decodeRequest(RequestHeader header, OperationProtobuf operationProtobuf,
-          Buffer bodyBuffer, ProtobufFeature protobufFeature) throws Exception {
+      public Invocation decodeRequest(RequestHeader header, OperationProtobuf operationProtobuf, Buffer bodyBuffer)
+          throws Exception {
         if (decodeRequestSucc) {
           return Mockito.mock(Invocation.class);
         }

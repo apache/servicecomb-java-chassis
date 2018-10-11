@@ -32,7 +32,7 @@ public class LoginRequest {
   }
 
   public static LoginRequest readObject(Buffer bodyBuffer) throws Exception {
-    return loginRequestSchema.readObject(bodyBuffer, null);
+    return loginRequestSchema.readObject(bodyBuffer);
   }
 
   @Tag(1)
@@ -42,11 +42,12 @@ public class LoginRequest {
   @Tag(2)
   private String zipName;
 
+  // no need this flag any more, but tag(3) should be reserved
   // 历史版本中的protoStuff实现的protobuf的map编码与标准的protobuf不兼容
   // 为保持highway的兼容，旧的不兼容编码也要保留
   // 只有LoginRequest/LoginResponse同时为true时，才使用标准protobuf编码
-  @Tag(3)
-  private boolean useProtobufMapCodec;
+  //@Tag(3)
+  //private boolean useProtobufMapCodec;
 
   public String getProtocol() {
     return protocol;
@@ -62,14 +63,6 @@ public class LoginRequest {
 
   public void setZipName(String zipName) {
     this.zipName = zipName;
-  }
-
-  public boolean isUseProtobufMapCodec() {
-    return useProtobufMapCodec;
-  }
-
-  public void setUseProtobufMapCodec(boolean useProtobufMapCodec) {
-    this.useProtobufMapCodec = useProtobufMapCodec;
   }
 
   public void writeObject(ProtobufOutput output) throws Exception {
