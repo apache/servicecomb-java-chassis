@@ -18,6 +18,7 @@
 package org.apache.servicecomb.common.rest.definition.path;
 
 import org.apache.servicecomb.common.rest.definition.RestParam;
+import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
 import org.apache.servicecomb.foundation.common.http.HttpUtils;
 
 /**
@@ -29,9 +30,9 @@ public class PathVarParamWriter extends AbstractUrlParamWriter {
   }
 
   @Override
-  public void write(StringBuilder builder, Object[] args) throws Exception {
+  public void write(URLPathStringBuilder builder, Object[] args) throws Exception {
     String paramValue = getParamValue(args).toString();
     String encodedPathParam = HttpUtils.encodePathParam(paramValue);
-    builder.append(encodedPathParam);
+    builder.appendPath(encodedPathParam);
   }
 }

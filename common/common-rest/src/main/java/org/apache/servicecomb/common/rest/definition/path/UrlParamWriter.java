@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.common.rest.definition.path;
 
+import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
+
 public interface UrlParamWriter {
-  void write(StringBuilder builder, Object[] args) throws Exception;
+  void write(URLPathStringBuilder builder, Object[] args) throws Exception;
 }

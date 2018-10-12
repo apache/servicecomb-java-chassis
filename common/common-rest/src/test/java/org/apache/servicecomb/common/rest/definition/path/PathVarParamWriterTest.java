@@ -18,6 +18,7 @@
 package org.apache.servicecomb.common.rest.definition.path;
 
 import org.apache.servicecomb.common.rest.definition.RestParam;
+import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,44 +31,44 @@ public class PathVarParamWriterTest {
   public void writePlainPath() throws Exception {
     PathVarParamWriter pathVarParamWriter = createPathVarParamWriter();
 
-    StringBuilder pathBuilder = new StringBuilder();
+    URLPathStringBuilder pathBuilder = new URLPathStringBuilder();
     pathVarParamWriter.write(pathBuilder, new Object[] {"abc"});
-    Assert.assertEquals("abc", pathBuilder.toString());
+    Assert.assertEquals("abc", pathBuilder.build());
   }
 
   @Test
   public void writePathWithSpace() throws Exception {
     PathVarParamWriter pathVarParamWriter = createPathVarParamWriter();
 
-    StringBuilder pathBuilder = new StringBuilder();
+    URLPathStringBuilder pathBuilder = new URLPathStringBuilder();
     pathVarParamWriter.write(pathBuilder, new String[] {"a 20bc"});
-    Assert.assertEquals("a%2020bc", pathBuilder.toString());
+    Assert.assertEquals("a%2020bc", pathBuilder.build());
   }
 
   @Test
   public void writePathWithPercentage() throws Exception {
     PathVarParamWriter pathVarParamWriter = createPathVarParamWriter();
-    StringBuilder pathBuilder = new StringBuilder();
-    pathBuilder.append("/api/");
+    URLPathStringBuilder pathBuilder = new URLPathStringBuilder();
+    pathBuilder.appendPath("/api/");
     pathVarParamWriter.write(pathBuilder, new String[] {"a%%bc"});
-    Assert.assertEquals("/api/a%25%25bc", pathBuilder.toString());
+    Assert.assertEquals("/api/a%25%25bc", pathBuilder.build());
   }
 
   @Test
   public void writePathParamWithSlash() throws Exception {
     PathVarParamWriter pathVarParamWriter = createPathVarParamWriter();
-    StringBuilder pathBuilder = new StringBuilder();
-    pathBuilder.append("/api/");
+    URLPathStringBuilder pathBuilder = new URLPathStringBuilder();
+    pathBuilder.appendPath("/api/");
     pathVarParamWriter.write(pathBuilder, new String[] {"a/bc"});
-    Assert.assertEquals("/api/a%2Fbc", pathBuilder.toString());
+    Assert.assertEquals("/api/a%2Fbc", pathBuilder.build());
   }
 
   @Test
   public void writeIntegerParam() throws Exception {
     PathVarParamWriter pathVarParamWriter = createPathVarParamWriter();
-    StringBuilder pathBuilder = new StringBuilder();
+    URLPathStringBuilder pathBuilder = new URLPathStringBuilder();
     pathVarParamWriter.write(pathBuilder, new Integer[] {12});
-    Assert.assertEquals("12", pathBuilder.toString());
+    Assert.assertEquals("12", pathBuilder.build());
   }
 
   private PathVarParamWriter createPathVarParamWriter() {
