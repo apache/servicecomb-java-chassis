@@ -25,27 +25,23 @@ import java.util.Collection;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.QueryProcessor;
 import org.apache.servicecomb.common.rest.definition.RestParam;
+import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
 import org.apache.servicecomb.swagger.converter.property.SwaggerParamCollectionFormat;
 
 public class QueryVarParamWriter extends AbstractUrlParamWriter {
-  // ? or &
-  private char prefix;
 
   private SwaggerParamCollectionFormat collectionFormat;
 
-  public QueryVarParamWriter(char prefix, RestParam param) {
+  public QueryVarParamWriter(RestParam param) {
     this.param = param;
-    this.prefix = prefix;
     this.collectionFormat = ((QueryProcessor) param.getParamProcessor()).getCollectionFormat();
   }
 
   @Override
-  public void write(StringBuilder builder, Object[] args) throws Exception {
-    builder.append(prefix);
-
+  public void write(URLPathStringBuilder builder, Object[] args) throws Exception {
     Object value = getParamValue(args);
     if (value == null) {
-      // 连key都不写进去，才能表达null的概念
+      // do not write query key to express "null"
       return;
     }
 
@@ -59,16 +55,11 @@ public class QueryVarParamWriter extends AbstractUrlParamWriter {
       return;
     }
 
-    writeKeyEqual(builder);
-    builder.append(encodeNotNullValue(value));
-  }
-
-  private void writeKeyEqual(StringBuilder builder) {
-    builder.append(param.getParamName()).append('=');
+    builder.appendQuery(param.getParamName(), encodeNotNullValue(value));
   }
 
   @SuppressWarnings("unchecked")
-  private void writeCollection(StringBuilder builder, Object value) throws Exception {
+  private void writeCollection(URLPathStringBuilder builder, Object value) throws Exception {
     if (shouldJoinParams()) {
       writeJoinedParams(builder, (Collection<?>) value);
       return;
@@ -77,13 +68,9 @@ public class QueryVarParamWriter extends AbstractUrlParamWriter {
     for (Object item : (Collection<Object>) value) {
       writeItem(builder, item);
     }
-
-    if (((Collection<Object>) value).size() != 0) {
-      deleteLastChar(builder);
-    }
   }
 
-  private void writeArray(StringBuilder builder, Object value) throws Exception {
+  private void writeArray(URLPathStringBuilder builder, Object value) throws Exception {
     if (shouldJoinParams()) {
       writeJoinedParams(builder, Arrays.asList(((Object[]) value)));
       return;
@@ -92,19 +79,14 @@ public class QueryVarParamWriter extends AbstractUrlParamWriter {
     for (Object item : (Object[]) value) {
       writeItem(builder, item);
     }
-
-    if (((Object[]) value).length != 0) {
-      deleteLastChar(builder);
-    }
   }
 
-  private void writeJoinedParams(StringBuilder builder, Collection<?> value) throws Exception {
+  private void writeJoinedParams(URLPathStringBuilder builder, Collection<?> value) throws Exception {
     String joinedParam = collectionFormat.joinParam(value);
     if (null == joinedParam) {
       return;
     }
-    writeKeyEqual(builder);
-    builder.append(encodeNotNullValue(joinedParam));
+    builder.appendQuery(param.getParamName(), encodeNotNullValue(joinedParam));
   }
 
   /**
@@ -115,18 +97,12 @@ public class QueryVarParamWriter extends AbstractUrlParamWriter {
     return null != collectionFormat && SwaggerParamCollectionFormat.MULTI != collectionFormat;
   }
 
-  private void deleteLastChar(StringBuilder builder) {
-    builder.setLength(builder.length() - 1);
-  }
-
-  private void writeItem(StringBuilder builder, Object item) throws Exception {
+  private void writeItem(URLPathStringBuilder builder, Object item) throws Exception {
     if (null == item) {
-      builder.append('&');
       return;
     }
 
-    writeKeyEqual(builder);
-    builder.append(encodeNotNullValue(item)).append('&');
+    builder.appendQuery(param.getParamName(), encodeNotNullValue(item));
   }
 
   private String encodeNotNullValue(Object value) throws Exception {

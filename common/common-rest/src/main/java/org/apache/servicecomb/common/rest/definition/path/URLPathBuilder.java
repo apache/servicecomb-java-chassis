@@ -47,12 +47,7 @@ public class URLPathBuilder {
         continue;
       }
 
-      char prefix = '&';
-      if (queryParamWriterList.isEmpty()) {
-        prefix = '?';
-      }
-
-      UrlParamWriter dynamicWriter = new QueryVarParamWriter(prefix, param);
+      UrlParamWriter dynamicWriter = new QueryVarParamWriter(param);
       queryParamWriterList.add(dynamicWriter);
     }
   }
@@ -90,31 +85,57 @@ public class URLPathBuilder {
     }
   }
 
-
   public String createRequestPath(Object[] args) throws Exception {
-    StringBuilder builder = new StringBuilder();
+    URLPathStringBuilder builder = new URLPathStringBuilder();
 
     genPathString(builder, args);
     genQueryString(builder, args);
 
-    return builder.toString();
+    return builder.build();
   }
 
   public String createPathString(Object[] args) throws Exception {
-    StringBuilder builder = new StringBuilder();
+    URLPathStringBuilder builder = new URLPathStringBuilder();
     genPathString(builder, args);
-    return builder.toString();
+    return builder.build();
   }
 
-  private void genPathString(StringBuilder builder, Object[] args) throws Exception {
+  private void genPathString(URLPathStringBuilder builder, Object[] args) throws Exception {
     for (UrlParamWriter writer : this.pathParamWriterList) {
       writer.write(builder, args);
     }
   }
 
-  private void genQueryString(StringBuilder builder, Object[] args) throws Exception {
+  private void genQueryString(URLPathStringBuilder builder, Object[] args) throws Exception {
     for (UrlParamWriter writer : queryParamWriterList) {
       writer.write(builder, args);
+    }
+  }
+
+  public static class URLPathStringBuilder {
+    private StringBuilder stringBuilder = new StringBuilder();
+
+    private boolean queryPrefixNotWrite = true;
+
+    public URLPathStringBuilder appendPath(String s) {
+      stringBuilder.append(s);
+      return this;
+    }
+
+    public URLPathStringBuilder appendQuery(String key, String value) {
+      if (queryPrefixNotWrite) {
+        stringBuilder.append('?');
+        queryPrefixNotWrite = false;
+      } else {
+        stringBuilder.append('&');
+      }
+
+      stringBuilder.append(key).append("=").append(value);
+      return this;
+    }
+
+    public String build() {
+      return stringBuilder.toString();
     }
   }
 }
