@@ -17,11 +17,22 @@
 
 package org.apache.servicecomb.swagger.converter.property;
 
+import java.util.Collection;
+import java.util.Iterator;
+
 public enum SwaggerParamCollectionFormat {
   CSV("csv", ","),
   SSV("ssv", " "),
   TSV("tsv", "\t"),
-  PIPES("pipes", "\\|"),
+  PIPES("pipes", "|") {
+    @Override
+    public String[] splitParam(String rawParam) {
+      if (null == rawParam) {
+        return new String[0];
+      }
+      return rawParam.split("\\|", -1);
+    }
+  },
   MULTI("multi", null) {
     /**
      * In fact, {@link SwaggerParamCollectionFormat#MULTI#splitParam(String)} of {@link SwaggerParamCollectionFormat#MULTI}
@@ -57,6 +68,41 @@ public enum SwaggerParamCollectionFormat {
     if (null == rawParam) {
       return new String[0];
     }
-    return rawParam.split(separator);
+    return rawParam.split(separator, -1);
+  }
+
+  /**
+   * Join params with {@link #separator}.
+   * Null element will be ignored since {@code null} cannot be described in query array param.
+   *
+   * @return joined params, or return {@code null} if {@code params} is null or all elements of {@code params} are null.
+   */
+  public String joinParam(Collection<?> params) {
+    if (null == params) {
+      return null;
+    }
+    StringBuilder paramBuilder = new StringBuilder();
+    Iterator<?> paramIterator = params.iterator();
+    boolean allNullElement = true;
+    while (paramIterator.hasNext()) {
+      // find the next not-null element
+      Object param = paramIterator.next();
+      while (null == param && paramIterator.hasNext()) {
+        param = paramIterator.next();
+      }
+      if (null == param) {
+        // the rest of all elements are null, no need to go on
+        break;
+      }
+
+      if (allNullElement) {
+        allNullElement = false;
+        paramBuilder.append(param);
+      } else {
+        // There are elements appended into builder before, need a separator
+        paramBuilder.append(separator).append(param);
+      }
+    }
+    return allNullElement ? null : paramBuilder.toString();
   }
 }

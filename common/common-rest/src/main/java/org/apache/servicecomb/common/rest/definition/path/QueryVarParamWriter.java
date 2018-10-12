@@ -19,18 +19,24 @@ package org.apache.servicecomb.common.rest.definition.path;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.QueryProcessor;
 import org.apache.servicecomb.common.rest.definition.RestParam;
+import org.apache.servicecomb.swagger.converter.property.SwaggerParamCollectionFormat;
 
 public class QueryVarParamWriter extends AbstractUrlParamWriter {
   // ? or &
   private char prefix;
 
+  private SwaggerParamCollectionFormat collectionFormat;
+
   public QueryVarParamWriter(char prefix, RestParam param) {
     this.param = param;
     this.prefix = prefix;
+    this.collectionFormat = ((QueryProcessor) param.getParamProcessor()).getCollectionFormat();
   }
 
   @Override
@@ -63,6 +69,11 @@ public class QueryVarParamWriter extends AbstractUrlParamWriter {
 
   @SuppressWarnings("unchecked")
   private void writeCollection(StringBuilder builder, Object value) throws Exception {
+    if (shouldJoinParams()) {
+      writeJoinedParams(builder, (Collection<?>) value);
+      return;
+    }
+
     for (Object item : (Collection<Object>) value) {
       writeItem(builder, item);
     }
@@ -73,6 +84,11 @@ public class QueryVarParamWriter extends AbstractUrlParamWriter {
   }
 
   private void writeArray(StringBuilder builder, Object value) throws Exception {
+    if (shouldJoinParams()) {
+      writeJoinedParams(builder, Arrays.asList(((Object[]) value)));
+      return;
+    }
+
     for (Object item : (Object[]) value) {
       writeItem(builder, item);
     }
@@ -82,20 +98,35 @@ public class QueryVarParamWriter extends AbstractUrlParamWriter {
     }
   }
 
+  private void writeJoinedParams(StringBuilder builder, Collection<?> value) throws Exception {
+    String joinedParam = collectionFormat.joinParam(value);
+    if (null == joinedParam) {
+      return;
+    }
+    writeKeyEqual(builder);
+    builder.append(encodeNotNullValue(joinedParam));
+  }
+
+  /**
+   * Whether to join params with separator.
+   * For collection format csv/ssv/tsv/pipes
+   */
+  private boolean shouldJoinParams() {
+    return null != collectionFormat && SwaggerParamCollectionFormat.MULTI != collectionFormat;
+  }
+
   private void deleteLastChar(StringBuilder builder) {
     builder.setLength(builder.length() - 1);
   }
 
   private void writeItem(StringBuilder builder, Object item) throws Exception {
-    writeKeyEqual(builder);
-
-    // TODO:数组元素为null，当前找不到表达方式，通过issue跟踪，有解决方案后再来处理
-    // http://code.huawei.com/CSE/cse-java-chassis/issues/133
-    if (item != null) {
-      builder.append(encodeNotNullValue(item));
+    if (null == item) {
+      builder.append('&');
+      return;
     }
 
-    builder.append('&');
+    writeKeyEqual(builder);
+    builder.append(encodeNotNullValue(item)).append('&');
   }
 
   private String encodeNotNullValue(Object value) throws Exception {

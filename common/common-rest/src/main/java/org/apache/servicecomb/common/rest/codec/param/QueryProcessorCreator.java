@@ -90,6 +90,10 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
     public String getProcessorType() {
       return PARAMTYPE;
     }
+
+    public SwaggerParamCollectionFormat getCollectionFormat() {
+      return collectionFormat;
+    }
   }
 
   public QueryProcessorCreator() {
