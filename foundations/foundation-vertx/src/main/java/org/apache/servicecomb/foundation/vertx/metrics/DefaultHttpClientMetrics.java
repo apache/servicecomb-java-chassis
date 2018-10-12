@@ -153,6 +153,8 @@ public class DefaultHttpClientMetrics implements
       LOGGER.warn("RRRRRRL: " + this.clientEndpointMetricManager.getClientEndpointMetricMap().size() + " " + Thread
           .currentThread().getName());
       for (SocketAddress socketAddress : this.clientEndpointMetricManager.getClientEndpointMetricMap().keySet()) {
+        System.out.println("get Remote: " + remoteAddress);
+        System.out.println(" socket Address " + socketAddress);
         System.out.println(socketAddress.host() + " " + socketAddress.path() + " " + socketAddress.port());
       }
     }
