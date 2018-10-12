@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.it.schema;
 
+import java.util.Arrays;
+
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -27,6 +29,8 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
+
+import io.swagger.annotations.ApiParam;
 
 @RestSchema(schemaId = "dataTypeJaxrs")
 @Path("/v1/dataTypeJaxrs")
@@ -206,5 +210,42 @@ public class DataTypeJaxrsSchema {
   @POST
   public Color enumBody(Color color) {
     return color;
+  }
+
+  // query array
+  @Path("queryArr")
+  @GET
+  public String queryArr(@QueryParam("queryArr") String[] queryArr) {
+    return Arrays.toString(queryArr) + queryArr.length;
+  }
+
+  @Path("queryArrCSV")
+  @GET
+  public String queryArrCSV(@ApiParam(collectionFormat = "csv") @QueryParam("queryArr") String[] queryArr) {
+    return Arrays.toString(queryArr) + queryArr.length;
+  }
+
+  @Path("queryArrSSV")
+  @GET
+  public String queryArrSSV(@ApiParam(collectionFormat = "ssv") @QueryParam("queryArr") String[] queryArr) {
+    return Arrays.toString(queryArr) + queryArr.length;
+  }
+
+  @Path("queryArrTSV")
+  @GET
+  public String queryArrTSV(@ApiParam(collectionFormat = "tsv") @QueryParam("queryArr") String[] queryArr) {
+    return Arrays.toString(queryArr) + queryArr.length;
+  }
+
+  @Path("queryArrPIPES")
+  @GET
+  public String queryArrPIPES(@ApiParam(collectionFormat = "pipes") @QueryParam("queryArr") String[] queryArr) {
+    return Arrays.toString(queryArr) + queryArr.length;
+  }
+
+  @Path("queryArrMULTI")
+  @GET
+  public String queryArrMULTI(@ApiParam(collectionFormat = "multi") @QueryParam("queryArr") String[] queryArr) {
+    return Arrays.toString(queryArr) + queryArr.length;
   }
 }

@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.it.schema;
 
+import java.util.Arrays;
+
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -27,6 +29,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import io.swagger.annotations.ApiParam;
 
 @RestSchema(schemaId = "dataTypeSpringmvc")
 @RequestMapping(path = "/v1/dataTypeSpringmvc")
@@ -97,7 +101,6 @@ public class DataTypeSpringmvcSchema {
   public String stringForm(@RequestAttribute("input") String input) {
     return input;
   }
-
 
   @GetMapping(path = "stringConcat")
   public String stringConcat(String str1, String str2) {
@@ -179,5 +182,36 @@ public class DataTypeSpringmvcSchema {
   @PostMapping(path = "enumBody")
   public Color enumBody(@RequestBody Color color) {
     return color;
+  }
+
+  // query array
+  @GetMapping("queryArr")
+  public String queryArr(@RequestParam("queryArr") String[] queryArr) {
+    return Arrays.toString(queryArr) + queryArr.length;
+  }
+
+  @GetMapping("queryArrCSV")
+  public String queryArrCSV(@ApiParam(collectionFormat = "csv") @RequestParam("queryArr") String[] queryArr) {
+    return Arrays.toString(queryArr) + queryArr.length;
+  }
+
+  @GetMapping("queryArrSSV")
+  public String queryArrSSV(@ApiParam(collectionFormat = "ssv") @RequestParam("queryArr") String[] queryArr) {
+    return Arrays.toString(queryArr) + queryArr.length;
+  }
+
+  @GetMapping("queryArrTSV")
+  public String queryArrTSV(@ApiParam(collectionFormat = "tsv") @RequestParam("queryArr") String[] queryArr) {
+    return Arrays.toString(queryArr) + queryArr.length;
+  }
+
+  @GetMapping("queryArrPIPES")
+  public String queryArrPIPES(@ApiParam(collectionFormat = "pipes") @RequestParam("queryArr") String[] queryArr) {
+    return Arrays.toString(queryArr) + queryArr.length;
+  }
+
+  @GetMapping("queryArrMULTI")
+  public String queryArrMULTI(@ApiParam(collectionFormat = "multi") @RequestParam("queryArr") String[] queryArr) {
+    return Arrays.toString(queryArr) + queryArr.length;
   }
 }

@@ -115,6 +115,19 @@ public class TestDataTypePrimitive {
 
     // enum
     Color enumBody(Color color);
+
+    // query array
+    String queryArr(String[] queryArr);
+
+    String queryArrCSV(String[] queryArr);
+
+    String queryArrSSV(String[] queryArr);
+
+    String queryArrTSV(String[] queryArr);
+
+    String queryArrPIPES(String[] queryArr);
+
+    String queryArrMULTI(String[] queryArr);
   }
 
   private static Consumers<DataTypePojoIntf> consumersPojo = new Consumers<>("dataTypePojo", DataTypePojoIntf.class);
@@ -155,7 +168,6 @@ public class TestDataTypePrimitive {
     assertEquals(10.2, consumersPojo.getSCBRestTemplate().postForObject("/doubleBody", map, double.class),
         0.0);
   }
-
 
   @Test
   public void string_pojo_rt() {
@@ -329,7 +341,7 @@ public class TestDataTypePrimitive {
     HttpHeaders headers = new HttpHeaders();
     headers.add("input", "10");
 
-    HttpEntity<?> entity = new HttpEntity<>(null, headers);
+    HttpEntity<?> entity = new HttpEntity<>(headers);
     ResponseEntity<Integer> response = consumers.getSCBRestTemplate()
         .exchange("/intHeader",
             HttpMethod.GET,
@@ -342,8 +354,7 @@ public class TestDataTypePrimitive {
     HttpHeaders headers = new HttpHeaders();
     headers.add("input", "10.2");
 
-    @SuppressWarnings("rawtypes")
-    HttpEntity entity = new HttpEntity<>(null, headers);
+    HttpEntity<?> entity = new HttpEntity<>(headers);
     ResponseEntity<Double> response = consumers.getSCBRestTemplate()
         .exchange("/doubleHeader",
             HttpMethod.GET,
@@ -362,7 +373,7 @@ public class TestDataTypePrimitive {
     HttpHeaders headers = new HttpHeaders();
     headers.add("input", expect);
 
-    HttpEntity<?> entity = new HttpEntity<>(null, headers);
+    HttpEntity<?> entity = new HttpEntity<>(headers);
     ResponseEntity<String> response = consumers.getSCBRestTemplate()
         .exchange("/stringHeader",
             HttpMethod.GET,
@@ -401,7 +412,7 @@ public class TestDataTypePrimitive {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Cookie", "input=10");
 
-    HttpEntity<?> entity = new HttpEntity<>(null, headers);
+    HttpEntity<?> entity = new HttpEntity<>(headers);
     ResponseEntity<Integer> response = consumers.getSCBRestTemplate()
         .exchange("/intCookie",
             HttpMethod.GET,
@@ -414,8 +425,7 @@ public class TestDataTypePrimitive {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Cookie", "input=10.2");
 
-    @SuppressWarnings("rawtypes")
-    HttpEntity entity = new HttpEntity<>(null, headers);
+    HttpEntity<?> entity = new HttpEntity<>(headers);
     ResponseEntity<Double> response = consumers.getSCBRestTemplate()
         .exchange("/doubleCookie",
             HttpMethod.GET,
@@ -434,7 +444,7 @@ public class TestDataTypePrimitive {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Cookie", "input=" + expect);
 
-    HttpEntity<?> entity = new HttpEntity<>(null, headers);
+    HttpEntity<?> entity = new HttpEntity<>(headers);
     ResponseEntity<String> response = consumers.getSCBRestTemplate()
         .exchange("/stringCookie",
             HttpMethod.GET,
@@ -463,10 +473,10 @@ public class TestDataTypePrimitive {
   public void intForm_jaxrs_rt() {
     Map<String, Integer> map = new HashMap<>();
     map.put("input", 10);
-    HttpEntity<Map<String, Integer>> formEntiry = new HttpEntity<>(map);
+    HttpEntity<Map<String, Integer>> formEntity = new HttpEntity<>(map);
 
     assertEquals(10,
-        (int) consumersJaxrs.getSCBRestTemplate().postForEntity("/intForm", formEntiry, int.class).getBody());
+        (int) consumersJaxrs.getSCBRestTemplate().postForEntity("/intForm", formEntity, int.class).getBody());
     //just use map is ok
     assertEquals(10,
         (int) consumersJaxrs.getSCBRestTemplate().postForEntity("/intForm", map, int.class).getBody());
@@ -476,10 +486,10 @@ public class TestDataTypePrimitive {
   public void doubleForm_jaxrs_rt() {
     Map<String, Double> map = new HashMap<>();
     map.put("input", 10.2);
-    HttpEntity<Map<String, Double>> formEntiry = new HttpEntity<>(map);
+    HttpEntity<Map<String, Double>> formEntity = new HttpEntity<>(map);
 
     assertEquals(10.2,
-        consumersJaxrs.getSCBRestTemplate().postForEntity("/doubleForm", formEntiry, double.class).getBody(),
+        consumersJaxrs.getSCBRestTemplate().postForEntity("/doubleForm", formEntity, double.class).getBody(),
         0.0);
     //just use map is ok
     assertEquals(10.2,
@@ -491,11 +501,11 @@ public class TestDataTypePrimitive {
     String expect = "serviceComb";
     Map<String, String> map = new HashMap<>();
     map.put("input", expect);
-    HttpEntity<Map<String, String>> formEntiry = new HttpEntity<>(map);
+    HttpEntity<Map<String, String>> formEntity = new HttpEntity<>(map);
 
     assertEquals(expect,
         consumersJaxrs.getSCBRestTemplate()
-            .postForEntity("/stringForm", formEntiry, String.class)
+            .postForEntity("/stringForm", formEntity, String.class)
             .getBody());
 
     //you can use another method to invoke it
@@ -742,20 +752,20 @@ public class TestDataTypePrimitive {
   public void intForm_springmvc_rt() {
     Map<String, Integer> map = new HashMap<>();
     map.put("input", 10);
-    HttpEntity<Map<String, Integer>> formEntiry = new HttpEntity<>(map);
+    HttpEntity<Map<String, Integer>> formEntity = new HttpEntity<>(map);
 
     assertEquals(10,
-        (int) consumersSpringmvc.getSCBRestTemplate().postForEntity("/intForm", formEntiry, int.class).getBody());
+        (int) consumersSpringmvc.getSCBRestTemplate().postForEntity("/intForm", formEntity, int.class).getBody());
   }
 
   @Test
   public void doubleForm_springmvc_rt() {
     Map<String, Double> map = new HashMap<>();
     map.put("input", 10.2);
-    HttpEntity<Map<String, Double>> formEntiry = new HttpEntity<>(map);
+    HttpEntity<Map<String, Double>> formEntity = new HttpEntity<>(map);
 
     assertEquals(10.2,
-        consumersSpringmvc.getSCBRestTemplate().postForEntity("/doubleForm", formEntiry, double.class)
+        consumersSpringmvc.getSCBRestTemplate().postForEntity("/doubleForm", formEntity, double.class)
             .getBody(), 0.0);
   }
 
@@ -764,10 +774,10 @@ public class TestDataTypePrimitive {
     String expect = "serviceComb";
     Map<String, String> map = new HashMap<>();
     map.put("input", expect);
-    HttpEntity<Map<String, String>> formEntiry = new HttpEntity<>(map);
+    HttpEntity<Map<String, String>> formEntity = new HttpEntity<>(map);
 
     assertEquals(expect,
-        consumersSpringmvc.getSCBRestTemplate().postForEntity("/stringForm", formEntiry, String.class)
+        consumersSpringmvc.getSCBRestTemplate().postForEntity("/stringForm", formEntity, String.class)
             .getBody());
 
     assertEquals(expect,
@@ -906,8 +916,7 @@ public class TestDataTypePrimitive {
     HttpHeaders headers = new HttpHeaders();
     headers.add("input", "10.2f");
 
-    @SuppressWarnings("rawtypes")
-    HttpEntity entity = new HttpEntity<>(null, headers);
+    HttpEntity<?> entity = new HttpEntity<>(headers);
     ResponseEntity<Float> response = consumers.getSCBRestTemplate()
         .exchange("/floatHeader",
             HttpMethod.GET,
@@ -930,8 +939,7 @@ public class TestDataTypePrimitive {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Cookie", "input=10.2f");
 
-    @SuppressWarnings("rawtypes")
-    HttpEntity entity = new HttpEntity<>(null, headers);
+    HttpEntity<?> entity = new HttpEntity<>(headers);
     ResponseEntity<Float> response = consumers.getSCBRestTemplate()
         .exchange("/floatCookie",
             HttpMethod.GET,
@@ -949,10 +957,10 @@ public class TestDataTypePrimitive {
   public void floatForm_jaxrs_rt() {
     Map<String, Float> map = new HashMap<>();
     map.put("input", 10.2f);
-    HttpEntity<Map<String, Float>> formEntiry = new HttpEntity<>(map);
+    HttpEntity<Map<String, Float>> formEntity = new HttpEntity<>(map);
 
     assertEquals(10.2f,
-        consumersJaxrs.getSCBRestTemplate().postForEntity("/floatForm", formEntiry, float.class).getBody(),
+        consumersJaxrs.getSCBRestTemplate().postForEntity("/floatForm", formEntity, float.class).getBody(),
         0.0f);
     //just use map is ok
     assertEquals(10.2f,
@@ -1032,10 +1040,10 @@ public class TestDataTypePrimitive {
   public void floatForm_springmvc_rt() {
     Map<String, Float> map = new HashMap<>();
     map.put("input", 10.2f);
-    HttpEntity<Map<String, Float>> formEntiry = new HttpEntity<>(map);
+    HttpEntity<Map<String, Float>> formEntity = new HttpEntity<>(map);
 
     assertEquals(10.2f,
-        consumersSpringmvc.getSCBRestTemplate().postForEntity("/floatForm", formEntiry, float.class)
+        consumersSpringmvc.getSCBRestTemplate().postForEntity("/floatForm", formEntity, float.class)
             .getBody(), 0.0f);
   }
 
@@ -1071,5 +1079,179 @@ public class TestDataTypePrimitive {
   public void enumBody_springmvc_rt() {
     assertEquals(Color.BLUE,
         consumersSpringmvc.getSCBRestTemplate().postForObject("/enumBody", Color.BLUE, Color.class));
+  }
+
+  // query array
+  @Test
+  public void queryArr_springmvc_intf() {
+    // default
+    assertEquals("[a, b, c]3",
+        consumersSpringmvc.getIntf().queryArr(new String[] {"a", "b", "c"}));
+    assertEquals("[a, ,  , b, c]5",
+        consumersSpringmvc.getIntf().queryArr(new String[] {"a", "", " ", "b", "c"}));
+    // CSV
+    assertEquals("[a, b, c]3",
+        consumersSpringmvc.getIntf().queryArrCSV(new String[] {"a", "b", "c"}));
+    assertEquals("[a, b, , c]4",
+        consumersSpringmvc.getIntf().queryArrCSV(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
+    assertEquals("[a, ,  , b, c]5",
+        consumersSpringmvc.getIntf().queryArrCSV(new String[] {"a", "", " ", "b", "c"}));
+    // SSV
+    assertEquals("[a, b, c]3",
+        consumersSpringmvc.getIntf().queryArrSSV(new String[] {"a", "b", "c"}));
+    assertEquals("[a, b, , c]4",
+        consumersSpringmvc.getIntf().queryArrSSV(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
+    // TSV
+    assertEquals("[a, b, c]3",
+        consumersSpringmvc.getIntf().queryArrTSV(new String[] {"a", "b", "c"}));
+    assertEquals("[a, b, , c]4",
+        consumersSpringmvc.getIntf().queryArrTSV(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
+    assertEquals("[a, ,  , b, c]5",
+        consumersSpringmvc.getIntf().queryArrTSV(new String[] {"a", "", " ", "b", "c"}));
+    // PIPES
+    assertEquals("[a, b, c]3",
+        consumersSpringmvc.getIntf().queryArrPIPES(new String[] {"a", "b", "c"}));
+    assertEquals("[a, b, , c]4",
+        consumersSpringmvc.getIntf()
+            .queryArrPIPES(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
+    assertEquals("[a, ,  , b, c]5",
+        consumersSpringmvc.getIntf().queryArrPIPES(new String[] {"a", "", " ", "b", "c"}));
+    // MULTI
+    assertEquals("[a, b, c]3",
+        consumersSpringmvc.getIntf().queryArrMULTI(new String[] {"a", "b", "c"}));
+    assertEquals("[a, b, , c]4",
+        consumersSpringmvc.getIntf()
+            .queryArrMULTI(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
+    assertEquals("[a, ,  , b, c]5",
+        consumersSpringmvc.getIntf().queryArrMULTI(new String[] {"a", "", " ", "b", "c"}));
+  }
+
+  @Test
+  public void queryArr_springmvc_rt() {
+    // default
+    assertEquals("[a, b, c]3",
+        consumersSpringmvc.getSCBRestTemplate()
+            .getForObject("/queryArr?queryArr=a&queryArr=b&queryArr=c", String.class));
+    assertEquals("[a, ,  , b, c]5",
+        consumersSpringmvc.getSCBRestTemplate()
+            .getForObject("/queryArr?queryArr=a&queryArr=&queryArr= &queryArr=b&queryArr=c", String.class));
+    // csv
+    assertEquals("[a, b, c]3",
+        consumersSpringmvc.getSCBRestTemplate()
+            .getForObject("/queryArrCSV?queryArr=a,b,c", String.class));
+    assertEquals("[a, ,  , b, c]5",
+        consumersSpringmvc.getSCBRestTemplate()
+            .getForObject("/queryArrCSV?queryArr=a,, ,b,c", String.class));
+    // ssv
+    assertEquals("[a, b, c]3",
+        consumersSpringmvc.getSCBRestTemplate()
+            .getForObject("/queryArrSSV?queryArr=a b c", String.class));
+    // tsv
+    assertEquals("[a, b, c]3",
+        consumersSpringmvc.getSCBRestTemplate()
+            .getForObject("/queryArrTSV?queryArr=a\tb\tc", String.class));
+    assertEquals("[a, ,  , b, c]5",
+        consumersSpringmvc.getSCBRestTemplate()
+            .getForObject("/queryArrTSV?queryArr=a\t\t \tb\tc", String.class));
+    // pipes
+    assertEquals("[a, b, c]3",
+        consumersSpringmvc.getSCBRestTemplate()
+            .getForObject("/queryArrPIPES?queryArr=a|b|c", String.class));
+    assertEquals("[a, ,  , b, c]5",
+        consumersSpringmvc.getSCBRestTemplate()
+            .getForObject("/queryArrPIPES?queryArr=a|| |b|c", String.class));
+    // multi
+    assertEquals("[a, b, c]3",
+        consumersSpringmvc.getSCBRestTemplate()
+            .getForObject("/queryArrMULTI?queryArr=a&queryArr=b&queryArr=c", String.class));
+    assertEquals("[a, ,  , b, c]5",
+        consumersSpringmvc.getSCBRestTemplate()
+            .getForObject("/queryArrMULTI?queryArr=a&queryArr=&queryArr= &queryArr=b&queryArr=c", String.class));
+  }
+
+  @Test
+  public void queryArr_jaxrs_intf() {
+    assertEquals("[a, b, c]3",
+        consumersJaxrs.getIntf().queryArr(new String[] {"a", "b", "c"}));
+    assertEquals("[a, b, , c]4",
+        consumersJaxrs.getIntf().queryArr(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
+    assertEquals("[a, ,  , b, c]5",
+        consumersJaxrs.getIntf().queryArr(new String[] {"a", "", " ", "b", "c"}));
+
+    assertEquals("[a, b, c]3",
+        consumersJaxrs.getIntf().queryArrCSV(new String[] {"a", "b", "c"}));
+    assertEquals("[a, b, , c]4",
+        consumersJaxrs.getIntf().queryArrCSV(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
+    assertEquals("[a, ,  , b, c]5",
+        consumersJaxrs.getIntf().queryArrCSV(new String[] {"a", "", " ", "b", "c"}));
+
+    assertEquals("[a, b, c]3",
+        consumersJaxrs.getIntf().queryArrSSV(new String[] {"a", "b", "c"}));
+    assertEquals("[a, b, , c]4",
+        consumersJaxrs.getIntf().queryArrSSV(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
+
+    assertEquals("[a, b, c]3",
+        consumersJaxrs.getIntf().queryArrTSV(new String[] {"a", "b", "c"}));
+    assertEquals("[a, b, , c]4",
+        consumersJaxrs.getIntf().queryArrTSV(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
+    assertEquals("[a, ,  , b, c]5",
+        consumersJaxrs.getIntf().queryArrTSV(new String[] {"a", "", " ", "b", "c"}));
+
+    assertEquals("[a, b, c]3",
+        consumersJaxrs.getIntf().queryArrPIPES(new String[] {"a", "b", "c"}));
+    assertEquals("[a, b, , c]4",
+        consumersJaxrs.getIntf().queryArrPIPES(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
+    assertEquals("[a, ,  , b, c]5",
+        consumersJaxrs.getIntf().queryArrPIPES(new String[] {"a", "", " ", "b", "c"}));
+
+    assertEquals("[a, b, c]3",
+        consumersJaxrs.getIntf().queryArrMULTI(new String[] {"a", "b", "c"}));
+    assertEquals("[a, b, , c]4",
+        consumersJaxrs.getIntf().queryArrMULTI(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
+    assertEquals("[a, ,  , b, c]5",
+        consumersJaxrs.getIntf().queryArrMULTI(new String[] {"a", "", " ", "b", "c"}));
+  }
+
+  @Test
+  public void queryArr_jaxrs_rt() {
+    // default
+    assertEquals("[a, b, c]3",
+        consumersJaxrs.getSCBRestTemplate()
+            .getForObject("/queryArr?queryArr=a&queryArr=b&queryArr=c", String.class));
+    assertEquals("[a, ,  , b, c]5",
+        consumersJaxrs.getSCBRestTemplate()
+            .getForObject("/queryArr?queryArr=a&queryArr=&queryArr= &queryArr=b&queryArr=c", String.class));
+    // csv
+    assertEquals("[a, b, c]3",
+        consumersJaxrs.getSCBRestTemplate()
+            .getForObject("/queryArrCSV?queryArr=a,b,c", String.class));
+    assertEquals("[a, ,  , b, c]5",
+        consumersJaxrs.getSCBRestTemplate()
+            .getForObject("/queryArrCSV?queryArr=a,, ,b,c", String.class));
+    // ssv
+    assertEquals("[a, b, c]3",
+        consumersJaxrs.getSCBRestTemplate()
+            .getForObject("/queryArrSSV?queryArr=a b c", String.class));
+    // tsv
+    assertEquals("[a, b, c]3",
+        consumersJaxrs.getSCBRestTemplate()
+            .getForObject("/queryArrTSV?queryArr=a\tb\tc", String.class));
+    assertEquals("[a, ,  , b, c]5",
+        consumersJaxrs.getSCBRestTemplate()
+            .getForObject("/queryArrTSV?queryArr=a\t\t \tb\tc", String.class));
+    // pipes
+    assertEquals("[a, b, c]3",
+        consumersJaxrs.getSCBRestTemplate()
+            .getForObject("/queryArrPIPES?queryArr=a|b|c", String.class));
+    assertEquals("[a, ,  , b, c]5",
+        consumersJaxrs.getSCBRestTemplate()
+            .getForObject("/queryArrPIPES?queryArr=a|| |b|c", String.class));
+    // multi
+    assertEquals("[a, b, c]3",
+        consumersJaxrs.getSCBRestTemplate()
+            .getForObject("/queryArrMULTI?queryArr=a&queryArr=b&queryArr=c", String.class));
+    assertEquals("[a, ,  , b, c]5",
+        consumersJaxrs.getSCBRestTemplate()
+            .getForObject("/queryArrMULTI?queryArr=a&queryArr=&queryArr= &queryArr=b&queryArr=c", String.class));
   }
 }

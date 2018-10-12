@@ -47,8 +47,18 @@ public class ApiParamSpringmvcSchema {
       readOnly = true,
       allowEmptyValue = true,
       name = "inputEx",
+      example = "10") int input) {
+
+  }
+
+  @PostMapping(path = "/queryArr")
+  public void queryArr(@ApiParam(value = "desc of queryArr param",
+      required = true,
+      readOnly = true,
+      allowEmptyValue = true,
+      name = "inputEx",
       example = "10",
-      collectionFormat = "fmt") int input) {
+      collectionFormat = "csv") int[] inputArr) {
 
   }
 
