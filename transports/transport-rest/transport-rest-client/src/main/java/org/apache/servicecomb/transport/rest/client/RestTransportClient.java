@@ -61,9 +61,7 @@ public class RestTransportClient {
     HttpClientOptions httpClientOptions = createHttpClientOptions();
     clientMgr = new ClientPoolManager<>(vertx, new HttpClientPoolFactory(httpClientOptions));
 
-    HttpClientOptions httpClientOptionshttp2 = createHttpClientOptions();
-    httpClientOptionshttp2.setUseAlpn(true).setProtocolVersion(HttpVersion.HTTP_2);
-    httpClientOptionshttp2.setHttp2ClearTextUpgrade(false);
+    HttpClientOptions httpClientOptionshttp2 = createHttp2ClientOptions();
 
     clientMgrHttp2 = new ClientPoolManager<>(vertx, new HttpClientPoolFactory(httpClientOptionshttp2));
 
@@ -82,6 +80,21 @@ public class RestTransportClient {
     httpClientOptions.setIdleTimeout(TransportClientConfig.getConnectionIdleTimeoutInSeconds());
     httpClientOptions.setKeepAlive(TransportClientConfig.getConnectionKeepAlive());
     httpClientOptions.setTryUseCompression(TransportClientConfig.getConnectionCompression());
+
+    VertxTLSBuilder.buildHttpClientOptions(SSL_KEY, httpClientOptions);
+    return httpClientOptions;
+  }
+
+  private static HttpClientOptions createHttp2ClientOptions() {
+    HttpClientOptions httpClientOptions = new HttpClientOptions();
+    httpClientOptions.setMaxPoolSize(TransportClientConfig.getConnectionMaxPoolSize())
+        .setUseAlpn(true)
+        .setIdleTimeout(TransportClientConfig.getConnectionIdleTimeoutInSeconds())
+        .setHttp2MultiplexingLimit(TransportClientConfig.getHttp2MultiplexingLimit())
+        .setHttp2MaxPoolSize(TransportClientConfig.getHttp2ConnectionMaxPoolSize())
+        .setProtocolVersion(HttpVersion.HTTP_2)
+        .setHttp2ClearTextUpgrade(false)
+        .setTryUseCompression(TransportClientConfig.getConnectionCompression());
 
     VertxTLSBuilder.buildHttpClientOptions(SSL_KEY, httpClientOptions);
     return httpClientOptions;
