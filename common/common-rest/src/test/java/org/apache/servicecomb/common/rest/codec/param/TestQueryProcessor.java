@@ -33,8 +33,8 @@ public class TestQueryProcessor {
   @Mocked
   HttpServletRequest request;
 
-  private ParamValueProcessor createProcessor(String name, Class<?> type) {
-    return new QueryProcessor(name, TypeFactory.defaultInstance().constructType(type), null);
+  private ParamValueProcessor createProcessor(String name, Class<?> type, String collectionFormat) {
+    return new QueryProcessor(name, TypeFactory.defaultInstance().constructType(type), null, collectionFormat);
   }
 
   @Test
@@ -46,7 +46,7 @@ public class TestQueryProcessor {
       }
     };
 
-    ParamValueProcessor processor = createProcessor("name", String.class);
+    ParamValueProcessor processor = createProcessor("name", String.class, "multi");
     Object value = processor.getValue(request);
     Assert.assertEquals("value", value);
   }
@@ -56,18 +56,32 @@ public class TestQueryProcessor {
     new Expectations() {
       {
         request.getParameterValues("name");
-        result = new String[] {"value"};
+        result = new String[] {"value", "value2"};
       }
     };
 
-    ParamValueProcessor processor = createProcessor("name", String[].class);
+    ParamValueProcessor processor = createProcessor("name", String[].class, "multi");
     String[] value = (String[]) processor.getValue(request);
-    Assert.assertThat(value, Matchers.arrayContaining("value"));
+    Assert.assertThat(value, Matchers.arrayContaining("value", "value2"));
+  }
+
+  @Test
+  public void testGetValueOnCollectionFormatIsCsv() throws Exception {
+    new Expectations() {
+      {
+        request.getParameter("name");
+        result = "value2,value3";
+      }
+    };
+
+    ParamValueProcessor processor = createProcessor("name", String[].class, "csv");
+    String[] value = (String[]) processor.getValue(request);
+    Assert.assertThat(value, Matchers.arrayContaining("value2", "value3"));
   }
 
   @Test
   public void testGetProcessorType() {
-    ParamValueProcessor processor = createProcessor("name", String.class);
+    ParamValueProcessor processor = createProcessor("name", String.class, "multi");
     Assert.assertEquals("query", processor.getProcessorType());
   }
 }
