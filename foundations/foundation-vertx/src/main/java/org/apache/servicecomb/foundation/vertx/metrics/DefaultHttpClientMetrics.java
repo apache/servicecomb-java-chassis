@@ -63,7 +63,7 @@ public class DefaultHttpClientMetrics implements
   @Override
   public DefaultClientEndpointMetric createEndpoint(String host, int port, int maxPoolSize) {
     SocketAddress address = new SocketAddressImpl(port, host);
-    LOGGER.warn(" clientEndpointMetricManager create end " + Thread.currentThread().getName() );
+    LOGGER.warn(" clientEndpointMetricManager create end " + Thread.currentThread().getName());
 
     return clientEndpointMetricManager.getOrCreateClientEndpointMetric(address);
   }
@@ -88,7 +88,14 @@ public class DefaultHttpClientMetrics implements
     // you can get more details from https://github.com/eclipse-vertx/vert.x/issues/2660
     // hence, we will set endpointMetric info in the method connected(SocketAddress remoteAddress, String remoteName)
     if (endpointMetric == null) {
-      LOGGER.warn("endpointMetric is null {}", Thread.currentThread().getName());
+      LOGGER.warn("ADD set endpointMetric is null {}", Thread.currentThread().getName());
+    }
+    if (endpointMetric != null) {
+      LOGGER.warn("endpointMetric : {}", endpointMetric);
+    }
+
+    if (socketMetric.getEndpointMetric() == null) {
+      LOGGER.warn(" socket.getEndpointMetrics is null");
     }
     endpointMetric.onConnect();
   }
@@ -149,15 +156,26 @@ public class DefaultHttpClientMetrics implements
     DefaultClientEndpointMetric clientEndpointMetric = this.clientEndpointMetricManager
         .getClientEndpointMetric(remoteAddress);
     if (clientEndpointMetric == null) {
-      LOGGER.warn("RRRRRRRRRRRKF : clientEndpoint is null :{}/{} {}",remoteAddress,remoteName,Thread.currentThread().getName() );
+      LOGGER.warn("RRRRRRRRRRRKF : clientEndpoint is null :{}/{} {}", remoteAddress, remoteName,
+          Thread.currentThread().getName());
       LOGGER.warn("RRRRRRL: " + this.clientEndpointMetricManager.getClientEndpointMetricMap().size() + " " + Thread
           .currentThread().getName());
-      LOGGER.warn("remote aDD {} / {} /{} ",remoteAddress.host() ,remoteAddress.path(),remoteAddress.port() );
+      LOGGER.warn("remote aDD {} / {} /{} ", remoteAddress.host(), remoteAddress.path(), remoteAddress.port());
       for (SocketAddress socketAddress : this.clientEndpointMetricManager.getClientEndpointMetricMap().keySet()) {
         System.out.println("get Remote: " + remoteAddress);
         System.out.println(" socket Address " + socketAddress);
         System.out.println(socketAddress.host() + " " + socketAddress.path() + " " + socketAddress.port());
       }
+      // when host of createEndpoint is not ip but a hostName
+      // get from remoteAddress will return null
+      // in this time need to try again with remoteName
+      // connected is a low frequency method, this try logic will not cause performance problem
+
+      SocketAddressImpl address = new SocketAddressImpl(remoteAddress.port(), remoteName);
+      clientEndpointMetric = this.clientEndpointMetricManager.getClientEndpointMetric(address);
+      System.out.println("after set : clientEndpointMetric is " + clientEndpointMetric);
+      // it's better to be done in endpointConnected
+      // but there is bug before vertx 3.6.0 vertx not invoke endpointConnec
     }
     return new DefaultHttpSocketMetric(clientEndpointMetric);
   }
@@ -169,12 +187,11 @@ public class DefaultHttpClientMetrics implements
   @Override
   public void bytesRead(DefaultHttpSocketMetric socketMetric, SocketAddress remoteAddress, long numberOfBytes) {
     if (socketMetric == null) {
-      LOGGER.warn("RRRKKDKDK : socketMetric is null {}", Thread.currentThread().getName() );
+      LOGGER.warn("RRRKKDKDK : socketMetric is null {}", Thread.currentThread().getName());
     }
 
     if (socketMetric != null && socketMetric.getEndpointMetric() == null) {
-      LOGGER.warn("RRRKKDKDK : socketMetric.getEndpointMetric is null {}", Thread.currentThread().getName() );
-
+      LOGGER.warn("RRRKKDKDK : socketMetric.getEndpointMetric is null {}", Thread.currentThread().getName());
     }
 
     socketMetric.getEndpointMetric().addBytesRead(numberOfBytes);
@@ -183,12 +200,11 @@ public class DefaultHttpClientMetrics implements
   @Override
   public void bytesWritten(DefaultHttpSocketMetric socketMetric, SocketAddress remoteAddress, long numberOfBytes) {
     if (socketMetric == null) {
-      LOGGER.warn("RRRKKDKDK : socketMetric is null {}", Thread.currentThread().getName() );
+      LOGGER.warn("RRRKKDKDK : socketMetric is null {}", Thread.currentThread().getName());
     }
 
     if (socketMetric != null && socketMetric.getEndpointMetric() == null) {
-      LOGGER.warn("RRRKKDKDK : socketMetric.getEndpointMetric is null {}", Thread.currentThread().getName() );
-
+      LOGGER.warn("RRRKKDKDK : socketMetric.getEndpointMetric is null {}", Thread.currentThread().getName());
     }
     socketMetric.getEndpointMetric().addBytesWritten(numberOfBytes);
   }
