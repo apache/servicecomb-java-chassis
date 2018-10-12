@@ -65,6 +65,13 @@ public class TestApiParam {
   }
 
   @Test
+  public void jaxrsQueryArray() {
+    check("apiParamJaxrs", "queryArr", "query");
+
+    Assert.assertEquals("multi", ((QueryParameter) parameter).getCollectionFormat());
+  }
+
+  @Test
   public void jaxrsHeader() {
     check("apiParamJaxrs", "header");
   }
@@ -98,7 +105,19 @@ public class TestApiParam {
     Assert.assertTrue(parameter.getAllowEmptyValue());
     Assert.assertEquals("inputEx", parameter.getName());
     Assert.assertEquals(10L, ((QueryParameter) parameter).getExample());
-    Assert.assertEquals("fmt", ((QueryParameter) parameter).getCollectionFormat());
+    Assert.assertNull(((QueryParameter) parameter).getCollectionFormat());
+  }
+
+  @Test
+  public void springmvcQueryArray() {
+    check("apiParamSpringmvc", "queryArr", "query");
+
+    Assert.assertTrue(parameter.getRequired());
+    Assert.assertTrue(parameter.isReadOnly());
+    Assert.assertTrue(parameter.getAllowEmptyValue());
+    Assert.assertEquals("inputEx", parameter.getName());
+    Assert.assertEquals("10", ((QueryParameter) parameter).getExample());
+    Assert.assertEquals("csv", ((QueryParameter) parameter).getCollectionFormat());
   }
 
   @Test

@@ -43,6 +43,13 @@ public class ApiParamJaxrsSchema {
   }
 
   @POST
+  @Path("/queryArr")
+  public void queryArr(@ApiParam(value = "desc of queryArr param")
+  @QueryParam("input") String[] input) {
+
+  }
+
+  @POST
   @Path("/header")
   public void header(@ApiParam(value = "desc of header param") @HeaderParam("input") int input) {
 
