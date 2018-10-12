@@ -152,6 +152,7 @@ public class DefaultHttpClientMetrics implements
       LOGGER.warn("RRRRRRRRRRRKF : clientEndpoint is null :{}/{} {}",remoteAddress,remoteName,Thread.currentThread().getName() );
       LOGGER.warn("RRRRRRL: " + this.clientEndpointMetricManager.getClientEndpointMetricMap().size() + " " + Thread
           .currentThread().getName());
+      LOGGER.warn("remote aDD {} / {} /{} ",remoteAddress.host() ,remoteAddress.path(),remoteAddress.port() );
       for (SocketAddress socketAddress : this.clientEndpointMetricManager.getClientEndpointMetricMap().keySet()) {
         System.out.println("get Remote: " + remoteAddress);
         System.out.println(" socket Address " + socketAddress);
@@ -168,11 +169,11 @@ public class DefaultHttpClientMetrics implements
   @Override
   public void bytesRead(DefaultHttpSocketMetric socketMetric, SocketAddress remoteAddress, long numberOfBytes) {
     if (socketMetric == null) {
-      LOGGER.warn("RRRKKDKDK : socketMetric is null", Thread.currentThread().getName() );
+      LOGGER.warn("RRRKKDKDK : socketMetric is null {}", Thread.currentThread().getName() );
     }
 
     if (socketMetric != null && socketMetric.getEndpointMetric() == null) {
-      LOGGER.warn("RRRKKDKDK : socketMetric.getEndpointMetric is null", Thread.currentThread().getName() );
+      LOGGER.warn("RRRKKDKDK : socketMetric.getEndpointMetric is null {}", Thread.currentThread().getName() );
 
     }
 
@@ -182,11 +183,11 @@ public class DefaultHttpClientMetrics implements
   @Override
   public void bytesWritten(DefaultHttpSocketMetric socketMetric, SocketAddress remoteAddress, long numberOfBytes) {
     if (socketMetric == null) {
-      LOGGER.warn("RRRKKDKDK : socketMetric is null", Thread.currentThread().getName() );
+      LOGGER.warn("RRRKKDKDK : socketMetric is null {}", Thread.currentThread().getName() );
     }
 
     if (socketMetric != null && socketMetric.getEndpointMetric() == null) {
-      LOGGER.warn("RRRKKDKDK : socketMetric.getEndpointMetric is null", Thread.currentThread().getName() );
+      LOGGER.warn("RRRKKDKDK : socketMetric.getEndpointMetric is null {}", Thread.currentThread().getName() );
 
     }
     socketMetric.getEndpointMetric().addBytesWritten(numberOfBytes);
