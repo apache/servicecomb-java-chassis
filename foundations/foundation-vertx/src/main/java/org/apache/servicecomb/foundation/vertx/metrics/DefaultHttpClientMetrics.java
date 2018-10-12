@@ -63,6 +63,8 @@ public class DefaultHttpClientMetrics implements
   @Override
   public DefaultClientEndpointMetric createEndpoint(String host, int port, int maxPoolSize) {
     SocketAddress address = new SocketAddressImpl(port, host);
+    LOGGER.warn(" clientEndpointMetricManager create end " + Thread.currentThread().getName() );
+
     return clientEndpointMetricManager.getOrCreateClientEndpointMetric(address);
   }
 
@@ -85,6 +87,9 @@ public class DefaultHttpClientMetrics implements
     // as http2 client will not invoke this method, the endpointMetric info will lost.
     // you can get more details from https://github.com/eclipse-vertx/vert.x/issues/2660
     // hence, we will set endpointMetric info in the method connected(SocketAddress remoteAddress, String remoteName)
+    if (endpointMetric == null) {
+      LOGGER.warn("endpointMetric is null {}", Thread.currentThread().getName());
+    }
     endpointMetric.onConnect();
   }
 
@@ -143,7 +148,14 @@ public class DefaultHttpClientMetrics implements
     //we can get endpointMetric info here, so set the endpointMetric info directly
     DefaultClientEndpointMetric clientEndpointMetric = this.clientEndpointMetricManager
         .getClientEndpointMetric(remoteAddress);
-
+    if (clientEndpointMetric == null) {
+      LOGGER.warn("RRRRRRRRRRRKF : clientEndpoint is null :{}/{} {}",remoteAddress,remoteName,Thread.currentThread().getName() );
+      LOGGER.warn("RRRRRRL: " + this.clientEndpointMetricManager.getClientEndpointMetricMap().size() + " " + Thread
+          .currentThread().getName());
+      for (SocketAddress socketAddress : this.clientEndpointMetricManager.getClientEndpointMetricMap().keySet()) {
+        System.out.println(socketAddress.host() + " " + socketAddress.path() + " " + socketAddress.port());
+      }
+    }
     return new DefaultHttpSocketMetric(clientEndpointMetric);
   }
 
@@ -153,11 +165,28 @@ public class DefaultHttpClientMetrics implements
 
   @Override
   public void bytesRead(DefaultHttpSocketMetric socketMetric, SocketAddress remoteAddress, long numberOfBytes) {
+    if (socketMetric == null) {
+      LOGGER.warn("RRRKKDKDK : socketMetric is null", Thread.currentThread().getName() );
+    }
+
+    if (socketMetric != null && socketMetric.getEndpointMetric() == null) {
+      LOGGER.warn("RRRKKDKDK : socketMetric.getEndpointMetric is null", Thread.currentThread().getName() );
+
+    }
+
     socketMetric.getEndpointMetric().addBytesRead(numberOfBytes);
   }
 
   @Override
   public void bytesWritten(DefaultHttpSocketMetric socketMetric, SocketAddress remoteAddress, long numberOfBytes) {
+    if (socketMetric == null) {
+      LOGGER.warn("RRRKKDKDK : socketMetric is null", Thread.currentThread().getName() );
+    }
+
+    if (socketMetric != null && socketMetric.getEndpointMetric() == null) {
+      LOGGER.warn("RRRKKDKDK : socketMetric.getEndpointMetric is null", Thread.currentThread().getName() );
+
+    }
     socketMetric.getEndpointMetric().addBytesWritten(numberOfBytes);
   }
 
