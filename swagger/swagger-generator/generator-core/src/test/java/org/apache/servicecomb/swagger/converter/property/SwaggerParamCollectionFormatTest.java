@@ -17,6 +17,15 @@
 
 package org.apache.servicecomb.swagger.converter.property;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -80,5 +89,112 @@ public class SwaggerParamCollectionFormatTest {
         Matchers.arrayContaining(""));
     Assert.assertThat(SwaggerParamCollectionFormat.MULTI.splitParam(""),
         Matchers.arrayContaining(""));
+
+    Assert.assertThat(SwaggerParamCollectionFormat.CSV.splitParam("a,,b"),
+        Matchers.arrayContaining("a", "", "b"));
+    Assert.assertThat(SwaggerParamCollectionFormat.SSV.splitParam("a  b"),
+        Matchers.arrayContaining("a", "", "b"));
+    Assert.assertThat(SwaggerParamCollectionFormat.TSV.splitParam("a\t\tb"),
+        Matchers.arrayContaining("a", "", "b"));
+    Assert.assertThat(SwaggerParamCollectionFormat.PIPES.splitParam("a||b"),
+        Matchers.arrayContaining("a", "", "b"));
+
+    Assert.assertThat(SwaggerParamCollectionFormat.CSV.splitParam("a,,"),
+        Matchers.arrayContaining("a", "", ""));
+    Assert.assertThat(SwaggerParamCollectionFormat.SSV.splitParam("a  "),
+        Matchers.arrayContaining("a", "", ""));
+    Assert.assertThat(SwaggerParamCollectionFormat.TSV.splitParam("a\t\t"),
+        Matchers.arrayContaining("a", "", ""));
+    String[] actual = SwaggerParamCollectionFormat.PIPES.splitParam("a||");
+    Assert.assertThat(Arrays.toString(actual), actual,
+        Matchers.arrayContaining("a", "", ""));
+
+    Assert.assertThat(SwaggerParamCollectionFormat.CSV.splitParam(",,b"),
+        Matchers.arrayContaining("", "", "b"));
+    Assert.assertThat(SwaggerParamCollectionFormat.SSV.splitParam("  b"),
+        Matchers.arrayContaining("", "", "b"));
+    Assert.assertThat(SwaggerParamCollectionFormat.TSV.splitParam("\t\tb"),
+        Matchers.arrayContaining("", "", "b"));
+    Assert.assertThat(SwaggerParamCollectionFormat.PIPES.splitParam("||b"),
+        Matchers.arrayContaining("", "", "b"));
+  }
+
+  @Test
+  public void joinNormal() {
+    List<String> params = Arrays.asList("a", "b", "c");
+    assertEquals("a,b,c", SwaggerParamCollectionFormat.CSV.joinParam(params));
+    assertEquals("a b c", SwaggerParamCollectionFormat.SSV.joinParam(params));
+    assertEquals("a\tb\tc", SwaggerParamCollectionFormat.TSV.joinParam(params));
+    assertEquals("a|b|c", SwaggerParamCollectionFormat.PIPES.joinParam(params));
+  }
+
+  @Test
+  public void join_SingleElement() {
+    List<String> params = Collections.singletonList("a");
+    assertEquals("a", SwaggerParamCollectionFormat.CSV.joinParam(params));
+    assertEquals("a", SwaggerParamCollectionFormat.SSV.joinParam(params));
+    assertEquals("a", SwaggerParamCollectionFormat.TSV.joinParam(params));
+    assertEquals("a", SwaggerParamCollectionFormat.PIPES.joinParam(params));
+  }
+
+  @Test
+  public void join_EmptyArray() {
+    Assert.assertNull(SwaggerParamCollectionFormat.CSV.joinParam(Collections.EMPTY_LIST));
+  }
+
+  @Test
+  public void join_NullAndBlankElement() {
+    Assert.assertNull(SwaggerParamCollectionFormat.CSV.joinParam(Collections.singletonList(null)));
+
+    assertEquals("", SwaggerParamCollectionFormat.CSV.joinParam(Collections.singleton("")));
+    assertEquals("a,,b,c", SwaggerParamCollectionFormat.CSV.joinParam(Arrays.asList("a", "", "b", "c")));
+    assertEquals("a  b c", SwaggerParamCollectionFormat.SSV.joinParam(Arrays.asList("a", "", "b", "c")));
+    assertEquals("a\t\tb\tc", SwaggerParamCollectionFormat.TSV.joinParam(Arrays.asList("a", "", "b", "c")));
+    assertEquals("a||b|c", SwaggerParamCollectionFormat.PIPES.joinParam(Arrays.asList("a", "", "b", "c")));
+
+    assertEquals("a,b,,c",
+        SwaggerParamCollectionFormat.CSV
+            .joinParam(Arrays.asList(null, "a", null, "b", null, "", null, null, "c", null)));
+    assertEquals("a b  c",
+        SwaggerParamCollectionFormat.SSV
+            .joinParam(Arrays.asList(null, "a", null, "b", null, "", null, null, "c", null)));
+    assertEquals("a\tb\t\tc",
+        SwaggerParamCollectionFormat.TSV
+            .joinParam(Arrays.asList(null, "a", null, "b", null, "", null, null, "c", null)));
+    assertEquals("a|b||c",
+        SwaggerParamCollectionFormat.PIPES
+            .joinParam(Arrays.asList(null, "a", null, "b", null, "", null, null, "c", null)));
+
+    assertEquals("a,b,,c",
+        SwaggerParamCollectionFormat.CSV
+            .joinParam(Arrays.asList(null, null, "a", null, "b", null, "", null, null, "c", null, null)));
+    assertEquals("a b  c",
+        SwaggerParamCollectionFormat.SSV
+            .joinParam(Arrays.asList(null, null, "a", null, "b", null, "", null, null, "c", null, null)));
+    assertEquals("a\tb\t\tc",
+        SwaggerParamCollectionFormat.TSV
+            .joinParam(Arrays.asList(null, null, "a", null, "b", null, "", null, null, "c", null, null)));
+    assertEquals("a|b||c",
+        SwaggerParamCollectionFormat.PIPES
+            .joinParam(Arrays.asList(null, null, "a", null, "b", null, "", null, null, "c", null, null)));
+  }
+
+  @Test
+  public void join_NullArray() {
+    assertNull(SwaggerParamCollectionFormat.CSV.joinParam(null));
+  }
+
+  /**
+   * In fact, the {@link SwaggerParamCollectionFormat#joinParam(Collection)} of {@link SwaggerParamCollectionFormat#MULTI}
+   * should never be invoked.
+   * This test is just for ensuring the method does not throw exception.
+   */
+  @Test
+  public void joinMulti() {
+    assertEquals("anullbnullc", SwaggerParamCollectionFormat.MULTI.joinParam(Arrays.asList("a", "b", "c")));
+    assertEquals("a", SwaggerParamCollectionFormat.MULTI.joinParam(Collections.singletonList("a")));
+    assertNull(SwaggerParamCollectionFormat.MULTI.joinParam(new ArrayList<String>()));
+    assertNull(SwaggerParamCollectionFormat.MULTI.joinParam(Collections.singleton(null)));
+    assertNull(SwaggerParamCollectionFormat.MULTI.joinParam(null));
   }
 }
