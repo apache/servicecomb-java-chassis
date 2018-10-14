@@ -84,7 +84,8 @@ public final class TransportConfig {
 
   public static long getMaxConcurrentStreams() {
     return DynamicPropertyFactory.getInstance()
-        .getLongProperty("servicecomb.rest.server.http2.concurrentStreams", 100L)
+        .getLongProperty("servicecomb.rest.server.http2.concurrentStreams",
+            HttpServerOptions.DEFAULT_INITIAL_SETTINGS_MAX_CONCURRENT_STREAMS)
         .get();
   }
 

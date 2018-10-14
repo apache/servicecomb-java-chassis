@@ -19,6 +19,8 @@ package org.apache.servicecomb.transport.rest.client;
 
 import com.netflix.config.DynamicPropertyFactory;
 
+import io.vertx.core.http.HttpClientOptions;
+
 public final class TransportClientConfig {
   private static Class<? extends RestTransportClient> restTransportClientCls = RestTransportClient.class;
 
@@ -38,12 +40,14 @@ public final class TransportClientConfig {
   }
 
   public static int getHttp2ConnectionMaxPoolSize() {
-    return DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.rest.client.http2.maxPoolSize", 1)
+    return DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.rest.client.http2.maxPoolSize",
+        HttpClientOptions.DEFAULT_HTTP2_MAX_POOL_SIZE)
         .get();
   }
 
   public static int getHttp2MultiplexingLimit() {
-    return DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.rest.client.http2.multiplexingLimit", -1)
+    return DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.rest.client.http2.multiplexingLimit",
+        HttpClientOptions.DEFAULT_HTTP2_MULTIPLEXING_LIMIT)
         .get();
   }
 
