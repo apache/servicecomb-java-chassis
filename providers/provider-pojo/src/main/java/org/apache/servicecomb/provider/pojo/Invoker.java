@@ -33,6 +33,7 @@ import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.context.InvocationContextCompletableFuture;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.springframework.util.StringUtils;
 
@@ -168,7 +169,7 @@ public class Invoker implements InvocationHandler {
 
   protected CompletableFuture<Object> completableFutureInvoke(Invocation invocation,
       SwaggerConsumerOperation consumerOperation) {
-    CompletableFuture<Object> future = new CompletableFuture<>();
+    CompletableFuture<Object> future = new InvocationContextCompletableFuture<>(invocation);
     InvokerUtils.reactiveInvoke(invocation, response -> {
       if (response.isSuccessed()) {
         Object result = consumerOperation.getResponseMapper().mapResponse(response);

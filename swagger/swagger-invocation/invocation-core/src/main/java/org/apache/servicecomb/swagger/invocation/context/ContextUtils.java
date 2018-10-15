@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.swagger.invocation.context;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * 传递调用过程的上下文数据
  */
@@ -44,5 +46,18 @@ public final class ContextUtils {
 
   public static void removeInvocationContext() {
     contextMgr.remove();
+  }
+
+  /**
+   *
+   * @param future must be InvocationContextCompletableFuture, that is returned from consumer api
+   * @return
+   */
+  public static InvocationContext getFromCompletableFuture(CompletableFuture<?> future) {
+    if (future instanceof InvocationContextCompletableFuture) {
+      return ((InvocationContextCompletableFuture<?>) future).getContext();
+    }
+
+    return null;
   }
 }
