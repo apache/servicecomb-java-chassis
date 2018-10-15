@@ -18,7 +18,6 @@
 package org.apache.servicecomb.swagger.converter.property;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 public enum SwaggerParamCollectionFormat {
   CSV("csv", ","),
@@ -78,31 +77,26 @@ public enum SwaggerParamCollectionFormat {
    * @return joined params, or return {@code null} if {@code params} is null or all elements of {@code params} are null.
    */
   public String joinParam(Collection<?> params) {
-    if (null == params) {
+    if (null == params || params.isEmpty()) {
       return null;
     }
+
     StringBuilder paramBuilder = new StringBuilder();
-    Iterator<?> paramIterator = params.iterator();
-    boolean allNullElement = true;
-    while (paramIterator.hasNext()) {
-      // find the next not-null element
-      Object param = paramIterator.next();
-      while (null == param && paramIterator.hasNext()) {
-        param = paramIterator.next();
-      }
-      if (null == param) {
-        // the rest of all elements are null, no need to go on
-        break;
+    int nullCount = 0;
+    for (Object param : params) {
+      if (param == null) {
+        nullCount++;
+        continue;
       }
 
-      if (allNullElement) {
-        allNullElement = false;
-        paramBuilder.append(param);
-      } else {
-        // There are elements appended into builder before, need a separator
-        paramBuilder.append(separator).append(param);
-      }
+      paramBuilder.append(param).append(separator);
     }
-    return allNullElement ? null : paramBuilder.toString();
+    if (nullCount == params.size()) {
+      return null;
+    }
+
+    paramBuilder.setLength(paramBuilder.length() - 1);
+
+    return paramBuilder.toString();
   }
 }

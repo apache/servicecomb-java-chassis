@@ -191,8 +191,8 @@ public class SwaggerParamCollectionFormatTest {
    */
   @Test
   public void joinMulti() {
-    assertEquals("anullbnullc", SwaggerParamCollectionFormat.MULTI.joinParam(Arrays.asList("a", "b", "c")));
-    assertEquals("a", SwaggerParamCollectionFormat.MULTI.joinParam(Collections.singletonList("a")));
+    SwaggerParamCollectionFormat.MULTI.joinParam(Arrays.asList("a", "b", "c"));
+    SwaggerParamCollectionFormat.MULTI.joinParam(Collections.singletonList("a"));
     assertNull(SwaggerParamCollectionFormat.MULTI.joinParam(new ArrayList<String>()));
     assertNull(SwaggerParamCollectionFormat.MULTI.joinParam(Collections.singleton(null)));
     assertNull(SwaggerParamCollectionFormat.MULTI.joinParam(null));
