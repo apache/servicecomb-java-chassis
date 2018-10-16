@@ -38,15 +38,13 @@ import com.netflix.config.DynamicPropertyFactory;
 public final class SSLOption {
   private static final SSLOption DEFAULT_OPTION = new SSLOption();
 
-  public static final String DEFAUL_CIPHERS = "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,"
-      + "TLS_RSA_WITH_AES_256_GCM_SHA384,"
-      + "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,"
-      + "TLS_RSA_WITH_AES_128_GCM_SHA256";
+  public static final String DEFAULT_CIPHERS = "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,"
+      + "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256";
 
   static {
     DEFAULT_OPTION.setEngine("jdk");
     DEFAULT_OPTION.setProtocols("TLSv1.2");
-    DEFAULT_OPTION.setCiphers(DEFAUL_CIPHERS);
+    DEFAULT_OPTION.setCiphers(DEFAULT_CIPHERS);
     DEFAULT_OPTION.setAuthPeer(false);
     DEFAULT_OPTION.setCheckCNHost(false);
     DEFAULT_OPTION.setCheckCNWhite(false);
