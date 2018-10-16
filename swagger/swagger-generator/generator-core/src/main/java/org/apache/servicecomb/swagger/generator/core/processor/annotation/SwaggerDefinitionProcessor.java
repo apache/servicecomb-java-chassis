@@ -138,10 +138,10 @@ public class SwaggerDefinitionProcessor implements ClassAnnotationProcessor {
     if (produces == null) {
       return;
     }
-    for (String produce : produces) {
-      if (!StringUtils.isEmpty(produce)) {
-        swagger.addProduces(produce);
-      }
+    List<String> produceList = Arrays.stream(produces).filter(s -> !StringUtils.isEmpty(s))
+        .collect(Collectors.toList());
+    if (!produceList.isEmpty()) {
+      swagger.setProduces(produceList);
     }
   }
 
@@ -150,10 +150,10 @@ public class SwaggerDefinitionProcessor implements ClassAnnotationProcessor {
     if (consumes == null) {
       return;
     }
-    for (String consume : consumes) {
-      if (!StringUtils.isEmpty(consume)) {
-        swagger.addConsumes(consume);
-      }
+    List<String> consumeList = Arrays.stream(consumes).filter(s -> !StringUtils.isEmpty(s))
+        .collect(Collectors.toList());
+    if (!consumeList.isEmpty()) {
+      swagger.setConsumes(consumeList);
     }
   }
 }

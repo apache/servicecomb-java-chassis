@@ -18,9 +18,12 @@
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.servicecomb.swagger.generator.core.MethodAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import io.swagger.models.Operation;
@@ -51,7 +54,11 @@ abstract class AbstractHttpMethodMappingAnnotationProcessor implements MethodAnn
       return;
     }
 
-    operation.setConsumes(Arrays.asList(consumes));
+    List<String> consumeList = Arrays.stream(consumes).filter(s -> !StringUtils.isEmpty(s))
+        .collect(Collectors.toList());
+    if (!consumeList.isEmpty()) {
+      operation.setConsumes(consumeList);
+    }
   }
 
   protected void processProduces(String[] produces, Operation operation) {
@@ -59,6 +66,10 @@ abstract class AbstractHttpMethodMappingAnnotationProcessor implements MethodAnn
       return;
     }
 
-    operation.setProduces(Arrays.asList(produces));
+    List<String> produceList = Arrays.stream(produces).filter(s -> !StringUtils.isEmpty(s))
+        .collect(Collectors.toList());
+    if (!produceList.isEmpty()) {
+      operation.setProduces(produceList);
+    }
   }
 }

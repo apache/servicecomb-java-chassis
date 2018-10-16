@@ -17,6 +17,10 @@
 
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.servicecomb.swagger.generator.core.MethodAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
 import org.springframework.util.StringUtils;
@@ -27,6 +31,9 @@ import io.swagger.models.Scheme;
 import io.swagger.util.BaseReaderUtils;
 
 public class ApiOperationProcessor implements MethodAnnotationProcessor {
+
+  private static final String SEPARATOR = ",";
+
   @Override
   public void process(Object annotation, OperationGenerator operationGenerator) {
     ApiOperation apiOperationAnnotation = (ApiOperation) annotation;
@@ -64,7 +71,7 @@ public class ApiOperationProcessor implements MethodAnnotationProcessor {
       return;
     }
 
-    for (String protocol : protocols.split(",")) {
+    for (String protocol : protocols.split(SEPARATOR)) {
       if (StringUtils.isEmpty(protocol)) {
         continue;
       }
@@ -79,12 +86,10 @@ public class ApiOperationProcessor implements MethodAnnotationProcessor {
       return;
     }
 
-    for (String consume : consumes.split(",")) {
-      if (StringUtils.isEmpty(consume)) {
-        continue;
-      }
-
-      operation.addConsumes(consume);
+    List<String> consumeList = Arrays.stream(consumes.split(SEPARATOR)).filter(s -> !StringUtils.isEmpty(s))
+        .collect(Collectors.toList());
+    if (!consumeList.isEmpty()) {
+      operation.setConsumes(consumeList);
     }
   }
 
@@ -94,12 +99,10 @@ public class ApiOperationProcessor implements MethodAnnotationProcessor {
       return;
     }
 
-    for (String produce : produces.split(",")) {
-      if (StringUtils.isEmpty(produce)) {
-        continue;
-      }
-
-      operation.addProduces(produce);
+    List<String> produceList = Arrays.stream(produces.split(SEPARATOR)).filter(s -> !StringUtils.isEmpty(s))
+        .collect(Collectors.toList());
+    if (!produceList.isEmpty()) {
+      operation.setProduces(produceList);
     }
   }
 
