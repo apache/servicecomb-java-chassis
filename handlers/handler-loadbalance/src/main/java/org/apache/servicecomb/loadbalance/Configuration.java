@@ -66,6 +66,8 @@ public final class Configuration {
 
   public static final String FILTER_SINGLE_TEST = "singleTestTime";
 
+  public static final String FILTER_MIN_ISOLATION_TIME = "minIsolationTime";
+
   public static final String FILTER_CONTINUOUS_FAILURE_THRESHOLD = "continuousFailureThreshold";
 
   public static final String TRANSACTIONCONTROL_OPTIONS_PREFIX_PATTERN =
@@ -197,11 +199,27 @@ public final class Configuration {
         PROP_ROOT + FILTER_ISOLATION + FILTER_SINGLE_TEST);
     try {
       int result = Integer.parseInt(p);
-      if (result > 0) {
+      if (result >= 0) {
         return result;
       }
       return defaultValue;
 
+    } catch (NumberFormatException e) {
+      return defaultValue;
+    }
+  }
+
+  public int getMinIsolationTime(String microservice) {
+    final int defaultValue = 3000; // 3 seconds
+    String p = getStringProperty("3000",
+        PROP_ROOT + microservice + "." + FILTER_ISOLATION + FILTER_MIN_ISOLATION_TIME,
+        PROP_ROOT + FILTER_ISOLATION + FILTER_MIN_ISOLATION_TIME);
+    try {
+      int result = Integer.parseInt(p);
+      if (result >= 0) {
+        return result;
+      }
+      return defaultValue;
     } catch (NumberFormatException e) {
       return defaultValue;
     }

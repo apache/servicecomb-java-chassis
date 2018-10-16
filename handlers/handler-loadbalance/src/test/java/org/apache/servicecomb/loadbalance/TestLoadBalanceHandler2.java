@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
@@ -63,7 +64,7 @@ public class TestLoadBalanceHandler2 {
   }
 
   @Test
-  public void testZoneAwareAndIsolationFilterWorks() {
+  public void testZoneAwareAndIsolationFilterWorks() throws Exception {
     ReferenceConfig referenceConfig = Mockito.mock(ReferenceConfig.class);
     OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
     SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
@@ -177,11 +178,16 @@ public class TestLoadBalanceHandler2 {
 
     //if errorThresholdPercentage greater than 0, it will activate.
     ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.errorThresholdPercentage", "20");
+    ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.minIsolationTime", "10");
     ServiceCombServer server2 = server;
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = (ServiceCombServer) loadBalancer.chooseServer(invocation);
     Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9091");
     ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server2);
+    loadBalancer = handler.getOrCreateLoadBalancer(invocation);
+    server = (ServiceCombServer) loadBalancer.chooseServer(invocation);
+    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9091");
+    TimeUnit.MILLISECONDS.sleep(20);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = (ServiceCombServer) loadBalancer.chooseServer(invocation);
     Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9090");

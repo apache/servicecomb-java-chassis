@@ -53,8 +53,9 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
     long enableRequestThreshold;
 
     int continuousFailureThreshold;
-  }
 
+    int minIsolationTime; // to avoid isolation recover too fast due to no concurrent control in concurrent scenario
+  }
   public EventBus eventBus = EventManager.getEventBus();
 
   @Override
@@ -102,6 +103,8 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
         .getEnableRequestThreshold(invocation.getMicroserviceName());
     settings.continuousFailureThreshold = Configuration.INSTANCE
         .getContinuousFailureThreshold(invocation.getMicroserviceName());
+    settings.minIsolationTime = Configuration.INSTANCE
+        .getMinIsolationTime(invocation.getMicroserviceName());
     return settings;
   }
 
@@ -114,37 +117,41 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
     ServiceCombServerStats serverStats = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(server);
     Settings settings = createSettings(invocation);
     if (!checkThresholdAllowed(settings, serverStats)) {
-      if ((System.currentTimeMillis() - serverStats.getLastVisitTime()) > settings.singleTestTime) {
-        // because we will ping server status, this logic may not be very likely to happen.
+      if (serverStats.isIsolated()
+          && (System.currentTimeMillis() - serverStats.getLastVisitTime()) > settings.singleTestTime) {
+        // [1]we can implement better recovery based on several attempts, but here we do not know if this attempt is success
         LOGGER.info("The Service {}'s instance {} has been isolated for a while, give a single test opportunity.",
             invocation.getMicroserviceName(),
             instance.getInstanceId());
         return true;
       }
-
       if (!serverStats.isIsolated()) {
-        LOGGER.warn("Isolate service {}'s instance {}.", invocation.getMicroserviceName(),
-            instance.getInstanceId());
+        ServiceCombLoadBalancerStats.INSTANCE.markIsolated(server, true);
         eventBus.post(
             new IsolationServerEvent(invocation.getMicroserviceName(), serverStats.getTotalRequests(),
                 serverStats.getCountinuousFailureCount(),
                 serverStats.getFailedRate(),
                 settings.continuousFailureThreshold, settings.errorThresholdPercentage, settings.enableRequestThreshold,
                 settings.singleTestTime, Type.OPEN));
-        ServiceCombLoadBalancerStats.INSTANCE.markIsolated(server, true);
+        LOGGER.warn("Isolate service {}'s instance {}.", invocation.getMicroserviceName(),
+            instance.getInstanceId());
       }
       return false;
     }
-
     if (serverStats.isIsolated()) {
-      LOGGER.warn("Recover service {}'s instance {} from isolation.", invocation.getMicroserviceName(),
-          instance.getInstanceId());
+      // [2] so that we add a feature to isolate for at least a minimal time, and we can avoid
+      // high volume of concurrent requests with a percentage of error(e.g. 50%) scenario with no isolation
+      if ((System.currentTimeMillis() - serverStats.getLastVisitTime()) <= settings.minIsolationTime) {
+        return false;
+      }
+      ServiceCombLoadBalancerStats.INSTANCE.markIsolated(server, false);
       eventBus.post(new IsolationServerEvent(invocation.getMicroserviceName(), serverStats.getTotalRequests(),
           serverStats.getCountinuousFailureCount(),
           serverStats.getFailedRate(),
           settings.continuousFailureThreshold, settings.errorThresholdPercentage, settings.enableRequestThreshold,
           settings.singleTestTime, Type.CLOSE));
-      ServiceCombLoadBalancerStats.INSTANCE.markIsolated(server, false);
+      LOGGER.warn("Recover service {}'s instance {} from isolation.", invocation.getMicroserviceName(),
+          instance.getInstanceId());
     }
     return true;
   }
