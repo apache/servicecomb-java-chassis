@@ -17,6 +17,10 @@
 
 package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.ws.rs.Consumes;
 
 import org.apache.servicecomb.swagger.generator.core.MethodAnnotationProcessor;
@@ -28,10 +32,10 @@ public class ConsumesAnnotationProcessor implements MethodAnnotationProcessor {
   public void process(Object annotation, OperationGenerator operationGenerator) {
     Consumes consumes = (Consumes) annotation;
 
-    for (String consume : consumes.value()) {
-      if (!StringUtils.isEmpty(consume)) {
-        operationGenerator.getOperation().addConsumes(consume);
-      }
+    List<String> consumeList = Arrays.stream(consumes.value()).filter(s -> !StringUtils.isEmpty(s))
+        .collect(Collectors.toList());
+    if (!consumeList.isEmpty()) {
+      operationGenerator.getOperation().setConsumes(consumeList);
     }
   }
 }

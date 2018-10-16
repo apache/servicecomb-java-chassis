@@ -21,8 +21,11 @@ import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
+import javax.ws.rs.core.MediaType;
+
 import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -43,10 +46,13 @@ public class SwaggerDefinitionProcessorTest {
   public void testProcess() {
     SwaggerGenerator swaggerGenerator = new SwaggerGenerator(Mockito.mock(SwaggerGeneratorContext.class),
         null);
+    Swagger swagger = swaggerGenerator.getSwagger();
+    // to test MediaType overwrite
+    swagger.addConsumes(MediaType.APPLICATION_XML);
+    swagger.addProduces(MediaType.APPLICATION_XML);
     swaggerDefinitionProcessor.process(SwaggerTestTarget.class.getAnnotation(SwaggerDefinition.class),
         swaggerGenerator);
 
-    Swagger swagger = swaggerGenerator.getSwagger();
     assertEquals(1, swagger.getTags().size());
     io.swagger.models.Tag tag = swagger.getTags().get(0);
     assertEquals("testTag", tag.getName());
@@ -61,6 +67,24 @@ public class SwaggerDefinitionProcessorTest {
     assertEquals("desc", info.getDescription());
     assertEquals("contactName", info.getContact().getName());
     assertEquals("licenseName", info.getLicense().getName());
+    assertThat(swagger.getConsumes(), Matchers.contains(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN));
+    assertThat(swagger.getProduces(), Matchers.contains(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML));
+  }
+
+  @Test
+  public void testProcess_emptyMediaType() {
+    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(Mockito.mock(SwaggerGeneratorContext.class),
+        null);
+    Swagger swagger = swaggerGenerator.getSwagger();
+    // to test MediaType overwrite
+    swagger.addConsumes(MediaType.APPLICATION_XML);
+    swagger.addProduces(MediaType.TEXT_PLAIN);
+    swaggerDefinitionProcessor.process(SwaggerTestTarget_EmptyMediaType.class.getAnnotation(SwaggerDefinition.class),
+        swaggerGenerator);
+
+    // empty media type should not be set, so keep consumes/produces not modified
+    assertThat(swagger.getConsumes(), Matchers.contains(MediaType.APPLICATION_XML));
+    assertThat(swagger.getProduces(), Matchers.contains(MediaType.TEXT_PLAIN));
   }
 
   @SwaggerDefinition(tags = {
@@ -69,7 +93,13 @@ public class SwaggerDefinitionProcessorTest {
       host = "127.0.0.1",
       schemes = {Scheme.HTTP, Scheme.HTTPS},
       info = @Info(title = "title", version = "version", description = "desc", contact = @Contact(name = "contactName"),
-          license = @License(name = "licenseName")))
+          license = @License(name = "licenseName")),
+      consumes = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN},
+      produces = {MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
   private class SwaggerTestTarget {
+  }
+
+  @SwaggerDefinition(consumes = "", produces = "")
+  private class SwaggerTestTarget_EmptyMediaType {
   }
 }
