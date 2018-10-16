@@ -51,13 +51,13 @@ public class IpPortManager {
   private boolean autoDiscoveryInited = false;
 
   private int maxRetryTimes;
-  
+
 
   public void setAutoDiscoveryInited(boolean autoDiscoveryInited) {
-	this.autoDiscoveryInited = autoDiscoveryInited;
+    this.autoDiscoveryInited = autoDiscoveryInited;
   }
 
-public int getMaxRetryTimes() {
+  public int getMaxRetryTimes() {
     return maxRetryTimes;
   }
 
@@ -81,11 +81,11 @@ public int getMaxRetryTimes() {
       InstanceCache cache = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
           REGISTRY_SERVICE_NAME,
           DefinitionConst.VERSION_RULE_LATEST);
-      if(cache.getInstanceMap().size() > 0) {
-    	setAutoDiscoveryInited(true);
-      }else {
-		setAutoDiscoveryInited(false);
-	}
+      if (cache.getInstanceMap().size() > 0) {
+        setAutoDiscoveryInited(true);
+      } else {
+        setAutoDiscoveryInited(false);
+      }
     }
   }
 
