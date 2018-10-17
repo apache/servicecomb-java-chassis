@@ -26,9 +26,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.exception.ExceptionUtils;
 import org.apache.servicecomb.core.provider.consumer.SyncResponseExecutor;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
@@ -60,6 +65,8 @@ import rx.Observable;
  */
 public class LoadbalanceHandler implements Handler {
   public static final String CONTEXT_KEY_SERVER_LIST = "x-context-server-list";
+
+  public static final String SERVICECOMB_SERVER_ENDPOINT = "servicecomb-server-endpoint";
 
   // just a wrapper to make sure in retry mode to choose a different server.
   class RetryLoadBalancer implements ILoadBalancer {
@@ -150,7 +157,8 @@ public class LoadbalanceHandler implements Handler {
     // Old configurations check.Just print an error, because configurations may given in dynamic and fail on runtime.
 
     String policyName = DynamicPropertyFactory.getInstance()
-        .getStringProperty("servicecomb.loadbalance.NFLoadBalancerRuleClassName", null).get();
+        .getStringProperty("servicecomb.loadbalance.NFLoadBalancerRuleClassName", null)
+        .get();
     if (!StringUtils.isEmpty(policyName)) {
       LOGGER.error("[servicecomb.loadbalance.NFLoadBalancerRuleClassName] is not supported anymore." +
           "use [servicecomb.loadbalance.strategy.name] instead.");
@@ -167,6 +175,17 @@ public class LoadbalanceHandler implements Handler {
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    String endpointUri = invocation.getLocalContext(SERVICECOMB_SERVER_ENDPOINT);
+    if (endpointUri != null) {
+      boolean isRest = endpointUri.startsWith("rest://");
+      if (!isRest) {
+        throw new InvocationException(Status.BAD_REQUEST,
+            "the endpoint's format of the configuration is incorrect, e.g rest://127.0.0.1:8080");
+      }
+      Transport transport = CseContext.getInstance().getTransportManager().findTransport("rest");
+      Endpoint endpoint = new Endpoint(transport, endpointUri);
+      invocation.setEndpoint(endpoint);
+    }
     String strategy = Configuration.INSTANCE.getRuleStrategyName(invocation.getMicroserviceName());
     if (!isEqual(strategy, this.strategy)) {
       //配置变化，需要重新生成所有的lb实例
@@ -199,7 +218,9 @@ public class LoadbalanceHandler implements Handler {
       return;
     }
     chosenLB.getLoadBalancerStats().incrementNumRequests(server);
-    invocation.setEndpoint(server.getEndpoint());
+    if (invocation.getEndpoint() == null) {
+      invocation.setEndpoint(server.getEndpoint());
+    }
     invocation.next(resp -> {
       // this stats is for WeightedResponseTimeRule
       chosenLB.getLoadBalancerStats().noteResponseTime(server, (System.currentTimeMillis() - time));
@@ -307,7 +328,9 @@ public class LoadbalanceHandler implements Handler {
             ServiceCombServer server = (ServiceCombServer) s;
             chosenLB.getLoadBalancerStats().incrementNumRequests(s);
             invocation.setHandlerIndex(currentHandler); // for retry
-            invocation.setEndpoint(server.getEndpoint());
+            if (invocation.getEndpoint() == null) {
+              invocation.setEndpoint(server.getEndpoint());
+            }
             invocation.next(resp -> {
               if (isFailedResponse(resp)) {
                 LOGGER.error("service {}, call error, msg is {}, server is {} ",

@@ -39,6 +39,7 @@ import org.apache.servicecomb.serviceregistry.api.registry.DataCenterInfo;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTreeNode;
+import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -190,5 +191,69 @@ public class TestLoadBalanceHandler2 {
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = (ServiceCombServer) loadBalancer.chooseServer(invocation);
     Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9091");
+  }
+
+  @Test
+  public void testConfiguredEndpoint() {
+    ReferenceConfig referenceConfig = Mockito.mock(ReferenceConfig.class);
+    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
+    when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
+    MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
+    when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
+    when(schemaMeta.getMicroserviceName()).thenReturn("testMicroserviceName");
+    when(microserviceMeta.getAppId()).thenReturn("testApp");
+    when(referenceConfig.getVersionRule()).thenReturn("0.0.0+");
+    when(referenceConfig.getTransport()).thenReturn("rest");
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, new Object[0]);
+    AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
+
+    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
+    ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
+    TransportManager transportManager = Mockito.mock(TransportManager.class);
+    Transport transport = Mockito.mock(Transport.class);
+    ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
+
+    // set up data
+    MicroserviceInstance myself = new MicroserviceInstance();
+
+    MicroserviceInstance findInstance = new MicroserviceInstance();
+    List<String> findEndpoint = new ArrayList<>();
+    findEndpoint.add("rest://localhost:9092");
+    findInstance.setEndpoints(findEndpoint);
+    findInstance.setInstanceId("findInstance");
+
+    Map<String, MicroserviceInstance> data = new HashMap<>();
+    DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent").data(data);
+    CseContext.getInstance().setTransportManager(transportManager);
+
+    RegistryUtils.setServiceRegistry(serviceRegistry);
+
+    when(serviceRegistry.getMicroserviceInstance()).thenReturn(myself);
+    when(serviceRegistry.getInstanceCacheManager()).thenReturn(instanceCacheManager);
+    when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
+        .thenReturn(parent);
+    when(transportManager.findTransport("rest")).thenReturn(transport);
+
+    LoadbalanceHandler handler = null;
+
+    handler = new LoadbalanceHandler();
+    data.put("findInstance", findInstance);
+    parent.cacheVersion(1);
+    handler = new LoadbalanceHandler();
+    try {
+      handler.handle(invocation, asyncResp);
+    } catch (Exception e) {
+
+    }
+    Assert.assertEquals("rest://localhost:9092", invocation.getEndpoint().getEndpoint());
+
+    invocation.addLocalContext("servicecomb-server-endpoint", "rest://127.0.0.1:8080");
+    try {
+      handler.handle(invocation, asyncResp);
+    } catch (Exception e) {
+
+    }
+    Assert.assertEquals("rest://127.0.0.1:8080", invocation.getEndpoint().getEndpoint());
   }
 }
