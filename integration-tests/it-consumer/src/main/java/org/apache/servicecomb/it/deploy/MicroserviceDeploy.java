@@ -37,13 +37,16 @@ public class MicroserviceDeploy extends NormalDeploy {
 
   @Override
   protected String[] createCmds() {
-    return new String[] {"java", "-jar", deployDefinition.getCmd()};
+    // must set jar at the end of the cmds
+    return new String[] {"java", "-jar"};
   }
 
   @Override
   protected String[] addArgs(String[] cmds) {
+    // add jar
     return ArrayUtils.addAll(super.addArgs(cmds),
-        "-DselfController=" + RegistryUtils.getMicroserviceInstance().getInstanceId());
+            "-DselfController=" + RegistryUtils.getMicroserviceInstance().getInstanceId(),
+        deployDefinition.getCmd());
   }
 
   public void ensureReady() throws Throwable {

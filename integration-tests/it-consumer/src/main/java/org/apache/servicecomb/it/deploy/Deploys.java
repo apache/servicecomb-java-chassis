@@ -38,6 +38,8 @@ public class Deploys {
 
   private MicroserviceDeploy baseProducer;
 
+  private MicroserviceDeploy baseHttp2Producer;
+
   private MicroserviceDeploy springBoot2StandaloneProducer;
 
   private MicroserviceDeploy springBoot2ServletProducer;
@@ -60,6 +62,10 @@ public class Deploys {
     return baseProducer;
   }
 
+  public MicroserviceDeploy getBaseHttp2Producer() {
+    return baseHttp2Producer;
+  }
+
   public MicroserviceDeploy getSpringBoot2StandaloneProducer() {
     return springBoot2StandaloneProducer;
   }
@@ -75,6 +81,7 @@ public class Deploys {
     serviceCenter = new ServiceCenterDeploy();
     initEdge();
     initBaseProducer();
+    initBaseHttp2Producer();
     initSpringBoot2StandaloneProducer();
     initSpringBoot2ServletProducer();
 //    initZuul();
@@ -185,6 +192,23 @@ public class Deploys {
     initDeployDefinition(definition);
 
     baseProducer = new MicroserviceDeploy(definition);
+  }
+
+
+  private void initBaseHttp2Producer() {
+    MicroserviceDeployDefinition definition = new MicroserviceDeployDefinition();
+    definition.setDeployName("baseHttp2Producer");
+    definition.setCmd("it-producer");
+    definition.setArgs(new String[] {});
+    definition.setArgs(new String[] {"-Dservicecomb.rest.address=0.0.0.0:0?protocol=http2",
+        "-Dservicecomb.highway.address=0.0.0.0:0?protocol=http2"});
+    definition.setAppId("integration-test");
+    definition.setMicroserviceName("it-producer");
+    definition.setVersion(DEFAULT_MICROSERVICE_VERSION);
+
+    initDeployDefinition(definition);
+
+    baseHttp2Producer = new MicroserviceDeploy(definition);
   }
 
   private void initSpringBoot2ServletProducer() {

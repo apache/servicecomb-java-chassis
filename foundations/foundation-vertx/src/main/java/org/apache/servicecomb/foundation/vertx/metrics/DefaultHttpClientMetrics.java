@@ -19,8 +19,6 @@ package org.apache.servicecomb.foundation.vertx.metrics;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientEndpointMetric;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientEndpointMetricManager;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultHttpSocketMetric;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
@@ -36,8 +34,6 @@ import io.vertx.core.spi.metrics.HttpClientMetrics;
  */
 public class DefaultHttpClientMetrics implements
     HttpClientMetrics<DefaultHttpSocketMetric, Object, DefaultHttpSocketMetric, DefaultClientEndpointMetric, Object> {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultHttpClientMetrics.class);
 
   private final DefaultClientEndpointMetricManager clientEndpointMetricManager;
 
@@ -147,8 +143,6 @@ public class DefaultHttpClientMetrics implements
     DefaultClientEndpointMetric clientEndpointMetric = this.clientEndpointMetricManager
         .getClientEndpointMetric(remoteAddress);
     if (clientEndpointMetric == null) {
-      LOGGER.warn("can not find endpointMetric directly by remoteAddress {}, try again with remoteName {}",
-          remoteAddress, remoteName);
       SocketAddressImpl address = new SocketAddressImpl(remoteAddress.port(), remoteName);
       clientEndpointMetric = this.clientEndpointMetricManager.getClientEndpointMetric(address);
     }

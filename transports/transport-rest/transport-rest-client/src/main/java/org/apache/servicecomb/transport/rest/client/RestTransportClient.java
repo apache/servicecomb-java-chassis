@@ -87,8 +87,7 @@ public class RestTransportClient {
 
   private static HttpClientOptions createHttp2ClientOptions() {
     HttpClientOptions httpClientOptions = new HttpClientOptions();
-    httpClientOptions.setMaxPoolSize(TransportClientConfig.getConnectionMaxPoolSize())
-        .setUseAlpn(TransportClientConfig.getUseAlpn())
+    httpClientOptions.setUseAlpn(TransportClientConfig.getUseAlpn())
         .setHttp2ClearTextUpgrade(false)
         .setProtocolVersion(HttpVersion.HTTP_2)
         .setIdleTimeout(TransportClientConfig.getHttp2ConnectionIdleTimeoutInSeconds())
