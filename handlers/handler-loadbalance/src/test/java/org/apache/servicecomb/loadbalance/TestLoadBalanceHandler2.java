@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -54,6 +55,8 @@ import org.mockito.Mockito;
 public class TestLoadBalanceHandler2 {
   @BeforeClass
   public static void beforeClass() {
+    //prepare for defineEndpointAndHandle
+    ArchaiusUtils.setProperty("servicecomb.loadbalance.userDefinedEndpoint.enabled", "true");
     // avoid mock
     ServiceCombLoadBalancerStats.INSTANCE.init();
   }
@@ -200,7 +203,7 @@ public class TestLoadBalanceHandler2 {
   }
 
   @Test
-  public void testConfiguredEndpoint() {
+  public void testConfigEndpoint() {
     ReferenceConfig referenceConfig = Mockito.mock(ReferenceConfig.class);
     OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
     SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
@@ -232,6 +235,7 @@ public class TestLoadBalanceHandler2 {
     Map<String, MicroserviceInstance> data = new HashMap<>();
     DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent").data(data);
     CseContext.getInstance().setTransportManager(transportManager);
+    SCBEngine.getInstance().setTransportManager(transportManager);
 
     RegistryUtils.setServiceRegistry(serviceRegistry);
 
@@ -270,7 +274,7 @@ public class TestLoadBalanceHandler2 {
       Assert.assertEquals("endpoint's format is not correct, throw exception", " but not throw exception");
     } catch (Exception e) {
       Assert.assertTrue(e.getMessage()
-          .contains("the endpoint's format of the configuration is incorrect, e.g rest://127.0.0.1:8080"));
+          .contains("Illegal character in scheme name"));
     }
 
     //transport is not find

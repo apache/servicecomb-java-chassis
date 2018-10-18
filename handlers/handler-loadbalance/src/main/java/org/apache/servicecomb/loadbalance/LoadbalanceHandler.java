@@ -30,10 +30,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.exception.ExceptionUtils;
 import org.apache.servicecomb.core.provider.consumer.SyncResponseExecutor;
@@ -68,6 +68,9 @@ public class LoadbalanceHandler implements Handler {
   public static final String CONTEXT_KEY_SERVER_LIST = "x-context-server-list";
 
   public static final String SERVICECOMB_SERVER_ENDPOINT = "scb-endpoint";
+
+  public static final boolean supportDefinedEndpoint =
+      DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.loadbalance.userDefinedEndpoint.enabled", false).get();
 
   // just a wrapper to make sure in retry mode to choose a different server.
   class RetryLoadBalancer implements ILoadBalancer {
@@ -176,23 +179,12 @@ public class LoadbalanceHandler implements Handler {
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    String endpointUri = invocation.getLocalContext(SERVICECOMB_SERVER_ENDPOINT);
-    if (endpointUri != null) {
-      String endpointRule = "[a-z]+://.+";
-      if (!endpointUri.matches(endpointRule)) {
-        throw new InvocationException(Status.BAD_REQUEST,
-            "the endpoint's format of the configuration is incorrect, e.g rest://127.0.0.1:8080");
+    if (supportDefinedEndpoint) {
+      if (defineEndpointAndHandle(invocation, asyncResp)) {
+        return;
       }
-      URI formatUri = new URI(endpointUri);
-      Transport transport = CseContext.getInstance().getTransportManager().findTransport(formatUri.getScheme());
-      if (transport == null) {
-        LOGGER.error("not deployed transport {}, ignore {}.", formatUri.getScheme(), endpointUri);
-        throw new InvocationException(Status.BAD_REQUEST,
-            "the endpoint's transport is not found.");
-      }
-      Endpoint endpoint = new Endpoint(transport, endpointUri);
-      invocation.setEndpoint(endpoint);
     }
+
     String strategy = Configuration.INSTANCE.getRuleStrategyName(invocation.getMicroserviceName());
     if (!isEqual(strategy, this.strategy)) {
       //配置变化，需要重新生成所有的lb实例
@@ -211,6 +203,26 @@ public class LoadbalanceHandler implements Handler {
     }
   }
 
+  private boolean defineEndpointAndHandle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    String endpointUri = invocation.getLocalContext(SERVICECOMB_SERVER_ENDPOINT);
+    if (endpointUri == null) {
+      return false;
+    }
+    URI formatUri = new URI(endpointUri);
+    Transport transport = SCBEngine.getInstance().getTransportManager().findTransport(formatUri.getScheme());
+    if (transport == null) {
+      LOGGER.error("not deployed transport {}, ignore {}.", formatUri.getScheme(), endpointUri);
+      throw new InvocationException(Status.BAD_REQUEST,
+          "the endpoint's transport is not found.");
+    }
+    Endpoint endpoint = new Endpoint(transport, endpointUri);
+    invocation.setEndpoint(endpoint);
+    invocation.next(resp -> {
+      asyncResp.handle(resp);
+    });
+    return true;
+  }
+
   private void clearLoadBalancer() {
     loadBalancerMap.clear();
   }
@@ -225,9 +237,7 @@ public class LoadbalanceHandler implements Handler {
       return;
     }
     chosenLB.getLoadBalancerStats().incrementNumRequests(server);
-    if (invocation.getEndpoint() == null) {
-      invocation.setEndpoint(server.getEndpoint());
-    }
+    invocation.setEndpoint(server.getEndpoint());
     invocation.next(resp -> {
       // this stats is for WeightedResponseTimeRule
       chosenLB.getLoadBalancerStats().noteResponseTime(server, (System.currentTimeMillis() - time));
@@ -335,9 +345,7 @@ public class LoadbalanceHandler implements Handler {
             ServiceCombServer server = (ServiceCombServer) s;
             chosenLB.getLoadBalancerStats().incrementNumRequests(s);
             invocation.setHandlerIndex(currentHandler); // for retry
-            if (invocation.getEndpoint() == null) {
-              invocation.setEndpoint(server.getEndpoint());
-            }
+            invocation.setEndpoint(server.getEndpoint());
             invocation.next(resp -> {
               if (isFailedResponse(resp)) {
                 LOGGER.error("service {}, call error, msg is {}, server is {} ",
