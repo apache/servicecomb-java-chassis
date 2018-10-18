@@ -248,12 +248,32 @@ public class TestLoadBalanceHandler2 {
     }
     Assert.assertEquals("rest://localhost:9092", invocation.getEndpoint().getEndpoint());
 
-    invocation.addLocalContext("servicecomb-server-endpoint", "rest://127.0.0.1:8080");
+    //success
+    invocation.addLocalContext("scb-endpoint", "rest://127.0.0.1:8080?sslEnabled=true&protocol=http2");
     try {
       handler.handle(invocation, asyncResp);
     } catch (Exception e) {
 
     }
-    Assert.assertEquals("rest://127.0.0.1:8080", invocation.getEndpoint().getEndpoint());
+    Assert.assertEquals("rest://127.0.0.1:8080?sslEnabled=true&protocol=http2", invocation.getEndpoint().getEndpoint());
+
+    //endpoint format is not correct
+    invocation.addLocalContext("scb-endpoint", "127.0.0.1:8080");
+    try {
+      handler.handle(invocation, asyncResp);
+      Assert.assertEquals("endpoint's format is not correct, throw exception", " but not throw exception");
+    } catch (Exception e) {
+      Assert.assertTrue(e.getMessage()
+          .contains("the endpoint's format of the configuration is incorrect, e.g rest://127.0.0.1:8080"));
+    }
+
+    //transport is not find
+    invocation.addLocalContext("scb-endpoint", "my://127.0.0.1:8080?sslEnabled=true&protocol=http2");
+    try {
+      handler.handle(invocation, asyncResp);
+      Assert.assertEquals("endpoint's transport not found, throw exception", "but not throw exception");
+    } catch (Exception e) {
+      Assert.assertTrue(e.getMessage().contains("the endpoint's transport is not found."));
+    }
   }
 }

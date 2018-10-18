@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.loadbalance;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -66,7 +67,7 @@ import rx.Observable;
 public class LoadbalanceHandler implements Handler {
   public static final String CONTEXT_KEY_SERVER_LIST = "x-context-server-list";
 
-  public static final String SERVICECOMB_SERVER_ENDPOINT = "servicecomb-server-endpoint";
+  public static final String SERVICECOMB_SERVER_ENDPOINT = "scb-endpoint";
 
   // just a wrapper to make sure in retry mode to choose a different server.
   class RetryLoadBalancer implements ILoadBalancer {
@@ -177,12 +178,18 @@ public class LoadbalanceHandler implements Handler {
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
     String endpointUri = invocation.getLocalContext(SERVICECOMB_SERVER_ENDPOINT);
     if (endpointUri != null) {
-      boolean isRest = endpointUri.startsWith("rest://");
-      if (!isRest) {
+      String endpointRule = "[a-z]+://.+";
+      if (!endpointUri.matches(endpointRule)) {
         throw new InvocationException(Status.BAD_REQUEST,
             "the endpoint's format of the configuration is incorrect, e.g rest://127.0.0.1:8080");
       }
-      Transport transport = CseContext.getInstance().getTransportManager().findTransport("rest");
+      URI formatUri = new URI(endpointUri);
+      Transport transport = CseContext.getInstance().getTransportManager().findTransport(formatUri.getScheme());
+      if (transport == null) {
+        LOGGER.error("not deployed transport {}, ignore {}.", formatUri.getScheme(), endpointUri);
+        throw new InvocationException(Status.BAD_REQUEST,
+            "the endpoint's transport is not found.");
+      }
       Endpoint endpoint = new Endpoint(transport, endpointUri);
       invocation.setEndpoint(endpoint);
     }
