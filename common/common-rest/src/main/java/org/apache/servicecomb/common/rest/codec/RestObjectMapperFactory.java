@@ -23,7 +23,7 @@ package org.apache.servicecomb.common.rest.codec;
 public class RestObjectMapperFactory {
   private static AbstractRestObjectMapper defaultMapper = new RestObjectMapper();
 
-  private static AbstractRestObjectMapper consumerWriterMapper = new RestObjectMapper();
+  private static AbstractRestObjectMapper consumerWriterMapper = defaultMapper;
 
   public static AbstractRestObjectMapper getConsumerWriterMapper() {
     return consumerWriterMapper;
