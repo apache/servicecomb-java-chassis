@@ -19,6 +19,7 @@ package org.apache.servicecomb.it.deploy;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
 
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
@@ -37,6 +38,8 @@ public class Deploys {
   private MicroserviceDeploy edge;
 
   private MicroserviceDeploy baseProducer;
+
+  private MicroserviceDeploy baseHttp2CProducer;
 
   private MicroserviceDeploy baseHttp2Producer;
 
@@ -66,6 +69,10 @@ public class Deploys {
     return baseHttp2Producer;
   }
 
+  public MicroserviceDeploy getBaseHttp2CProducer() {
+    return baseHttp2CProducer;
+  }
+
   public MicroserviceDeploy getSpringBoot2StandaloneProducer() {
     return springBoot2StandaloneProducer;
   }
@@ -81,6 +88,7 @@ public class Deploys {
     serviceCenter = new ServiceCenterDeploy();
     initEdge();
     initBaseProducer();
+    initBaseHttp2CProducer();
     initBaseHttp2Producer();
     initSpringBoot2StandaloneProducer();
     initSpringBoot2ServletProducer();
@@ -194,14 +202,20 @@ public class Deploys {
     baseProducer = new MicroserviceDeploy(definition);
   }
 
-
   private void initBaseHttp2Producer() {
     MicroserviceDeployDefinition definition = new MicroserviceDeployDefinition();
     definition.setDeployName("baseHttp2Producer");
     definition.setCmd("it-producer");
     definition.setArgs(new String[] {});
-    definition.setArgs(new String[] {"-Dservicecomb.rest.address=0.0.0.0:0?protocol=http2",
-        "-Dservicecomb.highway.address=0.0.0.0:0?protocol=http2"});
+    URL urlServer = Thread.currentThread().getContextClassLoader().getResource("certificates/server.p12");
+    URL urlTrust = Thread.currentThread().getContextClassLoader().getResource("certificates/trust.jks");
+    if (urlServer != null && urlTrust != null) {
+      definition.setArgs(new String[] {"-Dservicecomb.rest.address=0.0.0.0:0?sslEnabled=true&protocol=http2",
+          "-Dservicecomb.highway.address=0.0.0.0:0?sslEnabled=true",
+          "-Dserver.p12=" + urlServer.getPath(),
+          "-Dtrust.jks=" + urlTrust.getPath()
+      });
+    }
     definition.setAppId("integration-test");
     definition.setMicroserviceName("it-producer");
     definition.setVersion(DEFAULT_MICROSERVICE_VERSION);
@@ -209,6 +223,20 @@ public class Deploys {
     initDeployDefinition(definition);
 
     baseHttp2Producer = new MicroserviceDeploy(definition);
+  }
+
+  private void initBaseHttp2CProducer() {
+    MicroserviceDeployDefinition definition = new MicroserviceDeployDefinition();
+    definition.setDeployName("baseHttp2CProducer");
+    definition.setCmd("it-producer");
+    definition.setArgs(new String[] {"-Dservicecomb.rest.address=0.0.0.0:0?protocol=http2"});
+    definition.setAppId("integration-test");
+    definition.setMicroserviceName("it-producer");
+    definition.setVersion(DEFAULT_MICROSERVICE_VERSION);
+
+    initDeployDefinition(definition);
+
+    baseHttp2CProducer = new MicroserviceDeploy(definition);
   }
 
   private void initSpringBoot2ServletProducer() {

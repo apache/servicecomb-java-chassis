@@ -22,3 +22,18 @@ servicecomb:
   rest:
     server:
       maxInitialLineLength: 5000
+
+#########SSL options
+ssl.protocols: TLSv1.2
+ssl.authPeer: false
+ssl.checkCN.host: false
+
+#########certificates config
+ssl.trustStore: trust.jks
+ssl.trustStoreType: JKS
+ssl.trustStoreValue: Changeme_123
+ssl.keyStore: server.p12
+ssl.keyStoreType: PKCS12
+ssl.keyStoreValue: Changeme_123
+ssl.crl: revoke.crl
+ssl.sslCustomClass: org.apache.servicecomb.it.DemoSSLCustom

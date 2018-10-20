@@ -104,6 +104,9 @@ public class ConsumerMain {
     // ......
 
     testSpringBoot2Standalone();
+
+    testHttp2CStandalone();
+
     testSpringBoot2Servlet();
     //http2
     testHttp2Standalone();
@@ -145,6 +148,24 @@ public class ConsumerMain {
 
     ITJUnitUtils.popProducer();
     deploys.getBaseProducer().stop();
+  }
+
+  private static void testHttp2CStandalone() throws Throwable {
+    deploys.getBaseHttp2CProducer().ensureReady();
+
+    ITJUnitUtils.addProducer("it-producer");
+
+    runShareTestCases();
+
+    // currently not support update 3rd url, so only test once
+    ITJUnitUtils.run(Test3rdPartyInvocation.class);
+
+    //as setMaxInitialLineLength() is not work for http2, do not need
+    // ITJUnitUtils.runWithRest(TestRestServerConfig.class)
+    ITJUnitUtils.run(TestRestServerConfigEdge.class);
+
+    ITJUnitUtils.popProducer();
+    deploys.getBaseHttp2CProducer().stop();
   }
 
   private static void testHttp2Standalone() throws Throwable {
