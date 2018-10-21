@@ -39,7 +39,7 @@ public class TestCseHttpMessageConverter {
     lCseHttpMessageConverter.getSupportedMediaTypes();
     try {
       lCseHttpMessageConverter.read(this.getClass(), null);
-    } catch (HttpMessageNotReadableException | IOException ignored) {
+    } catch (HttpMessageNotReadableException | IOException | ClassCastException ignored) {
     }
     try {
       HttpOutputMessage httpOutputMessage = Mockito.mock(CseClientHttpRequest.class);

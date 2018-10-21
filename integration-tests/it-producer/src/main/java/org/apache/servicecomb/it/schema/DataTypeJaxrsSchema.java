@@ -206,6 +206,92 @@ public class DataTypeJaxrsSchema {
     return num1 + num2;
   }
 
+  //long
+  @Path("longPath/{input}")
+  @GET
+  public long longPath(@PathParam("input") long input) {
+    return input;
+  }
+
+  @Path("longQuery")
+  @GET
+  public long longQuery(@QueryParam("input") long input) {
+    return input;
+  }
+
+  @Path("longHeader")
+  @GET
+  public long longHeader(@HeaderParam("input") long input) {
+    return input;
+  }
+
+  @Path("longCookie")
+  @GET
+  public long longCookie(@CookieParam("input") long input) {
+    return input;
+  }
+
+  @Path("longForm")
+  @POST
+  public long longForm(@FormParam("input") long input) {
+    return input;
+  }
+
+  @Path("longBody")
+  @POST
+  public long longBody(long input) {
+    return input;
+  }
+
+  @Path("longAdd")
+  @GET
+  public long longAdd(@QueryParam("num1") long num1, @QueryParam("num2") long num2) {
+    return num1 + num2;
+  }
+
+  //short
+  @Path("shortPath/{input}")
+  @GET
+  public short shortPath(@PathParam("input") short input) {
+    return input;
+  }
+
+  @Path("shortQuery")
+  @GET
+  public short shortQuery(@QueryParam("input") short input) {
+    return input;
+  }
+
+  @Path("shortHeader")
+  @GET
+  public short shortHeader(@HeaderParam("input") short input) {
+    return input;
+  }
+
+  @Path("shortCookie")
+  @GET
+  public short shortCookie(@CookieParam("input") short input) {
+    return input;
+  }
+
+  @Path("shortForm")
+  @POST
+  public short shortForm(@FormParam("input") short input) {
+    return input;
+  }
+
+  @Path("shortBody")
+  @POST
+  public short shortBody(short input) {
+    return input;
+  }
+
+  @Path("shortAdd")
+  @GET
+  public short shortAdd(@QueryParam("num1") short num1, @QueryParam("num2") short num2) {
+    return (short) (num1 + num2);
+  }
+
   @Path("enumBody")
   @POST
   public Color enumBody(Color color) {

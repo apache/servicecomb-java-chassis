@@ -47,6 +47,20 @@ public class TestDefaultValue {
     float floatHeader(Float input);
 
     float floatForm(Float input);
+
+    //long
+    long longQuery(Long input);
+
+    long longHeader(Long input);
+
+    long longForm(Long input);
+
+    //short
+    short shortQuery(Short input);
+
+    short shortHeader(Short input);
+
+    short shortForm(Short input);
   }
 
   interface DefaultValueRequireIntf extends DefaultValueIntf {
@@ -73,6 +87,18 @@ public class TestDefaultValue {
     float floatHeaderRequire(Float input);
 
     float floatFormRequire(Float input);
+
+    long longQueryRequire(Long input);
+
+    long longHeaderRequire(Long input);
+
+    long longFormRequire(Long input);
+
+    short shortQueryRequire(Short input);
+
+    short shortHeaderRequire(Short input);
+
+    short shortFormRequire(Short input);
   }
 
   private String defaultStr = "string";
@@ -82,6 +108,10 @@ public class TestDefaultValue {
   private double defaultDouble = 10.2;
 
   private float defaultFloat = 10.2f;
+
+  private long defaultLong = 1000L;
+
+  private short defaultShort = 28;
 
   private static Consumers<DefaultValueIntf> consumersJaxrs = new Consumers<>("defaultValueJaxrs",
       DefaultValueIntf.class);
@@ -479,5 +509,206 @@ public class TestDefaultValue {
   public void floatForm_require_springmvc_rt() {
     assertEquals(defaultFloat,
         consumersSpringmvc.getSCBRestTemplate().postForObject("/floatFormRequire", null, float.class), 0.0f);
+  }
+
+  //long
+
+  @Test
+  public void longQuery_jaxrs_intf() {
+    assertEquals(defaultLong, consumersJaxrs.getIntf().longQuery(null));
+  }
+
+  @Test
+  public void longQuery_jaxrs_rt() {
+    assertEquals(defaultLong, (long) consumersJaxrs.getSCBRestTemplate().getForObject("/longQuery", long.class));
+  }
+
+  @Test
+  public void longHeader_jaxrs_intf() {
+    assertEquals(defaultLong, consumersJaxrs.getIntf().longHeader(null));
+  }
+
+  @Test
+  public void longHeader_jaxrs_rt() {
+    assertEquals(defaultLong,
+        (long) consumersJaxrs.getSCBRestTemplate().getForObject("/longHeader", long.class));
+  }
+
+  @Test
+  public void longForm_jaxrs_intf() {
+    assertEquals(defaultLong, consumersJaxrs.getIntf().longForm(null));
+  }
+
+  @Test
+  public void longForm_jaxrs_rt() {
+    assertEquals(defaultLong,
+        (long) consumersJaxrs.getSCBRestTemplate().postForObject("/longForm", null, long.class));
+  }
+
+  @Test
+  public void longQuery_springmvc_intf() {
+    assertEquals(defaultLong, consumersSpringmvc.getIntf().longQuery(null));
+  }
+
+  @Test
+  public void longQuery_springmvc_rt() {
+    assertEquals(defaultLong,
+        (long) consumersSpringmvc.getSCBRestTemplate().getForObject("/longQuery", long.class));
+  }
+
+  @Test
+  public void longHeader_springmvc_intf() {
+    assertEquals(defaultLong, consumersSpringmvc.getIntf().longHeader(null));
+  }
+
+  @Test
+  public void longHeader_springmvc_rt() {
+    assertEquals(defaultLong,
+        (long) consumersSpringmvc.getSCBRestTemplate().getForObject("/longHeader", long.class));
+  }
+
+  @Test
+  public void longForm_springmvc_intf() {
+    assertEquals(defaultLong, consumersSpringmvc.getIntf().longForm(null));
+  }
+
+  @Test
+  public void longForm_springmvc_rt() {
+    assertEquals(defaultLong,
+        (long) consumersSpringmvc.getSCBRestTemplate().postForObject("/longForm", null, long.class));
+  }
+
+  @Test
+  public void longQuery_require_springmvc_intf() {
+    assertEquals(defaultLong, consumersSpringmvc.getIntf().longQueryRequire(null));
+  }
+
+  @Test
+  public void longQuery_require_springmvc_rt() {
+    assertEquals(defaultLong,
+        (long) consumersSpringmvc.getSCBRestTemplate().getForObject("/longQueryRequire", long.class));
+  }
+
+  @Test
+  public void longHeader_require_springmvc_intf() {
+    assertEquals(defaultLong, consumersSpringmvc.getIntf().longHeaderRequire(null));
+  }
+
+
+  @Test
+  public void longHeader_require_springmvc_rt() {
+    assertEquals(defaultLong,
+        (long) consumersSpringmvc.getSCBRestTemplate().getForObject("/longHeaderRequire", long.class));
+  }
+
+  @Test
+  public void longForm_require_springmvc_intf() {
+    assertEquals(defaultLong, consumersSpringmvc.getIntf().longFormRequire(null));
+  }
+
+  @Test
+  public void longForm_require_springmvc_rt() {
+    assertEquals(defaultLong,
+        (long) consumersSpringmvc.getSCBRestTemplate().postForObject("/longFormRequire", null, long.class));
+  }
+  //short
+
+  @Test
+  public void shortQuery_jaxrs_intf() {
+    assertEquals(defaultShort, consumersJaxrs.getIntf().shortQuery(null));
+  }
+
+  @Test
+  public void shortQuery_jaxrs_rt() {
+    assertEquals(defaultShort, (short) consumersJaxrs.getSCBRestTemplate().getForObject("/shortQuery", short.class));
+  }
+
+  @Test
+  public void shortHeader_jaxrs_intf() {
+    assertEquals(defaultShort, consumersJaxrs.getIntf().shortHeader(null));
+  }
+
+  @Test
+  public void shortHeader_jaxrs_rt() {
+    assertEquals(defaultShort,
+        (short) consumersJaxrs.getSCBRestTemplate().getForObject("/shortHeader", short.class));
+  }
+
+  @Test
+  public void shortForm_jaxrs_intf() {
+    assertEquals(defaultShort, consumersJaxrs.getIntf().shortForm(null));
+  }
+
+  @Test
+  public void shortForm_jaxrs_rt() {
+    assertEquals(defaultShort,
+        (short) consumersJaxrs.getSCBRestTemplate().postForObject("/shortForm", null, short.class));
+  }
+
+  @Test
+  public void shortQuery_springmvc_intf() {
+    assertEquals(defaultShort, consumersSpringmvc.getIntf().shortQuery(null));
+  }
+
+  @Test
+  public void shortQuery_springmvc_rt() {
+    assertEquals(defaultShort,
+        (short) consumersSpringmvc.getSCBRestTemplate().getForObject("/shortQuery", short.class));
+  }
+
+  @Test
+  public void shortHeader_springmvc_intf() {
+    assertEquals(defaultShort, consumersSpringmvc.getIntf().shortHeader(null));
+  }
+
+  @Test
+  public void shortHeader_springmvc_rt() {
+    assertEquals(defaultShort,
+        (short) consumersSpringmvc.getSCBRestTemplate().getForObject("/shortHeader", short.class));
+  }
+
+  @Test
+  public void shortForm_springmvc_intf() {
+    assertEquals(defaultShort, consumersSpringmvc.getIntf().shortForm(null));
+  }
+
+  @Test
+  public void shortForm_springmvc_rt() {
+    assertEquals(defaultShort,
+        (short) consumersSpringmvc.getSCBRestTemplate().postForObject("/shortForm", null, short.class));
+  }
+
+  @Test
+  public void shortQuery_require_springmvc_intf() {
+    assertEquals(defaultShort, consumersSpringmvc.getIntf().shortQueryRequire(null));
+  }
+
+  @Test
+  public void shortQuery_require_springmvc_rt() {
+    assertEquals(defaultShort,
+        (short) consumersSpringmvc.getSCBRestTemplate().getForObject("/shortQueryRequire", short.class));
+  }
+
+  @Test
+  public void shortHeader_require_springmvc_intf() {
+    assertEquals(defaultShort, consumersSpringmvc.getIntf().shortHeaderRequire(null));
+  }
+
+
+  @Test
+  public void shortHeader_require_springmvc_rt() {
+    assertEquals(defaultShort,
+        (short) consumersSpringmvc.getSCBRestTemplate().getForObject("/shortHeaderRequire", short.class));
+  }
+
+  @Test
+  public void shortForm_require_springmvc_intf() {
+    assertEquals(defaultShort, consumersSpringmvc.getIntf().shortFormRequire(null));
+  }
+
+  @Test
+  public void shortForm_require_springmvc_rt() {
+    assertEquals(defaultShort,
+        (short) consumersSpringmvc.getSCBRestTemplate().postForObject("/shortFormRequire", null, short.class));
   }
 }

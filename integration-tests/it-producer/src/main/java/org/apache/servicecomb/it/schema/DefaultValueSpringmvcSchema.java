@@ -180,4 +180,83 @@ public class DefaultValueSpringmvcSchema {
   public float floatFormRequire(float input) {
     return input;
   }
+
+  //long
+
+  @GetMapping(path = "longQuery")
+  public long longQuery(@RequestParam(name = "input", required = false, defaultValue = "1000") long input) {
+    return input;
+  }
+
+  @GetMapping(path = "longHeader")
+  public long longHeader(@RequestHeader(name = "input", required = false, defaultValue = "1000") long input) {
+    return input;
+  }
+
+  @ApiImplicitParams({
+      @ApiImplicitParam(name = "input", dataType = "integer", format = "int64", paramType = "form", value = "", defaultValue = "1000",
+          required = false)})
+  @PostMapping(path = "longForm")
+  public long longForm(long input) {
+    return input;
+  }
+
+  // springmvc rule: required should be false because defaultValue have value
+  @GetMapping(path = "longQueryRequire")
+  public long longQueryRequire(@RequestParam(name = "input", required = true, defaultValue = "1000") long input) {
+    return input;
+  }
+
+  // springmvc rule: required should be false because defaultValue have value
+  @GetMapping(path = "longHeaderRequire")
+  public long longHeaderRequire(@RequestHeader(name = "input", required = true, defaultValue = "1000") long input) {
+    return input;
+  }
+
+  @ApiImplicitParams({
+      @ApiImplicitParam(name = "input", dataType = "integer", format = "int64", paramType = "form", value = "a required form param",
+          required = true, defaultValue = "1000")})
+  @PostMapping(path = "longFormRequire")
+  public long longFormRequire(long input) {
+    return input;
+  }
+
+  //short
+  @GetMapping(path = "shortQuery")
+  public short shortQuery(@RequestParam(name = "input", required = false, defaultValue = "28") short input) {
+    return input;
+  }
+
+  @GetMapping(path = "shortHeader")
+  public short shortHeader(@RequestHeader(name = "input", required = false, defaultValue = "28") short input) {
+    return input;
+  }
+
+  @ApiImplicitParams({
+      @ApiImplicitParam(name = "input", dataType = "integer", format = "int16", paramType = "form", value = "", defaultValue = "28",
+          required = false)})
+  @PostMapping(path = "shortForm")
+  public short shortForm(short input) {
+    return input;
+  }
+
+  // springmvc rule: required should be false because defaultValue have value
+  @GetMapping(path = "shortQueryRequire")
+  public short shortQueryRequire(@RequestParam(name = "input", required = true, defaultValue = "28") short input) {
+    return input;
+  }
+
+  // springmvc rule: required should be false because defaultValue have value
+  @GetMapping(path = "shortHeaderRequire")
+  public short shortHeaderRequire(@RequestHeader(name = "input", required = true, defaultValue = "28") short input) {
+    return input;
+  }
+
+  @ApiImplicitParams({
+      @ApiImplicitParam(name = "input", dataType = "integer", format = "int16", paramType = "form", value = "a required form param",
+          required = true, defaultValue = "28")})
+  @PostMapping(path = "shortFormRequire")
+  public short shortFormRequire(short input) {
+    return input;
+  }
 }

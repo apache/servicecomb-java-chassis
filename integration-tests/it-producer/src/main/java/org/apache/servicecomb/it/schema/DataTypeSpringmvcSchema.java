@@ -179,6 +179,78 @@ public class DataTypeSpringmvcSchema {
     return num1 + num2;
   }
 
+  //long
+  @GetMapping("longPath/{input}")
+  public long longPath(@PathVariable("input") long input) {
+    return input;
+  }
+
+  @GetMapping("longQuery")
+  public long longQuery(@RequestParam("input") long input) {
+    return input;
+  }
+
+  @GetMapping("longHeader")
+  public long longHeader(@RequestHeader("input") long input) {
+    return input;
+  }
+
+  @GetMapping("longCookie")
+  public long longCookie(@CookieValue("input") long input) {
+    return input;
+  }
+
+  @PostMapping("longForm")
+  public long longForm(@RequestAttribute("input") long input) {
+    return input;
+  }
+
+  @PostMapping("longBody")
+  public long longBody(@RequestBody long input) {
+    return input;
+  }
+
+  @GetMapping(path = "longAdd")
+  public long longAdd(long num1, long num2) {
+    return num1 + num2;
+  }
+
+  //short
+  @GetMapping("shortPath/{input}")
+  public short shortPath(@PathVariable("input") short input) {
+    return input;
+  }
+
+  @GetMapping("shortQuery")
+  public short shortQuery(@RequestParam("input") short input) {
+    return input;
+  }
+
+  @GetMapping("shortHeader")
+  public short shortHeader(@RequestHeader("input") short input) {
+    return input;
+  }
+
+  @GetMapping("shortCookie")
+  public short shortCookie(@CookieValue("input") short input) {
+    return input;
+  }
+
+  @PostMapping("shortForm")
+  public short shortForm(@RequestAttribute("input") short input) {
+    return input;
+  }
+
+  @PostMapping("shortBody")
+  public short shortBody(@RequestBody short input) {
+    return input;
+  }
+
+  @GetMapping(path = "shortAdd")
+  public short shortAdd(short num1, short num2) {
+    return (short) (num1 + num2);
+  }
+
   @PostMapping(path = "enumBody")
   public Color enumBody(@RequestBody Color color) {
     return color;

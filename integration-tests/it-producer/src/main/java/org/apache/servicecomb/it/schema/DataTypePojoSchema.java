@@ -56,6 +56,24 @@ public class DataTypePojoSchema {
     return num1 + num2;
   }
 
+  //long
+  public long longBody(long input) {
+    return input;
+  }
+
+  public long longAdd(long num1, long num2) {
+    return num1 + num2;
+  }
+
+  //short
+  public short shortBody(short input) {
+    return input;
+  }
+
+  public short shortAdd(short num1, short num2) {
+    return (short) (num1 + num2);
+  }
+
   public Color enumBody(Color color) {
     return color;
   }

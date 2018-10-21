@@ -22,6 +22,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.provider.springmvc.reference.CseClientHttpRequest;
 import org.apache.servicecomb.provider.springmvc.reference.CseClientHttpResponse;
 import org.springframework.http.HttpInputMessage;
@@ -68,7 +69,7 @@ public class CseHttpMessageConverter implements HttpMessageConverter<Object> {
     MessageBodyClientHttpResponseWrapper respWrapper = (MessageBodyClientHttpResponseWrapper) inputMessage;
     CseClientHttpResponse resp =
         (CseClientHttpResponse) ReflectionUtils.getField(RESPONSE_FIELD, respWrapper);
-    return resp.getResult();
+    return JsonUtils.convertValue(resp.getResult(), clazz);
   }
 
   @Override

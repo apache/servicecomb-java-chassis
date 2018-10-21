@@ -50,6 +50,14 @@ public class TestDataTypePrimitive {
 
     float floatAdd(float num1, float num2);
 
+    long longBody(long input);
+
+    long longAdd(long num1, long num2);
+
+    short shortBody(short input);
+
+    short shortAdd(short num1, short num2);
+
     Color enumBody(Color color);
   }
 
@@ -112,6 +120,36 @@ public class TestDataTypePrimitive {
     float floatForm(float input);
 
     float floatAdd(float num1, float num2);
+
+    //long
+    long longPath(long input);
+
+    long longQuery(long input);
+
+    long longHeader(long input);
+
+    long longCookie(long input);
+
+    long longBody(long input);
+
+    long longForm(long input);
+
+    long longAdd(long num1, long num2);
+
+    //short
+    short shortPath(short input);
+
+    short shortQuery(short input);
+
+    short shortHeader(short input);
+
+    short shortCookie(short input);
+
+    short shortBody(short input);
+
+    short shortForm(short input);
+
+    short shortAdd(short num1, short num2);
 
     // enum
     Color enumBody(Color color);
@@ -1073,6 +1111,461 @@ public class TestDataTypePrimitive {
   @Test
   public void enumBody_springmvc_intf() {
     assertEquals(Color.BLUE, consumersSpringmvc.getIntf().enumBody(Color.BLUE));
+  }
+
+  //long
+  @Test
+  public void long_pojo_intf() {
+    assertEquals(100L, consumersPojo.getIntf().longBody(100L));
+  }
+
+  @Test
+  public void long_pojo_rt() {
+    Map<String, Long> map = new HashMap<>();
+    map.put("input", 100L);
+    assertEquals(100L, (long) consumersPojo.getSCBRestTemplate().postForObject("/longBody", map, long.class));
+  }
+
+  @Test
+  public void longAdd_pojo_intf() {
+    assertEquals(300L, consumersPojo.getIntf().longAdd(100L, 200L));
+  }
+
+  @Test
+  public void longAdd_pojo_rt() {
+    Map<String, Long> map = new HashMap<>();
+    map.put("num1", 100L);
+    map.put("num2", 200L);
+    assertEquals(300L, (long) consumersPojo.getSCBRestTemplate().postForObject("/longAdd", map, long.class));
+  }
+
+  @Test
+  public void longPath_jaxrs_intf() {
+    assertEquals(100L, consumersJaxrs.getIntf().longPath(100L));
+  }
+
+  @Test
+  public void longPath_jaxrs_rt() {
+    assertEquals(100L, (long) consumersJaxrs.getSCBRestTemplate().getForObject("/longPath/100", long.class));
+  }
+
+  @Test
+  public void longQuery_jaxrs_intf() {
+    assertEquals(100L, consumersJaxrs.getIntf().longQuery(100L));
+  }
+
+  @Test
+  public void longQuery_jaxrs_rt() {
+    assertEquals(100L,
+        (long) consumersJaxrs.getSCBRestTemplate().getForObject("/longQuery?input=100", long.class));
+  }
+
+  @Test
+  public void longHeader_jaxrs_intf() {
+    assertEquals(100L, consumersJaxrs.getIntf().longHeader(100L));
+  }
+
+  @Test
+  public void longHeader_jaxrs_rt() {
+    longHeader_rt(consumersJaxrs);
+  }
+
+  protected void longHeader_rt(Consumers
+      <DataTypeRestIntf> consumers) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("input", "100");
+
+    @SuppressWarnings("rawtypes")
+    HttpEntity entity = new HttpEntity<>(null, headers);
+    ResponseEntity<Long> response = consumers.getSCBRestTemplate()
+        .exchange("/longHeader",
+            HttpMethod.GET,
+            entity,
+            long.class);
+    assertEquals(100L, (long) response.getBody());
+  }
+
+  @Test
+  public void longCookie_jaxrs_intf() {
+    assertEquals(100L, consumersJaxrs.getIntf().longCookie(100L));
+  }
+
+  @Test
+  public void longCookie_jaxrs_rt() {
+    longCookie_rt(consumersJaxrs);
+  }
+
+  void longCookie_rt(Consumers
+      <DataTypeRestIntf> consumers) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Cookie", "input=100");
+
+    @SuppressWarnings("rawtypes")
+    HttpEntity entity = new HttpEntity<>(null, headers);
+    ResponseEntity<Long> response = consumers.getSCBRestTemplate()
+        .exchange("/longCookie",
+            HttpMethod.GET,
+            entity,
+            long.class);
+    assertEquals(100L, (long) response.getBody());
+  }
+
+  @Test
+  public void longForm_jaxrs_intf() {
+    assertEquals(100L, consumersJaxrs.getIntf().longForm(100L));
+  }
+
+  @Test
+  public void longForm_jaxrs_rt() {
+    Map<String, Long> map = new HashMap<>();
+    map.put("input", 100L);
+    HttpEntity<Map<String, Long>> formEntiry = new HttpEntity<>(map);
+
+    assertEquals(100L,
+        (long) consumersJaxrs.getSCBRestTemplate().postForEntity("/longForm", formEntiry, long.class).getBody());
+    //just use map is ok
+    assertEquals(100L,
+        (long) consumersJaxrs.getSCBRestTemplate().postForEntity("/longForm", map, long.class).getBody()
+    );
+  }
+
+  @Test
+  public void longBody_jaxrs_intf() {
+    assertEquals(100L, consumersJaxrs.getIntf().longBody(100L));
+  }
+
+
+  @Test
+  public void longBody_jaxrs_rt() {
+    assertEquals(100L,
+        (long) consumersJaxrs.getSCBRestTemplate().postForObject("/longBody", 100L, long.class));
+  }
+
+  @Test
+  public void longAdd_jaxrs_intf() {
+    assertEquals(300L, consumersJaxrs.getIntf().longAdd(100L, 200L));
+  }
+
+  @Test
+  public void longAdd_jaxrs_rt() {
+    assertEquals(300L,
+        (long) consumersJaxrs.getSCBRestTemplate().getForObject("/longAdd?num1=100&num2=200", long.class));
+  }
+
+  @Test
+  public void longPath_springmvc_intf() {
+    assertEquals(100L, consumersSpringmvc.getIntf().longPath(100L));
+  }
+
+  @Test
+  public void longPath_springmvc_rt() {
+    assertEquals(100L, (long) consumersSpringmvc.getSCBRestTemplate().getForObject("/longPath/100", long.class));
+  }
+
+  @Test
+  public void longQuery_springmvc_intf() {
+    assertEquals(100L, consumersSpringmvc.getIntf().longQuery(100L));
+  }
+
+
+  @Test
+  public void longQuery_springmvc_rt() {
+    assertEquals(100L,
+        (long) consumersSpringmvc.getSCBRestTemplate().getForObject("/longQuery?input=100", long.class));
+  }
+
+  @Test
+  public void longHeader_springmvc_intf() {
+    assertEquals(100L, consumersSpringmvc.getIntf().longHeader(100L));
+  }
+
+  @Test
+  public void longHeader_springmvc_rt() {
+    longHeader_rt(consumersSpringmvc);
+  }
+
+  @Test
+  public void longCookie_springmvc_intf() {
+    assertEquals(100L, consumersSpringmvc.getIntf().longCookie(100L));
+  }
+
+  @Test
+  public void longCookie_springmvc_rt() {
+    longCookie_rt(consumersSpringmvc);
+  }
+
+  @Test
+  public void longForm_springmvc_intf() {
+    assertEquals(100L, consumersSpringmvc.getIntf().longForm(100L));
+  }
+
+  @Test
+  public void longForm_springmvc_rt() {
+    Map<String, Long> map = new HashMap<>();
+    map.put("input", 100L);
+    HttpEntity<Map<String, Long>> formEntiry = new HttpEntity<>(map);
+
+    assertEquals(100L,
+        (long) consumersSpringmvc.getSCBRestTemplate().postForEntity("/longForm", formEntiry, long.class).getBody());
+  }
+
+  @Test
+  public void longBody_springmvc_intf() {
+    assertEquals(100L, consumersSpringmvc.getIntf().longBody(100L));
+  }
+
+  @Test
+  public void longBody_springmvc_rt() {
+    assertEquals(100L,
+        (long) consumersSpringmvc.getSCBRestTemplate().postForObject("/longBody", 100L, long.class));
+  }
+
+  @Test
+  public void longAdd_springmvc_intf() {
+    assertEquals(300L, consumersSpringmvc.getIntf().longAdd(100L, 200L));
+  }
+
+  @Test
+  public void longAdd_springmvc_rt() {
+    assertEquals(300L,
+        (long) consumersSpringmvc.getSCBRestTemplate().getForObject("/longAdd?num1=100&num2=200", long.class));
+  }
+
+
+  @Test
+  public void short_pojo_rt() {
+    short num = 30;
+    Map<String, Short> map = new HashMap<>();
+    map.put("input", num);
+    assertEquals(num, (short) consumersPojo.getSCBRestTemplate().postForObject("/shortBody", map, short.class));
+  }
+
+
+  @Test
+  public void shortAdd_pojo_rt() {
+    short num1 = 30;
+    short num2 = 21;
+    short sum = 51;
+    Map<String, Short> map = new HashMap<>();
+    map.put("num1", num1);
+    map.put("num2", num2);
+    assertEquals(sum, (short) consumersPojo.getSCBRestTemplate().postForObject("/shortAdd", map, short.class));
+  }
+
+  @Test
+  public void shortPath_jaxrs_intf() {
+    short num = 30;
+    assertEquals(num, consumersJaxrs.getIntf().shortPath(num));
+  }
+
+  @Test
+  public void shortPath_jaxrs_rt() {
+    assertEquals(30, (short) consumersJaxrs.getSCBRestTemplate().getForObject("/shortPath/30", short.class));
+  }
+
+  @Test
+  public void shortQuery_jaxrs_intf() {
+    short num = 30;
+    assertEquals(num, consumersJaxrs.getIntf().shortQuery(num));
+  }
+
+  @Test
+  public void shortQuery_jaxrs_rt() {
+    short num = 30;
+    Map<String, Short> param = new HashMap<>();
+    param.put("input", num);
+
+    assertEquals(num,
+        (short) consumersJaxrs.getSCBRestTemplate().getForObject("/shortQuery?input={input}", short.class, param));
+  }
+
+  @Test
+  public void shortHeader_jaxrs_intf() {
+    short num = 30;
+    assertEquals(num, consumersJaxrs.getIntf().shortHeader(num));
+  }
+
+  @Test
+  public void shortHeader_jaxrs_rt() {
+    shortHeader_rt(consumersJaxrs);
+  }
+
+  protected void shortHeader_rt(Consumers
+      <DataTypeRestIntf> consumers) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("input", "30");
+
+    @SuppressWarnings("rawtypes")
+    HttpEntity entity = new HttpEntity<>(null, headers);
+    ResponseEntity<Short> response = consumers.getSCBRestTemplate()
+        .exchange("/shortHeader",
+            HttpMethod.GET,
+            entity,
+            short.class);
+    assertEquals(30, (short) response.getBody());
+  }
+
+  @Test
+  public void shortCookie_jaxrs_intf() {
+    short num = 30;
+    assertEquals(num, consumersJaxrs.getIntf().shortCookie(num));
+  }
+
+  @Test
+  public void shortCookie_jaxrs_rt() {
+    shortCookie_rt(consumersJaxrs);
+  }
+
+  void shortCookie_rt(Consumers<DataTypeRestIntf> consumers) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Cookie", "input=30");
+    short num = 30;
+    @SuppressWarnings("rawtypes")
+    HttpEntity entity = new HttpEntity<>(null, headers);
+    ResponseEntity<Short> response = consumers.getSCBRestTemplate()
+        .exchange("/shortCookie",
+            HttpMethod.GET,
+            entity,
+            short.class);
+    assertEquals(num, (short) response.getBody());
+  }
+
+  @Test
+  public void shortForm_jaxrs_intf() {
+    short num = 30;
+    assertEquals(num, consumersJaxrs.getIntf().shortForm(num));
+  }
+
+  @Test
+  public void shortForm_jaxrs_rt() {
+    short num = 30;
+    Map<String, Short> map = new HashMap<>();
+    map.put("input", num);
+    HttpEntity<Map<String, Short>> formEntiry = new HttpEntity<>(map);
+
+    assertEquals(num,
+        (short) consumersJaxrs.getSCBRestTemplate().postForEntity("/shortForm", formEntiry, short.class).getBody());
+    //just use map is ok
+    assertEquals(num,
+        (short) consumersJaxrs.getSCBRestTemplate().postForEntity("/shortForm", map, short.class).getBody()
+    );
+  }
+
+  @Test
+  public void shortBody_jaxrs_intf() {
+    short num = 30;
+    assertEquals(num, consumersJaxrs.getIntf().shortBody(num));
+  }
+
+
+  @Test
+  public void shortBody_jaxrs_rt() {
+    short num = 30;
+    assertEquals(num, (short) consumersJaxrs.getSCBRestTemplate().postForObject("/shortBody", num, short.class));
+  }
+
+  @Test
+  public void shortAdd_jaxrs_intf() {
+    short num1 = 30;
+    short num2 = 21;
+    short sum = 51;
+    assertEquals(sum, consumersJaxrs.getIntf().shortAdd(num1, num2));
+  }
+
+  @Test
+  public void shortAdd_jaxrs_rt() {
+    assertEquals(51,
+        (short) consumersJaxrs.getSCBRestTemplate().getForObject("/shortAdd?num1=30&num2=21", short.class));
+  }
+
+  @Test
+  public void shortPath_springmvc_intf() {
+    short num = 30;
+    assertEquals(num, consumersSpringmvc.getIntf().shortPath(num));
+  }
+
+  @Test
+  public void shortPath_springmvc_rt() {
+    assertEquals(30, (short) consumersSpringmvc.getSCBRestTemplate().getForObject("/shortPath/30", short.class));
+  }
+
+  @Test
+  public void shortQuery_springmvc_intf() {
+    short num = 30;
+    assertEquals(num, consumersSpringmvc.getIntf().shortQuery(num));
+  }
+
+
+  @Test
+  public void shortQuery_springmvc_rt() {
+    assertEquals(30,
+        (short) consumersSpringmvc.getSCBRestTemplate().getForObject("/shortQuery?input=30", short.class));
+  }
+
+  @Test
+  public void shortHeader_springmvc_intf() {
+    short num = 30;
+    assertEquals(num, consumersSpringmvc.getIntf().shortHeader(num));
+  }
+
+  @Test
+  public void shortHeader_springmvc_rt() {
+    shortHeader_rt(consumersSpringmvc);
+  }
+
+  @Test
+  public void shortCookie_springmvc_intf() {
+    short num = 30;
+    assertEquals(num, consumersSpringmvc.getIntf().shortCookie(num));
+  }
+
+  @Test
+  public void shortCookie_springmvc_rt() {
+    shortCookie_rt(consumersSpringmvc);
+  }
+
+  @Test
+  public void shortForm_springmvc_intf() {
+    short num = 30;
+    assertEquals(num, consumersSpringmvc.getIntf().shortForm(num));
+  }
+
+  @Test
+  public void shortForm_springmvc_rt() {
+    short num = 30;
+    Map<String, Short> map = new HashMap<>();
+    map.put("input", num);
+    HttpEntity<Map<String, Short>> formEntiry = new HttpEntity<>(map);
+
+    assertEquals(num,
+        (short) consumersSpringmvc.getSCBRestTemplate().postForEntity("/shortForm", formEntiry, short.class).getBody());
+  }
+
+  @Test
+  public void shortBody_springmvc_intf() {
+    short num = 30;
+    assertEquals(30, consumersSpringmvc.getIntf().shortBody(num));
+  }
+
+  @Test
+  public void shortBody_springmvc_rt() {
+    short num = 30;
+    assertEquals(num,
+        (short) consumersSpringmvc.getSCBRestTemplate().postForObject("/shortBody", num, short.class));
+  }
+
+  @Test
+  public void shortAdd_springmvc_intf() {
+    short num1 = 30;
+    short num2 = 21;
+    short sum = 51;
+    assertEquals(sum, consumersSpringmvc.getIntf().shortAdd(num1, num2));
+  }
+
+  @Test
+  public void shortAdd_springmvc_rt() {
+    assertEquals(51,
+        (short) consumersSpringmvc.getSCBRestTemplate().getForObject("/shortAdd?num1=30&num2=21", short.class));
   }
 
   @Test

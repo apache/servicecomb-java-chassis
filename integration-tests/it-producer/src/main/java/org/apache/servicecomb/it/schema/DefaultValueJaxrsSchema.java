@@ -101,4 +101,42 @@ public class DefaultValueJaxrsSchema {
   public float floatForm(@FormParam("input") @DefaultValue("10.2") float input) {
     return input;
   }
+
+  //long
+  @Path("longQuery")
+  @GET
+  public long longQuery(@QueryParam("input") @DefaultValue("1000") long input) {
+    return input;
+  }
+
+  @Path("longHeader")
+  @GET
+  public long longHeader(@HeaderParam(value = "input") @DefaultValue("1000") long input) {
+    return input;
+  }
+
+  @Path("longForm")
+  @POST
+  public long longForm(@FormParam("input") @DefaultValue("1000") long input) {
+    return input;
+  }
+
+  //short
+  @Path("shortQuery")
+  @GET
+  public short shortQuery(@QueryParam("input") @DefaultValue("28") short input) {
+    return input;
+  }
+
+  @Path("shortHeader")
+  @GET
+  public short shortHeader(@HeaderParam(value = "input") @DefaultValue("28") short input) {
+    return input;
+  }
+
+  @Path("shortForm")
+  @POST
+  public short shortForm(@FormParam("input") @DefaultValue("28") short input) {
+    return input;
+  }
 }
