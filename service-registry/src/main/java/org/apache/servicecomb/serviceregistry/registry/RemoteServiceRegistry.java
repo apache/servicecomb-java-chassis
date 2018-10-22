@@ -94,8 +94,10 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
   }
 
   @Subscribe
-  public void onMicroserviceRegistryTask(MicroserviceInstanceHeartbeatTask event) {
+  public void onMicroserviceHeartbeatTask(MicroserviceInstanceHeartbeatTask event) {
+    if (HeartbeatResult.SUCCESS.equals(event.getHeartbeatResult())) {
       ipPortManager.initAutoDiscovery();
+    }
   }
 
   public ScheduledThreadPoolExecutor getTaskPool() {
