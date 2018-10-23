@@ -25,6 +25,7 @@ import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
+import org.apache.servicecomb.serviceregistry.task.HeartbeatResult;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceHeartbeatTask;
 import org.apache.servicecomb.serviceregistry.task.event.PeriodicPullEvent;
 import org.apache.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;

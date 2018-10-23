@@ -75,5 +75,18 @@ public class MicroserviceDeploy extends NormalDeploy {
 
     sendCommand("ms-stop");
     waitStop();
+
+    MicroserviceVersionRule microserviceVersionRule = RegistryUtils.getServiceRegistry().getAppManager()
+        .getOrCreateMicroserviceVersionRule(microserviceDeployDefinition.getAppId(),
+            microserviceDeployDefinition.getMicroserviceName(),
+            microserviceDeployDefinition.getVersion());
+    while (microserviceVersionRule.getInstances().size() > 0) {
+      try {
+        LOGGER.info("{} not stop finished wait.", microserviceDeployDefinition.getDisplayName());
+        Thread.sleep(3000);
+      } catch (InterruptedException e) {
+        e.printStackTrace();
+      }
+    }
   }
 }
