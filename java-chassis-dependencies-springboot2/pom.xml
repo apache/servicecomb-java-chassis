@@ -37,10 +37,11 @@
     <argLine>-Dfile.encoding=UTF-8</argLine>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <spring.version>5.0.4.RELEASE</spring.version>
-    <spring.boot.version>2.0.0.RELEASE</spring.boot.version>
-    <spring.data.version>2.0.5.RELEASE</spring.data.version>
+    <spring.version>5.0.6.RELEASE</spring.version>
+    <spring.boot.version>2.0.3.RELEASE</spring.boot.version>
+    <spring.data.version>2.0.3.RELEASE</spring.data.version>
     <spring.session.version>2.0.3.RELEASE</spring.session.version>
+    <spring-cloud.version>Finchley.RELEASE</spring-cloud.version>
   </properties>
 
   <dependencyManagement>
@@ -147,6 +148,42 @@
         <artifactId>spring-session-data-redis</artifactId>
         <version>${spring.session.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${spring-cloud.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-commons</artifactId>
+        <version>2.0.0.RELEASE</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-context</artifactId>
+        <version>2.0.0.RELEASE</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-netflix-core</artifactId>
+        <version>2.0.0.RELEASE</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>pring-cloud-starter-netflix-zuul</artifactId>
+        <version>2.0.0.RELEASE</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
+        <version>2.0.0.RELEASE</version>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+        <version>2.0.0.RELEASE</version>
+      </dependency>
 
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
@@ -155,7 +192,6 @@
         <type>pom</type>
         <scope>import</scope>
       </dependency>
-
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>spring-boot2-starter</artifactId>
@@ -171,7 +207,11 @@
         <artifactId>spring-boot2-starter-standalone</artifactId>
         <version>1.1.0-SNAPSHOT</version>
       </dependency>
-
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>spring-boot2-starter-discovery</artifactId>
+        <version>1.1.0-SNAPSHOT</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
