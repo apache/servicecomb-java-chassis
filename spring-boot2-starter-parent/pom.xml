@@ -40,6 +40,7 @@
     <module>spring-boot2-starter</module>
     <module>spring-boot2-starter-servlet</module>
     <module>spring-boot2-starter-standalone</module>
+    <module>spring-boot2-starter-discovery</module>
   </modules>
 
   <build>
