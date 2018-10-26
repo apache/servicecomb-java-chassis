@@ -29,7 +29,6 @@
   <name>Java Chassis::Foundations::Config CC</name>
 
   <dependencies>
-
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>foundation-config</artifactId>
@@ -41,6 +40,12 @@
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>foundation-vertx</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-codegen</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 

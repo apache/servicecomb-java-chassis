@@ -45,6 +45,12 @@
       <artifactId>vertx-web</artifactId>
     </dependency>
     <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-codegen</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
       <groupId>com.netflix.spectator</groupId>
       <artifactId>spectator-reg-servo</artifactId>
     </dependency>
