@@ -48,6 +48,7 @@ public class MetricsBootListener implements BootListener {
         break;
       case BEFORE_CLOSE:
         metricsBootstrap.shutdown();
+        break;
       default:
         break;
     }

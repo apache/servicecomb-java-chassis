@@ -52,6 +52,7 @@ public class TestQueryProcessorCreator {
     Assert.assertEquals(null, result);
   }
 
+  @SuppressWarnings("UnusedAssignment")
   @Test
   public void testCreateNullAsEmpty() throws Exception {
     HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
@@ -70,12 +71,12 @@ public class TestQueryProcessorCreator {
     Assert.assertEquals("Hello", result);
 
     Mockito.when(request.getParameter("query")).thenReturn("");
-    result = (String) (String) processor.getValue(request);
+    result = (String) processor.getValue(request);
     Assert.assertEquals(null, result);
 
     Mockito.when(request.getParameter("query")).thenReturn(null);
     result = (String) processor.convertValue(null, TypeFactory.defaultInstance().constructType(String.class));
-    result = (String) (String) processor.getValue(request);
+    result = (String) processor.getValue(request);
     Assert.assertEquals(null, result);
   }
 }

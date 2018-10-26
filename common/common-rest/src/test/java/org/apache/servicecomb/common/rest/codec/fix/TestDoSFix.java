@@ -100,14 +100,14 @@ public class TestDoSFix {
     fastFail(() -> mapper.readValue(new ByteArrayInputStream(input.getBytes()), cls), eCls);
   }
 
-  void batFastFail(Class cls, Class<?> e1, Class<?> e2) {
+  void batFastFail(Class<?> cls, Class<?> e1, Class<?> e2) {
     fastFail(invalidNum, cls, e1);
     fastFail(invalidStr, cls, e2);
     fastFail(invalidArrNum, cls, e1);
     fastFail(invalidArrStr, cls, e2);
   }
 
-  void batFastFail(Class cls) {
+  void batFastFail(Class<?> cls) {
     batFastFail(cls, JsonParseException.class, InvalidFormatException.class);
   }
 
@@ -195,7 +195,7 @@ public class TestDoSFix {
     });
   }
 
-  void batFastSucc(Class cls, Object expected) {
+  void batFastSucc(Class<?> cls, Object expected) {
     Assert.assertEquals(expected, fastSucc(invalidNum, cls));
     Assert.assertEquals(expected, fastSucc(new ByteArrayInputStream(invalidNum.getBytes()), cls));
 

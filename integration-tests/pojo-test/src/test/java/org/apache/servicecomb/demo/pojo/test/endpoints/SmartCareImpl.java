@@ -40,6 +40,7 @@ public class SmartCareImpl implements SmartCare {
     return resp;
   }
 
+  @SuppressWarnings("divzero")
   @Override
   public Response delApplication(String appName) {
     // TODO: delete application

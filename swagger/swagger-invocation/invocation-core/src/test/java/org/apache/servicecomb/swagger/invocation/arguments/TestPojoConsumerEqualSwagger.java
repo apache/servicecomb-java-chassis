@@ -124,7 +124,7 @@ public class TestPojoConsumerEqualSwagger {
 
     Assert.assertEquals(bytes, invoker.getSwaggerArgument(0));
 
-    Assert.assertArrayEquals(bytes, (byte[]) result);
+    Assert.assertArrayEquals(bytes, result);
   }
 
   @Test

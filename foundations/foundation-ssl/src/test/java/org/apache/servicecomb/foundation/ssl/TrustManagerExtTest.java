@@ -84,6 +84,8 @@ public class TrustManagerExtTest {
   }
 
   class MyX509Certificate extends X509Certificate {
+    private static final long serialVersionUID = -3585440601605666276L;
+
     public void checkValidity() throws CertificateExpiredException, CertificateNotYetValidException {
     }
 
@@ -262,9 +264,8 @@ public class TrustManagerExtTest {
     Assert.assertNotNull(trustManagerExt);
   }
 
-  @SuppressWarnings("static-access")
   @Test
-  public void testConstructorWithParam(@Mocked CertificateUtil certificateUtil) {
+  public void testConstructorWithParam() {
     MyX509Certificate myX509Certificate1 = new MyX509Certificate();
     MyX509Certificate myX509Certificate2 = new MyX509Certificate();
 
@@ -272,12 +273,12 @@ public class TrustManagerExtTest {
     MyX509CertificateArray[0] = myX509Certificate1;
     MyX509CertificateArray[1] = myX509Certificate2;
 
-    new Expectations() {
+    new Expectations(CertificateUtil.class) {
       {
-        certificateUtil.findOwner((X509Certificate[]) any);
+        CertificateUtil.findOwner((X509Certificate[]) any);
         result = any;
 
-        certificateUtil.getCN((X509Certificate) any);
+        CertificateUtil.getCN((X509Certificate) any);
         result = "10.67.147.115";
       }
     };

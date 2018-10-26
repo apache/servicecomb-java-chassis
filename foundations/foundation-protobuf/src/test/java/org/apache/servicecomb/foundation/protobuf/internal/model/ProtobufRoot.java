@@ -3,7 +3,7 @@
 
 package org.apache.servicecomb.foundation.protobuf.internal.model;
 
-@SuppressWarnings("all")
+@SuppressWarnings({"all", "cast"})
 public final class ProtobufRoot {
   private ProtobufRoot() {
   }

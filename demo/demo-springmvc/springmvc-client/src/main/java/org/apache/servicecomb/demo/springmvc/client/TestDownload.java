@@ -31,6 +31,8 @@ import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import org.springframework.web.client.RestTemplate;
 
+import com.google.common.collect.Iterables;
+
 public class TestDownload {
   private File dir = new File("target/download");
 
@@ -89,6 +91,7 @@ public class TestDownload {
             content);
   }
 
+  @SuppressWarnings("unchecked")
   public void runRest() {
     futures.add(checkFile(intf.tempFileEntity(content)));
     futures.add(checkFuture(templateGet("tempFileEntity").saveAsBytes()));
@@ -126,7 +129,7 @@ public class TestDownload {
 
     try {
       CompletableFuture
-          .allOf(futures.toArray(new CompletableFuture[futures.size()]))
+          .allOf(Iterables.toArray((List<CompletableFuture<Object>>) (Object) futures, CompletableFuture.class))
           .get();
     } catch (InterruptedException | ExecutionException e1) {
       TestMgr.failed("test download failed.", e1);

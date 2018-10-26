@@ -32,7 +32,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 
 public class TestRestServerConfigEdge {
-  static GateRestTemplate client = (GateRestTemplate) GateRestTemplate.createEdgeRestTemplate("dataTypeJaxrs");
+  static GateRestTemplate client = GateRestTemplate.createEdgeRestTemplate("dataTypeJaxrs");
 
   @Test
   public void testIllegalPathParam() throws IOException {
