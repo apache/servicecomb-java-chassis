@@ -146,26 +146,26 @@ public class TestLoadBalanceHandler2 {
 
     handler = new LoadbalanceHandler();
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
-    server = (ServiceCombServer) loadBalancer.chooseServer(invocation);
+    server = loadBalancer.chooseServer(invocation);
     Assert.assertEquals(server, null);
 
     data.put("noneMatchInstance", noneMatchInstance);
     parent.cacheVersion(1);
     handler = new LoadbalanceHandler();
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
-    server = (ServiceCombServer) loadBalancer.chooseServer(invocation);
+    server = loadBalancer.chooseServer(invocation);
     Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9092");
 
     data.put("regionMatchInstance", regionMatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
-    server = (ServiceCombServer) loadBalancer.chooseServer(invocation);
+    server = loadBalancer.chooseServer(invocation);
     Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9091");
 
     data.put("allmatchInstance", allmatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
-    server = (ServiceCombServer) loadBalancer.chooseServer(invocation);
+    server = loadBalancer.chooseServer(invocation);
     Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9090");
 
     ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
@@ -177,7 +177,7 @@ public class TestLoadBalanceHandler2 {
     //if errorThresholdPercentage is 0,that means errorThresholdPercentage is not active.
     ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.errorThresholdPercentage", "0");
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
-    server = (ServiceCombServer) loadBalancer.chooseServer(invocation);
+    server = loadBalancer.chooseServer(invocation);
     Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9090");
 
     //if errorThresholdPercentage greater than 0, it will activate.
@@ -185,20 +185,20 @@ public class TestLoadBalanceHandler2 {
     ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.minIsolationTime", "10");
     ServiceCombServer server2 = server;
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
-    server = (ServiceCombServer) loadBalancer.chooseServer(invocation);
+    server = loadBalancer.chooseServer(invocation);
     Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9091");
     ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server2);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
-    server = (ServiceCombServer) loadBalancer.chooseServer(invocation);
+    server = loadBalancer.chooseServer(invocation);
     Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9091");
     TimeUnit.MILLISECONDS.sleep(20);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
-    server = (ServiceCombServer) loadBalancer.chooseServer(invocation);
+    server = loadBalancer.chooseServer(invocation);
     Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9090");
     ServiceCombLoadBalancerStats.INSTANCE.markFailure(server2);
     ServiceCombLoadBalancerStats.INSTANCE.markFailure(server2);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
-    server = (ServiceCombServer) loadBalancer.chooseServer(invocation);
+    server = loadBalancer.chooseServer(invocation);
     Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9091");
   }
 

@@ -1063,6 +1063,8 @@
             <compilerArgs>
               <arg>-Werror</arg>
               <arg>-Xlint:all</arg>
+              <!--not care for jdk8/jdk7 compatible problem-->
+              <arg>-Xlint:-classfile</arg>
             </compilerArgs>
           </configuration>
         </plugin>

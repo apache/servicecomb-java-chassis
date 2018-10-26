@@ -229,7 +229,7 @@ public class LoadbalanceHandler implements Handler {
 
   private void send(Invocation invocation, AsyncResponse asyncResp, final LoadBalancer chosenLB) throws Exception {
     long time = System.currentTimeMillis();
-    ServiceCombServer server = (ServiceCombServer) chosenLB.chooseServer(invocation);
+    ServiceCombServer server = chosenLB.chooseServer(invocation);
     if (null == server) {
       asyncResp.consumerFail(ExceptionUtils.lbAddressNotFound(invocation.getMicroserviceName(),
           invocation.getMicroserviceVersionRule(),

@@ -31,6 +31,7 @@ class ZipkinTracingAdviser {
     this.tracer = tracer;
   }
 
+  @SuppressWarnings({"unused", "try"})
   <T> T invoke(String spanName, String path, ThrowableSupplier<T> supplier) throws Throwable {
     Span span = createSpan(spanName, path);
     try (SpanInScope spanInScope = tracer.withSpanInScope(span)) {

@@ -43,6 +43,7 @@ public class RestServletInitializer extends AbstractConfigurableEmbeddedServletC
     implements ServletContextInitializer {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestServletInitializer.class);
 
+  @SuppressWarnings("try")
   @Override
   public void onStartup(ServletContext servletContext) throws ServletException {
     if (getPort() == 0) {

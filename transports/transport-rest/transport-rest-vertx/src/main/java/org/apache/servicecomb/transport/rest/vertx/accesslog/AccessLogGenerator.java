@@ -23,6 +23,8 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogIt
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.AccessLogPatternParser;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.parser.impl.VertxRestAccessLogPatternParser;
 
+import com.google.common.collect.Iterables;
+
 import io.vertx.ext.web.RoutingContext;
 
 /*
@@ -41,7 +43,7 @@ public class AccessLogGenerator {
   @SuppressWarnings("unchecked")
   public AccessLogGenerator(String rawPattern) {
     List<AccessLogItem<RoutingContext>> accessLogItemList = accessLogPatternParser.parsePattern(rawPattern);
-    accessLogItems = accessLogItemList.toArray(new AccessLogItem[0]);
+    accessLogItems = Iterables.toArray(accessLogItemList, AccessLogItem.class);
   }
 
   public String generateLog(AccessLogParam<RoutingContext> accessLogParam) {

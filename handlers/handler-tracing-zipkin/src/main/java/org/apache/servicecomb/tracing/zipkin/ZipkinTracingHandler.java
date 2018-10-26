@@ -40,6 +40,7 @@ class ZipkinTracingHandler implements Handler {
     this.tracingDelegate = tracingDelegate;
   }
 
+  @SuppressWarnings({"try", "unused"})
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
     Span span = tracingDelegate.createSpan(invocation);

@@ -199,7 +199,7 @@ public final class NetUtils {
   public static String getHostName() {
     //If failed to get host name ,micro-service will registry failed
     //So I add retry mechanism
-    if(hostName == null) {
+    if (hostName == null) {
       doGetHostNameAndHostAddress();
     }
     return hostName;
@@ -208,7 +208,7 @@ public final class NetUtils {
   public static String getHostAddress() {
     //If failed to get host address ,micro-service will registry failed
     //So I add retry mechanism
-    if(hostAddress == null) {
+    if (hostAddress == null) {
       doGetHostNameAndHostAddress();
     }
     return hostAddress;
@@ -226,6 +226,7 @@ public final class NetUtils {
     return address;
   }
 
+  @SuppressWarnings({"unused", "try"})
   public static boolean canTcpListen(InetAddress address, int port) {
     try (ServerSocket ss = new ServerSocket(port, 0, address)) {
       return true;

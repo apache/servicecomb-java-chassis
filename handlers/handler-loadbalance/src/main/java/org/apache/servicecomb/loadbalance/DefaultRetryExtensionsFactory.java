@@ -49,20 +49,19 @@ public class DefaultRetryExtensionsFactory implements ExtensionsFactory {
     return ACCEPT_KEYS.contains(key) && ACCEPT_VALUES.contains(value);
   }
 
-  @SuppressWarnings("unchecked")
   public RetryHandler createRetryHandler(String retryName, String microservice) {
     return new DefaultLoadBalancerRetryHandler(
         Configuration.INSTANCE.getRetryOnSame(microservice),
         Configuration.INSTANCE.getRetryOnNext(microservice), true) {
       private List<Class<? extends Throwable>> retriable = Lists
-          .newArrayList(new Class[] {ConnectException.class, SocketTimeoutException.class});
+          .newArrayList(ConnectException.class, SocketTimeoutException.class);
 
       Map<Class<? extends Throwable>, List<String>> strictRetriable =
           ImmutableMap.<Class<? extends Throwable>, List<String>>builder()
               .put(ConnectException.class, Lists.newArrayList())
               .put(SocketTimeoutException.class, Lists.newArrayList())
               /*
-               * deal with some special exceptions caused by the server side close the connection 
+               * deal with some special exceptions caused by the server side close the connection
                */
               .put(IOException.class, Lists.newArrayList(new String[] {"Connection reset by peer"}))
               .put(VertxException.class, Lists.newArrayList(new String[] {"Connection was closed"}))
