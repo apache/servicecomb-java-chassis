@@ -1048,6 +1048,8 @@
           <configuration>
             <source>1.8</source>
             <target>1.8</target>
+            <showDeprecation>true</showDeprecation>
+            <showWarnings>true</showWarnings>
             <compilerArgs>
               <arg>-Werror</arg>
               <arg>-Xlint:all</arg>
