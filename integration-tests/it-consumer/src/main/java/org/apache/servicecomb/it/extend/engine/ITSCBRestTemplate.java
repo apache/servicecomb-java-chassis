@@ -29,6 +29,8 @@ public class ITSCBRestTemplate extends CseRestTemplate {
 
   private String schemaId;
 
+  private String basePath;
+
   public ITSCBRestTemplate(String schemaId) {
     this.schemaId = schemaId;
   }
@@ -40,12 +42,17 @@ public class ITSCBRestTemplate extends CseRestTemplate {
             DefinitionConst.VERSION_RULE_ALL);
     MicroserviceVersionMeta microserviceVersionMeta = microserviceVersionRule.getLatestMicroserviceVersion();
     SchemaMeta schemaMeta = microserviceVersionMeta.getMicroserviceMeta().ensureFindSchemaMeta(schemaId);
-    urlPrefix = String.format("cse://%s/%s", producerName, schemaMeta.getSwagger().getBasePath());
+    basePath = schemaMeta.getSwagger().getBasePath();
+    urlPrefix = String.format("cse://%s%s", producerName, basePath);
 
     setUriTemplateHandler(new ITUriTemplateHandler(urlPrefix));
     setRequestFactory(new ITClientHttpRequestFactory());
 
     return this;
+  }
+
+  public String getBasePath() {
+    return basePath;
   }
 
   public String getUrlPrefix() {

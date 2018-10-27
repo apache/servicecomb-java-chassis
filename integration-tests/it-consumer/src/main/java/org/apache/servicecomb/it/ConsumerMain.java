@@ -32,6 +32,7 @@ import org.apache.servicecomb.it.testcase.TestIgnoreStaticMethod;
 import org.apache.servicecomb.it.testcase.TestParamCodec;
 import org.apache.servicecomb.it.testcase.TestParamCodecEdge;
 import org.apache.servicecomb.it.testcase.TestRequestBodySpringMvcSchema;
+import org.apache.servicecomb.it.testcase.TestRestController;
 import org.apache.servicecomb.it.testcase.TestRestServerConfig;
 import org.apache.servicecomb.it.testcase.TestRestServerConfigEdge;
 import org.apache.servicecomb.it.testcase.TestTrace;
@@ -132,6 +133,7 @@ public class ConsumerMain {
 
     ITJUnitUtils.run(TestRequestBodySpringMvcSchema.class);
     ITJUnitUtils.run(TestDefaultJsonValueJaxrsSchema.class);
+    ITJUnitUtils.run(TestRestController.class);
   }
 
   private static void testStandalone() throws Throwable {
