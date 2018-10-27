@@ -70,4 +70,6 @@ public final class RestConst {
   // the size threshold after which files will be written to disk
   // only available for servlet rest transport
   public static final String UPLOAD_FILE_SIZE_THRESHOLD = "servicecomb.uploads.fileSizeThreshold";
+
+  public static final String PROVIDER_SCAN_REST_CONTROLLER = "servicecomb.provider.rest.scanRestController";
 }

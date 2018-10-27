@@ -19,15 +19,22 @@ package org.apache.servicecomb.provider.rest.common;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.core.provider.producer.ProducerMeta;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 @Component
 public class RestProducers implements BeanPostProcessor {
   private List<ProducerMeta> producerMetaList = new ArrayList<>();
+
+  private boolean scanRestController = DynamicPropertyFactory.getInstance()
+      .getBooleanProperty(RestConst.PROVIDER_SCAN_REST_CONTROLLER, true).get();
 
   public List<ProducerMeta> getProducerMetaList() {
     return producerMetaList;
@@ -49,15 +56,24 @@ public class RestProducers implements BeanPostProcessor {
     // aop后，新的实例的父类可能是原class，也可能只是个proxy，父类不是原class
     // 所以，需要先取出原class，再取标注
     Class<?> beanCls = BeanUtils.getImplClassFromBean(bean);
-    if(beanCls == null) {
-    	return;
-    }
-    RestSchema restSchema = beanCls.getAnnotation(RestSchema.class);
-    if (restSchema == null) {
+    if (beanCls == null) {
       return;
     }
+    RestSchema restSchema = beanCls.getAnnotation(RestSchema.class);
+    ProducerMeta producerMeta;
+    if (restSchema == null) {
+      if (!scanRestController) {
+        return;
+      }
+      RestController controller = beanCls.getAnnotation(RestController.class);
+      if (controller == null) {
+        return;
+      }
+      producerMeta = new ProducerMeta(beanCls.getName(), bean, beanCls);
+    } else {
+      producerMeta = new ProducerMeta(restSchema.schemaId(), bean, beanCls);
+    }
 
-    ProducerMeta producerMeta = new ProducerMeta(restSchema.schemaId(), bean, beanCls);
     producerMetaList.add(producerMeta);
   }
 }

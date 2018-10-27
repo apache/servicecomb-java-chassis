@@ -35,6 +35,7 @@ import org.apache.servicecomb.swagger.generator.springmvc.processor.annotation.R
 import org.apache.servicecomb.swagger.generator.springmvc.processor.annotation.RequestMappingMethodAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.springmvc.processor.annotation.RequestParamAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.springmvc.processor.annotation.RequestPartAnnotationProcessor;
+import org.apache.servicecomb.swagger.generator.springmvc.processor.annotation.RestControllerClassAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.springmvc.processor.parameter.SpringmvcDefaultParameterProcessor;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -49,6 +50,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 
 public class SpringmvcSwaggerGeneratorContext extends RestSwaggerGeneratorContext {
   private static final int ORDER = 1000;
@@ -60,7 +62,7 @@ public class SpringmvcSwaggerGeneratorContext extends RestSwaggerGeneratorContex
 
   @Override
   public boolean canProcess(Class<?> cls) {
-    return ClassUtils.hasAnnotation(cls, RequestMapping.class);
+    return ClassUtils.hasAnnotation(cls, RequestMapping.class) || ClassUtils.hasAnnotation(cls, RestController.class);
   }
 
   @Override
@@ -78,6 +80,7 @@ public class SpringmvcSwaggerGeneratorContext extends RestSwaggerGeneratorContex
     super.initClassAnnotationMgr();
 
     classAnnotationMgr.register(RequestMapping.class, new RequestMappingClassAnnotationProcessor());
+    classAnnotationMgr.register(RestController.class, new RestControllerClassAnnotationProcessor());
   }
 
   @Override
