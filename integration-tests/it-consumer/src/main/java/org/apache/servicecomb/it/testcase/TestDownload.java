@@ -14,10 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.demo.springmvc.client;
+package org.apache.servicecomb.it.testcase;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -25,22 +27,19 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
-import org.apache.servicecomb.provider.pojo.Invoker;
-import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
-import org.springframework.web.client.RestTemplate;
+import org.apache.servicecomb.it.Consumers;
+import org.apache.servicecomb.it.testcase.support.DownloadSchemaIntf;
+import org.junit.Assert;
+import org.junit.Test;
 
 import com.google.common.collect.Iterables;
 
 public class TestDownload {
   private File dir = new File("target/download");
 
-  private DownloadSchemaIntf intf = Invoker.createProxy("springmvc", "download", DownloadSchemaIntf.class);
-
-  private RestTemplate restTemplate = new CseRestTemplate();
-
-  private String prefix = "cse://springmvc/download";
+  private static Consumers<DownloadSchemaIntf> consumers = new Consumers<>("download",
+      DownloadSchemaIntf.class);
 
   private List<CompletableFuture<?>> futures = new ArrayList<>();
 
@@ -66,6 +65,12 @@ public class TestDownload {
     return checkFuture(future);
   }
 
+  private String getStackTrace(Throwable e) {
+    StringWriter writer = new StringWriter();
+    e.printStackTrace(new PrintWriter(writer));
+    return writer.toString();
+  }
+
   private <T> CompletableFuture<T> checkFuture(CompletableFuture<T> future) {
     Error error = new Error();
     future.whenComplete((result, e) -> {
@@ -78,53 +83,54 @@ public class TestDownload {
         value = new String((byte[]) value);
       }
 
-      TestMgr.check(content, value, error);
+      Assert.assertEquals(getStackTrace(error), content, value);
     });
 
     return future;
   }
 
   private ReadStreamPart templateGet(String methodPath) {
-    return restTemplate
-        .getForObject(prefix + "/" + methodPath + "?content={content}",
+    return consumers.getSCBRestTemplate()
+        .getForObject("/" + methodPath + "?content={content}",
             ReadStreamPart.class,
             content);
   }
 
+  @Test
   @SuppressWarnings("unchecked")
   public void runRest() {
-    futures.add(checkFile(intf.tempFileEntity(content)));
+    futures.add(checkFile(consumers.getIntf().tempFileEntity(content)));
     futures.add(checkFuture(templateGet("tempFileEntity").saveAsBytes()));
 
-    futures.add(checkFile(intf.tempFilePart(content)));
+    futures.add(checkFile(consumers.getIntf().tempFilePart(content)));
     futures.add(checkFuture(templateGet("tempFilePart").saveAsString()));
 
-    futures.add(checkFile(intf.file(content)));
+    futures.add(checkFile(consumers.getIntf().file(content)));
     futures.add(checkFuture(templateGet("file").saveAsString()));
 
     {
-      ReadStreamPart part = intf.chineseAndSpaceFile(content);
-      TestMgr.check("测 试.test.txt", part.getSubmittedFileName());
+      ReadStreamPart part = consumers.getIntf().chineseAndSpaceFile(content);
+      Assert.assertEquals("测 试.test.txt", part.getSubmittedFileName());
       futures.add(checkFile(part));
 
       part = templateGet("chineseAndSpaceFile");
-      TestMgr.check("测 试.test.txt", part.getSubmittedFileName());
+      Assert.assertEquals("测 试.test.txt", part.getSubmittedFileName());
       futures.add(checkFuture(part.saveAsString()));
     }
 
-    futures.add(checkFile(intf.resource(content)));
+    futures.add(checkFile(consumers.getIntf().resource(content)));
     futures.add(checkFuture(templateGet("resource").saveAsString()));
 
-    futures.add(checkFile(intf.entityResource(content)));
+    futures.add(checkFile(consumers.getIntf().entityResource(content)));
     futures.add(checkFuture(templateGet("entityResource").saveAsString()));
 
-    futures.add(checkFile(intf.entityInputStream(content)));
+    futures.add(checkFile(consumers.getIntf().entityInputStream(content)));
     futures.add(checkFuture(templateGet("entityInputStream").saveAsString()));
 
-    futures.add(checkFile(intf.bytes(content)));
+    futures.add(checkFile(consumers.getIntf().bytes(content)));
     futures.add(checkFuture(templateGet("bytes").saveAsString()));
 
-    futures.add(checkFile(intf.netInputStream(content)));
+    futures.add(checkFile(consumers.getIntf().netInputStream(content)));
     futures.add(checkFuture(templateGet("netInputStream").saveAsString()));
 
     try {
@@ -132,7 +138,7 @@ public class TestDownload {
           .allOf(Iterables.toArray((List<CompletableFuture<Object>>) (Object) futures, CompletableFuture.class))
           .get();
     } catch (InterruptedException | ExecutionException e1) {
-      TestMgr.failed("test download failed.", e1);
+      Assert.fail("test download failed: " + getStackTrace(e1));
     }
   }
 }
