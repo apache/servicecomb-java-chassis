@@ -19,6 +19,7 @@ package org.apache.servicecomb.it;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.it.deploy.Deploys;
+import org.apache.servicecomb.it.deploy.MicroserviceDeploy;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.it.schema.TestApiOperation;
 import org.apache.servicecomb.it.testcase.TestAnnotatedAttribute;
@@ -53,10 +54,12 @@ public class ConsumerMain {
     BeanUtils.init();
     ITUtils.waitBootFinished();
 
-    run();
-
-    SCBEngine.getInstance().destroy();
-    deploys.getServiceCenter().stop();
+    try {
+      run();
+    } finally {
+      SCBEngine.getInstance().destroy();
+      deploys.getServiceCenter().stop();
+    }
 
     resultPrinter.print();
 
@@ -70,51 +73,22 @@ public class ConsumerMain {
     // if not ready, will start a new instance and wait for ready
     deploys.getEdge().ensureReady();
     // deploys.getZuul().ensureReady(zuul);
-    ITJUnitUtils.run(TestIgnoreStaticMethod.class);
-    ITJUnitUtils.run(TestIgnoreMethod.class);
-    ITJUnitUtils.run(TestApiParam.class);
-    ITJUnitUtils.run(TestApiOperation.class);
 
-    // 1.base test case
-    //   include all extension point abnormal scenes test case
+    try {
+      ITJUnitUtils.run(TestIgnoreStaticMethod.class);
+      ITJUnitUtils.run(TestIgnoreMethod.class);
+      ITJUnitUtils.run(TestApiParam.class);
+      ITJUnitUtils.run(TestApiOperation.class);
 
-    // deploy standalone base-producer
-    //   only run one case for "any" transport
-    //   run highway
-    //   run rest
-    //   run native restTemplate to edge/zuul
-    // stop standalone base-producer
-    testStandalone();
+      testOneProducer(deploys.getBaseProducer(), ConsumerMain::testStandalone);
+      testOneProducer(deploys.getBaseHttp2Producer(), ConsumerMain::testH2Standalone);
+      testOneProducer(deploys.getBaseHttp2CProducer(), ConsumerMain::testH2CStandalone);
 
-    // deploy tomcat base-producer
-    //   run vertx-servlet
-    //   run native restTemplate to edge/zuul
-    // stop tomcat base-producer
-
-    // deploy spring boot base-producer
-    //   run vertx-servlet
-    //   run native restTemplate to edge/zuul
-    // stop spring boot base-producer
-
-    // 2.complex test case
-    //   1)start new producer version
-    //     consumer/edge/zuul should ......
-    //   2)delete new producer version
-    //     consumer/edge/zuul should ......
-    //   ......
-
-    // 3.deploy development mode producer
-    // ......
-
-    testSpringBoot2Standalone();
-
-    testHttp2CStandalone();
-
-    testSpringBoot2Servlet();
-    //http2
-    testHttp2Standalone();
-
-    deploys.getEdge().stop();
+      testOneProducer(deploys.getSpringBoot2StandaloneProducer(), ConsumerMain::testSpringBoot2Standalone);
+      testOneProducer(deploys.getSpringBoot2ServletProducer(), ConsumerMain::testSpringBoot2Servlet);
+    } finally {
+      deploys.getEdge().stop();
+    }
   }
 
   private static void runShareTestCases() throws Throwable {
@@ -136,11 +110,23 @@ public class ConsumerMain {
     ITJUnitUtils.run(TestRestController.class);
   }
 
+  interface ITTask {
+    void run() throws Throwable;
+  }
+
+  private static void testOneProducer(MicroserviceDeploy microserviceDeploy, ITTask task) throws Throwable {
+    microserviceDeploy.ensureReady();
+    ITJUnitUtils.addProducer(microserviceDeploy.getMicroserviceDeployDefinition().getMicroserviceName());
+
+    try {
+      task.run();
+    } finally {
+      ITJUnitUtils.popProducer();
+      microserviceDeploy.stop();
+    }
+  }
+
   private static void testStandalone() throws Throwable {
-    deploys.getBaseProducer().ensureReady();
-
-    ITJUnitUtils.addProducer("it-producer");
-
     runShareTestCases();
 
     // currently not support update 3rd url, so only test once
@@ -149,66 +135,29 @@ public class ConsumerMain {
     // about url len, different deploy have different url len, so only test standalone
     ITJUnitUtils.runWithRest(TestRestServerConfig.class);
     ITJUnitUtils.run(TestRestServerConfigEdge.class);
-
-    ITJUnitUtils.popProducer();
-    deploys.getBaseProducer().stop();
   }
 
-  private static void testHttp2CStandalone() throws Throwable {
-    deploys.getBaseHttp2CProducer().ensureReady();
-
-    ITJUnitUtils.addProducer("it-producer");
-
+  private static void testH2CStandalone() throws Throwable {
     runShareTestCases();
-
-    // currently not support update 3rd url, so only test once
-    ITJUnitUtils.run(Test3rdPartyInvocation.class);
 
     //as setMaxInitialLineLength() is not work for http2, do not need
     // ITJUnitUtils.runWithRest(TestRestServerConfig.class)
     ITJUnitUtils.run(TestRestServerConfigEdge.class);
-
-    ITJUnitUtils.popProducer();
-    deploys.getBaseHttp2CProducer().stop();
   }
 
-  private static void testHttp2Standalone() throws Throwable {
-    deploys.getBaseHttp2Producer().ensureReady();
-
-    ITJUnitUtils.addProducer("it-producer");
-
+  private static void testH2Standalone() throws Throwable {
     runShareTestCases();
-
-    // currently not support update 3rd url, so only test once
-    ITJUnitUtils.run(Test3rdPartyInvocation.class);
 
     //as setMaxInitialLineLength() is not work for http2, do not need
     // ITJUnitUtils.runWithRest(TestRestServerConfig.class)
     ITJUnitUtils.run(TestRestServerConfigEdge.class);
-
-    ITJUnitUtils.popProducer();
-    deploys.getBaseHttp2Producer().stop();
   }
 
   private static void testSpringBoot2Standalone() throws Throwable {
-    deploys.getSpringBoot2StandaloneProducer().ensureReady();
-
-    ITJUnitUtils.addProducer("it-producer-deploy-springboot2-standalone");
-
     runShareTestCases();
-
-    ITJUnitUtils.popProducer();
-    deploys.getSpringBoot2StandaloneProducer().stop();
   }
 
   private static void testSpringBoot2Servlet() throws Throwable {
-    deploys.getSpringBoot2ServletProducer().ensureReady();
-
-    ITJUnitUtils.addProducer("it-producer-deploy-springboot2-servlet");
-
     runShareTestCases();
-
-    ITJUnitUtils.popProducer();
-    deploys.getSpringBoot2ServletProducer().stop();
   }
 }
