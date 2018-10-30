@@ -217,7 +217,7 @@ public class Deploys {
       });
     }
     definition.setAppId("integration-test");
-    definition.setMicroserviceName("it-producer");
+    definition.setMicroserviceName("it-producer-h2");
     definition.setVersion(DEFAULT_MICROSERVICE_VERSION);
 
     initDeployDefinition(definition);
@@ -231,7 +231,7 @@ public class Deploys {
     definition.setCmd("it-producer");
     definition.setArgs(new String[] {"-Dservicecomb.rest.address=0.0.0.0:0?protocol=http2"});
     definition.setAppId("integration-test");
-    definition.setMicroserviceName("it-producer");
+    definition.setMicroserviceName("it-producer-h2c");
     definition.setVersion(DEFAULT_MICROSERVICE_VERSION);
 
     initDeployDefinition(definition);

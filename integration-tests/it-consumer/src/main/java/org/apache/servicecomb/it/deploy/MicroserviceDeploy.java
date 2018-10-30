@@ -35,6 +35,10 @@ public class MicroserviceDeploy extends NormalDeploy {
     this.microserviceDeployDefinition.setStartCompleteLog("ServiceComb is ready.");
   }
 
+  public MicroserviceDeployDefinition getMicroserviceDeployDefinition() {
+    return microserviceDeployDefinition;
+  }
+
   @Override
   protected String[] createCmds() {
     // must set jar at the end of the cmds
@@ -45,7 +49,8 @@ public class MicroserviceDeploy extends NormalDeploy {
   protected String[] addArgs(String[] cmds) {
     // add jar
     return ArrayUtils.addAll(super.addArgs(cmds),
-            "-DselfController=" + RegistryUtils.getMicroserviceInstance().getInstanceId(),
+        "-DselfController=" + RegistryUtils.getMicroserviceInstance().getInstanceId(),
+        "-Dservice_description.name=" + microserviceDeployDefinition.getMicroserviceName(),
         deployDefinition.getCmd());
   }
 
@@ -75,18 +80,5 @@ public class MicroserviceDeploy extends NormalDeploy {
 
     sendCommand("ms-stop");
     waitStop();
-
-    MicroserviceVersionRule microserviceVersionRule = RegistryUtils.getServiceRegistry().getAppManager()
-        .getOrCreateMicroserviceVersionRule(microserviceDeployDefinition.getAppId(),
-            microserviceDeployDefinition.getMicroserviceName(),
-            microserviceDeployDefinition.getVersion());
-    while (microserviceVersionRule.getInstances().size() > 0) {
-      try {
-        LOGGER.info("{} not stop finished wait.", microserviceDeployDefinition.getDisplayName());
-        Thread.sleep(3000);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
   }
 }

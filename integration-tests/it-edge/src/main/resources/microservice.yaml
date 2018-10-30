@@ -25,15 +25,27 @@ servicecomb:
         default: loadbalance
         service:
           it-auth: loadbalance
-# this is not the majority, not testing this feature by default
-#  rest:
-#    parameter:
-#      decodeAsObject: true
-#      query:
-#        ignoreDefaultValue: true
-#        emptyAsNull: true
+  # this is not the majority, not testing this feature by default
+  #  rest:
+  #    parameter:
+  #      decodeAsObject: true
+  #      query:
+  #        ignoreDefaultValue: true
+  #        emptyAsNull: true
   operation:
     it-producer:
+      defaultJsonValueJaxrs:
+        jsonInput:
+          transport: rest
+        queryInput:
+          transport: rest
+    it-producer-h2:
+      defaultJsonValueJaxrs:
+        jsonInput:
+          transport: rest
+        queryInput:
+          transport: rest
+    it-producer-h2c:
       defaultJsonValueJaxrs:
         jsonInput:
           transport: rest
