@@ -210,6 +210,16 @@ public class SpringmvcClient {
             String.class,
             "hello 中国"));
 
+    try {
+      template.postForObject(prefix + "/controller/sayhello/{name}",
+          null,
+          String.class,
+          "exception");
+      TestMgr.check(true, false);
+    } catch (InvocationException e) {
+      TestMgr.check(e.getStatusCode(), 503);
+    }
+
     HttpHeaders headers = new HttpHeaders();
     headers.add("name", "world");
     @SuppressWarnings("rawtypes")
