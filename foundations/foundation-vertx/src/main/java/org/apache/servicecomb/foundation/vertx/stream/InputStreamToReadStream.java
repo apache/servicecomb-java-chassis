@@ -130,7 +130,7 @@ public class InputStreamToReadStream implements ReadStream<Buffer> {
     }
   }
 
-  private void handleException(Throwable e) {
+  public void handleException(Throwable e) {
     closeInputStream();
     exceptionHandler.handle(e);
   }
@@ -188,6 +188,10 @@ public class InputStreamToReadStream implements ReadStream<Buffer> {
   }
 
   private void closeInputStream() {
+    if (closed) {
+      return;
+    }
+    
     closed = true;
     if (!autoCloseInputStream) {
       return;
