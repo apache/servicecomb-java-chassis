@@ -243,8 +243,8 @@ public final class Configuration {
   }
 
   public int getContinuousFailureThreshold(String microservice) {
-    final int defaultValue = 2;
-    String p = getStringProperty("2",
+    final int defaultValue = 5;
+    String p = getStringProperty("5",
         PROP_ROOT + microservice + "." + FILTER_ISOLATION + FILTER_CONTINUOUS_FAILURE_THRESHOLD,
         PROP_ROOT + FILTER_ISOLATION + FILTER_CONTINUOUS_FAILURE_THRESHOLD);
     try {

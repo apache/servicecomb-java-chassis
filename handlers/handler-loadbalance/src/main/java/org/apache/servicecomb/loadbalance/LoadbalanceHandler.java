@@ -70,7 +70,8 @@ public class LoadbalanceHandler implements Handler {
   public static final String SERVICECOMB_SERVER_ENDPOINT = "scb-endpoint";
 
   public static final boolean supportDefinedEndpoint =
-      DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.loadbalance.userDefinedEndpoint.enabled", false).get();
+      DynamicPropertyFactory.getInstance()
+          .getBooleanProperty("servicecomb.loadbalance.userDefinedEndpoint.enabled", false).get();
 
   // just a wrapper to make sure in retry mode to choose a different server.
   class RetryLoadBalancer implements ILoadBalancer {
@@ -317,13 +318,28 @@ public class LoadbalanceHandler implements Handler {
       @Override
       public void onExecutionFailed(ExecutionContext<Invocation> context, Throwable finalException,
           ExecutionInfo info) {
+        LOGGER.error("Invoke all server failed. Operation {}, e={}",
+            context.getRequest().getInvocationQualifiedName(), finalException.toString());
         if (orginExecutor != null) {
           orginExecutor.execute(() -> {
-            asyncResp.consumerFail(finalException);
+            fail(finalException);
           });
         } else {
-          asyncResp.consumerFail(finalException);
+          fail(finalException);
         }
+      }
+
+      private void fail(Throwable finalException) {
+        int depth = 10;
+        Throwable t = finalException;
+        while (depth-- > 0) {
+          if (t instanceof InvocationException) {
+            asyncResp.consumerFail(t);
+            return;
+          }
+          t = finalException.getCause();
+        }
+        asyncResp.consumerFail(finalException);
       }
     };
     List<ExecutionListener<Invocation, Response>> listeners = new ArrayList<>(0);
