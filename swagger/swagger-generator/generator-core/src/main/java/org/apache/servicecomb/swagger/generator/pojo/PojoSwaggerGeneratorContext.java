@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.swagger.generator.pojo;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +32,16 @@ import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
 import org.apache.servicecomb.swagger.generator.pojo.converter.parameter.PendingBodyParameterConverter;
 import org.apache.servicecomb.swagger.generator.pojo.extend.parameter.PendingBodyParameter;
 import org.apache.servicecomb.swagger.generator.pojo.processor.parameter.PojoDefaultParameterProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.Parameter;
 
 public class PojoSwaggerGeneratorContext extends AbstractSwaggerGeneratorContext {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(PojoSwaggerGeneratorContext.class);
+
   static {
     ConverterMgr.addConverter(PendingBodyParameter.class, new PendingBodyParameterConverter());
   }
@@ -47,6 +53,16 @@ public class PojoSwaggerGeneratorContext extends AbstractSwaggerGeneratorContext
 
   @Override
   public boolean canProcess(Class<?> cls) {
+    for (Annotation annotation : cls.getAnnotations()) {
+      // we check the annotations by class name to avoid importing extra dependencies in this module
+      if ("javax.ws.rs.Path".equals(annotation.annotationType().getCanonicalName())
+          || "org.springframework.web.bind.annotation.RequestMapping"
+          .equals(annotation.annotationType().getCanonicalName())) {
+        LOGGER.info(
+            "There is @RequestMapping or @Path annotation on the REST interface class, but POJO swagger context is chosen. "
+                + "If this is unexpected, maybe you should check your dependency jar files.");
+      }
+    }
     return true;
   }
 
