@@ -22,6 +22,7 @@ import org.apache.servicecomb.foundation.common.io.AsyncCloseable;
 
 import io.vertx.core.Context;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.streams.Pump;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.core.streams.WriteStream;
@@ -41,12 +42,25 @@ public class PumpCommon {
   public CompletableFuture<Void> pump(Context context, ReadStream<Buffer> readStream, WriteStream<Buffer> writeStream) {
     CompletableFuture<Void> readFuture = new CompletableFuture<>();
 
-    writeStream.exceptionHandler(readFuture::completeExceptionally);
+    writeStream.exceptionHandler(e -> {
+      // consumer -> producer
+      // 3rd consumer -> edge -> producer
+      // when download not finished, consumer stop download
+      // producer should stop download logic at once
+      if (readStream instanceof InputStreamToReadStream) {
+        ((InputStreamToReadStream) readStream).handleException(e);
+      } else if (readStream instanceof HttpClientResponse) {
+        // can not find a way to cancel/terminate request
+        // so can only close the connection.
+        ((HttpClientResponse) readStream).request().connection().close();
+      }
+      readFuture.completeExceptionally(e);
+    });
     readStream.exceptionHandler(readFuture::completeExceptionally);
     // just means read finished, not means write finished
     readStream.endHandler(readFuture::complete);
 
-    // if readStream(HttpClientResponse) and awriteStream(HttpServerResponse)
+    // if readStream(HttpClientResponse) and writeStream(HttpServerResponse)
     // belongs to difference eventloop
     // maybe will cause deadlock
     // if happened, vertx will print deadlock stacks
