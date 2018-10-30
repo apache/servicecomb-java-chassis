@@ -49,7 +49,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RestSchema(schemaId = "download")
-@RequestMapping(path = "/base/v1//download")
+@RequestMapping(path = "/v1/download")
 public class DownloadSchema implements BootListener {
   File tempDir = new File("target/downloadTemp");
 

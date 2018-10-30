@@ -28,6 +28,7 @@ import org.apache.servicecomb.it.testcase.TestChangeTransport;
 import org.apache.servicecomb.it.testcase.TestDataTypePrimitive;
 import org.apache.servicecomb.it.testcase.TestDefaultJsonValueJaxrsSchema;
 import org.apache.servicecomb.it.testcase.TestDefaultValue;
+import org.apache.servicecomb.it.testcase.TestDownload;
 import org.apache.servicecomb.it.testcase.TestIgnoreMethod;
 import org.apache.servicecomb.it.testcase.TestIgnoreStaticMethod;
 import org.apache.servicecomb.it.testcase.TestParamCodec;
@@ -98,6 +99,11 @@ public class ConsumerMain {
 
     // only rest support default value feature
     ITJUnitUtils.runWithRest(TestDefaultValue.class);
+
+    // currently have bug with http2
+    if (!ITJUnitUtils.getProducerName().endsWith("-h2") && !ITJUnitUtils.getProducerName().endsWith("-h2c")) {
+      ITJUnitUtils.runWithRest(TestDownload.class);
+    }
 
     ITJUnitUtils.runWithHighwayAndRest(TestTrace.class);
     ITJUnitUtils.run(TestTraceEdge.class);
