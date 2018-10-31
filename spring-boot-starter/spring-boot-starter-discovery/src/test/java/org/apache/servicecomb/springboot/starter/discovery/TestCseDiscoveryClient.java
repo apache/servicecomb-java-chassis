@@ -24,9 +24,8 @@ import java.util.Map;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTree;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTreeNode;
 import org.junit.Assert;
 import org.junit.Test;
@@ -39,9 +38,8 @@ import mockit.Mocked;
 public class TestCseDiscoveryClient {
   @Test
   public void testCseDiscoveryClient(@Mocked RegistryUtils registryUtils,
-      @Injectable ServiceRegistryClient serviceRegistryClient,
-      @Mocked DiscoveryTree discoveryTree,
-      @Injectable DiscoveryTreeNode versionedCache) {
+      @Injectable InstanceCacheManager instanceCacheManager,
+      @Injectable ServiceRegistryClient serviceRegistryClient) {
     List<Microservice> microserviceList = new ArrayList<>();
     Microservice service1 = new Microservice();
     service1.setServiceName("service1");
@@ -50,7 +48,7 @@ public class TestCseDiscoveryClient {
     microserviceList.add(server2);
     server2.setServiceName("server2");
 
-    Map<String, MicroserviceInstance> servers = new HashMap<>();
+
     List<String> endpoints = new ArrayList<>();
     endpoints.add("rest://localhost:3333");
     endpoints.add("rest://localhost:4444");
@@ -58,18 +56,16 @@ public class TestCseDiscoveryClient {
     instance1.setServiceId("service1");
     instance1.setInstanceId("service1-instance1");
     instance1.setEndpoints(endpoints);
-    servers.put("service1-instance1", instance1);
 
+    Map<String, MicroserviceInstance> data = new HashMap<>();
+    data.put("service1-instance1", instance1);
+    DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent").data(data);
     new Expectations() {
       {
-        RegistryUtils.getServiceRegistryClient();
-        result = serviceRegistryClient;
+        instanceCacheManager.getOrCreateVersionedCache(anyString, anyString, anyString);
+        result = parent;
         serviceRegistryClient.getAllMicroservices();
         result = microserviceList;
-        discoveryTree.discovery((DiscoveryContext) any, anyString, anyString, anyString);
-        result = versionedCache;
-        versionedCache.data();
-        result = servers;
       }
     };
 
