@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
@@ -29,12 +30,18 @@ import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
+import org.apache.servicecomb.serviceregistry.discovery.DiscoveryFilter;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTree;
+import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTreeNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 
 public class CseDiscoveryClient implements DiscoveryClient {
+  private static final Logger LOGGER = LoggerFactory.getLogger(CseDiscoveryClient.class);
+
   private Map<String, DiscoveryTree> discoveryTrees = new ConcurrentHashMapEx<>();
 
   @Override
@@ -44,24 +51,55 @@ public class CseDiscoveryClient implements DiscoveryClient {
 
   @Override
   public List<ServiceInstance> getInstances(final String serviceId) {
+    class InstanceDiscoveryFilter implements DiscoveryFilter {
+      @Override
+      public int getOrder() {
+        return Short.MAX_VALUE;
+      }
+
+      @Override
+      public DiscoveryTreeNode discovery(DiscoveryContext context, DiscoveryTreeNode parent) {
+        return parent.children()
+            .computeIfAbsent(context.getInputParameters(), etn -> createDiscoveryTreeNode(context, parent));
+      }
+
+      @SuppressWarnings("unchecked")
+      protected DiscoveryTreeNode createDiscoveryTreeNode(DiscoveryContext context,
+          DiscoveryTreeNode parent) {
+        String serviceName = context.getInputParameters();
+            List<ServiceInstance> instances = new ArrayList<>();
+        for (MicroserviceInstance instance : ((Map<String, MicroserviceInstance>) parent.data()).values()) {
+          for (String endpoint : instance.getEndpoints()) {
+              String scheme = endpoint.split(":", 2)[0];
+              if (!scheme.equalsIgnoreCase(Const.RESTFUL)) {
+                LOGGER.info("Endpoint {} is not supported in Spring Cloud, ignoring.", endpoint);
+                continue;
+              }
+              URIEndpointObject uri = new URIEndpointObject(endpoint);
+              instances.add(new DefaultServiceInstance(serviceId, uri.getHostOrIp(), uri.getPort(), uri.isSslEnabled()));
+          }
+        }
+        return new DiscoveryTreeNode()
+            .subName(parent, serviceName)
+            .data(instances);
+      }
+    };
+
     DiscoveryContext context = new DiscoveryContext();
     context.setInputParameters(serviceId);
+
     DiscoveryTree discoveryTree = discoveryTrees.computeIfAbsent(serviceId, key -> {
-      return new DiscoveryTree();
+      DiscoveryTree tree =  new DiscoveryTree();
+      tree.addFilter(new InstanceDiscoveryFilter());
+      return tree;
     });
+
     VersionedCache serversVersionedCache = discoveryTree.discovery(context,
         RegistryUtils.getAppId(),
         serviceId,
         DefinitionConst.VERSION_RULE_ALL);
-    Map<String, MicroserviceInstance> servers = serversVersionedCache.data();
-    List<ServiceInstance> instances = new ArrayList<>(servers.size());
-    for (MicroserviceInstance s : servers.values()) {
-      for (String endpoint : s.getEndpoints()) {
-        URIEndpointObject uri = new URIEndpointObject(endpoint);
-        instances.add(new DefaultServiceInstance(serviceId, uri.getHostOrIp(), uri.getPort(), uri.isSslEnabled()));
-      }
-    }
-    return instances;
+
+    return serversVersionedCache.data();
   }
 
   @Override
