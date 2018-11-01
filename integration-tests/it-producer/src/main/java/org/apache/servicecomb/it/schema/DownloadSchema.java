@@ -20,6 +20,9 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+import java.lang.Thread.State;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -27,15 +30,18 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.Part;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.bootstrap.HttpServer;
 import org.apache.http.impl.bootstrap.ServerBootstrap;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.foundation.common.part.FilePart;
+import org.apache.servicecomb.it.ITUtils;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -192,6 +198,47 @@ public class DownloadSchema implements BootListener {
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=netInputStream.txt")
         .body(conn.getInputStream());
     conn.disconnect();
+    return responseEntity;
+  }
+
+  private Thread slowInputStreamThread;
+
+  @GetMapping(path = "/waitSlowInputStreamClosed")
+  public void waitSlowInputStreamClosed() {
+    while (!slowInputStreamThread.getState().equals(State.TERMINATED)) {
+      ITUtils.forceWait(TimeUnit.MILLISECONDS, 500);
+    }
+  }
+
+  @ApiResponses({@ApiResponse(code = 200, response = File.class, message = "")})
+  @GetMapping(path = "/slowInputStream")
+  public ResponseEntity<InputStream> slowInputStream() throws IOException {
+    PipedInputStream in = new PipedInputStream();
+    PipedOutputStream out = new PipedOutputStream();
+    in.connect(out);
+
+    slowInputStreamThread = new Thread(() -> {
+      Thread.currentThread().setName("download thread");
+      byte[] bytes = "1".getBytes();
+      for (; ; ) {
+        try {
+          out.write(bytes);
+          out.flush();
+          Thread.sleep(1000);
+        } catch (Throwable e) {
+          break;
+        }
+      }
+
+      IOUtils.closeQuietly(out);
+    });
+    slowInputStreamThread.start();
+
+    ResponseEntity<InputStream> responseEntity = ResponseEntity
+        .ok()
+        .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE)
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=slowInputStream.txt")
+        .body(in);
     return responseEntity;
   }
 }

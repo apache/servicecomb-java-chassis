@@ -29,6 +29,7 @@ import org.apache.servicecomb.it.testcase.TestDataTypePrimitive;
 import org.apache.servicecomb.it.testcase.TestDefaultJsonValueJaxrsSchema;
 import org.apache.servicecomb.it.testcase.TestDefaultValue;
 import org.apache.servicecomb.it.testcase.TestDownload;
+import org.apache.servicecomb.it.testcase.TestDownloadSlowStreamEdge;
 import org.apache.servicecomb.it.testcase.TestIgnoreMethod;
 import org.apache.servicecomb.it.testcase.TestIgnoreStaticMethod;
 import org.apache.servicecomb.it.testcase.TestParamCodec;
@@ -141,6 +142,9 @@ public class ConsumerMain {
     // about url len, different deploy have different url len, so only test standalone
     ITJUnitUtils.runWithRest(TestRestServerConfig.class);
     ITJUnitUtils.run(TestRestServerConfigEdge.class);
+
+    // currently, only support vertx download
+    ITJUnitUtils.run(TestDownloadSlowStreamEdge.class);
   }
 
   private static void testH2CStandalone() throws Throwable {
@@ -161,6 +165,9 @@ public class ConsumerMain {
 
   private static void testSpringBoot2Standalone() throws Throwable {
     runShareTestCases();
+
+    // currently, only support vertx download
+    ITJUnitUtils.run(TestDownloadSlowStreamEdge.class);
   }
 
   private static void testSpringBoot2Servlet() throws Throwable {
