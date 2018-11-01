@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.common.rest;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
@@ -268,12 +267,18 @@ public abstract class AbstractRestInvocation {
 
     try {
       responseEx.flushBuffer();
-    } catch (IOException flushException) {
+    } catch (Throwable flushException) {
       LOGGER.error("Failed to flush rest response, operation:{}, request uri:{}",
           getMicroserviceQualifiedName(), requestEx.getRequestURI(), flushException);
     }
 
-    requestEx.getAsyncContext().complete();
+    try {
+      requestEx.getAsyncContext().complete();
+    } catch (Throwable completeException) {
+      LOGGER.error("Failed to complete async rest response, operation:{}, request uri:{}",
+          getMicroserviceQualifiedName(), requestEx.getRequestURI(), completeException);
+    }
+
     // if failed to locate path, then will not create invocation
     // TODO: statistics this case
     if (invocation != null) {

@@ -34,30 +34,45 @@ servicecomb:
   #        emptyAsNull: true
   operation:
     it-producer:
+      download:
+        slowInputStream:
+          transport: rest
       defaultJsonValueJaxrs:
         jsonInput:
           transport: rest
         queryInput:
           transport: rest
     it-producer-h2:
+      download:
+        slowInputStream:
+          transport: rest
       defaultJsonValueJaxrs:
         jsonInput:
           transport: rest
         queryInput:
           transport: rest
     it-producer-h2c:
+      download:
+        slowInputStream:
+          transport: rest
       defaultJsonValueJaxrs:
         jsonInput:
           transport: rest
         queryInput:
           transport: rest
     it-producer-deploy-springboot2-servlet:
+      download:
+        slowInputStream:
+          transport: rest
       defaultJsonValueJaxrs:
         jsonInput:
           transport: rest
         queryInput:
           transport: rest
     it-producer-deploy-springboot2-standalone:
+      download:
+        slowInputStream:
+          transport: rest
       defaultJsonValueJaxrs:
         jsonInput:
           transport: rest
