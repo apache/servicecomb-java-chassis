@@ -40,6 +40,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.servicecomb.config.archaius.sources.ConfigCenterConfigurationSourceImpl;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.foundation.auth.SignRequest;
+import org.apache.servicecomb.foundation.common.encrypt.Encryptions;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
@@ -83,6 +84,8 @@ public class ConfigCenterClient {
   private static final ConfigCenterConfig CONFIG_CENTER_CONFIG = ConfigCenterConfig.INSTANCE;
 
   private static final String SSL_KEY = "cc.consumer";
+
+  public static final String PROXY_KEY = "cc.consumer";
 
   private static final long HEARTBEAT_INTERVAL = 30000;
 
@@ -205,7 +208,7 @@ public class ConfigCenterClient {
           .setHost(ConfigCenterConfig.INSTANCE.getProxyHost())
           .setPort(ConfigCenterConfig.INSTANCE.getProxyPort())
           .setUsername(ConfigCenterConfig.INSTANCE.getProxyUsername())
-          .setPassword(ConfigCenterConfig.INSTANCE.getProxyPasswd());
+          .setPassword(Encryptions.decode(ConfigCenterConfig.INSTANCE.getProxyPasswd(), PROXY_KEY));
       httpClientOptions.setProxyOptions(proxy);
     }
     httpClientOptions.setConnectTimeout(CONFIG_CENTER_CONFIG.getConnectionTimeout());
