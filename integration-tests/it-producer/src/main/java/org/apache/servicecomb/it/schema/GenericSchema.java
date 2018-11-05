@@ -33,42 +33,42 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(path = "/v1/generic")
 public class GenericSchema {
 
-  @PostMapping(path = "/holderUser")
+  @PostMapping(path = "holderUser")
   public Holder<User> holderUser(@RequestBody Holder<User> input) {
     Assert.isInstanceOf(Holder.class, input);
     Assert.isInstanceOf(User.class, input.value);
     return input;
   }
 
-  @PostMapping(path = "/genericUser")
+  @PostMapping(path = "genericUser")
   public Generic<User> genericUser(@RequestBody Generic<User> input) {
     Assert.isInstanceOf(Generic.class, input);
     Assert.isInstanceOf(User.class, input.value);
     return input;
   }
 
-  @PostMapping(path = "/genericLong")
+  @PostMapping(path = "genericLong")
   public Generic<Long> genericLong(@RequestBody Generic<Long> input) {
     Assert.isInstanceOf(Generic.class, input);
     Assert.isInstanceOf(Long.class, input.value);
     return input;
   }
 
-  @PostMapping(path = "/genericDate")
+  @PostMapping(path = "genericDate")
   public Generic<Date> genericDate(@RequestBody Generic<Date> input) {
     Assert.isInstanceOf(Generic.class, input);
     Assert.isInstanceOf(Date.class, input.value);
     return input;
   }
 
-  @PostMapping(path = "/genericEnum")
+  @PostMapping(path = "genericEnum")
   public Generic<HttpStatus> genericEnum(@RequestBody Generic<HttpStatus> input) {
     Assert.isInstanceOf(Generic.class, input);
     Assert.isInstanceOf(HttpStatus.class, input.value);
     return input;
   }
 
-  @PostMapping(path = "/genericGenericUser")
+  @PostMapping(path = "genericGenericUser")
   public Generic<Generic<User>> genericGenericUser(@RequestBody Generic<Generic<User>> input) {
     Assert.isInstanceOf(Generic.class, input);
     Assert.isInstanceOf(Generic.class, input.value);
@@ -76,14 +76,14 @@ public class GenericSchema {
     return input;
   }
 
-  @PostMapping(path = "/genericMap")
+  @PostMapping(path = "genericMap")
   public Generic<Map<String, String>> genericMap(@RequestBody Generic<Map<String, String>> mapGeneric) {
     Assert.isInstanceOf(Generic.class, mapGeneric);
     Assert.isInstanceOf(Map.class, mapGeneric.value);
     return mapGeneric;
   }
 
-  @PostMapping(path = "/genericMapList")
+  @PostMapping(path = "genericMapList")
   public Generic<Map<String, List<String>>> genericMapList(
       @RequestBody Generic<Map<String, List<String>>> mapListGeneric) {
     Assert.isInstanceOf(Generic.class, mapListGeneric);
@@ -91,7 +91,7 @@ public class GenericSchema {
     return mapListGeneric;
   }
 
-  @PostMapping(path = "/genericMapListUser")
+  @PostMapping(path = "genericMapListUser")
   public Generic<Map<String, List<User>>> genericMapListUser(
       @RequestBody Generic<Map<String, List<User>>> mapListUserGeneric) {
     Assert.isInstanceOf(Generic.class, mapListUserGeneric);
