@@ -34,6 +34,11 @@ servicecomb:
   #        emptyAsNull: true
   operation:
     it-producer:
+      generic:
+        genericUser:
+          transport: rest
+        genericMapListUser:
+          transport: rest
       download:
         slowInputStream:
           transport: rest
@@ -43,6 +48,11 @@ servicecomb:
         queryInput:
           transport: rest
     it-producer-h2:
+      generic:
+        genericUser:
+          transport: rest
+        genericMapListUser:
+          transport: rest
       download:
         slowInputStream:
           transport: rest
@@ -52,6 +62,11 @@ servicecomb:
         queryInput:
           transport: rest
     it-producer-h2c:
+      generic:
+        genericUser:
+          transport: rest
+        genericMapListUser:
+          transport: rest
       download:
         slowInputStream:
           transport: rest
@@ -61,6 +76,11 @@ servicecomb:
         queryInput:
           transport: rest
     it-producer-deploy-springboot2-servlet:
+      generic:
+        genericUser:
+          transport: rest
+        genericMapListUser:
+          transport: rest
       download:
         slowInputStream:
           transport: rest
@@ -70,6 +90,11 @@ servicecomb:
         queryInput:
           transport: rest
     it-producer-deploy-springboot2-standalone:
+      generic:
+        genericUser:
+          transport: rest
+        genericMapListUser:
+          transport: rest
       download:
         slowInputStream:
           transport: rest
