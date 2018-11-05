@@ -23,7 +23,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 
 import javax.xml.ws.Holder;
 
@@ -58,7 +60,7 @@ public class TestGeneric {
 
   private String expectUserStr = "{\"name\":\"nameA\",\"age\":100,\"index\":0,\"names\":null}";
 
-  private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+  private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);
 
   @Test
   public void testHolderUser_intf() {
@@ -118,7 +120,8 @@ public class TestGeneric {
     generic.value = new Date(1001);
     Generic<Date> result = consumers.getIntf().genericDate(generic);
     assertEquals(result.value.getClass(), Date.class);
-    assertEquals("1970-01-01T08:00:01.001Z", simpleDateFormat.format(result.value));
+    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+    assertEquals("1970-01-01T00:00:01.001Z", simpleDateFormat.format(result.value));
   }
 
   @Test
@@ -128,7 +131,8 @@ public class TestGeneric {
     @SuppressWarnings("unchecked")
     Generic<Date> result = consumers.getSCBRestTemplate().postForObject("/genericDate", generic, Generic.class);
     assertEquals(result.value.getClass(), Date.class);
-    assertEquals("1970-01-01T08:00:01.001Z", simpleDateFormat.format(result.value));
+    simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+    assertEquals("1970-01-01T00:00:01.001Z", simpleDateFormat.format(result.value));
   }
 
   @Test

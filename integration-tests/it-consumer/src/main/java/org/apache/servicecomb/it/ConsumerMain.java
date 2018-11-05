@@ -99,8 +99,7 @@ public class ConsumerMain {
     ITJUnitUtils.runWithHighwayAndRest(TestChangeTransport.class);
     ITJUnitUtils.runWithHighwayAndRest(TestDataTypePrimitive.class);
     ITJUnitUtils.runWithHighwayAndRest(TestAnnotatedAttribute.class);
-    ITJUnitUtils.runWithRest(TestGeneric.class);
-    ITJUnitUtils.run(TestGenericEdge.class);
+
     // only rest support default value feature
     ITJUnitUtils.runWithRest(TestDefaultValue.class);
 
@@ -114,6 +113,10 @@ public class ConsumerMain {
 
     ITJUnitUtils.runWithHighwayAndRest(TestParamCodec.class);
     ITJUnitUtils.run(TestParamCodecEdge.class);
+
+    //generic
+    ITJUnitUtils.runWithRest(TestGeneric.class);
+    ITJUnitUtils.run(TestGenericEdge.class);
 
     ITJUnitUtils.run(TestRequestBodySpringMvcSchema.class);
     ITJUnitUtils.run(TestDefaultJsonValueJaxrsSchema.class);
