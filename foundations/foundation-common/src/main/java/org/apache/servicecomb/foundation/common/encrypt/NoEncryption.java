@@ -19,6 +19,11 @@ package org.apache.servicecomb.foundation.common.encrypt;
 
 public class NoEncryption implements Encryption {
   @Override
+  public int getOrder() {
+    return 100;
+  }
+
+  @Override
   public char[] decode(char[] encrypted, String tags) {
     return encrypted;
   }
