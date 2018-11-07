@@ -19,6 +19,7 @@ package org.apache.servicecomb.loadbalance;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
 
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -81,6 +82,19 @@ public class TestDefaultRetryhandler {
     Assert.assertTrue(retriable);
 
     target = new IOException("");
+    root = new Exception(target);
+    retriable = retryHandler.isRetriableException(root, false);
+    Assert.assertFalse(retriable);
+  }
+
+  @Test
+  public void testRetryNoRouteToHostException() {
+    Exception target = new NoRouteToHostException("Host is unreachable");
+    Exception root = new Exception(target);
+    boolean retriable = retryHandler.isRetriableException(root, false);
+    Assert.assertTrue(retriable);
+
+    target = new NoRouteToHostException("Cannot assign requested address");
     root = new Exception(target);
     retriable = retryHandler.isRetriableException(root, false);
     Assert.assertFalse(retriable);

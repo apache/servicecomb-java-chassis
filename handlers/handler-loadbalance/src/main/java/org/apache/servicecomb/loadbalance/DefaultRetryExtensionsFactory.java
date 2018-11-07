@@ -18,6 +18,7 @@ package org.apache.servicecomb.loadbalance;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
 import java.util.Collection;
 import java.util.List;
@@ -65,6 +66,7 @@ public class DefaultRetryExtensionsFactory implements ExtensionsFactory {
                */
               .put(IOException.class, Lists.newArrayList(new String[] {"Connection reset by peer"}))
               .put(VertxException.class, Lists.newArrayList(new String[] {"Connection was closed"}))
+              .put(NoRouteToHostException.class, Lists.newArrayList(new String[]{"Host is unreachable"}))
               .build();
 
       @Override
