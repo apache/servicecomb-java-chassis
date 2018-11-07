@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.NoRouteToHostException;
 import java.net.SocketTimeoutException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,18 @@ public class DefaultRetryExtensionsFactory implements ExtensionsFactory {
   private static final Collection<String> ACCEPT_VALUES = Lists.newArrayList(
       RETRY_DEFAULT);
 
+  private static final Map<Class<? extends Throwable>, List<String>> strictRetriable =
+      ImmutableMap.<Class<? extends Throwable>, List<String>>builder()
+          .put(ConnectException.class, Arrays.asList())
+          .put(SocketTimeoutException.class, Arrays.asList())
+          /*
+           * deal with some special exceptions caused by the server side close the connection
+           */
+          .put(IOException.class, Arrays.asList(new String[] {"Connection reset by peer"}))
+          .put(VertxException.class, Arrays.asList(new String[] {"Connection was closed"}))
+          .put(NoRouteToHostException.class, Arrays.asList(new String[]{"Host is unreachable"}))
+          .build();
+
   @Override
   public boolean isSupport(String key, String value) {
     return ACCEPT_KEYS.contains(key) && ACCEPT_VALUES.contains(value);
@@ -54,20 +67,6 @@ public class DefaultRetryExtensionsFactory implements ExtensionsFactory {
     return new DefaultLoadBalancerRetryHandler(
         Configuration.INSTANCE.getRetryOnSame(microservice),
         Configuration.INSTANCE.getRetryOnNext(microservice), true) {
-      private List<Class<? extends Throwable>> retriable = Lists
-          .newArrayList(ConnectException.class, SocketTimeoutException.class);
-
-      Map<Class<? extends Throwable>, List<String>> strictRetriable =
-          ImmutableMap.<Class<? extends Throwable>, List<String>>builder()
-              .put(ConnectException.class, Lists.newArrayList())
-              .put(SocketTimeoutException.class, Lists.newArrayList())
-              /*
-               * deal with some special exceptions caused by the server side close the connection
-               */
-              .put(IOException.class, Lists.newArrayList(new String[] {"Connection reset by peer"}))
-              .put(VertxException.class, Lists.newArrayList(new String[] {"Connection was closed"}))
-              .put(NoRouteToHostException.class, Lists.newArrayList(new String[]{"Host is unreachable"}))
-              .build();
 
       @Override
       public boolean isRetriableException(Throwable e, boolean sameServer) {
@@ -80,11 +79,6 @@ public class DefaultRetryExtensionsFactory implements ExtensionsFactory {
           }
         }
         return retriable;
-      }
-
-      @Override
-      protected List<Class<? extends Throwable>> getRetriableExceptions() {
-        return this.retriable;
       }
 
       public boolean isPresentAsCause(Throwable throwableToSearchIn) {
