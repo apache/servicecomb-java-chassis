@@ -29,6 +29,10 @@ public class ExceptionToResponseConverters {
 
   private ExceptionToResponseConverter<Throwable> defaultConverter;
 
+  /**
+   * Load the {@link ExceptionToResponseConverter} implementations. Ensure that those converters whose {@link ExceptionToResponseConverter#getOrder()}
+   * return smaller value takes higher priority.
+   */
   @SuppressWarnings("unchecked")
   public ExceptionToResponseConverters() {
     SPIServiceUtils.getSortedService(ExceptionToResponseConverter.class).forEach(converter -> {
@@ -39,7 +43,7 @@ public class ExceptionToResponseConverters {
         return;
       }
 
-      exceptionToResponseConverters.put(converter.getExceptionClass(), converter);
+      exceptionToResponseConverters.putIfAbsent(converter.getExceptionClass(), converter);
     });
   }
 
