@@ -31,13 +31,13 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestExceptionToResponseConverters {
-  @SuppressWarnings({"rawtypes", "unchecked"})
   @Test
-  public void convertExceptionToResponse(@Mocked ExceptionToResponseConverter c1,
+  public void convertExceptionToResponse(
+      @Mocked ExceptionToResponseConverter<Throwable> c1,
       @Mocked Response r1,
-      @Mocked ExceptionToResponseConverter c2,
+      @Mocked ExceptionToResponseConverter<Throwable> c2,
       @Mocked Response r2,
-      @Mocked ExceptionToResponseConverter cDef) {
+      @Mocked ExceptionToResponseConverter<Throwable> cDef) {
     new Expectations(SPIServiceUtils.class) {
       {
         SPIServiceUtils.getSortedService(ExceptionToResponseConverter.class);
@@ -61,23 +61,23 @@ public class TestExceptionToResponseConverters {
     ExceptionToResponseConverters exceptionToResponseConverters = new ExceptionToResponseConverters();
 
     Assert.assertSame(r1,
-        exceptionToResponseConverters.convertExceptionToResponse((SwaggerInvocation) null, new Throwable()));
+        exceptionToResponseConverters.convertExceptionToResponse(null, new Throwable()));
     Assert.assertSame(r2,
-        exceptionToResponseConverters.convertExceptionToResponse((SwaggerInvocation) null, new Exception()));
+        exceptionToResponseConverters.convertExceptionToResponse(null, new Exception()));
     Assert.assertSame(r2,
-        exceptionToResponseConverters.convertExceptionToResponse((SwaggerInvocation) null,
+        exceptionToResponseConverters.convertExceptionToResponse(null,
             new IllegalStateException()));
   }
 
-  @SuppressWarnings({"rawtypes", "unchecked"})
   @Test
-  public void convertExceptionToResponse2(@Mocked ExceptionToResponseConverter c1,
+  public void convertExceptionToResponse_checkDefaultConverterPriority(
+      @Mocked ExceptionToResponseConverter<Throwable> c1,
       @Mocked Response r1,
-      @Mocked ExceptionToResponseConverter c2,
+      @Mocked ExceptionToResponseConverter<Throwable> c2,
       @Mocked Response r2,
-      @Mocked ExceptionToResponseConverter cDef,
+      @Mocked ExceptionToResponseConverter<Throwable> cDef,
       @Mocked Response rDef,
-      @Mocked ExceptionToResponseConverter cDef2) {
+      @Mocked ExceptionToResponseConverter<Throwable> cDef2) {
     new Expectations(SPIServiceUtils.class) {
       {
         SPIServiceUtils.getSortedService(ExceptionToResponseConverter.class);
@@ -107,11 +107,83 @@ public class TestExceptionToResponseConverters {
 
     Assert.assertSame(r2,
         exceptionToResponseConverters
-            .convertExceptionToResponse((SwaggerInvocation) null, new InvocationException(Status.UNAUTHORIZED, "")));
+            .convertExceptionToResponse(null, new InvocationException(Status.UNAUTHORIZED, "")));
     Assert.assertSame(r1,
-        exceptionToResponseConverters.convertExceptionToResponse((SwaggerInvocation) null, new RuntimeException()));
+        exceptionToResponseConverters.convertExceptionToResponse(null, new RuntimeException()));
     Assert.assertSame(rDef,
-        exceptionToResponseConverters.convertExceptionToResponse((SwaggerInvocation) null,
+        exceptionToResponseConverters.convertExceptionToResponse(null,
             new IOException()));
+  }
+
+  @Test
+  public void convertExceptionToResponse_CheckCommonConvertPriority(
+      @Mocked ExceptionToResponseConverter<RuntimeException0> cR0,
+      @Mocked ExceptionToResponseConverter<RuntimeException0> cR0_LowPriority,
+      @Mocked ExceptionToResponseConverter<RuntimeException1> cR1,
+      @Mocked ExceptionToResponseConverter<RuntimeException> cR,
+      @Mocked ExceptionToResponseConverter<Throwable> cT,
+      @Mocked ExceptionToResponseConverter<?> cDef,
+      @Mocked Response rR0,
+      @Mocked Response rR1,
+      @Mocked Response rR,
+      @Mocked Response rT) {
+    new Expectations(SPIServiceUtils.class) {
+      {
+        SPIServiceUtils.getSortedService(ExceptionToResponseConverter.class);
+        result = Arrays.asList(cR, cR0, cR0_LowPriority, cR1, cDef, cT);
+
+        cR0.getExceptionClass();
+        result = RuntimeException0.class;
+        cR0.convert((SwaggerInvocation) any, (RuntimeException0) any);
+        result = rR0;
+
+        cR0_LowPriority.getExceptionClass();
+        result = RuntimeException0.class;
+
+        cR1.getExceptionClass();
+        result = RuntimeException1.class;
+        cR1.convert((SwaggerInvocation) any, (RuntimeException1) any);
+        result = rR1;
+
+        cR.getExceptionClass();
+        result = RuntimeException.class;
+        cR.convert((SwaggerInvocation) any, (RuntimeException) any);
+        result = rR;
+
+        cT.getExceptionClass();
+        result = Throwable.class;
+        cT.convert((SwaggerInvocation) any, (Throwable) any);
+        result = rT;
+
+        cDef.getExceptionClass();
+        result = null;
+      }
+    };
+
+    ExceptionToResponseConverters exceptionToResponseConverters = new ExceptionToResponseConverters();
+
+    Assert.assertSame(rR0,
+        exceptionToResponseConverters.convertExceptionToResponse(null, new RuntimeException0_0()));
+    Assert.assertSame(rR0,
+        exceptionToResponseConverters.convertExceptionToResponse(null, new RuntimeException0()));
+    Assert.assertSame(rR1,
+        exceptionToResponseConverters.convertExceptionToResponse(null, new RuntimeException1()));
+    Assert.assertSame(rR,
+        exceptionToResponseConverters.convertExceptionToResponse(null, new RuntimeException()));
+    // Actually, a Throwable exception converter will act like a default converter, as our implementation expects.
+    Assert.assertSame(rT,
+        exceptionToResponseConverters.convertExceptionToResponse(null, new IOException()));
+  }
+
+  static class RuntimeException0 extends RuntimeException {
+    private static final long serialVersionUID = -5151948381107463505L;
+  }
+
+  static class RuntimeException1 extends RuntimeException {
+    private static final long serialVersionUID = 1752513688353075486L;
+  }
+
+  static class RuntimeException0_0 extends RuntimeException0 {
+    private static final long serialVersionUID = -6645187961518504765L;
   }
 }
