@@ -16,9 +16,9 @@
 ## ---------------------------------------------------------------------------
 
 #More details can be found :
-# 1.http://servicecomb.incubator.apache.org/users/service-definition/
-# 2.http://servicecomb.incubator.apache.org/users/service-configurations/
-# 3.http://servicecomb.incubator.apache.org/users/communicate-protocol/
+# 1.http://servicecomb.apache.org/users/service-definition/
+# 2.http://servicecomb.apache.org/users/service-configurations/
+# 3.http://servicecomb.apache.org/users/communicate-protocol/
 
 #Indicates an application name
 APPLICATION_ID: business

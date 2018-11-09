@@ -52,7 +52,7 @@ Auth sample use `RestTemplate` to present RSA communication between provider and
 
 1. Start the ServiceComb/Service Center
 
-   - [how to start the service center](http://servicecomb.incubator.apache.org/users/setup-environment/#)
+   - [how to start the service center](http://servicecomb.apache.org/users/setup-environment/#)
    - make sure service center address is configured correctly in `microservice.yaml` file
 
    ```yaml
@@ -66,10 +66,10 @@ Auth sample use `RestTemplate` to present RSA communication between provider and
 
    - Start provider service by maven
 
-     Compile the source code at root directory of ServiceComb Java Chassis, which is `incubator-servicecomb-java-chassis/`, and use `mvn exec` to execute the main class `AuthProviderMain`.
+     Compile the source code at root directory of ServiceComb Java Chassis, which is `servicecomb-java-chassis/`, and use `mvn exec` to execute the main class `AuthProviderMain`.
 
      ```bash
-     cd incubator-servicecomb-java-chassis/
+     cd servicecomb-java-chassis/
      mvn clean install -Psamples -DskipTests			#only need to install at first time.
      cd samples/auth-sample/auth-provider/
      mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.auth.provider.AuthProviderMain"
@@ -77,7 +77,7 @@ Auth sample use `RestTemplate` to present RSA communication between provider and
 
    - Start provider service by IDE
 
-     Import the project by InteliJ IDEA or Eclipse, add sample module to pom.xml file in root module `incubator-servicecomb-java-chassis/pom.xml`, and add `<module>samples</module>` to `<modules></modules>` block, Then find `main` function `AuthProviderMain` of provider service and `RUN` it like any other Java program.
+     Import the project by InteliJ IDEA or Eclipse, add sample module to pom.xml file in root module `servicecomb-java-chassis/pom.xml`, and add `<module>samples</module>` to `<modules></modules>` block, Then find `main` function `AuthProviderMain` of provider service and `RUN` it like any other Java program.
 
 3. Start the auth-consumer service
 

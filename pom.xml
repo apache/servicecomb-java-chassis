@@ -34,7 +34,7 @@
 
   <name>ServiceComb Java Chassis</name>
   <description>Software Development Kit (SDK) for rapid development of microservices</description>
-  <url>https://github.com/apache/incubator-servicecomb-java-chassis</url>
+  <url>https://github.com/apache/servicecomb-java-chassis</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -84,9 +84,9 @@
   <inceptionYear>2017</inceptionYear>
 
   <scm>
-    <url>https://github.com/apache/incubator-servicecomb-java-chassis</url>
-    <connection>scm:git:https://github.com/apache/incubator-servicecomb-java-chassis.git</connection>
-    <developerConnection>scm:git:https://github.com/apache/incubator-servicecomb-java-chassis.git</developerConnection>
+    <url>https://github.com/apache/servicecomb-java-chassis</url>
+    <connection>scm:git:https://github.com/apache/servicecomb-java-chassis.git</connection>
+    <developerConnection>scm:git:https://github.com/apache/servicecomb-java-chassis.git</developerConnection>
     <tag>v${project.version}</tag>
   </scm>
 

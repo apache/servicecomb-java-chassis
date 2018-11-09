@@ -7,14 +7,14 @@
  - Java Chassis can now use Apollo as configuration center. Users can now
 change configurations like load balancing policy and those changes will
 come into effect on the fly.
-See [here](http://servicecomb.incubator.apache.org/users/dynamic-config/) for more
+See [here](http://servicecomb.apache.org/users/dynamic-config/) for more
 details.
 
  - Metrics was re-factored. We now uses events for collecting invocation data
 instead of Hystrix. This reduces the performance penalty of computing
 metrics.
 Metrics can now be fetched via '/metrics' using HTTP.
-See [here](http://servicecomb.incubator.apache.org/users/metrics-in-1.0.0-m1/) for
+See [here](http://servicecomb.apache.org/users/metrics-in-1.0.0-m1/) for
 more details.
 
 ### Other Noticeable Changes:
