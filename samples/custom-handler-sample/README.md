@@ -43,7 +43,7 @@ ServiceComb support users to define a customized handler and and invoke the hand
 
 1. Start the ServiceComb/Service Center
 
-   - [how to start the service center](http://servicecomb.incubator.apache.org/users/setup-environment/#)
+   - [how to start the service center](http://servicecomb.apache.org/users/setup-environment/#)
    - make sure service center address is configured correctly in `microservice.yaml` file
 
    ```yaml
@@ -57,10 +57,10 @@ ServiceComb support users to define a customized handler and and invoke the hand
 
    - Start provider service by maven
 
-     Compile the source code at root directory of ServiceComb Java Chassis, which is `incubator-servicecomb-java-chassis/`, and use `mvn exec` to execute the main class `CustomHandlerProviderMain`.
+     Compile the source code at root directory of ServiceComb Java Chassis, which is `servicecomb-java-chassis/`, and use `mvn exec` to execute the main class `CustomHandlerProviderMain`.
 
      ```bash
-     cd incubator-servicecomb-java-chassis/			#need to complie code at root directory
+     cd servicecomb-java-chassis/			#need to complie code at root directory
      mvn clean install -Psamples -DskipTests			#only need to install at first time.
      cd samples/custom-handler-sample/custom-handler-provider/
      mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.customerhandler.provider.CustomHandlerProviderMain"
@@ -68,7 +68,7 @@ ServiceComb support users to define a customized handler and and invoke the hand
 
    - Start provider service by IDE
 
-     Import the project by InteliJ IDEA or Eclipse, add sample module to pom.xml file in root module `incubator-servicecomb-java-chassis/pom.xml`, and add `<module>samples</module>` to `<modules></modules>` block, Then find `main` function `CustomHandlerProviderMain` of provider service and `RUN` it like any other Java program.
+     Import the project by InteliJ IDEA or Eclipse, add sample module to pom.xml file in root module `servicecomb-java-chassis/pom.xml`, and add `<module>samples</module>` to `<modules></modules>` block, Then find `main` function `CustomHandlerProviderMain` of provider service and `RUN` it like any other Java program.
 
 3. Start the custom-handler-consumer service
 

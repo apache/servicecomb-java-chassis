@@ -32,7 +32,7 @@
 
   <name>Java Chassis::Parent</name>
   <description>Java Chassis Parent</description>
-  <url>https://github.com/apache/incubator-servicecomb-java-chassis</url>
+  <url>https://github.com/apache/servicecomb-java-chassis</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -4,7 +4,7 @@ ServiceComb Java Chassis supports generating provider-service API implicitly. Wh
 
 When you develop a microservice in transparent RPC mode, the code does not show how you want to define an API, and all generated APIs are POST methods, The input parameters of all the methods will be packaged as a class and transferred as body parameters. Therefore, if you develop providers using implicit APIs, you are advised to choose Spring MVC or JAX-RS mode to obtain complete RESTful statements.
 
-For detail information please refer to [Doc](http://servicecomb.incubator.apache.org/users/service-contract/)
+For detail information please refer to [Doc](http://servicecomb.apache.org/users/service-contract/)
 
 
 
@@ -12,7 +12,7 @@ For detail information please refer to [Doc](http://servicecomb.incubator.apache
 
 1. Start the ServiceComb/Service Center
 
-   - [how to start the service center](http://servicecomb.incubator.apache.org/users/setup-environment/#)
+   - [how to start the service center](http://servicecomb.apache.org/users/setup-environment/#)
    - make sure service center address is configured correctly in `microservice.yaml` file
 
    ```yaml
@@ -26,10 +26,10 @@ For detail information please refer to [Doc](http://servicecomb.incubator.apache
 
    - Start provider service via maven
 
-      Compile the source code at root directory of ServiceComb Java Chassis, which is `incubator-servicecomb-java-chassis/`, and use `mvn exec` to execute the main class `CodeFirstProviderMain`.
+      Compile the source code at root directory of ServiceComb Java Chassis, which is `servicecomb-java-chassis/`, and use `mvn exec` to execute the main class `CodeFirstProviderMain`.
 
       ```bash
-      cd incubator-servicecomb-java-chassis/
+      cd servicecomb-java-chassis/
       mvn clean install -Psamples -DskipTests			#only need to install at first time.
       cd samples/codefirst-sample/codefirst-provider/
       mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.codefirst.provider.CodeFirstProviderMain"
@@ -37,10 +37,10 @@ For detail information please refer to [Doc](http://servicecomb.incubator.apache
 
    - Start provider service via gradle
 
-      Compile the source code at root directory of ServiceComb Java Chassis, which is `incubator-servicecomb-java-chassis/`, and use `mvn exec` to execute the main class `CodeFirstProviderMain`.
+      Compile the source code at root directory of ServiceComb Java Chassis, which is `servicecomb-java-chassis/`, and use `mvn exec` to execute the main class `CodeFirstProviderMain`.
 
       ```bash
-      cd incubator-servicecomb-java-chassis/
+      cd servicecomb-java-chassis/
       mvn clean install -Psamples -DskipTests			#only need to install at first time.
       cd samples/codefirst-sample/codefirst-provider/
       gradle clean run
@@ -48,7 +48,7 @@ For detail information please refer to [Doc](http://servicecomb.incubator.apache
 
    - Start provider service via IDE
 
-      Import the project by InteliJ IDEA or Eclipse, add sample module to pom.xml file in root module `incubator-servicecomb-java-chassis/pom.xml`, and add `<module>samples</module>` to `<modules></modules>` block, Then find `main` function `CodeFirstProviderMain` of provider service and `RUN` it like any other Java program.
+      Import the project by InteliJ IDEA or Eclipse, add sample module to pom.xml file in root module `servicecomb-java-chassis/pom.xml`, and add `<module>samples</module>` to `<modules></modules>` block, Then find `main` function `CodeFirstProviderMain` of provider service and `RUN` it like any other Java program.
 
 3. Start the codefirst-consumer service
 

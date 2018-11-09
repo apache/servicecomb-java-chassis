@@ -2,8 +2,8 @@
 This project(module) is generate by *org.apache.servicecomb.archetypes:business-service-spring-boot-starter-archetype*, it use **spring-boot-starter-provider** to develop service producer.  
 
 ### More works can be done further:
-1. Modify "HelloImpl", add your business service logic, or create some new producers to provide your services. More details can be found : http://servicecomb.incubator.apache.org/users/develop-with-spring-boot-starter/
-2. Modify "microservice.yaml", change APPLICATION_ID, service_description.name, version, and service center address, endpoints publish address etc. More details can be found : http://servicecomb.incubator.apache.org/users/service-definition/
+1. Modify "HelloImpl", add your business service logic, or create some new producers to provide your services. More details can be found : http://servicecomb.apache.org/users/develop-with-spring-boot-starter/
+2. Modify "microservice.yaml", change APPLICATION_ID, service_description.name, version, and service center address, endpoints publish address etc. More details can be found : http://servicecomb.apache.org/users/service-definition/
 
 ### Package your service
 Under project(module) root folder, run 

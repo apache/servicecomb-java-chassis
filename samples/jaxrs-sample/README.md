@@ -9,7 +9,7 @@ ServiceComb supports developers in developing services in JAX-RS mode by using J
 * Release the service. Add `@RestSchema` as the annotation of the service implementation class and specify schemaID, which indicates that the implementation is released as a schema of the current microservice.
 * Create the jaxrsHello.bean.xml file in the resources/META-INF/spring directory and configure base-package that performs scanning
 
-   [Detail information please refer to Doc](http://servicecomb.incubator.apache.org/users/develop-with-jax-rs/)
+   [Detail information please refer to Doc](http://servicecomb.apache.org/users/develop-with-jax-rs/)
 
 ### Consumer Service
 
@@ -19,7 +19,7 @@ To consume a provider-service, only need to decalare a member of a service API t
 
 1. Start the ServiceComb/Service Center
 
-   - [how to start the service center](http://servicecomb.incubator.apache.org/users/setup-environment/#)
+   - [how to start the service center](http://servicecomb.apache.org/users/setup-environment/#)
    - make sure service center address is configured correctly in `microservice.yaml` file
 
    ```yaml
@@ -33,10 +33,10 @@ To consume a provider-service, only need to decalare a member of a service API t
 
    - Start provider service by maven
 
-     Compile the source code at root directory of ServiceComb Java Chassis, which is `incubator-servicecomb-java-chassis/`, and use `mvn exec` to execute the main class `JaxrsProviderMain`.
+     Compile the source code at root directory of ServiceComb Java Chassis, which is `servicecomb-java-chassis/`, and use `mvn exec` to execute the main class `JaxrsProviderMain`.
 
      ```bash
-     cd incubator-servicecomb-java-chassis/
+     cd servicecomb-java-chassis/
      mvn clean install -Psamples -DskipTests			#only need to install at first time.
      cd samples/jaxrs-sample/jaxrs-provider/
      mvn exec:java -Dexec.mainClass="org.apache.servicecomb.samples.jaxrs.provider.JaxrsProviderMain"
@@ -44,7 +44,7 @@ To consume a provider-service, only need to decalare a member of a service API t
 
    - Start provider service by IDE
 
-     Import the project by InteliJ IDEA or Eclipse, add sample module to pom.xml file in root module `incubator-servicecomb-java-chassis/pom.xml`, and add `<module>samples</module>` to `<modules></modules>` block, Then find `main` function `JaxrsProviderMain` of provider service and `RUN` it like any other Java Program.
+     Import the project by InteliJ IDEA or Eclipse, add sample module to pom.xml file in root module `servicecomb-java-chassis/pom.xml`, and add `<module>samples</module>` to `<modules></modules>` block, Then find `main` function `JaxrsProviderMain` of provider service and `RUN` it like any other Java Program.
 
 3. Start the jaxrs-consumer service
 
