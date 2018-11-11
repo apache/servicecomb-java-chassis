@@ -40,6 +40,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.models.parameters.Parameter;
@@ -77,6 +78,9 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
       // edge support convert from form-data or x-www-form-urlencoded to json automatically
       String contentType = request.getContentType();
       contentType = contentType == null ? "" : contentType.toLowerCase(Locale.US);
+      if (contentType.startsWith(MediaType.APPLICATION_XML)) {
+        return new XmlMapper().readValue(IOUtils.toString(request.getInputStream()), targetType.getRawClass());
+      }
       if (contentType.startsWith(MediaType.MULTIPART_FORM_DATA)
           || contentType.startsWith(MediaType.APPLICATION_FORM_URLENCODED)) {
         return convertValue(request.getParameterMap(), targetType);

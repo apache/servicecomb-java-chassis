@@ -17,3 +17,4 @@
 
 org.apache.servicecomb.common.rest.codec.produce.ProduceJsonProcessor
 org.apache.servicecomb.common.rest.codec.produce.ProduceTextPlainProcessor
+org.apache.servicecomb.common.rest.codec.produce.ProduceAppXmlProcessor
