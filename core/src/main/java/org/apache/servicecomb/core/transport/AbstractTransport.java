@@ -59,9 +59,13 @@ public abstract class AbstractTransport implements Transport {
   private static final long DEFAULT_TIMEOUT_MILLIS = 30000;
 
   // 所有transport使用同一个vertx实例，避免创建太多的线程
-  public static TransportVertxFactory transportVertxFactory = new TransportVertxFactory();
+  private static TransportVertxFactory transportVertxFactory = new TransportVertxFactory();
 
-  protected Vertx transportVertx = transportVertxFactory.getTransportVertx();
+  public static TransportVertxFactory getTransportVertxFactory() {
+    return transportVertxFactory;
+  }
+
+  protected Vertx transportVertx = getTransportVertxFactory().getTransportVertx();
 
   protected Endpoint endpoint;
 

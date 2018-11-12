@@ -17,6 +17,7 @@
 package org.apache.servicecomb.foundation.vertx.metrics.metric;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -29,6 +30,8 @@ import io.vertx.core.Vertx;
 import io.vertx.core.net.SocketAddress;
 
 public class DefaultClientEndpointMetricManager {
+  private final Vertx vertx;
+
   private final MetricsOptionsEx metricsOptionsEx;
 
   // to avoid save too many endpoint that not exist any more
@@ -37,10 +40,11 @@ public class DefaultClientEndpointMetricManager {
 
   private final ReadWriteLock rwlock = new ReentrantReadWriteLock();
 
+  private AtomicBoolean inited = new AtomicBoolean(false);
+
   public DefaultClientEndpointMetricManager(Vertx vertx, MetricsOptionsEx metricsOptionsEx) {
+    this.vertx = vertx;
     this.metricsOptionsEx = metricsOptionsEx;
-    vertx.setPeriodic(metricsOptionsEx.getCheckClientEndpointMetricIntervalInMilliseconds(),
-        this::onCheckClientEndpointMetricExpired);
   }
 
   @VisibleForTesting
@@ -53,6 +57,11 @@ public class DefaultClientEndpointMetricManager {
   }
 
   public DefaultClientEndpointMetric onConnect(SocketAddress serverAddress) {
+    if (inited.compareAndSet(false, true)) {
+      vertx.setPeriodic(metricsOptionsEx.getCheckClientEndpointMetricIntervalInMilliseconds(),
+          this::onCheckClientEndpointMetricExpired);
+    }
+
     rwlock.readLock().lock();
     try {
       DefaultClientEndpointMetric clientEndpointMetric = clientEndpointMetricMap
