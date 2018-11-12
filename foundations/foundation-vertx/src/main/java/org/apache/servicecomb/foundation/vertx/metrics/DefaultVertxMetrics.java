@@ -49,8 +49,8 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
   public DefaultVertxMetrics(Vertx vertx, VertxOptions vertxOptions) {
     this.vertx = vertx;
     this.vertxOptions = vertxOptions;
-    // can not create DefaultClientEndpointMetricManager in this time
-    // because vertx is not inited
+    this.clientEndpointMetricManager = new DefaultClientEndpointMetricManager(vertx,
+        (MetricsOptionsEx) vertxOptions.getMetricsOptions());
   }
 
   public Vertx getVertx() {
@@ -65,17 +65,6 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
     return serverEndpointMetricMap;
   }
 
-  private void initClientEndpointMetricManager() {
-    if (clientEndpointMetricManager == null) {
-      synchronized (vertx) {
-        if (clientEndpointMetricManager == null) {
-          clientEndpointMetricManager = new DefaultClientEndpointMetricManager(vertx,
-              (MetricsOptionsEx) vertxOptions.getMetricsOptions());
-        }
-      }
-    }
-  }
-
   @Override
   public HttpServerMetrics<?, ?, ?> createMetrics(HttpServer server, SocketAddress localAddress,
       HttpServerOptions options) {
@@ -86,7 +75,6 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
 
   @Override
   public HttpClientMetrics<?, ?, ?, ?, ?> createMetrics(HttpClient client, HttpClientOptions options) {
-    initClientEndpointMetricManager();
     return new DefaultHttpClientMetrics(clientEndpointMetricManager);
   }
 
@@ -99,7 +87,6 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
 
   @Override
   public TCPMetrics<?> createMetrics(NetClientOptions options) {
-    initClientEndpointMetricManager();
     return new DefaultTcpClientMetrics(clientEndpointMetricManager);
   }
 
