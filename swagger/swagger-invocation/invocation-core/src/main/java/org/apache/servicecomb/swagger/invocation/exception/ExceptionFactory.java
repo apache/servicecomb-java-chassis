@@ -44,7 +44,7 @@ public final class ExceptionFactory {
 
   public static final String CONSUMER_INNER_REASON_PHRASE = "Cse Internal Bad Request";
 
-  private static ExceptionToResponseConverters exceptionToResponseConverters = new ExceptionToResponseConverters();
+  private static ExceptionToProducerResponseConverters exceptionToProducerResponseConverters = new ExceptionToProducerResponseConverters();
 
   public static final StatusType CONSUMER_INNER_STATUS =
       new HttpStatus(CONSUMER_INNER_STATUS_CODE, CONSUMER_INNER_REASON_PHRASE);
@@ -125,6 +125,6 @@ public final class ExceptionFactory {
   }
 
   public static Response convertExceptionToResponse(SwaggerInvocation swaggerInvocation, Throwable e) {
-    return exceptionToResponseConverters.convertExceptionToResponse(swaggerInvocation, e);
+    return exceptionToProducerResponseConverters.convertExceptionToResponse(swaggerInvocation, e);
   }
 }

@@ -18,21 +18,16 @@ package org.apache.servicecomb.swagger.invocation.exception;
 
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class DefaultExceptionToResponseConverter implements ExceptionToResponseConverter<Throwable> {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultExceptionToResponseConverter.class);
-
+public class InvocationExceptionToProducerResponseConverter implements
+    ExceptionToProducerResponseConverter<InvocationException> {
   @Override
-  public Class<Throwable> getExceptionClass() {
-    // default logic, not bind to special class
-    return null;
+  public Class<InvocationException> getExceptionClass() {
+    return InvocationException.class;
   }
 
   @Override
-  public Response convert(SwaggerInvocation swaggerInvocation, Throwable e) {
-    LOGGER.error("invoke failed, invocation={}", swaggerInvocation.getInvocationQualifiedName(), e);
-    return Response.producerFailResp(e);
+  public Response convert(SwaggerInvocation swaggerInvocation, InvocationException e) {
+    return Response.failResp(e);
   }
 }
