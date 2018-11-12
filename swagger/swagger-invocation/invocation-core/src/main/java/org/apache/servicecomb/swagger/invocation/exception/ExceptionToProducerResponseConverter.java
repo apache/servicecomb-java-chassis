@@ -18,22 +18,13 @@ package org.apache.servicecomb.swagger.invocation.exception;
 
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
-import org.junit.Assert;
-import org.junit.Test;
 
-import mockit.Mocked;
+public interface ExceptionToProducerResponseConverter<T extends Throwable> {
+  Class<T> getExceptionClass();
 
-public class TestDefaultExceptionToResponseConverter {
-  DefaultExceptionToResponseConverter converter = new DefaultExceptionToResponseConverter();
-
-  @Test
-  public void getExceptionClass() {
-    Assert.assertNull(converter.getExceptionClass());
+  default int getOrder() {
+    return 0;
   }
 
-  @Test
-  public void convert(@Mocked SwaggerInvocation swaggerInvocation, @Mocked Error e) {
-    Response response = converter.convert(swaggerInvocation, e);
-    Assert.assertSame(e, ((InvocationException) response.getResult()).getCause());
-  }
+  Response convert(SwaggerInvocation swaggerInvocation, T e);
 }

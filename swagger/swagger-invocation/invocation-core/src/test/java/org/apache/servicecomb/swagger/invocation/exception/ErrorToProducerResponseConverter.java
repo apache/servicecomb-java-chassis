@@ -16,24 +16,19 @@
  */
 package org.apache.servicecomb.swagger.invocation.exception;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
-import org.junit.Assert;
-import org.junit.Test;
 
-import mockit.Mocked;
-
-public class TestInvocationExceptionToResponseConverter {
-  InvocationExceptionToResponseConverter converter = new InvocationExceptionToResponseConverter();
-
-  @Test
-  public void getExceptionClass() {
-    Assert.assertEquals(InvocationException.class, converter.getExceptionClass());
+public class ErrorToProducerResponseConverter implements ExceptionToProducerResponseConverter<Error> {
+  @Override
+  public Class<Error> getExceptionClass() {
+    return Error.class;
   }
 
-  @Test
-  public void convert(@Mocked SwaggerInvocation swaggerInvocation, @Mocked InvocationException e) {
-    Response response = converter.convert(swaggerInvocation, e);
-    Assert.assertSame(e, response.getResult());
+  @Override
+  public Response convert(SwaggerInvocation swaggerInvocation, Error e) {
+    return Response.create(Status.OK, "response from error: " + e.getMessage());
   }
 }

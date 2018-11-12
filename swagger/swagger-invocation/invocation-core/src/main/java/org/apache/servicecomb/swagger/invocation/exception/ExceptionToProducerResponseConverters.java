@@ -23,19 +23,19 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 
-public class ExceptionToResponseConverters {
-  private Map<Class<?>, ExceptionToResponseConverter<Throwable>> exceptionToResponseConverters =
+public class ExceptionToProducerResponseConverters {
+  private Map<Class<?>, ExceptionToProducerResponseConverter<Throwable>> exceptionToProducerResponseConverters =
       new HashMap<>();
 
-  private ExceptionToResponseConverter<Throwable> defaultConverter;
+  private ExceptionToProducerResponseConverter<Throwable> defaultConverter;
 
   /**
-   * Load the {@link ExceptionToResponseConverter} implementations. Ensure that those converters whose {@link ExceptionToResponseConverter#getOrder()}
+   * Load the {@link ExceptionToProducerResponseConverter} implementations. Ensure that those converters whose {@link ExceptionToProducerResponseConverter#getOrder()}
    * return smaller value takes higher priority.
    */
   @SuppressWarnings("unchecked")
-  public ExceptionToResponseConverters() {
-    SPIServiceUtils.getSortedService(ExceptionToResponseConverter.class).forEach(converter -> {
+  public ExceptionToProducerResponseConverters() {
+    SPIServiceUtils.getSortedService(ExceptionToProducerResponseConverter.class).forEach(converter -> {
       if (converter.getExceptionClass() == null) {
         if (defaultConverter == null) {
           defaultConverter = converter;
@@ -43,15 +43,15 @@ public class ExceptionToResponseConverters {
         return;
       }
 
-      exceptionToResponseConverters.putIfAbsent(converter.getExceptionClass(), converter);
+      exceptionToProducerResponseConverters.putIfAbsent(converter.getExceptionClass(), converter);
     });
   }
 
   public Response convertExceptionToResponse(SwaggerInvocation swaggerInvocation, Throwable e) {
-    ExceptionToResponseConverter<Throwable> converter = null;
+    ExceptionToProducerResponseConverter<Throwable> converter = null;
     Class<?> clazz = e.getClass();
     while (converter == null) {
-      converter = exceptionToResponseConverters.get(clazz);
+      converter = exceptionToProducerResponseConverters.get(clazz);
       if (clazz == Throwable.class) {
         break;
       }

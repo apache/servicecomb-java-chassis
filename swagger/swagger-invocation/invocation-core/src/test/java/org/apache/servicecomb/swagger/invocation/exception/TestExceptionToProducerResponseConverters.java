@@ -30,17 +30,17 @@ import org.junit.Test;
 import mockit.Expectations;
 import mockit.Mocked;
 
-public class TestExceptionToResponseConverters {
+public class TestExceptionToProducerResponseConverters {
   @Test
   public void convertExceptionToResponse(
-      @Mocked ExceptionToResponseConverter<Throwable> c1,
+      @Mocked ExceptionToProducerResponseConverter<Throwable> c1,
       @Mocked Response r1,
-      @Mocked ExceptionToResponseConverter<Throwable> c2,
+      @Mocked ExceptionToProducerResponseConverter<Throwable> c2,
       @Mocked Response r2,
-      @Mocked ExceptionToResponseConverter<Throwable> cDef) {
+      @Mocked ExceptionToProducerResponseConverter<Throwable> cDef) {
     new Expectations(SPIServiceUtils.class) {
       {
-        SPIServiceUtils.getSortedService(ExceptionToResponseConverter.class);
+        SPIServiceUtils.getSortedService(ExceptionToProducerResponseConverter.class);
         result = Arrays.asList(c1, c2, cDef);
 
         c1.getExceptionClass();
@@ -58,29 +58,29 @@ public class TestExceptionToResponseConverters {
       }
     };
 
-    ExceptionToResponseConverters exceptionToResponseConverters = new ExceptionToResponseConverters();
+    ExceptionToProducerResponseConverters exceptionToProducerResponseConverters = new ExceptionToProducerResponseConverters();
 
     Assert.assertSame(r1,
-        exceptionToResponseConverters.convertExceptionToResponse(null, new Throwable()));
+        exceptionToProducerResponseConverters.convertExceptionToResponse(null, new Throwable()));
     Assert.assertSame(r2,
-        exceptionToResponseConverters.convertExceptionToResponse(null, new Exception()));
+        exceptionToProducerResponseConverters.convertExceptionToResponse(null, new Exception()));
     Assert.assertSame(r2,
-        exceptionToResponseConverters.convertExceptionToResponse(null,
+        exceptionToProducerResponseConverters.convertExceptionToResponse(null,
             new IllegalStateException()));
   }
 
   @Test
   public void convertExceptionToResponse_checkDefaultConverterPriority(
-      @Mocked ExceptionToResponseConverter<Throwable> c1,
+      @Mocked ExceptionToProducerResponseConverter<Throwable> c1,
       @Mocked Response r1,
-      @Mocked ExceptionToResponseConverter<Throwable> c2,
+      @Mocked ExceptionToProducerResponseConverter<Throwable> c2,
       @Mocked Response r2,
-      @Mocked ExceptionToResponseConverter<Throwable> cDef,
+      @Mocked ExceptionToProducerResponseConverter<Throwable> cDef,
       @Mocked Response rDef,
-      @Mocked ExceptionToResponseConverter<Throwable> cDef2) {
+      @Mocked ExceptionToProducerResponseConverter<Throwable> cDef2) {
     new Expectations(SPIServiceUtils.class) {
       {
-        SPIServiceUtils.getSortedService(ExceptionToResponseConverter.class);
+        SPIServiceUtils.getSortedService(ExceptionToProducerResponseConverter.class);
         result = Arrays.asList(c1, c2, cDef, cDef2);
 
         c1.getExceptionClass();
@@ -103,33 +103,33 @@ public class TestExceptionToResponseConverters {
       }
     };
 
-    ExceptionToResponseConverters exceptionToResponseConverters = new ExceptionToResponseConverters();
+    ExceptionToProducerResponseConverters exceptionToProducerResponseConverters = new ExceptionToProducerResponseConverters();
 
     Assert.assertSame(r2,
-        exceptionToResponseConverters
+        exceptionToProducerResponseConverters
             .convertExceptionToResponse(null, new InvocationException(Status.UNAUTHORIZED, "")));
     Assert.assertSame(r1,
-        exceptionToResponseConverters.convertExceptionToResponse(null, new RuntimeException()));
+        exceptionToProducerResponseConverters.convertExceptionToResponse(null, new RuntimeException()));
     Assert.assertSame(rDef,
-        exceptionToResponseConverters.convertExceptionToResponse(null,
+        exceptionToProducerResponseConverters.convertExceptionToResponse(null,
             new IOException()));
   }
 
   @Test
   public void convertExceptionToResponse_CheckCommonConvertPriority(
-      @Mocked ExceptionToResponseConverter<RuntimeException0> cR0,
-      @Mocked ExceptionToResponseConverter<RuntimeException0> cR0_LowPriority,
-      @Mocked ExceptionToResponseConverter<RuntimeException1> cR1,
-      @Mocked ExceptionToResponseConverter<RuntimeException> cR,
-      @Mocked ExceptionToResponseConverter<Throwable> cT,
-      @Mocked ExceptionToResponseConverter<?> cDef,
+      @Mocked ExceptionToProducerResponseConverter<RuntimeException0> cR0,
+      @Mocked ExceptionToProducerResponseConverter<RuntimeException0> cR0_LowPriority,
+      @Mocked ExceptionToProducerResponseConverter<RuntimeException1> cR1,
+      @Mocked ExceptionToProducerResponseConverter<RuntimeException> cR,
+      @Mocked ExceptionToProducerResponseConverter<Throwable> cT,
+      @Mocked ExceptionToProducerResponseConverter<?> cDef,
       @Mocked Response rR0,
       @Mocked Response rR1,
       @Mocked Response rR,
       @Mocked Response rT) {
     new Expectations(SPIServiceUtils.class) {
       {
-        SPIServiceUtils.getSortedService(ExceptionToResponseConverter.class);
+        SPIServiceUtils.getSortedService(ExceptionToProducerResponseConverter.class);
         result = Arrays.asList(cR, cR0, cR0_LowPriority, cR1, cDef, cT);
 
         cR0.getExceptionClass();
@@ -160,19 +160,19 @@ public class TestExceptionToResponseConverters {
       }
     };
 
-    ExceptionToResponseConverters exceptionToResponseConverters = new ExceptionToResponseConverters();
+    ExceptionToProducerResponseConverters exceptionToProducerResponseConverters = new ExceptionToProducerResponseConverters();
 
     Assert.assertSame(rR0,
-        exceptionToResponseConverters.convertExceptionToResponse(null, new RuntimeException0_0()));
+        exceptionToProducerResponseConverters.convertExceptionToResponse(null, new RuntimeException0_0()));
     Assert.assertSame(rR0,
-        exceptionToResponseConverters.convertExceptionToResponse(null, new RuntimeException0()));
+        exceptionToProducerResponseConverters.convertExceptionToResponse(null, new RuntimeException0()));
     Assert.assertSame(rR1,
-        exceptionToResponseConverters.convertExceptionToResponse(null, new RuntimeException1()));
+        exceptionToProducerResponseConverters.convertExceptionToResponse(null, new RuntimeException1()));
     Assert.assertSame(rR,
-        exceptionToResponseConverters.convertExceptionToResponse(null, new RuntimeException()));
+        exceptionToProducerResponseConverters.convertExceptionToResponse(null, new RuntimeException()));
     // Actually, a Throwable exception converter will act like a default converter, as our implementation expects.
     Assert.assertSame(rT,
-        exceptionToResponseConverters.convertExceptionToResponse(null, new IOException()));
+        exceptionToProducerResponseConverters.convertExceptionToResponse(null, new IOException()));
   }
 
   static class RuntimeException0 extends RuntimeException {
