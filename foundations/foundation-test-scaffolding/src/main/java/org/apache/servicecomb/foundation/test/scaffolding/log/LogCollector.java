@@ -61,4 +61,8 @@ public class LogCollector {
   public void teardown() {
     Logger.getRootLogger().removeAppender(appender);
   }
+
+  public void clear() {
+    events = new ArrayList<>();
+  }
 }

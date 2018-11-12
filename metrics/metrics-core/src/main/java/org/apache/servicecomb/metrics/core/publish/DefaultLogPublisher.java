@@ -30,6 +30,7 @@ import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNo
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
+import org.apache.servicecomb.metrics.core.VertxMetersInitializer;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.meter.os.NetMeter;
 import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
@@ -53,6 +54,9 @@ public class DefaultLogPublisher implements MetricsInitializer {
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultLogPublisher.class);
 
   public static final String ENABLED = "servicecomb.metrics.publisher.defaultLog.enabled";
+
+  // for a client, maybe will connect to too many endpoints, so default not print detail, just print summary
+  public static final String ENDPOINTS_CLIENT_DETAIL_ENABLED = "servicecomb.metrics.publisher.defaultLog.endpoints.client.detail.enabled";
 
   //sample
   private static final String SIMPLE_HEADER = "%s:\n  simple:\n"
@@ -107,7 +111,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
     DefaultPublishModel model = factory.createDefaultPublishModel();
 
     printOsLog(factory.getTree(), sb);
-    printVertxMetrics(sb);
+    printVertxMetrics(factory.getTree(), sb);
     printThreadPoolMetrics(model, sb);
 
     printConsumerLog(model, sb);
@@ -410,7 +414,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
     return sb;
   }
 
-  protected void printVertxMetrics(StringBuilder sb) {
+  protected void printVertxMetrics(MeasurementTree tree, StringBuilder sb) {
     appendLine(sb, "vertx:");
 
     appendLine(sb, "  instances:");
@@ -419,6 +423,24 @@ public class DefaultLogPublisher implements MetricsInitializer {
       appendLine(sb, "    %-10s %d",
           entry.getKey(),
           entry.getValue().getEventLoopContextCreatedCount());
+    }
+
+    EndpointsLogPublisher client = new EndpointsLogPublisher(tree, sb, VertxMetersInitializer.ENDPOINTS_CLINET,
+        "client.endpoints", "remote");
+    EndpointsLogPublisher server = new EndpointsLogPublisher(tree, sb, VertxMetersInitializer.ENDPOINTS_SERVER,
+        "server.endpoints", "listen");
+    if (client.isExists() || server.isExists()) {
+      appendLine(sb, "  transport:");
+      if (client.isExists()) {
+        client.print(DynamicPropertyFactory
+            .getInstance()
+            .getBooleanProperty(ENDPOINTS_CLIENT_DETAIL_ENABLED, false)
+            .get());
+      }
+
+      if (server.isExists()) {
+        server.print(true);
+      }
     }
   }
 
