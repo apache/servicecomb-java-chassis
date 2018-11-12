@@ -38,10 +38,12 @@ servicecomb:
     client:
       thread-count: 8
   references:
-    transport: rest
+    transport: highway
   metrics:
     window_time: 1000
-    publisher.defaultLog.enabled: true
+    publisher.defaultLog:
+      enabled: true
+      endpoints.client.detail.enabled: true
 
 sync-count: 10
 async-count: 20
