@@ -205,6 +205,9 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   public boolean unregisterInstance() {
     MicroserviceInstance microserviceInstance = microservice.getInstance();
+    if (microserviceInstance.getInstanceId() == null || microserviceInstance.getServiceId() == null) {
+      return true;
+    }
     boolean result = srClient.unregisterMicroserviceInstance(microserviceInstance.getServiceId(),
         microserviceInstance.getInstanceId());
     if (!result) {
