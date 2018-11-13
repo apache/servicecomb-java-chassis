@@ -20,77 +20,51 @@ import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientEndpo
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientEndpointMetricManager;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultHttpSocketMetric;
 
-import io.vertx.core.http.HttpClient;
-import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.WebSocket;
 import io.vertx.core.net.SocketAddress;
-import io.vertx.core.net.impl.SocketAddressImpl;
 import io.vertx.core.spi.metrics.HttpClientMetrics;
 
 /**
  * important: not singleton, every HttpClient instance relate to a HttpClientMetrics instance
  */
 public class DefaultHttpClientMetrics implements
-    HttpClientMetrics<DefaultHttpSocketMetric, Object, DefaultHttpSocketMetric, DefaultClientEndpointMetric, Object> {
-
+    HttpClientMetrics<DefaultHttpSocketMetric, Object, DefaultHttpSocketMetric, Object, Object> {
   private final DefaultClientEndpointMetricManager clientEndpointMetricManager;
 
-  private final HttpClient client;
-
-  private final HttpClientOptions options;
-
-  public DefaultHttpClientMetrics(DefaultClientEndpointMetricManager clientEndpointMetricManager,
-      HttpClient client, HttpClientOptions options) {
+  public DefaultHttpClientMetrics(DefaultClientEndpointMetricManager clientEndpointMetricManager) {
     this.clientEndpointMetricManager = clientEndpointMetricManager;
-    this.client = client;
-    this.options = options;
-  }
-
-  public HttpClient getClient() {
-    return client;
-  }
-
-  public HttpClientOptions getOptions() {
-    return options;
   }
 
   @Override
-  public DefaultClientEndpointMetric createEndpoint(String host, int port, int maxPoolSize) {
-    SocketAddress address = new SocketAddressImpl(port, host);
-    return clientEndpointMetricManager.getOrCreateClientEndpointMetric(address);
-  }
-
-  @Override
-  public void closeEndpoint(String host, int port, DefaultClientEndpointMetric endpointMetric) {
-    endpointMetric.decRefCount();
-  }
-
-  @Override
-  public Object enqueueRequest(DefaultClientEndpointMetric endpointMetric) {
+  public Object createEndpoint(String host, int port, int maxPoolSize) {
     return null;
   }
 
   @Override
-  public void dequeueRequest(DefaultClientEndpointMetric endpointMetric, Object taskMetric) {
+  public void closeEndpoint(String host, int port, Object endpointMetric) {
   }
 
   @Override
-  public void endpointConnected(DefaultClientEndpointMetric endpointMetric, DefaultHttpSocketMetric socketMetric) {
-    // as http2 client will not invoke this method, the endpointMetric info will lost.
-    // you can get more details from https://github.com/eclipse-vertx/vert.x/issues/2660
-    // hence, we will set endpointMetric info in the method connected(SocketAddress remoteAddress, String remoteName)
+  public Object enqueueRequest(Object endpointMetric) {
+    return null;
   }
 
   @Override
-  public void endpointDisconnected(DefaultClientEndpointMetric endpointMetric, DefaultHttpSocketMetric socketMetric) {
-    endpointMetric.onDisconnect();
-    socketMetric.setConnected(false);
+  public void dequeueRequest(Object endpointMetric, Object taskMetric) {
   }
 
   @Override
-  public DefaultHttpSocketMetric requestBegin(DefaultClientEndpointMetric endpointMetric,
+  public void endpointConnected(Object endpointMetric, DefaultHttpSocketMetric socketMetric) {
+  }
+
+  @Override
+  public void endpointDisconnected(Object endpointMetric, DefaultHttpSocketMetric socketMetric) {
+  }
+
+  @Override
+  public DefaultHttpSocketMetric requestBegin(Object endpointMetric,
       DefaultHttpSocketMetric socketMetric, SocketAddress localAddress, SocketAddress remoteAddress,
       HttpClientRequest request) {
     socketMetric.requestBegin();
@@ -107,7 +81,7 @@ public class DefaultHttpClientMetrics implements
   }
 
   @Override
-  public DefaultHttpSocketMetric responsePushed(DefaultClientEndpointMetric endpointMetric,
+  public DefaultHttpSocketMetric responsePushed(Object endpointMetric,
       DefaultHttpSocketMetric socketMetric,
       SocketAddress localAddress,
       SocketAddress remoteAddress, HttpClientRequest request) {
@@ -123,7 +97,7 @@ public class DefaultHttpClientMetrics implements
   }
 
   @Override
-  public Object connected(DefaultClientEndpointMetric endpointMetric, DefaultHttpSocketMetric socketMetric,
+  public Object connected(Object endpointMetric, DefaultHttpSocketMetric socketMetric,
       WebSocket webSocket) {
     return null;
   }
@@ -135,26 +109,13 @@ public class DefaultHttpClientMetrics implements
 
   @Override
   public DefaultHttpSocketMetric connected(SocketAddress remoteAddress, String remoteName) {
-    // when host of createEndpoint is not ip but a hostName
-    // get from remoteAddress will return null
-    // in this time need to try again with remoteName
-    // connected is a low frequency method, this try logic will not cause performance problem
-
-    DefaultClientEndpointMetric clientEndpointMetric = this.clientEndpointMetricManager
-        .getClientEndpointMetric(remoteAddress);
-    if (clientEndpointMetric == null) {
-      SocketAddressImpl address = new SocketAddressImpl(remoteAddress.port(), remoteName);
-      clientEndpointMetric = this.clientEndpointMetricManager.getClientEndpointMetric(address);
-    }
-    // it's better to be done in endpointConnected
-    // but there is bug before vertx 3.6.0 vertx not invoke endpointConnected for http2
-    // to avoid this bug, we move the logic here
-    clientEndpointMetric.onConnect();
-    return new DefaultHttpSocketMetric(clientEndpointMetric);
+    DefaultClientEndpointMetric endpointMetric = this.clientEndpointMetricManager.onConnect(remoteAddress);
+    return new DefaultHttpSocketMetric(endpointMetric);
   }
 
   @Override
   public void disconnected(DefaultHttpSocketMetric socketMetric, SocketAddress remoteAddress) {
+    socketMetric.onDisconnect();
   }
 
   @Override

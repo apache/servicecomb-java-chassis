@@ -20,19 +20,18 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMetric;
-import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultHttpSocketMetric;
+import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultTcpSocketMetric;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.http.HttpServer;
-import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.net.NetServerOptions;
 import io.vertx.core.net.SocketAddress;
 import mockit.Mocked;
 
-public class TestDefaultHttpServerMetrics {
+public class TestDefaultTcpServerMetrics {
   @Mocked
   Vertx vertx;
 
@@ -43,68 +42,56 @@ public class TestDefaultHttpServerMetrics {
   DefaultVertxMetrics defaultVertxMetrics;
 
   @Mocked
-  HttpServer listen1_server1;
-
-  @Mocked
-  HttpServer listen1_server2;
-
-  @Mocked
   SocketAddress listen1_addr;
-
-  @Mocked
-  HttpServer listen2_server1;
-
-  @Mocked
-  HttpServer listen2_server2;
 
   @Mocked
   SocketAddress listen2_addr;
 
   @Mocked
-  HttpServerOptions options;
+  NetServerOptions options;
+
+  DefaultTcpServerMetrics metrics_listen1_server1;
+
+  DefaultTcpServerMetrics metrics_listen1_server2;
+
+  DefaultEndpointMetric endpointMetric1;
+
+  DefaultTcpServerMetrics metrics_listen2_server1;
+
+  DefaultTcpServerMetrics metrics_listen2_server2;
+
+  DefaultEndpointMetric endpointMetric2;
 
   @Mocked
   SocketAddress anyRemoteAddr;
 
-  DefaultHttpServerMetrics metrics_listen1_server1;
-
-  DefaultHttpServerMetrics metrics_listen1_server2;
-
-  DefaultEndpointMetric endpointMetric1;
-
-  DefaultHttpServerMetrics metrics_listen2_server1;
-
-  DefaultHttpServerMetrics metrics_listen2_server2;
-
-  DefaultEndpointMetric endpointMetric2;
-
   String remoteName = "remote";
 
-  DefaultHttpSocketMetric socketMetric_listen1_1;
+  DefaultTcpSocketMetric socketMetric_listen1_1;
 
-  DefaultHttpSocketMetric socketMetric_listen1_2;
+  DefaultTcpSocketMetric socketMetric_listen1_2;
 
-  DefaultHttpSocketMetric socketMetric_listen2_1;
+  DefaultTcpSocketMetric socketMetric_listen2_1;
 
-  DefaultHttpSocketMetric socketMetric_listen2_2;
+  DefaultTcpSocketMetric socketMetric_listen2_2;
 
-  DefaultHttpSocketMetric socketMetric_listen2_3;
+  DefaultTcpSocketMetric socketMetric_listen2_3;
 
   @Before
   public void setup() {
     vertxOptions.setMetricsOptions(metricsOptionsEx);
     defaultVertxMetrics = new DefaultVertxMetrics(vertx, vertxOptions);
 
-    metrics_listen1_server1 = (DefaultHttpServerMetrics) defaultVertxMetrics
-        .createMetrics(listen1_server1, listen1_addr, options);
-    metrics_listen1_server2 = (DefaultHttpServerMetrics) defaultVertxMetrics
-        .createMetrics(listen1_server2, listen1_addr, options);
+    metrics_listen1_server1 = (DefaultTcpServerMetrics) defaultVertxMetrics
+        .createMetrics(listen1_addr, options);
+    metrics_listen1_server2 = (DefaultTcpServerMetrics) defaultVertxMetrics
+        .createMetrics(listen1_addr, options);
     endpointMetric1 = metrics_listen1_server1.getEndpointMetric();
 
-    metrics_listen2_server1 = (DefaultHttpServerMetrics) defaultVertxMetrics
-        .createMetrics(listen2_server1, listen2_addr, options);
-    metrics_listen2_server2 = (DefaultHttpServerMetrics) defaultVertxMetrics
-        .createMetrics(listen2_server2, listen2_addr, options);
+    metrics_listen2_server1 = (DefaultTcpServerMetrics) defaultVertxMetrics
+        .createMetrics(listen2_addr, options);
+    metrics_listen2_server2 = (DefaultTcpServerMetrics) defaultVertxMetrics
+        .createMetrics(listen2_addr, options);
     endpointMetric2 = metrics_listen2_server1.getEndpointMetric();
 
     socketMetric_listen1_1 = metrics_listen1_server1.connected(anyRemoteAddr, remoteName);
@@ -194,13 +181,6 @@ public class TestDefaultHttpServerMetrics {
     Assert.assertSame(listen1_addr, metrics_listen1_server1.getEndpointMetric().getAddress());
     Assert.assertTrue(metrics_listen1_server1.isEnabled());
 
-    metrics_listen1_server1.requestBegin(null, null);
-    metrics_listen1_server1.requestReset(null);
-    metrics_listen1_server1.responsePushed(null, null, null, null);
-    metrics_listen1_server1.responseEnd(null, null);
-    metrics_listen1_server1.upgrade(null, null);
-    metrics_listen1_server1.connected((DefaultHttpSocketMetric) null, null);
-    metrics_listen1_server1.disconnected(null);
     metrics_listen1_server1.exceptionOccurred(null, null, null);
     metrics_listen1_server1.close();
   }

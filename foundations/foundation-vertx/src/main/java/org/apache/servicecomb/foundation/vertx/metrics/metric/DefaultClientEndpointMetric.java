@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.foundation.vertx.metrics.metric;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import io.vertx.core.net.SocketAddress;
 
 
@@ -30,8 +28,6 @@ public class DefaultClientEndpointMetric extends DefaultEndpointMetric {
   // decRefCount no need to lock, because that only cause to be expired later.
   private long lastNanoTime;
 
-  private AtomicLong refCount = new AtomicLong();
-
   public DefaultClientEndpointMetric(SocketAddress address) {
     super(address);
   }
@@ -40,22 +36,14 @@ public class DefaultClientEndpointMetric extends DefaultEndpointMetric {
     return lastNanoTime;
   }
 
-  public long getRefCount() {
-    return refCount.get();
-  }
-
-  public void incRefCount() {
+  @Override
+  public void onDisconnect() {
+    super.onDisconnect();
     lastNanoTime = System.nanoTime();
-    refCount.incrementAndGet();
-  }
-
-  public void decRefCount() {
-    lastNanoTime = System.nanoTime();
-    refCount.decrementAndGet();
   }
 
   public boolean isExpired(long nsTimeout) {
-    return refCount.get() == 0
+    return getCurrentConnectionCount() == 0
         && (System.nanoTime() - lastNanoTime) > nsTimeout;
   }
 }

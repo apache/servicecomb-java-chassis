@@ -29,9 +29,12 @@ import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.metrics.impl.DummyVertxMetrics;
+import io.vertx.core.net.NetClientOptions;
+import io.vertx.core.net.NetServerOptions;
 import io.vertx.core.net.SocketAddress;
 import io.vertx.core.spi.metrics.HttpClientMetrics;
 import io.vertx.core.spi.metrics.HttpServerMetrics;
+import io.vertx.core.spi.metrics.TCPMetrics;
 
 public class DefaultVertxMetrics extends DummyVertxMetrics {
   private final Vertx vertx;
@@ -46,6 +49,8 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
   public DefaultVertxMetrics(Vertx vertx, VertxOptions vertxOptions) {
     this.vertx = vertx;
     this.vertxOptions = vertxOptions;
+    // can not create DefaultClientEndpointMetricManager in this time
+    // because vertx is not inited
   }
 
   public Vertx getVertx() {
@@ -56,16 +61,11 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
     return clientEndpointMetricManager;
   }
 
-  @Override
-  public HttpServerMetrics<?, ?, ?> createMetrics(HttpServer server, SocketAddress localAddress,
-      HttpServerOptions options) {
-    DefaultEndpointMetric endpointMetric = serverEndpointMetricMap
-        .computeIfAbsent(localAddress, DefaultEndpointMetric::new);
-    return new DefaultHttpServerMetrics(endpointMetric, server, localAddress, options);
+  public Map<SocketAddress, DefaultEndpointMetric> getServerEndpointMetricMap() {
+    return serverEndpointMetricMap;
   }
 
-  @Override
-  public HttpClientMetrics<?, ?, ?, ?, ?> createMetrics(HttpClient client, HttpClientOptions options) {
+  private void initClientEndpointMetricManager() {
     if (clientEndpointMetricManager == null) {
       synchronized (vertx) {
         if (clientEndpointMetricManager == null) {
@@ -74,8 +74,33 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
         }
       }
     }
+  }
 
-    return new DefaultHttpClientMetrics(clientEndpointMetricManager, client, options);
+  @Override
+  public HttpServerMetrics<?, ?, ?> createMetrics(HttpServer server, SocketAddress localAddress,
+      HttpServerOptions options) {
+    DefaultEndpointMetric endpointMetric = serverEndpointMetricMap
+        .computeIfAbsent(localAddress, DefaultEndpointMetric::new);
+    return new DefaultHttpServerMetrics(endpointMetric);
+  }
+
+  @Override
+  public HttpClientMetrics<?, ?, ?, ?, ?> createMetrics(HttpClient client, HttpClientOptions options) {
+    initClientEndpointMetricManager();
+    return new DefaultHttpClientMetrics(clientEndpointMetricManager);
+  }
+
+  @Override
+  public TCPMetrics<?> createMetrics(SocketAddress localAddress, NetServerOptions options) {
+    DefaultEndpointMetric endpointMetric = serverEndpointMetricMap
+        .computeIfAbsent(localAddress, DefaultEndpointMetric::new);
+    return new DefaultTcpServerMetrics(endpointMetric);
+  }
+
+  @Override
+  public TCPMetrics<?> createMetrics(NetClientOptions options) {
+    initClientEndpointMetricManager();
+    return new DefaultTcpClientMetrics(clientEndpointMetricManager);
   }
 
   @Override
