@@ -17,6 +17,8 @@
 package org.apache.servicecomb.foundation.vertx.metrics.metric;
 
 import java.util.Map;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.vertx.metrics.MetricsOptionsEx;
@@ -33,7 +35,7 @@ public class DefaultClientEndpointMetricManager {
   // must check expired periodically
   private Map<SocketAddress, DefaultClientEndpointMetric> clientEndpointMetricMap = new ConcurrentHashMapEx<>();
 
-  private final Object lock = new Object();
+  private final ReadWriteLock rwlock = new ReentrantReadWriteLock();
 
   public DefaultClientEndpointMetricManager(Vertx vertx, MetricsOptionsEx metricsOptionsEx) {
     this.metricsOptionsEx = metricsOptionsEx;
@@ -42,31 +44,37 @@ public class DefaultClientEndpointMetricManager {
   }
 
   @VisibleForTesting
+  public DefaultClientEndpointMetric getClientEndpointMetric(SocketAddress serverAddress) {
+    return clientEndpointMetricMap.get(serverAddress);
+  }
+
   public Map<SocketAddress, DefaultClientEndpointMetric> getClientEndpointMetricMap() {
     return clientEndpointMetricMap;
   }
 
-  public DefaultClientEndpointMetric getOrCreateClientEndpointMetric(SocketAddress serverAddress) {
-    synchronized (lock) {
-      DefaultClientEndpointMetric metric = clientEndpointMetricMap
+  public DefaultClientEndpointMetric onConnect(SocketAddress serverAddress) {
+    rwlock.readLock().lock();
+    try {
+      DefaultClientEndpointMetric clientEndpointMetric = clientEndpointMetricMap
           .computeIfAbsent(serverAddress, DefaultClientEndpointMetric::new);
-      metric.incRefCount();
-      return metric;
+      clientEndpointMetric.onConnect();
+      return clientEndpointMetric;
+    } finally {
+      rwlock.readLock().unlock();
     }
-  }
-
-  public DefaultClientEndpointMetric getClientEndpointMetric(SocketAddress serverAddress) {
-    return clientEndpointMetricMap.get(serverAddress);
   }
 
   @VisibleForTesting
   public void onCheckClientEndpointMetricExpired(long periodic) {
     for (DefaultClientEndpointMetric metric : clientEndpointMetricMap.values()) {
       if (metric.isExpired(metricsOptionsEx.getCheckClientEndpointMetricExpiredInNano())) {
-        synchronized (lock) {
+        rwlock.writeLock().lock();
+        try {
           if (metric.isExpired(metricsOptionsEx.getCheckClientEndpointMetricExpiredInNano())) {
             clientEndpointMetricMap.remove(metric.getAddress());
           }
+        } finally {
+          rwlock.writeLock().unlock();
         }
       }
     }

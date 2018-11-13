@@ -20,8 +20,6 @@ import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMet
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultHttpSocketMetric;
 
 import io.vertx.core.http.HttpMethod;
-import io.vertx.core.http.HttpServer;
-import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.http.ServerWebSocket;
@@ -34,34 +32,12 @@ import io.vertx.core.spi.metrics.HttpServerMetrics;
 public class DefaultHttpServerMetrics implements HttpServerMetrics<Object, Object, DefaultHttpSocketMetric> {
   private final DefaultEndpointMetric endpointMetric;
 
-  private final HttpServer server;
-
-  private final SocketAddress localAddress;
-
-  private final HttpServerOptions options;
-
-  public DefaultHttpServerMetrics(DefaultEndpointMetric endpointMetric, HttpServer server,
-      SocketAddress localAddress, HttpServerOptions options) {
+  public DefaultHttpServerMetrics(DefaultEndpointMetric endpointMetric) {
     this.endpointMetric = endpointMetric;
-    this.server = server;
-    this.localAddress = localAddress;
-    this.options = options;
   }
 
   public DefaultEndpointMetric getEndpointMetric() {
     return endpointMetric;
-  }
-
-  public HttpServer getServer() {
-    return server;
-  }
-
-  public SocketAddress getLocalAddress() {
-    return localAddress;
-  }
-
-  public HttpServerOptions getOptions() {
-    return options;
   }
 
   @Override
@@ -108,8 +84,7 @@ public class DefaultHttpServerMetrics implements HttpServerMetrics<Object, Objec
 
   @Override
   public void disconnected(DefaultHttpSocketMetric socketMetric, SocketAddress remoteAddress) {
-    endpointMetric.onDisconnect();
-    socketMetric.setConnected(false);
+    socketMetric.onDisconnect();
   }
 
   @Override

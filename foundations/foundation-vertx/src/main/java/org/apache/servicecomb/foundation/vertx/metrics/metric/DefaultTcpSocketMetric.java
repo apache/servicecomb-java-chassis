@@ -16,28 +16,32 @@
  */
 package org.apache.servicecomb.foundation.vertx.metrics.metric;
 
-public class DefaultHttpSocketMetric extends DefaultTcpSocketMetric {
-  private long requestBeginTime;
+public class DefaultTcpSocketMetric {
+  protected DefaultEndpointMetric endpointMetric;
 
-  private long requestEndTime;
+  protected boolean connected = true;
 
-  public DefaultHttpSocketMetric(DefaultEndpointMetric endpointMetric) {
-    super(endpointMetric);
+  protected long connectedTime = System.nanoTime();
+
+  public DefaultTcpSocketMetric(DefaultEndpointMetric endpointMetric) {
+    this.endpointMetric = endpointMetric;
   }
 
-  public long getRequestBeginTime() {
-    return requestBeginTime;
+  @SuppressWarnings("unchecked")
+  public <T extends DefaultEndpointMetric> T getEndpointMetric() {
+    return (T) endpointMetric;
   }
 
-  public void requestBegin() {
-    this.requestBeginTime = System.nanoTime();
+  public boolean isConnected() {
+    return connected;
   }
 
-  public long getRequestEndTime() {
-    return requestEndTime;
+  public void onDisconnect() {
+    endpointMetric.onDisconnect();
+    this.connected = false;
   }
 
-  public void requestEnd() {
-    this.requestEndTime = System.nanoTime();
+  public long getConnectedTime() {
+    return connectedTime;
   }
 }

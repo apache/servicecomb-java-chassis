@@ -17,7 +17,7 @@
 package org.apache.servicecomb.foundation.vertx.metrics;
 
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientEndpointMetric;
-import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultHttpSocketMetric;
+import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultTcpSocketMetric;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -25,16 +25,14 @@ import org.junit.Test;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.http.HttpClient;
-import io.vertx.core.http.HttpClientOptions;
-import io.vertx.core.http.HttpClientRequest;
+import io.vertx.core.net.NetClientOptions;
 import io.vertx.core.net.SocketAddress;
 import io.vertx.core.net.impl.SocketAddressImpl;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 
-public class TestDefaultHttpClientMetrics {
+public class TestDefaultTcpClientMetrics {
   @Mocked
   Vertx vertx;
 
@@ -42,16 +40,13 @@ public class TestDefaultHttpClientMetrics {
 
   MetricsOptionsEx metricsOptionsEx = new MetricsOptionsEx();
 
-  @Mocked
-  HttpClient anyHttpClient;
-
-  HttpClientOptions options = new HttpClientOptions();
+  NetClientOptions options = new NetClientOptions();
 
   DefaultVertxMetrics defaultVertxMetrics;
 
-  DefaultHttpClientMetrics clientMetrics_a;
+  DefaultTcpClientMetrics clientMetrics_a;
 
-  DefaultHttpClientMetrics clientMetrics_b;
+  DefaultTcpClientMetrics clientMetrics_b;
 
   String host = "host";
 
@@ -65,19 +60,19 @@ public class TestDefaultHttpClientMetrics {
 
   DefaultClientEndpointMetric endpointMetric_a_1;
 
-  DefaultHttpSocketMetric socketMetric_a_1;
+  DefaultTcpSocketMetric socketMetric_a_1;
 
   DefaultClientEndpointMetric endpointMetric_a_2;
 
-  DefaultHttpSocketMetric socketMetric_a_2;
+  DefaultTcpSocketMetric socketMetric_a_2;
 
   DefaultClientEndpointMetric endpointMetric_b_1;
 
-  DefaultHttpSocketMetric socketMetric_b_1;
+  DefaultTcpSocketMetric socketMetric_b_1;
 
   DefaultClientEndpointMetric endpointMetric_b_2;
 
-  DefaultHttpSocketMetric socketMetric_b_2;
+  DefaultTcpSocketMetric socketMetric_b_2;
 
   static long nanoTime;
 
@@ -91,7 +86,7 @@ public class TestDefaultHttpClientMetrics {
     };
   }
 
-  private static DefaultHttpSocketMetric initSocketMetric(DefaultHttpClientMetrics metrics,
+  private static DefaultTcpSocketMetric initSocketMetric(DefaultTcpClientMetrics metrics,
       SocketAddress address) {
     return metrics.connected(address, address.toString());
   }
@@ -100,8 +95,8 @@ public class TestDefaultHttpClientMetrics {
   public void setup() {
     vertxOptions.setMetricsOptions(metricsOptionsEx);
     defaultVertxMetrics = new DefaultVertxMetrics(vertx, vertxOptions);
-    clientMetrics_a = (DefaultHttpClientMetrics) defaultVertxMetrics.createMetrics(anyHttpClient, options);
-    clientMetrics_b = (DefaultHttpClientMetrics) defaultVertxMetrics.createMetrics(anyHttpClient, options);
+    clientMetrics_a = (DefaultTcpClientMetrics) defaultVertxMetrics.createMetrics(options);
+    clientMetrics_b = (DefaultTcpClientMetrics) defaultVertxMetrics.createMetrics(options);
 
     nanoTime = 1;
 
@@ -241,25 +236,17 @@ public class TestDefaultHttpClientMetrics {
 
   @Test
   public void bytesReadAndWritten() {
-    DefaultHttpSocketMetric socketMetric = clientMetrics_a.connected(address1, host);
-    clientMetrics_a.endpointConnected(endpointMetric_a_1, socketMetric);
-    clientMetrics_a.bytesRead(socketMetric, address1, 1);
-    clientMetrics_a.bytesWritten(socketMetric, address1, 1);
+    clientMetrics_a.bytesRead(socketMetric_a_1, address1, 1);
+    clientMetrics_a.bytesWritten(socketMetric_a_1, address1, 1);
 
-    socketMetric = clientMetrics_a.connected(address2, host);
-    clientMetrics_a.endpointConnected(endpointMetric_a_2, socketMetric);
-    clientMetrics_a.bytesRead(socketMetric, address2, 1);
-    clientMetrics_a.bytesWritten(socketMetric, address2, 1);
+    clientMetrics_a.bytesRead(socketMetric_a_2, address2, 1);
+    clientMetrics_a.bytesWritten(socketMetric_a_2, address2, 1);
 
-    socketMetric = clientMetrics_b.connected(address1, host);
-    clientMetrics_b.endpointConnected(endpointMetric_b_1, socketMetric);
-    clientMetrics_b.bytesRead(socketMetric, address1, 1);
-    clientMetrics_b.bytesWritten(socketMetric, address1, 1);
+    clientMetrics_b.bytesRead(socketMetric_b_1, address1, 1);
+    clientMetrics_b.bytesWritten(socketMetric_b_1, address1, 1);
 
-    socketMetric = clientMetrics_b.connected(address2, host);
-    clientMetrics_b.endpointConnected(endpointMetric_b_2, socketMetric);
-    clientMetrics_b.bytesRead(socketMetric, address2, 1);
-    clientMetrics_b.bytesWritten(socketMetric, address2, 1);
+    clientMetrics_b.bytesRead(socketMetric_b_2, address2, 1);
+    clientMetrics_b.bytesWritten(socketMetric_b_2, address2, 1);
 
     Assert.assertEquals(2, endpointMetric_a_1.getBytesRead());
     Assert.assertEquals(2, endpointMetric_a_2.getBytesRead());
@@ -267,36 +254,11 @@ public class TestDefaultHttpClientMetrics {
     Assert.assertEquals(2, endpointMetric_a_2.getBytesWritten());
   }
 
-  @Test
-  public void requestBegin(@Mocked HttpClientRequest request) {
-    DefaultHttpSocketMetric socketMetric = clientMetrics_a.connected(address1, host);
-
-    nanoTime = 2;
-    clientMetrics_a.requestBegin(endpointMetric_a_1, socketMetric, address1, address1, request);
-    nanoTime = 3;
-    clientMetrics_a.requestEnd(socketMetric);
-
-    Assert.assertEquals(2, socketMetric.getRequestBeginTime());
-    Assert.assertEquals(3, socketMetric.getRequestEndTime());
-  }
-
   @SuppressWarnings("deprecation")
   @Test
   public void meaningless() {
     Assert.assertTrue(clientMetrics_a.isEnabled());
 
-    clientMetrics_a.enqueueRequest(endpointMetric_a_1);
-    clientMetrics_a.dequeueRequest(endpointMetric_a_1, null);
-    clientMetrics_a.createEndpoint(null, 0, 0);
-    clientMetrics_a.closeEndpoint(null, 0, null);
-    clientMetrics_a.endpointConnected(endpointMetric_a_1, null);
-    clientMetrics_a.endpointDisconnected(endpointMetric_a_1, null);
-    clientMetrics_a.responseBegin(null, null);
-    clientMetrics_a.responsePushed(null, null, null, null, null);
-    clientMetrics_a.requestReset(null);
-    clientMetrics_a.responseEnd(null, null);
-    clientMetrics_a.connected(null, null, null);
-    clientMetrics_a.disconnected(null);
     clientMetrics_a.exceptionOccurred(null, null, null);
     clientMetrics_a.close();
   }
