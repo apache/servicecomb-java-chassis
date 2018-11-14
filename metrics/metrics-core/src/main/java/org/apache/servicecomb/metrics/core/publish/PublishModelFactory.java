@@ -24,6 +24,7 @@ import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTr
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroups;
+import org.apache.servicecomb.metrics.core.publish.model.os.OsStatisticsMeter;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 
 import com.netflix.spectator.api.Meter;
@@ -44,6 +45,10 @@ public class PublishModelFactory {
     return tree;
   }
 
+  public MeasurementTree getTree() {
+    return tree;
+  }
+
   protected MeasurementGroupConfig createMeasurementGroupConfig() {
     MeasurementGroupConfig groupConfig = new MeasurementGroupConfig();
     groupConfig.addGroup(MeterInvocationConst.INVOCATION_NAME,
@@ -53,6 +58,11 @@ public class PublishModelFactory {
         MeterInvocationConst.TAG_STATUS,
         MeterInvocationConst.TAG_STAGE,
         MeterInvocationConst.TAG_STATISTIC);
+    //os config
+    groupConfig.addGroup(OsStatisticsMeter.OS_STATISTICS_NAME,
+        OsStatisticsMeter.OS_STATISTICS_TYPE,
+        OsStatisticsMeter.OS_STATISTICS_INTERFACE,
+        OsStatisticsMeter.OS_STATISTIC_DETAIL);
 
     return groupConfig;
   }
