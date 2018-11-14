@@ -21,8 +21,20 @@ import com.netflix.spectator.api.Tag;
 public class DefaultTagFinder implements TagFinder {
   private String tagKey;
 
+  private boolean skipOnNull;
+
   public DefaultTagFinder(String tagKey) {
     this.tagKey = tagKey;
+  }
+
+  public DefaultTagFinder(String tagKey, boolean skipOnNull) {
+    this.tagKey = tagKey;
+    this.skipOnNull = skipOnNull;
+  }
+
+  @Override
+  public boolean skipOnNull() {
+    return skipOnNull;
   }
 
   @Override

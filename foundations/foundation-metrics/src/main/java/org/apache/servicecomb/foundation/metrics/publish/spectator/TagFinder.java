@@ -33,6 +33,10 @@ public interface TagFinder {
             (obj == null ? "null" : obj.getClass().getName()));
   }
 
+  default boolean skipOnNull() {
+    return false;
+  }
+
   String getTagKey();
 
   // read target tag from tags

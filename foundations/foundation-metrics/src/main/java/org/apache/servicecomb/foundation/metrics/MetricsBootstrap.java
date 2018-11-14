@@ -74,7 +74,7 @@ public class MetricsBootstrap {
 
   protected void startPoll() {
     executorService.scheduleAtFixedRate(this::pollMeters,
-        0,
+        config.getMsPollInterval(),
         config.getMsPollInterval(),
         TimeUnit.MILLISECONDS);
   }

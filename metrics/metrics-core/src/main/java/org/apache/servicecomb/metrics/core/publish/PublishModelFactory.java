@@ -18,13 +18,15 @@ package org.apache.servicecomb.metrics.core.publish;
 
 import java.util.List;
 
+import org.apache.servicecomb.foundation.metrics.publish.spectator.DefaultTagFinder;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementGroupConfig;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
+import org.apache.servicecomb.metrics.core.meter.os.NetMeter;
+import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroups;
-import org.apache.servicecomb.metrics.core.publish.model.os.OsStatisticsMeter;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 
 import com.netflix.spectator.api.Meter;
@@ -59,10 +61,10 @@ public class PublishModelFactory {
         MeterInvocationConst.TAG_STAGE,
         MeterInvocationConst.TAG_STATISTIC);
     //os config
-    groupConfig.addGroup(OsStatisticsMeter.OS_STATISTICS_NAME,
-        OsStatisticsMeter.OS_STATISTICS_TYPE,
-        OsStatisticsMeter.OS_STATISTICS_INTERFACE,
-        OsStatisticsMeter.OS_STATISTIC_DETAIL);
+    groupConfig.addGroup(OsMeter.OS_NAME,
+        OsMeter.OS_TYPE,
+        new DefaultTagFinder(NetMeter.INTERFACE, true),
+        NetMeter.STATISTIC);
 
     return groupConfig;
   }
