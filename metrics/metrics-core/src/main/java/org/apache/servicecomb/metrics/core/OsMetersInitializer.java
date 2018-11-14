@@ -31,6 +31,8 @@ import com.netflix.spectator.api.Registry;
 public class OsMetersInitializer implements MetricsInitializer {
   private static final Logger LOGGER = LoggerFactory.getLogger(OsMetersInitializer.class);
 
+  private OsMeter osMeter;
+
   @Override
   public void init(CompositeRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
     if (!SystemUtils.IS_OS_LINUX) {
@@ -40,6 +42,11 @@ public class OsMetersInitializer implements MetricsInitializer {
     DefaultRegistryInitializer defaultRegistryInitializer = SPIServiceUtils
         .getTargetService(MetricsInitializer.class, DefaultRegistryInitializer.class);
     Registry registry = defaultRegistryInitializer.getRegistry();
-    registry.register(new OsMeter(registry, eventBus));
+    osMeter = new OsMeter(registry, eventBus);
+    registry.register(osMeter);
+  }
+
+  public OsMeter getOsMeter() {
+    return osMeter;
   }
 }

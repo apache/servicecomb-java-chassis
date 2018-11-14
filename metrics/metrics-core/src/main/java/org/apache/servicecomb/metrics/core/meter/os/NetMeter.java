@@ -50,7 +50,7 @@ public class NetMeter {
 
   private Map<String, InterfaceInfo> interfaceInfoMap = new ConcurrentHashMap<>();
 
-  static class InterfaceInfo {
+  public static class InterfaceInfo {
 
     private final String name;
 
@@ -84,6 +84,26 @@ public class NetMeter {
       receiveRate = (double) (rxBytes - lastRxBytes) * 1000 / interval;
       lastRxBytes = rxBytes;
       lastTxBytes = txBytes;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public long getLastRxBytes() {
+      return lastRxBytes;
+    }
+
+    public long getLastTxBytes() {
+      return lastTxBytes;
+    }
+
+    public double getSendRate() {
+      return sendRate;
+    }
+
+    public double getReceiveRate() {
+      return receiveRate;
     }
   }
 
@@ -142,5 +162,9 @@ public class NetMeter {
     } catch (IOException e) {
       LOGGER.error("Failed to read net info/", e);
     }
+  }
+
+  public Map<String, InterfaceInfo> getInterfaceInfoMap() {
+    return interfaceInfoMap;
   }
 }

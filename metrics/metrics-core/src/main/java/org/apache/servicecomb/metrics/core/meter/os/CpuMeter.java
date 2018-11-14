@@ -60,7 +60,7 @@ public class CpuMeter {
    * cpu  2445171 599297 353967 24490633 11242   0    10780    2993             0      0
    * cpu  user    nice   system idle     iowait  irq  softirq  stealstolen      guest  guest_nice
    * 0    1       2      3      4        5        6   7        8
-   * cpuTotal = user + nice + system + idle + wowait + itq + softirq + stealstolen
+   * cpuTotal = user + nice + system + idle + iowait + irq + softirq + stealstolen
    */
   protected void refreshCpu() {
     try {
@@ -83,5 +83,25 @@ public class CpuMeter {
     } catch (IOException e) {
       LOGGER.error("Failed to read current cpu info.", e);
     }
+  }
+
+  public double getRate() {
+    return rate;
+  }
+
+  public long getLastTotalTime() {
+    return lastTotalTime;
+  }
+
+  public long getLastIdleTime() {
+    return lastIdleTime;
+  }
+
+  public int getCpuNum() {
+    return cpuNum;
+  }
+
+  public Id getId() {
+    return id;
   }
 }

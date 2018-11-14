@@ -85,7 +85,13 @@ public class TestMetricsBootstrap {
     bootstrap.start(globalRegistry, eventBus);
 
     PolledEvent result = new PolledEvent(null, null);
+    List<PollEvent> events = new ArrayList<>();
     eventBus.register(new Object() {
+      @Subscribe
+      public void onPollEvent(PollEvent pollEvent) {
+        events.add(pollEvent);
+      }
+
       @Subscribe
       public void onEvent(PolledEvent event) {
         result.setMeters(event.getMeters());
@@ -95,7 +101,7 @@ public class TestMetricsBootstrap {
 
     bootstrap.pollMeters();
     bootstrap.shutdown();
-
+    Assert.assertEquals(1, events.size());
     Assert.assertEquals(meters, result.getMeters());
     Assert.assertThat(result.getMeasurements(), Matchers.contains(measurement));
   }

@@ -74,6 +74,16 @@ public class TestMeasurementTree {
   }
 
   @Test
+  public void from_withSkipOnNull() {
+    try {
+      MeasurementGroupConfig config = new MeasurementGroupConfig("id", new DefaultTagFinder("notExist", true));
+      tree.from(registry.iterator(), config);
+    } catch (Exception e) {
+      Assert.fail("should not throw exception");
+    }
+  }
+
+  @Test
   public void from_failed() {
     expectedException.expect(IllegalStateException.class);
     expectedException.expectMessage(Matchers

@@ -109,6 +109,44 @@ public class TestNetUtils {
   }
 
   @Test
+  public void humanReadableBytes() throws IOException {
+    Assert.assertEquals("0 B", NetUtils.humanReadableBytes(0L));
+    Assert.assertEquals("1 B", NetUtils.humanReadableBytes(1L));
+    Assert.assertEquals("1023 B", NetUtils.humanReadableBytes(1023L));
+
+    Assert.assertEquals("1.000 KB", NetUtils.humanReadableBytes(1024L));
+    Assert.assertEquals("1.001 KB", NetUtils.humanReadableBytes(1025L));
+    Assert.assertEquals("1023.999 KB", NetUtils.humanReadableBytes(1024L * 1024 - 1));
+
+    Assert.assertEquals("1.000 MB", NetUtils.humanReadableBytes(1024L * 1024));
+    Assert.assertEquals("1.000 MB", NetUtils.humanReadableBytes(1024L * 1024 + 1));
+    Assert.assertEquals("1.001 MB", NetUtils.humanReadableBytes(1024L * 1024 + 1024));
+    Assert.assertEquals("1023.999 MB", NetUtils.humanReadableBytes(1024L * 1024 * 1024 - 1024));
+    Assert.assertEquals("1024.000 MB", NetUtils.humanReadableBytes(1024L * 1024 * 1024 - 1));
+
+    Assert.assertEquals("1.000 GB", NetUtils.humanReadableBytes(1024L * 1024 * 1024));
+    Assert.assertEquals("1.000 GB", NetUtils.humanReadableBytes(1024L * 1024 * 1024 + 1));
+    Assert.assertEquals("1.000 GB", NetUtils.humanReadableBytes(1024L * 1024 * 1024 + 1024));
+    Assert.assertEquals("1023.999 GB", NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 - 1024 * 1024));
+    Assert.assertEquals("1024.000 GB", NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 - 1024));
+    Assert.assertEquals("1.000 TB", NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024));
+    Assert.assertEquals("1.001 TB", NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 + 1024 * 1024 * 1024));
+    Assert.assertEquals("1023.999 TB",
+        NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 * 1024 - 1024L * 1024 * 1024));
+
+    Assert.assertEquals("1.000 PB", NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 * 1024));
+    Assert.assertEquals("1.001 PB",
+        NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 * 1024 + 1024L * 1024 * 1024 * 1024));
+    Assert.assertEquals("1023.999 PB",
+        NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 * 1024 * 1024 - 1024L * 1024 * 1024 * 1024));
+
+    Assert.assertEquals("1.000 EB", NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 * 1024 * 1024));
+    Assert.assertEquals("1.001 EB",
+        NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 * 1024 * 1024 + 1024L * 1024 * 1024 * 1024 * 1024));
+    Assert.assertEquals("8.000 EB", NetUtils.humanReadableBytes(Long.MAX_VALUE));
+  }
+
+  @Test
   public void testGetHostName() {
     Assert.assertNotEquals(null, NetUtils.getHostName());
     Deencapsulation.setField(NetUtils.class, "hostName", null);
