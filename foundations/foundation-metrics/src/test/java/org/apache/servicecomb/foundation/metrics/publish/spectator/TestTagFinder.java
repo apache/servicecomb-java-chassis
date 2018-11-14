@@ -39,6 +39,8 @@ public class TestTagFinder {
   public void buildFromTagFinder() {
     TagFinder finder = new DefaultTagFinder("key");
     Assert.assertSame(finder, TagFinder.build(finder));
+    DefaultTagFinder tagFinder = new DefaultTagFinder("key", true);
+    Assert.assertSame(tagFinder, TagFinder.build(tagFinder));
   }
 
   @Test

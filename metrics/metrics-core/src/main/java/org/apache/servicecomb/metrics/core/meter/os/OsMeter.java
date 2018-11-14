@@ -87,4 +87,12 @@ public class OsMeter implements Meter {
   public boolean hasExpired() {
     return false;
   }
+
+  public CpuMeter getCpuMeter() {
+    return cpuMeter;
+  }
+
+  public NetMeter getNetMeter() {
+    return netMeter;
+  }
 }

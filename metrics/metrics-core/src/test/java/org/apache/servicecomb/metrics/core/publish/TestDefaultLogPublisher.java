@@ -17,6 +17,7 @@
 package org.apache.servicecomb.metrics.core.publish;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,10 +28,13 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
+import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
+import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
+import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
 import org.apache.servicecomb.metrics.core.publish.model.ThreadPoolPublishModel;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerf;
@@ -44,6 +48,7 @@ import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
 import com.netflix.spectator.api.CompositeRegistry;
+import com.netflix.spectator.api.Measurement;
 
 import io.vertx.core.impl.VertxImplEx;
 import mockit.Expectations;
@@ -127,7 +132,7 @@ public class TestDefaultLogPublisher {
   }
 
   @Test
-  public void onPolledEvent(@Mocked VertxImplEx vertxImplEx) {
+  public void onPolledEvent(@Mocked VertxImplEx vertxImplEx, @Mocked MeasurementTree tree) {
     new Expectations(VertxUtils.class) {
       {
         VertxUtils.getVertxMap();
@@ -172,11 +177,43 @@ public class TestDefaultLogPublisher {
     model.getProducer().setOperationPerfGroups(operationPerfGroups);
 
     model.getThreadPools().put("test", new ThreadPoolPublishModel());
+    Measurement measurement = new Measurement(null, 0L, 1.0);
+
+    MeasurementNode measurementNodeSend = new MeasurementNode("send", new HashMap<>());
+    MeasurementNode measurementNodeCpu = new MeasurementNode("cpu", new HashMap<>());
+    MeasurementNode measurementNodeRecv = new MeasurementNode("receive", new HashMap<>());
+    MeasurementNode measurementNodeEth0 = new MeasurementNode("eth0", new HashMap<>());
+    MeasurementNode measurementNodeNet = new MeasurementNode("net", new HashMap<>());
+    MeasurementNode measurementNodeOs = new MeasurementNode("os", new HashMap<>());
+
+    measurementNodeSend.getMeasurements().add(measurement);
+    measurementNodeRecv.getMeasurements().add(measurement);
+    measurementNodeEth0.getChildren().put("send", measurementNodeSend);
+    measurementNodeEth0.getChildren().put("receive", measurementNodeRecv);
+    measurementNodeNet.getChildren().put("eth0", measurementNodeEth0);
+    measurementNodeOs.getChildren().put("cpu", measurementNodeCpu);
+    measurementNodeOs.getChildren().put("net", measurementNodeNet);
+
+    measurementNodeOs.getMeasurements().add(measurement);
+    measurementNodeNet.getMeasurements().add(measurement);
+    measurementNodeCpu.getMeasurements().add(measurement);
+    measurementNodeEth0.getMeasurements().add(measurement);
+    new Expectations() {
+      {
+        tree.findChild(OsMeter.OS_NAME);
+        result = measurementNodeOs;
+      }
+    };
 
     new MockUp<PublishModelFactory>() {
       @Mock
       DefaultPublishModel createDefaultPublishModel() {
         return model;
+      }
+
+      @Mock
+      MeasurementTree getTree() {
+        return tree;
       }
     };
 
@@ -185,7 +222,6 @@ public class TestDefaultLogPublisher {
     List<LoggingEvent> events = collector.getEvents().stream().filter(e -> {
       return DefaultLogPublisher.class.getName().equals(e.getLoggerName());
     }).collect(Collectors.toList());
-
     LoggingEvent event = events.get(0);
     Assert.assertEquals("\n" +
             "vertx:\n" +
@@ -194,6 +230,12 @@ public class TestDefaultLogPublisher {
             "threadPool:\n" +
             "  corePoolSize maxThreads poolSize currentThreadsBusy queueSize taskCount completedTaskCount name\n" +
             "  0            0          0        0                  0         0.0       0.0                test\n" +
+            "os:\n"
+            + "  cpu: 100.00%\n"
+            + "  net:\n"
+            + "    send         receive      interface\n"
+            + "    1 B          1 B          eth0\n" +
+            "\n" +
             "consumer:\n" +
             "  simple:\n"
             + "    status          tps           latency                                    operation\n"
