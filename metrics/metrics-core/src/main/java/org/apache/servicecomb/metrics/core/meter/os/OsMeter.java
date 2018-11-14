@@ -14,14 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.metrics.core.publish.model.os;
+package org.apache.servicecomb.metrics.core.meter.os;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.servicecomb.foundation.metrics.PollEvent;
 
 import com.google.common.eventbus.EventBus;
@@ -31,50 +28,49 @@ import com.netflix.spectator.api.Measurement;
 import com.netflix.spectator.api.Meter;
 import com.netflix.spectator.api.Registry;
 
-public class OsStatisticsMeter implements Meter {
-  public static final String OS_STATISTICS_NAME = "os";
+/**
+ * name=os type=cpu value=10.0
+ * name=os type=net interface=eth0 statistic=send value=100
+ * name=os type=net interface=eth0 statistic=receive value=100
+ */
+public class OsMeter implements Meter {
+  public static final String OS_NAME = "os";
 
-  // cpu net
-  public static final String OS_STATISTICS_TYPE = "type";
+  public static final String OS_TYPE = "type";
 
-  public static final String OS_STATISTICS_INTERFACE = "interface";
+  public static final String OS_TYPE_CPU = "cpu";
 
-  public static final String OS_STATISTIC_DETAIL = "statistic";
+  public static final String OS_TYPE_NET = "net";
 
-  private Map<String, OsNetMeter> osNetMeterMap = new HashMap<>();
-
-  private List<Measurement> allMeasurements = new ArrayList<>();
+  private List<Measurement> measurements = new ArrayList<>();
 
   private Id id;
 
   private Registry registry;
 
-  private OsCpuMeter osCpuMeter;
+  private CpuMeter cpuMeter;
 
-  public OsStatisticsMeter(Registry registry, EventBus eventBus) {
+  private NetMeter netMeter;
+
+  public OsMeter(Registry registry, EventBus eventBus) {
     this.registry = registry;
-    this.id = registry.createId(OS_STATISTICS_NAME);
-    osCpuMeter = new OsCpuMeter(id);
+    this.id = registry.createId(OS_NAME);
+
+    cpuMeter = new CpuMeter(id.withTag(OS_TYPE, OS_TYPE_CPU));
+    netMeter = new NetMeter(id.withTag(OS_TYPE, OS_TYPE_NET));
+
     eventBus.register(this);
   }
 
   @Subscribe
-  public void syncOsData(PollEvent pollEvent) {
-    if (!SystemUtils.IS_OS_LINUX) {
-      return;
-    }
-    //refresh cpu
-    final List<Measurement> tmpCpuMeasurements = new ArrayList<>();
+  public void calcMeasurements(PollEvent pollEvent) {
     final long now = registry.clock().wallTime();
-    OsCpuMeter.refreshCpu(osCpuMeter);
-    osCpuMeter.calcMeasurements(tmpCpuMeasurements, now);
-    //reset allMeasurements
-    allMeasurements = tmpCpuMeasurements;
-    //refresh net
-    final List<Measurement> tmpNetMeasurements = new ArrayList<>();
-    OsNetMeter.refreshNet(id, osNetMeterMap, pollEvent.getMsPollInterval());
-    osNetMeterMap.values().forEach(osNetMeter -> osNetMeter.calcMeasurements(tmpNetMeasurements, now));
-    allMeasurements.addAll(tmpNetMeasurements);
+
+    final List<Measurement> tmpCpuMeasurements = new ArrayList<>();
+    cpuMeter.calcMeasurements(tmpCpuMeasurements, now);
+    netMeter.calcMeasurements(tmpCpuMeasurements, now, pollEvent);
+
+    measurements = tmpCpuMeasurements;
   }
 
   @Override
@@ -84,7 +80,7 @@ public class OsStatisticsMeter implements Meter {
 
   @Override
   public Iterable<Measurement> measure() {
-    return allMeasurements;
+    return measurements;
   }
 
   @Override

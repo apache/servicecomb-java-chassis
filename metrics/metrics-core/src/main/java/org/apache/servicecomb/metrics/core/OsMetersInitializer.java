@@ -14,24 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.metrics.core.publish;
+package org.apache.servicecomb.metrics.core;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
-import org.apache.servicecomb.metrics.core.DefaultRegistryInitializer;
-import org.apache.servicecomb.metrics.core.publish.model.os.OsStatisticsMeter;
+import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
 import com.netflix.spectator.api.CompositeRegistry;
 import com.netflix.spectator.api.Registry;
 
-public class OsMetersInitializer  implements MetricsInitializer {
+public class OsMetersInitializer implements MetricsInitializer {
+  private static final Logger LOGGER = LoggerFactory.getLogger(OsMetersInitializer.class);
+
   @Override
   public void init(CompositeRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+    if (!SystemUtils.IS_OS_LINUX) {
+      LOGGER.info("only support linux os to collect cpu and net info");
+      return;
+    }
     DefaultRegistryInitializer defaultRegistryInitializer = SPIServiceUtils
         .getTargetService(MetricsInitializer.class, DefaultRegistryInitializer.class);
     Registry registry = defaultRegistryInitializer.getRegistry();
-    registry.register(new OsStatisticsMeter(registry, eventBus));
+    registry.register(new OsMeter(registry, eventBus));
   }
 }
