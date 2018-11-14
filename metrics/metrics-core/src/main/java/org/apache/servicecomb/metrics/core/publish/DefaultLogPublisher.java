@@ -20,9 +20,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.SystemUtils;
+import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
+import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
+import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
@@ -31,6 +35,9 @@ import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPer
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroup;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroups;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.PerfInfo;
+import org.apache.servicecomb.metrics.core.publish.model.os.OsCpuMeter;
+import org.apache.servicecomb.metrics.core.publish.model.os.OsNetMeter;
+import org.apache.servicecomb.metrics.core.publish.model.os.OsStatisticsMeter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,6 +100,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
   }
 
   protected void printLog(List<Meter> meters) {
+
     StringBuilder sb = new StringBuilder();
     sb.append("\n");
 
@@ -102,13 +110,60 @@ public class DefaultLogPublisher implements MetricsInitializer {
     DefaultPublishModel model = factory.createDefaultPublishModel();
 
     printThreadPoolMetrics(model, sb);
-
+    printOsLog(factory.getTree(), sb);
     printConsumerLog(model, sb);
     printProducerLog(model, sb);
     printEdgeLog(model, sb);
 
     LOGGER.info(sb.toString());
   }
+
+  protected void printOsLog(MeasurementTree tree, StringBuilder sb) {
+    if (!SystemUtils.IS_OS_LINUX) {
+      return;
+    }
+    MeasurementNode osRootNode = tree.findChild(OsStatisticsMeter.OS_STATISTICS_NAME);
+    if (osRootNode != null && !osRootNode.getMeasurements().isEmpty()) {
+      sb.append("os:\n");
+      printOsCpuLog(sb, osRootNode);
+      printOsNetLog(sb, osRootNode);
+    }
+  }
+
+  private void printOsNetLog(StringBuilder sb, MeasurementNode osRootNode) {
+    MeasurementNode netNode = osRootNode.findChild("net");
+    if (netNode != null && !netNode.getMeasurements().isEmpty()) {
+      sb.append("  net:\n    interface                     send                                       recv\n");
+      for (MeasurementNode iNode : netNode.getChildren().values()) {
+        double sendRate =  iNode.findChild(OsNetMeter.tagBytesTransmit.value()).summary();
+        double receiveRate =  iNode.findChild(OsNetMeter.tagBytesReceive.value()).summary();
+        if ((sendRate == 0.0 && receiveRate == 0.0) || sendRate == OsNetMeter.DEFAULT_INIT_RATE
+            || receiveRate == OsNetMeter.DEFAULT_INIT_RATE) {
+          //if rate is 0, skip
+          //if not finish calc, skip
+          continue;
+        }
+        String sendRateStr = NetUtils.humanReadableBytes((long) sendRate);
+        String receiveRateStr = NetUtils.humanReadableBytes((long) receiveRate);
+        sb.append(String.format("    %-29s %-42s %s\n",
+            iNode.getName(), sendRateStr, receiveRateStr));
+      }
+    }
+  }
+
+  private void printOsCpuLog(StringBuilder sb, MeasurementNode osRootNode) {
+    MeasurementNode cpuNode = osRootNode.findChild("cpu");
+    if (cpuNode != null && !cpuNode.getMeasurements().isEmpty()) {
+      double rate = cpuNode.findChild("allCpu", OsCpuMeter.tagCpuRate.value()).summary();
+      if (rate <= 0.0) {
+        // if not finish calc, skip
+        return;
+      }
+      sb.append("  cpu: ")
+          .append(String.format("%.2f%%\n", rate * 100));
+    }
+  }
+
 
   protected void printThreadPoolMetrics(DefaultPublishModel model, StringBuilder sb) {
     if (model.getThreadPools().isEmpty()) {

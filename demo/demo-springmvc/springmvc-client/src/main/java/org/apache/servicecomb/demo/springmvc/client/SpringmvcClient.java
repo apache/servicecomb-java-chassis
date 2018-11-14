@@ -148,7 +148,7 @@ public class SpringmvcClient {
         for (String metricLine : metricLines) {
           if (!metricLine.startsWith("#")) {
             String[] metricKeyAndValue = metricLine.split(" ");
-            if (!metricKeyAndValue[0].startsWith("jvm")) {
+            if (!metricKeyAndValue[0].startsWith("jvm") && !metricKeyAndValue[0].startsWith("os")) {
               if (Double.parseDouble(metricKeyAndValue[1]) < 0) {
                 TestMgr.check("true", "false");
                 break;
