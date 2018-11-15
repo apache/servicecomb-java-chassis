@@ -16,24 +16,15 @@
  */
 package org.apache.servicecomb.springboot.starter.discovery;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.servicecomb.foundation.common.cache.VersionedCache;
-import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
-import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
-import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTree;
+import org.apache.servicecomb.springboot.common.DiscoveryClientUtil;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 
 public class CseDiscoveryClient implements DiscoveryClient {
-
-  private Map<String, DiscoveryTree> discoveryTrees = new ConcurrentHashMapEx<>();
+  private DiscoveryClientUtil<ServiceInstance>
+      discoveryClientUtil = new DiscoveryClientUtil<>(new InstanceDiscoveryFilter());
 
   @Override
   public String description() {
@@ -42,22 +33,7 @@ public class CseDiscoveryClient implements DiscoveryClient {
 
   @Override
   public List<ServiceInstance> getInstances(final String serviceId) {
-
-    DiscoveryContext context = new DiscoveryContext();
-    context.setInputParameters(serviceId);
-
-    DiscoveryTree discoveryTree = discoveryTrees.computeIfAbsent(serviceId, key -> {
-      DiscoveryTree tree =  new DiscoveryTree();
-      tree.addFilter(new InstanceDiscoveryFilter());
-      return tree;
-    });
-
-    VersionedCache serversVersionedCache = discoveryTree.discovery(context,
-        RegistryUtils.getAppId(),
-        serviceId,
-        DefinitionConst.VERSION_RULE_ALL);
-
-    return serversVersionedCache.data();
+    return discoveryClientUtil.getInstances(serviceId);
   }
 
   @Deprecated
@@ -67,14 +43,6 @@ public class CseDiscoveryClient implements DiscoveryClient {
 
   @Override
   public List<String> getServices() {
-    ServiceRegistryClient client = RegistryUtils.getServiceRegistryClient();
-    List<Microservice> services = client.getAllMicroservices();
-    List<String> serviceIDList = new ArrayList<>();
-    if (null != services && !services.isEmpty()) {
-      for (Microservice service : services) {
-        serviceIDList.add(service.getServiceName());
-      }
-    }
-    return serviceIDList;
+    return discoveryClientUtil.getServices();
   }
 }
