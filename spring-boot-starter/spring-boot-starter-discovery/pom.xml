@@ -79,5 +79,9 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>java-chassis-core</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>spring-boot-common</artifactId>
+    </dependency>
   </dependencies>
 </project>
