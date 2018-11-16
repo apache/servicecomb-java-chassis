@@ -101,15 +101,13 @@
     <module>swagger</module>
     <module>core</module>
     <module>service-registry</module>
-    <module>spring-boot-starter</module>
     <module>tracing</module>
     <module>edge</module>
     <module>metrics</module>
     <module>dynamic-config</module>
     <module>archetypes</module>
     <module>java-chassis-dependencies-springboot2</module>
-    <module>spring-boot2-starter-parent</module>
-    <module>spring-boot-common</module>
+    <module>java-chassis-spring-boot</module>
   </modules>
 
   <build>

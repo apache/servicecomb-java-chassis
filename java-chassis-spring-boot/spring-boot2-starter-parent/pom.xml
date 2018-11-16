@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -15,28 +16,44 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.servicecomb</groupId>
-    <artifactId>java-chassis-parent</artifactId>
+    <artifactId>java-chassis-dependencies-springboot2</artifactId>
     <version>1.1.0-SNAPSHOT</version>
-    <relativePath>../parent</relativePath>
+    <relativePath>../../java-chassis-dependencies-springboot2</relativePath>
   </parent>
-  <artifactId>spring-boot-starter-parent</artifactId>
-  <name>Java Chassis::Spring Boot Starter::Parent</name>
+  <modelVersion>4.0.0</modelVersion>
 
+  <artifactId>spring-boot2-starter-parent</artifactId>
   <packaging>pom</packaging>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.version>1.8</java.version>
+    <argLine>-Dfile.encoding=UTF-8</argLine>
+  </properties>
+
   <modules>
-    <module>spring-boot-starter-configuration</module>
-    <module>spring-boot-starter-provider</module>
-    <module>spring-boot-starter-transport</module>
-    <module>spring-boot-starter-discovery</module>
-    <module>spring-boot-starter-registry</module>
-    <module>spring-cloud-zuul</module>
-    <module>spring-cloud-zuul-zipkin</module>
-    <module>spring-boot-starter-servicecomb</module>
+    <module>spring-boot2-starter</module>
+    <module>spring-boot2-starter-servlet</module>
+    <module>spring-boot2-starter-standalone</module>
+    <module>spring-boot2-starter-discovery</module>
   </modules>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
