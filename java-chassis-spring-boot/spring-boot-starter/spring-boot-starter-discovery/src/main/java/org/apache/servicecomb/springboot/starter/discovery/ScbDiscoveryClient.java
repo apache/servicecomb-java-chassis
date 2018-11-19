@@ -18,13 +18,19 @@ package org.apache.servicecomb.springboot.starter.discovery;
 
 import java.util.List;
 
-import org.apache.servicecomb.springboot.common.DiscoveryClientUtil;
+import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.springboot.common.AbstractDiscoveryClient;
+import org.apache.servicecomb.springboot.common.InstanceDiscoveryFilter;
+import org.springframework.cloud.client.DefaultServiceInstance;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 
-public class CseDiscoveryClient implements DiscoveryClient {
-  private DiscoveryClientUtil<ServiceInstance>
-      discoveryClientUtil = new DiscoveryClientUtil<>(new InstanceDiscoveryFilter());
+public class ScbDiscoveryClient extends AbstractDiscoveryClient implements DiscoveryClient {
+
+  public ScbDiscoveryClient() {
+    super(new InstanceDiscoveryFilter((String name, URIEndpointObject uri) ->
+        new DefaultServiceInstance(name, uri.getHostOrIp(), uri.getPort(), uri.isSslEnabled())));
+  }
 
   @Override
   public String description() {
@@ -32,17 +38,12 @@ public class CseDiscoveryClient implements DiscoveryClient {
   }
 
   @Override
-  public List<ServiceInstance> getInstances(final String serviceId) {
-    return discoveryClientUtil.getInstances(serviceId);
-  }
-
   @Deprecated
   public ServiceInstance getLocalServiceInstance() {
     return null;
   }
 
-  @Override
-  public List<String> getServices() {
-    return discoveryClientUtil.getServices();
+  public List<ServiceInstance> getInstances(String serviceId) {
+    return super.doGetInstances(serviceId);
   }
 }

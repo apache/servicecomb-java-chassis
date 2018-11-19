@@ -14,20 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.springboot.starter.discovery;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.netflix.client.config.IClientConfig;
-
-import mockit.Injectable;
-
-public class TestCseRibbonClientConfiguration {
+public class TestScbDiscoveryClientConfiguration {
   @Test
-  public void testCseRibbonClientConfiguration(@Injectable IClientConfig clientConfig) {
-    CseRibbonClientConfiguration config = new CseRibbonClientConfiguration();
-    Assert.assertTrue(config.ribbonServerList(clientConfig) instanceof ServiceCombServerList);
+  public void testCseDiscoveryClientConfiguration() {
+    ScbDiscoveryClientConfiguration discoveryClientConfiguration = new ScbDiscoveryClientConfiguration();
+    Assert.assertTrue(discoveryClientConfiguration.cseDiscoveryClient() instanceof ScbDiscoveryClient);
   }
 }

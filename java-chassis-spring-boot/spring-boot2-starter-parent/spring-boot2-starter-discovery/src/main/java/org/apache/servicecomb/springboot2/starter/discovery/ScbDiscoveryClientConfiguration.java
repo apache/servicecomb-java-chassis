@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.springboot.starter.discovery;
+package org.apache.servicecomb.springboot2.starter.discovery;
 
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -26,11 +26,11 @@ import org.springframework.core.annotation.Order;
 
 @AutoConfigureBefore(SimpleDiscoveryClientAutoConfiguration.class)
 @Configuration
-public class CseDiscoveryClientConfiguration {
+public class ScbDiscoveryClientConfiguration {
   @Bean
   @Order(5000)
   @ConditionalOnProperty(value = "servicecomb.discoveryClient.enabled", havingValue = "true", matchIfMissing = true)
   public DiscoveryClient cseDiscoveryClient() {
-    return new CseDiscoveryClient();
+    return new ScbDiscoveryClient();
   }
 }

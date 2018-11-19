@@ -35,7 +35,7 @@ public class ServiceCombServerList extends AbstractServerList<Server> {
   private String serviceId;
 
   public ServiceCombServerList() {
-    discoveryTree.addFilter(new CseRibbonEndpointDiscoveryFilter());
+    discoveryTree.addFilter(new ScbRibbonEndpointDiscoveryFilter());
   }
 
   @Override

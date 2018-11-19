@@ -16,9 +16,9 @@
 ## ---------------------------------------------------------------------------
 
 org.apache.servicecomb.springboot.starter.provider.EnableServiceComb=\
-  org.apache.servicecomb.springboot.starter.discovery.CseDiscoveryClientConfiguration,\
-  org.apache.servicecomb.springboot.starter.discovery.CseRibbonConfiguration
+  org.apache.servicecomb.springboot.starter.discovery.ScbDiscoveryClientConfiguration,\
+  org.apache.servicecomb.springboot.starter.discovery.ScbRibbonConfiguration
 org.springframework.cloud.client.discovery.EnableDiscoveryClient=\
-  org.apache.servicecomb.springboot.starter.discovery.CseDiscoveryClientConfiguration
+  org.apache.servicecomb.springboot.starter.discovery.ScbDiscoveryClientConfiguration
 org.springframework.cloud.netflix.ribbon.RibbonClient=\
-  org.apache.servicecomb.springboot.starter.discovery.CseRibbonConfiguration
+  org.apache.servicecomb.springboot.starter.discovery.ScbRibbonConfiguration

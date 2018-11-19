@@ -33,10 +33,6 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>service-registry</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>java-chassis-core</artifactId>
-    </dependency>
   </dependencies>
 
   <build>
