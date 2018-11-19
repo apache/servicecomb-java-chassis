@@ -96,6 +96,7 @@ public class ServicePathManager {
 
   public ServicePathManager cloneServicePathManager() {
     ServicePathManager mgr = new ServicePathManager(microserviceMeta);
+    mgr.buildProducerPaths();
     swaggerPaths.cloneTo(mgr.swaggerPaths);
     mgr.schemaIdSet.addAll(schemaIdSet);
     return mgr;
