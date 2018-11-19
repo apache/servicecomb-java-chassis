@@ -72,9 +72,8 @@ public class RestEngineSchemaListener implements SchemaListener, BootListener {
     mgr = ServicePathManager.getServicePathManager(microserviceMeta);
     if (mgr == null) {
       mgr = new ServicePathManager(microserviceMeta);
-    } else {
-      mgr = mgr.cloneServicePathManager();
     }
+    
     mgrMap.put(microserviceMeta.getName(), mgr);
     return mgr;
   }
