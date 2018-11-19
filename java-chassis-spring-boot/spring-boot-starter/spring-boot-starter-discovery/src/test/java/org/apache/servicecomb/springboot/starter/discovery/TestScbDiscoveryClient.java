@@ -35,7 +35,7 @@ import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 
-public class TestCseDiscoveryClient {
+public class TestScbDiscoveryClient {
   @Test
   public void testCseDiscoveryClient(@Mocked RegistryUtils registryUtils,
       @Injectable InstanceCacheManager instanceCacheManager,
@@ -69,7 +69,7 @@ public class TestCseDiscoveryClient {
       }
     };
 
-    DiscoveryClient client = new CseDiscoveryClient();
+    DiscoveryClient client = new ScbDiscoveryClient();
     Assert.assertEquals("Spring Cloud CSE Discovery Client", client.description());
     Assert.assertEquals(2, client.getServices().size());
     Assert.assertEquals("server2", client.getServices().get(1));

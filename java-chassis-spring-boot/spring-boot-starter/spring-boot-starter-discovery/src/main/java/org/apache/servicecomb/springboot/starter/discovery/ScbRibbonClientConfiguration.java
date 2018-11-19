@@ -14,21 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.springboot2.starter.discovery;
+package org.apache.servicecomb.springboot.starter.discovery;
 
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.netflix.ribbon.RibbonAutoConfiguration;
-import org.springframework.cloud.netflix.ribbon.RibbonClients;
-import org.springframework.cloud.netflix.ribbon.SpringClientFactory;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Bean;
 
-@Configuration
-@EnableConfigurationProperties
-@ConditionalOnBean(SpringClientFactory.class)
-@AutoConfigureAfter(RibbonAutoConfiguration.class)
-@RibbonClients(defaultConfiguration = CseRibbonClientConfiguration.class)
-public class CseRibbonConfiguration {
+import com.netflix.client.config.IClientConfig;
+import com.netflix.loadbalancer.Server;
+import com.netflix.loadbalancer.ServerList;
 
+/**
+ * Custom {@link org.springframework.cloud.netflix.ribbon.RibbonClient} configuration must not be
+ * scanned by spring.
+ *
+ * @see <a href="http://cloud.spring.io/spring-cloud-static/Camden.SR4/#_customizing_the_ribbon_client">
+ * Customizing the Ribbon Client </a>
+ */
+public class ScbRibbonClientConfiguration {
+  @Bean
+  public ServerList<Server> ribbonServerList(
+      IClientConfig config) {
+    ServiceCombServerList serverList = new ServiceCombServerList();
+    serverList.initWithNiwsConfig(config);
+    return serverList;
+  }
 }

@@ -16,13 +16,21 @@
  */
 package org.apache.servicecomb.springboot.starter.discovery;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.cloud.client.discovery.DiscoveryClient;
+import org.springframework.cloud.client.discovery.simple.SimpleDiscoveryClientAutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
-public class TestCseDiscoveryClientConfiguration {
-  @Test
-  public void testCseDiscoveryClientConfiguration() {
-    CseDiscoveryClientConfiguration discoveryClientConfiguration = new CseDiscoveryClientConfiguration();
-    Assert.assertTrue(discoveryClientConfiguration.cseDiscoveryClient() instanceof CseDiscoveryClient);
+@AutoConfigureBefore(SimpleDiscoveryClientAutoConfiguration.class)
+@Configuration
+public class ScbDiscoveryClientConfiguration {
+  @Bean
+  @Order(5000)
+  @ConditionalOnProperty(value = "servicecomb.discoveryClient.enabled", havingValue = "true", matchIfMissing = true)
+  public DiscoveryClient cseDiscoveryClient() {
+    return new ScbDiscoveryClient();
   }
 }

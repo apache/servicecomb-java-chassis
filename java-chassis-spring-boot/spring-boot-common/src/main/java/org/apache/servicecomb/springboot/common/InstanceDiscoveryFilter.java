@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
@@ -29,9 +28,19 @@ import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTreeNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class AbstractInstanceDiscoveryFilter implements DiscoveryFilter {
+public class InstanceDiscoveryFilter implements DiscoveryFilter {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractInstanceDiscoveryFilter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(InstanceDiscoveryFilter.class);
+
+  public interface InstanceFactory {
+    Object createInstance(String name, URIEndpointObject uri);
+  }
+
+  InstanceFactory instanceFactory;
+
+  public InstanceDiscoveryFilter(InstanceFactory factory){
+    instanceFactory = factory;
+  }
 
   @Override
   public int getOrder() {
@@ -53,12 +62,12 @@ public abstract class AbstractInstanceDiscoveryFilter implements DiscoveryFilter
     for (MicroserviceInstance instance : ((Map<String, MicroserviceInstance>) parent.data()).values()) {
       for (String endpoint : instance.getEndpoints()) {
         String scheme = endpoint.split(":", 2)[0];
-        if (!scheme.equalsIgnoreCase(Const.RESTFUL)) {
+        if (!scheme.equalsIgnoreCase("rest")) {
           LOGGER.info("Endpoint {} is not supported in Spring Cloud, ignoring.", endpoint);
           continue;
         }
         URIEndpointObject uri = new URIEndpointObject(endpoint);
-        instances.add(createInstance(serviceName, uri));
+        instances.add(instanceFactory.createInstance(serviceName, uri));
       }
     }
 
@@ -66,6 +75,4 @@ public abstract class AbstractInstanceDiscoveryFilter implements DiscoveryFilter
         .subName(parent, serviceName)
         .data(instances);
   }
-
-  abstract protected Object createInstance(String name, URIEndpointObject uri);
 };

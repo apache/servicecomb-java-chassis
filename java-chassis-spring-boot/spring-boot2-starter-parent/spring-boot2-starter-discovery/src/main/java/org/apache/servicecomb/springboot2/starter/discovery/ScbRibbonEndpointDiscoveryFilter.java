@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.springboot.starter.discovery;
+package org.apache.servicecomb.springboot2.starter.discovery;
 
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
@@ -25,7 +25,7 @@ import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTreeNode;
 
 import com.netflix.loadbalancer.Server;
 
-public class CseRibbonEndpointDiscoveryFilter extends AbstractEndpointDiscoveryFilter {
+public class ScbRibbonEndpointDiscoveryFilter extends AbstractEndpointDiscoveryFilter {
   @Override
   protected String findTransportName(DiscoveryContext context, DiscoveryTreeNode parent) {
     //only need rest endpoints

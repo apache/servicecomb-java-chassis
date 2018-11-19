@@ -30,16 +30,16 @@ import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryFilter;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTree;
 
-public  class DiscoveryClientUtil<T> {
+public abstract class AbstractDiscoveryClient {
 
   private Map<String, DiscoveryTree> discoveryTrees = new ConcurrentHashMapEx<>();
   private DiscoveryFilter filter = null;
 
-  public DiscoveryClientUtil(DiscoveryFilter filter){
+  public AbstractDiscoveryClient(DiscoveryFilter filter){
     this.filter = filter;
   }
 
-  public List<T> getInstances(final String serviceId) {
+  public <T> List<T> doGetInstances(final String serviceId) {
     DiscoveryContext context = new DiscoveryContext();
     context.setInputParameters(serviceId);
 
