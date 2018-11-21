@@ -115,7 +115,7 @@ public final class AnnotationUtils {
   public static void addResponse(Swagger swagger, Operation operation, ApiOperation apiOperation) {
     ResponseConfig responseConfig = convert(apiOperation);
     generateResponse(swagger, responseConfig);
-    operation.response(responseConfig.getCode(), responseConfig.getResponse());
+    mergeResponse(operation, responseConfig);
   }
 
   public static void addResponse(Swagger swagger, ApiResponse apiResponse) {
@@ -127,7 +127,35 @@ public final class AnnotationUtils {
   public static void addResponse(Swagger swagger, Operation operation, ApiResponse apiResponse) {
     ResponseConfig responseConfig = convert(apiResponse);
     generateResponse(swagger, responseConfig);
-    operation.response(responseConfig.getCode(), responseConfig.getResponse());
+    mergeResponse(operation, responseConfig);
+  }
+
+  private static void mergeResponse(Operation operation, ResponseConfig responseConfig) {
+    if (operation.getResponses() == null) {
+      operation.response(responseConfig.getCode(), responseConfig.getResponse());
+      return;
+    }
+    Response response = operation.getResponses().get(String.valueOf(responseConfig.getCode()));
+    if (response != null) {
+      Response targetResp = responseConfig.getResponse();
+      if (StringUtils.isNotEmpty(targetResp.getDescription()) && StringUtils.isEmpty(response.getDescription())) {
+        response.setDescription(targetResp.getDescription());
+      }
+      if (targetResp.getSchema() != null && response.getSchema() == null) {
+        response.setSchema(targetResp.getSchema());
+      }
+      if (targetResp.getExamples() != null && response.getExamples() == null) {
+        response.setExamples(targetResp.getExamples());
+      }
+      if (targetResp.getHeaders() != null && response.getHeaders() == null) {
+        response.setHeaders(targetResp.getHeaders());
+      }
+      if (targetResp.getVendorExtensions() != null && response.getVendorExtensions() == null) {
+        response.setVendorExtensions(targetResp.getVendorExtensions());
+      }
+    } else {
+      operation.response(responseConfig.getCode(), responseConfig.getResponse());
+    }
   }
 
   private static void generateResponse(Swagger swagger, ResponseConfig responseConfig) {
