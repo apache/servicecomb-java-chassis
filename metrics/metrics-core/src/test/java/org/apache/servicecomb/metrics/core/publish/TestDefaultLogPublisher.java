@@ -30,6 +30,7 @@ import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
+import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
@@ -47,7 +48,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
-import com.netflix.spectator.api.CompositeRegistry;
 import com.netflix.spectator.api.Measurement;
 
 import io.vertx.core.impl.VertxImplEx;
@@ -57,7 +57,7 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestDefaultLogPublisher {
-  CompositeRegistry globalRegistry = null;
+  GlobalRegistry globalRegistry = new GlobalRegistry();
 
   EventBus eventBus = new EventBus();
 
@@ -145,8 +145,9 @@ public class TestDefaultLogPublisher {
     DefaultPublishModel model = new DefaultPublishModel();
 
     PerfInfo perfTotal = new PerfInfo();
-    perfTotal.setTps(10);
-    perfTotal.setMsTotalTime(100);
+    perfTotal.setTps(100_0000);
+    perfTotal.setMsTotalTime(30000L * 100_0000);
+    perfTotal.setMsMaxLatency(30000);
 
     OperationPerf operationPerf = new OperationPerf();
     operationPerf.setOperation("op");
@@ -222,41 +223,42 @@ public class TestDefaultLogPublisher {
     List<LoggingEvent> events = collector.getEvents().stream().filter(e -> {
       return DefaultLogPublisher.class.getName().equals(e.getLoggerName());
     }).collect(Collectors.toList());
+
     LoggingEvent event = events.get(0);
-    Assert.assertEquals("\n" +
-            "vertx:\n" +
-            "  name       eventLoopContext-created\n" +
-            "  v          1\n" +
-            "threadPool:\n" +
-            "  corePoolSize maxThreads poolSize currentThreadsBusy queueSize taskCount completedTaskCount name\n" +
-            "  0            0          0        0                  0         0.0       0.0                test\n" +
-            "os:\n"
+    Assert.assertEquals("\n"
+            + "os:\n"
             + "  cpu: 100.00%\n"
             + "  net:\n"
             + "    send         receive      interface\n"
-            + "    1 B          1 B          eth0\n" +
-            "\n" +
-            "consumer:\n" +
-            "  simple:\n"
-            + "    status          tps           latency                                    operation\n"
-            + "    rest.OK         10            10.000/0.000                               op\n"
-            + "                    10            10.000/0.000                               (summary)\n"
+            + "    1 B          1 B          eth0\n"
+            + "vertx:\n"
+            + "  instances:\n"
+            + "    name       eventLoopContext-created\n"
+            + "    v          1\n"
+            + "threadPool:\n"
+            + "  corePoolSize maxThreads poolSize currentThreadsBusy queueSize taskCount completedTaskCount name\n"
+            + "  0            0          0        0                  0         0.0       0.0                test\n"
+            + "consumer:\n"
+            + "  simple:\n"
+            + "    status          tps      latency             operation\n"
+            + "    rest.OK         1000000  30000.000/30000.000 op\n"
+            + "                    1000000  30000.000/30000.000 (summary)\n"
             + "  details:\n"
             + "    rest.OK:\n"
             + "      op:\n"
-            + "        prepare          : 10.000/0.000           handlersReq : 10.000/0.000           clientFiltersReq: 10.000/0.000           sendReq     : 10.000/0.000\n"
-            + "        getConnect       : 10.000/0.000           writeBuf    : 10.000/0.000           waitResp        : 10.000/0.000           wakeConsumer: 10.000/0.000\n"
-            + "        clientFiltersResp: 10.000/0.000           handlersResp: 10.000/0.000\n"
+            + "        prepare     : 30000.000/30000.000 handlersReq : 30000.000/30000.000 cFiltersReq: 30000.000/30000.000 sendReq     : 30000.000/30000.000\n"
+            + "        getConnect  : 30000.000/30000.000 writeBuf    : 30000.000/30000.000 waitResp   : 30000.000/30000.000 wakeConsumer: 30000.000/30000.000\n"
+            + "        cFiltersResp: 30000.000/30000.000 handlersResp: 30000.000/30000.000\n"
             + "producer:\n"
             + "  simple:\n"
-            + "    status          tps           latency                                    operation\n"
-            + "    rest.OK         10            10.000/0.000                               op\n"
-            + "                    10            10.000/0.000                               (summary)\n"
+            + "    status          tps      latency             operation\n"
+            + "    rest.OK         1000000  30000.000/30000.000 op\n"
+            + "                    1000000  30000.000/30000.000 (summary)\n"
             + "  details:\n"
             + "    rest.OK:\n"
             + "      op:\n"
-            + "        prepare: 10.000/0.000           queue       : 10.000/0.000           filtersReq : 10.000/0.000           handlersReq: 10.000/0.000\n"
-            + "        execute: 10.000/0.000           handlersResp: 10.000/0.000           filtersResp: 10.000/0.000           sendResp   : 10.000/0.000\n",
+            + "        prepare: 30000.000/30000.000 queue       : 30000.000/30000.000 filtersReq : 30000.000/30000.000 handlersReq: 30000.000/30000.000\n"
+            + "        execute: 30000.000/30000.000 handlersResp: 30000.000/30000.000 filtersResp: 30000.000/30000.000 sendResp   : 30000.000/30000.000\n",
         event.getMessage());
   }
 }

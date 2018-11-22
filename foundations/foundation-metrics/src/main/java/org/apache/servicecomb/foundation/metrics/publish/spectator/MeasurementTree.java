@@ -56,7 +56,7 @@ public class MeasurementTree extends MeasurementNode {
         Tag tag = tagFinder.find(id.tags());
         if (tag == null) {
           if (tagFinder.skipOnNull()) {
-            return;
+            break;
           }
           throw new IllegalStateException(
               String.format("tag key \"%s\" not exist in %s",
