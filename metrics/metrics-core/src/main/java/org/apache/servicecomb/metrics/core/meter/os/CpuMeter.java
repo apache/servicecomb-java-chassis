@@ -48,9 +48,9 @@ public class CpuMeter {
     rate = 0.0;
   }
 
-  public void calcMeasurements(List<Measurement> measurements, long timestap) {
+  public void calcMeasurements(List<Measurement> measurements, long msNow) {
     refreshCpu();
-    measurements.add(new Measurement(id, timestap, rate));
+    measurements.add(new Measurement(id, msNow, rate));
   }
 
   /*

@@ -19,13 +19,10 @@ package org.apache.servicecomb.metrics.core.meter.os;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.foundation.metrics.PollEvent;
+import org.apache.servicecomb.foundation.metrics.meter.AbstractPeriodMeter;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import com.netflix.spectator.api.Id;
+import com.google.common.annotations.VisibleForTesting;
 import com.netflix.spectator.api.Measurement;
-import com.netflix.spectator.api.Meter;
 import com.netflix.spectator.api.Registry;
 
 /**
@@ -33,7 +30,7 @@ import com.netflix.spectator.api.Registry;
  * name=os type=net interface=eth0 statistic=send value=100
  * name=os type=net interface=eth0 statistic=receive value=100
  */
-public class OsMeter implements Meter {
+public class OsMeter extends AbstractPeriodMeter {
   public static final String OS_NAME = "os";
 
   public static final String OS_TYPE = "type";
@@ -42,56 +39,36 @@ public class OsMeter implements Meter {
 
   public static final String OS_TYPE_NET = "net";
 
-  private List<Measurement> measurements = new ArrayList<>();
-
-  private Id id;
-
-  private Registry registry;
-
   private CpuMeter cpuMeter;
 
   private NetMeter netMeter;
 
-  public OsMeter(Registry registry, EventBus eventBus) {
-    this.registry = registry;
+  public OsMeter(Registry registry) {
     this.id = registry.createId(OS_NAME);
 
     cpuMeter = new CpuMeter(id.withTag(OS_TYPE, OS_TYPE_CPU));
     netMeter = new NetMeter(id.withTag(OS_TYPE, OS_TYPE_NET));
-
-    eventBus.register(this);
-  }
-
-  @Subscribe
-  public void calcMeasurements(PollEvent pollEvent) {
-    final long now = registry.clock().wallTime();
-
-    final List<Measurement> tmpCpuMeasurements = new ArrayList<>();
-    cpuMeter.calcMeasurements(tmpCpuMeasurements, now);
-    netMeter.calcMeasurements(tmpCpuMeasurements, now, pollEvent);
-
-    measurements = tmpCpuMeasurements;
   }
 
   @Override
-  public Id id() {
-    return id;
+  public void calcMeasurements(long msNow, long secondInterval) {
+    List<Measurement> measurements = new ArrayList<>();
+    calcMeasurements(measurements, msNow, secondInterval);
+    allMeasurements = measurements;
   }
 
   @Override
-  public Iterable<Measurement> measure() {
-    return measurements;
+  public void calcMeasurements(List<Measurement> measurements, long msNow, long secondInterval) {
+    cpuMeter.calcMeasurements(measurements, msNow);
+    netMeter.calcMeasurements(measurements, msNow, secondInterval);
   }
 
-  @Override
-  public boolean hasExpired() {
-    return false;
-  }
-
+  @VisibleForTesting
   public CpuMeter getCpuMeter() {
     return cpuMeter;
   }
 
+  @VisibleForTesting
   public NetMeter getNetMeter() {
     return netMeter;
   }

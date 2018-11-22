@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.servicecomb.foundation.metrics.PollEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +50,6 @@ public class NetMeter {
   private Map<String, InterfaceInfo> interfaceInfoMap = new ConcurrentHashMap<>();
 
   public static class InterfaceInfo {
-
     private final String name;
 
     private Id sendId;
@@ -76,12 +74,12 @@ public class NetMeter {
       this.receiveId = id.withTag(TAG_RECEIVE);
     }
 
-    public void update(String interfaceData, long interval) {
+    public void update(String interfaceData, long secondInterval) {
       String[] netInfo = interfaceData.trim().split("\\s+");
       long rxBytes = Long.parseLong(netInfo[0]);
       long txBytes = Long.parseLong(netInfo[8]);
-      sendRate = (double) (txBytes - lastTxBytes) * 1000 / interval;
-      receiveRate = (double) (rxBytes - lastRxBytes) * 1000 / interval;
+      sendRate = (double) (txBytes - lastTxBytes) / secondInterval;
+      receiveRate = (double) (rxBytes - lastRxBytes) / secondInterval;
       lastRxBytes = rxBytes;
       lastTxBytes = txBytes;
     }
@@ -109,6 +107,8 @@ public class NetMeter {
 
   public NetMeter(Id id) {
     this.id = id;
+
+    // init lastRxBytes and lastTxBytes
     refreshNet(1);
     for (InterfaceInfo interfaceInfo : interfaceInfoMap.values()) {
       interfaceInfo.sendRate = 0;
@@ -116,12 +116,12 @@ public class NetMeter {
     }
   }
 
-  public void calcMeasurements(List<Measurement> measurements, long timestap, PollEvent pollEvent) {
-    refreshNet(pollEvent.getMsPollInterval());
+  public void calcMeasurements(List<Measurement> measurements, long msNow, long secondInterval) {
+    refreshNet(secondInterval);
 
     for (InterfaceInfo interfaceInfo : interfaceInfoMap.values()) {
-      measurements.add(new Measurement(interfaceInfo.sendId, timestap, interfaceInfo.sendRate));
-      measurements.add(new Measurement(interfaceInfo.receiveId, timestap, interfaceInfo.receiveRate));
+      measurements.add(new Measurement(interfaceInfo.sendId, msNow, interfaceInfo.sendRate));
+      measurements.add(new Measurement(interfaceInfo.receiveId, msNow, interfaceInfo.receiveRate));
     }
   }
 
@@ -131,7 +131,7 @@ public class NetMeter {
    *  eth0: 2615248100 32148518    0    0    0     0          0          0         87333034794 21420267    0      0     0     0    0    0
    *        0          1           2    3    4     5          6          7          8
    */
-  protected void refreshNet(long interval) {
+  protected void refreshNet(long secondInterval) {
     try {
       File file = new File("/proc/net/dev");
       List<String> netInfo = FileUtils.readLines(file, StandardCharsets.UTF_8);
@@ -150,7 +150,7 @@ public class NetMeter {
         nameSet.add(name);
 
         InterfaceInfo interfaceInfo = interfaceInfoMap.computeIfAbsent(name, key -> new InterfaceInfo(id, key));
-        interfaceInfo.update(strings[1], interval);
+        interfaceInfo.update(strings[1], secondInterval);
       }
 
       // clear deleted interfaces

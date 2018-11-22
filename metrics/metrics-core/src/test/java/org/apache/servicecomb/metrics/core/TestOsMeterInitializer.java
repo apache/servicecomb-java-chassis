@@ -25,8 +25,7 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
+import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.metrics.core.meter.os.CpuMeter;
 import org.apache.servicecomb.metrics.core.meter.os.NetMeter;
 import org.apache.servicecomb.metrics.core.meter.os.NetMeter.InterfaceInfo;
@@ -47,15 +46,14 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestOsMeterInitializer {
-  private Registry registry = new DefaultRegistry(new ManualClock());
+  GlobalRegistry globalRegistry = new GlobalRegistry(new ManualClock());
 
-  @Mocked
-  private DefaultRegistryInitializer defaultRegistryInitializer;
-
-  @Mocked
-  private EventBus eventBus;
+  Registry registry = new DefaultRegistry(globalRegistry.getClock());
 
   private boolean isLinux;
+
+  @Mocked
+  EventBus eventBus;
 
   @Before
   public void beforeTest() {
@@ -65,14 +63,6 @@ public class TestOsMeterInitializer {
   @Test
   public void init(@Mocked Runtime runtime) {
     ReflectUtils.setField(SystemUtils.class, null, "IS_OS_LINUX", true);
-    new Expectations(SPIServiceUtils.class) {
-      {
-        SPIServiceUtils.getTargetService(MetricsInitializer.class, DefaultRegistryInitializer.class);
-        result = defaultRegistryInitializer;
-        defaultRegistryInitializer.getRegistry();
-        result = registry;
-      }
-    };
     List<String> list = new ArrayList<>();
     list.add("cpu  1 1 1 1 1 1 1 1 0 0");
     list.add("useless");
@@ -95,8 +85,9 @@ public class TestOsMeterInitializer {
         result = 2;
       }
     };
+    globalRegistry.add(registry);
     OsMetersInitializer osMetersInitializer = new OsMetersInitializer();
-    osMetersInitializer.init(null, eventBus, null);
+    osMetersInitializer.init(globalRegistry, eventBus, null);
     OsMeter osMeter = osMetersInitializer.getOsMeter();
     Assert.assertNotNull(osMeter);
     Assert.assertNotNull(osMeter.getCpuMeter());

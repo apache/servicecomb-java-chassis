@@ -23,12 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.servicecomb.foundation.metrics.PollEvent;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
-import com.google.common.eventbus.EventBus;
 import com.netflix.spectator.api.DefaultRegistry;
 import com.netflix.spectator.api.ManualClock;
 import com.netflix.spectator.api.Measurement;
@@ -40,12 +38,10 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestOsMeter {
-  EventBus eventBus = new EventBus();
-
   Registry registry = new DefaultRegistry(new ManualClock());
 
   @Test
-  public void testCalcMeasurement(@Mocked PollEvent pollEvent, @Mocked Runtime runtime) {
+  public void testCalcMeasurement(@Mocked Runtime runtime) {
     List<String> list = new ArrayList<>();
     list.add("cpu  1 1 1 1 1 1 1 1 0 0");
     list.add("useless");
@@ -66,16 +62,15 @@ public class TestOsMeter {
       {
         runtime.availableProcessors();
         result = 2;
-        pollEvent.getMsPollInterval();
-        result = 1000;
       }
     };
-    OsMeter osMeter = new OsMeter(registry, eventBus);
+    OsMeter osMeter = new OsMeter(registry);
     list.clear();
     list.add("cpu  2 2 2 2 2 2 2 2 0 0");
     list.add("useless");
     list.add("eth0: 1 1    0    0    0     0          0          1         1 1    1      0     0     0    0    0");
-    eventBus.post(pollEvent);
+
+    osMeter.calcMeasurements(1, 1);
     ArrayList<Measurement> measurements = Lists.newArrayList(osMeter.measure());
     Assert.assertEquals(3, measurements.size());
     Assert.assertEquals(1.75, measurements.get(0).value(), 0.0);
