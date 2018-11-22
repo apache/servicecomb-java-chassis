@@ -200,7 +200,7 @@ public class MessageSchema implements Schema<Object>, FieldMap<Object> {
    * </pre>
    * @param output
    * @param value
-   * @throws Throwable
+   * @throws IOException
    */
   protected void writeFromPojo(Output output, Object value) throws IOException {
     List<PojoFieldSerializer> serializers = pojoFieldSerializers

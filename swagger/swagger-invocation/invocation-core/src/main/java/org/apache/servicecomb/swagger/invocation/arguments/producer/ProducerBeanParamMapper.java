@@ -36,7 +36,8 @@ public class ProducerBeanParamMapper implements ArgumentMapper {
   private Converter converter;
 
   /**
-   * @param producerNameToSwaggerIndexMap name of the fields & setters defined in @BeanParam parameter -> swagger param index
+   * @param producerNameToSwaggerIndexMap name of the fields and setters defined in @BeanParam parameter to swagger
+   * param index
    * @param producerIdx index of producer param
    * @param producerParamType type of producer param
    */
