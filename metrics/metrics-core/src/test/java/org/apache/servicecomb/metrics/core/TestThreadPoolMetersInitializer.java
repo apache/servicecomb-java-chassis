@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RunnableScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -33,31 +34,31 @@ import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.FixedThreadExecutor;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
+import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 
 import com.netflix.spectator.api.DefaultRegistry;
 import com.netflix.spectator.api.ManualClock;
 import com.netflix.spectator.api.Registry;
+import com.netflix.spectator.api.patterns.PolledMeter;
+
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestThreadPoolMetersInitializer {
+  GlobalRegistry globalRegistry = new GlobalRegistry();
+
   Registry registry = new DefaultRegistry(new ManualClock());
 
   ThreadPoolMetersInitializer threadPoolMetersInitializer = new ThreadPoolMetersInitializer();
 
-  @Mocked
-  DefaultRegistryInitializer defaultRegistryInitializer;
-
-  @Mocked
-  ThreadPoolExecutor threadPoolExecutor;
+  ThreadPoolExecutor threadPoolExecutor = Mockito.mock(ThreadPoolExecutor.class);
 
   @Mocked
   BlockingQueue<Runnable> queue;
@@ -65,8 +66,7 @@ public class TestThreadPoolMetersInitializer {
   @Mocked
   FixedThreadExecutor fixedThreadExecutor;
 
-  @Mocked
-  Executor executor;
+  ExecutorService executor = Mockito.mock(ExecutorService.class);
 
   @Mocked
   ApplicationContext applicationContext;
@@ -92,14 +92,6 @@ public class TestThreadPoolMetersInitializer {
         result = microserviceMeta;
       }
     };
-    new Expectations(SPIServiceUtils.class) {
-      {
-        SPIServiceUtils.getTargetService(MetricsInitializer.class, DefaultRegistryInitializer.class);
-        result = defaultRegistryInitializer;
-        defaultRegistryInitializer.getRegistry();
-        result = registry;
-      }
-    };
     Map<String, Executor> beanExecutors = new HashMap<>();
     beanExecutors.put("executor", executor);
     beanExecutors.put("fixedThreadExecutor", fixedThreadExecutor);
@@ -113,6 +105,7 @@ public class TestThreadPoolMetersInitializer {
       }
     };
 
+    Mockito.when(threadPoolExecutor.getQueue()).thenReturn(queue);
     new Expectations(CseContext.getInstance()) {
       {
         microserviceMeta.getOperations();
@@ -127,8 +120,6 @@ public class TestThreadPoolMetersInitializer {
         fixedThreadExecutor.getExecutorList();
         result = Arrays.asList(threadPoolExecutor);
 
-        threadPoolExecutor.getQueue();
-        result = queue;
         queue.size();
         result = 10d;
       }
@@ -141,8 +132,10 @@ public class TestThreadPoolMetersInitializer {
       }
     };
 
-    threadPoolMetersInitializer.init(null, null, null);
+    globalRegistry.add(registry);
+    threadPoolMetersInitializer.init(globalRegistry, null, null);
 
+    PolledMeter.update(registry);
     List<String> result = new ArrayList<>();
     registry.iterator().forEachRemaining(meter -> {
       result.add(meter.measure().toString());

@@ -32,6 +32,7 @@ import com.google.common.eventbus.EventBus;
 import com.netflix.spectator.api.DefaultRegistry;
 import com.netflix.spectator.api.ManualClock;
 import com.netflix.spectator.api.Registry;
+import com.netflix.spectator.api.patterns.PolledMeter;
 import com.netflix.spectator.api.patterns.ThreadPoolMonitor;
 
 import mockit.Expectations;
@@ -68,6 +69,7 @@ public class TestThreadPoolPublishModelFactory {
     };
     ThreadPoolMonitor.attach(registry, threadPoolExecutor, "test");
 
+    PolledMeter.update(registry);
     PublishModelFactory factory = new PublishModelFactory(Lists.newArrayList(registry.iterator()));
     DefaultPublishModel model = factory.createDefaultPublishModel();
 
