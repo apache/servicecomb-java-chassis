@@ -103,10 +103,7 @@ public class ConsumerMain {
     // only rest support default value feature
     ITJUnitUtils.runWithRest(TestDefaultValue.class);
 
-    // currently have bug with http2
-    if (!ITJUnitUtils.getProducerName().endsWith("-h2") && !ITJUnitUtils.getProducerName().endsWith("-h2c")) {
-      ITJUnitUtils.runWithRest(TestDownload.class);
-    }
+    ITJUnitUtils.runWithRest(TestDownload.class);
 
     ITJUnitUtils.runWithHighwayAndRest(TestTrace.class);
     ITJUnitUtils.run(TestTraceEdge.class);
