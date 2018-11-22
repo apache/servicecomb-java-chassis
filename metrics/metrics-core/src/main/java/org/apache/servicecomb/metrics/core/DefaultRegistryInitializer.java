@@ -16,19 +16,20 @@
  */
 package org.apache.servicecomb.metrics.core;
 
+import java.time.Duration;
+
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
+import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 
 import com.google.common.eventbus.EventBus;
 import com.netflix.servo.DefaultMonitorRegistry;
-import com.netflix.spectator.api.CompositeRegistry;
-import com.netflix.spectator.api.Registry;
 import com.netflix.spectator.servo.ServoRegistry;
 
 public class DefaultRegistryInitializer implements MetricsInitializer {
   public static final String SERVO_POLLERS = "servo.pollers";
 
-  private CompositeRegistry globalRegistry;
+  private GlobalRegistry globalRegistry;
 
   private ServoRegistry registry;
 
@@ -39,12 +40,15 @@ public class DefaultRegistryInitializer implements MetricsInitializer {
   }
 
   @Override
-  public void init(CompositeRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+  public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
     this.globalRegistry = globalRegistry;
 
-    System.getProperties().setProperty(SERVO_POLLERS, String.valueOf(config.getMsPollInterval()));
-    registry = new ServoRegistry();
+    // spectator move poll gauges from inline to background executor
+    // we need to set the interval to unify value
+    System.setProperty("spectator.api.gaugePollingFrequency", Duration.ofMillis(config.getMsPollInterval()).toString());
 
+    System.setProperty(SERVO_POLLERS, String.valueOf(config.getMsPollInterval()));
+    registry = new ServoRegistry();
     globalRegistry.add(registry);
   }
 
@@ -54,9 +58,5 @@ public class DefaultRegistryInitializer implements MetricsInitializer {
       DefaultMonitorRegistry.getInstance().unregister(registry);
       globalRegistry.remove(registry);
     }
-  }
-
-  public Registry getRegistry() {
-    return registry;
   }
 }

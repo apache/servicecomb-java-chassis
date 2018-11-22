@@ -24,11 +24,10 @@ import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrap;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
+import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
 import org.apache.servicecomb.metrics.core.publish.MetricsRestPublisher;
 import org.springframework.stereotype.Component;
-
-import com.netflix.spectator.api.Spectator;
 
 @Component
 public class MetricsBootListener implements BootListener {
@@ -44,7 +43,7 @@ public class MetricsBootListener implements BootListener {
         registerSchemas();
         break;
       case AFTER_REGISTRY:
-        metricsBootstrap.start(Spectator.globalRegistry(), EventManager.getEventBus());
+        metricsBootstrap.start(new GlobalRegistry(), EventManager.getEventBus());
         break;
       case BEFORE_CLOSE:
         metricsBootstrap.shutdown();

@@ -19,22 +19,20 @@ package org.apache.servicecomb.metrics.core;
 import java.util.List;
 
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
+import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
 import com.netflix.servo.DefaultMonitorRegistry;
-import com.netflix.spectator.api.CompositeRegistry;
-import com.netflix.spectator.api.ManualClock;
 import com.netflix.spectator.api.Registry;
-import com.netflix.spectator.api.SpectatorUtils;
 import com.netflix.spectator.servo.ServoRegistry;
 
 import mockit.Deencapsulation;
 
 public class TestDefaultRegistryInitializer {
-  CompositeRegistry globalRegistry = SpectatorUtils.createCompositeRegistry(new ManualClock());
+  GlobalRegistry globalRegistry = new GlobalRegistry();
 
   List<Registry> registries = Deencapsulation.getField(globalRegistry, "registries");
 
@@ -45,7 +43,7 @@ public class TestDefaultRegistryInitializer {
     registryInitializer.init(globalRegistry, new EventBus(), new MetricsBootstrapConfig());
 
     Assert.assertEquals(-10, registryInitializer.getOrder());
-    Assert.assertThat(registryInitializer.getRegistry(), Matchers.instanceOf(ServoRegistry.class));
+    Assert.assertThat(globalRegistry.getDefaultRegistry(), Matchers.instanceOf(ServoRegistry.class));
     Assert.assertEquals(1, registries.size());
     Assert.assertEquals(1, DefaultMonitorRegistry.getInstance().getRegisteredMonitors().size());
 
