@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.foundation.vertx.metrics.metric;
 
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAdder;
 
 import io.vertx.core.net.SocketAddress;
 
@@ -28,15 +28,15 @@ public class DefaultEndpointMetric {
 
   // summary of connect times from boot
   // by this, we can know how many new connections connected recently
-  private AtomicLong connectCount = new AtomicLong();
+  private LongAdder connectCount = new LongAdder();
 
   // summary of disconnect times from boot
   // by this, we can know how many connections disconnected recently
-  private AtomicLong disconnectCount = new AtomicLong();
+  private LongAdder disconnectCount = new LongAdder();
 
-  private AtomicLong bytesRead = new AtomicLong();
+  private LongAdder bytesRead = new LongAdder();
 
-  private AtomicLong bytesWritten = new AtomicLong();
+  private LongAdder bytesWritten = new LongAdder();
 
   public DefaultEndpointMetric(SocketAddress address) {
     this.address = address;
@@ -47,38 +47,38 @@ public class DefaultEndpointMetric {
   }
 
   public long getConnectCount() {
-    return connectCount.get();
+    return connectCount.longValue();
   }
 
   public long getDisconnectCount() {
-    return disconnectCount.get();
+    return disconnectCount.longValue();
   }
 
   public long getCurrentConnectionCount() {
-    return connectCount.get() - disconnectCount.get();
+    return connectCount.longValue() - disconnectCount.longValue();
   }
 
   public void onConnect() {
-    connectCount.incrementAndGet();
+    connectCount.increment();
   }
 
   public void onDisconnect() {
-    disconnectCount.incrementAndGet();
+    disconnectCount.increment();
   }
 
   public long getBytesRead() {
-    return bytesRead.get();
+    return bytesRead.longValue();
   }
 
-  public long addBytesRead(long bytes) {
-    return bytesRead.addAndGet(bytes);
+  public void addBytesRead(long bytes) {
+    bytesRead.add(bytes);
   }
 
   public long getBytesWritten() {
-    return bytesWritten.get();
+    return bytesWritten.longValue();
   }
 
-  public long addBytesWritten(long bytes) {
-    return bytesWritten.addAndGet(bytes);
+  public void addBytesWritten(long bytes) {
+    bytesWritten.add(bytes);
   }
 }

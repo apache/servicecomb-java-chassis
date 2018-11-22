@@ -422,8 +422,8 @@ rxnetty-servo (https://github.com/ReactiveX/RxNetty) io.reactivex:rxnetty-servo:
 servo-core (https://github.com/Netflix/servo) com.netflix.servo:servo-core:jar:0.10.1
 servo-internal (https://github.com/Netflix/servo) com.netflix.servo:servo-internal:jar:0.10.1
 SnakeYAML (http://www.snakeyaml.org) org.yaml:snakeyaml:bundle:1.16
-spectator-api (https://github.com/Netflix/spectator) com.netflix.spectator:spectator-api:0.63.0
-spectator-reg-servo (https://github.com/Netflix/spectator) com.netflix.spectator:spectator-reg-servo:0.63.0
+spectator-api (https://github.com/Netflix/spectator) com.netflix.spectator:spectator-api:0.71.0
+spectator-reg-servo (https://github.com/Netflix/spectator) com.netflix.spectator:spectator-reg-servo:0.71.0
 Spring AOP (https://github.com/spring-projects/spring-framework) org.springframework:spring-aop:jar:4.3.16.RELEASE
 Spring Aspects (https://github.com/spring-projects/spring-framework) org.springframework:spring-aspects:jar:4.3.16.RELEASE
 Spring Beans (https://github.com/spring-projects/spring-framework) org.springframework:spring-beans:jar:4.3.16.RELEASE

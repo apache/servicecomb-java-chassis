@@ -14,19 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.foundation.metrics;
+package com.netflix.spectator.api;
 
-/**
- * give not standard meters to calc measurement , eg : cpu usage, net throughput, and so on
- */
-public class PollEvent {
-  private final long msPollInterval;
-
-  public PollEvent(long msPollInterval) {
-    this.msPollInterval = msPollInterval;
+public final class SpectatorUtils {
+  private SpectatorUtils() {
   }
 
-  public long getMsPollInterval() {
-    return msPollInterval;
+  public static Id createDefaultId(String name) {
+    return new DefaultId(name);
+  }
+
+  public static void removeExpiredMeters(Registry registry) {
+    if (registry instanceof AbstractRegistry) {
+      ((AbstractRegistry) registry).removeExpiredMeters();
+    }
+  }
+
+  public static void registerMeter(Registry registry, Meter meter) {
+    if (!(registry instanceof AbstractRegistry)) {
+      throw new IllegalStateException("registry must be a AbstractRegistry, class=" + registry.getClass().getName());
+    }
+    ((AbstractRegistry) registry).getOrCreate(meter.id(), Meter.class, null, _id -> meter);
   }
 }
