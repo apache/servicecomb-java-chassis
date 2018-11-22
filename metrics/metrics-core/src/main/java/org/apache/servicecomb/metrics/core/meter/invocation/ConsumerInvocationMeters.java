@@ -16,9 +16,6 @@
  */
 package org.apache.servicecomb.metrics.core.meter.invocation;
 
-import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.swagger.invocation.Response;
-
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Registry;
 
@@ -28,7 +25,7 @@ public class ConsumerInvocationMeters extends AbstractInvocationMeters {
   }
 
   @Override
-  protected AbstractInvocationMeter createMeter(Id id, Invocation invocation, Response response) {
-    return new ConsumerInvocationMeter(registry, id, invocation, response);
+  protected AbstractInvocationMeter createMeter(Id id) {
+    return new ConsumerInvocationMeter(registry, id);
   }
 }
