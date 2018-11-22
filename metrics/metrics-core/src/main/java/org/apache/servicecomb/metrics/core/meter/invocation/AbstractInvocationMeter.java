@@ -16,52 +16,84 @@
  */
 package org.apache.servicecomb.metrics.core.meter.invocation;
 
-import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
-import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.core.invocation.InvocationStageTrace;
+import org.apache.servicecomb.foundation.metrics.meter.AbstractPeriodMeter;
+import org.apache.servicecomb.foundation.metrics.meter.SimpleTimer;
 
 import com.netflix.spectator.api.Id;
+import com.netflix.spectator.api.Measurement;
 import com.netflix.spectator.api.Registry;
-import com.netflix.spectator.api.Timer;
 
-public abstract class AbstractInvocationMeter {
+public abstract class AbstractInvocationMeter extends AbstractPeriodMeter {
+  private final Registry registry;
+
   //total time
-  private Timer totalTimer;
+  private SimpleTimer totalTimer;
 
   // prepare time
-  private Timer prepareTimer;
+  private SimpleTimer prepareTimer;
 
   // handler request
-  private Timer handlersRequestTimer;
+  private SimpleTimer handlersRequestTimer;
 
   // handler response
-  private Timer handlersResponseTimer;
+  private SimpleTimer handlersResponseTimer;
 
-  public AbstractInvocationMeter(Registry registry, Id id, Invocation invocation, Response response) {
+  private long lastUpdated;
 
-    totalTimer = registry.timer(id.withTag(MeterInvocationConst.TAG_STAGE, MeterInvocationConst.STAGE_TOTAL));
-    prepareTimer = registry.timer(id.withTag(MeterInvocationConst.TAG_STAGE, MeterInvocationConst.STAGE_PREPARE));
-    handlersRequestTimer =
-        registry.timer(id.withTag(MeterInvocationConst.TAG_STAGE, MeterInvocationConst.STAGE_HANDLERS_REQUEST));
-    handlersResponseTimer =
-        registry.timer(id.withTag(MeterInvocationConst.TAG_STAGE, MeterInvocationConst.STAGE_HANDLERS_RESPONSE));
+  public AbstractInvocationMeter(Registry registry, Id id) {
+    this.registry = registry;
+    this.id = id;
+
+    totalTimer = creatStageTimer(MeterInvocationConst.STAGE_TOTAL);
+    prepareTimer = creatStageTimer(MeterInvocationConst.STAGE_PREPARE);
+    handlersRequestTimer = creatStageTimer(MeterInvocationConst.STAGE_HANDLERS_REQUEST);
+    handlersResponseTimer = creatStageTimer(MeterInvocationConst.STAGE_HANDLERS_RESPONSE);
+  }
+
+  protected SimpleTimer creatStageTimer(String stageValue) {
+    return createTimer(id.withTag(MeterInvocationConst.TAG_STAGE, stageValue));
+  }
+
+  protected SimpleTimer createTimer(String tagKey, String tagValue) {
+    return createTimer(id.withTag(tagKey, tagValue));
+  }
+
+  protected SimpleTimer createTimer(Id timerId) {
+    return new SimpleTimer(timerId);
   }
 
   public void onInvocationFinish(InvocationFinishEvent event) {
+    lastUpdated = registry.clock().wallTime();
 
-    totalTimer.record((long) event.getInvocation().getInvocationStageTrace().calcTotalTime(),
-        TimeUnit.NANOSECONDS);
+    InvocationStageTrace stageTrace = event.getInvocation().getInvocationStageTrace();
+    totalTimer.record((long) stageTrace.calcTotalTime());
+    handlersRequestTimer.record((long) stageTrace.calcHandlersRequestTime());
+    handlersResponseTimer.record((long) stageTrace.calcHandlersResponseTime());
+    prepareTimer.record((long) stageTrace.calcInvocationPrepareTime());
+  }
 
-    handlersRequestTimer
-        .record((long) event.getInvocation().getInvocationStageTrace().calcHandlersRequestTime(),
-            TimeUnit.NANOSECONDS);
-    handlersResponseTimer
-        .record((long) event.getInvocation().getInvocationStageTrace().calcHandlersResponseTime(),
-            TimeUnit.NANOSECONDS);
-    prepareTimer
-        .record((long) event.getInvocation().getInvocationStageTrace().calcInvocationPrepareTime(),
-            TimeUnit.NANOSECONDS);
+  @Override
+  public void calcMeasurements(long msNow, long secondInterval) {
+    List<Measurement> measurements = new ArrayList<>(3);
+    calcMeasurements(measurements, msNow, secondInterval);
+    allMeasurements = measurements;
+  }
+
+  @Override
+  public void calcMeasurements(List<Measurement> measurements, long msNow, long secondInterval) {
+    totalTimer.calcMeasurements(measurements, msNow, secondInterval);
+    handlersRequestTimer.calcMeasurements(measurements, msNow, secondInterval);
+    handlersResponseTimer.calcMeasurements(measurements, msNow, secondInterval);
+    prepareTimer.calcMeasurements(measurements, msNow, secondInterval);
+  }
+
+  @Override
+  public boolean hasExpired() {
+    return super.hasExpired();
   }
 }

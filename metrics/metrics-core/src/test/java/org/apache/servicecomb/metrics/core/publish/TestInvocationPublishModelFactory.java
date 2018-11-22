@@ -20,10 +20,7 @@ import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
-import org.apache.servicecomb.foundation.common.utils.JsonUtils;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
-import org.apache.servicecomb.metrics.core.DefaultRegistryInitializer;
+import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.metrics.core.InvocationMetersInitializer;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
@@ -31,13 +28,13 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.netflix.spectator.api.DefaultRegistry;
 import com.netflix.spectator.api.ManualClock;
 import com.netflix.spectator.api.Registry;
 
+import io.vertx.core.json.Json;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mock;
@@ -47,10 +44,9 @@ import mockit.Mocked;
 public class TestInvocationPublishModelFactory {
   EventBus eventBus = new EventBus();
 
-  Registry registry = new DefaultRegistry(new ManualClock());
+  GlobalRegistry globalRegistry = new GlobalRegistry();
 
-  @Mocked
-  DefaultRegistryInitializer defaultRegistryInitializer;
+  Registry registry = new DefaultRegistry(new ManualClock());
 
   InvocationMetersInitializer invocationMetersInitializer = new InvocationMetersInitializer();
 
@@ -65,27 +61,264 @@ public class TestInvocationPublishModelFactory {
   InvocationType invocationType;
 
   @Test
-  public void createDefaultPublishModel() throws JsonProcessingException {
-    new Expectations(SPIServiceUtils.class) {
-      {
-        SPIServiceUtils.getTargetService(MetricsInitializer.class, DefaultRegistryInitializer.class);
-        result = defaultRegistryInitializer;
-        defaultRegistryInitializer.getRegistry();
-        result = registry;
-      }
-    };
-    invocationMetersInitializer.init(null, eventBus, null);
+  public void createDefaultPublishModel() {
+    globalRegistry.add(registry);
+    invocationMetersInitializer.init(globalRegistry, eventBus, null);
     prepareInvocation();
 
+    globalRegistry.poll(1);
     PublishModelFactory factory = new PublishModelFactory(Lists.newArrayList(registry.iterator()));
     DefaultPublishModel model = factory.createDefaultPublishModel();
 
-    Assert.assertEquals(
-        "{\"operationPerfGroups\":{\"groups\":{\"rest\":{\"200\":{\"transport\":\"rest\",\"status\":\"200\",\"operationPerfs\":[{\"operation\":\"m.s.o\",\"stages\":{\"client_filters_request\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"prepare\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"consumer_send_request\":{\"tps\":1,\"msTotalTime\":2000.0,\"msMaxLatency\":0.0},\"total\":{\"tps\":1,\"msTotalTime\":14000.0,\"msMaxLatency\":0.0},\"handlers_request\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"consumer_wait_response\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"client_filters_response\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"handlers_response\":{\"tps\":1,\"msTotalTime\":3000.0,\"msMaxLatency\":0.0},\"consumer_get_connection\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"consumer_wake_consumer\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"consumer_write_to_buf\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0}}}],\"summary\":{\"operation\":\"\",\"stages\":{\"prepare\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"client_filters_request\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"total\":{\"tps\":1,\"msTotalTime\":14000.0,\"msMaxLatency\":0.0},\"consumer_send_request\":{\"tps\":1,\"msTotalTime\":2000.0,\"msMaxLatency\":0.0},\"handlers_request\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"handlers_response\":{\"tps\":1,\"msTotalTime\":3000.0,\"msMaxLatency\":0.0},\"client_filters_response\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"consumer_wait_response\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"consumer_get_connection\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"consumer_write_to_buf\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"consumer_wake_consumer\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0}}}}}}}}",
-        JsonUtils.writeValueAsString(model.getConsumer()));
-    Assert.assertEquals(
-        "{\"operationPerfGroups\":{\"groups\":{\"rest\":{\"200\":{\"transport\":\"rest\",\"status\":\"200\",\"operationPerfs\":[{\"operation\":\"m.s.o\",\"stages\":{\"server_filters_request\":{\"tps\":1,\"msTotalTime\":0.0,\"msMaxLatency\":0.0},\"prepare\":{\"tps\":1,\"msTotalTime\":5000.0,\"msMaxLatency\":0.0},\"execution\":{\"tps\":1,\"msTotalTime\":3000.0,\"msMaxLatency\":0.0},\"producer_send_response\":{\"tps\":1,\"msTotalTime\":2000.0,\"msMaxLatency\":0.0},\"total\":{\"tps\":1,\"msTotalTime\":14000.0,\"msMaxLatency\":0.0},\"handlers_request\":{\"tps\":1,\"msTotalTime\":6000.0,\"msMaxLatency\":0.0},\"handlers_response\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"queue\":{\"tps\":0,\"msTotalTime\":0.0,\"msMaxLatency\":0.0},\"server_filters_response\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0}}}],\"summary\":{\"operation\":\"\",\"stages\":{\"server_filters_request\":{\"tps\":1,\"msTotalTime\":0.0,\"msMaxLatency\":0.0},\"execution\":{\"tps\":1,\"msTotalTime\":3000.0,\"msMaxLatency\":0.0},\"prepare\":{\"tps\":1,\"msTotalTime\":5000.0,\"msMaxLatency\":0.0},\"total\":{\"tps\":1,\"msTotalTime\":14000.0,\"msMaxLatency\":0.0},\"producer_send_response\":{\"tps\":1,\"msTotalTime\":2000.0,\"msMaxLatency\":0.0},\"handlers_request\":{\"tps\":1,\"msTotalTime\":6000.0,\"msMaxLatency\":0.0},\"handlers_response\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0},\"queue\":{\"tps\":0,\"msTotalTime\":0.0,\"msMaxLatency\":0.0},\"server_filters_response\":{\"tps\":1,\"msTotalTime\":1000.0,\"msMaxLatency\":0.0}}}}}}}}",
-        JsonUtils.writeValueAsString(model.getProducer()));
+    String expect = "{\n"
+        + "  \"operationPerfGroups\" : {\n"
+        + "    \"groups\" : {\n"
+        + "      \"rest\" : {\n"
+        + "        \"200\" : {\n"
+        + "          \"transport\" : \"rest\",\n"
+        + "          \"status\" : \"200\",\n"
+        + "          \"operationPerfs\" : [ {\n"
+        + "            \"operation\" : \"m.s.o\",\n"
+        + "            \"stages\" : {\n"
+        + "              \"client_filters_request\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
+        + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
+        + "              },\n"
+        + "              \"prepare\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
+        + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
+        + "              },\n"
+        + "              \"consumer_send_request\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 2.0000000000000003E-6,\n"
+        + "                \"msMaxLatency\" : 2.0000000000000003E-6\n"
+        + "              },\n"
+        + "              \"total\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.4000000000000001E-5,\n"
+        + "                \"msMaxLatency\" : 1.4000000000000001E-5\n"
+        + "              },\n"
+        + "              \"handlers_request\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
+        + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
+        + "              },\n"
+        + "              \"client_filters_response\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
+        + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
+        + "              },\n"
+        + "              \"consumer_wait_response\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
+        + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
+        + "              },\n"
+        + "              \"handlers_response\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 3.0000000000000005E-6,\n"
+        + "                \"msMaxLatency\" : 3.0000000000000005E-6\n"
+        + "              },\n"
+        + "              \"consumer_get_connection\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
+        + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
+        + "              },\n"
+        + "              \"consumer_wake_consumer\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
+        + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
+        + "              },\n"
+        + "              \"consumer_write_to_buf\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
+        + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
+        + "              }\n"
+        + "            }\n"
+        + "          } ],\n"
+        + "          \"summary\" : {\n"
+        + "            \"operation\" : \"\",\n"
+        + "            \"stages\" : {\n"
+        + "              \"prepare\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
+        + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
+        + "              },\n"
+        + "              \"client_filters_request\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
+        + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
+        + "              },\n"
+        + "              \"total\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.4000000000000001E-5,\n"
+        + "                \"msMaxLatency\" : 1.4000000000000001E-5\n"
+        + "              },\n"
+        + "              \"consumer_send_request\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 2.0000000000000003E-6,\n"
+        + "                \"msMaxLatency\" : 2.0000000000000003E-6\n"
+        + "              },\n"
+        + "              \"handlers_request\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
+        + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
+        + "              },\n"
+        + "              \"handlers_response\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 3.0000000000000005E-6,\n"
+        + "                \"msMaxLatency\" : 3.0000000000000005E-6\n"
+        + "              },\n"
+        + "              \"consumer_wait_response\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
+        + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
+        + "              },\n"
+        + "              \"client_filters_response\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
+        + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
+        + "              },\n"
+        + "              \"consumer_get_connection\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
+        + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
+        + "              },\n"
+        + "              \"consumer_write_to_buf\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
+        + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
+        + "              },\n"
+        + "              \"consumer_wake_consumer\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
+        + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
+        + "              }\n"
+        + "            }\n"
+        + "          }\n"
+        + "        }\n"
+        + "      }\n"
+        + "    }\n"
+        + "  }\n"
+        + "}";
+    Assert.assertEquals(Json.encodePrettily(Json.decodeValue(expect, Object.class)),
+        Json.encodePrettily(model.getConsumer()));
+
+    expect = "{\n"
+        + "  \"operationPerfGroups\" : {\n"
+        + "    \"groups\" : {\n"
+        + "      \"rest\" : {\n"
+        + "        \"200\" : {\n"
+        + "          \"transport\" : \"rest\",\n"
+        + "          \"status\" : \"200\",\n"
+        + "          \"operationPerfs\" : [ {\n"
+        + "            \"operation\" : \"m.s.o\",\n"
+        + "            \"stages\" : {\n"
+        + "              \"server_filters_request\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 0.0,\n"
+        + "                \"msMaxLatency\" : 0.0\n"
+        + "              },\n"
+        + "              \"execution\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 3.0000000000000005E-6,\n"
+        + "                \"msMaxLatency\" : 3.0000000000000005E-6\n"
+        + "              },\n"
+        + "              \"prepare\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 5.0E-6,\n"
+        + "                \"msMaxLatency\" : 5.0E-6\n"
+        + "              },\n"
+        + "              \"producer_send_response\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 2.0000000000000003E-6,\n"
+        + "                \"msMaxLatency\" : 2.0000000000000003E-6\n"
+        + "              },\n"
+        + "              \"total\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.4000000000000001E-5,\n"
+        + "                \"msMaxLatency\" : 1.4000000000000001E-5\n"
+        + "              },\n"
+        + "              \"handlers_request\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 6.000000000000001E-6,\n"
+        + "                \"msMaxLatency\" : 6.000000000000001E-6\n"
+        + "              },\n"
+        + "              \"handlers_response\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
+        + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
+        + "              },\n"
+        + "              \"queue\" : {\n"
+        + "                \"tps\" : 0,\n"
+        + "                \"msTotalTime\" : 0.0,\n"
+        + "                \"msMaxLatency\" : 0.0\n"
+        + "              },\n"
+        + "              \"server_filters_response\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
+        + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
+        + "              }\n"
+        + "            }\n"
+        + "          } ],\n"
+        + "          \"summary\" : {\n"
+        + "            \"operation\" : \"\",\n"
+        + "            \"stages\" : {\n"
+        + "              \"server_filters_request\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 0.0,\n"
+        + "                \"msMaxLatency\" : 0.0\n"
+        + "              },\n"
+        + "              \"prepare\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 5.0E-6,\n"
+        + "                \"msMaxLatency\" : 5.0E-6\n"
+        + "              },\n"
+        + "              \"execution\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 3.0000000000000005E-6,\n"
+        + "                \"msMaxLatency\" : 3.0000000000000005E-6\n"
+        + "              },\n"
+        + "              \"total\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.4000000000000001E-5,\n"
+        + "                \"msMaxLatency\" : 1.4000000000000001E-5\n"
+        + "              },\n"
+        + "              \"producer_send_response\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 2.0000000000000003E-6,\n"
+        + "                \"msMaxLatency\" : 2.0000000000000003E-6\n"
+        + "              },\n"
+        + "              \"handlers_request\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 6.000000000000001E-6,\n"
+        + "                \"msMaxLatency\" : 6.000000000000001E-6\n"
+        + "              },\n"
+        + "              \"handlers_response\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
+        + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
+        + "              },\n"
+        + "              \"queue\" : {\n"
+        + "                \"tps\" : 0,\n"
+        + "                \"msTotalTime\" : 0.0,\n"
+        + "                \"msMaxLatency\" : 0.0\n"
+        + "              },\n"
+        + "              \"server_filters_response\" : {\n"
+        + "                \"tps\" : 1,\n"
+        + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
+        + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
+        + "              }\n"
+        + "            }\n"
+        + "          }\n"
+        + "        }\n"
+        + "      }\n"
+        + "    }\n"
+        + "  }\n"
+        + "}";
+    Assert.assertEquals(Json.encodePrettily(Json.decodeValue(expect, Object.class)),
+        Json.encodePrettily(model.getProducer()));
   }
 
   protected void prepareInvocation() {

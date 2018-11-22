@@ -26,6 +26,7 @@ import org.apache.servicecomb.swagger.invocation.Response;
 
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Registry;
+import com.netflix.spectator.api.SpectatorUtils;
 
 public abstract class AbstractInvocationMeters {
   protected Registry registry;
@@ -70,14 +71,13 @@ public abstract class AbstractInvocationMeters {
           MeterInvocationConst.TAG_STATUS,
           String.valueOf(response.getStatusCode()));
 
-      return createMeter(id, invocation, response);
+      AbstractInvocationMeter meter = createMeter(id);
+      SpectatorUtils.registerMeter(registry, meter);
+      return meter;
     });
   }
 
-
-
-  protected abstract AbstractInvocationMeter createMeter(Id id, Invocation invocation,
-      Response response);
+  protected abstract AbstractInvocationMeter createMeter(Id id);
 
   public void onInvocationStart(InvocationStartEvent event) {
   }
