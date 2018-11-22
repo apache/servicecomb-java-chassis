@@ -27,12 +27,11 @@ import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.FixedThreadExecutor;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
+import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 
 import com.google.common.eventbus.EventBus;
-import com.netflix.spectator.api.CompositeRegistry;
 import com.netflix.spectator.api.Registry;
 import com.netflix.spectator.api.patterns.ThreadPoolMonitor;
 
@@ -40,10 +39,8 @@ public class ThreadPoolMetersInitializer implements MetricsInitializer {
   private Registry registry;
 
   @Override
-  public void init(CompositeRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
-    DefaultRegistryInitializer defaultRegistryInitializer =
-        SPIServiceUtils.getTargetService(MetricsInitializer.class, DefaultRegistryInitializer.class);
-    registry = defaultRegistryInitializer.getRegistry();
+  public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+    registry = globalRegistry.getDefaultRegistry();
 
     createThreadPoolMeters();
   }
