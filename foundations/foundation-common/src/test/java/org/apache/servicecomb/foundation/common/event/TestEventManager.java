@@ -17,34 +17,74 @@
 
 package org.apache.servicecomb.foundation.common.event;
 
+import java.util.stream.Collectors;
+
+import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.eventbus.Subscribe;
 
 public class TestEventManager {
+  private int objCount = 0;
 
-  private int i = 0;
+  private int iCount = 0;
 
-  @Test
-  public void testRegister() {
-    EventManager.register(this);
-    EventManager.post(this);
-    EventManager.unregister(this);
-    Assert.assertEquals(1, i);
+  public void test(Object listener) {
+    EventManager.register(listener);
+    EventManager.post("a");
+    EventManager.post(1);
+    Assert.assertEquals(2, objCount);
+    Assert.assertEquals(1, iCount);
+
+    EventManager.unregister(listener);
+    EventManager.post("a");
+    EventManager.post(1);
+    Assert.assertEquals(2, objCount);
+    Assert.assertEquals(1, iCount);
   }
 
   @Test
-  public void testUnregister() {
-    EventManager.register(this);
-    EventManager.unregister(this);
-    EventManager.post(this);
-    Assert.assertEquals(0, i);
+  public void lambda() {
+    LogCollector collector = new LogCollector();
+
+    test(this);
+    Assert.assertTrue(collector.getEvents().isEmpty());
+    collector.teardown();
+  }
+
+  @Test
+  public void reflect() {
+    LogCollector collector = new LogCollector();
+    Object listener = new Object() {
+      @Subscribe
+      public void onObject(Object obj) {
+        objCount++;
+      }
+
+      @Subscribe
+      public void onInt(Integer obj) {
+        iCount++;
+      }
+    };
+    test(listener);
+    Assert.assertThat(collector.getEvents().stream().map(e -> e.getMessage()).collect(Collectors.toList()),
+        Matchers.containsInAnyOrder(
+            "Failed to create lambda for method: public void org.apache.servicecomb.foundation.common.event.TestEventManager$1.onObject(java.lang.Object), fallback to reflect.",
+            "Failed to create lambda for method: public void org.apache.servicecomb.foundation.common.event.TestEventManager$1.onInt(java.lang.Integer), fallback to reflect."));
+
+    collector.teardown();
   }
 
   @Subscribe
-  public void eventCallBack(TestEventManager lTestEventManager) {
-    i++;
+  public void onObject(Object obj) {
+    objCount++;
+  }
+
+  @Subscribe
+  public void onInt(Integer obj) {
+    iCount++;
   }
 }
 
