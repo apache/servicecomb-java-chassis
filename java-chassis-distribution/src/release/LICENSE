@@ -253,7 +253,7 @@ For details, see http://jax-rs-spec.java.net
 You can find a copy of the License at licenses/LICENSE-jax-rs
 
 ================================================================
-For javax.servlet:javax.el:jar:3.3.0
+For javax.servlet:javax.el:jar:3.0.0
 ================================================================
 This product bundles Java EL which is licensed under the
 COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.1.
@@ -317,7 +317,49 @@ For protobuf-java com.google.protobuf:protobuf-java:jar:3.5.1
 This product bundles protobuf which is licensed under the
 3-Clause BSD license.
 For details, see https://github.com/protocolbuffers/protobuf
-You can find a copy of the License at https://github.com/protocolbuffers/protobuf/blob/master/LICENSE
+You can find a copy of the License at licenses/LICENSE-protobuf
+
+================================================================
+For antlr4 org.antlr:antlr4:jar:4.7,
+org.antlr:antlr4-runtime:jar:4.7,
+org.antlr:antlr-runtime:jar,
+org.antlr:ST4:jar:4.0.8
+================================================================
+This product bundles antlr which is licensed under the
+3-Clause BSD license.
+For details, see https://www.antlr.org/
+You can find a copy of the License at licenses/LICENSE-antlr
+
+================================================================
+For aopalliance aopalliance:aopalliance:jar:1.0
+================================================================
+This product bundles aopalliance which is licensed under the
+public domain.
+For details, see http://aopalliance.sourceforge.net/
+
+================================================================
+For icu4j com.ibm.icu:icu4j:jar:58.2
+================================================================
+This product bundles icu4j which is licensed under the
+Unicode/ICU license.
+For details, see http://site.icu-project.org/home
+You can find a copy of the License at licenses/LICENSE-icu4j
+
+================================================================
+For javax.json org.glassfish:javax.json:bundle:1.0.4
+================================================================
+This product bundles javax.json which is licensed under the
+CDDL license.
+For details, see http://jsonp.java.net
+You can find a copy of the License at licenses/LICENSE-jsonp
+
+================================================================
+For abego TreeLayout org.abego.treelayout:org.abego.treelayout.core:bundle:1.0.3
+================================================================
+This product bundles TreeLayout which is licensed under the
+3-Clause BSD license.
+For details, see http://treelayout.sourceforge.net
+You can find a copy of the License at licenses/LICENSE-abego
 
 ================================================================
 For foundations/foundation-vertx/src/main/java/io/vertx/ext/web/impl/MimeTypesUtils.java
@@ -366,6 +408,8 @@ ezmorph (http://ezmorph.sourceforge.net) net.sf.ezmorph:ezmorph:jar:1.0.6
 FindBugs-jsr305 (http://findbugs.sourceforge.net/) com.google.code.findbugs:jsr305:jar:3.0.1
 Guava: Google Core Libraries for Java (http://code.google.com/p/guava-libraries/guava) com.google.guava:guava:bundle:21.0
 Guice (https://github.com/google/guice) com.google.inject:guice:jar:4.1.0
+Google Guice - Extensions - AssistedInject (https://github.com/google/guice/extensions-parent/guice-assistedinject) com.google.inject.extensions:guice-assistedinject:jar:4.1.0
+Google Guice - Extensions - MultiBindings (https://github.com/google/guice/extensions-parent/guice-multibindings) com.google.inject.extensions:guice-multibindings:jar:4.1.0
 Hibernate Validator Engine (http://hibernate.org/validator/hibernate-validator) org.hibernate:hibernate-validator:jar:6.0.2.Final
 hystrix-core (https://github.com/Netflix/Hystrix) com.netflix.hystrix:hystrix-core:jar:1.5.10
 hystrix-javanica (https://github.com/Netflix/Hystrix) com.netflix.hystrix:hystrix-javanica:jar:1.5.12
