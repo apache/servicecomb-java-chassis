@@ -36,6 +36,10 @@ public class MetricsBootListener implements BootListener {
   @Inject
   private ProducerSchemaFactory producerSchemaFactory;
 
+  public MetricsBootstrap getMetricsBootstrap() {
+    return metricsBootstrap;
+  }
+
   @Override
   public void onBootEvent(BootEvent event) {
     switch (event.getEventType()) {

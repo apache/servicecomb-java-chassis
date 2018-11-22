@@ -25,6 +25,7 @@ import java.net.URL;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
+import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -32,19 +33,17 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.netflix.spectator.api.CompositeRegistry;
 import com.netflix.spectator.api.Counter;
 import com.netflix.spectator.api.DefaultRegistry;
 import com.netflix.spectator.api.ManualClock;
 import com.netflix.spectator.api.Registry;
-import com.netflix.spectator.api.SpectatorUtils;
 import com.sun.net.httpserver.HttpServer;
 
 import io.prometheus.client.exporter.HTTPServer;
 
 @SuppressWarnings("restriction")
 public class TestPrometheusPublisher {
-  CompositeRegistry globalRegistry = SpectatorUtils.createCompositeRegistry(new ManualClock());
+  GlobalRegistry globalRegistry = new GlobalRegistry(new ManualClock());
 
   PrometheusPublisher publisher = new PrometheusPublisher();
 

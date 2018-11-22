@@ -72,7 +72,7 @@ public class MetricsBootstrap {
         TimeUnit.MILLISECONDS);
   }
 
-  protected void pollMeters() {
+  public synchronized void pollMeters() {
     long secondInterval = TimeUnit.MILLISECONDS.toSeconds(config.getMsPollInterval());
     PolledEvent polledEvent = globalRegistry.poll(secondInterval);
     eventBus.post(polledEvent);

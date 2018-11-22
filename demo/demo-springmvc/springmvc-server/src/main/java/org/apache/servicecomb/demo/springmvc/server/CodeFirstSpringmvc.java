@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 import javax.ws.rs.QueryParam;
@@ -44,6 +45,7 @@ import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
 import org.apache.servicecomb.demo.jaxbbean.JAXBPerson;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.demo.springmvc.decoderesponse.DecodeTestResponse;
+import org.apache.servicecomb.metrics.core.MetricsBootListener;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
 import org.apache.servicecomb.swagger.extend.annotations.ResponseHeaders;
@@ -361,9 +363,15 @@ public class CodeFirstSpringmvc {
     return form1 + form2;
   }
 
+  @Inject
+  MetricsBootListener metricsBootListener;
+
   //Only for Prometheus integration test
   @RequestMapping(path = "/prometheusForTest", method = RequestMethod.GET)
   public String prometheusForTest() {
+    // just for test, this makes client always can got latest metrics
+    metricsBootListener.getMetricsBootstrap().pollMeters();
+
     RestTemplate defaultRestTemplate = new RestTemplate();
     return defaultRestTemplate.getForObject("http://localhost:9696/metrics", String.class);
   }
