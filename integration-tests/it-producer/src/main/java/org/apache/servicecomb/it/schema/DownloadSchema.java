@@ -197,7 +197,6 @@ public class DownloadSchema implements BootListener {
         .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE)
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=netInputStream.txt")
         .body(conn.getInputStream());
-    conn.disconnect();
     return responseEntity;
   }
 
