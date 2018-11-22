@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.servicecomb.foundation.metrics.PollEvent;
 import org.apache.servicecomb.metrics.core.meter.os.NetMeter.InterfaceInfo;
 import org.junit.Assert;
 import org.junit.Test;
@@ -31,7 +30,6 @@ import org.junit.Test;
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
 
-import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
@@ -52,7 +50,7 @@ public class TestNetMeter {
     NetMeter netMeter = new NetMeter(id);
     list.remove(2);
     list.add("eth0: 1 1    0    0    0     0          0          1         1 1    1      0     0     0    0    0");
-    netMeter.refreshNet(1000);
+    netMeter.refreshNet(1);
     Map<String, InterfaceInfo> meterInterfaceInfoMap = netMeter.getInterfaceInfoMap();
     Assert.assertTrue(meterInterfaceInfoMap.containsKey("eth0"));
     InterfaceInfo eth0 = meterInterfaceInfoMap.get("eth0");
@@ -82,7 +80,7 @@ public class TestNetMeter {
     list.remove(2);
     list.add("eth0: 1 1    0    0    0     0          0          1         1 1    1      0     0     0    0    0");
     list.add("lo: 0 0    0    0    0     0          0          0         0 0    0      0     0     0    0    0");
-    netMeter.refreshNet(1000);
+    netMeter.refreshNet(1);
     Assert.assertEquals(2, netMap.size());
     InterfaceInfo eth0 = netMap.get("eth0");
     Assert.assertEquals("eth0", eth0.getName());
@@ -130,7 +128,7 @@ public class TestNetMeter {
     list.remove(2);
     list.remove(2);
     list.add("eth0: 1 1    0    0    0     0          0          1         1 1    1      0     0     0    0    0");
-    netMeter.refreshNet(1000);
+    netMeter.refreshNet(1);
     Assert.assertNull(netMap.get("lo"));
     Assert.assertEquals(1, netMap.size());
     Assert.assertEquals("eth0", eth0.getName());
@@ -142,18 +140,11 @@ public class TestNetMeter {
 
 
   @Test
-  public void testCalcMeasurements(@Mocked Id id, @Mocked PollEvent pollEvent) {
-
+  public void testCalcMeasurements(@Mocked Id id) {
     List<String> list = new ArrayList<>();
     list.add("useless");
     list.add("useless");
     list.add("eth0: 0 0    0    0    0     0          0          0         0 0    0      0     0     0    0    0");
-    new Expectations() {
-      {
-        pollEvent.getMsPollInterval();
-        result = 1000;
-      }
-    };
     new MockUp<FileUtils>() {
       @Mock
       public List<String> readLines(File file, Charset encoding) {
@@ -164,7 +155,7 @@ public class TestNetMeter {
     list.remove(2);
     list.add("eth0: 1 1    0    0    0     0          0          1         1 1    1      0     0     0    0    0");
     List<Measurement> measurements = new ArrayList<>();
-    netMeter.calcMeasurements(measurements, 0L, pollEvent);
+    netMeter.calcMeasurements(measurements, 0L, 1);
     Assert.assertEquals(2, measurements.size());
     Measurement send = measurements.get(0);
     Measurement recv = measurements.get(1);
