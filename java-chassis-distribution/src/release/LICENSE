@@ -347,7 +347,7 @@ Apache Commons BeanUtils (http://commons.apache.org/proper/commons-beanutils/) c
 Apache Commons Codec (http://commons.apache.org/proper/commons-codec/) commons-codec:commons-codec:jar:1.10
 Apache Commons Collections (http://commons.apache.org/collections/) commons-collections:commons-collections:jar:3.2.2
 Apache Commons Configuration (http://commons.apache.org/configuration/) commons-configuration:commons-configuration:jar:1.10
-Apache Commons Lang (http://commons.apache.org/proper/commons-lang/) org.apache.commons:commons-lang3:jar:3.3.2
+Apache Commons Lang (http://commons.apache.org/proper/commons-lang/) org.apache.commons:commons-lang3:jar:3.6
 Apache Commons Logging (http://commons.apache.org/proper/commons-logging/) commons-logging:commons-logging:jar:1.2
 Apache HttpClient (http://hc.apache.org/httpcomponents-client) org.apache.httpcomponents:httpclient:jar:4.5.2
 Apache HttpCore (http://hc.apache.org/httpcomponents-core-ga) org.apache.httpcomponents:httpcore:jar:4.4.9

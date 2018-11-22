@@ -24,7 +24,7 @@ import com.google.common.eventbus.EventBus;
  *
  */
 public class EventManager {
-  public static EventBus eventBus = new EventBus();
+  public static EventBus eventBus = new SimpleEventBus();
 
   public static EventBus getEventBus() {
     return eventBus;
