@@ -28,6 +28,7 @@ import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
+import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.meter.os.NetMeter;
@@ -44,7 +45,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.spectator.api.CompositeRegistry;
 import com.netflix.spectator.api.Meter;
 
 import io.vertx.core.impl.VertxImplEx;
@@ -56,30 +56,30 @@ public class DefaultLogPublisher implements MetricsInitializer {
 
   //sample
   private static final String SIMPLE_HEADER = "%s:\n  simple:\n"
-      + "    status          tps           latency                                    operation\n";
+      + "    status          tps      latency             operation\n";
 
-  private static final String FIRST_LINE_SIMPLE_FORMAT = "    %-15s %-13s %-42s %s\n";
+  private static final String FIRST_LINE_SIMPLE_FORMAT = "    %-15s %-8s %-19s %s\n";
 
-  private static final String SIMPLE_FORMAT = "                    %-13s %-42s %s\n";
+  private static final String SIMPLE_FORMAT = "                    %-8s %-19s %s\n";
 
   //details
-  private static final String PRODUCER_DETAILS_FORMAT =
-      "        prepare: %-22s queue       : %-22s filtersReq : %-22s handlersReq: %s\n"
-          + "        execute: %-22s handlersResp: %-22s filtersResp: %-22s sendResp   : %s\n";
+  private static final String PRODUCER_DETAILS_FORMAT = ""
+      + "        prepare: %-19s queue       : %-19s filtersReq : %-19s handlersReq: %s\n"
+      + "        execute: %-19s handlersResp: %-19s filtersResp: %-19s sendResp   : %s\n";
 
-  private static final String CONSUMER_DETAILS_FORMAT =
-      "        prepare          : %-22s handlersReq : %-22s clientFiltersReq: %-22s sendReq     : %s\n"
-          + "        getConnect       : %-22s writeBuf    : %-22s waitResp        : %-22s wakeConsumer: %s\n"
-          + "        clientFiltersResp: %-22s handlersResp: %s\n";
+  private static final String CONSUMER_DETAILS_FORMAT = ""
+      + "        prepare     : %-19s handlersReq : %-19s cFiltersReq: %-19s sendReq     : %s\n"
+      + "        getConnect  : %-19s writeBuf    : %-19s waitResp   : %-19s wakeConsumer: %s\n"
+      + "        cFiltersResp: %-19s handlersResp: %s\n";
 
-  private static final String EDGE_DETAILS_FORMAT =
-      "        prepare          : %-22s queue       : %-22s serverFiltersReq : %-22s handlersReq : %s\n"
-          + "        clientFiltersReq : %-22s sendReq     : %-22s getConnect       : %-22s writeBuf    : %s\n"
-          + "        waitResp         : %-22s wakeConsumer: %-22s clientFiltersResp: %-22s handlersResp: %s\n"
-          + "        serverFiltersResp: %-22s sendResp    : %s\n";
+  private static final String EDGE_DETAILS_FORMAT = ""
+      + "        prepare     : %-19s queue       : %-19s sFiltersReq : %-19s handlersReq : %s\n"
+      + "        cFiltersReq : %-19s sendReq     : %-19s getConnect  : %-19s writeBuf    : %s\n"
+      + "        waitResp    : %-19s wakeConsumer: %-19s cFiltersResp: %-19s handlersResp: %s\n"
+      + "        sFiltersResp: %-19s sendResp    : %s\n";
 
   @Override
-  public void init(CompositeRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+  public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
     if (!DynamicPropertyFactory.getInstance()
         .getBooleanProperty(ENABLED, false)
         .get()) {
@@ -100,17 +100,16 @@ public class DefaultLogPublisher implements MetricsInitializer {
   }
 
   protected void printLog(List<Meter> meters) {
-
     StringBuilder sb = new StringBuilder();
     sb.append("\n");
-
-    printVertxMetrics(sb);
 
     PublishModelFactory factory = new PublishModelFactory(meters);
     DefaultPublishModel model = factory.createDefaultPublishModel();
 
-    printThreadPoolMetrics(model, sb);
     printOsLog(factory.getTree(), sb);
+    printVertxMetrics(sb);
+    printThreadPoolMetrics(model, sb);
+
     printConsumerLog(model, sb);
     printProducerLog(model, sb);
     printEdgeLog(model, sb);
@@ -152,7 +151,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
           interfaceNode.getName());
     }
     if (tmpSb.length() != 0) {
-      appendLine(sb, tmpSb.toString());
+      sb.append(tmpSb.toString());
     }
   }
 
@@ -372,7 +371,6 @@ public class DefaultLogPublisher implements MetricsInitializer {
     PerfInfo prepare, queue, serverFiltersReq, handlersReq, clientFiltersReq, sendReq, getConnect, writeBuf,
         waitResp, wakeConsumer, clientFiltersResp, handlersResp, serverFiltersResp, sendResp;
     for (OperationPerf operationPerf : perfGroup.getOperationPerfs()) {
-
       prepare = operationPerf.findStage(MeterInvocationConst.STAGE_PREPARE);
       queue = operationPerf.findStage(MeterInvocationConst.STAGE_EXECUTOR_QUEUE);
       serverFiltersReq = operationPerf.findStage(MeterInvocationConst.STAGE_SERVER_FILTERS_REQUEST);
@@ -413,12 +411,14 @@ public class DefaultLogPublisher implements MetricsInitializer {
   }
 
   protected void printVertxMetrics(StringBuilder sb) {
-    sb.append("vertx:\n")
-        .append("  name       eventLoopContext-created\n");
+    appendLine(sb, "vertx:");
+
+    appendLine(sb, "  instances:");
+    appendLine(sb, "    name       eventLoopContext-created");
     for (Entry<String, VertxImplEx> entry : VertxUtils.getVertxMap().entrySet()) {
-      sb.append(String.format("  %-10s %d\n",
+      appendLine(sb, "    %-10s %d",
           entry.getKey(),
-          entry.getValue().getEventLoopContextCreatedCount()));
+          entry.getValue().getEventLoopContextCreatedCount());
     }
   }
 
