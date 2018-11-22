@@ -28,31 +28,31 @@ import org.apache.servicecomb.core.Invocation;
  *
  * for consumer:
  *         (prepare)                      (handlerReq)                                       (clientFilterReq)
- *   start --------> startHandlersRequest -----------> startClientFiltersRequest --------------------------------------
- *                                                        <----------------(sendRequest)----------------->            |
+ *   start --------&gt; startHandlersRequest -----------&gt; startClientFiltersRequest --------------------------------------
+ *                                                        &lt;----------------(sendRequest)-----------------&gt;            |
  *                        (receiveResponse)              (writeToBuffer)                   (getConnection)            |
- *    ---finishReceiveResponse <----- finishWriteToBuffer <----------- finishGetConnection <-------------- startSend <-
+ *    ---finishReceiveResponse &lt;----- finishWriteToBuffer &lt;----------- finishGetConnection &lt;-------------- startSend &lt;-
  *   | (wakeConsumer)            (clientFiltersResponse)               (handlersResponse)
- *   |-----> startClientFiltersResponse -------> finishClientFiltersResponse -------> finishHandlersResponse --> finish
+ *   |-----&gt; startClientFiltersResponse -------&gt; finishClientFiltersResponse -------&gt; finishHandlersResponse --&gt; finish
  *
  * for producer:
  *       (prepare)       (threadPoolQueue)                                (serverFiltersRequest)
- *   start ----> startSchedule -----> startExecution -> startServerFiltersRequest -------> startHandlersRequest -------
- *                          (handlersResponse)          <-------------(business)------------->      (handlersRequest) |
- *   -----finishHandlersResponse <------ finishBusiness <------- finishBusinessMethod <------ startBusinessMethod------
+ *   start ----&gt; startSchedule -----&gt; startExecution -&gt; startServerFiltersRequest -------&gt; startHandlersRequest -------
+ *                          (handlersResponse)          &lt;-------------(business)-------------&gt;      (handlersRequest) |
+ *   -----finishHandlersResponse &lt;------ finishBusiness &lt;------- finishBusinessMethod &lt;------ startBusinessMethod------
  *   | (serverFiltersResponse)     (sendResponse)
- *   |---> finishServerFiltersResponse ------> finish
+ *   |---&gt; finishServerFiltersResponse ------&gt; finish
  *
  * for edge:
  *      (prepare)         (threadPoolQueue)                               (serverFiltersRequest)
- *   start ----> startSchedule -----> startExecution -> startServerFiltersRequest ----> startHandlersRequest ----------
- *                           <----------(sendRequest)---------->                                                      |
+ *   start ----&gt; startSchedule -----&gt; startExecution -&gt; startServerFiltersRequest ----&gt; startHandlersRequest ----------
+ *                           &lt;----------(sendRequest)----------&gt;                                                      |
  *                       (writeToBuffer)              (getConnection)  (clientFilterReq)            (handlersRequest) |
- *   --- finishWriteToBuffer <------ finishGetConnection <------ startSend <------ startClientFiltersRequest <---------
+ *   --- finishWriteToBuffer &lt;------ finishGetConnection &lt;------ startSend &lt;------ startClientFiltersRequest &lt;---------
  *   | (receiveResponse)     (wakeConsumer)                 (clientFiltersResponse)
- *   ---> finishReceiveResponse ------> startClientFiltersResponse ------> finishClientFiltersResponse ----------------
+ *   ---&gt; finishReceiveResponse ------&gt; startClientFiltersResponse ------&gt; finishClientFiltersResponse ----------------
  *                                   (sendResponse)                  (serverFiltersResponse)       (handlersResponse) |
- *                              finish <------ finishServerFiltersResponse <------ finishHandlersResponse <------------
+ *                              finish &lt;------ finishServerFiltersResponse &lt;------ finishHandlersResponse &lt;------------
  *
  * </pre>
  */

@@ -42,7 +42,7 @@ public class RootSerializer {
    * parameter "value" of writeTo is self value, not owner
    * @param value
    * @return
-   * @throws Throwable
+   * @throws IOException
    */
   public byte[] serialize(Object value) throws IOException {
     ProtoStreamOutput output = new ProtoStreamOutput();
