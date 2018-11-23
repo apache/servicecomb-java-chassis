@@ -44,7 +44,7 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
     }
 
     @Override
-    public Object getValue(HttpServletRequest request) {
+    public Object getValue(HttpServletRequest request) throws Exception {
       @SuppressWarnings("unchecked")
       Map<String, Object> forms = (Map<String, Object>) request.getAttribute(RestConst.FORM_PARAMETERS);
       if (forms != null && !forms.isEmpty()) {
@@ -55,28 +55,24 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
         Object values = request.getParameterValues(paramPath);
         //Even if the paramPath does not exist, it won't be null at now, may be optimized in the future
         if (values == null) {
-          values = checkRequiredAndDefaultValue(values);
+          values = checkRequiredAndDefaultValue();
         }
         return convertValue(values, targetType);
       }
 
       Object value = request.getParameter(paramPath);
       if (value == null) {
-        value = checkRequiredAndDefaultValue(value);
+        value = checkRequiredAndDefaultValue();
       }
 
       return convertValue(value, targetType);
     }
 
-    private Object checkRequiredAndDefaultValue(Object values) {
+    private Object checkRequiredAndDefaultValue() throws Exception {
       if (isRequired()) {
-        throw new InvocationException(Status.BAD_REQUEST, "Parameter is not valid, required is true");
+        throw new InvocationException(Status.BAD_REQUEST, "Parameter is required.");
       }
-      Object defaultValue = getDefaultValue();
-      if (defaultValue != null) {
-        return defaultValue;
-      }
-      return values;
+      return getDefaultValue();
     }
 
     @Override

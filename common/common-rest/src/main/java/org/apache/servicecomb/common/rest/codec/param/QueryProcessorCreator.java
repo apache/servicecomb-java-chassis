@@ -64,7 +64,7 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
         value = request.getParameterValues(paramPath);
         //Even if the paramPath does not exist, it won't be null at now, may be optimized in the future
         if (value == null) {
-          value = checkRequiredAndDefaultValue(value);
+          value = checkRequiredAndDefaultValue();
         }
       } else {
         value = request.getParameter(paramPath);
@@ -75,7 +75,7 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
           }
         }
         if (value == null) {
-          value = checkRequiredAndDefaultValue(value);
+          value = checkRequiredAndDefaultValue();
         }
         if (null != collectionFormat) {
           value = collectionFormat.splitParam((String) value);
@@ -85,15 +85,15 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
       return convertValue(value, targetType);
     }
 
-    private Object checkRequiredAndDefaultValue(Object value) {
+    private Object checkRequiredAndDefaultValue() throws Exception {
       if (isRequired()) {
-        throw new InvocationException(Status.BAD_REQUEST, "Parameter is not valid, required is true");
+        throw new InvocationException(Status.BAD_REQUEST, "Parameter is required.");
       }
       Object defaultValue = getDefaultValue();
       if (!ignoreDefaultValue && defaultValue != null) {
         return defaultValue;
       }
-      return value;
+      return null;
     }
 
     @Override

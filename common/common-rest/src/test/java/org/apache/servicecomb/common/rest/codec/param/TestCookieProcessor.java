@@ -75,7 +75,7 @@ public class TestCookieProcessor {
       processor.getValue(request);
       Assert.assertEquals("required is true, throw exception", "not throw exception");
     } catch (Exception e) {
-      Assert.assertTrue(e.getMessage().contains("Parameter is not valid, required is true"));
+      Assert.assertTrue(e.getMessage().contains("Parameter is required."));
     }
   }
 
@@ -94,7 +94,7 @@ public class TestCookieProcessor {
       processor.getValue(request);
       Assert.assertEquals("required is true, throw exception", "not throw exception");
     } catch (Exception e) {
-      Assert.assertTrue(e.getMessage().contains("Parameter is not valid, required is true"));
+      Assert.assertTrue(e.getMessage().contains("Parameter is required."));
     }
   }
 
@@ -128,7 +128,7 @@ public class TestCookieProcessor {
       processor.getValue(request);
       Assert.assertEquals("required is true, throw exception", "not throw exception");
     } catch (Exception e) {
-      Assert.assertTrue(e.getMessage().contains("Parameter is not valid, required is true"));
+      Assert.assertTrue(e.getMessage().contains("Parameter is required."));
     }
   }
 

@@ -24,6 +24,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.definition.RestParam;
+import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +67,7 @@ public final class RestCodec {
     } catch (Exception e) {
       LOG.error("Parameter is not valid for operation {}. ",
           restOperation.getOperationMeta().getMicroserviceQualifiedName(),
-          e);
+          ExceptionUtils.getExceptionMessageWithoutTrace(e));
       // give standard http error code for invalid parameter
       throw new InvocationException(Status.BAD_REQUEST, "Parameter is not valid.");
     }
