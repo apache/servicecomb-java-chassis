@@ -165,10 +165,8 @@ public class TestLoadbalanceHandler {
       result.value = (Throwable) resp.getResult();
     }, loadBalancer);
 
-    Assert.assertEquals("InvocationException: code=490;msg=CommonExceptionData [message=Cse Internal Bad Request]",
+    Assert.assertEquals("InvocationException: code=500;msg=CommonExceptionData [message=No available address found.]",
         result.value.getMessage());
-    Assert.assertEquals("No available address found. microserviceName=ms, version=null, discoveryGroupName=null",
-        result.value.getCause().getMessage());
   }
 
   @Test

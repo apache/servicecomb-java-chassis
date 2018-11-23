@@ -56,6 +56,7 @@ public class SessionStickinessRule implements RuleExt {
   }
 
   public void setLoadBalancer(LoadBalancer loadBalancer) {
+    this.microserviceName = loadBalancer.getMicroServiceName();
     this.loadBalancer = loadBalancer;
   }
 
