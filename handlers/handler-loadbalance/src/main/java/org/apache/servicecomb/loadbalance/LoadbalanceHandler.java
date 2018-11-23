@@ -35,10 +35,10 @@ import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.core.exception.ExceptionUtils;
 import org.apache.servicecomb.core.provider.consumer.SyncResponseExecutor;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryFilter;
@@ -232,9 +232,7 @@ public class LoadbalanceHandler implements Handler {
     long time = System.currentTimeMillis();
     ServiceCombServer server = chosenLB.chooseServer(invocation);
     if (null == server) {
-      asyncResp.consumerFail(ExceptionUtils.lbAddressNotFound(invocation.getMicroserviceName(),
-          invocation.getMicroserviceVersionRule(),
-          invocation.getConfigTransportName()));
+      asyncResp.consumerFail(new InvocationException(Status.INTERNAL_SERVER_ERROR, "No available address found."));
       return;
     }
     chosenLB.getLoadBalancerStats().incrementNumRequests(server);
@@ -295,7 +293,7 @@ public class LoadbalanceHandler implements Handler {
             context.getRequest().getEndpoint(),
             info.getNumberOfPastServersAttempted(),
             info.getNumberOfPastAttemptsOnServer(),
-            exception.getMessage());
+            ExceptionUtils.getExceptionMessageWithoutTrace(exception));
       }
 
       @Override
@@ -319,7 +317,7 @@ public class LoadbalanceHandler implements Handler {
       public void onExecutionFailed(ExecutionContext<Invocation> context, Throwable finalException,
           ExecutionInfo info) {
         LOGGER.error("Invoke all server failed. Operation {}, e={}",
-            context.getRequest().getInvocationQualifiedName(), finalException.toString());
+            context.getRequest().getInvocationQualifiedName(), ExceptionUtils.getExceptionMessageWithoutTrace(finalException));
         if (orginExecutor != null) {
           orginExecutor.execute(() -> {
             fail(finalException);
@@ -366,7 +364,7 @@ public class LoadbalanceHandler implements Handler {
               if (isFailedResponse(resp)) {
                 LOGGER.error("service {}, call error, msg is {}, server is {} ",
                     invocation.getInvocationQualifiedName(),
-                    ((Throwable) resp.getResult()).getMessage(),
+                    ExceptionUtils.getExceptionMessageWithoutTrace((Throwable) resp.getResult()),
                     s);
                 chosenLB.getLoadBalancerStats().incrementSuccessiveConnectionFailureCount(s);
                 ServiceCombLoadBalancerStats.INSTANCE.markFailure(server);
