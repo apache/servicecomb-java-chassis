@@ -53,7 +53,7 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator {
         Enumeration<?> headerValues = request.getHeaders(paramPath);
         //Even if the paramPath does not exist, it won't be null at now, may be optimized in the future
         if (headerValues == null) {
-          Object obj = checkRequiredAndDefaultValue(headerValues);
+          Object obj = checkRequiredAndDefaultValue();
           if (obj instanceof Enumeration) {
             headerValues = (Enumeration<?>) obj;
           }
@@ -64,22 +64,18 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator {
       } else {
         value = request.getHeader(paramPath);
         if (value == null) {
-          value = checkRequiredAndDefaultValue(value);
+          value = checkRequiredAndDefaultValue();
         }
       }
 
       return convertValue(value, targetType);
     }
 
-    private Object checkRequiredAndDefaultValue(Object headerValue) {
+    private Object checkRequiredAndDefaultValue() throws Exception {
       if (isRequired()) {
-        throw new InvocationException(Status.BAD_REQUEST, "Parameter is not valid, required is true");
+        throw new InvocationException(Status.BAD_REQUEST, "Parameter is required.");
       }
-      Object defaultValue = getDefaultValue();
-      if (defaultValue != null) {
-        return defaultValue;
-      }
-      return headerValue;
+      return getDefaultValue();
     }
 
     @Override

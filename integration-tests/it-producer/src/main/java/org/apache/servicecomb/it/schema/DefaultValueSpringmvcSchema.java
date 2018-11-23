@@ -71,8 +71,18 @@ public class DefaultValueSpringmvcSchema {
     return input;
   }
 
+  @GetMapping("stringQueryTrue")
+  public String stringQueryTrue(@RequestParam(value = "input") String input) {
+    return input;
+  }
+
   @GetMapping("stringHeader")
   public String stringHeader(@RequestHeader(value = "input", defaultValue = "string") String input) {
+    return input;
+  }
+
+  @GetMapping("stringHeaderTrue")
+  public String stringHeaderTrue(@RequestHeader(value = "input") String input) {
     return input;
   }
 

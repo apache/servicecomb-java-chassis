@@ -49,6 +49,18 @@ public class AnnotatedAttributeSpringmvcSchema {
     return inputs + "," + inputs2 + "," + inputs3;
   }
 
+  @GetMapping("fromCookieRequired")
+  public String fromCookieRequired(
+      @CookieValue(name = "input", required = true) String input) {
+    return input;
+  }
+
+  @GetMapping("fromCookieDefaultValue")
+  public String fromCookieDefaultValue(
+      @CookieValue(name = "input", required = true, defaultValue = "default") String input) {
+    return input;
+  }
+
   @GetMapping("fromPath/{input}/{input2}/{input3}")
   public String fromPath(@PathVariable("input") String inputs, @PathVariable(value = "input2") String inputs2,
       @PathVariable(name = "input3") String inputs3) {

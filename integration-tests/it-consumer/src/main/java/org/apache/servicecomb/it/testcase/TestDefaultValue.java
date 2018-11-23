@@ -19,6 +19,7 @@ package org.apache.servicecomb.it.testcase;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.servicecomb.it.Consumers;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Test;
 
 public class TestDefaultValue {
@@ -217,6 +218,18 @@ public class TestDefaultValue {
   }
 
   @Test
+  public void stringQueryTrue_springmvc_rt() {
+    try {
+      consumersSpringmvc.getSCBRestTemplate().getForObject("/stringQueryTrue", String.class);
+      assertEquals("required is true, throw exception", "not throw exception");
+    } catch (InvocationException e) {
+      assertEquals(400, e.getStatusCode());
+      assertEquals("InvocationException: code=400;msg=CommonExceptionData [message=Parameter is not valid.]",
+          e.getMessage());
+    }
+  }
+
+  @Test
   public void intHeader_springmvc_intf() {
     assertEquals(defaultInt, consumersSpringmvc.getIntf().intHeader(null));
   }
@@ -246,6 +259,18 @@ public class TestDefaultValue {
   public void stringHeader_springmvc_rt() {
     assertEquals(defaultStr,
         consumersSpringmvc.getSCBRestTemplate().getForObject("/stringHeader", String.class));
+  }
+
+  @Test
+  public void stringHeaderTrue_springmvc_rt() {
+    try {
+      consumersSpringmvc.getSCBRestTemplate().getForObject("/stringHeaderTrue", String.class);
+      assertEquals("required is true, throw exception", "not throw exception");
+    } catch (InvocationException e) {
+      assertEquals(400, e.getStatusCode());
+      assertEquals("InvocationException: code=400;msg=CommonExceptionData [message=Parameter is not valid.]",
+          e.getMessage());
+    }
   }
 
   @Test
