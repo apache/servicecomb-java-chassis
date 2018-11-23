@@ -22,9 +22,11 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -37,8 +39,8 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
   public static final String PARAMTYPE = "formData";
 
   public static class FormProcessor extends AbstractParamProcessor {
-    public FormProcessor(String paramPath, JavaType targetType, Object defaultValue) {
-      super(paramPath, targetType, defaultValue);
+    public FormProcessor(String paramPath, JavaType targetType, Object defaultValue, boolean required) {
+      super(paramPath, targetType, defaultValue, required);
     }
 
     @Override
@@ -50,18 +52,31 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
       }
 
       if (targetType.isContainerType()) {
-        return convertValue(request.getParameterValues(paramPath), targetType);
+        Object values = request.getParameterValues(paramPath);
+        //Even if the paramPath does not exist, it won't be null at now, may be optimized in the future
+        if (values == null) {
+          values = checkRequiredAndDefaultValue(values);
+        }
+        return convertValue(values, targetType);
       }
 
       Object value = request.getParameter(paramPath);
       if (value == null) {
-        Object defaultValue = getDefaultValue();
-        if (defaultValue != null) {
-          value = defaultValue;
-        }
+        value = checkRequiredAndDefaultValue(value);
       }
 
       return convertValue(value, targetType);
+    }
+
+    private Object checkRequiredAndDefaultValue(Object values) {
+      if (isRequired()) {
+        throw new InvocationException(Status.BAD_REQUEST, "Parameter is not valid, required is true");
+      }
+      Object defaultValue = getDefaultValue();
+      if (defaultValue != null) {
+        return defaultValue;
+      }
+      return values;
     }
 
     @Override
@@ -84,9 +99,11 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
     JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
 
     if (isPart(parameter)) {
-      return new PartProcessor(parameter.getName(), targetType, ((FormParameter) parameter).getDefaultValue());
+      return new PartProcessor(parameter.getName(), targetType, ((FormParameter) parameter).getDefaultValue(),
+          parameter.getRequired());
     }
-    return new FormProcessor(parameter.getName(), targetType, ((FormParameter) parameter).getDefaultValue());
+    return new FormProcessor(parameter.getName(), targetType, ((FormParameter) parameter).getDefaultValue(),
+        parameter.getRequired());
   }
 
   private boolean isPart(Parameter parameter) {
@@ -94,8 +111,8 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
   }
 
   private static class PartProcessor extends AbstractParamProcessor {
-    PartProcessor(String paramPath, JavaType targetType, Object defaultValue) {
-      super(paramPath, targetType, defaultValue);
+    PartProcessor(String paramPath, JavaType targetType, Object defaultValue, boolean required) {
+      super(paramPath, targetType, defaultValue, required);
     }
 
     @Override

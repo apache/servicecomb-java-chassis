@@ -41,7 +41,7 @@ public class TestPathProcessor {
   ParamValueProcessor processor;
 
   private void createProcessor(String name, Class<?> type) {
-    processor = new PathProcessor(name, TypeFactory.defaultInstance().constructType(type), null);
+    processor = new PathProcessor(name, TypeFactory.defaultInstance().constructType(type), null, true);
   }
 
   private void prepareGetValue(String name, Class<?> type) {

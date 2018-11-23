@@ -349,35 +349,62 @@ public class TestDefaultValue {
 
   @Test
   public void intForm_require_springmvc_intf() {
-    assertEquals(defaultInt, consumersSpringmvc.getIntf().intFormRequire(null));
+    try {
+      consumersSpringmvc.getIntf().intFormRequire(null);
+      assertEquals("required is true, throw exception", "but not throw exception");
+    } catch (Exception e) {
+      assertEquals(true, e.getMessage().contains("Parameter is not valid"));
+    }
   }
 
   @Test
   public void doubleForm_require_springmvc_intf() {
-    assertEquals(defaultDouble, consumersSpringmvc.getIntf().doubleFormRequire(null), 0.0);
+    try {
+      consumersSpringmvc.getIntf().doubleFormRequire(null);
+      assertEquals("required is true, throw exception", "but not throw exception");
+    } catch (Exception e) {
+      assertEquals(true, e.getMessage().contains("Parameter is not valid"));
+    }
   }
 
   @Test
   public void stringForm_require_springmvc_intf() {
-    assertEquals(defaultStr, consumersSpringmvc.getIntf().stringFormRequire(null));
+    try {
+      consumersSpringmvc.getIntf().stringFormRequire(null);
+      assertEquals("required is true, throw exception", "but not throw exception");
+    } catch (Exception e) {
+      assertEquals(true, e.getMessage().contains("Parameter is not valid"));
+    }
   }
 
   @Test
   public void intForm_require_springmvc_rt() {
-    assertEquals(defaultInt,
-        (int) consumersSpringmvc.getSCBRestTemplate().postForObject("/intFormRequire", null, int.class));
+    try {
+      consumersSpringmvc.getSCBRestTemplate().postForObject("/intFormRequire", null, int.class);
+      assertEquals("required is true, throw exception", "but not throw exception");
+    } catch (Exception e) {
+      assertEquals(true, e.getMessage().contains("Parameter is not valid"));
+    }
   }
 
   @Test
   public void doubleForm_require_springmvc_rt() {
-    assertEquals(defaultDouble,
-        consumersSpringmvc.getSCBRestTemplate().postForObject("/doubleFormRequire", null, double.class), 0.0);
+    try {
+      consumersSpringmvc.getSCBRestTemplate().postForObject("/doubleFormRequire", null, double.class);
+      assertEquals("required is true, throw exception", "but not throw exception");
+    } catch (Exception e) {
+      assertEquals(true, e.getMessage().contains("Parameter is not valid"));
+    }
   }
 
   @Test
   public void stringForm_require_springmvc_rt() {
-    assertEquals(defaultStr,
-        consumersSpringmvc.getSCBRestTemplate().postForObject("/stringFormRequire", null, String.class));
+    try {
+      consumersSpringmvc.getSCBRestTemplate().postForObject("/stringFormRequire", null, String.class);
+      assertEquals("required is true, throw exception", "but not throw exception");
+    } catch (Exception e) {
+      assertEquals(true, e.getMessage().contains("Parameter is not valid"));
+    }
   }
 
   //float
@@ -472,12 +499,21 @@ public class TestDefaultValue {
 
   @Test
   public void floatForm_require_springmvc_intf() {
-    assertEquals(defaultFloat, consumersSpringmvc.getIntf().floatFormRequire(null), 0.0f);
+    try {
+      consumersSpringmvc.getIntf().floatFormRequire(null);
+      assertEquals("required is true, throw exception", "but not throw exception");
+    } catch (Exception e) {
+      assertEquals(true, e.getMessage().contains("Parameter is not valid"));
+    }
   }
 
   @Test
   public void floatForm_require_springmvc_rt() {
-    assertEquals(defaultFloat,
-        consumersSpringmvc.getSCBRestTemplate().postForObject("/floatFormRequire", null, float.class), 0.0f);
+    try {
+      consumersSpringmvc.getSCBRestTemplate().postForObject("/floatFormRequire", null, float.class);
+      assertEquals("required is true, throw exception", "but not throw exception");
+    } catch (Exception e) {
+      assertEquals(true, e.getMessage().contains("Parameter is not valid"));
+    }
   }
 }
