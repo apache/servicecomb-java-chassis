@@ -48,7 +48,7 @@ public class TestFormProcessor {
   RestClientRequest clientRequest;
 
   private FormProcessor createProcessor(String name, Class<?> type) {
-    return new FormProcessor(name, TypeFactory.defaultInstance().constructType(type), null);
+    return new FormProcessor(name, TypeFactory.defaultInstance().constructType(type), null, true);
   }
 
   private void createClientRequest() {
@@ -118,8 +118,30 @@ public class TestFormProcessor {
     };
 
     ParamValueProcessor processor = createProcessor("name", String[].class);
-    String[] value = (String[]) processor.getValue(request);
-    Assert.assertNull(value);
+    try {
+      processor.getValue(request);
+      Assert.assertEquals("required is true, throw exception", "not throw exception");
+    } catch (Exception e) {
+      Assert.assertTrue(e.getMessage().contains("Parameter is not valid, required is true"));
+    }
+  }
+
+  @Test
+  public void testGetValueNull() throws Exception {
+    new Expectations() {
+      {
+        request.getParameter("name");
+        result = null;
+      }
+    };
+
+    ParamValueProcessor processor = createProcessor("name", String.class);
+    try {
+      processor.getValue(request);
+      Assert.assertEquals("required is true, throw exception", "not throw exception");
+    } catch (Exception e) {
+      Assert.assertTrue(e.getMessage().contains("Parameter is not valid, required is true"));
+    }
   }
 
   @Test
@@ -148,7 +170,7 @@ public class TestFormProcessor {
 
     ParamValueProcessor processor =
         new FormProcessor("name", TypeFactory.defaultInstance().constructCollectionType(List.class, String.class),
-            null);
+            null, true);
     Object value = processor.getValue(request);
     Assert.assertThat((List<String>) value, Matchers.contains("value"));
   }
@@ -164,7 +186,8 @@ public class TestFormProcessor {
     };
 
     ParamValueProcessor processor =
-        new FormProcessor("name", TypeFactory.defaultInstance().constructCollectionType(Set.class, String.class), null);
+        new FormProcessor("name", TypeFactory.defaultInstance().constructCollectionType(Set.class, String.class), null,
+            true);
     Object value = processor.getValue(request);
     Assert.assertThat((Set<String>) value, Matchers.contains("value"));
   }

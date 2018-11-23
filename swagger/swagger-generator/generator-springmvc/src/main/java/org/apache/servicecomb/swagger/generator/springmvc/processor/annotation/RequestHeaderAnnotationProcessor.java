@@ -19,6 +19,7 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
 import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ValueConstants;
 
@@ -44,10 +45,15 @@ public class RequestHeaderAnnotationProcessor extends AbstractParameterProcessor
       HeaderParameter parameter) {
     super.fillParameter(annotation, operationGenerator, paramIdx, parameter);
 
+    Object defaultValue = parameter.getDefaultValue();
+    if (!ObjectUtils.isEmpty(defaultValue)) {
+      parameter.setRequired(false);
+      return;
+    }
     RequestHeader requestHeader = (RequestHeader) annotation;
     parameter.setRequired(requestHeader.required());
   }
-  
+
   @Override
   protected String getAnnotationParameterDefaultValue(Object annotation) {
     String defaultValue = ((RequestHeader) annotation).defaultValue();
@@ -56,5 +62,4 @@ public class RequestHeaderAnnotationProcessor extends AbstractParameterProcessor
     }
     return defaultValue;
   }
-  
 }

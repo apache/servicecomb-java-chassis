@@ -59,10 +59,9 @@ public abstract class AbstractParameterProcessor<T extends AbstractSerializableP
 
   protected void setParameterDefaultValue(Object annotation, T parameter) {
     String defaultValue = getAnnotationParameterDefaultValue(annotation);
-      if (StringUtils.isNotEmpty(defaultValue)) {
-        parameter.setDefaultValue(defaultValue);
+    if (StringUtils.isNotEmpty(defaultValue)) {
+      parameter.setDefaultValue(defaultValue);
     }
-
   }
 
   protected String getAnnotationParameterDefaultValue(Object annotation) {

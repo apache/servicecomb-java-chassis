@@ -61,7 +61,7 @@ public class SpringMvcDefaultValues {
   }
 
   @GetMapping("/query3")
-  public String query3(@RequestParam("a") @Min(value = 20) int a, @RequestParam("b") String b) {
+  public String query3(@RequestParam("a") @Min(value = 20) int a, @RequestParam(name = "b", required = false) String b) {
     return "Hello " + a + b;
   }
 
