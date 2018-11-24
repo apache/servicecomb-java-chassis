@@ -349,13 +349,13 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     return doGetSchema(microserviceId, schemaId, false);
   }
 
-  private String doGetSchema(String microserviceId, String schemaId, boolean isAggregatedServiceCenter) {
+  private String doGetSchema(String microserviceId, String schemaId, boolean global) {
     Holder<GetSchemaResponse> holder = new Holder<>();
     IpPort ipPort = ipPortManager.getAvailableAddress();
 
     CountDownLatch countDownLatch = new CountDownLatch(1);
     RequestParam param = new RequestParam();
-    if (isAggregatedServiceCenter) {
+    if (global) {
       param.addQueryParam("global", "true");
     }
     RestUtils.get(ipPort,
@@ -448,13 +448,13 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     return doGetMicroservice(microserviceId, false);
   }
 
-  private Microservice doGetMicroservice(String microserviceId, boolean isAggregatedServiceCenter) {
+  private Microservice doGetMicroservice(String microserviceId, boolean global) {
     Holder<GetServiceResponse> holder = new Holder<>();
     IpPort ipPort = ipPortManager.getAvailableAddress();
 
     CountDownLatch countDownLatch = new CountDownLatch(1);
     RequestParam param = new RequestParam();
-    if (isAggregatedServiceCenter) {
+    if (global) {
       param.addQueryParam("global", "true");
     }
     RestUtils.get(ipPort,
