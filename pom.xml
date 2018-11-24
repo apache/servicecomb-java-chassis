@@ -369,7 +369,6 @@
               <arg>-Xlint:all</arg>
               <!--not care for jdk8/jdk7 compatible problem-->
               <arg>-Xlint:-classfile</arg>
-              <arg>-Xlint:-processing</arg>
             </compilerArgs>
           </configuration>
         </plugin>
