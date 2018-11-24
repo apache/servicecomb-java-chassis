@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.foundation.vertx.metrics;
 
-import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMetric;
+import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultServerEndpointMetric;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultTcpSocketMetric;
 
 import io.vertx.core.net.SocketAddress;
@@ -26,13 +26,13 @@ import io.vertx.core.spi.metrics.TCPMetrics;
  * important: not singleton, every NetServer instance relate to a TcpServerMetrics instance
  */
 public class DefaultTcpServerMetrics implements TCPMetrics<DefaultTcpSocketMetric> {
-  private final DefaultEndpointMetric endpointMetric;
+  private final DefaultServerEndpointMetric endpointMetric;
 
-  public DefaultTcpServerMetrics(DefaultEndpointMetric endpointMetric) {
+  public DefaultTcpServerMetrics(DefaultServerEndpointMetric endpointMetric) {
     this.endpointMetric = endpointMetric;
   }
 
-  public DefaultEndpointMetric getEndpointMetric() {
+  public DefaultServerEndpointMetric getEndpointMetric() {
     return endpointMetric;
   }
 

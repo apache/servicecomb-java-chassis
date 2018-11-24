@@ -16,8 +16,8 @@
  */
 package org.apache.servicecomb.foundation.vertx.metrics;
 
-import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMetric;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultHttpSocketMetric;
+import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultServerEndpointMetric;
 
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerRequest;
@@ -30,13 +30,13 @@ import io.vertx.core.spi.metrics.HttpServerMetrics;
  * important: not singleton, every HttpServer instance relate to a HttpServerMetrics instance
  */
 public class DefaultHttpServerMetrics implements HttpServerMetrics<Object, Object, DefaultHttpSocketMetric> {
-  private final DefaultEndpointMetric endpointMetric;
+  private final DefaultServerEndpointMetric endpointMetric;
 
-  public DefaultHttpServerMetrics(DefaultEndpointMetric endpointMetric) {
+  public DefaultHttpServerMetrics(DefaultServerEndpointMetric endpointMetric) {
     this.endpointMetric = endpointMetric;
   }
 
-  public DefaultEndpointMetric getEndpointMetric() {
+  public DefaultServerEndpointMetric getEndpointMetric() {
     return endpointMetric;
   }
 

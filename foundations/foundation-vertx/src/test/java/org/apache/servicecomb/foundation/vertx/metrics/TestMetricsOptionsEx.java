@@ -36,7 +36,7 @@ public class TestMetricsOptionsEx {
 
   @Test
   public void expired() {
-    Assert.assertEquals(TimeUnit.MINUTES.toNanos(30), metricsOptionsEx.getCheckClientEndpointMetricExpiredInNano());
+    Assert.assertEquals(TimeUnit.MINUTES.toNanos(15), metricsOptionsEx.getCheckClientEndpointMetricExpiredInNano());
 
     metricsOptionsEx.setCheckClientEndpointMetricExpiredInNano(10);
     Assert.assertEquals(10, metricsOptionsEx.getCheckClientEndpointMetricExpiredInNano());
