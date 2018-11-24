@@ -136,25 +136,25 @@ public final class AnnotationUtils {
       return;
     }
     Response response = operation.getResponses().get(String.valueOf(responseConfig.getCode()));
-    if (response != null) {
-      Response targetResp = responseConfig.getResponse();
-      if (StringUtils.isNotEmpty(targetResp.getDescription()) && StringUtils.isEmpty(response.getDescription())) {
-        response.setDescription(targetResp.getDescription());
-      }
-      if (targetResp.getSchema() != null && response.getSchema() == null) {
-        response.setSchema(targetResp.getSchema());
-      }
-      if (targetResp.getExamples() != null && response.getExamples() == null) {
-        response.setExamples(targetResp.getExamples());
-      }
-      if (targetResp.getHeaders() != null && response.getHeaders() == null) {
-        response.setHeaders(targetResp.getHeaders());
-      }
-      if (targetResp.getVendorExtensions() != null && response.getVendorExtensions() == null) {
-        response.setVendorExtensions(targetResp.getVendorExtensions());
-      }
-    } else {
+    if (response == null) {
       operation.response(responseConfig.getCode(), responseConfig.getResponse());
+      return;
+    }
+    Response sourceResp = responseConfig.getResponse();
+    if (StringUtils.isNotEmpty(sourceResp.getDescription()) && StringUtils.isEmpty(response.getDescription())) {
+      response.setDescription(sourceResp.getDescription());
+    }
+    if (sourceResp.getSchema() != null && response.getSchema() == null) {
+      response.setSchema(sourceResp.getSchema());
+    }
+    if (sourceResp.getExamples() != null && response.getExamples() == null) {
+      response.setExamples(sourceResp.getExamples());
+    }
+    if (sourceResp.getHeaders() != null && response.getHeaders() == null) {
+      response.setHeaders(sourceResp.getHeaders());
+    }
+    if (sourceResp.getVendorExtensions() != null && response.getVendorExtensions() == null) {
+      response.setVendorExtensions(sourceResp.getVendorExtensions());
     }
   }
 
