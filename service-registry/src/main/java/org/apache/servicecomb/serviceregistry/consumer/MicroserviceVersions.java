@@ -160,10 +160,10 @@ public class MicroserviceVersions {
       setInstances(pulledInstances, rev);
       validated = true;
     } catch (Throwable e) {
-      LOGGER.error("Failed to setInstances, appId={}, microserviceName={}.",
-          getAppId(),
-          getMicroserviceName(),
-          e);
+      LOGGER.error(String.format("Failed to setInstances, AppId=%s, MicroserviceName=%s.",
+              getAppId(),
+              getMicroserviceName()),
+              e);
     }
   }
 
