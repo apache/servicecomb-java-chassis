@@ -166,9 +166,9 @@ public class TestVertxMetersInitializer {
     }
     expect += "      (summary)             1               0               1               4 B          21 B        \n"
         + "    server.endpoints:\n"
-        + "      listen                connectCount    disconnectCount connections     send         receive\n"
-        + "      0.0.0.0:0             1               0               1               21 B         4 B         \n"
-        + "      (summary)             1               0               1               21 B         4 B         \n\n";
+        + "      listen                connectCount    disconnectCount rejectByLimit   connections  send         receive\n"
+        + "      0.0.0.0:0             1               0               0               1            21 B         4 B         \n"
+        + "      (summary)             1               0               0               1            21 B         4 B         \n\n";
     Assert.assertEquals(expect, actual);
   }
 }

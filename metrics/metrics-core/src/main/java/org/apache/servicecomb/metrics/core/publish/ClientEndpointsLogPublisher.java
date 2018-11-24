@@ -24,23 +24,15 @@ import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTr
 import org.apache.servicecomb.metrics.core.VertxMetersInitializer;
 import org.apache.servicecomb.metrics.core.meter.vertx.EndpointMeter;
 
-public class EndpointsLogPublisher extends AbstractMeasurementNodeLogPublisher {
-  private final String title;
-
-  private final String endpointTitle;
-
-  public EndpointsLogPublisher(MeasurementTree tree, StringBuilder sb, String meterName, String title,
-      String endpointTitle) {
+public class ClientEndpointsLogPublisher extends AbstractMeasurementNodeLogPublisher {
+  public ClientEndpointsLogPublisher(MeasurementTree tree, StringBuilder sb, String meterName) {
     super(tree, sb, VertxMetersInitializer.VERTX_ENDPOINTS, meterName);
-    this.title = title;
-    this.endpointTitle = endpointTitle;
   }
 
   @Override
   public void print(boolean printDetail) {
-    appendLine(sb, "    %s:", title);
-    appendLine(sb, "      %-21s connectCount    disconnectCount connections     send         receive",
-        endpointTitle);
+    appendLine(sb, "    client.endpoints:");
+    appendLine(sb, "      remote                connectCount    disconnectCount connections     send         receive");
 
     double connect = 0;
     double disconnect = 0;

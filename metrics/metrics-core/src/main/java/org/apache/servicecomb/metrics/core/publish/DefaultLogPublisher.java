@@ -425,10 +425,10 @@ public class DefaultLogPublisher implements MetricsInitializer {
           entry.getValue().getEventLoopContextCreatedCount());
     }
 
-    EndpointsLogPublisher client = new EndpointsLogPublisher(tree, sb, VertxMetersInitializer.ENDPOINTS_CLINET,
-        "client.endpoints", "remote");
-    EndpointsLogPublisher server = new EndpointsLogPublisher(tree, sb, VertxMetersInitializer.ENDPOINTS_SERVER,
-        "server.endpoints", "listen");
+    ClientEndpointsLogPublisher client = new ClientEndpointsLogPublisher(tree, sb,
+        VertxMetersInitializer.ENDPOINTS_CLINET);
+    ServerEndpointsLogPublisher server = new ServerEndpointsLogPublisher(tree, sb,
+        VertxMetersInitializer.ENDPOINTS_SERVER);
     if (client.isExists() || server.isExists()) {
       appendLine(sb, "  transport:");
       if (client.isExists()) {
