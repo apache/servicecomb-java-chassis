@@ -57,6 +57,15 @@ public interface ServiceRegistryClient {
   Microservice getMicroservice(String microserviceId);
 
   /**
+   * <p>
+   *    if connect to simple ServiceCenter, same with the method
+   *    {@linkplain org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient#getMicroservice(String)}
+   *    if connect to ServiceCenter Aggregator, not only contain the target ServiceCenter but also other ServiceCenter clusters
+   * </p>
+   */
+  Microservice getAggregatedMicroservice(String microserviceId);
+
+  /**
    * 更新微服务properties
    */
   boolean updateMicroserviceProperties(String microserviceId, Map<String, String> serviceProperties);
@@ -78,6 +87,15 @@ public interface ServiceRegistryClient {
    * 获取schema内容
    */
   String getSchema(String microserviceId, String schemaId);
+
+  /**
+   * <p>
+   *    if connect to simple ServiceCenter, same with the method
+   *    {@linkplain org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient#getSchema(String, String)}
+   *    if connect to ServiceCenter Aggregator, not only contain the target ServiceCenter but also other ServiceCenter clusters
+   * </p>
+   */
+  String getAggregatedSchema(String microserviceId, String schemaId);
 
   /**
    *

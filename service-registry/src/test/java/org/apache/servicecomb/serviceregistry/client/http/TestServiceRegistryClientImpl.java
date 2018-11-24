@@ -36,6 +36,7 @@ import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
 import org.apache.servicecomb.serviceregistry.api.response.GetExistenceResponse;
 import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.api.response.GetSchemasResponse;
+import org.apache.servicecomb.serviceregistry.api.response.GetServiceResponse;
 import org.apache.servicecomb.serviceregistry.client.ClientException;
 import org.apache.servicecomb.serviceregistry.client.IpPortManager;
 import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl.ResponseWrapper;
@@ -50,6 +51,7 @@ import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientResponse;
+import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.Json;
 import mockit.Deencapsulation;
 import mockit.Expectations;
@@ -299,6 +301,53 @@ public class TestServiceRegistryClientImpl {
   }
 
   @Test
+  public void getAggregatedMicroservice() {
+    String microserviceId = "msId";
+    new MockUp<RestUtils>() {
+      @Mock
+      void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+        Holder<GetServiceResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
+        GetServiceResponse serviceResp = Json
+            .decodeValue(
+                "{\"service\":{\"serviceId\":\"serviceId\",\"framework\":null"
+                    + ",\"registerBy\":null,\"environment\":null,\"appId\":\"appId\",\"serviceName\":null,"
+                    + "\"alias\":null,\"version\":null,\"description\":null,\"level\":null,\"schemas\":[],"
+                    + "\"paths\":[],\"status\":\"UP\",\"properties\":{},\"intance\":null}}",
+                GetServiceResponse.class);
+        holder.value = serviceResp;
+        RequestParam requestParam = requestContext.getParams();
+        Assert.assertEquals("global=true", requestParam.getQueryParams());
+      }
+    };
+    Microservice aggregatedMicroservice = oClient.getAggregatedMicroservice(microserviceId);
+    Assert.assertEquals("serviceId", aggregatedMicroservice.getServiceId());
+    Assert.assertEquals("appId", aggregatedMicroservice.getAppId());
+  }
+
+  @Test
+  public void getAggregatedSchema() {
+    String microserviceId = "msId";
+    String schemaId = "schemaId";
+
+    new MockUp<RestUtils>() {
+
+      @Mock
+      void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+        Holder<GetSchemaResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
+        GetSchemaResponse schemasResp = Json
+            .decodeValue(
+                "{ \"schema\": \"schema\", \"schemaId\":\"metricsEndpoint\",\"summary\":\"c1188d709631a9038874f9efc6eb894f\"}",
+                GetSchemaResponse.class);
+        holder.value = schemasResp;
+        RequestParam requestParam = requestContext.getParams();
+        Assert.assertEquals("global=true", requestParam.getQueryParams());
+      }
+    };
+    String str = oClient.getAggregatedSchema(microserviceId, schemaId);
+    Assert.assertEquals("schema", str);
+  }
+
+  @Test
   public void getSchemas() {
     String microserviceId = "msId";
 
@@ -363,6 +412,13 @@ public class TestServiceRegistryClientImpl {
 
   @Test
   public void testFindServiceInstance() {
+    new MockUp<RestUtils>() {
+      @Mock
+      void get(IpPort ipPort, String uri, RequestParam requestParam,
+          Handler<RestResponse> responseHandler) {
+        Assert.assertEquals("global=true", requestParam.getQueryParams());
+      }
+    };
     Assert.assertNull(oClient.findServiceInstance("aaa", "bbb"));
   }
 
@@ -374,7 +430,13 @@ public class TestServiceRegistryClientImpl {
         throw new Error("must not invoke this.");
       }
     };
-
+    new MockUp<RestUtils>() {
+      @Mock
+      void get(IpPort ipPort, String uri, RequestParam requestParam,
+          Handler<RestResponse> responseHandler) {
+        Assert.assertEquals("global=true", requestParam.getQueryParams());
+      }
+    };
     Assert.assertNull(oClient.findServiceInstance(null, "appId", "serviceName", "1.0.0+"));
   }
 
@@ -395,6 +457,14 @@ public class TestServiceRegistryClientImpl {
     }.getMockInstance();
     RestResponse restResponse = new RestResponse(requestContext, response);
     new MockUp<RestUtils>() {
+      @Mock
+      void get(IpPort ipPort, String uri, RequestParam requestParam,
+          Handler<RestResponse> responseHandler) {
+        Assert.assertEquals("appId=appId&global=true&serviceName=serviceName&version=0.0.0%2B",
+            requestParam.getQueryParams());
+        httpDo(RestUtils.createRequestContext(HttpMethod.GET, ipPort, uri, requestParam), responseHandler);
+      }
+
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
         responseHandler.handle(restResponse);
@@ -417,6 +487,13 @@ public class TestServiceRegistryClientImpl {
     serviceCenterInfo.setConfig(new ServiceCenterConfig());
 
     new MockUp<RestUtils>() {
+      @Mock
+      void get(IpPort ipPort, String uri, RequestParam requestParam,
+          Handler<RestResponse> responseHandler) {
+        Assert.assertEquals("global=true", requestParam.getQueryParams());
+        httpDo(RestUtils.createRequestContext(HttpMethod.GET, ipPort, uri, requestParam), responseHandler);
+      }
+
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
         Holder<ServiceCenterInfo> holder = Deencapsulation.getField(responseHandler, "arg$4");
