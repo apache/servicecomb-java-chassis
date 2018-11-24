@@ -19,8 +19,6 @@ package org.apache.servicecomb.transport.highway;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
@@ -40,7 +38,7 @@ public class TestHighwayVerticle {
   @Test
   public void testHighwayVerticle(@Mocked Transport transport, @Mocked Vertx vertx, @Mocked Context context,
       @Mocked JsonObject json) {
-    HighwayServerVerticle highwayVerticle = new HighwayServerVerticle(new AtomicInteger());
+    HighwayServerVerticle highwayVerticle = new HighwayServerVerticle();
     URIEndpointObject endpiontObject = new URIEndpointObject("highway://127.0.0.1:9090");
     new Expectations() {
       {

@@ -19,25 +19,18 @@ package org.apache.servicecomb.transport.rest.vertx;
 
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
-import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.transport.AbstractTransport;
-import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
-import org.apache.servicecomb.foundation.vertx.ClientEvent;
-import org.apache.servicecomb.foundation.vertx.ConnectionEvent;
-import org.apache.servicecomb.foundation.vertx.TransportType;
 import org.apache.servicecomb.foundation.vertx.VertxTLSBuilder;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -72,16 +65,6 @@ public class RestServerVerticle extends AbstractVerticle {
 
   private URIEndpointObject endpointObject;
 
-  private final AtomicInteger connectedCounter;
-
-  public RestServerVerticle() {
-    this(CseContext.getInstance().getTransportManager().findTransport(Const.RESTFUL).getConnectedCounter());
-  }
-
-  public RestServerVerticle(AtomicInteger connectedCounter) {
-    this.connectedCounter = connectedCounter;
-  }
-
   @Override
   public void init(Vertx vertx, Context context) {
     super.init(vertx, context);
@@ -106,20 +89,6 @@ public class RestServerVerticle extends AbstractVerticle {
       initDispatcher(mainRouter);
       HttpServer httpServer = createHttpServer();
       httpServer.requestHandler(mainRouter::accept);
-      httpServer.connectionHandler(connection -> {
-        int connectedCount = connectedCounter.incrementAndGet();
-        int connectionLimit = DynamicPropertyFactory.getInstance()
-            .getIntProperty("servicecomb.rest.server.connection-limit", Integer.MAX_VALUE).get();
-        if (connectedCount > connectionLimit) {
-          connectedCounter.decrementAndGet();
-          connection.close();
-        } else {
-          EventManager.post(new ClientEvent(connection.remoteAddress().toString(),
-              ConnectionEvent.Connected, TransportType.Rest, connectedCount));
-          connection.closeHandler(event -> EventManager.post(new ClientEvent(connection.remoteAddress().toString(),
-              ConnectionEvent.Closed, TransportType.Rest, connectedCounter.decrementAndGet())));
-        }
-      });
       httpServer.exceptionHandler(e -> {
         LOGGER.error("Unexpected error in server.{}", ExceptionUtils.getExceptionMessageWithoutTrace(e));
       });

@@ -62,7 +62,7 @@ public class TestRestServerVerticle {
 
   @Before
   public void setUp() {
-    instance = new RestServerVerticle(new AtomicInteger());
+    instance = new RestServerVerticle();
     startFuture = Future.future();
 
     CseContext.getInstance().setTransportManager(new TransportManager());
@@ -95,7 +95,7 @@ public class TestRestServerVerticle {
         result = endpiont;
       }
     };
-    RestServerVerticle server = new RestServerVerticle(new AtomicInteger());
+    RestServerVerticle server = new RestServerVerticle();
     // process stuff done by Expectations
     server.init(vertx, context);
     server.start(startFuture);
@@ -122,7 +122,7 @@ public class TestRestServerVerticle {
         result = endpiont;
       }
     };
-    RestServerVerticle server = new RestServerVerticle(new AtomicInteger());
+    RestServerVerticle server = new RestServerVerticle();
     // process stuff done by Expectations
     server.init(vertx, context);
     server.start(startFuture);
@@ -149,7 +149,7 @@ public class TestRestServerVerticle {
         result = endpiont;
       }
     };
-    RestServerVerticle server = new RestServerVerticle(new AtomicInteger());
+    RestServerVerticle server = new RestServerVerticle();
     boolean status = false;
     try {
       server.init(vertx, context);
@@ -245,7 +245,7 @@ public class TestRestServerVerticle {
     Router router = Mockito.mock(Router.class);
     Mockito.when(router.route()).thenReturn(Mockito.mock(Route.class));
 
-    RestServerVerticle server = new RestServerVerticle(new AtomicInteger());
+    RestServerVerticle server = new RestServerVerticle();
 
     Deencapsulation.invoke(server, "mountCorsHandler", router);
     Assert.assertEquals(7, counter.get());
@@ -272,7 +272,7 @@ public class TestRestServerVerticle {
 
     Mockito.when(mainRouter.route()).thenReturn(route);
 
-    RestServerVerticle restServerVerticle = new RestServerVerticle(new AtomicInteger());
+    RestServerVerticle restServerVerticle = new RestServerVerticle();
 
     Deencapsulation.invoke(restServerVerticle, "mountGlobalRestFailureHandler", mainRouter);
     Assert.assertNotNull(handlerHolder.value);

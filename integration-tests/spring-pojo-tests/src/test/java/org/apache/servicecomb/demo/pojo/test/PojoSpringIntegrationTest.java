@@ -18,9 +18,7 @@
 package org.apache.servicecomb.demo.pojo.test;
 
 import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -28,18 +26,14 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 public class PojoSpringIntegrationTest extends PojoIntegrationTestBase {
 
-  private static final ConnectionEventWatcher watcher = new ConnectionEventWatcher();
-
   @BeforeClass
   public static void setUpClass() throws Exception {
     setUpLocalRegistry();
-    EventManager.register(watcher);
     PojoTestMain.main(null);
   }
 
   @AfterClass
   public static void teardownClass() {
     SCBEngine.getInstance().destroy();
-    Assert.assertArrayEquals("check connection count change", new Integer[] {1, 0}, watcher.getCounters().toArray());
   }
 }
