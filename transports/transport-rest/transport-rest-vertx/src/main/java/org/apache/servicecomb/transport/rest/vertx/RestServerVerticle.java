@@ -32,6 +32,8 @@ import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
 import org.apache.servicecomb.foundation.vertx.VertxTLSBuilder;
+import org.apache.servicecomb.foundation.vertx.metrics.DefaultHttpServerMetrics;
+import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultServerEndpointMetric;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogConfiguration;
@@ -52,6 +54,7 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.net.impl.ConnectionBase;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.CorsHandler;
@@ -89,6 +92,17 @@ public class RestServerVerticle extends AbstractVerticle {
       initDispatcher(mainRouter);
       HttpServer httpServer = createHttpServer();
       httpServer.requestHandler(mainRouter::accept);
+      httpServer.connectionHandler(connection -> {
+        DefaultHttpServerMetrics serverMetrics = (DefaultHttpServerMetrics) ((ConnectionBase) connection).metrics();
+        DefaultServerEndpointMetric endpointMetric = serverMetrics.getEndpointMetric();
+        long connectedCount = endpointMetric.getCurrentConnectionCount();
+        int connectionLimit = DynamicPropertyFactory.getInstance()
+            .getIntProperty("servicecomb.rest.server.connection-limit", Integer.MAX_VALUE).get();
+        if (connectedCount > connectionLimit) {
+          connection.close();
+          endpointMetric.onRejectByConnectionLimit();
+        }
+      });
       httpServer.exceptionHandler(e -> {
         LOGGER.error("Unexpected error in server.{}", ExceptionUtils.getExceptionMessageWithoutTrace(e));
       });

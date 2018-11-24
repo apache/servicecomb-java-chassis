@@ -22,6 +22,8 @@ import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.vertx.server.TcpServer;
 import org.apache.servicecomb.foundation.vertx.server.TcpServerConnection;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 public class HighwayServer extends TcpServer {
   private Endpoint endpoint;
 
@@ -33,5 +35,11 @@ public class HighwayServer extends TcpServer {
   @Override
   protected TcpServerConnection createTcpServerConnection() {
     return new HighwayServerConnection(endpoint);
+  }
+
+  @Override
+  protected int getConnectionLimit() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.highway.server.connection-limit", Integer.MAX_VALUE).get();
   }
 }
