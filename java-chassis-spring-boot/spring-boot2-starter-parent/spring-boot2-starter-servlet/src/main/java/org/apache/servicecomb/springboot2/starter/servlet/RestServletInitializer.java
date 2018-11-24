@@ -49,6 +49,7 @@ public class RestServletInitializer
   }
 
   @Override
+  @SuppressWarnings("try")
   public void onStartup(ServletContext servletContext) throws ServletException {
     if (factory.getPort() == 0) {
       LOGGER.warn(
