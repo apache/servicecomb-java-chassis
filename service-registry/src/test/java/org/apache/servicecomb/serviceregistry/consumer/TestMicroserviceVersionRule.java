@@ -19,11 +19,14 @@ package org.apache.servicecomb.serviceregistry.consumer;
 
 import java.util.Arrays;
 
+import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCache;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
+
+import mockit.Mocked;
 
 public class TestMicroserviceVersionRule {
   MicroserviceVersionRule microserviceVersionRule = new MicroserviceVersionRule("appId", "msName", "1+");
@@ -34,47 +37,48 @@ public class TestMicroserviceVersionRule {
   }
 
   @Test
-  public void addMicroserviceVersionNotMatch() {
-    MicroserviceVersion microserviceVersion = MicroserviceVersionTestUtils.createMicroserviceVersion("1", "0.0.1");
+  public void addMicroserviceVersionNotMatch(@Mocked ServiceRegistry serviceRegistry) {
+    MicroserviceVersion microserviceVersion = MicroserviceVersionTestUtils
+        .createMicroserviceVersion("1", "0.0.1", serviceRegistry);
     microserviceVersionRule.addMicroserviceVersion(microserviceVersion);
 
     Assert.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
   }
 
   @Test
-  public void addMicroserviceVersionMatch() {
-    MicroserviceVersion v2 = MicroserviceVersionTestUtils.createMicroserviceVersion("2", "2.0.0");
+  public void addMicroserviceVersionMatch(@Mocked ServiceRegistry serviceRegistry) {
+    MicroserviceVersion v2 = MicroserviceVersionTestUtils.createMicroserviceVersion("2", "2.0.0", serviceRegistry);
     microserviceVersionRule.addMicroserviceVersion(v2);
     Assert.assertSame(v2, microserviceVersionRule.getLatestMicroserviceVersion());
 
-    MicroserviceVersion v1 = MicroserviceVersionTestUtils.createMicroserviceVersion("1", "1.0.0");
+    MicroserviceVersion v1 = MicroserviceVersionTestUtils.createMicroserviceVersion("1", "1.0.0", serviceRegistry);
     microserviceVersionRule.addMicroserviceVersion(v1);
     Assert.assertSame(v2, microserviceVersionRule.getLatestMicroserviceVersion());
   }
 
   @Test
-  public void deleteMicroserviceVersionNotMatch() {
-    MicroserviceVersion v2 = MicroserviceVersionTestUtils.createMicroserviceVersion("2", "2.0.0");
+  public void deleteMicroserviceVersionNotMatch(@Mocked ServiceRegistry serviceRegistry) {
+    MicroserviceVersion v2 = MicroserviceVersionTestUtils.createMicroserviceVersion("2", "2.0.0", serviceRegistry);
     microserviceVersionRule.addMicroserviceVersion(v2);
 
-    MicroserviceVersion v1 = MicroserviceVersionTestUtils.createMicroserviceVersion("1", "0.0.1");
+    MicroserviceVersion v1 = MicroserviceVersionTestUtils.createMicroserviceVersion("1", "0.0.1", serviceRegistry);
     microserviceVersionRule.deleteMicroserviceVersion(v1);
     Assert.assertSame(v2, microserviceVersionRule.getLatestMicroserviceVersion());
   }
 
   @Test
-  public void deleteMicroserviceVersionMatchNotExist() {
-    MicroserviceVersion v2 = MicroserviceVersionTestUtils.createMicroserviceVersion("2", "2.0.0");
+  public void deleteMicroserviceVersionMatchNotExist(@Mocked ServiceRegistry serviceRegistry) {
+    MicroserviceVersion v2 = MicroserviceVersionTestUtils.createMicroserviceVersion("2", "2.0.0", serviceRegistry);
     microserviceVersionRule.addMicroserviceVersion(v2);
 
-    MicroserviceVersion v1 = MicroserviceVersionTestUtils.createMicroserviceVersion("1", "1.0.0");
+    MicroserviceVersion v1 = MicroserviceVersionTestUtils.createMicroserviceVersion("1", "1.0.0", serviceRegistry);
     microserviceVersionRule.deleteMicroserviceVersion(v1);
     Assert.assertSame(v2, microserviceVersionRule.getLatestMicroserviceVersion());
   }
 
   @Test
-  public void deleteMicroserviceVersionMatchAndExist() {
-    MicroserviceVersion v2 = MicroserviceVersionTestUtils.createMicroserviceVersion("2", "2.0.0");
+  public void deleteMicroserviceVersionMatchAndExist(@Mocked ServiceRegistry serviceRegistry) {
+    MicroserviceVersion v2 = MicroserviceVersionTestUtils.createMicroserviceVersion("2", "2.0.0", serviceRegistry);
     microserviceVersionRule.addMicroserviceVersion(v2);
 
     microserviceVersionRule.deleteMicroserviceVersion(v2);
@@ -83,11 +87,11 @@ public class TestMicroserviceVersionRule {
   }
 
   @Test
-  public void setInstances() {
-    MicroserviceVersion v1 = MicroserviceVersionTestUtils.createMicroserviceVersion("1", "0.0.1");
+  public void setInstances(@Mocked ServiceRegistry serviceRegistry) {
+    MicroserviceVersion v1 = MicroserviceVersionTestUtils.createMicroserviceVersion("1", "0.0.1", serviceRegistry);
     microserviceVersionRule.addMicroserviceVersion(v1);
 
-    MicroserviceVersion v2 = MicroserviceVersionTestUtils.createMicroserviceVersion("2", "2.0.0");
+    MicroserviceVersion v2 = MicroserviceVersionTestUtils.createMicroserviceVersion("2", "2.0.0", serviceRegistry);
     microserviceVersionRule.addMicroserviceVersion(v2);
 
     MicroserviceInstance instance1 = new MicroserviceInstance();
@@ -115,7 +119,7 @@ public class TestMicroserviceVersionRule {
     microserviceVersionRule.setInstances(Arrays.asList(instance2));
     Assert.assertEquals(microserviceVersionRule.getLatestMicroserviceVersion(), v2);
 
-    MicroserviceVersion v3 = MicroserviceVersionTestUtils.createMicroserviceVersion("3", "3.0.0");
+    MicroserviceVersion v3 = MicroserviceVersionTestUtils.createMicroserviceVersion("3", "3.0.0", serviceRegistry);
     microserviceVersionRule.addMicroserviceVersion(v3);
     Assert.assertEquals(microserviceVersionRule.getLatestMicroserviceVersion(), v2);
   }

@@ -299,7 +299,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   }
 
   @Override
-  public Microservice getAggregatedRemoteMicroervice(String microserviceId) {
+  public Microservice getAggregatedRemoteMicroservice(String microserviceId) {
     return srClient.getAggregatedMicroservice(microserviceId);
   }
 

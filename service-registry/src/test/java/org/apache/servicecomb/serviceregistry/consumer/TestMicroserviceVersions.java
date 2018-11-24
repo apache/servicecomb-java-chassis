@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.MicroserviceKey;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
@@ -52,6 +53,9 @@ import mockit.Mocked;
 
 public class TestMicroserviceVersions {
   EventBus eventBus = new EventBus();
+
+  @Mocked
+  ServiceRegistry serviceRegistry;
 
   AppManager appManager = new AppManager(eventBus);
 
@@ -128,6 +132,18 @@ public class TestMicroserviceVersions {
       @Mock
       Microservice getMicroservice(String microserviceId) {
         return microservices.get(microserviceId);
+      }
+
+      @Mock
+      ServiceRegistry getServiceRegistry() {
+        return serviceRegistry;
+      }
+    };
+
+    new Expectations() {
+      {
+        serviceRegistry.getAggregatedRemoteMicroservice(microserviceId);
+        result = microservices.get(microserviceId);
       }
     };
   }
@@ -241,7 +257,10 @@ public class TestMicroserviceVersions {
   @Test
   public void setInstances_selectUp() {
     String microserviceId = "1";
-    setup(microserviceId);
+
+    createMicroservice(microserviceId);
+    createInstance(microserviceId);
+    createMicroserviceInstances();
 
     instances.get(0).setStatus(MicroserviceInstanceStatus.DOWN);
     Deencapsulation.invoke(microserviceVersions, "setInstances", instances, "0");

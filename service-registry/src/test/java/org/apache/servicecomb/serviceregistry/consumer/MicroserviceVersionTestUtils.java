@@ -18,19 +18,27 @@
 package org.apache.servicecomb.serviceregistry.consumer;
 
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 
 import mockit.Expectations;
+import mockit.Mocked;
 
 public interface MicroserviceVersionTestUtils {
-  public static MicroserviceVersion createMicroserviceVersion(String microserviceId, String version) {
+
+
+  public static MicroserviceVersion createMicroserviceVersion(String microserviceId, String version,
+      @Mocked ServiceRegistry serviceRegistry) {
+
     Microservice microservice = new Microservice();
     microservice.setServiceId(microserviceId);
     microservice.setVersion(version);
 
     new Expectations(RegistryUtils.class) {
       {
-        RegistryUtils.getMicroservice(microserviceId);
+        RegistryUtils.getServiceRegistry();
+        result = serviceRegistry;
+        serviceRegistry.getAggregatedRemoteMicroservice(microserviceId);
         result = microservice;
       }
     };

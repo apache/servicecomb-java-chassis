@@ -26,6 +26,7 @@ import org.apache.servicecomb.core.definition.classloader.PrivateMicroserviceCla
 import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
 import org.apache.servicecomb.core.definition.schema.ConsumerSchemaFactory;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.hamcrest.Matchers;
 import org.junit.AfterClass;
@@ -35,6 +36,7 @@ import org.junit.Test;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
+import mockit.Mocked;
 
 public class TestMicroserviceVersionMeta {
   @AfterClass
@@ -44,7 +46,7 @@ public class TestMicroserviceVersionMeta {
   }
 
   @Test
-  public void construct() {
+  public void construct(@Mocked ServiceRegistry serviceRegistry) {
     String microserviceName = "app:ms";
     String microserviceId = "id";
     Microservice microservice = new Microservice();
@@ -52,7 +54,9 @@ public class TestMicroserviceVersionMeta {
 
     new Expectations(RegistryUtils.class) {
       {
-        RegistryUtils.getMicroservice(microserviceId);
+        RegistryUtils.getServiceRegistry();
+        result = serviceRegistry;
+        serviceRegistry.getAggregatedRemoteMicroservice(microserviceId);
         result = microservice;
       }
     };
