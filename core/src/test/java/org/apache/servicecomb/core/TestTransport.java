@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.core.endpoint.EndpointsCache;
 import org.apache.servicecomb.core.transport.TransportManager;
@@ -45,11 +44,6 @@ public class TestTransport {
 
       @Override
       public void send(Invocation invocation, AsyncResponse asyncResp) {
-      }
-
-      @Override
-      public AtomicInteger getConnectedCounter() {
-        return new AtomicInteger(0);
       }
 
       @Override

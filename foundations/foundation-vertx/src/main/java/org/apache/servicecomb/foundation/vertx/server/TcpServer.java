@@ -18,23 +18,16 @@
 package org.apache.servicecomb.foundation.vertx.server;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
-import org.apache.servicecomb.foundation.vertx.ClientEvent;
-import org.apache.servicecomb.foundation.vertx.ConnectionEvent;
-import org.apache.servicecomb.foundation.vertx.TransportType;
 import org.apache.servicecomb.foundation.vertx.VertxTLSBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.net.NetServer;
@@ -45,11 +38,8 @@ public class TcpServer {
 
   private URIEndpointObject endpointObject;
 
-  private final AtomicInteger connectedCounter;
-
-  public TcpServer(URIEndpointObject endpointObject, AtomicInteger connectedCounter) {
+  public TcpServer(URIEndpointObject endpointObject) {
     this.endpointObject = endpointObject;
-    this.connectedCounter = connectedCounter;
   }
 
   public void init(Vertx vertx, String sslKey, AsyncResultCallback<InetSocketAddress> callback) {
@@ -72,19 +62,8 @@ public class TcpServer {
     }
 
     netServer.connectHandler(netSocket -> {
-      int connectedCount = connectedCounter.incrementAndGet();
-      int connectionLimit = DynamicPropertyFactory.getInstance()
-          .getIntProperty("servicecomb.highway.server.connection-limit", Integer.MAX_VALUE).get();
-      if (connectedCount > connectionLimit) {
-        connectedCounter.decrementAndGet();
-        netSocket.close();
-        return;
-      }
-
       TcpServerConnection connection = createTcpServerConnection();
-      connection.init(netSocket, connectedCounter);
-      EventManager.post(new ClientEvent(netSocket.remoteAddress().toString(),
-          ConnectionEvent.Connected, TransportType.Highway, connectedCount));
+      connection.init(netSocket);
     });
     netServer.exceptionHandler(e -> {
       LOGGER.error("Unexpected error in server.{}", ExceptionUtils.getExceptionMessageWithoutTrace(e));

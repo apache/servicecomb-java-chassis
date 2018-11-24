@@ -18,27 +18,19 @@
 package org.apache.servicecomb.demo.springmvc.tests;
 
 import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 
 public class RawSpringMvcIntegrationTest extends SpringMvcIntegrationTestBase {
-
-  private static final ConnectionEventWatcher watcher = new ConnectionEventWatcher();
-
   @BeforeClass
   public static void init() throws Exception {
     System.setProperty("servicecomb.uploads.directory", "/tmp");
     setUpLocalRegistry();
-    EventManager.register(watcher);
     SpringMvcTestMain.main(new String[0]);
   }
 
   @AfterClass
   public static void shutdown() {
     SCBEngine.getInstance().destroy();
-    Assert.assertArrayEquals("check connection count change", new Integer[] {1, 2, 1, 0},
-        watcher.getCounters().toArray());
   }
 }

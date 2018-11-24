@@ -17,7 +17,6 @@
 package org.apache.servicecomb.transport.highway;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.ws.Holder;
 
@@ -73,7 +72,7 @@ public class TestHighwayServerConnection {
       }
     };
     connection = new HighwayServerConnection(endpoint);
-    connection.init(netSocket, new AtomicInteger());
+    connection.init(netSocket);
 
     header = new RequestHeader();
   }

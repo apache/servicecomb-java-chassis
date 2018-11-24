@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.transport.highway;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.vertx.server.TcpServer;
@@ -27,8 +25,8 @@ import org.apache.servicecomb.foundation.vertx.server.TcpServerConnection;
 public class HighwayServer extends TcpServer {
   private Endpoint endpoint;
 
-  public HighwayServer(Endpoint endpoint, AtomicInteger connectedCounter) {
-    super((URIEndpointObject) endpoint.getAddress(), connectedCounter);
+  public HighwayServer(Endpoint endpoint) {
+    super((URIEndpointObject) endpoint.getAddress());
     this.endpoint = endpoint;
   }
 
