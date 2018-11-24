@@ -346,13 +346,21 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
   @Override
   public String getSchema(String microserviceId, String schemaId) {
+    return doGetSchema(microserviceId, schemaId, false);
+  }
+
+  private String doGetSchema(String microserviceId, String schemaId, boolean isAggregatedServiceCenter) {
     Holder<GetSchemaResponse> holder = new Holder<>();
     IpPort ipPort = ipPortManager.getAvailableAddress();
 
     CountDownLatch countDownLatch = new CountDownLatch(1);
+    RequestParam param = new RequestParam();
+    if (isAggregatedServiceCenter) {
+      param.addQueryParam("global", "true");
+    }
     RestUtils.get(ipPort,
         String.format(Const.REGISTRY_API.MICROSERVICE_SCHEMA, microserviceId, schemaId),
-        new RequestParam(),
+        param,
         syncHandler(countDownLatch, GetSchemaResponse.class, holder));
     try {
       countDownLatch.await();
@@ -370,27 +378,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
   @Override
   public String getAggregatedSchema(String microserviceId, String schemaId) {
-    Holder<GetSchemaResponse> holder = new Holder<>();
-    IpPort ipPort = ipPortManager.getAvailableAddress();
-
-    CountDownLatch countDownLatch = new CountDownLatch(1);
-    RestUtils.get(ipPort,
-        String.format(Const.REGISTRY_API.MICROSERVICE_SCHEMA, microserviceId, schemaId),
-        new RequestParam().addQueryParam("global", "true"),
-        syncHandler(countDownLatch, GetSchemaResponse.class, holder));
-    try {
-      countDownLatch.await();
-    } catch (Exception e) {
-      LOGGER.error("query schema exist {}/{} failed",
-          microserviceId,
-          schemaId,
-          e);
-    }
-    if (holder.value != null) {
-      return holder.value.getSchema();
-    }
-
-    return null;
+    return doGetSchema(microserviceId, schemaId, true);
   }
 
   @Override
@@ -457,13 +445,21 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
   @Override
   public Microservice getMicroservice(String microserviceId) {
+    return doGetMicroservice(microserviceId, false);
+  }
+
+  private Microservice doGetMicroservice(String microserviceId, boolean isAggregatedServiceCenter) {
     Holder<GetServiceResponse> holder = new Holder<>();
     IpPort ipPort = ipPortManager.getAvailableAddress();
 
     CountDownLatch countDownLatch = new CountDownLatch(1);
+    RequestParam param = new RequestParam();
+    if (isAggregatedServiceCenter) {
+      param.addQueryParam("global", "true");
+    }
     RestUtils.get(ipPort,
         String.format(Const.REGISTRY_API.MICROSERVICE_OPERATION_ONE, microserviceId),
-        new RequestParam(),
+        param,
         syncHandler(countDownLatch, GetServiceResponse.class, holder));
     try {
       countDownLatch.await();
@@ -478,23 +474,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
   @Override
   public Microservice getAggregatedMicroservice(String microserviceId) {
-    Holder<GetServiceResponse> holder = new Holder<>();
-    IpPort ipPort = ipPortManager.getAvailableAddress();
-
-    CountDownLatch countDownLatch = new CountDownLatch(1);
-    RestUtils.get(ipPort,
-        String.format(Const.REGISTRY_API.MICROSERVICE_OPERATION_ONE, microserviceId),
-        new RequestParam().addQueryParam("global", "true"),
-        syncHandler(countDownLatch, GetServiceResponse.class, holder));
-    try {
-      countDownLatch.await();
-      if (holder.value != null) {
-        return holder.value.getService();
-      }
-    } catch (Exception e) {
-      LOGGER.error("query microservice {} failed", microserviceId, e);
-    }
-    return null;
+    return doGetMicroservice(microserviceId, true);
   }
 
   @Override
@@ -534,7 +514,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     CountDownLatch countDownLatch = new CountDownLatch(1);
     RestUtils.get(ipPort,
         String.format(Const.REGISTRY_API.MICROSERVICE_INSTANCE_OPERATION_ALL, providerId),
-        new RequestParam().addHeader("X-ConsumerId", consumerId).addQueryParam("global", "true"),
+        new RequestParam().addHeader("X-ConsumerId", consumerId),
         syncHandler(countDownLatch, GetInstancesResponse.class, holder));
     try {
       countDownLatch.await();
@@ -841,7 +821,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     CountDownLatch countDownLatch = new CountDownLatch(1);
     RestUtils.get(ipPort,
         Const.REGISTRY_API.SERVICECENTER_VERSION,
-        new RequestParam().addQueryParam("global", "true"),
+        new RequestParam(),
         syncHandler(countDownLatch, ServiceCenterInfo.class, holder));
     try {
       countDownLatch.await();

@@ -216,7 +216,7 @@ public final class RegistryUtils {
   }
 
   public static Microservice getMicroservice(String microserviceId) {
-    return serviceRegistry.getAggregatedRemoteMicroervice(microserviceId);
+    return serviceRegistry.getRemoteMicroservice(microserviceId);
   }
 
   public static MicroserviceInstances findServiceInstances(String appId, String serviceName,

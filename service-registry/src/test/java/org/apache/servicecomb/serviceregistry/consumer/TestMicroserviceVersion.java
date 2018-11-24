@@ -18,6 +18,7 @@
 package org.apache.servicecomb.serviceregistry.consumer;
 
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.version.Version;
 import org.hamcrest.Matchers;
@@ -27,19 +28,23 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import mockit.Expectations;
+import mockit.Mocked;
 
 public class TestMicroserviceVersion {
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
   @Test
-  public void constructInvalid() {
+  public void constructInvalid(@Mocked ServiceRegistry serviceRegistry) {
+
     expectedException.expect(IllegalStateException.class);
     expectedException.expectMessage(Matchers.is("Invalid microserviceId invalid."));
 
     new Expectations(RegistryUtils.class) {
       {
-        RegistryUtils.getMicroservice("invalid");
+        RegistryUtils.getServiceRegistry();
+        result = serviceRegistry;
+        serviceRegistry.getAggregatedRemoteMicroservice("invalid");
         result = null;
       }
     };
@@ -47,8 +52,9 @@ public class TestMicroserviceVersion {
   }
 
   @Test
-  public void constructNormal() {
-    MicroserviceVersion microserviceVersion = MicroserviceVersionTestUtils.createMicroserviceVersion("1", "1.0.0");
+  public void constructNormal(@Mocked ServiceRegistry serviceRegistry) {
+    MicroserviceVersion microserviceVersion = MicroserviceVersionTestUtils
+        .createMicroserviceVersion("1", "1.0.0", serviceRegistry);
     Assert.assertEquals("1", microserviceVersion.getMicroservice().getServiceId());
     Assert.assertEquals("1.0.0", microserviceVersion.getVersion().getVersion());
   }

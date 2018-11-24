@@ -58,7 +58,7 @@ public interface ServiceRegistryClient {
 
   /**
    * <p>
-   *    if connect to simple ServiceCenter, same with the method
+   *    if connect to normal ServiceCenter, same with the method
    *    {@linkplain org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient#getMicroservice(String)}
    *    if connect to ServiceCenter Aggregator, not only contain the target ServiceCenter but also other ServiceCenter clusters
    * </p>
@@ -90,7 +90,7 @@ public interface ServiceRegistryClient {
 
   /**
    * <p>
-   *    if connect to simple ServiceCenter, same with the method
+   *    if connect to normal ServiceCenter, same with the method
    *    {@linkplain org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient#getSchema(String, String)}
    *    if connect to ServiceCenter Aggregator, not only contain the target ServiceCenter but also other ServiceCenter clusters
    * </p>

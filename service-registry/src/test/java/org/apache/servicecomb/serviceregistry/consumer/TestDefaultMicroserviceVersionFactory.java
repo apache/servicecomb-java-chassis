@@ -18,6 +18,7 @@
 package org.apache.servicecomb.serviceregistry.consumer;
 
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,11 +28,13 @@ import mockit.Mocked;
 
 public class TestDefaultMicroserviceVersionFactory {
   @Test
-  public void create(@Mocked Microservice microservice) {
+  public void create(@Mocked Microservice microservice, @Mocked ServiceRegistry serviceRegistry) {
     String microserviceId = "id";
     new Expectations(RegistryUtils.class) {
       {
-        RegistryUtils.getMicroservice(microserviceId);
+        RegistryUtils.getServiceRegistry();
+        result = serviceRegistry;
+        serviceRegistry.getAggregatedRemoteMicroservice(microserviceId);
         result = microservice;
         microservice.getVersion();
         result = "1.0.0";

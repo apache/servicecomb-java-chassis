@@ -488,13 +488,6 @@ public class TestServiceRegistryClientImpl {
 
     new MockUp<RestUtils>() {
       @Mock
-      void get(IpPort ipPort, String uri, RequestParam requestParam,
-          Handler<RestResponse> responseHandler) {
-        Assert.assertEquals("global=true", requestParam.getQueryParams());
-        httpDo(RestUtils.createRequestContext(HttpMethod.GET, ipPort, uri, requestParam), responseHandler);
-      }
-
-      @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
         Holder<ServiceCenterInfo> holder = Deencapsulation.getField(responseHandler, "arg$4");
         holder.value = serviceCenterInfo;
