@@ -31,7 +31,7 @@ public class TestPumpImpl {
   @Test
   public void testPumpWithPending(@Mocked ReadStream<Object> rs, @Mocked WriteStream<Object> ws, @Mocked Buffer zeroBuf,
       @Mocked Buffer contentBuf) {
-    PumpImpl<Object> pump = new PumpImpl<>(rs, ws);
+    PumpImplEx<Object> pump = new PumpImplEx<>(rs, ws);
     Handler<Object> handler = pump.getDataHandler();
     new Expectations() {
       {

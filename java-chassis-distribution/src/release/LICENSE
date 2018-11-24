@@ -369,6 +369,12 @@ This product bundles files from vertx which is licensed under the Apache License
 For details, see https://github.com/vert-x3/vertx-web
 
 ================================================================
+For  foundations/foundation-vertx/src/main/java/org/apache/servicecomb/foundation/vertx/stream/PumpImplEx.java
+================================================================
+This product bundles files from vertx which is licensed under the Apache License v2.
+For details, see https://github.com/eclipse-vertx/vert.x
+
+================================================================
 For swagger/swagger-generator/generator-core/src/main/java/org/apache/servicecomb/swagger/extend/property/AbstractBaseIntegerProperty.java
 ================================================================
 This product bundles files from swagger which is licensed under the Apache License v2.
