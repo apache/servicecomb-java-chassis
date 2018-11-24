@@ -20,6 +20,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <artifactId>integration-tests</artifactId>
+    <groupId>org.apache.servicecomb.tests</groupId>
+    <version>1.1.0-SNAPSHOT</version>
+  </parent>
+
   <groupId>org.apache.servicecomb.tests</groupId>
   <artifactId>it-producer-deploy-springboot2-servlet</artifactId>
   <version>1.1.0-SNAPSHOT</version>
@@ -50,6 +56,10 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>foundation-test-scaffolding</artifactId>
       <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
     </dependency>
   </dependencies>
 
