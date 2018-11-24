@@ -35,9 +35,9 @@ public class TestMicroserviceInstanceCache {
       {
         RegistryUtils.getServiceRegistryClient();
         result = client;
-        client.getMicroservice("forkedid");
+        client.getAggregatedMicroservice("forkedid");
         result = microservice;
-        client.getMicroservice("forkedidNull");
+        client.getAggregatedMicroservice("forkedidNull");
         result = null;
       }
     };

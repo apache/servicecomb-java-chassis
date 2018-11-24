@@ -189,6 +189,11 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   @Override
+  public Microservice getAggregatedMicroservice(String microserviceId) {
+    return microserviceIdMap.get(microserviceId);
+  }
+
+  @Override
   public String registerMicroserviceInstance(MicroserviceInstance instance) {
     Map<String, MicroserviceInstance> instanceMap = microserviceInstanceMap.get(instance.getServiceId());
     if (instanceMap == null) {
@@ -345,6 +350,16 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
 
   @Override
   public String getSchema(String microserviceId, String schemaId) {
+    Microservice microservice = microserviceIdMap.get(microserviceId);
+    if (microservice == null) {
+      throw new IllegalArgumentException("Invalid serviceId, serviceId=" + microserviceId);
+    }
+
+    return microservice.getSchemaMap().get(schemaId);
+  }
+
+  @Override
+  public String getAggregatedSchema(String microserviceId, String schemaId) {
     Microservice microservice = microserviceIdMap.get(microserviceId);
     if (microservice == null) {
       throw new IllegalArgumentException("Invalid serviceId, serviceId=" + microserviceId);

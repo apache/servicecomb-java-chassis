@@ -65,7 +65,7 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
     }
 
     ServiceRegistryClient client = RegistryUtils.getServiceRegistryClient();
-    String schemaContent = client.getSchema(context.getMicroservice().getServiceId(), context.getSchemaId());
+    String schemaContent = client.getAggregatedSchema(context.getMicroservice().getServiceId(), context.getSchemaId());
     LOGGER.info("load schema from service center, microservice={}:{}:{}, schemaId={}, result={}",
         context.getMicroservice().getAppId(),
         context.getMicroservice().getServiceName(),

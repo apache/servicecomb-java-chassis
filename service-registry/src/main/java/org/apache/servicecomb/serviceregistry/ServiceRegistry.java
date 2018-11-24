@@ -58,6 +58,15 @@ public interface ServiceRegistry {
 
   Microservice getRemoteMicroservice(String microserviceId);
 
+  /**
+   * <p>
+   *    if connect to simple ServiceCenter, same with the method
+   *    {@linkplain org.apache.servicecomb.serviceregistry.ServiceRegistry#getRemoteMicroservice(String)}  }
+   *    if connect to ServiceCenter Aggregator, not only contain the target ServiceCenter but also other ServiceCenter cluster
+   * </p>
+   */
+  Microservice getAggregatedRemoteMicroervice(String microserviceId);
+
   Features getFeatures();
 
   /**

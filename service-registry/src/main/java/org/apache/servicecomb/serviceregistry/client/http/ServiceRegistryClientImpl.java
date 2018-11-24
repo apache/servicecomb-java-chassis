@@ -358,6 +358,30 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
       countDownLatch.await();
     } catch (Exception e) {
       LOGGER.error("query schema exist {}/{} failed",
+          schemaId,
+          e);
+    }
+    if (holder.value != null) {
+      return holder.value.getSchema();
+    }
+
+    return null;
+  }
+
+  @Override
+  public String getAggregatedSchema(String microserviceId, String schemaId) {
+    Holder<GetSchemaResponse> holder = new Holder<>();
+    IpPort ipPort = ipPortManager.getAvailableAddress();
+
+    CountDownLatch countDownLatch = new CountDownLatch(1);
+    RestUtils.get(ipPort,
+        String.format(Const.REGISTRY_API.MICROSERVICE_SCHEMA, microserviceId, schemaId),
+        new RequestParam().addQueryParam("global", "true"),
+        syncHandler(countDownLatch, GetSchemaResponse.class, holder));
+    try {
+      countDownLatch.await();
+    } catch (Exception e) {
+      LOGGER.error("query schema exist {}/{} failed",
           microserviceId,
           schemaId,
           e);
@@ -453,6 +477,27 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   @Override
+  public Microservice getAggregatedMicroservice(String microserviceId) {
+    Holder<GetServiceResponse> holder = new Holder<>();
+    IpPort ipPort = ipPortManager.getAvailableAddress();
+
+    CountDownLatch countDownLatch = new CountDownLatch(1);
+    RestUtils.get(ipPort,
+        String.format(Const.REGISTRY_API.MICROSERVICE_OPERATION_ONE, microserviceId),
+        new RequestParam().addQueryParam("global", "true"),
+        syncHandler(countDownLatch, GetServiceResponse.class, holder));
+    try {
+      countDownLatch.await();
+      if (holder.value != null) {
+        return holder.value.getService();
+      }
+    } catch (Exception e) {
+      LOGGER.error("query microservice {} failed", microserviceId, e);
+    }
+    return null;
+  }
+
+  @Override
   public String registerMicroserviceInstance(MicroserviceInstance instance) {
     Holder<RegisterInstanceResponse> holder = new Holder<>();
     IpPort ipPort = ipPortManager.getAvailableAddress();
@@ -489,7 +534,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     CountDownLatch countDownLatch = new CountDownLatch(1);
     RestUtils.get(ipPort,
         String.format(Const.REGISTRY_API.MICROSERVICE_INSTANCE_OPERATION_ALL, providerId),
-        new RequestParam().addHeader("X-ConsumerId", consumerId),
+        new RequestParam().addHeader("X-ConsumerId", consumerId).addQueryParam("global", "true"),
         syncHandler(countDownLatch, GetInstancesResponse.class, holder));
     try {
       countDownLatch.await();
@@ -650,6 +695,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
     RequestParam requestParam = new RequestParam().addQueryParam("appId", appId)
         .addQueryParam("serviceName", serviceName)
+        .addQueryParam("global", "true")
         .addQueryParam("version", versionRule)
         .addHeader("X-ConsumerId", consumerId);
     if (revision != null) {
@@ -774,7 +820,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
       CountDownLatch countDownLatch = new CountDownLatch(1);
       RestUtils.get(ipPort,
           String.format(Const.REGISTRY_API.MICROSERVICE_INSTANCE_OPERATION_ONE, serviceId, instanceId),
-          new RequestParam().addHeader("X-ConsumerId", serviceId),
+          new RequestParam().addHeader("X-ConsumerId", serviceId).addQueryParam("global", "true"),
           syncHandler(countDownLatch, MicroserviceInstanceResponse.class, holder));
       countDownLatch.await();
       if (null != holder.value) {
@@ -795,7 +841,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     CountDownLatch countDownLatch = new CountDownLatch(1);
     RestUtils.get(ipPort,
         Const.REGISTRY_API.SERVICECENTER_VERSION,
-        new RequestParam(),
+        new RequestParam().addQueryParam("global", "true"),
         syncHandler(countDownLatch, ServiceCenterInfo.class, holder));
     try {
       countDownLatch.await();
