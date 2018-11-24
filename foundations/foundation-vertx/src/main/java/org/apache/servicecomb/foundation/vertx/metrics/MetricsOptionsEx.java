@@ -23,7 +23,7 @@ import io.vertx.core.metrics.MetricsOptions;
 public class MetricsOptionsEx extends MetricsOptions {
   private long checkClientEndpointMetricIntervalInMilliseconds = TimeUnit.MINUTES.toMillis(1);
 
-  private long checkClientEndpointMetricExpiredInNano = TimeUnit.MINUTES.toNanos(30);
+  private long checkClientEndpointMetricExpiredInNano = TimeUnit.MINUTES.toNanos(15);
 
   public long getCheckClientEndpointMetricIntervalInMilliseconds() {
     return checkClientEndpointMetricIntervalInMilliseconds;

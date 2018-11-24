@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultClientEndpointMetricManager;
-import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMetric;
+import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultServerEndpointMetric;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -42,7 +42,7 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
   private VertxOptions vertxOptions;
 
   // to support listen multiple addresses, must use a map to manage the metric
-  private Map<SocketAddress, DefaultEndpointMetric> serverEndpointMetricMap = new ConcurrentHashMapEx<>();
+  private Map<SocketAddress, DefaultServerEndpointMetric> serverEndpointMetricMap = new ConcurrentHashMapEx<>();
 
   private volatile DefaultClientEndpointMetricManager clientEndpointMetricManager;
 
@@ -61,15 +61,15 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
     return clientEndpointMetricManager;
   }
 
-  public Map<SocketAddress, DefaultEndpointMetric> getServerEndpointMetricMap() {
+  public Map<SocketAddress, DefaultServerEndpointMetric> getServerEndpointMetricMap() {
     return serverEndpointMetricMap;
   }
 
   @Override
   public HttpServerMetrics<?, ?, ?> createMetrics(HttpServer server, SocketAddress localAddress,
       HttpServerOptions options) {
-    DefaultEndpointMetric endpointMetric = serverEndpointMetricMap
-        .computeIfAbsent(localAddress, DefaultEndpointMetric::new);
+    DefaultServerEndpointMetric endpointMetric = serverEndpointMetricMap
+        .computeIfAbsent(localAddress, DefaultServerEndpointMetric::new);
     return new DefaultHttpServerMetrics(endpointMetric);
   }
 
@@ -80,8 +80,8 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
 
   @Override
   public TCPMetrics<?> createMetrics(SocketAddress localAddress, NetServerOptions options) {
-    DefaultEndpointMetric endpointMetric = serverEndpointMetricMap
-        .computeIfAbsent(localAddress, DefaultEndpointMetric::new);
+    DefaultServerEndpointMetric endpointMetric = serverEndpointMetricMap
+        .computeIfAbsent(localAddress, DefaultServerEndpointMetric::new);
     return new DefaultTcpServerMetrics(endpointMetric);
   }
 
