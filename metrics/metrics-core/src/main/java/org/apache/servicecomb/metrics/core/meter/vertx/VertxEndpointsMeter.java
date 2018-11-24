@@ -63,8 +63,12 @@ public class VertxEndpointsMeter extends AbstractPeriodMeter {
       }
     }
     for (DefaultEndpointMetric metric : endpointMetricMap.values()) {
-      endpointMeterMap.computeIfAbsent(metric.getAddress(), addr -> new EndpointMeter(id, metric));
+      endpointMeterMap.computeIfAbsent(metric.getAddress(), addr -> createEndpointMeter(id, metric));
     }
+  }
+
+  protected EndpointMeter createEndpointMeter(Id id, DefaultEndpointMetric metric) {
+    return new EndpointMeter(id, metric);
   }
 
   @Override
