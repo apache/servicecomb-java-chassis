@@ -21,6 +21,7 @@ import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.metrics.core.meter.vertx.VertxEndpointsMeter;
+import org.apache.servicecomb.metrics.core.meter.vertx.VertxServerEndpointsMeter;
 
 import com.google.common.eventbus.EventBus;
 import com.netflix.spectator.api.Id;
@@ -50,7 +51,8 @@ public class VertxMetersInitializer implements MetricsInitializer {
             .getClientEndpointMetricMap());
     SpectatorUtils.registerMeter(registry, clientMeter);
 
-    VertxEndpointsMeter serverMeter = new VertxEndpointsMeter(endpointsId.withTag(ENDPOINTS_TYPE, ENDPOINTS_SERVER),
+    VertxEndpointsMeter serverMeter = new VertxServerEndpointsMeter(
+        endpointsId.withTag(ENDPOINTS_TYPE, ENDPOINTS_SERVER),
         AbstractTransport
             .getTransportVertxFactory()
             .getMetricsFactory()

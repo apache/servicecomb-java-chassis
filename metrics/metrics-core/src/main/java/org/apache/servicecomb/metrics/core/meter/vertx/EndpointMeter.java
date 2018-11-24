@@ -38,6 +38,8 @@ public class EndpointMeter {
 
   public static final String BYTES_WRITTEN = "bytesWritten";
 
+  protected Id id;
+
   private Id idConnect;
 
   private Id idDisconnect;
@@ -48,7 +50,7 @@ public class EndpointMeter {
 
   private Id idBytesWritten;
 
-  private DefaultEndpointMetric metric;
+  protected DefaultEndpointMetric metric;
 
   private long lastConnectCount;
 
@@ -60,6 +62,7 @@ public class EndpointMeter {
 
   public EndpointMeter(Id id, DefaultEndpointMetric metric) {
     id = id.withTag(ADDRESS, metric.getAddress().toString());
+    this.id = id;
     idConnect = id.withTag(STATISTIC, CONNECT_COUNT);
     idDisconnect = id.withTag(STATISTIC, DISCONNECT_COUNT);
     idConnections = id.withTag(STATISTIC, CONNECTIONS);
@@ -72,7 +75,7 @@ public class EndpointMeter {
     return metric;
   }
 
-  private Measurement newMeasurement(Id id, long timestamp, Number n) {
+  protected Measurement newMeasurement(Id id, long timestamp, Number n) {
     return new Measurement(id, timestamp, n.doubleValue());
   }
 
