@@ -18,6 +18,8 @@ package org.apache.servicecomb.metrics.core.meter.os;
 
 
 import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,15 +43,21 @@ public class TestOsMeter {
   Registry registry = new DefaultRegistry(new ManualClock());
 
   @Test
-  public void testCalcMeasurement(@Mocked Runtime runtime) {
+  public void testCalcMeasurement(@Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean) {
     List<String> list = new ArrayList<>();
-    list.add("cpu  1 1 1 1 1 1 1 1 0 0");
+    list.add("cpu  1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1");
     list.add("useless");
     list.add("eth0: 0 0    0    0    0     0          0          0         0 0    0      0     0     0    0    0");
     new MockUp<FileUtils>() {
       @Mock
       public List<String> readLines(File file, Charset encoding) {
         return list;
+      }
+    };
+    new MockUp<ManagementFactory>() {
+      @Mock
+      RuntimeMXBean getRuntimeMXBean() {
+        return mxBean;
       }
     };
     new MockUp<Runtime>() {
@@ -62,19 +70,24 @@ public class TestOsMeter {
       {
         runtime.availableProcessors();
         result = 2;
+        mxBean.getName();
+        result = "6666@desktop111";
       }
     };
     OsMeter osMeter = new OsMeter(registry);
     list.clear();
-    list.add("cpu  2 2 2 2 2 2 2 2 0 0");
+    list.add("cpu  2 2 2 2 2 2 2 2 0 0 2 2 2 2 2 2 2 2 2 2");
     list.add("useless");
     list.add("eth0: 1 1    0    0    0     0          0          1         1 1    1      0     0     0    0    0");
 
     osMeter.calcMeasurements(1, 1);
     ArrayList<Measurement> measurements = Lists.newArrayList(osMeter.measure());
-    Assert.assertEquals(3, measurements.size());
+    Assert.assertEquals(6, measurements.size());
     Assert.assertEquals(1.75, measurements.get(0).value(), 0.0);
     Assert.assertEquals(1.0, measurements.get(1).value(), 0.0);
     Assert.assertEquals(1.0, measurements.get(2).value(), 0.0);
+    Assert.assertEquals(1.0, measurements.get(3).value(), 0.0);
+    Assert.assertEquals(1.0, measurements.get(4).value(), 0.0);
+    Assert.assertEquals(1.0, measurements.get(5).value(), 0.0);
   }
 }

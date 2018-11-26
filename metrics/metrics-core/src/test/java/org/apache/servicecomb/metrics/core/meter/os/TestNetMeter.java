@@ -57,6 +57,8 @@ public class TestNetMeter {
     Assert.assertEquals("eth0", eth0.getName());
     Assert.assertEquals(1L, eth0.getLastRxBytes());
     Assert.assertEquals(1L, eth0.getLastTxBytes());
+    Assert.assertEquals(1L, eth0.getLastRxPackets());
+    Assert.assertEquals(1L, eth0.getLastTxPackets());
     Assert.assertEquals(1, eth0.getReceiveRate(), 0.0);
     Assert.assertEquals(1, eth0.getSendRate(), 0.0);
   }
@@ -85,15 +87,24 @@ public class TestNetMeter {
     InterfaceInfo eth0 = netMap.get("eth0");
     Assert.assertEquals("eth0", eth0.getName());
     Assert.assertEquals(1L, eth0.getLastRxBytes());
+    Assert.assertEquals(1L, eth0.getLastRxPackets());
+    Assert.assertEquals(1L, eth0.getLastTxPackets());
     Assert.assertEquals(1L, eth0.getLastTxBytes());
     Assert.assertEquals(1, eth0.getReceiveRate(), 0.0);
     Assert.assertEquals(1, eth0.getSendRate(), 0.0);
+    Assert.assertEquals(1, eth0.getSendPacketsRate(), 0.0);
+    Assert.assertEquals(1, eth0.getReceivePacketsRate(), 0.0);
+
     InterfaceInfo lo = netMap.get("lo");
     Assert.assertEquals("lo", lo.getName());
     Assert.assertEquals(0L, lo.getLastRxBytes());
+    Assert.assertEquals(0L, lo.getLastRxPackets());
+    Assert.assertEquals(0L, lo.getLastTxPackets());
     Assert.assertEquals(0L, lo.getLastTxBytes());
     Assert.assertEquals(0, lo.getReceiveRate(), 0.0);
+    Assert.assertEquals(0, lo.getReceivePacketsRate(), 0.0);
     Assert.assertEquals(0, lo.getSendRate(), 0.0);
+    Assert.assertEquals(0, lo.getSendPacketsRate(), 0.0);
   }
 
 
@@ -118,13 +129,22 @@ public class TestNetMeter {
     Assert.assertEquals("lo", lo.getName());
     Assert.assertEquals(0L, lo.getLastRxBytes());
     Assert.assertEquals(0L, lo.getLastTxBytes());
+    Assert.assertEquals(0L, lo.getLastRxPackets());
+    Assert.assertEquals(0L, lo.getLastTxPackets());
     Assert.assertEquals(0, lo.getReceiveRate(), 0.0);
+    Assert.assertEquals(0, lo.getReceivePacketsRate(), 0.0);
     Assert.assertEquals(0, lo.getSendRate(), 0.0);
+    Assert.assertEquals(0, lo.getSendPacketsRate(), 0.0);
+
     Assert.assertEquals("eth0", eth0.getName());
-    Assert.assertEquals(0L, eth0.getLastTxBytes());
     Assert.assertEquals(0L, eth0.getLastRxBytes());
+    Assert.assertEquals(0L, eth0.getLastTxBytes());
+    Assert.assertEquals(0L, eth0.getLastRxPackets());
+    Assert.assertEquals(0L, eth0.getLastTxPackets());
     Assert.assertEquals(0, eth0.getReceiveRate(), 0.0);
+    Assert.assertEquals(0, eth0.getReceivePacketsRate(), 0.0);
     Assert.assertEquals(0, eth0.getSendRate(), 0.0);
+    Assert.assertEquals(0, eth0.getSendPacketsRate(), 0.0);
     list.remove(2);
     list.remove(2);
     list.add("eth0: 1 1    0    0    0     0          0          1         1 1    1      0     0     0    0    0");
@@ -134,8 +154,12 @@ public class TestNetMeter {
     Assert.assertEquals("eth0", eth0.getName());
     Assert.assertEquals(1L, eth0.getLastRxBytes());
     Assert.assertEquals(1L, eth0.getLastTxBytes());
+    Assert.assertEquals(1L, eth0.getLastRxPackets());
+    Assert.assertEquals(1L, eth0.getLastTxPackets());
     Assert.assertEquals(1, eth0.getReceiveRate(), 0.0);
+    Assert.assertEquals(1, eth0.getReceivePacketsRate(), 0.0);
     Assert.assertEquals(1, eth0.getSendRate(), 0.0);
+    Assert.assertEquals(1, eth0.getSendPacketsRate(), 0.0);
   }
 
 
@@ -156,10 +180,14 @@ public class TestNetMeter {
     list.add("eth0: 1 1    0    0    0     0          0          1         1 1    1      0     0     0    0    0");
     List<Measurement> measurements = new ArrayList<>();
     netMeter.calcMeasurements(measurements, 0L, 1);
-    Assert.assertEquals(2, measurements.size());
+    Assert.assertEquals(4, measurements.size());
     Measurement send = measurements.get(0);
-    Measurement recv = measurements.get(1);
+    Measurement sendPackets = measurements.get(1);
+    Measurement receive = measurements.get(0);
+    Measurement receivePackets = measurements.get(1);
     Assert.assertEquals(1.0, send.value(), 0.0);
-    Assert.assertEquals(1.0, recv.value(), 0.0);
+    Assert.assertEquals(1.0, sendPackets.value(), 0.0);
+    Assert.assertEquals(1.0, receive.value(), 0.0);
+    Assert.assertEquals(1.0, receivePackets.value(), 0.0);
   }
 }

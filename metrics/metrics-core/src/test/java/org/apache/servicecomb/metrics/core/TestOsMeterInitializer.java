@@ -17,6 +17,8 @@
 package org.apache.servicecomb.metrics.core;
 
 import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,10 +63,10 @@ public class TestOsMeterInitializer {
   }
 
   @Test
-  public void init(@Mocked Runtime runtime) {
+  public void init(@Mocked Runtime runtime,@Mocked RuntimeMXBean mxBean) {
     ReflectUtils.setField(SystemUtils.class, null, "IS_OS_LINUX", true);
     List<String> list = new ArrayList<>();
-    list.add("cpu  1 1 1 1 1 1 1 1 0 0");
+    list.add("cpu  1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1");
     list.add("useless");
     list.add("eth0: 0 0    0    0    0     0          0          0         0 0    0      0     0     0    0    0");
     new MockUp<FileUtils>() {
@@ -73,6 +75,13 @@ public class TestOsMeterInitializer {
         return list;
       }
     };
+    new MockUp<ManagementFactory>() {
+      @Mock
+      RuntimeMXBean getRuntimeMXBean() {
+        return mxBean;
+      }
+    };
+
     new MockUp<Runtime>() {
       @Mock
       public Runtime getRuntime() {
@@ -83,6 +92,8 @@ public class TestOsMeterInitializer {
       {
         runtime.availableProcessors();
         result = 2;
+        mxBean.getName();
+        result = "6666@desktop111";
       }
     };
     globalRegistry.add(registry);
@@ -94,6 +105,8 @@ public class TestOsMeterInitializer {
     Assert.assertNotNull(osMeter.getNetMeter());
     CpuMeter cpuMeter = osMeter.getCpuMeter();
     NetMeter netMeter = osMeter.getNetMeter();
+    Assert.assertEquals("6666", cpuMeter.getPid());
+    Assert.assertEquals(4L, cpuMeter.getLastProcessTime());
     Assert.assertEquals(2, cpuMeter.getCpuNum());
     Assert.assertEquals(1L, cpuMeter.getLastIdleTime());
     Assert.assertEquals(8L, cpuMeter.getLastTotalTime());
@@ -102,8 +115,13 @@ public class TestOsMeterInitializer {
     InterfaceInfo eth0 = interfaceInfoMap.get("eth0");
     Assert.assertEquals(0L, eth0.getLastRxBytes());
     Assert.assertEquals(0L, eth0.getLastTxBytes());
+    Assert.assertEquals(0L, eth0.getLastTxPackets());
+    Assert.assertEquals(0L, eth0.getLastRxPackets());
+
     Assert.assertEquals(0.0, eth0.getSendRate(), 0.0);
     Assert.assertEquals(0.0, eth0.getReceiveRate(), 0.0);
+    Assert.assertEquals(0.0, eth0.getReceivePacketsRate(), 0.0);
+    Assert.assertEquals(0.0, eth0.getSendPacketsRate(), 0.0);
   }
 
   @Test

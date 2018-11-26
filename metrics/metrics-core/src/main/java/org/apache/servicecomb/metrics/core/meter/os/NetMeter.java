@@ -43,7 +43,11 @@ public class NetMeter {
 
   public static final Tag TAG_RECEIVE = new BasicTag(STATISTIC, "receive");
 
+  public static final Tag TAG_PACKETS_RECEIVE = new BasicTag(STATISTIC, "receivePackets");
+
   public static final Tag TAG_SEND = new BasicTag(STATISTIC, "send");
+
+  public static final Tag TAG_PACKETS_SEND = new BasicTag(STATISTIC, "sendPackets");
 
   private final Id id;
 
@@ -56,32 +60,55 @@ public class NetMeter {
 
     private Id receiveId;
 
+    private Id sendPacketId;
+
+    private Id receivePacketId;
+
     //receive bytes
     private long lastRxBytes;
 
     //transmit bytes
     private long lastTxBytes;
 
+    //receive packets
+    private long lastRxPackets;
+
+    //transmit packets
+    private long lastTxPackets;
+
     // bytes per second
     private double sendRate;
 
     private double receiveRate;
 
+    private double sendPacketsRate;
+
+    private double receivePacketsRate;
+
+
     InterfaceInfo(Id id, String name) {
       this.name = name;
       id = id.withTag(INTERFACE, name);
       this.sendId = id.withTag(TAG_SEND);
+      this.sendPacketId = id.withTag(TAG_PACKETS_SEND);
       this.receiveId = id.withTag(TAG_RECEIVE);
+      this.receivePacketId = id.withTag(TAG_PACKETS_RECEIVE);
     }
 
     public void update(String interfaceData, long secondInterval) {
       String[] netInfo = interfaceData.trim().split("\\s+");
       long rxBytes = Long.parseLong(netInfo[0]);
+      long rxPackets = Long.parseLong(netInfo[1]);
       long txBytes = Long.parseLong(netInfo[8]);
+      long txPackets = Long.parseLong(netInfo[9]);
       sendRate = (double) (txBytes - lastTxBytes) / secondInterval;
+      sendPacketsRate = (double) (txPackets - lastTxPackets) / secondInterval;
       receiveRate = (double) (rxBytes - lastRxBytes) / secondInterval;
+      receivePacketsRate = (double) (rxPackets - lastRxPackets) / secondInterval;
       lastRxBytes = rxBytes;
+      lastRxPackets = rxPackets;
       lastTxBytes = txBytes;
+      lastTxPackets = txPackets;
     }
 
     public String getName() {
@@ -103,16 +130,34 @@ public class NetMeter {
     public double getReceiveRate() {
       return receiveRate;
     }
+
+    public long getLastRxPackets() {
+      return lastRxPackets;
+    }
+
+    public long getLastTxPackets() {
+      return lastTxPackets;
+    }
+
+    public double getSendPacketsRate() {
+      return sendPacketsRate;
+    }
+
+    public double getReceivePacketsRate() {
+      return receivePacketsRate;
+    }
   }
 
   public NetMeter(Id id) {
     this.id = id;
 
-    // init lastRxBytes and lastTxBytes
+    // init lastRxBytes, lastRxPackets, lastTxBytes, lastTxPackets
     refreshNet(1);
     for (InterfaceInfo interfaceInfo : interfaceInfoMap.values()) {
       interfaceInfo.sendRate = 0;
+      interfaceInfo.sendPacketsRate = 0;
       interfaceInfo.receiveRate = 0;
+      interfaceInfo.receivePacketsRate = 0;
     }
   }
 
@@ -121,7 +166,9 @@ public class NetMeter {
 
     for (InterfaceInfo interfaceInfo : interfaceInfoMap.values()) {
       measurements.add(new Measurement(interfaceInfo.sendId, msNow, interfaceInfo.sendRate));
+      measurements.add(new Measurement(interfaceInfo.sendPacketId, msNow, interfaceInfo.sendPacketsRate));
       measurements.add(new Measurement(interfaceInfo.receiveId, msNow, interfaceInfo.receiveRate));
+      measurements.add(new Measurement(interfaceInfo.receivePacketId, msNow, interfaceInfo.receivePacketsRate));
     }
   }
 
@@ -129,7 +176,7 @@ public class NetMeter {
    * Inter-|   Receive                                                            |  Transmit
    *  face |bytes      packets     errs drop fifo  frame      compressed multicast|bytes       packets     errs   drop  fifo colls carrier compressed
    *  eth0: 2615248100 32148518    0    0    0     0          0          0         87333034794 21420267    0      0     0     0    0    0
-   *        0          1           2    3    4     5          6          7          8
+   *        0          1           2    3    4     5          6          7          8          9
    */
   protected void refreshNet(long secondInterval) {
     try {

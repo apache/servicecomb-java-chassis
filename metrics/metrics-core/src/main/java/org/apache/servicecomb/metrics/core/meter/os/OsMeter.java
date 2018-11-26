@@ -26,9 +26,12 @@ import com.netflix.spectator.api.Measurement;
 import com.netflix.spectator.api.Registry;
 
 /**
- * name=os type=cpu value=10.0
+ * name=os type=cpu statistic=allProcess value = 0
+ * name=os type=cpu statistic=currentProcess value = 0
  * name=os type=net interface=eth0 statistic=send value=100
  * name=os type=net interface=eth0 statistic=receive value=100
+ * name=os type=net interface=eth0 statistic=sendP value=100
+ * name=os type=net interface=eth0 statistic=receiveP value=100
  */
 public class OsMeter extends AbstractPeriodMeter {
   public static final String OS_NAME = "os";

@@ -32,6 +32,7 @@ import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.metrics.core.VertxMetersInitializer;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
+import org.apache.servicecomb.metrics.core.meter.os.CpuMeter;
 import org.apache.servicecomb.metrics.core.meter.os.NetMeter;
 import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
@@ -139,19 +140,23 @@ public class DefaultLogPublisher implements MetricsInitializer {
     }
 
     appendLine(sb, "  net:");
-    appendLine(sb, "    send         receive      interface");
+    appendLine(sb, "    send(Bps)    recv(Bps)    send(pps)    recv(pps)      interface");
 
     StringBuilder tmpSb = new StringBuilder();
     for (MeasurementNode interfaceNode : netNode.getChildren().values()) {
       double sendRate = interfaceNode.findChild(NetMeter.TAG_SEND.value()).summary();
+      double sendPacketsRate = interfaceNode.findChild(NetMeter.TAG_PACKETS_SEND.value()).summary();
       double receiveRate = interfaceNode.findChild(NetMeter.TAG_RECEIVE.value()).summary();
-      if (sendRate == 0 && receiveRate == 0) {
+      double receivePacketsRate = interfaceNode.findChild(NetMeter.TAG_PACKETS_RECEIVE.value()).summary();
+      if (sendRate == 0 && receiveRate == 0 && receivePacketsRate == 0 && sendPacketsRate == 0) {
         continue;
       }
 
-      appendLine(tmpSb, "    %-12s %-12s %s",
+      appendLine(tmpSb, "    %-12s %-12s %-12s %-14s %s",
           NetUtils.humanReadableBytes((long) sendRate),
           NetUtils.humanReadableBytes((long) receiveRate),
+          NetUtils.humanReadableBytes((long) sendPacketsRate),
+          NetUtils.humanReadableBytes((long) receivePacketsRate),
           interfaceNode.getName());
     }
     if (tmpSb.length() != 0) {
@@ -161,8 +166,14 @@ public class DefaultLogPublisher implements MetricsInitializer {
 
   private void printCpuLog(StringBuilder sb, MeasurementNode osNode) {
     MeasurementNode cpuNode = osNode.findChild(OsMeter.OS_TYPE_CPU);
-    if (cpuNode != null && !cpuNode.getMeasurements().isEmpty()) {
-      appendLine(sb, "  cpu: %.2f%%", cpuNode.summary() * 100);
+    if (cpuNode == null || cpuNode.getMeasurements().isEmpty()) {
+      return;
+    }
+    double allRate = cpuNode.findChild(CpuMeter.TAG_All.value()).summary();
+    double processRate = cpuNode.findChild(CpuMeter.TAG_CURRENT.value()).summary();
+    if (allRate != 0 || processRate != 0) {
+      appendLine(sb, "  cpu:");
+      appendLine(sb, "    all: %.2f%%    process: %.2f%%", allRate * 100, processRate * 100);
     }
   }
 
