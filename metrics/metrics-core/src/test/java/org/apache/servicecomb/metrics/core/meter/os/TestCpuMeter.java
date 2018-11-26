@@ -17,6 +17,8 @@
 package org.apache.servicecomb.metrics.core.meter.os;
 
 import java.io.File;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,54 +38,70 @@ import mockit.Mocked;
 public class TestCpuMeter {
 
   @Test
-  public void testRefreshCpuSuccess(@Mocked Id id, @Mocked Runtime runtime) {
+  public void testRefreshCpuSuccess(@Mocked Id id, @Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean) {
     List<String> list = new ArrayList<>();
-    list.add("cpu  1 1 1 1 1 1 1 1 0 0");
+    list.add("cpu  1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1");
     new MockUp<FileUtils>() {
       @Mock
       public List<String> readLines(File file, Charset encoding) {
         return list;
       }
     };
-    new Expectations() {
-      {
-        runtime.availableProcessors();
-        result = 2;
+    new MockUp<ManagementFactory>() {
+      @Mock
+      RuntimeMXBean getRuntimeMXBean() {
+        return mxBean;
       }
     };
+
     new MockUp<Runtime>() {
       @Mock
       public Runtime getRuntime() {
         return runtime;
       }
     };
+    new Expectations() {
+      {
+        runtime.availableProcessors();
+        result = 2;
+        mxBean.getName();
+        result = "6666@desktop111";
+      }
+    };
     CpuMeter cpuMeter = new CpuMeter(id);
     Assert.assertEquals(0.0, cpuMeter.getRate(), 0.0);
+    Assert.assertEquals(0.0, cpuMeter.getProcessRate(), 0.0);
+    Assert.assertEquals("6666", cpuMeter.getPid());
+    Assert.assertEquals(4L, cpuMeter.getLastProcessTime());
     Assert.assertEquals(8, cpuMeter.getLastTotalTime());
     Assert.assertEquals(1, cpuMeter.getLastIdleTime());
     Assert.assertEquals(2, cpuMeter.getCpuNum());
-    list.add(0, "cpu  2 2 2 2 2 2 2 2 0 0");
+    list.add(0, "cpu  2 2 2 2 2 2 2 2 0 0 2 2 2 2 2 2 2 2 2 2");
     cpuMeter.refreshCpu();
+    Assert.assertEquals(1.0, cpuMeter.getProcessRate(), 0.0);
     Assert.assertEquals(1.75, cpuMeter.getRate(), 0.0);
     Assert.assertEquals(16, cpuMeter.getLastTotalTime());
+    Assert.assertEquals(8, cpuMeter.getLastProcessTime());
     Assert.assertEquals(2, cpuMeter.getLastIdleTime());
     Assert.assertEquals(2, cpuMeter.getCpuNum());
+    Assert.assertEquals("6666", cpuMeter.getPid());
   }
 
   @Test
-  public void testRefreshError(@Mocked Id id, @Mocked Runtime runtime) {
+  public void testRefreshError(@Mocked Id id, @Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean) {
     List<String> list = new ArrayList<>();
-    list.add("cpu  1 1 1 1 1 1 1 1 0 0");
+    list.add("cpu  1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1");
     new MockUp<FileUtils>() {
       @Mock
       public List<String> readLines(File file, Charset encoding) {
         return list;
       }
     };
-    new Expectations() {
-      {
-        runtime.availableProcessors();
-        result = 2;
+
+    new MockUp<ManagementFactory>() {
+      @Mock
+      RuntimeMXBean getRuntimeMXBean() {
+        return mxBean;
       }
     };
     new MockUp<Runtime>() {
@@ -92,33 +110,48 @@ public class TestCpuMeter {
         return runtime;
       }
     };
+    new Expectations() {
+      {
+        runtime.availableProcessors();
+        result = 2;
+        mxBean.getName();
+        result = "6666@desktop111";
+      }
+    };
     CpuMeter cpuMeter = new CpuMeter(id);
+    Assert.assertEquals(0.0, cpuMeter.getProcessRate(), 0.0);
+    Assert.assertEquals("6666", cpuMeter.getPid());
+    Assert.assertEquals(4L, cpuMeter.getLastProcessTime());
     Assert.assertEquals(0.0, cpuMeter.getRate(), 0.0);
     Assert.assertEquals(8, cpuMeter.getLastTotalTime());
     Assert.assertEquals(1, cpuMeter.getLastIdleTime());
     Assert.assertEquals(2, cpuMeter.getCpuNum());
-    list.add(0, "cpu  1 1 1 1 1 1 1 1 0 0");
+    list.add(0, "cpu  1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1 1 1");
     cpuMeter.refreshCpu();
+    Assert.assertEquals(0.0, cpuMeter.getProcessRate(), 0.0);
+    Assert.assertEquals("6666", cpuMeter.getPid());
+    Assert.assertEquals(4L, cpuMeter.getLastProcessTime());
     Assert.assertEquals(0.0, cpuMeter.getRate(), 0.0);
     Assert.assertEquals(8, cpuMeter.getLastTotalTime());
     Assert.assertEquals(1, cpuMeter.getLastIdleTime());
   }
 
   @Test
-  public void testCalcMeasurements(@Mocked Id id, @Mocked Runtime runtime) {
+  public void testCalcMeasurements(@Mocked Id id, @Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean) {
     List<Measurement> measurements = new ArrayList<>();
     List<String> list = new ArrayList<>();
-    list.add("cpu  1 1 1 1 1 1 1 1 0 0");
+    list.add("cpu  1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1");
     new MockUp<FileUtils>() {
       @Mock
       public List<String> readLines(File file, Charset encoding) {
         return list;
       }
     };
-    new Expectations() {
-      {
-        runtime.availableProcessors();
-        result = 2;
+
+    new MockUp<ManagementFactory>() {
+      @Mock
+      RuntimeMXBean getRuntimeMXBean() {
+        return mxBean;
       }
     };
     new MockUp<Runtime>() {
@@ -127,12 +160,23 @@ public class TestCpuMeter {
         return runtime;
       }
     };
+    new Expectations() {
+      {
+        runtime.availableProcessors();
+        result = 2;
+        mxBean.getName();
+        result = "6666@desktop111";
+      }
+    };
     CpuMeter cpuMeter = new CpuMeter(id);
-    list.add(0, "cpu  2 2 2 2 2 2 2 2 0 0");
+    list.add(0, "cpu  2 2 2 2 2 2 2 2 0 0 2 2 2 2 2 2 2 2 2 2");
     cpuMeter.calcMeasurements(measurements, 0);
-    Assert.assertEquals(1, measurements.size());
+    Assert.assertEquals(2, measurements.size());
     Measurement measurement = measurements.get(0);
     Assert.assertEquals(0, measurement.timestamp());
     Assert.assertEquals(1.75, measurement.value(), 0.0);
+    measurement = measurements.get(1);
+    Assert.assertEquals(0, measurement.timestamp());
+    Assert.assertEquals(1.0, measurement.value(), 0.0);
   }
 }

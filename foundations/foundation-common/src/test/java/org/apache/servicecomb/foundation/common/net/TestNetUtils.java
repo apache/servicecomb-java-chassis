@@ -110,40 +110,39 @@ public class TestNetUtils {
 
   @Test
   public void humanReadableBytes() throws IOException {
-    Assert.assertEquals("0 B", NetUtils.humanReadableBytes(0L));
-    Assert.assertEquals("1 B", NetUtils.humanReadableBytes(1L));
-    Assert.assertEquals("1023 B", NetUtils.humanReadableBytes(1023L));
+    Assert.assertEquals("0", NetUtils.humanReadableBytes(0L));
+    Assert.assertEquals("1", NetUtils.humanReadableBytes(1L));
+    Assert.assertEquals("1023", NetUtils.humanReadableBytes(1023L));
 
-    Assert.assertEquals("1.000 KB", NetUtils.humanReadableBytes(1024L));
-    Assert.assertEquals("1.001 KB", NetUtils.humanReadableBytes(1025L));
-    Assert.assertEquals("1023.999 KB", NetUtils.humanReadableBytes(1024L * 1024 - 1));
+    Assert.assertEquals("1.000K", NetUtils.humanReadableBytes(1024L));
+    Assert.assertEquals("1.001K", NetUtils.humanReadableBytes(1025L));
+    Assert.assertEquals("1023.999K", NetUtils.humanReadableBytes(1024L * 1024 - 1));
 
-    Assert.assertEquals("1.000 MB", NetUtils.humanReadableBytes(1024L * 1024));
-    Assert.assertEquals("1.000 MB", NetUtils.humanReadableBytes(1024L * 1024 + 1));
-    Assert.assertEquals("1.001 MB", NetUtils.humanReadableBytes(1024L * 1024 + 1024));
-    Assert.assertEquals("1023.999 MB", NetUtils.humanReadableBytes(1024L * 1024 * 1024 - 1024));
-    Assert.assertEquals("1024.000 MB", NetUtils.humanReadableBytes(1024L * 1024 * 1024 - 1));
-
-    Assert.assertEquals("1.000 GB", NetUtils.humanReadableBytes(1024L * 1024 * 1024));
-    Assert.assertEquals("1.000 GB", NetUtils.humanReadableBytes(1024L * 1024 * 1024 + 1));
-    Assert.assertEquals("1.000 GB", NetUtils.humanReadableBytes(1024L * 1024 * 1024 + 1024));
-    Assert.assertEquals("1023.999 GB", NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 - 1024 * 1024));
-    Assert.assertEquals("1024.000 GB", NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 - 1024));
-    Assert.assertEquals("1.000 TB", NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024));
-    Assert.assertEquals("1.001 TB", NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 + 1024 * 1024 * 1024));
-    Assert.assertEquals("1023.999 TB",
+    Assert.assertEquals("1.000M", NetUtils.humanReadableBytes(1024L * 1024));
+    Assert.assertEquals("1.000M", NetUtils.humanReadableBytes(1024L * 1024 + 1));
+    Assert.assertEquals("1.001M", NetUtils.humanReadableBytes(1024L * 1024 + 1024));
+    Assert.assertEquals("1023.999M", NetUtils.humanReadableBytes(1024L * 1024 * 1024 - 1024));
+    Assert.assertEquals("1024.000M", NetUtils.humanReadableBytes(1024L * 1024 * 1024 - 1));
+    Assert.assertEquals("1.000G", NetUtils.humanReadableBytes(1024L * 1024 * 1024));
+    Assert.assertEquals("1.000G", NetUtils.humanReadableBytes(1024L * 1024 * 1024 + 1));
+    Assert.assertEquals("1.000G", NetUtils.humanReadableBytes(1024L * 1024 * 1024 + 1024));
+    Assert.assertEquals("1023.999G", NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 - 1024 * 1024));
+    Assert.assertEquals("1024.000G", NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 - 1024));
+    Assert.assertEquals("1.000T", NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024));
+    Assert.assertEquals("1.001T", NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 + 1024 * 1024 * 1024));
+    Assert.assertEquals("1023.999T",
         NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 * 1024 - 1024L * 1024 * 1024));
 
-    Assert.assertEquals("1.000 PB", NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 * 1024));
-    Assert.assertEquals("1.001 PB",
+    Assert.assertEquals("1.000P", NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 * 1024));
+    Assert.assertEquals("1.001P",
         NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 * 1024 + 1024L * 1024 * 1024 * 1024));
-    Assert.assertEquals("1023.999 PB",
+    Assert.assertEquals("1023.999P",
         NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 * 1024 * 1024 - 1024L * 1024 * 1024 * 1024));
 
-    Assert.assertEquals("1.000 EB", NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 * 1024 * 1024));
-    Assert.assertEquals("1.001 EB",
+    Assert.assertEquals("1.000E", NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 * 1024 * 1024));
+    Assert.assertEquals("1.001E",
         NetUtils.humanReadableBytes(1024L * 1024 * 1024 * 1024 * 1024 * 1024 + 1024L * 1024 * 1024 * 1024 * 1024));
-    Assert.assertEquals("8.000 EB", NetUtils.humanReadableBytes(Long.MAX_VALUE));
+    Assert.assertEquals("8.000E", NetUtils.humanReadableBytes(Long.MAX_VALUE));
   }
 
   @Test

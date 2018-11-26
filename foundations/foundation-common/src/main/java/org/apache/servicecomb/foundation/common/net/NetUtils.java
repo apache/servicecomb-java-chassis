@@ -238,10 +238,10 @@ public final class NetUtils {
   public static String humanReadableBytes(long bytes) {
     int unit = 1024;
     if (bytes < unit) {
-      return bytes + " B";
+      return bytes + "";
     }
     int exp = (int) (Math.log(bytes) / Math.log(unit));
     char pre = "KMGTPE".charAt(exp - 1);
-    return String.format("%.3f %cB", bytes / Math.pow(unit, exp), pre);
+    return String.format("%.3f%c", bytes / Math.pow(unit, exp), pre);
   }
 }
