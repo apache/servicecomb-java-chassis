@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.servicecomb.samples</groupId>
     <artifactId>local-service-registry</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.1.0</version>
   </parent>
   <artifactId>local-registry-client</artifactId>
   <name>Java Chassis::Demo::LocalServiceRegistry::Client</name>
