@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.servicecomb.deployment.Deployment;
+import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.slf4j.Logger;
@@ -130,10 +132,7 @@ public final class ServiceRegistryConfig {
   }
 
   public ArrayList<IpPort> getIpPort() {
-    DynamicStringProperty property =
-        DynamicPropertyFactory.getInstance()
-            .getStringProperty("servicecomb.service.registry.address", "https://127.0.0.1:30100");
-    List<String> uriList = Arrays.asList(property.get().split(","));
+    List<String> uriList = Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_SERVICE_CENTER).getAccessURL();
     ArrayList<IpPort> ipPortList = new ArrayList<>();
     uriList.forEach(anUriList -> {
       try {
@@ -189,7 +188,8 @@ public final class ServiceRegistryConfig {
   public int getHeartBeatRequestTimeout() {
     DynamicIntProperty property =
         DynamicPropertyFactory.getInstance()
-            .getIntProperty("servicecomb.service.registry.client.timeout.heartbeat", DEFAULT_REQUEST_HEARTBEAT_TIMEOUT_IN_MS);
+            .getIntProperty("servicecomb.service.registry.client.timeout.heartbeat",
+                DEFAULT_REQUEST_HEARTBEAT_TIMEOUT_IN_MS);
     int timeout = property.get();
     return timeout < 1 ? DEFAULT_REQUEST_HEARTBEAT_TIMEOUT_IN_MS : timeout;
   }
