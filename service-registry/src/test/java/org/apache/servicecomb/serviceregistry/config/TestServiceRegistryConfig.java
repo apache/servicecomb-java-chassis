@@ -20,6 +20,8 @@ package org.apache.servicecomb.serviceregistry.config;
 import java.util.List;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.servicecomb.deployment.DefaultDeploymentProvider;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.AfterClass;
@@ -33,7 +35,8 @@ public class TestServiceRegistryConfig {
   @BeforeClass
   public static void initClass() {
     ArchaiusUtils.resetConfig();
-    ArchaiusUtils.setProperty("servicecomb.service.registry.address", "http://127.0.0.1, https://127.0.0.1");
+    System.setProperty("servicecomb.service.registry.address", "http://127.0.0.1, https://127.0.0.1");
+    DefaultDeploymentProvider.setConfiguration(ConfigUtil.createLocalConfig());
   }
 
   @AfterClass

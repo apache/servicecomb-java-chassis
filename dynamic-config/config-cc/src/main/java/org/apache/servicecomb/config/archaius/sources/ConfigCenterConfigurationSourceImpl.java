@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.servicecomb.deployment.Deployment;
+import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.config.ConfigMapping;
 import org.apache.servicecomb.config.client.ConfigCenterClient;
 import org.apache.servicecomb.config.client.ConfigCenterConfig;
@@ -51,15 +53,12 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
 
   private ConfigCenterClient configCenterClient;
 
-  private static final String CONFIG_CENTER_URL_KEY = "servicecomb.config.client.serverUri";
-
   public ConfigCenterConfigurationSourceImpl() {
   }
 
   @Override
   public boolean isValidSource(Configuration localConfiguration) {
-    if (localConfiguration.getProperty(CONFIG_CENTER_URL_KEY) == null) {
-      LOGGER.warn("Config Center configuration source is not configured!");
+    if (Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_CONFIG_CENTER) == null) {
       return false;
     }
     return true;
