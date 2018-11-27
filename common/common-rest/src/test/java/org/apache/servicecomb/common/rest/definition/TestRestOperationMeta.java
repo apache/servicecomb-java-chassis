@@ -148,6 +148,18 @@ public class TestRestOperationMeta {
   }
 
   @Test
+  public void testCreateProduceProcessorsWithSemicolon() {
+    RestOperationMeta operationMeta = new RestOperationMeta();
+    operationMeta.produces = Arrays
+        .asList(MediaType.TEXT_PLAIN + ";charset=UTF-8", MediaType.APPLICATION_JSON + ";charset=UTF-8");
+    operationMeta.createProduceProcessors();
+    Assert.assertSame(ProduceProcessorManager.PLAIN_PROCESSOR,
+        operationMeta.ensureFindProduceProcessor(MediaType.TEXT_PLAIN));
+    Assert.assertSame(ProduceProcessorManager.JSON_PROCESSOR,
+        operationMeta.ensureFindProduceProcessor(MediaType.APPLICATION_JSON));
+  }
+
+  @Test
   public void testEnsureFindProduceProcessorRequest(@Mocked HttpServletRequestEx requestEx) {
     RestOperationMeta operationMeta = new RestOperationMeta();
     new Expectations() {
