@@ -39,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.swagger.models.Operation;
+import io.swagger.models.Response;
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.Parameter;
 import io.vertx.ext.web.impl.MimeTypesUtils;
@@ -51,6 +52,9 @@ public class RestOperationMeta {
   protected List<String> produces;
 
   protected boolean formData;
+
+  // make sure if response is file
+  protected boolean downloadFile;
 
   protected List<RestParam> paramList = new ArrayList<>();
 
@@ -80,6 +84,7 @@ public class RestOperationMeta {
       this.produces = swagger.getProduces();
     }
 
+    checkDownloadFile(operation);
     this.createProduceProcessors();
 
     Method method = operationMeta.getMethod();
@@ -103,6 +108,16 @@ public class RestOperationMeta {
     }
 
     setAbsolutePath(concatPath(swagger.getBasePath(), operationMeta.getOperationPath()));
+  }
+
+  private void checkDownloadFile(Operation operation) {
+    try {
+      Response response = operation.getResponses().get("200");
+      downloadFile = response.getSchema().getType().toLowerCase().equals("file");
+    } catch (Exception e) {
+      // if throw NullPointer Exception, set false
+      downloadFile = false;
+    }
   }
 
   public boolean isFormData() {
@@ -217,9 +232,14 @@ public class RestOperationMeta {
     if (StringUtils.isEmpty(acceptType)) {
       return defaultProcessor;
     }
-
-    List<String> mimeTyps = MimeTypesUtils.getSortedAcceptableMimeTypes(acceptType.toLowerCase(Locale.US));
-    for (String mime : mimeTyps) {
+    if (downloadFile) {
+      //do not check accept type, when the produces of provider is text/plain there will return text/plain processor
+      // when the produces of provider is application/json there will return application/json processor
+      //so do not care what accept type the consumer will set.
+      return this.produceProcessorMap.get(MediaType.WILDCARD);
+    }
+    List<String> mimeTypes = MimeTypesUtils.getSortedAcceptableMimeTypes(acceptType.toLowerCase(Locale.US));
+    for (String mime : mimeTypes) {
       ProduceProcessor processor = this.produceProcessorMap.get(mime);
       if (null != processor) {
         return processor;

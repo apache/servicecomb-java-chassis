@@ -192,12 +192,11 @@ public class DownloadSchema implements BootListener {
     URL url = new URL("http://localhost:" + server.getLocalPort() + "/download/netInputStream?content="
         + URLEncoder.encode(content, StandardCharsets.UTF_8.name()));
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-    ResponseEntity<InputStream> responseEntity = ResponseEntity
+    return ResponseEntity
         .ok()
         .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE)
         .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=netInputStream.txt")
         .body(conn.getInputStream());
-    return responseEntity;
   }
 
   private Thread slowInputStreamThread;
