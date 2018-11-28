@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -59,7 +60,7 @@ public class DefaultValueSpringmvcSchema {
   }
 
   @ApiImplicitParams({
-      @ApiImplicitParam(name = "input", dataType = "integer", format = "int32", paramType = "form", value = "a required form param", required = true, defaultValue = "13")})
+      @ApiImplicitParam(name = "input", dataType = "integer", format = "int32", paramType = "form", value = "a defaultValue form param", required = false, defaultValue = "13")})
   @PostMapping(path = "intFormRequire")
   public int intFormRequire(int input) {
     return input;
@@ -71,8 +72,8 @@ public class DefaultValueSpringmvcSchema {
     return input;
   }
 
-  @GetMapping("stringQueryTrue")
-  public String stringQueryTrue(@RequestParam(value = "input") String input) {
+  @GetMapping("stringQueryRequiredTrue")
+  public String stringQueryRequiredTrue(@RequestParam(value = "input") String input) {
     return input;
   }
 
@@ -81,8 +82,8 @@ public class DefaultValueSpringmvcSchema {
     return input;
   }
 
-  @GetMapping("stringHeaderTrue")
-  public String stringHeaderTrue(@RequestHeader(value = "input") String input) {
+  @GetMapping("stringHeaderRequiredTrue")
+  public String stringHeaderRequiredTrue(@RequestHeader(value = "input") String input) {
     return input;
   }
 
@@ -90,6 +91,11 @@ public class DefaultValueSpringmvcSchema {
       @ApiImplicitParam(name = "input", dataType = "string", paramType = "form", value = "", defaultValue = "string", required = false)})
   @PostMapping(path = "stringForm")
   public String stringForm(String input) {
+    return input;
+  }
+
+  @GetMapping("stringFormRequiredTrue")
+  public String stringFormRequiredTrue(@RequestPart(value = "input") String input) {
     return input;
   }
 
@@ -108,7 +114,7 @@ public class DefaultValueSpringmvcSchema {
   }
 
   @ApiImplicitParams({
-      @ApiImplicitParam(name = "input", dataType = "string", paramType = "form", value = "a required form param", required = true, defaultValue = "string")})
+      @ApiImplicitParam(name = "input", dataType = "string", paramType = "form", value = "a defalutValue form param", required = false, defaultValue = "string")})
   @PostMapping(path = "stringFormRequire")
   public String stringFormRequire(String input) {
     return input;
@@ -147,7 +153,7 @@ public class DefaultValueSpringmvcSchema {
   }
 
   @ApiImplicitParams({
-      @ApiImplicitParam(name = "input", dataType = "number", format = "double", paramType = "form", value = "a required form param", required = true, defaultValue = "10.2")})
+      @ApiImplicitParam(name = "input", dataType = "number", format = "double", paramType = "form", value = "a defaultValue form param", required = false, defaultValue = "10.2")})
   @PostMapping(path = "doubleFormRequire")
   public double doubleFormRequire(double input) {
     return input;
@@ -185,7 +191,7 @@ public class DefaultValueSpringmvcSchema {
   }
 
   @ApiImplicitParams({
-      @ApiImplicitParam(name = "input", dataType = "number", format = "float", paramType = "form", value = "a required form param", required = true, defaultValue = "10.2")})
+      @ApiImplicitParam(name = "input", dataType = "number", format = "float", paramType = "form", value = "a defaultValue form param", required = false, defaultValue = "10.2")})
   @PostMapping(path = "floatFormRequire")
   public float floatFormRequire(float input) {
     return input;

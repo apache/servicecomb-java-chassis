@@ -47,20 +47,15 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator {
     }
 
     @Override
-    public Object getValue(HttpServletRequest request) throws Exception {
+    public Object getValue(HttpServletRequest request) {
       Object value = null;
       if (targetType.isContainerType()) {
-        Enumeration<?> headerValues = request.getHeaders(paramPath);
-        //Even if the paramPath does not exist, it won't be null at now, may be optimized in the future
+        Enumeration<String> headerValues = request.getHeaders(paramPath);
         if (headerValues == null) {
-          Object obj = checkRequiredAndDefaultValue();
-          if (obj instanceof Enumeration) {
-            headerValues = (Enumeration<?>) obj;
-          }
+          //Even if the paramPath does not exist, headerValues won't be null at now
+          return null;
         }
-        if (headerValues != null) {
-          value = Collections.list(headerValues);
-        }
+        value = Collections.list(headerValues);
       } else {
         value = request.getHeader(paramPath);
         if (value == null) {
@@ -71,7 +66,7 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator {
       return convertValue(value, targetType);
     }
 
-    private Object checkRequiredAndDefaultValue() throws Exception {
+    private Object checkRequiredAndDefaultValue() {
       if (isRequired()) {
         throw new InvocationException(Status.BAD_REQUEST, "Parameter is required.");
       }
