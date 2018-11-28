@@ -106,13 +106,9 @@ public class TestHeaderProcessor {
       }
     };
 
-    HeaderProcessor processor = createProcessor("h1", String[].class);
-    try {
-      processor.getValue(request);
-      Assert.assertEquals("required is true, throw exception", "not throw exception");
-    } catch (Exception e) {
-      Assert.assertTrue(e.getMessage().contains("Parameter is required."));
-    }
+    HeaderProcessor processor = createProcessor("h1", String[].class, null, false);
+    String[] value = (String[]) processor.getValue(request);
+    Assert.assertNull(value);
   }
 
   @Test
@@ -189,7 +185,8 @@ public class TestHeaderProcessor {
     };
 
     HeaderProcessor processor =
-        new HeaderProcessor("h1", TypeFactory.defaultInstance().constructCollectionType(Set.class, String.class), null, true);
+        new HeaderProcessor("h1", TypeFactory.defaultInstance().constructCollectionType(Set.class, String.class), null,
+            true);
     Object value = processor.getValue(request);
     Assert.assertThat((Set<String>) value, Matchers.contains("h1v"));
   }

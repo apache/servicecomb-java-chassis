@@ -43,7 +43,7 @@ public class CookieProcessorCreator implements ParamValueProcessorCreator {
     }
 
     @Override
-    public Object getValue(HttpServletRequest request) throws Exception {
+    public Object getValue(HttpServletRequest request) {
       Cookie[] cookies = request.getCookies();
       Object value = null;
       if (cookies == null || cookies.length == 0) {
@@ -54,6 +54,7 @@ public class CookieProcessorCreator implements ParamValueProcessorCreator {
       for (Cookie cookie : cookies) {
         if (paramPath.equals(cookie.getName())) {
           value = cookie.getValue();
+          break;
         }
       }
       if (value == null) {
@@ -62,7 +63,7 @@ public class CookieProcessorCreator implements ParamValueProcessorCreator {
       return convertValue(value, targetType);
     }
 
-    private Object checkRequiredAndDefaultValue() throws Exception {
+    private Object checkRequiredAndDefaultValue() {
       if (isRequired()) {
         throw new InvocationException(Status.BAD_REQUEST, "Parameter is required.");
       }

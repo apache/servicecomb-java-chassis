@@ -57,15 +57,12 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
     }
 
     @Override
-    public Object getValue(HttpServletRequest request) throws Exception {
+    public Object getValue(HttpServletRequest request) {
       Object value = null;
       if (targetType.isContainerType()
           && SwaggerParamCollectionFormat.MULTI.equals(collectionFormat)) {
         value = request.getParameterValues(paramPath);
-        //Even if the paramPath does not exist, it won't be null at now, may be optimized in the future
-        if (value == null) {
-          value = checkRequiredAndDefaultValue();
-        }
+        //Even if the paramPath does not exist, value won't be null at now
       } else {
         value = request.getParameter(paramPath);
         // make some old systems happy
@@ -85,7 +82,7 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
       return convertValue(value, targetType);
     }
 
-    private Object checkRequiredAndDefaultValue() throws Exception {
+    private Object checkRequiredAndDefaultValue() {
       if (isRequired()) {
         throw new InvocationException(Status.BAD_REQUEST, "Parameter is required.");
       }

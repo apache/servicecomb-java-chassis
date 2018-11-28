@@ -51,6 +51,10 @@ public class TestFormProcessor {
     return new FormProcessor(name, TypeFactory.defaultInstance().constructType(type), null, true);
   }
 
+  private FormProcessor createProcessor(String name, Class<?> type, String defaultValue, boolean required) {
+    return new FormProcessor(name, TypeFactory.defaultInstance().constructType(type), defaultValue, required);
+  }
+
   private void createClientRequest() {
     clientRequest = new MockUp<RestClientRequest>() {
       @Mock
@@ -117,13 +121,9 @@ public class TestFormProcessor {
       }
     };
 
-    ParamValueProcessor processor = createProcessor("name", String[].class);
-    try {
-      processor.getValue(request);
-      Assert.assertEquals("required is true, throw exception", "not throw exception");
-    } catch (Exception e) {
-      Assert.assertTrue(e.getMessage().contains("Parameter is required."));
-    }
+    ParamValueProcessor processor = createProcessor("name", String[].class, null, false);
+    String[] value = (String[]) processor.getValue(request);
+    Assert.assertNull(value);
   }
 
   @Test
@@ -135,7 +135,7 @@ public class TestFormProcessor {
       }
     };
 
-    ParamValueProcessor processor = createProcessor("name", String.class);
+    ParamValueProcessor processor = createProcessor("name", String.class, null, true);
     try {
       processor.getValue(request);
       Assert.assertEquals("required is true, throw exception", "not throw exception");
