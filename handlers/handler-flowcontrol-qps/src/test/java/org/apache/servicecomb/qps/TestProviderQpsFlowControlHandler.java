@@ -18,6 +18,8 @@
 package org.apache.servicecomb.qps;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.times;
 
 import org.apache.servicecomb.core.Const;
@@ -59,7 +61,6 @@ public class TestProviderQpsFlowControlHandler {
     ArchaiusUtils.setProperty(Config.PROVIDER_LIMIT_KEY_PREFIX + "test", 1);
   }
 
-
   @After
   public void afterTest() {
     ArchaiusUtils.resetConfig();
@@ -71,6 +72,8 @@ public class TestProviderQpsFlowControlHandler {
       final @Injectable AsyncResponse asyncResp) throws Exception {
     new Expectations() {
       {
+        invocation.getHandlerIndex();
+        result = 0;
         invocation.getContext(Const.SRC_MICROSERVICE);
         result = "test";
         invocation.getOperationMeta();
@@ -95,25 +98,42 @@ public class TestProviderQpsFlowControlHandler {
     gHandler.handle(invocation, asyncResp);
   }
 
-
   @Test
   public void testQpsController() {
     mockUpSystemTime();
     QpsController qpsController = new QpsController("abc", 100);
-    assertEquals(false, qpsController.isLimitNewRequest());
+    assertFalse(qpsController.isLimitNewRequest());
 
     qpsController.setQpsLimit(1);
-    assertEquals(true, qpsController.isLimitNewRequest());
+    assertTrue(qpsController.isLimitNewRequest());
   }
 
   @Test
   public void testHandleOnSourceMicroserviceNameIsNull() throws Exception {
     Mockito.when(invocation.getContext(Const.SRC_MICROSERVICE)).thenReturn(null);
+    // only when handler index <= 0, the qps logic works
+    Mockito.when(invocation.getHandlerIndex()).thenReturn(0);
+    ArchaiusUtils.setProperty("servicecomb.flowcontrol.Provider.qps.global.limit", 1);
+    ProviderQpsFlowControlHandler.qpsControllerMgr
+        .setGlobalQpsController("servicecomb.flowcontrol.Provider.qps.global.limit");
 
     handler.handle(invocation, asyncResp);
     handler.handle(invocation, asyncResp);
 
-    Mockito.verify(invocation, times(2)).next(asyncResp);
+    // Invocation#getContext(String) is only invoked when the qps logic works
+    Mockito.verify(invocation, times(2)).getContext(Const.SRC_MICROSERVICE);
+    Mockito.verify(asyncResp, times(1)).producerFail(Mockito.any(Exception.class));
+  }
+
+  @Test
+  public void testHandleOnSourceOnHandlerIndexIsGreaterThan0() throws Exception {
+    Mockito.when(invocation.getContext(Const.SRC_MICROSERVICE)).thenReturn(null);
+
+    Mockito.when(invocation.getHandlerIndex()).thenReturn(1);
+    handler.handle(invocation, asyncResp);
+    handler.handle(invocation, asyncResp);
+
+    Mockito.verify(invocation, times(0)).getContext(Mockito.anyString());
   }
 
   @Test
@@ -122,25 +142,19 @@ public class TestProviderQpsFlowControlHandler {
     OperationMeta mockOperationMeta = QpsControllerManagerTest.getMockOperationMeta("pojo", "server", "opr");
     Mockito.when(invocation.getOperationMeta()).thenReturn(mockOperationMeta);
     Mockito.when(invocation.getSchemaId()).thenReturn("server");
-    new MockUp<QpsController>() {
-      @Mock
-      public boolean isLimitNewRequest() {
-        return true;
-      }
-    };
 
     new MockUp<QpsControllerManager>() {
-
       @Mock
       protected QpsController create(String qualifiedNameKey) {
-        return new QpsController(qualifiedNameKey, 12);
+        return new QpsController(qualifiedNameKey, 1);
       }
     };
 
     handler.handle(invocation, asyncResp);
+    handler.handle(invocation, asyncResp);
 
     ArgumentCaptor<InvocationException> captor = ArgumentCaptor.forClass(InvocationException.class);
-    Mockito.verify(asyncResp).producerFail(captor.capture());
+    Mockito.verify(asyncResp, times(1)).producerFail(captor.capture());
 
     InvocationException invocationException = captor.getValue();
     assertEquals(QpsConst.TOO_MANY_REQUESTS_STATUS, invocationException.getStatus());
@@ -155,23 +169,17 @@ public class TestProviderQpsFlowControlHandler {
         .getMockOperationMeta("pojo", "server", "opr");
     Mockito.when(invocation.getOperationMeta()).thenReturn(mockOperationMeta);
     Mockito.when(invocation.getSchemaId()).thenReturn("server");
-    new MockUp<QpsController>() {
-      @Mock
-      public boolean isLimitNewRequest() {
-        return false;
-      }
-    };
 
     new MockUp<QpsControllerManager>() {
-
       @Mock
       protected QpsController create(String qualifiedNameKey) {
-        return new QpsController(qualifiedNameKey, 12);
+        return new QpsController(qualifiedNameKey, 1);
       }
     };
     handler.handle(invocation, asyncResp);
 
-    Mockito.verify(invocation).next(asyncResp);
+    Mockito.verify(invocation, times(0)).next(asyncResp);
+    Mockito.verify(asyncResp, times(0)).producerFail(Mockito.any(Exception.class));
   }
 
   private void mockUpSystemTime() {

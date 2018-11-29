@@ -26,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response.Status;
+import javax.xml.ws.Holder;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
@@ -36,6 +37,7 @@ import org.apache.servicecomb.common.rest.filter.HttpServerFilterBeforeSendRespo
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -46,6 +48,8 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.annotations.VisibleForTesting;
 
 public abstract class AbstractRestInvocation {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRestInvocation.class);
@@ -126,6 +130,19 @@ public abstract class AbstractRestInvocation {
     invocation.getInvocationStageTrace().startSchedule();
     OperationMeta operationMeta = restOperationMeta.getOperationMeta();
 
+    try {
+      this.setContext();
+    } catch (Exception e) {
+      LOGGER.error("failed to set invocation context", e);
+      sendFailResponse(e);
+      return;
+    }
+
+    Holder<Boolean> qpsFlowControlReject = checkQpsFlowControl(operationMeta);
+    if (qpsFlowControlReject.value) {
+      return;
+    }
+
     operationMeta.getExecutor().execute(() -> {
       synchronized (this.requestEx) {
         try {
@@ -148,6 +165,39 @@ public abstract class AbstractRestInvocation {
         }
       }
     });
+  }
+
+  private Holder<Boolean> checkQpsFlowControl(OperationMeta operationMeta) {
+    Holder<Boolean> qpsFlowControlReject = new Holder<>(false);
+    Handler providerQpsFlowControlHandler = findQpsFlowControlHandler(operationMeta);
+    if (null != providerQpsFlowControlHandler) {
+      try {
+        providerQpsFlowControlHandler.handle(invocation, response -> {
+          qpsFlowControlReject.value = true;
+          produceProcessor = ProduceProcessorManager.JSON_PROCESSOR;
+          sendResponse(response);
+        });
+      } catch (Exception e) {
+        LOGGER.error("failed to execute ProviderQpsFlowControlHandler", e);
+        qpsFlowControlReject.value = true;
+        sendFailResponse(e);
+      }
+    }
+    return qpsFlowControlReject;
+  }
+
+  @VisibleForTesting
+  Handler findQpsFlowControlHandler(OperationMeta operationMeta) {
+    final List<Handler> providerHandlerChain = operationMeta.getSchemaMeta().getProviderHandlerChain();
+    Handler providerQpsFlowControlHandler = null;
+    for (Handler handler : providerHandlerChain) {
+      // matching by class name is more or less better than importing an extra maven dependency
+      if ("org.apache.servicecomb.qps.ProviderQpsFlowControlHandler".equals(handler.getClass().getName())) {
+        providerQpsFlowControlHandler = handler;
+        break;
+      }
+    }
+    return providerQpsFlowControlHandler;
   }
 
   private boolean isInQueueTimeout() {
@@ -183,7 +233,6 @@ public abstract class AbstractRestInvocation {
 
   protected Response prepareInvoke() throws Throwable {
     this.initProduceProcessor();
-    this.setContext();
     invocation.getHandlerContext().put(RestConst.REST_REQUEST, requestEx);
 
     invocation.getInvocationStageTrace().startServerFiltersRequest();
@@ -201,9 +250,7 @@ public abstract class AbstractRestInvocation {
 
   protected void doInvoke() throws Throwable {
     invocation.getInvocationStageTrace().startHandlersRequest();
-    invocation.next(resp -> {
-      sendResponseQuietly(resp);
-    });
+    invocation.next(resp -> sendResponseQuietly(resp));
   }
 
   public void sendFailResponse(Throwable throwable) {
