@@ -17,6 +17,10 @@
 
 package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.ws.rs.Produces;
 
 import org.apache.commons.lang3.StringUtils;
@@ -28,10 +32,10 @@ public class ProducesAnnotationProcessor implements MethodAnnotationProcessor {
   public void process(Object annotation, OperationGenerator operationGenerator) {
     Produces produces = (Produces) annotation;
 
-    for (String produce : produces.value()) {
-      if (!StringUtils.isEmpty(produce)) {
-        operationGenerator.getOperation().addProduces(produce);
-      }
+    List<String> produceList = Arrays.stream(produces.value()).filter(s -> !StringUtils.isEmpty(s))
+        .collect(Collectors.toList());
+    if (!produceList.isEmpty()) {
+      operationGenerator.getOperation().setProduces(produceList);
     }
   }
 }

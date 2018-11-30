@@ -18,6 +18,8 @@
 package org.apache.servicecomb.foundation.vertx;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.HashSet;
 
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLManager;
@@ -135,9 +137,10 @@ public final class VertxTLSBuilder {
     } else {
       LOGGER.warn("trustStore [" + fullTrustStore + "] file not exist, please check!");
     }
-    for (String protocol : sslOption.getProtocols().split(",")) {
-      tcpClientOptions.addEnabledSecureTransportProtocol(protocol);
-    }
+
+    tcpClientOptions
+        .setEnabledSecureTransportProtocols(new HashSet<String>(Arrays.asList(sslOption.getProtocols().split(","))));
+
     for (String cipher : SSLManager.getEnalbedCiphers(sslOption.getCiphers())) {
       tcpClientOptions.addEnabledCipherSuite(cipher);
     }

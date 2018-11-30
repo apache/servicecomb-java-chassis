@@ -18,15 +18,24 @@
 package org.apache.servicecomb.swagger.generator.core;
 
 import java.util.List;
+import java.util.Map;
 
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringValueResolver;
 
 @Component
 public class CompositeSwaggerGeneratorContext implements EmbeddedValueResolverAware {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(CompositeSwaggerGeneratorContext.class);
+
   private List<SwaggerGeneratorContext> contextList;
+
+  private Map<Class<?>, SwaggerGeneratorContext> producerClassSwaggerContextCacheMap = new ConcurrentHashMapEx<>();
 
   public CompositeSwaggerGeneratorContext() {
     contextList = SPIServiceUtils.getSortedService(SwaggerGeneratorContext.class);
@@ -46,12 +55,14 @@ public class CompositeSwaggerGeneratorContext implements EmbeddedValueResolverAw
   }
 
   public SwaggerGeneratorContext selectContext(Class<?> cls) {
-    for (SwaggerGeneratorContext context : contextList) {
-      if (context.canProcess(cls)) {
-        return context;
+    return producerClassSwaggerContextCacheMap.computeIfAbsent(cls, producerClass -> {
+      for (SwaggerGeneratorContext context : contextList) {
+        if (context.canProcess(cls)) {
+          LOGGER.info("select [{}] for [{}] to generate schema.", context.getClass().getName(), cls.getName());
+          return context;
+        }
       }
-    }
-
-    throw new Error("impossible, must be bug.");
+      throw new Error("impossible, must be bug.");
+    });
   }
 }

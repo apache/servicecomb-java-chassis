@@ -18,18 +18,18 @@ package org.apache.servicecomb.demo.jaxrs.client;
 
 import org.apache.servicecomb.loadbalance.Configuration;
 import org.apache.servicecomb.loadbalance.ExtensionsFactory;
+import org.apache.servicecomb.loadbalance.RoundRobinRuleExt;
+import org.apache.servicecomb.loadbalance.RuleExt;
 import org.springframework.stereotype.Component;
 
 import com.netflix.client.DefaultLoadBalancerRetryHandler;
 import com.netflix.client.RetryHandler;
 import com.netflix.client.Utils;
-import com.netflix.loadbalancer.IRule;
-import com.netflix.loadbalancer.RoundRobinRule;
 
 @Component
 public class CustomLoadbalanceExtensionsFactory implements ExtensionsFactory {
 
-  class MyCustomRule extends RoundRobinRule {
+  class MyCustomRule extends RoundRobinRuleExt {
 
   }
 
@@ -56,7 +56,7 @@ public class CustomLoadbalanceExtensionsFactory implements ExtensionsFactory {
   }
 
   @Override
-  public IRule createLoadBalancerRule(String ruleName) {
+  public RuleExt createLoadBalancerRule(String ruleName) {
     return new MyCustomRule();
   }
 

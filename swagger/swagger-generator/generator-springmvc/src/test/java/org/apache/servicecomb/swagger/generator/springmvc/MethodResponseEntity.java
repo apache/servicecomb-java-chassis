@@ -19,6 +19,7 @@ package org.apache.servicecomb.swagger.generator.springmvc;
 
 import java.util.List;
 
+import org.apache.servicecomb.foundation.test.scaffolding.model.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;

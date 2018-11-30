@@ -25,11 +25,13 @@ public class ConsumerMain {
     Log4jUtils.init();
     BeanUtils.init();
 
-    System.out.println("Running api dispater.");
+    new Consumer().testEncrypt();
+
+    System.out.println("Running api dispatcher.");
     new Consumer().run("api");
-    System.out.println("Running rest dispater.");
+    System.out.println("Running rest dispatcher.");
     new Consumer().run("rest");
-    System.out.println("Running url dispater.");
+    System.out.println("Running url dispatcher.");
     new Consumer().run("url");
 
     System.out.println("All test case finished.");

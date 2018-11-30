@@ -17,19 +17,35 @@
 
 package org.apache.servicecomb.serviceregistry.registry;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.consumer.DefaultMicroserviceVersionFactory;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceManager;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersion;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
+import org.apache.servicecomb.serviceregistry.consumer.StaticMicroserviceVersionFactory;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.hamcrest.Matchers;
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.mockito.Mockito;
 
 import com.google.common.eventbus.EventBus;
 
+import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
 
@@ -70,6 +86,17 @@ public class TestAbstractServiceRegistry {
   public void setup() {
     registry =
         new AbstractServiceRegistryForTest(eventBus, serviceRegistryConfig, microserviceDefinition);
+    RegistryUtils.setServiceRegistry(registry);
+  }
+
+  @After
+  public void tearDown() {
+    registry.appManager = null;
+  }
+
+  @AfterClass
+  public static void afterClass() {
+    RegistryUtils.setServiceRegistry(null);
   }
 
   @Test
@@ -96,8 +123,7 @@ public class TestAbstractServiceRegistry {
   }
 
   @Test
-  public void initAppManagerSpecialMicroserviceVersionFactoryFailed()
-      throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+  public void initAppManagerSpecialMicroserviceVersionFactoryFailed() {
     new Expectations() {
       {
         serviceRegistryConfig.getMicroserviceVersionFactory();
@@ -108,5 +134,71 @@ public class TestAbstractServiceRegistry {
     expectedException.expectMessage(Matchers.is("Failed to init appManager."));
 
     registry.init();
+  }
+
+  @Test
+  public void registryMicroserviceMapping() {
+    String testServiceName = "testService";
+    final String testVersion = "1.0.1";
+
+    HashMap<String, MicroserviceVersions> versionsByName = prepareForMicroserviceMappingRegistry();
+
+    ArrayList<MicroserviceInstance> instancesParam = new ArrayList<>();
+    instancesParam.add(new MicroserviceInstance());
+    registry.registerMicroserviceMapping(testServiceName, testVersion, instancesParam, Test3rdPartyServiceIntf.class);
+
+    MicroserviceVersions microserviceVersions = versionsByName.get(testServiceName);
+    List<MicroserviceInstance> instances = Deencapsulation.getField(microserviceVersions, "instances");
+    Assert.assertEquals(1, instances.size());
+    Assert.assertSame(instancesParam.get(0), instances.get(0));
+
+    // nothing will happen if register repeatedly
+    List<MicroserviceInstance> newInstancesParam = new ArrayList<>();
+    newInstancesParam.add(new MicroserviceInstance());
+    registry.registerMicroserviceMapping(
+        testServiceName, testVersion, newInstancesParam, Test3rdPartyServiceIntf.class);
+
+    microserviceVersions = versionsByName.get(testServiceName);
+    instances = Deencapsulation.getField(microserviceVersions, "instances");
+    Assert.assertEquals(1, instances.size());
+    Assert.assertSame(instancesParam.get(0), instances.get(0));
+  }
+
+  @Test
+  public void registryMicroserviceMappingByEndpoints() {
+    String testServiceName = "testService";
+    final String testVersion = "1.0.1";
+
+    HashMap<String, MicroserviceVersions> versionByName = prepareForMicroserviceMappingRegistry();
+
+    registry.registerMicroserviceMappingByEndpoints(testServiceName, testVersion,
+        Arrays.asList("cse://127.0.0.1:8080", "cse://127.0.0.1:8081"), Test3rdPartyServiceIntf.class);
+
+    MicroserviceVersions microserviceVersions = versionByName.get(testServiceName);
+    List<MicroserviceInstance> instances = Deencapsulation.getField(microserviceVersions, "instances");
+    Assert.assertEquals(2, instances.size());
+    Assert.assertEquals("cse://127.0.0.1:8080", instances.get(0).getEndpoints().get(0));
+    Assert.assertEquals("cse://127.0.0.1:8081", instances.get(1).getEndpoints().get(0));
+  }
+
+  private HashMap<String, MicroserviceVersions> prepareForMicroserviceMappingRegistry() {
+    registry.appManager = Mockito.mock(AppManager.class);
+    MicroserviceManager microserviceManager = Mockito.mock(MicroserviceManager.class);
+    StaticMicroserviceVersionFactory staticMicroserviceVersionFactory =
+        Mockito.mock(StaticMicroserviceVersionFactory.class);
+    HashMap<String, MicroserviceVersions> versionsByName = new HashMap<>();
+
+    Mockito.when(registry.appManager.getOrCreateMicroserviceManager(this.appId)).thenReturn(microserviceManager);
+    Mockito.when(registry.appManager.getEventBus()).thenReturn(Mockito.mock(EventBus.class));
+    Mockito.when(registry.appManager.getStaticMicroserviceVersionFactory())
+        .thenReturn(staticMicroserviceVersionFactory);
+    Mockito.when(staticMicroserviceVersionFactory.create(Mockito.any()))
+        .thenReturn(Mockito.mock(MicroserviceVersion.class));
+
+    Mockito.when(microserviceManager.getVersionsByName()).thenReturn(versionsByName);
+    return versionsByName;
+  }
+
+  private interface Test3rdPartyServiceIntf {
   }
 }

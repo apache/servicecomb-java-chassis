@@ -33,6 +33,6 @@ public class AccessLogConfigurationTest {
   @Test
   public void getAccesslogPattern() {
     String result = AccessLogConfiguration.INSTANCE.getAccesslogPattern();
-    assertEquals("%h - - %t %r %s %B", result);
+    assertEquals("%h - - %t %r %s %B %D", result);
   }
 }

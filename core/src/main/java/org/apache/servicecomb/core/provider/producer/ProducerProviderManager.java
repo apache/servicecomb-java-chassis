@@ -22,13 +22,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-import javax.inject.Inject;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.ProducerProvider;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.definition.SchemaUtils;
@@ -46,18 +44,14 @@ public class ProducerProviderManager implements BootListener {
   @Autowired(required = false)
   private List<ProducerProvider> producerProviderList = Collections.emptyList();
 
-  @Inject
-  private MicroserviceMetaManager microserviceMetaManager;
-
   private MicroserviceMeta microserviceMeta;
 
   public void init() throws Exception {
     for (ProducerProvider provider : producerProviderList) {
       provider.init();
     }
-
     Microservice microservice = RegistryUtils.getMicroservice();
-    microserviceMeta = microserviceMetaManager.getOrCreateMicroserviceMeta(microservice);
+    microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     for (SchemaMeta schemaMeta : microserviceMeta.getSchemaMetas()) {
       String content = SchemaUtils.swaggerToString(schemaMeta.getSwagger());
       microservice.addSchema(schemaMeta.getSchemaId(), content);

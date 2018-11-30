@@ -16,4 +16,3 @@
 #
 
 org.apache.servicecomb.common.rest.filter.inner.ServerRestArgsFilter
-org.apache.servicecomb.common.rest.filter.tracing.TracingFilter

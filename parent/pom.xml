@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.servicecomb</groupId>
     <artifactId>java-chassis-dependencies</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <relativePath>../java-chassis-dependencies</relativePath>
   </parent>
 
@@ -32,7 +32,7 @@
 
   <name>Java Chassis::Parent</name>
   <description>Java Chassis Parent</description>
-  <url>https://github.com/apache/incubator-servicecomb-java-chassis</url>
+  <url>https://github.com/apache/servicecomb-java-chassis</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -61,12 +61,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.github.seanyinx</groupId>
-      <artifactId>unit-scaffolding</artifactId>
-      <version>1.0.0</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-all</artifactId>
       <scope>test</scope>
@@ -79,11 +73,6 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -101,6 +90,17 @@
       <artifactId>powermock-module-junit4</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.github.seanyinx</groupId>
+      <artifactId>unit-scaffolding</artifactId>
+      <version>1.0.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>javax.inject</groupId>
@@ -111,170 +111,4 @@
       <artifactId>spring-aspects</artifactId>
     </dependency>
   </dependencies>
-
-  <distributionManagement>
-    <repository>
-      <id>apache.releases.https</id>
-      <name>Apache Release Distribution Repository</name>
-      <url>https://repository.apache.org/service/local/staging/deploy/maven2</url>
-    </repository>
-    <snapshotRepository>
-      <id>apache.snapshots.https</id>
-      <name>Apache Development Snapshot Repository</name>
-      <url>https://repository.apache.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <configuration>
-          <configLocation>../etc/checkstyle.xml</configLocation>
-          <excludes>**/demo/**</excludes>
-        </configuration>
-      </plugin>
-    </plugins>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <artifactId>maven-remote-resources-plugin</artifactId>
-          <version>1.5</version>
-        </plugin>
-        <!-- Fixed the m2e warning of remote resources plugin -->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-remote-resources-plugin</artifactId>
-                    <versionRange>[1.0,)</versionRange>
-                    <goals>
-                      <goal>process</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore>
-                    </ignore>
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>io.fabric8</groupId>
-          <artifactId>docker-maven-plugin</artifactId>
-          <version>0.20.0</version>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.gmaven</groupId>
-          <artifactId>gmaven-plugin</artifactId>
-          <version>1.5</version>
-        </plugin>
-        <plugin>
-          <groupId>org.eluder.coveralls</groupId>
-          <artifactId>coveralls-maven-plugin</artifactId>
-          <configuration>
-            <jacocoReports>
-              <jacocoReport>${project.basedir}/coverage-reports/target/site/jacoco-aggregate/jacoco.xml</jacocoReport>
-            </jacocoReports>
-          </configuration>
-        </plugin>
-        <plugin>
-          <groupId>org.jacoco</groupId>
-          <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.7.8</version>
-          <configuration>
-            <excludes>
-              <exclude>*$Impl_*</exclude>
-            </excludes>
-          </configuration>
-          <executions>
-            <execution>
-              <id>default-prepare-agent</id>
-              <goals>
-                <goal>prepare-agent</goal>
-              </goals>
-              <configuration>
-                <destFile>${project.build.directory}/jacoco.exec</destFile>
-              </configuration>
-            </execution>
-            <execution>
-              <id>default-prepare-agent-integration</id>
-              <phase>pre-integration-test</phase>
-              <goals>
-                <goal>prepare-agent-integration</goal>
-              </goals>
-              <configuration>
-                <destFile>${project.build.directory}/jacoco-it.exec</destFile>
-                <propertyName>jacoco.failsafe.argLine</propertyName>
-              </configuration>
-            </execution>
-            <execution>
-              <id>default-report</id>
-              <goals>
-                <goal>report</goal>
-              </goals>
-            </execution>
-            <execution>
-              <id>default-report-integration</id>
-              <goals>
-                <goal>report-integration</goal>
-              </goals>
-            </execution>
-          </executions>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
-
-  <reporting>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.5</version>
-      </plugin>
-    </plugins>
-  </reporting>
-
-  <profiles>
-    <profile>
-      <id>docker-machine</id>
-      <build>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>io.fabric8</groupId>
-              <artifactId>docker-maven-plugin</artifactId>
-              <configuration>
-                <machine>
-                  <name>default</name>
-                  <autoCreate>true</autoCreate>
-                </machine>
-              </configuration>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-      </build>
-    </profile>
-    <profile>
-      <id>jacoco</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.jacoco</groupId>
-            <artifactId>jacoco-maven-plugin</artifactId>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 </project>

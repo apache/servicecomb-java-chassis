@@ -19,6 +19,7 @@ package org.apache.servicecomb.common.rest.codec;
 
 import javax.servlet.http.Part;
 
+import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 
 /**
@@ -33,6 +34,8 @@ public interface RestClientRequest {
   void addCookie(String name, String value);
 
   void putHeader(String name, String value);
+
+  MultiMap getHeaders();
 
   void addForm(String name, Object value);
 

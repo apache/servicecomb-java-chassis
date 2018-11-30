@@ -18,6 +18,7 @@
 package org.apache.servicecomb.transport.rest.vertx.accesslog.impl;
 
 import java.util.HashSet;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.ws.Holder;
 
@@ -78,9 +79,13 @@ public class AccessLogHandlerTest {
 
     Holder<Integer> counter = new Holder<>();
     counter.value = 0;
+    String testThreadName = Thread.currentThread().getName();
     new MockUp<System>() {
       @Mock
       long currentTimeMillis() {
+        if (!testThreadName.equals(Thread.currentThread().getName())) {
+          return TimeUnit.NANOSECONDS.toMillis(System.nanoTime());
+        }
         if (counter.value < 1) {
           ++counter.value;
           return 1L;

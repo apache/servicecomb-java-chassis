@@ -28,6 +28,7 @@ import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
 import io.vertx.core.Verticle;
+import io.vertx.core.http.HttpServerOptions;
 
 public final class TransportConfig {
 
@@ -78,6 +79,19 @@ public final class TransportConfig {
   public static boolean getCompressed() {
     return DynamicPropertyFactory.getInstance()
         .getBooleanProperty("servicecomb.rest.server.compression", DEFAULT_SERVER_COMPRESSION_SUPPORT)
+        .get();
+  }
+
+  public static long getMaxConcurrentStreams() {
+    return DynamicPropertyFactory.getInstance()
+        .getLongProperty("servicecomb.rest.server.http2.concurrentStreams",
+            HttpServerOptions.DEFAULT_INITIAL_SETTINGS_MAX_CONCURRENT_STREAMS)
+        .get();
+  }
+
+  public static boolean getUseAlpn() {
+    return DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.rest.server.http2.useAlpnEnabled", true)
         .get();
   }
 
@@ -140,5 +154,12 @@ public final class TransportConfig {
           .forEach(resultSet::add);
     }
     return resultSet;
+  }
+
+  public static int getMaxInitialLineLength() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.rest.server.maxInitialLineLength",
+            HttpServerOptions.DEFAULT_MAX_INITIAL_LINE_LENGTH)
+        .get();
   }
 }

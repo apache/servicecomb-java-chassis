@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.serviceregistry.consumer;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -32,6 +33,7 @@ import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceC
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
+import org.apache.servicecomb.serviceregistry.task.event.MicroserviceNotExistEvent;
 import org.apache.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,21 +43,28 @@ import com.google.common.eventbus.Subscribe;
 public class MicroserviceVersions {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceVersions.class);
 
-  private AppManager appManager;
+  AppManager appManager;
 
   private String appId;
 
   private String microserviceName;
 
+  // revision and pulledInstances directly equals to SC's response
   private String revision = null;
 
-  private List<MicroserviceInstance> instances;
+  private List<MicroserviceInstance> pulledInstances;
+
+  // instances not always equals to pulledInstances
+  // in the future:
+  //  pulledInstances means all instance
+  //  instances means available instance
+  List<MicroserviceInstance> instances;
 
   // key is service id
-  private Map<String, MicroserviceVersion> versions = new ConcurrentHashMapEx<>();
+  Map<String, MicroserviceVersion> versions = new ConcurrentHashMapEx<>();
 
   // key is version rule
-  private Map<String, MicroserviceVersionRule> versionRules = new ConcurrentHashMapEx<>();
+  Map<String, MicroserviceVersionRule> versionRules = new ConcurrentHashMapEx<>();
 
   // process pulled instances and create versionRule must be protected by lock
   // otherwise maybe lost instance or version in versionRule
@@ -65,7 +74,7 @@ public class MicroserviceVersions {
   // only pendingPullCount is 0, then do a real pull 
   private AtomicInteger pendingPullCount = new AtomicInteger();
 
-  private boolean validated = false;
+  boolean validated = false;
 
   public MicroserviceVersions(AppManager appManager, String appId, String microserviceName) {
     this.appManager = appManager;
@@ -100,6 +109,18 @@ public class MicroserviceVersions {
     return (T) versions.get(serviceId);
   }
 
+  public String getRevision() {
+    return revision;
+  }
+
+  public void setRevision(String revision) {
+    this.revision = revision;
+  }
+
+  public List<MicroserviceInstance> getPulledInstances() {
+    return pulledInstances;
+  }
+
   public void submitPull() {
     pendingPullCount.incrementAndGet();
 
@@ -118,10 +139,17 @@ public class MicroserviceVersions {
     if (microserviceInstances == null) {
       return;
     }
+    if (microserviceInstances.isMicroserviceNotExist()) {
+      appManager.getEventBus().post(new MicroserviceNotExistEvent(appId, microserviceName));
+      return;
+    }
+
     if (!microserviceInstances.isNeedRefresh()) {
       return;
     }
-    List<MicroserviceInstance> pulledInstances = microserviceInstances.getInstancesResponse().getInstances();
+
+    pulledInstances = microserviceInstances.getInstancesResponse().getInstances();
+    pulledInstances.sort(Comparator.comparing(MicroserviceInstance::getInstanceId));
     String rev = microserviceInstances.getRevision();
 
     safeSetInstances(pulledInstances, rev);
@@ -170,9 +198,7 @@ public class MicroserviceVersions {
       List<MicroserviceInstance> inUseInstances) {
     List<MicroserviceInstance> upInstances = pulledInstances
         .stream()
-        .filter(instance -> {
-          return MicroserviceInstanceStatus.UP.equals(instance.getStatus());
-        })
+        .filter(instance -> MicroserviceInstanceStatus.UP.equals(instance.getStatus()))
         .collect(Collectors.toList());
     if (upInstances.isEmpty() && inUseInstances != null && ServiceRegistryConfig.INSTANCE
         .isEmptyInstanceProtectionEnabled()) {

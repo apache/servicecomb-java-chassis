@@ -17,7 +17,9 @@
 package org.apache.servicecomb.swagger.engine;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -25,6 +27,8 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
+import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
+import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapperConfig;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapperFactory;
 import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapper;
@@ -37,16 +41,27 @@ import org.apache.servicecomb.swagger.invocation.response.producer.ProducerRespo
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapperFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.Operation;
 
 @Component
 public class SwaggerEnvironment {
   private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerEnvironment.class);
 
   @Inject
+  protected CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext;
+
+  /**
+   * default producerArgumentsFactory
+   */
+  @Inject
   private ProducerArgumentsMapperFactory producerArgumentsFactory;
+
+  @Autowired
+  private List<ProducerArgumentsMapperFactory> producerArgumentsMapperFactoryList = new ArrayList<>(0);
 
   private ResponseMapperFactorys<ProducerResponseMapper> producerResponseMapperFactorys =
       new ResponseMapperFactorys<>(ProducerResponseMapperFactory.class);
@@ -61,6 +76,15 @@ public class SwaggerEnvironment {
   public void setConverterMgr(ConverterMgr converterMgr) {
     consumerResponseMapperFactorys.setConverterMgr(converterMgr);
     producerResponseMapperFactorys.setConverterMgr(converterMgr);
+  }
+
+  public CompositeSwaggerGeneratorContext getCompositeSwaggerGeneratorContext() {
+    return compositeSwaggerGeneratorContext;
+  }
+
+  public void setCompositeSwaggerGeneratorContext(
+      CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext) {
+    this.compositeSwaggerGeneratorContext = compositeSwaggerGeneratorContext;
   }
 
   public ProducerArgumentsMapperFactory getProducerArgumentsFactory() {
@@ -101,8 +125,12 @@ public class SwaggerEnvironment {
         continue;
       }
 
+      ArgumentsMapperConfig config = new ArgumentsMapperConfig();
+      config.setSwaggerMethod(swaggerMethod);
+      config.setProviderMethod(consumerMethod);
+
       ConsumerArgumentsMapper argsMapper =
-          consumerArgumentsFactory.createArgumentsMapper(swaggerMethod, consumerMethod);
+          consumerArgumentsFactory.createArgumentsMapper(config);
       ConsumerResponseMapper responseMapper = consumerResponseMapperFactorys.createResponseMapper(
           swaggerMethod.getGenericReturnType(),
           consumerMethod.getGenericReturnType());
@@ -129,7 +157,8 @@ public class SwaggerEnvironment {
     return apiOperationAnnotation.nickname();
   }
 
-  public SwaggerProducer createProducer(Object producerInstance, Class<?> swaggerIntf) {
+  public SwaggerProducer createProducer(Object producerInstance, Class<?> swaggerIntf,
+      Map<String, Operation> swaggerOperationMap) {
     Class<?> producerCls = BeanUtils.getImplClassFromBean(producerInstance);
     Map<String, Method> visibleProducerMethods = retrieveVisibleMethods(producerCls);
 
@@ -142,14 +171,20 @@ public class SwaggerEnvironment {
       Method producerMethod = visibleProducerMethods.getOrDefault(methodName, null);
       if (producerMethod == null) {
         // producer未实现契约，非法
-        String msg = String.format("swagger method %s:%s not exist in producer.",
-            swaggerIntf.getClass().getName(),
-            methodName);
+        String msg = String.format("swagger method %s not exist in producer %s.",
+            methodName,
+            producerInstance.getClass().getName());
         throw new Error(msg);
       }
 
-      ProducerArgumentsMapper argsMapper = producerArgumentsFactory.createArgumentsMapper(swaggerMethod,
-          producerMethod);
+      ArgumentsMapperConfig config = new ArgumentsMapperConfig();
+      config.setSwaggerMethod(swaggerMethod);
+      config.setProviderMethod(producerMethod);
+      config.setSwaggerOperation(swaggerOperationMap.get(methodName));
+      config.setSwaggerGeneratorContext(compositeSwaggerGeneratorContext.selectContext(producerCls));
+
+      ProducerArgumentsMapperFactory argumentsMapperFactory = selectProducerArgumentsMapperFactory(config);
+      ProducerArgumentsMapper argsMapper = argumentsMapperFactory.createArgumentsMapper(config);
       ProducerResponseMapper responseMapper = producerResponseMapperFactorys.createResponseMapper(
           swaggerMethod.getGenericReturnType(),
           producerMethod.getGenericReturnType());
@@ -167,6 +202,20 @@ public class SwaggerEnvironment {
     }
 
     return producer;
+  }
+
+  ProducerArgumentsMapperFactory selectProducerArgumentsMapperFactory(ArgumentsMapperConfig config) {
+    ProducerArgumentsMapperFactory argumentsMapperFactory = null;
+    for (ProducerArgumentsMapperFactory producerArgumentsMapperFactory : this.producerArgumentsMapperFactoryList) {
+      if (producerArgumentsMapperFactory.canProcess(config)) {
+        argumentsMapperFactory = producerArgumentsMapperFactory;
+        break;
+      }
+    }
+    if (null == argumentsMapperFactory) {
+      argumentsMapperFactory = this.producerArgumentsFactory;
+    }
+    return argumentsMapperFactory;
   }
 
   private Map<String, Method> retrieveVisibleMethods(Class<?> clazz) {

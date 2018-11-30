@@ -26,10 +26,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.FixedThreadExecutor;
-import org.apache.servicecomb.core.executor.ReactiveExecutor;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.junit.Assert;
 import org.junit.Test;
@@ -43,9 +41,8 @@ import mockit.Mocked;
 
 public class TestProducerProviderManager {
   @Test
-  public void allowedNoProvider(@Mocked MicroserviceMetaManager microserviceMetaManager) {
+  public void allowedNoProvider() {
     AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-    context.getBeanFactory().registerSingleton(microserviceMetaManager.getClass().getName(), microserviceMetaManager);
     context.register(ProducerProviderManager.class);
     // must not throw exception
     context.refresh();
@@ -102,7 +99,7 @@ public class TestProducerProviderManager {
 
   @Test
   public void onBootEvent_close_unknown(@Mocked MicroserviceMeta microserviceMeta, @Mocked OperationMeta op1) {
-    Executor executor = new ReactiveExecutor();
+    Executor executor = new UnCloseableExecutor();
     new Expectations() {
       {
         microserviceMeta.getOperations();
@@ -121,8 +118,16 @@ public class TestProducerProviderManager {
     producerProviderManager.onBootEvent(event);
 
     Assert.assertEquals(
-        "Executor org.apache.servicecomb.core.executor.ReactiveExecutor do not support close or shutdown, it may block service shutdown.",
+        "Executor org.apache.servicecomb.core.provider.producer.TestProducerProviderManager$UnCloseableExecutor "
+            + "do not support close or shutdown, it may block service shutdown.",
         logCollector.getEvents().get(0).getMessage());
     logCollector.teardown();
+  }
+
+  public static class UnCloseableExecutor implements Executor {
+    @Override
+    public void execute(Runnable command) {
+      command.run();
+    }
   }
 }

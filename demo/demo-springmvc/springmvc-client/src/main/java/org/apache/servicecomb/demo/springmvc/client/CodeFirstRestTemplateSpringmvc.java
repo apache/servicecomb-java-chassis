@@ -30,7 +30,6 @@ import javax.servlet.http.Part;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.bizkeeper.BizkeeperExceptionUtils;
-import org.apache.servicecomb.core.exception.CseException;
 import org.apache.servicecomb.demo.CodeFirstRestTemplate;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.part.FilePart;
@@ -71,14 +70,14 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
 
   private TestGeneric testGeneric = new TestGeneric();
 
-  private TestDownload testDownload = new TestDownload();
-
   private TestRestTemplate testRestTemplate = new TestRestTemplate();
+
+  private TestContentType testContentType = new TestContentType();
+
+  private TestBizkeeper testBizkeeper = new TestBizkeeper();
 
   @Override
   protected void testOnlyRest(RestTemplate template, String cseUrlPrefix) {
-    testDownload.runRest();
-
     try {
       testUpload(template, cseUrlPrefix);
     } catch (IOException e) {
@@ -88,6 +87,8 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     testResponse.runRest();
     testObject.runRest();
     testGeneric.runRest();
+    testRestTemplate.runRest();
+    testContentType.runAllTest();
 
     super.testOnlyRest(template, cseUrlPrefix);
   }
@@ -107,6 +108,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     testObject.runAllTransport();
     testGeneric.runAllTransport();
     testRestTemplate.runAllTest();
+    testBizkeeper.runAllTest();
 
     testResponseEntity("springmvc", template, cseUrlPrefix);
     testCodeFirstTestForm(template, cseUrlPrefix);
@@ -136,17 +138,13 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     String result = testRestTemplateUpload(template, cseUrlPrefix, file1, someFile);
     TestMgr.check(expect, result);
 
-    {
-      MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-      map.add("file1", new FileSystemResource(file1));
+    MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+    map.add("file1", new FileSystemResource(file1));
 
-      result = template.postForObject(
-          cseUrlPrefix + "/upload1",
-          new HttpEntity<>(map),
-          String.class);
-
-      System.out.println(result);
-    }
+    result = template.postForObject(
+        cseUrlPrefix + "/upload1",
+        new HttpEntity<>(map),
+        String.class);
 
     result = uploadPartAndFile.fileUpload(new FilePart(null, file1), someFile);
     TestMgr.check(expect, result);
@@ -176,6 +174,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
   }
 
   private void testFallback(RestTemplate template, String cseUrlPrefix) {
+    long start = System.currentTimeMillis();
     String result = template.getForObject(cseUrlPrefix + "/fallback/returnnull/hello", String.class);
     TestMgr.check(result, "hello");
     result = template.getForObject(cseUrlPrefix + "/fallback/returnnull/throwexception", String.class);
@@ -187,7 +186,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
       result = template.getForObject(cseUrlPrefix + "/fallback/throwexception/throwexception", String.class);
       TestMgr.check(false, true);
     } catch (Exception e) {
-      TestMgr.check(((CseException) e.getCause()).getMessage(),
+      TestMgr.check(e.getCause().getMessage(),
           BizkeeperExceptionUtils.createBizkeeperException(BizkeeperExceptionUtils.SERVICECOMB_BIZKEEPER_FALLBACK,
               null,
               "springmvc.codeFirst.fallbackThrowException").getMessage());
@@ -202,6 +201,10 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
 
     result = template.getForObject(cseUrlPrefix + "/fallback/force/hello", String.class);
     TestMgr.check(result, "mockedreslut");
+
+    // This test case is fallback testing and will return null if failed.
+    // In order to check if failed due to some unexpected timeout exception, check the time.
+    TestMgr.check(System.currentTimeMillis() - start < 10000, true);
   }
 
   private void testResponseEntity(String microserviceName, RestTemplate template, String cseUrlPrefix) {
@@ -227,6 +230,9 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     TestMgr.check("h1v " + srcName, responseEntity.getHeaders().getFirst("h1"));
     TestMgr.check("h2v " + srcName, responseEntity.getHeaders().getFirst("h2"));
     checkStatusCode(microserviceName, 202, responseEntity.getStatusCode());
+
+    int retryResult = template.getForObject(cseUrlPrefix + "retrySuccess?a=2&b=3", Integer.class);
+    TestMgr.check(retryResult, 5);
   }
 
   protected void testCodeFirstTestForm(RestTemplate template, String cseUrlPrefix) {

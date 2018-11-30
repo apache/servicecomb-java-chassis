@@ -33,6 +33,7 @@ import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.context.InvocationContextCompletableFuture;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.springframework.util.StringUtils;
 
@@ -63,14 +64,14 @@ public class Invoker implements InvocationHandler {
   }
 
   // 原始数据
-  private String microserviceName;
+  protected String microserviceName;
 
-  private String schemaId;
+  protected String schemaId;
 
-  private Class<?> consumerIntf;
+  protected Class<?> consumerIntf;
 
   // 生成的数据
-  private InvokerMeta invokerMeta = new InvokerMeta(null, null, null, null);
+  protected InvokerMeta invokerMeta = new InvokerMeta(null, null, null, null);
 
   @SuppressWarnings("unchecked")
   public static <T> T createProxy(String microserviceName, String schemaId, Class<?> consumerIntf) {
@@ -85,7 +86,7 @@ public class Invoker implements InvocationHandler {
   }
 
   protected InvokerMeta createInvokerMeta() {
-    ReferenceConfig referenceConfig = SCBEngine.getInstance().getReferenceConfigForInvoke(microserviceName);
+    ReferenceConfig referenceConfig = findReferenceConfig();
     MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
 
     SchemaMeta schemaMeta;
@@ -113,6 +114,10 @@ public class Invoker implements InvocationHandler {
     SwaggerConsumer swaggerConsumer = CseContext.getInstance().getSwaggerEnvironment().createConsumer(consumerIntf,
         schemaMeta.getSwaggerIntf());
     return new InvokerMeta(referenceConfig, microserviceMeta, schemaMeta, swaggerConsumer);
+  }
+
+  protected ReferenceConfig findReferenceConfig() {
+    return SCBEngine.getInstance().getReferenceConfigForInvoke(microserviceName);
   }
 
   @Override
@@ -164,7 +169,7 @@ public class Invoker implements InvocationHandler {
 
   protected CompletableFuture<Object> completableFutureInvoke(Invocation invocation,
       SwaggerConsumerOperation consumerOperation) {
-    CompletableFuture<Object> future = new CompletableFuture<>();
+    CompletableFuture<Object> future = new InvocationContextCompletableFuture<>(invocation);
     InvokerUtils.reactiveInvoke(invocation, response -> {
       if (response.isSuccessed()) {
         Object result = consumerOperation.getResponseMapper().mapResponse(response);

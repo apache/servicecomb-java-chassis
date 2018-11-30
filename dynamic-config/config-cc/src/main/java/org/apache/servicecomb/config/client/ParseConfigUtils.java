@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.servicecomb.config.archaius.sources.ConfigCenterConfigurationSourceImpl.UpdateHandler;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
@@ -36,36 +38,87 @@ public class ParseConfigUtils {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ParseConfigUtils.class);
 
-  private static LinkedHashMap<String, Map<String, Object>> multiDimensionItems = new LinkedHashMap<>();
+  private static final ParseConfigUtils INSTANCE = new ParseConfigUtils();
 
-  public static final Map<String, Object> flatItems = new HashMap<>();
+  private LinkedHashMap<String, Map<String, Object>> multiDimensionItems = new LinkedHashMap<>();
+
+  //it's dangerous to make flatItems public
+  private final Map<String, Object> flatItems = new HashMap<>();
+
+  private String currentVersionInfo = "default";
 
   private UpdateHandler updateHandler;
 
+  private Lock configLock = new ReentrantLock();
+
+  //for compatibility with other modules and JunitTest
   public ParseConfigUtils(UpdateHandler updateHandler) {
     this.updateHandler = updateHandler;
   }
 
+  private ParseConfigUtils() {
+  }
+
+  public void initWithUpdateHandler(UpdateHandler updateHandler) {
+    if (updateHandler == null) {
+      LOGGER.error("when init ParseConfigUtils, updateHandler can not be null");
+    }
+    this.updateHandler = updateHandler;
+  }
+
+  /*
+      as the data is returned, we can block the thread at a short time. consider that if the multiple verticles were deployed
+      and if we use pull mode and push mode at the same time , we must share a common lock with all methods which would
+      change the config setting
+     */
   public void refreshConfigItems(Map<String, Map<String, Object>> remoteItems) {
-    multiDimensionItems.clear();
-    multiDimensionItems.putAll(remoteItems);
-    doRefreshItems();
-    LOGGER.debug("refresh config success");
+    try {
+      configLock.lock();
+      String oldRevision = currentVersionInfo;
+      currentVersionInfo =
+          remoteItems.getOrDefault("revision", new HashMap<>()).getOrDefault("version", "default").toString();
+      //make sure the currentVersionInfo != ""
+      currentVersionInfo = currentVersionInfo.equals("") ? "default" : currentVersionInfo;
+      //the key revision is not the config setting
+      boolean newVersion = (remoteItems.remove("revision") != null);
+      multiDimensionItems.clear();
+      multiDimensionItems.putAll(remoteItems);
+      doRefreshItems();
+      if (newVersion) {
+        LOGGER.info("Updating remote config is done. revision has changed from {} to {}", oldRevision,
+            currentVersionInfo);
+      }
+    } finally {
+      configLock.unlock();
+    }
+  }
+
+  public static ParseConfigUtils getInstance() {
+    return INSTANCE;
+  }
+
+  public String getCurrentVersionInfo() {
+    return this.currentVersionInfo;
   }
 
   public void refreshConfigItemsIncremental(Map<String, Object> action) {
-    if ("UPDATE".equals(action.get("action"))) {
-      try {
-        multiDimensionItems.put((String) action.get("key"), JsonUtils.OBJ_MAPPER
-            .readValue(action.get("value").toString(), new TypeReference<Map<String, Object>>() {
-            }));
-      } catch (IOException e) {
-        LOGGER.error("parse config change action fail");
+    try {
+      configLock.lock();
+      if ("UPDATE".equals(action.get("action"))) {
+        try {
+          multiDimensionItems.put((String) action.get("key"), JsonUtils.OBJ_MAPPER
+              .readValue(action.get("value").toString(), new TypeReference<Map<String, Object>>() {
+              }));
+        } catch (IOException e) {
+          LOGGER.error("parse config change action fail");
+        }
+        doRefreshItems();
+      } else if ("DELETE".equals(action.get("action"))) {
+        multiDimensionItems.remove(action.get("key"));
+        doRefreshItems();
       }
-      doRefreshItems();
-    } else if ("DELETE".equals(action.get("action"))) {
-      multiDimensionItems.remove(action.get("key"));
-      doRefreshItems();
+    } finally {
+      configLock.unlock();
     }
   }
 

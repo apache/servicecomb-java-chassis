@@ -31,3 +31,5 @@ servicecomb:
     chain:
       Provider:
         default: bizkeeper-provider
+  uploads:
+    directory: target

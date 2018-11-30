@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.common.rest.codec.param;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -79,11 +77,27 @@ public class TestPathProcessor {
   }
 
   @Test
-  public void testGetValuePathEncoded() throws Exception {
+  public void testGetSpaceEncoded() throws Exception {
     prepareGetValue("name", String.class);
-    pathVars.put("name", URLEncoder.encode("a b", StandardCharsets.UTF_8.name()));
+    pathVars.put("name", "a%20b");
 
     Assert.assertEquals("a b", processor.getValue(request));
+  }
+
+  @Test
+  public void testGetPlus() throws Exception {
+    prepareGetValue("name", String.class);
+    pathVars.put("name", "a+b");
+
+    Assert.assertEquals("a+b", processor.getValue(request));
+  }
+
+  @Test
+  public void testGetPercentage() throws Exception {
+    prepareGetValue("name", String.class);
+    pathVars.put("name", "%25%25");
+
+    Assert.assertEquals("%%", processor.getValue(request));
   }
 
   @Test

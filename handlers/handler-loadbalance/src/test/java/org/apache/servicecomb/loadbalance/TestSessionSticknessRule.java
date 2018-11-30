@@ -20,10 +20,13 @@ package org.apache.servicecomb.loadbalance;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
 import org.junit.Assert;
 import org.junit.Test;
@@ -44,23 +47,24 @@ public class TestSessionSticknessRule {
 
     LoadBalancer mockedLb = mock(LoadBalancer.class);
     Transport transport = mock(Transport.class);
-    CseServer mockedServer = new CseServer(transport, new CacheEndpoint("rest:127.0.0.1:8889", null));
-    Object key = Mockito.mock(Object.class);
+    MicroserviceInstance instance1 = new MicroserviceInstance();
+    instance1.setInstanceId("1234");
+    ServiceCombServer mockedServer =
+        new ServiceCombServer(transport, new CacheEndpoint("rest:127.0.0.1:8889", instance1));
+    Invocation invocation = mock(Invocation.class);
     LoadBalancerStats stats = mock(LoadBalancerStats.class);
     Mockito.when(mockedLb.getLoadBalancerStats()).thenReturn(stats);
-    Deencapsulation.invoke(rule, "chooseServerWhenTimeout", key);
+    Deencapsulation.invoke(rule, "chooseServerWhenTimeout", Arrays.asList(mockedServer), invocation);
     mockedServer.setAlive(true);
     mockedServer.setReadyToServe(true);
-    List<Server> allServers = Arrays.asList(mockedServer);
-    when(mockedLb.getReachableServers()).thenReturn(allServers);
-    when(mockedLb.getAllServers()).thenReturn(allServers);
-
+    List<ServiceCombServer> allServers = Arrays.asList(mockedServer);
     rule.setLoadBalancer(mockedLb);
-    Assert.assertEquals(rule.getLoadBalancer(), mockedLb);
-    Server s = rule.choose("default");
+
+
+    Server s = rule.choose(allServers, invocation);
     Assert.assertEquals(s, mockedServer);
 
-    s = rule.choose("default");
+    s = rule.choose(allServers, invocation);
     Assert.assertEquals(s, mockedServer);
   }
 
@@ -71,11 +75,12 @@ public class TestSessionSticknessRule {
 
     SessionStickinessRule ss = new SessionStickinessRule();
 
-    Object key = new Object();
+    Invocation invocation = mock(Invocation.class);
+    ServiceCombServer server = mock(ServiceCombServer.class);
+    List<ServiceCombServer> servers = new ArrayList<>();
+    servers.add(server);
 
-    Server s = new Server("test");
-
-    Deencapsulation.setField(ss, "lastServer", s);
+    Deencapsulation.setField(ss, "lastServer", server);
 
     new MockUp<SessionStickinessRule>() {
 
@@ -94,7 +99,7 @@ public class TestSessionSticknessRule {
     };
 
     try {
-      ss.choose(key);
+      ss.choose(servers, invocation);
     } catch (Exception e) {
       status = false;
     }
@@ -108,11 +113,12 @@ public class TestSessionSticknessRule {
 
     SessionStickinessRule ss = new SessionStickinessRule();
 
-    Object key = new Object();
+    Invocation invocation = mock(Invocation.class);
+    ServiceCombServer server = mock(ServiceCombServer.class);
+    List<ServiceCombServer> servers = new ArrayList<>();
+    servers.add(server);
 
-    Server s = new Server("test");
-
-    Deencapsulation.setField(ss, "lastServer", s);
+    Deencapsulation.setField(ss, "lastServer", server);
 
     new MockUp<SessionStickinessRule>() {
 
@@ -123,7 +129,7 @@ public class TestSessionSticknessRule {
     };
 
     try {
-      ss.choose(key);
+      ss.choose(servers, invocation);
     } catch (Exception e) {
       status = false;
     }
@@ -138,11 +144,12 @@ public class TestSessionSticknessRule {
 
     SessionStickinessRule ss = new SessionStickinessRule();
 
-    Object key = new Object();
+    Invocation invocation = mock(Invocation.class);
+    ServiceCombServer server = mock(ServiceCombServer.class);
+    List<ServiceCombServer> servers = new ArrayList<>();
+    servers.add(server);
 
-    Server s = new Server("test");
-
-    Deencapsulation.setField(ss, "lastServer", s);
+    Deencapsulation.setField(ss, "lastServer", server);
 
     new MockUp<SessionStickinessRule>() {
 
@@ -153,7 +160,7 @@ public class TestSessionSticknessRule {
     };
 
     try {
-      ss.choose(key);
+      ss.choose(servers, invocation);
     } catch (Exception e) {
       status = false;
     }
@@ -167,11 +174,12 @@ public class TestSessionSticknessRule {
 
     SessionStickinessRule ss = new SessionStickinessRule();
 
-    Object key = new Object();
+    Invocation invocation = mock(Invocation.class);
+    ServiceCombServer server = mock(ServiceCombServer.class);
+    List<ServiceCombServer> servers = new ArrayList<>();
+    servers.add(server);
 
-    Server s = new Server("test");
-
-    Deencapsulation.setField(ss, "lastServer", s);
+    Deencapsulation.setField(ss, "lastServer", server);
 
     new MockUp<SessionStickinessRule>() {
 
@@ -189,8 +197,16 @@ public class TestSessionSticknessRule {
       }
     };
 
+    new MockUp<SessionStickinessRule>() {
+
+      @Mock
+      private boolean isLastServerExists(Server server) {
+        return true;
+      }
+    };
+
     try {
-      ss.choose(key);
+      ss.choose(servers, invocation);
     } catch (Exception e) {
       status = false;
     }
@@ -203,13 +219,14 @@ public class TestSessionSticknessRule {
     boolean status = true;
     SessionStickinessRule ss = new SessionStickinessRule();
 
-    Object key = new Object();
+    Invocation invocation = mock(Invocation.class);
+    ServiceCombServer server = mock(ServiceCombServer.class);
+    List<ServiceCombServer> servers = new ArrayList<>();
+    servers.add(server);
 
-    Server s = new Server("test");
-
-    Deencapsulation.setField(ss, "lastServer", s);
+    Deencapsulation.setField(ss, "lastServer", server);
     try {
-      ss.choose(key);
+      ss.choose(servers, invocation);
     } catch (Exception e) {
       status = false;
     }
@@ -217,17 +234,37 @@ public class TestSessionSticknessRule {
   }
 
   @Test
-  public void testServerWithKey() {
+  public void testLastServerNotExist() {
+    SessionStickinessRule rule = new SessionStickinessRule();
 
-    boolean status = true;
-    SessionStickinessRule ss = new SessionStickinessRule();
+    Transport transport = mock(Transport.class);
+    Invocation invocation = mock(Invocation.class);
+    MicroserviceInstance instance1 = new MicroserviceInstance();
+    instance1.setInstanceId("1234");
+    ServiceCombServer mockedServer =
+        new ServiceCombServer(transport, new CacheEndpoint("rest:127.0.0.1:8890", instance1));
+    mockedServer.setAlive(true);
+    mockedServer.setReadyToServe(true);
+    mockedServer.setId("mockedServer");
+    List<ServiceCombServer> allServers = Arrays.asList(mockedServer);
+    LoadBalancer lb = new LoadBalancer(rule, "mockedServer");
+    when(invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST)).thenReturn(allServers);
+    rule.setLoadBalancer(lb);
+    ServiceCombServer server = new ServiceCombServer(transport, new CacheEndpoint("rest:127.0.0.1:8890", instance1));
+    Deencapsulation.setField(rule, "lastServer", server);
 
-    Object key = new Object();
-    try {
-      ss.choose(key);
-    } catch (Exception e) {
-      status = false;
-    }
-    Assert.assertTrue(status);
+    new MockUp<SessionStickinessRule>(rule) {
+      @Mock
+      private boolean isTimeOut() {
+        return false;
+      }
+
+      @Mock
+      private boolean isErrorThresholdMet() {
+        return false;
+      }
+    };
+    Server s = rule.choose(allServers, invocation);
+    Assert.assertEquals(mockedServer, s);
   }
 }

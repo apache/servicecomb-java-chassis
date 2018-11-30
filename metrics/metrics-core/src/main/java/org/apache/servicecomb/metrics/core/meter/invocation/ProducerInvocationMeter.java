@@ -16,36 +16,57 @@
  */
 package org.apache.servicecomb.metrics.core.meter.invocation;
 
-import java.util.concurrent.TimeUnit;
+import java.util.List;
 
-import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
-import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.core.invocation.InvocationStageTrace;
+import org.apache.servicecomb.foundation.metrics.meter.SimpleTimer;
 
 import com.netflix.spectator.api.Id;
+import com.netflix.spectator.api.Measurement;
 import com.netflix.spectator.api.Registry;
-import com.netflix.spectator.api.Timer;
 
 public class ProducerInvocationMeter extends AbstractInvocationMeter {
-  private Timer executorQueueTimer;
+  private SimpleTimer executorQueueTimer;
 
-  private Timer executionTimer;
+  private SimpleTimer executionTimer;
 
-  public ProducerInvocationMeter(Registry registry, Id id, Invocation invocation, Response response) {
-    super(registry, id, invocation, response);
+  private SimpleTimer serverFiltersRequestTimer;
 
-    executorQueueTimer =
-        registry.timer(id.withTag(MeterInvocationConst.TAG_STAGE, MeterInvocationConst.STAGE_EXECUTOR_QUEUE));
-    executionTimer =
-        registry.timer(id.withTag(MeterInvocationConst.TAG_STAGE, MeterInvocationConst.STAGE_EXECUTION));
+  private SimpleTimer serverFiltersResponseTimer;
+
+  private SimpleTimer sendResponseTimer;
+
+  public ProducerInvocationMeter(Registry registry, Id id) {
+    super(registry, id);
+
+    executorQueueTimer = creatStageTimer(MeterInvocationConst.STAGE_EXECUTOR_QUEUE);
+    executionTimer = creatStageTimer(MeterInvocationConst.STAGE_EXECUTION);
+    serverFiltersRequestTimer = creatStageTimer(MeterInvocationConst.STAGE_SERVER_FILTERS_REQUEST);
+    serverFiltersResponseTimer = creatStageTimer(MeterInvocationConst.STAGE_SERVER_FILTERS_RESPONSE);
+    sendResponseTimer = creatStageTimer(MeterInvocationConst.STAGE_PRODUCER_SEND_RESPONSE);
   }
 
   @Override
   public void onInvocationFinish(InvocationFinishEvent event) {
     super.onInvocationFinish(event);
 
-    Invocation invocation = event.getInvocation();
-    executorQueueTimer.record(invocation.getStartExecutionTime() - invocation.getStartTime(), TimeUnit.NANOSECONDS);
-    executionTimer.record(event.getNanoCurrent() - invocation.getStartExecutionTime(), TimeUnit.NANOSECONDS);
+    InvocationStageTrace invocationStageTrace = event.getInvocation().getInvocationStageTrace();
+    executorQueueTimer.record((long) invocationStageTrace.calcThreadPoolQueueTime());
+    executionTimer.record((long) invocationStageTrace.calcBusinessTime());
+    serverFiltersRequestTimer.record((long) invocationStageTrace.calcServerFiltersRequestTime());
+    serverFiltersResponseTimer.record((long) invocationStageTrace.calcServerFiltersResponseTime());
+    sendResponseTimer.record((long) invocationStageTrace.calcSendResponseTime());
+  }
+
+  @Override
+  public void calcMeasurements(List<Measurement> measurements, long msNow, long secondInterval) {
+    super.calcMeasurements(measurements, msNow, secondInterval);
+
+    executorQueueTimer.calcMeasurements(measurements, msNow, secondInterval);
+    executionTimer.calcMeasurements(measurements, msNow, secondInterval);
+    serverFiltersRequestTimer.calcMeasurements(measurements, msNow, secondInterval);
+    serverFiltersResponseTimer.calcMeasurements(measurements, msNow, secondInterval);
+    sendResponseTimer.calcMeasurements(measurements, msNow, secondInterval);
   }
 }

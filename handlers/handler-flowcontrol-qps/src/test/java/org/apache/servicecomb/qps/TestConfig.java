@@ -17,7 +17,10 @@
 
 package org.apache.servicecomb.qps;
 
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -25,20 +28,32 @@ import org.junit.Test;
  *
  */
 public class TestConfig {
+  @BeforeClass
+  public static void classSetup() {
+    ArchaiusUtils.resetConfig();
+  }
+
+  @AfterClass
+  public static void classTeardown() {
+    ArchaiusUtils.resetConfig();
+  }
+
   @Test
   public void testEnabled() {
+    Config.INSTANCE = new Config();
+
     Assert.assertEquals(true, Config.INSTANCE.isProviderEnabled());
-    Utils.updateProperty(Config.PROVIDER_ENABLED, false);
+    ArchaiusUtils.updateProperty(Config.PROVIDER_ENABLED, false);
     Assert.assertEquals(false, Config.INSTANCE.isProviderEnabled());
 
-    Utils.updateProperty(Config.PROVIDER_ENABLED, null);
+    ArchaiusUtils.updateProperty(Config.PROVIDER_ENABLED, null);
     Assert.assertEquals(true, Config.INSTANCE.isProviderEnabled());
 
     Assert.assertEquals(true, Config.INSTANCE.isConsumerEnabled());
-    Utils.updateProperty(Config.CONSUMER_ENABLED, false);
+    ArchaiusUtils.updateProperty(Config.CONSUMER_ENABLED, false);
     Assert.assertEquals(false, Config.INSTANCE.isConsumerEnabled());
 
-    Utils.updateProperty(Config.CONSUMER_ENABLED, null);
+    ArchaiusUtils.updateProperty(Config.CONSUMER_ENABLED, null);
     Assert.assertEquals(true, Config.INSTANCE.isConsumerEnabled());
   }
 }

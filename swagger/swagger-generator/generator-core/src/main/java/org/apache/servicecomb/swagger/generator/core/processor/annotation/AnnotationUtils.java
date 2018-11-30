@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,21 +25,25 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.generator.core.processor.annotation.models.ResponseConfig;
 import org.apache.servicecomb.swagger.generator.core.processor.annotation.models.ResponseConfigBase;
 import org.apache.servicecomb.swagger.generator.core.processor.annotation.models.ResponseHeaderConfig;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.Example;
+import io.swagger.annotations.ExampleProperty;
 import io.swagger.annotations.ResponseHeader;
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.Model;
 import io.swagger.models.Operation;
 import io.swagger.models.Response;
 import io.swagger.models.Swagger;
+import io.swagger.models.parameters.AbstractSerializableParameter;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.CookieParameter;
 import io.swagger.models.parameters.FormParameter;
@@ -47,6 +52,8 @@ import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.PathParameter;
 import io.swagger.models.parameters.QueryParameter;
 import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.FileProperty;
+import io.swagger.models.properties.LongProperty;
 import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.util.ParameterProcessor;
@@ -108,7 +115,7 @@ public final class AnnotationUtils {
   public static void addResponse(Swagger swagger, Operation operation, ApiOperation apiOperation) {
     ResponseConfig responseConfig = convert(apiOperation);
     generateResponse(swagger, responseConfig);
-    operation.response(responseConfig.getCode(), responseConfig.getResponse());
+    mergeResponse(operation, responseConfig);
   }
 
   public static void addResponse(Swagger swagger, ApiResponse apiResponse) {
@@ -120,7 +127,35 @@ public final class AnnotationUtils {
   public static void addResponse(Swagger swagger, Operation operation, ApiResponse apiResponse) {
     ResponseConfig responseConfig = convert(apiResponse);
     generateResponse(swagger, responseConfig);
-    operation.response(responseConfig.getCode(), responseConfig.getResponse());
+    mergeResponse(operation, responseConfig);
+  }
+
+  private static void mergeResponse(Operation operation, ResponseConfig responseConfig) {
+    if (operation.getResponses() == null) {
+      operation.response(responseConfig.getCode(), responseConfig.getResponse());
+      return;
+    }
+    Response response = operation.getResponses().get(String.valueOf(responseConfig.getCode()));
+    if (response == null) {
+      operation.response(responseConfig.getCode(), responseConfig.getResponse());
+      return;
+    }
+    Response sourceResp = responseConfig.getResponse();
+    if (StringUtils.isNotEmpty(sourceResp.getDescription()) && StringUtils.isEmpty(response.getDescription())) {
+      response.setDescription(sourceResp.getDescription());
+    }
+    if (sourceResp.getSchema() != null && response.getSchema() == null) {
+      response.setSchema(sourceResp.getSchema());
+    }
+    if (sourceResp.getExamples() != null && response.getExamples() == null) {
+      response.setExamples(sourceResp.getExamples());
+    }
+    if (sourceResp.getHeaders() != null && response.getHeaders() == null) {
+      response.setHeaders(sourceResp.getHeaders());
+    }
+    if (sourceResp.getVendorExtensions() != null && response.getVendorExtensions() == null) {
+      response.setVendorExtensions(sourceResp.getVendorExtensions());
+    }
   }
 
   private static void generateResponse(Swagger swagger, ResponseConfig responseConfig) {
@@ -216,6 +251,93 @@ public final class AnnotationUtils {
         return new CookieParameter();
       default:
         throw new Error("not support paramType " + paramAnnotation.paramType());
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T> T findAnnotation(Annotation[] annotations, Class<T> annotationType) {
+    for (Annotation annotation : annotations) {
+      if (annotation.annotationType().equals(annotationType)) {
+        return (T) annotation;
+      }
+    }
+
+    return null;
+  }
+
+  public static void processApiParam(Annotation[] paramAnnotations, Parameter parameter) {
+    ApiParam param = findAnnotation(paramAnnotations, ApiParam.class);
+    if (param == null) {
+      return;
+    }
+
+    if (parameter instanceof AbstractSerializableParameter) {
+      processApiParam(param, (AbstractSerializableParameter<?>) parameter);
+      return;
+    }
+
+    processApiParam(param, (BodyParameter) parameter);
+  }
+
+  protected static void processApiParam(ApiParam param, BodyParameter p) {
+    if (param.required()) {
+      p.setRequired(true);
+    }
+    if (StringUtils.isNotEmpty(param.name())) {
+      p.setName(param.name());
+    }
+    if (StringUtils.isNotEmpty(param.value())) {
+      p.setDescription(param.value());
+    }
+    if (StringUtils.isNotEmpty(param.access())) {
+      p.setAccess(param.access());
+    }
+
+    Example example = param.examples();
+    if (example != null && example.value() != null) {
+      for (ExampleProperty ex : example.value()) {
+        String mediaType = ex.mediaType();
+        String value = ex.value();
+        if (!mediaType.isEmpty() && !value.isEmpty()) {
+          p.example(mediaType.trim(), value.trim());
+        }
+      }
+    }
+  }
+
+  protected static void processApiParam(ApiParam param, AbstractSerializableParameter<?> p) {
+    if (param.required()) {
+      p.setRequired(true);
+    }
+    if (param.readOnly()) {
+      p.setReadOnly(true);
+    }
+    if (param.allowEmptyValue()) {
+      p.setAllowEmptyValue(true);
+    }
+    if (StringUtils.isNotEmpty(param.name())) {
+      p.setName(param.name());
+    }
+    if (StringUtils.isNotEmpty(param.value())) {
+      p.setDescription(param.value());
+    }
+    if (StringUtils.isNotEmpty(param.example())) {
+      p.setExample(param.example());
+    }
+    if (StringUtils.isNotEmpty(param.access())) {
+      p.setAccess(param.access());
+    }
+    if (StringUtils.isNoneEmpty(param.collectionFormat())) {
+      p.setCollectionFormat(param.collectionFormat());
+    }
+    if (StringUtils.isNotEmpty(param.type())) {
+      if ("java.io.File".equalsIgnoreCase(param.type())) {
+        p.setProperty(new FileProperty());
+      } else if ("long".equalsIgnoreCase(param.type())) {
+        p.setProperty(new LongProperty());
+      } else {
+        p.setType(param.type());
+      }
     }
   }
 }

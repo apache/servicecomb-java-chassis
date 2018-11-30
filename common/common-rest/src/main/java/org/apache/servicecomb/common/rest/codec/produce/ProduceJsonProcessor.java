@@ -22,7 +22,7 @@ import java.io.OutputStream;
 
 import javax.ws.rs.core.MediaType;
 
-import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 
 import com.fasterxml.jackson.databind.JavaType;
 
@@ -35,12 +35,13 @@ public class ProduceJsonProcessor implements ProduceProcessor {
 
   @Override
   public void doEncodeResponse(OutputStream output, Object result) throws Exception {
-    RestObjectMapper.INSTANCE.writeValue(output, result);
+    RestObjectMapperFactory.getRestObjectMapper().writeValue(output, result);
   }
 
   @Override
   public Object doDecodeResponse(InputStream input, JavaType type) throws Exception {
-    return RestObjectMapper.INSTANCE.readValue(input, type);
+    return RestObjectMapperFactory.getRestObjectMapper()
+        .readValue(input, type);
   }
 
   @Override

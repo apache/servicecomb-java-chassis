@@ -44,6 +44,8 @@ import mockit.Mocked;
 
 public class CertificateUtilTest {
   class MyX509Certificate extends X509Certificate {
+    private static final long serialVersionUID = -3585440601605666278L;
+
     public void checkValidity() throws CertificateExpiredException, CertificateNotYetValidException {
     }
 

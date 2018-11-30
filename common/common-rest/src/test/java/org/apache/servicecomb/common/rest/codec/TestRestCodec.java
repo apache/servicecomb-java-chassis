@@ -133,7 +133,7 @@ public class TestRestCodec {
       RestCodec.restToArgs(request, restOperation);
       success = true;
     } catch (InvocationException e) {
-      Assert.assertEquals(590, e.getStatusCode());
+      Assert.assertEquals(400, e.getStatusCode());
       Assert.assertEquals("Parameter is not valid.", ((CommonExceptionData) e.getErrorData()).getMessage());
     }
     Assert.assertEquals(success, false);

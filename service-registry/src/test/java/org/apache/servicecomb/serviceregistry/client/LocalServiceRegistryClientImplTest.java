@@ -121,13 +121,12 @@ public class LocalServiceRegistryClientImplTest {
     List<MicroserviceInstance> result =
         registryClient.findServiceInstance("self", appId, microserviceName, DefinitionConst.VERSION_RULE_ALL);
 
-    Assert.assertThat(result, Matchers.empty());
+    Assert.assertThat(result, Matchers.nullValue());
 
     MicroserviceInstances microserviceInstances =
         registryClient.findServiceInstances("self", appId, microserviceName, DefinitionConst.VERSION_RULE_ALL, null);
-    List<MicroserviceInstance> results = microserviceInstances.getInstancesResponse().getInstances();
-
-    Assert.assertThat(results, Matchers.empty());
+    Assert.assertThat(microserviceInstances.isMicroserviceNotExist(), Matchers.is(true));
+    Assert.assertThat(microserviceInstances.getInstancesResponse(), Matchers.nullValue());
   }
 
   @Test

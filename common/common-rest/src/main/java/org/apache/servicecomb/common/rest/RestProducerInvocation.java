@@ -22,17 +22,16 @@ import java.util.List;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
-import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class RestProducerInvocation extends AbstractRestInvocation {
+
   protected Transport transport;
 
   public void invoke(Transport transport, HttpServletRequestEx requestEx, HttpServletResponseEx responseEx,
@@ -54,13 +53,7 @@ public class RestProducerInvocation extends AbstractRestInvocation {
   }
 
   protected void findRestOperation() {
-    String targetMicroserviceName = requestEx.getHeader(Const.TARGET_MICROSERVICE);
-    if (targetMicroserviceName == null) {
-      // for compatible
-      targetMicroserviceName = RegistryUtils.getMicroservice().getServiceName();
-    }
-    MicroserviceMeta selfMicroserviceMeta =
-        CseContext.getInstance().getMicroserviceMetaManager().ensureFindValue(targetMicroserviceName);
+    MicroserviceMeta selfMicroserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     findRestOperation(selfMicroserviceMeta);
   }
 

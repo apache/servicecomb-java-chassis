@@ -31,7 +31,9 @@ public final class Configuration {
   //// 2.1 configuration items
   public static final String PROP_ROOT = "servicecomb.loadbalance.";
 
-  public static final String PROP_POLICY = "NFLoadBalancerRuleClassName";
+  public static final String RPOP_SERVER_EXPIRED_IN_SECONDS = "servicecomb.loadbalance.stats.serverExpiredInSeconds";
+
+  public static final String RPOP_TIMER_INTERVAL_IN_MINIS = "servicecomb.loadbalance.stats.timerIntervalInMilis";
 
   public static final String PROP_RULE_STRATEGY_NAME = "strategy.name";
 
@@ -52,17 +54,6 @@ public final class Configuration {
 
   public static final String SUCCESSIVE_FAILED_TIMES = "SessionStickinessRule.successiveFailedTimes";
 
-  // Begin: ServerListFilters configurations
-  //Enabled filter lists, e.g servicecomb.loadbalance.serverListFilters=a,b,c
-  public static final String SERVER_LIST_FILTERS = "servicecomb.loadbalance.serverListFilters";
-
-  //Class name of each filter: e.g servicecomb.loadbalance.serverListFilter.a.className=org.apache.servicecomb.MyServerListFilterExt
-  public static final String SERVER_LIST_FILTER_CLASS_HOLDER = "servicecomb.loadbalance.serverListFilter.%s.className";
-
-  //Property of the class: e.g servicecomb.loadbalance.serverListFilter.a.myproperty=sample
-  public static final String SERVER_LIST_FILTER_PROPERTY_HOLDER = "servicecomb.loadbalance.serverListFilter.%s.%s";
-  //End: ServerListFilters configurations
-
   private static final double PERCENT = 100;
 
   public static final String FILTER_ISOLATION = "isolation.";
@@ -75,24 +66,16 @@ public final class Configuration {
 
   public static final String FILTER_SINGLE_TEST = "singleTestTime";
 
+  public static final String FILTER_MIN_ISOLATION_TIME = "minIsolationTime";
+
   public static final String FILTER_CONTINUOUS_FAILURE_THRESHOLD = "continuousFailureThreshold";
 
   public static final String TRANSACTIONCONTROL_OPTIONS_PREFIX_PATTERN =
       "servicecomb.loadbalance.%s.transactionControl.options";
 
-  public static final String TRANSACTIONCONTROL_POLICY_KEY_PATTERN = "servicecomb.loadbalance.%s.transactionControl.policy";
-
   public static final Configuration INSTANCE = new Configuration();
 
   private Configuration() {
-  }
-
-  public String getPolicy(String microservice) {
-    return getStringProperty(null,
-        PROP_ROOT + microservice + "." + PROP_POLICY,
-        PROP_ROOT_20 + microservice + "." + PROP_POLICY,
-        PROP_ROOT + PROP_POLICY,
-        PROP_ROOT_20 + PROP_POLICY);
   }
 
   public String getRuleStrategyName(String microservice) {
@@ -147,9 +130,8 @@ public final class Configuration {
       int result = Integer.parseInt(p);
       if (result > 0) {
         return result;
-      } else {
-        return defaultValue;
       }
+      return defaultValue;
     } catch (NumberFormatException e) {
       return defaultValue;
     }
@@ -164,74 +146,83 @@ public final class Configuration {
       int result = Integer.parseInt(p);
       if (result > 0) {
         return result;
-      } else {
-        return defaultValue;
       }
+      return defaultValue;
     } catch (NumberFormatException e) {
       return defaultValue;
     }
   }
 
   public boolean isIsolationFilterOpen(String microservice) {
-    String p = getStringProperty("false",
+    String p = getStringProperty("true",
         PROP_ROOT + microservice + "." + FILTER_ISOLATION + FILTER_OPEN,
         PROP_ROOT + FILTER_ISOLATION + FILTER_OPEN);
     return Boolean.parseBoolean(p);
   }
 
   public int getErrorThresholdPercentage(String microservice) {
-    final int defaultValue = 20;
-    String p = getStringProperty("20",
+    final int defaultValue = 0;
+    String p = getStringProperty("0",
         PROP_ROOT + microservice + "." + FILTER_ISOLATION + FILTER_ERROR_PERCENTAGE,
         PROP_ROOT + FILTER_ISOLATION + FILTER_ERROR_PERCENTAGE);
     try {
       int result = Integer.parseInt(p);
       if (result <= PERCENT && result > 0) {
         return result;
-      } else {
-        return defaultValue;
       }
+      return defaultValue;
     } catch (NumberFormatException e) {
       return defaultValue;
     }
   }
 
   public int getEnableRequestThreshold(String microservice) {
-    final int defaultValue = 20;
-    String p = getStringProperty("20",
+    final int defaultValue = 5;
+    String p = getStringProperty("5",
         PROP_ROOT + microservice + "." + FILTER_ISOLATION + FILTER_ENABLE_REQUEST,
         PROP_ROOT + FILTER_ISOLATION + FILTER_ENABLE_REQUEST);
     try {
       int result = Integer.parseInt(p);
       if (result > 0) {
         return result;
-      } else {
-        return defaultValue;
       }
+      return defaultValue;
     } catch (NumberFormatException e) {
       return defaultValue;
     }
   }
 
   public int getSingleTestTime(String microservice) {
-    final int defaultValue = 10000;
-    String p = getStringProperty("10000",
+    final int defaultValue = 60000;
+    String p = getStringProperty("60000",
         PROP_ROOT + microservice + "." + FILTER_ISOLATION + FILTER_SINGLE_TEST,
         PROP_ROOT + FILTER_ISOLATION + FILTER_SINGLE_TEST);
     try {
       int result = Integer.parseInt(p);
-      if (result > 0) {
+      if (result >= 0) {
         return result;
-      } else {
-        return defaultValue;
       }
+      return defaultValue;
+
     } catch (NumberFormatException e) {
       return defaultValue;
     }
   }
 
-  public String getFlowsplitFilterPolicy(String microservice) {
-    return getStringProperty("", String.format(TRANSACTIONCONTROL_POLICY_KEY_PATTERN, microservice));
+  public int getMinIsolationTime(String microservice) {
+    final int defaultValue = 3000; // 3 seconds
+    String p = getStringProperty("3000",
+        PROP_ROOT + microservice + "." + FILTER_ISOLATION + FILTER_MIN_ISOLATION_TIME,
+        PROP_ROOT + FILTER_ISOLATION + FILTER_MIN_ISOLATION_TIME);
+    try {
+      int result = Integer.parseInt(p);
+      if (result >= 0) {
+        return result;
+      }
+      return defaultValue;
+    } catch (NumberFormatException e) {
+      return defaultValue;
+    }
   }
 
   public Map<String, String> getFlowsplitFilterOptions(String microservice) {
@@ -244,29 +235,24 @@ public final class Configuration {
     for (String key : keys) {
       property = DynamicPropertyFactory.getInstance().getStringProperty(key, null).get();
       if (property != null) {
-        break;
+        return property;
       }
     }
 
-    if (property != null) {
-      return property;
-    } else {
-      return defaultValue;
-    }
+    return defaultValue;
   }
 
   public int getContinuousFailureThreshold(String microservice) {
-    final int defaultValue = 0;
-    String p = getStringProperty("0",
+    final int defaultValue = 5;
+    String p = getStringProperty("5",
         PROP_ROOT + microservice + "." + FILTER_ISOLATION + FILTER_CONTINUOUS_FAILURE_THRESHOLD,
         PROP_ROOT + FILTER_ISOLATION + FILTER_CONTINUOUS_FAILURE_THRESHOLD);
     try {
       int result = Integer.parseInt(p);
       if (result > 0) {
         return result;
-      } else {
-        return defaultValue;
       }
+      return defaultValue;
     } catch (NumberFormatException e) {
       return defaultValue;
     }

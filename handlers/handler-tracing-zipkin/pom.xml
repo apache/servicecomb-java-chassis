@@ -22,7 +22,7 @@
   <parent>
     <artifactId>handlers</artifactId>
     <groupId>org.apache.servicecomb</groupId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -59,10 +59,9 @@
       <artifactId>brave-context-log4j12</artifactId>
     </dependency>
     <dependency>
-      <!-- only needed in test phase for mocking brave -->
       <groupId>io.zipkin.java</groupId>
       <artifactId>zipkin</artifactId>
-      <scope>test</scope>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>

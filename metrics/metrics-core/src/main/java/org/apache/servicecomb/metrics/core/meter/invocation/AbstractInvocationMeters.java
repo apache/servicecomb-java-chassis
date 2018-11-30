@@ -26,6 +26,7 @@ import org.apache.servicecomb.swagger.invocation.Response;
 
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Registry;
+import com.netflix.spectator.api.SpectatorUtils;
 
 public abstract class AbstractInvocationMeters {
   protected Registry registry;
@@ -42,8 +43,16 @@ public abstract class AbstractInvocationMeters {
   protected AbstractInvocationMeter getOrCreateMeters(Invocation invocation, Response response) {
     // build string key is faster then use Id to locate timer directly
     StringBuilder keyBuilder = new StringBuilder(maxKeyLen);
+    String invocationName;
+    //check edge
+    if (invocation.isConsumer() && invocation.isEdge()) {
+      invocationName = MeterInvocationConst.EDGE_INVOCATION_NAME;
+    } else {
+      invocationName = invocation.getInvocationType().name();
+    }
+
     keyBuilder
-        .append(invocation.getInvocationType().name())
+        .append(invocationName)
         .append(invocation.getRealTransportName())
         .append(invocation.getMicroserviceQualifiedName())
         .append(response.getStatusCode());
@@ -54,7 +63,7 @@ public abstract class AbstractInvocationMeters {
     return metersMap.computeIfAbsent(keyBuilder.toString(), k -> {
       Id id = registry.createId(MeterInvocationConst.INVOCATION_NAME,
           MeterInvocationConst.TAG_ROLE,
-          invocation.getInvocationType().name(),
+          invocationName,
           MeterInvocationConst.TAG_TRANSPORT,
           invocation.getRealTransportName(),
           MeterInvocationConst.TAG_OPERATION,
@@ -62,12 +71,13 @@ public abstract class AbstractInvocationMeters {
           MeterInvocationConst.TAG_STATUS,
           String.valueOf(response.getStatusCode()));
 
-      return createMeter(id, invocation, response);
+      AbstractInvocationMeter meter = createMeter(id);
+      SpectatorUtils.registerMeter(registry, meter);
+      return meter;
     });
   }
 
-  protected abstract AbstractInvocationMeter createMeter(Id id, Invocation invocation,
-      Response response);
+  protected abstract AbstractInvocationMeter createMeter(Id id);
 
   public void onInvocationStart(InvocationStartEvent event) {
   }

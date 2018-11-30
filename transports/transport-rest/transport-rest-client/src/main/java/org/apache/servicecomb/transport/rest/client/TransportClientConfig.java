@@ -19,6 +19,9 @@ package org.apache.servicecomb.transport.rest.client;
 
 import com.netflix.config.DynamicPropertyFactory;
 
+import io.vertx.core.http.HttpClientOptions;
+import io.vertx.core.net.TCPSSLOptions;
+
 public final class TransportClientConfig {
   private static Class<? extends RestTransportClient> restTransportClientCls = RestTransportClient.class;
 
@@ -37,8 +40,35 @@ public final class TransportClientConfig {
     return DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.rest.client.thread-count", 1).get();
   }
 
+  public static int getHttp2ConnectionMaxPoolSize() {
+    return DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.rest.client.http2.maxPoolSize",
+        HttpClientOptions.DEFAULT_HTTP2_MAX_POOL_SIZE)
+        .get();
+  }
+
+  public static int getHttp2MultiplexingLimit() {
+    return DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.rest.client.http2.multiplexingLimit",
+        HttpClientOptions.DEFAULT_HTTP2_MULTIPLEXING_LIMIT)
+        .get();
+  }
+
+  public static int getHttp2ConnectionIdleTimeoutInSeconds() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.rest.client.http2.idleTimeoutInSeconds", TCPSSLOptions.DEFAULT_IDLE_TIMEOUT)
+        .get();
+  }
+
+
+  public static boolean getUseAlpn() {
+    return DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.rest.client.http2.useAlpnEnabled", true)
+        .get();
+  }
+
   public static int getConnectionMaxPoolSize() {
-    return DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.rest.client.connection.maxPoolSize", 5).get();
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.rest.client.connection.maxPoolSize", HttpClientOptions.DEFAULT_MAX_POOL_SIZE)
+        .get();
   }
 
   public static int getConnectionIdleTimeoutInSeconds() {
@@ -48,12 +78,16 @@ public final class TransportClientConfig {
   }
 
   public static boolean getConnectionKeepAlive() {
-    return DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.rest.client.connection.keepAlive", true).get();
+    return DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.rest.client.connection.keepAlive", HttpClientOptions.DEFAULT_KEEP_ALIVE)
+        .get();
   }
+
 
   public static boolean getConnectionCompression() {
     return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.rest.client.connection.compression", false)
+        .getBooleanProperty("servicecomb.rest.client.connection.compression",
+            HttpClientOptions.DEFAULT_TRY_USE_COMPRESSION)
         .get();
   }
 }

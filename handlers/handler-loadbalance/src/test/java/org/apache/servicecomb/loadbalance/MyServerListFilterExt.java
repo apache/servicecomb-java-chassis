@@ -22,25 +22,16 @@ import java.util.List;
 
 import org.apache.servicecomb.core.Invocation;
 
-import com.netflix.loadbalancer.Server;
-
 /**
  * @author l00168639
  *
  */
 public class MyServerListFilterExt implements ServerListFilterExt {
-  private Invocation invocation;
-
   @Override
-  public List<Server> getFilteredListOfServers(List<Server> serverList) {
+  public List<ServiceCombServer> getFilteredListOfServers(List<ServiceCombServer> serverList, Invocation invocation) {
     if (invocation.getAppId().equals("test")) {
       return new ArrayList<>();
     }
     return serverList;
-  }
-
-  @Override
-  public void setInvocation(Invocation invocation) {
-    this.invocation = invocation;
   }
 }

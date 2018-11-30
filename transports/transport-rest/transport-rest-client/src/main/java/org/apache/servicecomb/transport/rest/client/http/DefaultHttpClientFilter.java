@@ -23,6 +23,7 @@ import javax.ws.rs.core.HttpHeaders;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
+import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
 import org.apache.servicecomb.core.Invocation;
@@ -30,15 +31,29 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
-import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 public class DefaultHttpClientFilter implements HttpClientFilter {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultHttpClientFilter.class);
+
+  private static final boolean enabled = DynamicPropertyFactory.getInstance().getBooleanProperty
+      ("servicecomb.http.filter.client.default.enabled", true).get();
 
   @Override
   public int getOrder() {
     return Integer.MAX_VALUE;
+  }
+
+  @Override
+  public boolean enabled() {
+    return enabled;
   }
 
   @Override
@@ -61,10 +76,10 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
     return restOperation.findProduceProcessor(contentTypeForFind);
   }
 
-  protected Object extractResult(Invocation invocation, HttpServletResponseEx responseEx) {
+  protected Response extractResponse(Invocation invocation, HttpServletResponseEx responseEx) {
     Object result = invocation.getHandlerContext().get(RestConst.READ_STREAM_PART);
     if (result != null) {
-      return result;
+      return Response.create(responseEx.getStatusType(), result);
     }
 
     OperationMeta operationMeta = invocation.getOperationMeta();
@@ -72,6 +87,8 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
     RestOperationMeta swaggerRestOperation = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
     ProduceProcessor produceProcessor = findProduceProcessor(swaggerRestOperation, responseEx);
     if (produceProcessor == null) {
+      // This happens outside the runtime such as Servlet filter response. Here we give a default json parser to it
+      // and keep user data not get lose.
       String msg =
           String.format("method %s, path %s, statusCode %d, reasonPhrase %s, response content-type %s is not supported",
               swaggerRestOperation.getHttpMethod(),
@@ -79,22 +96,37 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
               responseEx.getStatus(),
               responseEx.getStatusType().getReasonPhrase(),
               responseEx.getHeader(HttpHeaders.CONTENT_TYPE));
-      return ExceptionFactory.createConsumerException(new CommonExceptionData(msg));
+      LOGGER.warn(msg);
+      produceProcessor = ProduceProcessorManager.DEFAULT_PROCESSOR;
     }
 
     try {
-      return produceProcessor.decodeResponse(responseEx.getBodyBuffer(), responseMeta.getJavaType());
+      result = produceProcessor.decodeResponse(responseEx.getBodyBuffer(), responseMeta.getJavaType());
+      return Response.create(responseEx.getStatusType(), result);
     } catch (Exception e) {
-      return ExceptionFactory.createConsumerException(e);
+      LOGGER.error("failed to decode response body, exception is [{}]", e.getMessage());
+      String msg =
+          String.format("method %s, path %s, statusCode %d, reasonPhrase %s, response content-type %s is not supported",
+              swaggerRestOperation.getHttpMethod(),
+              swaggerRestOperation.getAbsolutePath(),
+              responseEx.getStatus(),
+              responseEx.getStatusType().getReasonPhrase(),
+              responseEx.getHeader(HttpHeaders.CONTENT_TYPE));
+      if (HttpStatus.isSuccess(responseEx.getStatus())) {
+        return Response.createConsumerFail(
+            new InvocationException(400, responseEx.getStatusType().getReasonPhrase(),
+                new CommonExceptionData(msg), e));
+      }
+      return Response.createConsumerFail(
+          new InvocationException(responseEx.getStatus(), responseEx.getStatusType().getReasonPhrase(),
+              new CommonExceptionData(msg), e));
     }
   }
 
   @Override
   public Response afterReceiveResponse(Invocation invocation, HttpServletResponseEx responseEx) {
-    Object result = extractResult(invocation, responseEx);
+    Response response = extractResponse(invocation, responseEx);
 
-    Response response =
-        Response.create(responseEx.getStatusType(), result);
     for (String headerName : responseEx.getHeaderNames()) {
       Collection<String> headerValues = responseEx.getHeaders(headerName);
       for (String headerValue : headerValues) {

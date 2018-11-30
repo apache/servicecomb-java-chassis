@@ -26,13 +26,17 @@ import io.swagger.models.parameters.HeaderParameter;
 
 public class RequestHeaderAnnotationProcessor extends AbstractParameterProcessor<HeaderParameter> {
   @Override
-  protected HeaderParameter createParameter() {
+  public HeaderParameter createParameter() {
     return new HeaderParameter();
   }
 
   @Override
-  protected String getAnnotationParameterName(Object annotation) {
-    return ((RequestHeader) annotation).name();
+  public String getAnnotationParameterName(Object annotation) {
+    String value = ((RequestHeader) annotation).value();
+    if (value.isEmpty()) {
+      value = ((RequestHeader) annotation).name();
+    }
+    return value;
   }
 
   @Override

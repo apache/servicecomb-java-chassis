@@ -16,17 +16,17 @@
  */
 package org.apache.servicecomb.serviceregistry.registry;
 
-import java.util.concurrent.RejectedExecutionHandler;
+import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
-import org.apache.servicecomb.serviceregistry.task.MicroserviceRegisterTask;
+import org.apache.servicecomb.serviceregistry.task.HeartbeatResult;
+import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceHeartbeatTask;
 import org.apache.servicecomb.serviceregistry.task.event.PeriodicPullEvent;
 import org.apache.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
 import org.apache.servicecomb.serviceregistry.task.event.ShutdownEvent;
@@ -41,6 +41,9 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
 
   private ScheduledThreadPoolExecutor taskPool;
 
+  private List<ServiceRegistryTaskInitializer> taskInitializers = SPIServiceUtils
+      .getOrLoadSortedService(ServiceRegistryTaskInitializer.class);
+
   public RemoteServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
       MicroserviceDefinition microserviceDefinition) {
     super(eventBus, serviceRegistryConfig, microserviceDefinition);
@@ -49,17 +52,10 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
   @Override
   public void init() {
     super.init();
-    taskPool = new ScheduledThreadPoolExecutor(2, new ThreadFactory() {
-      @Override
-      public Thread newThread(Runnable task) {
-        return new Thread(task, "Service Center Task");
-      }
-    }, new RejectedExecutionHandler() {
-      @Override
-      public void rejectedExecution(Runnable task, ThreadPoolExecutor executor) {
-        LOGGER.warn("Too many pending tasks, reject " + task.getClass().getName());
-      }
-    });
+    taskPool = new ScheduledThreadPoolExecutor(2,
+        task -> new Thread(task, "Service Center Task"),
+        (task, executor) -> LOGGER.warn("Too many pending tasks, reject " + task.getClass().getName())
+    );
   }
 
   @Override
@@ -87,8 +83,11 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
         serviceRegistryConfig.getInstancePullInterval(),
         serviceRegistryConfig.getInstancePullInterval(),
         TimeUnit.SECONDS);
-  }
 
+    for (ServiceRegistryTaskInitializer initializer : taskInitializers) {
+      initializer.init(this);
+    }
+  }
 
   @Subscribe
   public void onPullMicroserviceVersionsInstancesEvent(PullMicroserviceVersionsInstancesEvent event) {
@@ -96,14 +95,13 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
   }
 
   @Subscribe
-  public void onMicroserviceRegistryTask(MicroserviceRegisterTask event) {
-    if (event.isRegistered()) {
+  public void onMicroserviceHeartbeatTask(MicroserviceInstanceHeartbeatTask event) {
+    if (HeartbeatResult.SUCCESS.equals(event.getHeartbeatResult())) {
       ipPortManager.initAutoDiscovery();
     }
   }
 
-  // for testing
-  ScheduledThreadPoolExecutor getTaskPool() {
+  public ScheduledThreadPoolExecutor getTaskPool() {
     return this.taskPool;
   }
 }

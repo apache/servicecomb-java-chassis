@@ -19,25 +19,19 @@ package org.apache.servicecomb.core.event;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.Response;
 
-public class InvocationFinishEvent {
+public class InvocationFinishEvent extends InvocationBaseEvent {
   private long nanoCurrent;
-
-  private Invocation invocation;
 
   private Response response;
 
   public InvocationFinishEvent(Invocation invocation, Response response) {
-    this.nanoCurrent = System.nanoTime();
-    this.invocation = invocation;
+    super(invocation);
+    this.nanoCurrent = invocation.getInvocationStageTrace().getFinish();
     this.response = response;
   }
 
   public long getNanoCurrent() {
     return nanoCurrent;
-  }
-
-  public Invocation getInvocation() {
-    return invocation;
   }
 
   public Response getResponse() {

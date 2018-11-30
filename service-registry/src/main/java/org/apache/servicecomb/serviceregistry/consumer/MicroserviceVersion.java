@@ -27,11 +27,16 @@ public class MicroserviceVersion {
   protected Microservice microservice;
 
   public MicroserviceVersion(String microserviceId) {
-    microservice = RegistryUtils.getMicroservice(microserviceId);
+    microservice = RegistryUtils.getServiceRegistry().getAggregatedRemoteMicroservice(microserviceId);
     if (microservice == null) {
       throw new IllegalStateException(String.format("Invalid microserviceId %s.", microserviceId));
     }
 
+    this.version = new Version(microservice.getVersion());
+  }
+
+  public MicroserviceVersion(Microservice microservice) {
+    this.microservice = microservice;
     this.version = new Version(microservice.getVersion());
   }
 

@@ -24,15 +24,16 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import com.netflix.spectator.api.CompositeRegistry;
 import com.netflix.spectator.api.Measurement;
 import com.netflix.spectator.api.Meter;
+import com.netflix.spectator.api.Registry;
 
 import mockit.Deencapsulation;
 import mockit.Expectations;
@@ -41,8 +42,7 @@ import mockit.Mocked;
 public class TestMetricsBootstrap {
   MetricsBootstrap bootstrap = new MetricsBootstrap();
 
-  @Mocked
-  CompositeRegistry globalRegistry;
+  GlobalRegistry globalRegistry = new GlobalRegistry();
 
   EventBus eventBus = new EventBus();
 
@@ -51,7 +51,7 @@ public class TestMetricsBootstrap {
     List<MetricsInitializer> initList = new ArrayList<>();
     MetricsInitializer metricsInitializer = new MetricsInitializer() {
       @Override
-      public void init(CompositeRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+      public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
         initList.add(this);
       }
     };
@@ -69,14 +69,15 @@ public class TestMetricsBootstrap {
   }
 
   @Test
-  public void pollMeters(@Mocked Meter meter, @Mocked Measurement measurement,
+  public void pollMeters(@Mocked Registry registry, @Mocked Meter meter, @Mocked Measurement measurement,
       @Mocked ScheduledExecutorService executor) {
     List<Meter> meters = Arrays.asList(meter);
+    globalRegistry.add(registry);
     new Expectations(Executors.class) {
       {
         Executors.newScheduledThreadPool(1, (ThreadFactory) any);
         result = executor;
-        globalRegistry.iterator();
+        registry.iterator();
         result = meters.iterator();
         meter.measure();
         result = Arrays.asList(measurement);
@@ -95,7 +96,6 @@ public class TestMetricsBootstrap {
 
     bootstrap.pollMeters();
     bootstrap.shutdown();
-
     Assert.assertEquals(meters, result.getMeters());
     Assert.assertThat(result.getMeasurements(), Matchers.contains(measurement));
   }
@@ -110,7 +110,7 @@ public class TestMetricsBootstrap {
       }
 
       @Override
-      public void init(CompositeRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+      public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
       }
 
       @Override
@@ -126,7 +126,7 @@ public class TestMetricsBootstrap {
       }
 
       @Override
-      public void init(CompositeRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+      public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
       }
 
       @Override

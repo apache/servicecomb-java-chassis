@@ -17,125 +17,57 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 
-import com.netflix.loadbalancer.AbstractLoadBalancer;
-import com.netflix.loadbalancer.IRule;
+import com.google.common.annotations.VisibleForTesting;
 import com.netflix.loadbalancer.LoadBalancerStats;
-import com.netflix.loadbalancer.Server;
-import com.netflix.loadbalancer.ServerListFilter;
-import com.netflix.loadbalancer.WeightedResponseTimeRule;
 
 /**
- * 实现不包含服务器状态监测的负载均衡器。（这些职责在注册中心客户端实现）
- *
+ *  A load balancer with RuleExt and ServerListFilterExt
  */
-public class LoadBalancer extends AbstractLoadBalancer {
-  private String name;
+public class LoadBalancer {
+  private static AtomicInteger id = new AtomicInteger(0);
 
-  private List<Server> serverList = Collections.emptyList();
-
-  private IRule rule;
+  private RuleExt rule;
 
   private LoadBalancerStats lbStats;
 
-  // 以filter类名为Key
-  private Map<String, ServerListFilterExt> filters;
-
   private String microServiceName;
 
-  public LoadBalancer(String name, IRule rule, String microServiceName) {
-    this.name = name;
-    this.rule = rule;
+  private List<ServerListFilterExt> filters;
+
+  public LoadBalancer(RuleExt rule, String microServiceName) {
     this.microServiceName = microServiceName;
-    this.lbStats = new LoadBalancerStats(null);
-    this.filters = new ConcurrentHashMap<>();
+    this.rule = rule;
+    this.lbStats = new LoadBalancerStats(microServiceName + id.getAndDecrement());
+    // load new instances, because filters work on service information
+    this.filters = SPIServiceUtils.loadSortedService(ServerListFilterExt.class);
     this.rule.setLoadBalancer(this);
+    this.filters.forEach((item) -> item.setLoadBalancer(this));
   }
 
-  public String getName() {
-    return name;
-  }
-
-  public void shutdown() {
-    // netflix components does not have a property way to shutdown laodbalancers so we do it in a not quite elegant way.
-    if (this.rule instanceof WeightedResponseTimeRule) {
-      ((WeightedResponseTimeRule) this.rule).shutdown();
+  public ServiceCombServer chooseServer(Invocation invocation) {
+    List<ServiceCombServer> servers = invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST);
+    for (ServerListFilterExt filterExt : filters) {
+      servers = filterExt.getFilteredListOfServers(servers, invocation);
     }
+    return rule.choose(servers, invocation);
   }
 
-  // every filter group has a loadBalancer instance
-  // serverList almost not changed for different invocation
-  // so every invocation will call setServerList, this is no problem
-  public void setServerList(List<Server> serverList) {
-    this.serverList = Collections.unmodifiableList(serverList);
-  }
-
-  @Override
-  public void addServers(List<Server> newServers) {
-    throw new UnsupportedOperationException("Not implemented.");
-  }
-
-  @Override
-  public Server chooseServer(Object key) {
-    return rule.choose(key);
-  }
-
-  @Override
-  public void markServerDown(Server server) {
-    throw new UnsupportedOperationException("Not implemented.");
-  }
-
-  @Override
-  @Deprecated
-  public List<Server> getServerList(boolean availableOnly) {
-    return getAllServers();
-  }
-
-  @Override
-  public List<Server> getReachableServers() {
-    return getAllServers();
-  }
-
-  @Override
-  public List<Server> getAllServers() {
-    List<Server> servers = serverList;
-    for (ServerListFilter<Server> filter : filters.values()) {
-      servers = filter.getFilteredListOfServers(servers);
-    }
-    return servers;
-  }
-
-  @Override
-  public List<Server> getServerList(ServerGroup serverGroup) {
-    throw new UnsupportedOperationException("Not implemented.");
-  }
-
-  @Override
   public LoadBalancerStats getLoadBalancerStats() {
     return lbStats;
   }
 
-  public void setInvocation(Invocation invocation) {
-    for (ServerListFilterExt filter : filters.values()) {
-      filter.setInvocation(invocation);
-    }
-  }
-
-  public void putFilter(String name, ServerListFilterExt filter) {
-    filters.put(name, filter);
-  }
-
-  public int getFilterSize() {
-    return filters.size();
-  }
-
   public String getMicroServiceName() {
     return microServiceName;
+  }
+
+  @VisibleForTesting
+  void setFilters(List<ServerListFilterExt> filters) {
+    this.filters = filters;
   }
 }

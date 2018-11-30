@@ -20,6 +20,7 @@ package org.apache.servicecomb.common.rest.codec.produce;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.foundation.common.RegisterManager;
@@ -47,8 +48,9 @@ public final class ProduceProcessorManager extends RegisterManager<String, Produ
     super(NAME);
     Set<String> set = new HashSet<>();
     produceProcessor.forEach(processor -> {
-      if (set.add(processor.getName()))
+      if (set.add(processor.getName())) {
         register(processor.getName(), processor);
+      }
     });
   }
 }

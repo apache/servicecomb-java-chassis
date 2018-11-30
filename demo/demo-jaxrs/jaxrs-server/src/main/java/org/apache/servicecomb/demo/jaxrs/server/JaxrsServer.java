@@ -17,11 +17,17 @@
 
 package org.apache.servicecomb.demo.jaxrs.server;
 
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.demo.RestObjectMapperWithStringMapper;
+import org.apache.servicecomb.demo.RestObjectMapperWithStringMapperNotWriteNull;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 
 public class JaxrsServer {
   public static void main(String[] args) throws Exception {
+    RestObjectMapperFactory.setDefaultRestObjectMapper(new RestObjectMapperWithStringMapper());
+    RestObjectMapperFactory.setConsumerWriterMapper(new RestObjectMapperWithStringMapperNotWriteNull());
+
     Log4jUtils.init();
     BeanUtils.init();
   }

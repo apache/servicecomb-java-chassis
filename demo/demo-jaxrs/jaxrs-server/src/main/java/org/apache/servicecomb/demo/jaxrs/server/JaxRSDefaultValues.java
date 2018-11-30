@@ -88,4 +88,56 @@ public class JaxRSDefaultValues {
     return "" + appType;
   }
 
+  @Path("/javaprimitiveint")
+  @POST
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  public String jaxRsJavaPrimitiveInt(@FormParam("a") int a, @DefaultValue("bobo") @FormParam("b") String b) {
+    return "Hello " + a + b;
+  }
+
+  @Path("/javaprimitivenumber")
+  @POST
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  public String jaxRsJavaPrimitiveNumber(@QueryParam("a") float a, @QueryParam("b") boolean b) {
+    return "Hello " + a + b;
+  }
+
+  @Path("/javaprimitivestr")
+  @POST
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  public String jaxRsJavaPrimitiveStr(@FormParam("b") int b, @FormParam("a") String a) {
+    if (a == null || a.equals("")) {
+      return "Hello";
+    }
+    return "Hello " + b + a;
+  }
+
+  @Path("/javaprimitivecomb")
+  @POST
+  @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+  public String jaxRsJavaPrimitiveCombnation(@QueryParam("a") Integer a, @QueryParam("b") Float b) {
+    return "Hello " + a + b;
+  }
+
+  @Path("/allprimitivetypes")
+  @POST
+  public String allprimitivetypes(@QueryParam("pBoolean") boolean pBoolean,
+      @QueryParam("pChar") char pChar,
+      @QueryParam("pByte") byte pByte,
+      @QueryParam("pShort") short pShort,
+      @QueryParam("pInt") int pInt,
+      @QueryParam("pLong") long pLong,
+      @QueryParam("pFloat") float pFloat,
+      @QueryParam("pDouble") double pDouble,
+      @QueryParam("pDoubleWrap") Double pDoubleWrap) {
+    return "Hello " + pBoolean + ","
+        + pChar + ","
+        + pByte + ","
+        + pShort + ","
+        + pInt + ","
+        + pLong + ","
+        + pFloat + ","
+        + pDouble + ","
+        + pDoubleWrap;
+  }
 }

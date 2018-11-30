@@ -17,7 +17,9 @@
 
 package org.apache.servicecomb.core;
 
+import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
+import org.apache.servicecomb.core.definition.schema.StaticSchemaFactory;
 import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.core.transport.TransportManager;
@@ -64,11 +66,16 @@ public class CseApplicationListener
       }
 
       if (SCBEngine.getInstance().getBootListenerList() == null) {
+        //SCBEngine init first, hence we do not need worry that when other beans need use the
+        //producer microserviceMeta, the SCBEngine is not inited.
+        String serviceName = RegistryUtils.getMicroservice().getServiceName();
+        SCBEngine.getInstance().setProducerMicroserviceMeta(new MicroserviceMeta(serviceName));
         SCBEngine.getInstance().setProducerProviderManager(applicationContext.getBean(ProducerProviderManager.class));
         SCBEngine.getInstance().setConsumerProviderManager(applicationContext.getBean(ConsumerProviderManager.class));
         SCBEngine.getInstance().setTransportManager(applicationContext.getBean(TransportManager.class));
         SCBEngine.getInstance().setSchemaListenerManager(applicationContext.getBean(SchemaListenerManager.class));
         SCBEngine.getInstance().setBootListenerList(applicationContext.getBeansOfType(BootListener.class).values());
+        SCBEngine.getInstance().setStaticSchemaFactory(applicationContext.getBean(StaticSchemaFactory.class));
       }
 
       SCBEngine.getInstance().init();

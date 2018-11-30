@@ -19,27 +19,29 @@ package org.apache.servicecomb.common.rest.definition.path;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collection;
 
-import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.QueryProcessor;
 import org.apache.servicecomb.common.rest.definition.RestParam;
+import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
+import org.apache.servicecomb.swagger.converter.property.SwaggerParamCollectionFormat;
 
 public class QueryVarParamWriter extends AbstractUrlParamWriter {
-  // ? or &
-  private char prefix;
 
-  public QueryVarParamWriter(char prefix, RestParam param) {
+  private SwaggerParamCollectionFormat collectionFormat;
+
+  public QueryVarParamWriter(RestParam param) {
     this.param = param;
-    this.prefix = prefix;
+    this.collectionFormat = ((QueryProcessor) param.getParamProcessor()).getCollectionFormat();
   }
 
   @Override
-  public void write(StringBuilder builder, Object[] args) throws Exception {
-    builder.append(prefix);
-
+  public void write(URLPathStringBuilder builder, Object[] args) throws Exception {
     Object value = getParamValue(args);
     if (value == null) {
-      // 连key都不写进去，才能表达null的概念
+      // do not write query key to express "null"
       return;
     }
 
@@ -53,53 +55,58 @@ public class QueryVarParamWriter extends AbstractUrlParamWriter {
       return;
     }
 
-    writeKeyEqual(builder);
-    builder.append(encodeNotNullValue(value));
-  }
-
-  private void writeKeyEqual(StringBuilder builder) {
-    builder.append(param.getParamName()).append('=');
+    builder.appendQuery(param.getParamName(), encodeNotNullValue(value));
   }
 
   @SuppressWarnings("unchecked")
-  private void writeCollection(StringBuilder builder, Object value) throws Exception {
+  private void writeCollection(URLPathStringBuilder builder, Object value) throws Exception {
+    if (shouldJoinParams()) {
+      writeJoinedParams(builder, (Collection<?>) value);
+      return;
+    }
+
     for (Object item : (Collection<Object>) value) {
       writeItem(builder, item);
     }
-
-    if (((Collection<Object>) value).size() != 0) {
-      deleteLastChar(builder);
-    }
   }
 
-  private void writeArray(StringBuilder builder, Object value) throws Exception {
+  private void writeArray(URLPathStringBuilder builder, Object value) throws Exception {
+    if (shouldJoinParams()) {
+      writeJoinedParams(builder, Arrays.asList(((Object[]) value)));
+      return;
+    }
+
     for (Object item : (Object[]) value) {
       writeItem(builder, item);
     }
-
-    if (((Object[]) value).length != 0) {
-      deleteLastChar(builder);
-    }
   }
 
-  private void deleteLastChar(StringBuilder builder) {
-    builder.setLength(builder.length() - 1);
+  private void writeJoinedParams(URLPathStringBuilder builder, Collection<?> value) throws Exception {
+    String joinedParam = collectionFormat.joinParam(value);
+    if (null == joinedParam) {
+      return;
+    }
+    builder.appendQuery(param.getParamName(), encodeNotNullValue(joinedParam));
   }
 
-  private void writeItem(StringBuilder builder, Object item) throws Exception {
-    writeKeyEqual(builder);
+  /**
+   * Whether to join params with separator.
+   * For collection format csv/ssv/tsv/pipes
+   */
+  private boolean shouldJoinParams() {
+    return null != collectionFormat && SwaggerParamCollectionFormat.MULTI != collectionFormat;
+  }
 
-    // TODO:数组元素为null，当前找不到表达方式，通过issue跟踪，有解决方案后再来处理
-    // http://code.huawei.com/CSE/cse-java-chassis/issues/133
-    if (item != null) {
-      builder.append(encodeNotNullValue(item));
+  private void writeItem(URLPathStringBuilder builder, Object item) throws Exception {
+    if (null == item) {
+      return;
     }
 
-    builder.append('&');
+    builder.appendQuery(param.getParamName(), encodeNotNullValue(item));
   }
 
   private String encodeNotNullValue(Object value) throws Exception {
-    String strValue = RestObjectMapper.INSTANCE.convertToString(value);
+    String strValue = RestObjectMapperFactory.getRestObjectMapper().convertToString(value);
     return URLEncoder.encode(strValue, StandardCharsets.UTF_8.name());
   }
 }

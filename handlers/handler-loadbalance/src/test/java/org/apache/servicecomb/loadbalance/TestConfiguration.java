@@ -19,7 +19,6 @@ package org.apache.servicecomb.loadbalance;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
@@ -35,7 +34,6 @@ public class TestConfiguration {
   public void testConstants() {
 
     assertEquals("servicecomb.loadbalance.", Configuration.PROP_ROOT);
-    assertEquals("NFLoadBalancerRuleClassName", Configuration.PROP_POLICY);
     assertEquals("ribbon.", Configuration.PROP_ROOT_20);
     assertEquals("retryEnabled", Configuration.PROP_RETRY_ENABLED);
     assertEquals("retryOnNext", Configuration.PROP_RETRY_ONNEXT);
@@ -47,7 +45,6 @@ public class TestConfiguration {
 
   @Test
   public void testFullConfigurationWithArgsString() {
-    assertNull(Configuration.INSTANCE.getPolicy("test"));
     assertNotNull(Configuration.INSTANCE.getRetryOnNext("test"));
     assertNotNull(Configuration.INSTANCE.getRetryOnSame("test"));
     assertNotNull(Configuration.INSTANCE.isRetryEnabled("test"));

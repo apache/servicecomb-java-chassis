@@ -23,7 +23,7 @@ service_description:
 
 apollo:
   config:
-    serverUri: http://apollo.servicecomb.apache.org:8070
+    serverUri: http://localhost:23334
     serviceName: SampleApp
     env: DEV
     clusters: default
@@ -31,7 +31,3 @@ apollo:
     token: testtoken
     refreshInterval: 2
 
-servicecomb:
-  config:
-    client:
-      serverUri: http://apollo.servicecomb.apache.org:8070

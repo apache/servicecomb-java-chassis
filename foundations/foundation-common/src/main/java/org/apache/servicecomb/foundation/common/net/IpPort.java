@@ -19,6 +19,8 @@ package org.apache.servicecomb.foundation.common.net;
 
 import java.net.InetSocketAddress;
 
+import com.google.common.base.Objects;
+
 public class IpPort {
   private String hostOrIp;
 
@@ -51,6 +53,11 @@ public class IpPort {
 
   public void setPort(int port) {
     this.port = port;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(port, hostOrIp);
   }
 
   @Override

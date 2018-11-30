@@ -51,19 +51,16 @@ servicecomb:
   handler:
     chain:
       Consumer:
-        default: loadbalance,bizkeeper-consumer
+        default: loadbalance,fault-injection-consumer,bizkeeper-consumer
   tracing:
     enabled: true
     samplingRate: 0.5
   loadbalance:
-    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.WeightedResponseTimeRule
+    strategy:
+      name: WeightedResponse
     retryEnabled: true
     retryOnSame: 1
     retryOnNext: 1
-    serverListFilters: zoneaware
-    serverListFilter:
-      zoneaware:
-        className: org.apache.servicecomb.loadbalance.filter.ZoneAwareServerListFilterExt
   fallbackpolicy:
     Consumer:
       springmvc:
@@ -86,11 +83,46 @@ servicecomb:
     name: myDC
     region: my-Region
     availableZone: my-Zone
-
+  governance:
+    Consumer:
+      springmvc:
+        schemas:
+          codeFirst:
+            operations:
+              testDelay:
+                policy:
+                  fault:
+                    protocols:
+                      rest:
+                        delay:
+                          fixedDelay: 10
+                          percent: 50
+              testAbort:
+                policy:
+                  fault:
+                    protocols:
+                      rest:
+                        abort:
+                          httpStatus: 421
+                          percent: 50
   test:
     duplicate1: newer
 
 cse:
+  fallback:
+    Consumer:
+      springmvc:
+        codeFirstBizkeeperTest:
+          testTimeout:
+            enabled: false
+  isolation:
+    Consumer:
+      springmvc:
+        codeFirstBizkeeperTest:
+          testTimeout:
+            timeout:
+              enabled: true
+            timeoutInMilliseconds: 1000
   test:
     duplicate2: newer
 #########SSL options

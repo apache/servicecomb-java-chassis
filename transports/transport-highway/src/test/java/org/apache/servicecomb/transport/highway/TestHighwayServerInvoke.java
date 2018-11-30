@@ -64,10 +64,19 @@ public class TestHighwayServerInvoke {
 
   private SocketAddress socketAddress;
 
+  static long nanoTime = 1;
+
   @BeforeClass
   public static void classSetup() {
     EventManager.eventBus = new EventBus();
     SCBEngine.getInstance().setStatus(SCBStatus.UP);
+
+    new MockUp<System>() {
+      @Mock
+      long nanoTime() {
+        return nanoTime;
+      }
+    };
   }
 
   @AfterClass
@@ -133,7 +142,6 @@ public class TestHighwayServerInvoke {
     operationMeta.setExecutor(new ReactiveExecutor());
 
     HighwayServerInvoke highwayServerInvoke = new HighwayServerInvoke();
-    highwayServerInvoke.setMicroserviceMetaManager(unitTestMeta.getMicroserviceMetaManager());
 
     RequestHeader requestHeader = MockUtil.getInstance().requestHeader;
 
@@ -155,6 +163,12 @@ public class TestHighwayServerInvoke {
     Assert.assertEquals(true, Buffer.buffer(netSocketBuffer).toString().startsWith("CSE.TCP"));
     Assert.assertSame(highwayServerInvoke.invocation, startHolder.value.getInvocation());
     Assert.assertSame(highwayServerInvoke.invocation, finishHolder.value.getInvocation());
-    Assert.assertTrue(highwayServerInvoke.invocation.getStartExecutionTime() != 0);
+    Assert.assertTrue(highwayServerInvoke.invocation.getInvocationStageTrace().getStartExecution() != 0);
+    Assert.assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getStart());
+    Assert.assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getStartHandlersRequest());
+    Assert.assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getFinishHandlersResponse());
+    Assert.assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getStartSchedule());
+    Assert.assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getStartHandlersRequest());
+    Assert.assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getFinishHandlersResponse());
   }
 }

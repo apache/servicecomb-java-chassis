@@ -86,14 +86,19 @@ public final class ServiceRegistryConfig {
 
   public static final String PROXY_PASSWD = PROXY_PRE_NAME + "passwd";
 
-
   private ServiceRegistryConfig() {
 
   }
 
-
   public String getMicroserviceVersionFactory() {
     return DynamicPropertyFactory.getInstance().getStringProperty(MICROSERVICE_VERSION_FACTORY, null).get();
+  }
+
+  /**
+   * Currently we don't provide configuration about {@link org.apache.servicecomb.serviceregistry.consumer.StaticMicroserviceVersionFactory}
+   */
+  public String getStaticMicroserviceVersionFactory() {
+    return "org.apache.servicecomb.core.definition.StaticMicroserviceVersionMetaFactory";
   }
 
   public HttpVersion getHttpVersion() {

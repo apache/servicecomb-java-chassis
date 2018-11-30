@@ -133,7 +133,14 @@ public class TestPumpFromPart {
     };
 
     pump_error(null);
+    Assert.assertTrue(inputStreamClosed);
+    Assert.assertTrue(outputStreamClosed);
+
+    inputStreamClosed = false;
+    outputStreamClosed = false;
     pump_error(context);
+    Assert.assertTrue(inputStreamClosed);
+    Assert.assertTrue(outputStreamClosed);
   }
 
   @Test
@@ -152,6 +159,13 @@ public class TestPumpFromPart {
     };
 
     pump_error(null);
+    Assert.assertTrue(inputStreamClosed);
+    Assert.assertTrue(outputStreamClosed);
+
+    inputStreamClosed = false;
+    outputStreamClosed = false;
     pump_error(context);
+    Assert.assertTrue(inputStreamClosed);
+    Assert.assertTrue(outputStreamClosed);
   }
 }

@@ -32,7 +32,7 @@ import javax.servlet.http.Part;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
-import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import org.apache.servicecomb.foundation.vertx.stream.PumpFromPart;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
@@ -40,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.vertx.core.Context;
+import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpHeaders;
@@ -122,7 +123,7 @@ public class RestClientRequestImpl implements RestClientRequest {
           output.write(bytesOf("--" + boundary + "\r\n"));
           output.write(bytesOf("Content-Disposition: form-data; name=\"" + entry.getKey() + "\"\r\n\r\n"));
           if (entry.getValue() != null) {
-            String value = RestObjectMapper.INSTANCE.convertToString(entry.getValue());
+            String value = RestObjectMapperFactory.getRestObjectMapper().convertToString(entry.getValue());
             output.write(value.getBytes(StandardCharsets.UTF_8));
           }
         }
@@ -223,7 +224,7 @@ public class RestClientRequestImpl implements RestClientRequest {
         output.write(entry.getKey().getBytes(StandardCharsets.UTF_8));
         output.write('=');
         if (entry.getValue() != null) {
-          String value = RestObjectMapper.INSTANCE.convertToString(entry.getValue());
+          String value = RestObjectMapperFactory.getRestObjectMapper().convertToString(entry.getValue());
           value = URLEncoder.encode(value, StandardCharsets.UTF_8.name());
           output.write(value.getBytes(StandardCharsets.UTF_8));
         }
@@ -271,5 +272,10 @@ public class RestClientRequestImpl implements RestClientRequest {
   @Override
   public void putHeader(String name, String value) {
     request.putHeader(name, value);
+  }
+
+  @Override
+  public MultiMap getHeaders() {
+    return request.headers();
   }
 }

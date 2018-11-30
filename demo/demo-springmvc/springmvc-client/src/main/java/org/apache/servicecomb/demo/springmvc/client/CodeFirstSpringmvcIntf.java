@@ -24,7 +24,10 @@ import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.demo.EmptyObject;
 import org.apache.servicecomb.demo.Generic;
+import org.apache.servicecomb.demo.compute.GenericParam;
+import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.server.User;
+import org.apache.servicecomb.demo.springmvc.decoderesponse.DecodeTestResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,4 +62,17 @@ public interface CodeFirstSpringmvcIntf {
   void testvoidInRPC();
 
   Void testVoidInRPC();
+
+  String checkQueryObject(String name, String otherName, Person requestBody);
+
+  String checkQueryGenericObject(GenericParam<Person> requestBody, String str, long num);
+
+  String checkQueryGenericString(String str, GenericParam<Person> requestBody, long num, String data,
+      String strExtended, int intExtended);
+
+  String testDelay();
+
+  String testAbort();
+
+  DecodeTestResponse testDecodeResponseError();
 }

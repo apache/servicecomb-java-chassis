@@ -22,6 +22,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
+import org.apache.servicecomb.demo.edge.service.EdgeConst;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
@@ -32,9 +33,9 @@ import org.slf4j.LoggerFactory;
 public class AuthHandler implements Handler {
   private static Logger LOGGER = LoggerFactory.getLogger(AuthHandler.class);
 
-  private Auth auth;
+  private static Auth auth;
 
-  public AuthHandler() {
+  static {
     auth = Invoker.createProxy("auth", "auth", Auth.class);
   }
 
@@ -44,12 +45,29 @@ public class AuthHandler implements Handler {
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    if (!auth.auth("")) {
-      asyncResp.consumerFail(new InvocationException(Status.UNAUTHORIZED, (Object) "auth failed"));
+    if (invocation.getHandlerContext().get(EdgeConst.ENCRYPT_CONTEXT) != null) {
+      invocation.next(asyncResp);
       return;
     }
 
+    auth.auth("").whenComplete((succ, e) -> doHandle(invocation, asyncResp, succ, e));
+  }
+
+  protected void doHandle(Invocation invocation, AsyncResponse asyncResp, Boolean authSucc, Throwable authException) {
+    if (authException != null) {
+      asyncResp.consumerFail(new InvocationException(Status.UNAUTHORIZED, (Object) authException.getMessage()));
+      return;
+    }
+
+    if (!authSucc) {
+      asyncResp.consumerFail(new InvocationException(Status.UNAUTHORIZED, (Object) "auth failed"));
+    }
+
     LOGGER.debug("auth success.");
-    invocation.next(asyncResp);
+    try {
+      invocation.next(asyncResp);
+    } catch (Throwable e) {
+      asyncResp.consumerFail(e);
+    }
   }
 }

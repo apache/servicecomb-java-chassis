@@ -34,6 +34,7 @@ import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.engine.bootstrap.BootstrapNormal;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.context.InvocationContextCompletableFuture;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
 import org.hamcrest.Matchers;
@@ -203,6 +204,8 @@ public class TestInvoker {
       Assert.assertEquals(1, result);
       Assert.assertEquals(null, ex);
     });
+
+    Assert.assertThat(future, Matchers.instanceOf(InvocationContextCompletableFuture.class));
   }
 
   @Test

@@ -52,6 +52,11 @@ public class IpPortManager {
 
   private int maxRetryTimes;
 
+
+  public void setAutoDiscoveryInited(boolean autoDiscoveryInited) {
+    this.autoDiscoveryInited = autoDiscoveryInited;
+  }
+
   public int getMaxRetryTimes() {
     return maxRetryTimes;
   }
@@ -73,10 +78,14 @@ public class IpPortManager {
   // we have to do this operation after the first time setup has already done
   public void initAutoDiscovery() {
     if (!autoDiscoveryInited && this.serviceRegistryConfig.isRegistryAutoDiscovery()) {
-      instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
+      InstanceCache cache = instanceCacheManager.getOrCreate(REGISTRY_APP_ID,
           REGISTRY_SERVICE_NAME,
           DefinitionConst.VERSION_RULE_LATEST);
-      autoDiscoveryInited = true;
+      if (cache.getInstanceMap().size() > 0) {
+        setAutoDiscoveryInited(true);
+      } else {
+        setAutoDiscoveryInited(false);
+      }
     }
   }
 

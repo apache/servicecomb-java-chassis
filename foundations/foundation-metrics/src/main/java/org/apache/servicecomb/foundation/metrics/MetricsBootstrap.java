@@ -24,16 +24,13 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 
-import com.google.common.collect.Lists;
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.netflix.spectator.api.CompositeRegistry;
-import com.netflix.spectator.api.Measurement;
-import com.netflix.spectator.api.Meter;
 
 public class MetricsBootstrap {
-  private CompositeRegistry globalRegistry;
+  private GlobalRegistry globalRegistry;
 
   private EventBus eventBus;
 
@@ -41,7 +38,7 @@ public class MetricsBootstrap {
 
   private ScheduledExecutorService executorService;
 
-  public void start(CompositeRegistry globalRegistry, EventBus eventBus) {
+  public void start(GlobalRegistry globalRegistry, EventBus eventBus) {
     this.globalRegistry = globalRegistry;
     this.eventBus = eventBus;
     this.executorService = Executors.newScheduledThreadPool(1,
@@ -60,15 +57,12 @@ public class MetricsBootstrap {
 
     List<MetricsInitializer> initializers = new ArrayList<>(SPIServiceUtils.getSortedService(MetricsInitializer.class));
     Collections.reverse(initializers);
-    initializers.forEach(initializer -> {
-      initializer.destroy();
-    });
+    initializers.forEach(initializer -> initializer.destroy());
   }
 
   protected void loadMetricsInitializers() {
-    SPIServiceUtils.getSortedService(MetricsInitializer.class).forEach(initializer -> {
-      initializer.init(globalRegistry, eventBus, config);
-    });
+    SPIServiceUtils.getSortedService(MetricsInitializer.class)
+        .forEach(initializer -> initializer.init(globalRegistry, eventBus, config));
   }
 
   protected void startPoll() {
@@ -78,16 +72,9 @@ public class MetricsBootstrap {
         TimeUnit.MILLISECONDS);
   }
 
-  protected void pollMeters() {
-    List<Meter> meters = Lists.newArrayList(globalRegistry.iterator());
-    // must collect measurements
-    // otherwise if there is no any period publisher, normal publisher maybe get NaN values 
-    List<Measurement> measurements = new ArrayList<>();
-    for (Meter meter : meters) {
-      meter.measure().forEach(measurements::add);
-    }
-    PolledEvent event = new PolledEvent(meters, measurements);
-
-    eventBus.post(event);
+  public synchronized void pollMeters() {
+    long secondInterval = TimeUnit.MILLISECONDS.toSeconds(config.getMsPollInterval());
+    PolledEvent polledEvent = globalRegistry.poll(secondInterval);
+    eventBus.post(polledEvent);
   }
 }

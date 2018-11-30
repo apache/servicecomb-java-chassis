@@ -21,13 +21,17 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.extension.ProducerInvokeExtension;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 
@@ -124,13 +128,18 @@ public class SwaggerProducerOperation {
   @SuppressWarnings("unchecked")
   public void doCompletableFutureInvoke(SwaggerInvocation invocation, AsyncResponse asyncResp) {
     try {
+      invocation.onBusinessMethodStart();
+
       Object[] args = argumentsMapper.toProducerArgs(invocation);
       for (ProducerInvokeExtension producerInvokeExtension : producerInvokeExtenstionList) {
         producerInvokeExtension.beforeMethodInvoke(invocation, this, args);
       }
+
       Object result = producerMethod.invoke(producerInstance, args);
+      invocation.onBusinessMethodFinish();
 
       ((CompletableFuture<Object>) result).whenComplete((realResult, ex) -> {
+        invocation.onBusinessFinish();
         if (ex == null) {
           asyncResp.handle(responseMapper.mapResponse(invocation.getStatus(), realResult));
           return;
@@ -138,7 +147,15 @@ public class SwaggerProducerOperation {
 
         asyncResp.handle(processException(invocation, ex));
       });
+    } catch (IllegalArgumentException ae) {
+      invocation.onBusinessMethodFinish();
+      invocation.onBusinessFinish();
+      asyncResp.handle(processException(invocation,
+          new InvocationException(Status.BAD_REQUEST.getStatusCode(), "",
+              new CommonExceptionData("Parameters not valid or types not match."), ae)));
     } catch (Throwable e) {
+      invocation.onBusinessMethodFinish();
+      invocation.onBusinessFinish();
       asyncResp.handle(processException(invocation, e));
     }
   }
@@ -153,13 +170,28 @@ public class SwaggerProducerOperation {
   public Response doInvoke(SwaggerInvocation invocation) {
     Response response = null;
     try {
+      invocation.onBusinessMethodStart();
+
       Object[] args = argumentsMapper.toProducerArgs(invocation);
       for (ProducerInvokeExtension producerInvokeExtension : producerInvokeExtenstionList) {
         producerInvokeExtension.beforeMethodInvoke(invocation, this, args);
       }
+
       Object result = producerMethod.invoke(producerInstance, args);
       response = responseMapper.mapResponse(invocation.getStatus(), result);
+
+      invocation.onBusinessMethodFinish();
+      invocation.onBusinessFinish();
+    } catch (IllegalArgumentException ae) {
+      invocation.onBusinessMethodFinish();
+      invocation.onBusinessFinish();
+      // ae.getMessage() is always null. Give a custom error message.
+      response = processException(invocation,
+          new InvocationException(Status.BAD_REQUEST.getStatusCode(), "",
+              new CommonExceptionData("Parameters not valid or types not match."), ae));
     } catch (Throwable e) {
+      invocation.onBusinessMethodFinish();
+      invocation.onBusinessFinish();
       response = processException(invocation, e);
     }
     return response;

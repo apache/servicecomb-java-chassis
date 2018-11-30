@@ -18,14 +18,8 @@ package org.apache.servicecomb.core.event;
 
 import org.apache.servicecomb.core.Invocation;
 
-public class InvocationStartEvent {
-  private Invocation invocation;
-
+public class InvocationStartEvent extends InvocationBaseEvent {
   public InvocationStartEvent(Invocation invocation) {
-    this.invocation = invocation;
-  }
-
-  public Invocation getInvocation() {
-    return invocation;
+    super(invocation);
   }
 }

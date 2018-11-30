@@ -40,6 +40,8 @@ public abstract class AbstractClientPool implements ClientPool {
 
   protected static final String SSL_KEY = "sc.consumer";
 
+  public static final String PROXY_KEY = "sc.consumer";
+
   private ClientPoolManager<HttpClientWithContext> clientMgr;
 
   public AbstractClientPool() {

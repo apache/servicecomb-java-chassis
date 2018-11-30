@@ -27,10 +27,20 @@ public abstract class AbstractTcpClientPackage {
     return reqId.getAndIncrement();
   }
 
+  private long finishWriteToBuffer;
+
   protected long msgId = getAndIncRequestId();
 
   public long getMsgId() {
     return msgId;
+  }
+
+  public long getFinishWriteToBuffer() {
+    return finishWriteToBuffer;
+  }
+
+  public void finishWriteToBuffer() {
+    this.finishWriteToBuffer = System.nanoTime();
   }
 
   public abstract TcpOutputStream createStream();

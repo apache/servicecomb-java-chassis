@@ -19,11 +19,11 @@ package org.apache.servicecomb.foundation.vertx.client.http;
 import org.junit.Assert;
 import org.junit.Test;
 
-import io.vertx.core.Context;
-import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
+import io.vertx.core.impl.ContextImpl;
 import io.vertx.core.impl.VertxImpl;
+import io.vertx.core.impl.VertxInternal;
 import mockit.Expectations;
 import mockit.Mocked;
 
@@ -33,7 +33,8 @@ public class TestHttpClientPoolFactory {
   HttpClientPoolFactory factory = new HttpClientPoolFactory(httpClientOptions);
 
   @Test
-  public void createClientPool(@Mocked Vertx vertx, @Mocked Context context, @Mocked HttpClient httpClient) {
+  public void createClientPool(@Mocked VertxInternal vertx, @Mocked ContextImpl context,
+      @Mocked HttpClient httpClient) {
     new Expectations(VertxImpl.class) {
       {
         context.owner();

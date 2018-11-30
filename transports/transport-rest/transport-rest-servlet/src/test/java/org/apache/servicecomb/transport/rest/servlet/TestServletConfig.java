@@ -44,7 +44,7 @@ public class TestServletConfig {
 
   @Test
   public void testGetServerTimeout() {
-    Assert.assertEquals(ServletConfig.DEFAULT_TIMEOUT, ServletConfig.getServerTimeout());
+    Assert.assertEquals(ServletConfig.DEFAULT_ASYN_SERVLET_TIMEOUT, ServletConfig.getAsyncServletTimeout());
   }
 
   @Test

@@ -24,13 +24,15 @@ import java.util.List;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
+import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
 import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.spectator.api.CompositeRegistry;
 import com.netflix.spectator.api.Measurement;
+import com.netflix.spectator.api.Meter;
+import com.netflix.spectator.api.Registry;
 import com.netflix.spectator.api.Tag;
 
 import io.prometheus.client.Collector;
@@ -45,10 +47,10 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
 
   private HTTPServer httpServer;
 
-  private CompositeRegistry globalRegistry;
+  private GlobalRegistry globalRegistry;
 
   @Override
-  public void init(CompositeRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+  public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
     this.globalRegistry = globalRegistry;
 
     //prometheus default port allocation is here : https://github.com/prometheus/prometheus/wiki/Default-port-allocations
@@ -82,14 +84,15 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
     }
 
     List<Sample> samples = new ArrayList<>();
-    globalRegistry
-        .iterator()
-        .forEachRemaining(meter -> {
-          meter.measure().forEach(measurement -> {
-            Sample sample = convertMeasurementToSample(measurement);
-            samples.add(sample);
-          });
+    for (Registry registry : globalRegistry.getRegistries()) {
+      for (Meter meter : registry) {
+        meter.measure().forEach(measurement -> {
+          Sample sample = convertMeasurementToSample(measurement);
+          samples.add(sample);
         });
+      }
+    }
+
     familySamples.add(new MetricFamilySamples("ServiceComb Metrics", Type.UNTYPED, "ServiceComb Metrics", samples));
 
     return familySamples;

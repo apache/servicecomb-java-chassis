@@ -19,16 +19,15 @@ package org.apache.servicecomb.metrics.core.publish;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
+import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
 import com.netflix.spectator.api.Clock;
-import com.netflix.spectator.api.CompositeRegistry;
 import com.netflix.spectator.api.DefaultRegistry;
 import com.netflix.spectator.api.ManualClock;
 import com.netflix.spectator.api.Registry;
-import com.netflix.spectator.api.SpectatorUtils;
 
 public class TestMetricsRestPublisher {
   MetricsRestPublisher publisher = new MetricsRestPublisher();
@@ -43,7 +42,7 @@ public class TestMetricsRestPublisher {
   @Test
   public void measure_normal() {
     Clock clock = new ManualClock();
-    CompositeRegistry globalRegistry = SpectatorUtils.createCompositeRegistry(clock);
+    GlobalRegistry globalRegistry = new GlobalRegistry();
     Registry registry = new DefaultRegistry(clock);
     registry.timer(registry.createId("name", "t1", "v1", "t2", "v2"));
     globalRegistry.add(registry);

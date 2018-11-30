@@ -18,6 +18,7 @@
 package org.apache.servicecomb.transport.rest.client.http;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,10 +26,12 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.RestConst;
+import org.apache.servicecomb.common.rest.codec.produce.ProduceJsonProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -38,10 +41,16 @@ import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.type.SimpleType;
+
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.buffer.impl.BufferImpl;
 import io.vertx.core.http.CaseInsensitiveHeaders;
 import mockit.Expectations;
+import mockit.Injectable;
+import mockit.Mock;
+import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestDefaultHttpClientFilter {
@@ -96,39 +105,157 @@ public class TestDefaultHttpClientFilter {
   }
 
   @Test
-  public void extractResult_readStreamPart(@Mocked Invocation invocation, @Mocked ReadStreamPart part) {
+  public void extractResult_readStreamPart(@Mocked Invocation invocation, @Mocked ReadStreamPart part,
+      @Mocked HttpServletResponseEx responseEx) {
     Map<String, Object> handlerContext = new HashMap<>();
     handlerContext.put(RestConst.READ_STREAM_PART, part);
     new Expectations() {
       {
         invocation.getHandlerContext();
         result = handlerContext;
+        responseEx.getStatusType();
+        result = Status.OK;
       }
     };
 
-    Assert.assertSame(part, filter.extractResult(invocation, null));
+    Response response = filter.extractResponse(invocation, responseEx);
+    Assert.assertSame(part, response.getResult());
+    Assert.assertEquals(Status.OK, response.getStatus());
+  }
+
+  @Test
+  public void extractResult_decodeError(@Mocked Invocation invocation, @Mocked ReadStreamPart part,
+      @Mocked OperationMeta operationMeta, @Mocked ResponseMeta responseMeta,
+      @Mocked RestOperationMeta swaggerRestOperation,
+      @Mocked HttpServletResponseEx responseEx) {
+    Map<String, Object> handlerContext = new HashMap<>();
+    new Expectations() {
+      {
+        invocation.getHandlerContext();
+        result = handlerContext;
+        invocation.getOperationMeta();
+        result = operationMeta;
+        operationMeta.findResponseMeta(400);
+        result = responseMeta;
+        operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
+        result = swaggerRestOperation;
+        responseMeta.getJavaType();
+        result = SimpleType.constructUnsafe(Date.class);
+        responseEx.getStatus();
+        result = 400;
+        responseEx.getBodyBuffer();
+        result = new BufferImpl().appendString("abc");
+      }
+    };
+    new MockUp<DefaultHttpClientFilter>() {
+      @Mock
+      ProduceProcessor findProduceProcessor(RestOperationMeta restOperation, HttpServletResponseEx responseEx) {
+        return new ProduceJsonProcessor();
+      }
+    };
+
+    Response response = filter.extractResponse(invocation, responseEx);
+    Assert.assertEquals(400, response.getStatusCode());
+    Assert.assertEquals(InvocationException.class, response.<InvocationException>getResult().getClass());
+    InvocationException invocationException = response.getResult();
+    Assert.assertEquals(
+        "InvocationException: code=400;msg=CommonExceptionData [message=method null, path null, statusCode 400, reasonPhrase null, response content-type null is not supported]",
+        invocationException.getMessage());
+    Assert.assertEquals("Unrecognized token 'abc': was expecting ('true', 'false' or 'null')\n"
+            + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 7]",
+        invocationException.getCause().getMessage());
+    Assert.assertEquals(CommonExceptionData.class, invocationException.getErrorData().getClass());
+    CommonExceptionData commonExceptionData = (CommonExceptionData) invocationException.getErrorData();
+    Assert.assertEquals(
+        "method null, path null, statusCode 400, reasonPhrase null, response content-type null is not supported",
+        commonExceptionData.getMessage());
+  }
+
+  @Test
+  public void extractResult_decodeError200(@Mocked Invocation invocation, @Mocked ReadStreamPart part,
+      @Mocked OperationMeta operationMeta, @Mocked ResponseMeta responseMeta,
+      @Mocked RestOperationMeta swaggerRestOperation,
+      @Mocked HttpServletResponseEx responseEx) {
+    Map<String, Object> handlerContext = new HashMap<>();
+    new Expectations() {
+      {
+        invocation.getHandlerContext();
+        result = handlerContext;
+        invocation.getOperationMeta();
+        result = operationMeta;
+        operationMeta.findResponseMeta(200);
+        result = responseMeta;
+        operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
+        result = swaggerRestOperation;
+        responseMeta.getJavaType();
+        result = SimpleType.constructUnsafe(Date.class);
+        responseEx.getStatus();
+        result = 200;
+        responseEx.getBodyBuffer();
+        result = new BufferImpl().appendString("abc");
+      }
+    };
+    new MockUp<DefaultHttpClientFilter>() {
+      @Mock
+      ProduceProcessor findProduceProcessor(RestOperationMeta restOperation, HttpServletResponseEx responseEx) {
+        return new ProduceJsonProcessor();
+      }
+    };
+
+    Response response = filter.extractResponse(invocation, responseEx);
+    Assert.assertEquals(400, response.getStatusCode());
+    Assert.assertEquals(InvocationException.class, response.<InvocationException>getResult().getClass());
+    InvocationException invocationException = response.getResult();
+    Assert.assertEquals(
+        "InvocationException: code=400;msg=CommonExceptionData [message=method null, path null, statusCode 200, reasonPhrase null, response content-type null is not supported]",
+        invocationException.getMessage());
+    Assert.assertEquals("Unrecognized token 'abc': was expecting ('true', 'false' or 'null')\n"
+            + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 7]",
+        invocationException.getCause().getMessage());
+    Assert.assertEquals(CommonExceptionData.class, invocationException.getErrorData().getClass());
+    CommonExceptionData commonExceptionData = (CommonExceptionData) invocationException.getErrorData();
+    Assert.assertEquals(
+        "method null, path null, statusCode 200, reasonPhrase null, response content-type null is not supported",
+        commonExceptionData.getMessage());
   }
 
   @Test
   public void testAfterReceiveResponseNullProduceProcessor(@Mocked Invocation invocation,
       @Mocked HttpServletResponseEx responseEx,
       @Mocked OperationMeta operationMeta,
-      @Mocked RestOperationMeta swaggerRestOperation) throws Exception {
+      @Mocked RestOperationMeta swaggerRestOperation,
+      @Injectable ResponseMeta responseMeta) throws Exception {
+    CommonExceptionData data = new CommonExceptionData("abcd");
     new Expectations() {
       {
         invocation.getOperationMeta();
         result = operationMeta;
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
         result = swaggerRestOperation;
+        operationMeta.findResponseMeta(403);
+        result = responseMeta;
+        responseMeta.getJavaType();
+        result = SimpleType.constructUnsafe(CommonExceptionData.class);
+        responseEx.getStatus();
+        result = 403;
+        responseEx.getStatusType();
+        result = Status.FORBIDDEN;
+        responseEx.getBodyBuffer();
+        result = Buffer.buffer(JsonUtils.writeValueAsString(data).getBytes());
       }
     };
 
     Response response = filter.afterReceiveResponse(invocation, responseEx);
-    InvocationException exception = response.getResult();
-    CommonExceptionData data = (CommonExceptionData) exception.getErrorData();
+    Assert.assertEquals(403, response.getStatusCode());
+    Assert.assertEquals("Forbidden", response.getReasonPhrase());
+    Assert.assertEquals(InvocationException.class, response.<InvocationException>getResult().getClass());
+    InvocationException invocationException = response.getResult();
     Assert.assertEquals(
-        "method null, path null, statusCode 0, reasonPhrase null, response content-type null is not supported",
-        data.getMessage());
+        403,
+        invocationException.getStatusCode());
+    Assert.assertEquals(
+        "CommonExceptionData [message=abcd]",
+        invocationException.getErrorData().toString());
   }
 
   @Test

@@ -37,6 +37,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.vertx.core.buffer.Buffer;
+import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
 
@@ -131,5 +132,21 @@ public class TestStandardHttpServletRequestEx {
     Assert.assertThat(Collections.list(requestEx.getParameterNames()), Matchers.contains("p1", "p2"));
     Assert.assertThat(requestEx.getParameterValues("p1"), Matchers.arrayContaining("v1-1", "v1-2", "v1-3"));
     Assert.assertEquals("v1-1", requestEx.getParameter("p1"));
+  }
+
+  @Test
+  public void setParameter() {
+    Map<String, String[]> parameterMap = new HashMap<>();
+    Deencapsulation.setField(requestEx, "parameterMap", parameterMap);
+
+    requestEx.setParameter("k1", "v1");
+    requestEx.setParameter("k2", "v2");
+
+    Assert.assertEquals("v1", requestEx.getParameter("k1"));
+    Assert.assertEquals("v2", requestEx.getParameter("k2"));
+
+    Assert.assertSame(parameterMap, requestEx.getParameterMap());
+
+    Assert.assertThat(Collections.list(requestEx.getParameterNames()), Matchers.contains("k1", "k2"));
   }
 }

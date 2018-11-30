@@ -24,6 +24,7 @@ package org.apache.servicecomb.transport.rest.vertx;
 import java.io.File;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.ws.rs.core.Response.Status;
@@ -33,7 +34,6 @@ import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 import io.netty.handler.codec.http.HttpHeaderValues;
-import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.file.FileSystem;
@@ -78,6 +78,11 @@ public class RestBodyHandler implements BodyHandler {
   @Override
   public void handle(RoutingContext context) {
     HttpServerRequest request = context.request();
+    if (request.headers().contains(HttpHeaders.UPGRADE, HttpHeaders.WEBSOCKET, true)) {
+      context.next();
+      return;
+    }
+
     // we need to keep state since we can be called again on reroute
     Boolean handled = context.get(BODY_HANDLED);
     if (handled == null || !handled) {
@@ -129,6 +134,8 @@ public class RestBodyHandler implements BodyHandler {
 
     private AtomicInteger uploadCount = new AtomicInteger();
 
+    AtomicBoolean cleanup = new AtomicBoolean(false);
+
     private boolean ended;
 
     private long uploadSize = 0L;
@@ -159,21 +166,37 @@ public class RestBodyHandler implements BodyHandler {
           if (uploadsDir == null) {
             failed = true;
             CommonExceptionData data = new CommonExceptionData("not support file upload.");
-            throw new ErrorDataDecoderException(ExceptionFactory.createConsumerException(data));
+            context.fail(ExceptionFactory.createProducerException(data));
+            return;
           }
           // *** cse end ***
-
+          if (bodyLimit != -1 && upload.isSizeAvailable()) {
+            // we can try to abort even before the upload starts
+            long size = uploadSize + upload.size();
+            if (size > bodyLimit) {
+              failed = true;
+              context.fail(new InvocationException(Status.REQUEST_ENTITY_TOO_LARGE,
+                  Status.REQUEST_ENTITY_TOO_LARGE.getReasonPhrase()));
+              return;
+            }
+          }
           // we actually upload to a file with a generated filename
           uploadCount.incrementAndGet();
           String uploadedFileName = new File(uploadsDir, UUID.randomUUID().toString()).getPath();
           upload.streamToFileSystem(uploadedFileName);
           FileUploadImpl fileUpload = new FileUploadImpl(uploadedFileName, upload);
           fileUploads.add(fileUpload);
-          upload.exceptionHandler(context::fail);
+          upload.exceptionHandler(t -> {
+            deleteFileUploads();
+            context.fail(t);
+          });
           upload.endHandler(v -> uploadEnded());
         });
       }
-      context.request().exceptionHandler(context::fail);
+      context.request().exceptionHandler(t -> {
+        deleteFileUploads();
+        context.fail(t);
+      });
     }
 
     private void makeUploadDir(FileSystem fileSystem) {
@@ -196,8 +219,10 @@ public class RestBodyHandler implements BodyHandler {
       uploadSize += buff.length();
       if (bodyLimit != -1 && uploadSize > bodyLimit) {
         failed = true;
+        // enqueue a delete for the error uploads
         context.fail(new InvocationException(Status.REQUEST_ENTITY_TOO_LARGE,
             Status.REQUEST_ENTITY_TOO_LARGE.getReasonPhrase()));
+        context.vertx().runOnContext(v -> deleteFileUploads());
       } else {
         // multipart requests will not end up in the request body
         // url encoded should also not, however jQuery by default
@@ -228,16 +253,13 @@ public class RestBodyHandler implements BodyHandler {
     }
 
     void doEnd() {
-      if (deleteUploadedFilesOnEnd) {
-        if (failed) {
-          deleteFileUploads();
-        } else {
-          context.addBodyEndHandler(x -> deleteFileUploads());
-        }
+      if (failed) {
+        deleteFileUploads();
+        return;
       }
 
-      if (failed) {
-        return;
+      if (deleteUploadedFilesOnEnd) {
+        context.addBodyEndHandler(x -> deleteFileUploads());
       }
 
       HttpServerRequest req = context.request();
@@ -249,22 +271,23 @@ public class RestBodyHandler implements BodyHandler {
     }
 
     private void deleteFileUploads() {
-      for (FileUpload fileUpload : context.fileUploads()) {
-        FileSystem fileSystem = context.vertx().fileSystem();
-        String uploadedFileName = fileUpload.uploadedFileName();
-        fileSystem.exists(uploadedFileName, existResult -> {
-          if (existResult.failed()) {
-            LOGGER.warn("Could not detect if uploaded file exists, not deleting: " + uploadedFileName,
-                existResult.cause());
-          } else if (existResult.result()) {
-            fileSystem.delete(uploadedFileName, deleteResult -> {
-              if (deleteResult.failed()) {
-                LOGGER.warn("Delete of uploaded file failed: " + uploadedFileName,
-                    deleteResult.cause());
-              }
-            });
-          }
-        });
+      if (cleanup.compareAndSet(false, true)) {
+        for (FileUpload fileUpload : context.fileUploads()) {
+          FileSystem fileSystem = context.vertx().fileSystem();
+          String uploadedFileName = fileUpload.uploadedFileName();
+          fileSystem.exists(uploadedFileName, existResult -> {
+            if (existResult.failed()) {
+              LOGGER.warn("Could not detect if uploaded file exists, not deleting: " + uploadedFileName,
+                  existResult.cause());
+            } else if (existResult.result()) {
+              fileSystem.delete(uploadedFileName, deleteResult -> {
+                if (deleteResult.failed()) {
+                  LOGGER.warn("Delete of uploaded file failed: " + uploadedFileName, deleteResult.cause());
+                }
+              });
+            }
+          });
+        }
       }
     }
   }

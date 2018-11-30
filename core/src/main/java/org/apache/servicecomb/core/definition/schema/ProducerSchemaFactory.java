@@ -17,6 +17,11 @@
 
 package org.apache.servicecomb.core.definition.schema;
 
+import static org.apache.servicecomb.serviceregistry.api.Const.REGISTER_URL_PREFIX;
+import static org.apache.servicecomb.serviceregistry.api.Const.URL_PREFIX;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -24,12 +29,14 @@ import java.util.concurrent.Executor;
 import javax.inject.Inject;
 
 import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
@@ -37,12 +44,12 @@ import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectWriter;
+import com.netflix.config.DynamicPropertyFactory;
 
+import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
-import io.swagger.util.Yaml;
 
 @Component
 public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaContext> {
@@ -51,26 +58,15 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
   @Inject
   private SwaggerEnvironment swaggerEnv;
 
-  private ObjectWriter writer = Yaml.pretty();
-
-  private String getSwaggerContent(Swagger swagger) {
-    try {
-      return writer.writeValueAsString(swagger);
-    } catch (JsonProcessingException e) {
-      throw new Error(e);
-    }
-  }
-
   public void setSwaggerEnv(SwaggerEnvironment swaggerEnv) {
     this.swaggerEnv = swaggerEnv;
   }
 
   // 只会在启动流程中调用
-  public SchemaMeta getOrCreateProducerSchema(String microserviceName, String schemaId,
+  public SchemaMeta getOrCreateProducerSchema(String schemaId,
       Class<?> producerClass,
       Object producerInstance) {
-    MicroserviceMeta microserviceMeta = microserviceMetaManager.getOrCreateMicroserviceMeta(microserviceName);
-
+    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     ProducerSchemaContext context = new ProducerSchemaContext();
     context.setMicroserviceMeta(microserviceMeta);
     context.setSchemaId(schemaId);
@@ -79,7 +75,8 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
 
     SchemaMeta schemaMeta = getOrCreateSchema(context);
 
-    SwaggerProducer producer = swaggerEnv.createProducer(producerInstance, schemaMeta.getSwaggerIntf());
+    SwaggerProducer producer = swaggerEnv.createProducer(producerInstance, schemaMeta.getSwaggerIntf(),
+        convertSwaggerOperationMap(schemaMeta));
     Executor reactiveExecutor = BeanUtils.getBean(ExecutorManager.EXECUTOR_REACTIVE);
     for (OperationMeta operationMeta : schemaMeta.getOperations()) {
       SwaggerProducerOperation producerOperation = producer.findOperation(operationMeta.getOperationId());
@@ -91,6 +88,13 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
     }
 
     return schemaMeta;
+  }
+
+  private Map<String, Operation> convertSwaggerOperationMap(SchemaMeta schemaMeta) {
+    Map<String, Operation> operationMap = new LinkedHashMap<>(schemaMeta.getOperations().size());
+    schemaMeta.getOperations().forEach(
+        operationMeta -> operationMap.put(operationMeta.getOperationId(), operationMeta.getSwaggerOperation()));
+    return operationMap;
   }
 
   protected SchemaMeta createSchema(ProducerSchemaContext context) {
@@ -110,7 +114,7 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
     if (swagger == null) {
       SwaggerGenerator generator = generateSwagger(context);
       swagger = generator.getSwagger();
-      String swaggerContent = getSwaggerContent(swagger);
+      String swaggerContent = SwaggerUtils.swaggerToString(swagger);
       LOGGER.info("generate swagger for {}/{}/{}, swagger: {}",
           context.getMicroserviceMeta().getAppId(),
           context.getMicroserviceName(),
@@ -118,6 +122,13 @@ public class ProducerSchemaFactory extends AbstractSchemaFactory<ProducerSchemaC
           swaggerContent);
     }
 
+    String urlPrefix = System.getProperty(URL_PREFIX);
+    if (!StringUtils.isEmpty(urlPrefix) && !swagger.getBasePath().startsWith(urlPrefix)
+        && DynamicPropertyFactory.getInstance()
+        .getBooleanProperty(REGISTER_URL_PREFIX, false).get()) {
+      LOGGER.info("Add swagger base path prefix for {} with {}", swagger.getBasePath(), urlPrefix);
+      swagger.setBasePath(urlPrefix + swagger.getBasePath());
+    }
     // 注册契约
     return schemaLoader.registerSchema(context.getMicroserviceMeta(), context.getSchemaId(), swagger);
   }

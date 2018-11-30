@@ -17,6 +17,7 @@
 package org.apache.servicecomb.metrics.core.publish;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,10 +28,14 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
+import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
+import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
+import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
+import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
 import org.apache.servicecomb.metrics.core.publish.model.ThreadPoolPublishModel;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerf;
@@ -43,7 +48,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
-import com.netflix.spectator.api.CompositeRegistry;
+import com.netflix.spectator.api.Measurement;
 
 import io.vertx.core.impl.VertxImplEx;
 import mockit.Expectations;
@@ -52,7 +57,7 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestDefaultLogPublisher {
-  CompositeRegistry globalRegistry = null;
+  GlobalRegistry globalRegistry = new GlobalRegistry();
 
   EventBus eventBus = new EventBus();
 
@@ -127,7 +132,7 @@ public class TestDefaultLogPublisher {
   }
 
   @Test
-  public void onPolledEvent(@Mocked VertxImplEx vertxImplEx) {
+  public void onPolledEvent(@Mocked VertxImplEx vertxImplEx, @Mocked MeasurementTree tree) {
     new Expectations(VertxUtils.class) {
       {
         VertxUtils.getVertxMap();
@@ -140,14 +145,28 @@ public class TestDefaultLogPublisher {
     DefaultPublishModel model = new DefaultPublishModel();
 
     PerfInfo perfTotal = new PerfInfo();
-    perfTotal.setTps(10);
-    perfTotal.setMsTotalTime(100);
+    perfTotal.setTps(100_0000);
+    perfTotal.setMsTotalTime(30000L * 100_0000);
+    perfTotal.setMsMaxLatency(30000);
 
     OperationPerf operationPerf = new OperationPerf();
     operationPerf.setOperation("op");
     operationPerf.getStages().put(MeterInvocationConst.STAGE_TOTAL, perfTotal);
     operationPerf.getStages().put(MeterInvocationConst.STAGE_EXECUTOR_QUEUE, perfTotal);
     operationPerf.getStages().put(MeterInvocationConst.STAGE_EXECUTION, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_PREPARE, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_HANDLERS_REQUEST, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_HANDLERS_RESPONSE, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_CLIENT_FILTERS_REQUEST, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_CLIENT_FILTERS_RESPONSE, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_CONSUMER_SEND_REQUEST, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_PRODUCER_SEND_RESPONSE, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_CONSUMER_GET_CONNECTION, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_CONSUMER_WRITE_TO_BUF, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_CONSUMER_WAIT_RESPONSE, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_CONSUMER_WAKE_CONSUMER, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_SERVER_FILTERS_REQUEST, perfTotal);
+    operationPerf.getStages().put(MeterInvocationConst.STAGE_SERVER_FILTERS_RESPONSE, perfTotal);
 
     OperationPerfGroup operationPerfGroup = new OperationPerfGroup(Const.RESTFUL, Status.OK.name());
     operationPerfGroup.addOperationPerf(operationPerf);
@@ -159,11 +178,43 @@ public class TestDefaultLogPublisher {
     model.getProducer().setOperationPerfGroups(operationPerfGroups);
 
     model.getThreadPools().put("test", new ThreadPoolPublishModel());
+    Measurement measurement = new Measurement(null, 0L, 1.0);
+
+    MeasurementNode measurementNodeSend = new MeasurementNode("send", new HashMap<>());
+    MeasurementNode measurementNodeCpu = new MeasurementNode("cpu", new HashMap<>());
+    MeasurementNode measurementNodeRecv = new MeasurementNode("receive", new HashMap<>());
+    MeasurementNode measurementNodeEth0 = new MeasurementNode("eth0", new HashMap<>());
+    MeasurementNode measurementNodeNet = new MeasurementNode("net", new HashMap<>());
+    MeasurementNode measurementNodeOs = new MeasurementNode("os", new HashMap<>());
+
+    measurementNodeSend.getMeasurements().add(measurement);
+    measurementNodeRecv.getMeasurements().add(measurement);
+    measurementNodeEth0.getChildren().put("send", measurementNodeSend);
+    measurementNodeEth0.getChildren().put("receive", measurementNodeRecv);
+    measurementNodeNet.getChildren().put("eth0", measurementNodeEth0);
+    measurementNodeOs.getChildren().put("cpu", measurementNodeCpu);
+    measurementNodeOs.getChildren().put("net", measurementNodeNet);
+
+    measurementNodeOs.getMeasurements().add(measurement);
+    measurementNodeNet.getMeasurements().add(measurement);
+    measurementNodeCpu.getMeasurements().add(measurement);
+    measurementNodeEth0.getMeasurements().add(measurement);
+    new Expectations() {
+      {
+        tree.findChild(OsMeter.OS_NAME);
+        result = measurementNodeOs;
+      }
+    };
 
     new MockUp<PublishModelFactory>() {
       @Mock
       DefaultPublishModel createDefaultPublishModel() {
         return model;
+      }
+
+      @Mock
+      MeasurementTree getTree() {
+        return tree;
       }
     };
 
@@ -174,24 +225,40 @@ public class TestDefaultLogPublisher {
     }).collect(Collectors.toList());
 
     LoggingEvent event = events.get(0);
-    Assert.assertEquals("\n" +
-            "vertx:\n" +
-            "  name       eventLoopContext-created\n" +
-            "  v          1\n" +
-            "threadPool:\n" +
-            "  corePoolSize maxThreads poolSize currentThreadsBusy queueSize taskCount completedTaskCount name\n" +
-            "  0            0          0        0                  0         0.0       0.0                test\n" +
-            "consumer:\n" +
-            "  tps     latency(ms) max-latency(ms) operation\n" +
-            "  rest.OK:\n" +
-            "  10      10.000      0.000           op\n" +
-            "  10      10.000      0.000           \n" +
-            "producer:\n" +
-            "  tps     latency(ms) max-latency(ms) queue(ms) max-queue(ms) execute(ms) max-execute(ms) operation\n" +
-            "  rest.OK:\n" +
-            "  10      10.000      0.000           10.000    0.000         10.000      0.000           op\n" +
-            "  10      10.000      0.000           10.000    0.000         10.000      0.000           \n" +
-            "",
+    Assert.assertEquals("\n"
+            + "os:\n"
+            + "  cpu: 100.00%\n"
+            + "  net:\n"
+            + "    send         receive      interface\n"
+            + "    1 B          1 B          eth0\n"
+            + "vertx:\n"
+            + "  instances:\n"
+            + "    name       eventLoopContext-created\n"
+            + "    v          1\n"
+            + "threadPool:\n"
+            + "  corePoolSize maxThreads poolSize currentThreadsBusy queueSize taskCount completedTaskCount name\n"
+            + "  0            0          0        0                  0         0.0       0.0                test\n"
+            + "consumer:\n"
+            + "  simple:\n"
+            + "    status          tps      latency             operation\n"
+            + "    rest.OK         1000000  30000.000/30000.000 op\n"
+            + "                    1000000  30000.000/30000.000 (summary)\n"
+            + "  details:\n"
+            + "    rest.OK:\n"
+            + "      op:\n"
+            + "        prepare     : 30000.000/30000.000 handlersReq : 30000.000/30000.000 cFiltersReq: 30000.000/30000.000 sendReq     : 30000.000/30000.000\n"
+            + "        getConnect  : 30000.000/30000.000 writeBuf    : 30000.000/30000.000 waitResp   : 30000.000/30000.000 wakeConsumer: 30000.000/30000.000\n"
+            + "        cFiltersResp: 30000.000/30000.000 handlersResp: 30000.000/30000.000\n"
+            + "producer:\n"
+            + "  simple:\n"
+            + "    status          tps      latency             operation\n"
+            + "    rest.OK         1000000  30000.000/30000.000 op\n"
+            + "                    1000000  30000.000/30000.000 (summary)\n"
+            + "  details:\n"
+            + "    rest.OK:\n"
+            + "      op:\n"
+            + "        prepare: 30000.000/30000.000 queue       : 30000.000/30000.000 filtersReq : 30000.000/30000.000 handlersReq: 30000.000/30000.000\n"
+            + "        execute: 30000.000/30000.000 handlersResp: 30000.000/30000.000 filtersResp: 30000.000/30000.000 sendResp   : 30000.000/30000.000\n",
         event.getMessage());
   }
 }

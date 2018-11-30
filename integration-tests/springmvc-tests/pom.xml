@@ -22,7 +22,7 @@
   <parent>
     <artifactId>integration-tests</artifactId>
     <groupId>org.apache.servicecomb.tests</groupId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -36,34 +36,13 @@
     <module>springmvc-tests-simplified-mapping</module>
     <module>springmvc-tests-general-with-springboot</module>
     <module>springmvc-tests-simplified-mapping-with-springboot</module>
+    <module>springmvc-tests-connection-limit</module>
   </modules>
 
   <dependencies>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-schema</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.servicecomb.demo</groupId>
-          <artifactId>demo-signature</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>provider-springmvc</artifactId>
     </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <forkCount>1</forkCount>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

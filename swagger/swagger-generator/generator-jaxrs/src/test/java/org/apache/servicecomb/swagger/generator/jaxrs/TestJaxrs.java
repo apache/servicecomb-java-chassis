@@ -78,7 +78,7 @@ public class TestJaxrs {
   public void testQueryComplex() {
     UnitTestSwaggerUtils.testException(
         "generate operation swagger failed, org.apache.servicecomb.swagger.generator.jaxrs.Echo:queryComplex",
-        "not allow complex type for query parameter, method=org.apache.servicecomb.swagger.generator.jaxrs.Echo:queryComplex, paramIdx=0, type=java.util.List<org.apache.servicecomb.swagger.generator.jaxrs.User>",
+        "not allow complex type for query parameter, method=org.apache.servicecomb.swagger.generator.jaxrs.Echo:queryComplex, paramIdx=0, type=java.util.List<org.apache.servicecomb.foundation.test.scaffolding.model.User>",
         context,
         Echo.class,
         "queryComplex");
@@ -121,5 +121,11 @@ public class TestJaxrs {
   public void testRawJsonStringMethod() {
     UnitTestSwaggerUtils
         .testSwagger(classLoader, "schemas/rawJsonStringMethod.yaml", context, Echo.class, "rawJsonStringMethod");
+  }
+
+  @Test
+  public void testEnumBody() {
+    UnitTestSwaggerUtils
+        .testSwagger(classLoader, "schemas/enumBody.yaml", context, Echo.class, "enumBody");
   }
 }

@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.loadbalance;
 
+import java.io.IOException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
@@ -31,9 +32,6 @@ import org.junit.Test;
 
 import com.netflix.client.DefaultLoadBalancerRetryHandler;
 import com.netflix.client.RetryHandler;
-import com.netflix.loadbalancer.RandomRule;
-import com.netflix.loadbalancer.RoundRobinRule;
-import com.netflix.loadbalancer.WeightedResponseTimeRule;
 
 import mockit.Deencapsulation;
 
@@ -59,17 +57,16 @@ public class TestExtensionsManager {
 
     BeansHolder holder = new BeansHolder();
     List<ExtensionsFactory> extensionsFactories = new ArrayList<>();
-    extensionsFactories.add(new RuleClassNameExtentionsFactory());
     extensionsFactories.add(new RuleNameExtentionsFactory());
     extensionsFactories.add(new DefaultRetryExtensionsFactory());
     Deencapsulation.setField(holder, "extentionsFactories", extensionsFactories);
     holder.init();
 
-    Assert.assertEquals(RoundRobinRule.class.getName(),
+    Assert.assertEquals(RoundRobinRuleExt.class.getName(),
         ExtensionsManager.createLoadBalancerRule("mytest1").getClass().getName());
-    Assert.assertEquals(RandomRule.class.getName(),
+    Assert.assertEquals(RandomRuleExt.class.getName(),
         ExtensionsManager.createLoadBalancerRule("mytest2").getClass().getName());
-    Assert.assertEquals(WeightedResponseTimeRule.class.getName(),
+    Assert.assertEquals(WeightedResponseTimeRuleExt.class.getName(),
         ExtensionsManager.createLoadBalancerRule("mytest3").getClass().getName());
     Assert.assertEquals(SessionStickinessRule.class.getName(),
         ExtensionsManager.createLoadBalancerRule("mytest4").getClass().getName());
@@ -83,43 +80,21 @@ public class TestExtensionsManager {
 
   @Test
   public void testRuleClassName() {
-    System.setProperty("servicecomb.loadbalance.mytest1.NFLoadBalancerRuleClassName",
-        "com.netflix.loadbalancer.RoundRobinRule");
-    System.setProperty("servicecomb.loadbalance.mytest2.NFLoadBalancerRuleClassName",
-        "com.netflix.loadbalancer.WeightedResponseTimeRule");
-    System.setProperty("servicecomb.loadbalance.mytest3.NFLoadBalancerRuleClassName", "com.netflix.loadbalancer.RandomRule");
-    System.setProperty("servicecomb.loadbalance.mytest4.NFLoadBalancerRuleClassName",
-        "org.apache.servicecomb.loadbalance.SessionStickinessRule");
-
     BeansHolder holder = new BeansHolder();
     List<ExtensionsFactory> extensionsFactories = new ArrayList<>();
-    extensionsFactories.add(new RuleClassNameExtentionsFactory());
     extensionsFactories.add(new RuleNameExtentionsFactory());
     extensionsFactories.add(new DefaultRetryExtensionsFactory());
     Deencapsulation.setField(holder, "extentionsFactories", extensionsFactories);
     holder.init();
-
-    Assert.assertEquals(RoundRobinRule.class.getName(),
-        ExtensionsManager.createLoadBalancerRule("mytest1").getClass().getName());
-    Assert.assertEquals(WeightedResponseTimeRule.class.getName(),
-        ExtensionsManager.createLoadBalancerRule("mytest2").getClass().getName());
-    Assert.assertEquals(RandomRule.class.getName(),
-        ExtensionsManager.createLoadBalancerRule("mytest3").getClass().getName());
-    Assert.assertEquals(SessionStickinessRule.class.getName(),
-        ExtensionsManager.createLoadBalancerRule("mytest4").getClass().getName());
-
-    System.getProperties().remove("servicecomb.loadbalance.mytest1.NFLoadBalancerRuleClassName");
-    System.getProperties().remove("servicecomb.loadbalance.mytest2.NFLoadBalancerRuleClassName");
-    System.getProperties().remove("servicecomb.loadbalance.mytest3.NFLoadBalancerRuleClassName");
-    System.getProperties().remove("servicecomb.loadbalance.mytest4.NFLoadBalancerRuleClassName");
-
     RetryHandler retryHandler = ExtensionsManager.createRetryHandler("mytest1");
     Assert.assertTrue(DefaultLoadBalancerRetryHandler.class.isInstance(retryHandler));
     Assert.assertFalse(retryHandler.isRetriableException(new InvocationException(400, "", ""), false));
     Assert.assertFalse(retryHandler.isRetriableException(new InvocationException(400, "", ""), true));
+    Assert.assertTrue(retryHandler.isRetriableException(new InvocationException(503, "", ""), true));
     Assert.assertTrue(retryHandler.isRetriableException(new ConnectException(), false));
     Assert.assertTrue(retryHandler.isRetriableException(new ConnectException(), true));
     Assert.assertTrue(retryHandler.isRetriableException(new SocketTimeoutException(), false));
     Assert.assertTrue(retryHandler.isRetriableException(new SocketTimeoutException(), true));
+    Assert.assertFalse(retryHandler.isRetriableException(new IOException(), true));
   }
 }

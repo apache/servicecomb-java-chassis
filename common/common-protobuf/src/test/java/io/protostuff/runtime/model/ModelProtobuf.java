@@ -22,6 +22,7 @@ package io.protostuff.runtime.model;
 
 import com.google.protobuf.CodedOutputStream;
 
+@SuppressWarnings({"cast"})
 public final class ModelProtobuf {
   private ModelProtobuf() {
   }

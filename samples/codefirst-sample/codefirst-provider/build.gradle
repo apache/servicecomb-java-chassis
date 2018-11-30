@@ -22,7 +22,7 @@ dependencies {
     compile group: 'org.apache.servicecomb', name: 'provider-springmvc'
     compile group: 'org.apache.servicecomb', name: 'transport-highway'
     compile group: 'org.apache.servicecomb', name: 'transport-rest-vertx'
-    compile group: 'org.apache.servicecomb.samples', name: 'common-schema', version: '1.0.0-m2-SNAPSHOT'
+    compile group: 'org.apache.servicecomb.samples', name: 'common-schema', version: '1.0.0-SNAPSHOT'
     compile group: 'org.slf4j', name: 'slf4j-log4j12'
 }
 
@@ -47,6 +47,6 @@ apply plugin: 'io.spring.dependency-management'
 
 dependencyManagement {
     imports {
-        mavenBom 'org.apache.servicecomb:java-chassis-dependencies:1.0.0-m2-SNAPSHOT'
+        mavenBom 'org.apache.servicecomb:java-chassis-dependencies:1.0.0-SNAPSHOT'
     }
 }

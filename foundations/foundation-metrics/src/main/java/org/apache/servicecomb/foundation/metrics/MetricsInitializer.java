@@ -16,8 +16,9 @@
  */
 package org.apache.servicecomb.foundation.metrics;
 
+import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
+
 import com.google.common.eventbus.EventBus;
-import com.netflix.spectator.api.CompositeRegistry;
 
 public interface MetricsInitializer {
   default int getOrder() {
@@ -27,7 +28,7 @@ public interface MetricsInitializer {
   /**
    * if create new registry, must add to globalRegistry
    */
-  void init(CompositeRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config);
+  void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config);
 
   default void destroy() {
 

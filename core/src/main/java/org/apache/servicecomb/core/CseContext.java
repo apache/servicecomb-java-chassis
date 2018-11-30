@@ -19,7 +19,6 @@ package org.apache.servicecomb.core;
 
 import javax.inject.Inject;
 
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
 import org.apache.servicecomb.core.definition.loader.SchemaLoader;
 import org.apache.servicecomb.core.definition.schema.ConsumerSchemaFactory;
@@ -39,8 +38,6 @@ public class CseContext {
 
   private SchemaLoader schemaLoader;
 
-  private MicroserviceMetaManager microserviceMetaManager;
-
   private ConsumerSchemaFactory consumerSchemaFactory;
 
   private ConsumerProviderManager consumerProviderManager;
@@ -57,10 +54,6 @@ public class CseContext {
 
   public SchemaLoader getSchemaLoader() {
     return schemaLoader;
-  }
-
-  public MicroserviceMetaManager getMicroserviceMetaManager() {
-    return microserviceMetaManager;
   }
 
   public ConsumerSchemaFactory getConsumerSchemaFactory() {
@@ -86,11 +79,6 @@ public class CseContext {
   @Inject
   public void setSwaggerEnvironment(SwaggerEnvironment swaggerEnvironment) {
     this.swaggerEnvironment = swaggerEnvironment;
-  }
-
-  @Inject
-  public void setMicroserviceMetaManager(MicroserviceMetaManager microserviceMetaManager) {
-    this.microserviceMetaManager = microserviceMetaManager;
   }
 
   @Inject

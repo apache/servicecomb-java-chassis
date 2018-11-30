@@ -21,10 +21,6 @@ import java.util.Collection;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
-import com.netflix.loadbalancer.IRule;
-import com.netflix.loadbalancer.RandomRule;
-import com.netflix.loadbalancer.RoundRobinRule;
-import com.netflix.loadbalancer.WeightedResponseTimeRule;
 
 @Component
 public class RuleNameExtentionsFactory implements ExtensionsFactory {
@@ -51,13 +47,13 @@ public class RuleNameExtentionsFactory implements ExtensionsFactory {
   }
 
   @Override
-  public IRule createLoadBalancerRule(String ruleName) {
+  public RuleExt createLoadBalancerRule(String ruleName) {
     if (RULE_RoundRobin.equals(ruleName)) {
-      return new RoundRobinRule();
+      return new RoundRobinRuleExt();
     } else if (RULE_Random.equals(ruleName)) {
-      return new RandomRule();
+      return new RandomRuleExt();
     } else if (RULE_WeightedResponse.equals(ruleName)) {
-      return new WeightedResponseTimeRule();
+      return new WeightedResponseTimeRuleExt();
     } else if (RULE_SessionStickiness.equals(ruleName)) {
       return new SessionStickinessRule();
     } else {

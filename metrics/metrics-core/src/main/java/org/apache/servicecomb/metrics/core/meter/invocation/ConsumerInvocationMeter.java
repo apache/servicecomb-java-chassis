@@ -16,14 +16,66 @@
  */
 package org.apache.servicecomb.metrics.core.meter.invocation;
 
-import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.swagger.invocation.Response;
+import java.util.List;
+
+import org.apache.servicecomb.core.event.InvocationFinishEvent;
+import org.apache.servicecomb.core.invocation.InvocationStageTrace;
+import org.apache.servicecomb.foundation.metrics.meter.SimpleTimer;
 
 import com.netflix.spectator.api.Id;
+import com.netflix.spectator.api.Measurement;
 import com.netflix.spectator.api.Registry;
 
 public class ConsumerInvocationMeter extends AbstractInvocationMeter {
-  public ConsumerInvocationMeter(Registry registry, Id id, Invocation invocation, Response response) {
-    super(registry, id, invocation, response);
+  private SimpleTimer clientFiltersRequestTimer;
+
+  private SimpleTimer consumerSendRequestTimer;
+
+  private SimpleTimer consumerGetConnectionTimer;
+
+  private SimpleTimer consumerWriteToBufTimer;
+
+  private SimpleTimer consumerWaitResponseTimer;
+
+  private SimpleTimer consumerWakeConsumerTimer;
+
+  private SimpleTimer clientFiltersResponseTimer;
+
+  public ConsumerInvocationMeter(Registry registry, Id id) {
+    super(registry, id);
+    clientFiltersRequestTimer = creatStageTimer(MeterInvocationConst.STAGE_CLIENT_FILTERS_REQUEST);
+    consumerSendRequestTimer = creatStageTimer(MeterInvocationConst.STAGE_CONSUMER_SEND_REQUEST);
+    consumerGetConnectionTimer = creatStageTimer(MeterInvocationConst.STAGE_CONSUMER_GET_CONNECTION);
+    consumerWriteToBufTimer = creatStageTimer(MeterInvocationConst.STAGE_CONSUMER_WRITE_TO_BUF);
+    consumerWakeConsumerTimer = creatStageTimer(MeterInvocationConst.STAGE_CONSUMER_WAKE_CONSUMER);
+    clientFiltersResponseTimer = creatStageTimer(MeterInvocationConst.STAGE_CLIENT_FILTERS_RESPONSE);
+    consumerWaitResponseTimer = creatStageTimer(MeterInvocationConst.STAGE_CONSUMER_WAIT_RESPONSE);
+  }
+
+  @Override
+  public void onInvocationFinish(InvocationFinishEvent event) {
+    super.onInvocationFinish(event);
+
+    InvocationStageTrace invocationStageTrace = event.getInvocation().getInvocationStageTrace();
+    clientFiltersRequestTimer.record((long) invocationStageTrace.calcClientFiltersRequestTime());
+    consumerSendRequestTimer.record((long) invocationStageTrace.calcSendRequestTime());
+    consumerGetConnectionTimer.record((long) invocationStageTrace.calcGetConnectionTime());
+    consumerWriteToBufTimer.record((long) invocationStageTrace.calcWriteToBufferTime());
+    consumerWaitResponseTimer.record((long) invocationStageTrace.calcReceiveResponseTime());
+    consumerWakeConsumerTimer.record((long) invocationStageTrace.calcWakeConsumer());
+    clientFiltersResponseTimer.record((long) invocationStageTrace.calcClientFiltersResponseTime());
+  }
+
+  @Override
+  public void calcMeasurements(List<Measurement> measurements, long msNow, long secondInterval) {
+    super.calcMeasurements(measurements, msNow, secondInterval);
+
+    clientFiltersRequestTimer.calcMeasurements(measurements, msNow, secondInterval);
+    consumerSendRequestTimer.calcMeasurements(measurements, msNow, secondInterval);
+    consumerGetConnectionTimer.calcMeasurements(measurements, msNow, secondInterval);
+    consumerWriteToBufTimer.calcMeasurements(measurements, msNow, secondInterval);
+    consumerWaitResponseTimer.calcMeasurements(measurements, msNow, secondInterval);
+    consumerWakeConsumerTimer.calcMeasurements(measurements, msNow, secondInterval);
+    clientFiltersResponseTimer.calcMeasurements(measurements, msNow, secondInterval);
   }
 }

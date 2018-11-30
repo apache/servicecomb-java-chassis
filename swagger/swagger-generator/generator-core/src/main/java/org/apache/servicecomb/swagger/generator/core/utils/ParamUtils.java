@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.swagger.generator.core.utils;
 
+import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -27,19 +28,20 @@ import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 
-import com.fasterxml.jackson.databind.ser.std.MapProperty;
-
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.Model;
+import io.swagger.models.ModelImpl;
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.AbstractSerializableParameter;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.ObjectProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.PropertyBuilder;
 import io.swagger.models.properties.RefProperty;
+import io.swagger.models.properties.StringProperty;
 
 public final class ParamUtils {
   private static DefaultParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
@@ -57,8 +59,17 @@ public final class ParamUtils {
     return existName;
   }
 
+  public static String getParameterName(Executable methodOrConstructor, int parameterIndex) {
+    MethodParameter methodParameter = MethodParameter.forMethodOrConstructor(methodOrConstructor, parameterIndex);
+    return getParameterName(methodParameter, parameterIndex);
+  }
+
   public static String getParameterName(Method method, int paramIdx) {
     MethodParameter methodParameter = new MethodParameter(method, paramIdx);
+    return getParameterName(methodParameter, paramIdx);
+  }
+
+  public static String getParameterName(MethodParameter methodParameter, int paramIdx) {
     methodParameter.initParameterNameDiscovery(parameterNameDiscoverer);
 
     String paramName = methodParameter.getParameterName();
@@ -90,6 +101,9 @@ public final class ParamUtils {
 
     Property property = ModelConverters.getInstance().readAsProperty(paramType);
     Model model = PropertyBuilder.toModel(property);
+    if (model instanceof ModelImpl && property instanceof StringProperty) {
+      ((ModelImpl) model).setEnum(((StringProperty) property).getEnum());
+    }
 
     BodyParameter bodyParameter = new BodyParameter();
     bodyParameter.setName(paramName);
@@ -114,7 +128,7 @@ public final class ParamUtils {
     Property property = ModelConverters.getInstance().readAsProperty(paramType);
 
     if (isComplexProperty(property)) {
-      // 简单参数不可以是复杂类型
+      // cannot set a simple parameter(header, query, etc.) as complex type
       String msg = String.format("not allow complex type for %s parameter, method=%s:%s, paramIdx=%d, type=%s",
           parameter.getIn(),
           method.getDeclaringClass().getName(),
@@ -122,6 +136,26 @@ public final class ParamUtils {
           paramIdx,
           paramType.getTypeName());
       throw new Error(msg);
+    }
+    parameter.setProperty(property);
+  }
+
+  /**
+   * Set param type info. For {@linkplain javax.ws.rs.BeanParam BeanParam} scenario.
+   *
+   * @param paramType type of the swagger parameter
+   * @param parameter swagger parameter
+   */
+  public static void setParameterType(Type paramType, AbstractSerializableParameter<?> parameter) {
+    Property property = ModelConverters.getInstance().readAsProperty(paramType);
+
+    if (isComplexProperty(property)) {
+      // cannot set a simple parameter(header, query, etc.) as complex type
+      throw new IllegalArgumentException(
+          String.format(
+              "not allow such type of param:[%s], param name is [%s]",
+              property.getClass(),
+              parameter.getName()));
     }
     parameter.setProperty(property);
   }

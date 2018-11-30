@@ -26,7 +26,6 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.transport.highway.message.RequestHeader;
 import org.apache.servicecomb.transport.highway.message.ResponseHeader;
 
-import io.protostuff.runtime.ProtobufFeature;
 import io.vertx.core.buffer.Buffer;
 
 public final class HighwayCodec {
@@ -34,7 +33,7 @@ public final class HighwayCodec {
   }
 
   public static TcpOutputStream encodeRequest(long msgId, Invocation invocation,
-      OperationProtobuf operationProtobuf, ProtobufFeature protobufFeature) throws Exception {
+      OperationProtobuf operationProtobuf) throws Exception {
     // 写header
     RequestHeader header = new RequestHeader();
     header.setMsgType(MsgType.REQUEST);
@@ -44,42 +43,41 @@ public final class HighwayCodec {
     header.setOperationName(invocation.getOperationName());
     header.setContext(invocation.getContext());
 
-    HighwayOutputStream os = new HighwayOutputStream(msgId, protobufFeature);
+    HighwayOutputStream os = new HighwayOutputStream(msgId);
     os.write(header, operationProtobuf.getRequestSchema(), invocation.getArgs());
     return os;
   }
 
   public static void decodeRequest(Invocation invocation, RequestHeader header, OperationProtobuf operationProtobuf,
-      Buffer bodyBuffer, ProtobufFeature protobufFeature) throws Exception {
+      Buffer bodyBuffer) throws Exception {
     WrapSchema schema = operationProtobuf.getRequestSchema();
-    Object[] args = schema.readObject(bodyBuffer, protobufFeature);
+    Object[] args = schema.readObject(bodyBuffer);
 
     invocation.setSwaggerArguments(args);
     invocation.setContext(header.getContext());
   }
 
-  public static RequestHeader readRequestHeader(Buffer headerBuffer,
-      ProtobufFeature protobufFeature) throws Exception {
-    return RequestHeader.readObject(headerBuffer, protobufFeature);
+  public static RequestHeader readRequestHeader(Buffer headerBuffer) throws Exception {
+    return RequestHeader.readObject(headerBuffer);
   }
 
   public static Buffer encodeResponse(long msgId, ResponseHeader header, WrapSchema bodySchema,
-      Object body, ProtobufFeature protobufFeature) throws Exception {
-    try (HighwayOutputStream os = new HighwayOutputStream(msgId, protobufFeature)) {
+      Object body) throws Exception {
+    try (HighwayOutputStream os = new HighwayOutputStream(msgId)) {
       os.write(header, bodySchema, body);
       return os.getBuffer();
     }
   }
 
-  public static Response decodeResponse(Invocation invocation, OperationProtobuf operationProtobuf,
-      TcpData tcpData, ProtobufFeature protobufFeature) throws Exception {
-    ResponseHeader header = ResponseHeader.readObject(tcpData.getHeaderBuffer(), protobufFeature);
+  public static Response decodeResponse(Invocation invocation, OperationProtobuf operationProtobuf, TcpData tcpData)
+      throws Exception {
+    ResponseHeader header = ResponseHeader.readObject(tcpData.getHeaderBuffer());
     if (header.getContext() != null) {
       invocation.getContext().putAll(header.getContext());
     }
 
     WrapSchema bodySchema = operationProtobuf.findResponseSchema(header.getStatusCode());
-    Object body = bodySchema.readObject(tcpData.getBodyBuffer(), protobufFeature);
+    Object body = bodySchema.readObject(tcpData.getBodyBuffer());
 
     Response response = Response.create(header.getStatusCode(), header.getReasonPhrase(), body);
     response.setHeaders(header.getHeaders());

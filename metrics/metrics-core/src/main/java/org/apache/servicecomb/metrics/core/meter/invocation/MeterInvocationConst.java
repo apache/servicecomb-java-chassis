@@ -19,24 +19,55 @@ package org.apache.servicecomb.metrics.core.meter.invocation;
 import com.netflix.spectator.api.Statistic;
 
 public interface MeterInvocationConst {
-  final String INVOCATION_NAME = "servicecomb.invocation";
+  String INVOCATION_NAME = "servicecomb.invocation";
 
   // consumer or producer
-  final String TAG_ROLE = "role";
+  String TAG_ROLE = "role";
 
-  final String TAG_OPERATION = "operation";
+  String TAG_OPERATION = "operation";
 
-  final String TAG_TRANSPORT = "transport";
+  String TAG_TRANSPORT = "transport";
 
-  final String TAG_STAGE = "stage";
+  String TAG_STAGE = "stage";
 
-  final String TAG_STATUS = "status";
+  String TAG_STATUS = "status";
 
-  final String TAG_STATISTIC = Statistic.count.key();
+  String TAG_STATISTIC = Statistic.count.key();
 
-  final String STAGE_TOTAL = "total";
+  String STAGE_TOTAL = "total";
 
-  final String STAGE_EXECUTOR_QUEUE = "queue";
+  String STAGE_PREPARE = "prepare";
 
-  final String STAGE_EXECUTION = "execution";
+  String STAGE_EXECUTOR_QUEUE = "queue";
+
+  String STAGE_EXECUTION = "execution";
+
+  String EDGE_INVOCATION_NAME = "EDGE";
+
+  String STAGE_HANDLERS_REQUEST = "handlers_request";
+
+  String STAGE_HANDLERS_RESPONSE = "handlers_response";
+
+  // producer only
+  String STAGE_SERVER_FILTERS_REQUEST = "server_filters_request";
+
+  String STAGE_SERVER_FILTERS_RESPONSE = "server_filters_response";
+
+  String STAGE_PRODUCER_SEND_RESPONSE = "producer_send_response";
+
+  //consumer only
+
+  String STAGE_CLIENT_FILTERS_REQUEST = "client_filters_request";
+
+  String STAGE_CONSUMER_SEND_REQUEST = "consumer_send_request";
+
+  String STAGE_CONSUMER_GET_CONNECTION = "consumer_get_connection";
+
+  String STAGE_CONSUMER_WRITE_TO_BUF = "consumer_write_to_buf";
+
+  String STAGE_CONSUMER_WAIT_RESPONSE = "consumer_wait_response";
+
+  String STAGE_CONSUMER_WAKE_CONSUMER = "consumer_wake_consumer";
+
+  String STAGE_CLIENT_FILTERS_RESPONSE = "client_filters_response";
 }

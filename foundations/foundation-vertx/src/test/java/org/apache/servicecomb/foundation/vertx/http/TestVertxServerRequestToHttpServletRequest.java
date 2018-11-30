@@ -19,6 +19,7 @@ package org.apache.servicecomb.foundation.vertx.http;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -451,5 +452,22 @@ public class TestVertxServerRequestToHttpServletRequest {
     };
 
     Assert.assertEquals("ce", request.getCharacterEncoding());
+  }
+
+
+  @Test
+  public void setParameter() {
+    Map<String, String[]> parameterMap = new HashMap<>();
+    Deencapsulation.setField(request, "parameterMap", parameterMap);
+
+    request.setParameter("k1", "v1");
+    request.setParameter("k2", "v2");
+
+    Assert.assertEquals("v1", request.getParameter("k1"));
+    Assert.assertEquals("v2", request.getParameter("k2"));
+
+    Assert.assertSame(parameterMap, request.getParameterMap());
+
+    Assert.assertThat(Collections.list(request.getParameterNames()), Matchers.contains("k1", "k2"));
   }
 }

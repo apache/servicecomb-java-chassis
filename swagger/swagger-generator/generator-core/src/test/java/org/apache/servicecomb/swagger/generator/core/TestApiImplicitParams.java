@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.swagger.generator.core;
 
-import org.apache.servicecomb.swagger.generator.core.schema.User;
+import org.apache.servicecomb.foundation.test.scaffolding.model.User;
 import org.apache.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
 import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
 import org.junit.Assert;
@@ -40,7 +40,7 @@ public class TestApiImplicitParams {
         value = {@ApiImplicitParam(
             paramType = "body",
             name = "body",
-            dataType = "org.apache.servicecomb.swagger.generator.core.schema.User")})
+            dataType = "org.apache.servicecomb.foundation.test.scaffolding.model.User")})
     void testBody();
   }
 

@@ -20,7 +20,7 @@ package org.apache.servicecomb.common.rest.codec.param;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
-import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 
 import com.fasterxml.jackson.databind.JavaType;
 
@@ -30,7 +30,8 @@ public interface ParamValueProcessor {
   void setValue(RestClientRequest clientRequest, Object arg) throws Exception;
 
   default Object convertValue(Object value, JavaType targetType) {
-    return RestObjectMapper.INSTANCE.convertValue(value, targetType);
+    return RestObjectMapperFactory.getRestObjectMapper()
+        .convertValue(value, targetType);
   }
 
   String getParameterPath();

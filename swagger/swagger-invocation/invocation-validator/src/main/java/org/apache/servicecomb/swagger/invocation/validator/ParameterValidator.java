@@ -43,7 +43,11 @@ public class ParameterValidator implements ProducerInvokeExtension {
       throws ConstraintViolationException {
 
     if (null == executableValidator) {
-      ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+      ValidatorFactory factory =
+          Validation.byDefaultProvider()
+              .configure()
+              .parameterNameProvider(new DefaultParameterNameProvider())
+              .buildValidatorFactory();
       executableValidator = factory.getValidator().forExecutables();
     }
     Set<ConstraintViolation<Object>> violations =

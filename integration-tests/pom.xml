@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.apache.servicecomb</groupId>
     <artifactId>java-chassis-parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <relativePath>../parent</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
@@ -41,19 +41,37 @@
     <module>spring-zuul-tracing-tests</module>
     <module>spring-pojo-tests</module>
     <module>dynamic-config-tests</module>
+    <module>spring-pojo-connection-limit-test</module>
+
+    <module>it-common</module>
+    <module>it-producer</module>
+    <module>it-edge</module>
+    <module>it-common-service</module>
+
+    <module>it-producer-deploy-springboot2-standalone</module>
+    <module>it-producer-deploy-springboot2-servlet</module>
+
+    <!--must be the last one-->
+    <module>it-consumer</module>
   </modules>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
+        <groupId>org.apache.servicecomb.tests</groupId>
+        <artifactId>it-common</artifactId>
+        <version>1.1.0-SNAPSHOT</version>
+      </dependency>
+
+      <dependency>
         <groupId>org.apache.servicecomb.demo</groupId>
         <artifactId>demo-schema</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb.tests</groupId>
         <artifactId>test-common</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.1.0-SNAPSHOT</version>
         <type>test-jar</type>
       </dependency>
       <dependency>
@@ -78,6 +96,22 @@
   <dependencies>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
+      <artifactId>transport-rest-vertx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>provider-springmvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>provider-pojo</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>provider-jaxrs</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>handler-bizkeeper</artifactId>
     </dependency>
     <dependency>
@@ -98,28 +132,69 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>swagger-generator-springmvc</artifactId>
+      <artifactId>metrics-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-core</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-all</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-test-scaffolding</artifactId>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>3.0.2</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-    <plugins>
-      <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <extensions>true</extensions>
-        <configuration>
-          <skipStaging>true</skipStaging>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+
+  <profiles>
+    <profile>
+      <id>it-jar</id>
+      <activation>
+        <file>
+          <exists>enable-it-jar</exists>
+        </file>
+      </activation>
+
+      <!--must manage by profile, otherwise when "mvn install" will cause classpath problem-->
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.1.0</version>
+            <executions>
+              <execution>
+                <id>default-jar</id>
+                <phase>package</phase>
+              </execution>
+            </executions>
+            <configuration>
+              <archive>
+                <manifest>
+                  <classpathLayoutType>repository</classpathLayoutType>
+                  <addClasspath>true</addClasspath>
+                  <classpathPrefix>file:///${settings.localRepository}/</classpathPrefix>
+                  <mainClass>${it.main}</mainClass>
+                </manifest>
+                <manifestEntries>
+                  <Class-Path>. ..</Class-Path>
+                </manifestEntries>
+              </archive>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.common.rest.definition;
 
+import static org.junit.Assert.fail;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +26,7 @@ import java.util.Map;
 import org.apache.servicecomb.common.rest.definition.path.PathRegExp;
 import org.apache.servicecomb.common.rest.definition.path.QueryVarParamWriter;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder;
+import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -38,11 +41,11 @@ import mockit.MockUp;
 public class TestPath {
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
   }
 
   @Test
@@ -61,29 +64,33 @@ public class TestPath {
     Assert.assertEquals(0, oSecondPathRegExp.getStaticCharCount());
     Assert.assertNotEquals(null, (oPathRegExp.match("//{test}//", new HashMap<>())));
     // Error Scenarios
-    oPathRegExp = new PathRegExp("//{test \t}//");
+    new PathRegExp("//{test \t}//");
     // Error Scenarios for double {{
     try {
-      oPathRegExp = new PathRegExp("//{test{");
+      new PathRegExp("//{test{");
+      fail("an exception is expected!");
     } catch (Exception e) {
       Assert.assertEquals(true, e.getMessage().contains("A variable must not contain an extra"));
     }
     // Error Scenarios for illegal }}
     try {
-      oPathRegExp = new PathRegExp("//}");
+      new PathRegExp("//}");
+      fail("an exception is expected!");
     } catch (Exception e) {
       Assert.assertEquals(true, e.getMessage().contains("is only allowed as"));
     }
     // Error Scenarios for illegal ;
     try {
-      oPathRegExp = new PathRegExp("//;");
+      new PathRegExp("//;");
+      fail("an exception is expected!");
     } catch (Exception e) {
       Assert.assertEquals(true, e.getMessage().contains("matrix parameters are not allowed in"));
     }
 
     // Error Scenarios for NO } ;
     try {
-      oPathRegExp = new PathRegExp("//{test");
+      new PathRegExp("//{test");
+      fail("an exception is expected!");
     } catch (Exception e) {
       Assert.assertEquals(true, e.getMessage().contains("No '}' found after"));
     }
@@ -110,7 +117,7 @@ public class TestPath {
   }
 
   @Test
-  public void testQueryVarParamWriter() throws Exception {
+  public void testQueryVarParamWriter() {
     boolean status = true;
     new MockUp<RestParam>() {
       @Mock
@@ -126,7 +133,7 @@ public class TestPath {
     };
 
     Parameter parameter = new QueryParameter();
-    QueryVarParamWriter writer = new QueryVarParamWriter('&', new RestParam(0, parameter, String.class));
+    QueryVarParamWriter writer = new QueryVarParamWriter(new RestParam(0, parameter, String.class));
     try {
       verify(writer, "T", "&queryVar=T");
       verify(writer, null, "&");
@@ -142,8 +149,9 @@ public class TestPath {
     Assert.assertTrue(status);
   }
 
+  // TODO expect not used?
   private void verify(QueryVarParamWriter writer, Object arg, String expect) throws Exception {
-    StringBuilder sb = new StringBuilder();
+    URLPathStringBuilder sb = new URLPathStringBuilder();
     Object[] args = new Object[] {arg};
     writer.write(sb, args);
   }

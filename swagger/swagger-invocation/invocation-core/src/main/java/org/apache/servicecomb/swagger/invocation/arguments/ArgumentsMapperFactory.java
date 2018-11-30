@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.swagger.invocation.arguments;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
@@ -26,14 +27,30 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.ws.rs.CookieParam;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
 
+import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.converter.Converter;
 import org.apache.servicecomb.swagger.invocation.converter.ConverterMgr;
 import org.apache.servicecomb.swagger.invocation.converter.impl.ConverterCommon;
 import org.springframework.util.TypeUtils;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 
-public abstract class ArgumentsMapperFactory {
+
+/**
+ * @param <T> type of the generated ArgumentsMapper
+ */
+public abstract class ArgumentsMapperFactory<T> {
   @Inject
   protected ConverterMgr converterMgr;
 
@@ -57,16 +74,6 @@ public abstract class ArgumentsMapperFactory {
       return factoryMap.get((Class<?>) type);
     }
     return null;
-  }
-
-  public <T> T createArgumentsMapper(Method swaggerMethod, Method providerMethod) {
-    ArgumentsMapperConfig config = new ArgumentsMapperConfig();
-    config.setSwaggerMethod(swaggerMethod);
-    config.setProviderMethod(providerMethod);
-
-    collectArgumentsMapper(config);
-
-    return createArgumentsMapper(config);
   }
 
   protected void collectArgumentsMapper(ArgumentsMapperConfig config) {
@@ -118,6 +125,7 @@ public abstract class ArgumentsMapperFactory {
   protected List<ProviderParameter> collectContextArgumentsMapper(ArgumentsMapperConfig config) {
     List<ProviderParameter> providerNormalParams = new ArrayList<>();
 
+    final Annotation[][] parameterAnnotations = config.getProviderMethod().getParameterAnnotations();
     Type[] providerParameterTypes = config.getProviderMethod().getGenericParameterTypes();
     for (int providerIdx = 0; providerIdx < providerParameterTypes.length; providerIdx++) {
       Type parameterType = providerParameterTypes[providerIdx];
@@ -128,11 +136,69 @@ public abstract class ArgumentsMapperFactory {
         continue;
       }
 
-      ProviderParameter pp = new ProviderParameter(providerIdx, parameterType);
+      ProviderParameter pp = new ProviderParameter(providerIdx, parameterType,
+          retrieveVisibleParamName(config.getProviderMethod(), providerIdx))
+          .setAnnotations(parameterAnnotations[providerIdx]);
       providerNormalParams.add(pp);
     }
 
     return providerNormalParams;
+  }
+
+  /**
+   * Try to get the swagger param name of the corresponding producer/consumer method param
+   * @param method producer/consumer method
+   * @param paramIndex index of the producer/consumer method
+   * @return the param name specified by param annotations, or the param name defined in code
+   */
+  public static String retrieveVisibleParamName(Method method, int paramIndex) {
+    final Annotation[] annotations = method.getParameterAnnotations()[paramIndex];
+    String paramName = null;
+    for (Annotation annotation : annotations) {
+      paramName = retrieveVisibleParamName(annotation);
+    }
+    if (null == paramName) {
+      paramName = ParamUtils.getParameterName(method, paramIndex);
+    }
+    return paramName;
+  }
+
+  public static String retrieveVisibleParamName(Annotation annotation) {
+    if (CookieParam.class.isInstance(annotation)) {
+      return ((CookieParam) annotation).value();
+    }
+    if (CookieValue.class.isInstance(annotation)) {
+      return ((CookieValue) annotation).name();
+    }
+    if (FormParam.class.isInstance(annotation)) {
+      return ((FormParam) annotation).value();
+    }
+    if (HeaderParam.class.isInstance(annotation)) {
+      return ((HeaderParam) annotation).value();
+    }
+    if (PathParam.class.isInstance(annotation)) {
+      return ((PathParam) annotation).value();
+    }
+    if (PathVariable.class.isInstance(annotation)) {
+      return ((PathVariable) annotation).value();
+    }
+    if (QueryParam.class.isInstance(annotation)) {
+      return ((QueryParam) annotation).value();
+    }
+    if (RequestAttribute.class.isInstance(annotation)) {
+      return ((RequestAttribute) annotation).name();
+    }
+    if (RequestHeader.class.isInstance(annotation)) {
+      return ((RequestHeader) annotation).name();
+    }
+    if (RequestParam.class.isInstance(annotation)) {
+      return ((RequestParam) annotation).name();
+    }
+    if (RequestPart.class.isInstance(annotation)) {
+      return ((RequestPart) annotation).name();
+    }
+
+    return null;
   }
 
   protected void collectSwaggerArgumentsMapper(ArgumentsMapperConfig config,
@@ -180,7 +246,7 @@ public abstract class ArgumentsMapperFactory {
     config.addArgumentMapper(bodyFieldArg);
   }
 
-  protected abstract <T> T createArgumentsMapper(ArgumentsMapperConfig config);
+  public abstract T createArgumentsMapper(ArgumentsMapperConfig config);
 
   protected abstract ArgumentMapper createArgumentMapperWithConverter(int swaggerIdx, int providerIdx,
       Converter converter);

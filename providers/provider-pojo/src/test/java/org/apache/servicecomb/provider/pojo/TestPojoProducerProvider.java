@@ -70,8 +70,6 @@ public class TestPojoProducerProvider {
         result = null;
         meta.getImplementation();
         result = "pojo:org.apache.servicecomb.provider.pojo.Person";
-        service.getServiceName();
-        result = "test";
       }
     };
     PojoProducerProvider provider = new PojoProducerProvider();

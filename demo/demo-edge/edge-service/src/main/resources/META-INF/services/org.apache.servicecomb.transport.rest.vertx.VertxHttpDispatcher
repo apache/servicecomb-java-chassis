@@ -16,3 +16,4 @@
 #
 
 org.apache.servicecomb.demo.edge.service.EdgeDispatcher
+org.apache.servicecomb.demo.edge.service.encrypt.EncryptEdgeDispatcher

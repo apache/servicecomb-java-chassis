@@ -27,8 +27,6 @@ import org.apache.servicecomb.provider.pojo.instance.PojoInstanceFactory;
 import org.apache.servicecomb.provider.pojo.instance.SpringInstanceFactory;
 import org.apache.servicecomb.provider.pojo.schema.PojoProducerMeta;
 import org.apache.servicecomb.provider.pojo.schema.PojoProducers;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -56,10 +54,8 @@ public class PojoProducerProvider extends AbstractProducerProvider {
     for (PojoProducerMeta pojoProducerMeta : pojoProducers.getProducers()) {
       initPojoProducerMeta(pojoProducerMeta);
 
-      Microservice microservice = RegistryUtils.getMicroservice();
       try {
         producerSchemaFactory.getOrCreateProducerSchema(
-            microservice.getServiceName(),
             pojoProducerMeta.getSchemaId(),
             pojoProducerMeta.getInstanceClass(),
             pojoProducerMeta.getInstance());

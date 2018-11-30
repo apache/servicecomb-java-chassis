@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.serviceregistry.client.http;
 
+import org.apache.servicecomb.foundation.common.encrypt.Encryptions;
 import org.apache.servicecomb.foundation.vertx.VertxTLSBuilder;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.slf4j.Logger;
@@ -50,7 +51,7 @@ public final class HttpClientPool extends AbstractClientPool {
       proxy.setHost(ServiceRegistryConfig.INSTANCE.getProxyHost());
       proxy.setPort(ServiceRegistryConfig.INSTANCE.getProxyPort());
       proxy.setUsername(ServiceRegistryConfig.INSTANCE.getProxyUsername());
-      proxy.setPassword(ServiceRegistryConfig.INSTANCE.getProxyPasswd());
+      proxy.setPassword(Encryptions.decode(ServiceRegistryConfig.INSTANCE.getProxyPasswd(), PROXY_KEY));
       httpClientOptions.setProxyOptions(proxy);
     }
     if (ver == HttpVersion.HTTP_2) {

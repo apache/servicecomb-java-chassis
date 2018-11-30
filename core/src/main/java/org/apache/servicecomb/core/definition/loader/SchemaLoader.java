@@ -19,13 +19,11 @@ package org.apache.servicecomb.core.definition.loader;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.core.Handler;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.definition.SchemaUtils;
 import org.apache.servicecomb.core.handler.ConsumerHandlerManager;
@@ -47,13 +45,6 @@ import io.swagger.models.Swagger;
 @Component
 public class SchemaLoader {
   private static final Logger LOGGER = LoggerFactory.getLogger(SchemaLoader.class);
-
-  @Inject
-  protected MicroserviceMetaManager microserviceMetaManager;
-
-  public void setMicroserviceMetaManager(MicroserviceMetaManager microserviceMetaManager) {
-    this.microserviceMetaManager = microserviceMetaManager;
-  }
 
   /*
    * resource的路径格式，至少是以这个形式结尾：schemaId.yaml
@@ -77,13 +68,12 @@ public class SchemaLoader {
       throw new Error(String.format("Parse the swagger for %s:%s failed", microserviceName, schemaId));
     }
 
-    return registerSchema(microserviceName, schemaId, swagger);
+    return registerSchema(schemaId, swagger);
   }
 
-  public SchemaMeta registerSchema(String microserviceName, String schemaId,
+  public SchemaMeta registerSchema(String schemaId,
       Swagger swagger) {
-    MicroserviceMeta microserviceMeta = microserviceMetaManager.getOrCreateMicroserviceMeta(microserviceName);
-
+    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     return registerSchema(microserviceMeta, schemaId, swagger);
   }
 

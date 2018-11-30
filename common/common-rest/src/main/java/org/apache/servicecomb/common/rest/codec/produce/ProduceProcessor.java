@@ -54,10 +54,6 @@ public interface ProduceProcessor {
   }
 
   default Object decodeResponse(InputStream input, JavaType type) throws Exception {
-    if (input.available() == 0) {
-      return null;
-    }
-
     return doDecodeResponse(input, type);
   }
 

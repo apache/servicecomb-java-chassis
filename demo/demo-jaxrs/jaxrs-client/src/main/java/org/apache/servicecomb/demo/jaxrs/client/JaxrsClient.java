@@ -24,18 +24,23 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.http.HttpStatus;
-import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.demo.CodeFirstRestTemplate;
 import org.apache.servicecomb.demo.DemoConst;
+import org.apache.servicecomb.demo.RestObjectMapperWithStringMapper;
+import org.apache.servicecomb.demo.RestObjectMapperWithStringMapperNotWriteNull;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.compute.Person;
+import org.apache.servicecomb.demo.jaxrs.client.beanParam.BeanParamPojoClient;
+import org.apache.servicecomb.demo.jaxrs.client.beanParam.BeanParamRestTemplateClient;
+import org.apache.servicecomb.demo.jaxrs.client.pojoDefault.DefaultModelServiceClient;
+import org.apache.servicecomb.demo.jaxrs.client.validation.ValidationServiceClient;
 import org.apache.servicecomb.demo.validator.Student;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
-import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -59,6 +64,8 @@ public class JaxrsClient {
   public static void init() throws Exception {
     Log4jUtils.init();
     BeanUtils.init();
+    RestObjectMapperFactory.setDefaultRestObjectMapper(new RestObjectMapperWithStringMapper());
+    RestObjectMapperFactory.setConsumerWriterMapper(new RestObjectMapperWithStringMapperNotWriteNull());
   }
 
   public static void run() throws Exception {
@@ -68,6 +75,15 @@ public class JaxrsClient {
     testValidator(templateNew);
     testClientTimeOut(templateNew);
     testJaxRSDefaultValues(templateNew);
+    testSpringMvcDefaultValuesJavaPrimitive(templateNew);
+    MultiErrorCodeServiceClient.runTest();
+
+    BeanParamPojoClient beanParamPojoClient = new BeanParamPojoClient();
+    beanParamPojoClient.testAll();
+    BeanParamRestTemplateClient beanParamRestTemplateClient = new BeanParamRestTemplateClient();
+    beanParamRestTemplateClient.testAll();
+    DefaultModelServiceClient.run();
+    ValidationServiceClient.run();
   }
 
   private static void testCompute(RestTemplate template) throws Exception {
@@ -87,7 +103,7 @@ public class JaxrsClient {
     }
   }
 
-  private static void testValidator(RestTemplate template) throws Exception {
+  private static void testValidator(RestTemplate template) {
     String microserviceName = "jaxrs";
     for (String transport : DemoConst.transports) {
       CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
@@ -116,8 +132,8 @@ public class JaxrsClient {
       //default values
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
-      MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-      HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+      MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+      HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
       String result = template.postForObject(cseUrlPrefix + "/form", request, String.class);
       TestMgr.check("Hello 20bobo", result);
 
@@ -133,7 +149,7 @@ public class JaxrsClient {
         result = template.getForObject(cseUrlPrefix + "/query2", String.class);
       } catch (InvocationException e) {
         failed = true;
-        TestMgr.check(e.getStatusCode(), ExceptionFactory.PRODUCER_INNER_STATUS_CODE);
+        TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
       }
 
       failed = false;
@@ -169,10 +185,13 @@ public class JaxrsClient {
       result = template.getForObject(cseUrlPrefix + "/query3?a=30&b=2", String.class);
       TestMgr.check("Hello 302", result);
 
+      result = template.getForObject(cseUrlPrefix + "/query3?a=30", String.class);
+      TestMgr.check("Hello 30null", result);
+
       //input values
       headers = new HttpHeaders();
       headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
-      Map<String, String> params = new HashMap<String, String>();
+      Map<String, String> params = new HashMap<>();
       params.put("a", "30");
       params.put("b", "sam");
       HttpEntity<Map<String, String>> requestPara = new HttpEntity<>(params, headers);
@@ -193,7 +212,6 @@ public class JaxrsClient {
       result = template.getForObject(cseUrlPrefix + "/query2?a=3&b=4&c=5&d=30&e=2", String.class);
       TestMgr.check("Hello 345302", result);
     }
-
   }
 
 
@@ -264,11 +282,12 @@ public class JaxrsClient {
   private static void testRawJsonParam(RestTemplate template, String cseUrlPrefix) throws Exception {
     Map<String, String> person = new HashMap<>();
     person.put("name", "Tom");
-    String jsonPerson = RestObjectMapper.INSTANCE.writeValueAsString(person);
+    String jsonPerson = RestObjectMapperFactory.getRestObjectMapper().writeValueAsString(person);
     TestMgr.check("hello Tom",
         template.postForObject(cseUrlPrefix + "/compute/testrawjson", jsonPerson, String.class));
   }
 
+  @SuppressWarnings({"rawtypes"})
   private static void testValidatorAddFail(RestTemplate template, String cseUrlPrefix) {
     Map<String, String> params = new HashMap<>();
     params.put("a", "5");
@@ -283,10 +302,9 @@ public class JaxrsClient {
       // Message dependends on locale, so just check the short part.
       // 'must be greater than or equal to 20', propertyPath=add.arg1, rootBeanClass=class org.apache.servicecomb.demo.jaxrs.server.Validator, messageTemplate='{javax.validation.constraints.Min.message}'}]]
       // ignored
+      Map data = (Map) e.getErrorData();
       TestMgr.check(
-          "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=",
-          e.getErrorData().toString().substring(0,
-              "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=".length()));
+          true, data.get("message").toString().contains("propertyPath=add.b"));
     }
 
     TestMgr.check(true, isExcep);
@@ -300,6 +318,7 @@ public class JaxrsClient {
     TestMgr.check(25, result);
   }
 
+  @SuppressWarnings({"rawtypes"})
   private static void testValidatorSayHiFail(RestTemplate template, String cseUrlPrefix) {
     boolean isExcep = false;
     try {
@@ -309,10 +328,9 @@ public class JaxrsClient {
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
       // Message dependends on locale, so just check the short part.
+      Map data = (Map) e.getErrorData();
       TestMgr.check(
-          "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=",
-          e.getErrorData().toString().substring(0,
-              "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=".length()));
+          true, data.get("message").toString().contains("propertyPath=sayHi.name"));
     }
     TestMgr.check(true, isExcep);
   }
@@ -324,6 +342,7 @@ public class JaxrsClient {
     TestMgr.check("world sayhi", responseEntity.getBody());
   }
 
+  @SuppressWarnings({"rawtypes"})
   private static void testValidatorExchangeFail(RestTemplate template, String cseUrlPrefix) {
     HttpHeaders headers = new HttpHeaders();
     headers.add("Accept", MediaType.APPLICATION_JSON);
@@ -342,10 +361,9 @@ public class JaxrsClient {
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
       // Message dependends on locale, so just check the short part.
+      Map data = (Map) e.getErrorData();
       TestMgr.check(
-          "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=",
-          e.getErrorData().toString().substring(0,
-              "CommonExceptionData [message=[ConstraintViolationImpl{interpolatedMessage=".length()));
+          true, data.get("message").toString().contains("propertyPath=sayHello.student.age"));
     }
     TestMgr.check(true, isExcep);
   }
@@ -358,7 +376,7 @@ public class JaxrsClient {
     TestMgr.check("hello test 15", result);
   }
 
-  private static void testClientTimeOut(RestTemplate template) throws Exception {
+  private static void testClientTimeOut(RestTemplate template) {
     String microserviceName = "jaxrs";
     for (String transport : DemoConst.transports) {
       if (transport.equals(Const.ANY_TRANSPORT)) {
@@ -398,5 +416,31 @@ public class JaxrsClient {
     }
 
     TestMgr.check(true, isExcep);
+  }
+
+  private static void testSpringMvcDefaultValuesJavaPrimitive(RestTemplate template) {
+    String microserviceName = "jaxrs";
+    String cseUrlPrefix = "cse://" + microserviceName + "/JaxRSDefaultValues/";
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
+    MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+    //default values with primitive
+    String result = template.postForObject(cseUrlPrefix + "/javaprimitiveint", request, String.class);
+    TestMgr.check("Hello 0bobo", result);
+
+    result = template.postForObject(cseUrlPrefix + "/javaprimitivenumber", request, String.class);
+    TestMgr.check("Hello 0.0false", result);
+
+    result = template.postForObject(cseUrlPrefix + "/javaprimitivestr", request, String.class);
+    TestMgr.check("Hello", result);
+
+    result = template.postForObject(cseUrlPrefix + "/javaprimitivecomb", request, String.class);
+    TestMgr.check("Hello nullnull", result);
+
+    result = template.postForObject(cseUrlPrefix + "/allprimitivetypes", null, String.class);
+    TestMgr.check("Hello false,0,0,0,0,0,0.0,0.0,null", result);
   }
 }

@@ -72,7 +72,7 @@ public final class JvmUtils {
       return mainClassOrJar;
     }
 
-    String manifestUri = "jar:file:/" + new File(mainClassOrJar).getAbsolutePath() + "!/" + JarFile.MANIFEST_NAME;
+    String manifestUri = "jar:file:" + new File(mainClassOrJar).getAbsolutePath() + "!/" + JarFile.MANIFEST_NAME;
 
     try {
       URL url = new URL(manifestUri);

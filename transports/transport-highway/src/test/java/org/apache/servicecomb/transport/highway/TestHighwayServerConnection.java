@@ -24,8 +24,8 @@ import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Endpoint;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
@@ -54,9 +54,6 @@ public class TestHighwayServerConnection {
       ProtobufManager.getDefaultScopedProtobufSchemaManager().getOrCreateSchema(LoginRequest.class);
 
   HighwayServerConnection connection;
-
-  @Mocked
-  MicroserviceMetaManager microserviceMetaManager;
 
   @Mocked
   Endpoint endpoint;
@@ -146,15 +143,14 @@ public class TestHighwayServerConnection {
     Buffer headerBuffer = createBuffer(requestHeaderSchema, header);
 
     Buffer bodyBuffer = Buffer.buffer();
-
+    new Expectations(SCBEngine.class) {
+      {
+        SCBEngine.getInstance().getProducerMicroserviceMeta();
+        result = microserviceMeta;
+      }
+    };
     new Expectations(CseContext.getInstance()) {
       {
-        CseContext.getInstance().getMicroserviceMetaManager();
-        result = microserviceMetaManager;
-
-        microserviceMetaManager.ensureFindValue(null);
-        result = microserviceMeta;
-
         microserviceMeta.ensureFindSchemaMeta(header.getSchemaId());
         result = schemaMeta;
       }

@@ -66,7 +66,7 @@ public class TestVertxTLSBuilder {
     static {
       sslOption.setEngine("openssl");
       sslOption.setProtocols("");
-      sslOption.setCiphers(SSLOption.DEFAUL_CIPHERS);
+      sslOption.setCiphers(SSLOption.DEFAULT_CIPHERS);
       sslOption.setCheckCNHost(true);
     }
 

@@ -199,7 +199,7 @@ public final class NetUtils {
   public static String getHostName() {
     //If failed to get host name ,micro-service will registry failed
     //So I add retry mechanism
-    if(hostName == null) {
+    if (hostName == null) {
       doGetHostNameAndHostAddress();
     }
     return hostName;
@@ -208,7 +208,7 @@ public final class NetUtils {
   public static String getHostAddress() {
     //If failed to get host address ,micro-service will registry failed
     //So I add retry mechanism
-    if(hostAddress == null) {
+    if (hostAddress == null) {
       doGetHostNameAndHostAddress();
     }
     return hostAddress;
@@ -226,11 +226,22 @@ public final class NetUtils {
     return address;
   }
 
+  @SuppressWarnings({"unused", "try"})
   public static boolean canTcpListen(InetAddress address, int port) {
     try (ServerSocket ss = new ServerSocket(port, 0, address)) {
       return true;
     } catch (IOException e) {
       return false;
     }
+  }
+
+  public static String humanReadableBytes(long bytes) {
+    int unit = 1024;
+    if (bytes < unit) {
+      return bytes + " B";
+    }
+    int exp = (int) (Math.log(bytes) / Math.log(unit));
+    char pre = "KMGTPE".charAt(exp - 1);
+    return String.format("%.3f %cB", bytes / Math.pow(unit, exp), pre);
   }
 }

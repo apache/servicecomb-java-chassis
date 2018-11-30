@@ -18,18 +18,23 @@
 package org.apache.servicecomb.faultinjection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.xml.ws.Holder;
+
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,9 +65,6 @@ public class TestFaultInjectHandler {
   boolean isAbort;
 
   @InjectMocks
-  FaultInjectionHandler faultHandler;
-
-  @InjectMocks
   AbortFault abortFault;
 
   @InjectMocks
@@ -75,39 +77,35 @@ public class TestFaultInjectHandler {
     }
   };
 
-
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
+    ArchaiusUtils.resetConfig();
     handler = new FaultInjectionHandler();
-
     invocation = Mockito.mock(Invocation.class);
-
     asyncResp = Mockito.mock(AsyncResponse.class);
-
     operationMeta = Mockito.mock(OperationMeta.class);
-
     transport = Mockito.mock(Transport.class);
     MockitoAnnotations.initMocks(this);
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     handler = null;
-
     invocation = null;
-
     asyncResp = null;
-
     operationMeta = null;
-
     transport = null;
+    ArchaiusUtils.resetConfig();
+  }
+
+  @AfterClass
+  public static void classTeardown() {
+    VertxUtils.closeVertxByName("faultinjectionTest");
   }
 
   /**
    * Tests the fault injection handler functionality with default values for
    * highway transport.
-   *
-   * @throws Exception
    */
   @Test
   public void testFaultInjectHandlerHighwayWithDefaultCfg() throws Exception {
@@ -131,8 +129,6 @@ public class TestFaultInjectHandler {
   /**
    * Tests the fault injection handler functionality with default values for rest
    * transport.
-   *
-   * @throws Exception
    */
   @Test
   public void testFaultInjectHandlerRestWithDefaultCfg() throws Exception {
@@ -156,8 +152,6 @@ public class TestFaultInjectHandler {
   /**
    * Tests the fault injection handler functionality with global configuration
    * with delay/abort condition.
-   *
-   * @throws Exception
    */
   @Test
   public void testFaultInjectHandlerConfigChangeGlobal() throws Exception {
@@ -185,10 +179,12 @@ public class TestFaultInjectHandler {
     Assert.assertFalse(isDelay);
     Assert.assertFalse(isAbort);
 
-    System.getProperties().remove("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay");
+    System.getProperties()
+        .remove("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay");
     System.getProperties().remove("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent");
     System.getProperties().remove("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent");
-    System.getProperties().remove("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus");
+    System.getProperties()
+        .remove("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName3");
     assertEquals(2, count.get());
@@ -197,8 +193,6 @@ public class TestFaultInjectHandler {
   /**
    * Tests the fault injection handler functionality with service level configuration
    * with delay/abort condition.
-   *
-   * @throws Exception
    */
   @Test
   public void testFaultInjectHandlerServiceCfgSuccess() throws Exception {
@@ -238,19 +232,21 @@ public class TestFaultInjectHandler {
   /**
    * Tests the fault injection handler functionality with schema level configuration
    * with delay/abort condition.
-   *
-   * @throws Exception
    */
   @Test
   public void testFaultInjectHandlerSchemaCfgSuccess() throws Exception {
 
-    System.setProperty("servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.delay.fixedDelay",
+    System.setProperty(
+        "servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.delay.fixedDelay",
         "1");
-    System.setProperty("servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.delay.percent",
+    System.setProperty(
+        "servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.delay.percent",
         "10");
-    System.setProperty("servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.abort.percent",
+    System.setProperty(
+        "servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.abort.percent",
         "10");
-    System.setProperty("servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.abort.httpStatus",
+    System.setProperty(
+        "servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.abort.httpStatus",
         "421");
 
     Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName5");
@@ -272,13 +268,15 @@ public class TestFaultInjectHandler {
     Assert.assertFalse(isAbort);
 
     System.getProperties()
-        .remove("servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.delay.fixedDelay");
+        .remove(
+            "servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.delay.fixedDelay");
     System.getProperties()
         .remove("servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.delay.percent");
     System.getProperties()
         .remove("servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.abort.percent");
     System.getProperties()
-        .remove("servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.abort.httpStatus");
+        .remove(
+            "servicecomb.governance.Consumer.carts.schemas.testSchema.policy.fault.protocols.rest.abort.httpStatus");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName5");
     assertEquals(2, count.get());
@@ -287,8 +285,6 @@ public class TestFaultInjectHandler {
   /**
    * Tests the fault injection handler functionality with operation level configuration
    * with delay/abort condition.
-   *
-   * @throws Exception
    */
   @Test
   public void testFaultInjectHandlerOperationCfgSuccess() throws Exception {
@@ -344,8 +340,6 @@ public class TestFaultInjectHandler {
 
   /**
    * Tests the fault injection handler functionality with configuration change event for global level config.
-   *
-   * @throws Exception
    */
   @Test
   public void testFaultInjectHandlerConfigChangeEvent1() throws Exception {
@@ -386,9 +380,12 @@ public class TestFaultInjectHandler {
     TestFaultInjectUtil
         .updateProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus", 421);
 
+    Holder<Boolean> isAsserted = new Holder<>(false);
     handler.handle(invocation, ar -> {
-      assertEquals(true, response.isFailed());
+      isAsserted.value = true;
+      assertTrue(response.isFailed());
     });
+    Assert.assertTrue(isAsserted.value);
 
     System.getProperties()
         .remove(
@@ -409,8 +406,6 @@ public class TestFaultInjectHandler {
 
   /**
    * Tests the fault injection handler functionality with configuration change event for operation level config.
-   *
-   * @throws Exception
    */
   @Test
   public void testFaultInjectHandlerConfigChangeEvent2() throws Exception {
@@ -452,14 +447,17 @@ public class TestFaultInjectHandler {
             "servicecomb.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.delay.fixedDelay",
             500);
 
+    Holder<Boolean> isAsserted = new Holder<>(false);
     handler.handle(invocation, ar -> {
       //check whether error code return
+      isAsserted.value = true;
       assertEquals(420, response.getStatusCode());
-      assertEquals(true, response.isFailed());
+      assertTrue(response.isFailed());
       long timeNow = System.currentTimeMillis();
       //if really time delay is added it should be greater than 5s.
       Assert.assertTrue((timeNow - timeOld) >= 500);
     });
+    Assert.assertTrue(isAsserted.value);
 
     System.getProperties()
         .remove(
@@ -480,8 +478,6 @@ public class TestFaultInjectHandler {
 
   /**
    * Tests the fault injection handler functionality with configuration change event for schema level config.
-   *
-   * @throws Exception
    */
   @Test
   public void testFaultInjectHandlerConfigChangeEvent3() throws Exception {
@@ -523,23 +519,28 @@ public class TestFaultInjectHandler {
             "servicecomb.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.delay.fixedDelay",
             500);
 
+    Holder<Boolean> isAsserted = new Holder<>(false);
     handler.handle(invocation, ar -> {
       //check whether error code return, defaut is 421.
+      isAsserted.value = true;
       assertEquals(421, response.getStatusCode());
-      assertEquals(true, response.isFailed());
+      assertTrue(response.isFailed());
       long timeNow = System.currentTimeMillis();
       //if really time delay is added it should be greater than 5s.
       Assert.assertTrue((timeNow - timeOld) >= 500);
     });
+    Assert.assertTrue(isAsserted.value);
 
     System.getProperties()
-        .remove("servicecomb.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.delay.fixedDelay");
+        .remove(
+            "servicecomb.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.delay.fixedDelay");
     System.getProperties()
         .remove("servicecomb.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.delay.percent");
     System.getProperties()
         .remove("servicecomb.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.abort.percent");
     System.getProperties()
-        .remove("servicecomb.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.abort.httpStatus");
+        .remove(
+            "servicecomb.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.abort.httpStatus");
 
     AtomicLong count = FaultInjectionUtil.getOperMetTotalReq("restMicroserviceQualifiedName9");
     assertEquals(3, count.get());
@@ -547,8 +548,6 @@ public class TestFaultInjectHandler {
 
   /**
    * Tests the fault injection handler functionality with configuration change event for service level config.
-   *
-   * @throws Exception
    */
   @Test
   public void testFaultInjectHandlerConfigChangeEvent4() throws Exception {
@@ -586,14 +585,17 @@ public class TestFaultInjectHandler {
     TestFaultInjectUtil
         .updateProperty("servicecomb.governance.Consumer.carts4.policy.fault.protocols.rest.delay.fixedDelay", 500);
 
+    Holder<Boolean> isAsserted = new Holder<>(false);
     handler.handle(invocation, ar -> {
       //check whether error code return,
+      isAsserted.value = true;
       assertEquals(421, response.getStatusCode());
-      assertEquals(true, response.isFailed());
+      assertTrue(response.isFailed());
       long timeNow = System.currentTimeMillis();
       //if really time delay is added it should be greater than 5s.
       Assert.assertTrue((timeNow - timeOld) >= 500);
     });
+    Assert.assertTrue(isAsserted.value);
 
     System.getProperties()
         .remove("servicecomb.governance.Consumer.carts4.policy.fault.protocols.rest.delay.fixedDelay");
@@ -610,8 +612,6 @@ public class TestFaultInjectHandler {
 
   /**
    * Tests the fault injection handler functionality with configuration change event for service level config.
-   *
-   * @throws Exception
    */
   @Test
   public void testFaultInjectHandlerConfigChangeEvent5() throws Exception {
@@ -619,8 +619,14 @@ public class TestFaultInjectHandler {
         "servicecomb.governance.Consumer.carts5.policy.fault.protocols.rest.delay.percent",
         "100");
     System.setProperty(
+        "servicecomb.governance.Consumer.carts5.policy.fault.protocols.rest.delay.fixedDelay",
+        "10");
+    System.setProperty(
         "servicecomb.governance.Consumer.carts5.policy.fault.protocols.rest.abort.percent",
         "100");
+    System.setProperty(
+        "servicecomb.governance.Consumer.carts5.policy.fault.protocols.rest.abort.httpStatus",
+        "500");
 
     Mockito.when(invocation.getMicroserviceQualifiedName()).thenReturn("MicroserviceQualifiedName11");
     Mockito.when(invocation.getTransport()).thenReturn(transport);
@@ -641,11 +647,16 @@ public class TestFaultInjectHandler {
     }
     Assert.assertTrue(validAssert);
     TestFaultInjectUtil
-        .updateProperty("servicecomb.governance.Consumer.carts5.policy.fault.protocols.rest.abort.percent", 500);
+        .updateProperty("servicecomb.governance.Consumer.carts5.policy.fault.protocols.rest.abort.httpStatus", "420");
 
+    Holder<Boolean> isAsserted = new Holder<>(false);
     handler.handle(invocation, ar -> {
-      assertEquals(true, response.isFailed());
+      isAsserted.value = true;
+      assertTrue(response.isFailed());
+      assertEquals(500, response.getStatusCode());
+      assertEquals(420, ar.getStatusCode());
     });
+    Assert.assertTrue(isAsserted.value);
 
     System.getProperties()
         .remove("servicecomb.governance.Consumer.carts5.policy.fault.protocols.rest.delay.fixedDelay");
@@ -662,11 +673,9 @@ public class TestFaultInjectHandler {
 
   /**
    * Tests the fault injection handler functionality with configuration change event for service level config.
-   *
-   * @throws Exception
    */
   @Test
-  public void testFaultInjectHandlerConfigChangeEvent6() throws Exception {
+  public void testFaultInjectHandlerConfigChangeEvent6() {
     System.setProperty("servicecomb.governance.Consumer.carts6.policy.fault.protocols.rest.delay.fixedDelay", "1000");
 
     System.setProperty(

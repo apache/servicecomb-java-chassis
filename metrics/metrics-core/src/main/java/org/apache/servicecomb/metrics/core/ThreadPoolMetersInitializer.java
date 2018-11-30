@@ -22,18 +22,16 @@ import java.util.Map.Entry;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.FixedThreadExecutor;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
+import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 
 import com.google.common.eventbus.EventBus;
-import com.netflix.spectator.api.CompositeRegistry;
 import com.netflix.spectator.api.Registry;
 import com.netflix.spectator.api.patterns.ThreadPoolMonitor;
 
@@ -41,10 +39,8 @@ public class ThreadPoolMetersInitializer implements MetricsInitializer {
   private Registry registry;
 
   @Override
-  public void init(CompositeRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
-    DefaultRegistryInitializer defaultRegistryInitializer =
-        SPIServiceUtils.getTargetService(MetricsInitializer.class, DefaultRegistryInitializer.class);
-    registry = defaultRegistryInitializer.getRegistry();
+  public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+    registry = globalRegistry.getDefaultRegistry();
 
     createThreadPoolMeters();
   }
@@ -71,14 +67,11 @@ public class ThreadPoolMetersInitializer implements MetricsInitializer {
 
   protected Map<Executor, Executor> collectionOperationExecutors() {
     Map<Executor, Executor> operationExecutors = new IdentityHashMap<>();
-
-    MicroserviceMetaManager microserviceMetaManager = CseContext.getInstance().getMicroserviceMetaManager();
-    for (MicroserviceMeta microserviceMeta : microserviceMetaManager.values()) {
-      for (OperationMeta operationMeta : microserviceMeta.getOperations()) {
-        operationExecutors.put(operationMeta.getExecutor(), operationMeta.getExecutor());
-      }
+    //only one instance in the values
+    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
+    for (OperationMeta operationMeta : microserviceMeta.getOperations()) {
+      operationExecutors.put(operationMeta.getExecutor(), operationMeta.getExecutor());
     }
-
     return operationExecutors;
   }
 

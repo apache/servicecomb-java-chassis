@@ -38,7 +38,7 @@ public class HighwayClientPackage extends AbstractTcpClientPackage {
   @Override
   public TcpOutputStream createStream() {
     try {
-      return HighwayCodec.encodeRequest(msgId, invocation, operationProtobuf, tcpClient.getProtobufFeature());
+      return HighwayCodec.encodeRequest(msgId, invocation, operationProtobuf);
     } catch (Exception e) {
       String msg = String.format("encode request failed. appid=%s, qualifiedName=%s",
           invocation.getAppId(),

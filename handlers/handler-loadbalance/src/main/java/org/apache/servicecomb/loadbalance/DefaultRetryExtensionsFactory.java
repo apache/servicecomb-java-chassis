@@ -16,14 +16,25 @@
  */
 package org.apache.servicecomb.loadbalance;
 
+import java.io.IOException;
+import java.net.ConnectException;
+import java.net.NoRouteToHostException;
+import java.net.SocketTimeoutException;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.stereotype.Component;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.netflix.client.DefaultLoadBalancerRetryHandler;
 import com.netflix.client.RetryHandler;
-import com.netflix.client.Utils;
+
+import io.vertx.core.VertxException;
 
 @Component
 public class DefaultRetryExtensionsFactory implements ExtensionsFactory {
@@ -35,20 +46,64 @@ public class DefaultRetryExtensionsFactory implements ExtensionsFactory {
   private static final Collection<String> ACCEPT_VALUES = Lists.newArrayList(
       RETRY_DEFAULT);
 
+  private static final Map<Class<? extends Throwable>, List<String>> strictRetriable =
+      ImmutableMap.<Class<? extends Throwable>, List<String>>builder()
+          .put(ConnectException.class, Arrays.asList())
+          .put(SocketTimeoutException.class, Arrays.asList())
+          /*
+           * deal with some special exceptions caused by the server side close the connection
+           */
+          .put(IOException.class, Arrays.asList(new String[] {"Connection reset by peer"}))
+          .put(VertxException.class, Arrays.asList(new String[] {"Connection was closed"}))
+          .put(NoRouteToHostException.class, Arrays.asList(new String[]{"Host is unreachable"}))
+          .build();
+
   @Override
   public boolean isSupport(String key, String value) {
     return ACCEPT_KEYS.contains(key) && ACCEPT_VALUES.contains(value);
   }
 
   public RetryHandler createRetryHandler(String retryName, String microservice) {
-    RetryHandler handler = new DefaultLoadBalancerRetryHandler(
+    return new DefaultLoadBalancerRetryHandler(
         Configuration.INSTANCE.getRetryOnSame(microservice),
         Configuration.INSTANCE.getRetryOnNext(microservice), true) {
+
       @Override
       public boolean isRetriableException(Throwable e, boolean sameServer) {
-        return Utils.isPresentAsCause(e, getRetriableExceptions());
+        boolean retriable = isPresentAsCause(e);
+        if (!retriable) {
+          if (e instanceof InvocationException) {
+            if (((InvocationException) e).getStatusCode() == 503) {
+              return true;
+            }
+          }
+        }
+        return retriable;
+      }
+
+      public boolean isPresentAsCause(Throwable throwableToSearchIn) {
+        int infiniteLoopPreventionCounter = 10;
+        while (throwableToSearchIn != null && infiniteLoopPreventionCounter > 0) {
+          infiniteLoopPreventionCounter--;
+          for (Entry<Class<? extends Throwable>, List<String>> c : strictRetriable.entrySet()) {
+            Class<? extends Throwable> key = c.getKey();
+            if (key.isAssignableFrom(throwableToSearchIn.getClass())) {
+              if (c.getValue() == null || c.getValue().isEmpty()) {
+                return true;
+              } else {
+                String msg = throwableToSearchIn.getMessage();
+                for (String val : c.getValue()) {
+                  if (val.equals(msg)) {
+                    return true;
+                  }
+                }
+              }
+            }
+          }
+          throwableToSearchIn = throwableToSearchIn.getCause();
+        }
+        return false;
       }
     };
-    return handler;
   }
 }

@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.MicroserviceKey;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
@@ -33,6 +34,7 @@ import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceS
 import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
+import org.apache.servicecomb.serviceregistry.task.event.MicroserviceNotExistEvent;
 import org.apache.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
 import org.apache.servicecomb.serviceregistry.version.Version;
 import org.junit.After;
@@ -51,6 +53,9 @@ import mockit.Mocked;
 
 public class TestMicroserviceVersions {
   EventBus eventBus = new EventBus();
+
+  @Mocked
+  ServiceRegistry serviceRegistry;
 
   AppManager appManager = new AppManager(eventBus);
 
@@ -72,6 +77,7 @@ public class TestMicroserviceVersions {
 
   @Before
   public void setUp() throws Exception {
+    ArchaiusUtils.resetConfig();
     microserviceInstances = new MicroserviceInstances();
     findInstancesResponse = new FindInstancesResponse();
   }
@@ -126,6 +132,18 @@ public class TestMicroserviceVersions {
       @Mock
       Microservice getMicroservice(String microserviceId) {
         return microservices.get(microserviceId);
+      }
+
+      @Mock
+      ServiceRegistry getServiceRegistry() {
+        return serviceRegistry;
+      }
+    };
+
+    new Expectations() {
+      {
+        serviceRegistry.getAggregatedRemoteMicroservice(microserviceId);
+        result = microservices.get(microserviceId);
       }
     };
   }
@@ -194,6 +212,37 @@ public class TestMicroserviceVersions {
   }
 
   @Test
+  public void pullInstances_notExists() {
+    MicroserviceInstances microserviceInstances = new MicroserviceInstances();
+    microserviceInstances.setMicroserviceNotExist(true);
+
+    new MockUp<RegistryUtils>() {
+      @Mock
+      MicroserviceInstances findServiceInstances(String appId, String serviceName,
+          String versionRule, String revision) {
+        return microserviceInstances;
+      }
+    };
+
+    MicroserviceNotExistEvent microserviceNotExistEvent = new MicroserviceNotExistEvent(null, null);
+    eventBus.register(new Object() {
+      @Subscribe
+      public void onMicroserviceNotExistEvent(MicroserviceNotExistEvent event) {
+        microserviceNotExistEvent.setAppId(event.getAppId());
+        microserviceNotExistEvent.setMicroserviceName(event.getMicroserviceName());
+      }
+    });
+
+    pendingPullCount.set(1);
+
+    // not throw exception
+    microserviceVersions.pullInstances();
+
+    Assert.assertEquals(appId, microserviceNotExistEvent.getAppId());
+    Assert.assertEquals(microserviceName, microserviceNotExistEvent.getMicroserviceName());
+  }
+
+  @Test
   public void setInstancesMatch() {
     String microserviceId = "1";
     setup(microserviceId);
@@ -208,7 +257,10 @@ public class TestMicroserviceVersions {
   @Test
   public void setInstances_selectUp() {
     String microserviceId = "1";
-    setup(microserviceId);
+
+    createMicroservice(microserviceId);
+    createInstance(microserviceId);
+    createMicroserviceInstances();
 
     instances.get(0).setStatus(MicroserviceInstanceStatus.DOWN);
     Deencapsulation.invoke(microserviceVersions, "setInstances", instances, "0");

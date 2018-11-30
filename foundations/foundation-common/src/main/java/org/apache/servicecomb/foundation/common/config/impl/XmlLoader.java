@@ -67,7 +67,7 @@ public class XmlLoader extends AbstractLoader {
           }
 
           Element clone = (Element) doc.importNode(child, true);
-          Element exist = findAndSetExist((Element) clone);
+          Element exist = findAndSetExist(clone);
           if (exist == null) {
             root.appendChild(clone);
             continue;

@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.transport.highway;
 
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.foundation.vertx.client.tcp.AbstractTcpClientPackage;
 import org.apache.servicecomb.foundation.vertx.client.tcp.NetClientWrapper;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpClientConnection;
@@ -26,22 +27,15 @@ import org.apache.servicecomb.transport.highway.message.RequestHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.protostuff.runtime.ProtobufFeature;
 import io.vertx.core.Context;
 import io.vertx.core.buffer.Buffer;
 
 public class HighwayClientConnection extends TcpClientConnection {
   private static final Logger LOGGER = LoggerFactory.getLogger(HighwayClientConnection.class);
 
-  private ProtobufFeature protobufFeature = new ProtobufFeature();
-
   public HighwayClientConnection(Context context, NetClientWrapper netClientWrapper, String endpoint) {
     super(context, netClientWrapper, endpoint);
     setLocalSupportLogin(true);
-  }
-
-  public ProtobufFeature getProtobufFeature() {
-    return protobufFeature;
   }
 
   @Override
@@ -51,10 +45,9 @@ public class HighwayClientConnection extends TcpClientConnection {
       header.setMsgType(MsgType.LOGIN);
 
       LoginRequest login = new LoginRequest();
-      login.setProtocol(HighwayTransport.NAME);
-      login.setUseProtobufMapCodec(true);
+      login.setProtocol(Const.HIGHWAY);
 
-      HighwayOutputStream os = new HighwayOutputStream(AbstractTcpClientPackage.getAndIncRequestId(), null);
+      HighwayOutputStream os = new HighwayOutputStream(AbstractTcpClientPackage.getAndIncRequestId());
       os.write(header, LoginRequest.getLoginRequestSchema(), login);
       return os;
     } catch (Throwable e) {
@@ -66,7 +59,6 @@ public class HighwayClientConnection extends TcpClientConnection {
   protected boolean onLoginResponse(Buffer bodyBuffer) {
     try {
       LoginResponse response = LoginResponse.readObject(bodyBuffer);
-      protobufFeature.setUseProtobufMapCodec(response.isUseProtobufMapCodec());
       return true;
     } catch (Throwable e) {
       LOGGER.error("decode login response failed.", e);

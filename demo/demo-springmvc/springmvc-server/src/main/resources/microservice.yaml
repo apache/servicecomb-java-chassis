@@ -14,21 +14,20 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
-servicecomb:
-  microserviceVersionFactory: org.apache.servicecomb.core.definition.PrivateMicroserviceVersionMetaFactory
 
 APPLICATION_ID: springmvctest
 service_description:
   name: springmvc
   version: 0.0.3
   paths:
-    - path: /test1/testpath
-      property:
-        checksession: false
-    - path: /test2/testpath
-      property:
-        checksession: true
+  - path: /test1/testpath
+    property:
+      checksession: false
+  - path: /test2/testpath
+    property:
+      checksession: true
 servicecomb:
+  microserviceVersionFactory: org.apache.servicecomb.core.definition.PrivateMicroserviceVersionMetaFactory
   service:
     registry:
       registerPath: true
@@ -44,7 +43,7 @@ servicecomb:
           interval: 10
         watch: false
       autodiscovery: true
-# can download config center from https://cse-bucket.obs.myhwclouds.com/LocalCSE/Local-CSE-1.0.0.zip to test dynamic config
+  # can download config center from https://cse-bucket.obs.myhwclouds.com/LocalCSE/Local-CSE-1.0.0.zip to test dynamic config
   config:
     client:
       serverUri: http://127.0.0.1:30113
@@ -54,11 +53,11 @@ servicecomb:
   uploads:
     directory: target
   rest:
-    address: 0.0.0.0:8080?sslEnabled=true
+    address: 0.0.0.0:8082?sslEnabled=true
     server:
       compression: true
   highway:
-    address: 0.0.0.0:7070?sslEnabled=true
+    address: 0.0.0.0:7072?sslEnabled=true
   handler:
     chain:
       Provider:

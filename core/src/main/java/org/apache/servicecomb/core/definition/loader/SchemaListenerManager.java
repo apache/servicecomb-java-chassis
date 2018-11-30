@@ -21,10 +21,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.inject.Inject;
-
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,18 +32,12 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class SchemaListenerManager {
+
   @Autowired(required = false)
   private List<SchemaListener> schemaListenerList = new ArrayList<>();
 
-  @Inject
-  private MicroserviceMetaManager microserviceMetaManager;
-
   public void setSchemaListenerList(List<SchemaListener> schemaListenerList) {
     this.schemaListenerList = schemaListenerList;
-  }
-
-  public void setMicroserviceMetaManager(MicroserviceMetaManager microserviceMetaManager) {
-    this.microserviceMetaManager = microserviceMetaManager;
   }
 
   public void notifySchemaListener(MicroserviceMeta... microserviceMetas) {
@@ -53,13 +45,13 @@ public class SchemaListenerManager {
     for (MicroserviceMeta microserviceMeta : microserviceMetas) {
       schemaMetaList.addAll(microserviceMeta.getSchemaMetas());
     }
-
     notifySchemaListener(schemaMetaList.toArray(new SchemaMeta[schemaMetaList.size()]));
   }
 
   public void notifySchemaListener() {
-    Collection<MicroserviceMeta> microserviceMetas = microserviceMetaManager.values();
-    notifySchemaListener(microserviceMetas.toArray(new MicroserviceMeta[microserviceMetas.size()]));
+    //only one instance
+    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
+    notifySchemaListener(microserviceMeta);
   }
 
   public void notifySchemaListener(SchemaMeta... schemaMetas) {
@@ -73,13 +65,13 @@ public class SchemaListenerManager {
     notifySchemaListener(schemaMetas);
   }
 
-  public SchemaMeta ensureFindSchemaMeta(String microserviceName, String schemaId) {
-    MicroserviceMeta microserviceMeta = microserviceMetaManager.ensureFindValue(microserviceName);
+  public SchemaMeta ensureFindSchemaMeta(String schemaId) {
+    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     return microserviceMeta.ensureFindSchemaMeta(schemaId);
   }
 
-  public Collection<SchemaMeta> getAllSchemaMeta(String microserviceName) {
-    MicroserviceMeta microserviceMeta = microserviceMetaManager.ensureFindValue(microserviceName);
+  public Collection<SchemaMeta> getAllSchemaMeta() {
+    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     return microserviceMeta.getSchemaMetas();
   }
 }

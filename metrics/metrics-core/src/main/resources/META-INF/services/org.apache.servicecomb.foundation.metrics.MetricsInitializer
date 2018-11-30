@@ -19,4 +19,6 @@ org.apache.servicecomb.metrics.core.DefaultRegistryInitializer
 org.apache.servicecomb.metrics.core.InvocationMetersInitializer
 org.apache.servicecomb.metrics.core.ThreadPoolMetersInitializer
 org.apache.servicecomb.metrics.core.publish.DefaultLogPublisher
+org.apache.servicecomb.metrics.core.VertxMetersInitializer
+org.apache.servicecomb.metrics.core.OsMetersInitializer
 org.apache.servicecomb.metrics.core.publish.MetricsRestPublisher

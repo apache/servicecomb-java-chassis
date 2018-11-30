@@ -19,7 +19,6 @@ package org.apache.servicecomb.foundation.common.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -35,7 +34,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 public final class Log4jUtils {
+
   private static final String MERGED_FILE = "merged.log4j.properties";
+
+  public static final String OUTPUT_CONFIG_ENABLED = "log4j.logger.outputConfig.enabled";
+
+  public static final String OUTPUT_CONFIG_ENABLED_TRUE = "true";
 
   // spring boot的包装中会重复调用init，需要规避一下
   private static boolean inited = false;
@@ -72,13 +76,17 @@ public final class Log4jUtils {
       PropertyConfigurator.configure(properties);
       inited = true;
 
-      // 如果最高优先级的文件是在磁盘上，且有写权限，则将merge的结果输出到该目录，方便维护时观察生效的参数
-      outputFile(loader.getFoundResList(), properties);
+      if (OUTPUT_CONFIG_ENABLED_TRUE.equals(
+          properties.getProperty(OUTPUT_CONFIG_ENABLED, OUTPUT_CONFIG_ENABLED_TRUE))) {
+        // If the property file with the highest priority is on a hard disk(not in a jar package)
+        // and we have write access, output the merged property file for the purpose of debugging
+        outputFile(loader.getFoundResList(), properties);
+      }
     }
   }
 
   private static void outputFile(List<Resource> resList,
-      Properties properties) throws IOException, URISyntaxException {
+      Properties properties) throws IOException {
     //不可以作为class的变量初始化，因为在outputFile前一句log机制才初始化完成的
     //must create org.slf4j.impl.Log4jLoggerAdapter by LoggerExtFactory
     //in order to redefine Log4jLoggerAdapter before other class load Log4jLoggerAdapter

@@ -17,15 +17,13 @@
 
 package org.apache.servicecomb.loadbalance;
 
+import java.util.List;
+
+import org.apache.servicecomb.core.Invocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.netflix.loadbalancer.AbstractLoadBalancer;
-import com.netflix.loadbalancer.ILoadBalancer;
-import com.netflix.loadbalancer.IRule;
 import com.netflix.loadbalancer.LoadBalancerStats;
-import com.netflix.loadbalancer.RoundRobinRule;
-import com.netflix.loadbalancer.Server;
 import com.netflix.loadbalancer.ServerStats;
 
 /**
@@ -33,17 +31,17 @@ import com.netflix.loadbalancer.ServerStats;
  * 提供当会话过期或者失败次数超过限制后，轮询选择其他服务器的能力。
  *
  */
-public class SessionStickinessRule implements IRule {
+public class SessionStickinessRule implements RuleExt {
   private static final Logger LOG = LoggerFactory.getLogger(SessionStickinessRule.class);
 
   private final Object lock = new Object();
 
-  private ILoadBalancer lb;
+  private LoadBalancer loadBalancer;
 
   // use random rule as the trigger rule, to prevent consumer instance select the same producer instance.
-  private IRule triggerRule;
+  private RuleExt triggerRule;
 
-  private volatile Server lastServer = null;
+  private volatile ServiceCombServer lastServer = null;
 
   private long lastAccessedTime = 0;
 
@@ -54,39 +52,42 @@ public class SessionStickinessRule implements IRule {
   private String microserviceName;
 
   public SessionStickinessRule() {
-    triggerRule = new RoundRobinRule();
+    triggerRule = new RoundRobinRuleExt();
   }
 
-  private Server chooseNextServer(Object key) {
-    AbstractLoadBalancer lb = (AbstractLoadBalancer) getLoadBalancer();
-    triggerRule.setLoadBalancer(lb);
-    lastServer = triggerRule.choose(key);
+  public void setLoadBalancer(LoadBalancer loadBalancer) {
+    this.microserviceName = loadBalancer.getMicroServiceName();
+    this.loadBalancer = loadBalancer;
+  }
+
+  private ServiceCombServer chooseNextServer(List<ServiceCombServer> servers, Invocation invocation) {
+    lastServer = triggerRule.choose(servers, invocation);
     lastAccessedTime = System.currentTimeMillis();
     return lastServer;
   }
 
-  private Server chooseInitialServer(Object key) {
+  private ServiceCombServer chooseInitialServer(List<ServiceCombServer> servers, Invocation invocation) {
     synchronized (lock) {
       if (lastServer == null) {
-        chooseNextServer(key);
+        chooseNextServer(servers, invocation);
       }
     }
     return lastServer;
   }
 
-  private Server chooseServerWhenTimeout(Object key) {
+  private ServiceCombServer chooseServerWhenTimeout(List<ServiceCombServer> servers, Invocation invocation) {
     synchronized (lock) {
       if (isTimeOut()) {
-        chooseNextServer(key);
+        chooseNextServer(servers, invocation);
       }
     }
     return lastServer;
   }
 
-  private Server chooseServerErrorThresholdMet(Object key) {
+  private ServiceCombServer chooseServerErrorThresholdMet(List<ServiceCombServer> servers, Invocation invocation) {
     synchronized (lock) {
       if (errorThresholdMet) {
-        chooseNextServer(key);
+        chooseNextServer(servers, invocation);
         errorThresholdMet = false;
       }
     }
@@ -101,8 +102,7 @@ public class SessionStickinessRule implements IRule {
   }
 
   private boolean isErrorThresholdMet() {
-    AbstractLoadBalancer lb = (AbstractLoadBalancer) getLoadBalancer();
-    LoadBalancerStats stats = lb.getLoadBalancerStats();
+    LoadBalancerStats stats = loadBalancer.getLoadBalancerStats();
 
     if (stats != null && stats.getServerStats() != null && stats.getServerStats().size() > 0) {
       ServerStats serverStats = stats.getSingleServerStat(lastServer);
@@ -117,14 +117,14 @@ public class SessionStickinessRule implements IRule {
   }
 
   @Override
-  public Server choose(Object key) {
+  public ServiceCombServer choose(List<ServiceCombServer> servers, Invocation invocation) {
     if (lastServer == null) {
-      return chooseInitialServer(key);
+      return chooseInitialServer(servers, invocation);
     }
 
     if (isTimeOut()) {
       LOG.warn("session timeout. choose another server.");
-      return chooseServerWhenTimeout(key);
+      return chooseServerWhenTimeout(servers, invocation);
     } else {
       this.lastAccessedTime = System.currentTimeMillis();
     }
@@ -132,20 +132,13 @@ public class SessionStickinessRule implements IRule {
     if (isErrorThresholdMet()) {
       LOG.warn("reached max error. choose another server.");
       errorThresholdMet = true;
-      return chooseServerErrorThresholdMet(key);
+      return chooseServerErrorThresholdMet(servers, invocation);
+    }
+
+    if (!servers.contains(lastServer)) {
+      return chooseNextServer(servers, invocation);
     }
 
     return lastServer;
-  }
-
-  @Override
-  public void setLoadBalancer(ILoadBalancer lb) {
-    this.lb = lb;
-    this.microserviceName = ((LoadBalancer) lb).getMicroServiceName();
-  }
-
-  @Override
-  public ILoadBalancer getLoadBalancer() {
-    return this.lb;
   }
 }

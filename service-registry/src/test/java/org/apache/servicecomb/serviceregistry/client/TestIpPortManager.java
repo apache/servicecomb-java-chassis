@@ -121,22 +121,32 @@ public class TestIpPortManager {
       }
     };
 
-    manager.initAutoDiscovery();
+    manager.initAutoDiscovery();  //init result is false at first time
     IpPort address4 = manager.getNextAvailableAddress(address3);
     if (address1.getPort() == 9980) {
       Assert.assertEquals("127.0.0.1", address4.getHostOrIp());
-      Assert.assertEquals(9982, address4.getPort());
+      Assert.assertEquals(9980, address4.getPort());
     } else {
       address4 = manager.getNextAvailableAddress(address1);
       Assert.assertEquals("127.0.0.1", address4.getHostOrIp());
-      Assert.assertEquals(9982, address4.getPort());
+      Assert.assertEquals(9980, address4.getPort());
     }
 
     IpPort address5 = manager.getNextAvailableAddress(address4);
     Assert.assertEquals("127.0.0.1", address5.getHostOrIp());
-    Assert.assertEquals(9980, address5.getPort());
-  }
+    Assert.assertEquals(9981, address5.getPort());
 
+    manager.setAutoDiscoveryInited(true);
+    IpPort address6 = manager.getNextAvailableAddress(address3);
+    if (address1.getPort() == 9980) {
+      Assert.assertEquals("127.0.0.1", address6.getHostOrIp());
+      Assert.assertEquals(9982, address6.getPort());
+    } else {
+      address6 = manager.getNextAvailableAddress(address1);
+      Assert.assertEquals("127.0.0.1", address6.getHostOrIp());
+      Assert.assertEquals(9982, address6.getPort());
+    }
+  }
   @Test
   public void testCreateServiceRegistryCacheWithInstanceCache() {
 

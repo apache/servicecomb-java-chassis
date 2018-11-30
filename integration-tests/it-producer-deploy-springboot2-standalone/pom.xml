@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <version>1.1.0-SNAPSHOT</version>
+  <groupId>org.apache.servicecomb.tests</groupId>
+  <artifactId>it-producer-deploy-springboot2-standalone</artifactId>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>java-chassis-dependencies-springboot2</artifactId>
+        <version>1.1.0-SNAPSHOT</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb.tests</groupId>
+      <artifactId>it-producer</artifactId>
+      <version>1.1.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>spring-boot2-starter-standalone</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-test-scaffolding</artifactId>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.1</version>
+          <configuration>
+            <compilerArgument>-parameters</compilerArgument>
+            <encoding>UTF-8</encoding>
+            <source>1.8</source>
+            <target>1.8</target>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.rat</groupId>
+          <artifactId>apache-rat-plugin</artifactId>
+          <configuration>
+            <excludes>
+              <exclude>DISCLAIMER</exclude>
+              <exclude>.travis.yml</exclude>
+              <exclude>**/*.md</exclude>
+              <excldue>**/*.MD</excldue>
+              <exclude>**/target/*</exclude>
+              <!-- Skip the code style configuration file -->
+              <exclude>**/etc/eclipse-java-google-style.xml</exclude>
+              <exclude>**/etc/intellij-java-google-style.xml</exclude>
+              <!-- Skip the ssl configuration files -->
+              <exculde>**/resources/ssl/**</exculde>
+              <!-- SKip the licenses files -->
+              <exclude>**/src/release/licenses/**</exclude>
+              <!-- Skip the demo log files -->
+              <exclude>**/logs/**.log</exclude>
+              <exclude>**/**.log</exclude>
+              <!-- Skip the target files -->
+              <exclude>**/target/**</exclude>
+              <!-- Skip the source files which are forked from vertx -->
+              <exclude>**/io/vertx/ext/web/impl/MimeTypesUtils.java</exclude>
+              <exclude>**/java/org/apache/servicecomb/transport/rest/vertx/RestBodyHandler.java</exclude>
+              <!--Skip protobuf generated file-->
+              <exclude>**/java/org/apache/servicecomb/foundation/protobuf/internal/model/ProtobufRoot.java</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <properties>
+    <it.main>org.apache.servicecomb.it.SpringBoot2StandaloneApplication</it.main>
+  </properties>
+
+  <profiles>
+    <profile>
+      <id>it-jar</id>
+      <activation>
+        <file>
+          <exists>enable-it-jar</exists>
+        </file>
+      </activation>
+
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <version>2.0.0.RELEASE</version>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>repackage</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>2.6</version>
+            <configuration>
+              <archive>
+                <manifestEntries>
+                  <Class-Path>.</Class-Path>
+                </manifestEntries>
+              </archive>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+</project>

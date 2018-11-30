@@ -132,6 +132,7 @@ public class TcpClientConnection extends TcpConnection {
       // encode in sender thread
       try (TcpOutputStream os = tcpClientPackage.createStream()) {
         write(os.getByteBuf());
+        tcpClientPackage.finishWriteToBuffer();
       }
       return true;
     }
@@ -156,6 +157,7 @@ public class TcpClientConnection extends TcpConnection {
       try (TcpOutputStream os = pkg.createStream()) {
         Buffer buf = os.getBuffer();
         netSocket.write(buf);
+        pkg.finishWriteToBuffer();
       }
     }
   }

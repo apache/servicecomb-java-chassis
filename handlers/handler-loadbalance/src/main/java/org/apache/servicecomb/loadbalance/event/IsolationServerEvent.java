@@ -26,7 +26,7 @@ public class IsolationServerEvent extends AlarmEvent {
   private long currentTotalRequest;
 
   //当前实例连续出错次数
-  private int currentCountinuousFailureCount;
+  private long currentCountinuousFailureCount;
 
   //当前实例出错百分比
   private double currentErrorPercentage;
@@ -39,7 +39,7 @@ public class IsolationServerEvent extends AlarmEvent {
 
   private long singleTestTime;
 
-  public IsolationServerEvent(String microserviceName, long totalRequest, int currentCountinuousFailureCount,
+  public IsolationServerEvent(String microserviceName, long totalRequest, long currentCountinuousFailureCount,
       double currentErrorPercentage, int continuousFailureThreshold,
       int errorThresholdPercentage, long enableRequestThreshold, long singleTestTime, Type type) {
     super(type);
@@ -61,7 +61,7 @@ public class IsolationServerEvent extends AlarmEvent {
     return currentTotalRequest;
   }
 
-  public int getCurrentCountinuousFailureCount() {
+  public long getCurrentCountinuousFailureCount() {
     return currentCountinuousFailureCount;
   }
 

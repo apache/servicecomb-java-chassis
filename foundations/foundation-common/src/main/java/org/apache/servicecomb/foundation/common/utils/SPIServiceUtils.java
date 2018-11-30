@@ -20,12 +20,15 @@ package org.apache.servicecomb.foundation.common.utils;
 import java.lang.reflect.Method;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -127,6 +130,18 @@ public final class SPIServiceUtils {
     }
 
     return services.get(0);
+  }
+
+  public static <T> Collection<T> getPriorityHighestServices(Function<T, String> keyFunc, Class<T> serviceType) {
+    List<T> services = getOrLoadSortedService(serviceType);
+    if (services.isEmpty()) {
+      LOGGER.info("Can not find SPI service for {}", serviceType.getName());
+      return null;
+    }
+
+    Map<String, T> map = new HashMap<>();
+    services.forEach(instance -> map.putIfAbsent(keyFunc.apply(instance), instance));
+    return map.values();
   }
 
   @SuppressWarnings("unchecked")

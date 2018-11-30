@@ -20,27 +20,43 @@ package org.apache.servicecomb.transport.rest.vertx;
 import java.util.List;
 import java.util.Set;
 
+import javax.ws.rs.core.MediaType;
+
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
 import org.apache.servicecomb.foundation.vertx.VertxTLSBuilder;
+import org.apache.servicecomb.foundation.vertx.metrics.DefaultHttpServerMetrics;
+import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultServerEndpointMetric;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogConfiguration;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.impl.AccessLogHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
+import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.Http2Settings;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
+import io.vertx.core.http.HttpServerResponse;
+import io.vertx.core.net.impl.ConnectionBase;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.CorsHandler;
 
 public class RestServerVerticle extends AbstractVerticle {
@@ -70,17 +86,70 @@ public class RestServerVerticle extends AbstractVerticle {
         return;
       }
       Router mainRouter = Router.router(vertx);
+      mountGlobalRestFailureHandler(mainRouter);
       mountAccessLogHandler(mainRouter);
       mountCorsHandler(mainRouter);
       initDispatcher(mainRouter);
       HttpServer httpServer = createHttpServer();
       httpServer.requestHandler(mainRouter::accept);
+      httpServer.connectionHandler(connection -> {
+        DefaultHttpServerMetrics serverMetrics = (DefaultHttpServerMetrics) ((ConnectionBase) connection).metrics();
+        DefaultServerEndpointMetric endpointMetric = serverMetrics.getEndpointMetric();
+        long connectedCount = endpointMetric.getCurrentConnectionCount();
+        int connectionLimit = DynamicPropertyFactory.getInstance()
+            .getIntProperty("servicecomb.rest.server.connection-limit", Integer.MAX_VALUE).get();
+        if (connectedCount > connectionLimit) {
+          connection.close();
+          endpointMetric.onRejectByConnectionLimit();
+        }
+      });
+      httpServer.exceptionHandler(e -> {
+        LOGGER.error("Unexpected error in server.{}", ExceptionUtils.getExceptionMessageWithoutTrace(e));
+      });
       startListen(httpServer, startFuture);
     } catch (Throwable e) {
       // vert.x got some states that not print error and execute call back in VertexUtils.blockDeploy, we add a log our self.
       LOGGER.error("", e);
       throw e;
     }
+  }
+
+  private void mountGlobalRestFailureHandler(Router mainRouter) {
+    GlobalRestFailureHandler globalRestFailureHandler =
+        SPIServiceUtils.getPriorityHighestService(GlobalRestFailureHandler.class);
+    Handler<RoutingContext> failureHandler = null == globalRestFailureHandler ?
+        ctx -> {
+          if (ctx.response().closed()) {
+            // response has been sent, do nothing
+            LOGGER.error("get a failure with closed response", ctx.failure());
+            ctx.next();
+          }
+          HttpServerResponse response = ctx.response();
+          if (ctx.failure() instanceof InvocationException) {
+            // ServiceComb defined exception
+            InvocationException exception = (InvocationException) ctx.failure();
+            response.setStatusCode(exception.getStatusCode());
+            response.setStatusMessage(exception.getErrorData().toString());
+            response.end();
+            return;
+          }
+
+          LOGGER.error("unexpected failure happened", ctx.failure());
+          try {
+            // unknown exception
+            CommonExceptionData unknownError = new CommonExceptionData("unknown error");
+            ctx.response().setStatusCode(500).putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .end(RestObjectMapperFactory.getRestObjectMapper().writeValueAsString(unknownError));
+          } catch (Exception e) {
+            LOGGER.error("failed to send error response!", e);
+          }
+        }
+        : globalRestFailureHandler;
+
+    mainRouter.route()
+        // this handler does nothing, just ensure the failure handler can catch exception
+        .handler(RoutingContext::next)
+        .failureHandler(failureHandler);
   }
 
   private void mountAccessLogHandler(Router mainRouter) {
@@ -166,8 +235,10 @@ public class RestServerVerticle extends AbstractVerticle {
     serverOptions.setIdleTimeout(TransportConfig.getConnectionIdleTimeoutInSeconds());
     serverOptions.setCompressionSupported(TransportConfig.getCompressed());
     serverOptions.setMaxHeaderSize(TransportConfig.getMaxHeaderSize());
+    serverOptions.setMaxInitialLineLength(TransportConfig.getMaxInitialLineLength());
     if (endpointObject.isHttp2Enabled()) {
-      serverOptions.setUseAlpn(true);
+      serverOptions.setUseAlpn(TransportConfig.getUseAlpn())
+          .setInitialSettings(new Http2Settings().setMaxConcurrentStreams(TransportConfig.getMaxConcurrentStreams()));
     }
     if (endpointObject.isSslEnabled()) {
       SSLOptionFactory factory =

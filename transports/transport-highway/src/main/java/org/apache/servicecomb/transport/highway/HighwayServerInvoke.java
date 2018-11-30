@@ -19,15 +19,16 @@ package org.apache.servicecomb.transport.highway;
 
 import java.util.Map;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
 import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
@@ -39,15 +40,10 @@ import org.apache.servicecomb.transport.highway.message.ResponseHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.protostuff.runtime.ProtobufFeature;
 import io.vertx.core.buffer.Buffer;
 
 public class HighwayServerInvoke {
   private static final Logger LOGGER = LoggerFactory.getLogger(HighwayServerInvoke.class);
-
-  private MicroserviceMetaManager microserviceMetaManager = CseContext.getInstance().getMicroserviceMetaManager();
-
-  private ProtobufFeature protobufFeature;
 
   private RequestHeader header;
 
@@ -65,17 +61,15 @@ public class HighwayServerInvoke {
 
   Invocation invocation;
 
+  protected long start;
+
   public HighwayServerInvoke() {
-    this(null, null);
+    this(null);
   }
 
-  public HighwayServerInvoke(Endpoint endpoint, ProtobufFeature protobufFeature) {
+  public HighwayServerInvoke(Endpoint endpoint) {
+    this.start = System.nanoTime();
     this.endpoint = endpoint;
-    this.protobufFeature = protobufFeature;
-  }
-
-  public void setMicroserviceMetaManager(MicroserviceMetaManager microserviceMetaManager) {
-    this.microserviceMetaManager = microserviceMetaManager;
   }
 
   public boolean init(TcpConnection connection, long msgId,
@@ -103,7 +97,7 @@ public class HighwayServerInvoke {
     this.msgId = msgId;
     this.header = header;
 
-    MicroserviceMeta microserviceMeta = microserviceMetaManager.ensureFindValue(header.getDestMicroservice());
+    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     SchemaMeta schemaMeta = microserviceMeta.ensureFindSchemaMeta(header.getSchemaId());
     this.operationMeta = schemaMeta.ensureFindOperation(header.getOperationName());
     this.operationProtobuf = ProtobufManager.getOrCreateOperation(operationMeta);
@@ -113,6 +107,9 @@ public class HighwayServerInvoke {
 
   private void runInExecutor() {
     try {
+      if (isInQueueTimeout()) {
+        throw new InvocationException(Status.INTERNAL_SERVER_ERROR, "Timeout when processing the request.");
+      }
       doRunInExecutor();
     } catch (Throwable e) {
       String msg = String.format("handle request error, %s, msgId=%d",
@@ -124,18 +121,27 @@ public class HighwayServerInvoke {
     }
   }
 
-  private void doRunInExecutor() throws Exception {
-    invocation.onStartExecute();
+  private boolean isInQueueTimeout() {
+    return System.nanoTime() - invocation.getInvocationStageTrace().getStart() >
+        HighwayConfig.getRequestWaitInPoolTimeout() * 1_000_000;
+  }
 
-    HighwayCodec.decodeRequest(invocation, header, operationProtobuf, bodyBuffer, protobufFeature);
+  private void doRunInExecutor() throws Exception {
+    invocation.onExecuteStart();
+
+    invocation.getInvocationStageTrace().startServerFiltersRequest();
+    HighwayCodec.decodeRequest(invocation, header, operationProtobuf, bodyBuffer);
     invocation.getHandlerContext().put(Const.REMOTE_ADDRESS, this.connection.getNetSocket().remoteAddress());
 
+    invocation.getInvocationStageTrace().startHandlersRequest();
     invocation.next(response -> {
       sendResponse(invocation.getContext(), response);
     });
   }
 
   private void sendResponse(Map<String, String> context, Response response) {
+    invocation.getInvocationStageTrace().finishHandlersResponse();
+
     ResponseHeader header = new ResponseHeader();
     header.setStatusCode(response.getStatusCode());
     header.setReasonPhrase(response.getReasonPhrase());
@@ -149,7 +155,8 @@ public class HighwayServerInvoke {
     }
 
     try {
-      Buffer respBuffer = HighwayCodec.encodeResponse(msgId, header, bodySchema, body, protobufFeature);
+      Buffer respBuffer = HighwayCodec.encodeResponse(msgId, header, bodySchema, body);
+      invocation.getInvocationStageTrace().finishServerFiltersResponse();
       connection.write(respBuffer.getByteBuf());
     } catch (Exception e) {
       // 没招了，直接打日志
@@ -172,7 +179,8 @@ public class HighwayServerInvoke {
       invocation = InvocationFactory.forProvider(endpoint,
           operationProtobuf.getOperationMeta(),
           null);
-      invocation.onStart();
+      invocation.onStart(null, start);
+      invocation.getInvocationStageTrace().startSchedule();
       operationMeta.getExecutor().execute(() -> runInExecutor());
     } catch (IllegalStateException e) {
       sendResponse(header.getContext(), Response.providerFailResp(e));

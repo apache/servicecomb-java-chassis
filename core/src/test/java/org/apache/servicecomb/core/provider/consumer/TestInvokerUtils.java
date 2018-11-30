@@ -17,15 +17,19 @@
 
 package org.apache.servicecomb.core.provider.consumer;
 
+import java.util.Arrays;
+
 import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.SCBStatus;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
+import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
@@ -34,6 +38,7 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -49,7 +54,32 @@ public class TestInvokerUtils {
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
+  @Mocked
+  ReferenceConfig referenceConfig;
+
+  @Mocked
+  SchemaMeta schemaMeta;
+
+  @Mocked
+  OperationMeta operationMeta;
+
+  Invocation invocation;
+
+  static Object invokeResult;
+
   SCBEngine scbEngine = new SCBEngine();
+
+  static long nanoTime = 1;
+
+  @BeforeClass
+  public static void classSetup() {
+    new MockUp<System>() {
+      @Mock
+      long nanoTime() {
+        return nanoTime;
+      }
+    };
+  }
 
   @Before
   public void setup() {
@@ -60,34 +90,56 @@ public class TestInvokerUtils {
       }
     };
     scbEngine.setStatus(SCBStatus.UP);
+
+    new Expectations() {
+      {
+        operationMeta.getSchemaMeta();
+        result = schemaMeta;
+        schemaMeta.getConsumerHandlerChain();
+        result = Arrays.asList((Handler) (i, ar) -> {
+          System.out.println(invokeResult);
+          ar.success(invokeResult);
+        });
+      }
+    };
+    invocation = new Invocation(referenceConfig, operationMeta, new Object[] {});
   }
 
   @Test
   public void testSyncInvokeInvocationWithException() {
     Invocation invocation = Mockito.mock(Invocation.class);
+    InvocationStageTrace stageTrace = new InvocationStageTrace(invocation);
+    Mockito.when(invocation.getInvocationStageTrace()).thenReturn(stageTrace);
 
     Response response = Mockito.mock(Response.class);
     new MockUp<SyncResponseExecutor>() {
       @Mock
       public Response waitResponse() {
-        return Mockito.mock(Response.class);
+        return response;
       }
     };
-    Mockito.when(response.isSuccessed()).thenReturn(true);
+    Mockito.when(response.isSuccessed()).thenReturn(false);
     OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
     Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
     Mockito.when(operationMeta.getMicroserviceQualifiedName()).thenReturn("test");
 
-    try {
-      InvokerUtils.syncInvoke(invocation);
-    } catch (InvocationException e) {
-      Assert.assertEquals(490, e.getStatusCode());
-    }
+    expectedException.expect(InvocationException.class);
+    expectedException.expect(Matchers.hasProperty("statusCode", Matchers.is(490)));
+    InvokerUtils.syncInvoke(invocation);
   }
 
   @Test
-  public void testReactiveInvoke(@Mocked Invocation invocation, @Mocked InvocationContext parentContext,
-      @Mocked Response response) {
+  public void testSyncInvokeNormal() {
+    invokeResult = 1;
+    Assert.assertEquals(1, (int) InvokerUtils.syncInvoke(invocation));
+    Assert.assertEquals(1, invocation.getInvocationStageTrace().getStart());
+    Assert.assertEquals(1, invocation.getInvocationStageTrace().getStartHandlersRequest());
+    Assert.assertEquals(1, invocation.getInvocationStageTrace().getFinishHandlersResponse());
+    Assert.assertEquals(1, invocation.getInvocationStageTrace().getFinish());
+  }
+
+  @Test
+  public void testReactiveInvoke(@Mocked InvocationContext parentContext, @Mocked Response response) {
     new MockUp<Invocation>(invocation) {
       @Mock
       InvocationContext getParentContext() {
@@ -105,6 +157,29 @@ public class TestInvokerUtils {
 
     Assert.assertNull(ContextUtils.getInvocationContext());
     Assert.assertSame(parentContext, holder.value);
+    Assert.assertEquals(1, invocation.getInvocationStageTrace().getStart());
+    Assert.assertEquals(1, invocation.getInvocationStageTrace().getStartHandlersRequest());
+    Assert.assertEquals(1, invocation.getInvocationStageTrace().getFinishHandlersResponse());
+    Assert.assertEquals(1, invocation.getInvocationStageTrace().getFinish());
+  }
+
+  @Test
+  public void reactiveInvokeException() {
+    new MockUp<Invocation>(invocation) {
+      @Mock
+      void next(AsyncResponse asyncResp) {
+        throw new Error();
+      }
+    };
+
+    Holder<Response> holder = new Holder<>();
+    InvokerUtils.reactiveInvoke(invocation, ar -> holder.value = ar);
+
+    Assert.assertFalse(holder.value.isSuccessed());
+    Assert.assertEquals(1, invocation.getInvocationStageTrace().getStart());
+    Assert.assertEquals(1, invocation.getInvocationStageTrace().getStartHandlersRequest());
+    Assert.assertEquals(1, invocation.getInvocationStageTrace().getFinishHandlersResponse());
+    Assert.assertEquals(1, invocation.getInvocationStageTrace().getFinish());
   }
 
   @SuppressWarnings("deprecation")
@@ -124,9 +199,10 @@ public class TestInvokerUtils {
   public void testSyncInvoke_4param_NotReady() {
     scbEngine.setStatus(SCBStatus.DOWN);
 
-    expectedException.expect(IllegalStateException.class);
+    expectedException.expect(InvocationException.class);
     expectedException.expectMessage(
-        Matchers.is("The request is rejected, as the service cannot process the request due to STATUS = DOWN"));
+        Matchers
+            .is("InvocationException: code=503;msg=CommonExceptionData [message=The request is rejected. Cannot process the request due to STATUS = DOWN]"));
     InvokerUtils.syncInvoke("ms", "schemaId", "opName", null);
   }
 
@@ -134,9 +210,10 @@ public class TestInvokerUtils {
   public void testSyncInvoke_6param_NotReady() {
     scbEngine.setStatus(SCBStatus.DOWN);
 
-    expectedException.expect(IllegalStateException.class);
+    expectedException.expect(InvocationException.class);
     expectedException.expectMessage(
-        Matchers.is("The request is rejected, as the service cannot process the request due to STATUS = DOWN"));
+        Matchers
+            .is("InvocationException: code=503;msg=CommonExceptionData [message=The request is rejected. Cannot process the request due to STATUS = DOWN]"));
 
     InvokerUtils.syncInvoke("ms", "latest", "rest", "schemaId", "opName", null);
   }

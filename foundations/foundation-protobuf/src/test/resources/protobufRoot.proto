@@ -1,0 +1,63 @@
+/*
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+  
+      http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ */
+
+syntax = "proto3";
+import "google/protobuf/any.proto";
+package org.apache.servicecomb.foundation.protobuf.internal.model;
+
+message Root {
+  int32 int32 = 1;
+  int64 int64 = 2;
+  uint32 uint32 = 3;
+  uint64 uint64 = 4;
+  sint32 sint32 = 5;
+  sint64 sint64 = 6;
+  fixed32 fixed32 = 7;
+  fixed64 fixed64 = 8;
+  sfixed32 sfixed32 = 9;
+  sfixed64 sfixed64 = 10;
+  float floatValue = 11;
+  double doubleValue = 12;
+  bool bool = 13;
+  string string = 14;
+  bytes bytes = 15;
+  Color color = 16;
+
+  User user = 17;
+
+  map<string, string> ssMap = 18;
+  map<string, User> spMap = 19;
+
+  repeated string sList = 20;
+  repeated User pList = 21;
+
+  google.protobuf.Any any = 22;
+  repeated google.protobuf.Any anys = 23;
+
+  Root typeRecursive = 24;
+}
+enum Color {
+  RED = 0;
+  YELLOW = 1;
+  BLUE = 2;
+}
+
+message User {
+  string name = 1;
+
+  Root typeRecursive = 2;
+}

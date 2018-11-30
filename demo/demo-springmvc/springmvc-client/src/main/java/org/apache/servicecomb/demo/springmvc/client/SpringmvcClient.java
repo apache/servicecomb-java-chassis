@@ -30,8 +30,8 @@ import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.apache.servicecomb.provider.springmvc.reference.UrlWithProviderPrefixClientHttpRequestFactory;
 import org.apache.servicecomb.provider.springmvc.reference.UrlWithServiceNameClientHttpRequestFactory;
-import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -47,17 +47,26 @@ import com.netflix.config.DynamicPropertyFactory;
 public class SpringmvcClient {
   private static RestTemplate templateUrlWithServiceName = new CseRestTemplate();
 
+  private static RestTemplate templateUrlWithProviderPrefix = new CseRestTemplate();
+
   private static RestTemplate restTemplate;
 
   private static Controller controller;
 
   public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
+    try {
+      Log4jUtils.init();
+      BeanUtils.init();
 
-    run();
+      run();
 
-    TestMgr.summary();
+      TestMgr.summary();
+    } catch (Throwable e) {
+      TestMgr.check("success", "failed");
+      System.err.println("-------------- test failed -------------");
+      e.printStackTrace();
+      System.err.println("-------------- test failed -------------");
+    }
   }
 
   public static void run() {
@@ -65,6 +74,7 @@ public class SpringmvcClient {
 
     templateUrlWithServiceName.setRequestFactory(new UrlWithServiceNameClientHttpRequestFactory());
     restTemplate = RestTemplateBuilder.create();
+    templateUrlWithProviderPrefix.setRequestFactory(new UrlWithProviderPrefixClientHttpRequestFactory("/pojo/rest"));
     controller = BeanUtils.getBean("controller");
 
     String prefix = "cse://springmvc";
@@ -80,6 +90,7 @@ public class SpringmvcClient {
     CodeFirstRestTemplateSpringmvc codeFirstClient =
         BeanUtils.getContext().getBean(CodeFirstRestTemplateSpringmvc.class);
     codeFirstClient.testCodeFirst(restTemplate, "springmvc", "/codeFirstSpringmvc/");
+    codeFirstClient.testCodeFirst(templateUrlWithProviderPrefix, "springmvc", "/pojo/rest/codeFirstSpringmvc/");
 
     String microserviceName = "springmvc";
     for (String transport : DemoConst.transports) {
@@ -91,6 +102,7 @@ public class SpringmvcClient {
       testController();
       testRequiredBody(templateUrlWithServiceName, microserviceName);
       testSpringMvcDefaultValues(templateUrlWithServiceName, microserviceName);
+      testSpringMvcDefaultValuesJavaPrimitive(templateUrlWithServiceName, microserviceName);
     }
     HttpHeaders headers = new HttpHeaders();
     headers.set("Accept-Encoding", "gzip");
@@ -113,13 +125,11 @@ public class SpringmvcClient {
 
     //    TestMgr.check(true, metrics.get("jvm(name=heapUsed,statistic=gauge)") != 0);
     TestMgr.check(true, metrics.size() > 0);
-    TestMgr.check(true,
-        metrics.get(
-            "servicecomb.invocation(operation=springmvc.codeFirst.saySomething,role=PRODUCER,stage=total,statistic=count,status=200,transport=highway)") >= 0);
 
     //prometheus integration test
     try {
-      String content = restTemplate.getForObject("cse://springmvc/codeFirstSpringmvc/prometheusForTest", String.class);
+      String content = restTemplate
+          .getForObject("cse://springmvc/codeFirstSpringmvc/prometheusForTest", String.class);
 
       TestMgr.check(true, content.contains("servicecomb_invocation{operation=\"springmvc.codeFirst.addDate"));
       TestMgr.check(true, content.contains("servicecomb_invocation{operation=\"springmvc.codeFirst.sayHello"));
@@ -134,7 +144,7 @@ public class SpringmvcClient {
         for (String metricLine : metricLines) {
           if (!metricLine.startsWith("#")) {
             String[] metricKeyAndValue = metricLine.split(" ");
-            if (!metricKeyAndValue[0].startsWith("jvm")) {
+            if (!metricKeyAndValue[0].startsWith("jvm") && !metricKeyAndValue[0].startsWith("os")) {
               if (Double.parseDouble(metricKeyAndValue[1]) < 0) {
                 TestMgr.check("true", "false");
                 break;
@@ -152,6 +162,18 @@ public class SpringmvcClient {
 
   private static void testController(RestTemplate template, String microserviceName) {
     String prefix = "cse://" + microserviceName;
+
+    TestMgr.check(7,
+        template.getForObject(prefix + "/controller/add?a=3&b=4",
+            Integer.class));
+
+    try {
+      template.getForObject(prefix + "/controller/add",
+          Integer.class);
+      TestMgr.check("failed", "success");
+    } catch (InvocationException e) {
+      TestMgr.check(e.getStatusCode(), 400);
+    }
 
     TestMgr.check("hi world [world]",
         template.getForObject(prefix + "/controller/sayhi?name=world",
@@ -183,6 +205,16 @@ public class SpringmvcClient {
             null,
             String.class,
             "hello 中国"));
+
+    try {
+      template.postForObject(prefix + "/controller/sayhello/{name}",
+          null,
+          String.class,
+          "exception");
+      TestMgr.check(true, false);
+    } catch (InvocationException e) {
+      TestMgr.check(e.getStatusCode(), 503);
+    }
 
     HttpHeaders headers = new HttpHeaders();
     headers.add("name", "world");
@@ -265,8 +297,8 @@ public class SpringmvcClient {
     //default values
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-    MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+    MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
     String result = template.postForObject(cseUrlPrefix + "/form", request, String.class);
     TestMgr.check("Hello 20bobo", result);
 
@@ -282,7 +314,7 @@ public class SpringmvcClient {
       result = template.getForObject(cseUrlPrefix + "/query2", String.class);
     } catch (InvocationException e) {
       failed = true;
-      TestMgr.check(e.getStatusCode(), ExceptionFactory.PRODUCER_INNER_STATUS_CODE);
+      TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
     }
 
     failed = false;
@@ -318,6 +350,9 @@ public class SpringmvcClient {
     result = template.getForObject(cseUrlPrefix + "/query3?a=30&b=2", String.class);
     TestMgr.check("Hello 302", result);
 
+    result = template.getForObject(cseUrlPrefix + "/query3?a=30", String.class);
+    TestMgr.check("Hello 30null", result);
+
     //input values
     headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -338,5 +373,24 @@ public class SpringmvcClient {
 
     result = template.getForObject(cseUrlPrefix + "/query2?a=3&b=4&c=5&d=30&e=2", String.class);
     TestMgr.check("Hello 345302", result);
+  }
+
+  private static void testSpringMvcDefaultValuesJavaPrimitive(RestTemplate template, String microserviceName) {
+    String cseUrlPrefix = "cse://" + microserviceName + "/SpringMvcDefaultValues/";
+    //default values with primitive
+    String result = template.postForObject(cseUrlPrefix + "/javaprimitiveint", null, String.class);
+    TestMgr.check("Hello 0bobo", result);
+
+    result = template.postForObject(cseUrlPrefix + "/javaprimitivenumber", null, String.class);
+    TestMgr.check("Hello 0.0false", result);
+
+    result = template.postForObject(cseUrlPrefix + "/javaprimitivestr", null, String.class);
+    TestMgr.check("Hello", result);
+
+    result = template.postForObject(cseUrlPrefix + "/javaprimitivecomb", null, String.class);
+    TestMgr.check("Hello nullnull", result);
+
+    result = template.postForObject(cseUrlPrefix + "/allprimitivetypes", null, String.class);
+    TestMgr.check("Hello false,0,0,0,0,0,0.0,0.0,null", result);
   }
 }

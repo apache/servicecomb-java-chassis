@@ -56,7 +56,7 @@ public class TestProviderQpsFlowControlHandler {
   public void setUP() {
     ArchaiusUtils.resetConfig();
     QpsControllerManagerTest.clearState(ProviderQpsFlowControlHandler.qpsControllerMgr);
-    Utils.updateProperty(Config.PROVIDER_LIMIT_KEY_PREFIX + "test", 1);
+    ArchaiusUtils.setProperty(Config.PROVIDER_LIMIT_KEY_PREFIX + "test", 1);
   }
 
 
@@ -86,7 +86,7 @@ public class TestProviderQpsFlowControlHandler {
     ProviderQpsFlowControlHandler gHandler = new ProviderQpsFlowControlHandler();
     gHandler.handle(invocation, asyncResp);
 
-    Utils.updateProperty(Config.PROVIDER_LIMIT_KEY_GLOBAL, 3);
+    ArchaiusUtils.setProperty(Config.PROVIDER_LIMIT_KEY_GLOBAL, 3);
 
     expectedException.expect(RuntimeException.class);
     expectedException.expectMessage("test error");

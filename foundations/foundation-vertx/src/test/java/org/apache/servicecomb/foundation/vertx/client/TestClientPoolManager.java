@@ -51,6 +51,7 @@ public class TestClientPoolManager {
 
   Map<String, Object> contextMap = new HashMap<>();
 
+  @Mocked
   Context context;
 
   @Before
@@ -58,7 +59,7 @@ public class TestClientPoolManager {
     poolMgr = new ClientPoolManager<>(vertx, factory);
     id = Deencapsulation.getField(poolMgr, "id");
     pools = Deencapsulation.getField(poolMgr, "pools");
-    context = new MockUp<Context>() {
+    new MockUp<Context>(context) {
       @Mock
       void put(String key, Object value) {
         contextMap.put(key, value);
@@ -79,7 +80,7 @@ public class TestClientPoolManager {
       boolean isEventLoopContext() {
         return true;
       }
-    }.getMockInstance();
+    };
   }
 
   @Test
@@ -198,7 +199,7 @@ public class TestClientPoolManager {
   }
 
   @Test
-  public void findByContext_otherVertx(@Mocked Vertx otherVertx, @Mocked Context otherContext) {
+  public void findByContext_otherVertx(@Mocked VertxImpl otherVertx, @Mocked Context otherContext) {
     HttpClientWithContext pool = new HttpClientWithContext(null, null);
     pools.add(pool);
 
@@ -215,7 +216,7 @@ public class TestClientPoolManager {
   }
 
   @Test
-  public void findByContext_woker(@Mocked Context workerContext) {
+  public void findByContext_worker(@Mocked Context workerContext) {
     HttpClientWithContext pool = new HttpClientWithContext(null, null);
     pools.add(pool);
 

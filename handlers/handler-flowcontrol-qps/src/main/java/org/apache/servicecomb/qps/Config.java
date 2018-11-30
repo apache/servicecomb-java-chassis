@@ -37,7 +37,7 @@ public final class Config {
 
   public static final String PROVIDER_ENABLED = "servicecomb.flowcontrol.Provider.qps.enabled";
 
-  public static final Config INSTANCE = new Config();
+  public static Config INSTANCE = new Config();
 
   private final DynamicBooleanProperty consumerEanbled =
       DynamicPropertyFactory.getInstance().getBooleanProperty(CONSUMER_ENABLED, true);
@@ -45,7 +45,7 @@ public final class Config {
   private final DynamicBooleanProperty providerEanbled =
       DynamicPropertyFactory.getInstance().getBooleanProperty(PROVIDER_ENABLED, true);
 
-  private Config() {
+  public Config() {
     consumerEanbled.addCallback(() -> {
       boolean newValue = consumerEanbled.get();
       LOGGER.info("{} changed from {} to {}", CONSUMER_ENABLED, consumerEanbled, newValue);

@@ -24,9 +24,12 @@ import static org.junit.Assert.assertThat;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import javax.ws.rs.core.MediaType;
+
 import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import io.swagger.annotations.ApiOperation;
@@ -62,6 +65,43 @@ public class ApiOperationProcessorTest {
     assertNull(tagList);
   }
 
+  @Test
+  public void testMediaType() throws NoSuchMethodException {
+    ApiOperationProcessor apiOperationProcessor = new ApiOperationProcessor();
+
+    Method method = TestClass.class.getMethod("testSingleMediaType", String.class);
+    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(new PojoSwaggerGeneratorContext(), TestClass.class);
+    OperationGenerator operationGenerator = new OperationGenerator(swaggerGenerator, method);
+
+    apiOperationProcessor.process(method.getAnnotation(ApiOperation.class), operationGenerator);
+
+    assertThat(operationGenerator.getOperation().getConsumes(), Matchers.contains(MediaType.TEXT_PLAIN));
+    assertThat(operationGenerator.getOperation().getProduces(), Matchers.contains(MediaType.APPLICATION_XML));
+
+    method = TestClass.class.getMethod("testMultiMediaType", String.class);
+    apiOperationProcessor.process(method.getAnnotation(ApiOperation.class), operationGenerator);
+
+    assertThat(operationGenerator.getOperation().getConsumes(),
+        Matchers.contains(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN));
+    assertThat(operationGenerator.getOperation().getProduces(),
+        Matchers.contains(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML));
+
+    method = TestClass.class.getMethod("testBlankMediaType", String.class);
+    apiOperationProcessor.process(method.getAnnotation(ApiOperation.class), operationGenerator);
+
+    assertThat(operationGenerator.getOperation().getConsumes(),
+        Matchers.contains(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN));
+    assertThat(operationGenerator.getOperation().getProduces(),
+        Matchers.contains(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML));
+
+    operationGenerator.getOperation().addConsumes(MediaType.TEXT_HTML);
+    operationGenerator.getOperation().addProduces(MediaType.TEXT_HTML);
+    assertThat(operationGenerator.getOperation().getConsumes(),
+        Matchers.contains(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, MediaType.TEXT_HTML));
+    assertThat(operationGenerator.getOperation().getProduces(),
+        Matchers.contains(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_HTML));
+  }
+
   private static class TestClass {
     @ApiOperation(value = "value1", tags = {"tag1", "tag2"})
     public void function() {
@@ -69,6 +109,23 @@ public class ApiOperationProcessorTest {
 
     @ApiOperation(value = "value2")
     public void functionWithNoTag() {
+    }
+
+    @ApiOperation(value = "testSingleMediaType", consumes = MediaType.TEXT_PLAIN, produces = MediaType.APPLICATION_XML)
+    public String testSingleMediaType(String input) {
+      return input;
+    }
+
+    @ApiOperation(value = "testMultiMediaType",
+        consumes = MediaType.APPLICATION_JSON + "," + MediaType.TEXT_PLAIN,
+        produces = MediaType.APPLICATION_JSON + "," + MediaType.APPLICATION_XML)
+    public String testMultiMediaType(String input) {
+      return input;
+    }
+
+    @ApiOperation(value = "testBlankMediaType", consumes = "", produces = "")
+    public String testBlankMediaType(String input) {
+      return input;
     }
   }
 }

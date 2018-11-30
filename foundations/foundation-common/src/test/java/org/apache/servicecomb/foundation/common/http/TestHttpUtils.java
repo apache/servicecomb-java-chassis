@@ -26,7 +26,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-
 public class TestHttpUtils {
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
@@ -85,6 +84,37 @@ public class TestHttpUtils {
     expectedException.expectCause(Matchers.instanceOf(URISyntaxException.class));
 
     HttpUtils.uriEncodePath(":");
+  }
+
+  @Test
+  public void uriEncode_plus() {
+    String encoded = HttpUtils.uriEncodePath("a+b");
+    Assert.assertEquals("a+b", encoded);
+    Assert.assertEquals("a+b", HttpUtils.uriDecodePath(encoded));
+  }
+
+  @Test
+  public void uriEncode_encodeEntirePath() {
+    String encoded = HttpUtils.uriEncodePath("a%%'+b/def");
+    Assert.assertEquals("a%25%25'+b/def", encoded);
+  }
+
+  @Test
+  public void pathParamEncode() {
+    Assert.assertEquals("a+b", HttpUtils.encodePathParam("a+b"));
+    Assert.assertEquals("a%25b", HttpUtils.encodePathParam("a%b"));
+    Assert.assertEquals("a%25%25b", HttpUtils.encodePathParam("a%%b"));
+    Assert.assertEquals("%3C%20%3E'%22%EF%BC%88)&%2F%20%20", HttpUtils.encodePathParam("< >'\"（)&/  "));
+    Assert.assertEquals("%E6%B5%8B%20%E8%AF%95", HttpUtils.encodePathParam("测 试"));
+  }
+
+  /**
+   * SafeChar: the characters that are not encoded.
+   * This test is to show those safe chars excepting 0..9, a..z and A..Z
+   */
+  @Test
+  public void pathParamEncode_SafeChar() {
+    Assert.assertEquals("-._~!$'()*,;&=@:+", HttpUtils.encodePathParam("-._~!$'()*,;&=@:+"));
   }
 
   @Test

@@ -39,7 +39,6 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.SCBStatus;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
@@ -87,9 +86,6 @@ public class TestAbstractRestInvocation {
   ReferenceConfig endpoint;
 
   @Mocked
-  MicroserviceMetaManager microserviceMetaManager;
-
-  @Mocked
   SchemaMeta schemaMeta;
 
   @Mocked
@@ -106,6 +102,13 @@ public class TestAbstractRestInvocation {
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
+  class AbstractHttpServletRequestForTest extends AbstractHttpServletRequest {
+    @Override
+    public String getHeader(String name) {
+      return null;
+    }
+  }
+
   class AbstractRestInvocationForTest extends AbstractRestInvocation {
     @Override
     protected OperationLocator locateOperation(ServicePathManager servicePathManager) {
@@ -120,10 +123,19 @@ public class TestAbstractRestInvocation {
 
   AbstractRestInvocation restInvocation = new AbstractRestInvocationForTest();
 
+  static long nanoTime = 123;
+
   @BeforeClass
   public static void classSetup() {
     EventManager.eventBus = new EventBus();
     SCBEngine.getInstance().setStatus(SCBStatus.UP);
+
+    new MockUp<System>() {
+      @Mock
+      long nanoTime() {
+        return nanoTime;
+      }
+    };
   }
 
   @AfterClass
@@ -254,6 +266,8 @@ public class TestAbstractRestInvocation {
     Response response = Response.ok("");
     new Expectations() {
       {
+        filter.enabled();
+        result = true;
         filter.afterReceiveRequest(invocation, requestEx);
         result = response;
       }
@@ -283,8 +297,34 @@ public class TestAbstractRestInvocation {
   public void invokeFilterNoResponse(@Mocked HttpServerFilter filter) {
     new Expectations() {
       {
+        filter.enabled();
+        result = true;
         filter.afterReceiveRequest(invocation, requestEx);
         result = null;
+      }
+    };
+
+    Holder<Boolean> result = new Holder<>();
+    restInvocation = new AbstractRestInvocationForTest() {
+      @Override
+      protected void doInvoke() {
+        result.value = true;
+      }
+    };
+    initRestInvocation();
+    restInvocation.httpServerFilters = Arrays.asList(filter);
+
+    restInvocation.invoke();
+
+    Assert.assertTrue(result.value);
+  }
+
+  @Test
+  public void invokeFilterNoResponseDisableFilter(@Mocked HttpServerFilter filter) {
+    new Expectations() {
+      {
+        filter.enabled();
+        result = false;
       }
     };
 
@@ -308,6 +348,8 @@ public class TestAbstractRestInvocation {
     Error error = new Error();
     new Expectations() {
       {
+        filter.enabled();
+        result = true;
         filter.afterReceiveRequest(invocation, requestEx);
         result = error;
       }
@@ -337,6 +379,8 @@ public class TestAbstractRestInvocation {
   public void invokeNormal(@Mocked HttpServerFilter filter) {
     new Expectations() {
       {
+        filter.enabled();
+        result = true;
         filter.afterReceiveRequest(invocation, requestEx);
         result = null;
       }
@@ -356,6 +400,8 @@ public class TestAbstractRestInvocation {
     restInvocation.httpServerFilters = Arrays.asList(filter);
 
     restInvocation.invoke();
+
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartServerFiltersRequest());
   }
 
   @Test
@@ -438,6 +484,44 @@ public class TestAbstractRestInvocation {
     restInvocation.sendResponseQuietly(response);
 
     // just log, check nothing
+  }
+
+  @Test
+  public void sendResponseQuietlyExceptionOnNullInvocation(@Mocked Response response) {
+    restInvocation = new AbstractRestInvocationForTest() {
+      @Override
+      protected void doInvoke() {
+      }
+
+      @Override
+      protected void sendResponse(Response response) {
+        throw new Error("");
+      }
+    };
+    initRestInvocation();
+    restInvocation.invocation = null;
+
+    restInvocation.sendResponseQuietly(response);
+
+    // just log, check nothing, and should not throw NPE
+  }
+
+  @Test
+  public void executeHttpServerFiltersNullInvocation(@Mocked Response response) {
+    Holder<Boolean> flag = new Holder<>();
+    restInvocation = new AbstractRestInvocationForTest() {
+      @Override
+      protected void onExecuteHttpServerFiltersFinish(Response response, Throwable e) {
+        super.onExecuteHttpServerFiltersFinish(response, e);
+        flag.value = true;
+      }
+    };
+    initRestInvocation();
+    restInvocation.invocation = null;
+
+    restInvocation.executeHttpServerFilters(response);
+
+    Assert.assertTrue(flag.value);
   }
 
   @Test
@@ -610,6 +694,7 @@ public class TestAbstractRestInvocation {
 
     restInvocation.sendResponse(response);
     Assert.assertEquals("\"ok\"", buffer.toString());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishServerFiltersResponse());
   }
 
   @Test
@@ -671,8 +756,6 @@ public class TestAbstractRestInvocation {
       {
         requestEx.getHeader(Const.TARGET_MICROSERVICE);
         result = "ms";
-        microserviceMetaManager.ensureFindValue("ms");
-        result = microserviceMeta;
         ServicePathManager.getServicePathManager(microserviceMeta);
         result = null;
       }
@@ -716,8 +799,7 @@ public class TestAbstractRestInvocation {
   @Test
   public void scheduleInvocationException(@Mocked OperationMeta operationMeta) {
     Executor executor = new ReactiveExecutor();
-    requestEx = new AbstractHttpServletRequest() {
-    };
+    requestEx = new AbstractHttpServletRequestForTest();
     requestEx.setAttribute(RestConst.REST_REQUEST, requestEx);
     new Expectations() {
       {
@@ -764,8 +846,7 @@ public class TestAbstractRestInvocation {
       }
     };
 
-    requestEx = new AbstractHttpServletRequest() {
-    };
+    requestEx = new AbstractHttpServletRequestForTest();
 
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
@@ -787,13 +868,6 @@ public class TestAbstractRestInvocation {
 
   @Test
   public void scheduleInvocationNormal(@Mocked OperationMeta operationMeta) {
-    long time = 123;
-    new MockUp<System>() {
-      @Mock
-      long nanoTime() {
-        return time;
-      }
-    };
     Holder<InvocationStartEvent> eventHolder = new Holder<>();
     Object subscriber = new Object() {
       @Subscribe
@@ -804,15 +878,16 @@ public class TestAbstractRestInvocation {
     EventManager.register(subscriber);
 
     Executor executor = new ReactiveExecutor();
-    requestEx = new AbstractHttpServletRequest() {
-    };
+    requestEx = new AbstractHttpServletRequestForTest();
     requestEx.setAttribute(RestConst.REST_REQUEST, requestEx);
-    new Expectations() {
+    new Expectations(requestEx) {
       {
         restOperation.getOperationMeta();
         result = operationMeta;
         operationMeta.getExecutor();
         result = executor;
+        requestEx.getHeader(Const.TRACE_ID_NAME);
+        result = "tid";
       }
     };
 
@@ -830,8 +905,10 @@ public class TestAbstractRestInvocation {
     EventManager.unregister(subscriber);
 
     Assert.assertTrue(result.value);
-    Assert.assertEquals(time, invocation.getStartTime());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStart());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartSchedule());
     Assert.assertSame(invocation, eventHolder.value.getInvocation());
+    Assert.assertEquals("tid", invocation.getTraceId());
   }
 
   @Test
@@ -859,7 +936,7 @@ public class TestAbstractRestInvocation {
 
     Assert.assertTrue(result.value);
     Assert.assertSame(invocation, restInvocation.invocation);
-    Assert.assertEquals(time, invocation.getStartExecutionTime());
+    Assert.assertEquals(time, invocation.getInvocationStageTrace().getStartExecution());
   }
 
   @Test
@@ -878,7 +955,7 @@ public class TestAbstractRestInvocation {
     Holder<Response> result = new Holder<>();
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
-      protected void sendResponseQuietly(Response response) {
+      protected void sendResponse(Response response) {
         result.value = response;
       }
     };
@@ -887,5 +964,7 @@ public class TestAbstractRestInvocation {
     restInvocation.doInvoke();
 
     Assert.assertSame(response, result.value);
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartHandlersRequest());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishHandlersResponse());
   }
 }

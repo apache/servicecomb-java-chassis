@@ -22,7 +22,6 @@ import java.net.URL;
 import javax.inject.Inject;
 
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.definition.SchemaUtils;
 import org.apache.servicecomb.core.definition.loader.SchemaLoader;
@@ -40,8 +39,6 @@ import io.swagger.models.Swagger;
  * 在producer场景中，如果本地没有契约，需要根据实现类动态生成契约
  */
 public abstract class AbstractSchemaFactory<CONTEXT extends SchemaContext> {
-  @Inject
-  protected MicroserviceMetaManager microserviceMetaManager;
 
   protected SchemaLoader schemaLoader;
 
@@ -51,10 +48,6 @@ public abstract class AbstractSchemaFactory<CONTEXT extends SchemaContext> {
   @Inject
   public void setSchemaLoader(SchemaLoader schemaLoader) {
     this.schemaLoader = schemaLoader;
-  }
-
-  public void setMicroserviceMetaManager(MicroserviceMetaManager microserviceMetaManager) {
-    this.microserviceMetaManager = microserviceMetaManager;
   }
 
   // 因为aop的存在，schemaInstance的class不一定等于schemaClass

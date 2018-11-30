@@ -16,9 +16,11 @@
  */
 package org.apache.servicecomb.authentication.provider;
 
+import java.beans.PropertyDescriptor;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
@@ -84,18 +86,36 @@ public class AccessController {
   private boolean matchFound(Microservice microservice, Map<String, ConfigurationItem> ruleList) {
     boolean matched = false;
     for (ConfigurationItem item : ruleList.values()) {
-      // TODO: Currently we only support property, not support tags. And we will support tags later.
       if (ConfigurationItem.CATEGORY_PROPERTY.equals(item.category)) {
-        // TODO: Currently we only support to configure serviceName. And we will support others later.
-        if ("serviceName".equals(item.propertyName)) {
-          if (isPatternMatch(microservice.getServiceName(), item.rule)) {
-            matched = true;
-            break;
-          }
-        }
+        // we support to configure properties, e.g. serviceName, appId, environment, alias, version and so on, also support key in properties.
+        if (matchMicroserviceField(microservice, item) || matchMicroserviceProperties(microservice, item))
+          return true;
       }
     }
     return matched;
+  }
+
+  private boolean matchMicroserviceProperties(Microservice microservice, ConfigurationItem item) {
+    Map<String, String> properties = microservice.getProperties();
+    for (Entry<String, String> entry : properties.entrySet()) {
+      if (!entry.getKey().equals(item.propertyName))
+        continue;
+      return isPatternMatch(entry.getValue(), item.rule);
+    }
+    return false;
+  }
+
+  private boolean matchMicroserviceField(Microservice microservice, ConfigurationItem item) {
+    Object fieldValue = null;
+    try {
+      fieldValue = new PropertyDescriptor(item.propertyName, Microservice.class).getReadMethod().invoke(microservice);
+    } catch (Exception e) {
+      LOG.warn("can't find propertyname: {} in microservice field, will search in microservice properties.", item.propertyName);
+      return false;
+    }
+    if (fieldValue.getClass().getName().equals(String.class.getName()))
+      return isPatternMatch((String) fieldValue, item.rule);
+    return false;
   }
 
   private boolean isPatternMatch(String value, String pattern) {

@@ -27,20 +27,22 @@ import javax.ws.rs.Path;
 
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
+import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 
 import com.google.common.eventbus.EventBus;
-import com.netflix.spectator.api.CompositeRegistry;
 import com.netflix.spectator.api.Id;
+import com.netflix.spectator.api.Meter;
+import com.netflix.spectator.api.Registry;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @Path("/metrics")
 public class MetricsRestPublisher implements MetricsInitializer {
-  private CompositeRegistry globalRegistry;
+  private GlobalRegistry globalRegistry;
 
   @Override
-  public void init(CompositeRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+  public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
     this.globalRegistry = globalRegistry;
   }
 
@@ -56,14 +58,14 @@ public class MetricsRestPublisher implements MetricsInitializer {
     }
 
     StringBuilder sb = new StringBuilder();
-    globalRegistry
-        .iterator()
-        .forEachRemaining(meter -> {
-          meter.measure().forEach(measurement -> {
-            String key = idToString(measurement.id(), sb);
-            measurements.put(key, measurement.value());
-          });
+    for (Registry registry : globalRegistry.getRegistries()) {
+      for (Meter meter : registry) {
+        meter.measure().forEach(measurement -> {
+          String key = idToString(measurement.id(), sb);
+          measurements.put(key, measurement.value());
         });
+      }
+    }
 
     return measurements;
   }

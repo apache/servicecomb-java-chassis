@@ -18,10 +18,15 @@ package org.apache.servicecomb.metrics.core.publish;
 
 import java.util.List;
 
+import org.apache.servicecomb.foundation.metrics.publish.spectator.DefaultTagFinder;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementGroupConfig;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
+import org.apache.servicecomb.metrics.core.VertxMetersInitializer;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
+import org.apache.servicecomb.metrics.core.meter.os.NetMeter;
+import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
+import org.apache.servicecomb.metrics.core.meter.vertx.EndpointMeter;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroups;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
@@ -44,6 +49,10 @@ public class PublishModelFactory {
     return tree;
   }
 
+  public MeasurementTree getTree() {
+    return tree;
+  }
+
   protected MeasurementGroupConfig createMeasurementGroupConfig() {
     MeasurementGroupConfig groupConfig = new MeasurementGroupConfig();
     groupConfig.addGroup(MeterInvocationConst.INVOCATION_NAME,
@@ -53,6 +62,17 @@ public class PublishModelFactory {
         MeterInvocationConst.TAG_STATUS,
         MeterInvocationConst.TAG_STAGE,
         MeterInvocationConst.TAG_STATISTIC);
+
+    //os config
+    groupConfig.addGroup(OsMeter.OS_NAME,
+        OsMeter.OS_TYPE,
+        new DefaultTagFinder(NetMeter.INTERFACE, true),
+        NetMeter.STATISTIC);
+
+    groupConfig.addGroup(VertxMetersInitializer.VERTX_ENDPOINTS,
+        VertxMetersInitializer.ENDPOINTS_TYPE,
+        EndpointMeter.ADDRESS,
+        EndpointMeter.STATISTIC);
 
     return groupConfig;
   }
@@ -84,8 +104,12 @@ public class PublishModelFactory {
 
     model.getConsumer()
         .setOperationPerfGroups(generateOperationPerfGroups(tree, InvocationType.CONSUMER.name()));
+
     model.getProducer()
         .setOperationPerfGroups(generateOperationPerfGroups(tree, InvocationType.PRODUCER.name()));
+    //edge
+    model.getEdge()
+        .setOperationPerfGroups(generateOperationPerfGroups(tree, MeterInvocationConst.EDGE_INVOCATION_NAME));
 
     ThreadPoolMonitorPublishModelFactory.create(tree, model.getThreadPools());
 

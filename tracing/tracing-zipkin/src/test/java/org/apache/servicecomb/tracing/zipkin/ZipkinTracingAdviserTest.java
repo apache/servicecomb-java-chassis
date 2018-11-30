@@ -27,6 +27,7 @@ import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -104,11 +105,12 @@ public class ZipkinTracingAdviserTest {
     assertThat(tracedValues(span), containsInAnyOrder(this.getClass().getCanonicalName(), "RuntimeException: oops"));
   }
 
+  @SuppressWarnings({"unused", "try"})
   @Test
-  public void startsNewChildSpan() throws Exception {
+  public void startsNewChildSpan() {
     CyclicBarrier cyclicBarrier = new CyclicBarrier(nThreads);
 
-    CompletableFuture<?>[] futures = new CompletableFuture[nThreads];
+    CompletableFuture<?>[] futures = (CompletableFuture<?>[]) Array.newInstance(CompletableFuture.class, nThreads);
     for (int i = 0; i < nThreads; i++) {
       futures[i] = CompletableFuture.runAsync(() -> {
         Span currentSpan = tracing.tracer().newTrace().start();

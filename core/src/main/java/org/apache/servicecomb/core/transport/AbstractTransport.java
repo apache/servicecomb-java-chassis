@@ -33,7 +33,6 @@ import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
-import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +58,13 @@ public abstract class AbstractTransport implements Transport {
   private static final long DEFAULT_TIMEOUT_MILLIS = 30000;
 
   // 所有transport使用同一个vertx实例，避免创建太多的线程
-  protected Vertx transportVertx = VertxUtils.getOrCreateVertxByName("transport", null);
+  private static TransportVertxFactory transportVertxFactory = new TransportVertxFactory();
+
+  public static TransportVertxFactory getTransportVertxFactory() {
+    return transportVertxFactory;
+  }
+
+  protected Vertx transportVertx = getTransportVertxFactory().getTransportVertx();
 
   protected Endpoint endpoint;
 

@@ -27,6 +27,7 @@ import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
 import org.apache.servicecomb.foundation.common.net.IpPort;
@@ -38,6 +39,7 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.foundation.vertx.http.VertxClientRequestToHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.VertxClientResponseToHttpServletResponse;
+import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultHttpSocketMetric;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -50,6 +52,7 @@ import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.RequestOptions;
+import io.vertx.core.net.impl.ConnectionBase;
 
 public class RestClientInvocation {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestClientInvocation.class);
@@ -89,13 +92,16 @@ public class RestClientInvocation {
 
     Buffer requestBodyBuffer = restClientRequest.getBodyBuffer();
     HttpServletRequestEx requestEx = new VertxClientRequestToHttpServletRequest(clientRequest, requestBodyBuffer);
+    invocation.getInvocationStageTrace().startClientFiltersRequest();
     for (HttpClientFilter filter : httpClientFilters) {
-      filter.beforeSendRequest(invocation, requestEx);
+      if (filter.enabled()) {
+        filter.beforeSendRequest(invocation, requestEx);
+      }
     }
 
     clientRequest.exceptionHandler(e -> {
       LOGGER.error("Failed to send request to {}.", ipPort.getSocketAddress(), e);
-      asyncResp.fail(invocation.getInvocationType(), e);
+      fail(e);
     });
     clientRequest.connectionHandler(connection -> {
       LOGGER.debug("http connection connected, local:{}, remote:{}.",
@@ -113,7 +119,9 @@ public class RestClientInvocation {
             e);
       });
     });
+
     // 从业务线程转移到网络线程中去发送
+    invocation.getInvocationStageTrace().startSend();
     httpClientWithContext.runOnContext(httpClient -> {
       this.setCseContext();
       //set the timeout based on priority. the priority is follows.
@@ -125,7 +133,7 @@ public class RestClientInvocation {
         restClientRequest.end();
       } catch (Throwable e) {
         LOGGER.error("send http request failed,", e);
-        asyncResp.fail(invocation.getInvocationType(), e);
+        fail(e);
       }
     });
   }
@@ -167,7 +175,7 @@ public class RestClientInvocation {
 
     httpClientResponse.exceptionHandler(e -> {
       LOGGER.error("Failed to receive response from {}.", httpClientResponse.netSocket().remoteAddress(), e);
-      asyncResp.fail(invocation.getInvocationType(), e);
+      fail(e);
     });
 
     clientResponse.bodyHandler(responseBuf -> {
@@ -175,22 +183,67 @@ public class RestClientInvocation {
     });
   }
 
+  /**
+   *
+   * @param responseBuf response body buffer, when download, responseBuf is null, because download data by ReadStreamPart
+   */
   protected void processResponseBody(Buffer responseBuf) {
+    invocation.getInvocationStageTrace().finishReceiveResponse();
     invocation.getResponseExecutor().execute(() -> {
       try {
+        invocation.getInvocationStageTrace().startClientFiltersResponse();
         HttpServletResponseEx responseEx =
             new VertxClientResponseToHttpServletResponse(clientResponse, responseBuf);
         for (HttpClientFilter filter : httpClientFilters) {
-          Response response = filter.afterReceiveResponse(invocation, responseEx);
-          if (response != null) {
-            asyncResp.complete(response);
-            return;
+          if (filter.enabled()) {
+            Response response = filter.afterReceiveResponse(invocation, responseEx);
+            if (response != null) {
+              complete(response);
+              return;
+            }
           }
         }
       } catch (Throwable e) {
-        asyncResp.fail(invocation.getInvocationType(), e);
+        fail(e);
       }
     });
+  }
+
+  protected void complete(Response response) {
+    DefaultHttpSocketMetric httpSocketMetric = (DefaultHttpSocketMetric) ((ConnectionBase) clientRequest.connection())
+        .metric();
+    invocation.getInvocationStageTrace().finishGetConnection(httpSocketMetric.getRequestBeginTime());
+    invocation.getInvocationStageTrace().finishWriteToBuffer(httpSocketMetric.getRequestEndTime());
+
+    invocation.getInvocationStageTrace().finishClientFiltersResponse();
+    asyncResp.complete(response);
+  }
+
+  protected void fail(Throwable e) {
+    if (invocation.isFinished()) {
+      return;
+    }
+
+    InvocationStageTrace stageTrace = invocation.getInvocationStageTrace();
+    ConnectionBase connection = (ConnectionBase) clientRequest.connection();
+    // connection maybe null when exception happens such as ssl handshake failure
+    if (connection != null) {
+      DefaultHttpSocketMetric httpSocketMetric = (DefaultHttpSocketMetric) connection.metric();
+      stageTrace.finishGetConnection(httpSocketMetric.getRequestBeginTime());
+      stageTrace.finishWriteToBuffer(httpSocketMetric.getRequestEndTime());
+    }
+
+    // even failed and did not received response, still set time for it
+    // that will help to know the real timeout time
+    if (stageTrace.getFinishReceiveResponse() == 0) {
+      stageTrace.finishReceiveResponse();
+    }
+    if (stageTrace.getStartClientFiltersResponse() == 0) {
+      stageTrace.startClientFiltersResponse();
+    }
+
+    stageTrace.finishClientFiltersResponse();
+    asyncResp.fail(invocation.getInvocationType(), e);
   }
 
   protected void setCseContext() {

@@ -47,20 +47,21 @@ public class ProducerTestsAfterBootup implements BootListener {
 
   public void testSchemaNotChange() {
     LOGGER.info("ProducerTestsAfterBootup testing start");
+    //we can not set microserviceName any more
     SchemaMeta meta =
-        factory.getOrCreateProducerSchema("customer-service",
-            "test1",
+        factory.getOrCreateProducerSchema("test1",
             CodeFirstSpringmvcForSchema.class,
             new CodeFirstSpringmvcForSchema());
     String codeFirst = getSwaggerContent(meta.getSwagger());
-    TestMgr.check("07a48acef4cc1a7f2387d695923c49e98951a974e4f51cf1356d6878db48888f",
+    TestMgr.check("2986daa46b229ec125443122dd7b51ee9a64879f1750d0996f948ce0718685c7",
         RegistryUtils.calcSchemaSummary(codeFirst));
-    TestMgr.check(codeFirst.length(), 899);
+    TestMgr.check(codeFirst.length(), 889);
   }
 
-  public void testRegisterPath() {
-    TestMgr.check(RegistryUtils.getMicroservice().getPaths().size(), 10);
+  public void testRegisteredBasePath() {
+    TestMgr.check(12, RegistryUtils.getMicroservice().getPaths().size());
   }
+
   private String getSwaggerContent(Swagger swagger) {
     try {
       return writer.writeValueAsString(swagger);
@@ -73,7 +74,7 @@ public class ProducerTestsAfterBootup implements BootListener {
   public void onBootEvent(BootEvent event) {
     if (event.getEventType() == BootListener.EventType.AFTER_REGISTRY) {
       testSchemaNotChange();
-      testRegisterPath();
+      testRegisteredBasePath();
       if (!TestMgr.isSuccess()) {
         TestMgr.summary();
         throw new IllegalStateException("some tests are failed. ");

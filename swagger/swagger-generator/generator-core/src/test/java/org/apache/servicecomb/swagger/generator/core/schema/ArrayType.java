@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.swagger.generator.core.schema;
 
+import org.apache.servicecomb.foundation.test.scaffolding.model.User;
+
 public class ArrayType {
   public byte[] testBytes(byte[] value) {
     return null;

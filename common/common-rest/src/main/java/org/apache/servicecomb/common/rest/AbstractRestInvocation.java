@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.common.rest;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
@@ -51,6 +50,10 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractRestInvocation {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRestInvocation.class);
 
+  public static final String UNKNOWN_OPERATION_ID = "UNKNOWN_OPERATION";
+
+  protected long start;
+
   protected RestOperationMeta restOperationMeta;
 
   protected Invocation invocation;
@@ -62,6 +65,10 @@ public abstract class AbstractRestInvocation {
   protected ProduceProcessor produceProcessor;
 
   protected List<HttpServerFilter> httpServerFilters = Collections.emptyList();
+
+  public AbstractRestInvocation() {
+    this.start = System.nanoTime();
+  }
 
   public void setHttpServerFilters(List<HttpServerFilter> httpServerFilters) {
     this.httpServerFilters = httpServerFilters;
@@ -115,12 +122,16 @@ public abstract class AbstractRestInvocation {
       return;
     }
 
-    invocation.onStart();
+    invocation.onStart(requestEx, start);
+    invocation.getInvocationStageTrace().startSchedule();
     OperationMeta operationMeta = restOperationMeta.getOperationMeta();
 
     operationMeta.getExecutor().execute(() -> {
       synchronized (this.requestEx) {
         try {
+          if (isInQueueTimeout()) {
+            throw new InvocationException(Status.INTERNAL_SERVER_ERROR, "Timeout when processing the request.");
+          }
           if (requestEx.getAttribute(RestConst.REST_REQUEST) != requestEx) {
             // already timeout
             // in this time, request maybe recycled and reused by web container, do not use requestEx
@@ -139,8 +150,13 @@ public abstract class AbstractRestInvocation {
     });
   }
 
+  private boolean isInQueueTimeout() {
+    return System.nanoTime() - invocation.getInvocationStageTrace().getStart() >
+        CommonRestConfig.getRequestWaitInPoolTimeout() * 1_000_000;
+  }
+
   protected void runOnExecutor() {
-    invocation.onStartExecute();
+    invocation.onExecuteStart();
 
     invoke();
   }
@@ -170,10 +186,13 @@ public abstract class AbstractRestInvocation {
     this.setContext();
     invocation.getHandlerContext().put(RestConst.REST_REQUEST, requestEx);
 
+    invocation.getInvocationStageTrace().startServerFiltersRequest();
     for (HttpServerFilter filter : httpServerFilters) {
-      Response response = filter.afterReceiveRequest(invocation, requestEx);
-      if (response != null) {
-        return response;
+      if (filter.enabled()) {
+        Response response = filter.afterReceiveRequest(invocation, requestEx);
+        if (response != null) {
+          return response;
+        }
       }
     }
 
@@ -181,6 +200,7 @@ public abstract class AbstractRestInvocation {
   }
 
   protected void doInvoke() throws Throwable {
+    invocation.getInvocationStageTrace().startHandlersRequest();
     invocation.next(resp -> {
       sendResponseQuietly(resp);
     });
@@ -196,12 +216,14 @@ public abstract class AbstractRestInvocation {
   }
 
   protected void sendResponseQuietly(Response response) {
+    if (invocation != null) {
+      invocation.getInvocationStageTrace().finishHandlersResponse();
+    }
     try {
       sendResponse(response);
     } catch (Throwable e) {
-      LOGGER.error("Failed to send rest response, operation:{}.",
-          invocation.getMicroserviceQualifiedName(),
-          e);
+      LOGGER.error("Failed to send rest response, operation:{}, request uri:{}",
+          getMicroserviceQualifiedName(), requestEx.getRequestURI(), e);
     }
   }
 
@@ -229,30 +251,42 @@ public abstract class AbstractRestInvocation {
         new HttpServerFilterBeforeSendResponseExecutor(httpServerFilters, invocation, responseEx);
     CompletableFuture<Void> future = exec.run();
     future.whenComplete((v, e) -> {
+      if (invocation != null) {
+        invocation.getInvocationStageTrace().finishServerFiltersResponse();
+      }
+
       onExecuteHttpServerFiltersFinish(response, e);
     });
   }
 
   protected void onExecuteHttpServerFiltersFinish(Response response, Throwable e) {
     if (e != null) {
-      LOGGER.error("Failed to execute HttpServerFilters, operation:{}.",
-          invocation.getMicroserviceQualifiedName(),
-          e);
+      LOGGER.error("Failed to execute HttpServerFilters, operation:{}, request uri:{}",
+          getMicroserviceQualifiedName(), requestEx.getRequestURI(), e);
     }
 
     try {
       responseEx.flushBuffer();
-    } catch (IOException flushException) {
-      LOGGER.error("Failed to flush rest response, operation:{}.",
-          invocation.getMicroserviceQualifiedName(),
-          flushException);
+    } catch (Throwable flushException) {
+      LOGGER.error("Failed to flush rest response, operation:{}, request uri:{}",
+          getMicroserviceQualifiedName(), requestEx.getRequestURI(), flushException);
     }
 
-    requestEx.getAsyncContext().complete();
+    try {
+      requestEx.getAsyncContext().complete();
+    } catch (Throwable completeException) {
+      LOGGER.error("Failed to complete async rest response, operation:{}, request uri:{}",
+          getMicroserviceQualifiedName(), requestEx.getRequestURI(), completeException);
+    }
+
     // if failed to locate path, then will not create invocation
     // TODO: statistics this case
     if (invocation != null) {
       invocation.onFinish(response);
     }
+  }
+
+  private String getMicroserviceQualifiedName() {
+    return null == invocation ? UNKNOWN_OPERATION_ID : invocation.getMicroserviceQualifiedName();
   }
 }

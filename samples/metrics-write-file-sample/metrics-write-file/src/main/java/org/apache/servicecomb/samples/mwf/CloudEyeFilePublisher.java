@@ -23,6 +23,7 @@ import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
+import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.slf4j.Logger;
@@ -33,7 +34,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.spectator.api.CompositeRegistry;
 import com.netflix.spectator.api.Measurement;
 import com.netflix.spectator.api.Meter;
 import com.netflix.spectator.api.Tag;
@@ -56,7 +56,7 @@ public class CloudEyeFilePublisher implements MetricsInitializer {
   private String hostName;
 
   @Override
-  public void init(CompositeRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
+  public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
     eventBus.register(this);
 
     Microservice microservice = RegistryUtils.getMicroservice();

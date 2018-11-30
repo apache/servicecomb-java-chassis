@@ -29,15 +29,16 @@
 
   <groupId>org.apache.servicecomb</groupId>
   <artifactId>java-chassis</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>ServiceComb Java Chassis</name>
   <description>Software Development Kit (SDK) for rapid development of microservices</description>
-  <url>https://github.com/apache/incubator-servicecomb-java-chassis</url>
+  <url>https://github.com/apache/servicecomb-java-chassis</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <skip-remote-resource>true</skip-remote-resource>
   </properties>
 
   <licenses>
@@ -83,11 +84,24 @@
   <inceptionYear>2017</inceptionYear>
 
   <scm>
-    <url>https://github.com/apache/incubator-servicecomb-java-chassis</url>
-    <connection>scm:git:https://github.com/apache/incubator-servicecomb-java-chassis.git</connection>
-    <developerConnection>scm:git:https://github.com/apache/incubator-servicecomb-java-chassis.git</developerConnection>
+    <url>https://github.com/apache/servicecomb-java-chassis</url>
+    <connection>scm:git:https://github.com/apache/servicecomb-java-chassis.git</connection>
+    <developerConnection>scm:git:https://github.com/apache/servicecomb-java-chassis.git</developerConnection>
     <tag>v${project.version}</tag>
   </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>apache.releases.https</id>
+      <name>Apache Release Distribution Repository</name>
+      <url>https://repository.apache.org/service/local/staging/deploy/maven2</url>
+    </repository>
+    <snapshotRepository>
+      <id>apache.snapshots.https</id>
+      <name>Apache Development Snapshot Repository</name>
+      <url>https://repository.apache.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
 
   <modules>
     <module>parent</module>
@@ -100,17 +114,286 @@
     <module>swagger</module>
     <module>core</module>
     <module>service-registry</module>
-    <module>spring-boot-starter</module>
     <module>tracing</module>
     <module>edge</module>
     <module>metrics</module>
     <module>dynamic-config</module>
     <module>archetypes</module>
+    <module>java-chassis-dependencies-springboot2</module>
+    <module>java-chassis-spring-boot</module>
   </modules>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jxr-plugin</artifactId>
+        <version>2.5</version>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <configLocation>../etc/checkstyle.xml</configLocation>
+          <excludes>**/demo/**</excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-remote-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>process-resource-bundles</id>
+            <goals>
+              <goal>process</goal>
+            </goals>
+            <configuration>
+              <skip>${skip-remote-resource}</skip>
+              <resourceBundles>
+                <resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
+                <resourceBundle>org.apache:apache-incubator-disclaimer-resource-bundle:1.1</resourceBundle>
+              </resourceBundles>
+              <properties>
+                <projectName>Apache ServiceComb</projectName>
+              </properties>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>1.16</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.rat</groupId>
+        <artifactId>apache-rat-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>DISCLAIMER</exclude>
+            <exclude>.travis.yml</exclude>
+            <exclude>**/*.md</exclude>
+            <excldue>**/*.MD</excldue>
+            <exclude>**/target/*</exclude>
+            <!-- Skip the code style configuration file -->
+            <exclude>**/etc/eclipse-java-google-style.xml</exclude>
+            <exclude>**/etc/intellij-java-google-style.xml</exclude>
+            <!-- Skip the ssl configuration files -->
+            <exculde>**/resources/ssl/**</exculde>
+            <!-- SKip the licenses files -->
+            <exclude>**/src/release/licenses/**</exclude>
+            <!-- Skip the demo log files -->
+            <exclude>**/logs/**.log</exclude>
+            <exclude>**/**.log</exclude>
+            <!-- Skip the target files -->
+            <exclude>**/target/**</exclude>
+            <!-- Skip the source files which are forked from vertx -->
+            <exclude>**/io/vertx/ext/web/impl/MimeTypesUtils.java</exclude>
+            <exclude>**/java/org/apache/servicecomb/transport/rest/vertx/RestBodyHandler.java</exclude>
+            <!--Skip protobuf generated file-->
+            <exclude>**/java/org/apache/servicecomb/foundation/protobuf/internal/model/ProtobufRoot.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>java</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skip>${maven.test.skip}</skip>
+          <testFailureIgnore>${maven.test.failure.ignore}</testFailureIgnore>
+          <excludes>
+            <exclude>${excludesFile}</exclude>
+          </excludes>
+          <forkCount>1</forkCount>
+          <reuseForks>true</reuseForks>
+          <runOrder>alphabetical</runOrder>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>findbugs-maven-plugin</artifactId>
+        <version>3.0.1</version>
+        <configuration>
+          <findbugsXmlOutput>true</findbugsXmlOutput>
+          <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
+          <xmlOutput>true</xmlOutput>
+          <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.eluder.coveralls</groupId>
+          <artifactId>coveralls-maven-plugin</artifactId>
+          <version>4.3.0</version>
+          <configuration>
+            <jacocoReports>
+              <jacocoReport>${project.basedir}/coverage-reports/target/site/jacoco-aggregate/jacoco.xml</jacocoReport>
+            </jacocoReports>
+          </configuration>
+        </plugin>
+        <plugin>
+          <artifactId>maven-remote-resources-plugin</artifactId>
+          <version>1.5</version>
+        </plugin>
+        <plugin>
+          <groupId>io.fabric8</groupId>
+          <artifactId>docker-maven-plugin</artifactId>
+          <version>0.20.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.gmaven</groupId>
+          <artifactId>gmaven-plugin</artifactId>
+          <version>1.5</version>
+        </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>0.7.8</version>
+          <configuration>
+            <excludes>
+              <exclude>*$Impl_*</exclude>
+            </excludes>
+          </configuration>
+          <executions>
+            <execution>
+              <id>default-prepare-agent</id>
+              <goals>
+                <goal>prepare-agent</goal>
+              </goals>
+              <configuration>
+                <destFile>${project.build.directory}/jacoco.exec</destFile>
+              </configuration>
+            </execution>
+            <execution>
+              <id>default-prepare-agent-integration</id>
+              <phase>pre-integration-test</phase>
+              <goals>
+                <goal>prepare-agent-integration</goal>
+              </goals>
+              <configuration>
+                <destFile>${project.build.directory}/jacoco-it.exec</destFile>
+                <propertyName>jacoco.failsafe.argLine</propertyName>
+              </configuration>
+            </execution>
+            <execution>
+              <id>default-report</id>
+              <goals>
+                <goal>report</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>default-report-integration</id>
+              <goals>
+                <goal>report-integration</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.1</version>
+          <configuration>
+            <source>1.8</source>
+            <target>1.8</target>
+            <showDeprecation>true</showDeprecation>
+            <showWarnings>true</showWarnings>
+            <compilerArgs>
+              <arg>-Werror</arg>
+              <arg>-Xlint:all</arg>
+              <!--not care for jdk8/jdk7 compatible problem-->
+              <arg>-Xlint:-classfile</arg>
+            </compilerArgs>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <versionRange>[0.0.1,)</versionRange>
+                    <goals>
+                      <goal>prepare-agent</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore/>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>2.4</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>3.4</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-checkstyle-plugin</artifactId>
+          <version>2.17</version>
+          <inherited>true</inherited>
+          <dependencies>
+            <dependency>
+              <groupId>com.puppycrawl.tools</groupId>
+              <artifactId>checkstyle</artifactId>
+              <version>7.6</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
 
   <profiles>
     <profile>
       <id>release</id>
+      <properties>
+        <skip-remote-resource>false</skip-remote-resource>
+      </properties>
       <build>
         <plugins>
           <plugin>
@@ -141,25 +424,6 @@
                 <goals>
                   <goal>jar-no-fork</goal>
                 </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <artifactId>maven-remote-resources-plugin</artifactId>
-            <executions>
-              <execution>
-                <goals>
-                  <goal>process</goal>
-                </goals>
-                <configuration>
-                  <resourceBundles>
-                    <resourceBundle>org.apache:apache-jar-resource-bundle:1.4</resourceBundle>
-                    <resourceBundle>org.apache:apache-incubator-disclaimer-resource-bundle:1.1</resourceBundle>
-                  </resourceBundles>
-                  <properties>
-                    <projectName>Apache ServiceComb</projectName>
-                  </properties>
-                </configuration>
               </execution>
             </executions>
           </plugin>
@@ -199,6 +463,9 @@
     </profile>
     <profile>
       <id>distribution</id>
+      <properties>
+        <skip-remote-resource>false</skip-remote-resource>
+      </properties>
       <modules>
         <module>java-chassis-distribution</module>
       </modules>
@@ -215,97 +482,36 @@
         <module>samples</module>
       </modules>
     </profile>
+    <profile>
+      <id>docker-machine</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>io.fabric8</groupId>
+              <artifactId>docker-maven-plugin</artifactId>
+              <configuration>
+                <machine>
+                  <name>default</name>
+                  <autoCreate>true</autoCreate>
+                </machine>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+    <profile>
+      <id>jacoco</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.rat</groupId>
-        <artifactId>apache-rat-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>DISCLAIMER</exclude>
-            <exclude>.travis.yml</exclude>
-            <exclude>**/*.md</exclude>
-            <excldue>**/*.MD</excldue>
-            <exclude>**/target/*</exclude>
-            <!-- Skip the code style configuration file -->
-            <exclude>**/etc/eclipse-java-google-style.xml</exclude>
-            <exclude>**/etc/intellij-java-google-style.xml</exclude>
-            <!-- Skip the ssl configuration files -->
-            <exculde>**/resources/ssl/**</exculde>
-            <!-- SKip the licenses files -->
-            <exclude>**/src/release/licenses/**</exclude>
-            <!-- Skip the demo log files -->
-            <exclude>**/logs/**.log</exclude>
-            <!-- Skip the source files which are forked from vertx -->
-            <exclude>**/io/vertx/ext/web/impl/MimeTypesUtils.java</exclude>
-            <exclude>**/java/org/apache/servicecomb/transport/rest/vertx/RestBodyHandler.java</exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <version>1.2.1</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>java</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <skip>${maven.test.skip}</skip>
-          <testFailureIgnore>${maven.test.failure.ignore}</testFailureIgnore>
-          <excludes>
-            <exclude>${excludesFile}</exclude>
-          </excludes>
-          <forkCount>2</forkCount>
-          <reuseForks>true</reuseForks>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
-        <version>3.0.1</version>
-        <configuration>
-          <findbugsXmlOutput>true</findbugsXmlOutput>
-          <findbugsXmlWithMessages>true</findbugsXmlWithMessages>
-          <xmlOutput>true</xmlOutput>
-          <excludeFilterFile>findbugs-exclude.xml</excludeFilterFile>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <archive>
-            <manifest>
-              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-              <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-            </manifest>
-          </archive>
-        </configuration>
-      </plugin>
-    </plugins>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.eluder.coveralls</groupId>
-          <artifactId>coveralls-maven-plugin</artifactId>
-          <version>4.3.0</version>
-          <configuration>
-            <jacocoReports>
-              <jacocoReport>${project.basedir}/coverage-reports/target/site/jacoco-aggregate/jacoco.xml</jacocoReport>
-            </jacocoReports>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
 </project>

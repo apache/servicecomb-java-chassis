@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.apache.servicecomb</groupId>
     <artifactId>common</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
   </parent>
   <artifactId>common-protobuf</artifactId>
   <name>Java Chassis::Common::Protobuf</name>
@@ -32,28 +32,15 @@
       <artifactId>java-chassis-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.protostuff</groupId>
-      <artifactId>protostuff-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.protostuff</groupId>
-      <artifactId>protostuff-runtime</artifactId>
-    </dependency>
-    <!-- 当前没作用，但是后续还是要改回jackson插件机制的，相关代码先保留吧 -->
-    <dependency>
-      <groupId>com.fasterxml.jackson.dataformat</groupId>
-      <artifactId>jackson-dataformat-protobuf</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>common-javassist</artifactId>
     </dependency>
+
     <dependency>
-      <groupId>com.google.protobuf</groupId>
-      <artifactId>protobuf-java</artifactId>
-      <version>3.3.0</version>
-      <scope>test</scope>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-protobuf</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
@@ -63,6 +50,15 @@
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>swagger-generator-springmvc</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-test-scaffolding</artifactId>
     </dependency>
   </dependencies>
 </project>

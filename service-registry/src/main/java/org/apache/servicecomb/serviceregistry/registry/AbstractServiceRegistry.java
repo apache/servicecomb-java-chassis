@@ -19,12 +19,15 @@ package org.apache.servicecomb.serviceregistry.registry;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_DEFAULT_REGISTER_BY;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_FRAMEWORK_DEFAULT_NAME;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.servicecomb.serviceregistry.Features;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.registry.BasePath;
@@ -33,7 +36,6 @@ import org.apache.servicecomb.serviceregistry.api.registry.FrameworkVersions;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManagerNew;
 import org.apache.servicecomb.serviceregistry.client.IpPortManager;
@@ -41,7 +43,9 @@ import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionFactory;
+import org.apache.servicecomb.serviceregistry.consumer.StaticMicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceServiceCenterTask;
 import org.apache.servicecomb.serviceregistry.task.ServiceCenterTask;
@@ -76,8 +80,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   protected ServiceCenterTask serviceCenterTask;
 
-  protected ServiceCenterInfo serviceCenterInfo;
-
   public AbstractServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
       MicroserviceDefinition microserviceDefinition) {
     this.eventBus = eventBus;
@@ -100,8 +102,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     if (srClient == null) {
       srClient = createServiceRegistryClient();
     }
-
-    serviceCenterInfo = srClient.getServiceCenterInfo();
 
     createServiceCenterTask();
 
@@ -186,7 +186,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     microservice.setRegisterBy(CONFIG_DEFAULT_REGISTER_BY);
   }
 
-
   private void loadStaticConfiguration() {
     // TODO 如果yaml定义了paths规则属性，替换默认值，现需要DynamicPropertyFactory支持数组获取
     List<BasePath> paths = microservice.getPaths();
@@ -206,6 +205,9 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   public boolean unregisterInstance() {
     MicroserviceInstance microserviceInstance = microservice.getInstance();
+    if (microserviceInstance.getInstanceId() == null || microserviceInstance.getServiceId() == null) {
+      return true;
+    }
     boolean result = srClient.unregisterMicroserviceInstance(microserviceInstance.getServiceId(),
         microserviceInstance.getInstanceId());
     if (!result) {
@@ -223,7 +225,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   public List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
       String versionRule) {
     MicroserviceInstances instances = findServiceInstances(appId, serviceName, versionRule, null);
-    if (instances == null) {
+    if (instances == null || instances.isMicroserviceNotExist()) {
       return null;
     }
     return instances.getInstancesResponse().getInstances();
@@ -243,6 +245,10 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
           serviceName,
           versionRule);
       return null;
+    }
+
+    if (microserviceInstances.isMicroserviceNotExist()) {
+      return microserviceInstances;
     }
 
     if (!microserviceInstances.isNeedRefresh()) {
@@ -292,6 +298,11 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     return srClient.getMicroservice(microserviceId);
   }
 
+  @Override
+  public Microservice getAggregatedRemoteMicroservice(String microserviceId) {
+    return srClient.getAggregatedMicroservice(microserviceId);
+  }
+
   public Microservice getMicroservice() {
     return microservice;
   }
@@ -303,5 +314,33 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   public void destroy() {
     eventBus.post(new ShutdownEvent());
     unregisterInstance();
+  }
+
+  @Override
+  public void registerMicroserviceMapping(String microserviceName, String version,
+      List<MicroserviceInstance> instances, Class<?> schemaIntfCls) {
+    String app = RegistryUtils.getAppId();
+    MicroserviceManager microserviceManager = appManager.getOrCreateMicroserviceManager(app);
+    microserviceManager.getVersionsByName()
+        .computeIfAbsent(microserviceName,
+            svcName -> {
+              StaticMicroserviceVersions microserviceVersions = new StaticMicroserviceVersions(this.appManager,
+                  app, microserviceName, schemaIntfCls);
+              microserviceVersions.addInstances(version, instances);
+              return microserviceVersions;
+            });
+  }
+
+  @Override
+  public void registerMicroserviceMappingByEndpoints(String microserviceName, String version,
+      List<String> endpoints, Class<?> schemaIntfCls) {
+    ArrayList<MicroserviceInstance> microserviceInstances = new ArrayList<>();
+    for (String endpoint : endpoints) {
+      MicroserviceInstance instance = new MicroserviceInstance();
+      instance.setEndpoints(Collections.singletonList(endpoint));
+      microserviceInstances.add(instance);
+    }
+
+    registerMicroserviceMapping(microserviceName, version, microserviceInstances, schemaIntfCls);
   }
 }

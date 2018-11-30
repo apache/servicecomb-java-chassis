@@ -178,11 +178,11 @@ public class HystrixCommandPropertiesExt extends HystrixCommandProperties {
   private final HystrixProperty<Boolean> requestCacheEnabled;
 
   protected HystrixCommandPropertiesExt(HystrixCommandKey key) {
-    this(key, HystrixCommandProperties.Setter(), "cse");
+    this(key, HystrixCommandProperties.Setter(), "servicecomb");
   }
 
   protected HystrixCommandPropertiesExt(HystrixCommandKey key, HystrixCommandProperties.Setter builder) {
-    this(key, builder, "cse");
+    this(key, builder, "servicecomb");
   }
 
   protected HystrixCommandPropertiesExt(HystrixCommandKey key, HystrixCommandProperties.Setter builder,

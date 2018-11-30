@@ -97,6 +97,25 @@ public class TestRestTemplateCopyHeaderFilter {
   }
 
   @Test
+  public void beforeSendRequestSkipContentLength(@Mocked Invocation invocation) {
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.add(HttpHeaders.CONTENT_LENGTH, "0");
+
+    Map<String, Object> context = new HashMap<>();
+    context.put(RestConst.CONSUMER_HEADER, httpHeaders);
+    new Expectations() {
+      {
+        invocation.getHandlerContext();
+        result = context;
+      }
+    };
+
+    HttpServletRequestEx requestEx = new CommonToHttpServletRequest(null, null, new HttpHeaders(), null, false);
+    filter.beforeSendRequest(invocation, requestEx);
+    Assert.assertNull((requestEx.getHeader(HttpHeaders.CONTENT_LENGTH)));
+  }
+
+  @Test
   public void afterReceiveResponse() {
     Assert.assertNull(filter.afterReceiveResponse(null, null));
   }

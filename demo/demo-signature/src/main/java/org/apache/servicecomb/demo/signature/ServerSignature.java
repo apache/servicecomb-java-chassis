@@ -48,7 +48,7 @@ public class ServerSignature implements HttpServerFilter {
   public Response afterReceiveRequest(Invocation invocation, HttpServletRequestEx requestEx) {
     String signature = SignatureUtils.genSignature(requestEx);
     String clientSignature = requestEx.getHeader("signature");
-    LOGGER.info("check request signature, client: {}, server: {}.", clientSignature, signature);
+    LOGGER.debug("check request signature, client: {}, server: {}.", clientSignature, signature);
     if (!signature.equals(clientSignature)) {
       LOGGER.error("check request signature failed: {}", invocation.getInvocationQualifiedName());
       return Response

@@ -19,12 +19,12 @@ package org.apache.servicecomb.core.definition.schema;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+import javax.ws.rs.core.Response.Status;
 import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.definition.MicroserviceMetaManager;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.definition.loader.SchemaLoader;
@@ -33,6 +33,7 @@ import org.apache.servicecomb.core.executor.ReactiveExecutor;
 import org.apache.servicecomb.core.unittest.UnitTestMeta;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
@@ -42,6 +43,7 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapperFactory;
 import org.apache.servicecomb.swagger.invocation.converter.ConverterMgr;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.hamcrest.Matchers;
 import org.junit.AfterClass;
@@ -49,6 +51,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.swagger.models.Swagger;
 import mockit.Mock;
 import mockit.MockUp;
 
@@ -57,32 +60,45 @@ public class TestProducerSchemaFactory {
 
   private static ProducerSchemaFactory producerSchemaFactory = new ProducerSchemaFactory();
 
-  private static SchemaMeta schemaMeta;
+  static boolean rejectAdd;
 
   public static class TestProducerSchemaFactoryImpl {
     public int add(int x, int y) {
+      if (rejectAdd) {
+        throw new Error("reject add");
+      }
       return x + y;
     }
 
-    public CompletableFuture<String> async() {
-      return null;
+    public CompletableFuture<String> asyncAdd(int x, int y) {
+      if (rejectAdd) {
+        throw new Error("reject add");
+      }
+      return CompletableFuture.completedFuture(String.valueOf(x + y));
     }
   }
 
+  static long nanoTime = 123;
+
   @BeforeClass
   public static void init() {
+    new MockUp<System>() {
+      @Mock
+      long nanoTime() {
+        return nanoTime;
+      }
+    };
+
     new UnitTestMeta();
 
     ConverterMgr converterMgr = new ConverterMgr();
     ProducerArgumentsMapperFactory producerArgsMapperFactory = new ProducerArgumentsMapperFactory();
     producerArgsMapperFactory.setConverterMgr(converterMgr);
 
-    MicroserviceMetaManager microserviceMetaManager = new MicroserviceMetaManager();
     SchemaLoader schemaLoader = new SchemaLoader();
     CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext = new CompositeSwaggerGeneratorContext();
 
     producerSchemaFactory.setSwaggerEnv(swaggerEnv);
-    ReflectUtils.setField(producerSchemaFactory, "microserviceMetaManager", microserviceMetaManager);
     ReflectUtils.setField(producerSchemaFactory, "schemaLoader", schemaLoader);
     ReflectUtils.setField(producerSchemaFactory,
         "compositeSwaggerGeneratorContext",
@@ -102,11 +118,6 @@ public class TestProducerSchemaFactory {
         return (T) normalExecutor;
       }
     };
-
-    schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("app:ms",
-        "schema",
-        TestProducerSchemaFactoryImpl.class,
-        new TestProducerSchemaFactoryImpl());
   }
 
   @AfterClass
@@ -116,12 +127,17 @@ public class TestProducerSchemaFactory {
 
   @Test
   public void testGetOrCreateProducer() throws Exception {
+    SchemaMeta schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("schema",
+        TestProducerSchemaFactoryImpl.class,
+        new TestProducerSchemaFactoryImpl());
+    Swagger swagger = schemaMeta.getSwagger();
+    Assert.assertEquals(swagger.getBasePath(), "/TestProducerSchemaFactoryImpl");
     OperationMeta operationMeta = schemaMeta.ensureFindOperation("add");
     Assert.assertEquals("add", operationMeta.getOperationId());
 
     SwaggerProducerOperation producerOperation = operationMeta.getExtData(Const.PRODUCER_OPERATION);
-
-    Object addBody = Class.forName("cse.gen.app.ms.schema.addBody").newInstance();
+    //we can not set microserviceName any more,use the default name
+    Object addBody = Class.forName("cse.gen.app.perfClient.schema.addBody").newInstance();
     ReflectUtils.setField(addBody, "x", 1);
     ReflectUtils.setField(addBody, "y", 2);
     Invocation invocation = new Invocation((Endpoint) null, operationMeta, new Object[] {addBody}) {
@@ -131,24 +147,97 @@ public class TestProducerSchemaFactory {
       }
     };
     Holder<Response> holder = new Holder<>();
-    producerOperation.invoke(invocation, resp -> {
-      holder.value = resp;
-    });
+    rejectAdd = false;
+    producerOperation.invoke(invocation, resp -> holder.value = resp);
     Assert.assertEquals(3, (int) holder.value.getResult());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartBusinessMethod());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishBusiness());
 
-    invocation.setSwaggerArguments(new Object[] {1, 2});
-    producerOperation.invoke(invocation, resp -> {
-      holder.value = resp;
-    });
+    nanoTime++;
+    rejectAdd = true;
+    producerOperation.invoke(invocation, resp -> holder.value = resp);
     Assert.assertEquals(true, holder.value.isFailed());
-    InvocationException exception = (InvocationException) holder.value.getResult();
+    InvocationException exception = holder.value.getResult();
     CommonExceptionData data = (CommonExceptionData) exception.getErrorData();
+    Assert.assertEquals(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, exception.getStatusCode());
     Assert.assertEquals("Cse Internal Server Error", data.getMessage());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartBusinessMethod());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishBusiness());
+
+    nanoTime++;
+    invocation.setSwaggerArguments(new Object[] {1, 2});
+    producerOperation.invoke(invocation, resp -> holder.value = resp);
+    Assert.assertEquals(true, holder.value.isFailed());
+    exception = holder.value.getResult();
+    data = (CommonExceptionData) exception.getErrorData();
+    Assert.assertEquals(Status.BAD_REQUEST.getStatusCode(), exception.getStatusCode());
+    Assert.assertEquals("Parameters not valid or types not match.", data.getMessage());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartBusinessMethod());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishBusiness());
   }
 
   @Test
-  public void testCompletableFuture() {
-    OperationMeta operationMeta = schemaMeta.ensureFindOperation("async");
+  public void testGetOrCreateProducerWithPrefix() {
+    ArchaiusUtils.setProperty(org.apache.servicecomb.serviceregistry.api.Const.REGISTER_URL_PREFIX, "true");
+    System.setProperty(org.apache.servicecomb.serviceregistry.api.Const.URL_PREFIX, "/pojo/test");
+    SchemaMeta schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("schema2",
+        TestProducerSchemaFactoryImpl.class,
+        new TestProducerSchemaFactoryImpl());
+    OperationMeta operationMeta = schemaMeta.ensureFindOperation("add");
+    Assert.assertEquals("add", operationMeta.getOperationId());
+    Swagger swagger = schemaMeta.getSwagger();
+    Assert.assertEquals(swagger.getBasePath(), "/pojo/test/TestProducerSchemaFactoryImpl");
+
+    ArchaiusUtils.resetConfig();
+    System.getProperties().remove(org.apache.servicecomb.serviceregistry.api.Const.URL_PREFIX);
+  }
+
+  @Test
+  public void testCompletableFuture() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+    SchemaMeta schemaMeta = producerSchemaFactory.getOrCreateProducerSchema("schema",
+        TestProducerSchemaFactoryImpl.class,
+        new TestProducerSchemaFactoryImpl());
+    OperationMeta operationMeta = schemaMeta.ensureFindOperation("asyncAdd");
     Assert.assertThat(operationMeta.getExecutor(), Matchers.instanceOf(ReactiveExecutor.class));
+
+    SwaggerProducerOperation producerOperation = operationMeta.getExtData(Const.PRODUCER_OPERATION);
+    //we can not set microserviceName any more,use the default name
+    Object addBody = Class.forName("cse.gen.app.perfClient.schema.asyncAddBody").newInstance();
+    ReflectUtils.setField(addBody, "x", 1);
+    ReflectUtils.setField(addBody, "y", 2);
+    Invocation invocation = new Invocation((Endpoint) null, operationMeta, new Object[] {addBody}) {
+      @Override
+      public String getInvocationQualifiedName() {
+        return "";
+      }
+    };
+    Holder<Response> holder = new Holder<>();
+    rejectAdd = false;
+    producerOperation.invoke(invocation, resp -> holder.value = resp);
+    Assert.assertEquals("3", holder.value.getResult());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartBusinessMethod());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishBusiness());
+
+    nanoTime++;
+    rejectAdd = true;
+    producerOperation.invoke(invocation, resp -> holder.value = resp);
+    Assert.assertEquals(true, holder.value.isFailed());
+    InvocationException exception = holder.value.getResult();
+    CommonExceptionData data = (CommonExceptionData) exception.getErrorData();
+    Assert.assertEquals(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, exception.getStatusCode());
+    Assert.assertEquals("Cse Internal Server Error", data.getMessage());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartBusinessMethod());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishBusiness());
+
+    nanoTime++;
+    invocation.setSwaggerArguments(new Object[] {1, 2});
+    producerOperation.invoke(invocation, resp -> holder.value = resp);
+    Assert.assertEquals(true, holder.value.isFailed());
+    exception = holder.value.getResult();
+    data = (CommonExceptionData) exception.getErrorData();
+    Assert.assertEquals(Status.BAD_REQUEST.getStatusCode(), exception.getStatusCode());
+    Assert.assertEquals("Parameters not valid or types not match.", data.getMessage());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartBusinessMethod());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishBusiness());
   }
 }

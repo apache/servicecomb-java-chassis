@@ -17,11 +17,14 @@
 
 package org.apache.servicecomb.demo.jaxrs.server;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DELETE;
@@ -37,7 +40,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.apache.commons.io.IOUtils;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
@@ -147,7 +151,7 @@ public class CodeFirstJaxrs {
   public String testRawJsonString(String jsonInput) {
     Map<String, String> person;
     try {
-      person = RestObjectMapper.INSTANCE.readValue(jsonInput.getBytes(), Map.class);
+      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(), Map.class);
     } catch (Exception e) {
       e.printStackTrace();
       return null;
@@ -206,7 +210,7 @@ public class CodeFirstJaxrs {
   public String testRawJsonAnnotation(@RawJsonRequestBody String jsonInput) {
     Map<String, String> person;
     try {
-      person = RestObjectMapper.INSTANCE.readValue(jsonInput.getBytes(), Map.class);
+      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(), Map.class);
     } catch (Exception e) {
       e.printStackTrace();
       return null;
@@ -218,5 +222,39 @@ public class CodeFirstJaxrs {
   @GET
   public String getTraceId() {
     return ContextUtils.getInvocationContext().getContext(Const.TRACE_ID_NAME);
+  }
+
+  @Path("/upload1")
+  @POST
+  @Produces(MediaType.TEXT_PLAIN)
+  public String fileUpload1(@FormParam("file1") Part file1, @FormParam("file2") Part file2) throws IOException {
+    if (file1 == null || file2 == null) {
+      return "null file";
+    }
+    try (InputStream is1 = file1.getInputStream(); InputStream is2 = file2.getInputStream()) {
+      String content1 = IOUtils.toString(is1);
+      String content2 = IOUtils.toString(is2);
+      return String.format("%s:%s:%s\n" + "%s:%s:%s",
+          file1.getSubmittedFileName(),
+          file1.getContentType(),
+          content1,
+          file2.getSubmittedFileName(),
+          file2.getContentType(),
+          content2);
+    }
+  }
+
+  @Path("/upload2")
+  @POST
+  @Produces(MediaType.TEXT_PLAIN)
+  public String fileUpload2(@FormParam("file1") Part file1, @FormParam("message") String message) throws IOException {
+    try (InputStream is1 = file1.getInputStream()) {
+      String content1 = IOUtils.toString(is1);
+      return String.format("%s:%s:%s:%s",
+          file1.getSubmittedFileName(),
+          file1.getContentType(),
+          content1,
+          message);
+    }
   }
 }

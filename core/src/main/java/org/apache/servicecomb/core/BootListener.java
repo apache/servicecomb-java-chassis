@@ -34,7 +34,17 @@ public interface BootListener {
   }
 
   class BootEvent {
+    private SCBEngine scbEngine;
+
     private EventType eventType;
+
+    public SCBEngine getScbEngine() {
+      return scbEngine;
+    }
+
+    public void setScbEngine(SCBEngine scbEngine) {
+      this.scbEngine = scbEngine;
+    }
 
     public EventType getEventType() {
       return eventType;
@@ -43,6 +53,10 @@ public interface BootListener {
     public void setEventType(EventType eventType) {
       this.eventType = eventType;
     }
+  }
+
+  default int getOrder() {
+    return 0;
   }
 
   void onBootEvent(BootEvent event);

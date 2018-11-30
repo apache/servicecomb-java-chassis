@@ -22,7 +22,9 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 import javax.ws.rs.QueryParam;
@@ -30,21 +32,27 @@ import javax.ws.rs.core.Response.Status;
 import javax.xml.ws.Holder;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.demo.EmptyObject;
 import org.apache.servicecomb.demo.Generic;
+import org.apache.servicecomb.demo.compute.GenericParam;
+import org.apache.servicecomb.demo.compute.GenericParamExtended;
+import org.apache.servicecomb.demo.compute.GenericParamWithJsonIgnore;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.ignore.InputModelForTestIgnore;
 import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
 import org.apache.servicecomb.demo.jaxbbean.JAXBPerson;
 import org.apache.servicecomb.demo.server.User;
+import org.apache.servicecomb.demo.springmvc.decoderesponse.DecodeTestResponse;
+import org.apache.servicecomb.metrics.core.MetricsBootListener;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
 import org.apache.servicecomb.swagger.extend.annotations.ResponseHeaders;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.response.Headers;
 import org.slf4j.Logger;
@@ -84,6 +92,8 @@ import io.vertx.core.json.JsonObject;
 public class CodeFirstSpringmvc {
   private static final Logger LOGGER = LoggerFactory.getLogger(CodeFirstSpringmvc.class);
 
+  private AtomicInteger firstInovcation = new AtomicInteger(2);
+
   private String _fileUpload(MultipartFile file1, Part file2) {
     try (InputStream is1 = file1.getInputStream(); InputStream is2 = file2.getInputStream()) {
       String content1 = IOUtils.toString(is1);
@@ -99,6 +109,14 @@ public class CodeFirstSpringmvc {
     } catch (IOException e) {
       throw new IllegalArgumentException(e);
     }
+  }
+
+  @GetMapping(path = "/retrySuccess")
+  public int retrySuccess(@RequestParam("a") int a, @RequestParam("b") int b) {
+    if (firstInovcation.getAndDecrement() > 0) {
+      throw new InvocationException(Status.SERVICE_UNAVAILABLE, "try again later.");
+    }
+    return a + b;
   }
 
   @PostMapping(path = "/upload1", produces = MediaType.TEXT_PLAIN_VALUE)
@@ -141,10 +159,10 @@ public class CodeFirstSpringmvc {
   public Response cseResponse(InvocationContext c1) {
     Response response = Response.createSuccess(Status.ACCEPTED, new User());
     Headers headers = response.getHeaders();
-    headers.addHeader("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE).toString());
+    headers.addHeader("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE));
 
     InvocationContext c2 = ContextUtils.getInvocationContext();
-    headers.addHeader("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE).toString());
+    headers.addHeader("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE));
 
     return response;
   }
@@ -204,7 +222,7 @@ public class CodeFirstSpringmvc {
   public String testRawJsonString(String jsonInput) {
     Map<String, String> person;
     try {
-      person = RestObjectMapper.INSTANCE.readValue(jsonInput.getBytes(), Map.class);
+      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(), Map.class);
     } catch (Exception e) {
       e.printStackTrace();
       return null;
@@ -254,42 +272,44 @@ public class CodeFirstSpringmvc {
     return result;
   }
 
+  // Using 490, 590 error code, the response type should be CommonExceptionData. Or we need
+  // complex ExceptionConverters to deal with exceptions thrown by Hanlders, etc.
   @RequestMapping(path = "/fallback/returnnull/{name}", method = RequestMethod.GET)
   @ApiResponses(value = {@ApiResponse(code = 200, response = String.class, message = "xxx"),
-      @ApiResponse(code = 490, response = String.class, message = "xxx")})
+      @ApiResponse(code = 490, response = CommonExceptionData.class, message = "xxx")})
   public String fallbackReturnNull(@PathVariable(name = "name") String name) {
     if ("throwexception".equals(name)) {
-      throw new InvocationException(490, "490", "xxx");
+      throw new InvocationException(490, "490", new CommonExceptionData("xxx"));
     }
     return name;
   }
 
   @RequestMapping(path = "/fallback/throwexception/{name}", method = RequestMethod.GET)
   @ApiResponses(value = {@ApiResponse(code = 200, response = String.class, message = "xxx"),
-      @ApiResponse(code = 490, response = String.class, message = "xxx")})
+      @ApiResponse(code = 490, response = CommonExceptionData.class, message = "xxx")})
   public String fallbackThrowException(@PathVariable(name = "name") String name) {
     if ("throwexception".equals(name)) {
-      throw new InvocationException(490, "490", "xxx");
+      throw new InvocationException(490, "490", new CommonExceptionData("xxx"));
     }
     return name;
   }
 
   @RequestMapping(path = "/fallback/fromcache/{name}", method = RequestMethod.GET)
   @ApiResponses(value = {@ApiResponse(code = 200, response = String.class, message = "xxx"),
-      @ApiResponse(code = 490, response = String.class, message = "xxx")})
+      @ApiResponse(code = 490, response = CommonExceptionData.class, message = "xxx")})
   public String fallbackFromCache(@PathVariable(name = "name") String name) {
     if ("throwexception".equals(name)) {
-      throw new InvocationException(490, "490", "xxx");
+      throw new InvocationException(490, "490", new CommonExceptionData("xxx"));
     }
     return name;
   }
 
   @RequestMapping(path = "/fallback/force/{name}", method = RequestMethod.GET)
   @ApiResponses(value = {@ApiResponse(code = 200, response = String.class, message = "xxx"),
-      @ApiResponse(code = 490, response = String.class, message = "xxx")})
+      @ApiResponse(code = 490, response = CommonExceptionData.class, message = "xxx")})
   public String fallbackForce(@PathVariable(name = "name") String name) {
     if ("throwexception".equals(name)) {
-      throw new InvocationException(490, "490", "xxx");
+      throw new InvocationException(490, "490", new CommonExceptionData("xxx"));
     }
     return name;
   }
@@ -301,7 +321,7 @@ public class CodeFirstSpringmvc {
 
   @RequestMapping(path = "/testenum/{name}", method = RequestMethod.GET)
   @ApiResponses(value = {@ApiResponse(code = 200, response = String.class, message = "200 normal"),
-      @ApiResponse(code = 490, response = String.class, message = "490 exception")})
+      @ApiResponse(code = 490, response = CommonExceptionData.class, message = "490 exception")})
   public String testEnum(@RequestParam(name = "username") String username,
       @PathVariable(value = "name") NameType nameType) {
     return nameType.toString();
@@ -322,7 +342,7 @@ public class CodeFirstSpringmvc {
   public String testRawJsonAnnotation(@RawJsonRequestBody String jsonInput) {
     Map<String, String> person;
     try {
-      person = RestObjectMapper.INSTANCE.readValue(jsonInput.getBytes(), Map.class);
+      person = RestObjectMapperFactory.getRestObjectMapper().readValue(jsonInput.getBytes(), Map.class);
     } catch (Exception e) {
       e.printStackTrace();
       return null;
@@ -343,9 +363,15 @@ public class CodeFirstSpringmvc {
     return form1 + form2;
   }
 
+  @Inject
+  MetricsBootListener metricsBootListener;
+
   //Only for Prometheus integration test
   @RequestMapping(path = "/prometheusForTest", method = RequestMethod.GET)
   public String prometheusForTest() {
+    // just for test, this makes client always can got latest metrics
+    metricsBootListener.getMetricsBootstrap().pollMeters();
+
     RestTemplate defaultRestTemplate = new RestTemplate();
     return defaultRestTemplate.getForObject("http://localhost:9696/metrics", String.class);
   }
@@ -463,5 +489,57 @@ public class CodeFirstSpringmvc {
     LOGGER.info("checkVoidResult() is called!");
     return testvoidInRPCSuccess && testVoidInRPCSuccess && testvoidInRestTemplateSuccess
         && testVoidInRestTemplateSuccess;
+  }
+
+  /**
+   * Simple query object test, users can use it mixed with InvocationContext and plain query param, RequestBody
+   */
+  @PostMapping(path = "/checkQueryObject")
+  public String checkQueryObject(Person person, @RequestParam(name = "otherName") String otherName,
+      InvocationContext invocationContext, @RequestParam(name = "name") String name, @RequestBody Person requestBody) {
+    LOGGER.info("checkQueryObject() is called!");
+    return "invocationContext_is_null=" + (null == invocationContext) + ",person="
+        + person + ",otherName=" + otherName + ",name=" + name + ",requestBody=" + requestBody;
+  }
+
+  /**
+   * For the nesting object params, including the generic params whose generic field is an object,
+   * the inner object field is not supported.
+   */
+  @PutMapping(path = "/checkQueryGenericObject")
+  public String checkQueryGenericObject(@RequestBody GenericParam<Person> requestBody,
+      GenericParamWithJsonIgnore<Person> generic, String str) {
+    LOGGER.info("checkQueryGenericObject() is called!");
+    return "str=" + str + ",generic=" + generic + ",requestBody=" + requestBody;
+  }
+
+  /**
+   * If the generic field is simple type, it's supported to be deserialized.
+   * The same for those simple type field inherited from the parent class.
+   */
+  @PutMapping(path = "/checkQueryGenericString")
+  public String checkQueryGenericString(String str, @RequestBody GenericParam<Person> requestBody,
+      GenericParamExtended<String> generic) {
+    LOGGER.info("checkQueryGenericObject() is called!");
+    return "str=" + str + ",generic=" + generic + ",requestBody=" + requestBody;
+  }
+
+  @GetMapping(path = "/testDelay")
+  public String testDelay() {
+    LOGGER.info("testDelay() is called!");
+    return "OK";
+  }
+
+  @GetMapping(path = "/testAbort")
+  public String testAbort() {
+    LOGGER.info("testAbort() is called!");
+    return "OK";
+  }
+
+  @GetMapping(path = "/testDecodeResponseError")
+  public DecodeTestResponse testDecodeResponseError() {
+    DecodeTestResponse response = new DecodeTestResponse();
+    response.setContent("returnOK");
+    return response;
   }
 }

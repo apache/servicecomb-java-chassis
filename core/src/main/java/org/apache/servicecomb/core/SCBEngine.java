@@ -16,14 +16,22 @@
  */
 package org.apache.servicecomb.core;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
+
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
+import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
+import org.apache.servicecomb.core.definition.schema.StaticSchemaFactory;
 import org.apache.servicecomb.core.endpoint.AbstractEndpointsCache;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
@@ -33,9 +41,11 @@ import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceRegisterTask;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -43,14 +53,21 @@ import org.springframework.util.StringUtils;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import com.netflix.config.DynamicPropertyFactory;
 
 // TODO: should not depend on spring, that will make integration more flexible
 public class SCBEngine {
   private static final Logger LOGGER = LoggerFactory.getLogger(SCBEngine.class);
 
+  static final String CFG_KEY_WAIT_UP_TIMEOUT = "servicecomb.boot.waitUp.timeoutInMilliseconds";
+
+  static final long DEFAULT_WAIT_UP_TIMEOUT = 10_000;
+
   private ProducerProviderManager producerProviderManager;
 
   private ConsumerProviderManager consumerProviderManager;
+
+  private MicroserviceMeta producerMicroserviceMeta;
 
   private TransportManager transportManager;
 
@@ -64,6 +81,12 @@ public class SCBEngine {
 
   private volatile SCBStatus status = SCBStatus.DOWN;
 
+  private EventBus eventBus = EventManager.getEventBus();
+
+  private StaticSchemaFactory staticSchemaFactory;
+
+  private static final SCBEngine INSTANCE = new SCBEngine();
+
   public void setStatus(SCBStatus status) {
     this.status = status;
   }
@@ -72,12 +95,12 @@ public class SCBEngine {
     return status;
   }
 
-  private EventBus eventBus = EventManager.getEventBus();
-
-  private static final SCBEngine INSTANCE = new SCBEngine();
-
   public static SCBEngine getInstance() {
     return INSTANCE;
+  }
+
+  public EventBus getEventBus() {
+    return eventBus;
   }
 
   public void setProducerProviderManager(
@@ -108,11 +131,17 @@ public class SCBEngine {
   }
 
   public void setBootListenerList(Collection<BootListener> bootListenerList) {
-    this.bootListenerList = bootListenerList;
+    List<BootListener> tmp = new ArrayList<>();
+    tmp.addAll(bootListenerList);
+    tmp.addAll(SPIServiceUtils.getOrLoadSortedService(BootListener.class));
+    tmp.sort(Comparator.comparingInt(BootListener::getOrder));
+
+    this.bootListenerList = tmp;
   }
 
   protected void triggerEvent(EventType eventType) {
     BootEvent event = new BootEvent();
+    event.setScbEngine(this);
     event.setEventType(eventType);
 
     for (BootListener listener : bootListenerList) {
@@ -122,6 +151,7 @@ public class SCBEngine {
 
   protected void safeTriggerEvent(EventType eventType) {
     BootEvent event = new BootEvent();
+    event.setScbEngine(this);
     event.setEventType(eventType);
 
     for (BootListener listener : bootListenerList) {
@@ -155,6 +185,7 @@ public class SCBEngine {
           status = SCBStatus.UP;
           triggerEvent(EventType.AFTER_REGISTRY);
           EventManager.unregister(this);
+          LOGGER.info("ServiceComb is ready.");
         }
       }
     });
@@ -176,15 +207,16 @@ public class SCBEngine {
     if (SCBStatus.DOWN.equals(status)) {
       try {
         doInit();
-        status = SCBStatus.UP;
-      } catch (Exception e) {
+        waitStatusUp();
+      } catch (TimeoutException e) {
+        LOGGER.warn("{}", e.getMessage());
+      } catch (Throwable e) {
         destroy();
         status = SCBStatus.FAILED;
         throw new IllegalStateException("ServiceComb init failed.", e);
       }
     }
   }
-
 
   private void doInit() throws Exception {
     status = SCBStatus.STARTING;
@@ -226,7 +258,7 @@ public class SCBEngine {
    * even some step throw exception, must catch it and go on, otherwise shutdown process will be broken.
    */
   public synchronized void destroy() {
-    if (SCBStatus.UP.equals(status)) {
+    if (SCBStatus.UP.equals(status) || SCBStatus.STARTING.equals(status)) {
       LOGGER.info("ServiceComb is closing now...");
       doDestroy();
       status = SCBStatus.DOWN;
@@ -276,8 +308,10 @@ public class SCBEngine {
   public void ensureStatusUp() {
     SCBStatus currentStatus = getStatus();
     if (!SCBStatus.UP.equals(currentStatus)) {
-      throw new IllegalStateException(
-          "The request is rejected, as the service cannot process the request due to STATUS = " + currentStatus);
+      String message =
+          "The request is rejected. Cannot process the request due to STATUS = " + currentStatus;
+      LOGGER.warn(message);
+      throw new InvocationException(Status.SERVICE_UNAVAILABLE, message);
     }
   }
 
@@ -291,5 +325,64 @@ public class SCBEngine {
     ensureStatusUp();
 
     return consumerProviderManager.getReferenceConfig(microserviceName);
+  }
+
+  public MicroserviceMeta getProducerMicroserviceMeta() {
+    return producerMicroserviceMeta;
+  }
+
+  public void setProducerMicroserviceMeta(MicroserviceMeta producerMicroserviceMeta) {
+    this.producerMicroserviceMeta = producerMicroserviceMeta;
+  }
+
+  /**
+   * better to subscribe EventType.AFTER_REGISTRY by BootListener<br>
+   * but in some simple scenes, just block and wait is enough.
+   */
+  public void waitStatusUp() throws InterruptedException, TimeoutException {
+    long msWait = DynamicPropertyFactory.getInstance().getLongProperty(CFG_KEY_WAIT_UP_TIMEOUT, DEFAULT_WAIT_UP_TIMEOUT)
+        .get();
+    waitStatusUp(msWait);
+  }
+
+  /**
+   * better to subscribe EventType.AFTER_REGISTRY by BootListener<br>
+   * but in some simple scenes, just block and wait is enough.
+   */
+  public void waitStatusUp(long msWait) throws InterruptedException, TimeoutException {
+    if (msWait <= 0) {
+      LOGGER.info("Give up waiting for status up, wait timeout milliseconds={}.", msWait);
+      return;
+    }
+
+    LOGGER.info("Waiting for status up. timeout: {}ms", msWait);
+    long start = System.currentTimeMillis();
+    for (; ; ) {
+      SCBStatus currentStatus = getStatus();
+      switch (currentStatus) {
+        case DOWN:
+        case FAILED:
+          throw new IllegalStateException("Failed to wait status up, real status: " + currentStatus);
+        case UP:
+          LOGGER.info("Status already changed to up.");
+          return;
+        default:
+          break;
+      }
+
+      TimeUnit.MILLISECONDS.sleep(100);
+      if (System.currentTimeMillis() - start > msWait) {
+        throw new TimeoutException(
+            String.format("Timeout to wait status up, timeout: %dms, last status: %s", msWait, currentStatus));
+      }
+    }
+  }
+
+  public StaticSchemaFactory getStaticSchemaFactory() {
+    return staticSchemaFactory;
+  }
+
+  public void setStaticSchemaFactory(StaticSchemaFactory staticSchemaFactory) {
+    this.staticSchemaFactory = staticSchemaFactory;
   }
 }

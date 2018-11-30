@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.demo.integration;
 
+import static org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -31,6 +32,7 @@ public class PojoReferenceIntegrationTest {
 
   @BeforeClass
   public static void setUp() throws Exception {
+    System.setProperty(LOCAL_REGISTRY_FILE_KEY, "notExistJustForceLocal");
     SomePojoTestMain.main(new String[0]);
   }
 

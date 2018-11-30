@@ -17,22 +17,36 @@
 
 package org.apache.servicecomb.core;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.core.event.InvocationBusinessMethodFinishEvent;
+import org.apache.servicecomb.core.event.InvocationBusinessMethodStartEvent;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
+import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
+import org.apache.servicecomb.core.tracing.TraceIdGenerator;
 import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 
 public class Invocation extends SwaggerInvocation {
+  private static final Collection<TraceIdGenerator> TRACE_ID_GENERATORS = loadTraceIdGenerators();
+
+  static Collection<TraceIdGenerator> loadTraceIdGenerators() {
+    return SPIServiceUtils.getPriorityHighestServices(generator -> generator.getName(), TraceIdGenerator.class);
+  }
+
   private ReferenceConfig referenceConfig;
 
   // 本次调用对应的schemaMeta
@@ -57,18 +71,42 @@ public class Invocation extends SwaggerInvocation {
   // 同步模式：避免应答在网络线程中处理解码等等业务级逻辑
   private Executor responseExecutor;
 
-  private long startTime;
-
-  private long startExecutionTime;
-
   private boolean sync = true;
 
-  public long getStartTime() {
-    return startTime;
+  private InvocationStageTrace invocationStageTrace = new InvocationStageTrace(this);
+
+  private HttpServletRequestEx requestEx;
+
+  private boolean finished;
+
+  // not extend InvocationType
+  // because isEdge() only affect to apm/metrics output, no need to change so many logic
+  private boolean edge;
+
+  public HttpServletRequestEx getRequestEx() {
+    return requestEx;
   }
 
+  public InvocationStageTrace getInvocationStageTrace() {
+    return invocationStageTrace;
+  }
+
+  public String getTraceId() {
+    return getContext(Const.TRACE_ID_NAME);
+  }
+
+  public String getTraceId(String traceIdName) {
+    return getContext(traceIdName);
+  }
+
+  @Deprecated
+  public long getStartTime() {
+    return invocationStageTrace.getStart();
+  }
+
+  @Deprecated
   public long getStartExecutionTime() {
-    return startExecutionTime;
+    return invocationStageTrace.getStartExecution();
   }
 
   public Invocation(ReferenceConfig referenceConfig, OperationMeta operationMeta, Object[] swaggerArguments) {
@@ -160,6 +198,9 @@ public class Invocation extends SwaggerInvocation {
   }
 
   public String getConfigTransportName() {
+    if (operationMeta.getTransport() != null) {
+      return operationMeta.getTransport();
+    }
     return referenceConfig.getTransport();
   }
 
@@ -188,17 +229,79 @@ public class Invocation extends SwaggerInvocation {
     return operationMeta.getMicroserviceQualifiedName();
   }
 
-  public void onStart() {
-    this.startTime = System.nanoTime();
+  protected void initTraceId() {
+    for (TraceIdGenerator traceIdGenerator : TRACE_ID_GENERATORS) {
+      initTraceId(traceIdGenerator);
+    }
+  }
+
+  protected void initTraceId(TraceIdGenerator traceIdGenerator) {
+    if (!StringUtils.isEmpty(getTraceId(traceIdGenerator.getTraceIdKeyName()))) {
+      // if invocation context contains traceId, nothing needed to do
+      return;
+    }
+
+    if (requestEx == null) {
+      // it's a new consumer invocation, must generate a traceId
+      addContext(traceIdGenerator.getTraceIdKeyName(), traceIdGenerator.generate());
+      return;
+    }
+
+    String traceId = requestEx.getHeader(traceIdGenerator.getTraceIdKeyName());
+    if (!StringUtils.isEmpty(traceId)) {
+      // if request header contains traceId, save traceId into invocation context
+      addContext(traceIdGenerator.getTraceIdKeyName(), traceId);
+      return;
+    }
+
+    // if traceId not found, generate a traceId
+    addContext(traceIdGenerator.getTraceIdKeyName(), traceIdGenerator.generate());
+  }
+
+  public void onStart(long start) {
+    invocationStageTrace.start(start);
+    initTraceId();
     EventManager.post(new InvocationStartEvent(this));
   }
 
-  public void onStartExecute() {
-    this.startExecutionTime = System.nanoTime();
+  public void onStart(HttpServletRequestEx requestEx, long start) {
+    this.requestEx = requestEx;
+    onStart(start);
+  }
+
+  public void onExecuteStart() {
+    invocationStageTrace.startExecution();
+  }
+
+  @Override
+  public void onBusinessMethodStart() {
+    invocationStageTrace.startBusinessMethod();
+    EventManager.post(new InvocationBusinessMethodStartEvent(this));
+  }
+
+  @Override
+  public void onBusinessMethodFinish() {
+    EventManager.post(new InvocationBusinessMethodFinishEvent(this));
+  }
+
+  @Override
+  public void onBusinessFinish() {
+    invocationStageTrace.finishBusiness();
   }
 
   public void onFinish(Response response) {
+    if (finished) {
+      // avoid to post repeated event
+      return;
+    }
+
+    invocationStageTrace.finish();
     EventManager.post(new InvocationFinishEvent(this, response));
+    finished = true;
+  }
+
+  public boolean isFinished() {
+    return finished;
   }
 
   public boolean isSync() {
@@ -211,5 +314,13 @@ public class Invocation extends SwaggerInvocation {
 
   public boolean isConsumer() {
     return InvocationType.CONSUMER.equals(invocationType);
+  }
+
+  public boolean isEdge() {
+    return edge;
+  }
+
+  public void setEdge(boolean edge) {
+    this.edge = edge;
   }
 }

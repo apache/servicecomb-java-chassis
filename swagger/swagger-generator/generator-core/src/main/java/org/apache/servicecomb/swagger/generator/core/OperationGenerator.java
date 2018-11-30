@@ -31,7 +31,10 @@ import javax.ws.rs.DefaultValue;
 
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.extend.parameter.ContextParameter;
+import org.apache.servicecomb.swagger.generator.core.processor.annotation.AnnotationUtils;
 import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import io.swagger.models.HttpMethod;
@@ -45,6 +48,8 @@ import io.swagger.models.properties.Property;
 import io.swagger.util.ReflectionUtils;
 
 public class OperationGenerator {
+  private static final Logger LOGGER = LoggerFactory.getLogger(OperationGenerator.class);
+
   protected SwaggerGenerator swaggerGenerator;
 
   protected Swagger swagger;
@@ -139,7 +144,27 @@ public class OperationGenerator {
     methodAnnotationParameters.add(parameter);
   }
 
+  /**
+   * Add a parameter into {@linkplain #providerParameters},
+   * duplicated name params will be ignored(excepting for {@linkplain ContextParameter}s)
+   */
   public void addProviderParameter(Parameter parameter) {
+    if (ContextParameter.class.isInstance(parameter)) {
+      // ContextParameter has no name and is not written in schema,
+      // so just add it without checking
+      providerParameters.add(parameter);
+      return;
+    }
+    // check duplicated param according to param name
+    for (Parameter providerParameter : providerParameters) {
+      if (parameter.getName().equals(providerParameter.getName())) {
+        LOGGER.warn(
+            "Param name [{}] is duplicated which may cause ambiguous deserialization result. Please check you schema definition",
+            parameter.getName());
+        return;
+      }
+    }
+
     providerParameters.add(parameter);
   }
 
@@ -253,13 +278,13 @@ public class OperationGenerator {
     Type[] parameterTypes = providerMethod.getGenericParameterTypes();
     for (int paramIdx = 0; paramIdx < parameterTypes.length; paramIdx++) {
       int swaggerParamCount = providerParameters.size();
+      Type type = parameterTypes[paramIdx];
 
       // 根据annotation处理
       Annotation[] paramAnnotations = allAnnotations[paramIdx];
-      processByParameterAnnotation(paramAnnotations, paramIdx);
+      processByParameterAnnotation(paramAnnotations, paramIdx, type);
 
       if (isArgumentNotProcessed(swaggerParamCount)) {
-        Type type = parameterTypes[paramIdx];
         // 是否需要根据参数类型处理，目标场景：httpRequest之类
         processByParameterType(type, paramIdx);
       }
@@ -268,6 +293,11 @@ public class OperationGenerator {
         // 没有用于描述契约的标注，根据函数原型来反射生成
         context.getDefaultParamProcessor().process(this, paramIdx);
       }
+
+      if (!isArgumentNotProcessed(swaggerParamCount)) {
+        Parameter parameter = providerParameters.get(this.providerParameters.size() - 1);
+        AnnotationUtils.processApiParam(paramAnnotations, parameter);
+      }
     }
   }
 
@@ -275,7 +305,8 @@ public class OperationGenerator {
     return swaggerParamCount == providerParameters.size();
   }
 
-  protected void processByParameterAnnotation(Annotation[] paramAnnotations, int paramIdx) {
+  @SuppressWarnings({"rawtypes"})
+  protected void processByParameterAnnotation(Annotation[] paramAnnotations, int paramIdx, Type parameterType) {
     String defaultValue = null;
     Parameter parameter = null;
     for (Annotation annotation : paramAnnotations) {
@@ -291,10 +322,24 @@ public class OperationGenerator {
         }
       }
     }
-    if (parameter instanceof AbstractSerializableParameter && defaultValue != null) {
-      ((AbstractSerializableParameter<?>) parameter).setDefaultValue(defaultValue);
+    if (parameter instanceof AbstractSerializableParameter) {
+      if (defaultValue != null) {
+        ((AbstractSerializableParameter<?>) parameter).setDefaultValue(defaultValue);
+      } else if ((((AbstractSerializableParameter<?>) parameter).getDefaultValue() == null)
+          && (!((AbstractSerializableParameter<?>) parameter)
+          .getRequired())) { //if required false then only take java primitive values as defaults
+        if (parameterType instanceof Class && ((Class) parameterType).isPrimitive()) {
+          switch (parameterType.getTypeName()) {
+            case "boolean":
+              defaultValue = "false";
+              break;
+            default:
+              defaultValue = "0";
+          }
+        }
+        ((AbstractSerializableParameter<?>) parameter).setDefaultValue(defaultValue);
+      }
     }
-
   }
 
   protected void processByParameterType(Type parameterType, int paramIdx) {

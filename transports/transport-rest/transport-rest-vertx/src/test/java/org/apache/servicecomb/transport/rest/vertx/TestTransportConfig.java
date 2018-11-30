@@ -140,4 +140,26 @@ public class TestTransportConfig {
     ArchaiusUtils.setProperty("servicecomb.cors.maxAge", 3600);
     Assert.assertEquals(3600, TransportConfig.getCorsMaxAge());
   }
+
+  @Test
+  public void testMaxConcurrentStreams() {
+    Assert.assertEquals(100L, TransportConfig.getMaxConcurrentStreams());
+    ArchaiusUtils.setProperty("servicecomb.rest.server.http2.concurrentStreams", 200L);
+    Assert.assertEquals(200L, TransportConfig.getMaxConcurrentStreams());
+  }
+
+  @Test
+  public void testUseAlpn() {
+    Assert.assertTrue(TransportConfig.getUseAlpn());
+    ArchaiusUtils.setProperty("servicecomb.rest.server.http2.useAlpnEnabled", false);
+    Assert.assertFalse(TransportConfig.getUseAlpn());
+  }
+
+
+  @Test
+  public void testGetMaxInitialLineLength() {
+    Assert.assertEquals(4096, TransportConfig.getMaxInitialLineLength());
+    ArchaiusUtils.setProperty("servicecomb.rest.server.maxInitialLineLength", 8000);
+    Assert.assertEquals(8000, TransportConfig.getMaxInitialLineLength());
+  }
 }

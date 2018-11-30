@@ -17,17 +17,23 @@
 
 package org.apache.servicecomb.demo.pojo.test;
 
+import org.apache.servicecomb.core.SCBEngine;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = PojoSpringMain.class)
 public class PojoSpringIntegrationTest extends PojoIntegrationTestBase {
 
   @BeforeClass
-  public static void setUpClass() {
+  public static void setUpClass() throws Exception {
     setUpLocalRegistry();
+    PojoTestMain.main(null);
+  }
+
+  @AfterClass
+  public static void teardownClass() {
+    SCBEngine.getInstance().destroy();
   }
 }

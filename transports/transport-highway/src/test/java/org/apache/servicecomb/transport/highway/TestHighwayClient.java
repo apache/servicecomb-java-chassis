@@ -24,10 +24,12 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.ReactiveExecutor;
+import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
@@ -50,7 +52,6 @@ import com.netflix.config.DynamicPropertyFactory;
 
 import io.netty.buffer.ByteBuf;
 import io.protostuff.runtime.ProtobufCompatibleUtils;
-import io.protostuff.runtime.ProtobufFeature;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
@@ -67,11 +68,15 @@ public class TestHighwayClient {
 
   Invocation invocation = Mockito.mock(Invocation.class);
 
+  InvocationStageTrace invocationStageTrace = new InvocationStageTrace(invocation);
+
   OperationProtobuf operationProtobuf = Mockito.mock(OperationProtobuf.class);
 
   OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
 
   Endpoint endpoint = Mockito.mock(Endpoint.class);
+
+  static long nanoTime = 123;
 
   @BeforeClass
   public static void beforeCls() {
@@ -79,6 +84,13 @@ public class TestHighwayClient {
     AbstractConfiguration configuration =
         (AbstractConfiguration) DynamicPropertyFactory.getBackingConfigurationSource();
     configuration.addProperty(REQUEST_TIMEOUT_KEY, 2000);
+
+    new MockUp<System>() {
+      @Mock
+      long nanoTime() {
+        return nanoTime;
+      }
+    };
   }
 
   @Test
@@ -92,7 +104,7 @@ public class TestHighwayClient {
       @Mock
       <VERTICLE extends AbstractVerticle> boolean blockDeploy(Vertx vertx,
           Class<VERTICLE> cls,
-          DeploymentOptions options) throws InterruptedException {
+          DeploymentOptions options) {
         return true;
       }
     };
@@ -109,7 +121,7 @@ public class TestHighwayClient {
       @Mock
       <VERTICLE extends AbstractVerticle> boolean blockDeploy(Vertx vertx,
           Class<VERTICLE> cls,
-          DeploymentOptions options) throws InterruptedException {
+          DeploymentOptions options) {
         return true;
       }
     };
@@ -123,7 +135,7 @@ public class TestHighwayClient {
 
     new MockUp<ProtobufManager>() {
       @Mock
-      public OperationProtobuf getOrCreateOperation(OperationMeta operationMeta) throws Exception {
+      public OperationProtobuf getOrCreateOperation(OperationMeta operationMeta) {
         return operationProtobuf;
       }
     };
@@ -138,14 +150,14 @@ public class TestHighwayClient {
     new MockUp<HighwayCodec>() {
       @Mock
       public Buffer encodeRequest(Invocation invocation, OperationProtobuf operationProtobuf,
-          long msgId) throws Exception {
+          long msgId) {
         return null;
       }
 
       @Mock
-      Response decodeResponse(Invocation invocation, OperationProtobuf operationProtobuf,
-          TcpData tcpData, ProtobufFeature protobufFeature) throws Throwable {
-        if (Response.class.isInstance(decodedResponse)) {
+      Response decodeResponse(Invocation invocation, OperationProtobuf operationProtobuf, TcpData tcpData)
+          throws Throwable {
+        if (decodedResponse instanceof Response) {
           return (Response) decodedResponse;
         }
 
@@ -159,6 +171,7 @@ public class TestHighwayClient {
     Mockito.when(invocation.getEndpoint()).thenReturn(endpoint);
     Mockito.when(invocation.getEndpoint().getEndpoint()).thenReturn("endpoint");
     Mockito.when(invocation.getResponseExecutor()).thenReturn(new ReactiveExecutor());
+    Mockito.when(invocation.getInvocationStageTrace()).thenReturn(invocationStageTrace);
 
     Holder<Object> result = new Holder<>();
     client.send(invocation, ar -> {
@@ -177,10 +190,23 @@ public class TestHighwayClient {
         callback.success(null);
       }
     };
-
+    new MockUp<HighwayClientPackage>() {
+      @Mock
+      public long getFinishWriteToBuffer() {
+        return nanoTime;
+      }
+    };
     Object result = doTestSend(vertx, pool, tcpClient, Response.ok("ok"));
 
     Assert.assertEquals("ok", result);
+    Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersRequest());
+    Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersResponse());
+    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishClientFiltersResponse());
+
+    Assert.assertEquals(nanoTime, invocationStageTrace.getStartSend());
+    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishGetConnection());
+    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishWriteToBuffer());
+    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishReceiveResponse());
   }
 
   @Test
@@ -196,6 +222,9 @@ public class TestHighwayClient {
     Object result = doTestSend(vertx, pool, tcpClient, new InvocationException(Status.BAD_REQUEST, (Object) "failed"));
 
     Assert.assertEquals("failed", ((InvocationException) result).getErrorData());
+    Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersRequest());
+    Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersResponse());
+    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishClientFiltersResponse());
   }
 
   @Test
@@ -214,6 +243,9 @@ public class TestHighwayClient {
         null);
 
     Assert.assertEquals("failed", ((InvocationException) result).getErrorData());
+    Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersRequest());
+    Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersResponse());
+    Assert.assertEquals(nanoTime, invocationStageTrace.getFinishClientFiltersResponse());
   }
 
   @Test
@@ -239,10 +271,10 @@ public class TestHighwayClient {
     start += headerLen;
     Buffer bodyBuffer = os.getBuffer().slice(start, end);
 
-    RequestHeader header = RequestHeader.readObject(headerBuffer, connection.getProtobufFeature());
+    RequestHeader header = RequestHeader.readObject(headerBuffer);
     Assert.assertEquals(MsgType.LOGIN, header.getMsgType());
 
     LoginRequest login = LoginRequest.readObject(bodyBuffer);
-    Assert.assertEquals(HighwayTransport.NAME, login.getProtocol());
+    Assert.assertEquals(Const.HIGHWAY, login.getProtocol());
   }
 }

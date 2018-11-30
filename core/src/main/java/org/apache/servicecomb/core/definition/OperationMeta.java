@@ -27,6 +27,8 @@ import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
 import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 import io.swagger.models.Operation;
 
 public class OperationMeta {
@@ -56,6 +58,8 @@ public class OperationMeta {
   // 为避免每个地方都做复杂的层次管理，直接在这里保存扩展数据
   private Map<String, Object> extData = new ConcurrentHashMap<>();
 
+  private String transport = null;
+
   public void init(SchemaMeta schemaMeta, Method method, String operationPath, String httpMethod,
       Operation swaggerOperation) {
     this.schemaMeta = schemaMeta;
@@ -71,6 +75,14 @@ public class OperationMeta {
     responsesMeta.init(schemaMeta.getSwaggerToClassGenerator(),
         swaggerOperation,
         method.getGenericReturnType());
+
+    transport = DynamicPropertyFactory.getInstance()
+        .getStringProperty("servicecomb.operation."
+            + microserviceQualifiedName + ".transport", null).get();
+  }
+
+  public String getTransport() {
+    return transport;
   }
 
   public String getHttpMethod() {

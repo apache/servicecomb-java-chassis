@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
+import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -24,12 +25,25 @@ import io.swagger.models.parameters.PathParameter;
 
 public class PathVariableAnnotationProcessor extends AbstractParameterProcessor<PathParameter> {
   @Override
-  protected PathParameter createParameter() {
+  public PathParameter createParameter() {
     return new PathParameter();
   }
 
   @Override
-  protected String getAnnotationParameterName(Object annotation) {
-    return ((PathVariable) annotation).value();
+  public String getAnnotationParameterName(Object annotation) {
+    String value = ((PathVariable) annotation).value();
+    if (value.isEmpty()) {
+      value = ((PathVariable) annotation).name();
+    }
+    return value;
+  }
+  
+  @Override
+  protected void fillParameter(Object annotation, OperationGenerator operationGenerator, int paramIdx,
+      PathParameter parameter) {
+    super.fillParameter(annotation, operationGenerator, paramIdx, parameter);
+
+    PathVariable pathVariable = (PathVariable) annotation;
+    parameter.setRequired(pathVariable.required()); 
   }
 }
