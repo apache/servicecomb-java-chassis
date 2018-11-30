@@ -31,9 +31,11 @@ public final class ProtoConst {
   private ProtoConst() {
   }
 
+  public static String ANNOTATION_WRAP_ARGUMENTS = "@WrapArguments";
+
   public static String ANNOTATION_WRAP_PROPERTY = "@WrapProperty";
 
-  public static String OP_HINT = " scb:";
+  public static String ANNOTATION_RPC = "@Rpc";
 
   public static String PACK_SCHEMA = "type.googleapis.com/";
 

@@ -18,6 +18,10 @@ package org.apache.servicecomb.codec.protobuf.internal.converter;
 
 import static org.apache.servicecomb.foundation.common.utils.StringBuilderUtils.appendLine;
 
+import java.util.List;
+
+import com.google.common.base.Strings;
+
 import io.protostuff.compiler.model.Enum;
 import io.protostuff.compiler.model.EnumConstant;
 import io.protostuff.compiler.model.Field;
@@ -59,9 +63,7 @@ public class ProtoToStringGenerator {
   private void serviceToString(Service service, StringBuilder sb) {
     appendLine(sb, "service %s {", service.getName());
     for (ServiceMethod serviceMethod : service.getMethods()) {
-      if (!serviceMethod.getCommentLines().isEmpty()) {
-        appendLine(sb, "  //" + serviceMethod.getComments());
-      }
+      commentsToString(serviceMethod.getCommentLines(), sb, 2);
       appendLine(sb, "  rpc %s (%s) returns (%s);\n", serviceMethod.getName(), serviceMethod.getArgTypeName(),
           serviceMethod.getReturnTypeName());
     }
@@ -79,7 +81,20 @@ public class ProtoToStringGenerator {
     sb.append("}\n\n");
   }
 
+  private void commentsToString(List<String> comments, StringBuilder sb, int padLeft) {
+    if (comments.isEmpty()) {
+      return;
+    }
+
+    String pad = Strings.repeat(" ", padLeft) + "//";
+    for (String comment : comments) {
+      sb.append(pad);
+      appendLine(sb, comment);
+    }
+  }
+
   private void messageToString(Message message, StringBuilder sb) {
+    commentsToString(message.getCommentLines(), sb, 0);
     appendLine(sb, "message %s {", message.getName());
     for (Field field : message.getFields()) {
       sb.append("  ");

@@ -24,6 +24,10 @@ import io.swagger.models.properties.Property;
 
 public interface SwaggerTypeAdapter {
   static SwaggerTypeAdapter create(Object swaggerType) {
+    if (swaggerType instanceof SwaggerTypeAdapter) {
+      return (SwaggerTypeAdapter) swaggerType;
+    }
+
     if (swaggerType instanceof Property) {
       return new PropertyAdapter((Property) swaggerType);
     }
