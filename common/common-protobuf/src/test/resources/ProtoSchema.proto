@@ -1,0 +1,430 @@
+/*
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+ */
+
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+import "google/protobuf/any.proto";
+package a.b;
+
+message Empty {
+}
+
+message FieldNeedWrap {
+  repeated ListUser listListUser = 1;
+  repeated MapUser listMapUser = 2;
+  map<string, ListUser> mapListUser = 3;
+  map<string, MapUser> mapMapUser = 4;
+  repeated ListListUser listListListUser = 5;
+  repeated ListMapUser listListMapUser = 6;
+  repeated MapListUser listMapListUser = 7;
+  repeated MapMapUser listMapMapUser = 8;
+  map<string, MapListUser> mapMapListUser = 9;
+  map<string, MapMapUser> mapMapMapUser = 10;
+}
+
+message User {
+  string name = 1;
+  repeated User friends = 2;
+}
+
+message Ref1 {
+  Ref2 ref = 1;
+}
+
+message Ref2 {
+  Ref1 ref = 1;
+}
+
+//@WrapArguments
+message BaseRequestWrap {
+  bool boolValue = 1;
+  int32 iValue = 2;
+  int64 lValue = 3;
+  float fValue = 4;
+  double dValue = 5;
+  string sValue = 6;
+  repeated int32 iArray = 7;
+  Enum_2610aa5dc6cd086cf20168892802c9c765a557f4951557340ad9f0982c53e055 color = 8;
+  int64 localDate = 9;
+  int64 date = 10;
+  Empty empty = 11;
+}
+
+//@WrapProperty
+message BaseResponseWrap444 {
+  Enum_2610aa5dc6cd086cf20168892802c9c765a557f4951557340ad9f0982c53e055 value = 1;
+}
+
+//@WrapProperty
+message BaseResponseWrap200 {
+  int32 value = 1;
+}
+
+//@WrapArguments
+message BytesRequestWrap {
+  bytes value = 1;
+}
+
+//@WrapProperty
+message BytesResponseWrap200 {
+  bytes value = 1;
+}
+
+//@WrapArguments
+message ColorBodyRequestWrap {
+  Enum_2610aa5dc6cd086cf20168892802c9c765a557f4951557340ad9f0982c53e055 color = 1;
+}
+
+//@WrapProperty
+message ColorBodyResponseWrap200 {
+  Enum_2610aa5dc6cd086cf20168892802c9c765a557f4951557340ad9f0982c53e055 value = 1;
+}
+
+//@WrapArguments
+message ListListListStringRequestWrap {
+  repeated ListListString value = 1;
+}
+
+//@WrapProperty
+message ListListListStringResponseWrap200 {
+  repeated ListListString value = 1;
+}
+
+//@WrapArguments
+message ListListMapStringRequestWrap {
+  repeated ListMapString value = 1;
+}
+
+//@WrapProperty
+message ListListMapStringResponseWrap200 {
+  repeated ListMapString value = 1;
+}
+
+//@WrapArguments
+message ListListStringRequestWrap {
+  repeated ListString value = 1;
+}
+
+//@WrapProperty
+message ListListStringResponseWrap200 {
+  repeated ListString value = 1;
+}
+
+//@WrapArguments
+message ListListUserRequestWrap {
+  repeated ListUser value = 1;
+}
+
+//@WrapProperty
+message ListListUserResponseWrap200 {
+  repeated ListUser value = 1;
+}
+
+//@WrapArguments
+message ListMapListStringRequestWrap {
+  repeated MapListString value = 1;
+}
+
+//@WrapProperty
+message ListMapListStringResponseWrap200 {
+  repeated MapListString value = 1;
+}
+
+//@WrapArguments
+message ListMapMapStringRequestWrap {
+  repeated MapMapString value = 1;
+}
+
+//@WrapProperty
+message ListMapMapStringResponseWrap200 {
+  repeated MapMapString value = 1;
+}
+
+//@WrapArguments
+message ListMapStringRequestWrap {
+  repeated MapString value = 1;
+}
+
+//@WrapProperty
+message ListMapStringResponseWrap200 {
+  repeated MapString value = 1;
+}
+
+//@WrapArguments
+message ListMapUserRequestWrap {
+  repeated MapUser value = 1;
+}
+
+//@WrapProperty
+message ListMapUserResponseWrap200 {
+  repeated MapUser value = 1;
+}
+
+//@WrapArguments
+message ListObjRequestWrap {
+  repeated google.protobuf.Any objs = 1;
+}
+
+//@WrapProperty
+message ListObjResponseWrap200 {
+  repeated google.protobuf.Any value = 1;
+}
+
+//@WrapArguments
+message ListUserRequestWrap {
+  repeated User users = 1;
+}
+
+//@WrapProperty
+message ListUserResponseWrap200 {
+  repeated User value = 1;
+}
+
+//@WrapArguments
+message MapListStringRequestWrap {
+  map<string, ListString> value = 1;
+}
+
+//@WrapProperty
+message MapListStringResponseWrap200 {
+  map<string, ListString> value = 1;
+}
+
+//@WrapArguments
+message MapListUserRequestWrap {
+  map<string, ListUser> value = 1;
+}
+
+//@WrapProperty
+message MapListUserResponseWrap200 {
+  map<string, ListUser> value = 1;
+}
+
+//@WrapArguments
+message MapMapListStringRequestWrap {
+  map<string, MapListString> value = 1;
+}
+
+//@WrapProperty
+message MapMapListStringResponseWrap200 {
+  map<string, MapListString> value = 1;
+}
+
+//@WrapArguments
+message MapMapMapStringRequestWrap {
+  map<string, MapMapString> value = 1;
+}
+
+//@WrapProperty
+message MapMapMapStringResponseWrap200 {
+  map<string, MapMapString> value = 1;
+}
+
+//@WrapArguments
+message MapMapStringRequestWrap {
+  map<string, MapString> value = 1;
+}
+
+//@WrapProperty
+message MapMapStringResponseWrap200 {
+  map<string, MapString> value = 1;
+}
+
+//@WrapArguments
+message MapMapUserRequestWrap {
+  map<string, MapUser> value = 1;
+}
+
+//@WrapProperty
+message MapMapUserResponseWrap200 {
+  map<string, MapUser> value = 1;
+}
+
+//@WrapArguments
+message MapObjRequestWrap {
+  map<string, google.protobuf.Any> objs = 1;
+}
+
+//@WrapProperty
+message MapObjResponseWrap200 {
+  map<string, google.protobuf.Any> value = 1;
+}
+
+//@WrapArguments
+message MapUserRequestWrap {
+  map<string, User> users = 1;
+}
+
+//@WrapProperty
+message MapUserResponseWrap200 {
+  map<string, User> value = 1;
+}
+
+//@WrapArguments
+message UserWrapInProtobufRequestWrap {
+  User user = 1;
+  int32 ivalue = 2;
+}
+
+//@WrapProperty
+message ListUser {
+  repeated User value = 1;
+}
+
+//@WrapProperty
+message MapUser {
+  map<string, User> value = 1;
+}
+
+//@WrapProperty
+message ListListUser {
+  repeated ListUser value = 1;
+}
+
+//@WrapProperty
+message ListMapUser {
+  repeated MapUser value = 1;
+}
+
+//@WrapProperty
+message MapListUser {
+  map<string, ListUser> value = 1;
+}
+
+//@WrapProperty
+message MapMapUser {
+  map<string, MapUser> value = 1;
+}
+
+//@WrapProperty
+message ListListString {
+  repeated ListString value = 1;
+}
+
+//@WrapProperty
+message ListMapString {
+  repeated MapString value = 1;
+}
+
+//@WrapProperty
+message ListString {
+  repeated string value = 1;
+}
+
+//@WrapProperty
+message MapListString {
+  map<string, ListString> value = 1;
+}
+
+//@WrapProperty
+message MapMapString {
+  map<string, MapString> value = 1;
+}
+
+//@WrapProperty
+message MapString {
+  map<string, string> value = 1;
+}
+
+enum Enum_2610aa5dc6cd086cf20168892802c9c765a557f4951557340ad9f0982c53e055 {
+  RED = 0;
+  YELLOW = 1;
+  BLUE = 2;
+}
+
+service MainService {
+  //@Rpc{"argTypeName":"BaseRequestWrap","responses":{"200":{"typeName":"BaseResponseWrap200"},"444":{"typeName":"BaseResponseWrap444"}}}
+  rpc base (BaseRequestWrap) returns (BaseResponseWrap200);
+
+  //@Rpc{"argTypeName":"BytesRequestWrap","responses":{"200":{"typeName":"BytesResponseWrap200"}}}
+  rpc bytes (BytesRequestWrap) returns (BytesResponseWrap200);
+
+  //@Rpc{"argTypeName":"ColorBodyRequestWrap","responses":{"200":{"typeName":"ColorBodyResponseWrap200"}}}
+  rpc colorBody (ColorBodyRequestWrap) returns (ColorBodyResponseWrap200);
+
+  //@Rpc{"argTypeName":"FieldNeedWrap","responses":{"200":{"typeName":"FieldNeedWrap"}}}
+  rpc fieldNeedWrap (FieldNeedWrap) returns (FieldNeedWrap);
+
+  //@Rpc{"argTypeName":"ListListListStringRequestWrap","responses":{"200":{"typeName":"ListListListStringResponseWrap200"}}}
+  rpc listListListString (ListListListStringRequestWrap) returns (ListListListStringResponseWrap200);
+
+  //@Rpc{"argTypeName":"ListListMapStringRequestWrap","responses":{"200":{"typeName":"ListListMapStringResponseWrap200"}}}
+  rpc listListMapString (ListListMapStringRequestWrap) returns (ListListMapStringResponseWrap200);
+
+  //@Rpc{"argTypeName":"ListListStringRequestWrap","responses":{"200":{"typeName":"ListListStringResponseWrap200"}}}
+  rpc listListString (ListListStringRequestWrap) returns (ListListStringResponseWrap200);
+
+  //@Rpc{"argTypeName":"ListListUserRequestWrap","responses":{"200":{"typeName":"ListListUserResponseWrap200"}}}
+  rpc listListUser (ListListUserRequestWrap) returns (ListListUserResponseWrap200);
+
+  //@Rpc{"argTypeName":"ListMapListStringRequestWrap","responses":{"200":{"typeName":"ListMapListStringResponseWrap200"}}}
+  rpc listMapListString (ListMapListStringRequestWrap) returns (ListMapListStringResponseWrap200);
+
+  //@Rpc{"argTypeName":"ListMapMapStringRequestWrap","responses":{"200":{"typeName":"ListMapMapStringResponseWrap200"}}}
+  rpc listMapMapString (ListMapMapStringRequestWrap) returns (ListMapMapStringResponseWrap200);
+
+  //@Rpc{"argTypeName":"ListMapStringRequestWrap","responses":{"200":{"typeName":"ListMapStringResponseWrap200"}}}
+  rpc listMapString (ListMapStringRequestWrap) returns (ListMapStringResponseWrap200);
+
+  //@Rpc{"argTypeName":"ListMapUserRequestWrap","responses":{"200":{"typeName":"ListMapUserResponseWrap200"}}}
+  rpc listMapUser (ListMapUserRequestWrap) returns (ListMapUserResponseWrap200);
+
+  //@Rpc{"argTypeName":"ListObjRequestWrap","responses":{"200":{"typeName":"ListObjResponseWrap200"}}}
+  rpc listObj (ListObjRequestWrap) returns (ListObjResponseWrap200);
+
+  //@Rpc{"argTypeName":"ListUserRequestWrap","responses":{"200":{"typeName":"ListUserResponseWrap200"}}}
+  rpc listUser (ListUserRequestWrap) returns (ListUserResponseWrap200);
+
+  //@Rpc{"argTypeName":"MapListStringRequestWrap","responses":{"200":{"typeName":"MapListStringResponseWrap200"}}}
+  rpc mapListString (MapListStringRequestWrap) returns (MapListStringResponseWrap200);
+
+  //@Rpc{"argTypeName":"MapListUserRequestWrap","responses":{"200":{"typeName":"MapListUserResponseWrap200"}}}
+  rpc mapListUser (MapListUserRequestWrap) returns (MapListUserResponseWrap200);
+
+  //@Rpc{"argTypeName":"MapMapListStringRequestWrap","responses":{"200":{"typeName":"MapMapListStringResponseWrap200"}}}
+  rpc mapMapListString (MapMapListStringRequestWrap) returns (MapMapListStringResponseWrap200);
+
+  //@Rpc{"argTypeName":"MapMapMapStringRequestWrap","responses":{"200":{"typeName":"MapMapMapStringResponseWrap200"}}}
+  rpc mapMapMapString (MapMapMapStringRequestWrap) returns (MapMapMapStringResponseWrap200);
+
+  //@Rpc{"argTypeName":"MapMapStringRequestWrap","responses":{"200":{"typeName":"MapMapStringResponseWrap200"}}}
+  rpc mapMapString (MapMapStringRequestWrap) returns (MapMapStringResponseWrap200);
+
+  //@Rpc{"argTypeName":"MapMapUserRequestWrap","responses":{"200":{"typeName":"MapMapUserResponseWrap200"}}}
+  rpc mapMapUser (MapMapUserRequestWrap) returns (MapMapUserResponseWrap200);
+
+  //@Rpc{"argTypeName":"MapObjRequestWrap","responses":{"200":{"typeName":"MapObjResponseWrap200"}}}
+  rpc mapObj (MapObjRequestWrap) returns (MapObjResponseWrap200);
+
+  //@Rpc{"argTypeName":"MapUserRequestWrap","responses":{"200":{"typeName":"MapUserResponseWrap200"}}}
+  rpc mapUser (MapUserRequestWrap) returns (MapUserResponseWrap200);
+
+  //@Rpc{"argTypeName":"google.protobuf.Empty","responses":{"200":{"typeName":"google.protobuf.Empty"}}}
+  rpc noParamVoid (google.protobuf.Empty) returns (google.protobuf.Empty);
+
+  //@Rpc{"argTypeName":"google.protobuf.Any","responses":{"200":{"typeName":"google.protobuf.Any"}}}
+  rpc obj (google.protobuf.Any) returns (google.protobuf.Any);
+
+  //@Rpc{"argTypeName":"Ref1","responses":{"200":{"typeName":"Ref2"}}}
+  rpc ref (Ref1) returns (Ref2);
+
+  //@Rpc{"argTypeName":"User","responses":{"200":{"typeName":"User"}}}
+  rpc user (User) returns (User);
+
+  //@Rpc{"argTypeName":"UserWrapInProtobufRequestWrap","responses":{"200":{"typeName":"User"}}}
+  rpc userWrapInProtobuf (UserWrapInProtobufRequestWrap) returns (User);
+}
