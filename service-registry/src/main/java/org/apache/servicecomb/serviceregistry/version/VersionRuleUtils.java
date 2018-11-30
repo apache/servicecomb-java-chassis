@@ -54,7 +54,17 @@ public final class VersionRuleUtils {
         return versionRule;
       }
     }
+    throw new IllegalStateException("config service_description.version is invalid ");
+  }
 
-    throw new IllegalStateException("never run to here");
+  public static void checkVersionFormat(String strVersionRule) {
+    strVersionRule = strVersionRule.trim();
+    for (VersionRuleParser parser : parsers) {
+      VersionRule versionRule = parser.parse(strVersionRule);
+      if (versionRule != null) {
+        return;
+      }
+    }
+    throw new IllegalStateException("config service_description.version is invalid ");
   }
 }

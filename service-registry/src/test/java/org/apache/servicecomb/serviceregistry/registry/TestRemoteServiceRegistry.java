@@ -35,6 +35,7 @@ import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
 import org.apache.servicecomb.serviceregistry.task.event.ShutdownEvent;
+import org.apache.servicecomb.serviceregistry.version.VersionRuleUtils;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -140,6 +141,13 @@ public class TestRemoteServiceRegistry {
         throw new Error("ok");
       }
     }.getMockInstance();
+
+    new MockUp<VersionRuleUtils>() {
+      @Mock
+      void checkVersionFormat(String strVersionRule) {
+        return;
+      }
+    };
 
     expectedException.expect(Error.class);
     expectedException.expectMessage(Matchers.is("ok"));

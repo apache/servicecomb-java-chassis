@@ -18,7 +18,9 @@
 package org.apache.servicecomb.serviceregistry.api.registry;
 
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_DESCRIPTION_KEY;
+import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY;
 import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.CONFIG_ALLOW_CROSS_APP_KEY;
+import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_MICROSERVICE_VERSION;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,12 +29,19 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
 import mockit.Deencapsulation;
+import mockit.Expectations;
+import mockit.Mocked;
 
 public class TestMicroserviceFactory {
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
+
   @Test
   public void testAllowCrossApp() {
     MicroserviceFactory factory = new MicroserviceFactory();
@@ -124,5 +133,24 @@ public class TestMicroserviceFactory {
     Deencapsulation.invoke(factory, "setDescription", configuration, microservice);
 
     Assert.assertEquals(" , ", microservice.getDescription());
+  }
+
+  @Test
+  public void testCreateMicroserviceFromDefinitionWithInvalidVersion(@Mocked Configuration configuration,
+      @Mocked MicroserviceDefinition microserviceDefinition) {
+
+    new Expectations() {
+      {
+        configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY,
+            DEFAULT_MICROSERVICE_VERSION);
+        result = "x.y.x.1";
+        microserviceDefinition.getConfiguration();
+        result = configuration;
+      }
+    };
+    expectedException.equals(IllegalStateException.class);
+    expectedException.expectMessage("Invalid major \"x\", version \"x.y.x.1\"");
+    MicroserviceFactory microserviceFactory = new MicroserviceFactory();
+    microserviceFactory.create(microserviceDefinition);
   }
 }
