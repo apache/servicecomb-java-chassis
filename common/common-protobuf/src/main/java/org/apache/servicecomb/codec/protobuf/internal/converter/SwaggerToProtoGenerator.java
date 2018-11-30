@@ -61,7 +61,7 @@ public class SwaggerToProtoGenerator {
 
   private final Set<String> messages = new HashSet<>();
 
-  private final List<Runnable> pending = new ArrayList<>();
+  private List<Runnable> pending = new ArrayList<>();
 
   // not java package
   // better to be: app_${app}.mid_{microservice}.sid_{schemaId}
@@ -73,8 +73,15 @@ public class SwaggerToProtoGenerator {
   public Proto convert() {
     convertDefinitions();
     convertOperations();
-    for (Runnable runnable : pending) {
-      runnable.run();
+    for (; ; ) {
+      List<Runnable> oldPending = pending;
+      pending = new ArrayList<>();
+      for (Runnable runnable : oldPending) {
+        runnable.run();
+      }
+      if (pending.isEmpty()) {
+        break;
+      }
     }
 
     return createProto();
@@ -153,14 +160,14 @@ public class SwaggerToProtoGenerator {
       return type;
     }
 
-    Property property = adapter.getArrayItem();
-    if (property != null) {
-      return "repeated " + convertSwaggerType(property);
+    Property itemProperty = adapter.getArrayItem();
+    if (itemProperty != null) {
+      return "repeated " + convertArrayOrMapItem(itemProperty);
     }
 
-    property = adapter.getMapItem();
-    if (property != null) {
-      return String.format("map<string, %s>", convertSwaggerType(property));
+    itemProperty = adapter.getMapItem();
+    if (itemProperty != null) {
+      return String.format("map<string, %s>", convertArrayOrMapItem(itemProperty));
     }
 
     if (adapter.isObject()) {
@@ -171,6 +178,40 @@ public class SwaggerToProtoGenerator {
     throw new IllegalStateException(String
         .format("not support swagger type, class=%s, content=%s.", swaggerType.getClass().getName(),
             Json.encode(swaggerType)));
+  }
+
+  private String convertArrayOrMapItem(Property itemProperty) {
+    SwaggerTypeAdapter itemAdapter = SwaggerTypeAdapter.create(itemProperty);
+    // List<List<>>, need to wrap
+    if (itemAdapter.getArrayItem() != null) {
+      String protoName = generateWrapPropertyName(List.class.getSimpleName(), itemAdapter.getArrayItem());
+      pending.add(() -> wrapPropertyToMessage(protoName, itemProperty));
+      return protoName;
+    }
+
+    // List<Map<>>, need to wrap
+    if (itemAdapter.getMapItem() != null) {
+      String protoName = generateWrapPropertyName(Map.class.getSimpleName(), itemAdapter.getMapItem());
+      pending.add(() -> wrapPropertyToMessage(protoName, itemProperty));
+      return protoName;
+    }
+
+    return convertSwaggerType(itemProperty);
+  }
+
+  private String generateWrapPropertyName(String prefix, Property property) {
+    SwaggerTypeAdapter adapter = SwaggerTypeAdapter.create(property);
+    // List<List<>>, need to wrap
+    if (adapter.getArrayItem() != null) {
+      return generateWrapPropertyName(prefix + List.class.getSimpleName(), adapter.getArrayItem());
+    }
+
+    // List<Map<>>, need to wrap
+    if (adapter.getMapItem() != null) {
+      return generateWrapPropertyName(prefix + Map.class.getSimpleName(), adapter.getMapItem());
+    }
+
+    return prefix + StringUtils.capitalize(convertSwaggerType(adapter));
   }
 
   private void wrapPropertyToMessage(String protoName, Property property) {
@@ -276,7 +317,7 @@ public class SwaggerToProtoGenerator {
       }
     }
 
-    String wrapName = operation.getOperationId() + "RequestWrap";
+    String wrapName = StringUtils.capitalize(operation.getOperationId()) + "RequestWrap";
     createWrapArgs(wrapName, parameters);
 
     protoMethod.setArgTypeName(wrapName);
@@ -291,7 +332,7 @@ public class SwaggerToProtoGenerator {
       protoResponse.setTypeName(type);
 
       if (wrapped) {
-        String wrapName = operation.getOperationId() + "ResponseWrap" + entry.getKey();
+        String wrapName = StringUtils.capitalize(operation.getOperationId()) + "ResponseWrap" + entry.getKey();
         wrapPropertyToMessage(wrapName, entry.getValue().getSchema());
 
         protoResponse.setTypeName(wrapName);

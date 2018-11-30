@@ -26,6 +26,7 @@ import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Empty;
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -94,5 +95,83 @@ public class ProtoSchema {
 
   @GetMapping(path = "/noParamVoid")
   public void noParamVoid() {
+  }
+
+  @PostMapping(path = "/listListString")
+  public List<List<String>> listListString(@RequestBody List<List<String>> value) {
+    return value;
+  }
+
+  @PostMapping(path = "/listListUser")
+  public List<List<User>> listListUser(@RequestBody List<List<User>> value) {
+    return value;
+  }
+
+  @PostMapping(path = "/listMapString")
+  public List<Map<String, String>> listMapString(@RequestBody List<Map<String, String>> value) {
+    return value;
+  }
+
+  @PostMapping(path = "/listMapUser")
+  public List<Map<String, User>> listMapUser(@RequestBody List<Map<String, User>> value) {
+    return value;
+  }
+
+  @PostMapping(path = "/mapListString")
+  public Map<String, List<String>> mapListString(@RequestBody Map<String, List<String>> value) {
+    return value;
+  }
+
+  @PostMapping(path = "/mapListUser")
+  public Map<String, List<User>> mapListUser(@RequestBody Map<String, List<User>> value) {
+    return value;
+  }
+
+  @PostMapping(path = "/mapMapString")
+  public Map<String, Map<String, String>> mapMapString(@RequestBody Map<String, Map<String, String>> value) {
+    return value;
+  }
+
+  @PostMapping(path = "/mapMapUser")
+  public Map<String, Map<String, User>> mapMapUser(@RequestBody Map<String, Map<String, User>> value) {
+    return value;
+  }
+
+  @PostMapping(path = "/listListListString")
+  public List<List<List<String>>> listListListString(@RequestBody List<List<List<String>>> value) {
+    return value;
+  }
+
+  @PostMapping(path = "/listListMapString")
+  public List<List<Map<String, String>>> listListMapString(@RequestBody List<List<Map<String, String>>> value) {
+    return value;
+  }
+
+  @PostMapping(path = "/listMapListString")
+  public List<Map<String, List<String>>> listMapListString(@RequestBody List<Map<String, List<String>>> value) {
+    return value;
+  }
+
+  @PostMapping(path = "/listMapMapString")
+  public List<Map<String, Map<String, String>>> listMapMapString(
+      @RequestBody List<Map<String, Map<String, String>>> value) {
+    return value;
+  }
+
+  @PostMapping(path = "/mapMapListString")
+  public Map<String, Map<String, List<String>>> mapMapListString(
+      @RequestBody Map<String, Map<String, List<String>>> value) {
+    return value;
+  }
+
+  @PostMapping(path = "/mapMapMapString")
+  public Map<String, Map<String, Map<String, String>>> mapMapMapString(
+      @RequestBody Map<String, Map<String, Map<String, String>>> value) {
+    return value;
+  }
+
+  @PostMapping(path = "/fieldNeedWrap")
+  public FieldNeedWrap fieldNeedWrap(@RequestBody FieldNeedWrap fieldNeedWrap) {
+    return fieldNeedWrap;
   }
 }
