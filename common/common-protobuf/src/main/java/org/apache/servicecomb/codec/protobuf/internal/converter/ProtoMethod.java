@@ -28,8 +28,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class ProtoMethod {
   private String argTypeName;
 
-  private boolean argWrapped;
-
   @JsonProperty
   // key is status
   private Map<Integer, ProtoResponse> responses = new HashMap<>();
@@ -42,14 +40,6 @@ public class ProtoMethod {
 
   public void setArgTypeName(String argTypeName) {
     this.argTypeName = argTypeName;
-  }
-
-  public boolean isArgWrapped() {
-    return argWrapped;
-  }
-
-  public void setArgWrapped(boolean argWrapped) {
-    this.argWrapped = argWrapped;
   }
 
   public void addResponse(String status, ProtoResponse response) {

@@ -19,21 +19,11 @@ package org.apache.servicecomb.codec.protobuf.internal.converter;
 public class ProtoResponse {
   private String typeName;
 
-  private boolean wrapped;
-
   public String getTypeName() {
     return typeName;
   }
 
   public void setTypeName(String typeName) {
     this.typeName = typeName;
-  }
-
-  public boolean isWrapped() {
-    return wrapped;
-  }
-
-  public void setWrapped(boolean wrapped) {
-    this.wrapped = wrapped;
   }
 }
