@@ -109,6 +109,10 @@ public class Invocation extends SwaggerInvocation {
     return invocationStageTrace.getStartExecution();
   }
 
+  public Invocation() {
+    // An empty invocation, used to mock or some other scenario do not need operation information.
+  }
+
   public Invocation(ReferenceConfig referenceConfig, OperationMeta operationMeta, Object[] swaggerArguments) {
     this.invocationType = InvocationType.CONSUMER;
     this.referenceConfig = referenceConfig;
