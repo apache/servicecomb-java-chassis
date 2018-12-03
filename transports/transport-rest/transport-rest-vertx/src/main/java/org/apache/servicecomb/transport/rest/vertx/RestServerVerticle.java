@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.transport.rest.vertx;
 
+import java.nio.channels.ClosedChannelException;
 import java.util.List;
 import java.util.Set;
 
@@ -104,7 +105,12 @@ public class RestServerVerticle extends AbstractVerticle {
         }
       });
       httpServer.exceptionHandler(e -> {
-        LOGGER.error("Unexpected error in server.{}", ExceptionUtils.getExceptionMessageWithoutTrace(e));
+        if(e instanceof ClosedChannelException) {
+          // This is quite normal in between browser and ege, so do not print out.
+          LOGGER.debug("Unexpected error in server.{}", ExceptionUtils.getExceptionMessageWithoutTrace(e));
+        } else {
+          LOGGER.error("Unexpected error in server.{}", ExceptionUtils.getExceptionMessageWithoutTrace(e));
+        }
       });
       startListen(httpServer, startFuture);
     } catch (Throwable e) {
