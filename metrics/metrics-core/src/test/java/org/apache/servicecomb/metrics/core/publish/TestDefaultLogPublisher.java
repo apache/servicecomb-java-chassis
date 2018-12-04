@@ -180,7 +180,6 @@ public class TestDefaultLogPublisher {
     model.getThreadPools().put("test", new ThreadPoolPublishModel());
     Measurement measurement = new Measurement(null, 0L, 1.0);
 
-    MeasurementNode measurementNodeCpu = new MeasurementNode("cpu", new HashMap<>());
     MeasurementNode measurementNodeCpuAll = new MeasurementNode("allProcess", new HashMap<>());
     MeasurementNode measurementNodeCpuProcess = new MeasurementNode("currentProcess", new HashMap<>());
     MeasurementNode measurementNodeSend = new MeasurementNode("send", new HashMap<>());
@@ -198,22 +197,19 @@ public class TestDefaultLogPublisher {
     measurementNodeRecvPacket.getMeasurements().add(measurement);
     measurementNodeSendPacket.getMeasurements().add(measurement);
 
-    measurementNodeCpu.getChildren().put("allProcess", measurementNodeCpuAll);
-    measurementNodeCpu.getChildren().put("currentProcess", measurementNodeCpuProcess);
     measurementNodeEth0.getChildren().put("send", measurementNodeSend);
     measurementNodeEth0.getChildren().put("receive", measurementNodeRecv);
     measurementNodeEth0.getChildren().put("receivePackets", measurementNodeRecvPacket);
     measurementNodeEth0.getChildren().put("sendPackets", measurementNodeSendPacket);
 
     measurementNodeNet.getChildren().put("eth0", measurementNodeEth0);
-    measurementNodeOs.getChildren().put("cpu", measurementNodeCpu);
+    measurementNodeOs.getChildren().put("cpu", measurementNodeCpuAll);
+    measurementNodeOs.getChildren().put("processCpu", measurementNodeCpuProcess);
     measurementNodeOs.getChildren().put("net", measurementNodeNet);
 
     measurementNodeOs.getMeasurements().add(measurement);
     measurementNodeNet.getMeasurements().add(measurement);
-    measurementNodeCpu.getMeasurements().add(measurement);
     measurementNodeEth0.getMeasurements().add(measurement);
-
 
     new MockUp<PublishModelFactory>() {
       @Mock
