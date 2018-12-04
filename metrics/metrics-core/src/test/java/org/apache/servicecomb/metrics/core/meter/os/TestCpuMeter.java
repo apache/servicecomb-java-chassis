@@ -69,20 +69,29 @@ public class TestCpuMeter {
       }
     };
     CpuMeter cpuMeter = new CpuMeter(id);
-    Assert.assertEquals(0.0, cpuMeter.getRate(), 0.0);
-    Assert.assertEquals(0.0, cpuMeter.getProcessRate(), 0.0);
+    Assert.assertEquals(0.0, cpuMeter.getACpuInfo().getRate(), 0.0);
+    Assert.assertEquals(0.0, cpuMeter.getPCpuInfo().getRate(), 0.0);
+
     Assert.assertEquals("6666", cpuMeter.getPid());
-    Assert.assertEquals(4L, cpuMeter.getLastProcessTime());
+    Assert.assertEquals(4L, cpuMeter.getPCpuInfo().getLastTime());
     Assert.assertEquals(8, cpuMeter.getLastTotalTime());
-    Assert.assertEquals(1, cpuMeter.getLastIdleTime());
+    Assert.assertEquals(1, cpuMeter.getACpuInfo().getLastTime());
     Assert.assertEquals(2, cpuMeter.getCpuNum());
+    Assert.assertEquals("/proc/stat", cpuMeter.getACpuInfo().getFilePath());
+    Assert.assertTrue(cpuMeter.getACpuInfo().isHasTotal());
+
+    Assert.assertEquals("/proc/6666/stat", cpuMeter.getPCpuInfo().getFilePath());
+    Assert.assertFalse(cpuMeter.getPCpuInfo().isHasTotal());
+
     list.add(0, "cpu  2 2 2 2 2 2 2 2 0 0 2 2 2 2 2 2 2 2 2 2");
     cpuMeter.refreshCpu();
-    Assert.assertEquals(1.0, cpuMeter.getProcessRate(), 0.0);
-    Assert.assertEquals(1.75, cpuMeter.getRate(), 0.0);
+    Assert.assertEquals(1.0, cpuMeter.getPCpuInfo().getRate(), 0.0);
+    Assert.assertEquals(1.75, cpuMeter.getACpuInfo().getRate(), 0.0);
+
     Assert.assertEquals(16, cpuMeter.getLastTotalTime());
-    Assert.assertEquals(8, cpuMeter.getLastProcessTime());
-    Assert.assertEquals(2, cpuMeter.getLastIdleTime());
+    Assert.assertEquals(8, cpuMeter.getPCpuInfo().getLastTime());
+    Assert.assertEquals(2, cpuMeter.getACpuInfo().getLastTime());
+
     Assert.assertEquals(2, cpuMeter.getCpuNum());
     Assert.assertEquals("6666", cpuMeter.getPid());
   }
@@ -119,21 +128,30 @@ public class TestCpuMeter {
       }
     };
     CpuMeter cpuMeter = new CpuMeter(id);
-    Assert.assertEquals(0.0, cpuMeter.getProcessRate(), 0.0);
+    Assert.assertEquals(0.0, cpuMeter.getPCpuInfo().getRate(), 0.0);
     Assert.assertEquals("6666", cpuMeter.getPid());
-    Assert.assertEquals(4L, cpuMeter.getLastProcessTime());
-    Assert.assertEquals(0.0, cpuMeter.getRate(), 0.0);
-    Assert.assertEquals(8, cpuMeter.getLastTotalTime());
-    Assert.assertEquals(1, cpuMeter.getLastIdleTime());
+    Assert.assertEquals(4L, cpuMeter.getPCpuInfo().getLastTime());
+    Assert.assertEquals(0.0, cpuMeter.getACpuInfo().getRate(), 0.0);
+
+    Assert.assertEquals(8L, cpuMeter.getLastTotalTime());
+    Assert.assertEquals(1L, cpuMeter.getACpuInfo().getLastTime());
     Assert.assertEquals(2, cpuMeter.getCpuNum());
+    Assert.assertEquals("/proc/stat", cpuMeter.getACpuInfo().getFilePath());
+    Assert.assertTrue(cpuMeter.getACpuInfo().isHasTotal());
+
+    Assert.assertEquals("/proc/6666/stat", cpuMeter.getPCpuInfo().getFilePath());
+    Assert.assertFalse(cpuMeter.getPCpuInfo().isHasTotal());
     list.add(0, "cpu  1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1 1 1");
     cpuMeter.refreshCpu();
-    Assert.assertEquals(0.0, cpuMeter.getProcessRate(), 0.0);
+
+    Assert.assertEquals(0.0, cpuMeter.getPCpuInfo().getRate(), 0.0);
     Assert.assertEquals("6666", cpuMeter.getPid());
-    Assert.assertEquals(4L, cpuMeter.getLastProcessTime());
-    Assert.assertEquals(0.0, cpuMeter.getRate(), 0.0);
+    Assert.assertEquals(4L, cpuMeter.getPCpuInfo().getLastTime());
+
+    Assert.assertEquals(0.0, cpuMeter.getACpuInfo().getRate(), 0.0);
     Assert.assertEquals(8, cpuMeter.getLastTotalTime());
-    Assert.assertEquals(1, cpuMeter.getLastIdleTime());
+    Assert.assertEquals(1, cpuMeter.getACpuInfo().getLastTime());
+
   }
 
   @Test

@@ -171,10 +171,8 @@ public class DefaultLogPublisher implements MetricsInitializer {
     }
     double allRate = cpuNode.findChild(CpuMeter.TAG_All.value()).summary();
     double processRate = cpuNode.findChild(CpuMeter.TAG_CURRENT.value()).summary();
-    if (allRate != 0 || processRate != 0) {
-      appendLine(sb, "  cpu:");
-      appendLine(sb, "    all: %.2f%%    process: %.2f%%", allRate * 100, processRate * 100);
-    }
+    appendLine(sb, "  cpu:");
+    appendLine(sb, "    all: %.2f%%    process: %.2f%%", allRate * 100, processRate * 100);
   }
 
 

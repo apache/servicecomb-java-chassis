@@ -32,7 +32,7 @@ public class ClientEndpointsLogPublisher extends AbstractMeasurementNodeLogPubli
   @Override
   public void print(boolean printDetail) {
     appendLine(sb, "    client.endpoints:");
-    appendLine(sb, "      remote                connectCount    disconnectCount connections     send(B)      receive(B)");
+    appendLine(sb, "      remote                connectCount    disconnectCount connections     send(Bps)    receive(Bps)");
 
     double connect = 0;
     double disconnect = 0;

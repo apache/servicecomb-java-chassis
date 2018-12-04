@@ -53,14 +53,22 @@ public class TestNetMeter {
     netMeter.refreshNet(1);
     Map<String, InterfaceInfo> meterInterfaceInfoMap = netMeter.getInterfaceInfoMap();
     Assert.assertTrue(meterInterfaceInfoMap.containsKey("eth0"));
+
     InterfaceInfo eth0 = meterInterfaceInfoMap.get("eth0");
+
     Assert.assertEquals("eth0", eth0.getName());
-    Assert.assertEquals(1L, eth0.getLastRxBytes());
-    Assert.assertEquals(1L, eth0.getLastTxBytes());
-    Assert.assertEquals(1L, eth0.getLastRxPackets());
-    Assert.assertEquals(1L, eth0.getLastTxPackets());
-    Assert.assertEquals(1, eth0.getReceiveRate(), 0.0);
-    Assert.assertEquals(1, eth0.getSendRate(), 0.0);
+
+    Assert.assertEquals(1L, eth0.getRecvPartInterface().getLastBytes());
+    Assert.assertEquals(1L, eth0.getRecvPartInterface().getLastPackets());
+    Assert.assertEquals(1, eth0.getRecvPartInterface().getRate(), 0.0);
+    Assert.assertEquals(1, eth0.getRecvPartInterface().getPacketsRate(), 0.0);
+    Assert.assertEquals(0, eth0.getRecvPartInterface().getIndex());
+
+    Assert.assertEquals(1L, eth0.getSendPartInterface().getLastBytes());
+    Assert.assertEquals(1L, eth0.getSendPartInterface().getLastPackets());
+    Assert.assertEquals(1, eth0.getSendPartInterface().getRate(), 0.0);
+    Assert.assertEquals(1, eth0.getSendPartInterface().getPacketsRate(), 0.0);
+    Assert.assertEquals(8, eth0.getSendPartInterface().getIndex());
   }
 
 
@@ -86,25 +94,32 @@ public class TestNetMeter {
     Assert.assertEquals(2, netMap.size());
     InterfaceInfo eth0 = netMap.get("eth0");
     Assert.assertEquals("eth0", eth0.getName());
-    Assert.assertEquals(1L, eth0.getLastRxBytes());
-    Assert.assertEquals(1L, eth0.getLastRxPackets());
-    Assert.assertEquals(1L, eth0.getLastTxPackets());
-    Assert.assertEquals(1L, eth0.getLastTxBytes());
-    Assert.assertEquals(1, eth0.getReceiveRate(), 0.0);
-    Assert.assertEquals(1, eth0.getSendRate(), 0.0);
-    Assert.assertEquals(1, eth0.getSendPacketsRate(), 0.0);
-    Assert.assertEquals(1, eth0.getReceivePacketsRate(), 0.0);
+    Assert.assertEquals(1L, eth0.getRecvPartInterface().getLastBytes());
+    Assert.assertEquals(1L, eth0.getRecvPartInterface().getLastPackets());
+    Assert.assertEquals(1, eth0.getRecvPartInterface().getRate(), 0.0);
+    Assert.assertEquals(1, eth0.getRecvPartInterface().getPacketsRate(), 0.0);
+    Assert.assertEquals(0, eth0.getRecvPartInterface().getIndex());
+
+    Assert.assertEquals(1L, eth0.getSendPartInterface().getLastBytes());
+    Assert.assertEquals(1L, eth0.getSendPartInterface().getLastPackets());
+    Assert.assertEquals(1, eth0.getSendPartInterface().getRate(), 0.0);
+    Assert.assertEquals(1, eth0.getSendPartInterface().getPacketsRate(), 0.0);
+    Assert.assertEquals(8, eth0.getSendPartInterface().getIndex());
 
     InterfaceInfo lo = netMap.get("lo");
     Assert.assertEquals("lo", lo.getName());
-    Assert.assertEquals(0L, lo.getLastRxBytes());
-    Assert.assertEquals(0L, lo.getLastRxPackets());
-    Assert.assertEquals(0L, lo.getLastTxPackets());
-    Assert.assertEquals(0L, lo.getLastTxBytes());
-    Assert.assertEquals(0, lo.getReceiveRate(), 0.0);
-    Assert.assertEquals(0, lo.getReceivePacketsRate(), 0.0);
-    Assert.assertEquals(0, lo.getSendRate(), 0.0);
-    Assert.assertEquals(0, lo.getSendPacketsRate(), 0.0);
+
+    Assert.assertEquals(0L, lo.getRecvPartInterface().getLastBytes());
+    Assert.assertEquals(0L, lo.getRecvPartInterface().getLastPackets());
+    Assert.assertEquals(0, lo.getRecvPartInterface().getRate(), 0.0);
+    Assert.assertEquals(0, lo.getRecvPartInterface().getPacketsRate(), 0.0);
+    Assert.assertEquals(0, lo.getRecvPartInterface().getIndex());
+
+    Assert.assertEquals(0L, lo.getSendPartInterface().getLastBytes());
+    Assert.assertEquals(0L, lo.getSendPartInterface().getLastPackets());
+    Assert.assertEquals(0, lo.getSendPartInterface().getRate(), 0.0);
+    Assert.assertEquals(0, lo.getSendPartInterface().getPacketsRate(), 0.0);
+    Assert.assertEquals(8, lo.getSendPartInterface().getIndex());
   }
 
 
@@ -127,24 +142,30 @@ public class TestNetMeter {
     InterfaceInfo lo = netMap.get("lo");
     InterfaceInfo eth0 = netMap.get("eth0");
     Assert.assertEquals("lo", lo.getName());
-    Assert.assertEquals(0L, lo.getLastRxBytes());
-    Assert.assertEquals(0L, lo.getLastTxBytes());
-    Assert.assertEquals(0L, lo.getLastRxPackets());
-    Assert.assertEquals(0L, lo.getLastTxPackets());
-    Assert.assertEquals(0, lo.getReceiveRate(), 0.0);
-    Assert.assertEquals(0, lo.getReceivePacketsRate(), 0.0);
-    Assert.assertEquals(0, lo.getSendRate(), 0.0);
-    Assert.assertEquals(0, lo.getSendPacketsRate(), 0.0);
+    Assert.assertEquals(0L, lo.getRecvPartInterface().getLastBytes());
+    Assert.assertEquals(0L, lo.getRecvPartInterface().getLastPackets());
+    Assert.assertEquals(0, lo.getRecvPartInterface().getRate(), 0.0);
+    Assert.assertEquals(0, lo.getRecvPartInterface().getPacketsRate(), 0.0);
+    Assert.assertEquals(0, lo.getRecvPartInterface().getIndex());
+
+    Assert.assertEquals(0L, lo.getSendPartInterface().getLastBytes());
+    Assert.assertEquals(0L, lo.getSendPartInterface().getLastPackets());
+    Assert.assertEquals(0, lo.getSendPartInterface().getRate(), 0.0);
+    Assert.assertEquals(0, lo.getSendPartInterface().getPacketsRate(), 0.0);
+    Assert.assertEquals(8, lo.getSendPartInterface().getIndex());
 
     Assert.assertEquals("eth0", eth0.getName());
-    Assert.assertEquals(0L, eth0.getLastRxBytes());
-    Assert.assertEquals(0L, eth0.getLastTxBytes());
-    Assert.assertEquals(0L, eth0.getLastRxPackets());
-    Assert.assertEquals(0L, eth0.getLastTxPackets());
-    Assert.assertEquals(0, eth0.getReceiveRate(), 0.0);
-    Assert.assertEquals(0, eth0.getReceivePacketsRate(), 0.0);
-    Assert.assertEquals(0, eth0.getSendRate(), 0.0);
-    Assert.assertEquals(0, eth0.getSendPacketsRate(), 0.0);
+    Assert.assertEquals(0L, eth0.getRecvPartInterface().getLastBytes());
+    Assert.assertEquals(0L, eth0.getRecvPartInterface().getLastPackets());
+    Assert.assertEquals(0, eth0.getRecvPartInterface().getRate(), 0.0);
+    Assert.assertEquals(0, eth0.getRecvPartInterface().getPacketsRate(), 0.0);
+    Assert.assertEquals(0, eth0.getRecvPartInterface().getIndex());
+
+    Assert.assertEquals(0L, eth0.getSendPartInterface().getLastBytes());
+    Assert.assertEquals(0L, eth0.getSendPartInterface().getLastPackets());
+    Assert.assertEquals(0, eth0.getSendPartInterface().getRate(), 0.0);
+    Assert.assertEquals(0, eth0.getSendPartInterface().getPacketsRate(), 0.0);
+    Assert.assertEquals(8, eth0.getSendPartInterface().getIndex());
     list.remove(2);
     list.remove(2);
     list.add("eth0: 1 1    0    0    0     0          0          1         1 1    1      0     0     0    0    0");
@@ -152,14 +173,17 @@ public class TestNetMeter {
     Assert.assertNull(netMap.get("lo"));
     Assert.assertEquals(1, netMap.size());
     Assert.assertEquals("eth0", eth0.getName());
-    Assert.assertEquals(1L, eth0.getLastRxBytes());
-    Assert.assertEquals(1L, eth0.getLastTxBytes());
-    Assert.assertEquals(1L, eth0.getLastRxPackets());
-    Assert.assertEquals(1L, eth0.getLastTxPackets());
-    Assert.assertEquals(1, eth0.getReceiveRate(), 0.0);
-    Assert.assertEquals(1, eth0.getReceivePacketsRate(), 0.0);
-    Assert.assertEquals(1, eth0.getSendRate(), 0.0);
-    Assert.assertEquals(1, eth0.getSendPacketsRate(), 0.0);
+    Assert.assertEquals(1L, eth0.getRecvPartInterface().getLastBytes());
+    Assert.assertEquals(1L, eth0.getRecvPartInterface().getLastPackets());
+    Assert.assertEquals(1, eth0.getRecvPartInterface().getRate(), 0.0);
+    Assert.assertEquals(1, eth0.getRecvPartInterface().getPacketsRate(), 0.0);
+    Assert.assertEquals(0, eth0.getRecvPartInterface().getIndex());
+
+    Assert.assertEquals(1L, eth0.getSendPartInterface().getLastBytes());
+    Assert.assertEquals(1L, eth0.getSendPartInterface().getLastPackets());
+    Assert.assertEquals(1, eth0.getSendPartInterface().getRate(), 0.0);
+    Assert.assertEquals(1, eth0.getSendPartInterface().getPacketsRate(), 0.0);
+    Assert.assertEquals(8, eth0.getSendPartInterface().getIndex());
   }
 
 
