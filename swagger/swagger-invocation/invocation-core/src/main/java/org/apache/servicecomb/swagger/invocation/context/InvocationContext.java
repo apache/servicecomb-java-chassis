@@ -19,6 +19,7 @@ package org.apache.servicecomb.swagger.invocation.context;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
@@ -65,6 +66,24 @@ public class InvocationContext {
       return;
     }
 
+    context.putAll(otherContext);
+  }
+
+  public void mergeContext(InvocationContext otherContext) {
+    mergeContext(otherContext.getContext());
+  }
+
+  public void mergeContext(Map<String, String> otherContext) {
+    if (otherContext == null) {
+      return;
+    }
+    if (otherContext.size() > context.size()) {
+      for (Entry<String, String> entry : context.entrySet()) {
+        otherContext.putIfAbsent(entry.getKey(), entry.getValue());
+      }
+      this.context = otherContext;
+      return;
+    }
     context.putAll(otherContext);
   }
 

@@ -105,7 +105,7 @@ public abstract class AbstractRestInvocation {
     @SuppressWarnings("unchecked")
     Map<String, String> cseContext =
         JsonUtils.readValue(strCseContext.getBytes(StandardCharsets.UTF_8), Map.class);
-    invocation.addContext(cseContext);
+    invocation.mergeContext(cseContext);
   }
 
   public String getContext(String key) {
