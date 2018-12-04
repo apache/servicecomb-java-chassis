@@ -37,6 +37,7 @@ import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.transport.highway.message.RequestHeader;
 import org.apache.servicecomb.transport.highway.message.ResponseHeader;
 import org.junit.After;
@@ -163,6 +164,26 @@ public class TestHighwayCodec {
     Response response = HighwayCodec.decodeResponse(invocation, operationProtobuf, tcp);
     Assert.assertEquals("10", invocation.getContext().get("a"));
     Assert.assertEquals(200, response.getStatusCode());
+  }
+
+  @Test
+  public void testDecodeRequestTraceId(@Mocked Endpoint endpoint) throws Exception {
+    commonMock();
+
+    Invocation invocation = new Invocation(endpoint, operationMeta, null);
+
+    invocation.addContext("X-B3-traceId", "test1");
+    Assert.assertEquals("test1", invocation.getContext("X-B3-traceId"));
+
+    RequestHeader headers = new RequestHeader();
+    Map<String, String> context = new HashMap<>();
+    headers.setContext(context);
+    HighwayCodec.decodeRequest(invocation, headers, operationProtobuf, bodyBuffer);
+    Assert.assertEquals("test1", invocation.getContext("X-B3-traceId"));
+
+    context.put("X-B3-traceId", "test2");
+    HighwayCodec.decodeRequest(invocation, headers, operationProtobuf, bodyBuffer);
+    Assert.assertEquals("test2", invocation.getContext("X-B3-traceId"));
   }
 
   @Test
