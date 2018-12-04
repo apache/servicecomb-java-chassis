@@ -160,7 +160,7 @@ public class TestVertxMetersInitializer {
         + "    transport  4\n"
         + "  transport:\n"
         + "    client.endpoints:\n"
-        + "      remote                connectCount    disconnectCount connections     send(B)      receive(B)\n";
+        + "      remote                connectCount    disconnectCount connections     send(Bps)    receive(Bps)\n";
     if (printDetail) {
       expect += String.format(
           "      127.0.0.1:%-5s       1               0               1               4            21          \n",
@@ -168,7 +168,7 @@ public class TestVertxMetersInitializer {
     }
     expect += "      (summary)             1               0               1               4            21          \n"
         + "    server.endpoints:\n"
-        + "      listen                connectCount    disconnectCount rejectByLimit   connections  send(B)      receive(B)\n"
+        + "      listen                connectCount    disconnectCount rejectByLimit   connections  send(Bps)    receive(Bps)\n"
         + "      0.0.0.0:0             1               0               0               1            21           4           \n"
         + "      (summary)             1               0               0               1            21           4           \n\n";
 

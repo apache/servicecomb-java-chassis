@@ -105,23 +105,30 @@ public class TestOsMeterInitializer {
     Assert.assertNotNull(osMeter.getNetMeter());
     CpuMeter cpuMeter = osMeter.getCpuMeter();
     NetMeter netMeter = osMeter.getNetMeter();
+    Assert.assertEquals(0.0, cpuMeter.getPCpuInfo().getRate(), 0.0);
     Assert.assertEquals("6666", cpuMeter.getPid());
-    Assert.assertEquals(4L, cpuMeter.getLastProcessTime());
-    Assert.assertEquals(2, cpuMeter.getCpuNum());
-    Assert.assertEquals(1L, cpuMeter.getLastIdleTime());
+    Assert.assertEquals(4L, cpuMeter.getPCpuInfo().getLastTime());
+    Assert.assertEquals(0.0, cpuMeter.getACpuInfo().getRate(), 0.0);
+
     Assert.assertEquals(8L, cpuMeter.getLastTotalTime());
+    Assert.assertEquals(1L, cpuMeter.getACpuInfo().getLastTime());
+    Assert.assertEquals(2, cpuMeter.getCpuNum());
+    Assert.assertEquals("/proc/stat", cpuMeter.getACpuInfo().getFilePath());
+
     Map<String, InterfaceInfo> interfaceInfoMap = netMeter.getInterfaceInfoMap();
     Assert.assertEquals(1, interfaceInfoMap.size());
     InterfaceInfo eth0 = interfaceInfoMap.get("eth0");
-    Assert.assertEquals(0L, eth0.getLastRxBytes());
-    Assert.assertEquals(0L, eth0.getLastTxBytes());
-    Assert.assertEquals(0L, eth0.getLastTxPackets());
-    Assert.assertEquals(0L, eth0.getLastRxPackets());
+    Assert.assertEquals(0L, eth0.getRecvPartInterface().getLastBytes());
+    Assert.assertEquals(0L, eth0.getRecvPartInterface().getLastPackets());
+    Assert.assertEquals(0, eth0.getRecvPartInterface().getRate(), 0.0);
+    Assert.assertEquals(0, eth0.getRecvPartInterface().getPacketsRate(), 0.0);
+    Assert.assertEquals(0, eth0.getRecvPartInterface().getIndex());
 
-    Assert.assertEquals(0.0, eth0.getSendRate(), 0.0);
-    Assert.assertEquals(0.0, eth0.getReceiveRate(), 0.0);
-    Assert.assertEquals(0.0, eth0.getReceivePacketsRate(), 0.0);
-    Assert.assertEquals(0.0, eth0.getSendPacketsRate(), 0.0);
+    Assert.assertEquals(0L, eth0.getSendPartInterface().getLastBytes());
+    Assert.assertEquals(0L, eth0.getSendPartInterface().getLastPackets());
+    Assert.assertEquals(0, eth0.getSendPartInterface().getRate(), 0.0);
+    Assert.assertEquals(0, eth0.getSendPartInterface().getPacketsRate(), 0.0);
+    Assert.assertEquals(8, eth0.getSendPartInterface().getIndex());
   }
 
   @Test

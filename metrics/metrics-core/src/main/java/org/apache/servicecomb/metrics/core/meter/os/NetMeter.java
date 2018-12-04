@@ -29,6 +29,7 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.netflix.spectator.api.BasicTag;
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
@@ -56,95 +57,103 @@ public class NetMeter {
   public static class InterfaceInfo {
     private final String name;
 
-    private Id sendId;
+    private PartInterface sendPartInterface;
 
-    private Id receiveId;
-
-    private Id sendPacketId;
-
-    private Id receivePacketId;
-
-    //receive bytes
-    private long lastRxBytes;
-
-    //transmit bytes
-    private long lastTxBytes;
-
-    //receive packets
-    private long lastRxPackets;
-
-    //transmit packets
-    private long lastTxPackets;
-
-    // bytes per second
-    private double sendRate;
-
-    private double receiveRate;
-
-    private double sendPacketsRate;
-
-    private double receivePacketsRate;
+    private PartInterface recvPartInterface;
 
 
     InterfaceInfo(Id id, String name) {
       this.name = name;
       id = id.withTag(INTERFACE, name);
-      this.sendId = id.withTag(TAG_SEND);
-      this.sendPacketId = id.withTag(TAG_PACKETS_SEND);
-      this.receiveId = id.withTag(TAG_RECEIVE);
-      this.receivePacketId = id.withTag(TAG_PACKETS_RECEIVE);
+      this.recvPartInterface = new PartInterface(id.withTag(TAG_RECEIVE), id.withTag(TAG_PACKETS_RECEIVE), 0);
+      this.sendPartInterface = new PartInterface(id.withTag(TAG_SEND), id.withTag(TAG_PACKETS_SEND), 8);
     }
 
     public void update(String interfaceData, long secondInterval) {
       String[] netInfo = interfaceData.trim().split("\\s+");
-      long rxBytes = Long.parseLong(netInfo[0]);
-      long rxPackets = Long.parseLong(netInfo[1]);
-      long txBytes = Long.parseLong(netInfo[8]);
-      long txPackets = Long.parseLong(netInfo[9]);
-      sendRate = (double) (txBytes - lastTxBytes) / secondInterval;
-      sendPacketsRate = (double) (txPackets - lastTxPackets) / secondInterval;
-      receiveRate = (double) (rxBytes - lastRxBytes) / secondInterval;
-      receivePacketsRate = (double) (rxPackets - lastRxPackets) / secondInterval;
-      lastRxBytes = rxBytes;
-      lastRxPackets = rxPackets;
-      lastTxBytes = txBytes;
-      lastTxPackets = txPackets;
+      this.sendPartInterface.update(netInfo, secondInterval);
+      this.recvPartInterface.update(netInfo, secondInterval);
     }
 
     public String getName() {
       return name;
     }
 
-    public long getLastRxBytes() {
-      return lastRxBytes;
+    @VisibleForTesting
+    public PartInterface getSendPartInterface() {
+      return sendPartInterface;
     }
 
-    public long getLastTxBytes() {
-      return lastTxBytes;
+    @VisibleForTesting
+    public PartInterface getRecvPartInterface() {
+      return recvPartInterface;
+    }
+  }
+
+  public static class PartInterface {
+    private final int index;
+
+    private Id id;
+
+    private Id packetsId;
+
+    // send/recv bytes
+    private long lastBytes;
+
+    // send/recv packets
+    private long lastPackets;
+
+    //Bps
+    private double rate;
+
+    //Bps
+    private double packetsRate;
+
+    public PartInterface(Id id, Id packetsId, int index) {
+      this.id = id;
+      this.packetsId = packetsId;
+      this.index = index;
     }
 
-    public double getSendRate() {
-      return sendRate;
+    public void clearRate() {
+      rate = 0;
+      packetsRate = 0;
     }
 
-    public double getReceiveRate() {
-      return receiveRate;
+    public void update(String[] netInfo, long secondInterval) {
+      long currentBytes = Long.parseLong(netInfo[index]);
+      long currentPackets = Long.parseLong(netInfo[index + 1]);
+
+      rate = (double) (currentBytes - lastBytes) / secondInterval;
+      packetsRate = (double) (currentPackets - lastPackets) / secondInterval;
+
+      lastBytes = currentBytes;
+      lastPackets = currentPackets;
     }
 
-    public long getLastRxPackets() {
-      return lastRxPackets;
+    @VisibleForTesting
+    public long getLastBytes() {
+      return lastBytes;
     }
 
-    public long getLastTxPackets() {
-      return lastTxPackets;
+    @VisibleForTesting
+    public long getLastPackets() {
+      return lastPackets;
     }
 
-    public double getSendPacketsRate() {
-      return sendPacketsRate;
+    @VisibleForTesting
+    public double getRate() {
+      return rate;
     }
 
-    public double getReceivePacketsRate() {
-      return receivePacketsRate;
+    @VisibleForTesting
+    public double getPacketsRate() {
+      return packetsRate;
+    }
+
+    @VisibleForTesting
+    public int getIndex() {
+      return index;
     }
   }
 
@@ -154,10 +163,8 @@ public class NetMeter {
     // init lastRxBytes, lastRxPackets, lastTxBytes, lastTxPackets
     refreshNet(1);
     for (InterfaceInfo interfaceInfo : interfaceInfoMap.values()) {
-      interfaceInfo.sendRate = 0;
-      interfaceInfo.sendPacketsRate = 0;
-      interfaceInfo.receiveRate = 0;
-      interfaceInfo.receivePacketsRate = 0;
+      interfaceInfo.sendPartInterface.clearRate();
+      interfaceInfo.recvPartInterface.clearRate();
     }
   }
 
@@ -165,10 +172,14 @@ public class NetMeter {
     refreshNet(secondInterval);
 
     for (InterfaceInfo interfaceInfo : interfaceInfoMap.values()) {
-      measurements.add(new Measurement(interfaceInfo.sendId, msNow, interfaceInfo.sendRate));
-      measurements.add(new Measurement(interfaceInfo.sendPacketId, msNow, interfaceInfo.sendPacketsRate));
-      measurements.add(new Measurement(interfaceInfo.receiveId, msNow, interfaceInfo.receiveRate));
-      measurements.add(new Measurement(interfaceInfo.receivePacketId, msNow, interfaceInfo.receivePacketsRate));
+      measurements
+          .add(new Measurement(interfaceInfo.sendPartInterface.id, msNow, interfaceInfo.sendPartInterface.rate));
+      measurements.add(new Measurement(interfaceInfo.sendPartInterface.packetsId, msNow,
+          interfaceInfo.sendPartInterface.packetsRate));
+      measurements
+          .add(new Measurement(interfaceInfo.recvPartInterface.id, msNow, interfaceInfo.recvPartInterface.rate));
+      measurements.add(new Measurement(interfaceInfo.recvPartInterface.packetsId, msNow,
+          interfaceInfo.recvPartInterface.packetsRate));
     }
   }
 
@@ -182,9 +193,9 @@ public class NetMeter {
     try {
       File file = new File("/proc/net/dev");
       List<String> netInfo = FileUtils.readLines(file, StandardCharsets.UTF_8);
-      //the first two lines is useless
-
       Set<String> nameSet = new HashSet<>();
+
+      //the first two lines is useless
       for (int i = 2; i < netInfo.size(); i++) {
         String interfaceData = netInfo.get(i);
         String[] strings = interfaceData.split(":");
@@ -211,6 +222,7 @@ public class NetMeter {
     }
   }
 
+  @VisibleForTesting
   public Map<String, InterfaceInfo> getInterfaceInfoMap() {
     return interfaceInfoMap;
   }
