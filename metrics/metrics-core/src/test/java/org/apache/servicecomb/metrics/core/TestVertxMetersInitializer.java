@@ -93,8 +93,8 @@ public class TestVertxMetersInitializer {
       HttpClient client = vertx.createHttpClient();
       client.post(port, "127.0.0.1", "/").handler(resp -> {
         resp.bodyHandler((buffer) -> {
+          startFuture.complete();
         });
-        startFuture.complete();
       }).end(body);
     }
   }

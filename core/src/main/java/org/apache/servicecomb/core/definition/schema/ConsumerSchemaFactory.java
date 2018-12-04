@@ -37,9 +37,8 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
   // 允许consumerIntf与schemaId对应的interface原型不同，用于支持context类型的参数
   // consumerIntf为null，表示原型与契约相同
   public void createConsumerSchema(MicroserviceMeta microserviceMeta, Microservice microservice) {
-    // concurrently compile will improve performance, so we force using parallel stream
     long start = System.currentTimeMillis();
-    microservice.getSchemas().parallelStream().forEach(schemaId -> {
+    for (String schemaId : microservice.getSchemas()) {
       ConsumerSchemaContext context = new ConsumerSchemaContext();
       context.setMicroserviceMeta(microserviceMeta);
       context.setMicroservice(microservice);
@@ -47,7 +46,8 @@ public class ConsumerSchemaFactory extends AbstractSchemaFactory<ConsumerSchemaC
       context.setProviderClass(null);
 
       getOrCreateSchema(context);
-    });
+    }
+
     LOGGER.info("Loading schema for service {} token {}", microservice.getServiceId(),
         (System.currentTimeMillis() - start));
   }
