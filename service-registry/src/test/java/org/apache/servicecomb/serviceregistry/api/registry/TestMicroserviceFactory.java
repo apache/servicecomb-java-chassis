@@ -149,7 +149,7 @@ public class TestMicroserviceFactory {
       }
     };
     expectedException.equals(IllegalStateException.class);
-    expectedException.expectMessage("config service_description.version x.y.x.1 is invalid");
+    expectedException.expectMessage("Invalid major \"x\", version \"x.y.x.1\".");
     MicroserviceFactory microserviceFactory = new MicroserviceFactory();
     microserviceFactory.create(microserviceDefinition);
   }

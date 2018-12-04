@@ -56,10 +56,8 @@ public class MicroserviceFactory {
     microservice.setAppId(configuration.getString(CONFIG_APPLICATION_ID_KEY, DEFAULT_APPLICATION_ID));
     String version = configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY,
         DEFAULT_MICROSERVICE_VERSION);
-    //check version format
-    if (!Version.checkVersion(version)) {
-      throw new IllegalStateException(String.format("config service_description.version %s is invalid", version));
-    }
+    // just check version format
+    new Version(version);
     microservice.setVersion(version);
     setDescription(configuration, microservice);
     microservice.setLevel(configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_ROLE_KEY, "FRONT"));

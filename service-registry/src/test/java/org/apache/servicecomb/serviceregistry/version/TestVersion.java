@@ -199,28 +199,4 @@ public class TestVersion {
     Assert.assertEquals(1, version.compareTo(new Version((short) 0,
         Short.MAX_VALUE, Short.MAX_VALUE, Short.MAX_VALUE)));
   }
-
-  @Test
-  public void testCheckVersion() {
-    Assert.assertFalse(Version.checkVersion("-1"));
-    Assert.assertFalse(Version.checkVersion("1."));
-    Assert.assertFalse(Version.checkVersion("1.-1"));
-    Assert.assertFalse(Version.checkVersion("1.1."));
-    Assert.assertFalse(Version.checkVersion("1.1.-1"));
-    Assert.assertFalse(Version.checkVersion("1.1.1."));
-    Assert.assertFalse(Version.checkVersion("1.1.1.-1"));
-    Assert.assertFalse(Version.checkVersion("1.1.1.1."));
-    Assert.assertFalse(Version.checkVersion("1.1.1.1.1"));
-    Assert.assertFalse(Version.checkVersion("a"));
-    Assert.assertFalse(Version.checkVersion("a."));
-    Assert.assertFalse(Version.checkVersion("1.a"));
-    Assert.assertFalse(Version.checkVersion("1.1.a"));
-    Assert.assertFalse(Version.checkVersion("1.1.1.a"));
-    Assert.assertFalse(Version.checkVersion("1.1.1.1.a"));
-
-    Assert.assertTrue(Version.checkVersion("1"));
-    Assert.assertTrue(Version.checkVersion("1.1"));
-    Assert.assertTrue(Version.checkVersion("1.1.1"));
-    Assert.assertTrue(Version.checkVersion("1.1.1.1"));
-  }
 }
