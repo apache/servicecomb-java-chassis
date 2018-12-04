@@ -16,6 +16,9 @@
  */
 package org.apache.servicecomb.serviceregistry.registry;
 
+import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY;
+import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_MICROSERVICE_VERSION;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
@@ -23,6 +26,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
@@ -35,7 +39,6 @@ import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
 import org.apache.servicecomb.serviceregistry.task.event.ShutdownEvent;
-import org.apache.servicecomb.serviceregistry.version.Version;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -129,7 +132,8 @@ public class TestRemoteServiceRegistry {
 
   @Test
   public void onPullMicroserviceVersionsInstancesEvent(@Injectable ServiceRegistryConfig config,
-      @Injectable MicroserviceDefinition definition, @Mocked MicroserviceVersions microserviceVersions) {
+      @Injectable MicroserviceDefinition definition, @Mocked MicroserviceVersions microserviceVersions,
+      @Mocked Configuration configuration) {
     PullMicroserviceVersionsInstancesEvent event = new PullMicroserviceVersionsInstancesEvent(microserviceVersions, 1);
 
     ScheduledThreadPoolExecutor taskPool = new MockUp<ScheduledThreadPoolExecutor>() {
@@ -142,10 +146,13 @@ public class TestRemoteServiceRegistry {
       }
     }.getMockInstance();
 
-    new MockUp<Version>() {
-      @Mock
-      boolean checkVersion(String version){
-        return true;
+    new Expectations() {
+      {
+        definition.getConfiguration();
+        result = configuration;
+        configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY,
+            DEFAULT_MICROSERVICE_VERSION);
+        result = "1.0.0";
       }
     };
 

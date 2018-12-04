@@ -21,8 +21,6 @@ import java.util.Objects;
 
 import org.apache.commons.lang.ArrayUtils;
 
-import com.google.common.annotations.VisibleForTesting;
-
 // short version is enough
 public class Version implements Comparable<Version> {
   private static final String[] ZERO = new String[] {"0", "0", "0", "0"};
@@ -51,7 +49,9 @@ public class Version implements Comparable<Version> {
       throw new IllegalStateException(String.format("Invalid version \"%s\".", version));
     }
 
-    versions = (String[]) ArrayUtils.addAll(versions, ZERO);
+    if (versions.length < 4) {
+      versions = (String[]) ArrayUtils.addAll(versions, ZERO);
+    }
     this.major = parseNumber("major", version, versions[0]);
     this.minor = parseNumber("minor", version, versions[1]);
     this.patch = parseNumber("patch", version, versions[2]);
@@ -66,8 +66,8 @@ public class Version implements Comparable<Version> {
     try {
       value = Short.parseShort(version);
     } catch (NumberFormatException e) {
-      throw new IllegalStateException(String.format("Invalid %s \"%s\", version \"%s\".", name, version, allVersion),
-          e);
+      throw new IllegalStateException(
+          String.format("Invalid %s \"%s\", version \"%s\".", name, version, allVersion), e);
     }
 
     if (value < 0) {
@@ -88,15 +88,7 @@ public class Version implements Comparable<Version> {
   }
 
   private String combineStringVersion() {
-    StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder.append(major)
-        .append(".")
-        .append(minor)
-        .append(".")
-        .append(patch)
-        .append(".")
-        .append(build);
-    return stringBuilder.toString();
+    return major + "." + minor + "." + patch + "." + build;
   }
 
   // 1.0.0 equals 1.0.0.0
@@ -104,22 +96,18 @@ public class Version implements Comparable<Version> {
     return (long) major << 48 | (long) minor << 32 | (long) patch << 16 | (long) build;
   }
 
-  @VisibleForTesting
   public short getMajor() {
     return major;
   }
 
-  @VisibleForTesting
   public short getMinor() {
     return minor;
   }
 
-  @VisibleForTesting
   public short getPatch() {
     return patch;
   }
 
-  @VisibleForTesting
   public short getBuild() {
     return build;
   }
@@ -154,11 +142,5 @@ public class Version implements Comparable<Version> {
   @Override
   public int compareTo(Version other) {
     return Long.compare(numberVersion, other.numberVersion);
-  }
-
-  //check version. maybe not contains the range of short. but it's just ok
-  public static boolean checkVersion(String version) {
-    Objects.requireNonNull(version);
-    return version.matches("\\d+(.\\d+){0,3}");
   }
 }
