@@ -49,8 +49,6 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.annotations.VisibleForTesting;
-
 public abstract class AbstractRestInvocation {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRestInvocation.class);
 
@@ -169,7 +167,8 @@ public abstract class AbstractRestInvocation {
 
   private Holder<Boolean> checkQpsFlowControl(OperationMeta operationMeta) {
     Holder<Boolean> qpsFlowControlReject = new Holder<>(false);
-    Handler providerQpsFlowControlHandler = findQpsFlowControlHandler(operationMeta);
+    @SuppressWarnings("deprecation")
+    Handler providerQpsFlowControlHandler = operationMeta.getProviderQpsFlowControlHandler();
     if (null != providerQpsFlowControlHandler) {
       try {
         providerQpsFlowControlHandler.handle(invocation, response -> {
@@ -184,20 +183,6 @@ public abstract class AbstractRestInvocation {
       }
     }
     return qpsFlowControlReject;
-  }
-
-  @VisibleForTesting
-  Handler findQpsFlowControlHandler(OperationMeta operationMeta) {
-    final List<Handler> providerHandlerChain = operationMeta.getSchemaMeta().getProviderHandlerChain();
-    Handler providerQpsFlowControlHandler = null;
-    for (Handler handler : providerHandlerChain) {
-      // matching by class name is more or less better than importing an extra maven dependency
-      if ("org.apache.servicecomb.qps.ProviderQpsFlowControlHandler".equals(handler.getClass().getName())) {
-        providerQpsFlowControlHandler = handler;
-        break;
-      }
-    }
-    return providerQpsFlowControlHandler;
   }
 
   private boolean isInQueueTimeout() {

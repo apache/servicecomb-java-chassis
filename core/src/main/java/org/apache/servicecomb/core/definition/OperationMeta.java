@@ -18,11 +18,13 @@
 package org.apache.servicecomb.core.definition;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
+import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
 import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
@@ -57,6 +59,12 @@ public class OperationMeta {
   // transport、provider、consumer端都可能需要扩展数据
   // 为避免每个地方都做复杂的层次管理，直接在这里保存扩展数据
   private Map<String, Object> extData = new ConcurrentHashMap<>();
+
+  // providerQpsFlowControlHandler is a temporary filed, only for internal usage
+  private Handler providerQpsFlowControlHandler;
+
+  // providerQpsFlowControlHandlerSearched is a temporary filed, only for internal usage
+  private boolean providerQpsFlowControlHandlerSearched;
 
   private String transport = null;
 
@@ -157,5 +165,26 @@ public class OperationMeta {
 
   public int getParamSize() {
     return swaggerOperation.getParameters().size();
+  }
+
+  /**
+   * Only for JavaChassis internal usage.
+   */
+  @Deprecated
+  public Handler getProviderQpsFlowControlHandler() {
+    if (providerQpsFlowControlHandlerSearched) {
+      return providerQpsFlowControlHandler;
+    }
+
+    final List<Handler> providerHandlerChain = getSchemaMeta().getProviderHandlerChain();
+    for (Handler handler : providerHandlerChain) {
+      // matching by class name is more or less better than importing an extra maven dependency
+      if ("org.apache.servicecomb.qps.ProviderQpsFlowControlHandler".equals(handler.getClass().getName())) {
+        providerQpsFlowControlHandler = handler;
+        break;
+      }
+    }
+    providerQpsFlowControlHandlerSearched = true;
+    return providerQpsFlowControlHandler;
   }
 }
