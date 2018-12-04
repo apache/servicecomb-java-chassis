@@ -30,8 +30,8 @@ import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.metrics.core.meter.os.CpuMeter;
 import org.apache.servicecomb.metrics.core.meter.os.NetMeter;
-import org.apache.servicecomb.metrics.core.meter.os.NetMeter.InterfaceInfo;
 import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
+import org.apache.servicecomb.metrics.core.meter.os.net.InterfaceUsage;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -63,7 +63,7 @@ public class TestOsMeterInitializer {
   }
 
   @Test
-  public void init(@Mocked Runtime runtime,@Mocked RuntimeMXBean mxBean) {
+  public void init(@Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean) {
     ReflectUtils.setField(SystemUtils.class, null, "IS_OS_LINUX", true);
     List<String> list = new ArrayList<>();
     list.add("cpu  1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1");
@@ -105,30 +105,38 @@ public class TestOsMeterInitializer {
     Assert.assertNotNull(osMeter.getNetMeter());
     CpuMeter cpuMeter = osMeter.getCpuMeter();
     NetMeter netMeter = osMeter.getNetMeter();
-    Assert.assertEquals(0.0, cpuMeter.getPCpuInfo().getRate(), 0.0);
-    Assert.assertEquals("6666", cpuMeter.getPid());
-    Assert.assertEquals(4L, cpuMeter.getPCpuInfo().getLastTime());
-    Assert.assertEquals(0.0, cpuMeter.getACpuInfo().getRate(), 0.0);
+    Assert.assertEquals(0.0, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
+    Assert.assertEquals("/proc/6666/stat", cpuMeter.getProcessCpuUsage().getFilePath());
+    Assert.assertEquals(4L, cpuMeter.getProcessCpuUsage().getLastBusyTime());
+    Assert.assertEquals(8L, cpuMeter.getProcessCpuUsage().getPeriodTotalTime());
 
-    Assert.assertEquals(8L, cpuMeter.getLastTotalTime());
-    Assert.assertEquals(1L, cpuMeter.getACpuInfo().getLastTime());
-    Assert.assertEquals(2, cpuMeter.getCpuNum());
-    Assert.assertEquals("/proc/stat", cpuMeter.getACpuInfo().getFilePath());
+    Assert.assertEquals(0.0, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
+    Assert.assertEquals(8L, cpuMeter.getAllCpuUsage().getPeriodTotalTime());
+    Assert.assertEquals(7L, cpuMeter.getAllCpuUsage().getLastBusyTime());
+    Assert.assertEquals("/proc/stat", cpuMeter.getAllCpuUsage().getFilePath());
 
-    Map<String, InterfaceInfo> interfaceInfoMap = netMeter.getInterfaceInfoMap();
+    Map<String, InterfaceUsage> interfaceInfoMap = netMeter.getInterfaceUsageMap();
     Assert.assertEquals(1, interfaceInfoMap.size());
-    InterfaceInfo eth0 = interfaceInfoMap.get("eth0");
-    Assert.assertEquals(0L, eth0.getRecvPartInterface().getLastBytes());
-    Assert.assertEquals(0L, eth0.getRecvPartInterface().getLastPackets());
-    Assert.assertEquals(0, eth0.getRecvPartInterface().getRate(), 0.0);
-    Assert.assertEquals(0, eth0.getRecvPartInterface().getPacketsRate(), 0.0);
-    Assert.assertEquals(0, eth0.getRecvPartInterface().getIndex());
+    InterfaceUsage eth0 = interfaceInfoMap.get("eth0");
+    Assert.assertEquals(4, eth0.getNetStats().size());
+    // recv Bps
+    Assert.assertEquals(0L, eth0.getNetStats().get(0).getLastValue());
+    Assert.assertEquals(0, eth0.getNetStats().get(0).getRate(), 0.0);
+    Assert.assertEquals(0, eth0.getNetStats().get(0).getIndex());
+    // send Bps
+    Assert.assertEquals(0L, eth0.getNetStats().get(1).getLastValue());
+    Assert.assertEquals(0, eth0.getNetStats().get(1).getRate(), 0.0);
+    Assert.assertEquals(8, eth0.getNetStats().get(1).getIndex());
 
-    Assert.assertEquals(0L, eth0.getSendPartInterface().getLastBytes());
-    Assert.assertEquals(0L, eth0.getSendPartInterface().getLastPackets());
-    Assert.assertEquals(0, eth0.getSendPartInterface().getRate(), 0.0);
-    Assert.assertEquals(0, eth0.getSendPartInterface().getPacketsRate(), 0.0);
-    Assert.assertEquals(8, eth0.getSendPartInterface().getIndex());
+    // recv pps
+    Assert.assertEquals(0L, eth0.getNetStats().get(2).getLastValue());
+    Assert.assertEquals(0, eth0.getNetStats().get(2).getRate(), 0.0);
+    Assert.assertEquals(1, eth0.getNetStats().get(2).getIndex());
+
+    // send pps
+    Assert.assertEquals(0L, eth0.getNetStats().get(3).getLastValue());
+    Assert.assertEquals(0, eth0.getNetStats().get(3).getRate(), 0.0);
+    Assert.assertEquals(9, eth0.getNetStats().get(3).getIndex());
   }
 
   @Test

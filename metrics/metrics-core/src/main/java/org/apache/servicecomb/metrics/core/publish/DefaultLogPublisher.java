@@ -165,12 +165,16 @@ public class DefaultLogPublisher implements MetricsInitializer {
   }
 
   private void printCpuLog(StringBuilder sb, MeasurementNode osNode) {
-    MeasurementNode cpuNode = osNode.findChild(OsMeter.OS_TYPE_CPU);
-    if (cpuNode == null || cpuNode.getMeasurements().isEmpty()) {
+    MeasurementNode cpuNode = osNode.findChild(OsMeter.OS_TYPE_ALL_CPU);
+    MeasurementNode processNode = osNode.findChild(OsMeter.OS_TYPE_PROCESS_CPU);
+    if (cpuNode == null || cpuNode.getMeasurements().isEmpty() ||
+        processNode == null || processNode.getMeasurements().isEmpty()) {
       return;
     }
-    double allRate = cpuNode.findChild(CpuMeter.TAG_All.value()).summary();
-    double processRate = cpuNode.findChild(CpuMeter.TAG_CURRENT.value()).summary();
+
+    double allRate = cpuNode.summary();
+    double processRate = processNode.summary();
+
     appendLine(sb, "  cpu:");
     appendLine(sb, "    all: %.2f%%    process: %.2f%%", allRate * 100, processRate * 100);
   }

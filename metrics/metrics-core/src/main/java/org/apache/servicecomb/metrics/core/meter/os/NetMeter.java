@@ -26,6 +26,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.servicecomb.metrics.core.meter.os.net.InterfaceUsage;
+import org.apache.servicecomb.metrics.core.meter.os.net.NetStat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,136 +54,26 @@ public class NetMeter {
 
   private final Id id;
 
-  private Map<String, InterfaceInfo> interfaceInfoMap = new ConcurrentHashMap<>();
-
-  public static class InterfaceInfo {
-    private final String name;
-
-    private PartInterface sendPartInterface;
-
-    private PartInterface recvPartInterface;
-
-
-    InterfaceInfo(Id id, String name) {
-      this.name = name;
-      id = id.withTag(INTERFACE, name);
-      this.recvPartInterface = new PartInterface(id.withTag(TAG_RECEIVE), id.withTag(TAG_PACKETS_RECEIVE), 0);
-      this.sendPartInterface = new PartInterface(id.withTag(TAG_SEND), id.withTag(TAG_PACKETS_SEND), 8);
-    }
-
-    public void update(String interfaceData, long secondInterval) {
-      String[] netInfo = interfaceData.trim().split("\\s+");
-      this.sendPartInterface.update(netInfo, secondInterval);
-      this.recvPartInterface.update(netInfo, secondInterval);
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    @VisibleForTesting
-    public PartInterface getSendPartInterface() {
-      return sendPartInterface;
-    }
-
-    @VisibleForTesting
-    public PartInterface getRecvPartInterface() {
-      return recvPartInterface;
-    }
-  }
-
-  public static class PartInterface {
-    private final int index;
-
-    private Id id;
-
-    private Id packetsId;
-
-    // send/recv bytes
-    private long lastBytes;
-
-    // send/recv packets
-    private long lastPackets;
-
-    //Bps
-    private double rate;
-
-    //Bps
-    private double packetsRate;
-
-    public PartInterface(Id id, Id packetsId, int index) {
-      this.id = id;
-      this.packetsId = packetsId;
-      this.index = index;
-    }
-
-    public void clearRate() {
-      rate = 0;
-      packetsRate = 0;
-    }
-
-    public void update(String[] netInfo, long secondInterval) {
-      long currentBytes = Long.parseLong(netInfo[index]);
-      long currentPackets = Long.parseLong(netInfo[index + 1]);
-
-      rate = (double) (currentBytes - lastBytes) / secondInterval;
-      packetsRate = (double) (currentPackets - lastPackets) / secondInterval;
-
-      lastBytes = currentBytes;
-      lastPackets = currentPackets;
-    }
-
-    @VisibleForTesting
-    public long getLastBytes() {
-      return lastBytes;
-    }
-
-    @VisibleForTesting
-    public long getLastPackets() {
-      return lastPackets;
-    }
-
-    @VisibleForTesting
-    public double getRate() {
-      return rate;
-    }
-
-    @VisibleForTesting
-    public double getPacketsRate() {
-      return packetsRate;
-    }
-
-    @VisibleForTesting
-    public int getIndex() {
-      return index;
-    }
-  }
+  private Map<String, InterfaceUsage> interfaceUsageMap = new ConcurrentHashMap<>();
 
   public NetMeter(Id id) {
     this.id = id;
-
     // init lastRxBytes, lastRxPackets, lastTxBytes, lastTxPackets
     refreshNet(1);
-    for (InterfaceInfo interfaceInfo : interfaceInfoMap.values()) {
-      interfaceInfo.sendPartInterface.clearRate();
-      interfaceInfo.recvPartInterface.clearRate();
-    }
+    interfaceUsageMap.values().forEach(interfaceUsage -> {
+      interfaceUsage.getNetStats().forEach(NetStat::clearRate);
+    });
   }
 
   public void calcMeasurements(List<Measurement> measurements, long msNow, long secondInterval) {
     refreshNet(secondInterval);
 
-    for (InterfaceInfo interfaceInfo : interfaceInfoMap.values()) {
-      measurements
-          .add(new Measurement(interfaceInfo.sendPartInterface.id, msNow, interfaceInfo.sendPartInterface.rate));
-      measurements.add(new Measurement(interfaceInfo.sendPartInterface.packetsId, msNow,
-          interfaceInfo.sendPartInterface.packetsRate));
-      measurements
-          .add(new Measurement(interfaceInfo.recvPartInterface.id, msNow, interfaceInfo.recvPartInterface.rate));
-      measurements.add(new Measurement(interfaceInfo.recvPartInterface.packetsId, msNow,
-          interfaceInfo.recvPartInterface.packetsRate));
-    }
+    interfaceUsageMap.values().stream()
+        .flatMap(interfaceUsage -> interfaceUsage.getNetStats().stream())
+        .map(netStat -> new Measurement(netStat.getId(), msNow, netStat.getRate()))
+        .forEach(measurements::add);
   }
+
 
   /*
    * Inter-|   Receive                                                            |  Transmit
@@ -207,14 +99,14 @@ public class NetMeter {
         String name = strings[0].trim();
         nameSet.add(name);
 
-        InterfaceInfo interfaceInfo = interfaceInfoMap.computeIfAbsent(name, key -> new InterfaceInfo(id, key));
-        interfaceInfo.update(strings[1], secondInterval);
+        InterfaceUsage interfaceUsage = interfaceUsageMap.computeIfAbsent(name, key -> new InterfaceUsage(id, key));
+        interfaceUsage.update(strings[1], secondInterval);
       }
 
       // clear deleted interfaces
-      for (String interfaceName : interfaceInfoMap.keySet()) {
+      for (String interfaceName : interfaceUsageMap.keySet()) {
         if (!nameSet.contains(interfaceName)) {
-          this.interfaceInfoMap.remove(interfaceName);
+          this.interfaceUsageMap.remove(interfaceName);
         }
       }
     } catch (IOException e) {
@@ -223,7 +115,7 @@ public class NetMeter {
   }
 
   @VisibleForTesting
-  public Map<String, InterfaceInfo> getInterfaceInfoMap() {
-    return interfaceInfoMap;
+  public Map<String, InterfaceUsage> getInterfaceUsageMap() {
+    return interfaceUsageMap;
   }
 }
