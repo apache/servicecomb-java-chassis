@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.metrics.core.meter.os.cpu;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.netflix.spectator.api.Id;
 
 /*
@@ -61,7 +60,6 @@ public class OsCpuUsage extends AbstractCpuUsage {
     return currentTotalTime - Long.parseLong(stats[4]);
   }
 
-  @VisibleForTesting
   public long getLastTotalTime() {
     return lastTotalTime;
   }
