@@ -21,10 +21,13 @@ import static java.util.Collections.emptyList;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.Response.Status;
 
@@ -60,6 +63,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 import io.netty.handler.codec.http.HttpStatusClass;
 import io.vertx.core.Handler;
@@ -78,6 +84,18 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   public ServiceRegistryClientImpl(IpPortManager ipPortManager) {
     this.ipPortManager = ipPortManager;
   }
+
+  private LoadingCache<String, Map<String, String>> schemaCache = CacheBuilder.newBuilder()
+      .expireAfterAccess(60, TimeUnit.SECONDS).build(new CacheLoader<String, Map<String, String>>() {
+        public Map<String, String> load(String key) {
+          Holder<List<GetSchemaResponse>> result = getSchemas(key, true, true);
+          Map<String, String> schemas = new HashMap<>();
+          if (result.getStatusCode() == Status.OK.getStatusCode() ) {
+            result.value.stream().forEach(r -> schemas.put(r.getSchemaId(), r.getSchema()));
+          }
+          return schemas;
+        }
+      });
 
   @Override
   public void init() {
@@ -350,6 +368,16 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   private String doGetSchema(String microserviceId, String schemaId, boolean global) {
+    try {
+      // avoid query too many times of schema when first time loading
+      String cachedSchema = schemaCache.get(microserviceId).get(schemaId);
+      if (cachedSchema != null) {
+        return cachedSchema;
+      }
+    } catch (ExecutionException e) {
+      // ignore this error.
+    }
+
     Holder<GetSchemaResponse> holder = new Holder<>();
     IpPort ipPort = ipPortManager.getAvailableAddress();
 
@@ -383,15 +411,27 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
   @Override
   public Holder<List<GetSchemaResponse>> getSchemas(String microserviceId) {
+    return getSchemas(microserviceId, false, false);
+  }
+
+  private Holder<List<GetSchemaResponse>> getSchemas(String microserviceId, boolean withSchema, boolean global) {
     Holder<GetSchemasResponse> holder = new Holder<>();
     IpPort ipPort = ipPortManager.getAvailableAddress();
     Holder<List<GetSchemaResponse>> resultHolder = new Holder<>();
 
     CountDownLatch countDownLatch = new CountDownLatch(1);
-    // default not return schema content, just return summary!
+    String url = Const.REGISTRY_API.MICROSERVICE_ALL_SCHEMAs;
+    RequestParam requestParam = new RequestParam();
+    if (withSchema) {
+      url = Const.REGISTRY_API.MICROSERVICE_ALL_SCHEMAs + "?withSchema=1";
+    }
+    if (global) {
+      requestParam.addQueryParam("global", "true");
+    }
+
     RestUtils.get(ipPort,
-        String.format(Const.REGISTRY_API.MICROSERVICE_ALL_SCHEMAs, microserviceId),
-        new RequestParam(),
+        String.format(url, microserviceId),
+        requestParam,
         syncHandler(countDownLatch, GetSchemasResponse.class, holder));
     try {
       countDownLatch.await();

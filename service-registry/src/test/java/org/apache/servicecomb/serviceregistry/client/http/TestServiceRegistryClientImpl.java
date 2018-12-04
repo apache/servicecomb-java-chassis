@@ -20,8 +20,11 @@ package org.apache.servicecomb.serviceregistry.client.http;
 import static org.hamcrest.core.Is.is;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.Response.Status;
 
@@ -46,6 +49,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
@@ -343,8 +350,21 @@ public class TestServiceRegistryClientImpl {
         Assert.assertEquals("global=true", requestParam.getQueryParams());
       }
     };
+
+    LoadingCache<String, Map<String, String>> oldCache = Deencapsulation.getField(oClient, "schemaCache");
+    LoadingCache<String, Map<String, String>> newCache = CacheBuilder.newBuilder()
+        .expireAfterAccess(60, TimeUnit.SECONDS).build(new CacheLoader<String, Map<String, String>>() {
+          public Map<String, String> load(String key) {
+            Map<String, String> schemas = new HashMap<>();
+            return schemas;
+          }
+        });
+    Deencapsulation.setField(oClient, "schemaCache", newCache);
+
     String str = oClient.getAggregatedSchema(microserviceId, schemaId);
     Assert.assertEquals("schema", str);
+
+    Deencapsulation.setField(oClient, "schemaCache", oldCache);
   }
 
   @Test
