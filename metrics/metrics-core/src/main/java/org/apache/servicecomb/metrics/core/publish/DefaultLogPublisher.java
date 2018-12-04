@@ -140,7 +140,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
     }
 
     appendLine(sb, "  net:");
-    appendLine(sb, "    send(Bps)    recv(Bps)    send(pps)    recv(pps)      interface");
+    appendLine(sb, "    send(Bps)    recv(Bps)    send(pps)    recv(pps)    interface");
 
     StringBuilder tmpSb = new StringBuilder();
     for (MeasurementNode interfaceNode : netNode.getChildren().values()) {
@@ -152,7 +152,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
         continue;
       }
 
-      appendLine(tmpSb, "    %-12s %-12s %-12s %-14s %s",
+      appendLine(tmpSb, "    %-12s %-12s %-12s %-12s %s",
           NetUtils.humanReadableBytes((long) sendRate),
           NetUtils.humanReadableBytes((long) receiveRate),
           NetUtils.humanReadableBytes((long) sendPacketsRate),

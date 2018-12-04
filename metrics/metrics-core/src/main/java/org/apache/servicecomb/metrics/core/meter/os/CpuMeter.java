@@ -21,17 +21,10 @@ import java.util.List;
 import org.apache.servicecomb.metrics.core.meter.os.cpu.OsCpuUsage;
 import org.apache.servicecomb.metrics.core.meter.os.cpu.ProcessCpuUsage;
 
-import com.google.common.annotations.VisibleForTesting;
-import com.netflix.spectator.api.BasicTag;
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
-import com.netflix.spectator.api.Tag;
 
 public class CpuMeter {
-
-  public static final Tag TAG_All = new BasicTag(OsMeter.OS_TYPE, OsMeter.OS_TYPE_ALL_CPU);
-
-  public static final Tag TAG_CURRENT = new BasicTag(OsMeter.OS_TYPE, OsMeter.OS_TYPE_PROCESS_CPU);
 
   // read from /proc/stat
   private OsCpuUsage allCpuUsage;
@@ -40,8 +33,8 @@ public class CpuMeter {
   private ProcessCpuUsage processCpuUsage;
 
   public CpuMeter(Id id) {
-    allCpuUsage = new OsCpuUsage(id.withTag(TAG_All));
-    processCpuUsage = new ProcessCpuUsage(id.withTag(TAG_CURRENT));
+    allCpuUsage = new OsCpuUsage(id.withTag(OsMeter.OS_TYPE, OsMeter.OS_TYPE_ALL_CPU));
+    processCpuUsage = new ProcessCpuUsage(id.withTag(OsMeter.OS_TYPE, OsMeter.OS_TYPE_PROCESS_CPU));
 
     //must refresh all first
     update();
@@ -55,19 +48,16 @@ public class CpuMeter {
     measurements.add(new Measurement(processCpuUsage.getId(), msNow, processCpuUsage.getUsage()));
   }
 
-  @VisibleForTesting
   public void update() {
     allCpuUsage.update();
     processCpuUsage.setPeriodTotalTime(allCpuUsage.getPeriodTotalTime());
     processCpuUsage.update();
   }
 
-  @VisibleForTesting
   public OsCpuUsage getAllCpuUsage() {
     return allCpuUsage;
   }
 
-  @VisibleForTesting
   public ProcessCpuUsage getProcessCpuUsage() {
     return processCpuUsage;
   }

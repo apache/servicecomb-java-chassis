@@ -29,7 +29,6 @@ public class NetStat {
   // Bps/pps
   private double rate;
 
-
   public NetStat(Id id, int index) {
     this.id = id;
     this.index = index;

@@ -31,7 +31,6 @@ import org.apache.servicecomb.metrics.core.meter.os.net.NetStat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.netflix.spectator.api.BasicTag;
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
@@ -68,10 +67,9 @@ public class NetMeter {
   public void calcMeasurements(List<Measurement> measurements, long msNow, long secondInterval) {
     refreshNet(secondInterval);
 
-    interfaceUsageMap.values().stream()
-        .flatMap(interfaceUsage -> interfaceUsage.getNetStats().stream())
-        .map(netStat -> new Measurement(netStat.getId(), msNow, netStat.getRate()))
-        .forEach(measurements::add);
+    interfaceUsageMap.values().forEach(interfaceUsage -> {
+      interfaceUsage.calcMeasurements(measurements, msNow);
+    });
   }
 
 
@@ -114,7 +112,6 @@ public class NetMeter {
     }
   }
 
-  @VisibleForTesting
   public Map<String, InterfaceUsage> getInterfaceUsageMap() {
     return interfaceUsageMap;
   }

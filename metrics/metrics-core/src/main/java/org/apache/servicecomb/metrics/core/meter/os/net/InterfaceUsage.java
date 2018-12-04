@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.netflix.spectator.api.Id;
+import com.netflix.spectator.api.Measurement;
 
 public class InterfaceUsage {
   private final String name;
@@ -48,6 +49,12 @@ public class InterfaceUsage {
     netStats.add(new NetStat(id.withTag(TAG_PACKETS_RECEIVE), 1));
     // send/pps
     netStats.add(new NetStat(id.withTag(TAG_PACKETS_SEND), 9));
+  }
+
+  public void calcMeasurements(List<Measurement> measurements, long msNow) {
+    netStats.forEach(netStat -> {
+      measurements.add(new Measurement(netStat.getId(), msNow, netStat.getRate()));
+    });
   }
 
   public void update(String interfaceData, long secondInterval) {
