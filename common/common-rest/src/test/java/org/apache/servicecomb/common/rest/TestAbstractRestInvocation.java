@@ -1005,12 +1005,13 @@ public class TestAbstractRestInvocation {
     assertEquals(Integer.valueOf(1), endCount.value);
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void scheduleInvocation_flowControlReject() {
-    restInvocation = new AbstractRestInvocationForTest() {
-      @Override
-      Handler findQpsFlowControlHandler(OperationMeta operationMeta) {
-        return (invocation, asyncResp) -> asyncResp.producerFail(new InvocationException(
+    new Expectations() {
+      {
+        operationMeta.getProviderQpsFlowControlHandler();
+        result = (Handler) (invocation, asyncResp) -> asyncResp.producerFail(new InvocationException(
             new HttpStatus(429, "Too Many Requests"),
             new CommonExceptionData("rejected by qps flowcontrol")));
       }
