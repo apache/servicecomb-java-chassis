@@ -71,7 +71,7 @@ public class TestDefaultEdgeDispatcher {
         result = requst;
         requst.path();
         result = "/api/testService/v1/hello";
-        invocation.setVersionRule("1.0.0-2.0.0");
+        invocation.setVersionRule("1.0.0.0-2.0.0.0");
         invocation.init("testService", context, "/testService/v1/hello",
             Deencapsulation.getField(dispatcher, "httpServerFilters"));
         invocation.edgeInvoke();

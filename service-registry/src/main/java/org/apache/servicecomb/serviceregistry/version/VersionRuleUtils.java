@@ -56,15 +56,4 @@ public final class VersionRuleUtils {
     }
     throw new IllegalStateException("config service_description.version is invalid ");
   }
-
-  public static void checkVersionFormat(String strVersionRule) {
-    strVersionRule = strVersionRule.trim();
-    for (VersionRuleParser parser : parsers) {
-      VersionRule versionRule = parser.parse(strVersionRule);
-      if (versionRule != null) {
-        return;
-      }
-    }
-    throw new IllegalStateException("config service_description.version is invalid ");
-  }
 }

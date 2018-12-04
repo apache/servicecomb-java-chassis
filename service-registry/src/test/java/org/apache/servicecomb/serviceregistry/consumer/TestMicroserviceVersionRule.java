@@ -33,7 +33,7 @@ public class TestMicroserviceVersionRule {
 
   @Test
   public void getVersionRule() {
-    Assert.assertEquals("1.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
+    Assert.assertEquals("1.0.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
   }
 
   @Test

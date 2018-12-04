@@ -34,7 +34,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.serviceregistry.config.ConfigurePropertyUtils;
 import org.apache.servicecomb.serviceregistry.config.MicroservicePropertiesLoader;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
-import org.apache.servicecomb.serviceregistry.version.VersionRuleUtils;
+import org.apache.servicecomb.serviceregistry.version.Version;
 
 public class MicroserviceFactory {
   public Microservice create(String appId, String microserviceName) {
@@ -57,7 +57,9 @@ public class MicroserviceFactory {
     String version = configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY,
         DEFAULT_MICROSERVICE_VERSION);
     //check version format
-    VersionRuleUtils.checkVersionFormat(version);
+    if (!Version.checkVersion(version)) {
+      throw new IllegalStateException(String.format("config service_description.version %s is invalid", version));
+    }
     microservice.setVersion(version);
     setDescription(configuration, microservice);
     microservice.setLevel(configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_ROLE_KEY, "FRONT"));

@@ -35,7 +35,7 @@ public class TestCompatiblePathVersionMapper {
   public void getOrCreate() {
     VersionRule versionRule = mapper.getOrCreate("v1");
 
-    Assert.assertEquals("1.0.0-2.0.0", versionRule.getVersionRule());
+    Assert.assertEquals("1.0.0.0-2.0.0.0", versionRule.getVersionRule());
   }
 
   @Test
@@ -82,6 +82,6 @@ public class TestCompatiblePathVersionMapper {
   public void createVersionRule_32767() {
     VersionRule versionRule = mapper.getOrCreate("v32767");
 
-    Assert.assertEquals("32767.0.0+", versionRule.getVersionRule());
+    Assert.assertEquals("32767.0.0.0+", versionRule.getVersionRule());
   }
 }

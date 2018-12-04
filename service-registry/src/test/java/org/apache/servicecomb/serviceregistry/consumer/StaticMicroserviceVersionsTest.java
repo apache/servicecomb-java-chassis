@@ -66,7 +66,7 @@ public class StaticMicroserviceVersionsTest {
     StaticMicroserviceVersions staticMicroserviceVersions = createStaticMicroserviceVersions();
 
     MicroserviceInstance instance = new MicroserviceInstance();
-    String serviceVersion = "1.2.1";
+    String serviceVersion = "1.2.1.0";
     staticMicroserviceVersions.addInstances(serviceVersion, Collections.singletonList(instance));
 
     MicroserviceVersionRule versionRule = staticMicroserviceVersions.getOrCreateMicroserviceVersionRule(serviceVersion);

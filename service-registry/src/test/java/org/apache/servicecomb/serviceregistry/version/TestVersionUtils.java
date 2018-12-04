@@ -41,7 +41,7 @@ public class TestVersionUtils {
   public void getOrCreate() {
     Version v = VersionUtils.getOrCreate("1.0.0");
 
-    Assert.assertEquals("1.0.0", v.getVersion());
+    Assert.assertEquals("1.0.0.0", v.getVersion());
     Assert.assertSame(v, VersionUtils.getOrCreate("1.0.0"));
   }
 }
