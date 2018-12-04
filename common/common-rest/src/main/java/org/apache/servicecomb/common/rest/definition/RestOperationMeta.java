@@ -173,9 +173,8 @@ public class RestOperationMeta {
       }
     } else {
       for (String produce : produces) {
-        int index = produce.indexOf(";");
-        if (index != -1) {
-          produce = produce.substring(0, index);
+        if (produce.contains(";")) {
+          produce = produce.substring(0, produce.indexOf(";"));
         }
         ProduceProcessor processor = ProduceProcessorManager.INSTANCE.findValue(produce);
         if (processor == null) {

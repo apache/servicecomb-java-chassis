@@ -29,7 +29,6 @@ public class AcceptTypeSpringmvcSchema {
     return name;
   }
 
-
   @RequestMapping(path = "/sayHello", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
   public String sayHello(@RequestParam(name = "name", defaultValue = "test") String name) {
     return name;

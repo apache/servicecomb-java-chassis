@@ -36,7 +36,6 @@ public class TestAcceptType {
   private static Consumers<AcceptTypeIntf> consumersAcceptTypeJaxrs = new Consumers<>("acceptTypeJaxrsSchema",
       AcceptTypeIntf.class);
 
-
   @Test
   public void testTextPlain_rt() {
     checkTextPlain(consumersAcceptTypeSpringmvc);
@@ -46,23 +45,20 @@ public class TestAcceptType {
   private void checkTextPlain(Consumers<AcceptTypeIntf> consumers) {
     String result = textHeader_rt(consumers, MediaType.TEXT_PLAIN_VALUE);
     Assert.assertEquals("cse", result);
-
     try {
       textHeader_rt(consumers, MediaType.APPLICATION_JSON_VALUE);
       Assert.fail("should throw exception");
     } catch (InvocationException e) {
       Assert.assertEquals(406, e.getStatusCode());
       Assert.assertTrue(e.getMessage().contains("Accept application/json is not supported"));
-    } catch (Exception e) {
+    } catch (Throwable e) {
       Assert.fail(" should throw InvocationException");
     }
   }
 
   private String textHeader_rt(Consumers<AcceptTypeIntf> consumers, String type) {
-
     HttpHeaders headers = new HttpHeaders();
     headers.add("accept", type);
-
     HttpEntity<?> entity = new HttpEntity<>(headers);
     ResponseEntity<String> response = consumers.getSCBRestTemplate()
         .exchange("/sayHi?name=cse",
@@ -72,13 +68,11 @@ public class TestAcceptType {
     return response.getBody();
   }
 
-
   @Test
   public void testProducerApplicationJson_rt() {
     checkApplicationJson(consumersAcceptTypeSpringmvc);
     checkApplicationJson(consumersAcceptTypeJaxrs);
   }
-
 
   private void checkApplicationJson(Consumers<AcceptTypeIntf> consumers) {
     String result = jsonHeader_rt(consumers, MediaType.APPLICATION_JSON_VALUE);
@@ -89,16 +83,14 @@ public class TestAcceptType {
     } catch (InvocationException e) {
       Assert.assertEquals(406, e.getStatusCode());
       Assert.assertTrue(e.getMessage().contains("Accept text/plain is not supported"));
-    } catch (Exception e) {
-      Assert.fail(" should throw InvocationException");
+    } catch (Throwable e) {
+      Assert.fail("should throw InvocationException");
     }
   }
 
   private String jsonHeader_rt(Consumers<AcceptTypeIntf> consumers, String type) {
-
     HttpHeaders headers = new HttpHeaders();
     headers.add("accept", type);
-
     HttpEntity<?> entity = new HttpEntity<>(headers);
     ResponseEntity<String> response = consumers.getSCBRestTemplate()
         .exchange("/sayHello?name=cse",
