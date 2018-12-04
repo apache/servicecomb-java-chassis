@@ -94,7 +94,7 @@ public class TestConsumerProviderManager {
 
     Assert.assertEquals("app", referenceConfig.getMicroserviceVersionRule().getAppId());
     Assert.assertEquals("app:ms", referenceConfig.getMicroserviceVersionRule().getMicroserviceName());
-    Assert.assertEquals("0.0.0+", referenceConfig.getMicroserviceVersionRule().getVersionRule().getVersionRule());
+    Assert.assertEquals("0.0.0.0+", referenceConfig.getMicroserviceVersionRule().getVersionRule().getVersionRule());
     Assert.assertEquals(Const.ANY_TRANSPORT, referenceConfig.getTransport());
   }
 
@@ -107,7 +107,7 @@ public class TestConsumerProviderManager {
 
     Assert.assertEquals("app", referenceConfig.getMicroserviceVersionRule().getAppId());
     Assert.assertEquals("app:ms", referenceConfig.getMicroserviceVersionRule().getMicroserviceName());
-    Assert.assertEquals("1.0.0+", referenceConfig.getMicroserviceVersionRule().getVersionRule().getVersionRule());
+    Assert.assertEquals("1.0.0.0+", referenceConfig.getMicroserviceVersionRule().getVersionRule().getVersionRule());
     Assert.assertEquals(Const.RESTFUL, referenceConfig.getTransport());
   }
 

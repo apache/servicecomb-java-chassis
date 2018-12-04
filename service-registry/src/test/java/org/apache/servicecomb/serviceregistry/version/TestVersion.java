@@ -30,42 +30,35 @@ public class TestVersion {
 
   short s2 = 2;
 
-  short s0 = 0;
-
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
   @Test
   public void constructFromStringNormalOnlyMajor() {
     version = new Version("1");
-    Assert.assertEquals("1.0.0", version.getVersion());
+    Assert.assertEquals("1.0.0.0", version.getVersion());
     Assert.assertEquals(1, version.getMajor());
     Assert.assertEquals(0, version.getMinor());
     Assert.assertEquals(0, version.getPatch());
-    Assert.assertEquals(0, version.getBuild());
-    Assert.assertFalse(version.isVersionFour());
   }
 
   @Test
   public void constructFromStringNormalOnlyMajorMinor() {
     version = new Version("1.1");
-    Assert.assertEquals("1.1.0", version.getVersion());
+    Assert.assertEquals("1.1.0.0", version.getVersion());
     Assert.assertEquals(1, version.getMajor());
     Assert.assertEquals(1, version.getMinor());
     Assert.assertEquals(0, version.getPatch());
-    Assert.assertEquals(0, version.getBuild());
-    Assert.assertFalse(version.isVersionFour());
   }
 
   @Test
   public void constructFromStringOnlyMajorMinorPatch() {
     version = new Version("1.1.1");
-    Assert.assertEquals("1.1.1", version.getVersion());
+    Assert.assertEquals("1.1.1.0", version.getVersion());
     Assert.assertEquals(1, version.getMajor());
     Assert.assertEquals(1, version.getMinor());
     Assert.assertEquals(1, version.getPatch());
     Assert.assertEquals(0, version.getBuild());
-    Assert.assertFalse(version.isVersionFour());
   }
 
   @Test
@@ -76,8 +69,8 @@ public class TestVersion {
     Assert.assertEquals(1, version.getMinor());
     Assert.assertEquals(1, version.getPatch());
     Assert.assertEquals(1, version.getBuild());
-    Assert.assertTrue(version.isVersionFour());
   }
+
 
   @Test
   public void constructFromStringInvalidNull() {
@@ -158,19 +151,12 @@ public class TestVersion {
   public void constructFromStringInvalidTooManyPart() {
     expectedException.expect(IllegalStateException.class);
     expectedException.expectMessage(Matchers.is("Invalid version \"1.1.1.1.\"."));
-
     version = new Version("1.1.1.1.");
   }
 
   @Test
   public void constructFromNumber() {
-    version = new Version(s1, s1, s1, s0, false);
-    Assert.assertEquals("1.1.1", version.getVersion());
-    Assert.assertEquals(1, version.getMajor());
-    Assert.assertEquals(1, version.getMinor());
-    Assert.assertEquals(1, version.getPatch());
-    Assert.assertEquals(0, version.getBuild());
-    version = new Version(s1, s1, s1, s1, true);
+    version = new Version(s1, s1, s1, s1);
     Assert.assertEquals("1.1.1.1", version.getVersion());
     Assert.assertEquals(1, version.getMajor());
     Assert.assertEquals(1, version.getMinor());
@@ -180,52 +166,61 @@ public class TestVersion {
 
   @Test
   public void testToString() {
-    version = new Version(s1, s1, s1, s0, false);
-    Assert.assertEquals("1.1.1", version.toString());
-    version = new Version(s1, s1, s1, s0, true);
-    Assert.assertEquals("1.1.1.0", version.toString());
+    version = new Version(s1, s1, s1, s1);
+    Assert.assertEquals("1.1.1.1", version.toString());
   }
 
   @Test
   public void testHashCode() {
-    version = new Version(s1, s1, s1, s0, false);
+    version = new Version(s1, s1, s1, s1);
     Assert.assertEquals(version.getVersion().hashCode(), version.hashCode());
-    Version version2 = new Version(s1, s1, s1, s0, true);
-    Assert.assertNotEquals(version.getVersion().hashCode(), version2.hashCode());
   }
 
   @Test
   public void testEquals() {
-    version = new Version(s1, s1, s1, s0, false);
+    version = new Version(s1, s1, s1, s1);
 
     Assert.assertTrue(version.equals(version));
-
-    Assert.assertTrue(version.equals(new Version(s1, s1, s1, s0, false)));
-    Assert.assertTrue(version.equals(new Version(s1, s1, s1, s0, true)));
-
+    Assert.assertTrue(version.equals(new Version(s1, s1, s1, s1)));
     Assert.assertFalse(version.equals(null));
   }
 
   @Test
   public void compareTo() {
-    version = new Version(s1, s1, s1, s0, false);
-    Assert.assertEquals(0, version.compareTo(version));
-    Assert.assertEquals(0, version.compareTo(new Version(s1, s1, s1, s0, false)));
-    Assert.assertEquals(-1, version.compareTo(new Version(s1, s1, s2, s0, false)));
-    Assert.assertEquals(-1, version.compareTo(new Version(s1, s2, s1, s0, false)));
-    Assert.assertEquals(-1, version.compareTo(new Version(s2, s1, s1, s0, false)));
-    Assert.assertEquals(1, version.compareTo(new Version((short) 0, Short.MAX_VALUE, Short.MAX_VALUE, s0, false)));
-    Assert.assertEquals(1,version.compareTo(new Version(s1, s1, s0, s0, true)));
+    version = new Version(s1, s1, s1, s1);
 
-    version = new Version(s1, s1, s1, s0, true);
     Assert.assertEquals(0, version.compareTo(version));
-    Assert.assertEquals(0, version.compareTo(new Version(s1, s1, s1, s0, true)));
-    Assert.assertEquals(-1, version.compareTo(new Version(s1, s1, s2, s0, true)));
-    Assert.assertEquals(-1, version.compareTo(new Version(s1, s2, s1, s0, true)));
-    Assert.assertEquals(-1, version.compareTo(new Version(s2, s1, s1, s0, true)));
-    Assert.assertEquals(1, version.compareTo(new Version((short) 0, Short.MAX_VALUE, Short.MAX_VALUE, s0, true)));
-    Assert.assertEquals(1,version.compareTo(new Version(s1, s1, s0, s0, false)));
+    Assert.assertEquals(0, version.compareTo(new Version(s1, s1, s1, s1)));
 
-    Assert.assertEquals(0,version.compareTo(new Version(s1, s1, s1, s0, false)));
+    Assert.assertEquals(-1, version.compareTo(new Version(s1, s1, s2, s1)));
+    Assert.assertEquals(-1, version.compareTo(new Version(s1, s2, s1, s1)));
+    Assert.assertEquals(-1, version.compareTo(new Version(s2, s1, s1, s1)));
+
+    Assert.assertEquals(1, version.compareTo(new Version((short) 0,
+        Short.MAX_VALUE, Short.MAX_VALUE, Short.MAX_VALUE)));
+  }
+
+  @Test
+  public void testCheckVersion() {
+    Assert.assertFalse(Version.checkVersion("-1"));
+    Assert.assertFalse(Version.checkVersion("1."));
+    Assert.assertFalse(Version.checkVersion("1.-1"));
+    Assert.assertFalse(Version.checkVersion("1.1."));
+    Assert.assertFalse(Version.checkVersion("1.1.-1"));
+    Assert.assertFalse(Version.checkVersion("1.1.1."));
+    Assert.assertFalse(Version.checkVersion("1.1.1.-1"));
+    Assert.assertFalse(Version.checkVersion("1.1.1.1."));
+    Assert.assertFalse(Version.checkVersion("1.1.1.1.1"));
+    Assert.assertFalse(Version.checkVersion("a"));
+    Assert.assertFalse(Version.checkVersion("a."));
+    Assert.assertFalse(Version.checkVersion("1.a"));
+    Assert.assertFalse(Version.checkVersion("1.1.a"));
+    Assert.assertFalse(Version.checkVersion("1.1.1.a"));
+    Assert.assertFalse(Version.checkVersion("1.1.1.1.a"));
+
+    Assert.assertTrue(Version.checkVersion("1"));
+    Assert.assertTrue(Version.checkVersion("1.1"));
+    Assert.assertTrue(Version.checkVersion("1.1.1"));
+    Assert.assertTrue(Version.checkVersion("1.1.1.1"));
   }
 }

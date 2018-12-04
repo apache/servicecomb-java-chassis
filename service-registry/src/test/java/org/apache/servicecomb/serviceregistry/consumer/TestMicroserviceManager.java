@@ -87,7 +87,7 @@ public class TestMicroserviceManager {
 
     MicroserviceVersionRule microserviceVersionRule =
         microserviceManager.getOrCreateMicroserviceVersionRule(serviceName, versionRule);
-    Assert.assertEquals("0.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
+    Assert.assertEquals("0.0.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
     Assert.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
     Assert.assertEquals(1, cachedVersions.size());
   }
@@ -111,7 +111,7 @@ public class TestMicroserviceManager {
 
     MicroserviceVersionRule microserviceVersionRule =
         microserviceManager.getOrCreateMicroserviceVersionRule(serviceName, versionRule);
-    Assert.assertEquals("0.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
+    Assert.assertEquals("0.0.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
     Assert.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
     Assert.assertEquals(0, cachedVersions.size());
 

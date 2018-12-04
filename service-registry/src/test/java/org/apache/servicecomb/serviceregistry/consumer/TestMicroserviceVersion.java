@@ -56,7 +56,7 @@ public class TestMicroserviceVersion {
     MicroserviceVersion microserviceVersion = MicroserviceVersionTestUtils
         .createMicroserviceVersion("1", "1.0.0", serviceRegistry);
     Assert.assertEquals("1", microserviceVersion.getMicroservice().getServiceId());
-    Assert.assertEquals("1.0.0", microserviceVersion.getVersion().getVersion());
+    Assert.assertEquals("1.0.0.0", microserviceVersion.getVersion().getVersion());
   }
 
   @Test
