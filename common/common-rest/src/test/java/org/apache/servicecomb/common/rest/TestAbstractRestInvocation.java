@@ -251,6 +251,34 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
+  public void setContextTraceId() throws Exception {
+    Map<String, String> context = new HashMap<>();
+    new Expectations() {
+      {
+        requestEx.getHeader(Const.CSE_CONTEXT);
+        result = JsonUtils.writeValueAsString(context);
+      }
+    };
+    invocation.addContext("X-B3-traceId", "value1");
+    //if request has no traceId, use invocation's traceId
+    restInvocation.setContext();
+    Assert.assertThat(invocation.getContext().size(), Matchers.is(1));
+    Assert.assertThat(invocation.getContext(), Matchers.hasEntry("X-B3-traceId", "value1"));
+
+    context.put("X-B3-traceId", "value2");
+    new Expectations() {
+      {
+        requestEx.getHeader(Const.CSE_CONTEXT);
+        result = JsonUtils.writeValueAsString(context);
+      }
+    };
+    //if request has traceId, use request's traceId
+    restInvocation.setContext();
+    Assert.assertThat(invocation.getContext().size(), Matchers.is(1));
+    Assert.assertThat(invocation.getContext(), Matchers.hasEntry("X-B3-traceId", "value2"));
+  }
+
+  @Test
   public void getContext() {
     invocation.addContext("key", "test");
     Assert.assertEquals("test", restInvocation.getContext("key"));
