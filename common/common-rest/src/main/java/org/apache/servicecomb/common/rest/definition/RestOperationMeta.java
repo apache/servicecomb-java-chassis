@@ -173,6 +173,9 @@ public class RestOperationMeta {
       }
     } else {
       for (String produce : produces) {
+        if (produce.contains(";")) {
+          produce = produce.substring(0, produce.indexOf(";"));
+        }
         ProduceProcessor processor = ProduceProcessorManager.INSTANCE.findValue(produce);
         if (processor == null) {
           LOGGER.error("produce {} is not supported", produce);
