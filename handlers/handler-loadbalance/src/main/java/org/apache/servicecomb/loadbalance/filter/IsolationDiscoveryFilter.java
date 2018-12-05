@@ -45,17 +45,18 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(IsolationDiscoveryFilter.class);
 
-  class Settings {
-    int errorThresholdPercentage;
+  public class Settings {
+    public int errorThresholdPercentage;
 
-    long singleTestTime;
+    public long singleTestTime;
 
-    long enableRequestThreshold;
+    public long enableRequestThreshold;
 
-    int continuousFailureThreshold;
+    public int continuousFailureThreshold;
 
-    int minIsolationTime; // to avoid isolation recover too fast due to no concurrent control in concurrent scenario
+    public int minIsolationTime; // to avoid isolation recover too fast due to no concurrent control in concurrent scenario
   }
+
   public EventBus eventBus = EventManager.getEventBus();
 
   @Override
@@ -128,11 +129,8 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
       if (!serverStats.isIsolated()) {
         ServiceCombLoadBalancerStats.INSTANCE.markIsolated(server, true);
         eventBus.post(
-            new IsolationServerEvent(invocation.getMicroserviceName(), serverStats.getTotalRequests(),
-                serverStats.getCountinuousFailureCount(),
-                serverStats.getFailedRate(),
-                settings.continuousFailureThreshold, settings.errorThresholdPercentage, settings.enableRequestThreshold,
-                settings.singleTestTime, Type.OPEN));
+            new IsolationServerEvent(invocation.getMicroserviceName(), instance, serverStats,
+                settings, Type.OPEN));
         LOGGER.warn("Isolate service {}'s instance {}.", invocation.getMicroserviceName(),
             instance.getInstanceId());
       }
@@ -145,11 +143,8 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
         return false;
       }
       ServiceCombLoadBalancerStats.INSTANCE.markIsolated(server, false);
-      eventBus.post(new IsolationServerEvent(invocation.getMicroserviceName(), serverStats.getTotalRequests(),
-          serverStats.getCountinuousFailureCount(),
-          serverStats.getFailedRate(),
-          settings.continuousFailureThreshold, settings.errorThresholdPercentage, settings.enableRequestThreshold,
-          settings.singleTestTime, Type.CLOSE));
+      eventBus.post(new IsolationServerEvent(invocation.getMicroserviceName(), instance, serverStats,
+          settings, Type.CLOSE));
       LOGGER.warn("Recover service {}'s instance {} from isolation.", invocation.getMicroserviceName(),
           instance.getInstanceId());
     }
