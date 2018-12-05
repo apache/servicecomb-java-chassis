@@ -219,6 +219,9 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
 
   @Override
   public boolean unregisterMicroserviceInstance(String microserviceId, String microserviceInstanceId) {
+    if (microserviceId == null) {
+      return true;
+    }
     Map<String, MicroserviceInstance> instanceMap = microserviceInstanceMap.get(microserviceId);
     if (instanceMap != null) {
       instanceMap.remove(microserviceInstanceId);

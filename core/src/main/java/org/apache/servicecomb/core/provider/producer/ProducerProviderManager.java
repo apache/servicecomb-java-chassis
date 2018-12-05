@@ -63,7 +63,9 @@ public class ProducerProviderManager implements BootListener {
     if (!EventType.AFTER_CLOSE.equals(event.getEventType())) {
       return;
     }
-
+    if (microserviceMeta == null) {
+      return;
+    }
     for (OperationMeta operationMeta : microserviceMeta.getOperations()) {
       if (ExecutorService.class.isInstance(operationMeta.getExecutor())) {
         ((ExecutorService) operationMeta.getExecutor()).shutdown();
