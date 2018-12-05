@@ -20,7 +20,9 @@ import java.lang.reflect.Type;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.foundation.protobuf.internal.RootPropertyWrapDeserializer;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.BeanDescriptorManager;
+import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyWrapper;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.DeserializerSchemaManager;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.SerializerSchemaManager;
 
@@ -104,5 +106,18 @@ public class ProtoMapper {
 
   public RootDeserializer createRootDeserializer(JavaType javaType, Message message) {
     return deserializerSchemaManager.createRootDeserializer(javaType, message);
+  }
+
+  public RootDeserializer createPropertyRootDeserializer(String shortWrapMessageName, Type propertyType) {
+    Message message = proto.getMessage(shortWrapMessageName);
+    if (!deserializerSchemaManager.isWrapProperty(message)) {
+      return createRootDeserializer(propertyType, shortWrapMessageName);
+    }
+
+    JavaType propertyWrapJavaType = TypeFactory.defaultInstance().constructParametricType(
+        PropertyWrapper.class,
+        TypeFactory.defaultInstance().constructType(propertyType));
+    RootDeserializer rootDeserializer = createRootDeserializer(propertyWrapJavaType, message);
+    return new RootPropertyWrapDeserializer(rootDeserializer);
   }
 }
