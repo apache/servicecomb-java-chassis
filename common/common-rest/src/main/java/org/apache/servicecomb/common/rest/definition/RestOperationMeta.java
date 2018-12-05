@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.servlet.http.Part;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
@@ -35,8 +36,11 @@ import org.apache.servicecomb.common.rest.definition.path.PathRegExp;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
@@ -51,6 +55,9 @@ public class RestOperationMeta {
   protected List<String> produces;
 
   protected boolean formData;
+
+  // make sure if response is file
+  protected boolean downloadFile;
 
   protected List<RestParam> paramList = new ArrayList<>();
 
@@ -80,13 +87,14 @@ public class RestOperationMeta {
       this.produces = swagger.getProduces();
     }
 
+    this.downloadFile = checkDownloadFileFlag();
     this.createProduceProcessors();
 
     Method method = operationMeta.getMethod();
     Type[] genericParamTypes = method.getGenericParameterTypes();
     if (genericParamTypes.length != operation.getParameters().size()) {
       throw new Error("Param count is not equal between swagger and method, path=" + absolutePath
-        + ";operation=" + operationMeta.getMicroserviceQualifiedName());
+          + ";operation=" + operationMeta.getMicroserviceQualifiedName());
     }
 
     // 初始化所有rest param
@@ -103,6 +111,15 @@ public class RestOperationMeta {
     }
 
     setAbsolutePath(concatPath(swagger.getBasePath(), operationMeta.getOperationPath()));
+  }
+
+  private boolean checkDownloadFileFlag() {
+    ResponseMeta responseMeta = operationMeta.findResponseMeta(200);
+    if (responseMeta != null) {
+      JavaType javaType = responseMeta.getJavaType();
+      return javaType.getRawClass().equals(Part.class);
+    }
+    return false;
   }
 
   public boolean isFormData() {
@@ -217,12 +234,17 @@ public class RestOperationMeta {
   }
 
   public ProduceProcessor ensureFindProduceProcessor(String acceptType) {
+    if (downloadFile) {
+      //do not check accept type, when the produces of provider is text/plain there will return text/plain processor
+      //when the produces of provider is application/json there will return the application/json processor
+      //so do not care what accept type the consumer will set.
+      return this.produceProcessorMap.get(MediaType.WILDCARD);
+    }
     if (StringUtils.isEmpty(acceptType)) {
       return defaultProcessor;
     }
-
-    List<String> mimeTyps = MimeTypesUtils.getSortedAcceptableMimeTypes(acceptType.toLowerCase(Locale.US));
-    for (String mime : mimeTyps) {
+    List<String> mimeTypes = MimeTypesUtils.getSortedAcceptableMimeTypes(acceptType.toLowerCase(Locale.US));
+    for (String mime : mimeTypes) {
       ProduceProcessor processor = this.produceProcessorMap.get(mime);
       if (null != processor) {
         return processor;

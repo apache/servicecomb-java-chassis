@@ -184,6 +184,20 @@ public class TestRestOperationMeta {
   }
 
   @Test
+  public void testEnsureFindProduceProcessorWithDownload() {
+    RestOperationMeta operationMeta = new RestOperationMeta();
+    operationMeta.produces = Arrays.asList(MediaType.APPLICATION_JSON);
+    operationMeta.downloadFile = true;
+    operationMeta.createProduceProcessors();
+
+    Assert.assertSame(ProduceProcessorManager.JSON_PROCESSOR,
+        operationMeta.ensureFindProduceProcessor("text/plain"));
+
+    operationMeta.downloadFile = false;
+    Assert.assertNull(operationMeta.ensureFindProduceProcessor("text/plain"));
+  }
+
+  @Test
   public void testEnsureFindProduceProcessorAcceptNotFound() {
     RestOperationMeta operationMeta = new RestOperationMeta();
     operationMeta.produces = Arrays.asList(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN);

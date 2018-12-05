@@ -32,6 +32,11 @@ import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.testcase.support.DownloadSchemaIntf;
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 import com.google.common.collect.Iterables;
 
@@ -96,17 +101,35 @@ public class TestDownload {
             content);
   }
 
+  private ReadStreamPart templateExchange(String methodPath, String type) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("accept", type);
+    HttpEntity<?> entity = new HttpEntity<>(headers);
+    ResponseEntity<ReadStreamPart> response = consumers.getSCBRestTemplate()
+        .exchange("/" + methodPath + "?content={content}",
+            HttpMethod.GET,
+            entity,
+            ReadStreamPart.class, content);
+    return response.getBody();
+  }
+
   @Test
   @SuppressWarnings("unchecked")
   public void runRest() {
     futures.add(checkFile(consumers.getIntf().tempFileEntity(content)));
     futures.add(checkFuture(templateGet("tempFileEntity").saveAsBytes()));
+    futures.add(checkFuture(templateExchange("tempFileEntity", MediaType.TEXT_PLAIN_VALUE).saveAsBytes()));
+    futures.add(checkFuture(templateExchange("tempFileEntity", MediaType.APPLICATION_JSON_VALUE).saveAsBytes()));
 
     futures.add(checkFile(consumers.getIntf().tempFilePart(content)));
     futures.add(checkFuture(templateGet("tempFilePart").saveAsString()));
+    futures.add(checkFuture(templateExchange("tempFilePart", MediaType.TEXT_PLAIN_VALUE).saveAsString()));
+    futures.add(checkFuture(templateExchange("tempFilePart", MediaType.APPLICATION_JSON_VALUE).saveAsString()));
 
     futures.add(checkFile(consumers.getIntf().file(content)));
     futures.add(checkFuture(templateGet("file").saveAsString()));
+    futures.add(checkFuture(templateExchange("file", MediaType.TEXT_PLAIN_VALUE).saveAsString()));
+    futures.add(checkFuture(templateExchange("file", MediaType.APPLICATION_JSON_VALUE).saveAsString()));
 
     {
       ReadStreamPart part = consumers.getIntf().chineseAndSpaceFile(content);
@@ -116,22 +139,40 @@ public class TestDownload {
       part = templateGet("chineseAndSpaceFile");
       Assert.assertEquals("测 试.test.txt", part.getSubmittedFileName());
       futures.add(checkFuture(part.saveAsString()));
+
+      ReadStreamPart part2 = templateExchange("chineseAndSpaceFile", MediaType.TEXT_PLAIN_VALUE);
+      Assert.assertEquals("测 试.test.txt", part2.getSubmittedFileName());
+      futures.add(checkFuture(part2.saveAsString()));
+
+      ReadStreamPart part3 = templateExchange("chineseAndSpaceFile", MediaType.APPLICATION_JSON_VALUE);
+      Assert.assertEquals("测 试.test.txt", part3.getSubmittedFileName());
+      futures.add(checkFuture(part3.saveAsString()));
     }
 
     futures.add(checkFile(consumers.getIntf().resource(content)));
     futures.add(checkFuture(templateGet("resource").saveAsString()));
+    futures.add(checkFuture(templateExchange("resource", MediaType.TEXT_PLAIN_VALUE).saveAsString()));
+    futures.add(checkFuture(templateExchange("resource", MediaType.APPLICATION_JSON_VALUE).saveAsString()));
 
     futures.add(checkFile(consumers.getIntf().entityResource(content)));
     futures.add(checkFuture(templateGet("entityResource").saveAsString()));
+    futures.add(checkFuture(templateExchange("entityResource", MediaType.TEXT_PLAIN_VALUE).saveAsString()));
+    futures.add(checkFuture(templateExchange("entityResource", MediaType.APPLICATION_JSON_VALUE).saveAsString()));
 
     futures.add(checkFile(consumers.getIntf().entityInputStream(content)));
     futures.add(checkFuture(templateGet("entityInputStream").saveAsString()));
+    futures.add(checkFuture(templateExchange("entityInputStream", MediaType.TEXT_PLAIN_VALUE).saveAsString()));
+    futures.add(checkFuture(templateExchange("entityInputStream", MediaType.APPLICATION_JSON_VALUE).saveAsString()));
 
     futures.add(checkFile(consumers.getIntf().bytes(content)));
     futures.add(checkFuture(templateGet("bytes").saveAsString()));
+    futures.add(checkFuture(templateExchange("bytes", MediaType.TEXT_PLAIN_VALUE).saveAsString()));
+    futures.add(checkFuture(templateExchange("bytes", MediaType.APPLICATION_JSON_VALUE).saveAsString()));
 
     futures.add(checkFile(consumers.getIntf().netInputStream(content)));
     futures.add(checkFuture(templateGet("netInputStream").saveAsString()));
+    futures.add(checkFuture(templateExchange("netInputStream", MediaType.TEXT_PLAIN_VALUE).saveAsString()));
+    futures.add(checkFuture(templateExchange("netInputStream", MediaType.APPLICATION_JSON_VALUE).saveAsString()));
 
     try {
       CompletableFuture
