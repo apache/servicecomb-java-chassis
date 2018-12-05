@@ -14,26 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.invocation.exception;
+
+package org.apache.servicecomb.it.edge.converter;
+
+import java.util.concurrent.TimeoutException;
+
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.servicecomb.swagger.invocation.exception.ExceptionToProducerResponseConverter;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
-public class DefaultExceptionToProducerResponseConverter implements ExceptionToProducerResponseConverter<Throwable> {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultExceptionToProducerResponseConverter.class);
-
+public class CustomExceptionConverter implements ExceptionToProducerResponseConverter<TimeoutException> {
   @Override
-  public Class<Throwable> getExceptionClass() {
-    // default logic, not bind to special class
-    return null;
+  public Class<TimeoutException> getExceptionClass() {
+    return TimeoutException.class;
   }
 
   @Override
-  public Response convert(SwaggerInvocation swaggerInvocation, Throwable e) {
-    LOGGER.error("invoke failed, invocation={}", swaggerInvocation.getInvocationQualifiedName(), e);
-    //not only producer but also consumer
-    return Response.failResp(swaggerInvocation.getInvocationType(), e);
+  public int getOrder() {
+    return -12;
+  }
+
+  @Override
+  public Response convert(SwaggerInvocation swaggerInvocation, TimeoutException e) {
+    CustomException customException = new CustomException("change the response", 777);
+    InvocationException stt = new InvocationException(Status.EXPECTATION_FAILED, customException);
+    return Response.failResp(stt);
   }
 }

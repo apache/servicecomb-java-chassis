@@ -124,3 +124,9 @@ servicecomb:
               path: "/url/business/v2/.*"
               microserviceName: business
               versionRule: 2.0.0-3.0.0
+  request:
+    it-producer:
+      edgeExceptionConvertSchema:
+        timeout: 30000
+        add:
+          timeout: 1000
