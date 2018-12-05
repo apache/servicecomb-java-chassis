@@ -31,6 +31,7 @@ import org.apache.servicecomb.it.testcase.TestDefaultJsonValueJaxrsSchema;
 import org.apache.servicecomb.it.testcase.TestDefaultValue;
 import org.apache.servicecomb.it.testcase.TestDownload;
 import org.apache.servicecomb.it.testcase.TestDownloadSlowStreamEdge;
+import org.apache.servicecomb.it.testcase.TestExceptionConvertEdge;
 import org.apache.servicecomb.it.testcase.TestGenericEdge;
 import org.apache.servicecomb.it.testcase.TestIgnoreMethod;
 import org.apache.servicecomb.it.testcase.TestIgnoreStaticMethod;
@@ -106,6 +107,7 @@ public class ConsumerMain {
     ITJUnitUtils.runWithRest(TestAcceptType.class);
 
     ITJUnitUtils.runWithRest(TestDownload.class);
+    ITJUnitUtils.runWithHighwayAndRest(TestExceptionConvertEdge.class);
 
     ITJUnitUtils.runWithHighwayAndRest(TestTrace.class);
     ITJUnitUtils.run(TestTraceEdge.class);
