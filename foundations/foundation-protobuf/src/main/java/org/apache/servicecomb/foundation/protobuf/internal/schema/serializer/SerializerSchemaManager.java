@@ -27,6 +27,8 @@ import org.apache.servicecomb.foundation.protobuf.internal.schema.AnySchema;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.FieldSchema;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.MapSchema;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.MessageAsFieldSchema;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.PropertyWrapMessageAsFieldSchema;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.PropertyWrapMessageSchema;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.RepeatedSchema;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.SchemaCreateContext;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.SchemaManager;
@@ -66,7 +68,11 @@ public class SerializerSchemaManager extends SchemaManager {
 
   protected RootSerializer createRootSerializer(SchemaCreateContext context, Message message) {
     MessageSchema schema = createSchema(context, message);
-
+    if (isWrapProperty(message)) {
+      FieldSchema fieldSchema = (FieldSchema) schema.getFields().get(0);
+      schema = new PropertyWrapMessageSchema();
+      ((PropertyWrapMessageSchema) schema).setFieldSchema(fieldSchema);
+    }
     return new RootSerializer(schema);
   }
 
@@ -76,7 +82,7 @@ public class SerializerSchemaManager extends SchemaManager {
       return schema;
     }
 
-    schema = new MessageSchema();
+    schema = newMessageSchema(message);
     context.getSchemas().put(message.getName(), schema);
 
     List<io.protostuff.runtime.Field<Object>> fieldSchemas = new ArrayList<>();
@@ -119,7 +125,12 @@ public class SerializerSchemaManager extends SchemaManager {
 
     // message
     MessageSchema messageSchema = createSchema(context, (Message) protoField.getType());
-    MessageAsFieldSchema messageAsFieldSchema = new MessageAsFieldSchema(protoField, messageSchema);
+    MessageAsFieldSchema messageAsFieldSchema;
+    if (isWrapProperty((Message) protoField.getType())) {
+      messageAsFieldSchema = new PropertyWrapMessageAsFieldSchema(protoField, messageSchema);
+    } else {
+      messageAsFieldSchema = new MessageAsFieldSchema(protoField, messageSchema);
+    }
     return messageAsFieldSchema;
   }
 }

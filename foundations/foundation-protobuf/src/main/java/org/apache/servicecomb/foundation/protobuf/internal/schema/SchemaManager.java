@@ -35,8 +35,11 @@ import org.apache.servicecomb.foundation.protobuf.internal.schema.scalar.UInt32S
 import org.apache.servicecomb.foundation.protobuf.internal.schema.scalar.UInt64Schema;
 
 import io.protostuff.compiler.model.Field;
+import io.protostuff.compiler.model.FieldContainer;
+import io.protostuff.compiler.model.Message;
 import io.protostuff.compiler.model.Proto;
 import io.protostuff.compiler.model.ScalarFieldType;
+import io.protostuff.runtime.MessageSchema;
 
 public class SchemaManager {
   protected final ProtoMapper protoMapper;
@@ -50,6 +53,14 @@ public class SchemaManager {
 
   protected boolean isAnyField(Field protoField, boolean repeated) {
     return !repeated && protoField.getType().getCanonicalName().equals(ProtoConst.ANY.getCanonicalName());
+  }
+
+  public boolean isWrapProperty(FieldContainer fieldContainer) {
+    return fieldContainer.getCommentLines().contains(ProtoConst.ANNOTATION_WRAP_PROPERTY);
+  }
+
+  protected MessageSchema newMessageSchema(Message message) {
+    return new MessageSchema();
   }
 
   protected FieldSchema createScalarField(Field protoField) {

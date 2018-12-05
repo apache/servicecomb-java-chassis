@@ -17,34 +17,46 @@
 package org.apache.servicecomb.foundation.protobuf.internal.schema;
 
 import java.io.IOException;
+import java.util.List;
 
 import io.protostuff.Input;
 import io.protostuff.Output;
 import io.protostuff.Schema;
 import io.protostuff.compiler.model.Field;
+import io.protostuff.runtime.MessageSchema;
 
-public class MessageAsFieldSchema extends FieldSchema {
-  protected Schema<Object> schema;
+/**
+ *
+ */
+public class PropertyWrapMessageAsFieldSchema extends MessageAsFieldSchema {
+  private PropertyWrapMessageSchema propertyWrapMessageSchema;
 
-  public MessageAsFieldSchema(Field protoField, Schema<Object> schema) {
-    super(protoField);
-    this.schema = schema;
+  private FieldSchema fieldSchema;
+
+  public PropertyWrapMessageAsFieldSchema(Field protoField, Schema<Object> schema) {
+    super(protoField, schema);
+
+    List<io.protostuff.runtime.Field<Object>> list = ((MessageSchema) schema).getFields();
+    this.fieldSchema = (FieldSchema) list.get(0);
+
+    propertyWrapMessageSchema = new PropertyWrapMessageSchema();
+    propertyWrapMessageSchema.setFieldSchema(fieldSchema);
   }
 
   @Override
   public void writeTo(Output output, Object value) throws IOException {
-    output.writeObject(number, value, schema, false);
+    output.writeObject(number, value, propertyWrapMessageSchema, false);
   }
 
   @Override
   public Object readFrom(Input input) throws IOException {
-    return input.mergeObject(null, schema);
+    Object instance = schema.newMessage();
+    input.mergeObject(instance, schema);
+    return fieldSchema.getter.get(instance);
   }
 
   @Override
   public void mergeFrom(Input input, Object message) throws IOException {
-    Object existing = getter.get(message);
-    Object fieldValue = input.mergeObject(existing, schema);
-    setter.set(message, fieldValue);
+    throw new UnsupportedOperationException();
   }
 }

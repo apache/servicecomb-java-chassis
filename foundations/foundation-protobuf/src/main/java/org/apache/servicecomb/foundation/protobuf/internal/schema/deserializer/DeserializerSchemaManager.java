@@ -28,10 +28,12 @@ import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.BeanDescriptor;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.BeanFactory;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
+import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyWrapper;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.AnySchema;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.FieldSchema;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.MapSchema;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.MessageAsFieldSchema;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.PropertyWrapMessageAsFieldSchema;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.RepeatedSchema;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.SchemaCreateContext;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.SchemaManager;
@@ -39,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.protostuff.compiler.model.Field;
 import io.protostuff.compiler.model.Message;
@@ -69,14 +72,13 @@ public class DeserializerSchemaManager extends SchemaManager {
     return new RootDeserializer(beanDescriptor, schema);
   }
 
-  protected MessageSchema createSchema(SchemaCreateContext context, JavaType javaType,
-      Message message) {
+  public MessageSchema createSchema(SchemaCreateContext context, JavaType javaType, Message message) {
     MessageSchema schema = context.getSchemas().get(message.getName());
     if (schema != null) {
       return schema;
     }
 
-    schema = new MessageSchema();
+    schema = newMessageSchema(message);
     context.getSchemas().put(message.getName(), schema);
 
     doCreateSchema(context, schema, javaType, message);
@@ -87,11 +89,17 @@ public class DeserializerSchemaManager extends SchemaManager {
   protected void doCreateSchema(SchemaCreateContext context, MessageSchema schema,
       JavaType javaType,
       Message message) {
+    if (javaType.isJavaLangObject()) {
+      javaType = TypeFactory.defaultInstance().constructType(Map.class);
+    }
     if (Map.class.isAssignableFrom(javaType.getRawClass())) {
       doCreateSchemaToMap(context, schema, javaType, message);
       return;
     }
 
+    if (isWrapProperty(message) && (!javaType.getRawClass().equals(PropertyWrapper.class))) {
+      javaType = TypeFactory.defaultInstance().constructParametricType(PropertyWrapper.class, javaType);
+    }
     BeanDescriptor beanDescriptor = protoMapper.getBeanDescriptorManager().getOrCreateBeanDescriptor(javaType);
 
     List<io.protostuff.runtime.Field<Object>> fieldSchemas = new ArrayList<>();
@@ -177,7 +185,12 @@ public class DeserializerSchemaManager extends SchemaManager {
 
     // message
     MessageSchema messageSchema = createSchema(context, javaType, (Message) protoField.getType());
-    MessageAsFieldSchema messageAsFieldSchema = new MessageAsFieldSchema(protoField, messageSchema);
+    MessageAsFieldSchema messageAsFieldSchema;
+    if (isWrapProperty((Message) protoField.getType())) {
+      messageAsFieldSchema = new PropertyWrapMessageAsFieldSchema(protoField, messageSchema);
+    } else {
+      messageAsFieldSchema = new MessageAsFieldSchema(protoField, messageSchema);
+    }
     return messageAsFieldSchema;
   }
 }
