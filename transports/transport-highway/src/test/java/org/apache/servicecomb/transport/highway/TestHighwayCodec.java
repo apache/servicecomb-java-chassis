@@ -37,7 +37,6 @@ import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.transport.highway.message.RequestHeader;
 import org.apache.servicecomb.transport.highway.message.ResponseHeader;
 import org.junit.After;
@@ -81,7 +80,7 @@ public class TestHighwayCodec {
   }
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
     serviceRegistry.init();
     RegistryUtils.setServiceRegistry(serviceRegistry);
@@ -106,7 +105,7 @@ public class TestHighwayCodec {
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
 
     header = null;
 

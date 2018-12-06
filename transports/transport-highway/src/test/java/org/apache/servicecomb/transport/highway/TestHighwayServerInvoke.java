@@ -17,8 +17,13 @@
 
 package org.apache.servicecomb.transport.highway;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
 import javax.xml.ws.Holder;
 
+import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.SCBStatus;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -28,7 +33,11 @@ import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.executor.ReactiveExecutor;
 import org.apache.servicecomb.core.unittest.UnitTestMeta;
 import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpConnection;
+import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.transport.common.MockUtil;
 import org.apache.servicecomb.transport.highway.message.RequestHeader;
 import org.junit.AfterClass;
@@ -44,6 +53,7 @@ import io.netty.buffer.ByteBuf;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetSocket;
 import io.vertx.core.net.SocketAddress;
+import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
 
@@ -54,7 +64,7 @@ public class TestHighwayServerInvoke {
     }
   }
 
-  private UnitTestMeta unitTestMeta;
+  private static UnitTestMeta unitTestMeta;
 
   private ByteBuf netSocketBuffer;
 
@@ -70,6 +80,7 @@ public class TestHighwayServerInvoke {
   public static void classSetup() {
     EventManager.eventBus = new EventBus();
     SCBEngine.getInstance().setStatus(SCBStatus.UP);
+    unitTestMeta = new UnitTestMeta();
 
     new MockUp<System>() {
       @Mock
@@ -87,7 +98,6 @@ public class TestHighwayServerInvoke {
 
   @Before
   public void setup() {
-    unitTestMeta = new UnitTestMeta();
     socketAddress = new MockUp<SocketAddress>() {
       @Mock
       public String host() {
@@ -153,22 +163,55 @@ public class TestHighwayServerInvoke {
     requestHeader.setDestMicroservice(schemaMeta.getMicroserviceName());
     requestHeader.setSchemaId(schemaMeta.getSchemaId());
     requestHeader.setOperationName(operationMeta.getOperationId());
-    Assert.assertTrue(highwayServerInvoke.init(connection, 0, requestHeader, null));
+    assertTrue(highwayServerInvoke.init(connection, 0, requestHeader, null));
 
     // exe失败
     MockUtil.getInstance().decodeRequestSucc = false;
     highwayServerInvoke.execute();
     EventManager.unregister(subscriber);
 
-    Assert.assertEquals(true, Buffer.buffer(netSocketBuffer).toString().startsWith("CSE.TCP"));
-    Assert.assertSame(highwayServerInvoke.invocation, startHolder.value.getInvocation());
-    Assert.assertSame(highwayServerInvoke.invocation, finishHolder.value.getInvocation());
-    Assert.assertTrue(highwayServerInvoke.invocation.getInvocationStageTrace().getStartExecution() != 0);
-    Assert.assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getStart());
-    Assert.assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getStartHandlersRequest());
-    Assert.assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getFinishHandlersResponse());
-    Assert.assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getStartSchedule());
-    Assert.assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getStartHandlersRequest());
-    Assert.assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getFinishHandlersResponse());
+    assertTrue(Buffer.buffer(netSocketBuffer).toString().startsWith("CSE.TCP"));
+    assertSame(highwayServerInvoke.invocation, startHolder.value.getInvocation());
+    assertSame(highwayServerInvoke.invocation, finishHolder.value.getInvocation());
+    assertTrue(highwayServerInvoke.invocation.getInvocationStageTrace().getStartExecution() != 0);
+    assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getStart());
+    assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getStartHandlersRequest());
+    assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getFinishHandlersResponse());
+    assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getStartSchedule());
+    assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getStartHandlersRequest());
+    assertEquals(1, highwayServerInvoke.invocation.getInvocationStageTrace().getFinishHandlersResponse());
+  }
+
+  @Test
+  public void testFlowControlQps() {
+    MockUtil.getInstance().mockHighwayCodec();
+    SchemaMeta schemaMeta = unitTestMeta.getOrCreateSchemaMeta(Impl.class);
+    OperationMeta operationMeta = schemaMeta.ensureFindOperation("add");
+    operationMeta.setExecutor(new ReactiveExecutor());
+    Deencapsulation.setField(operationMeta, "providerQpsFlowControlHandlerSearched", true);
+    Deencapsulation.setField(operationMeta, "providerQpsFlowControlHandler",
+        (Handler) (invocation, asyncResp) -> asyncResp.producerFail(new InvocationException(
+            new HttpStatus(429, "Too Many Requests"),
+            new CommonExceptionData("rejected by qps flowcontrol"))));
+
+    RequestHeader requestHeader = MockUtil.getInstance().requestHeader;
+    requestHeader.setDestMicroservice(schemaMeta.getMicroserviceName());
+    requestHeader.setSchemaId(schemaMeta.getSchemaId());
+    requestHeader.setOperationName(operationMeta.getOperationId());
+
+    HighwayServerInvoke highwayServerInvoke = new HighwayServerInvoke();
+
+    assertTrue(highwayServerInvoke.init(connection, 0, requestHeader, null));
+    MockUtil.getInstance().decodeRequestSucc = true;
+
+    ArchaiusUtils.setProperty("servicecomb.flowcontrol.Provider.qps.enabled", "true");
+    ArchaiusUtils.setProperty("servicecomb.flowcontrol.Provider.qps.global.limit", "1");
+
+    highwayServerInvoke.execute();
+    String bodyString = Buffer.buffer(netSocketBuffer).toString();
+    assertTrue(bodyString.contains("Too Many Requests"));
+    assertTrue(bodyString.contains("rejected by qps flowcontrol"));
+
+    ArchaiusUtils.resetConfig();
   }
 }
