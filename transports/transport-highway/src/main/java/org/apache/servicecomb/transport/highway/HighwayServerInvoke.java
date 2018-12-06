@@ -20,12 +20,14 @@ package org.apache.servicecomb.transport.highway;
 import java.util.Map;
 
 import javax.ws.rs.core.Response.Status;
+import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
+import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
@@ -181,9 +183,38 @@ public class HighwayServerInvoke {
           null);
       invocation.onStart(null, start);
       invocation.getInvocationStageTrace().startSchedule();
-      operationMeta.getExecutor().execute(() -> runInExecutor());
+
+      // copied from HighwayCodec#decodeRequest()
+      // for temporary qps enhance purpose, we'll remove it when handler mechanism is refactored
+      invocation.mergeContext(header.getContext());
+
+      Holder<Boolean> qpsFlowControlReject = checkQpsFlowControl(operationMeta);
+      if (qpsFlowControlReject.value) {
+        return;
+      }
+
+      operationMeta.getExecutor().execute(this::runInExecutor);
     } catch (IllegalStateException e) {
       sendResponse(header.getContext(), Response.providerFailResp(e));
     }
+  }
+
+  private Holder<Boolean> checkQpsFlowControl(OperationMeta operationMeta) {
+    Holder<Boolean> qpsFlowControlReject = new Holder<>(false);
+    @SuppressWarnings("deprecation")
+    Handler providerQpsFlowControlHandler = operationMeta.getProviderQpsFlowControlHandler();
+    if (null != providerQpsFlowControlHandler) {
+      try {
+        providerQpsFlowControlHandler.handle(invocation, response -> {
+          qpsFlowControlReject.value = true;
+          sendResponse(header.getContext(), response);
+        });
+      } catch (Exception e) {
+        LOGGER.error("failed to execute ProviderQpsFlowControlHandler", e);
+        qpsFlowControlReject.value = true;
+        sendResponse(header.getContext(), Response.providerFailResp(e));
+      }
+    }
+    return qpsFlowControlReject;
   }
 }
