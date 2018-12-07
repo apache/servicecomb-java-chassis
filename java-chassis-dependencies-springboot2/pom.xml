@@ -79,7 +79,7 @@
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>java-chassis-dependencies</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>${project.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -87,22 +87,22 @@
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>spring-boot2-starter</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>spring-boot2-starter-servlet</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>spring-boot2-starter-standalone</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>spring-boot2-starter-discovery</artifactId>
-        <version>1.2.0-SNAPSHOT</version>
+        <version>${project.version}</version>
       </dependency>
 
     </dependencies>
