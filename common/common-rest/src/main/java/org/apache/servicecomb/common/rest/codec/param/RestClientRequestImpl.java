@@ -22,8 +22,10 @@ import static javax.ws.rs.core.MediaType.MULTIPART_FORM_DATA;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -52,7 +54,8 @@ public class RestClientRequestImpl implements RestClientRequest {
 
   protected AsyncResponse asyncResp;
 
-  private final Map<String, Part> uploads = new HashMap<>();
+  // maybe part or list of parts
+  private final Map<String, Object> uploads = new HashMap<>();
 
   protected HttpClientRequest request;
 
@@ -80,7 +83,7 @@ public class RestClientRequestImpl implements RestClientRequest {
   }
 
   @Override
-  public void attach(String name, Part part) {
+  public void attach(String name, Object part) {
     if (null == part) {
       LOGGER.debug("null file is ignored, file name = [{}]", name);
       return;
@@ -155,35 +158,48 @@ public class RestClientRequestImpl implements RestClientRequest {
   }
 
   private void attachFiles(String boundary) {
-    Iterator<Entry<String, Part>> uploadsIterator = uploads.entrySet().iterator();
-    attachFile(boundary, uploadsIterator);
+    Iterator<Entry<String, Object>> uploadsIterator = uploads.entrySet().iterator();
+    List<NamePartMap> namePartMaps = new ArrayList<>();
+    while (uploadsIterator.hasNext()) {
+      Entry<String, Object> entry = uploadsIterator.next();
+      String name = entry.getKey();
+      Object tmpPart = entry.getValue();
+      if (tmpPart instanceof Part) {
+        namePartMaps.add(new NamePartMap(name, (Part) tmpPart));
+      } else {
+        //it's a list
+        @SuppressWarnings("unchecked")
+        List<Part> partList = (List<Part>) tmpPart;
+        partList.forEach(part -> namePartMaps.add(new NamePartMap(name, part)));
+      }
+    }
+    attachFile(boundary, namePartMaps.iterator());
   }
 
-  private void attachFile(String boundary, Iterator<Entry<String, Part>> uploadsIterator) {
+  private void attachFile(String boundary, Iterator<NamePartMap> uploadsIterator) {
     if (!uploadsIterator.hasNext()) {
       request.write(boundaryEndInfo(boundary));
       request.end();
       return;
     }
 
-    Entry<String, Part> entry = uploadsIterator.next();
+    NamePartMap next = uploadsIterator.next();
     // do not use part.getName() to get parameter name
     // because pojo consumer not easy to set name to part
-    String name = entry.getKey();
-    Part part = entry.getValue();
-    String filename = part.getSubmittedFileName();
 
-    Buffer fileHeader = fileBoundaryInfo(boundary, name, part);
+    String filename = next.getPart().getSubmittedFileName();
+
+    Buffer fileHeader = fileBoundaryInfo(boundary, next.getName(), next.getPart());
     request.write(fileHeader);
 
-    new PumpFromPart(context, part).toWriteStream(request).whenComplete((v, e) -> {
+    new PumpFromPart(context, next.getPart()).toWriteStream(request).whenComplete((v, e) -> {
       if (e != null) {
-        LOGGER.debug("Failed to sending file [{}:{}].", name, filename, e);
+        LOGGER.debug("Failed to sending file [{}:{}].", next.getName(), filename, e);
         asyncResp.consumerFail(e);
         return;
       }
 
-      LOGGER.debug("finish sending file [{}:{}].", name, filename);
+      LOGGER.debug("finish sending file [{}:{}].", next.getName(), filename);
       attachFile(boundary, uploadsIterator);
     });
   }
@@ -277,5 +293,24 @@ public class RestClientRequestImpl implements RestClientRequest {
   @Override
   public MultiMap getHeaders() {
     return request.headers();
+  }
+
+  public static class NamePartMap {
+    String name;
+
+    Part part;
+
+    public NamePartMap(String name, Part part) {
+      this.name = name;
+      this.part = part;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public Part getPart() {
+      return part;
+    }
   }
 }

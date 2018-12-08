@@ -15,24 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.swagger.invocation.generator;
+package org.apache.servicecomb.swagger.generator.springmvc.processor.parameter;
 
 import java.lang.reflect.Type;
+import java.util.List;
 
-import org.apache.servicecomb.swagger.extend.parameter.InvocationContextParameter;
 import org.apache.servicecomb.swagger.generator.core.CommonParameterTypeProcessor;
 import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
-import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
+import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
+import org.springframework.web.multipart.MultipartFile;
 
-public class InvocationContextProcessor implements CommonParameterTypeProcessor {
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
+import io.swagger.models.parameters.FormParameter;
+import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.FileProperty;
+import io.swagger.models.properties.Property;
+
+public class MultipartFileListTypeProcessor implements CommonParameterTypeProcessor {
+
   @Override
   public Type getParameterType() {
-    return InvocationContext.class;
+    return TypeFactory.defaultInstance().constructCollectionType(List.class, MultipartFile.class);
   }
 
   @Override
   public void process(OperationGenerator operationGenerator, int paramIdx) {
-    InvocationContextParameter parameter = new InvocationContextParameter();
+    FormParameter parameter = new FormParameter();
+    parameter.setName(ParamUtils.getParameterName(operationGenerator.getProviderMethod(), paramIdx));
+    Property property = new ArrayProperty(new FileProperty());
+    parameter.setProperty(property);
     operationGenerator.addProviderParameter(parameter);
   }
 }

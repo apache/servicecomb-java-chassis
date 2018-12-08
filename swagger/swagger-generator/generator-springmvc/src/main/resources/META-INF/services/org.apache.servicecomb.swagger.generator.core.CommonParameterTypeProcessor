@@ -16,3 +16,5 @@
 #
 
 org.apache.servicecomb.swagger.generator.springmvc.processor.parameter.MultipartFileTypeProcessor
+org.apache.servicecomb.swagger.generator.springmvc.processor.parameter.MultipartFileArrayTypeProcessor
+org.apache.servicecomb.swagger.generator.springmvc.processor.parameter.MultipartFileListTypeProcessor

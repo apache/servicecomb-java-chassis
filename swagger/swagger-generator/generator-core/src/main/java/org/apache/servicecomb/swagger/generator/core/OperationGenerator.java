@@ -19,6 +19,7 @@ package org.apache.servicecomb.swagger.generator.core;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,6 +37,8 @@ import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
+
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.HttpMethod;
 import io.swagger.models.Operation;
@@ -347,6 +350,26 @@ public class OperationGenerator {
     if (processor != null) {
       processor.process(this, paramIdx);
     }
+    Type realType = checkAndGetType(parameterType);
+    if (realType != null) {
+      processor = context.findParameterTypeProcessor(realType);
+      if (processor != null) {
+        processor.process(this, paramIdx);
+      }
+    }
+  }
+
+  // if is list<?> check and get respond type
+  private Type checkAndGetType(Type type) {
+    if (ParameterizedType.class.isAssignableFrom(type.getClass())) {
+      ParameterizedType targetType = (ParameterizedType) type;
+      Class<?> targetCls = (Class<?>) targetType.getRawType();
+      if (List.class.isAssignableFrom(targetCls)) {
+        return TypeFactory.defaultInstance().constructCollectionType(List.class,
+            (Class<?>) targetType.getActualTypeArguments()[0]);
+      }
+    }
+    return null;
   }
 
   public void correctOperation() {

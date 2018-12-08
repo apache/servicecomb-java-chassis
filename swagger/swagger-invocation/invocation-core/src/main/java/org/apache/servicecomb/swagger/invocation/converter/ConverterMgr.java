@@ -37,6 +37,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
 @Component
 public class ConverterMgr {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConverterMgr.class);
@@ -99,13 +101,40 @@ public class ConverterMgr {
     return findCommonConverter(target);
   }
 
+
   protected Converter findSrcTarget(Type src, Type target) {
     Map<Type, Converter> map = srcTargetMap.get(src);
-    if (map == null) {
-      return null;
+    if (map != null) {
+      return map.get(target);
     }
+    Type realSrc = checkAndGetType(src);
+    if (realSrc != null) {
+      Map<Type, Converter> typeConverterMap = srcTargetMap.get(realSrc);
+      if (typeConverterMap != null) {
+        Converter converter = typeConverterMap.get(target);
+        if (converter != null) {
+          return converter;
+        }
+        Type realTarget = checkAndGetType(target);
+        if (realTarget != null) {
+          return typeConverterMap.get(realTarget);
+        }
+      }
+    }
+    return null;
+  }
 
-    return map.get(target);
+  // if is list<?> check and get respond type
+  private Type checkAndGetType(Type type) {
+    if (ParameterizedType.class.isAssignableFrom(type.getClass())) {
+      ParameterizedType targetType = (ParameterizedType) type;
+      Class<?> targetCls = (Class<?>) targetType.getRawType();
+      if (List.class.isAssignableFrom(targetCls)) {
+        return TypeFactory.defaultInstance().constructCollectionType(List.class,
+            (Class<?>) targetType.getActualTypeArguments()[0]);
+      }
+    }
+    return null;
   }
 
   protected Converter findCommonConverter(Type target) {

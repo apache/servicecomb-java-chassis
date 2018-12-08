@@ -14,30 +14,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.apache.servicecomb.swagger.generator.springmvc.processor.parameter;
+package org.apache.servicecomb.swagger.invocation.converter;
 
 import java.lang.reflect.Type;
+import java.util.List;
 
-import org.apache.servicecomb.swagger.generator.core.CommonParameterTypeProcessor;
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
+import javax.servlet.http.Part;
+
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import io.swagger.models.parameters.FormParameter;
-import io.swagger.models.properties.FileProperty;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
-public class MultipartFileTypeProcessor implements CommonParameterTypeProcessor {
+
+@Component
+public class SpringMultipartArrayConverter implements CustomizedConverter {
+
   @Override
-  public Type getParameterType() {
-    return MultipartFile.class;
+  public Type getSrcType() {
+    return TypeFactory.defaultInstance().constructCollectionType(List.class, Part.class);
   }
 
   @Override
-  public void process(OperationGenerator operationGenerator, int paramIdx) {
-    FormParameter parameter = new FormParameter();
-    parameter.setType(new FileProperty().getType());
-    parameter.setName(ParamUtils.getParameterName(operationGenerator.getProviderMethod(), paramIdx));
-    operationGenerator.addProviderParameter(parameter);
+  public Type getTargetType() {
+    return MultipartFile[].class;
+  }
+
+  @Override
+  public Object convert(Object value) {
+    if (value == null) {
+      return null;
+    }
+    @SuppressWarnings("unchecked")
+    List<Part> partList = (List<Part>) value;
+    PartToMultipartFile[] partArray = new PartToMultipartFile[partList.size()];
+    for (int i = 0; i < partArray.length; i++) {
+      partArray[i] = new PartToMultipartFile(partList.get(i));
+    }
+    return partArray;
   }
 }
