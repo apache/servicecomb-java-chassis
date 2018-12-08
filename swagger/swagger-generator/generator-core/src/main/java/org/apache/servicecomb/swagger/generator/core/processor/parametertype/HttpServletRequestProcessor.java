@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.swagger.generator.core.processor.parametertype;
 
+import java.lang.reflect.Type;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.servicecomb.swagger.extend.parameter.HttpRequestParameter;
@@ -25,7 +27,7 @@ import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
 
 public class HttpServletRequestProcessor implements CommonParameterTypeProcessor {
   @Override
-  public Class<?> getParameterType() {
+  public Type getParameterType() {
     return HttpServletRequest.class;
   }
 

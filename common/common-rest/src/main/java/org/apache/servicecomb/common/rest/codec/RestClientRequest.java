@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.common.rest.codec;
 
-import javax.servlet.http.Part;
-
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 
@@ -41,5 +39,5 @@ public interface RestClientRequest {
 
   Buffer getBodyBuffer() throws Exception;
 
-  void attach(String name, Part part);
+  void attach(String name, Object part);
 }

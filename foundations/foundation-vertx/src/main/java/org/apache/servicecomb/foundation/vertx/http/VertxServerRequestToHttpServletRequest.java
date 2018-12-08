@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.foundation.vertx.http;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -273,6 +275,14 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
 
     final FileUpload fileUpload = upload.get();
     return new FileUploadPart(fileUpload);
+  }
+
+  @Override
+  public Collection<Part> getParts() {
+    Set<FileUpload> fileUploads = context.fileUploads();
+    List<Part> partList = new ArrayList<>();
+    fileUploads.stream().map(FileUploadPart::new).forEach(partList::add);
+    return partList;
   }
 
   public RoutingContext getContext() {
