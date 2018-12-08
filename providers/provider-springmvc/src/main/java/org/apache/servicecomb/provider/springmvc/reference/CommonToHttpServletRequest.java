@@ -43,6 +43,8 @@ import org.apache.servicecomb.foundation.common.part.ResourcePart;
 import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 import org.springframework.core.io.Resource;
 
+import com.google.common.annotations.VisibleForTesting;
+
 // restTemplate convert parameters to invocation args.
 public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
   private Map<String, List<String>> queryParams;
@@ -232,8 +234,6 @@ public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
       if (value == null) {
         continue;
       }
-      Class<?> aClass = value.getClass();
-      System.out.println(aClass.isArray());
       if (Collection.class.isInstance(value)) {
         Collection<?> collection = (Collection<?>) value;
         if (collection.isEmpty()) {
@@ -270,5 +270,10 @@ public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
       value = collection.iterator().next();
     }
     return value;
+  }
+
+  @VisibleForTesting
+  public List<String> getFileKeys() {
+    return fileKeys;
   }
 }

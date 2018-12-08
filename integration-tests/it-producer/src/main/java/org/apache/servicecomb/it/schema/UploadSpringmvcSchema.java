@@ -82,6 +82,14 @@ public class UploadSpringmvcSchema {
     return _fileUpload(file1) + name;
   }
 
+  @RequestMapping(path = "/uploadMix", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public String uploadMix(@RequestPart(name = "file1") List<MultipartFile> file1,
+      @RequestPart(name = "file2") MultipartFile[] file2, @RequestAttribute("name") String name) {
+    List<MultipartFile> multipartFileList = Arrays.asList(file2);
+    file1.addAll(multipartFileList);
+    return _fileUpload(file1) + name;
+  }
+
   private static String _fileUpload(List<MultipartFile> fileList) {
     StringBuilder stringBuilder = new StringBuilder();
     try {

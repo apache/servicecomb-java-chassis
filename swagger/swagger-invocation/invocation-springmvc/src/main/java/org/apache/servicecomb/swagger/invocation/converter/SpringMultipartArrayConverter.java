@@ -26,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
-
 @Component
 public class SpringMultipartArrayConverter implements CustomizedConverter {
 

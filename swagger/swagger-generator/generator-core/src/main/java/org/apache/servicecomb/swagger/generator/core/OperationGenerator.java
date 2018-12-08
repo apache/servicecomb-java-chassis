@@ -349,6 +349,7 @@ public class OperationGenerator {
     ParameterTypeProcessor processor = context.findParameterTypeProcessor(parameterType);
     if (processor != null) {
       processor.process(this, paramIdx);
+      return;
     }
     Type realType = checkAndGetType(parameterType);
     if (realType != null) {
