@@ -30,7 +30,6 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 @Component
 public class SpringMultipartListConverter implements CustomizedConverter {
 
-
   @Override
   public Type getSrcType() {
     return TypeFactory.defaultInstance().constructCollectionType(List.class, Part.class);

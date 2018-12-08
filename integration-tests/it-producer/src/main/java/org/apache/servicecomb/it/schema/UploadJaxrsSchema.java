@@ -43,10 +43,10 @@ public class UploadJaxrsSchema {
   @Path("/uploadArray1")
   @POST
   @Produces(MediaType.TEXT_PLAIN)
-  public String uploadArray1(@FormParam("file1") Part[] fileArray, @FormParam("file2") Part file2) throws IOException {
+  public String uploadArray1(@FormParam("file1") Part[] file1, @FormParam("file2") Part file2) throws IOException {
     StringBuilder stringBuilder = new StringBuilder();
-    for (int i = 0; i < fileArray.length; i++) {
-      stringBuilder.append(getStrFromPart(fileArray[i]));
+    for (int i = 0; i < file1.length; i++) {
+      stringBuilder.append(getStrFromPart(file1[i]));
     }
     return stringBuilder.append(getStrFromPart(file2)).toString();
   }
@@ -55,10 +55,10 @@ public class UploadJaxrsSchema {
   @Path("/uploadList1")
   @POST
   @Produces(MediaType.TEXT_PLAIN)
-  public String uploadList1(@FormParam("file1") List<Part> fileArray, @FormParam("file2") Part file2)
+  public String uploadList1(@FormParam("file1") List<Part> file1, @FormParam("file2") Part file2)
       throws IOException {
     StringBuilder stringBuilder = new StringBuilder();
-    fileArray.forEach(part -> {
+    file1.forEach(part -> {
       stringBuilder.append(getStrFromPart(part));
     });
     return stringBuilder.append(getStrFromPart(file2)).toString();
@@ -75,11 +75,11 @@ public class UploadJaxrsSchema {
   @Path("/uploadArray2")
   @POST
   @Produces(MediaType.TEXT_PLAIN)
-  public String uploadArray2(@FormParam("file1") Part[] fileArray, @FormParam("message") String message)
+  public String uploadArray2(@FormParam("file1") Part[] file1, @FormParam("message") String message)
       throws IOException {
     StringBuilder stringBuilder = new StringBuilder();
-    for (int i = 0; i < fileArray.length; i++) {
-      stringBuilder.append(getStrFromPart(fileArray[i]));
+    for (int i = 0; i < file1.length; i++) {
+      stringBuilder.append(getStrFromPart(file1[i]));
     }
     return stringBuilder.append(message).toString();
   }
@@ -88,18 +88,33 @@ public class UploadJaxrsSchema {
   @Path("/uploadList2")
   @POST
   @Produces(MediaType.TEXT_PLAIN)
-  public String uploadList2(@FormParam("file1") List<Part> fileArray, @FormParam("message") String message)
-      throws IOException {
+  public String uploadList2(@FormParam("file1") List<Part> file1, @FormParam("message") String message) {
     StringBuilder stringBuilder = new StringBuilder();
-    fileArray.forEach(part -> {
+    file1.forEach(part -> {
       stringBuilder.append(getStrFromPart(part));
     });
     return stringBuilder.append(message).toString();
   }
 
+
+  @Path("/uploadMix")
+  @POST
+  @Produces(MediaType.TEXT_PLAIN)
+  public String uploadMix(@FormParam("file1") List<Part> file1, @FormParam("file2") Part[] file2,
+      @FormParam("message") String message) {
+    StringBuilder stringBuilder = new StringBuilder();
+    file1.forEach(part -> {
+      stringBuilder.append(getStrFromPart(part));
+    });
+    for (int i = 0; i < file2.length; i++) {
+      stringBuilder.append(getStrFromPart(file2[i]));
+    }
+    return stringBuilder.append(message).toString();
+  }
+
   private static String getStrFromPart(Part file1) {
     try (InputStream is1 = file1.getInputStream()) {
-      return IOUtils.toString(is1);
+      return IOUtils.toString(is1, "utf-8");
     } catch (IOException e) {
       e.printStackTrace();
     }

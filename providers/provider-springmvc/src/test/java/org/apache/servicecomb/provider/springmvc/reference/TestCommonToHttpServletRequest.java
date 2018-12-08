@@ -17,8 +17,11 @@
 
 package org.apache.servicecomb.provider.springmvc.reference;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -26,13 +29,19 @@ import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
 import javax.ws.rs.core.HttpHeaders;
 
 import org.apache.servicecomb.common.rest.RestConst;
+import org.apache.servicecomb.common.rest.codec.param.FormProcessorCreator.PartProcessor;
+import org.apache.servicecomb.common.rest.definition.RestParam;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
+
+import mockit.Expectations;
+import mockit.Mocked;
 
 public class TestCommonToHttpServletRequest {
   @Test
@@ -51,6 +60,30 @@ public class TestCommonToHttpServletRequest {
 
     Assert.assertEquals(null, request.getAttribute(RestConst.FORM_PARAMETERS));
     Assert.assertEquals(body, request.getAttribute(RestConst.BODY_PARAMETER));
+  }
+
+  @Test
+  public void testConstructNormal(@Mocked RestParam param1, @Mocked RestParam param2,
+      @Mocked PartProcessor partProcessor) {
+    List<RestParam> restParams = new ArrayList<>();
+    restParams.add(param1);
+    restParams.add(param2);
+    new Expectations() {
+      {
+        param1.getParamProcessor();
+        result = partProcessor;
+        param1.getParamName();
+        result = "test1";
+        param2.getParamProcessor();
+        result = partProcessor;
+        param2.getParamName();
+        result = "test2";
+      }
+    };
+    HttpServletRequest request = new CommonToHttpServletRequest(null, null, null, null, false, restParams);
+    Assert.assertEquals(2, ((CommonToHttpServletRequest) request).getFileKeys().size());
+    Assert.assertEquals("test1", ((CommonToHttpServletRequest) request).getFileKeys().get(0));
+    Assert.assertEquals("test2", ((CommonToHttpServletRequest) request).getFileKeys().get(1));
   }
 
   @Test
@@ -234,5 +267,48 @@ public class TestCommonToHttpServletRequest {
     request.addHeader("name", "v1");
     request.addHeader("name", "v2");
     Assert.assertThat(Collections.list(request.getHeaders("name")), Matchers.contains("v1", "v2"));
+  }
+
+  @Test
+  public void testGetParts(@Mocked RestParam param1, @Mocked RestParam param2,
+      @Mocked PartProcessor partProcessor) {
+    List<RestParam> restParams = new ArrayList<>();
+    restParams.add(param1);
+    restParams.add(param2);
+    File file1 = new File("file1.txt");
+    File file2 = new File("file2.txt");
+    new Expectations() {
+      {
+        param1.getParamProcessor();
+        result = partProcessor;
+        param1.getParamName();
+        result = "test1";
+        param2.getParamProcessor();
+        result = partProcessor;
+        param2.getParamName();
+        result = "test2";
+      }
+    };
+    File[] files = {file1, file2};
+    List<File> list = Arrays.asList(files);
+    Map<String, Object> objectMap = new HashMap<>();
+    objectMap.put("test1", list);
+    objectMap.put("test2", files);
+    objectMap.put("test3", list);
+    objectMap.put("test4", "haha");
+
+    Map<String, String> pathParams = new HashMap<>();
+    HttpServletRequest request = new CommonToHttpServletRequest(pathParams, null, null, objectMap, true, restParams);
+    try {
+      Collection<Part> tmpParts = request.getParts();
+      ArrayList<Part> parts = new ArrayList<>(tmpParts);
+      Assert.assertEquals(4, parts.size());
+      Assert.assertEquals("test1", parts.get(0).getName());
+      Assert.assertEquals("test1", parts.get(1).getName());
+      Assert.assertEquals("test2", parts.get(2).getName());
+      Assert.assertEquals("test2", parts.get(3).getName());
+    } catch (Throwable e) {
+      Assert.fail("should not throw exception");
+    }
   }
 }

@@ -122,8 +122,7 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
 
     @Override
     public Object getValue(HttpServletRequest request) throws Exception {
-
-      if (targetType.getRawClass().equals(List.class)) {
+      if (List.class.isAssignableFrom(targetType.getRawClass())) {
         JavaType contentType = targetType.getContentType();
         if (contentType != null && contentType.getRawClass().equals(Part.class)) {
           //get all parts

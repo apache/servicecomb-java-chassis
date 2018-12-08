@@ -43,6 +43,7 @@ import org.apache.servicecomb.it.testcase.TestRestServerConfig;
 import org.apache.servicecomb.it.testcase.TestRestServerConfigEdge;
 import org.apache.servicecomb.it.testcase.TestTrace;
 import org.apache.servicecomb.it.testcase.TestTraceEdge;
+import org.apache.servicecomb.it.testcase.TestUpload;
 import org.apache.servicecomb.it.testcase.base.TestGeneric;
 import org.apache.servicecomb.it.testcase.thirdparty.Test3rdPartyInvocation;
 
@@ -106,6 +107,7 @@ public class ConsumerMain {
     ITJUnitUtils.runWithRest(TestDefaultValue.class);
     ITJUnitUtils.runWithRest(TestAcceptType.class);
 
+    ITJUnitUtils.runWithRest(TestUpload.class);
     ITJUnitUtils.runWithRest(TestDownload.class);
     ITJUnitUtils.runWithHighwayAndRest(TestExceptionConvertEdge.class);
 
