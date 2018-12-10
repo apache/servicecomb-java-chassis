@@ -60,6 +60,13 @@ public class UploadSpringmvcSchema {
     return _fileUpload(file1) + name;
   }
 
+  @RequestMapping(path = "/uploadArrayList", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public String fileUploadArrayList(@RequestPart(name = "file1") ArrayList<MultipartFile> file1,
+      @RequestPart(name = "file2") ArrayList<MultipartFile> file2, @RequestAttribute("name") String name) {
+    file1.addAll(file2);
+    return _fileUpload(file1) + name;
+  }
+
   @RequestMapping(path = "/uploadWithoutAnnotation", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public String uploadWithoutAnnotation(MultipartFile file1, MultipartFile file2,
       @RequestAttribute("name") String name) {
@@ -77,6 +84,13 @@ public class UploadSpringmvcSchema {
 
   @RequestMapping(path = "/uploadListArrayWithoutAnnotation", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public String uploadListWithoutAnnotation(List<MultipartFile> file1, List<MultipartFile> file2,
+      @RequestAttribute("name") String name) {
+    file1.addAll(file2);
+    return _fileUpload(file1) + name;
+  }
+
+  @RequestMapping(path = "/uploadArrayListArrayWithoutAnnotation", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public String uploadArrayListWithoutAnnotation(ArrayList<MultipartFile> file1, ArrayList<MultipartFile> file2,
       @RequestAttribute("name") String name) {
     file1.addAll(file2);
     return _fileUpload(file1) + name;

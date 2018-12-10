@@ -25,19 +25,19 @@ import javax.servlet.http.Part;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.inject.util.Types;
 
 @Component
 public class SpringMultipartListConverter implements CustomizedConverter {
 
   @Override
   public Type getSrcType() {
-    return TypeFactory.defaultInstance().constructCollectionType(List.class, Part.class);
+    return Types.newParameterizedType(List.class, Part.class);
   }
 
   @Override
   public Type getTargetType() {
-    return TypeFactory.defaultInstance().constructCollectionType(List.class, MultipartFile.class);
+    return Types.newParameterizedType(List.class, MultipartFile.class);
   }
 
   @Override

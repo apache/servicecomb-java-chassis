@@ -18,6 +18,7 @@ package org.apache.servicecomb.it.schema;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.Part;
@@ -64,6 +65,18 @@ public class UploadJaxrsSchema {
     return stringBuilder.append(getStrFromPart(file2)).toString();
   }
 
+  @Path("/uploadArrayList1")
+  @POST
+  @Produces(MediaType.TEXT_PLAIN)
+  public String uploadArrayList1(@FormParam("file1") ArrayList<Part> file1, @FormParam("file2") Part file2)
+      throws IOException {
+    StringBuilder stringBuilder = new StringBuilder();
+    file1.forEach(part -> {
+      stringBuilder.append(getStrFromPart(part));
+    });
+    return stringBuilder.append(getStrFromPart(file2)).toString();
+  }
+
 
   @Path("/upload2")
   @POST
@@ -96,6 +109,16 @@ public class UploadJaxrsSchema {
     return stringBuilder.append(message).toString();
   }
 
+  @Path("/uploadArrayList2")
+  @POST
+  @Produces(MediaType.TEXT_PLAIN)
+  public String uploadArrayList2(@FormParam("file1") ArrayList<Part> file1, @FormParam("message") String message) {
+    StringBuilder stringBuilder = new StringBuilder();
+    file1.forEach(part -> {
+      stringBuilder.append(getStrFromPart(part));
+    });
+    return stringBuilder.append(message).toString();
+  }
 
   @Path("/uploadMix")
   @POST

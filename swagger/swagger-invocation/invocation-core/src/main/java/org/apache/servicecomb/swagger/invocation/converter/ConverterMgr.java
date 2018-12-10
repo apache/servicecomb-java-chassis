@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.inject.util.Types;
 
 @Component
 public class ConverterMgr {
@@ -105,21 +105,15 @@ public class ConverterMgr {
   protected Converter findSrcTarget(Type src, Type target) {
     Map<Type, Converter> map = srcTargetMap.get(src);
     if (map != null) {
-      return map.get(target);
-    }
-    Type realSrc = checkAndGetType(src);
-    if (realSrc != null) {
-      Map<Type, Converter> typeConverterMap = srcTargetMap.get(realSrc);
-      if (typeConverterMap != null) {
-        Converter converter = typeConverterMap.get(target);
-        if (converter != null) {
-          return converter;
-        }
+      Converter converter = map.get(target);
+      if (converter == null) {
+        //maybe target class is ArrayList...
         Type realTarget = checkAndGetType(target);
         if (realTarget != null) {
-          return typeConverterMap.get(realTarget);
+          converter = map.get(realTarget);
         }
       }
+      return converter;
     }
     return null;
   }
@@ -130,8 +124,7 @@ public class ConverterMgr {
       ParameterizedType targetType = (ParameterizedType) type;
       Class<?> targetCls = (Class<?>) targetType.getRawType();
       if (List.class.isAssignableFrom(targetCls)) {
-        return TypeFactory.defaultInstance().constructCollectionType(List.class,
-            (Class<?>) targetType.getActualTypeArguments()[0]);
+        return Types.newParameterizedType(List.class, (Class<?>) targetType.getActualTypeArguments()[0]);
       }
     }
     return null;

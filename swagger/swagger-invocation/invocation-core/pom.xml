@@ -29,6 +29,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>com.google.inject</groupId>
+      <artifactId>guice</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>swagger-generator-core</artifactId>
     </dependency>
