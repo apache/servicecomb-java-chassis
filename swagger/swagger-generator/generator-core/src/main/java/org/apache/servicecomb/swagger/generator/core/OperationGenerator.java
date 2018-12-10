@@ -38,7 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.inject.util.Types;
 
 import io.swagger.models.HttpMethod;
 import io.swagger.models.Operation;
@@ -347,16 +347,15 @@ public class OperationGenerator {
 
   protected void processByParameterType(Type parameterType, int paramIdx) {
     ParameterTypeProcessor processor = context.findParameterTypeProcessor(parameterType);
+    if (processor == null) {
+      //maybe is ArrayList ...
+      Type realType = checkAndGetType(parameterType);
+      if (realType != null) {
+        processor = context.findParameterTypeProcessor(realType);
+      }
+    }
     if (processor != null) {
       processor.process(this, paramIdx);
-      return;
-    }
-    Type realType = checkAndGetType(parameterType);
-    if (realType != null) {
-      processor = context.findParameterTypeProcessor(realType);
-      if (processor != null) {
-        processor.process(this, paramIdx);
-      }
     }
   }
 
@@ -366,8 +365,7 @@ public class OperationGenerator {
       ParameterizedType targetType = (ParameterizedType) type;
       Class<?> targetCls = (Class<?>) targetType.getRawType();
       if (List.class.isAssignableFrom(targetCls)) {
-        return TypeFactory.defaultInstance().constructCollectionType(List.class,
-            (Class<?>) targetType.getActualTypeArguments()[0]);
+        return Types.newParameterizedType(List.class, (Class<?>) targetType.getActualTypeArguments()[0]);
       }
     }
     return null;

@@ -108,6 +108,19 @@ public class TestUpload {
   }
 
   @Test
+  public void testJarxUploadArrayList1() {
+    Map<String, Object> map = new HashMap<>();
+    ArrayList<FileSystemResource> list = new ArrayList<>();
+    list.add(fileSystemResource1);
+    list.add(fileSystemResource2);
+    map.put("file1", list);
+    map.put("file2", fileSystemResource3);
+    String result = consumersJaxrs.getSCBRestTemplate()
+        .postForObject("/uploadArrayList1", new HttpEntity<>(map), String.class);
+    Assert.assertTrue(containsAll(result, "hello1", "中文 2", "cse3"));
+  }
+
+  @Test
   public void testJarxUpload2() {
     Map<String, Object> map = new HashMap<>();
     map.put("file1", fileSystemResource1);
@@ -138,6 +151,19 @@ public class TestUpload {
     map.put("message", message);
     String result = consumersJaxrs.getSCBRestTemplate()
         .postForObject("/uploadList2", new HttpEntity<>(map), String.class);
+    Assert.assertTrue(containsAll(result, "cse3", "中文 2", message));
+  }
+
+  @Test
+  public void testJarxUploadArrayList2() {
+    Map<String, Object> map = new HashMap<>();
+    ArrayList<FileSystemResource> list = new ArrayList<>();
+    list.add(fileSystemResource2);
+    list.add(fileSystemResource3);
+    map.put("file1", list);
+    map.put("message", message);
+    String result = consumersJaxrs.getSCBRestTemplate()
+        .postForObject("/uploadArrayList2", new HttpEntity<>(map), String.class);
     Assert.assertTrue(containsAll(result, "cse3", "中文 2", message));
   }
 
@@ -204,6 +230,24 @@ public class TestUpload {
     Assert.assertTrue(containsAll(result, "hello1", "cse4", "cse3", "中文 2", message));
   }
 
+  @Test
+  public void testFileUploadArrayList() {
+    Map<String, Object> map = new HashMap<>();
+    ArrayList<FileSystemResource> list1 = new ArrayList<>();
+    ArrayList<FileSystemResource> list2 = new ArrayList<>();
+    list1.add(fileSystemResource1);
+    list1.add(fileSystemResource2);
+    list2.add(fileSystemResource3);
+    list2.add(fileSystemResource4);
+    map.put("file1", list1);
+    map.put("file2", list2);
+    map.put("name", message);
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+    String result = consumersSpringmvc.getSCBRestTemplate()
+        .postForObject("/uploadArrayList", new HttpEntity<>(map, headers), String.class);
+    Assert.assertTrue(containsAll(result, "hello1", "cse4", "cse3", "中文 2", message));
+  }
 
   @Test
   public void testFileUploadWithoutAnnotation() {
@@ -249,6 +293,25 @@ public class TestUpload {
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
     String result = consumersSpringmvc.getSCBRestTemplate()
         .postForObject("/uploadListArrayWithoutAnnotation", new HttpEntity<>(map, headers), String.class);
+    Assert.assertTrue(containsAll(result, "hello1", "cse4", "cse3", "中文 2", message));
+  }
+
+  @Test
+  public void testFileUploadArrayListWithoutAnnotation() {
+    Map<String, Object> map = new HashMap<>();
+    ArrayList<FileSystemResource> list1 = new ArrayList<>();
+    ArrayList<FileSystemResource> list2 = new ArrayList<>();
+    list1.add(fileSystemResource1);
+    list1.add(fileSystemResource2);
+    list2.add(fileSystemResource3);
+    list2.add(fileSystemResource4);
+    map.put("file1", list1);
+    map.put("file2", list2);
+    map.put("name", message);
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+    String result = consumersSpringmvc.getSCBRestTemplate()
+        .postForObject("/uploadArrayListArrayWithoutAnnotation", new HttpEntity<>(map, headers), String.class);
     Assert.assertTrue(containsAll(result, "hello1", "cse4", "cse3", "中文 2", message));
   }
 
