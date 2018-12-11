@@ -26,7 +26,9 @@ import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
+import org.apache.servicecomb.serviceregistry.consumer.StaticMicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.diagnosis.Status;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
@@ -238,5 +240,34 @@ public class TestInstanceCacheChecker {
 
     Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
     Assert.assertNull(microserviceVersions.getRevision());
+  }
+
+  @Test
+  public void check_StaticMicroservice() {
+    Holder<MicroserviceInstances> findHolder = new Holder<>(new MicroserviceInstances());
+
+    new MockUp<RegistryUtils>() {
+      @Mock
+      MicroserviceInstances findServiceInstances(String appId, String serviceName,
+          String versionRule, String revision) {
+        return findHolder.value;
+      }
+    };
+
+    MicroserviceManager microserviceManager = serviceRegistry.getAppManager()
+        .getOrCreateMicroserviceManager(RegistryUtils.getAppId());
+    microserviceManager.getVersionsByName().put(microserviceName,
+        new StaticMicroserviceVersions(serviceRegistry.getAppManager(), RegistryUtils.getAppId(), microserviceName,
+            ThirdPartyServiceForUT.class));
+
+    InstanceCacheSummary instanceCacheSummary = checker.check();
+
+    expectedSummary.setStatus(Status.NORMAL);
+
+    Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
+  }
+
+  private interface ThirdPartyServiceForUT {
+    String sayHello(String name);
   }
 }
