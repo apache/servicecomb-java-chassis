@@ -111,6 +111,11 @@ public class MicroserviceWatchTask extends AbstractTask {
             changedEvent.getInstance().getEndpoints());
         break;
       default:
+        LOGGER.info("microservice {}/{}/{} UNKNOWN event action {}.",
+            changedEvent.getKey().getAppId(),
+            changedEvent.getKey().getServiceName(),
+            changedEvent.getKey().getVersion(),
+            changedEvent.getAction());
         break;
     }
 

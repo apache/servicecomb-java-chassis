@@ -51,7 +51,7 @@ public class AddressResolverConfig {
     AddressResolverOptions addressResolverOptions = new AddressResolverOptions();
     addressResolverOptions
         .setServers(getStringListProperty(configSource,
-            AddressResolverOptions.DEFAULT_SEACH_DOMAINS,
+            AddressResolverOptions.DEFAULT_SERVERS,
             "addressResolver." + tag + ".servers",
             "addressResolver.servers"));
     addressResolverOptions
@@ -96,7 +96,7 @@ public class AddressResolverConfig {
             "addressResolver.searchDomains"));
     addressResolverOptions
         .setNdots(getPositiveIntProperty(configSource,
-            AddressResolverOptions.DEFAULT_CACHE_MIN_TIME_TO_LIVE,
+            AddressResolverOptions.DEFAULT_NDOTS,
             "addressResolver." + tag + ".ndots",
             "addressResolver.ndots"));
     addressResolverOptions
