@@ -28,6 +28,7 @@ import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
+import org.apache.servicecomb.serviceregistry.consumer.StaticMicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.diagnosis.Status;
 import org.slf4j.Logger;
@@ -55,6 +56,9 @@ public class InstanceCacheChecker {
 
     for (MicroserviceManager microserviceManager : appManager.getApps().values()) {
       for (MicroserviceVersions microserviceVersions : microserviceManager.getVersionsByName().values()) {
+        if (microserviceVersions instanceof StaticMicroserviceVersions) {
+          continue;
+        }
         InstanceCacheResult instanceCacheResult = check(microserviceVersions);
         addInstanceCacheResult(instanceCacheResult);
       }
@@ -103,11 +107,6 @@ public class InstanceCacheChecker {
 
     // compare all instances
     List<MicroserviceInstance> remoteInstances = microserviceInstances.getInstancesResponse().getInstances();
-//    if (RandomUtils.nextInt(0, 2) == 0) {
-//      MicroserviceInstance microserviceInstance = new MicroserviceInstance();
-//      microserviceInstance.setInstanceId("abc");
-//      remoteInstances.add(microserviceInstance);
-//    }
     remoteInstances.sort(Comparator.comparing(MicroserviceInstance::getInstanceId));
     String local = Json.encode(microserviceVersions.getPulledInstances());
     String remote = Json.encode(remoteInstances);
