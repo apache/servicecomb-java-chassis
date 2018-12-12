@@ -417,10 +417,7 @@ Guice (https://github.com/google/guice) com.google.inject:guice:jar:4.1.0
 Google Guice - Extensions - AssistedInject (https://github.com/google/guice/extensions-parent/guice-assistedinject) com.google.inject.extensions:guice-assistedinject:jar:4.1.0
 Google Guice - Extensions - MultiBindings (https://github.com/google/guice/extensions-parent/guice-multibindings) com.google.inject.extensions:guice-multibindings:jar:4.1.0
 Hibernate Validator Engine (http://hibernate.org/validator/hibernate-validator) org.hibernate:hibernate-validator:jar:6.0.2.Final
-hystrix-core (https://github.com/Netflix/Hystrix) com.netflix.hystrix:hystrix-core:jar:1.5.10
-hystrix-javanica (https://github.com/Netflix/Hystrix) com.netflix.hystrix:hystrix-javanica:jar:1.5.12
-hystrix-metrics-event-stream (https://github.com/Netflix/Hystrix) com.netflix.hystrix:hystrix-metrics-event-stream:jar:1.5.12
-hystrix-serialization (https://github.com/Netflix/Hystrix) com.netflix.hystrix:hystrix-serialization:jar:1.5.12
+hystrix-core (https://github.com/Netflix/Hystrix) com.netflix.hystrix:hystrix-core:jar:1.5.12
 Jackson dataformat: protobuf (http://github.com/FasterXML/jackson-dataformats-binary) com.fasterxml.jackson.dataformat:jackson-dataformat-protobuf:bundle:2.9.6
 Jackson module: Afterburner (https://github.com/FasterXML/jackson-modules-base) com.fasterxml.jackson.module:jackson-module-afterburner:bundle:2.8.11
 Jackson module: JAXB-annotations (http://github.com/FasterXML/jackson-module-jaxb-annotations) com.fasterxml.jackson.module:jackson-module-jaxb-annotations:bundle:2.8.11

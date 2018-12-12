@@ -93,7 +93,7 @@
       <dependency>
         <groupId>com.netflix.hystrix</groupId>
         <artifactId>hystrix-core</artifactId>
-        <version>1.5.10</version>
+        <version>1.5.12</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
