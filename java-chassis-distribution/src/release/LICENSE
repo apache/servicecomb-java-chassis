@@ -412,7 +412,7 @@ Commons IO (http://commons.apache.org/io/) commons-io:commons-io:jar:2.4
 Commons Lang (http://commons.apache.org/lang/) commons-lang:commons-lang:jar:2.6
 ezmorph (http://ezmorph.sourceforge.net) net.sf.ezmorph:ezmorph:jar:1.0.6
 FindBugs-jsr305 (http://findbugs.sourceforge.net/) com.google.code.findbugs:jsr305:jar:3.0.1
-Guava: Google Core Libraries for Java (http://code.google.com/p/guava-libraries/guava) com.google.guava:guava:bundle:21.0
+Guava: Google Core Libraries for Java (http://code.google.com/p/guava-libraries/guava) com.google.guava:guava:bundle:25.1-jre
 Guice (https://github.com/google/guice) com.google.inject:guice:jar:4.1.0
 Google Guice - Extensions - AssistedInject (https://github.com/google/guice/extensions-parent/guice-assistedinject) com.google.inject.extensions:guice-assistedinject:jar:4.1.0
 Google Guice - Extensions - MultiBindings (https://github.com/google/guice/extensions-parent/guice-multibindings) com.google.inject.extensions:guice-multibindings:jar:4.1.0
