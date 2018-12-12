@@ -474,9 +474,9 @@ servo-internal (https://github.com/Netflix/servo) com.netflix.servo:servo-intern
 SnakeYAML (http://www.snakeyaml.org) org.yaml:snakeyaml:bundle:1.16
 spectator-api (https://github.com/Netflix/spectator) com.netflix.spectator:spectator-api:0.71.0
 spectator-reg-servo (https://github.com/Netflix/spectator) com.netflix.spectator:spectator-reg-servo:0.71.0
-Spring AOP (https://github.com/spring-projects/spring-framework) org.springframework:spring-aop:jar:4.3.16.RELEASE
-Spring Aspects (https://github.com/spring-projects/spring-framework) org.springframework:spring-aspects:jar:4.3.16.RELEASE
-Spring Beans (https://github.com/spring-projects/spring-framework) org.springframework:spring-beans:jar:4.3.16.RELEASE
+Spring AOP (https://github.com/spring-projects/spring-framework) org.springframework:spring-aop:jar:4.3.20.RELEASE
+Spring Aspects (https://github.com/spring-projects/spring-framework) org.springframework:spring-aspects:jar:4.3.20.RELEASE
+Spring Beans (https://github.com/spring-projects/spring-framework) org.springframework:spring-beans:jar:4.3.20.RELEASE
 Spring Boot (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot:jar:1.5.12.RELEASE
 Spring Boot Actuator (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-actuator:jar:1.5.12.RELEASE
 Spring Boot Actuator Starter (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-starter-actuator:jar:1.5.12.RELEASE
@@ -489,11 +489,11 @@ Spring Boot Web Starter (http://projects.spring.io/spring-boot/) org.springframe
 Spring Cloud Commons (https://projects.spring.io/spring-cloud/spring-cloud-commons/) org.springframework.cloud:spring-cloud-commons:jar:1.3.3.RELEASE
 Spring Cloud Context (https://projects.spring.io/spring-cloud/spring-cloud-context/) org.springframework.cloud:spring-cloud-context:jar:1.3.3.RELEASE
 Spring Cloud Netflix Core (https://spring.io/spring-cloud/spring-cloud-netflix/spring-cloud-netflix-core) org.springframework.cloud:spring-cloud-netflix-core:jar:1.4.4.RELEASE
-Spring Context (https://github.com/spring-projects/spring-framework) org.springframework:spring-context:jar:4.3.16.RELEASE
-Spring Core (https://github.com/spring-projects/spring-framework) org.springframework:spring-core:jar:4.3.16.RELEASE
-Spring Expression Language (SpEL) (https://github.com/spring-projects/spring-framework) org.springframework:spring-expression:jar:4.3.16.RELEASE
-Spring Web (https://github.com/spring-projects/spring-framework) org.springframework:spring-web:jar:4.3.16.RELEASE
-Spring Web MVC (https://github.com/spring-projects/spring-framework) org.springframework:spring-webmvc:jar:4.3.16.RELEASE
+Spring Context (https://github.com/spring-projects/spring-framework) org.springframework:spring-context:jar:4.3.20.RELEASE
+Spring Core (https://github.com/spring-projects/spring-framework) org.springframework:spring-core:jar:4.3.20.RELEASE
+Spring Expression Language (SpEL) (https://github.com/spring-projects/spring-framework) org.springframework:spring-expression:jar:4.3.20.RELEASE
+Spring Web (https://github.com/spring-projects/spring-framework) org.springframework:spring-web:jar:4.3.20.RELEASE
+Spring Web MVC (https://github.com/spring-projects/spring-framework) org.springframework:spring-webmvc:jar:4.3.20.RELEASE
 spring-cloud-starter (https://projects.spring.io/spring-cloud) org.springframework.cloud:spring-cloud-starter:jar:1.3.3.RELEASE
 spring-cloud-starter-archaius (https://projects.spring.io/spring-cloud) org.springframework.cloud:spring-cloud-starter-archaius:jar:1.4.4.RELEASE
 spring-cloud-starter-hystrix (https://projects.spring.io/spring-cloud) org.springframework.cloud:spring-cloud-starter-hystrix:jar:1.4.4.RELEASE
