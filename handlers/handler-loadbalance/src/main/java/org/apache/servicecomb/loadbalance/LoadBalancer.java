@@ -22,14 +22,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.netflix.loadbalancer.LoadBalancerStats;
+
 
 /**
  *  A load balancer with RuleExt and ServerListFilterExt
  */
 public class LoadBalancer {
+  private static final Logger LOGGER = LoggerFactory.getLogger(LoadBalancer.class);
+
   private static AtomicInteger id = new AtomicInteger(0);
 
   private RuleExt rule;
@@ -52,8 +57,12 @@ public class LoadBalancer {
 
   public ServiceCombServer chooseServer(Invocation invocation) {
     List<ServiceCombServer> servers = invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST);
+    int serversCount = servers.size();
     for (ServerListFilterExt filterExt : filters) {
       servers = filterExt.getFilteredListOfServers(servers, invocation);
+      if (servers.isEmpty() && serversCount > 0) {
+        LOGGER.warn("There are not servers exist after filtered by {}.", filterExt.getClass());
+      }
     }
     return rule.choose(servers, invocation);
   }
