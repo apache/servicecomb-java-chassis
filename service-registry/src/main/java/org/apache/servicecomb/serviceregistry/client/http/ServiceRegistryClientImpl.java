@@ -90,7 +90,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         public Map<String, String> load(String key) {
           Holder<List<GetSchemaResponse>> result = getSchemas(key, true, true);
           Map<String, String> schemas = new HashMap<>();
-          if (result.getStatusCode() == Status.OK.getStatusCode() ) {
+          if (result.getStatusCode() == Status.OK.getStatusCode()) {
             result.value.stream().forEach(r -> schemas.put(r.getSchemaId(), r.getSchema()));
           }
           return schemas;
@@ -699,15 +699,6 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   @Override
   public MicroserviceInstances findServiceInstances(String consumerId, String appId, String serviceName,
       String versionRule, String revision) {
-    // must register self first, and then invoke findServiceInstances
-    if (consumerId == null) {
-      LOGGER.error("find microservice instance {}/{}/{} failed, not registered to serviceCenter.",
-          appId,
-          serviceName,
-          versionRule);
-      return null;
-    }
-
     MicroserviceInstances microserviceInstances = new MicroserviceInstances();
     IpPort ipPort = ipPortManager.getAvailableAddress();
 
@@ -716,8 +707,13 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     RequestParam requestParam = new RequestParam().addQueryParam("appId", appId)
         .addQueryParam("serviceName", serviceName)
         .addQueryParam("global", "true")
-        .addQueryParam("version", versionRule)
-        .addHeader("X-ConsumerId", consumerId);
+        .addQueryParam("version", versionRule);
+    if (RegistryUtils.getMicroservice().getEnvironment() != null) {
+      requestParam.addQueryParam("env", RegistryUtils.getMicroservice().getEnvironment());
+    }
+    if (consumerId != null) {
+      requestParam.addHeader("X-ConsumerId", consumerId);
+    }
     if (revision != null) {
       requestParam.addQueryParam("rev", revision);
     }
