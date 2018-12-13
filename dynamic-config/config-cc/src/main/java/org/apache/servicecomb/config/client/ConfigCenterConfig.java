@@ -20,7 +20,6 @@ package org.apache.servicecomb.config.client;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_SERVICECOMB_ENV;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.SERVICECOMB_ENV;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.deployment.Deployment;
@@ -138,11 +137,11 @@ public final class ConfigCenterConfig {
   }
 
   public String getProxyUsername() {
-    return finalConfig.getString(PROXY_USERNAME, "");
+    return finalConfig.getString(PROXY_USERNAME, null);
   }
 
   public String getProxyPasswd() {
-    return finalConfig.getString(PROXY_PASSWD, "");
+    return finalConfig.getString(PROXY_PASSWD, null);
   }
 
   @SuppressWarnings("unchecked")

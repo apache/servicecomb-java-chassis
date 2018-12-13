@@ -44,4 +44,13 @@ public class TestConfigCenterConfig {
     ConfigCenterConfig.setConcurrentCompositeConfiguration(ConfigUtil.createLocalConfig());
     Assert.assertEquals("development", ConfigCenterConfig.INSTANCE.getEnvironment());
   }
+
+  @Test
+  public void getProxyConfig() {
+    Assert.assertFalse(ConfigCenterConfig.INSTANCE.isProxyEnable());
+    Assert.assertEquals("127.0.0.1", ConfigCenterConfig.INSTANCE.getProxyHost());
+    Assert.assertEquals(8080, ConfigCenterConfig.INSTANCE.getProxyPort());
+    Assert.assertNull(ConfigCenterConfig.INSTANCE.getProxyUsername());
+    Assert.assertNull(ConfigCenterConfig.INSTANCE.getProxyPasswd());
+  }
 }

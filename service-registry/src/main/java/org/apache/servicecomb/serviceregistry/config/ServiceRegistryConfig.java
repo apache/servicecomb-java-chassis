@@ -19,7 +19,6 @@ package org.apache.servicecomb.serviceregistry.config;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.servicecomb.deployment.Deployment;
@@ -296,12 +295,12 @@ public final class ServiceRegistryConfig {
   }
 
   public String getProxyUsername() {
-    String username = getProperty("user", PROXY_USERNAME);
+    String username = getProperty(null, PROXY_USERNAME);
     return username;
   }
 
   public String getProxyPasswd() {
-    String passwd = getProperty("passwd", PROXY_PASSWD);
+    String passwd = getProperty(null, PROXY_PASSWD);
     return passwd;
   }
 
