@@ -62,6 +62,7 @@ public class LoadBalancer {
       servers = filterExt.getFilteredListOfServers(servers, invocation);
       if (servers.isEmpty() && serversCount > 0) {
         LOGGER.warn("There are not servers exist after filtered by {}.", filterExt.getClass());
+        break;
       }
     }
     return rule.choose(servers, invocation);
