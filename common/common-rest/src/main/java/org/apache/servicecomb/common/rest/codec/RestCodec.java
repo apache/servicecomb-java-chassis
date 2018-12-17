@@ -65,7 +65,7 @@ public final class RestCodec {
 
       return paramValues;
     } catch (Exception e) {
-      LOG.error("Parameter is not valid for operation {}. ",
+      LOG.error("Parameter is not valid for operation {}. Message is {}.",
           restOperation.getOperationMeta().getMicroserviceQualifiedName(),
           ExceptionUtils.getExceptionMessageWithoutTrace(e));
       // give standard http error code for invalid parameter
