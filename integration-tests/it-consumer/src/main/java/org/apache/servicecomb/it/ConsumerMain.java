@@ -122,6 +122,7 @@ public class ConsumerMain {
     ITJUnitUtils.run(TestRequestBodySpringMvcSchema.class);
     ITJUnitUtils.run(TestDefaultJsonValueJaxrsSchema.class);
     ITJUnitUtils.run(TestRestController.class);
+    ITJUnitUtils.runWithRest(TestRestController.class);
   }
 
   interface ITTask {
