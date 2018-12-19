@@ -47,6 +47,9 @@ servicecomb:
           transport: rest
         queryInput:
           transport: rest
+      org.apache.servicecomb.it.schema.RestControllerSchema:
+        restControllerSchemaQueries:
+          transport: rest
     it-producer-h2:
       generic:
         genericUser:
@@ -60,6 +63,9 @@ servicecomb:
         jsonInput:
           transport: rest
         queryInput:
+          transport: rest
+      org.apache.servicecomb.it.schema.RestControllerSchema:
+        restControllerSchemaQueries:
           transport: rest
     it-producer-h2c:
       generic:
@@ -75,6 +81,9 @@ servicecomb:
           transport: rest
         queryInput:
           transport: rest
+      org.apache.servicecomb.it.schema.RestControllerSchema:
+        restControllerSchemaQueries:
+          transport: rest
     it-producer-deploy-springboot2-servlet:
       generic:
         genericUser:
@@ -89,6 +98,9 @@ servicecomb:
           transport: rest
         queryInput:
           transport: rest
+      org.apache.servicecomb.it.schema.RestControllerSchema:
+        restControllerSchemaQueries:
+          transport: rest
     it-producer-deploy-springboot2-standalone:
       generic:
         genericUser:
@@ -102,6 +114,9 @@ servicecomb:
         jsonInput:
           transport: rest
         queryInput:
+          transport: rest
+      org.apache.servicecomb.it.schema.RestControllerSchema:
+        restControllerSchemaQueries:
           transport: rest
   http:
     dispatcher:
