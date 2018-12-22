@@ -17,6 +17,8 @@
 package org.apache.servicecomb.serviceregistry.registry;
 
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY;
+import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.CONFIG_QUALIFIED_INSTANCE_INITIAL_STATUS;
+import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_INSTANCE_INITIAL_STATUS;
 import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_MICROSERVICE_VERSION;
 
 import java.util.ArrayList;
@@ -32,6 +34,7 @@ import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -153,6 +156,8 @@ public class TestRemoteServiceRegistry {
         configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY,
             DEFAULT_MICROSERVICE_VERSION);
         result = "1.0.0";
+        configuration.getString(CONFIG_QUALIFIED_INSTANCE_INITIAL_STATUS, DEFAULT_INSTANCE_INITIAL_STATUS);
+        result = MicroserviceInstanceStatus.UP.name();
       }
     };
 

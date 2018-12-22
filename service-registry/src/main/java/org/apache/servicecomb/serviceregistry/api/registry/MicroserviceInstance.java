@@ -18,7 +18,9 @@
 package org.apache.servicecomb.serviceregistry.api.registry;
 
 import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.CONFIG_QUALIFIED_INSTANCE_ENVIRONMENT_KEY;
+import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.CONFIG_QUALIFIED_INSTANCE_INITIAL_STATUS;
 import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_INSTANCE_ENVIRONMENT;
+import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_INSTANCE_INITIAL_STATUS;
 import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_STAGE;
 
 import java.util.ArrayList;
@@ -168,6 +170,8 @@ public class MicroserviceInstance {
     microserviceInstance
         .setEnvironment(
             configuration.getString(CONFIG_QUALIFIED_INSTANCE_ENVIRONMENT_KEY, DEFAULT_INSTANCE_ENVIRONMENT));
+    microserviceInstance.setStatus(MicroserviceInstanceStatus
+        .valueOf(configuration.getString(CONFIG_QUALIFIED_INSTANCE_INITIAL_STATUS, DEFAULT_INSTANCE_INITIAL_STATUS)));
     HealthCheck healthCheck = new HealthCheck();
     healthCheck.setMode(HealthCheckMode.HEARTBEAT);
     microserviceInstance.setHealthCheck(healthCheck);
@@ -189,7 +193,8 @@ public class MicroserviceInstance {
       DataCenterInfo dataCenterInfo = new DataCenterInfo();
       dataCenterInfo.setName(dataCenterName);
       dataCenterInfo
-          .setRegion(DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.datacenter.region", null).get());
+          .setRegion(
+              DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.datacenter.region", null).get());
       dataCenterInfo.setAvailableZone(
           DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.datacenter.availableZone", null).get());
       microserviceInstance.setDataCenterInfo(dataCenterInfo);
