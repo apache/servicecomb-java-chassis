@@ -93,7 +93,7 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
       }
     }
 
-    familySamples.add(new MetricFamilySamples("ServiceComb Metrics", Type.UNTYPED, "ServiceComb Metrics", samples));
+    familySamples.add(new MetricFamilySamples("ServiceComb_Metrics", Type.UNTYPED, "ServiceComb Metrics", samples));
 
     return familySamples;
   }
