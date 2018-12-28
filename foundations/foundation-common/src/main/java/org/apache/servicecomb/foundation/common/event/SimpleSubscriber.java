@@ -70,7 +70,11 @@ public class SimpleSubscriber {
   }
 
   public void dispatchEvent(Object event) {
-    dispatcher.accept(event);
+    try {
+      dispatcher.accept(event);
+    } catch (Throwable e) {
+      LOGGER.error("event process should not throw error. ", e);
+    }
   }
 
   private void syncDispatch(Object event) {

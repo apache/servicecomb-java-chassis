@@ -125,6 +125,10 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         return;
       }
       holder.setStatusCode(response.statusCode());
+      response.exceptionHandler(e -> {
+        LOGGER.error("error in processing response.", e);
+        countDownLatch.countDown();
+      });
       response.bodyHandler(
           bodyBuffer -> {
             if (cls.getName().equals(HttpClientResponse.class.getName())) {
@@ -184,7 +188,10 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
         return;
       }
-
+      response.exceptionHandler(e -> {
+        LOGGER.error("error in processing response.", e);
+        countDownLatch.countDown();
+      });
       response.bodyHandler(bodyBuffer -> {
         ResponseWrapper responseWrapper = new ResponseWrapper();
         responseWrapper.response = response;
@@ -209,6 +216,10 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         }
         return;
       }
+      response.exceptionHandler(e -> {
+        LOGGER.warn("failed to findInstances.", e);
+        countDownLatch.countDown();
+      });
       response.bodyHandler(
           bodyBuffer -> {
             try {

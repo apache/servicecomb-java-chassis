@@ -52,9 +52,21 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
   @Override
   public void init() {
     super.init();
-    taskPool = new ScheduledThreadPoolExecutor(2,
-        task -> new Thread(task, "Service Center Task"),
-        (task, executor) -> LOGGER.warn("Too many pending tasks, reject " + task.getClass().getName())
+    taskPool = new ScheduledThreadPoolExecutor(3,
+        task -> {
+          return new Thread(task) {
+            @Override
+            public void run() {
+              try {
+                setName("Service Center Task [" + task.toString() + "[" + this.getId() + "]]");
+                super.run();
+              } catch (Throwable e) {
+                LOGGER.error("task {} execute error.", getName(), e);
+              }
+            }
+          };
+        },
+        (task, executor) -> LOGGER.warn("Too many pending tasks, reject " + task.toString())
     );
   }
 
