@@ -93,8 +93,7 @@ public class ApolloClient {
     public void run() {
       try {
         refreshConfig();
-      } catch (Exception e) {
-
+      } catch (Throwable e) {
         LOGGER.error("client refresh thread exception ", e);
       }
     }

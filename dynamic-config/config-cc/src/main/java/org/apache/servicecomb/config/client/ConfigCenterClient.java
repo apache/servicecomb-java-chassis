@@ -252,7 +252,7 @@ public class ConfigCenterClient {
           refreshConfig(configCenter, wait);
           doWatch(configCenter);
         }
-      } catch (Exception e) {
+      } catch (Throwable e) {
         LOGGER.error("client refresh thread exception", e);
       }
     }

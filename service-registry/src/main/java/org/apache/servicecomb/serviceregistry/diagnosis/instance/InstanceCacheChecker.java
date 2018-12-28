@@ -102,6 +102,8 @@ public class InstanceCacheChecker {
       instanceCacheResult.setDetail(String.format(
           "revision is different, will be synchronized in next pull. local revision=%s, remote revision=%s",
           microserviceVersions.getRevision(), microserviceInstances.getRevision()));
+      // better to change revision and more likely to find the correct instances in next pull.
+      microserviceVersions.setRevision(null);
       return instanceCacheResult;
     }
 

@@ -25,11 +25,15 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 public class MetricsBootstrap {
+  private static final Logger LOGGER = LoggerFactory.getLogger(MetricsBootstrap.class);
+
   private GlobalRegistry globalRegistry;
 
   private EventBus eventBus;
@@ -73,8 +77,12 @@ public class MetricsBootstrap {
   }
 
   public synchronized void pollMeters() {
-    long secondInterval = TimeUnit.MILLISECONDS.toSeconds(config.getMsPollInterval());
-    PolledEvent polledEvent = globalRegistry.poll(secondInterval);
-    eventBus.post(polledEvent);
+    try {
+      long secondInterval = TimeUnit.MILLISECONDS.toSeconds(config.getMsPollInterval());
+      PolledEvent polledEvent = globalRegistry.poll(secondInterval);
+      eventBus.post(polledEvent);
+    } catch (Throwable e) {
+      LOGGER.error("poll meters error. ", e);
+    }
   }
 }
