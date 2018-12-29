@@ -22,9 +22,9 @@ servicecomb:
   handler:
     chain:
       Consumer:
-        default: loadbalance
+        default: globalExceptionHandler,loadbalance
         service:
-          it-auth: loadbalance
+          it-auth: globalExceptionHandler,loadbalance
   # this is not the majority, not testing this feature by default
   #  rest:
   #    parameter:
