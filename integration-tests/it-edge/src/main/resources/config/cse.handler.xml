@@ -17,4 +17,5 @@
 
 <config>
   <handler id="auth" class="org.apache.servicecomb.it.edge.handler.AuthHandler"/>
+  <handler id="globalExceptionHandler" class="org.apache.servicecomb.it.edge.handler.ExceptionConvertHandler"/>
 </config>

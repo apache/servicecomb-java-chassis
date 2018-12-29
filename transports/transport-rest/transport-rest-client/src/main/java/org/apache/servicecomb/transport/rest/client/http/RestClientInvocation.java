@@ -244,8 +244,7 @@ public class RestClientInvocation {
     }
 
     stageTrace.finishClientFiltersResponse();
-    //convert exception
-    asyncResp.handle(ExceptionFactory.convertExceptionToResponse(invocation, e));
+    asyncResp.fail(invocation.getInvocationType(), e);
   }
 
   protected void setCseContext() {
