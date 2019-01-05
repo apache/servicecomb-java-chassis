@@ -18,16 +18,15 @@ package org.apache.servicecomb.foundation.common.utils.bean;
 
 import java.util.Map;
 
-public class MapSetter implements Setter {
-  private Object key;
+public class MapSetter<K, V> implements Setter<Map<K, V>, V> {
+  private K key;
 
-  public MapSetter(Object key) {
+  public MapSetter(K key) {
     this.key = key;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
-  public void set(Object instance, Object value) {
-    ((Map<Object, Object>) instance).put(key, value);
+  public void set(Map<K, V> instance, V value) {
+    instance.put(key, value);
   }
 }

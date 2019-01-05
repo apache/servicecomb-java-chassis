@@ -16,6 +16,6 @@
  */
 package org.apache.servicecomb.foundation.common.utils.bean;
 
-public interface Setter {
-  void set(Object instance, Object value);
+public interface Setter<C, F> {
+  void set(C instance, F value);
 }

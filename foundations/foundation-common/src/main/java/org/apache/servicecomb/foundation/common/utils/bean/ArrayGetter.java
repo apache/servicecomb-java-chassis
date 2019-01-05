@@ -16,17 +16,15 @@
  */
 package org.apache.servicecomb.foundation.common.utils.bean;
 
-import java.util.Map;
+public class ArrayGetter<T> implements Getter<T[], T> {
+  private final int idx;
 
-public class MapGetter<K, V> implements Getter<Map<K, V>, V> {
-  private K key;
-
-  public MapGetter(K key) {
-    this.key = key;
+  public ArrayGetter(int idx) {
+    this.idx = idx;
   }
 
   @Override
-  public V get(Map<K, V> instance) {
-    return instance.get(key);
+  public T get(T[] instance) {
+    return instance[idx];
   }
 }
