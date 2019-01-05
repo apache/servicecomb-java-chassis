@@ -17,10 +17,7 @@
 
 package org.apache.servicecomb.foundation.common.event;
 
-import java.util.stream.Collectors;
-
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -46,7 +43,7 @@ public class TestEventManager {
   }
 
   @Test
-  public void lambda() {
+  public void normalListener() {
     LogCollector collector = new LogCollector();
 
     test(this);
@@ -55,25 +52,21 @@ public class TestEventManager {
   }
 
   @Test
-  public void reflect() {
+  public void anonymousListener() {
     LogCollector collector = new LogCollector();
     Object listener = new Object() {
       @Subscribe
-      public void onObject(Object obj) {
+      private void onObject(Object obj) {
         objCount++;
       }
 
       @Subscribe
-      public void onInt(Integer obj) {
+      void onInt(Integer obj) {
         iCount++;
       }
     };
     test(listener);
-    Assert.assertThat(collector.getEvents().stream().map(e -> e.getMessage()).collect(Collectors.toList()),
-        Matchers.containsInAnyOrder(
-            "Failed to create lambda for method: public void org.apache.servicecomb.foundation.common.event.TestEventManager$1.onObject(java.lang.Object), fallback to reflect.",
-            "Failed to create lambda for method: public void org.apache.servicecomb.foundation.common.event.TestEventManager$1.onInt(java.lang.Integer), fallback to reflect."));
-
+    Assert.assertTrue(collector.getEvents().isEmpty());
     collector.teardown();
   }
 
