@@ -18,10 +18,16 @@
 package org.apache.servicecomb.foundation.common.utils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.springframework.util.ReflectionUtils;
+
+import com.google.common.reflect.TypeToken;
 
 public final class ReflectUtils {
   private static final Field MODIFIERS_FIELD =
@@ -61,5 +67,22 @@ public final class ReflectUtils {
     }
 
     return null;
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T> Class<T> getFieldArgument(Class<?> genericCls, String fieldName) {
+    try {
+      Type generic = FieldUtils.getField(genericCls, fieldName).getGenericType();
+      TypeToken<?> token = TypeToken.of(genericCls).resolveType(generic);
+      Type fieldType = token.getType();
+      Type argument = ((ParameterizedType) fieldType).getActualTypeArguments()[0];
+      if (argument instanceof GenericArrayType) {
+        return (Class<T>) TypeToken.of(argument).getRawType();
+      }
+
+      return (Class<T>) argument;
+    } catch (Throwable e) {
+      throw new IllegalStateException("Failed to get generic argument.", e);
+    }
   }
 }

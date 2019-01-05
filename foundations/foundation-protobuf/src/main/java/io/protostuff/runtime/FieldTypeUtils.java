@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.foundation.protobuf.internal.schema;
+package io.protostuff.runtime;
 
 import io.protostuff.WireFormat.FieldType;
 import io.protostuff.compiler.model.ScalarFieldType;
 
-public final class ProtoSchemaUtils {
+public final class FieldTypeUtils {
   public static FieldType convert(io.protostuff.compiler.model.FieldType fieldType) {
     if (fieldType.isEnum()) {
       return FieldType.ENUM;
@@ -65,7 +65,7 @@ public final class ProtoSchemaUtils {
     if (fieldType.isMessage()) {
       return FieldType.MESSAGE;
     }
-    
+
     throw new IllegalStateException("bug: miss process of " + fieldType);
   }
 }
