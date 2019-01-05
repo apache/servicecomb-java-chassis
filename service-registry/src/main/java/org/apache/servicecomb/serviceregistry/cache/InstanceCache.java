@@ -100,7 +100,7 @@ public class InstanceCache {
   protected Map<String, List<CacheEndpoint>> createTransportMap() {
     Map<String, List<CacheEndpoint>> transportMap = new HashMap<>();
     for (MicroserviceInstance instance : instanceMap.values()) {
-      // 过滤到不可用实例
+      // This is only used for service center, not change it now
       if (instance.getStatus() != MicroserviceInstanceStatus.UP) {
         continue;
       }

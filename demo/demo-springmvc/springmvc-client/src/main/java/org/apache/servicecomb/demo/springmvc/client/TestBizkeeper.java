@@ -60,7 +60,7 @@ public class TestBizkeeper {
           "servicecomb.isolation.Consumer.springmvc.codeFirstBizkeeperTest.testTimeout.timeout.enabled", "true");
       ArchaiusUtils.setProperty(
           "servicecomb.isolation.Consumer.springmvc.codeFirstBizkeeperTest.testTimeout.timeoutInMilliseconds", 500);
-      restTemplate.getForObject(prefix + "/testTimeout?name={1}&delaytime={2}", String.class, "joker", 500);
+      restTemplate.getForObject(prefix + "/testTimeout?name={1}&delaytime={2}", String.class, "joker", 1000);
       TestMgr.check("expect: throw timeout exception", "real: not throw timeout exception");
     } catch (InvocationException e) {
       TestMgr.check(TimeoutException.class, e.getCause().getCause().getClass());

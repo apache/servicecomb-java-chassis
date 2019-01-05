@@ -30,7 +30,6 @@ import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.MicroserviceKey;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
@@ -252,21 +251,6 @@ public class TestMicroserviceVersions {
     microserviceVersions.pullInstances();
 
     Assert.assertSame(instances.get(0), microserviceVersionRule.getInstances().get("i1"));
-  }
-
-  @Test
-  public void setInstances_selectUp() {
-    String microserviceId = "1";
-
-    createMicroservice(microserviceId);
-    createInstance(microserviceId);
-    createMicroserviceInstances();
-
-    instances.get(0).setStatus(MicroserviceInstanceStatus.DOWN);
-    Deencapsulation.invoke(microserviceVersions, "setInstances", instances, "0");
-
-    List<?> resultInstances = Deencapsulation.getField(microserviceVersions, "instances");
-    Assert.assertTrue(resultInstances.isEmpty());
   }
 
   @Test
