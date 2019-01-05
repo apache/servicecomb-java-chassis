@@ -363,7 +363,7 @@ You can find a copy of the License at licenses/LICENSE-abego
 
 ================================================================
 For foundations/foundation-vertx/src/main/java/io/vertx/ext/web/impl/MimeTypesUtils.java
-transports/transport-rest/transport-rest-vertx/src/main/java/org/apache/servicecomb/transport/rest/vertx/RestBodyHandler.java
+    transports/transport-rest/transport-rest-vertx/src/main/java/org/apache/servicecomb/transport/rest/vertx/RestBodyHandler.java
 ================================================================
 This product bundles files from vertx which is licensed under the Apache License v2.
 For details, see https://github.com/vert-x3/vertx-web
@@ -385,6 +385,24 @@ For handlers/handler-bizkeeper/src/main/java/org/apache/servicecomb/bizkeeper/Hy
 ================================================================
 This product bundles files from Hystrix which is licensed under the Apache License v2.
 For details, see https://github.com/Netflix/Hystrix
+
+================================================================
+For foundations/foundation-protobuf/src/main/java/io/protostuff/runtime/ArrayFieldMapEx.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/runtime/FieldMapEx.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/runtime/FieldSchema.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/runtime/FieldTypeUtils.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/runtime/HashFieldMapEx.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/ByteBufferInputEx.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/InputEx.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/OutputEx.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/package-info.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/ProtobufOutputEx.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/SchemaEx.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/SchemaReader.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/SchemaWriter.java
+================================================================
+This product bundles files from protostuff which is licensed under the Apache License v2.
+For details, see  https://github.com/protostuff/protostuff
 
 ================================================================
 This product bundles the following libraries which are licensed
