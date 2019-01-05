@@ -42,6 +42,8 @@ public final class ProtoConst {
 
   public static JavaType MAP_TYPE = TypeFactory.defaultInstance().constructType(LinkedHashMap.class);
 
+  public static JavaType OBJECT_TYPE = TypeFactory.defaultInstance().constructType(Object.class);
+
   public static Proto ANY_PROTO;
 
   public static Message ANY;
