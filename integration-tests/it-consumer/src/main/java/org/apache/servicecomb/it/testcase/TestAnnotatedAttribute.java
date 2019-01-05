@@ -17,6 +17,7 @@
 package org.apache.servicecomb.it.testcase;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -132,8 +133,9 @@ public class TestAnnotatedAttribute {
       assertEquals("required is true, throw exception", "but not throw exception");
     } catch (InvocationException e) {
       assertEquals(400, e.getStatusCode());
-      assertEquals("InvocationException: code=400;msg=CommonExceptionData [message=Parameter is not valid.]",
-          e.getMessage());
+      assertTrue(
+          e.getMessage()
+              .contains("InvocationException: code=400;msg=CommonExceptionData [message=Parameter is not valid"));
     }
     headers.add(HttpHeaders.COOKIE, "input1=default1");
     requestEntity = new HttpEntity<>(headers);
@@ -146,8 +148,9 @@ public class TestAnnotatedAttribute {
       assertEquals("required is true, throw exception", "but not throw exception");
     } catch (InvocationException e) {
       assertEquals(400, e.getStatusCode());
-      assertEquals("InvocationException: code=400;msg=CommonExceptionData [message=Parameter is not valid.]",
-          e.getMessage());
+      assertTrue(
+          e.getMessage()
+              .contains("InvocationException: code=400;msg=CommonExceptionData [message=Parameter is not valid"));
     }
     headers.add(HttpHeaders.COOKIE, "input=joker");
     requestEntity = new HttpEntity<>(headers);
