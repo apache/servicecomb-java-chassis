@@ -16,9 +16,6 @@
  */
 package org.apache.servicecomb.foundation.protobuf.internal.bean;
 
-import org.apache.servicecomb.foundation.common.utils.bean.Getter;
-import org.apache.servicecomb.foundation.common.utils.bean.Setter;
-
 import com.fasterxml.jackson.databind.JavaType;
 
 public class PropertyDescriptor {
@@ -26,12 +23,9 @@ public class PropertyDescriptor {
 
   private JavaType javaType;
 
-  private Getter getter;
+  private Object getter;
 
-  private Setter setter;
-
-  // not available for primitive types
-  private BeanFactory factory;
+  private Object setter;
 
   public String getName() {
     return name;
@@ -49,27 +43,21 @@ public class PropertyDescriptor {
     this.javaType = javaType;
   }
 
-  public Getter getGetter() {
-    return getter;
+  @SuppressWarnings("unchecked")
+  public <T> T getGetter() {
+    return (T) getter;
   }
 
-  public void setGetter(Getter getter) {
+  public void setGetter(Object getter) {
     this.getter = getter;
   }
 
-  public Setter getSetter() {
-    return setter;
+  @SuppressWarnings("unchecked")
+  public <T> T getSetter() {
+    return (T) setter;
   }
 
-  public void setSetter(Setter setter) {
+  public void setSetter(Object setter) {
     this.setter = setter;
-  }
-
-  public BeanFactory getFactory() {
-    return factory;
-  }
-
-  public void setFactory(BeanFactory factory) {
-    this.factory = factory;
   }
 }
