@@ -30,7 +30,30 @@ import org.apache.servicecomb.foundation.common.utils.bean.Getter;
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 
 public final class LambdaMetafactoryUtils {
-  private static Lookup lookup = MethodHandles.lookup();
+  private static Field allowedModesField;
+
+  private static final int ALL_MODES = (MethodHandles.Lookup.PRIVATE | MethodHandles.Lookup.PROTECTED
+      | MethodHandles.Lookup.PACKAGE | MethodHandles.Lookup.PUBLIC);
+
+  private static final Lookup LOOKUP = MethodHandles.lookup();
+
+  static {
+    enhanceLambda();
+  }
+
+  private static void enhanceLambda() {
+    try {
+      Field modifiersField = Field.class.getDeclaredField("modifiers");
+      modifiersField.setAccessible(true);
+
+      allowedModesField = Lookup.class.getDeclaredField("allowedModes");
+      allowedModesField.setAccessible(true);
+      int modifiers = allowedModesField.getModifiers();
+      modifiersField.setInt(allowedModesField, modifiers & ~Modifier.FINAL);
+    } catch (Throwable e) {
+      throw new IllegalStateException("Failed to init LambdaMetafactoryUtils.", e);
+    }
+  }
 
   private LambdaMetafactoryUtils() {
   }
@@ -45,43 +68,55 @@ public final class LambdaMetafactoryUtils {
     return null;
   }
 
-  public static <T> T createLambda(Object instance, Method instanceMethod, Class<?> functionalIntfCls)
-      throws Throwable {
-    Method intfMethod = findAbstractMethod(functionalIntfCls);
-    MethodHandle methodHandle = lookup.unreflect(instanceMethod);
+  @SuppressWarnings("unchecked")
+  public static <T> T createLambda(Object instance, Method instanceMethod, Class<?> functionalIntfCls) {
+    try {
+      Lookup lookup = LOOKUP.in(instanceMethod.getDeclaringClass());
+      allowedModesField.set(lookup, ALL_MODES);
 
-    MethodType intfMethodType = MethodType.methodType(intfMethod.getReturnType(), intfMethod.getParameterTypes());
-    MethodType instanceMethodType = MethodType
-        .methodType(instanceMethod.getReturnType(), instanceMethod.getParameterTypes());
-    CallSite callSite = LambdaMetafactory.metafactory(
-        lookup,
-        intfMethod.getName(),
-        MethodType.methodType(functionalIntfCls, instance.getClass()),
-        intfMethodType,
-        methodHandle,
-        instanceMethodType);
+      Method intfMethod = findAbstractMethod(functionalIntfCls);
+      MethodHandle methodHandle = lookup.unreflect(instanceMethod);
 
-    //noinspection unchecked
-    return (T) callSite.getTarget().bindTo(instance).invoke();
+      MethodType intfMethodType = MethodType.methodType(intfMethod.getReturnType(), intfMethod.getParameterTypes());
+      MethodType instanceMethodType = MethodType
+          .methodType(instanceMethod.getReturnType(), instanceMethod.getParameterTypes());
+      CallSite callSite = LambdaMetafactory.metafactory(
+          lookup,
+          intfMethod.getName(),
+          MethodType.methodType(functionalIntfCls, instance.getClass()),
+          intfMethodType,
+          methodHandle,
+          instanceMethodType);
+
+      return (T) callSite.getTarget().bindTo(instance).invoke();
+    } catch (Throwable e) {
+      throw new IllegalStateException("Failed to create lambda from " + instanceMethod, e);
+    }
   }
 
-  public static <T> T createLambda(Method instanceMethod, Class<?> functionalIntfCls)
-      throws Throwable {
-    Method intfMethod = findAbstractMethod(functionalIntfCls);
-    MethodHandle methodHandle = lookup.unreflect(instanceMethod);
+  @SuppressWarnings("unchecked")
+  public static <T> T createLambda(Method instanceMethod, Class<?> functionalIntfCls) {
+    try {
+      Lookup lookup = LOOKUP.in(instanceMethod.getDeclaringClass());
+      allowedModesField.set(lookup, ALL_MODES);
 
-    MethodType intfMethodType = MethodType.methodType(intfMethod.getReturnType(), intfMethod.getParameterTypes());
-    MethodType instanceMethodType = methodHandle.type();
-    CallSite callSite = LambdaMetafactory.metafactory(
-        lookup,
-        intfMethod.getName(),
-        MethodType.methodType(functionalIntfCls),
-        intfMethodType,
-        methodHandle,
-        instanceMethodType);
+      Method intfMethod = findAbstractMethod(functionalIntfCls);
+      MethodHandle methodHandle = lookup.unreflect(instanceMethod);
 
-    //noinspection unchecked
-    return (T) callSite.getTarget().invoke();
+      MethodType intfMethodType = MethodType.methodType(intfMethod.getReturnType(), intfMethod.getParameterTypes());
+      MethodType instanceMethodType = methodHandle.type();
+      CallSite callSite = LambdaMetafactory.metafactory(
+          lookup,
+          intfMethod.getName(),
+          MethodType.methodType(functionalIntfCls),
+          intfMethodType,
+          methodHandle,
+          instanceMethodType);
+
+      return (T) callSite.getTarget().invoke();
+    } catch (Throwable e) {
+      throw new IllegalStateException("Failed to create lambda from " + instanceMethod, e);
+    }
   }
 
   public static Getter createGetter(Method getMethod) throws Throwable {
