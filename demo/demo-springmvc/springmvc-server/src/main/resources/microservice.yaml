@@ -26,6 +26,8 @@ service_description:
   - path: /test2/testpath
     property:
       checksession: true
+instance_description:
+  initialStatus : TESTING
 servicecomb:
   microserviceVersionFactory: org.apache.servicecomb.core.definition.PrivateMicroserviceVersionMetaFactory
   service:

@@ -61,6 +61,7 @@ servicecomb:
     retryEnabled: true
     retryOnSame: 1
     retryOnNext: 1
+    filter.status.enabled: false
   fallbackpolicy:
     Consumer:
       springmvc:
