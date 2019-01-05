@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.foundation.common.utils;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
@@ -84,5 +85,10 @@ public final class ReflectUtils {
     } catch (Throwable e) {
       throw new IllegalStateException("Failed to get generic argument.", e);
     }
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T> T constructArrayType(Class<?> cls) {
+    return (T) Array.newInstance(cls, 0).getClass();
   }
 }
