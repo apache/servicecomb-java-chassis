@@ -16,6 +16,6 @@
  */
 package org.apache.servicecomb.foundation.common.utils.bean;
 
-public interface Getter {
-  Object get(Object instance);
+public interface Getter<C, F> {
+  F get(C instance);
 }

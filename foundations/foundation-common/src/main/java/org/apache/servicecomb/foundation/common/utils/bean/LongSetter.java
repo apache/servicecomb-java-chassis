@@ -16,17 +16,6 @@
  */
 package org.apache.servicecomb.foundation.common.utils.bean;
 
-import java.util.Map;
-
-public class MapGetter<K, V> implements Getter<Map<K, V>, V> {
-  private K key;
-
-  public MapGetter(K key) {
-    this.key = key;
-  }
-
-  @Override
-  public V get(Map<K, V> instance) {
-    return instance.get(key);
-  }
+public interface LongSetter<T> {
+  void set(T instance, long value);
 }
