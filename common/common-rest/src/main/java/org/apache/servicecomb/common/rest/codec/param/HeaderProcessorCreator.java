@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.models.parameters.HeaderParameter;
 import io.swagger.models.parameters.Parameter;
@@ -42,6 +43,10 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator {
   public static final String PARAMTYPE = "header";
 
   public static class HeaderProcessor extends AbstractParamProcessor {
+    // This configuration is used for temporary use only. Do not use it if you are sure how it works. And may be deleted in future.
+    private boolean ignoreRequiredCheck = DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.rest.parameter.header.ignoreRequiredCheck", false).get();
+
     public HeaderProcessor(String paramPath, JavaType targetType, Object defaultValue, boolean required) {
       super(paramPath, targetType, defaultValue, required);
     }
@@ -67,7 +72,7 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator {
     }
 
     private Object checkRequiredAndDefaultValue() {
-      if (isRequired()) {
+      if (!ignoreRequiredCheck && isRequired()) {
         throw new InvocationException(Status.BAD_REQUEST, "Parameter is required.");
       }
       return getDefaultValue();
