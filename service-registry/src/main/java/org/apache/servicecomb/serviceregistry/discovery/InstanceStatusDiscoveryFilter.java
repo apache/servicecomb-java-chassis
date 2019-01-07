@@ -35,7 +35,7 @@ public class InstanceStatusDiscoveryFilter extends AbstractDiscoveryFilter {
   @Override
   public int getOrder() {
     // OperationInstancesDiscoveryFilter should execute first
-    return -5000;
+    return -20000;
   }
 
   @Override
@@ -66,7 +66,7 @@ public class InstanceStatusDiscoveryFilter extends AbstractDiscoveryFilter {
     }
 
     if (filteredServers.isEmpty()) {
-      LOGGER.warn("No instance found by filter. " + this.getClass().getName());
+      return;
     }
     DiscoveryTreeNode child = new DiscoveryTreeNode().subName(parent, UP_INSTANCES).data(filteredServers);
     parent.child(UP_INSTANCES, child);
