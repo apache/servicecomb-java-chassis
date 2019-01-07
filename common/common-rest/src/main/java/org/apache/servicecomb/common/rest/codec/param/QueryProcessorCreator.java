@@ -46,6 +46,10 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
     private boolean ignoreDefaultValue = DynamicPropertyFactory.getInstance()
         .getBooleanProperty("servicecomb.rest.parameter.query.ignoreDefaultValue", false).get();
 
+    // This configuration is used for temporary use only. Do not use it if you are sure how it works. And may be deleted in future.
+    private boolean ignoreRequiredCheck = DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.rest.parameter.query.ignoreRequiredCheck", false).get();
+
     private SwaggerParamCollectionFormat collectionFormat;
 
     public QueryProcessor(String paramPath, JavaType targetType, Object defaultValue, boolean required,
@@ -83,7 +87,7 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
     }
 
     private Object checkRequiredAndDefaultValue() {
-      if (isRequired()) {
+      if (!ignoreRequiredCheck && isRequired()) {
         throw new InvocationException(Status.BAD_REQUEST, "Parameter is required.");
       }
       Object defaultValue = getDefaultValue();
