@@ -55,7 +55,7 @@ public class DefaultRetryExtensionsFactory implements ExtensionsFactory {
            */
           .put(IOException.class, Arrays.asList(new String[] {"Connection reset by peer"}))
           .put(VertxException.class, Arrays.asList(new String[] {"Connection was closed"}))
-          .put(NoRouteToHostException.class, Arrays.asList(new String[]{"Host is unreachable"}))
+          .put(NoRouteToHostException.class, Arrays.asList())
           .build();
 
   @Override
