@@ -16,10 +16,11 @@
  */
 package org.apache.servicecomb.foundation.protobuf.internal.schema.scalar;
 
+import java.util.HashMap;
+
 import org.apache.servicecomb.foundation.protobuf.internal.TestSchemaBase;
 import org.apache.servicecomb.foundation.protobuf.internal.model.User;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.protobuf.ByteString;
@@ -34,9 +35,6 @@ public class TestBytesSchema extends TestSchemaBase {
     byte[] value = "abc".getBytes();
     builder.setBytes(ByteString.copyFrom(value));
     check();
-
-    // null
-    Assert.assertEquals(0, serFieldSchema.writeTo(null).length);
   }
 
   @Test
@@ -45,6 +43,8 @@ public class TestBytesSchema extends TestSchemaBase {
     expectedException.expectMessage(Matchers
         .is("not support serialize from org.apache.servicecomb.foundation.protobuf.internal.model.User to proto bytes, field=org.apache.servicecomb.foundation.protobuf.internal.model.Root:bytes"));
 
-    serFieldSchema.writeTo(new User());
+    scbMap = new HashMap<>();
+    scbMap.put("bytes", new User());
+    rootSerializer.serialize(scbMap);
   }
 }

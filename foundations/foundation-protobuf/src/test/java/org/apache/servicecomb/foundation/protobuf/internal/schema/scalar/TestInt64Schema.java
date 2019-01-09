@@ -17,11 +17,9 @@
 package org.apache.servicecomb.foundation.protobuf.internal.schema.scalar;
 
 public class TestInt64Schema extends TestNumberBaseSchema {
-  @Override
-  protected void init() {
-    fieldName = "int64";
+  public TestInt64Schema() {
     minValue = Long.MIN_VALUE;
     maxValue = Long.MAX_VALUE;
-    super.init();
+    initFields("int64", "objInt64");
   }
 }

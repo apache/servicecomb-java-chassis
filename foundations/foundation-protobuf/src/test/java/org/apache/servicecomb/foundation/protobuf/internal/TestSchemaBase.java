@@ -26,21 +26,23 @@ import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
 import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot;
 import org.apache.servicecomb.foundation.protobuf.internal.model.Root;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.FieldSchema;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
+
+import io.protostuff.compiler.model.Field;
 
 public class TestSchemaBase {
   protected static ProtoMapperFactory factory = new ProtoMapperFactory();
 
   protected static ProtoMapper protoMapper = factory.createFromName("protobufRoot.proto");
 
-  protected static RootSerializer rootSerializer = protoMapper.findRootSerializer("Root");
+  protected static RootSerializer rootSerializer = protoMapper.createRootSerializer("Root", Root.class);
 
-  protected static RootDeserializer rootDeserializer = protoMapper.createRootDeserializer(Root.class, "Root");
+  protected static RootDeserializer<Root> rootDeserializer = protoMapper.createRootDeserializer("Root", Root.class);
 
-  protected static RootDeserializer mapRootDeserializer = protoMapper.createRootDeserializer(Map.class, "Root");
+  protected static RootDeserializer<Map<String, Object>> mapRootDeserializer = protoMapper
+      .createRootDeserializer("Root", Map.class);
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
@@ -57,13 +59,28 @@ public class TestSchemaBase {
 
   protected byte[] protobufBytes;
 
-  protected FieldSchema serFieldSchema;
+  protected String primitiveFieldName;
 
-  protected FieldSchema deserFieldSchema;
+  protected Field primitiveProtoField;
+
+  protected String fieldName;
+
+  protected Field protoField;
+
+  protected void initFields(String primitiveFieldName, String fieldName) {
+    this.primitiveFieldName = primitiveFieldName;
+    if (primitiveFieldName != null) {
+      primitiveProtoField = protoMapper.getProto().getMessage("Root").getField(primitiveFieldName);
+    }
+
+    initField(fieldName);
+  }
 
   protected void initField(String fieldName) {
-    serFieldSchema = (FieldSchema) rootSerializer.getSchema().getFieldByName(fieldName);
-    deserFieldSchema = (FieldSchema) rootDeserializer.getSchema().getFieldByName(fieldName);
+    this.fieldName = fieldName;
+    if (fieldName != null) {
+      protoField = protoMapper.getProto().getMessage("Root").getField(fieldName);
+    }
   }
 
   protected void check() throws IOException {
@@ -74,7 +91,8 @@ public class TestSchemaBase {
     check(rootDeserializer, mapRootDeserializer, rootSerializer, print);
   }
 
-  protected void check(RootDeserializer deserializer, RootDeserializer mapDeserializer, RootSerializer serializer,
+  protected <T> void check(RootDeserializer<T> deserializer, RootDeserializer<Map<String, Object>> mapDeserializer,
+      RootSerializer serializer,
       boolean print) throws IOException {
     // 1.standard protobuf serialize to bytes
     protobufBytes = builder.build().toByteArray();
@@ -90,8 +108,8 @@ public class TestSchemaBase {
     if (print) {
       System.out.println("scbRoot bytes:" + Hex.encodeHexString(scbRootBytes));
       System.out.println("scbRoot len  :" + scbRootBytes.length);
-      System.out.println("scbMap bytes :" + Hex.encodeHexString(scbRootBytes));
-      System.out.println("scbMap len   :" + scbRootBytes.length);
+      System.out.println("scbMap bytes :" + Hex.encodeHexString(scbMapBytes));
+      System.out.println("scbMap len   :" + scbMapBytes.length);
       System.out.println("protobuf     :" + Hex.encodeHexString(protobufBytes));
       System.out.println("protobuf len :" + protobufBytes.length);
     }
