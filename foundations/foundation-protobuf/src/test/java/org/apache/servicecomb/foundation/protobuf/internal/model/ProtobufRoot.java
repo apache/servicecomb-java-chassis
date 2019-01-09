@@ -5,9 +5,7 @@ package org.apache.servicecomb.foundation.protobuf.internal.model;
 
 @SuppressWarnings({"all", "cast"})
 public final class ProtobufRoot {
-  private ProtobufRoot() {
-  }
-
+  private ProtobufRoot() {}
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistryLite registry) {
   }
@@ -17,7 +15,6 @@ public final class ProtobufRoot {
     registerAllExtensions(
         (com.google.protobuf.ExtensionRegistryLite) registry);
   }
-
   /**
    * Protobuf enum {@code org.apache.servicecomb.foundation.protobuf.internal.model.Color}
    */
@@ -35,18 +32,17 @@ public final class ProtobufRoot {
      * <code>BLUE = 2;</code>
      */
     BLUE(2),
-    UNRECOGNIZED(-1),;
+    UNRECOGNIZED(-1),
+    ;
 
     /**
      * <code>RED = 0;</code>
      */
     public static final int RED_VALUE = 0;
-
     /**
      * <code>YELLOW = 1;</code>
      */
     public static final int YELLOW_VALUE = 1;
-
     /**
      * <code>BLUE = 2;</code>
      */
@@ -55,7 +51,7 @@ public final class ProtobufRoot {
 
     public final int getNumber() {
       if (this == UNRECOGNIZED) {
-        throw new IllegalArgumentException(
+        throw new java.lang.IllegalArgumentException(
             "Can't get the number of an unknown enum value.");
       }
       return value;
@@ -64,50 +60,43 @@ public final class ProtobufRoot {
     /**
      * @deprecated Use {@link #forNumber(int)} instead.
      */
-    @Deprecated
+    @java.lang.Deprecated
     public static Color valueOf(int value) {
       return forNumber(value);
     }
 
     public static Color forNumber(int value) {
       switch (value) {
-        case 0:
-          return RED;
-        case 1:
-          return YELLOW;
-        case 2:
-          return BLUE;
-        default:
-          return null;
+        case 0: return RED;
+        case 1: return YELLOW;
+        case 2: return BLUE;
+        default: return null;
       }
     }
 
     public static com.google.protobuf.Internal.EnumLiteMap<Color>
-    internalGetValueMap() {
+        internalGetValueMap() {
       return internalValueMap;
     }
-
     private static final com.google.protobuf.Internal.EnumLiteMap<
         Color> internalValueMap =
-        new com.google.protobuf.Internal.EnumLiteMap<Color>() {
-          public Color findValueByNumber(int number) {
-            return Color.forNumber(number);
-          }
-        };
+          new com.google.protobuf.Internal.EnumLiteMap<Color>() {
+            public Color findValueByNumber(int number) {
+              return Color.forNumber(number);
+            }
+          };
 
     public final com.google.protobuf.Descriptors.EnumValueDescriptor
-    getValueDescriptor() {
+        getValueDescriptor() {
       return getDescriptor().getValues().get(ordinal());
     }
-
     public final com.google.protobuf.Descriptors.EnumDescriptor
-    getDescriptorForType() {
+        getDescriptorForType() {
       return getDescriptor();
     }
-
     public static final com.google.protobuf.Descriptors.EnumDescriptor
-    getDescriptor() {
-      return ProtobufRoot.getDescriptor().getEnumTypes().get(0);
+        getDescriptor() {
+      return org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.getDescriptor().getEnumTypes().get(0);
     }
 
     private static final Color[] VALUES = values();
@@ -115,8 +104,8 @@ public final class ProtobufRoot {
     public static Color valueOf(
         com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
       if (desc.getType() != getDescriptor()) {
-        throw new IllegalArgumentException(
-            "EnumValueDescriptor is not for this type.");
+        throw new java.lang.IllegalArgumentException(
+          "EnumValueDescriptor is not for this type.");
       }
       if (desc.getIndex() == -1) {
         return UNRECOGNIZED;
@@ -203,247 +192,709 @@ public final class ProtobufRoot {
     boolean getBool();
 
     /**
-     * <code>string string = 14;</code>
+     * <code>int32 objInt32 = 20;</code>
      */
-    String getString();
+    int getObjInt32();
 
     /**
-     * <code>string string = 14;</code>
+     * <code>int64 objInt64 = 21;</code>
+     */
+    long getObjInt64();
+
+    /**
+     * <code>uint32 objUint32 = 22;</code>
+     */
+    int getObjUint32();
+
+    /**
+     * <code>uint64 objUint64 = 23;</code>
+     */
+    long getObjUint64();
+
+    /**
+     * <code>sint32 objSint32 = 24;</code>
+     */
+    int getObjSint32();
+
+    /**
+     * <code>sint64 objSint64 = 25;</code>
+     */
+    long getObjSint64();
+
+    /**
+     * <code>fixed32 objFixed32 = 26;</code>
+     */
+    int getObjFixed32();
+
+    /**
+     * <code>fixed64 objFixed64 = 27;</code>
+     */
+    long getObjFixed64();
+
+    /**
+     * <code>sfixed32 objSfixed32 = 28;</code>
+     */
+    int getObjSfixed32();
+
+    /**
+     * <code>sfixed64 objSfixed64 = 29;</code>
+     */
+    long getObjSfixed64();
+
+    /**
+     * <code>float objFloatValue = 30;</code>
+     */
+    float getObjFloatValue();
+
+    /**
+     * <code>double objDoubleValue = 31;</code>
+     */
+    double getObjDoubleValue();
+
+    /**
+     * <code>bool objBool = 32;</code>
+     */
+    boolean getObjBool();
+
+    /**
+     * <code>string string = 40;</code>
+     */
+    java.lang.String getString();
+    /**
+     * <code>string string = 40;</code>
      */
     com.google.protobuf.ByteString
-    getStringBytes();
+        getStringBytes();
 
     /**
-     * <code>bytes bytes = 15;</code>
+     * <code>bytes bytes = 41;</code>
      */
     com.google.protobuf.ByteString getBytes();
 
     /**
-     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 16;</code>
+     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 42;</code>
      */
     int getColorValue();
-
     /**
-     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 16;</code>
+     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 42;</code>
      */
-    Color getColor();
+    org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color getColor();
 
     /**
-     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 17;</code>
+     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 43;</code>
      */
     boolean hasUser();
-
     /**
-     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 17;</code>
+     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 43;</code>
      */
-    User getUser();
-
+    org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getUser();
     /**
-     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 17;</code>
+     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 43;</code>
      */
-    UserOrBuilder getUserOrBuilder();
+    org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.UserOrBuilder getUserOrBuilder();
 
     /**
-     * <code>map&lt;string, string&gt; ssMap = 18;</code>
+     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 44;</code>
      */
-    int getSsMapCount();
-
+    boolean hasTypeRecursive();
     /**
-     * <code>map&lt;string, string&gt; ssMap = 18;</code>
+     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 44;</code>
      */
-    boolean containsSsMap(
-        String key);
-
+    org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root getTypeRecursive();
     /**
-     * Use {@link #getSsMapMap()} instead.
+     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 44;</code>
      */
-    @Deprecated
-    java.util.Map<String, String>
-    getSsMap();
+    org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.RootOrBuilder getTypeRecursiveOrBuilder();
 
     /**
-     * <code>map&lt;string, string&gt; ssMap = 18;</code>
-     */
-    java.util.Map<String, String>
-    getSsMapMap();
-
-    /**
-     * <code>map&lt;string, string&gt; ssMap = 18;</code>
-     */
-
-    String getSsMapOrDefault(
-        String key,
-        String defaultValue);
-
-    /**
-     * <code>map&lt;string, string&gt; ssMap = 18;</code>
-     */
-
-    String getSsMapOrThrow(
-        String key);
-
-    /**
-     * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 19;</code>
-     */
-    int getSpMapCount();
-
-    /**
-     * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 19;</code>
-     */
-    boolean containsSpMap(
-        String key);
-
-    /**
-     * Use {@link #getSpMapMap()} instead.
-     */
-    @Deprecated
-    java.util.Map<String, User>
-    getSpMap();
-
-    /**
-     * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 19;</code>
-     */
-    java.util.Map<String, User>
-    getSpMapMap();
-
-    /**
-     * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 19;</code>
-     */
-
-    User getSpMapOrDefault(
-        String key,
-        User defaultValue);
-
-    /**
-     * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 19;</code>
-     */
-
-    User getSpMapOrThrow(
-        String key);
-
-    /**
-     * <code>repeated string sList = 20;</code>
-     */
-    java.util.List<String>
-    getSListList();
-
-    /**
-     * <code>repeated string sList = 20;</code>
-     */
-    int getSListCount();
-
-    /**
-     * <code>repeated string sList = 20;</code>
-     */
-    String getSList(int index);
-
-    /**
-     * <code>repeated string sList = 20;</code>
-     */
-    com.google.protobuf.ByteString
-    getSListBytes(int index);
-
-    /**
-     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
-     */
-    java.util.List<User>
-    getPListList();
-
-    /**
-     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
-     */
-    User getPList(int index);
-
-    /**
-     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
-     */
-    int getPListCount();
-
-    /**
-     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
-     */
-    java.util.List<? extends UserOrBuilder>
-    getPListOrBuilderList();
-
-    /**
-     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
-     */
-    UserOrBuilder getPListOrBuilder(
-        int index);
-
-    /**
-     * <code>.google.protobuf.Any any = 22;</code>
+     * <code>.google.protobuf.Any any = 50;</code>
      */
     boolean hasAny();
-
     /**
-     * <code>.google.protobuf.Any any = 22;</code>
+     * <code>.google.protobuf.Any any = 50;</code>
      */
     com.google.protobuf.Any getAny();
-
     /**
-     * <code>.google.protobuf.Any any = 22;</code>
+     * <code>.google.protobuf.Any any = 50;</code>
      */
     com.google.protobuf.AnyOrBuilder getAnyOrBuilder();
 
     /**
-     * <code>repeated .google.protobuf.Any anys = 23;</code>
+     * <code>repeated .google.protobuf.Any anys = 51;</code>
      */
-    java.util.List<com.google.protobuf.Any>
-    getAnysList();
-
+    java.util.List<com.google.protobuf.Any> 
+        getAnysList();
     /**
-     * <code>repeated .google.protobuf.Any anys = 23;</code>
+     * <code>repeated .google.protobuf.Any anys = 51;</code>
      */
     com.google.protobuf.Any getAnys(int index);
-
     /**
-     * <code>repeated .google.protobuf.Any anys = 23;</code>
+     * <code>repeated .google.protobuf.Any anys = 51;</code>
      */
     int getAnysCount();
-
     /**
-     * <code>repeated .google.protobuf.Any anys = 23;</code>
+     * <code>repeated .google.protobuf.Any anys = 51;</code>
      */
-    java.util.List<? extends com.google.protobuf.AnyOrBuilder>
-    getAnysOrBuilderList();
-
+    java.util.List<? extends com.google.protobuf.AnyOrBuilder> 
+        getAnysOrBuilderList();
     /**
-     * <code>repeated .google.protobuf.Any anys = 23;</code>
+     * <code>repeated .google.protobuf.Any anys = 51;</code>
      */
     com.google.protobuf.AnyOrBuilder getAnysOrBuilder(
         int index);
 
     /**
-     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 24;</code>
+     * <code>map&lt;string, string&gt; ssMap = 60;</code>
      */
-    boolean hasTypeRecursive();
+    int getSsMapCount();
+    /**
+     * <code>map&lt;string, string&gt; ssMap = 60;</code>
+     */
+    boolean containsSsMap(
+        java.lang.String key);
+    /**
+     * Use {@link #getSsMapMap()} instead.
+     */
+    @java.lang.Deprecated
+    java.util.Map<java.lang.String, java.lang.String>
+    getSsMap();
+    /**
+     * <code>map&lt;string, string&gt; ssMap = 60;</code>
+     */
+    java.util.Map<java.lang.String, java.lang.String>
+    getSsMapMap();
+    /**
+     * <code>map&lt;string, string&gt; ssMap = 60;</code>
+     */
+
+    java.lang.String getSsMapOrDefault(
+        java.lang.String key,
+        java.lang.String defaultValue);
+    /**
+     * <code>map&lt;string, string&gt; ssMap = 60;</code>
+     */
+
+    java.lang.String getSsMapOrThrow(
+        java.lang.String key);
 
     /**
-     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 24;</code>
+     * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
      */
-    Root getTypeRecursive();
+    int getSint32MapCount();
+    /**
+     * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
+     */
+    boolean containsSint32Map(
+        java.lang.String key);
+    /**
+     * Use {@link #getSint32MapMap()} instead.
+     */
+    @java.lang.Deprecated
+    java.util.Map<java.lang.String, java.lang.Integer>
+    getSint32Map();
+    /**
+     * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
+     */
+    java.util.Map<java.lang.String, java.lang.Integer>
+    getSint32MapMap();
+    /**
+     * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
+     */
+
+    int getSint32MapOrDefault(
+        java.lang.String key,
+        int defaultValue);
+    /**
+     * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
+     */
+
+    int getSint32MapOrThrow(
+        java.lang.String key);
 
     /**
-     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 24;</code>
+     * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
      */
-    RootOrBuilder getTypeRecursiveOrBuilder();
+    int getSpMapCount();
+    /**
+     * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
+     */
+    boolean containsSpMap(
+        java.lang.String key);
+    /**
+     * Use {@link #getSpMapMap()} instead.
+     */
+    @java.lang.Deprecated
+    java.util.Map<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User>
+    getSpMap();
+    /**
+     * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
+     */
+    java.util.Map<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User>
+    getSpMapMap();
+    /**
+     * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
+     */
+
+    org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getSpMapOrDefault(
+        java.lang.String key,
+        org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User defaultValue);
+    /**
+     * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
+     */
+
+    org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getSpMapOrThrow(
+        java.lang.String key);
+
+    /**
+     * <code>repeated int32 int32sPacked = 70;</code>
+     */
+    java.util.List<java.lang.Integer> getInt32SPackedList();
+    /**
+     * <code>repeated int32 int32sPacked = 70;</code>
+     */
+    int getInt32SPackedCount();
+    /**
+     * <code>repeated int32 int32sPacked = 70;</code>
+     */
+    int getInt32SPacked(int index);
+
+    /**
+     * <code>repeated int64 int64sPacked = 71;</code>
+     */
+    java.util.List<java.lang.Long> getInt64SPackedList();
+    /**
+     * <code>repeated int64 int64sPacked = 71;</code>
+     */
+    int getInt64SPackedCount();
+    /**
+     * <code>repeated int64 int64sPacked = 71;</code>
+     */
+    long getInt64SPacked(int index);
+
+    /**
+     * <code>repeated uint32 uint32sPacked = 72;</code>
+     */
+    java.util.List<java.lang.Integer> getUint32SPackedList();
+    /**
+     * <code>repeated uint32 uint32sPacked = 72;</code>
+     */
+    int getUint32SPackedCount();
+    /**
+     * <code>repeated uint32 uint32sPacked = 72;</code>
+     */
+    int getUint32SPacked(int index);
+
+    /**
+     * <code>repeated uint64 uint64sPacked = 73;</code>
+     */
+    java.util.List<java.lang.Long> getUint64SPackedList();
+    /**
+     * <code>repeated uint64 uint64sPacked = 73;</code>
+     */
+    int getUint64SPackedCount();
+    /**
+     * <code>repeated uint64 uint64sPacked = 73;</code>
+     */
+    long getUint64SPacked(int index);
+
+    /**
+     * <code>repeated sint32 sint32sPacked = 74;</code>
+     */
+    java.util.List<java.lang.Integer> getSint32SPackedList();
+    /**
+     * <code>repeated sint32 sint32sPacked = 74;</code>
+     */
+    int getSint32SPackedCount();
+    /**
+     * <code>repeated sint32 sint32sPacked = 74;</code>
+     */
+    int getSint32SPacked(int index);
+
+    /**
+     * <code>repeated sint64 sint64sPacked = 75;</code>
+     */
+    java.util.List<java.lang.Long> getSint64SPackedList();
+    /**
+     * <code>repeated sint64 sint64sPacked = 75;</code>
+     */
+    int getSint64SPackedCount();
+    /**
+     * <code>repeated sint64 sint64sPacked = 75;</code>
+     */
+    long getSint64SPacked(int index);
+
+    /**
+     * <code>repeated fixed32 fixed32sPacked = 76;</code>
+     */
+    java.util.List<java.lang.Integer> getFixed32SPackedList();
+    /**
+     * <code>repeated fixed32 fixed32sPacked = 76;</code>
+     */
+    int getFixed32SPackedCount();
+    /**
+     * <code>repeated fixed32 fixed32sPacked = 76;</code>
+     */
+    int getFixed32SPacked(int index);
+
+    /**
+     * <code>repeated fixed64 fixed64sPacked = 77;</code>
+     */
+    java.util.List<java.lang.Long> getFixed64SPackedList();
+    /**
+     * <code>repeated fixed64 fixed64sPacked = 77;</code>
+     */
+    int getFixed64SPackedCount();
+    /**
+     * <code>repeated fixed64 fixed64sPacked = 77;</code>
+     */
+    long getFixed64SPacked(int index);
+
+    /**
+     * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+     */
+    java.util.List<java.lang.Integer> getSfixed32SPackedList();
+    /**
+     * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+     */
+    int getSfixed32SPackedCount();
+    /**
+     * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+     */
+    int getSfixed32SPacked(int index);
+
+    /**
+     * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+     */
+    java.util.List<java.lang.Long> getSfixed64SPackedList();
+    /**
+     * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+     */
+    int getSfixed64SPackedCount();
+    /**
+     * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+     */
+    long getSfixed64SPacked(int index);
+
+    /**
+     * <code>repeated float floatsPacked = 80;</code>
+     */
+    java.util.List<java.lang.Float> getFloatsPackedList();
+    /**
+     * <code>repeated float floatsPacked = 80;</code>
+     */
+    int getFloatsPackedCount();
+    /**
+     * <code>repeated float floatsPacked = 80;</code>
+     */
+    float getFloatsPacked(int index);
+
+    /**
+     * <code>repeated double doublesPacked = 81;</code>
+     */
+    java.util.List<java.lang.Double> getDoublesPackedList();
+    /**
+     * <code>repeated double doublesPacked = 81;</code>
+     */
+    int getDoublesPackedCount();
+    /**
+     * <code>repeated double doublesPacked = 81;</code>
+     */
+    double getDoublesPacked(int index);
+
+    /**
+     * <code>repeated bool boolsPacked = 82;</code>
+     */
+    java.util.List<java.lang.Boolean> getBoolsPackedList();
+    /**
+     * <code>repeated bool boolsPacked = 82;</code>
+     */
+    int getBoolsPackedCount();
+    /**
+     * <code>repeated bool boolsPacked = 82;</code>
+     */
+    boolean getBoolsPacked(int index);
+
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+     */
+    java.util.List<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color> getColorsPackedList();
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+     */
+    int getColorsPackedCount();
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+     */
+    org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color getColorsPacked(int index);
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+     */
+    java.util.List<java.lang.Integer>
+    getColorsPackedValueList();
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+     */
+    int getColorsPackedValue(int index);
+
+    /**
+     * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+     */
+    java.util.List<java.lang.Integer> getInt32SNotPackedList();
+    /**
+     * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+     */
+    int getInt32SNotPackedCount();
+    /**
+     * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+     */
+    int getInt32SNotPacked(int index);
+
+    /**
+     * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+     */
+    java.util.List<java.lang.Long> getInt64SNotPackedList();
+    /**
+     * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+     */
+    int getInt64SNotPackedCount();
+    /**
+     * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+     */
+    long getInt64SNotPacked(int index);
+
+    /**
+     * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+     */
+    java.util.List<java.lang.Integer> getUint32SNotPackedList();
+    /**
+     * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+     */
+    int getUint32SNotPackedCount();
+    /**
+     * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+     */
+    int getUint32SNotPacked(int index);
+
+    /**
+     * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+     */
+    java.util.List<java.lang.Long> getUint64SNotPackedList();
+    /**
+     * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+     */
+    int getUint64SNotPackedCount();
+    /**
+     * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+     */
+    long getUint64SNotPacked(int index);
+
+    /**
+     * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+     */
+    java.util.List<java.lang.Integer> getSint32SNotPackedList();
+    /**
+     * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+     */
+    int getSint32SNotPackedCount();
+    /**
+     * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+     */
+    int getSint32SNotPacked(int index);
+
+    /**
+     * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+     */
+    java.util.List<java.lang.Long> getSint64SNotPackedList();
+    /**
+     * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+     */
+    int getSint64SNotPackedCount();
+    /**
+     * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+     */
+    long getSint64SNotPacked(int index);
+
+    /**
+     * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+     */
+    java.util.List<java.lang.Integer> getFixed32SNotPackedList();
+    /**
+     * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+     */
+    int getFixed32SNotPackedCount();
+    /**
+     * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+     */
+    int getFixed32SNotPacked(int index);
+
+    /**
+     * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+     */
+    java.util.List<java.lang.Long> getFixed64SNotPackedList();
+    /**
+     * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+     */
+    int getFixed64SNotPackedCount();
+    /**
+     * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+     */
+    long getFixed64SNotPacked(int index);
+
+    /**
+     * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+     */
+    java.util.List<java.lang.Integer> getSfixed32SNotPackedList();
+    /**
+     * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+     */
+    int getSfixed32SNotPackedCount();
+    /**
+     * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+     */
+    int getSfixed32SNotPacked(int index);
+
+    /**
+     * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+     */
+    java.util.List<java.lang.Long> getSfixed64SNotPackedList();
+    /**
+     * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+     */
+    int getSfixed64SNotPackedCount();
+    /**
+     * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+     */
+    long getSfixed64SNotPacked(int index);
+
+    /**
+     * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+     */
+    java.util.List<java.lang.Float> getFloatsNotPackedList();
+    /**
+     * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+     */
+    int getFloatsNotPackedCount();
+    /**
+     * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+     */
+    float getFloatsNotPacked(int index);
+
+    /**
+     * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+     */
+    java.util.List<java.lang.Double> getDoublesNotPackedList();
+    /**
+     * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+     */
+    int getDoublesNotPackedCount();
+    /**
+     * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+     */
+    double getDoublesNotPacked(int index);
+
+    /**
+     * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+     */
+    java.util.List<java.lang.Boolean> getBoolsNotPackedList();
+    /**
+     * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+     */
+    int getBoolsNotPackedCount();
+    /**
+     * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+     */
+    boolean getBoolsNotPacked(int index);
+
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+     */
+    java.util.List<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color> getColorsNotPackedList();
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+     */
+    int getColorsNotPackedCount();
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+     */
+    org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color getColorsNotPacked(int index);
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+     */
+    java.util.List<java.lang.Integer>
+    getColorsNotPackedValueList();
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+     */
+    int getColorsNotPackedValue(int index);
+
+    /**
+     * <code>repeated string strings = 110;</code>
+     */
+    java.util.List<java.lang.String>
+        getStringsList();
+    /**
+     * <code>repeated string strings = 110;</code>
+     */
+    int getStringsCount();
+    /**
+     * <code>repeated string strings = 110;</code>
+     */
+    java.lang.String getStrings(int index);
+    /**
+     * <code>repeated string strings = 110;</code>
+     */
+    com.google.protobuf.ByteString
+        getStringsBytes(int index);
+
+    /**
+     * <code>repeated bytes bytess = 111;</code>
+     */
+    java.util.List<com.google.protobuf.ByteString> getBytessList();
+    /**
+     * <code>repeated bytes bytess = 111;</code>
+     */
+    int getBytessCount();
+    /**
+     * <code>repeated bytes bytess = 111;</code>
+     */
+    com.google.protobuf.ByteString getBytess(int index);
+
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
+     */
+    java.util.List<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> 
+        getUsersList();
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
+     */
+    org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getUsers(int index);
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
+     */
+    int getUsersCount();
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
+     */
+    java.util.List<? extends org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.UserOrBuilder> 
+        getUsersOrBuilderList();
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
+     */
+    org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.UserOrBuilder getUsersOrBuilder(
+        int index);
   }
-
   /**
    * Protobuf type {@code org.apache.servicecomb.foundation.protobuf.internal.model.Root}
    */
-  public static final class Root extends
+  public  static final class Root extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:org.apache.servicecomb.foundation.protobuf.internal.model.Root)
       RootOrBuilder {
-    private static final long serialVersionUID = 0L;
-
+  private static final long serialVersionUID = 0L;
     // Use Root.newBuilder() to construct.
     private Root(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-
     private Root() {
       int32_ = 0;
       int64_ = 0L;
@@ -458,29 +909,72 @@ public final class ProtobufRoot {
       floatValue_ = 0F;
       doubleValue_ = 0D;
       bool_ = false;
+      objInt32_ = 0;
+      objInt64_ = 0L;
+      objUint32_ = 0;
+      objUint64_ = 0L;
+      objSint32_ = 0;
+      objSint64_ = 0L;
+      objFixed32_ = 0;
+      objFixed64_ = 0L;
+      objSfixed32_ = 0;
+      objSfixed64_ = 0L;
+      objFloatValue_ = 0F;
+      objDoubleValue_ = 0D;
+      objBool_ = false;
       string_ = "";
       bytes_ = com.google.protobuf.ByteString.EMPTY;
       color_ = 0;
-      sList_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      pList_ = java.util.Collections.emptyList();
       anys_ = java.util.Collections.emptyList();
+      int32SPacked_ = java.util.Collections.emptyList();
+      int64SPacked_ = java.util.Collections.emptyList();
+      uint32SPacked_ = java.util.Collections.emptyList();
+      uint64SPacked_ = java.util.Collections.emptyList();
+      sint32SPacked_ = java.util.Collections.emptyList();
+      sint64SPacked_ = java.util.Collections.emptyList();
+      fixed32SPacked_ = java.util.Collections.emptyList();
+      fixed64SPacked_ = java.util.Collections.emptyList();
+      sfixed32SPacked_ = java.util.Collections.emptyList();
+      sfixed64SPacked_ = java.util.Collections.emptyList();
+      floatsPacked_ = java.util.Collections.emptyList();
+      doublesPacked_ = java.util.Collections.emptyList();
+      boolsPacked_ = java.util.Collections.emptyList();
+      colorsPacked_ = java.util.Collections.emptyList();
+      int32SNotPacked_ = java.util.Collections.emptyList();
+      int64SNotPacked_ = java.util.Collections.emptyList();
+      uint32SNotPacked_ = java.util.Collections.emptyList();
+      uint64SNotPacked_ = java.util.Collections.emptyList();
+      sint32SNotPacked_ = java.util.Collections.emptyList();
+      sint64SNotPacked_ = java.util.Collections.emptyList();
+      fixed32SNotPacked_ = java.util.Collections.emptyList();
+      fixed64SNotPacked_ = java.util.Collections.emptyList();
+      sfixed32SNotPacked_ = java.util.Collections.emptyList();
+      sfixed64SNotPacked_ = java.util.Collections.emptyList();
+      floatsNotPacked_ = java.util.Collections.emptyList();
+      doublesNotPacked_ = java.util.Collections.emptyList();
+      boolsNotPacked_ = java.util.Collections.emptyList();
+      colorsNotPacked_ = java.util.Collections.emptyList();
+      strings_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      bytess_ = java.util.Collections.emptyList();
+      users_ = java.util.Collections.emptyList();
     }
 
-    @Override
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return this.unknownFields;
     }
-
     private Root(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       this();
       if (extensionRegistry == null) {
-        throw new NullPointerException();
+        throw new java.lang.NullPointerException();
       }
       int mutable_bitField0_ = 0;
+      int mutable_bitField1_ = 0;
+      int mutable_bitField2_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
       try {
@@ -556,29 +1050,94 @@ public final class ProtobufRoot {
               bool_ = input.readBool();
               break;
             }
-            case 114: {
-              String s = input.readStringRequireUtf8();
+            case 160: {
+
+              objInt32_ = input.readInt32();
+              break;
+            }
+            case 168: {
+
+              objInt64_ = input.readInt64();
+              break;
+            }
+            case 176: {
+
+              objUint32_ = input.readUInt32();
+              break;
+            }
+            case 184: {
+
+              objUint64_ = input.readUInt64();
+              break;
+            }
+            case 192: {
+
+              objSint32_ = input.readSInt32();
+              break;
+            }
+            case 200: {
+
+              objSint64_ = input.readSInt64();
+              break;
+            }
+            case 213: {
+
+              objFixed32_ = input.readFixed32();
+              break;
+            }
+            case 217: {
+
+              objFixed64_ = input.readFixed64();
+              break;
+            }
+            case 229: {
+
+              objSfixed32_ = input.readSFixed32();
+              break;
+            }
+            case 233: {
+
+              objSfixed64_ = input.readSFixed64();
+              break;
+            }
+            case 245: {
+
+              objFloatValue_ = input.readFloat();
+              break;
+            }
+            case 249: {
+
+              objDoubleValue_ = input.readDouble();
+              break;
+            }
+            case 256: {
+
+              objBool_ = input.readBool();
+              break;
+            }
+            case 322: {
+              java.lang.String s = input.readStringRequireUtf8();
 
               string_ = s;
               break;
             }
-            case 122: {
+            case 330: {
 
               bytes_ = input.readBytes();
               break;
             }
-            case 128: {
+            case 336: {
               int rawValue = input.readEnum();
 
               color_ = rawValue;
               break;
             }
-            case 138: {
-              User.Builder subBuilder = null;
+            case 346: {
+              org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.Builder subBuilder = null;
               if (user_ != null) {
                 subBuilder = user_.toBuilder();
               }
-              user_ = input.readMessage(User.parser(), extensionRegistry);
+              user_ = input.readMessage(org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.parser(), extensionRegistry);
               if (subBuilder != null) {
                 subBuilder.mergeFrom(user_);
                 user_ = subBuilder.buildPartial();
@@ -586,51 +1145,20 @@ public final class ProtobufRoot {
 
               break;
             }
-            case 146: {
-              if (!((mutable_bitField0_ & 0x00020000) == 0x00020000)) {
-                ssMap_ = com.google.protobuf.MapField.newMapField(
-                    SsMapDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00020000;
+            case 354: {
+              org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.Builder subBuilder = null;
+              if (typeRecursive_ != null) {
+                subBuilder = typeRecursive_.toBuilder();
               }
-              com.google.protobuf.MapEntry<String, String>
-                  ssMap__ = input.readMessage(
-                  SsMapDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              ssMap_.getMutableMap().put(
-                  ssMap__.getKey(), ssMap__.getValue());
+              typeRecursive_ = input.readMessage(org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.parser(), extensionRegistry);
+              if (subBuilder != null) {
+                subBuilder.mergeFrom(typeRecursive_);
+                typeRecursive_ = subBuilder.buildPartial();
+              }
+
               break;
             }
-            case 154: {
-              if (!((mutable_bitField0_ & 0x00040000) == 0x00040000)) {
-                spMap_ = com.google.protobuf.MapField.newMapField(
-                    SpMapDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00040000;
-              }
-              com.google.protobuf.MapEntry<String, User>
-                  spMap__ = input.readMessage(
-                  SpMapDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              spMap_.getMutableMap().put(
-                  spMap__.getKey(), spMap__.getValue());
-              break;
-            }
-            case 162: {
-              String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00080000) == 0x00080000)) {
-                sList_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00080000;
-              }
-              sList_.add(s);
-              break;
-            }
-            case 170: {
-              if (!((mutable_bitField0_ & 0x00100000) == 0x00100000)) {
-                pList_ = new java.util.ArrayList<>();
-                mutable_bitField0_ |= 0x00100000;
-              }
-              pList_.add(
-                  input.readMessage(User.parser(), extensionRegistry));
-              break;
-            }
-            case 178: {
+            case 402: {
               com.google.protobuf.Any.Builder subBuilder = null;
               if (any_ != null) {
                 subBuilder = any_.toBuilder();
@@ -643,26 +1171,670 @@ public final class ProtobufRoot {
 
               break;
             }
-            case 186: {
-              if (!((mutable_bitField0_ & 0x00400000) == 0x00400000)) {
-                anys_ = new java.util.ArrayList<>();
-                mutable_bitField0_ |= 0x00400000;
+            case 410: {
+              if (!((mutable_bitField1_ & 0x00000001) == 0x00000001)) {
+                anys_ = new java.util.ArrayList<com.google.protobuf.Any>();
+                mutable_bitField1_ |= 0x00000001;
               }
               anys_.add(
                   input.readMessage(com.google.protobuf.Any.parser(), extensionRegistry));
               break;
             }
-            case 194: {
-              Builder subBuilder = null;
-              if (typeRecursive_ != null) {
-                subBuilder = typeRecursive_.toBuilder();
+            case 482: {
+              if (!((mutable_bitField1_ & 0x00000002) == 0x00000002)) {
+                ssMap_ = com.google.protobuf.MapField.newMapField(
+                    SsMapDefaultEntryHolder.defaultEntry);
+                mutable_bitField1_ |= 0x00000002;
               }
-              typeRecursive_ = input.readMessage(Root.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(typeRecursive_);
-                typeRecursive_ = subBuilder.buildPartial();
+              com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+              ssMap__ = input.readMessage(
+                  SsMapDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+              ssMap_.getMutableMap().put(
+                  ssMap__.getKey(), ssMap__.getValue());
+              break;
+            }
+            case 490: {
+              if (!((mutable_bitField1_ & 0x00000004) == 0x00000004)) {
+                sint32Map_ = com.google.protobuf.MapField.newMapField(
+                    Sint32MapDefaultEntryHolder.defaultEntry);
+                mutable_bitField1_ |= 0x00000004;
               }
-
+              com.google.protobuf.MapEntry<java.lang.String, java.lang.Integer>
+              sint32Map__ = input.readMessage(
+                  Sint32MapDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+              sint32Map_.getMutableMap().put(
+                  sint32Map__.getKey(), sint32Map__.getValue());
+              break;
+            }
+            case 498: {
+              if (!((mutable_bitField1_ & 0x00000008) == 0x00000008)) {
+                spMap_ = com.google.protobuf.MapField.newMapField(
+                    SpMapDefaultEntryHolder.defaultEntry);
+                mutable_bitField1_ |= 0x00000008;
+              }
+              com.google.protobuf.MapEntry<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User>
+              spMap__ = input.readMessage(
+                  SpMapDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+              spMap_.getMutableMap().put(
+                  spMap__.getKey(), spMap__.getValue());
+              break;
+            }
+            case 560: {
+              if (!((mutable_bitField1_ & 0x00000010) == 0x00000010)) {
+                int32SPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField1_ |= 0x00000010;
+              }
+              int32SPacked_.add(input.readInt32());
+              break;
+            }
+            case 562: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x00000010) == 0x00000010) && input.getBytesUntilLimit() > 0) {
+                int32SPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField1_ |= 0x00000010;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                int32SPacked_.add(input.readInt32());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 568: {
+              if (!((mutable_bitField1_ & 0x00000020) == 0x00000020)) {
+                int64SPacked_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField1_ |= 0x00000020;
+              }
+              int64SPacked_.add(input.readInt64());
+              break;
+            }
+            case 570: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x00000020) == 0x00000020) && input.getBytesUntilLimit() > 0) {
+                int64SPacked_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField1_ |= 0x00000020;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                int64SPacked_.add(input.readInt64());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 576: {
+              if (!((mutable_bitField1_ & 0x00000040) == 0x00000040)) {
+                uint32SPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField1_ |= 0x00000040;
+              }
+              uint32SPacked_.add(input.readUInt32());
+              break;
+            }
+            case 578: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x00000040) == 0x00000040) && input.getBytesUntilLimit() > 0) {
+                uint32SPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField1_ |= 0x00000040;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                uint32SPacked_.add(input.readUInt32());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 584: {
+              if (!((mutable_bitField1_ & 0x00000080) == 0x00000080)) {
+                uint64SPacked_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField1_ |= 0x00000080;
+              }
+              uint64SPacked_.add(input.readUInt64());
+              break;
+            }
+            case 586: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x00000080) == 0x00000080) && input.getBytesUntilLimit() > 0) {
+                uint64SPacked_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField1_ |= 0x00000080;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                uint64SPacked_.add(input.readUInt64());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 592: {
+              if (!((mutable_bitField1_ & 0x00000100) == 0x00000100)) {
+                sint32SPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField1_ |= 0x00000100;
+              }
+              sint32SPacked_.add(input.readSInt32());
+              break;
+            }
+            case 594: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x00000100) == 0x00000100) && input.getBytesUntilLimit() > 0) {
+                sint32SPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField1_ |= 0x00000100;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                sint32SPacked_.add(input.readSInt32());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 600: {
+              if (!((mutable_bitField1_ & 0x00000200) == 0x00000200)) {
+                sint64SPacked_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField1_ |= 0x00000200;
+              }
+              sint64SPacked_.add(input.readSInt64());
+              break;
+            }
+            case 602: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x00000200) == 0x00000200) && input.getBytesUntilLimit() > 0) {
+                sint64SPacked_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField1_ |= 0x00000200;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                sint64SPacked_.add(input.readSInt64());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 613: {
+              if (!((mutable_bitField1_ & 0x00000400) == 0x00000400)) {
+                fixed32SPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField1_ |= 0x00000400;
+              }
+              fixed32SPacked_.add(input.readFixed32());
+              break;
+            }
+            case 610: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x00000400) == 0x00000400) && input.getBytesUntilLimit() > 0) {
+                fixed32SPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField1_ |= 0x00000400;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                fixed32SPacked_.add(input.readFixed32());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 617: {
+              if (!((mutable_bitField1_ & 0x00000800) == 0x00000800)) {
+                fixed64SPacked_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField1_ |= 0x00000800;
+              }
+              fixed64SPacked_.add(input.readFixed64());
+              break;
+            }
+            case 618: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x00000800) == 0x00000800) && input.getBytesUntilLimit() > 0) {
+                fixed64SPacked_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField1_ |= 0x00000800;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                fixed64SPacked_.add(input.readFixed64());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 629: {
+              if (!((mutable_bitField1_ & 0x00001000) == 0x00001000)) {
+                sfixed32SPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField1_ |= 0x00001000;
+              }
+              sfixed32SPacked_.add(input.readSFixed32());
+              break;
+            }
+            case 626: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x00001000) == 0x00001000) && input.getBytesUntilLimit() > 0) {
+                sfixed32SPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField1_ |= 0x00001000;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                sfixed32SPacked_.add(input.readSFixed32());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 633: {
+              if (!((mutable_bitField1_ & 0x00002000) == 0x00002000)) {
+                sfixed64SPacked_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField1_ |= 0x00002000;
+              }
+              sfixed64SPacked_.add(input.readSFixed64());
+              break;
+            }
+            case 634: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x00002000) == 0x00002000) && input.getBytesUntilLimit() > 0) {
+                sfixed64SPacked_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField1_ |= 0x00002000;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                sfixed64SPacked_.add(input.readSFixed64());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 645: {
+              if (!((mutable_bitField1_ & 0x00004000) == 0x00004000)) {
+                floatsPacked_ = new java.util.ArrayList<java.lang.Float>();
+                mutable_bitField1_ |= 0x00004000;
+              }
+              floatsPacked_.add(input.readFloat());
+              break;
+            }
+            case 642: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x00004000) == 0x00004000) && input.getBytesUntilLimit() > 0) {
+                floatsPacked_ = new java.util.ArrayList<java.lang.Float>();
+                mutable_bitField1_ |= 0x00004000;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                floatsPacked_.add(input.readFloat());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 649: {
+              if (!((mutable_bitField1_ & 0x00008000) == 0x00008000)) {
+                doublesPacked_ = new java.util.ArrayList<java.lang.Double>();
+                mutable_bitField1_ |= 0x00008000;
+              }
+              doublesPacked_.add(input.readDouble());
+              break;
+            }
+            case 650: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x00008000) == 0x00008000) && input.getBytesUntilLimit() > 0) {
+                doublesPacked_ = new java.util.ArrayList<java.lang.Double>();
+                mutable_bitField1_ |= 0x00008000;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                doublesPacked_.add(input.readDouble());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 656: {
+              if (!((mutable_bitField1_ & 0x00010000) == 0x00010000)) {
+                boolsPacked_ = new java.util.ArrayList<java.lang.Boolean>();
+                mutable_bitField1_ |= 0x00010000;
+              }
+              boolsPacked_.add(input.readBool());
+              break;
+            }
+            case 658: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x00010000) == 0x00010000) && input.getBytesUntilLimit() > 0) {
+                boolsPacked_ = new java.util.ArrayList<java.lang.Boolean>();
+                mutable_bitField1_ |= 0x00010000;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                boolsPacked_.add(input.readBool());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 664: {
+              int rawValue = input.readEnum();
+              if (!((mutable_bitField1_ & 0x00020000) == 0x00020000)) {
+                colorsPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField1_ |= 0x00020000;
+              }
+              colorsPacked_.add(rawValue);
+              break;
+            }
+            case 666: {
+              int length = input.readRawVarint32();
+              int oldLimit = input.pushLimit(length);
+              while(input.getBytesUntilLimit() > 0) {
+                int rawValue = input.readEnum();
+                if (!((mutable_bitField1_ & 0x00020000) == 0x00020000)) {
+                  colorsPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                  mutable_bitField1_ |= 0x00020000;
+                }
+                colorsPacked_.add(rawValue);
+              }
+              input.popLimit(oldLimit);
+              break;
+            }
+            case 720: {
+              if (!((mutable_bitField1_ & 0x00040000) == 0x00040000)) {
+                int32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField1_ |= 0x00040000;
+              }
+              int32SNotPacked_.add(input.readInt32());
+              break;
+            }
+            case 722: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x00040000) == 0x00040000) && input.getBytesUntilLimit() > 0) {
+                int32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField1_ |= 0x00040000;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                int32SNotPacked_.add(input.readInt32());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 728: {
+              if (!((mutable_bitField1_ & 0x00080000) == 0x00080000)) {
+                int64SNotPacked_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField1_ |= 0x00080000;
+              }
+              int64SNotPacked_.add(input.readInt64());
+              break;
+            }
+            case 730: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x00080000) == 0x00080000) && input.getBytesUntilLimit() > 0) {
+                int64SNotPacked_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField1_ |= 0x00080000;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                int64SNotPacked_.add(input.readInt64());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 736: {
+              if (!((mutable_bitField1_ & 0x00100000) == 0x00100000)) {
+                uint32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField1_ |= 0x00100000;
+              }
+              uint32SNotPacked_.add(input.readUInt32());
+              break;
+            }
+            case 738: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x00100000) == 0x00100000) && input.getBytesUntilLimit() > 0) {
+                uint32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField1_ |= 0x00100000;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                uint32SNotPacked_.add(input.readUInt32());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 744: {
+              if (!((mutable_bitField1_ & 0x00200000) == 0x00200000)) {
+                uint64SNotPacked_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField1_ |= 0x00200000;
+              }
+              uint64SNotPacked_.add(input.readUInt64());
+              break;
+            }
+            case 746: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x00200000) == 0x00200000) && input.getBytesUntilLimit() > 0) {
+                uint64SNotPacked_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField1_ |= 0x00200000;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                uint64SNotPacked_.add(input.readUInt64());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 752: {
+              if (!((mutable_bitField1_ & 0x00400000) == 0x00400000)) {
+                sint32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField1_ |= 0x00400000;
+              }
+              sint32SNotPacked_.add(input.readSInt32());
+              break;
+            }
+            case 754: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x00400000) == 0x00400000) && input.getBytesUntilLimit() > 0) {
+                sint32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField1_ |= 0x00400000;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                sint32SNotPacked_.add(input.readSInt32());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 760: {
+              if (!((mutable_bitField1_ & 0x00800000) == 0x00800000)) {
+                sint64SNotPacked_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField1_ |= 0x00800000;
+              }
+              sint64SNotPacked_.add(input.readSInt64());
+              break;
+            }
+            case 762: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x00800000) == 0x00800000) && input.getBytesUntilLimit() > 0) {
+                sint64SNotPacked_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField1_ |= 0x00800000;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                sint64SNotPacked_.add(input.readSInt64());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 773: {
+              if (!((mutable_bitField1_ & 0x01000000) == 0x01000000)) {
+                fixed32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField1_ |= 0x01000000;
+              }
+              fixed32SNotPacked_.add(input.readFixed32());
+              break;
+            }
+            case 770: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x01000000) == 0x01000000) && input.getBytesUntilLimit() > 0) {
+                fixed32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField1_ |= 0x01000000;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                fixed32SNotPacked_.add(input.readFixed32());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 777: {
+              if (!((mutable_bitField1_ & 0x02000000) == 0x02000000)) {
+                fixed64SNotPacked_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField1_ |= 0x02000000;
+              }
+              fixed64SNotPacked_.add(input.readFixed64());
+              break;
+            }
+            case 778: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x02000000) == 0x02000000) && input.getBytesUntilLimit() > 0) {
+                fixed64SNotPacked_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField1_ |= 0x02000000;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                fixed64SNotPacked_.add(input.readFixed64());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 789: {
+              if (!((mutable_bitField1_ & 0x04000000) == 0x04000000)) {
+                sfixed32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField1_ |= 0x04000000;
+              }
+              sfixed32SNotPacked_.add(input.readSFixed32());
+              break;
+            }
+            case 786: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x04000000) == 0x04000000) && input.getBytesUntilLimit() > 0) {
+                sfixed32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField1_ |= 0x04000000;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                sfixed32SNotPacked_.add(input.readSFixed32());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 793: {
+              if (!((mutable_bitField1_ & 0x08000000) == 0x08000000)) {
+                sfixed64SNotPacked_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField1_ |= 0x08000000;
+              }
+              sfixed64SNotPacked_.add(input.readSFixed64());
+              break;
+            }
+            case 794: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x08000000) == 0x08000000) && input.getBytesUntilLimit() > 0) {
+                sfixed64SNotPacked_ = new java.util.ArrayList<java.lang.Long>();
+                mutable_bitField1_ |= 0x08000000;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                sfixed64SNotPacked_.add(input.readSFixed64());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 805: {
+              if (!((mutable_bitField1_ & 0x10000000) == 0x10000000)) {
+                floatsNotPacked_ = new java.util.ArrayList<java.lang.Float>();
+                mutable_bitField1_ |= 0x10000000;
+              }
+              floatsNotPacked_.add(input.readFloat());
+              break;
+            }
+            case 802: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x10000000) == 0x10000000) && input.getBytesUntilLimit() > 0) {
+                floatsNotPacked_ = new java.util.ArrayList<java.lang.Float>();
+                mutable_bitField1_ |= 0x10000000;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                floatsNotPacked_.add(input.readFloat());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 809: {
+              if (!((mutable_bitField1_ & 0x20000000) == 0x20000000)) {
+                doublesNotPacked_ = new java.util.ArrayList<java.lang.Double>();
+                mutable_bitField1_ |= 0x20000000;
+              }
+              doublesNotPacked_.add(input.readDouble());
+              break;
+            }
+            case 810: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x20000000) == 0x20000000) && input.getBytesUntilLimit() > 0) {
+                doublesNotPacked_ = new java.util.ArrayList<java.lang.Double>();
+                mutable_bitField1_ |= 0x20000000;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                doublesNotPacked_.add(input.readDouble());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 816: {
+              if (!((mutable_bitField1_ & 0x40000000) == 0x40000000)) {
+                boolsNotPacked_ = new java.util.ArrayList<java.lang.Boolean>();
+                mutable_bitField1_ |= 0x40000000;
+              }
+              boolsNotPacked_.add(input.readBool());
+              break;
+            }
+            case 818: {
+              int length = input.readRawVarint32();
+              int limit = input.pushLimit(length);
+              if (!((mutable_bitField1_ & 0x40000000) == 0x40000000) && input.getBytesUntilLimit() > 0) {
+                boolsNotPacked_ = new java.util.ArrayList<java.lang.Boolean>();
+                mutable_bitField1_ |= 0x40000000;
+              }
+              while (input.getBytesUntilLimit() > 0) {
+                boolsNotPacked_.add(input.readBool());
+              }
+              input.popLimit(limit);
+              break;
+            }
+            case 824: {
+              int rawValue = input.readEnum();
+              if (!((mutable_bitField1_ & 0x80000000) == 0x80000000)) {
+                colorsNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                mutable_bitField1_ |= 0x80000000;
+              }
+              colorsNotPacked_.add(rawValue);
+              break;
+            }
+            case 826: {
+              int length = input.readRawVarint32();
+              int oldLimit = input.pushLimit(length);
+              while(input.getBytesUntilLimit() > 0) {
+                int rawValue = input.readEnum();
+                if (!((mutable_bitField1_ & 0x80000000) == 0x80000000)) {
+                  colorsNotPacked_ = new java.util.ArrayList<java.lang.Integer>();
+                  mutable_bitField1_ |= 0x80000000;
+                }
+                colorsNotPacked_.add(rawValue);
+              }
+              input.popLimit(oldLimit);
+              break;
+            }
+            case 882: {
+              java.lang.String s = input.readStringRequireUtf8();
+              if (!((mutable_bitField2_ & 0x00000001) == 0x00000001)) {
+                strings_ = new com.google.protobuf.LazyStringArrayList();
+                mutable_bitField2_ |= 0x00000001;
+              }
+              strings_.add(s);
+              break;
+            }
+            case 890: {
+              if (!((mutable_bitField2_ & 0x00000002) == 0x00000002)) {
+                bytess_ = new java.util.ArrayList<com.google.protobuf.ByteString>();
+                mutable_bitField2_ |= 0x00000002;
+              }
+              bytess_.add(input.readBytes());
+              break;
+            }
+            case 898: {
+              if (!((mutable_bitField2_ & 0x00000004) == 0x00000004)) {
+                users_ = new java.util.ArrayList<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User>();
+                mutable_bitField2_ |= 0x00000004;
+              }
+              users_.add(
+                  input.readMessage(org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.parser(), extensionRegistry));
               break;
             }
             default: {
@@ -680,54 +1852,138 @@ public final class ProtobufRoot {
         throw new com.google.protobuf.InvalidProtocolBufferException(
             e).setUnfinishedMessage(this);
       } finally {
-        if (((mutable_bitField0_ & 0x00080000) == 0x00080000)) {
-          sList_ = sList_.getUnmodifiableView();
-        }
-        if (((mutable_bitField0_ & 0x00100000) == 0x00100000)) {
-          pList_ = java.util.Collections.unmodifiableList(pList_);
-        }
-        if (((mutable_bitField0_ & 0x00400000) == 0x00400000)) {
+        if (((mutable_bitField1_ & 0x00000001) == 0x00000001)) {
           anys_ = java.util.Collections.unmodifiableList(anys_);
+        }
+        if (((mutable_bitField1_ & 0x00000010) == 0x00000010)) {
+          int32SPacked_ = java.util.Collections.unmodifiableList(int32SPacked_);
+        }
+        if (((mutable_bitField1_ & 0x00000020) == 0x00000020)) {
+          int64SPacked_ = java.util.Collections.unmodifiableList(int64SPacked_);
+        }
+        if (((mutable_bitField1_ & 0x00000040) == 0x00000040)) {
+          uint32SPacked_ = java.util.Collections.unmodifiableList(uint32SPacked_);
+        }
+        if (((mutable_bitField1_ & 0x00000080) == 0x00000080)) {
+          uint64SPacked_ = java.util.Collections.unmodifiableList(uint64SPacked_);
+        }
+        if (((mutable_bitField1_ & 0x00000100) == 0x00000100)) {
+          sint32SPacked_ = java.util.Collections.unmodifiableList(sint32SPacked_);
+        }
+        if (((mutable_bitField1_ & 0x00000200) == 0x00000200)) {
+          sint64SPacked_ = java.util.Collections.unmodifiableList(sint64SPacked_);
+        }
+        if (((mutable_bitField1_ & 0x00000400) == 0x00000400)) {
+          fixed32SPacked_ = java.util.Collections.unmodifiableList(fixed32SPacked_);
+        }
+        if (((mutable_bitField1_ & 0x00000800) == 0x00000800)) {
+          fixed64SPacked_ = java.util.Collections.unmodifiableList(fixed64SPacked_);
+        }
+        if (((mutable_bitField1_ & 0x00001000) == 0x00001000)) {
+          sfixed32SPacked_ = java.util.Collections.unmodifiableList(sfixed32SPacked_);
+        }
+        if (((mutable_bitField1_ & 0x00002000) == 0x00002000)) {
+          sfixed64SPacked_ = java.util.Collections.unmodifiableList(sfixed64SPacked_);
+        }
+        if (((mutable_bitField1_ & 0x00004000) == 0x00004000)) {
+          floatsPacked_ = java.util.Collections.unmodifiableList(floatsPacked_);
+        }
+        if (((mutable_bitField1_ & 0x00008000) == 0x00008000)) {
+          doublesPacked_ = java.util.Collections.unmodifiableList(doublesPacked_);
+        }
+        if (((mutable_bitField1_ & 0x00010000) == 0x00010000)) {
+          boolsPacked_ = java.util.Collections.unmodifiableList(boolsPacked_);
+        }
+        if (((mutable_bitField1_ & 0x00020000) == 0x00020000)) {
+          colorsPacked_ = java.util.Collections.unmodifiableList(colorsPacked_);
+        }
+        if (((mutable_bitField1_ & 0x00040000) == 0x00040000)) {
+          int32SNotPacked_ = java.util.Collections.unmodifiableList(int32SNotPacked_);
+        }
+        if (((mutable_bitField1_ & 0x00080000) == 0x00080000)) {
+          int64SNotPacked_ = java.util.Collections.unmodifiableList(int64SNotPacked_);
+        }
+        if (((mutable_bitField1_ & 0x00100000) == 0x00100000)) {
+          uint32SNotPacked_ = java.util.Collections.unmodifiableList(uint32SNotPacked_);
+        }
+        if (((mutable_bitField1_ & 0x00200000) == 0x00200000)) {
+          uint64SNotPacked_ = java.util.Collections.unmodifiableList(uint64SNotPacked_);
+        }
+        if (((mutable_bitField1_ & 0x00400000) == 0x00400000)) {
+          sint32SNotPacked_ = java.util.Collections.unmodifiableList(sint32SNotPacked_);
+        }
+        if (((mutable_bitField1_ & 0x00800000) == 0x00800000)) {
+          sint64SNotPacked_ = java.util.Collections.unmodifiableList(sint64SNotPacked_);
+        }
+        if (((mutable_bitField1_ & 0x01000000) == 0x01000000)) {
+          fixed32SNotPacked_ = java.util.Collections.unmodifiableList(fixed32SNotPacked_);
+        }
+        if (((mutable_bitField1_ & 0x02000000) == 0x02000000)) {
+          fixed64SNotPacked_ = java.util.Collections.unmodifiableList(fixed64SNotPacked_);
+        }
+        if (((mutable_bitField1_ & 0x04000000) == 0x04000000)) {
+          sfixed32SNotPacked_ = java.util.Collections.unmodifiableList(sfixed32SNotPacked_);
+        }
+        if (((mutable_bitField1_ & 0x08000000) == 0x08000000)) {
+          sfixed64SNotPacked_ = java.util.Collections.unmodifiableList(sfixed64SNotPacked_);
+        }
+        if (((mutable_bitField1_ & 0x10000000) == 0x10000000)) {
+          floatsNotPacked_ = java.util.Collections.unmodifiableList(floatsNotPacked_);
+        }
+        if (((mutable_bitField1_ & 0x20000000) == 0x20000000)) {
+          doublesNotPacked_ = java.util.Collections.unmodifiableList(doublesNotPacked_);
+        }
+        if (((mutable_bitField1_ & 0x40000000) == 0x40000000)) {
+          boolsNotPacked_ = java.util.Collections.unmodifiableList(boolsNotPacked_);
+        }
+        if (((mutable_bitField1_ & 0x80000000) == 0x80000000)) {
+          colorsNotPacked_ = java.util.Collections.unmodifiableList(colorsNotPacked_);
+        }
+        if (((mutable_bitField2_ & 0x00000001) == 0x00000001)) {
+          strings_ = strings_.getUnmodifiableView();
+        }
+        if (((mutable_bitField2_ & 0x00000002) == 0x00000002)) {
+          bytess_ = java.util.Collections.unmodifiableList(bytess_);
+        }
+        if (((mutable_bitField2_ & 0x00000004) == 0x00000004)) {
+          users_ = java.util.Collections.unmodifiableList(users_);
         }
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
       }
     }
-
     public static final com.google.protobuf.Descriptors.Descriptor
-    getDescriptor() {
-      return ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_descriptor;
+        getDescriptor() {
+      return org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_descriptor;
     }
 
     @SuppressWarnings({"rawtypes"})
-    @Override
+    @java.lang.Override
     protected com.google.protobuf.MapField internalGetMapField(
         int number) {
       switch (number) {
-        case 18:
+        case 60:
           return internalGetSsMap();
-        case 19:
+        case 61:
+          return internalGetSint32Map();
+        case 62:
           return internalGetSpMap();
         default:
           throw new RuntimeException(
               "Invalid map field number: " + number);
       }
     }
-
-    @Override
-    protected FieldAccessorTable
-    internalGetFieldAccessorTable() {
-      return ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_fieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              Root.class, Builder.class);
+              org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.class, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.Builder.class);
     }
 
     private int bitField0_;
-
     public static final int INT32_FIELD_NUMBER = 1;
-
     private int int32_;
-
     /**
      * <code>int32 int32 = 1;</code>
      */
@@ -736,9 +1992,7 @@ public final class ProtobufRoot {
     }
 
     public static final int INT64_FIELD_NUMBER = 2;
-
     private long int64_;
-
     /**
      * <code>int64 int64 = 2;</code>
      */
@@ -747,9 +2001,7 @@ public final class ProtobufRoot {
     }
 
     public static final int UINT32_FIELD_NUMBER = 3;
-
     private int uint32_;
-
     /**
      * <code>uint32 uint32 = 3;</code>
      */
@@ -758,9 +2010,7 @@ public final class ProtobufRoot {
     }
 
     public static final int UINT64_FIELD_NUMBER = 4;
-
     private long uint64_;
-
     /**
      * <code>uint64 uint64 = 4;</code>
      */
@@ -769,9 +2019,7 @@ public final class ProtobufRoot {
     }
 
     public static final int SINT32_FIELD_NUMBER = 5;
-
     private int sint32_;
-
     /**
      * <code>sint32 sint32 = 5;</code>
      */
@@ -780,9 +2028,7 @@ public final class ProtobufRoot {
     }
 
     public static final int SINT64_FIELD_NUMBER = 6;
-
     private long sint64_;
-
     /**
      * <code>sint64 sint64 = 6;</code>
      */
@@ -791,9 +2037,7 @@ public final class ProtobufRoot {
     }
 
     public static final int FIXED32_FIELD_NUMBER = 7;
-
     private int fixed32_;
-
     /**
      * <code>fixed32 fixed32 = 7;</code>
      */
@@ -802,9 +2046,7 @@ public final class ProtobufRoot {
     }
 
     public static final int FIXED64_FIELD_NUMBER = 8;
-
     private long fixed64_;
-
     /**
      * <code>fixed64 fixed64 = 8;</code>
      */
@@ -813,9 +2055,7 @@ public final class ProtobufRoot {
     }
 
     public static final int SFIXED32_FIELD_NUMBER = 9;
-
     private int sfixed32_;
-
     /**
      * <code>sfixed32 sfixed32 = 9;</code>
      */
@@ -824,9 +2064,7 @@ public final class ProtobufRoot {
     }
 
     public static final int SFIXED64_FIELD_NUMBER = 10;
-
     private long sfixed64_;
-
     /**
      * <code>sfixed64 sfixed64 = 10;</code>
      */
@@ -835,9 +2073,7 @@ public final class ProtobufRoot {
     }
 
     public static final int FLOATVALUE_FIELD_NUMBER = 11;
-
     private float floatValue_;
-
     /**
      * <code>float floatValue = 11;</code>
      */
@@ -846,9 +2082,7 @@ public final class ProtobufRoot {
     }
 
     public static final int DOUBLEVALUE_FIELD_NUMBER = 12;
-
     private double doubleValue_;
-
     /**
      * <code>double doubleValue = 12;</code>
      */
@@ -857,9 +2091,7 @@ public final class ProtobufRoot {
     }
 
     public static final int BOOL_FIELD_NUMBER = 13;
-
     private boolean bool_;
-
     /**
      * <code>bool bool = 13;</code>
      */
@@ -867,36 +2099,150 @@ public final class ProtobufRoot {
       return bool_;
     }
 
-    public static final int STRING_FIELD_NUMBER = 14;
-
-    private volatile Object string_;
-
+    public static final int OBJINT32_FIELD_NUMBER = 20;
+    private int objInt32_;
     /**
-     * <code>string string = 14;</code>
+     * <code>int32 objInt32 = 20;</code>
      */
-    public String getString() {
-      Object ref = string_;
-      if (ref instanceof String) {
-        return (String) ref;
+    public int getObjInt32() {
+      return objInt32_;
+    }
+
+    public static final int OBJINT64_FIELD_NUMBER = 21;
+    private long objInt64_;
+    /**
+     * <code>int64 objInt64 = 21;</code>
+     */
+    public long getObjInt64() {
+      return objInt64_;
+    }
+
+    public static final int OBJUINT32_FIELD_NUMBER = 22;
+    private int objUint32_;
+    /**
+     * <code>uint32 objUint32 = 22;</code>
+     */
+    public int getObjUint32() {
+      return objUint32_;
+    }
+
+    public static final int OBJUINT64_FIELD_NUMBER = 23;
+    private long objUint64_;
+    /**
+     * <code>uint64 objUint64 = 23;</code>
+     */
+    public long getObjUint64() {
+      return objUint64_;
+    }
+
+    public static final int OBJSINT32_FIELD_NUMBER = 24;
+    private int objSint32_;
+    /**
+     * <code>sint32 objSint32 = 24;</code>
+     */
+    public int getObjSint32() {
+      return objSint32_;
+    }
+
+    public static final int OBJSINT64_FIELD_NUMBER = 25;
+    private long objSint64_;
+    /**
+     * <code>sint64 objSint64 = 25;</code>
+     */
+    public long getObjSint64() {
+      return objSint64_;
+    }
+
+    public static final int OBJFIXED32_FIELD_NUMBER = 26;
+    private int objFixed32_;
+    /**
+     * <code>fixed32 objFixed32 = 26;</code>
+     */
+    public int getObjFixed32() {
+      return objFixed32_;
+    }
+
+    public static final int OBJFIXED64_FIELD_NUMBER = 27;
+    private long objFixed64_;
+    /**
+     * <code>fixed64 objFixed64 = 27;</code>
+     */
+    public long getObjFixed64() {
+      return objFixed64_;
+    }
+
+    public static final int OBJSFIXED32_FIELD_NUMBER = 28;
+    private int objSfixed32_;
+    /**
+     * <code>sfixed32 objSfixed32 = 28;</code>
+     */
+    public int getObjSfixed32() {
+      return objSfixed32_;
+    }
+
+    public static final int OBJSFIXED64_FIELD_NUMBER = 29;
+    private long objSfixed64_;
+    /**
+     * <code>sfixed64 objSfixed64 = 29;</code>
+     */
+    public long getObjSfixed64() {
+      return objSfixed64_;
+    }
+
+    public static final int OBJFLOATVALUE_FIELD_NUMBER = 30;
+    private float objFloatValue_;
+    /**
+     * <code>float objFloatValue = 30;</code>
+     */
+    public float getObjFloatValue() {
+      return objFloatValue_;
+    }
+
+    public static final int OBJDOUBLEVALUE_FIELD_NUMBER = 31;
+    private double objDoubleValue_;
+    /**
+     * <code>double objDoubleValue = 31;</code>
+     */
+    public double getObjDoubleValue() {
+      return objDoubleValue_;
+    }
+
+    public static final int OBJBOOL_FIELD_NUMBER = 32;
+    private boolean objBool_;
+    /**
+     * <code>bool objBool = 32;</code>
+     */
+    public boolean getObjBool() {
+      return objBool_;
+    }
+
+    public static final int STRING_FIELD_NUMBER = 40;
+    private volatile java.lang.Object string_;
+    /**
+     * <code>string string = 40;</code>
+     */
+    public java.lang.String getString() {
+      java.lang.Object ref = string_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs =
+        com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+        java.lang.String s = bs.toStringUtf8();
         string_ = s;
         return s;
       }
     }
-
     /**
-     * <code>string string = 14;</code>
+     * <code>string string = 40;</code>
      */
     public com.google.protobuf.ByteString
-    getStringBytes() {
-      Object ref = string_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
+        getStringBytes() {
+      java.lang.Object ref = string_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                (java.lang.String) ref);
         string_ = b;
         return b;
       } else {
@@ -904,80 +2250,145 @@ public final class ProtobufRoot {
       }
     }
 
-    public static final int BYTES_FIELD_NUMBER = 15;
-
+    public static final int BYTES_FIELD_NUMBER = 41;
     private com.google.protobuf.ByteString bytes_;
-
     /**
-     * <code>bytes bytes = 15;</code>
+     * <code>bytes bytes = 41;</code>
      */
     public com.google.protobuf.ByteString getBytes() {
       return bytes_;
     }
 
-    public static final int COLOR_FIELD_NUMBER = 16;
-
+    public static final int COLOR_FIELD_NUMBER = 42;
     private int color_;
-
     /**
-     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 16;</code>
+     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 42;</code>
      */
     public int getColorValue() {
       return color_;
     }
-
     /**
-     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 16;</code>
+     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 42;</code>
      */
-    public Color getColor() {
+    public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color getColor() {
       @SuppressWarnings("deprecation")
-      Color result = Color.valueOf(color_);
-      return result == null ? Color.UNRECOGNIZED : result;
+      org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color result = org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color.valueOf(color_);
+      return result == null ? org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color.UNRECOGNIZED : result;
     }
 
-    public static final int USER_FIELD_NUMBER = 17;
-
-    private User user_;
-
+    public static final int USER_FIELD_NUMBER = 43;
+    private org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User user_;
     /**
-     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 17;</code>
+     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 43;</code>
      */
     public boolean hasUser() {
       return user_ != null;
     }
-
     /**
-     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 17;</code>
+     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 43;</code>
      */
-    public User getUser() {
-      return user_ == null ? User.getDefaultInstance() : user_;
+    public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getUser() {
+      return user_ == null ? org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.getDefaultInstance() : user_;
     }
-
     /**
-     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 17;</code>
+     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 43;</code>
      */
-    public UserOrBuilder getUserOrBuilder() {
+    public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.UserOrBuilder getUserOrBuilder() {
       return getUser();
     }
 
-    public static final int SSMAP_FIELD_NUMBER = 18;
+    public static final int TYPERECURSIVE_FIELD_NUMBER = 44;
+    private org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root typeRecursive_;
+    /**
+     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 44;</code>
+     */
+    public boolean hasTypeRecursive() {
+      return typeRecursive_ != null;
+    }
+    /**
+     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 44;</code>
+     */
+    public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root getTypeRecursive() {
+      return typeRecursive_ == null ? org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.getDefaultInstance() : typeRecursive_;
+    }
+    /**
+     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 44;</code>
+     */
+    public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.RootOrBuilder getTypeRecursiveOrBuilder() {
+      return getTypeRecursive();
+    }
 
+    public static final int ANY_FIELD_NUMBER = 50;
+    private com.google.protobuf.Any any_;
+    /**
+     * <code>.google.protobuf.Any any = 50;</code>
+     */
+    public boolean hasAny() {
+      return any_ != null;
+    }
+    /**
+     * <code>.google.protobuf.Any any = 50;</code>
+     */
+    public com.google.protobuf.Any getAny() {
+      return any_ == null ? com.google.protobuf.Any.getDefaultInstance() : any_;
+    }
+    /**
+     * <code>.google.protobuf.Any any = 50;</code>
+     */
+    public com.google.protobuf.AnyOrBuilder getAnyOrBuilder() {
+      return getAny();
+    }
+
+    public static final int ANYS_FIELD_NUMBER = 51;
+    private java.util.List<com.google.protobuf.Any> anys_;
+    /**
+     * <code>repeated .google.protobuf.Any anys = 51;</code>
+     */
+    public java.util.List<com.google.protobuf.Any> getAnysList() {
+      return anys_;
+    }
+    /**
+     * <code>repeated .google.protobuf.Any anys = 51;</code>
+     */
+    public java.util.List<? extends com.google.protobuf.AnyOrBuilder> 
+        getAnysOrBuilderList() {
+      return anys_;
+    }
+    /**
+     * <code>repeated .google.protobuf.Any anys = 51;</code>
+     */
+    public int getAnysCount() {
+      return anys_.size();
+    }
+    /**
+     * <code>repeated .google.protobuf.Any anys = 51;</code>
+     */
+    public com.google.protobuf.Any getAnys(int index) {
+      return anys_.get(index);
+    }
+    /**
+     * <code>repeated .google.protobuf.Any anys = 51;</code>
+     */
+    public com.google.protobuf.AnyOrBuilder getAnysOrBuilder(
+        int index) {
+      return anys_.get(index);
+    }
+
+    public static final int SSMAP_FIELD_NUMBER = 60;
     private static final class SsMapDefaultEntryHolder {
       static final com.google.protobuf.MapEntry<
-          String, String> defaultEntry =
-          com.google.protobuf.MapEntry
-              .<String, String>newDefaultInstance(
-                  ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_SsMapEntry_descriptor,
+          java.lang.String, java.lang.String> defaultEntry =
+              com.google.protobuf.MapEntry
+              .<java.lang.String, java.lang.String>newDefaultInstance(
+                  org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_SsMapEntry_descriptor, 
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "",
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "");
     }
-
     private com.google.protobuf.MapField<
-        String, String> ssMap_;
-
-    private com.google.protobuf.MapField<String, String>
+        java.lang.String, java.lang.String> ssMap_;
+    private com.google.protobuf.MapField<java.lang.String, java.lang.String>
     internalGetSsMap() {
       if (ssMap_ == null) {
         return com.google.protobuf.MapField.emptyMapField(
@@ -989,85 +2400,147 @@ public final class ProtobufRoot {
     public int getSsMapCount() {
       return internalGetSsMap().getMap().size();
     }
-
     /**
-     * <code>map&lt;string, string&gt; ssMap = 18;</code>
+     * <code>map&lt;string, string&gt; ssMap = 60;</code>
      */
 
     public boolean containsSsMap(
-        String key) {
-      if (key == null) {
-        throw new NullPointerException();
-      }
+        java.lang.String key) {
+      if (key == null) { throw new java.lang.NullPointerException(); }
       return internalGetSsMap().getMap().containsKey(key);
     }
-
     /**
      * Use {@link #getSsMapMap()} instead.
      */
-    @Deprecated
-    public java.util.Map<String, String> getSsMap() {
+    @java.lang.Deprecated
+    public java.util.Map<java.lang.String, java.lang.String> getSsMap() {
       return getSsMapMap();
     }
-
     /**
-     * <code>map&lt;string, string&gt; ssMap = 18;</code>
+     * <code>map&lt;string, string&gt; ssMap = 60;</code>
      */
 
-    public java.util.Map<String, String> getSsMapMap() {
+    public java.util.Map<java.lang.String, java.lang.String> getSsMapMap() {
       return internalGetSsMap().getMap();
     }
-
     /**
-     * <code>map&lt;string, string&gt; ssMap = 18;</code>
+     * <code>map&lt;string, string&gt; ssMap = 60;</code>
      */
 
-    public String getSsMapOrDefault(
-        String key,
-        String defaultValue) {
-      if (key == null) {
-        throw new NullPointerException();
-      }
-      java.util.Map<String, String> map =
+    public java.lang.String getSsMapOrDefault(
+        java.lang.String key,
+        java.lang.String defaultValue) {
+      if (key == null) { throw new java.lang.NullPointerException(); }
+      java.util.Map<java.lang.String, java.lang.String> map =
           internalGetSsMap().getMap();
       return map.containsKey(key) ? map.get(key) : defaultValue;
     }
-
     /**
-     * <code>map&lt;string, string&gt; ssMap = 18;</code>
+     * <code>map&lt;string, string&gt; ssMap = 60;</code>
      */
 
-    public String getSsMapOrThrow(
-        String key) {
-      if (key == null) {
-        throw new NullPointerException();
-      }
-      java.util.Map<String, String> map =
+    public java.lang.String getSsMapOrThrow(
+        java.lang.String key) {
+      if (key == null) { throw new java.lang.NullPointerException(); }
+      java.util.Map<java.lang.String, java.lang.String> map =
           internalGetSsMap().getMap();
       if (!map.containsKey(key)) {
-        throw new IllegalArgumentException();
+        throw new java.lang.IllegalArgumentException();
       }
       return map.get(key);
     }
 
-    public static final int SPMAP_FIELD_NUMBER = 19;
+    public static final int SINT32MAP_FIELD_NUMBER = 61;
+    private static final class Sint32MapDefaultEntryHolder {
+      static final com.google.protobuf.MapEntry<
+          java.lang.String, java.lang.Integer> defaultEntry =
+              com.google.protobuf.MapEntry
+              .<java.lang.String, java.lang.Integer>newDefaultInstance(
+                  org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_Sint32MapEntry_descriptor, 
+                  com.google.protobuf.WireFormat.FieldType.STRING,
+                  "",
+                  com.google.protobuf.WireFormat.FieldType.INT32,
+                  0);
+    }
+    private com.google.protobuf.MapField<
+        java.lang.String, java.lang.Integer> sint32Map_;
+    private com.google.protobuf.MapField<java.lang.String, java.lang.Integer>
+    internalGetSint32Map() {
+      if (sint32Map_ == null) {
+        return com.google.protobuf.MapField.emptyMapField(
+            Sint32MapDefaultEntryHolder.defaultEntry);
+      }
+      return sint32Map_;
+    }
 
+    public int getSint32MapCount() {
+      return internalGetSint32Map().getMap().size();
+    }
+    /**
+     * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
+     */
+
+    public boolean containsSint32Map(
+        java.lang.String key) {
+      if (key == null) { throw new java.lang.NullPointerException(); }
+      return internalGetSint32Map().getMap().containsKey(key);
+    }
+    /**
+     * Use {@link #getSint32MapMap()} instead.
+     */
+    @java.lang.Deprecated
+    public java.util.Map<java.lang.String, java.lang.Integer> getSint32Map() {
+      return getSint32MapMap();
+    }
+    /**
+     * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
+     */
+
+    public java.util.Map<java.lang.String, java.lang.Integer> getSint32MapMap() {
+      return internalGetSint32Map().getMap();
+    }
+    /**
+     * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
+     */
+
+    public int getSint32MapOrDefault(
+        java.lang.String key,
+        int defaultValue) {
+      if (key == null) { throw new java.lang.NullPointerException(); }
+      java.util.Map<java.lang.String, java.lang.Integer> map =
+          internalGetSint32Map().getMap();
+      return map.containsKey(key) ? map.get(key) : defaultValue;
+    }
+    /**
+     * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
+     */
+
+    public int getSint32MapOrThrow(
+        java.lang.String key) {
+      if (key == null) { throw new java.lang.NullPointerException(); }
+      java.util.Map<java.lang.String, java.lang.Integer> map =
+          internalGetSint32Map().getMap();
+      if (!map.containsKey(key)) {
+        throw new java.lang.IllegalArgumentException();
+      }
+      return map.get(key);
+    }
+
+    public static final int SPMAP_FIELD_NUMBER = 62;
     private static final class SpMapDefaultEntryHolder {
       static final com.google.protobuf.MapEntry<
-          String, User> defaultEntry =
-          com.google.protobuf.MapEntry
-              .<String, User>newDefaultInstance(
-                  ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_SpMapEntry_descriptor,
+          java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> defaultEntry =
+              com.google.protobuf.MapEntry
+              .<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User>newDefaultInstance(
+                  org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_SpMapEntry_descriptor, 
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "",
                   com.google.protobuf.WireFormat.FieldType.MESSAGE,
-                  User.getDefaultInstance());
+                  org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.getDefaultInstance());
     }
-
     private com.google.protobuf.MapField<
-        String, User> spMap_;
-
-    private com.google.protobuf.MapField<String, User>
+        java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> spMap_;
+    private com.google.protobuf.MapField<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User>
     internalGetSpMap() {
       if (spMap_ == null) {
         return com.google.protobuf.MapField.emptyMapField(
@@ -1079,252 +2552,833 @@ public final class ProtobufRoot {
     public int getSpMapCount() {
       return internalGetSpMap().getMap().size();
     }
-
     /**
-     * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 19;</code>
+     * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
      */
 
     public boolean containsSpMap(
-        String key) {
-      if (key == null) {
-        throw new NullPointerException();
-      }
+        java.lang.String key) {
+      if (key == null) { throw new java.lang.NullPointerException(); }
       return internalGetSpMap().getMap().containsKey(key);
     }
-
     /**
      * Use {@link #getSpMapMap()} instead.
      */
-    @Deprecated
-    public java.util.Map<String, User> getSpMap() {
+    @java.lang.Deprecated
+    public java.util.Map<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> getSpMap() {
       return getSpMapMap();
     }
-
     /**
-     * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 19;</code>
+     * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
      */
 
-    public java.util.Map<String, User> getSpMapMap() {
+    public java.util.Map<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> getSpMapMap() {
       return internalGetSpMap().getMap();
     }
-
     /**
-     * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 19;</code>
+     * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
      */
 
-    public User getSpMapOrDefault(
-        String key,
-        User defaultValue) {
-      if (key == null) {
-        throw new NullPointerException();
-      }
-      java.util.Map<String, User> map =
+    public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getSpMapOrDefault(
+        java.lang.String key,
+        org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User defaultValue) {
+      if (key == null) { throw new java.lang.NullPointerException(); }
+      java.util.Map<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> map =
           internalGetSpMap().getMap();
       return map.containsKey(key) ? map.get(key) : defaultValue;
     }
-
     /**
-     * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 19;</code>
+     * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
      */
 
-    public User getSpMapOrThrow(
-        String key) {
-      if (key == null) {
-        throw new NullPointerException();
-      }
-      java.util.Map<String, User> map =
+    public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getSpMapOrThrow(
+        java.lang.String key) {
+      if (key == null) { throw new java.lang.NullPointerException(); }
+      java.util.Map<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> map =
           internalGetSpMap().getMap();
       if (!map.containsKey(key)) {
-        throw new IllegalArgumentException();
+        throw new java.lang.IllegalArgumentException();
       }
       return map.get(key);
     }
 
-    public static final int SLIST_FIELD_NUMBER = 20;
-
-    private com.google.protobuf.LazyStringList sList_;
-
+    public static final int INT32SPACKED_FIELD_NUMBER = 70;
+    private java.util.List<java.lang.Integer> int32SPacked_;
     /**
-     * <code>repeated string sList = 20;</code>
+     * <code>repeated int32 int32sPacked = 70;</code>
+     */
+    public java.util.List<java.lang.Integer>
+        getInt32SPackedList() {
+      return int32SPacked_;
+    }
+    /**
+     * <code>repeated int32 int32sPacked = 70;</code>
+     */
+    public int getInt32SPackedCount() {
+      return int32SPacked_.size();
+    }
+    /**
+     * <code>repeated int32 int32sPacked = 70;</code>
+     */
+    public int getInt32SPacked(int index) {
+      return int32SPacked_.get(index);
+    }
+    private int int32SPackedMemoizedSerializedSize = -1;
+
+    public static final int INT64SPACKED_FIELD_NUMBER = 71;
+    private java.util.List<java.lang.Long> int64SPacked_;
+    /**
+     * <code>repeated int64 int64sPacked = 71;</code>
+     */
+    public java.util.List<java.lang.Long>
+        getInt64SPackedList() {
+      return int64SPacked_;
+    }
+    /**
+     * <code>repeated int64 int64sPacked = 71;</code>
+     */
+    public int getInt64SPackedCount() {
+      return int64SPacked_.size();
+    }
+    /**
+     * <code>repeated int64 int64sPacked = 71;</code>
+     */
+    public long getInt64SPacked(int index) {
+      return int64SPacked_.get(index);
+    }
+    private int int64SPackedMemoizedSerializedSize = -1;
+
+    public static final int UINT32SPACKED_FIELD_NUMBER = 72;
+    private java.util.List<java.lang.Integer> uint32SPacked_;
+    /**
+     * <code>repeated uint32 uint32sPacked = 72;</code>
+     */
+    public java.util.List<java.lang.Integer>
+        getUint32SPackedList() {
+      return uint32SPacked_;
+    }
+    /**
+     * <code>repeated uint32 uint32sPacked = 72;</code>
+     */
+    public int getUint32SPackedCount() {
+      return uint32SPacked_.size();
+    }
+    /**
+     * <code>repeated uint32 uint32sPacked = 72;</code>
+     */
+    public int getUint32SPacked(int index) {
+      return uint32SPacked_.get(index);
+    }
+    private int uint32SPackedMemoizedSerializedSize = -1;
+
+    public static final int UINT64SPACKED_FIELD_NUMBER = 73;
+    private java.util.List<java.lang.Long> uint64SPacked_;
+    /**
+     * <code>repeated uint64 uint64sPacked = 73;</code>
+     */
+    public java.util.List<java.lang.Long>
+        getUint64SPackedList() {
+      return uint64SPacked_;
+    }
+    /**
+     * <code>repeated uint64 uint64sPacked = 73;</code>
+     */
+    public int getUint64SPackedCount() {
+      return uint64SPacked_.size();
+    }
+    /**
+     * <code>repeated uint64 uint64sPacked = 73;</code>
+     */
+    public long getUint64SPacked(int index) {
+      return uint64SPacked_.get(index);
+    }
+    private int uint64SPackedMemoizedSerializedSize = -1;
+
+    public static final int SINT32SPACKED_FIELD_NUMBER = 74;
+    private java.util.List<java.lang.Integer> sint32SPacked_;
+    /**
+     * <code>repeated sint32 sint32sPacked = 74;</code>
+     */
+    public java.util.List<java.lang.Integer>
+        getSint32SPackedList() {
+      return sint32SPacked_;
+    }
+    /**
+     * <code>repeated sint32 sint32sPacked = 74;</code>
+     */
+    public int getSint32SPackedCount() {
+      return sint32SPacked_.size();
+    }
+    /**
+     * <code>repeated sint32 sint32sPacked = 74;</code>
+     */
+    public int getSint32SPacked(int index) {
+      return sint32SPacked_.get(index);
+    }
+    private int sint32SPackedMemoizedSerializedSize = -1;
+
+    public static final int SINT64SPACKED_FIELD_NUMBER = 75;
+    private java.util.List<java.lang.Long> sint64SPacked_;
+    /**
+     * <code>repeated sint64 sint64sPacked = 75;</code>
+     */
+    public java.util.List<java.lang.Long>
+        getSint64SPackedList() {
+      return sint64SPacked_;
+    }
+    /**
+     * <code>repeated sint64 sint64sPacked = 75;</code>
+     */
+    public int getSint64SPackedCount() {
+      return sint64SPacked_.size();
+    }
+    /**
+     * <code>repeated sint64 sint64sPacked = 75;</code>
+     */
+    public long getSint64SPacked(int index) {
+      return sint64SPacked_.get(index);
+    }
+    private int sint64SPackedMemoizedSerializedSize = -1;
+
+    public static final int FIXED32SPACKED_FIELD_NUMBER = 76;
+    private java.util.List<java.lang.Integer> fixed32SPacked_;
+    /**
+     * <code>repeated fixed32 fixed32sPacked = 76;</code>
+     */
+    public java.util.List<java.lang.Integer>
+        getFixed32SPackedList() {
+      return fixed32SPacked_;
+    }
+    /**
+     * <code>repeated fixed32 fixed32sPacked = 76;</code>
+     */
+    public int getFixed32SPackedCount() {
+      return fixed32SPacked_.size();
+    }
+    /**
+     * <code>repeated fixed32 fixed32sPacked = 76;</code>
+     */
+    public int getFixed32SPacked(int index) {
+      return fixed32SPacked_.get(index);
+    }
+    private int fixed32SPackedMemoizedSerializedSize = -1;
+
+    public static final int FIXED64SPACKED_FIELD_NUMBER = 77;
+    private java.util.List<java.lang.Long> fixed64SPacked_;
+    /**
+     * <code>repeated fixed64 fixed64sPacked = 77;</code>
+     */
+    public java.util.List<java.lang.Long>
+        getFixed64SPackedList() {
+      return fixed64SPacked_;
+    }
+    /**
+     * <code>repeated fixed64 fixed64sPacked = 77;</code>
+     */
+    public int getFixed64SPackedCount() {
+      return fixed64SPacked_.size();
+    }
+    /**
+     * <code>repeated fixed64 fixed64sPacked = 77;</code>
+     */
+    public long getFixed64SPacked(int index) {
+      return fixed64SPacked_.get(index);
+    }
+    private int fixed64SPackedMemoizedSerializedSize = -1;
+
+    public static final int SFIXED32SPACKED_FIELD_NUMBER = 78;
+    private java.util.List<java.lang.Integer> sfixed32SPacked_;
+    /**
+     * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+     */
+    public java.util.List<java.lang.Integer>
+        getSfixed32SPackedList() {
+      return sfixed32SPacked_;
+    }
+    /**
+     * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+     */
+    public int getSfixed32SPackedCount() {
+      return sfixed32SPacked_.size();
+    }
+    /**
+     * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+     */
+    public int getSfixed32SPacked(int index) {
+      return sfixed32SPacked_.get(index);
+    }
+    private int sfixed32SPackedMemoizedSerializedSize = -1;
+
+    public static final int SFIXED64SPACKED_FIELD_NUMBER = 79;
+    private java.util.List<java.lang.Long> sfixed64SPacked_;
+    /**
+     * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+     */
+    public java.util.List<java.lang.Long>
+        getSfixed64SPackedList() {
+      return sfixed64SPacked_;
+    }
+    /**
+     * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+     */
+    public int getSfixed64SPackedCount() {
+      return sfixed64SPacked_.size();
+    }
+    /**
+     * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+     */
+    public long getSfixed64SPacked(int index) {
+      return sfixed64SPacked_.get(index);
+    }
+    private int sfixed64SPackedMemoizedSerializedSize = -1;
+
+    public static final int FLOATSPACKED_FIELD_NUMBER = 80;
+    private java.util.List<java.lang.Float> floatsPacked_;
+    /**
+     * <code>repeated float floatsPacked = 80;</code>
+     */
+    public java.util.List<java.lang.Float>
+        getFloatsPackedList() {
+      return floatsPacked_;
+    }
+    /**
+     * <code>repeated float floatsPacked = 80;</code>
+     */
+    public int getFloatsPackedCount() {
+      return floatsPacked_.size();
+    }
+    /**
+     * <code>repeated float floatsPacked = 80;</code>
+     */
+    public float getFloatsPacked(int index) {
+      return floatsPacked_.get(index);
+    }
+    private int floatsPackedMemoizedSerializedSize = -1;
+
+    public static final int DOUBLESPACKED_FIELD_NUMBER = 81;
+    private java.util.List<java.lang.Double> doublesPacked_;
+    /**
+     * <code>repeated double doublesPacked = 81;</code>
+     */
+    public java.util.List<java.lang.Double>
+        getDoublesPackedList() {
+      return doublesPacked_;
+    }
+    /**
+     * <code>repeated double doublesPacked = 81;</code>
+     */
+    public int getDoublesPackedCount() {
+      return doublesPacked_.size();
+    }
+    /**
+     * <code>repeated double doublesPacked = 81;</code>
+     */
+    public double getDoublesPacked(int index) {
+      return doublesPacked_.get(index);
+    }
+    private int doublesPackedMemoizedSerializedSize = -1;
+
+    public static final int BOOLSPACKED_FIELD_NUMBER = 82;
+    private java.util.List<java.lang.Boolean> boolsPacked_;
+    /**
+     * <code>repeated bool boolsPacked = 82;</code>
+     */
+    public java.util.List<java.lang.Boolean>
+        getBoolsPackedList() {
+      return boolsPacked_;
+    }
+    /**
+     * <code>repeated bool boolsPacked = 82;</code>
+     */
+    public int getBoolsPackedCount() {
+      return boolsPacked_.size();
+    }
+    /**
+     * <code>repeated bool boolsPacked = 82;</code>
+     */
+    public boolean getBoolsPacked(int index) {
+      return boolsPacked_.get(index);
+    }
+    private int boolsPackedMemoizedSerializedSize = -1;
+
+    public static final int COLORSPACKED_FIELD_NUMBER = 83;
+    private java.util.List<java.lang.Integer> colorsPacked_;
+    private static final com.google.protobuf.Internal.ListAdapter.Converter<
+        java.lang.Integer, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color> colorsPacked_converter_ =
+            new com.google.protobuf.Internal.ListAdapter.Converter<
+                java.lang.Integer, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color>() {
+              public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color convert(java.lang.Integer from) {
+                @SuppressWarnings("deprecation")
+                org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color result = org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color.valueOf(from);
+                return result == null ? org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color.UNRECOGNIZED : result;
+              }
+            };
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+     */
+    public java.util.List<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color> getColorsPackedList() {
+      return new com.google.protobuf.Internal.ListAdapter<
+          java.lang.Integer, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color>(colorsPacked_, colorsPacked_converter_);
+    }
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+     */
+    public int getColorsPackedCount() {
+      return colorsPacked_.size();
+    }
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+     */
+    public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color getColorsPacked(int index) {
+      return colorsPacked_converter_.convert(colorsPacked_.get(index));
+    }
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+     */
+    public java.util.List<java.lang.Integer>
+    getColorsPackedValueList() {
+      return colorsPacked_;
+    }
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+     */
+    public int getColorsPackedValue(int index) {
+      return colorsPacked_.get(index);
+    }
+    private int colorsPackedMemoizedSerializedSize;
+
+    public static final int INT32SNOTPACKED_FIELD_NUMBER = 90;
+    private java.util.List<java.lang.Integer> int32SNotPacked_;
+    /**
+     * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+     */
+    public java.util.List<java.lang.Integer>
+        getInt32SNotPackedList() {
+      return int32SNotPacked_;
+    }
+    /**
+     * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+     */
+    public int getInt32SNotPackedCount() {
+      return int32SNotPacked_.size();
+    }
+    /**
+     * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+     */
+    public int getInt32SNotPacked(int index) {
+      return int32SNotPacked_.get(index);
+    }
+
+    public static final int INT64SNOTPACKED_FIELD_NUMBER = 91;
+    private java.util.List<java.lang.Long> int64SNotPacked_;
+    /**
+     * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+     */
+    public java.util.List<java.lang.Long>
+        getInt64SNotPackedList() {
+      return int64SNotPacked_;
+    }
+    /**
+     * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+     */
+    public int getInt64SNotPackedCount() {
+      return int64SNotPacked_.size();
+    }
+    /**
+     * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+     */
+    public long getInt64SNotPacked(int index) {
+      return int64SNotPacked_.get(index);
+    }
+
+    public static final int UINT32SNOTPACKED_FIELD_NUMBER = 92;
+    private java.util.List<java.lang.Integer> uint32SNotPacked_;
+    /**
+     * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+     */
+    public java.util.List<java.lang.Integer>
+        getUint32SNotPackedList() {
+      return uint32SNotPacked_;
+    }
+    /**
+     * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+     */
+    public int getUint32SNotPackedCount() {
+      return uint32SNotPacked_.size();
+    }
+    /**
+     * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+     */
+    public int getUint32SNotPacked(int index) {
+      return uint32SNotPacked_.get(index);
+    }
+
+    public static final int UINT64SNOTPACKED_FIELD_NUMBER = 93;
+    private java.util.List<java.lang.Long> uint64SNotPacked_;
+    /**
+     * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+     */
+    public java.util.List<java.lang.Long>
+        getUint64SNotPackedList() {
+      return uint64SNotPacked_;
+    }
+    /**
+     * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+     */
+    public int getUint64SNotPackedCount() {
+      return uint64SNotPacked_.size();
+    }
+    /**
+     * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+     */
+    public long getUint64SNotPacked(int index) {
+      return uint64SNotPacked_.get(index);
+    }
+
+    public static final int SINT32SNOTPACKED_FIELD_NUMBER = 94;
+    private java.util.List<java.lang.Integer> sint32SNotPacked_;
+    /**
+     * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+     */
+    public java.util.List<java.lang.Integer>
+        getSint32SNotPackedList() {
+      return sint32SNotPacked_;
+    }
+    /**
+     * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+     */
+    public int getSint32SNotPackedCount() {
+      return sint32SNotPacked_.size();
+    }
+    /**
+     * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+     */
+    public int getSint32SNotPacked(int index) {
+      return sint32SNotPacked_.get(index);
+    }
+
+    public static final int SINT64SNOTPACKED_FIELD_NUMBER = 95;
+    private java.util.List<java.lang.Long> sint64SNotPacked_;
+    /**
+     * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+     */
+    public java.util.List<java.lang.Long>
+        getSint64SNotPackedList() {
+      return sint64SNotPacked_;
+    }
+    /**
+     * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+     */
+    public int getSint64SNotPackedCount() {
+      return sint64SNotPacked_.size();
+    }
+    /**
+     * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+     */
+    public long getSint64SNotPacked(int index) {
+      return sint64SNotPacked_.get(index);
+    }
+
+    public static final int FIXED32SNOTPACKED_FIELD_NUMBER = 96;
+    private java.util.List<java.lang.Integer> fixed32SNotPacked_;
+    /**
+     * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+     */
+    public java.util.List<java.lang.Integer>
+        getFixed32SNotPackedList() {
+      return fixed32SNotPacked_;
+    }
+    /**
+     * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+     */
+    public int getFixed32SNotPackedCount() {
+      return fixed32SNotPacked_.size();
+    }
+    /**
+     * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+     */
+    public int getFixed32SNotPacked(int index) {
+      return fixed32SNotPacked_.get(index);
+    }
+
+    public static final int FIXED64SNOTPACKED_FIELD_NUMBER = 97;
+    private java.util.List<java.lang.Long> fixed64SNotPacked_;
+    /**
+     * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+     */
+    public java.util.List<java.lang.Long>
+        getFixed64SNotPackedList() {
+      return fixed64SNotPacked_;
+    }
+    /**
+     * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+     */
+    public int getFixed64SNotPackedCount() {
+      return fixed64SNotPacked_.size();
+    }
+    /**
+     * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+     */
+    public long getFixed64SNotPacked(int index) {
+      return fixed64SNotPacked_.get(index);
+    }
+
+    public static final int SFIXED32SNOTPACKED_FIELD_NUMBER = 98;
+    private java.util.List<java.lang.Integer> sfixed32SNotPacked_;
+    /**
+     * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+     */
+    public java.util.List<java.lang.Integer>
+        getSfixed32SNotPackedList() {
+      return sfixed32SNotPacked_;
+    }
+    /**
+     * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+     */
+    public int getSfixed32SNotPackedCount() {
+      return sfixed32SNotPacked_.size();
+    }
+    /**
+     * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+     */
+    public int getSfixed32SNotPacked(int index) {
+      return sfixed32SNotPacked_.get(index);
+    }
+
+    public static final int SFIXED64SNOTPACKED_FIELD_NUMBER = 99;
+    private java.util.List<java.lang.Long> sfixed64SNotPacked_;
+    /**
+     * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+     */
+    public java.util.List<java.lang.Long>
+        getSfixed64SNotPackedList() {
+      return sfixed64SNotPacked_;
+    }
+    /**
+     * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+     */
+    public int getSfixed64SNotPackedCount() {
+      return sfixed64SNotPacked_.size();
+    }
+    /**
+     * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+     */
+    public long getSfixed64SNotPacked(int index) {
+      return sfixed64SNotPacked_.get(index);
+    }
+
+    public static final int FLOATSNOTPACKED_FIELD_NUMBER = 100;
+    private java.util.List<java.lang.Float> floatsNotPacked_;
+    /**
+     * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+     */
+    public java.util.List<java.lang.Float>
+        getFloatsNotPackedList() {
+      return floatsNotPacked_;
+    }
+    /**
+     * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+     */
+    public int getFloatsNotPackedCount() {
+      return floatsNotPacked_.size();
+    }
+    /**
+     * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+     */
+    public float getFloatsNotPacked(int index) {
+      return floatsNotPacked_.get(index);
+    }
+
+    public static final int DOUBLESNOTPACKED_FIELD_NUMBER = 101;
+    private java.util.List<java.lang.Double> doublesNotPacked_;
+    /**
+     * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+     */
+    public java.util.List<java.lang.Double>
+        getDoublesNotPackedList() {
+      return doublesNotPacked_;
+    }
+    /**
+     * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+     */
+    public int getDoublesNotPackedCount() {
+      return doublesNotPacked_.size();
+    }
+    /**
+     * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+     */
+    public double getDoublesNotPacked(int index) {
+      return doublesNotPacked_.get(index);
+    }
+
+    public static final int BOOLSNOTPACKED_FIELD_NUMBER = 102;
+    private java.util.List<java.lang.Boolean> boolsNotPacked_;
+    /**
+     * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+     */
+    public java.util.List<java.lang.Boolean>
+        getBoolsNotPackedList() {
+      return boolsNotPacked_;
+    }
+    /**
+     * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+     */
+    public int getBoolsNotPackedCount() {
+      return boolsNotPacked_.size();
+    }
+    /**
+     * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+     */
+    public boolean getBoolsNotPacked(int index) {
+      return boolsNotPacked_.get(index);
+    }
+
+    public static final int COLORSNOTPACKED_FIELD_NUMBER = 103;
+    private java.util.List<java.lang.Integer> colorsNotPacked_;
+    private static final com.google.protobuf.Internal.ListAdapter.Converter<
+        java.lang.Integer, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color> colorsNotPacked_converter_ =
+            new com.google.protobuf.Internal.ListAdapter.Converter<
+                java.lang.Integer, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color>() {
+              public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color convert(java.lang.Integer from) {
+                @SuppressWarnings("deprecation")
+                org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color result = org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color.valueOf(from);
+                return result == null ? org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color.UNRECOGNIZED : result;
+              }
+            };
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+     */
+    public java.util.List<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color> getColorsNotPackedList() {
+      return new com.google.protobuf.Internal.ListAdapter<
+          java.lang.Integer, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color>(colorsNotPacked_, colorsNotPacked_converter_);
+    }
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+     */
+    public int getColorsNotPackedCount() {
+      return colorsNotPacked_.size();
+    }
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+     */
+    public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color getColorsNotPacked(int index) {
+      return colorsNotPacked_converter_.convert(colorsNotPacked_.get(index));
+    }
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+     */
+    public java.util.List<java.lang.Integer>
+    getColorsNotPackedValueList() {
+      return colorsNotPacked_;
+    }
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+     */
+    public int getColorsNotPackedValue(int index) {
+      return colorsNotPacked_.get(index);
+    }
+
+    public static final int STRINGS_FIELD_NUMBER = 110;
+    private com.google.protobuf.LazyStringList strings_;
+    /**
+     * <code>repeated string strings = 110;</code>
      */
     public com.google.protobuf.ProtocolStringList
-    getSListList() {
-      return sList_;
+        getStringsList() {
+      return strings_;
     }
-
     /**
-     * <code>repeated string sList = 20;</code>
+     * <code>repeated string strings = 110;</code>
      */
-    public int getSListCount() {
-      return sList_.size();
+    public int getStringsCount() {
+      return strings_.size();
     }
-
     /**
-     * <code>repeated string sList = 20;</code>
+     * <code>repeated string strings = 110;</code>
      */
-    public String getSList(int index) {
-      return sList_.get(index);
+    public java.lang.String getStrings(int index) {
+      return strings_.get(index);
     }
-
     /**
-     * <code>repeated string sList = 20;</code>
+     * <code>repeated string strings = 110;</code>
      */
     public com.google.protobuf.ByteString
-    getSListBytes(int index) {
-      return sList_.getByteString(index);
+        getStringsBytes(int index) {
+      return strings_.getByteString(index);
     }
 
-    public static final int PLIST_FIELD_NUMBER = 21;
-
-    private java.util.List<User> pList_;
-
+    public static final int BYTESS_FIELD_NUMBER = 111;
+    private java.util.List<com.google.protobuf.ByteString> bytess_;
     /**
-     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
+     * <code>repeated bytes bytess = 111;</code>
      */
-    public java.util.List<User> getPListList() {
-      return pList_;
+    public java.util.List<com.google.protobuf.ByteString>
+        getBytessList() {
+      return bytess_;
+    }
+    /**
+     * <code>repeated bytes bytess = 111;</code>
+     */
+    public int getBytessCount() {
+      return bytess_.size();
+    }
+    /**
+     * <code>repeated bytes bytess = 111;</code>
+     */
+    public com.google.protobuf.ByteString getBytess(int index) {
+      return bytess_.get(index);
     }
 
+    public static final int USERS_FIELD_NUMBER = 112;
+    private java.util.List<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> users_;
     /**
-     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
      */
-    public java.util.List<? extends UserOrBuilder>
-    getPListOrBuilderList() {
-      return pList_;
+    public java.util.List<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> getUsersList() {
+      return users_;
     }
-
     /**
-     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
      */
-    public int getPListCount() {
-      return pList_.size();
+    public java.util.List<? extends org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.UserOrBuilder> 
+        getUsersOrBuilderList() {
+      return users_;
     }
-
     /**
-     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
      */
-    public User getPList(int index) {
-      return pList_.get(index);
+    public int getUsersCount() {
+      return users_.size();
     }
-
     /**
-     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
      */
-    public UserOrBuilder getPListOrBuilder(
+    public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getUsers(int index) {
+      return users_.get(index);
+    }
+    /**
+     * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
+     */
+    public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.UserOrBuilder getUsersOrBuilder(
         int index) {
-      return pList_.get(index);
-    }
-
-    public static final int ANY_FIELD_NUMBER = 22;
-
-    private com.google.protobuf.Any any_;
-
-    /**
-     * <code>.google.protobuf.Any any = 22;</code>
-     */
-    public boolean hasAny() {
-      return any_ != null;
-    }
-
-    /**
-     * <code>.google.protobuf.Any any = 22;</code>
-     */
-    public com.google.protobuf.Any getAny() {
-      return any_ == null ? com.google.protobuf.Any.getDefaultInstance() : any_;
-    }
-
-    /**
-     * <code>.google.protobuf.Any any = 22;</code>
-     */
-    public com.google.protobuf.AnyOrBuilder getAnyOrBuilder() {
-      return getAny();
-    }
-
-    public static final int ANYS_FIELD_NUMBER = 23;
-
-    private java.util.List<com.google.protobuf.Any> anys_;
-
-    /**
-     * <code>repeated .google.protobuf.Any anys = 23;</code>
-     */
-    public java.util.List<com.google.protobuf.Any> getAnysList() {
-      return anys_;
-    }
-
-    /**
-     * <code>repeated .google.protobuf.Any anys = 23;</code>
-     */
-    public java.util.List<? extends com.google.protobuf.AnyOrBuilder>
-    getAnysOrBuilderList() {
-      return anys_;
-    }
-
-    /**
-     * <code>repeated .google.protobuf.Any anys = 23;</code>
-     */
-    public int getAnysCount() {
-      return anys_.size();
-    }
-
-    /**
-     * <code>repeated .google.protobuf.Any anys = 23;</code>
-     */
-    public com.google.protobuf.Any getAnys(int index) {
-      return anys_.get(index);
-    }
-
-    /**
-     * <code>repeated .google.protobuf.Any anys = 23;</code>
-     */
-    public com.google.protobuf.AnyOrBuilder getAnysOrBuilder(
-        int index) {
-      return anys_.get(index);
-    }
-
-    public static final int TYPERECURSIVE_FIELD_NUMBER = 24;
-
-    private Root typeRecursive_;
-
-    /**
-     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 24;</code>
-     */
-    public boolean hasTypeRecursive() {
-      return typeRecursive_ != null;
-    }
-
-    /**
-     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 24;</code>
-     */
-    public Root getTypeRecursive() {
-      return typeRecursive_ == null ? Root.getDefaultInstance() : typeRecursive_;
-    }
-
-    /**
-     * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 24;</code>
-     */
-    public RootOrBuilder getTypeRecursiveOrBuilder() {
-      return getTypeRecursive();
+      return users_.get(index);
     }
 
     private byte memoizedIsInitialized = -1;
-
-    @Override
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) {
-        return true;
-      }
-      if (isInitialized == 0) {
-        return false;
-      }
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       memoizedIsInitialized = 1;
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
-        throws java.io.IOException {
+                        throws java.io.IOException {
+      getSerializedSize();
       if (int32_ != 0) {
         output.writeInt32(1, int32_);
       }
@@ -1364,181 +3418,716 @@ public final class ProtobufRoot {
       if (bool_ != false) {
         output.writeBool(13, bool_);
       }
+      if (objInt32_ != 0) {
+        output.writeInt32(20, objInt32_);
+      }
+      if (objInt64_ != 0L) {
+        output.writeInt64(21, objInt64_);
+      }
+      if (objUint32_ != 0) {
+        output.writeUInt32(22, objUint32_);
+      }
+      if (objUint64_ != 0L) {
+        output.writeUInt64(23, objUint64_);
+      }
+      if (objSint32_ != 0) {
+        output.writeSInt32(24, objSint32_);
+      }
+      if (objSint64_ != 0L) {
+        output.writeSInt64(25, objSint64_);
+      }
+      if (objFixed32_ != 0) {
+        output.writeFixed32(26, objFixed32_);
+      }
+      if (objFixed64_ != 0L) {
+        output.writeFixed64(27, objFixed64_);
+      }
+      if (objSfixed32_ != 0) {
+        output.writeSFixed32(28, objSfixed32_);
+      }
+      if (objSfixed64_ != 0L) {
+        output.writeSFixed64(29, objSfixed64_);
+      }
+      if (objFloatValue_ != 0F) {
+        output.writeFloat(30, objFloatValue_);
+      }
+      if (objDoubleValue_ != 0D) {
+        output.writeDouble(31, objDoubleValue_);
+      }
+      if (objBool_ != false) {
+        output.writeBool(32, objBool_);
+      }
       if (!getStringBytes().isEmpty()) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 14, string_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 40, string_);
       }
       if (!bytes_.isEmpty()) {
-        output.writeBytes(15, bytes_);
+        output.writeBytes(41, bytes_);
       }
-      if (color_ != Color.RED.getNumber()) {
-        output.writeEnum(16, color_);
+      if (color_ != org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color.RED.getNumber()) {
+        output.writeEnum(42, color_);
       }
       if (user_ != null) {
-        output.writeMessage(17, getUser());
-      }
-      com.google.protobuf.GeneratedMessageV3
-          .serializeStringMapTo(
-              output,
-              internalGetSsMap(),
-              SsMapDefaultEntryHolder.defaultEntry,
-              18);
-      com.google.protobuf.GeneratedMessageV3
-          .serializeStringMapTo(
-              output,
-              internalGetSpMap(),
-              SpMapDefaultEntryHolder.defaultEntry,
-              19);
-      for (int i = 0; i < sList_.size(); i++) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 20, sList_.getRaw(i));
-      }
-      for (int i = 0; i < pList_.size(); i++) {
-        output.writeMessage(21, pList_.get(i));
-      }
-      if (any_ != null) {
-        output.writeMessage(22, getAny());
-      }
-      for (int i = 0; i < anys_.size(); i++) {
-        output.writeMessage(23, anys_.get(i));
+        output.writeMessage(43, getUser());
       }
       if (typeRecursive_ != null) {
-        output.writeMessage(24, getTypeRecursive());
+        output.writeMessage(44, getTypeRecursive());
+      }
+      if (any_ != null) {
+        output.writeMessage(50, getAny());
+      }
+      for (int i = 0; i < anys_.size(); i++) {
+        output.writeMessage(51, anys_.get(i));
+      }
+      com.google.protobuf.GeneratedMessageV3
+        .serializeStringMapTo(
+          output,
+          internalGetSsMap(),
+          SsMapDefaultEntryHolder.defaultEntry,
+          60);
+      com.google.protobuf.GeneratedMessageV3
+        .serializeStringMapTo(
+          output,
+          internalGetSint32Map(),
+          Sint32MapDefaultEntryHolder.defaultEntry,
+          61);
+      com.google.protobuf.GeneratedMessageV3
+        .serializeStringMapTo(
+          output,
+          internalGetSpMap(),
+          SpMapDefaultEntryHolder.defaultEntry,
+          62);
+      if (getInt32SPackedList().size() > 0) {
+        output.writeUInt32NoTag(562);
+        output.writeUInt32NoTag(int32SPackedMemoizedSerializedSize);
+      }
+      for (int i = 0; i < int32SPacked_.size(); i++) {
+        output.writeInt32NoTag(int32SPacked_.get(i));
+      }
+      if (getInt64SPackedList().size() > 0) {
+        output.writeUInt32NoTag(570);
+        output.writeUInt32NoTag(int64SPackedMemoizedSerializedSize);
+      }
+      for (int i = 0; i < int64SPacked_.size(); i++) {
+        output.writeInt64NoTag(int64SPacked_.get(i));
+      }
+      if (getUint32SPackedList().size() > 0) {
+        output.writeUInt32NoTag(578);
+        output.writeUInt32NoTag(uint32SPackedMemoizedSerializedSize);
+      }
+      for (int i = 0; i < uint32SPacked_.size(); i++) {
+        output.writeUInt32NoTag(uint32SPacked_.get(i));
+      }
+      if (getUint64SPackedList().size() > 0) {
+        output.writeUInt32NoTag(586);
+        output.writeUInt32NoTag(uint64SPackedMemoizedSerializedSize);
+      }
+      for (int i = 0; i < uint64SPacked_.size(); i++) {
+        output.writeUInt64NoTag(uint64SPacked_.get(i));
+      }
+      if (getSint32SPackedList().size() > 0) {
+        output.writeUInt32NoTag(594);
+        output.writeUInt32NoTag(sint32SPackedMemoizedSerializedSize);
+      }
+      for (int i = 0; i < sint32SPacked_.size(); i++) {
+        output.writeSInt32NoTag(sint32SPacked_.get(i));
+      }
+      if (getSint64SPackedList().size() > 0) {
+        output.writeUInt32NoTag(602);
+        output.writeUInt32NoTag(sint64SPackedMemoizedSerializedSize);
+      }
+      for (int i = 0; i < sint64SPacked_.size(); i++) {
+        output.writeSInt64NoTag(sint64SPacked_.get(i));
+      }
+      if (getFixed32SPackedList().size() > 0) {
+        output.writeUInt32NoTag(610);
+        output.writeUInt32NoTag(fixed32SPackedMemoizedSerializedSize);
+      }
+      for (int i = 0; i < fixed32SPacked_.size(); i++) {
+        output.writeFixed32NoTag(fixed32SPacked_.get(i));
+      }
+      if (getFixed64SPackedList().size() > 0) {
+        output.writeUInt32NoTag(618);
+        output.writeUInt32NoTag(fixed64SPackedMemoizedSerializedSize);
+      }
+      for (int i = 0; i < fixed64SPacked_.size(); i++) {
+        output.writeFixed64NoTag(fixed64SPacked_.get(i));
+      }
+      if (getSfixed32SPackedList().size() > 0) {
+        output.writeUInt32NoTag(626);
+        output.writeUInt32NoTag(sfixed32SPackedMemoizedSerializedSize);
+      }
+      for (int i = 0; i < sfixed32SPacked_.size(); i++) {
+        output.writeSFixed32NoTag(sfixed32SPacked_.get(i));
+      }
+      if (getSfixed64SPackedList().size() > 0) {
+        output.writeUInt32NoTag(634);
+        output.writeUInt32NoTag(sfixed64SPackedMemoizedSerializedSize);
+      }
+      for (int i = 0; i < sfixed64SPacked_.size(); i++) {
+        output.writeSFixed64NoTag(sfixed64SPacked_.get(i));
+      }
+      if (getFloatsPackedList().size() > 0) {
+        output.writeUInt32NoTag(642);
+        output.writeUInt32NoTag(floatsPackedMemoizedSerializedSize);
+      }
+      for (int i = 0; i < floatsPacked_.size(); i++) {
+        output.writeFloatNoTag(floatsPacked_.get(i));
+      }
+      if (getDoublesPackedList().size() > 0) {
+        output.writeUInt32NoTag(650);
+        output.writeUInt32NoTag(doublesPackedMemoizedSerializedSize);
+      }
+      for (int i = 0; i < doublesPacked_.size(); i++) {
+        output.writeDoubleNoTag(doublesPacked_.get(i));
+      }
+      if (getBoolsPackedList().size() > 0) {
+        output.writeUInt32NoTag(658);
+        output.writeUInt32NoTag(boolsPackedMemoizedSerializedSize);
+      }
+      for (int i = 0; i < boolsPacked_.size(); i++) {
+        output.writeBoolNoTag(boolsPacked_.get(i));
+      }
+      if (getColorsPackedList().size() > 0) {
+        output.writeUInt32NoTag(666);
+        output.writeUInt32NoTag(colorsPackedMemoizedSerializedSize);
+      }
+      for (int i = 0; i < colorsPacked_.size(); i++) {
+        output.writeEnumNoTag(colorsPacked_.get(i));
+      }
+      for (int i = 0; i < int32SNotPacked_.size(); i++) {
+        output.writeInt32(90, int32SNotPacked_.get(i));
+      }
+      for (int i = 0; i < int64SNotPacked_.size(); i++) {
+        output.writeInt64(91, int64SNotPacked_.get(i));
+      }
+      for (int i = 0; i < uint32SNotPacked_.size(); i++) {
+        output.writeUInt32(92, uint32SNotPacked_.get(i));
+      }
+      for (int i = 0; i < uint64SNotPacked_.size(); i++) {
+        output.writeUInt64(93, uint64SNotPacked_.get(i));
+      }
+      for (int i = 0; i < sint32SNotPacked_.size(); i++) {
+        output.writeSInt32(94, sint32SNotPacked_.get(i));
+      }
+      for (int i = 0; i < sint64SNotPacked_.size(); i++) {
+        output.writeSInt64(95, sint64SNotPacked_.get(i));
+      }
+      for (int i = 0; i < fixed32SNotPacked_.size(); i++) {
+        output.writeFixed32(96, fixed32SNotPacked_.get(i));
+      }
+      for (int i = 0; i < fixed64SNotPacked_.size(); i++) {
+        output.writeFixed64(97, fixed64SNotPacked_.get(i));
+      }
+      for (int i = 0; i < sfixed32SNotPacked_.size(); i++) {
+        output.writeSFixed32(98, sfixed32SNotPacked_.get(i));
+      }
+      for (int i = 0; i < sfixed64SNotPacked_.size(); i++) {
+        output.writeSFixed64(99, sfixed64SNotPacked_.get(i));
+      }
+      for (int i = 0; i < floatsNotPacked_.size(); i++) {
+        output.writeFloat(100, floatsNotPacked_.get(i));
+      }
+      for (int i = 0; i < doublesNotPacked_.size(); i++) {
+        output.writeDouble(101, doublesNotPacked_.get(i));
+      }
+      for (int i = 0; i < boolsNotPacked_.size(); i++) {
+        output.writeBool(102, boolsNotPacked_.get(i));
+      }
+      for (int i = 0; i < colorsNotPacked_.size(); i++) {
+        output.writeEnum(103, colorsNotPacked_.get(i));
+      }
+      for (int i = 0; i < strings_.size(); i++) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 110, strings_.getRaw(i));
+      }
+      for (int i = 0; i < bytess_.size(); i++) {
+        output.writeBytes(111, bytess_.get(i));
+      }
+      for (int i = 0; i < users_.size(); i++) {
+        output.writeMessage(112, users_.get(i));
       }
       unknownFields.writeTo(output);
     }
 
-    @Override
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
-      if (size != -1) {
-        return size;
-      }
+      if (size != -1) return size;
 
       size = 0;
       if (int32_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-            .computeInt32Size(1, int32_);
+          .computeInt32Size(1, int32_);
       }
       if (int64_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-            .computeInt64Size(2, int64_);
+          .computeInt64Size(2, int64_);
       }
       if (uint32_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-            .computeUInt32Size(3, uint32_);
+          .computeUInt32Size(3, uint32_);
       }
       if (uint64_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-            .computeUInt64Size(4, uint64_);
+          .computeUInt64Size(4, uint64_);
       }
       if (sint32_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-            .computeSInt32Size(5, sint32_);
+          .computeSInt32Size(5, sint32_);
       }
       if (sint64_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-            .computeSInt64Size(6, sint64_);
+          .computeSInt64Size(6, sint64_);
       }
       if (fixed32_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-            .computeFixed32Size(7, fixed32_);
+          .computeFixed32Size(7, fixed32_);
       }
       if (fixed64_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-            .computeFixed64Size(8, fixed64_);
+          .computeFixed64Size(8, fixed64_);
       }
       if (sfixed32_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-            .computeSFixed32Size(9, sfixed32_);
+          .computeSFixed32Size(9, sfixed32_);
       }
       if (sfixed64_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-            .computeSFixed64Size(10, sfixed64_);
+          .computeSFixed64Size(10, sfixed64_);
       }
       if (floatValue_ != 0F) {
         size += com.google.protobuf.CodedOutputStream
-            .computeFloatSize(11, floatValue_);
+          .computeFloatSize(11, floatValue_);
       }
       if (doubleValue_ != 0D) {
         size += com.google.protobuf.CodedOutputStream
-            .computeDoubleSize(12, doubleValue_);
+          .computeDoubleSize(12, doubleValue_);
       }
       if (bool_ != false) {
         size += com.google.protobuf.CodedOutputStream
-            .computeBoolSize(13, bool_);
+          .computeBoolSize(13, bool_);
+      }
+      if (objInt32_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(20, objInt32_);
+      }
+      if (objInt64_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(21, objInt64_);
+      }
+      if (objUint32_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt32Size(22, objUint32_);
+      }
+      if (objUint64_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeUInt64Size(23, objUint64_);
+      }
+      if (objSint32_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeSInt32Size(24, objSint32_);
+      }
+      if (objSint64_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeSInt64Size(25, objSint64_);
+      }
+      if (objFixed32_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFixed32Size(26, objFixed32_);
+      }
+      if (objFixed64_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFixed64Size(27, objFixed64_);
+      }
+      if (objSfixed32_ != 0) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeSFixed32Size(28, objSfixed32_);
+      }
+      if (objSfixed64_ != 0L) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeSFixed64Size(29, objSfixed64_);
+      }
+      if (objFloatValue_ != 0F) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeFloatSize(30, objFloatValue_);
+      }
+      if (objDoubleValue_ != 0D) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeDoubleSize(31, objDoubleValue_);
+      }
+      if (objBool_ != false) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBoolSize(32, objBool_);
       }
       if (!getStringBytes().isEmpty()) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(14, string_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(40, string_);
       }
       if (!bytes_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
-            .computeBytesSize(15, bytes_);
+          .computeBytesSize(41, bytes_);
       }
-      if (color_ != Color.RED.getNumber()) {
+      if (color_ != org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color.RED.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
-            .computeEnumSize(16, color_);
+          .computeEnumSize(42, color_);
       }
       if (user_ != null) {
         size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(17, getUser());
-      }
-      for (java.util.Map.Entry<String, String> entry
-          : internalGetSsMap().getMap().entrySet()) {
-        com.google.protobuf.MapEntry<String, String>
-            ssMap__ = SsMapDefaultEntryHolder.defaultEntry.newBuilderForType()
-            .setKey(entry.getKey())
-            .setValue(entry.getValue())
-            .build();
-        size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(18, ssMap__);
-      }
-      for (java.util.Map.Entry<String, User> entry
-          : internalGetSpMap().getMap().entrySet()) {
-        com.google.protobuf.MapEntry<String, User>
-            spMap__ = SpMapDefaultEntryHolder.defaultEntry.newBuilderForType()
-            .setKey(entry.getKey())
-            .setValue(entry.getValue())
-            .build();
-        size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(19, spMap__);
-      }
-      {
-        int dataSize = 0;
-        for (int i = 0; i < sList_.size(); i++) {
-          dataSize += computeStringSizeNoTag(sList_.getRaw(i));
-        }
-        size += dataSize;
-        size += 2 * getSListList().size();
-      }
-      for (int i = 0; i < pList_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(21, pList_.get(i));
-      }
-      if (any_ != null) {
-        size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(22, getAny());
-      }
-      for (int i = 0; i < anys_.size(); i++) {
-        size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(23, anys_.get(i));
+          .computeMessageSize(43, getUser());
       }
       if (typeRecursive_ != null) {
         size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(24, getTypeRecursive());
+          .computeMessageSize(44, getTypeRecursive());
+      }
+      if (any_ != null) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(50, getAny());
+      }
+      for (int i = 0; i < anys_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(51, anys_.get(i));
+      }
+      for (java.util.Map.Entry<java.lang.String, java.lang.String> entry
+           : internalGetSsMap().getMap().entrySet()) {
+        com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+        ssMap__ = SsMapDefaultEntryHolder.defaultEntry.newBuilderForType()
+            .setKey(entry.getKey())
+            .setValue(entry.getValue())
+            .build();
+        size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(60, ssMap__);
+      }
+      for (java.util.Map.Entry<java.lang.String, java.lang.Integer> entry
+           : internalGetSint32Map().getMap().entrySet()) {
+        com.google.protobuf.MapEntry<java.lang.String, java.lang.Integer>
+        sint32Map__ = Sint32MapDefaultEntryHolder.defaultEntry.newBuilderForType()
+            .setKey(entry.getKey())
+            .setValue(entry.getValue())
+            .build();
+        size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(61, sint32Map__);
+      }
+      for (java.util.Map.Entry<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> entry
+           : internalGetSpMap().getMap().entrySet()) {
+        com.google.protobuf.MapEntry<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User>
+        spMap__ = SpMapDefaultEntryHolder.defaultEntry.newBuilderForType()
+            .setKey(entry.getKey())
+            .setValue(entry.getValue())
+            .build();
+        size += com.google.protobuf.CodedOutputStream
+            .computeMessageSize(62, spMap__);
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < int32SPacked_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeInt32SizeNoTag(int32SPacked_.get(i));
+        }
+        size += dataSize;
+        if (!getInt32SPackedList().isEmpty()) {
+          size += 2;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        int32SPackedMemoizedSerializedSize = dataSize;
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < int64SPacked_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeInt64SizeNoTag(int64SPacked_.get(i));
+        }
+        size += dataSize;
+        if (!getInt64SPackedList().isEmpty()) {
+          size += 2;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        int64SPackedMemoizedSerializedSize = dataSize;
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < uint32SPacked_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeUInt32SizeNoTag(uint32SPacked_.get(i));
+        }
+        size += dataSize;
+        if (!getUint32SPackedList().isEmpty()) {
+          size += 2;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        uint32SPackedMemoizedSerializedSize = dataSize;
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < uint64SPacked_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeUInt64SizeNoTag(uint64SPacked_.get(i));
+        }
+        size += dataSize;
+        if (!getUint64SPackedList().isEmpty()) {
+          size += 2;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        uint64SPackedMemoizedSerializedSize = dataSize;
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < sint32SPacked_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeSInt32SizeNoTag(sint32SPacked_.get(i));
+        }
+        size += dataSize;
+        if (!getSint32SPackedList().isEmpty()) {
+          size += 2;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        sint32SPackedMemoizedSerializedSize = dataSize;
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < sint64SPacked_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeSInt64SizeNoTag(sint64SPacked_.get(i));
+        }
+        size += dataSize;
+        if (!getSint64SPackedList().isEmpty()) {
+          size += 2;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        sint64SPackedMemoizedSerializedSize = dataSize;
+      }
+      {
+        int dataSize = 0;
+        dataSize = 4 * getFixed32SPackedList().size();
+        size += dataSize;
+        if (!getFixed32SPackedList().isEmpty()) {
+          size += 2;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        fixed32SPackedMemoizedSerializedSize = dataSize;
+      }
+      {
+        int dataSize = 0;
+        dataSize = 8 * getFixed64SPackedList().size();
+        size += dataSize;
+        if (!getFixed64SPackedList().isEmpty()) {
+          size += 2;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        fixed64SPackedMemoizedSerializedSize = dataSize;
+      }
+      {
+        int dataSize = 0;
+        dataSize = 4 * getSfixed32SPackedList().size();
+        size += dataSize;
+        if (!getSfixed32SPackedList().isEmpty()) {
+          size += 2;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        sfixed32SPackedMemoizedSerializedSize = dataSize;
+      }
+      {
+        int dataSize = 0;
+        dataSize = 8 * getSfixed64SPackedList().size();
+        size += dataSize;
+        if (!getSfixed64SPackedList().isEmpty()) {
+          size += 2;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        sfixed64SPackedMemoizedSerializedSize = dataSize;
+      }
+      {
+        int dataSize = 0;
+        dataSize = 4 * getFloatsPackedList().size();
+        size += dataSize;
+        if (!getFloatsPackedList().isEmpty()) {
+          size += 2;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        floatsPackedMemoizedSerializedSize = dataSize;
+      }
+      {
+        int dataSize = 0;
+        dataSize = 8 * getDoublesPackedList().size();
+        size += dataSize;
+        if (!getDoublesPackedList().isEmpty()) {
+          size += 2;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        doublesPackedMemoizedSerializedSize = dataSize;
+      }
+      {
+        int dataSize = 0;
+        dataSize = 1 * getBoolsPackedList().size();
+        size += dataSize;
+        if (!getBoolsPackedList().isEmpty()) {
+          size += 2;
+          size += com.google.protobuf.CodedOutputStream
+              .computeInt32SizeNoTag(dataSize);
+        }
+        boolsPackedMemoizedSerializedSize = dataSize;
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < colorsPacked_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeEnumSizeNoTag(colorsPacked_.get(i));
+        }
+        size += dataSize;
+        if (!getColorsPackedList().isEmpty()) {  size += 2;
+          size += com.google.protobuf.CodedOutputStream
+            .computeUInt32SizeNoTag(dataSize);
+        }colorsPackedMemoizedSerializedSize = dataSize;
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < int32SNotPacked_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeInt32SizeNoTag(int32SNotPacked_.get(i));
+        }
+        size += dataSize;
+        size += 2 * getInt32SNotPackedList().size();
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < int64SNotPacked_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeInt64SizeNoTag(int64SNotPacked_.get(i));
+        }
+        size += dataSize;
+        size += 2 * getInt64SNotPackedList().size();
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < uint32SNotPacked_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeUInt32SizeNoTag(uint32SNotPacked_.get(i));
+        }
+        size += dataSize;
+        size += 2 * getUint32SNotPackedList().size();
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < uint64SNotPacked_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeUInt64SizeNoTag(uint64SNotPacked_.get(i));
+        }
+        size += dataSize;
+        size += 2 * getUint64SNotPackedList().size();
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < sint32SNotPacked_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeSInt32SizeNoTag(sint32SNotPacked_.get(i));
+        }
+        size += dataSize;
+        size += 2 * getSint32SNotPackedList().size();
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < sint64SNotPacked_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeSInt64SizeNoTag(sint64SNotPacked_.get(i));
+        }
+        size += dataSize;
+        size += 2 * getSint64SNotPackedList().size();
+      }
+      {
+        int dataSize = 0;
+        dataSize = 4 * getFixed32SNotPackedList().size();
+        size += dataSize;
+        size += 2 * getFixed32SNotPackedList().size();
+      }
+      {
+        int dataSize = 0;
+        dataSize = 8 * getFixed64SNotPackedList().size();
+        size += dataSize;
+        size += 2 * getFixed64SNotPackedList().size();
+      }
+      {
+        int dataSize = 0;
+        dataSize = 4 * getSfixed32SNotPackedList().size();
+        size += dataSize;
+        size += 2 * getSfixed32SNotPackedList().size();
+      }
+      {
+        int dataSize = 0;
+        dataSize = 8 * getSfixed64SNotPackedList().size();
+        size += dataSize;
+        size += 2 * getSfixed64SNotPackedList().size();
+      }
+      {
+        int dataSize = 0;
+        dataSize = 4 * getFloatsNotPackedList().size();
+        size += dataSize;
+        size += 2 * getFloatsNotPackedList().size();
+      }
+      {
+        int dataSize = 0;
+        dataSize = 8 * getDoublesNotPackedList().size();
+        size += dataSize;
+        size += 2 * getDoublesNotPackedList().size();
+      }
+      {
+        int dataSize = 0;
+        dataSize = 1 * getBoolsNotPackedList().size();
+        size += dataSize;
+        size += 2 * getBoolsNotPackedList().size();
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < colorsNotPacked_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeEnumSizeNoTag(colorsNotPacked_.get(i));
+        }
+        size += dataSize;
+        size += 2 * colorsNotPacked_.size();
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < strings_.size(); i++) {
+          dataSize += computeStringSizeNoTag(strings_.getRaw(i));
+        }
+        size += dataSize;
+        size += 2 * getStringsList().size();
+      }
+      {
+        int dataSize = 0;
+        for (int i = 0; i < bytess_.size(); i++) {
+          dataSize += com.google.protobuf.CodedOutputStream
+            .computeBytesSizeNoTag(bytess_.get(i));
+        }
+        size += dataSize;
+        size += 2 * getBytessList().size();
+      }
+      for (int i = 0; i < users_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(112, users_.get(i));
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    @Override
-    public boolean equals(final Object obj) {
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
-        return true;
+       return true;
       }
-      if (!(obj instanceof Root)) {
+      if (!(obj instanceof org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root)) {
         return super.equals(obj);
       }
-      Root other = (Root) obj;
+      org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root other = (org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root) obj;
 
       boolean result = true;
       result = result && (getInt32()
@@ -1562,15 +4151,45 @@ public final class ProtobufRoot {
       result = result && (getSfixed64()
           == other.getSfixed64());
       result = result && (
-          Float.floatToIntBits(getFloatValue())
-              == Float.floatToIntBits(
+          java.lang.Float.floatToIntBits(getFloatValue())
+          == java.lang.Float.floatToIntBits(
               other.getFloatValue()));
       result = result && (
-          Double.doubleToLongBits(getDoubleValue())
-              == Double.doubleToLongBits(
+          java.lang.Double.doubleToLongBits(getDoubleValue())
+          == java.lang.Double.doubleToLongBits(
               other.getDoubleValue()));
       result = result && (getBool()
           == other.getBool());
+      result = result && (getObjInt32()
+          == other.getObjInt32());
+      result = result && (getObjInt64()
+          == other.getObjInt64());
+      result = result && (getObjUint32()
+          == other.getObjUint32());
+      result = result && (getObjUint64()
+          == other.getObjUint64());
+      result = result && (getObjSint32()
+          == other.getObjSint32());
+      result = result && (getObjSint64()
+          == other.getObjSint64());
+      result = result && (getObjFixed32()
+          == other.getObjFixed32());
+      result = result && (getObjFixed64()
+          == other.getObjFixed64());
+      result = result && (getObjSfixed32()
+          == other.getObjSfixed32());
+      result = result && (getObjSfixed64()
+          == other.getObjSfixed64());
+      result = result && (
+          java.lang.Float.floatToIntBits(getObjFloatValue())
+          == java.lang.Float.floatToIntBits(
+              other.getObjFloatValue()));
+      result = result && (
+          java.lang.Double.doubleToLongBits(getObjDoubleValue())
+          == java.lang.Double.doubleToLongBits(
+              other.getObjDoubleValue()));
+      result = result && (getObjBool()
+          == other.getObjBool());
       result = result && getString()
           .equals(other.getString());
       result = result && getBytes()
@@ -1581,14 +4200,11 @@ public final class ProtobufRoot {
         result = result && getUser()
             .equals(other.getUser());
       }
-      result = result && internalGetSsMap().equals(
-          other.internalGetSsMap());
-      result = result && internalGetSpMap().equals(
-          other.internalGetSpMap());
-      result = result && getSListList()
-          .equals(other.getSListList());
-      result = result && getPListList()
-          .equals(other.getPListList());
+      result = result && (hasTypeRecursive() == other.hasTypeRecursive());
+      if (hasTypeRecursive()) {
+        result = result && getTypeRecursive()
+            .equals(other.getTypeRecursive());
+      }
       result = result && (hasAny() == other.hasAny());
       if (hasAny()) {
         result = result && getAny()
@@ -1596,16 +4212,77 @@ public final class ProtobufRoot {
       }
       result = result && getAnysList()
           .equals(other.getAnysList());
-      result = result && (hasTypeRecursive() == other.hasTypeRecursive());
-      if (hasTypeRecursive()) {
-        result = result && getTypeRecursive()
-            .equals(other.getTypeRecursive());
-      }
+      result = result && internalGetSsMap().equals(
+          other.internalGetSsMap());
+      result = result && internalGetSint32Map().equals(
+          other.internalGetSint32Map());
+      result = result && internalGetSpMap().equals(
+          other.internalGetSpMap());
+      result = result && getInt32SPackedList()
+          .equals(other.getInt32SPackedList());
+      result = result && getInt64SPackedList()
+          .equals(other.getInt64SPackedList());
+      result = result && getUint32SPackedList()
+          .equals(other.getUint32SPackedList());
+      result = result && getUint64SPackedList()
+          .equals(other.getUint64SPackedList());
+      result = result && getSint32SPackedList()
+          .equals(other.getSint32SPackedList());
+      result = result && getSint64SPackedList()
+          .equals(other.getSint64SPackedList());
+      result = result && getFixed32SPackedList()
+          .equals(other.getFixed32SPackedList());
+      result = result && getFixed64SPackedList()
+          .equals(other.getFixed64SPackedList());
+      result = result && getSfixed32SPackedList()
+          .equals(other.getSfixed32SPackedList());
+      result = result && getSfixed64SPackedList()
+          .equals(other.getSfixed64SPackedList());
+      result = result && getFloatsPackedList()
+          .equals(other.getFloatsPackedList());
+      result = result && getDoublesPackedList()
+          .equals(other.getDoublesPackedList());
+      result = result && getBoolsPackedList()
+          .equals(other.getBoolsPackedList());
+      result = result && colorsPacked_.equals(other.colorsPacked_);
+      result = result && getInt32SNotPackedList()
+          .equals(other.getInt32SNotPackedList());
+      result = result && getInt64SNotPackedList()
+          .equals(other.getInt64SNotPackedList());
+      result = result && getUint32SNotPackedList()
+          .equals(other.getUint32SNotPackedList());
+      result = result && getUint64SNotPackedList()
+          .equals(other.getUint64SNotPackedList());
+      result = result && getSint32SNotPackedList()
+          .equals(other.getSint32SNotPackedList());
+      result = result && getSint64SNotPackedList()
+          .equals(other.getSint64SNotPackedList());
+      result = result && getFixed32SNotPackedList()
+          .equals(other.getFixed32SNotPackedList());
+      result = result && getFixed64SNotPackedList()
+          .equals(other.getFixed64SNotPackedList());
+      result = result && getSfixed32SNotPackedList()
+          .equals(other.getSfixed32SNotPackedList());
+      result = result && getSfixed64SNotPackedList()
+          .equals(other.getSfixed64SNotPackedList());
+      result = result && getFloatsNotPackedList()
+          .equals(other.getFloatsNotPackedList());
+      result = result && getDoublesNotPackedList()
+          .equals(other.getDoublesNotPackedList());
+      result = result && getBoolsNotPackedList()
+          .equals(other.getBoolsNotPackedList());
+      result = result && colorsNotPacked_.equals(other.colorsNotPacked_);
+      result = result && getStringsList()
+          .equals(other.getStringsList());
+      result = result && getBytessList()
+          .equals(other.getBytessList());
+      result = result && getUsersList()
+          .equals(other.getUsersList());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
 
-    @Override
+    @java.lang.Override
     public int hashCode() {
       if (memoizedHashCode != 0) {
         return memoizedHashCode;
@@ -1638,14 +4315,48 @@ public final class ProtobufRoot {
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           getSfixed64());
       hash = (37 * hash) + FLOATVALUE_FIELD_NUMBER;
-      hash = (53 * hash) + Float.floatToIntBits(
+      hash = (53 * hash) + java.lang.Float.floatToIntBits(
           getFloatValue());
       hash = (37 * hash) + DOUBLEVALUE_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
-          Double.doubleToLongBits(getDoubleValue()));
+          java.lang.Double.doubleToLongBits(getDoubleValue()));
       hash = (37 * hash) + BOOL_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
           getBool());
+      hash = (37 * hash) + OBJINT32_FIELD_NUMBER;
+      hash = (53 * hash) + getObjInt32();
+      hash = (37 * hash) + OBJINT64_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getObjInt64());
+      hash = (37 * hash) + OBJUINT32_FIELD_NUMBER;
+      hash = (53 * hash) + getObjUint32();
+      hash = (37 * hash) + OBJUINT64_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getObjUint64());
+      hash = (37 * hash) + OBJSINT32_FIELD_NUMBER;
+      hash = (53 * hash) + getObjSint32();
+      hash = (37 * hash) + OBJSINT64_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getObjSint64());
+      hash = (37 * hash) + OBJFIXED32_FIELD_NUMBER;
+      hash = (53 * hash) + getObjFixed32();
+      hash = (37 * hash) + OBJFIXED64_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getObjFixed64());
+      hash = (37 * hash) + OBJSFIXED32_FIELD_NUMBER;
+      hash = (53 * hash) + getObjSfixed32();
+      hash = (37 * hash) + OBJSFIXED64_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          getObjSfixed64());
+      hash = (37 * hash) + OBJFLOATVALUE_FIELD_NUMBER;
+      hash = (53 * hash) + java.lang.Float.floatToIntBits(
+          getObjFloatValue());
+      hash = (37 * hash) + OBJDOUBLEVALUE_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
+          java.lang.Double.doubleToLongBits(getObjDoubleValue()));
+      hash = (37 * hash) + OBJBOOL_FIELD_NUMBER;
+      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+          getObjBool());
       hash = (37 * hash) + STRING_FIELD_NUMBER;
       hash = (53 * hash) + getString().hashCode();
       hash = (37 * hash) + BYTES_FIELD_NUMBER;
@@ -1656,21 +4367,9 @@ public final class ProtobufRoot {
         hash = (37 * hash) + USER_FIELD_NUMBER;
         hash = (53 * hash) + getUser().hashCode();
       }
-      if (!internalGetSsMap().getMap().isEmpty()) {
-        hash = (37 * hash) + SSMAP_FIELD_NUMBER;
-        hash = (53 * hash) + internalGetSsMap().hashCode();
-      }
-      if (!internalGetSpMap().getMap().isEmpty()) {
-        hash = (37 * hash) + SPMAP_FIELD_NUMBER;
-        hash = (53 * hash) + internalGetSpMap().hashCode();
-      }
-      if (getSListCount() > 0) {
-        hash = (37 * hash) + SLIST_FIELD_NUMBER;
-        hash = (53 * hash) + getSListList().hashCode();
-      }
-      if (getPListCount() > 0) {
-        hash = (37 * hash) + PLIST_FIELD_NUMBER;
-        hash = (53 * hash) + getPListList().hashCode();
+      if (hasTypeRecursive()) {
+        hash = (37 * hash) + TYPERECURSIVE_FIELD_NUMBER;
+        hash = (53 * hash) + getTypeRecursive().hashCode();
       }
       if (hasAny()) {
         hash = (37 * hash) + ANY_FIELD_NUMBER;
@@ -1680,89 +4379,210 @@ public final class ProtobufRoot {
         hash = (37 * hash) + ANYS_FIELD_NUMBER;
         hash = (53 * hash) + getAnysList().hashCode();
       }
-      if (hasTypeRecursive()) {
-        hash = (37 * hash) + TYPERECURSIVE_FIELD_NUMBER;
-        hash = (53 * hash) + getTypeRecursive().hashCode();
+      if (!internalGetSsMap().getMap().isEmpty()) {
+        hash = (37 * hash) + SSMAP_FIELD_NUMBER;
+        hash = (53 * hash) + internalGetSsMap().hashCode();
+      }
+      if (!internalGetSint32Map().getMap().isEmpty()) {
+        hash = (37 * hash) + SINT32MAP_FIELD_NUMBER;
+        hash = (53 * hash) + internalGetSint32Map().hashCode();
+      }
+      if (!internalGetSpMap().getMap().isEmpty()) {
+        hash = (37 * hash) + SPMAP_FIELD_NUMBER;
+        hash = (53 * hash) + internalGetSpMap().hashCode();
+      }
+      if (getInt32SPackedCount() > 0) {
+        hash = (37 * hash) + INT32SPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getInt32SPackedList().hashCode();
+      }
+      if (getInt64SPackedCount() > 0) {
+        hash = (37 * hash) + INT64SPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getInt64SPackedList().hashCode();
+      }
+      if (getUint32SPackedCount() > 0) {
+        hash = (37 * hash) + UINT32SPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getUint32SPackedList().hashCode();
+      }
+      if (getUint64SPackedCount() > 0) {
+        hash = (37 * hash) + UINT64SPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getUint64SPackedList().hashCode();
+      }
+      if (getSint32SPackedCount() > 0) {
+        hash = (37 * hash) + SINT32SPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getSint32SPackedList().hashCode();
+      }
+      if (getSint64SPackedCount() > 0) {
+        hash = (37 * hash) + SINT64SPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getSint64SPackedList().hashCode();
+      }
+      if (getFixed32SPackedCount() > 0) {
+        hash = (37 * hash) + FIXED32SPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getFixed32SPackedList().hashCode();
+      }
+      if (getFixed64SPackedCount() > 0) {
+        hash = (37 * hash) + FIXED64SPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getFixed64SPackedList().hashCode();
+      }
+      if (getSfixed32SPackedCount() > 0) {
+        hash = (37 * hash) + SFIXED32SPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getSfixed32SPackedList().hashCode();
+      }
+      if (getSfixed64SPackedCount() > 0) {
+        hash = (37 * hash) + SFIXED64SPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getSfixed64SPackedList().hashCode();
+      }
+      if (getFloatsPackedCount() > 0) {
+        hash = (37 * hash) + FLOATSPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getFloatsPackedList().hashCode();
+      }
+      if (getDoublesPackedCount() > 0) {
+        hash = (37 * hash) + DOUBLESPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getDoublesPackedList().hashCode();
+      }
+      if (getBoolsPackedCount() > 0) {
+        hash = (37 * hash) + BOOLSPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getBoolsPackedList().hashCode();
+      }
+      if (getColorsPackedCount() > 0) {
+        hash = (37 * hash) + COLORSPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + colorsPacked_.hashCode();
+      }
+      if (getInt32SNotPackedCount() > 0) {
+        hash = (37 * hash) + INT32SNOTPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getInt32SNotPackedList().hashCode();
+      }
+      if (getInt64SNotPackedCount() > 0) {
+        hash = (37 * hash) + INT64SNOTPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getInt64SNotPackedList().hashCode();
+      }
+      if (getUint32SNotPackedCount() > 0) {
+        hash = (37 * hash) + UINT32SNOTPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getUint32SNotPackedList().hashCode();
+      }
+      if (getUint64SNotPackedCount() > 0) {
+        hash = (37 * hash) + UINT64SNOTPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getUint64SNotPackedList().hashCode();
+      }
+      if (getSint32SNotPackedCount() > 0) {
+        hash = (37 * hash) + SINT32SNOTPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getSint32SNotPackedList().hashCode();
+      }
+      if (getSint64SNotPackedCount() > 0) {
+        hash = (37 * hash) + SINT64SNOTPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getSint64SNotPackedList().hashCode();
+      }
+      if (getFixed32SNotPackedCount() > 0) {
+        hash = (37 * hash) + FIXED32SNOTPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getFixed32SNotPackedList().hashCode();
+      }
+      if (getFixed64SNotPackedCount() > 0) {
+        hash = (37 * hash) + FIXED64SNOTPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getFixed64SNotPackedList().hashCode();
+      }
+      if (getSfixed32SNotPackedCount() > 0) {
+        hash = (37 * hash) + SFIXED32SNOTPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getSfixed32SNotPackedList().hashCode();
+      }
+      if (getSfixed64SNotPackedCount() > 0) {
+        hash = (37 * hash) + SFIXED64SNOTPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getSfixed64SNotPackedList().hashCode();
+      }
+      if (getFloatsNotPackedCount() > 0) {
+        hash = (37 * hash) + FLOATSNOTPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getFloatsNotPackedList().hashCode();
+      }
+      if (getDoublesNotPackedCount() > 0) {
+        hash = (37 * hash) + DOUBLESNOTPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getDoublesNotPackedList().hashCode();
+      }
+      if (getBoolsNotPackedCount() > 0) {
+        hash = (37 * hash) + BOOLSNOTPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + getBoolsNotPackedList().hashCode();
+      }
+      if (getColorsNotPackedCount() > 0) {
+        hash = (37 * hash) + COLORSNOTPACKED_FIELD_NUMBER;
+        hash = (53 * hash) + colorsNotPacked_.hashCode();
+      }
+      if (getStringsCount() > 0) {
+        hash = (37 * hash) + STRINGS_FIELD_NUMBER;
+        hash = (53 * hash) + getStringsList().hashCode();
+      }
+      if (getBytessCount() > 0) {
+        hash = (37 * hash) + BYTESS_FIELD_NUMBER;
+        hash = (53 * hash) + getBytessList().hashCode();
+      }
+      if (getUsersCount() > 0) {
+        hash = (37 * hash) + USERS_FIELD_NUMBER;
+        hash = (53 * hash) + getUsersList().hashCode();
       }
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
     }
 
-    public static Root parseFrom(
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-
-    public static Root parseFrom(
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-
-    public static Root parseFrom(
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-
-    public static Root parseFrom(
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-
-    public static Root parseFrom(byte[] data)
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-
-    public static Root parseFrom(
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-
-    public static Root parseFrom(java.io.InputStream input)
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-
-    public static Root parseFrom(
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
-    public static Root parseDelimitedFrom(java.io.InputStream input)
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
-    public static Root parseDelimitedFrom(
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-
-    public static Root parseFrom(
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-
-    public static Root parseFrom(
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -1770,78 +4590,74 @@ public final class ProtobufRoot {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    @Override
-    public Builder newBuilderForType() {
-      return newBuilder();
-    }
-
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-
-    public static Builder newBuilder(Root prototype) {
+    public static Builder newBuilder(org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
-
-    @Override
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
     }
 
-    @Override
+    @java.lang.Override
     protected Builder newBuilderForType(
-        BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
-
     /**
      * Protobuf type {@code org.apache.servicecomb.foundation.protobuf.internal.model.Root}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:org.apache.servicecomb.foundation.protobuf.internal.model.Root)
-        RootOrBuilder {
+        org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.RootOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
-      getDescriptor() {
-        return ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_descriptor;
+          getDescriptor() {
+        return org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_descriptor;
       }
 
       @SuppressWarnings({"rawtypes"})
       protected com.google.protobuf.MapField internalGetMapField(
           int number) {
         switch (number) {
-          case 18:
+          case 60:
             return internalGetSsMap();
-          case 19:
+          case 61:
+            return internalGetSint32Map();
+          case 62:
             return internalGetSpMap();
           default:
             throw new RuntimeException(
                 "Invalid map field number: " + number);
         }
       }
-
       @SuppressWarnings({"rawtypes"})
       protected com.google.protobuf.MapField internalGetMutableMapField(
           int number) {
         switch (number) {
-          case 18:
+          case 60:
             return internalGetMutableSsMap();
-          case 19:
+          case 61:
+            return internalGetMutableSint32Map();
+          case 62:
             return internalGetMutableSpMap();
           default:
             throw new RuntimeException(
                 "Invalid map field number: " + number);
         }
       }
-
-      @Override
-      protected FieldAccessorTable
-      internalGetFieldAccessorTable() {
-        return ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_fieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                Root.class, Builder.class);
+                org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.class, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.Builder.class);
       }
 
       // Construct using org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.newBuilder()
@@ -1850,20 +4666,18 @@ public final class ProtobufRoot {
       }
 
       private Builder(
-          BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
-
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
-            .alwaysUseFieldBuilders) {
-          getPListFieldBuilder();
+                .alwaysUseFieldBuilders) {
           getAnysFieldBuilder();
+          getUsersFieldBuilder();
         }
       }
-
-      @Override
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         int32_ = 0;
@@ -1892,6 +4706,32 @@ public final class ProtobufRoot {
 
         bool_ = false;
 
+        objInt32_ = 0;
+
+        objInt64_ = 0L;
+
+        objUint32_ = 0;
+
+        objUint64_ = 0L;
+
+        objSint32_ = 0;
+
+        objSint64_ = 0L;
+
+        objFixed32_ = 0;
+
+        objFixed64_ = 0L;
+
+        objSfixed32_ = 0;
+
+        objSfixed64_ = 0L;
+
+        objFloatValue_ = 0F;
+
+        objDoubleValue_ = 0D;
+
+        objBool_ = false;
+
         string_ = "";
 
         bytes_ = com.google.protobuf.ByteString.EMPTY;
@@ -1904,15 +4744,11 @@ public final class ProtobufRoot {
           user_ = null;
           userBuilder_ = null;
         }
-        internalGetMutableSsMap().clear();
-        internalGetMutableSpMap().clear();
-        sList_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00080000);
-        if (pListBuilder_ == null) {
-          pList_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00100000);
+        if (typeRecursiveBuilder_ == null) {
+          typeRecursive_ = null;
         } else {
-          pListBuilder_.clear();
+          typeRecursive_ = null;
+          typeRecursiveBuilder_ = null;
         }
         if (anyBuilder_ == null) {
           any_ = null;
@@ -1922,43 +4758,108 @@ public final class ProtobufRoot {
         }
         if (anysBuilder_ == null) {
           anys_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00400000);
+          bitField1_ = (bitField1_ & ~0x00000001);
         } else {
           anysBuilder_.clear();
         }
-        if (typeRecursiveBuilder_ == null) {
-          typeRecursive_ = null;
+        internalGetMutableSsMap().clear();
+        internalGetMutableSint32Map().clear();
+        internalGetMutableSpMap().clear();
+        int32SPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00000010);
+        int64SPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00000020);
+        uint32SPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00000040);
+        uint64SPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00000080);
+        sint32SPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00000100);
+        sint64SPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00000200);
+        fixed32SPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00000400);
+        fixed64SPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00000800);
+        sfixed32SPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00001000);
+        sfixed64SPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00002000);
+        floatsPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00004000);
+        doublesPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00008000);
+        boolsPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00010000);
+        colorsPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00020000);
+        int32SNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00040000);
+        int64SNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00080000);
+        uint32SNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00100000);
+        uint64SNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00200000);
+        sint32SNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00400000);
+        sint64SNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00800000);
+        fixed32SNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x01000000);
+        fixed64SNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x02000000);
+        sfixed32SNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x04000000);
+        sfixed64SNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x08000000);
+        floatsNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x10000000);
+        doublesNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x20000000);
+        boolsNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x40000000);
+        colorsNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x80000000);
+        strings_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField2_ = (bitField2_ & ~0x00000001);
+        bytess_ = java.util.Collections.emptyList();
+        bitField2_ = (bitField2_ & ~0x00000002);
+        if (usersBuilder_ == null) {
+          users_ = java.util.Collections.emptyList();
+          bitField2_ = (bitField2_ & ~0x00000004);
         } else {
-          typeRecursive_ = null;
-          typeRecursiveBuilder_ = null;
+          usersBuilder_.clear();
         }
         return this;
       }
 
-      @Override
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
-      getDescriptorForType() {
-        return ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_descriptor;
+          getDescriptorForType() {
+        return org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_descriptor;
       }
 
-      @Override
-      public Root getDefaultInstanceForType() {
-        return Root.getDefaultInstance();
+      @java.lang.Override
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root getDefaultInstanceForType() {
+        return org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.getDefaultInstance();
       }
 
-      @Override
-      public Root build() {
-        Root result = buildPartial();
+      @java.lang.Override
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root build() {
+        org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      @Override
-      public Root buildPartial() {
-        Root result = new Root(this);
+      @java.lang.Override
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root buildPartial() {
+        org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root result = new org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root(this);
         int from_bitField0_ = bitField0_;
+        int from_bitField1_ = bitField1_;
+        int from_bitField2_ = bitField2_;
         int to_bitField0_ = 0;
         result.int32_ = int32_;
         result.int64_ = int64_;
@@ -1973,6 +4874,19 @@ public final class ProtobufRoot {
         result.floatValue_ = floatValue_;
         result.doubleValue_ = doubleValue_;
         result.bool_ = bool_;
+        result.objInt32_ = objInt32_;
+        result.objInt64_ = objInt64_;
+        result.objUint32_ = objUint32_;
+        result.objUint64_ = objUint64_;
+        result.objSint32_ = objSint32_;
+        result.objSint64_ = objSint64_;
+        result.objFixed32_ = objFixed32_;
+        result.objFixed64_ = objFixed64_;
+        result.objSfixed32_ = objSfixed32_;
+        result.objSfixed64_ = objSfixed64_;
+        result.objFloatValue_ = objFloatValue_;
+        result.objDoubleValue_ = objDoubleValue_;
+        result.objBool_ = objBool_;
         result.string_ = string_;
         result.bytes_ = bytes_;
         result.color_ = color_;
@@ -1981,23 +4895,10 @@ public final class ProtobufRoot {
         } else {
           result.user_ = userBuilder_.build();
         }
-        result.ssMap_ = internalGetSsMap();
-        result.ssMap_.makeImmutable();
-        result.spMap_ = internalGetSpMap();
-        result.spMap_.makeImmutable();
-        if (((bitField0_ & 0x00080000) == 0x00080000)) {
-          sList_ = sList_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00080000);
-        }
-        result.sList_ = sList_;
-        if (pListBuilder_ == null) {
-          if (((bitField0_ & 0x00100000) == 0x00100000)) {
-            pList_ = java.util.Collections.unmodifiableList(pList_);
-            bitField0_ = (bitField0_ & ~0x00100000);
-          }
-          result.pList_ = pList_;
+        if (typeRecursiveBuilder_ == null) {
+          result.typeRecursive_ = typeRecursive_;
         } else {
-          result.pList_ = pListBuilder_.build();
+          result.typeRecursive_ = typeRecursiveBuilder_.build();
         }
         if (anyBuilder_ == null) {
           result.any_ = any_;
@@ -2005,76 +4906,228 @@ public final class ProtobufRoot {
           result.any_ = anyBuilder_.build();
         }
         if (anysBuilder_ == null) {
-          if (((bitField0_ & 0x00400000) == 0x00400000)) {
+          if (((bitField1_ & 0x00000001) == 0x00000001)) {
             anys_ = java.util.Collections.unmodifiableList(anys_);
-            bitField0_ = (bitField0_ & ~0x00400000);
+            bitField1_ = (bitField1_ & ~0x00000001);
           }
           result.anys_ = anys_;
         } else {
           result.anys_ = anysBuilder_.build();
         }
-        if (typeRecursiveBuilder_ == null) {
-          result.typeRecursive_ = typeRecursive_;
+        result.ssMap_ = internalGetSsMap();
+        result.ssMap_.makeImmutable();
+        result.sint32Map_ = internalGetSint32Map();
+        result.sint32Map_.makeImmutable();
+        result.spMap_ = internalGetSpMap();
+        result.spMap_.makeImmutable();
+        if (((bitField1_ & 0x00000010) == 0x00000010)) {
+          int32SPacked_ = java.util.Collections.unmodifiableList(int32SPacked_);
+          bitField1_ = (bitField1_ & ~0x00000010);
+        }
+        result.int32SPacked_ = int32SPacked_;
+        if (((bitField1_ & 0x00000020) == 0x00000020)) {
+          int64SPacked_ = java.util.Collections.unmodifiableList(int64SPacked_);
+          bitField1_ = (bitField1_ & ~0x00000020);
+        }
+        result.int64SPacked_ = int64SPacked_;
+        if (((bitField1_ & 0x00000040) == 0x00000040)) {
+          uint32SPacked_ = java.util.Collections.unmodifiableList(uint32SPacked_);
+          bitField1_ = (bitField1_ & ~0x00000040);
+        }
+        result.uint32SPacked_ = uint32SPacked_;
+        if (((bitField1_ & 0x00000080) == 0x00000080)) {
+          uint64SPacked_ = java.util.Collections.unmodifiableList(uint64SPacked_);
+          bitField1_ = (bitField1_ & ~0x00000080);
+        }
+        result.uint64SPacked_ = uint64SPacked_;
+        if (((bitField1_ & 0x00000100) == 0x00000100)) {
+          sint32SPacked_ = java.util.Collections.unmodifiableList(sint32SPacked_);
+          bitField1_ = (bitField1_ & ~0x00000100);
+        }
+        result.sint32SPacked_ = sint32SPacked_;
+        if (((bitField1_ & 0x00000200) == 0x00000200)) {
+          sint64SPacked_ = java.util.Collections.unmodifiableList(sint64SPacked_);
+          bitField1_ = (bitField1_ & ~0x00000200);
+        }
+        result.sint64SPacked_ = sint64SPacked_;
+        if (((bitField1_ & 0x00000400) == 0x00000400)) {
+          fixed32SPacked_ = java.util.Collections.unmodifiableList(fixed32SPacked_);
+          bitField1_ = (bitField1_ & ~0x00000400);
+        }
+        result.fixed32SPacked_ = fixed32SPacked_;
+        if (((bitField1_ & 0x00000800) == 0x00000800)) {
+          fixed64SPacked_ = java.util.Collections.unmodifiableList(fixed64SPacked_);
+          bitField1_ = (bitField1_ & ~0x00000800);
+        }
+        result.fixed64SPacked_ = fixed64SPacked_;
+        if (((bitField1_ & 0x00001000) == 0x00001000)) {
+          sfixed32SPacked_ = java.util.Collections.unmodifiableList(sfixed32SPacked_);
+          bitField1_ = (bitField1_ & ~0x00001000);
+        }
+        result.sfixed32SPacked_ = sfixed32SPacked_;
+        if (((bitField1_ & 0x00002000) == 0x00002000)) {
+          sfixed64SPacked_ = java.util.Collections.unmodifiableList(sfixed64SPacked_);
+          bitField1_ = (bitField1_ & ~0x00002000);
+        }
+        result.sfixed64SPacked_ = sfixed64SPacked_;
+        if (((bitField1_ & 0x00004000) == 0x00004000)) {
+          floatsPacked_ = java.util.Collections.unmodifiableList(floatsPacked_);
+          bitField1_ = (bitField1_ & ~0x00004000);
+        }
+        result.floatsPacked_ = floatsPacked_;
+        if (((bitField1_ & 0x00008000) == 0x00008000)) {
+          doublesPacked_ = java.util.Collections.unmodifiableList(doublesPacked_);
+          bitField1_ = (bitField1_ & ~0x00008000);
+        }
+        result.doublesPacked_ = doublesPacked_;
+        if (((bitField1_ & 0x00010000) == 0x00010000)) {
+          boolsPacked_ = java.util.Collections.unmodifiableList(boolsPacked_);
+          bitField1_ = (bitField1_ & ~0x00010000);
+        }
+        result.boolsPacked_ = boolsPacked_;
+        if (((bitField1_ & 0x00020000) == 0x00020000)) {
+          colorsPacked_ = java.util.Collections.unmodifiableList(colorsPacked_);
+          bitField1_ = (bitField1_ & ~0x00020000);
+        }
+        result.colorsPacked_ = colorsPacked_;
+        if (((bitField1_ & 0x00040000) == 0x00040000)) {
+          int32SNotPacked_ = java.util.Collections.unmodifiableList(int32SNotPacked_);
+          bitField1_ = (bitField1_ & ~0x00040000);
+        }
+        result.int32SNotPacked_ = int32SNotPacked_;
+        if (((bitField1_ & 0x00080000) == 0x00080000)) {
+          int64SNotPacked_ = java.util.Collections.unmodifiableList(int64SNotPacked_);
+          bitField1_ = (bitField1_ & ~0x00080000);
+        }
+        result.int64SNotPacked_ = int64SNotPacked_;
+        if (((bitField1_ & 0x00100000) == 0x00100000)) {
+          uint32SNotPacked_ = java.util.Collections.unmodifiableList(uint32SNotPacked_);
+          bitField1_ = (bitField1_ & ~0x00100000);
+        }
+        result.uint32SNotPacked_ = uint32SNotPacked_;
+        if (((bitField1_ & 0x00200000) == 0x00200000)) {
+          uint64SNotPacked_ = java.util.Collections.unmodifiableList(uint64SNotPacked_);
+          bitField1_ = (bitField1_ & ~0x00200000);
+        }
+        result.uint64SNotPacked_ = uint64SNotPacked_;
+        if (((bitField1_ & 0x00400000) == 0x00400000)) {
+          sint32SNotPacked_ = java.util.Collections.unmodifiableList(sint32SNotPacked_);
+          bitField1_ = (bitField1_ & ~0x00400000);
+        }
+        result.sint32SNotPacked_ = sint32SNotPacked_;
+        if (((bitField1_ & 0x00800000) == 0x00800000)) {
+          sint64SNotPacked_ = java.util.Collections.unmodifiableList(sint64SNotPacked_);
+          bitField1_ = (bitField1_ & ~0x00800000);
+        }
+        result.sint64SNotPacked_ = sint64SNotPacked_;
+        if (((bitField1_ & 0x01000000) == 0x01000000)) {
+          fixed32SNotPacked_ = java.util.Collections.unmodifiableList(fixed32SNotPacked_);
+          bitField1_ = (bitField1_ & ~0x01000000);
+        }
+        result.fixed32SNotPacked_ = fixed32SNotPacked_;
+        if (((bitField1_ & 0x02000000) == 0x02000000)) {
+          fixed64SNotPacked_ = java.util.Collections.unmodifiableList(fixed64SNotPacked_);
+          bitField1_ = (bitField1_ & ~0x02000000);
+        }
+        result.fixed64SNotPacked_ = fixed64SNotPacked_;
+        if (((bitField1_ & 0x04000000) == 0x04000000)) {
+          sfixed32SNotPacked_ = java.util.Collections.unmodifiableList(sfixed32SNotPacked_);
+          bitField1_ = (bitField1_ & ~0x04000000);
+        }
+        result.sfixed32SNotPacked_ = sfixed32SNotPacked_;
+        if (((bitField1_ & 0x08000000) == 0x08000000)) {
+          sfixed64SNotPacked_ = java.util.Collections.unmodifiableList(sfixed64SNotPacked_);
+          bitField1_ = (bitField1_ & ~0x08000000);
+        }
+        result.sfixed64SNotPacked_ = sfixed64SNotPacked_;
+        if (((bitField1_ & 0x10000000) == 0x10000000)) {
+          floatsNotPacked_ = java.util.Collections.unmodifiableList(floatsNotPacked_);
+          bitField1_ = (bitField1_ & ~0x10000000);
+        }
+        result.floatsNotPacked_ = floatsNotPacked_;
+        if (((bitField1_ & 0x20000000) == 0x20000000)) {
+          doublesNotPacked_ = java.util.Collections.unmodifiableList(doublesNotPacked_);
+          bitField1_ = (bitField1_ & ~0x20000000);
+        }
+        result.doublesNotPacked_ = doublesNotPacked_;
+        if (((bitField1_ & 0x40000000) == 0x40000000)) {
+          boolsNotPacked_ = java.util.Collections.unmodifiableList(boolsNotPacked_);
+          bitField1_ = (bitField1_ & ~0x40000000);
+        }
+        result.boolsNotPacked_ = boolsNotPacked_;
+        if (((bitField1_ & 0x80000000) == 0x80000000)) {
+          colorsNotPacked_ = java.util.Collections.unmodifiableList(colorsNotPacked_);
+          bitField1_ = (bitField1_ & ~0x80000000);
+        }
+        result.colorsNotPacked_ = colorsNotPacked_;
+        if (((bitField2_ & 0x00000001) == 0x00000001)) {
+          strings_ = strings_.getUnmodifiableView();
+          bitField2_ = (bitField2_ & ~0x00000001);
+        }
+        result.strings_ = strings_;
+        if (((bitField2_ & 0x00000002) == 0x00000002)) {
+          bytess_ = java.util.Collections.unmodifiableList(bytess_);
+          bitField2_ = (bitField2_ & ~0x00000002);
+        }
+        result.bytess_ = bytess_;
+        if (usersBuilder_ == null) {
+          if (((bitField2_ & 0x00000004) == 0x00000004)) {
+            users_ = java.util.Collections.unmodifiableList(users_);
+            bitField2_ = (bitField2_ & ~0x00000004);
+          }
+          result.users_ = users_;
         } else {
-          result.typeRecursive_ = typeRecursiveBuilder_.build();
+          result.users_ = usersBuilder_.build();
         }
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
 
-      @Override
+      @java.lang.Override
       public Builder clone() {
         return (Builder) super.clone();
       }
-
-      @Override
+      @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return (Builder) super.setField(field, value);
       }
-
-      @Override
+      @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
         return (Builder) super.clearField(field);
       }
-
-      @Override
+      @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
         return (Builder) super.clearOneof(oneof);
       }
-
-      @Override
+      @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, Object value) {
+          int index, java.lang.Object value) {
         return (Builder) super.setRepeatedField(field, index, value);
       }
-
-      @Override
+      @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return (Builder) super.addRepeatedField(field, value);
       }
-
-      @Override
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof Root) {
-          return mergeFrom((Root) other);
+        if (other instanceof org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root) {
+          return mergeFrom((org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(Root other) {
-        if (other == Root.getDefaultInstance()) {
-          return this;
-        }
+      public Builder mergeFrom(org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root other) {
+        if (other == org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.getDefaultInstance()) return this;
         if (other.getInt32() != 0) {
           setInt32(other.getInt32());
         }
@@ -2114,6 +5167,45 @@ public final class ProtobufRoot {
         if (other.getBool() != false) {
           setBool(other.getBool());
         }
+        if (other.getObjInt32() != 0) {
+          setObjInt32(other.getObjInt32());
+        }
+        if (other.getObjInt64() != 0L) {
+          setObjInt64(other.getObjInt64());
+        }
+        if (other.getObjUint32() != 0) {
+          setObjUint32(other.getObjUint32());
+        }
+        if (other.getObjUint64() != 0L) {
+          setObjUint64(other.getObjUint64());
+        }
+        if (other.getObjSint32() != 0) {
+          setObjSint32(other.getObjSint32());
+        }
+        if (other.getObjSint64() != 0L) {
+          setObjSint64(other.getObjSint64());
+        }
+        if (other.getObjFixed32() != 0) {
+          setObjFixed32(other.getObjFixed32());
+        }
+        if (other.getObjFixed64() != 0L) {
+          setObjFixed64(other.getObjFixed64());
+        }
+        if (other.getObjSfixed32() != 0) {
+          setObjSfixed32(other.getObjSfixed32());
+        }
+        if (other.getObjSfixed64() != 0L) {
+          setObjSfixed64(other.getObjSfixed64());
+        }
+        if (other.getObjFloatValue() != 0F) {
+          setObjFloatValue(other.getObjFloatValue());
+        }
+        if (other.getObjDoubleValue() != 0D) {
+          setObjDoubleValue(other.getObjDoubleValue());
+        }
+        if (other.getObjBool() != false) {
+          setObjBool(other.getObjBool());
+        }
         if (!other.getString().isEmpty()) {
           string_ = other.string_;
           onChanged();
@@ -2127,45 +5219,8 @@ public final class ProtobufRoot {
         if (other.hasUser()) {
           mergeUser(other.getUser());
         }
-        internalGetMutableSsMap().mergeFrom(
-            other.internalGetSsMap());
-        internalGetMutableSpMap().mergeFrom(
-            other.internalGetSpMap());
-        if (!other.sList_.isEmpty()) {
-          if (sList_.isEmpty()) {
-            sList_ = other.sList_;
-            bitField0_ = (bitField0_ & ~0x00080000);
-          } else {
-            ensureSListIsMutable();
-            sList_.addAll(other.sList_);
-          }
-          onChanged();
-        }
-        if (pListBuilder_ == null) {
-          if (!other.pList_.isEmpty()) {
-            if (pList_.isEmpty()) {
-              pList_ = other.pList_;
-              bitField0_ = (bitField0_ & ~0x00100000);
-            } else {
-              ensurePListIsMutable();
-              pList_.addAll(other.pList_);
-            }
-            onChanged();
-          }
-        } else {
-          if (!other.pList_.isEmpty()) {
-            if (pListBuilder_.isEmpty()) {
-              pListBuilder_.dispose();
-              pListBuilder_ = null;
-              pList_ = other.pList_;
-              bitField0_ = (bitField0_ & ~0x00100000);
-              pListBuilder_ =
-                  com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                      getPListFieldBuilder() : null;
-            } else {
-              pListBuilder_.addAllMessages(other.pList_);
-            }
-          }
+        if (other.hasTypeRecursive()) {
+          mergeTypeRecursive(other.getTypeRecursive());
         }
         if (other.hasAny()) {
           mergeAny(other.getAny());
@@ -2174,7 +5229,7 @@ public final class ProtobufRoot {
           if (!other.anys_.isEmpty()) {
             if (anys_.isEmpty()) {
               anys_ = other.anys_;
-              bitField0_ = (bitField0_ & ~0x00400000);
+              bitField1_ = (bitField1_ & ~0x00000001);
             } else {
               ensureAnysIsMutable();
               anys_.addAll(other.anys_);
@@ -2187,38 +5242,367 @@ public final class ProtobufRoot {
               anysBuilder_.dispose();
               anysBuilder_ = null;
               anys_ = other.anys_;
-              bitField0_ = (bitField0_ & ~0x00400000);
-              anysBuilder_ =
-                  com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                      getAnysFieldBuilder() : null;
+              bitField1_ = (bitField1_ & ~0x00000001);
+              anysBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getAnysFieldBuilder() : null;
             } else {
               anysBuilder_.addAllMessages(other.anys_);
             }
           }
         }
-        if (other.hasTypeRecursive()) {
-          mergeTypeRecursive(other.getTypeRecursive());
+        internalGetMutableSsMap().mergeFrom(
+            other.internalGetSsMap());
+        internalGetMutableSint32Map().mergeFrom(
+            other.internalGetSint32Map());
+        internalGetMutableSpMap().mergeFrom(
+            other.internalGetSpMap());
+        if (!other.int32SPacked_.isEmpty()) {
+          if (int32SPacked_.isEmpty()) {
+            int32SPacked_ = other.int32SPacked_;
+            bitField1_ = (bitField1_ & ~0x00000010);
+          } else {
+            ensureInt32SPackedIsMutable();
+            int32SPacked_.addAll(other.int32SPacked_);
+          }
+          onChanged();
+        }
+        if (!other.int64SPacked_.isEmpty()) {
+          if (int64SPacked_.isEmpty()) {
+            int64SPacked_ = other.int64SPacked_;
+            bitField1_ = (bitField1_ & ~0x00000020);
+          } else {
+            ensureInt64SPackedIsMutable();
+            int64SPacked_.addAll(other.int64SPacked_);
+          }
+          onChanged();
+        }
+        if (!other.uint32SPacked_.isEmpty()) {
+          if (uint32SPacked_.isEmpty()) {
+            uint32SPacked_ = other.uint32SPacked_;
+            bitField1_ = (bitField1_ & ~0x00000040);
+          } else {
+            ensureUint32SPackedIsMutable();
+            uint32SPacked_.addAll(other.uint32SPacked_);
+          }
+          onChanged();
+        }
+        if (!other.uint64SPacked_.isEmpty()) {
+          if (uint64SPacked_.isEmpty()) {
+            uint64SPacked_ = other.uint64SPacked_;
+            bitField1_ = (bitField1_ & ~0x00000080);
+          } else {
+            ensureUint64SPackedIsMutable();
+            uint64SPacked_.addAll(other.uint64SPacked_);
+          }
+          onChanged();
+        }
+        if (!other.sint32SPacked_.isEmpty()) {
+          if (sint32SPacked_.isEmpty()) {
+            sint32SPacked_ = other.sint32SPacked_;
+            bitField1_ = (bitField1_ & ~0x00000100);
+          } else {
+            ensureSint32SPackedIsMutable();
+            sint32SPacked_.addAll(other.sint32SPacked_);
+          }
+          onChanged();
+        }
+        if (!other.sint64SPacked_.isEmpty()) {
+          if (sint64SPacked_.isEmpty()) {
+            sint64SPacked_ = other.sint64SPacked_;
+            bitField1_ = (bitField1_ & ~0x00000200);
+          } else {
+            ensureSint64SPackedIsMutable();
+            sint64SPacked_.addAll(other.sint64SPacked_);
+          }
+          onChanged();
+        }
+        if (!other.fixed32SPacked_.isEmpty()) {
+          if (fixed32SPacked_.isEmpty()) {
+            fixed32SPacked_ = other.fixed32SPacked_;
+            bitField1_ = (bitField1_ & ~0x00000400);
+          } else {
+            ensureFixed32SPackedIsMutable();
+            fixed32SPacked_.addAll(other.fixed32SPacked_);
+          }
+          onChanged();
+        }
+        if (!other.fixed64SPacked_.isEmpty()) {
+          if (fixed64SPacked_.isEmpty()) {
+            fixed64SPacked_ = other.fixed64SPacked_;
+            bitField1_ = (bitField1_ & ~0x00000800);
+          } else {
+            ensureFixed64SPackedIsMutable();
+            fixed64SPacked_.addAll(other.fixed64SPacked_);
+          }
+          onChanged();
+        }
+        if (!other.sfixed32SPacked_.isEmpty()) {
+          if (sfixed32SPacked_.isEmpty()) {
+            sfixed32SPacked_ = other.sfixed32SPacked_;
+            bitField1_ = (bitField1_ & ~0x00001000);
+          } else {
+            ensureSfixed32SPackedIsMutable();
+            sfixed32SPacked_.addAll(other.sfixed32SPacked_);
+          }
+          onChanged();
+        }
+        if (!other.sfixed64SPacked_.isEmpty()) {
+          if (sfixed64SPacked_.isEmpty()) {
+            sfixed64SPacked_ = other.sfixed64SPacked_;
+            bitField1_ = (bitField1_ & ~0x00002000);
+          } else {
+            ensureSfixed64SPackedIsMutable();
+            sfixed64SPacked_.addAll(other.sfixed64SPacked_);
+          }
+          onChanged();
+        }
+        if (!other.floatsPacked_.isEmpty()) {
+          if (floatsPacked_.isEmpty()) {
+            floatsPacked_ = other.floatsPacked_;
+            bitField1_ = (bitField1_ & ~0x00004000);
+          } else {
+            ensureFloatsPackedIsMutable();
+            floatsPacked_.addAll(other.floatsPacked_);
+          }
+          onChanged();
+        }
+        if (!other.doublesPacked_.isEmpty()) {
+          if (doublesPacked_.isEmpty()) {
+            doublesPacked_ = other.doublesPacked_;
+            bitField1_ = (bitField1_ & ~0x00008000);
+          } else {
+            ensureDoublesPackedIsMutable();
+            doublesPacked_.addAll(other.doublesPacked_);
+          }
+          onChanged();
+        }
+        if (!other.boolsPacked_.isEmpty()) {
+          if (boolsPacked_.isEmpty()) {
+            boolsPacked_ = other.boolsPacked_;
+            bitField1_ = (bitField1_ & ~0x00010000);
+          } else {
+            ensureBoolsPackedIsMutable();
+            boolsPacked_.addAll(other.boolsPacked_);
+          }
+          onChanged();
+        }
+        if (!other.colorsPacked_.isEmpty()) {
+          if (colorsPacked_.isEmpty()) {
+            colorsPacked_ = other.colorsPacked_;
+            bitField1_ = (bitField1_ & ~0x00020000);
+          } else {
+            ensureColorsPackedIsMutable();
+            colorsPacked_.addAll(other.colorsPacked_);
+          }
+          onChanged();
+        }
+        if (!other.int32SNotPacked_.isEmpty()) {
+          if (int32SNotPacked_.isEmpty()) {
+            int32SNotPacked_ = other.int32SNotPacked_;
+            bitField1_ = (bitField1_ & ~0x00040000);
+          } else {
+            ensureInt32SNotPackedIsMutable();
+            int32SNotPacked_.addAll(other.int32SNotPacked_);
+          }
+          onChanged();
+        }
+        if (!other.int64SNotPacked_.isEmpty()) {
+          if (int64SNotPacked_.isEmpty()) {
+            int64SNotPacked_ = other.int64SNotPacked_;
+            bitField1_ = (bitField1_ & ~0x00080000);
+          } else {
+            ensureInt64SNotPackedIsMutable();
+            int64SNotPacked_.addAll(other.int64SNotPacked_);
+          }
+          onChanged();
+        }
+        if (!other.uint32SNotPacked_.isEmpty()) {
+          if (uint32SNotPacked_.isEmpty()) {
+            uint32SNotPacked_ = other.uint32SNotPacked_;
+            bitField1_ = (bitField1_ & ~0x00100000);
+          } else {
+            ensureUint32SNotPackedIsMutable();
+            uint32SNotPacked_.addAll(other.uint32SNotPacked_);
+          }
+          onChanged();
+        }
+        if (!other.uint64SNotPacked_.isEmpty()) {
+          if (uint64SNotPacked_.isEmpty()) {
+            uint64SNotPacked_ = other.uint64SNotPacked_;
+            bitField1_ = (bitField1_ & ~0x00200000);
+          } else {
+            ensureUint64SNotPackedIsMutable();
+            uint64SNotPacked_.addAll(other.uint64SNotPacked_);
+          }
+          onChanged();
+        }
+        if (!other.sint32SNotPacked_.isEmpty()) {
+          if (sint32SNotPacked_.isEmpty()) {
+            sint32SNotPacked_ = other.sint32SNotPacked_;
+            bitField1_ = (bitField1_ & ~0x00400000);
+          } else {
+            ensureSint32SNotPackedIsMutable();
+            sint32SNotPacked_.addAll(other.sint32SNotPacked_);
+          }
+          onChanged();
+        }
+        if (!other.sint64SNotPacked_.isEmpty()) {
+          if (sint64SNotPacked_.isEmpty()) {
+            sint64SNotPacked_ = other.sint64SNotPacked_;
+            bitField1_ = (bitField1_ & ~0x00800000);
+          } else {
+            ensureSint64SNotPackedIsMutable();
+            sint64SNotPacked_.addAll(other.sint64SNotPacked_);
+          }
+          onChanged();
+        }
+        if (!other.fixed32SNotPacked_.isEmpty()) {
+          if (fixed32SNotPacked_.isEmpty()) {
+            fixed32SNotPacked_ = other.fixed32SNotPacked_;
+            bitField1_ = (bitField1_ & ~0x01000000);
+          } else {
+            ensureFixed32SNotPackedIsMutable();
+            fixed32SNotPacked_.addAll(other.fixed32SNotPacked_);
+          }
+          onChanged();
+        }
+        if (!other.fixed64SNotPacked_.isEmpty()) {
+          if (fixed64SNotPacked_.isEmpty()) {
+            fixed64SNotPacked_ = other.fixed64SNotPacked_;
+            bitField1_ = (bitField1_ & ~0x02000000);
+          } else {
+            ensureFixed64SNotPackedIsMutable();
+            fixed64SNotPacked_.addAll(other.fixed64SNotPacked_);
+          }
+          onChanged();
+        }
+        if (!other.sfixed32SNotPacked_.isEmpty()) {
+          if (sfixed32SNotPacked_.isEmpty()) {
+            sfixed32SNotPacked_ = other.sfixed32SNotPacked_;
+            bitField1_ = (bitField1_ & ~0x04000000);
+          } else {
+            ensureSfixed32SNotPackedIsMutable();
+            sfixed32SNotPacked_.addAll(other.sfixed32SNotPacked_);
+          }
+          onChanged();
+        }
+        if (!other.sfixed64SNotPacked_.isEmpty()) {
+          if (sfixed64SNotPacked_.isEmpty()) {
+            sfixed64SNotPacked_ = other.sfixed64SNotPacked_;
+            bitField1_ = (bitField1_ & ~0x08000000);
+          } else {
+            ensureSfixed64SNotPackedIsMutable();
+            sfixed64SNotPacked_.addAll(other.sfixed64SNotPacked_);
+          }
+          onChanged();
+        }
+        if (!other.floatsNotPacked_.isEmpty()) {
+          if (floatsNotPacked_.isEmpty()) {
+            floatsNotPacked_ = other.floatsNotPacked_;
+            bitField1_ = (bitField1_ & ~0x10000000);
+          } else {
+            ensureFloatsNotPackedIsMutable();
+            floatsNotPacked_.addAll(other.floatsNotPacked_);
+          }
+          onChanged();
+        }
+        if (!other.doublesNotPacked_.isEmpty()) {
+          if (doublesNotPacked_.isEmpty()) {
+            doublesNotPacked_ = other.doublesNotPacked_;
+            bitField1_ = (bitField1_ & ~0x20000000);
+          } else {
+            ensureDoublesNotPackedIsMutable();
+            doublesNotPacked_.addAll(other.doublesNotPacked_);
+          }
+          onChanged();
+        }
+        if (!other.boolsNotPacked_.isEmpty()) {
+          if (boolsNotPacked_.isEmpty()) {
+            boolsNotPacked_ = other.boolsNotPacked_;
+            bitField1_ = (bitField1_ & ~0x40000000);
+          } else {
+            ensureBoolsNotPackedIsMutable();
+            boolsNotPacked_.addAll(other.boolsNotPacked_);
+          }
+          onChanged();
+        }
+        if (!other.colorsNotPacked_.isEmpty()) {
+          if (colorsNotPacked_.isEmpty()) {
+            colorsNotPacked_ = other.colorsNotPacked_;
+            bitField1_ = (bitField1_ & ~0x80000000);
+          } else {
+            ensureColorsNotPackedIsMutable();
+            colorsNotPacked_.addAll(other.colorsNotPacked_);
+          }
+          onChanged();
+        }
+        if (!other.strings_.isEmpty()) {
+          if (strings_.isEmpty()) {
+            strings_ = other.strings_;
+            bitField2_ = (bitField2_ & ~0x00000001);
+          } else {
+            ensureStringsIsMutable();
+            strings_.addAll(other.strings_);
+          }
+          onChanged();
+        }
+        if (!other.bytess_.isEmpty()) {
+          if (bytess_.isEmpty()) {
+            bytess_ = other.bytess_;
+            bitField2_ = (bitField2_ & ~0x00000002);
+          } else {
+            ensureBytessIsMutable();
+            bytess_.addAll(other.bytess_);
+          }
+          onChanged();
+        }
+        if (usersBuilder_ == null) {
+          if (!other.users_.isEmpty()) {
+            if (users_.isEmpty()) {
+              users_ = other.users_;
+              bitField2_ = (bitField2_ & ~0x00000004);
+            } else {
+              ensureUsersIsMutable();
+              users_.addAll(other.users_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.users_.isEmpty()) {
+            if (usersBuilder_.isEmpty()) {
+              usersBuilder_.dispose();
+              usersBuilder_ = null;
+              users_ = other.users_;
+              bitField2_ = (bitField2_ & ~0x00000004);
+              usersBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getUsersFieldBuilder() : null;
+            } else {
+              usersBuilder_.addAllMessages(other.users_);
+            }
+          }
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
         return this;
       }
 
-      @Override
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
-      @Override
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        Root parsedMessage = null;
+        org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (Root) e.getUnfinishedMessage();
+          parsedMessage = (org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -2227,569 +5611,852 @@ public final class ProtobufRoot {
         }
         return this;
       }
-
       private int bitField0_;
+      private int bitField1_;
+      private int bitField2_;
 
-      private int int32_;
-
+      private int int32_ ;
       /**
        * <code>int32 int32 = 1;</code>
        */
       public int getInt32() {
         return int32_;
       }
-
       /**
        * <code>int32 int32 = 1;</code>
        */
       public Builder setInt32(int value) {
-
+        
         int32_ = value;
         onChanged();
         return this;
       }
-
       /**
        * <code>int32 int32 = 1;</code>
        */
       public Builder clearInt32() {
-
+        
         int32_ = 0;
         onChanged();
         return this;
       }
 
-      private long int64_;
-
+      private long int64_ ;
       /**
        * <code>int64 int64 = 2;</code>
        */
       public long getInt64() {
         return int64_;
       }
-
       /**
        * <code>int64 int64 = 2;</code>
        */
       public Builder setInt64(long value) {
-
+        
         int64_ = value;
         onChanged();
         return this;
       }
-
       /**
        * <code>int64 int64 = 2;</code>
        */
       public Builder clearInt64() {
-
+        
         int64_ = 0L;
         onChanged();
         return this;
       }
 
-      private int uint32_;
-
+      private int uint32_ ;
       /**
        * <code>uint32 uint32 = 3;</code>
        */
       public int getUint32() {
         return uint32_;
       }
-
       /**
        * <code>uint32 uint32 = 3;</code>
        */
       public Builder setUint32(int value) {
-
+        
         uint32_ = value;
         onChanged();
         return this;
       }
-
       /**
        * <code>uint32 uint32 = 3;</code>
        */
       public Builder clearUint32() {
-
+        
         uint32_ = 0;
         onChanged();
         return this;
       }
 
-      private long uint64_;
-
+      private long uint64_ ;
       /**
        * <code>uint64 uint64 = 4;</code>
        */
       public long getUint64() {
         return uint64_;
       }
-
       /**
        * <code>uint64 uint64 = 4;</code>
        */
       public Builder setUint64(long value) {
-
+        
         uint64_ = value;
         onChanged();
         return this;
       }
-
       /**
        * <code>uint64 uint64 = 4;</code>
        */
       public Builder clearUint64() {
-
+        
         uint64_ = 0L;
         onChanged();
         return this;
       }
 
-      private int sint32_;
-
+      private int sint32_ ;
       /**
        * <code>sint32 sint32 = 5;</code>
        */
       public int getSint32() {
         return sint32_;
       }
-
       /**
        * <code>sint32 sint32 = 5;</code>
        */
       public Builder setSint32(int value) {
-
+        
         sint32_ = value;
         onChanged();
         return this;
       }
-
       /**
        * <code>sint32 sint32 = 5;</code>
        */
       public Builder clearSint32() {
-
+        
         sint32_ = 0;
         onChanged();
         return this;
       }
 
-      private long sint64_;
-
+      private long sint64_ ;
       /**
        * <code>sint64 sint64 = 6;</code>
        */
       public long getSint64() {
         return sint64_;
       }
-
       /**
        * <code>sint64 sint64 = 6;</code>
        */
       public Builder setSint64(long value) {
-
+        
         sint64_ = value;
         onChanged();
         return this;
       }
-
       /**
        * <code>sint64 sint64 = 6;</code>
        */
       public Builder clearSint64() {
-
+        
         sint64_ = 0L;
         onChanged();
         return this;
       }
 
-      private int fixed32_;
-
+      private int fixed32_ ;
       /**
        * <code>fixed32 fixed32 = 7;</code>
        */
       public int getFixed32() {
         return fixed32_;
       }
-
       /**
        * <code>fixed32 fixed32 = 7;</code>
        */
       public Builder setFixed32(int value) {
-
+        
         fixed32_ = value;
         onChanged();
         return this;
       }
-
       /**
        * <code>fixed32 fixed32 = 7;</code>
        */
       public Builder clearFixed32() {
-
+        
         fixed32_ = 0;
         onChanged();
         return this;
       }
 
-      private long fixed64_;
-
+      private long fixed64_ ;
       /**
        * <code>fixed64 fixed64 = 8;</code>
        */
       public long getFixed64() {
         return fixed64_;
       }
-
       /**
        * <code>fixed64 fixed64 = 8;</code>
        */
       public Builder setFixed64(long value) {
-
+        
         fixed64_ = value;
         onChanged();
         return this;
       }
-
       /**
        * <code>fixed64 fixed64 = 8;</code>
        */
       public Builder clearFixed64() {
-
+        
         fixed64_ = 0L;
         onChanged();
         return this;
       }
 
-      private int sfixed32_;
-
+      private int sfixed32_ ;
       /**
        * <code>sfixed32 sfixed32 = 9;</code>
        */
       public int getSfixed32() {
         return sfixed32_;
       }
-
       /**
        * <code>sfixed32 sfixed32 = 9;</code>
        */
       public Builder setSfixed32(int value) {
-
+        
         sfixed32_ = value;
         onChanged();
         return this;
       }
-
       /**
        * <code>sfixed32 sfixed32 = 9;</code>
        */
       public Builder clearSfixed32() {
-
+        
         sfixed32_ = 0;
         onChanged();
         return this;
       }
 
-      private long sfixed64_;
-
+      private long sfixed64_ ;
       /**
        * <code>sfixed64 sfixed64 = 10;</code>
        */
       public long getSfixed64() {
         return sfixed64_;
       }
-
       /**
        * <code>sfixed64 sfixed64 = 10;</code>
        */
       public Builder setSfixed64(long value) {
-
+        
         sfixed64_ = value;
         onChanged();
         return this;
       }
-
       /**
        * <code>sfixed64 sfixed64 = 10;</code>
        */
       public Builder clearSfixed64() {
-
+        
         sfixed64_ = 0L;
         onChanged();
         return this;
       }
 
-      private float floatValue_;
-
+      private float floatValue_ ;
       /**
        * <code>float floatValue = 11;</code>
        */
       public float getFloatValue() {
         return floatValue_;
       }
-
       /**
        * <code>float floatValue = 11;</code>
        */
       public Builder setFloatValue(float value) {
-
+        
         floatValue_ = value;
         onChanged();
         return this;
       }
-
       /**
        * <code>float floatValue = 11;</code>
        */
       public Builder clearFloatValue() {
-
+        
         floatValue_ = 0F;
         onChanged();
         return this;
       }
 
-      private double doubleValue_;
-
+      private double doubleValue_ ;
       /**
        * <code>double doubleValue = 12;</code>
        */
       public double getDoubleValue() {
         return doubleValue_;
       }
-
       /**
        * <code>double doubleValue = 12;</code>
        */
       public Builder setDoubleValue(double value) {
-
+        
         doubleValue_ = value;
         onChanged();
         return this;
       }
-
       /**
        * <code>double doubleValue = 12;</code>
        */
       public Builder clearDoubleValue() {
-
+        
         doubleValue_ = 0D;
         onChanged();
         return this;
       }
 
-      private boolean bool_;
-
+      private boolean bool_ ;
       /**
        * <code>bool bool = 13;</code>
        */
       public boolean getBool() {
         return bool_;
       }
-
       /**
        * <code>bool bool = 13;</code>
        */
       public Builder setBool(boolean value) {
-
+        
         bool_ = value;
         onChanged();
         return this;
       }
-
       /**
        * <code>bool bool = 13;</code>
        */
       public Builder clearBool() {
-
+        
         bool_ = false;
         onChanged();
         return this;
       }
 
-      private Object string_ = "";
-
+      private int objInt32_ ;
       /**
-       * <code>string string = 14;</code>
+       * <code>int32 objInt32 = 20;</code>
        */
-      public String getString() {
-        Object ref = string_;
-        if (!(ref instanceof String)) {
+      public int getObjInt32() {
+        return objInt32_;
+      }
+      /**
+       * <code>int32 objInt32 = 20;</code>
+       */
+      public Builder setObjInt32(int value) {
+        
+        objInt32_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int32 objInt32 = 20;</code>
+       */
+      public Builder clearObjInt32() {
+        
+        objInt32_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private long objInt64_ ;
+      /**
+       * <code>int64 objInt64 = 21;</code>
+       */
+      public long getObjInt64() {
+        return objInt64_;
+      }
+      /**
+       * <code>int64 objInt64 = 21;</code>
+       */
+      public Builder setObjInt64(long value) {
+        
+        objInt64_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>int64 objInt64 = 21;</code>
+       */
+      public Builder clearObjInt64() {
+        
+        objInt64_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private int objUint32_ ;
+      /**
+       * <code>uint32 objUint32 = 22;</code>
+       */
+      public int getObjUint32() {
+        return objUint32_;
+      }
+      /**
+       * <code>uint32 objUint32 = 22;</code>
+       */
+      public Builder setObjUint32(int value) {
+        
+        objUint32_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint32 objUint32 = 22;</code>
+       */
+      public Builder clearObjUint32() {
+        
+        objUint32_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private long objUint64_ ;
+      /**
+       * <code>uint64 objUint64 = 23;</code>
+       */
+      public long getObjUint64() {
+        return objUint64_;
+      }
+      /**
+       * <code>uint64 objUint64 = 23;</code>
+       */
+      public Builder setObjUint64(long value) {
+        
+        objUint64_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>uint64 objUint64 = 23;</code>
+       */
+      public Builder clearObjUint64() {
+        
+        objUint64_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private int objSint32_ ;
+      /**
+       * <code>sint32 objSint32 = 24;</code>
+       */
+      public int getObjSint32() {
+        return objSint32_;
+      }
+      /**
+       * <code>sint32 objSint32 = 24;</code>
+       */
+      public Builder setObjSint32(int value) {
+        
+        objSint32_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>sint32 objSint32 = 24;</code>
+       */
+      public Builder clearObjSint32() {
+        
+        objSint32_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private long objSint64_ ;
+      /**
+       * <code>sint64 objSint64 = 25;</code>
+       */
+      public long getObjSint64() {
+        return objSint64_;
+      }
+      /**
+       * <code>sint64 objSint64 = 25;</code>
+       */
+      public Builder setObjSint64(long value) {
+        
+        objSint64_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>sint64 objSint64 = 25;</code>
+       */
+      public Builder clearObjSint64() {
+        
+        objSint64_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private int objFixed32_ ;
+      /**
+       * <code>fixed32 objFixed32 = 26;</code>
+       */
+      public int getObjFixed32() {
+        return objFixed32_;
+      }
+      /**
+       * <code>fixed32 objFixed32 = 26;</code>
+       */
+      public Builder setObjFixed32(int value) {
+        
+        objFixed32_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>fixed32 objFixed32 = 26;</code>
+       */
+      public Builder clearObjFixed32() {
+        
+        objFixed32_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private long objFixed64_ ;
+      /**
+       * <code>fixed64 objFixed64 = 27;</code>
+       */
+      public long getObjFixed64() {
+        return objFixed64_;
+      }
+      /**
+       * <code>fixed64 objFixed64 = 27;</code>
+       */
+      public Builder setObjFixed64(long value) {
+        
+        objFixed64_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>fixed64 objFixed64 = 27;</code>
+       */
+      public Builder clearObjFixed64() {
+        
+        objFixed64_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private int objSfixed32_ ;
+      /**
+       * <code>sfixed32 objSfixed32 = 28;</code>
+       */
+      public int getObjSfixed32() {
+        return objSfixed32_;
+      }
+      /**
+       * <code>sfixed32 objSfixed32 = 28;</code>
+       */
+      public Builder setObjSfixed32(int value) {
+        
+        objSfixed32_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>sfixed32 objSfixed32 = 28;</code>
+       */
+      public Builder clearObjSfixed32() {
+        
+        objSfixed32_ = 0;
+        onChanged();
+        return this;
+      }
+
+      private long objSfixed64_ ;
+      /**
+       * <code>sfixed64 objSfixed64 = 29;</code>
+       */
+      public long getObjSfixed64() {
+        return objSfixed64_;
+      }
+      /**
+       * <code>sfixed64 objSfixed64 = 29;</code>
+       */
+      public Builder setObjSfixed64(long value) {
+        
+        objSfixed64_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>sfixed64 objSfixed64 = 29;</code>
+       */
+      public Builder clearObjSfixed64() {
+        
+        objSfixed64_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private float objFloatValue_ ;
+      /**
+       * <code>float objFloatValue = 30;</code>
+       */
+      public float getObjFloatValue() {
+        return objFloatValue_;
+      }
+      /**
+       * <code>float objFloatValue = 30;</code>
+       */
+      public Builder setObjFloatValue(float value) {
+        
+        objFloatValue_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>float objFloatValue = 30;</code>
+       */
+      public Builder clearObjFloatValue() {
+        
+        objFloatValue_ = 0F;
+        onChanged();
+        return this;
+      }
+
+      private double objDoubleValue_ ;
+      /**
+       * <code>double objDoubleValue = 31;</code>
+       */
+      public double getObjDoubleValue() {
+        return objDoubleValue_;
+      }
+      /**
+       * <code>double objDoubleValue = 31;</code>
+       */
+      public Builder setObjDoubleValue(double value) {
+        
+        objDoubleValue_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>double objDoubleValue = 31;</code>
+       */
+      public Builder clearObjDoubleValue() {
+        
+        objDoubleValue_ = 0D;
+        onChanged();
+        return this;
+      }
+
+      private boolean objBool_ ;
+      /**
+       * <code>bool objBool = 32;</code>
+       */
+      public boolean getObjBool() {
+        return objBool_;
+      }
+      /**
+       * <code>bool objBool = 32;</code>
+       */
+      public Builder setObjBool(boolean value) {
+        
+        objBool_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>bool objBool = 32;</code>
+       */
+      public Builder clearObjBool() {
+        
+        objBool_ = false;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object string_ = "";
+      /**
+       * <code>string string = 40;</code>
+       */
+      public java.lang.String getString() {
+        java.lang.Object ref = string_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+          java.lang.String s = bs.toStringUtf8();
           string_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-
       /**
-       * <code>string string = 14;</code>
+       * <code>string string = 40;</code>
        */
       public com.google.protobuf.ByteString
-      getStringBytes() {
-        Object ref = string_;
+          getStringBytes() {
+        java.lang.Object ref = string_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  (java.lang.String) ref);
           string_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
-
       /**
-       * <code>string string = 14;</code>
+       * <code>string string = 40;</code>
        */
       public Builder setString(
-          String value) {
+          java.lang.String value) {
         if (value == null) {
-          throw new NullPointerException();
-        }
-
+    throw new NullPointerException();
+  }
+  
         string_ = value;
         onChanged();
         return this;
       }
-
       /**
-       * <code>string string = 14;</code>
+       * <code>string string = 40;</code>
        */
       public Builder clearString() {
-
+        
         string_ = getDefaultInstance().getString();
         onChanged();
         return this;
       }
-
       /**
-       * <code>string string = 14;</code>
+       * <code>string string = 40;</code>
        */
       public Builder setStringBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
-          throw new NullPointerException();
-        }
-        checkByteStringIsUtf8(value);
-
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
         string_ = value;
         onChanged();
         return this;
       }
 
       private com.google.protobuf.ByteString bytes_ = com.google.protobuf.ByteString.EMPTY;
-
       /**
-       * <code>bytes bytes = 15;</code>
+       * <code>bytes bytes = 41;</code>
        */
       public com.google.protobuf.ByteString getBytes() {
         return bytes_;
       }
-
       /**
-       * <code>bytes bytes = 15;</code>
+       * <code>bytes bytes = 41;</code>
        */
       public Builder setBytes(com.google.protobuf.ByteString value) {
         if (value == null) {
-          throw new NullPointerException();
-        }
-
+    throw new NullPointerException();
+  }
+  
         bytes_ = value;
         onChanged();
         return this;
       }
-
       /**
-       * <code>bytes bytes = 15;</code>
+       * <code>bytes bytes = 41;</code>
        */
       public Builder clearBytes() {
-
+        
         bytes_ = getDefaultInstance().getBytes();
         onChanged();
         return this;
       }
 
       private int color_ = 0;
-
       /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 16;</code>
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 42;</code>
        */
       public int getColorValue() {
         return color_;
       }
-
       /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 16;</code>
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 42;</code>
        */
       public Builder setColorValue(int value) {
         color_ = value;
         onChanged();
         return this;
       }
-
       /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 16;</code>
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 42;</code>
        */
-      public Color getColor() {
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color getColor() {
         @SuppressWarnings("deprecation")
-        Color result = Color.valueOf(color_);
-        return result == null ? Color.UNRECOGNIZED : result;
+        org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color result = org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color.valueOf(color_);
+        return result == null ? org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color.UNRECOGNIZED : result;
       }
-
       /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 16;</code>
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 42;</code>
        */
-      public Builder setColor(Color value) {
+      public Builder setColor(org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color value) {
         if (value == null) {
           throw new NullPointerException();
         }
-
+        
         color_ = value.getNumber();
         onChanged();
         return this;
       }
-
       /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 16;</code>
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Color color = 42;</code>
        */
       public Builder clearColor() {
-
+        
         color_ = 0;
         onChanged();
         return this;
       }
 
-      private User user_ = null;
-
+      private org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User user_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
-          User, User.Builder, UserOrBuilder> userBuilder_;
-
+          org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.Builder, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.UserOrBuilder> userBuilder_;
       /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 17;</code>
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 43;</code>
        */
       public boolean hasUser() {
         return userBuilder_ != null || user_ != null;
       }
-
       /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 17;</code>
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 43;</code>
        */
-      public User getUser() {
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getUser() {
         if (userBuilder_ == null) {
-          return user_ == null ? User.getDefaultInstance() : user_;
+          return user_ == null ? org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.getDefaultInstance() : user_;
         } else {
           return userBuilder_.getMessage();
         }
       }
-
       /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 17;</code>
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 43;</code>
        */
-      public Builder setUser(User value) {
+      public Builder setUser(org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User value) {
         if (userBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -2802,12 +6469,11 @@ public final class ProtobufRoot {
 
         return this;
       }
-
       /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 17;</code>
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 43;</code>
        */
       public Builder setUser(
-          User.Builder builderForValue) {
+          org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.Builder builderForValue) {
         if (userBuilder_ == null) {
           user_ = builderForValue.build();
           onChanged();
@@ -2817,15 +6483,14 @@ public final class ProtobufRoot {
 
         return this;
       }
-
       /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 17;</code>
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 43;</code>
        */
-      public Builder mergeUser(User value) {
+      public Builder mergeUser(org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User value) {
         if (userBuilder_ == null) {
           if (user_ != null) {
             user_ =
-                User.newBuilder(user_).mergeFrom(value).buildPartial();
+              org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.newBuilder(user_).mergeFrom(value).buildPartial();
           } else {
             user_ = value;
           }
@@ -2836,9 +6501,8 @@ public final class ProtobufRoot {
 
         return this;
       }
-
       /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 17;</code>
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 43;</code>
        */
       public Builder clearUser() {
         if (userBuilder_ == null) {
@@ -2851,713 +6515,170 @@ public final class ProtobufRoot {
 
         return this;
       }
-
       /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 17;</code>
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 43;</code>
        */
-      public User.Builder getUserBuilder() {
-
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.Builder getUserBuilder() {
+        
         onChanged();
         return getUserFieldBuilder().getBuilder();
       }
-
       /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 17;</code>
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 43;</code>
        */
-      public UserOrBuilder getUserOrBuilder() {
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.UserOrBuilder getUserOrBuilder() {
         if (userBuilder_ != null) {
           return userBuilder_.getMessageOrBuilder();
         } else {
           return user_ == null ?
-              User.getDefaultInstance() : user_;
+              org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.getDefaultInstance() : user_;
         }
       }
-
       /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 17;</code>
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.User user = 43;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          User, User.Builder, UserOrBuilder>
-      getUserFieldBuilder() {
+          org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.Builder, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.UserOrBuilder> 
+          getUserFieldBuilder() {
         if (userBuilder_ == null) {
-          userBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<>(
-              getUser(),
-              getParentForChildren(),
-              isClean());
+          userBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.Builder, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.UserOrBuilder>(
+                  getUser(),
+                  getParentForChildren(),
+                  isClean());
           user_ = null;
         }
         return userBuilder_;
       }
 
-      private com.google.protobuf.MapField<
-          String, String> ssMap_;
-
-      private com.google.protobuf.MapField<String, String>
-      internalGetSsMap() {
-        if (ssMap_ == null) {
-          return com.google.protobuf.MapField.emptyMapField(
-              SsMapDefaultEntryHolder.defaultEntry);
-        }
-        return ssMap_;
-      }
-
-      private com.google.protobuf.MapField<String, String>
-      internalGetMutableSsMap() {
-        onChanged();
-        if (ssMap_ == null) {
-          ssMap_ = com.google.protobuf.MapField.newMapField(
-              SsMapDefaultEntryHolder.defaultEntry);
-        }
-        if (!ssMap_.isMutable()) {
-          ssMap_ = ssMap_.copy();
-        }
-        return ssMap_;
-      }
-
-      public int getSsMapCount() {
-        return internalGetSsMap().getMap().size();
-      }
-
+      private org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root typeRecursive_ = null;
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.Builder, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.RootOrBuilder> typeRecursiveBuilder_;
       /**
-       * <code>map&lt;string, string&gt; ssMap = 18;</code>
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 44;</code>
        */
-
-      public boolean containsSsMap(
-          String key) {
-        if (key == null) {
-          throw new NullPointerException();
-        }
-        return internalGetSsMap().getMap().containsKey(key);
+      public boolean hasTypeRecursive() {
+        return typeRecursiveBuilder_ != null || typeRecursive_ != null;
       }
-
       /**
-       * Use {@link #getSsMapMap()} instead.
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 44;</code>
        */
-      @Deprecated
-      public java.util.Map<String, String> getSsMap() {
-        return getSsMapMap();
-      }
-
-      /**
-       * <code>map&lt;string, string&gt; ssMap = 18;</code>
-       */
-
-      public java.util.Map<String, String> getSsMapMap() {
-        return internalGetSsMap().getMap();
-      }
-
-      /**
-       * <code>map&lt;string, string&gt; ssMap = 18;</code>
-       */
-
-      public String getSsMapOrDefault(
-          String key,
-          String defaultValue) {
-        if (key == null) {
-          throw new NullPointerException();
-        }
-        java.util.Map<String, String> map =
-            internalGetSsMap().getMap();
-        return map.containsKey(key) ? map.get(key) : defaultValue;
-      }
-
-      /**
-       * <code>map&lt;string, string&gt; ssMap = 18;</code>
-       */
-
-      public String getSsMapOrThrow(
-          String key) {
-        if (key == null) {
-          throw new NullPointerException();
-        }
-        java.util.Map<String, String> map =
-            internalGetSsMap().getMap();
-        if (!map.containsKey(key)) {
-          throw new IllegalArgumentException();
-        }
-        return map.get(key);
-      }
-
-      public Builder clearSsMap() {
-        internalGetMutableSsMap().getMutableMap()
-            .clear();
-        return this;
-      }
-
-      /**
-       * <code>map&lt;string, string&gt; ssMap = 18;</code>
-       */
-
-      public Builder removeSsMap(
-          String key) {
-        if (key == null) {
-          throw new NullPointerException();
-        }
-        internalGetMutableSsMap().getMutableMap()
-            .remove(key);
-        return this;
-      }
-
-      /**
-       * Use alternate mutation accessors instead.
-       */
-      @Deprecated
-      public java.util.Map<String, String>
-      getMutableSsMap() {
-        return internalGetMutableSsMap().getMutableMap();
-      }
-
-      /**
-       * <code>map&lt;string, string&gt; ssMap = 18;</code>
-       */
-      public Builder putSsMap(
-          String key,
-          String value) {
-        if (key == null) {
-          throw new NullPointerException();
-        }
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        internalGetMutableSsMap().getMutableMap()
-            .put(key, value);
-        return this;
-      }
-
-      /**
-       * <code>map&lt;string, string&gt; ssMap = 18;</code>
-       */
-
-      public Builder putAllSsMap(
-          java.util.Map<String, String> values) {
-        internalGetMutableSsMap().getMutableMap()
-            .putAll(values);
-        return this;
-      }
-
-      private com.google.protobuf.MapField<
-          String, User> spMap_;
-
-      private com.google.protobuf.MapField<String, User>
-      internalGetSpMap() {
-        if (spMap_ == null) {
-          return com.google.protobuf.MapField.emptyMapField(
-              SpMapDefaultEntryHolder.defaultEntry);
-        }
-        return spMap_;
-      }
-
-      private com.google.protobuf.MapField<String, User>
-      internalGetMutableSpMap() {
-        onChanged();
-        if (spMap_ == null) {
-          spMap_ = com.google.protobuf.MapField.newMapField(
-              SpMapDefaultEntryHolder.defaultEntry);
-        }
-        if (!spMap_.isMutable()) {
-          spMap_ = spMap_.copy();
-        }
-        return spMap_;
-      }
-
-      public int getSpMapCount() {
-        return internalGetSpMap().getMap().size();
-      }
-
-      /**
-       * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 19;</code>
-       */
-
-      public boolean containsSpMap(
-          String key) {
-        if (key == null) {
-          throw new NullPointerException();
-        }
-        return internalGetSpMap().getMap().containsKey(key);
-      }
-
-      /**
-       * Use {@link #getSpMapMap()} instead.
-       */
-      @Deprecated
-      public java.util.Map<String, User> getSpMap() {
-        return getSpMapMap();
-      }
-
-      /**
-       * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 19;</code>
-       */
-
-      public java.util.Map<String, User> getSpMapMap() {
-        return internalGetSpMap().getMap();
-      }
-
-      /**
-       * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 19;</code>
-       */
-
-      public User getSpMapOrDefault(
-          String key,
-          User defaultValue) {
-        if (key == null) {
-          throw new NullPointerException();
-        }
-        java.util.Map<String, User> map =
-            internalGetSpMap().getMap();
-        return map.containsKey(key) ? map.get(key) : defaultValue;
-      }
-
-      /**
-       * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 19;</code>
-       */
-
-      public User getSpMapOrThrow(
-          String key) {
-        if (key == null) {
-          throw new NullPointerException();
-        }
-        java.util.Map<String, User> map =
-            internalGetSpMap().getMap();
-        if (!map.containsKey(key)) {
-          throw new IllegalArgumentException();
-        }
-        return map.get(key);
-      }
-
-      public Builder clearSpMap() {
-        internalGetMutableSpMap().getMutableMap()
-            .clear();
-        return this;
-      }
-
-      /**
-       * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 19;</code>
-       */
-
-      public Builder removeSpMap(
-          String key) {
-        if (key == null) {
-          throw new NullPointerException();
-        }
-        internalGetMutableSpMap().getMutableMap()
-            .remove(key);
-        return this;
-      }
-
-      /**
-       * Use alternate mutation accessors instead.
-       */
-      @Deprecated
-      public java.util.Map<String, User>
-      getMutableSpMap() {
-        return internalGetMutableSpMap().getMutableMap();
-      }
-
-      /**
-       * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 19;</code>
-       */
-      public Builder putSpMap(
-          String key,
-          User value) {
-        if (key == null) {
-          throw new NullPointerException();
-        }
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        internalGetMutableSpMap().getMutableMap()
-            .put(key, value);
-        return this;
-      }
-
-      /**
-       * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 19;</code>
-       */
-
-      public Builder putAllSpMap(
-          java.util.Map<String, User> values) {
-        internalGetMutableSpMap().getMutableMap()
-            .putAll(values);
-        return this;
-      }
-
-      private com.google.protobuf.LazyStringList sList_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-
-      private void ensureSListIsMutable() {
-        if (!((bitField0_ & 0x00080000) == 0x00080000)) {
-          sList_ = new com.google.protobuf.LazyStringArrayList(sList_);
-          bitField0_ |= 0x00080000;
-        }
-      }
-
-      /**
-       * <code>repeated string sList = 20;</code>
-       */
-      public com.google.protobuf.ProtocolStringList
-      getSListList() {
-        return sList_.getUnmodifiableView();
-      }
-
-      /**
-       * <code>repeated string sList = 20;</code>
-       */
-      public int getSListCount() {
-        return sList_.size();
-      }
-
-      /**
-       * <code>repeated string sList = 20;</code>
-       */
-      public String getSList(int index) {
-        return sList_.get(index);
-      }
-
-      /**
-       * <code>repeated string sList = 20;</code>
-       */
-      public com.google.protobuf.ByteString
-      getSListBytes(int index) {
-        return sList_.getByteString(index);
-      }
-
-      /**
-       * <code>repeated string sList = 20;</code>
-       */
-      public Builder setSList(
-          int index, String value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        ensureSListIsMutable();
-        sList_.set(index, value);
-        onChanged();
-        return this;
-      }
-
-      /**
-       * <code>repeated string sList = 20;</code>
-       */
-      public Builder addSList(
-          String value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        ensureSListIsMutable();
-        sList_.add(value);
-        onChanged();
-        return this;
-      }
-
-      /**
-       * <code>repeated string sList = 20;</code>
-       */
-      public Builder addAllSList(
-          Iterable<String> values) {
-        ensureSListIsMutable();
-        com.google.protobuf.AbstractMessageLite.Builder.addAll(
-            values, sList_);
-        onChanged();
-        return this;
-      }
-
-      /**
-       * <code>repeated string sList = 20;</code>
-       */
-      public Builder clearSList() {
-        sList_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00080000);
-        onChanged();
-        return this;
-      }
-
-      /**
-       * <code>repeated string sList = 20;</code>
-       */
-      public Builder addSListBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-          throw new NullPointerException();
-        }
-        checkByteStringIsUtf8(value);
-        ensureSListIsMutable();
-        sList_.add(value);
-        onChanged();
-        return this;
-      }
-
-      private java.util.List<User> pList_ =
-          java.util.Collections.emptyList();
-
-      private void ensurePListIsMutable() {
-        if (!((bitField0_ & 0x00100000) == 0x00100000)) {
-          pList_ = new java.util.ArrayList<>(pList_);
-          bitField0_ |= 0x00100000;
-        }
-      }
-
-      private com.google.protobuf.RepeatedFieldBuilderV3<
-          User, User.Builder, UserOrBuilder> pListBuilder_;
-
-      /**
-       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
-       */
-      public java.util.List<User> getPListList() {
-        if (pListBuilder_ == null) {
-          return java.util.Collections.unmodifiableList(pList_);
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root getTypeRecursive() {
+        if (typeRecursiveBuilder_ == null) {
+          return typeRecursive_ == null ? org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.getDefaultInstance() : typeRecursive_;
         } else {
-          return pListBuilder_.getMessageList();
+          return typeRecursiveBuilder_.getMessage();
         }
       }
-
       /**
-       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 44;</code>
        */
-      public int getPListCount() {
-        if (pListBuilder_ == null) {
-          return pList_.size();
-        } else {
-          return pListBuilder_.getCount();
-        }
-      }
-
-      /**
-       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
-       */
-      public User getPList(int index) {
-        if (pListBuilder_ == null) {
-          return pList_.get(index);
-        } else {
-          return pListBuilder_.getMessage(index);
-        }
-      }
-
-      /**
-       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
-       */
-      public Builder setPList(
-          int index, User value) {
-        if (pListBuilder_ == null) {
+      public Builder setTypeRecursive(org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root value) {
+        if (typeRecursiveBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          ensurePListIsMutable();
-          pList_.set(index, value);
+          typeRecursive_ = value;
           onChanged();
         } else {
-          pListBuilder_.setMessage(index, value);
+          typeRecursiveBuilder_.setMessage(value);
         }
+
         return this;
       }
-
       /**
-       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 44;</code>
        */
-      public Builder setPList(
-          int index, User.Builder builderForValue) {
-        if (pListBuilder_ == null) {
-          ensurePListIsMutable();
-          pList_.set(index, builderForValue.build());
+      public Builder setTypeRecursive(
+          org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.Builder builderForValue) {
+        if (typeRecursiveBuilder_ == null) {
+          typeRecursive_ = builderForValue.build();
           onChanged();
         } else {
-          pListBuilder_.setMessage(index, builderForValue.build());
+          typeRecursiveBuilder_.setMessage(builderForValue.build());
         }
+
         return this;
       }
-
       /**
-       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 44;</code>
        */
-      public Builder addPList(User value) {
-        if (pListBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
+      public Builder mergeTypeRecursive(org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root value) {
+        if (typeRecursiveBuilder_ == null) {
+          if (typeRecursive_ != null) {
+            typeRecursive_ =
+              org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.newBuilder(typeRecursive_).mergeFrom(value).buildPartial();
+          } else {
+            typeRecursive_ = value;
           }
-          ensurePListIsMutable();
-          pList_.add(value);
           onChanged();
         } else {
-          pListBuilder_.addMessage(value);
+          typeRecursiveBuilder_.mergeFrom(value);
         }
+
         return this;
       }
-
       /**
-       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 44;</code>
        */
-      public Builder addPList(
-          int index, User value) {
-        if (pListBuilder_ == null) {
-          if (value == null) {
-            throw new NullPointerException();
-          }
-          ensurePListIsMutable();
-          pList_.add(index, value);
+      public Builder clearTypeRecursive() {
+        if (typeRecursiveBuilder_ == null) {
+          typeRecursive_ = null;
           onChanged();
         } else {
-          pListBuilder_.addMessage(index, value);
+          typeRecursive_ = null;
+          typeRecursiveBuilder_ = null;
         }
+
         return this;
       }
-
       /**
-       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 44;</code>
        */
-      public Builder addPList(
-          User.Builder builderForValue) {
-        if (pListBuilder_ == null) {
-          ensurePListIsMutable();
-          pList_.add(builderForValue.build());
-          onChanged();
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.Builder getTypeRecursiveBuilder() {
+        
+        onChanged();
+        return getTypeRecursiveFieldBuilder().getBuilder();
+      }
+      /**
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 44;</code>
+       */
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.RootOrBuilder getTypeRecursiveOrBuilder() {
+        if (typeRecursiveBuilder_ != null) {
+          return typeRecursiveBuilder_.getMessageOrBuilder();
         } else {
-          pListBuilder_.addMessage(builderForValue.build());
-        }
-        return this;
-      }
-
-      /**
-       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
-       */
-      public Builder addPList(
-          int index, User.Builder builderForValue) {
-        if (pListBuilder_ == null) {
-          ensurePListIsMutable();
-          pList_.add(index, builderForValue.build());
-          onChanged();
-        } else {
-          pListBuilder_.addMessage(index, builderForValue.build());
-        }
-        return this;
-      }
-
-      /**
-       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
-       */
-      public Builder addAllPList(
-          Iterable<? extends User> values) {
-        if (pListBuilder_ == null) {
-          ensurePListIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, pList_);
-          onChanged();
-        } else {
-          pListBuilder_.addAllMessages(values);
-        }
-        return this;
-      }
-
-      /**
-       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
-       */
-      public Builder clearPList() {
-        if (pListBuilder_ == null) {
-          pList_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00100000);
-          onChanged();
-        } else {
-          pListBuilder_.clear();
-        }
-        return this;
-      }
-
-      /**
-       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
-       */
-      public Builder removePList(int index) {
-        if (pListBuilder_ == null) {
-          ensurePListIsMutable();
-          pList_.remove(index);
-          onChanged();
-        } else {
-          pListBuilder_.remove(index);
-        }
-        return this;
-      }
-
-      /**
-       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
-       */
-      public User.Builder getPListBuilder(
-          int index) {
-        return getPListFieldBuilder().getBuilder(index);
-      }
-
-      /**
-       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
-       */
-      public UserOrBuilder getPListOrBuilder(
-          int index) {
-        if (pListBuilder_ == null) {
-          return pList_.get(index);
-        } else {
-          return pListBuilder_.getMessageOrBuilder(index);
+          return typeRecursive_ == null ?
+              org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.getDefaultInstance() : typeRecursive_;
         }
       }
-
       /**
-       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
+       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 44;</code>
        */
-      public java.util.List<? extends UserOrBuilder>
-      getPListOrBuilderList() {
-        if (pListBuilder_ != null) {
-          return pListBuilder_.getMessageOrBuilderList();
-        } else {
-          return java.util.Collections.unmodifiableList(pList_);
+      private com.google.protobuf.SingleFieldBuilderV3<
+          org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.Builder, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.RootOrBuilder> 
+          getTypeRecursiveFieldBuilder() {
+        if (typeRecursiveBuilder_ == null) {
+          typeRecursiveBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.Builder, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.RootOrBuilder>(
+                  getTypeRecursive(),
+                  getParentForChildren(),
+                  isClean());
+          typeRecursive_ = null;
         }
-      }
-
-      /**
-       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
-       */
-      public User.Builder addPListBuilder() {
-        return getPListFieldBuilder().addBuilder(
-            User.getDefaultInstance());
-      }
-
-      /**
-       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
-       */
-      public User.Builder addPListBuilder(
-          int index) {
-        return getPListFieldBuilder().addBuilder(
-            index, User.getDefaultInstance());
-      }
-
-      /**
-       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User pList = 21;</code>
-       */
-      public java.util.List<User.Builder>
-      getPListBuilderList() {
-        return getPListFieldBuilder().getBuilderList();
-      }
-
-      private com.google.protobuf.RepeatedFieldBuilderV3<
-          User, User.Builder, UserOrBuilder>
-      getPListFieldBuilder() {
-        if (pListBuilder_ == null) {
-          pListBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<>(
-              pList_,
-              ((bitField0_ & 0x00100000) == 0x00100000),
-              getParentForChildren(),
-              isClean());
-          pList_ = null;
-        }
-        return pListBuilder_;
+        return typeRecursiveBuilder_;
       }
 
       private com.google.protobuf.Any any_ = null;
-
       private com.google.protobuf.SingleFieldBuilderV3<
           com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder> anyBuilder_;
-
       /**
-       * <code>.google.protobuf.Any any = 22;</code>
+       * <code>.google.protobuf.Any any = 50;</code>
        */
       public boolean hasAny() {
         return anyBuilder_ != null || any_ != null;
       }
-
       /**
-       * <code>.google.protobuf.Any any = 22;</code>
+       * <code>.google.protobuf.Any any = 50;</code>
        */
       public com.google.protobuf.Any getAny() {
         if (anyBuilder_ == null) {
@@ -3566,9 +6687,8 @@ public final class ProtobufRoot {
           return anyBuilder_.getMessage();
         }
       }
-
       /**
-       * <code>.google.protobuf.Any any = 22;</code>
+       * <code>.google.protobuf.Any any = 50;</code>
        */
       public Builder setAny(com.google.protobuf.Any value) {
         if (anyBuilder_ == null) {
@@ -3583,9 +6703,8 @@ public final class ProtobufRoot {
 
         return this;
       }
-
       /**
-       * <code>.google.protobuf.Any any = 22;</code>
+       * <code>.google.protobuf.Any any = 50;</code>
        */
       public Builder setAny(
           com.google.protobuf.Any.Builder builderForValue) {
@@ -3598,15 +6717,14 @@ public final class ProtobufRoot {
 
         return this;
       }
-
       /**
-       * <code>.google.protobuf.Any any = 22;</code>
+       * <code>.google.protobuf.Any any = 50;</code>
        */
       public Builder mergeAny(com.google.protobuf.Any value) {
         if (anyBuilder_ == null) {
           if (any_ != null) {
             any_ =
-                com.google.protobuf.Any.newBuilder(any_).mergeFrom(value).buildPartial();
+              com.google.protobuf.Any.newBuilder(any_).mergeFrom(value).buildPartial();
           } else {
             any_ = value;
           }
@@ -3617,9 +6735,8 @@ public final class ProtobufRoot {
 
         return this;
       }
-
       /**
-       * <code>.google.protobuf.Any any = 22;</code>
+       * <code>.google.protobuf.Any any = 50;</code>
        */
       public Builder clearAny() {
         if (anyBuilder_ == null) {
@@ -3632,18 +6749,16 @@ public final class ProtobufRoot {
 
         return this;
       }
-
       /**
-       * <code>.google.protobuf.Any any = 22;</code>
+       * <code>.google.protobuf.Any any = 50;</code>
        */
       public com.google.protobuf.Any.Builder getAnyBuilder() {
-
+        
         onChanged();
         return getAnyFieldBuilder().getBuilder();
       }
-
       /**
-       * <code>.google.protobuf.Any any = 22;</code>
+       * <code>.google.protobuf.Any any = 50;</code>
        */
       public com.google.protobuf.AnyOrBuilder getAnyOrBuilder() {
         if (anyBuilder_ != null) {
@@ -3653,38 +6768,37 @@ public final class ProtobufRoot {
               com.google.protobuf.Any.getDefaultInstance() : any_;
         }
       }
-
       /**
-       * <code>.google.protobuf.Any any = 22;</code>
+       * <code>.google.protobuf.Any any = 50;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder>
-      getAnyFieldBuilder() {
+          com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder> 
+          getAnyFieldBuilder() {
         if (anyBuilder_ == null) {
-          anyBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<>(
-              getAny(),
-              getParentForChildren(),
-              isClean());
+          anyBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder>(
+                  getAny(),
+                  getParentForChildren(),
+                  isClean());
           any_ = null;
         }
         return anyBuilder_;
       }
 
       private java.util.List<com.google.protobuf.Any> anys_ =
-          java.util.Collections.emptyList();
-
+        java.util.Collections.emptyList();
       private void ensureAnysIsMutable() {
-        if (!((bitField0_ & 0x00400000) == 0x00400000)) {
-          anys_ = new java.util.ArrayList<>(anys_);
-          bitField0_ |= 0x00400000;
-        }
+        if (!((bitField1_ & 0x00000001) == 0x00000001)) {
+          anys_ = new java.util.ArrayList<com.google.protobuf.Any>(anys_);
+          bitField1_ |= 0x00000001;
+         }
       }
 
       private com.google.protobuf.RepeatedFieldBuilderV3<
           com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder> anysBuilder_;
 
       /**
-       * <code>repeated .google.protobuf.Any anys = 23;</code>
+       * <code>repeated .google.protobuf.Any anys = 51;</code>
        */
       public java.util.List<com.google.protobuf.Any> getAnysList() {
         if (anysBuilder_ == null) {
@@ -3693,9 +6807,8 @@ public final class ProtobufRoot {
           return anysBuilder_.getMessageList();
         }
       }
-
       /**
-       * <code>repeated .google.protobuf.Any anys = 23;</code>
+       * <code>repeated .google.protobuf.Any anys = 51;</code>
        */
       public int getAnysCount() {
         if (anysBuilder_ == null) {
@@ -3704,9 +6817,8 @@ public final class ProtobufRoot {
           return anysBuilder_.getCount();
         }
       }
-
       /**
-       * <code>repeated .google.protobuf.Any anys = 23;</code>
+       * <code>repeated .google.protobuf.Any anys = 51;</code>
        */
       public com.google.protobuf.Any getAnys(int index) {
         if (anysBuilder_ == null) {
@@ -3715,9 +6827,8 @@ public final class ProtobufRoot {
           return anysBuilder_.getMessage(index);
         }
       }
-
       /**
-       * <code>repeated .google.protobuf.Any anys = 23;</code>
+       * <code>repeated .google.protobuf.Any anys = 51;</code>
        */
       public Builder setAnys(
           int index, com.google.protobuf.Any value) {
@@ -3733,9 +6844,8 @@ public final class ProtobufRoot {
         }
         return this;
       }
-
       /**
-       * <code>repeated .google.protobuf.Any anys = 23;</code>
+       * <code>repeated .google.protobuf.Any anys = 51;</code>
        */
       public Builder setAnys(
           int index, com.google.protobuf.Any.Builder builderForValue) {
@@ -3748,9 +6858,8 @@ public final class ProtobufRoot {
         }
         return this;
       }
-
       /**
-       * <code>repeated .google.protobuf.Any anys = 23;</code>
+       * <code>repeated .google.protobuf.Any anys = 51;</code>
        */
       public Builder addAnys(com.google.protobuf.Any value) {
         if (anysBuilder_ == null) {
@@ -3765,9 +6874,8 @@ public final class ProtobufRoot {
         }
         return this;
       }
-
       /**
-       * <code>repeated .google.protobuf.Any anys = 23;</code>
+       * <code>repeated .google.protobuf.Any anys = 51;</code>
        */
       public Builder addAnys(
           int index, com.google.protobuf.Any value) {
@@ -3783,9 +6891,8 @@ public final class ProtobufRoot {
         }
         return this;
       }
-
       /**
-       * <code>repeated .google.protobuf.Any anys = 23;</code>
+       * <code>repeated .google.protobuf.Any anys = 51;</code>
        */
       public Builder addAnys(
           com.google.protobuf.Any.Builder builderForValue) {
@@ -3798,9 +6905,8 @@ public final class ProtobufRoot {
         }
         return this;
       }
-
       /**
-       * <code>repeated .google.protobuf.Any anys = 23;</code>
+       * <code>repeated .google.protobuf.Any anys = 51;</code>
        */
       public Builder addAnys(
           int index, com.google.protobuf.Any.Builder builderForValue) {
@@ -3813,12 +6919,11 @@ public final class ProtobufRoot {
         }
         return this;
       }
-
       /**
-       * <code>repeated .google.protobuf.Any anys = 23;</code>
+       * <code>repeated .google.protobuf.Any anys = 51;</code>
        */
       public Builder addAllAnys(
-          Iterable<? extends com.google.protobuf.Any> values) {
+          java.lang.Iterable<? extends com.google.protobuf.Any> values) {
         if (anysBuilder_ == null) {
           ensureAnysIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -3829,23 +6934,21 @@ public final class ProtobufRoot {
         }
         return this;
       }
-
       /**
-       * <code>repeated .google.protobuf.Any anys = 23;</code>
+       * <code>repeated .google.protobuf.Any anys = 51;</code>
        */
       public Builder clearAnys() {
         if (anysBuilder_ == null) {
           anys_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00400000);
+          bitField1_ = (bitField1_ & ~0x00000001);
           onChanged();
         } else {
           anysBuilder_.clear();
         }
         return this;
       }
-
       /**
-       * <code>repeated .google.protobuf.Any anys = 23;</code>
+       * <code>repeated .google.protobuf.Any anys = 51;</code>
        */
       public Builder removeAnys(int index) {
         if (anysBuilder_ == null) {
@@ -3857,233 +6960,2826 @@ public final class ProtobufRoot {
         }
         return this;
       }
-
       /**
-       * <code>repeated .google.protobuf.Any anys = 23;</code>
+       * <code>repeated .google.protobuf.Any anys = 51;</code>
        */
       public com.google.protobuf.Any.Builder getAnysBuilder(
           int index) {
         return getAnysFieldBuilder().getBuilder(index);
       }
-
       /**
-       * <code>repeated .google.protobuf.Any anys = 23;</code>
+       * <code>repeated .google.protobuf.Any anys = 51;</code>
        */
       public com.google.protobuf.AnyOrBuilder getAnysOrBuilder(
           int index) {
         if (anysBuilder_ == null) {
-          return anys_.get(index);
-        } else {
+          return anys_.get(index);  } else {
           return anysBuilder_.getMessageOrBuilder(index);
         }
       }
-
       /**
-       * <code>repeated .google.protobuf.Any anys = 23;</code>
+       * <code>repeated .google.protobuf.Any anys = 51;</code>
        */
-      public java.util.List<? extends com.google.protobuf.AnyOrBuilder>
-      getAnysOrBuilderList() {
+      public java.util.List<? extends com.google.protobuf.AnyOrBuilder> 
+           getAnysOrBuilderList() {
         if (anysBuilder_ != null) {
           return anysBuilder_.getMessageOrBuilderList();
         } else {
           return java.util.Collections.unmodifiableList(anys_);
         }
       }
-
       /**
-       * <code>repeated .google.protobuf.Any anys = 23;</code>
+       * <code>repeated .google.protobuf.Any anys = 51;</code>
        */
       public com.google.protobuf.Any.Builder addAnysBuilder() {
         return getAnysFieldBuilder().addBuilder(
             com.google.protobuf.Any.getDefaultInstance());
       }
-
       /**
-       * <code>repeated .google.protobuf.Any anys = 23;</code>
+       * <code>repeated .google.protobuf.Any anys = 51;</code>
        */
       public com.google.protobuf.Any.Builder addAnysBuilder(
           int index) {
         return getAnysFieldBuilder().addBuilder(
             index, com.google.protobuf.Any.getDefaultInstance());
       }
-
       /**
-       * <code>repeated .google.protobuf.Any anys = 23;</code>
+       * <code>repeated .google.protobuf.Any anys = 51;</code>
        */
-      public java.util.List<com.google.protobuf.Any.Builder>
-      getAnysBuilderList() {
+      public java.util.List<com.google.protobuf.Any.Builder> 
+           getAnysBuilderList() {
         return getAnysFieldBuilder().getBuilderList();
       }
-
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder>
-      getAnysFieldBuilder() {
+          com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder> 
+          getAnysFieldBuilder() {
         if (anysBuilder_ == null) {
-          anysBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<>(
-              anys_,
-              ((bitField0_ & 0x00400000) == 0x00400000),
-              getParentForChildren(),
-              isClean());
+          anysBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              com.google.protobuf.Any, com.google.protobuf.Any.Builder, com.google.protobuf.AnyOrBuilder>(
+                  anys_,
+                  ((bitField1_ & 0x00000001) == 0x00000001),
+                  getParentForChildren(),
+                  isClean());
           anys_ = null;
         }
         return anysBuilder_;
       }
 
-      private Root typeRecursive_ = null;
-
-      private com.google.protobuf.SingleFieldBuilderV3<
-          Root, Builder, RootOrBuilder> typeRecursiveBuilder_;
-
-      /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 24;</code>
-       */
-      public boolean hasTypeRecursive() {
-        return typeRecursiveBuilder_ != null || typeRecursive_ != null;
+      private com.google.protobuf.MapField<
+          java.lang.String, java.lang.String> ssMap_;
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String>
+      internalGetSsMap() {
+        if (ssMap_ == null) {
+          return com.google.protobuf.MapField.emptyMapField(
+              SsMapDefaultEntryHolder.defaultEntry);
+        }
+        return ssMap_;
+      }
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String>
+      internalGetMutableSsMap() {
+        onChanged();;
+        if (ssMap_ == null) {
+          ssMap_ = com.google.protobuf.MapField.newMapField(
+              SsMapDefaultEntryHolder.defaultEntry);
+        }
+        if (!ssMap_.isMutable()) {
+          ssMap_ = ssMap_.copy();
+        }
+        return ssMap_;
       }
 
+      public int getSsMapCount() {
+        return internalGetSsMap().getMap().size();
+      }
       /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 24;</code>
+       * <code>map&lt;string, string&gt; ssMap = 60;</code>
        */
-      public Root getTypeRecursive() {
-        if (typeRecursiveBuilder_ == null) {
-          return typeRecursive_ == null ? Root.getDefaultInstance() : typeRecursive_;
-        } else {
-          return typeRecursiveBuilder_.getMessage();
+
+      public boolean containsSsMap(
+          java.lang.String key) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        return internalGetSsMap().getMap().containsKey(key);
+      }
+      /**
+       * Use {@link #getSsMapMap()} instead.
+       */
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String> getSsMap() {
+        return getSsMapMap();
+      }
+      /**
+       * <code>map&lt;string, string&gt; ssMap = 60;</code>
+       */
+
+      public java.util.Map<java.lang.String, java.lang.String> getSsMapMap() {
+        return internalGetSsMap().getMap();
+      }
+      /**
+       * <code>map&lt;string, string&gt; ssMap = 60;</code>
+       */
+
+      public java.lang.String getSsMapOrDefault(
+          java.lang.String key,
+          java.lang.String defaultValue) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        java.util.Map<java.lang.String, java.lang.String> map =
+            internalGetSsMap().getMap();
+        return map.containsKey(key) ? map.get(key) : defaultValue;
+      }
+      /**
+       * <code>map&lt;string, string&gt; ssMap = 60;</code>
+       */
+
+      public java.lang.String getSsMapOrThrow(
+          java.lang.String key) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        java.util.Map<java.lang.String, java.lang.String> map =
+            internalGetSsMap().getMap();
+        if (!map.containsKey(key)) {
+          throw new java.lang.IllegalArgumentException();
+        }
+        return map.get(key);
+      }
+
+      public Builder clearSsMap() {
+        internalGetMutableSsMap().getMutableMap()
+            .clear();
+        return this;
+      }
+      /**
+       * <code>map&lt;string, string&gt; ssMap = 60;</code>
+       */
+
+      public Builder removeSsMap(
+          java.lang.String key) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        internalGetMutableSsMap().getMutableMap()
+            .remove(key);
+        return this;
+      }
+      /**
+       * Use alternate mutation accessors instead.
+       */
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String>
+      getMutableSsMap() {
+        return internalGetMutableSsMap().getMutableMap();
+      }
+      /**
+       * <code>map&lt;string, string&gt; ssMap = 60;</code>
+       */
+      public Builder putSsMap(
+          java.lang.String key,
+          java.lang.String value) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        if (value == null) { throw new java.lang.NullPointerException(); }
+        internalGetMutableSsMap().getMutableMap()
+            .put(key, value);
+        return this;
+      }
+      /**
+       * <code>map&lt;string, string&gt; ssMap = 60;</code>
+       */
+
+      public Builder putAllSsMap(
+          java.util.Map<java.lang.String, java.lang.String> values) {
+        internalGetMutableSsMap().getMutableMap()
+            .putAll(values);
+        return this;
+      }
+
+      private com.google.protobuf.MapField<
+          java.lang.String, java.lang.Integer> sint32Map_;
+      private com.google.protobuf.MapField<java.lang.String, java.lang.Integer>
+      internalGetSint32Map() {
+        if (sint32Map_ == null) {
+          return com.google.protobuf.MapField.emptyMapField(
+              Sint32MapDefaultEntryHolder.defaultEntry);
+        }
+        return sint32Map_;
+      }
+      private com.google.protobuf.MapField<java.lang.String, java.lang.Integer>
+      internalGetMutableSint32Map() {
+        onChanged();;
+        if (sint32Map_ == null) {
+          sint32Map_ = com.google.protobuf.MapField.newMapField(
+              Sint32MapDefaultEntryHolder.defaultEntry);
+        }
+        if (!sint32Map_.isMutable()) {
+          sint32Map_ = sint32Map_.copy();
+        }
+        return sint32Map_;
+      }
+
+      public int getSint32MapCount() {
+        return internalGetSint32Map().getMap().size();
+      }
+      /**
+       * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
+       */
+
+      public boolean containsSint32Map(
+          java.lang.String key) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        return internalGetSint32Map().getMap().containsKey(key);
+      }
+      /**
+       * Use {@link #getSint32MapMap()} instead.
+       */
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.Integer> getSint32Map() {
+        return getSint32MapMap();
+      }
+      /**
+       * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
+       */
+
+      public java.util.Map<java.lang.String, java.lang.Integer> getSint32MapMap() {
+        return internalGetSint32Map().getMap();
+      }
+      /**
+       * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
+       */
+
+      public int getSint32MapOrDefault(
+          java.lang.String key,
+          int defaultValue) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        java.util.Map<java.lang.String, java.lang.Integer> map =
+            internalGetSint32Map().getMap();
+        return map.containsKey(key) ? map.get(key) : defaultValue;
+      }
+      /**
+       * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
+       */
+
+      public int getSint32MapOrThrow(
+          java.lang.String key) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        java.util.Map<java.lang.String, java.lang.Integer> map =
+            internalGetSint32Map().getMap();
+        if (!map.containsKey(key)) {
+          throw new java.lang.IllegalArgumentException();
+        }
+        return map.get(key);
+      }
+
+      public Builder clearSint32Map() {
+        internalGetMutableSint32Map().getMutableMap()
+            .clear();
+        return this;
+      }
+      /**
+       * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
+       */
+
+      public Builder removeSint32Map(
+          java.lang.String key) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        internalGetMutableSint32Map().getMutableMap()
+            .remove(key);
+        return this;
+      }
+      /**
+       * Use alternate mutation accessors instead.
+       */
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.Integer>
+      getMutableSint32Map() {
+        return internalGetMutableSint32Map().getMutableMap();
+      }
+      /**
+       * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
+       */
+      public Builder putSint32Map(
+          java.lang.String key,
+          int value) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        
+        internalGetMutableSint32Map().getMutableMap()
+            .put(key, value);
+        return this;
+      }
+      /**
+       * <code>map&lt;string, int32&gt; sint32Map = 61;</code>
+       */
+
+      public Builder putAllSint32Map(
+          java.util.Map<java.lang.String, java.lang.Integer> values) {
+        internalGetMutableSint32Map().getMutableMap()
+            .putAll(values);
+        return this;
+      }
+
+      private com.google.protobuf.MapField<
+          java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> spMap_;
+      private com.google.protobuf.MapField<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User>
+      internalGetSpMap() {
+        if (spMap_ == null) {
+          return com.google.protobuf.MapField.emptyMapField(
+              SpMapDefaultEntryHolder.defaultEntry);
+        }
+        return spMap_;
+      }
+      private com.google.protobuf.MapField<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User>
+      internalGetMutableSpMap() {
+        onChanged();;
+        if (spMap_ == null) {
+          spMap_ = com.google.protobuf.MapField.newMapField(
+              SpMapDefaultEntryHolder.defaultEntry);
+        }
+        if (!spMap_.isMutable()) {
+          spMap_ = spMap_.copy();
+        }
+        return spMap_;
+      }
+
+      public int getSpMapCount() {
+        return internalGetSpMap().getMap().size();
+      }
+      /**
+       * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
+       */
+
+      public boolean containsSpMap(
+          java.lang.String key) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        return internalGetSpMap().getMap().containsKey(key);
+      }
+      /**
+       * Use {@link #getSpMapMap()} instead.
+       */
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> getSpMap() {
+        return getSpMapMap();
+      }
+      /**
+       * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
+       */
+
+      public java.util.Map<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> getSpMapMap() {
+        return internalGetSpMap().getMap();
+      }
+      /**
+       * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
+       */
+
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getSpMapOrDefault(
+          java.lang.String key,
+          org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User defaultValue) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        java.util.Map<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> map =
+            internalGetSpMap().getMap();
+        return map.containsKey(key) ? map.get(key) : defaultValue;
+      }
+      /**
+       * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
+       */
+
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getSpMapOrThrow(
+          java.lang.String key) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        java.util.Map<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> map =
+            internalGetSpMap().getMap();
+        if (!map.containsKey(key)) {
+          throw new java.lang.IllegalArgumentException();
+        }
+        return map.get(key);
+      }
+
+      public Builder clearSpMap() {
+        internalGetMutableSpMap().getMutableMap()
+            .clear();
+        return this;
+      }
+      /**
+       * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
+       */
+
+      public Builder removeSpMap(
+          java.lang.String key) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        internalGetMutableSpMap().getMutableMap()
+            .remove(key);
+        return this;
+      }
+      /**
+       * Use alternate mutation accessors instead.
+       */
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User>
+      getMutableSpMap() {
+        return internalGetMutableSpMap().getMutableMap();
+      }
+      /**
+       * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
+       */
+      public Builder putSpMap(
+          java.lang.String key,
+          org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User value) {
+        if (key == null) { throw new java.lang.NullPointerException(); }
+        if (value == null) { throw new java.lang.NullPointerException(); }
+        internalGetMutableSpMap().getMutableMap()
+            .put(key, value);
+        return this;
+      }
+      /**
+       * <code>map&lt;string, .org.apache.servicecomb.foundation.protobuf.internal.model.User&gt; spMap = 62;</code>
+       */
+
+      public Builder putAllSpMap(
+          java.util.Map<java.lang.String, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> values) {
+        internalGetMutableSpMap().getMutableMap()
+            .putAll(values);
+        return this;
+      }
+
+      private java.util.List<java.lang.Integer> int32SPacked_ = java.util.Collections.emptyList();
+      private void ensureInt32SPackedIsMutable() {
+        if (!((bitField1_ & 0x00000010) == 0x00000010)) {
+          int32SPacked_ = new java.util.ArrayList<java.lang.Integer>(int32SPacked_);
+          bitField1_ |= 0x00000010;
+         }
+      }
+      /**
+       * <code>repeated int32 int32sPacked = 70;</code>
+       */
+      public java.util.List<java.lang.Integer>
+          getInt32SPackedList() {
+        return java.util.Collections.unmodifiableList(int32SPacked_);
+      }
+      /**
+       * <code>repeated int32 int32sPacked = 70;</code>
+       */
+      public int getInt32SPackedCount() {
+        return int32SPacked_.size();
+      }
+      /**
+       * <code>repeated int32 int32sPacked = 70;</code>
+       */
+      public int getInt32SPacked(int index) {
+        return int32SPacked_.get(index);
+      }
+      /**
+       * <code>repeated int32 int32sPacked = 70;</code>
+       */
+      public Builder setInt32SPacked(
+          int index, int value) {
+        ensureInt32SPackedIsMutable();
+        int32SPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated int32 int32sPacked = 70;</code>
+       */
+      public Builder addInt32SPacked(int value) {
+        ensureInt32SPackedIsMutable();
+        int32SPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated int32 int32sPacked = 70;</code>
+       */
+      public Builder addAllInt32SPacked(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureInt32SPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, int32SPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated int32 int32sPacked = 70;</code>
+       */
+      public Builder clearInt32SPacked() {
+        int32SPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00000010);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Long> int64SPacked_ = java.util.Collections.emptyList();
+      private void ensureInt64SPackedIsMutable() {
+        if (!((bitField1_ & 0x00000020) == 0x00000020)) {
+          int64SPacked_ = new java.util.ArrayList<java.lang.Long>(int64SPacked_);
+          bitField1_ |= 0x00000020;
+         }
+      }
+      /**
+       * <code>repeated int64 int64sPacked = 71;</code>
+       */
+      public java.util.List<java.lang.Long>
+          getInt64SPackedList() {
+        return java.util.Collections.unmodifiableList(int64SPacked_);
+      }
+      /**
+       * <code>repeated int64 int64sPacked = 71;</code>
+       */
+      public int getInt64SPackedCount() {
+        return int64SPacked_.size();
+      }
+      /**
+       * <code>repeated int64 int64sPacked = 71;</code>
+       */
+      public long getInt64SPacked(int index) {
+        return int64SPacked_.get(index);
+      }
+      /**
+       * <code>repeated int64 int64sPacked = 71;</code>
+       */
+      public Builder setInt64SPacked(
+          int index, long value) {
+        ensureInt64SPackedIsMutable();
+        int64SPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated int64 int64sPacked = 71;</code>
+       */
+      public Builder addInt64SPacked(long value) {
+        ensureInt64SPackedIsMutable();
+        int64SPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated int64 int64sPacked = 71;</code>
+       */
+      public Builder addAllInt64SPacked(
+          java.lang.Iterable<? extends java.lang.Long> values) {
+        ensureInt64SPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, int64SPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated int64 int64sPacked = 71;</code>
+       */
+      public Builder clearInt64SPacked() {
+        int64SPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00000020);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Integer> uint32SPacked_ = java.util.Collections.emptyList();
+      private void ensureUint32SPackedIsMutable() {
+        if (!((bitField1_ & 0x00000040) == 0x00000040)) {
+          uint32SPacked_ = new java.util.ArrayList<java.lang.Integer>(uint32SPacked_);
+          bitField1_ |= 0x00000040;
+         }
+      }
+      /**
+       * <code>repeated uint32 uint32sPacked = 72;</code>
+       */
+      public java.util.List<java.lang.Integer>
+          getUint32SPackedList() {
+        return java.util.Collections.unmodifiableList(uint32SPacked_);
+      }
+      /**
+       * <code>repeated uint32 uint32sPacked = 72;</code>
+       */
+      public int getUint32SPackedCount() {
+        return uint32SPacked_.size();
+      }
+      /**
+       * <code>repeated uint32 uint32sPacked = 72;</code>
+       */
+      public int getUint32SPacked(int index) {
+        return uint32SPacked_.get(index);
+      }
+      /**
+       * <code>repeated uint32 uint32sPacked = 72;</code>
+       */
+      public Builder setUint32SPacked(
+          int index, int value) {
+        ensureUint32SPackedIsMutable();
+        uint32SPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 uint32sPacked = 72;</code>
+       */
+      public Builder addUint32SPacked(int value) {
+        ensureUint32SPackedIsMutable();
+        uint32SPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 uint32sPacked = 72;</code>
+       */
+      public Builder addAllUint32SPacked(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureUint32SPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, uint32SPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 uint32sPacked = 72;</code>
+       */
+      public Builder clearUint32SPacked() {
+        uint32SPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00000040);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Long> uint64SPacked_ = java.util.Collections.emptyList();
+      private void ensureUint64SPackedIsMutable() {
+        if (!((bitField1_ & 0x00000080) == 0x00000080)) {
+          uint64SPacked_ = new java.util.ArrayList<java.lang.Long>(uint64SPacked_);
+          bitField1_ |= 0x00000080;
+         }
+      }
+      /**
+       * <code>repeated uint64 uint64sPacked = 73;</code>
+       */
+      public java.util.List<java.lang.Long>
+          getUint64SPackedList() {
+        return java.util.Collections.unmodifiableList(uint64SPacked_);
+      }
+      /**
+       * <code>repeated uint64 uint64sPacked = 73;</code>
+       */
+      public int getUint64SPackedCount() {
+        return uint64SPacked_.size();
+      }
+      /**
+       * <code>repeated uint64 uint64sPacked = 73;</code>
+       */
+      public long getUint64SPacked(int index) {
+        return uint64SPacked_.get(index);
+      }
+      /**
+       * <code>repeated uint64 uint64sPacked = 73;</code>
+       */
+      public Builder setUint64SPacked(
+          int index, long value) {
+        ensureUint64SPackedIsMutable();
+        uint64SPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint64 uint64sPacked = 73;</code>
+       */
+      public Builder addUint64SPacked(long value) {
+        ensureUint64SPackedIsMutable();
+        uint64SPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint64 uint64sPacked = 73;</code>
+       */
+      public Builder addAllUint64SPacked(
+          java.lang.Iterable<? extends java.lang.Long> values) {
+        ensureUint64SPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, uint64SPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint64 uint64sPacked = 73;</code>
+       */
+      public Builder clearUint64SPacked() {
+        uint64SPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00000080);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Integer> sint32SPacked_ = java.util.Collections.emptyList();
+      private void ensureSint32SPackedIsMutable() {
+        if (!((bitField1_ & 0x00000100) == 0x00000100)) {
+          sint32SPacked_ = new java.util.ArrayList<java.lang.Integer>(sint32SPacked_);
+          bitField1_ |= 0x00000100;
+         }
+      }
+      /**
+       * <code>repeated sint32 sint32sPacked = 74;</code>
+       */
+      public java.util.List<java.lang.Integer>
+          getSint32SPackedList() {
+        return java.util.Collections.unmodifiableList(sint32SPacked_);
+      }
+      /**
+       * <code>repeated sint32 sint32sPacked = 74;</code>
+       */
+      public int getSint32SPackedCount() {
+        return sint32SPacked_.size();
+      }
+      /**
+       * <code>repeated sint32 sint32sPacked = 74;</code>
+       */
+      public int getSint32SPacked(int index) {
+        return sint32SPacked_.get(index);
+      }
+      /**
+       * <code>repeated sint32 sint32sPacked = 74;</code>
+       */
+      public Builder setSint32SPacked(
+          int index, int value) {
+        ensureSint32SPackedIsMutable();
+        sint32SPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sint32 sint32sPacked = 74;</code>
+       */
+      public Builder addSint32SPacked(int value) {
+        ensureSint32SPackedIsMutable();
+        sint32SPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sint32 sint32sPacked = 74;</code>
+       */
+      public Builder addAllSint32SPacked(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureSint32SPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, sint32SPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sint32 sint32sPacked = 74;</code>
+       */
+      public Builder clearSint32SPacked() {
+        sint32SPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00000100);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Long> sint64SPacked_ = java.util.Collections.emptyList();
+      private void ensureSint64SPackedIsMutable() {
+        if (!((bitField1_ & 0x00000200) == 0x00000200)) {
+          sint64SPacked_ = new java.util.ArrayList<java.lang.Long>(sint64SPacked_);
+          bitField1_ |= 0x00000200;
+         }
+      }
+      /**
+       * <code>repeated sint64 sint64sPacked = 75;</code>
+       */
+      public java.util.List<java.lang.Long>
+          getSint64SPackedList() {
+        return java.util.Collections.unmodifiableList(sint64SPacked_);
+      }
+      /**
+       * <code>repeated sint64 sint64sPacked = 75;</code>
+       */
+      public int getSint64SPackedCount() {
+        return sint64SPacked_.size();
+      }
+      /**
+       * <code>repeated sint64 sint64sPacked = 75;</code>
+       */
+      public long getSint64SPacked(int index) {
+        return sint64SPacked_.get(index);
+      }
+      /**
+       * <code>repeated sint64 sint64sPacked = 75;</code>
+       */
+      public Builder setSint64SPacked(
+          int index, long value) {
+        ensureSint64SPackedIsMutable();
+        sint64SPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sint64 sint64sPacked = 75;</code>
+       */
+      public Builder addSint64SPacked(long value) {
+        ensureSint64SPackedIsMutable();
+        sint64SPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sint64 sint64sPacked = 75;</code>
+       */
+      public Builder addAllSint64SPacked(
+          java.lang.Iterable<? extends java.lang.Long> values) {
+        ensureSint64SPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, sint64SPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sint64 sint64sPacked = 75;</code>
+       */
+      public Builder clearSint64SPacked() {
+        sint64SPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00000200);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Integer> fixed32SPacked_ = java.util.Collections.emptyList();
+      private void ensureFixed32SPackedIsMutable() {
+        if (!((bitField1_ & 0x00000400) == 0x00000400)) {
+          fixed32SPacked_ = new java.util.ArrayList<java.lang.Integer>(fixed32SPacked_);
+          bitField1_ |= 0x00000400;
+         }
+      }
+      /**
+       * <code>repeated fixed32 fixed32sPacked = 76;</code>
+       */
+      public java.util.List<java.lang.Integer>
+          getFixed32SPackedList() {
+        return java.util.Collections.unmodifiableList(fixed32SPacked_);
+      }
+      /**
+       * <code>repeated fixed32 fixed32sPacked = 76;</code>
+       */
+      public int getFixed32SPackedCount() {
+        return fixed32SPacked_.size();
+      }
+      /**
+       * <code>repeated fixed32 fixed32sPacked = 76;</code>
+       */
+      public int getFixed32SPacked(int index) {
+        return fixed32SPacked_.get(index);
+      }
+      /**
+       * <code>repeated fixed32 fixed32sPacked = 76;</code>
+       */
+      public Builder setFixed32SPacked(
+          int index, int value) {
+        ensureFixed32SPackedIsMutable();
+        fixed32SPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated fixed32 fixed32sPacked = 76;</code>
+       */
+      public Builder addFixed32SPacked(int value) {
+        ensureFixed32SPackedIsMutable();
+        fixed32SPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated fixed32 fixed32sPacked = 76;</code>
+       */
+      public Builder addAllFixed32SPacked(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureFixed32SPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, fixed32SPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated fixed32 fixed32sPacked = 76;</code>
+       */
+      public Builder clearFixed32SPacked() {
+        fixed32SPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00000400);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Long> fixed64SPacked_ = java.util.Collections.emptyList();
+      private void ensureFixed64SPackedIsMutable() {
+        if (!((bitField1_ & 0x00000800) == 0x00000800)) {
+          fixed64SPacked_ = new java.util.ArrayList<java.lang.Long>(fixed64SPacked_);
+          bitField1_ |= 0x00000800;
+         }
+      }
+      /**
+       * <code>repeated fixed64 fixed64sPacked = 77;</code>
+       */
+      public java.util.List<java.lang.Long>
+          getFixed64SPackedList() {
+        return java.util.Collections.unmodifiableList(fixed64SPacked_);
+      }
+      /**
+       * <code>repeated fixed64 fixed64sPacked = 77;</code>
+       */
+      public int getFixed64SPackedCount() {
+        return fixed64SPacked_.size();
+      }
+      /**
+       * <code>repeated fixed64 fixed64sPacked = 77;</code>
+       */
+      public long getFixed64SPacked(int index) {
+        return fixed64SPacked_.get(index);
+      }
+      /**
+       * <code>repeated fixed64 fixed64sPacked = 77;</code>
+       */
+      public Builder setFixed64SPacked(
+          int index, long value) {
+        ensureFixed64SPackedIsMutable();
+        fixed64SPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated fixed64 fixed64sPacked = 77;</code>
+       */
+      public Builder addFixed64SPacked(long value) {
+        ensureFixed64SPackedIsMutable();
+        fixed64SPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated fixed64 fixed64sPacked = 77;</code>
+       */
+      public Builder addAllFixed64SPacked(
+          java.lang.Iterable<? extends java.lang.Long> values) {
+        ensureFixed64SPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, fixed64SPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated fixed64 fixed64sPacked = 77;</code>
+       */
+      public Builder clearFixed64SPacked() {
+        fixed64SPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00000800);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Integer> sfixed32SPacked_ = java.util.Collections.emptyList();
+      private void ensureSfixed32SPackedIsMutable() {
+        if (!((bitField1_ & 0x00001000) == 0x00001000)) {
+          sfixed32SPacked_ = new java.util.ArrayList<java.lang.Integer>(sfixed32SPacked_);
+          bitField1_ |= 0x00001000;
+         }
+      }
+      /**
+       * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+       */
+      public java.util.List<java.lang.Integer>
+          getSfixed32SPackedList() {
+        return java.util.Collections.unmodifiableList(sfixed32SPacked_);
+      }
+      /**
+       * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+       */
+      public int getSfixed32SPackedCount() {
+        return sfixed32SPacked_.size();
+      }
+      /**
+       * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+       */
+      public int getSfixed32SPacked(int index) {
+        return sfixed32SPacked_.get(index);
+      }
+      /**
+       * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+       */
+      public Builder setSfixed32SPacked(
+          int index, int value) {
+        ensureSfixed32SPackedIsMutable();
+        sfixed32SPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+       */
+      public Builder addSfixed32SPacked(int value) {
+        ensureSfixed32SPackedIsMutable();
+        sfixed32SPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+       */
+      public Builder addAllSfixed32SPacked(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureSfixed32SPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, sfixed32SPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sfixed32 sfixed32sPacked = 78;</code>
+       */
+      public Builder clearSfixed32SPacked() {
+        sfixed32SPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00001000);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Long> sfixed64SPacked_ = java.util.Collections.emptyList();
+      private void ensureSfixed64SPackedIsMutable() {
+        if (!((bitField1_ & 0x00002000) == 0x00002000)) {
+          sfixed64SPacked_ = new java.util.ArrayList<java.lang.Long>(sfixed64SPacked_);
+          bitField1_ |= 0x00002000;
+         }
+      }
+      /**
+       * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+       */
+      public java.util.List<java.lang.Long>
+          getSfixed64SPackedList() {
+        return java.util.Collections.unmodifiableList(sfixed64SPacked_);
+      }
+      /**
+       * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+       */
+      public int getSfixed64SPackedCount() {
+        return sfixed64SPacked_.size();
+      }
+      /**
+       * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+       */
+      public long getSfixed64SPacked(int index) {
+        return sfixed64SPacked_.get(index);
+      }
+      /**
+       * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+       */
+      public Builder setSfixed64SPacked(
+          int index, long value) {
+        ensureSfixed64SPackedIsMutable();
+        sfixed64SPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+       */
+      public Builder addSfixed64SPacked(long value) {
+        ensureSfixed64SPackedIsMutable();
+        sfixed64SPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+       */
+      public Builder addAllSfixed64SPacked(
+          java.lang.Iterable<? extends java.lang.Long> values) {
+        ensureSfixed64SPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, sfixed64SPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sfixed64 sfixed64sPacked = 79;</code>
+       */
+      public Builder clearSfixed64SPacked() {
+        sfixed64SPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00002000);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Float> floatsPacked_ = java.util.Collections.emptyList();
+      private void ensureFloatsPackedIsMutable() {
+        if (!((bitField1_ & 0x00004000) == 0x00004000)) {
+          floatsPacked_ = new java.util.ArrayList<java.lang.Float>(floatsPacked_);
+          bitField1_ |= 0x00004000;
+         }
+      }
+      /**
+       * <code>repeated float floatsPacked = 80;</code>
+       */
+      public java.util.List<java.lang.Float>
+          getFloatsPackedList() {
+        return java.util.Collections.unmodifiableList(floatsPacked_);
+      }
+      /**
+       * <code>repeated float floatsPacked = 80;</code>
+       */
+      public int getFloatsPackedCount() {
+        return floatsPacked_.size();
+      }
+      /**
+       * <code>repeated float floatsPacked = 80;</code>
+       */
+      public float getFloatsPacked(int index) {
+        return floatsPacked_.get(index);
+      }
+      /**
+       * <code>repeated float floatsPacked = 80;</code>
+       */
+      public Builder setFloatsPacked(
+          int index, float value) {
+        ensureFloatsPackedIsMutable();
+        floatsPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated float floatsPacked = 80;</code>
+       */
+      public Builder addFloatsPacked(float value) {
+        ensureFloatsPackedIsMutable();
+        floatsPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated float floatsPacked = 80;</code>
+       */
+      public Builder addAllFloatsPacked(
+          java.lang.Iterable<? extends java.lang.Float> values) {
+        ensureFloatsPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, floatsPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated float floatsPacked = 80;</code>
+       */
+      public Builder clearFloatsPacked() {
+        floatsPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00004000);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Double> doublesPacked_ = java.util.Collections.emptyList();
+      private void ensureDoublesPackedIsMutable() {
+        if (!((bitField1_ & 0x00008000) == 0x00008000)) {
+          doublesPacked_ = new java.util.ArrayList<java.lang.Double>(doublesPacked_);
+          bitField1_ |= 0x00008000;
+         }
+      }
+      /**
+       * <code>repeated double doublesPacked = 81;</code>
+       */
+      public java.util.List<java.lang.Double>
+          getDoublesPackedList() {
+        return java.util.Collections.unmodifiableList(doublesPacked_);
+      }
+      /**
+       * <code>repeated double doublesPacked = 81;</code>
+       */
+      public int getDoublesPackedCount() {
+        return doublesPacked_.size();
+      }
+      /**
+       * <code>repeated double doublesPacked = 81;</code>
+       */
+      public double getDoublesPacked(int index) {
+        return doublesPacked_.get(index);
+      }
+      /**
+       * <code>repeated double doublesPacked = 81;</code>
+       */
+      public Builder setDoublesPacked(
+          int index, double value) {
+        ensureDoublesPackedIsMutable();
+        doublesPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated double doublesPacked = 81;</code>
+       */
+      public Builder addDoublesPacked(double value) {
+        ensureDoublesPackedIsMutable();
+        doublesPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated double doublesPacked = 81;</code>
+       */
+      public Builder addAllDoublesPacked(
+          java.lang.Iterable<? extends java.lang.Double> values) {
+        ensureDoublesPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, doublesPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated double doublesPacked = 81;</code>
+       */
+      public Builder clearDoublesPacked() {
+        doublesPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00008000);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Boolean> boolsPacked_ = java.util.Collections.emptyList();
+      private void ensureBoolsPackedIsMutable() {
+        if (!((bitField1_ & 0x00010000) == 0x00010000)) {
+          boolsPacked_ = new java.util.ArrayList<java.lang.Boolean>(boolsPacked_);
+          bitField1_ |= 0x00010000;
+         }
+      }
+      /**
+       * <code>repeated bool boolsPacked = 82;</code>
+       */
+      public java.util.List<java.lang.Boolean>
+          getBoolsPackedList() {
+        return java.util.Collections.unmodifiableList(boolsPacked_);
+      }
+      /**
+       * <code>repeated bool boolsPacked = 82;</code>
+       */
+      public int getBoolsPackedCount() {
+        return boolsPacked_.size();
+      }
+      /**
+       * <code>repeated bool boolsPacked = 82;</code>
+       */
+      public boolean getBoolsPacked(int index) {
+        return boolsPacked_.get(index);
+      }
+      /**
+       * <code>repeated bool boolsPacked = 82;</code>
+       */
+      public Builder setBoolsPacked(
+          int index, boolean value) {
+        ensureBoolsPackedIsMutable();
+        boolsPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated bool boolsPacked = 82;</code>
+       */
+      public Builder addBoolsPacked(boolean value) {
+        ensureBoolsPackedIsMutable();
+        boolsPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated bool boolsPacked = 82;</code>
+       */
+      public Builder addAllBoolsPacked(
+          java.lang.Iterable<? extends java.lang.Boolean> values) {
+        ensureBoolsPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, boolsPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated bool boolsPacked = 82;</code>
+       */
+      public Builder clearBoolsPacked() {
+        boolsPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00010000);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Integer> colorsPacked_ =
+        java.util.Collections.emptyList();
+      private void ensureColorsPackedIsMutable() {
+        if (!((bitField1_ & 0x00020000) == 0x00020000)) {
+          colorsPacked_ = new java.util.ArrayList<java.lang.Integer>(colorsPacked_);
+          bitField1_ |= 0x00020000;
         }
       }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       */
+      public java.util.List<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color> getColorsPackedList() {
+        return new com.google.protobuf.Internal.ListAdapter<
+            java.lang.Integer, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color>(colorsPacked_, colorsPacked_converter_);
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       */
+      public int getColorsPackedCount() {
+        return colorsPacked_.size();
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       */
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color getColorsPacked(int index) {
+        return colorsPacked_converter_.convert(colorsPacked_.get(index));
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       */
+      public Builder setColorsPacked(
+          int index, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureColorsPackedIsMutable();
+        colorsPacked_.set(index, value.getNumber());
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       */
+      public Builder addColorsPacked(org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureColorsPackedIsMutable();
+        colorsPacked_.add(value.getNumber());
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       */
+      public Builder addAllColorsPacked(
+          java.lang.Iterable<? extends org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color> values) {
+        ensureColorsPackedIsMutable();
+        for (org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color value : values) {
+          colorsPacked_.add(value.getNumber());
+        }
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       */
+      public Builder clearColorsPacked() {
+        colorsPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00020000);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       */
+      public java.util.List<java.lang.Integer>
+      getColorsPackedValueList() {
+        return java.util.Collections.unmodifiableList(colorsPacked_);
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       */
+      public int getColorsPackedValue(int index) {
+        return colorsPacked_.get(index);
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       */
+      public Builder setColorsPackedValue(
+          int index, int value) {
+        ensureColorsPackedIsMutable();
+        colorsPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       */
+      public Builder addColorsPackedValue(int value) {
+        ensureColorsPackedIsMutable();
+        colorsPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsPacked = 83;</code>
+       */
+      public Builder addAllColorsPackedValue(
+          java.lang.Iterable<java.lang.Integer> values) {
+        ensureColorsPackedIsMutable();
+        for (int value : values) {
+          colorsPacked_.add(value);
+        }
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Integer> int32SNotPacked_ = java.util.Collections.emptyList();
+      private void ensureInt32SNotPackedIsMutable() {
+        if (!((bitField1_ & 0x00040000) == 0x00040000)) {
+          int32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>(int32SNotPacked_);
+          bitField1_ |= 0x00040000;
+         }
+      }
+      /**
+       * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+       */
+      public java.util.List<java.lang.Integer>
+          getInt32SNotPackedList() {
+        return java.util.Collections.unmodifiableList(int32SNotPacked_);
+      }
+      /**
+       * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+       */
+      public int getInt32SNotPackedCount() {
+        return int32SNotPacked_.size();
+      }
+      /**
+       * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+       */
+      public int getInt32SNotPacked(int index) {
+        return int32SNotPacked_.get(index);
+      }
+      /**
+       * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+       */
+      public Builder setInt32SNotPacked(
+          int index, int value) {
+        ensureInt32SNotPackedIsMutable();
+        int32SNotPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+       */
+      public Builder addInt32SNotPacked(int value) {
+        ensureInt32SNotPackedIsMutable();
+        int32SNotPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+       */
+      public Builder addAllInt32SNotPacked(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureInt32SNotPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, int32SNotPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated int32 int32sNotPacked = 90 [packed = false];</code>
+       */
+      public Builder clearInt32SNotPacked() {
+        int32SNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00040000);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Long> int64SNotPacked_ = java.util.Collections.emptyList();
+      private void ensureInt64SNotPackedIsMutable() {
+        if (!((bitField1_ & 0x00080000) == 0x00080000)) {
+          int64SNotPacked_ = new java.util.ArrayList<java.lang.Long>(int64SNotPacked_);
+          bitField1_ |= 0x00080000;
+         }
+      }
+      /**
+       * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+       */
+      public java.util.List<java.lang.Long>
+          getInt64SNotPackedList() {
+        return java.util.Collections.unmodifiableList(int64SNotPacked_);
+      }
+      /**
+       * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+       */
+      public int getInt64SNotPackedCount() {
+        return int64SNotPacked_.size();
+      }
+      /**
+       * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+       */
+      public long getInt64SNotPacked(int index) {
+        return int64SNotPacked_.get(index);
+      }
+      /**
+       * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+       */
+      public Builder setInt64SNotPacked(
+          int index, long value) {
+        ensureInt64SNotPackedIsMutable();
+        int64SNotPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+       */
+      public Builder addInt64SNotPacked(long value) {
+        ensureInt64SNotPackedIsMutable();
+        int64SNotPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+       */
+      public Builder addAllInt64SNotPacked(
+          java.lang.Iterable<? extends java.lang.Long> values) {
+        ensureInt64SNotPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, int64SNotPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated int64 int64sNotPacked = 91 [packed = false];</code>
+       */
+      public Builder clearInt64SNotPacked() {
+        int64SNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00080000);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Integer> uint32SNotPacked_ = java.util.Collections.emptyList();
+      private void ensureUint32SNotPackedIsMutable() {
+        if (!((bitField1_ & 0x00100000) == 0x00100000)) {
+          uint32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>(uint32SNotPacked_);
+          bitField1_ |= 0x00100000;
+         }
+      }
+      /**
+       * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+       */
+      public java.util.List<java.lang.Integer>
+          getUint32SNotPackedList() {
+        return java.util.Collections.unmodifiableList(uint32SNotPacked_);
+      }
+      /**
+       * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+       */
+      public int getUint32SNotPackedCount() {
+        return uint32SNotPacked_.size();
+      }
+      /**
+       * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+       */
+      public int getUint32SNotPacked(int index) {
+        return uint32SNotPacked_.get(index);
+      }
+      /**
+       * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+       */
+      public Builder setUint32SNotPacked(
+          int index, int value) {
+        ensureUint32SNotPackedIsMutable();
+        uint32SNotPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+       */
+      public Builder addUint32SNotPacked(int value) {
+        ensureUint32SNotPackedIsMutable();
+        uint32SNotPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+       */
+      public Builder addAllUint32SNotPacked(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureUint32SNotPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, uint32SNotPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint32 uint32sNotPacked = 92 [packed = false];</code>
+       */
+      public Builder clearUint32SNotPacked() {
+        uint32SNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00100000);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Long> uint64SNotPacked_ = java.util.Collections.emptyList();
+      private void ensureUint64SNotPackedIsMutable() {
+        if (!((bitField1_ & 0x00200000) == 0x00200000)) {
+          uint64SNotPacked_ = new java.util.ArrayList<java.lang.Long>(uint64SNotPacked_);
+          bitField1_ |= 0x00200000;
+         }
+      }
+      /**
+       * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+       */
+      public java.util.List<java.lang.Long>
+          getUint64SNotPackedList() {
+        return java.util.Collections.unmodifiableList(uint64SNotPacked_);
+      }
+      /**
+       * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+       */
+      public int getUint64SNotPackedCount() {
+        return uint64SNotPacked_.size();
+      }
+      /**
+       * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+       */
+      public long getUint64SNotPacked(int index) {
+        return uint64SNotPacked_.get(index);
+      }
+      /**
+       * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+       */
+      public Builder setUint64SNotPacked(
+          int index, long value) {
+        ensureUint64SNotPackedIsMutable();
+        uint64SNotPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+       */
+      public Builder addUint64SNotPacked(long value) {
+        ensureUint64SNotPackedIsMutable();
+        uint64SNotPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+       */
+      public Builder addAllUint64SNotPacked(
+          java.lang.Iterable<? extends java.lang.Long> values) {
+        ensureUint64SNotPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, uint64SNotPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated uint64 uint64sNotPacked = 93 [packed = false];</code>
+       */
+      public Builder clearUint64SNotPacked() {
+        uint64SNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00200000);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Integer> sint32SNotPacked_ = java.util.Collections.emptyList();
+      private void ensureSint32SNotPackedIsMutable() {
+        if (!((bitField1_ & 0x00400000) == 0x00400000)) {
+          sint32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>(sint32SNotPacked_);
+          bitField1_ |= 0x00400000;
+         }
+      }
+      /**
+       * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+       */
+      public java.util.List<java.lang.Integer>
+          getSint32SNotPackedList() {
+        return java.util.Collections.unmodifiableList(sint32SNotPacked_);
+      }
+      /**
+       * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+       */
+      public int getSint32SNotPackedCount() {
+        return sint32SNotPacked_.size();
+      }
+      /**
+       * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+       */
+      public int getSint32SNotPacked(int index) {
+        return sint32SNotPacked_.get(index);
+      }
+      /**
+       * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+       */
+      public Builder setSint32SNotPacked(
+          int index, int value) {
+        ensureSint32SNotPackedIsMutable();
+        sint32SNotPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+       */
+      public Builder addSint32SNotPacked(int value) {
+        ensureSint32SNotPackedIsMutable();
+        sint32SNotPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+       */
+      public Builder addAllSint32SNotPacked(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureSint32SNotPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, sint32SNotPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sint32 sint32sNotPacked = 94 [packed = false];</code>
+       */
+      public Builder clearSint32SNotPacked() {
+        sint32SNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00400000);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Long> sint64SNotPacked_ = java.util.Collections.emptyList();
+      private void ensureSint64SNotPackedIsMutable() {
+        if (!((bitField1_ & 0x00800000) == 0x00800000)) {
+          sint64SNotPacked_ = new java.util.ArrayList<java.lang.Long>(sint64SNotPacked_);
+          bitField1_ |= 0x00800000;
+         }
+      }
+      /**
+       * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+       */
+      public java.util.List<java.lang.Long>
+          getSint64SNotPackedList() {
+        return java.util.Collections.unmodifiableList(sint64SNotPacked_);
+      }
+      /**
+       * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+       */
+      public int getSint64SNotPackedCount() {
+        return sint64SNotPacked_.size();
+      }
+      /**
+       * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+       */
+      public long getSint64SNotPacked(int index) {
+        return sint64SNotPacked_.get(index);
+      }
+      /**
+       * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+       */
+      public Builder setSint64SNotPacked(
+          int index, long value) {
+        ensureSint64SNotPackedIsMutable();
+        sint64SNotPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+       */
+      public Builder addSint64SNotPacked(long value) {
+        ensureSint64SNotPackedIsMutable();
+        sint64SNotPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+       */
+      public Builder addAllSint64SNotPacked(
+          java.lang.Iterable<? extends java.lang.Long> values) {
+        ensureSint64SNotPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, sint64SNotPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sint64 sint64sNotPacked = 95 [packed = false];</code>
+       */
+      public Builder clearSint64SNotPacked() {
+        sint64SNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x00800000);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Integer> fixed32SNotPacked_ = java.util.Collections.emptyList();
+      private void ensureFixed32SNotPackedIsMutable() {
+        if (!((bitField1_ & 0x01000000) == 0x01000000)) {
+          fixed32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>(fixed32SNotPacked_);
+          bitField1_ |= 0x01000000;
+         }
+      }
+      /**
+       * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+       */
+      public java.util.List<java.lang.Integer>
+          getFixed32SNotPackedList() {
+        return java.util.Collections.unmodifiableList(fixed32SNotPacked_);
+      }
+      /**
+       * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+       */
+      public int getFixed32SNotPackedCount() {
+        return fixed32SNotPacked_.size();
+      }
+      /**
+       * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+       */
+      public int getFixed32SNotPacked(int index) {
+        return fixed32SNotPacked_.get(index);
+      }
+      /**
+       * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+       */
+      public Builder setFixed32SNotPacked(
+          int index, int value) {
+        ensureFixed32SNotPackedIsMutable();
+        fixed32SNotPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+       */
+      public Builder addFixed32SNotPacked(int value) {
+        ensureFixed32SNotPackedIsMutable();
+        fixed32SNotPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+       */
+      public Builder addAllFixed32SNotPacked(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureFixed32SNotPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, fixed32SNotPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated fixed32 fixed32sNotPacked = 96 [packed = false];</code>
+       */
+      public Builder clearFixed32SNotPacked() {
+        fixed32SNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x01000000);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Long> fixed64SNotPacked_ = java.util.Collections.emptyList();
+      private void ensureFixed64SNotPackedIsMutable() {
+        if (!((bitField1_ & 0x02000000) == 0x02000000)) {
+          fixed64SNotPacked_ = new java.util.ArrayList<java.lang.Long>(fixed64SNotPacked_);
+          bitField1_ |= 0x02000000;
+         }
+      }
+      /**
+       * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+       */
+      public java.util.List<java.lang.Long>
+          getFixed64SNotPackedList() {
+        return java.util.Collections.unmodifiableList(fixed64SNotPacked_);
+      }
+      /**
+       * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+       */
+      public int getFixed64SNotPackedCount() {
+        return fixed64SNotPacked_.size();
+      }
+      /**
+       * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+       */
+      public long getFixed64SNotPacked(int index) {
+        return fixed64SNotPacked_.get(index);
+      }
+      /**
+       * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+       */
+      public Builder setFixed64SNotPacked(
+          int index, long value) {
+        ensureFixed64SNotPackedIsMutable();
+        fixed64SNotPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+       */
+      public Builder addFixed64SNotPacked(long value) {
+        ensureFixed64SNotPackedIsMutable();
+        fixed64SNotPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+       */
+      public Builder addAllFixed64SNotPacked(
+          java.lang.Iterable<? extends java.lang.Long> values) {
+        ensureFixed64SNotPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, fixed64SNotPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated fixed64 fixed64sNotPacked = 97 [packed = false];</code>
+       */
+      public Builder clearFixed64SNotPacked() {
+        fixed64SNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x02000000);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Integer> sfixed32SNotPacked_ = java.util.Collections.emptyList();
+      private void ensureSfixed32SNotPackedIsMutable() {
+        if (!((bitField1_ & 0x04000000) == 0x04000000)) {
+          sfixed32SNotPacked_ = new java.util.ArrayList<java.lang.Integer>(sfixed32SNotPacked_);
+          bitField1_ |= 0x04000000;
+         }
+      }
+      /**
+       * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+       */
+      public java.util.List<java.lang.Integer>
+          getSfixed32SNotPackedList() {
+        return java.util.Collections.unmodifiableList(sfixed32SNotPacked_);
+      }
+      /**
+       * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+       */
+      public int getSfixed32SNotPackedCount() {
+        return sfixed32SNotPacked_.size();
+      }
+      /**
+       * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+       */
+      public int getSfixed32SNotPacked(int index) {
+        return sfixed32SNotPacked_.get(index);
+      }
+      /**
+       * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+       */
+      public Builder setSfixed32SNotPacked(
+          int index, int value) {
+        ensureSfixed32SNotPackedIsMutable();
+        sfixed32SNotPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+       */
+      public Builder addSfixed32SNotPacked(int value) {
+        ensureSfixed32SNotPackedIsMutable();
+        sfixed32SNotPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+       */
+      public Builder addAllSfixed32SNotPacked(
+          java.lang.Iterable<? extends java.lang.Integer> values) {
+        ensureSfixed32SNotPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, sfixed32SNotPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sfixed32 sfixed32sNotPacked = 98 [packed = false];</code>
+       */
+      public Builder clearSfixed32SNotPacked() {
+        sfixed32SNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x04000000);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Long> sfixed64SNotPacked_ = java.util.Collections.emptyList();
+      private void ensureSfixed64SNotPackedIsMutable() {
+        if (!((bitField1_ & 0x08000000) == 0x08000000)) {
+          sfixed64SNotPacked_ = new java.util.ArrayList<java.lang.Long>(sfixed64SNotPacked_);
+          bitField1_ |= 0x08000000;
+         }
+      }
+      /**
+       * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+       */
+      public java.util.List<java.lang.Long>
+          getSfixed64SNotPackedList() {
+        return java.util.Collections.unmodifiableList(sfixed64SNotPacked_);
+      }
+      /**
+       * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+       */
+      public int getSfixed64SNotPackedCount() {
+        return sfixed64SNotPacked_.size();
+      }
+      /**
+       * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+       */
+      public long getSfixed64SNotPacked(int index) {
+        return sfixed64SNotPacked_.get(index);
+      }
+      /**
+       * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+       */
+      public Builder setSfixed64SNotPacked(
+          int index, long value) {
+        ensureSfixed64SNotPackedIsMutable();
+        sfixed64SNotPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+       */
+      public Builder addSfixed64SNotPacked(long value) {
+        ensureSfixed64SNotPackedIsMutable();
+        sfixed64SNotPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+       */
+      public Builder addAllSfixed64SNotPacked(
+          java.lang.Iterable<? extends java.lang.Long> values) {
+        ensureSfixed64SNotPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, sfixed64SNotPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated sfixed64 sfixed64sNotPacked = 99 [packed = false];</code>
+       */
+      public Builder clearSfixed64SNotPacked() {
+        sfixed64SNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x08000000);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Float> floatsNotPacked_ = java.util.Collections.emptyList();
+      private void ensureFloatsNotPackedIsMutable() {
+        if (!((bitField1_ & 0x10000000) == 0x10000000)) {
+          floatsNotPacked_ = new java.util.ArrayList<java.lang.Float>(floatsNotPacked_);
+          bitField1_ |= 0x10000000;
+         }
+      }
+      /**
+       * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+       */
+      public java.util.List<java.lang.Float>
+          getFloatsNotPackedList() {
+        return java.util.Collections.unmodifiableList(floatsNotPacked_);
+      }
+      /**
+       * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+       */
+      public int getFloatsNotPackedCount() {
+        return floatsNotPacked_.size();
+      }
+      /**
+       * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+       */
+      public float getFloatsNotPacked(int index) {
+        return floatsNotPacked_.get(index);
+      }
+      /**
+       * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+       */
+      public Builder setFloatsNotPacked(
+          int index, float value) {
+        ensureFloatsNotPackedIsMutable();
+        floatsNotPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+       */
+      public Builder addFloatsNotPacked(float value) {
+        ensureFloatsNotPackedIsMutable();
+        floatsNotPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+       */
+      public Builder addAllFloatsNotPacked(
+          java.lang.Iterable<? extends java.lang.Float> values) {
+        ensureFloatsNotPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, floatsNotPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated float floatsNotPacked = 100 [packed = false];</code>
+       */
+      public Builder clearFloatsNotPacked() {
+        floatsNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x10000000);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Double> doublesNotPacked_ = java.util.Collections.emptyList();
+      private void ensureDoublesNotPackedIsMutable() {
+        if (!((bitField1_ & 0x20000000) == 0x20000000)) {
+          doublesNotPacked_ = new java.util.ArrayList<java.lang.Double>(doublesNotPacked_);
+          bitField1_ |= 0x20000000;
+         }
+      }
+      /**
+       * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+       */
+      public java.util.List<java.lang.Double>
+          getDoublesNotPackedList() {
+        return java.util.Collections.unmodifiableList(doublesNotPacked_);
+      }
+      /**
+       * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+       */
+      public int getDoublesNotPackedCount() {
+        return doublesNotPacked_.size();
+      }
+      /**
+       * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+       */
+      public double getDoublesNotPacked(int index) {
+        return doublesNotPacked_.get(index);
+      }
+      /**
+       * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+       */
+      public Builder setDoublesNotPacked(
+          int index, double value) {
+        ensureDoublesNotPackedIsMutable();
+        doublesNotPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+       */
+      public Builder addDoublesNotPacked(double value) {
+        ensureDoublesNotPackedIsMutable();
+        doublesNotPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+       */
+      public Builder addAllDoublesNotPacked(
+          java.lang.Iterable<? extends java.lang.Double> values) {
+        ensureDoublesNotPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, doublesNotPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated double doublesNotPacked = 101 [packed = false];</code>
+       */
+      public Builder clearDoublesNotPacked() {
+        doublesNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x20000000);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Boolean> boolsNotPacked_ = java.util.Collections.emptyList();
+      private void ensureBoolsNotPackedIsMutable() {
+        if (!((bitField1_ & 0x40000000) == 0x40000000)) {
+          boolsNotPacked_ = new java.util.ArrayList<java.lang.Boolean>(boolsNotPacked_);
+          bitField1_ |= 0x40000000;
+         }
+      }
+      /**
+       * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+       */
+      public java.util.List<java.lang.Boolean>
+          getBoolsNotPackedList() {
+        return java.util.Collections.unmodifiableList(boolsNotPacked_);
+      }
+      /**
+       * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+       */
+      public int getBoolsNotPackedCount() {
+        return boolsNotPacked_.size();
+      }
+      /**
+       * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+       */
+      public boolean getBoolsNotPacked(int index) {
+        return boolsNotPacked_.get(index);
+      }
+      /**
+       * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+       */
+      public Builder setBoolsNotPacked(
+          int index, boolean value) {
+        ensureBoolsNotPackedIsMutable();
+        boolsNotPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+       */
+      public Builder addBoolsNotPacked(boolean value) {
+        ensureBoolsNotPackedIsMutable();
+        boolsNotPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+       */
+      public Builder addAllBoolsNotPacked(
+          java.lang.Iterable<? extends java.lang.Boolean> values) {
+        ensureBoolsNotPackedIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, boolsNotPacked_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated bool boolsNotPacked = 102 [packed = false];</code>
+       */
+      public Builder clearBoolsNotPacked() {
+        boolsNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x40000000);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<java.lang.Integer> colorsNotPacked_ =
+        java.util.Collections.emptyList();
+      private void ensureColorsNotPackedIsMutable() {
+        if (!((bitField1_ & 0x80000000) == 0x80000000)) {
+          colorsNotPacked_ = new java.util.ArrayList<java.lang.Integer>(colorsNotPacked_);
+          bitField1_ |= 0x80000000;
+        }
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       */
+      public java.util.List<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color> getColorsNotPackedList() {
+        return new com.google.protobuf.Internal.ListAdapter<
+            java.lang.Integer, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color>(colorsNotPacked_, colorsNotPacked_converter_);
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       */
+      public int getColorsNotPackedCount() {
+        return colorsNotPacked_.size();
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       */
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color getColorsNotPacked(int index) {
+        return colorsNotPacked_converter_.convert(colorsNotPacked_.get(index));
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       */
+      public Builder setColorsNotPacked(
+          int index, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureColorsNotPackedIsMutable();
+        colorsNotPacked_.set(index, value.getNumber());
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       */
+      public Builder addColorsNotPacked(org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color value) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureColorsNotPackedIsMutable();
+        colorsNotPacked_.add(value.getNumber());
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       */
+      public Builder addAllColorsNotPacked(
+          java.lang.Iterable<? extends org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color> values) {
+        ensureColorsNotPackedIsMutable();
+        for (org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Color value : values) {
+          colorsNotPacked_.add(value.getNumber());
+        }
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       */
+      public Builder clearColorsNotPacked() {
+        colorsNotPacked_ = java.util.Collections.emptyList();
+        bitField1_ = (bitField1_ & ~0x80000000);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       */
+      public java.util.List<java.lang.Integer>
+      getColorsNotPackedValueList() {
+        return java.util.Collections.unmodifiableList(colorsNotPacked_);
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       */
+      public int getColorsNotPackedValue(int index) {
+        return colorsNotPacked_.get(index);
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       */
+      public Builder setColorsNotPackedValue(
+          int index, int value) {
+        ensureColorsNotPackedIsMutable();
+        colorsNotPacked_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       */
+      public Builder addColorsNotPackedValue(int value) {
+        ensureColorsNotPackedIsMutable();
+        colorsNotPacked_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.Color colorsNotPacked = 103 [packed = false];</code>
+       */
+      public Builder addAllColorsNotPackedValue(
+          java.lang.Iterable<java.lang.Integer> values) {
+        ensureColorsNotPackedIsMutable();
+        for (int value : values) {
+          colorsNotPacked_.add(value);
+        }
+        onChanged();
+        return this;
+      }
+
+      private com.google.protobuf.LazyStringList strings_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private void ensureStringsIsMutable() {
+        if (!((bitField2_ & 0x00000001) == 0x00000001)) {
+          strings_ = new com.google.protobuf.LazyStringArrayList(strings_);
+          bitField2_ |= 0x00000001;
+         }
+      }
+      /**
+       * <code>repeated string strings = 110;</code>
+       */
+      public com.google.protobuf.ProtocolStringList
+          getStringsList() {
+        return strings_.getUnmodifiableView();
+      }
+      /**
+       * <code>repeated string strings = 110;</code>
+       */
+      public int getStringsCount() {
+        return strings_.size();
+      }
+      /**
+       * <code>repeated string strings = 110;</code>
+       */
+      public java.lang.String getStrings(int index) {
+        return strings_.get(index);
+      }
+      /**
+       * <code>repeated string strings = 110;</code>
+       */
+      public com.google.protobuf.ByteString
+          getStringsBytes(int index) {
+        return strings_.getByteString(index);
+      }
+      /**
+       * <code>repeated string strings = 110;</code>
+       */
+      public Builder setStrings(
+          int index, java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureStringsIsMutable();
+        strings_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string strings = 110;</code>
+       */
+      public Builder addStrings(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureStringsIsMutable();
+        strings_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string strings = 110;</code>
+       */
+      public Builder addAllStrings(
+          java.lang.Iterable<java.lang.String> values) {
+        ensureStringsIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, strings_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string strings = 110;</code>
+       */
+      public Builder clearStrings() {
+        strings_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+        bitField2_ = (bitField2_ & ~0x00000001);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated string strings = 110;</code>
+       */
+      public Builder addStringsBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        ensureStringsIsMutable();
+        strings_.add(value);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<com.google.protobuf.ByteString> bytess_ = java.util.Collections.emptyList();
+      private void ensureBytessIsMutable() {
+        if (!((bitField2_ & 0x00000002) == 0x00000002)) {
+          bytess_ = new java.util.ArrayList<com.google.protobuf.ByteString>(bytess_);
+          bitField2_ |= 0x00000002;
+         }
+      }
+      /**
+       * <code>repeated bytes bytess = 111;</code>
+       */
+      public java.util.List<com.google.protobuf.ByteString>
+          getBytessList() {
+        return java.util.Collections.unmodifiableList(bytess_);
+      }
+      /**
+       * <code>repeated bytes bytess = 111;</code>
+       */
+      public int getBytessCount() {
+        return bytess_.size();
+      }
+      /**
+       * <code>repeated bytes bytess = 111;</code>
+       */
+      public com.google.protobuf.ByteString getBytess(int index) {
+        return bytess_.get(index);
+      }
+      /**
+       * <code>repeated bytes bytess = 111;</code>
+       */
+      public Builder setBytess(
+          int index, com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureBytessIsMutable();
+        bytess_.set(index, value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated bytes bytess = 111;</code>
+       */
+      public Builder addBytess(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  ensureBytessIsMutable();
+        bytess_.add(value);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated bytes bytess = 111;</code>
+       */
+      public Builder addAllBytess(
+          java.lang.Iterable<? extends com.google.protobuf.ByteString> values) {
+        ensureBytessIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, bytess_);
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>repeated bytes bytess = 111;</code>
+       */
+      public Builder clearBytess() {
+        bytess_ = java.util.Collections.emptyList();
+        bitField2_ = (bitField2_ & ~0x00000002);
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> users_ =
+        java.util.Collections.emptyList();
+      private void ensureUsersIsMutable() {
+        if (!((bitField2_ & 0x00000004) == 0x00000004)) {
+          users_ = new java.util.ArrayList<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User>(users_);
+          bitField2_ |= 0x00000004;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.Builder, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.UserOrBuilder> usersBuilder_;
 
       /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 24;</code>
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
        */
-      public Builder setTypeRecursive(Root value) {
-        if (typeRecursiveBuilder_ == null) {
+      public java.util.List<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> getUsersList() {
+        if (usersBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(users_);
+        } else {
+          return usersBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
+       */
+      public int getUsersCount() {
+        if (usersBuilder_ == null) {
+          return users_.size();
+        } else {
+          return usersBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
+       */
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getUsers(int index) {
+        if (usersBuilder_ == null) {
+          return users_.get(index);
+        } else {
+          return usersBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
+       */
+      public Builder setUsers(
+          int index, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User value) {
+        if (usersBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
           }
-          typeRecursive_ = value;
+          ensureUsersIsMutable();
+          users_.set(index, value);
           onChanged();
         } else {
-          typeRecursiveBuilder_.setMessage(value);
+          usersBuilder_.setMessage(index, value);
         }
-
         return this;
       }
-
       /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 24;</code>
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
        */
-      public Builder setTypeRecursive(
-          Builder builderForValue) {
-        if (typeRecursiveBuilder_ == null) {
-          typeRecursive_ = builderForValue.build();
+      public Builder setUsers(
+          int index, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.Builder builderForValue) {
+        if (usersBuilder_ == null) {
+          ensureUsersIsMutable();
+          users_.set(index, builderForValue.build());
           onChanged();
         } else {
-          typeRecursiveBuilder_.setMessage(builderForValue.build());
+          usersBuilder_.setMessage(index, builderForValue.build());
         }
-
         return this;
       }
-
       /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 24;</code>
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
        */
-      public Builder mergeTypeRecursive(Root value) {
-        if (typeRecursiveBuilder_ == null) {
-          if (typeRecursive_ != null) {
-            typeRecursive_ =
-                Root.newBuilder(typeRecursive_).mergeFrom(value).buildPartial();
-          } else {
-            typeRecursive_ = value;
+      public Builder addUsers(org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User value) {
+        if (usersBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
           }
+          ensureUsersIsMutable();
+          users_.add(value);
           onChanged();
         } else {
-          typeRecursiveBuilder_.mergeFrom(value);
+          usersBuilder_.addMessage(value);
         }
-
         return this;
       }
-
       /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 24;</code>
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
        */
-      public Builder clearTypeRecursive() {
-        if (typeRecursiveBuilder_ == null) {
-          typeRecursive_ = null;
+      public Builder addUsers(
+          int index, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User value) {
+        if (usersBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureUsersIsMutable();
+          users_.add(index, value);
           onChanged();
         } else {
-          typeRecursive_ = null;
-          typeRecursiveBuilder_ = null;
+          usersBuilder_.addMessage(index, value);
         }
-
         return this;
       }
-
       /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 24;</code>
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
        */
-      public Builder getTypeRecursiveBuilder() {
-
-        onChanged();
-        return getTypeRecursiveFieldBuilder().getBuilder();
-      }
-
-      /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 24;</code>
-       */
-      public RootOrBuilder getTypeRecursiveOrBuilder() {
-        if (typeRecursiveBuilder_ != null) {
-          return typeRecursiveBuilder_.getMessageOrBuilder();
+      public Builder addUsers(
+          org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.Builder builderForValue) {
+        if (usersBuilder_ == null) {
+          ensureUsersIsMutable();
+          users_.add(builderForValue.build());
+          onChanged();
         } else {
-          return typeRecursive_ == null ?
-              Root.getDefaultInstance() : typeRecursive_;
+          usersBuilder_.addMessage(builderForValue.build());
         }
+        return this;
       }
-
       /**
-       * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 24;</code>
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
        */
-      private com.google.protobuf.SingleFieldBuilderV3<
-          Root, Builder, RootOrBuilder>
-      getTypeRecursiveFieldBuilder() {
-        if (typeRecursiveBuilder_ == null) {
-          typeRecursiveBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<>(
-              getTypeRecursive(),
-              getParentForChildren(),
-              isClean());
-          typeRecursive_ = null;
+      public Builder addUsers(
+          int index, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.Builder builderForValue) {
+        if (usersBuilder_ == null) {
+          ensureUsersIsMutable();
+          users_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          usersBuilder_.addMessage(index, builderForValue.build());
         }
-        return typeRecursiveBuilder_;
+        return this;
       }
-
-      @Override
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
+       */
+      public Builder addAllUsers(
+          java.lang.Iterable<? extends org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User> values) {
+        if (usersBuilder_ == null) {
+          ensureUsersIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, users_);
+          onChanged();
+        } else {
+          usersBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
+       */
+      public Builder clearUsers() {
+        if (usersBuilder_ == null) {
+          users_ = java.util.Collections.emptyList();
+          bitField2_ = (bitField2_ & ~0x00000004);
+          onChanged();
+        } else {
+          usersBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
+       */
+      public Builder removeUsers(int index) {
+        if (usersBuilder_ == null) {
+          ensureUsersIsMutable();
+          users_.remove(index);
+          onChanged();
+        } else {
+          usersBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
+       */
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.Builder getUsersBuilder(
+          int index) {
+        return getUsersFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
+       */
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.UserOrBuilder getUsersOrBuilder(
+          int index) {
+        if (usersBuilder_ == null) {
+          return users_.get(index);  } else {
+          return usersBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
+       */
+      public java.util.List<? extends org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.UserOrBuilder> 
+           getUsersOrBuilderList() {
+        if (usersBuilder_ != null) {
+          return usersBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(users_);
+        }
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
+       */
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.Builder addUsersBuilder() {
+        return getUsersFieldBuilder().addBuilder(
+            org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
+       */
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.Builder addUsersBuilder(
+          int index) {
+        return getUsersFieldBuilder().addBuilder(
+            index, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .org.apache.servicecomb.foundation.protobuf.internal.model.User users = 112;</code>
+       */
+      public java.util.List<org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.Builder> 
+           getUsersBuilderList() {
+        return getUsersFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.Builder, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.UserOrBuilder> 
+          getUsersFieldBuilder() {
+        if (usersBuilder_ == null) {
+          usersBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.Builder, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.UserOrBuilder>(
+                  users_,
+                  ((bitField2_ & 0x00000004) == 0x00000004),
+                  getParentForChildren(),
+                  isClean());
+          users_ = null;
+        }
+        return usersBuilder_;
+      }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFieldsProto3(unknownFields);
       }
 
-      @Override
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 
+
       // @@protoc_insertion_point(builder_scope:org.apache.servicecomb.foundation.protobuf.internal.model.Root)
     }
 
     // @@protoc_insertion_point(class_scope:org.apache.servicecomb.foundation.protobuf.internal.model.Root)
-    private static final Root DEFAULT_INSTANCE;
-
+    private static final org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new Root();
+      DEFAULT_INSTANCE = new org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root();
     }
 
-    public static Root getDefaultInstance() {
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
     private static final com.google.protobuf.Parser<Root>
         PARSER = new com.google.protobuf.AbstractParser<Root>() {
-      @Override
+      @java.lang.Override
       public Root parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4096,15 +9792,16 @@ public final class ProtobufRoot {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Parser<Root> getParserForType() {
       return PARSER;
     }
 
-    @Override
-    public Root getDefaultInstanceForType() {
+    @java.lang.Override
+    public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
+
   }
 
   public interface UserOrBuilder extends
@@ -4114,61 +9811,54 @@ public final class ProtobufRoot {
     /**
      * <code>string name = 1;</code>
      */
-    String getName();
-
+    java.lang.String getName();
     /**
      * <code>string name = 1;</code>
      */
     com.google.protobuf.ByteString
-    getNameBytes();
+        getNameBytes();
 
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 2;</code>
      */
     boolean hasTypeRecursive();
-
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 2;</code>
      */
-    Root getTypeRecursive();
-
+    org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root getTypeRecursive();
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 2;</code>
      */
-    RootOrBuilder getTypeRecursiveOrBuilder();
+    org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.RootOrBuilder getTypeRecursiveOrBuilder();
   }
-
   /**
    * Protobuf type {@code org.apache.servicecomb.foundation.protobuf.internal.model.User}
    */
-  public static final class User extends
+  public  static final class User extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:org.apache.servicecomb.foundation.protobuf.internal.model.User)
       UserOrBuilder {
-    private static final long serialVersionUID = 0L;
-
+  private static final long serialVersionUID = 0L;
     // Use User.newBuilder() to construct.
     private User(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-
     private User() {
       name_ = "";
     }
 
-    @Override
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
     getUnknownFields() {
       return this.unknownFields;
     }
-
     private User(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       this();
       if (extensionRegistry == null) {
-        throw new NullPointerException();
+        throw new java.lang.NullPointerException();
       }
       int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
@@ -4182,17 +9872,17 @@ public final class ProtobufRoot {
               done = true;
               break;
             case 10: {
-              String s = input.readStringRequireUtf8();
+              java.lang.String s = input.readStringRequireUtf8();
 
               name_ = s;
               break;
             }
             case 18: {
-              Root.Builder subBuilder = null;
+              org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.Builder subBuilder = null;
               if (typeRecursive_ != null) {
                 subBuilder = typeRecursive_.toBuilder();
               }
-              typeRecursive_ = input.readMessage(Root.parser(), extensionRegistry);
+              typeRecursive_ = input.readMessage(org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.parser(), extensionRegistry);
               if (subBuilder != null) {
                 subBuilder.mergeFrom(typeRecursive_);
                 typeRecursive_ = subBuilder.buildPartial();
@@ -4219,50 +9909,46 @@ public final class ProtobufRoot {
         makeExtensionsImmutable();
       }
     }
-
     public static final com.google.protobuf.Descriptors.Descriptor
-    getDescriptor() {
-      return ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_User_descriptor;
+        getDescriptor() {
+      return org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_User_descriptor;
     }
 
-    @Override
-    protected FieldAccessorTable
-    internalGetFieldAccessorTable() {
-      return ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_User_fieldAccessorTable
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_User_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              User.class, Builder.class);
+              org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.class, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.Builder.class);
     }
 
     public static final int NAME_FIELD_NUMBER = 1;
-
-    private volatile Object name_;
-
+    private volatile java.lang.Object name_;
     /**
      * <code>string name = 1;</code>
      */
-    public String getName() {
-      Object ref = name_;
-      if (ref instanceof String) {
-        return (String) ref;
+    public java.lang.String getName() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs =
+        com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+        java.lang.String s = bs.toStringUtf8();
         name_ = s;
         return s;
       }
     }
-
     /**
      * <code>string name = 1;</code>
      */
     public com.google.protobuf.ByteString
-    getNameBytes() {
-      Object ref = name_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b =
+        getNameBytes() {
+      java.lang.Object ref = name_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                (java.lang.String) ref);
         name_ = b;
         return b;
       } else {
@@ -4271,49 +9957,40 @@ public final class ProtobufRoot {
     }
 
     public static final int TYPERECURSIVE_FIELD_NUMBER = 2;
-
-    private Root typeRecursive_;
-
+    private org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root typeRecursive_;
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 2;</code>
      */
     public boolean hasTypeRecursive() {
       return typeRecursive_ != null;
     }
-
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 2;</code>
      */
-    public Root getTypeRecursive() {
-      return typeRecursive_ == null ? Root.getDefaultInstance() : typeRecursive_;
+    public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root getTypeRecursive() {
+      return typeRecursive_ == null ? org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.getDefaultInstance() : typeRecursive_;
     }
-
     /**
      * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 2;</code>
      */
-    public RootOrBuilder getTypeRecursiveOrBuilder() {
+    public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.RootOrBuilder getTypeRecursiveOrBuilder() {
       return getTypeRecursive();
     }
 
     private byte memoizedIsInitialized = -1;
-
-    @Override
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
-      if (isInitialized == 1) {
-        return true;
-      }
-      if (isInitialized == 0) {
-        return false;
-      }
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
 
       memoizedIsInitialized = 1;
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
-        throws java.io.IOException {
+                        throws java.io.IOException {
       if (!getNameBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
       }
@@ -4323,12 +10000,10 @@ public final class ProtobufRoot {
       unknownFields.writeTo(output);
     }
 
-    @Override
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
-      if (size != -1) {
-        return size;
-      }
+      if (size != -1) return size;
 
       size = 0;
       if (!getNameBytes().isEmpty()) {
@@ -4336,22 +10011,22 @@ public final class ProtobufRoot {
       }
       if (typeRecursive_ != null) {
         size += com.google.protobuf.CodedOutputStream
-            .computeMessageSize(2, getTypeRecursive());
+          .computeMessageSize(2, getTypeRecursive());
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    @Override
-    public boolean equals(final Object obj) {
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
-        return true;
+       return true;
       }
-      if (!(obj instanceof User)) {
+      if (!(obj instanceof org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User)) {
         return super.equals(obj);
       }
-      User other = (User) obj;
+      org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User other = (org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User) obj;
 
       boolean result = true;
       result = result && getName()
@@ -4365,7 +10040,7 @@ public final class ProtobufRoot {
       return result;
     }
 
-    @Override
+    @java.lang.Override
     public int hashCode() {
       if (memoizedHashCode != 0) {
         return memoizedHashCode;
@@ -4383,80 +10058,69 @@ public final class ProtobufRoot {
       return hash;
     }
 
-    public static User parseFrom(
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-
-    public static User parseFrom(
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-
-    public static User parseFrom(
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-
-    public static User parseFrom(
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-
-    public static User parseFrom(byte[] data)
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-
-    public static User parseFrom(
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-
-    public static User parseFrom(java.io.InputStream input)
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-
-    public static User parseFrom(
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-
-    public static User parseDelimitedFrom(java.io.InputStream input)
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-
-    public static User parseDelimitedFrom(
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-
-    public static User parseFrom(
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-
-    public static User parseFrom(
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -4464,50 +10128,44 @@ public final class ProtobufRoot {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    @Override
-    public Builder newBuilderForType() {
-      return newBuilder();
-    }
-
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-
-    public static Builder newBuilder(User prototype) {
+    public static Builder newBuilder(org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
-
-    @Override
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
     }
 
-    @Override
+    @java.lang.Override
     protected Builder newBuilderForType(
-        BuilderParent parent) {
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
-
     /**
      * Protobuf type {@code org.apache.servicecomb.foundation.protobuf.internal.model.User}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:org.apache.servicecomb.foundation.protobuf.internal.model.User)
-        UserOrBuilder {
+        org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.UserOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
-      getDescriptor() {
-        return ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_User_descriptor;
+          getDescriptor() {
+        return org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_User_descriptor;
       }
 
-      @Override
-      protected FieldAccessorTable
-      internalGetFieldAccessorTable() {
-        return ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_User_fieldAccessorTable
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_User_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                User.class, Builder.class);
+                org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.class, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.Builder.class);
       }
 
       // Construct using org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.newBuilder()
@@ -4516,18 +10174,16 @@ public final class ProtobufRoot {
       }
 
       private Builder(
-          BuilderParent parent) {
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
         maybeForceBuilderInitialization();
       }
-
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
-            .alwaysUseFieldBuilders) {
+                .alwaysUseFieldBuilders) {
         }
       }
-
-      @Override
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         name_ = "";
@@ -4541,29 +10197,29 @@ public final class ProtobufRoot {
         return this;
       }
 
-      @Override
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
-      getDescriptorForType() {
-        return ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_User_descriptor;
+          getDescriptorForType() {
+        return org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_User_descriptor;
       }
 
-      @Override
-      public User getDefaultInstanceForType() {
-        return User.getDefaultInstance();
+      @java.lang.Override
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getDefaultInstanceForType() {
+        return org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.getDefaultInstance();
       }
 
-      @Override
-      public User build() {
-        User result = buildPartial();
+      @java.lang.Override
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User build() {
+        org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      @Override
-      public User buildPartial() {
-        User result = new User(this);
+      @java.lang.Override
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User buildPartial() {
+        org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User result = new org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User(this);
         result.name_ = name_;
         if (typeRecursiveBuilder_ == null) {
           result.typeRecursive_ = typeRecursive_;
@@ -4574,58 +10230,50 @@ public final class ProtobufRoot {
         return result;
       }
 
-      @Override
+      @java.lang.Override
       public Builder clone() {
         return (Builder) super.clone();
       }
-
-      @Override
+      @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return (Builder) super.setField(field, value);
       }
-
-      @Override
+      @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
         return (Builder) super.clearField(field);
       }
-
-      @Override
+      @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
         return (Builder) super.clearOneof(oneof);
       }
-
-      @Override
+      @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, Object value) {
+          int index, java.lang.Object value) {
         return (Builder) super.setRepeatedField(field, index, value);
       }
-
-      @Override
+      @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return (Builder) super.addRepeatedField(field, value);
       }
-
-      @Override
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof User) {
-          return mergeFrom((User) other);
+        if (other instanceof org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User) {
+          return mergeFrom((org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(User other) {
-        if (other == User.getDefaultInstance()) {
-          return this;
-        }
+      public Builder mergeFrom(org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User other) {
+        if (other == org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User.getDefaultInstance()) return this;
         if (!other.getName().isEmpty()) {
           name_ = other.name_;
           onChanged();
@@ -4638,21 +10286,21 @@ public final class ProtobufRoot {
         return this;
       }
 
-      @Override
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
-      @Override
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        User parsedMessage = null;
+        org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (User) e.getUnfinishedMessage();
+          parsedMessage = (org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -4662,107 +10310,98 @@ public final class ProtobufRoot {
         return this;
       }
 
-      private Object name_ = "";
-
+      private java.lang.Object name_ = "";
       /**
        * <code>string name = 1;</code>
        */
-      public String getName() {
-        Object ref = name_;
-        if (!(ref instanceof String)) {
+      public java.lang.String getName() {
+        java.lang.Object ref = name_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+          java.lang.String s = bs.toStringUtf8();
           name_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
-
       /**
        * <code>string name = 1;</code>
        */
       public com.google.protobuf.ByteString
-      getNameBytes() {
-        Object ref = name_;
+          getNameBytes() {
+        java.lang.Object ref = name_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b =
+          com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  (java.lang.String) ref);
           name_ = b;
           return b;
         } else {
           return (com.google.protobuf.ByteString) ref;
         }
       }
-
       /**
        * <code>string name = 1;</code>
        */
       public Builder setName(
-          String value) {
+          java.lang.String value) {
         if (value == null) {
-          throw new NullPointerException();
-        }
-
+    throw new NullPointerException();
+  }
+  
         name_ = value;
         onChanged();
         return this;
       }
-
       /**
        * <code>string name = 1;</code>
        */
       public Builder clearName() {
-
+        
         name_ = getDefaultInstance().getName();
         onChanged();
         return this;
       }
-
       /**
        * <code>string name = 1;</code>
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
-          throw new NullPointerException();
-        }
-        checkByteStringIsUtf8(value);
-
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
         name_ = value;
         onChanged();
         return this;
       }
 
-      private Root typeRecursive_ = null;
-
+      private org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root typeRecursive_ = null;
       private com.google.protobuf.SingleFieldBuilderV3<
-          Root, Root.Builder, RootOrBuilder> typeRecursiveBuilder_;
-
+          org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.Builder, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.RootOrBuilder> typeRecursiveBuilder_;
       /**
        * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 2;</code>
        */
       public boolean hasTypeRecursive() {
         return typeRecursiveBuilder_ != null || typeRecursive_ != null;
       }
-
       /**
        * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 2;</code>
        */
-      public Root getTypeRecursive() {
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root getTypeRecursive() {
         if (typeRecursiveBuilder_ == null) {
-          return typeRecursive_ == null ? Root.getDefaultInstance() : typeRecursive_;
+          return typeRecursive_ == null ? org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.getDefaultInstance() : typeRecursive_;
         } else {
           return typeRecursiveBuilder_.getMessage();
         }
       }
-
       /**
        * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 2;</code>
        */
-      public Builder setTypeRecursive(Root value) {
+      public Builder setTypeRecursive(org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root value) {
         if (typeRecursiveBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -4775,12 +10414,11 @@ public final class ProtobufRoot {
 
         return this;
       }
-
       /**
        * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 2;</code>
        */
       public Builder setTypeRecursive(
-          Root.Builder builderForValue) {
+          org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.Builder builderForValue) {
         if (typeRecursiveBuilder_ == null) {
           typeRecursive_ = builderForValue.build();
           onChanged();
@@ -4790,15 +10428,14 @@ public final class ProtobufRoot {
 
         return this;
       }
-
       /**
        * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 2;</code>
        */
-      public Builder mergeTypeRecursive(Root value) {
+      public Builder mergeTypeRecursive(org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root value) {
         if (typeRecursiveBuilder_ == null) {
           if (typeRecursive_ != null) {
             typeRecursive_ =
-                Root.newBuilder(typeRecursive_).mergeFrom(value).buildPartial();
+              org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.newBuilder(typeRecursive_).mergeFrom(value).buildPartial();
           } else {
             typeRecursive_ = value;
           }
@@ -4809,7 +10446,6 @@ public final class ProtobufRoot {
 
         return this;
       }
-
       /**
        * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 2;</code>
        */
@@ -4824,73 +10460,70 @@ public final class ProtobufRoot {
 
         return this;
       }
-
       /**
        * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 2;</code>
        */
-      public Root.Builder getTypeRecursiveBuilder() {
-
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.Builder getTypeRecursiveBuilder() {
+        
         onChanged();
         return getTypeRecursiveFieldBuilder().getBuilder();
       }
-
       /**
        * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 2;</code>
        */
-      public RootOrBuilder getTypeRecursiveOrBuilder() {
+      public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.RootOrBuilder getTypeRecursiveOrBuilder() {
         if (typeRecursiveBuilder_ != null) {
           return typeRecursiveBuilder_.getMessageOrBuilder();
         } else {
           return typeRecursive_ == null ?
-              Root.getDefaultInstance() : typeRecursive_;
+              org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.getDefaultInstance() : typeRecursive_;
         }
       }
-
       /**
        * <code>.org.apache.servicecomb.foundation.protobuf.internal.model.Root typeRecursive = 2;</code>
        */
       private com.google.protobuf.SingleFieldBuilderV3<
-          Root, Root.Builder, RootOrBuilder>
-      getTypeRecursiveFieldBuilder() {
+          org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.Builder, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.RootOrBuilder> 
+          getTypeRecursiveFieldBuilder() {
         if (typeRecursiveBuilder_ == null) {
-          typeRecursiveBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<>(
-              getTypeRecursive(),
-              getParentForChildren(),
-              isClean());
+          typeRecursiveBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+              org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.Root.Builder, org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.RootOrBuilder>(
+                  getTypeRecursive(),
+                  getParentForChildren(),
+                  isClean());
           typeRecursive_ = null;
         }
         return typeRecursiveBuilder_;
       }
-
-      @Override
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFieldsProto3(unknownFields);
       }
 
-      @Override
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 
+
       // @@protoc_insertion_point(builder_scope:org.apache.servicecomb.foundation.protobuf.internal.model.User)
     }
 
     // @@protoc_insertion_point(class_scope:org.apache.servicecomb.foundation.protobuf.internal.model.User)
-    private static final User DEFAULT_INSTANCE;
-
+    private static final org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new User();
+      DEFAULT_INSTANCE = new org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User();
     }
 
-    public static User getDefaultInstance() {
+    public static org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
     private static final com.google.protobuf.Parser<User>
         PARSER = new com.google.protobuf.AbstractParser<User>() {
-      @Override
+      @java.lang.Override
       public User parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4903,90 +10536,120 @@ public final class ProtobufRoot {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Parser<User> getParserForType() {
       return PARSER;
     }
 
-    @Override
-    public User getDefaultInstanceForType() {
+    @java.lang.Override
+    public org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
+
   }
 
   private static final com.google.protobuf.Descriptors.Descriptor
-      internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_descriptor;
-
-  private static final
-  com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+    internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_fieldAccessorTable;
-
   private static final com.google.protobuf.Descriptors.Descriptor
-      internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_SsMapEntry_descriptor;
-
-  private static final
-  com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+    internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_SsMapEntry_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_SsMapEntry_fieldAccessorTable;
-
   private static final com.google.protobuf.Descriptors.Descriptor
-      internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_SpMapEntry_descriptor;
-
-  private static final
-  com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+    internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_Sint32MapEntry_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_Sint32MapEntry_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_SpMapEntry_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_SpMapEntry_fieldAccessorTable;
-
   private static final com.google.protobuf.Descriptors.Descriptor
-      internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_User_descriptor;
-
-  private static final
-  com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+    internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_User_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_User_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
-  getDescriptor() {
+      getDescriptor() {
     return descriptor;
   }
-
-  private static com.google.protobuf.Descriptors.FileDescriptor
+  private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
-
   static {
-    String[] descriptorData = {
-        "\n\022protobufRoot.proto\0229org.apache.service" +
-            "comb.foundation.protobuf.internal.model\032" +
-            "\031google/protobuf/any.proto\"\361\007\n\004Root\022\r\n\005i" +
-            "nt32\030\001 \001(\005\022\r\n\005int64\030\002 \001(\003\022\016\n\006uint32\030\003 \001(" +
-            "\r\022\016\n\006uint64\030\004 \001(\004\022\016\n\006sint32\030\005 \001(\021\022\016\n\006sin" +
-            "t64\030\006 \001(\022\022\017\n\007fixed32\030\007 \001(\007\022\017\n\007fixed64\030\010 " +
-            "\001(\006\022\020\n\010sfixed32\030\t \001(\017\022\020\n\010sfixed64\030\n \001(\020\022" +
-            "\022\n\nfloatValue\030\013 \001(\002\022\023\n\013doubleValue\030\014 \001(\001" +
-            "\022\014\n\004bool\030\r \001(\010\022\016\n\006string\030\016 \001(\t\022\r\n\005bytes\030" +
-            "\017 \001(\014\022O\n\005color\030\020 \001(\0162@.org.apache.servic" +
-            "ecomb.foundation.protobuf.internal.model" +
-            ".Color\022M\n\004user\030\021 \001(\0132?.org.apache.servic" +
-            "ecomb.foundation.protobuf.internal.model" +
-            ".User\022Y\n\005ssMap\030\022 \003(\0132J.org.apache.servic" +
-            "ecomb.foundation.protobuf.internal.model" +
-            ".Root.SsMapEntry\022Y\n\005spMap\030\023 \003(\0132J.org.ap" +
-            "ache.servicecomb.foundation.protobuf.int" +
-            "ernal.model.Root.SpMapEntry\022\r\n\005sList\030\024 \003" +
-            "(\t\022N\n\005pList\030\025 \003(\0132?.org.apache.serviceco" +
-            "mb.foundation.protobuf.internal.model.Us" +
-            "er\022!\n\003any\030\026 \001(\0132\024.google.protobuf.Any\022\"\n" +
-            "\004anys\030\027 \003(\0132\024.google.protobuf.Any\022V\n\rtyp" +
-            "eRecursive\030\030 \001(\0132?.org.apache.servicecom" +
-            "b.foundation.protobuf.internal.model.Roo" +
-            "t\032,\n\nSsMapEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 " +
-            "\001(\t:\0028\001\032m\n\nSpMapEntry\022\013\n\003key\030\001 \001(\t\022N\n\005va" +
-            "lue\030\002 \001(\0132?.org.apache.servicecomb.found" +
-            "ation.protobuf.internal.model.User:\0028\001\"l" +
-            "\n\004User\022\014\n\004name\030\001 \001(\t\022V\n\rtypeRecursive\030\002 " +
-            "\001(\0132?.org.apache.servicecomb.foundation." +
-            "protobuf.internal.model.Root*&\n\005Color\022\007\n" +
-            "\003RED\020\000\022\n\n\006YELLOW\020\001\022\010\n\004BLUE\020\002b\006proto3"
+    java.lang.String[] descriptorData = {
+      "\n\022protobufRoot.proto\0229org.apache.service" +
+      "comb.foundation.protobuf.internal.model\032" +
+      "\031google/protobuf/any.proto\"\204\022\n\004Root\022\r\n\005i" +
+      "nt32\030\001 \001(\005\022\r\n\005int64\030\002 \001(\003\022\016\n\006uint32\030\003 \001(" +
+      "\r\022\016\n\006uint64\030\004 \001(\004\022\016\n\006sint32\030\005 \001(\021\022\016\n\006sin" +
+      "t64\030\006 \001(\022\022\017\n\007fixed32\030\007 \001(\007\022\017\n\007fixed64\030\010 " +
+      "\001(\006\022\020\n\010sfixed32\030\t \001(\017\022\020\n\010sfixed64\030\n \001(\020\022" +
+      "\022\n\nfloatValue\030\013 \001(\002\022\023\n\013doubleValue\030\014 \001(\001" +
+      "\022\014\n\004bool\030\r \001(\010\022\020\n\010objInt32\030\024 \001(\005\022\020\n\010objI" +
+      "nt64\030\025 \001(\003\022\021\n\tobjUint32\030\026 \001(\r\022\021\n\tobjUint" +
+      "64\030\027 \001(\004\022\021\n\tobjSint32\030\030 \001(\021\022\021\n\tobjSint64" +
+      "\030\031 \001(\022\022\022\n\nobjFixed32\030\032 \001(\007\022\022\n\nobjFixed64" +
+      "\030\033 \001(\006\022\023\n\013objSfixed32\030\034 \001(\017\022\023\n\013objSfixed" +
+      "64\030\035 \001(\020\022\025\n\robjFloatValue\030\036 \001(\002\022\026\n\016objDo" +
+      "ubleValue\030\037 \001(\001\022\017\n\007objBool\030  \001(\010\022\016\n\006stri" +
+      "ng\030( \001(\t\022\r\n\005bytes\030) \001(\014\022O\n\005color\030* \001(\0162@" +
+      ".org.apache.servicecomb.foundation.proto" +
+      "buf.internal.model.Color\022M\n\004user\030+ \001(\0132?" +
+      ".org.apache.servicecomb.foundation.proto" +
+      "buf.internal.model.User\022V\n\rtypeRecursive" +
+      "\030, \001(\0132?.org.apache.servicecomb.foundati" +
+      "on.protobuf.internal.model.Root\022!\n\003any\0302" +
+      " \001(\0132\024.google.protobuf.Any\022\"\n\004anys\0303 \003(\013" +
+      "2\024.google.protobuf.Any\022Y\n\005ssMap\030< \003(\0132J." +
+      "org.apache.servicecomb.foundation.protob" +
+      "uf.internal.model.Root.SsMapEntry\022a\n\tsin" +
+      "t32Map\030= \003(\0132N.org.apache.servicecomb.fo" +
+      "undation.protobuf.internal.model.Root.Si" +
+      "nt32MapEntry\022Y\n\005spMap\030> \003(\0132J.org.apache" +
+      ".servicecomb.foundation.protobuf.interna" +
+      "l.model.Root.SpMapEntry\022\024\n\014int32sPacked\030" +
+      "F \003(\005\022\024\n\014int64sPacked\030G \003(\003\022\025\n\ruint32sPa" +
+      "cked\030H \003(\r\022\025\n\ruint64sPacked\030I \003(\004\022\025\n\rsin" +
+      "t32sPacked\030J \003(\021\022\025\n\rsint64sPacked\030K \003(\022\022" +
+      "\026\n\016fixed32sPacked\030L \003(\007\022\026\n\016fixed64sPacke" +
+      "d\030M \003(\006\022\027\n\017sfixed32sPacked\030N \003(\017\022\027\n\017sfix" +
+      "ed64sPacked\030O \003(\020\022\024\n\014floatsPacked\030P \003(\002\022" +
+      "\025\n\rdoublesPacked\030Q \003(\001\022\023\n\013boolsPacked\030R " +
+      "\003(\010\022V\n\014colorsPacked\030S \003(\0162@.org.apache.s" +
+      "ervicecomb.foundation.protobuf.internal." +
+      "model.Color\022\033\n\017int32sNotPacked\030Z \003(\005B\002\020\000" +
+      "\022\033\n\017int64sNotPacked\030[ \003(\003B\002\020\000\022\034\n\020uint32s" +
+      "NotPacked\030\\ \003(\rB\002\020\000\022\034\n\020uint64sNotPacked\030" +
+      "] \003(\004B\002\020\000\022\034\n\020sint32sNotPacked\030^ \003(\021B\002\020\000\022" +
+      "\034\n\020sint64sNotPacked\030_ \003(\022B\002\020\000\022\035\n\021fixed32" +
+      "sNotPacked\030` \003(\007B\002\020\000\022\035\n\021fixed64sNotPacke" +
+      "d\030a \003(\006B\002\020\000\022\036\n\022sfixed32sNotPacked\030b \003(\017B" +
+      "\002\020\000\022\036\n\022sfixed64sNotPacked\030c \003(\020B\002\020\000\022\033\n\017f" +
+      "loatsNotPacked\030d \003(\002B\002\020\000\022\034\n\020doublesNotPa" +
+      "cked\030e \003(\001B\002\020\000\022\032\n\016boolsNotPacked\030f \003(\010B\002" +
+      "\020\000\022]\n\017colorsNotPacked\030g \003(\0162@.org.apache" +
+      ".servicecomb.foundation.protobuf.interna" +
+      "l.model.ColorB\002\020\000\022\017\n\007strings\030n \003(\t\022\016\n\006by" +
+      "tess\030o \003(\014\022N\n\005users\030p \003(\0132?.org.apache.s" +
+      "ervicecomb.foundation.protobuf.internal." +
+      "model.User\032,\n\nSsMapEntry\022\013\n\003key\030\001 \001(\t\022\r\n" +
+      "\005value\030\002 \001(\t:\0028\001\0320\n\016Sint32MapEntry\022\013\n\003ke" +
+      "y\030\001 \001(\t\022\r\n\005value\030\002 \001(\005:\0028\001\032m\n\nSpMapEntry" +
+      "\022\013\n\003key\030\001 \001(\t\022N\n\005value\030\002 \001(\0132?.org.apach" +
+      "e.servicecomb.foundation.protobuf.intern" +
+      "al.model.User:\0028\001\"l\n\004User\022\014\n\004name\030\001 \001(\t\022" +
+      "V\n\rtypeRecursive\030\002 \001(\0132?.org.apache.serv" +
+      "icecomb.foundation.protobuf.internal.mod" +
+      "el.Root*&\n\005Color\022\007\n\003RED\020\000\022\n\n\006YELLOW\020\001\022\010\n" +
+      "\004BLUE\020\002b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-        new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
+        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
           public com.google.protobuf.ExtensionRegistry assignDescriptors(
               com.google.protobuf.Descriptors.FileDescriptor root) {
             descriptor = root;
@@ -4994,38 +10657,40 @@ public final class ProtobufRoot {
           }
         };
     com.google.protobuf.Descriptors.FileDescriptor
-        .internalBuildGeneratedFileFrom(descriptorData,
-            new com.google.protobuf.Descriptors.FileDescriptor[] {
-                com.google.protobuf.AnyProto.getDescriptor(),
-            }, assigner);
+      .internalBuildGeneratedFileFrom(descriptorData,
+        new com.google.protobuf.Descriptors.FileDescriptor[] {
+          com.google.protobuf.AnyProto.getDescriptor(),
+        }, assigner);
     internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_descriptor =
-        getDescriptor().getMessageTypes().get(0);
+      getDescriptor().getMessageTypes().get(0);
     internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_fieldAccessorTable = new
-        com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_descriptor,
-        new String[] {"Int32", "Int64", "Uint32", "Uint64", "Sint32", "Sint64", "Fixed32", "Fixed64", "Sfixed32",
-            "Sfixed64", "FloatValue", "DoubleValue", "Bool", "String", "Bytes", "Color", "User", "SsMap", "SpMap",
-            "SList", "PList", "Any", "Anys", "TypeRecursive",});
+        new java.lang.String[] { "Int32", "Int64", "Uint32", "Uint64", "Sint32", "Sint64", "Fixed32", "Fixed64", "Sfixed32", "Sfixed64", "FloatValue", "DoubleValue", "Bool", "ObjInt32", "ObjInt64", "ObjUint32", "ObjUint64", "ObjSint32", "ObjSint64", "ObjFixed32", "ObjFixed64", "ObjSfixed32", "ObjSfixed64", "ObjFloatValue", "ObjDoubleValue", "ObjBool", "String", "Bytes", "Color", "User", "TypeRecursive", "Any", "Anys", "SsMap", "Sint32Map", "SpMap", "Int32SPacked", "Int64SPacked", "Uint32SPacked", "Uint64SPacked", "Sint32SPacked", "Sint64SPacked", "Fixed32SPacked", "Fixed64SPacked", "Sfixed32SPacked", "Sfixed64SPacked", "FloatsPacked", "DoublesPacked", "BoolsPacked", "ColorsPacked", "Int32SNotPacked", "Int64SNotPacked", "Uint32SNotPacked", "Uint64SNotPacked", "Sint32SNotPacked", "Sint64SNotPacked", "Fixed32SNotPacked", "Fixed64SNotPacked", "Sfixed32SNotPacked", "Sfixed64SNotPacked", "FloatsNotPacked", "DoublesNotPacked", "BoolsNotPacked", "ColorsNotPacked", "Strings", "Bytess", "Users", });
     internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_SsMapEntry_descriptor =
-        internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_descriptor.getNestedTypes()
-            .get(0);
+      internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_descriptor.getNestedTypes().get(0);
     internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_SsMapEntry_fieldAccessorTable = new
-        com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_SsMapEntry_descriptor,
-        new String[] {"Key", "Value",});
+        new java.lang.String[] { "Key", "Value", });
+    internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_Sint32MapEntry_descriptor =
+      internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_descriptor.getNestedTypes().get(1);
+    internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_Sint32MapEntry_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_Sint32MapEntry_descriptor,
+        new java.lang.String[] { "Key", "Value", });
     internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_SpMapEntry_descriptor =
-        internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_descriptor.getNestedTypes()
-            .get(1);
+      internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_descriptor.getNestedTypes().get(2);
     internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_SpMapEntry_fieldAccessorTable = new
-        com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_Root_SpMapEntry_descriptor,
-        new String[] {"Key", "Value",});
+        new java.lang.String[] { "Key", "Value", });
     internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_User_descriptor =
-        getDescriptor().getMessageTypes().get(1);
+      getDescriptor().getMessageTypes().get(1);
     internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_User_fieldAccessorTable = new
-        com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_org_apache_servicecomb_foundation_protobuf_internal_model_User_descriptor,
-        new String[] {"Name", "TypeRecursive",});
+        new java.lang.String[] { "Name", "TypeRecursive", });
     com.google.protobuf.AnyProto.getDescriptor();
   }
 
