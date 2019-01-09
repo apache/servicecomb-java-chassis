@@ -18,43 +18,30 @@ package org.apache.servicecomb.foundation.protobuf;
 
 import java.io.IOException;
 
-import org.apache.servicecomb.foundation.protobuf.internal.bean.BeanDescriptor;
+import io.protostuff.ByteArrayInputEx;
+import io.protostuff.InputEx;
+import io.protostuff.SchemaEx;
 
-import io.protostuff.ByteArrayInput;
-import io.protostuff.Input;
-import io.protostuff.runtime.MessageSchema;
+public class RootDeserializer<T> {
+  protected SchemaEx<T> schema;
 
-public class RootDeserializer {
-  private BeanDescriptor beanDescriptor;
-
-  private MessageSchema schema;
-
-  public RootDeserializer(BeanDescriptor beanDescriptor, MessageSchema schema) {
-    this.beanDescriptor = beanDescriptor;
+  public RootDeserializer(SchemaEx<T> schema) {
     this.schema = schema;
   }
 
-  public BeanDescriptor getBeanDescriptor() {
-    return beanDescriptor;
-  }
-
-  public void setBeanDescriptor(BeanDescriptor beanDescriptor) {
-    this.beanDescriptor = beanDescriptor;
-  }
-
-  public MessageSchema getSchema() {
+  public SchemaEx<T> getSchema() {
     return schema;
   }
 
-  public void setSchema(MessageSchema schema) {
+  public void setSchema(SchemaEx<T> schema) {
     this.schema = schema;
   }
 
   @SuppressWarnings("unchecked")
-  public <T> T deserialize(byte[] bytes) throws IOException {
-    Input input = new ByteArrayInput(bytes, false);
-    Object instance = beanDescriptor.create();
+  public T deserialize(byte[] bytes) throws IOException {
+    InputEx input = new ByteArrayInputEx(bytes);
+    T instance = schema.newMessage();
     schema.mergeFrom(input, instance);
-    return (T) instance;
+    return instance;
   }
 }
