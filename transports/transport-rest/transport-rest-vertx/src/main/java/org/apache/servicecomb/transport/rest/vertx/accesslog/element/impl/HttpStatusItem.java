@@ -19,11 +19,14 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl;
 
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 
 public class HttpStatusItem implements AccessLogItem<RoutingContext> {
+  private static Logger LOGGER = LoggerFactory.getLogger(HttpStatusItem.class);
 
   public static final String EMPTY_RESULT = "-";
 
@@ -33,7 +36,12 @@ public class HttpStatusItem implements AccessLogItem<RoutingContext> {
     if (null == response) {
       return EMPTY_RESULT;
     }
-
+    if (response.closed() && !response.ended()) {
+      LOGGER.warn(
+          "Response is closed before sending any data. "
+              + "Please check idle connection timeout for provider is properly configured.");
+      return EMPTY_RESULT;
+    }
     return String.valueOf(response.getStatusCode());
   }
 }

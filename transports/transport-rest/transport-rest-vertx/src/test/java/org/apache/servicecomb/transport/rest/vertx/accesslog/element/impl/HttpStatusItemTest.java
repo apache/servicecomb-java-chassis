@@ -26,7 +26,7 @@ import org.mockito.Mockito;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 
-public class StatusItemTest {
+public class HttpStatusItemTest {
 
   private static final HttpStatusItem STATUS_ELEMENT = new HttpStatusItem();
 
@@ -51,11 +51,19 @@ public class StatusItemTest {
   public void getFormattedElementOnResponseIsNull() {
     AccessLogParam<RoutingContext> param = new AccessLogParam<>();
     RoutingContext context = Mockito.mock(RoutingContext.class);
+    HttpServerResponse response = Mockito.mock(HttpServerResponse.class);
 
     param.setContextData(context);
     Mockito.when(context.response()).thenReturn(null);
 
     String result = STATUS_ELEMENT.getFormattedItem(param);
+
+    assertEquals("-", result);
+
+    Mockito.when(context.response()).thenReturn(response);
+    Mockito.when(response.closed()).thenReturn(true);
+    Mockito.when(response.ended()).thenReturn(false);
+    result = STATUS_ELEMENT.getFormattedItem(param);
 
     assertEquals("-", result);
   }
