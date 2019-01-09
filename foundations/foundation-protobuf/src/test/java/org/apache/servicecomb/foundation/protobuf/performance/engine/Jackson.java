@@ -32,7 +32,7 @@ import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufSchema;
 import com.fasterxml.jackson.dataformat.protobuf.schema.ProtobufSchemaLoader;
 
 public class Jackson implements ProtubufCodecEngine {
-  @JsonIgnoreProperties({"ssMap", "spMap", "any", "anys", "typeRecursive"})
+  @JsonIgnoreProperties({"ssMap", "spMap", "sint32Map", "any", "anys", "typeRecursive"})
   interface RootMixin {
   }
 

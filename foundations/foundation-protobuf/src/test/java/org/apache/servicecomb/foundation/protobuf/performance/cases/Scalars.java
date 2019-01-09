@@ -21,13 +21,13 @@ import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 
 public class Scalars extends TestBase {
   public Scalars() {
-    pojoRoot.setInt32(1);
-    pojoRoot.setInt64(1L);
+    pojoRoot.setInt32(10000);
+    pojoRoot.setInt64(10000L);
     pojoRoot.setString("string value");
     pojoRoot.setColor(Color.BLUE);
 
-    builder.setInt32(1)
-        .setInt64(1L)
+    builder.setInt32(10000)
+        .setInt64(10000L)
         .setString("string value")
         .setColorValue(2);
   }
