@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.foundation.protobuf.internal.schema.scalar;
 
+import java.util.HashMap;
+
 import org.apache.servicecomb.foundation.protobuf.internal.TestSchemaBase;
 import org.apache.servicecomb.foundation.protobuf.internal.model.User;
 import org.hamcrest.Matchers;
@@ -23,10 +25,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestStringSchema extends TestSchemaBase {
-  public TestStringSchema() {
-    initField("string");
-  }
-
   @Test
   public void normal() throws Throwable {
     String value = "abc";
@@ -34,19 +32,24 @@ public class TestStringSchema extends TestSchemaBase {
     check();
 
     // string[]
-    Assert.assertArrayEquals(protobufBytes, serFieldSchema.writeTo(new String[] {value}));
+    scbMap = new HashMap<>();
+    scbMap.put("string", new String[] {value});
+    Assert.assertArrayEquals(protobufBytes, rootSerializer.serialize(scbMap));
 
     // string
-    Assert.assertArrayEquals(protobufBytes, serFieldSchema.writeTo(value));
+    scbMap.put("string", value);
+    Assert.assertArrayEquals(protobufBytes, rootSerializer.serialize(scbMap));
   }
 
   @Test
   public void nullOrEmpty() throws Throwable {
     // null
-    Assert.assertEquals(0, serFieldSchema.writeTo(null).length);
+    scbMap = new HashMap<>();
+    Assert.assertEquals(0, rootSerializer.serialize(scbMap).length);
 
     // empty string[]
-    Assert.assertEquals(0, serFieldSchema.writeTo(new String[] {}).length);
+    scbMap.put("string", new String[] {});
+    Assert.assertEquals(0, rootSerializer.serialize(scbMap).length);
   }
 
   @Test
@@ -55,6 +58,8 @@ public class TestStringSchema extends TestSchemaBase {
     expectedException.expectMessage(Matchers
         .is("not support serialize from org.apache.servicecomb.foundation.protobuf.internal.model.User to proto string, field=org.apache.servicecomb.foundation.protobuf.internal.model.Root:string"));
 
-    serFieldSchema.writeTo(new User());
+    scbMap = new HashMap<>();
+    scbMap.put("string", new User());
+    rootSerializer.serialize(scbMap);
   }
 }

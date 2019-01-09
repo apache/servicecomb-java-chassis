@@ -14,26 +14,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.foundation.protobuf.internal.schema.serializer;
+package org.apache.servicecomb.foundation.protobuf.internal.schema.scalar;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.protobuf.internal.TestSchemaBase;
 import org.apache.servicecomb.foundation.protobuf.internal.model.User;
+import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class TestEnumSerializerSchema extends TestSchemaBase {
-  public TestEnumSerializerSchema() {
-    initField("color");
-  }
-
+public class TestEnumSchema extends TestSchemaBase {
   @Test
   public void empty() throws Throwable {
-    Assert.assertEquals(0, serFieldSchema.writeTo(null).length);
-    Assert.assertEquals(0, serFieldSchema.writeTo(new String[0]).length);
+    // null
+    scbMap = new HashMap<>();
+    Assert.assertEquals(0, rootSerializer.serialize(scbMap).length);
+
+    // empty string[]
+    scbMap.put("color", new String[] {});
+    Assert.assertEquals(0, rootSerializer.serialize(scbMap).length);
+  }
+
+  private static class EnumRoot {
+    private int color;
+
+    public int getColor() {
+      return color;
+    }
+
+    public void setColor(int color) {
+      this.color = color;
+    }
   }
 
   @Test
@@ -42,6 +56,9 @@ public class TestEnumSerializerSchema extends TestSchemaBase {
     check();
 
     Map<String, Object> map = new HashMap<>();
+    map.put("color", Color.BLUE);
+    Assert.assertArrayEquals(protobufBytes, rootSerializer.serialize(map));
+
     map.put("color", 2);
     Assert.assertArrayEquals(protobufBytes, rootSerializer.serialize(map));
 
@@ -50,6 +67,9 @@ public class TestEnumSerializerSchema extends TestSchemaBase {
 
     map.put("color", "BLUE");
     Assert.assertArrayEquals(protobufBytes, rootSerializer.serialize(map));
+
+    EnumRoot enumRoot = protoMapper.<EnumRoot>createRootDeserializer("Root", EnumRoot.class).deserialize(protobufBytes);
+    Assert.assertEquals(2, enumRoot.color);
   }
 
   enum Sharp {
@@ -62,7 +82,9 @@ public class TestEnumSerializerSchema extends TestSchemaBase {
     expectedException.expectMessage(Matchers
         .is("invalid enum name ROUND for proto Color, field=org.apache.servicecomb.foundation.protobuf.internal.model.Root:color"));
 
-    serFieldSchema.writeTo(Sharp.ROUND);
+    scbMap = new HashMap<>();
+    scbMap.put("color", Sharp.ROUND);
+    rootSerializer.serialize(scbMap);
   }
 
   @Test
@@ -71,7 +93,9 @@ public class TestEnumSerializerSchema extends TestSchemaBase {
     expectedException.expectMessage(Matchers
         .is("invalid enum value 3 for proto Color, field=org.apache.servicecomb.foundation.protobuf.internal.model.Root:color"));
 
-    serFieldSchema.writeTo(3);
+    scbMap = new HashMap<>();
+    scbMap.put("color", 3);
+    rootSerializer.serialize(scbMap);
   }
 
   @Test
@@ -80,6 +104,8 @@ public class TestEnumSerializerSchema extends TestSchemaBase {
     expectedException.expectMessage(Matchers
         .is("not support serialize from org.apache.servicecomb.foundation.protobuf.internal.model.User to proto Color, field=org.apache.servicecomb.foundation.protobuf.internal.model.Root:color"));
 
-    serFieldSchema.writeTo(new User());
+    scbMap = new HashMap<>();
+    scbMap.put("color", new User());
+    rootSerializer.serialize(scbMap);
   }
 }

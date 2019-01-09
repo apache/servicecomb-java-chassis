@@ -17,11 +17,9 @@
 package org.apache.servicecomb.foundation.protobuf.internal.schema.scalar;
 
 public class TestDoubleSchema extends TestNumberBaseSchema {
-  @Override
-  protected void init() {
-    fieldName = "doubleValue";
+  public TestDoubleSchema() {
     minValue = Double.MIN_VALUE;
     maxValue = Double.MAX_VALUE;
-    super.init();
+    initFields("doubleValue", "objDoubleValue");
   }
 }

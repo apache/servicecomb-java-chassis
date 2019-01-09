@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.foundation.protobuf.internal.schema.scalar;
 
+import java.util.HashMap;
+
 import org.apache.servicecomb.foundation.protobuf.internal.TestSchemaBase;
 import org.apache.servicecomb.foundation.protobuf.internal.model.User;
 import org.hamcrest.Matchers;
@@ -24,7 +26,7 @@ import org.junit.Test;
 
 public class TestBoolSchema extends TestSchemaBase {
   public TestBoolSchema() {
-    initField("bool");
+    initFields("bool", "objBool");
   }
 
   @Test
@@ -51,19 +53,24 @@ public class TestBoolSchema extends TestSchemaBase {
 
   protected void doTestFromString(String value) throws Throwable {
     // string[]
-    Assert.assertArrayEquals(protobufBytes, serFieldSchema.writeTo(new String[] {value}));
+    scbMap = new HashMap<>();
+    scbMap.put("bool", new String[] {value});
+    Assert.assertArrayEquals(protobufBytes, rootSerializer.serialize(scbMap));
 
     // string
-    Assert.assertArrayEquals(protobufBytes, serFieldSchema.writeTo(value));
+    scbMap.put("bool", value);
+    Assert.assertArrayEquals(protobufBytes, rootSerializer.serialize(scbMap));
   }
 
   @Test
   public void nullOrEmpty() throws Throwable {
     // null
-    Assert.assertEquals(0, serFieldSchema.writeTo(null).length);
+    scbMap = new HashMap<>();
+    Assert.assertEquals(0, rootSerializer.serialize(scbMap).length);
 
     // empty string[]
-    Assert.assertEquals(0, serFieldSchema.writeTo(new String[] {}).length);
+    scbMap.put("bool", new String[] {});
+    Assert.assertEquals(0, rootSerializer.serialize(scbMap).length);
   }
 
   @Test
@@ -72,7 +79,9 @@ public class TestBoolSchema extends TestSchemaBase {
     expectedException.expectMessage(Matchers
         .is("not support serialize from org.apache.servicecomb.foundation.protobuf.internal.model.User to proto bool, field=org.apache.servicecomb.foundation.protobuf.internal.model.Root:bool"));
 
-    serFieldSchema.writeTo(new User());
+    scbMap = new HashMap<>();
+    scbMap.put("bool", new User());
+    rootSerializer.serialize(scbMap);
   }
 }
 

@@ -17,11 +17,9 @@
 package org.apache.servicecomb.foundation.protobuf.internal.schema.scalar;
 
 public class TestFloatSchema extends TestNumberBaseSchema {
-  @Override
-  protected void init() {
-    fieldName = "floatValue";
+  public TestFloatSchema() {
     minValue = Float.MIN_VALUE;
     maxValue = Float.MAX_VALUE;
-    super.init();
+    initFields("floatValue", "objFloatValue");
   }
 }
