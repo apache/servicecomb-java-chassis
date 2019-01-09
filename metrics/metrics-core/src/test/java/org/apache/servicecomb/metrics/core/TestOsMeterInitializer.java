@@ -31,6 +31,7 @@ import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.metrics.core.meter.os.CpuMeter;
 import org.apache.servicecomb.metrics.core.meter.os.NetMeter;
 import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
+import org.apache.servicecomb.metrics.core.meter.os.cpu.CpuUtils;
 import org.apache.servicecomb.metrics.core.meter.os.net.InterfaceUsage;
 import org.junit.After;
 import org.junit.Assert;
@@ -38,6 +39,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.io.Files;
 import com.netflix.spectator.api.DefaultRegistry;
 import com.netflix.spectator.api.ManualClock;
 import com.netflix.spectator.api.Registry;
@@ -66,13 +68,26 @@ public class TestOsMeterInitializer {
   public void init(@Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean) {
     ReflectUtils.setField(SystemUtils.class, null, "IS_OS_LINUX", true);
     List<String> list = new ArrayList<>();
-    list.add("cpu  1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1");
+    list.add("13  1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1");
     list.add("useless");
     list.add("eth0: 0 0    0    0    0     0          0          0         0 0    0      0     0     0    0    0");
+    new MockUp<Files>() {
+      //Files.readFirstLine
+      @Mock
+      public String readFirstLine(File file, Charset encoding) {
+        return list.get(0);
+      }
+    };
     new MockUp<FileUtils>() {
       @Mock
       public List<String> readLines(File file, Charset encoding) {
         return list;
+      }
+    };
+    new MockUp<CpuUtils>() {
+      @Mock
+      public int calcHertz() {
+        return 100;
       }
     };
     new MockUp<ManagementFactory>() {
@@ -92,8 +107,6 @@ public class TestOsMeterInitializer {
       {
         runtime.availableProcessors();
         result = 2;
-        mxBean.getName();
-        result = "6666@desktop111";
       }
     };
     globalRegistry.add(registry);
@@ -106,14 +119,8 @@ public class TestOsMeterInitializer {
     CpuMeter cpuMeter = osMeter.getCpuMeter();
     NetMeter netMeter = osMeter.getNetMeter();
     Assert.assertEquals(0.0, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
-    Assert.assertEquals("/proc/6666/stat", cpuMeter.getProcessCpuUsage().getFilePath());
-    Assert.assertEquals(4L, cpuMeter.getProcessCpuUsage().getLastBusyTime());
-    Assert.assertEquals(8L, cpuMeter.getProcessCpuUsage().getPeriodTotalTime());
 
     Assert.assertEquals(0.0, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
-    Assert.assertEquals(8L, cpuMeter.getAllCpuUsage().getPeriodTotalTime());
-    Assert.assertEquals(7L, cpuMeter.getAllCpuUsage().getLastBusyTime());
-    Assert.assertEquals("/proc/stat", cpuMeter.getAllCpuUsage().getFilePath());
 
     Map<String, InterfaceUsage> interfaceInfoMap = netMeter.getInterfaceUsageMap();
     Assert.assertEquals(1, interfaceInfoMap.size());

@@ -29,7 +29,7 @@ public class CpuMeter {
   // read from /proc/stat
   private OsCpuUsage allCpuUsage;
 
-  // read from /proc/{pid}/stat
+  // read from /proc/self/stat /proc/uptime
   private ProcessCpuUsage processCpuUsage;
 
   public CpuMeter(Id id) {
@@ -50,7 +50,6 @@ public class CpuMeter {
 
   public void update() {
     allCpuUsage.update();
-    processCpuUsage.setPeriodTotalTime(allCpuUsage.getPeriodTotalTime());
     processCpuUsage.update();
   }
 
