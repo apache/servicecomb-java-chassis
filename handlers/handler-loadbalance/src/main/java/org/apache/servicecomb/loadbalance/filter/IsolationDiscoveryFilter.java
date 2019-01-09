@@ -90,7 +90,15 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
         filteredServers.put(key, instance);
       }
     }
-    DiscoveryTreeNode child = new DiscoveryTreeNode().data(filteredServers);
+
+    DiscoveryTreeNode child = new DiscoveryTreeNode();
+    if (filteredServers.isEmpty() && DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.loadbalance.filter.isolation.emptyInstanceProtectionEnabled", false).get()) {
+      LOGGER.warn("All servers have been isolated, allow one of them based on load balance rule.");
+      child.data(instances);
+    } else {
+      child.data(filteredServers);
+    }
     parent.child("filterred", child);
     return child;
   }
