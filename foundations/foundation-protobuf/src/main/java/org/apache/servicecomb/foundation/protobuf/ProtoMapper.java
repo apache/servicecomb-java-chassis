@@ -20,10 +20,11 @@ import java.lang.reflect.Type;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.foundation.protobuf.internal.RootPropertyWrapDeserializer;
+import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.BeanDescriptorManager;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyWrapper;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.DeserializerSchemaManager;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.RootPropertyWrapperDeserializer;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.SerializerSchemaManager;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -62,6 +63,14 @@ public class ProtoMapper {
     return proto;
   }
 
+  public SerializerSchemaManager getSerializerSchemaManager() {
+    return serializerSchemaManager;
+  }
+
+  public DeserializerSchemaManager getDeserializerSchemaManager() {
+    return deserializerSchemaManager;
+  }
+
   public ObjectMapper getJsonMapper() {
     return jsonMapper;
   }
@@ -88,36 +97,44 @@ public class ProtoMapper {
     return null;
   }
 
-  public RootSerializer findRootSerializer(String shortMessageName) {
-    return serializerSchemaManager.findRootSerializer(shortMessageName);
+  public synchronized RootSerializer createRootSerializer(String shortMessageName, Type type) {
+    Message message = proto.getMessage(shortMessageName);
+    if (message == null) {
+      throw new IllegalStateException("can not find proto message to create serializer, name=" + shortMessageName);
+    }
+
+    return createRootSerializer(message, type);
   }
 
-  public RootSerializer findRootSerializerByCanonical(String canonicalMessageName) {
-    return serializerSchemaManager.findRootSerializerByCanonical(canonicalMessageName);
+  public synchronized RootSerializer createRootSerializer(Message message, Type type) {
+    return serializerSchemaManager.createRootSerializer(message, type);
   }
 
-  public RootDeserializer createRootDeserializer(Type type, String shortMessageName) {
-    return createRootDeserializer(TypeFactory.defaultInstance().constructType(type), shortMessageName);
+  public synchronized <T> RootDeserializer<T> createRootDeserializer(String shortMessageName, Type type) {
+    Message message = proto.getMessage(shortMessageName);
+    if (message == null) {
+      throw new IllegalStateException("can not find proto message to create deserializer, name=" + shortMessageName);
+    }
+
+    return createRootDeserializer(message, type);
   }
 
-  public RootDeserializer createRootDeserializer(JavaType javaType, String shortMessageName) {
-    return deserializerSchemaManager.createRootDeserializer(javaType, shortMessageName);
+  public synchronized <T> RootDeserializer<T> createRootDeserializer(Message message, Type type) {
+    return deserializerSchemaManager.createRootDeserializer(message, type);
   }
 
-  public RootDeserializer createRootDeserializer(JavaType javaType, Message message) {
-    return deserializerSchemaManager.createRootDeserializer(javaType, message);
-  }
-
-  public RootDeserializer createPropertyRootDeserializer(String shortWrapMessageName, Type propertyType) {
-    Message message = proto.getMessage(shortWrapMessageName);
-    if (!deserializerSchemaManager.isWrapProperty(message)) {
-      return createRootDeserializer(propertyType, shortWrapMessageName);
+  public synchronized <T> RootDeserializer<T> createPropertyRootDeserializer(String shortMessageName,
+      Type propertyType) {
+    Message message = proto.getMessage(shortMessageName);
+    if (!ProtoUtils.isWrapProperty(message)) {
+      return createRootDeserializer(shortMessageName, propertyType);
     }
 
     JavaType propertyWrapJavaType = TypeFactory.defaultInstance().constructParametricType(
         PropertyWrapper.class,
         TypeFactory.defaultInstance().constructType(propertyType));
-    RootDeserializer rootDeserializer = createRootDeserializer(propertyWrapJavaType, message);
-    return new RootPropertyWrapDeserializer(rootDeserializer);
+    RootDeserializer<PropertyWrapper<T>> deserializer = deserializerSchemaManager
+        .createRootDeserializer(message, propertyWrapJavaType);
+    return new RootPropertyWrapperDeserializer<>(deserializer);
   }
 }

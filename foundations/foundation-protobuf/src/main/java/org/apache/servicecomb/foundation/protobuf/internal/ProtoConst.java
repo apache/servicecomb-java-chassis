@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.foundation.protobuf.internal;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import org.apache.servicecomb.foundation.protobuf.internal.parser.ProtoParser;
@@ -41,6 +42,8 @@ public final class ProtoConst {
   public static String JSON_ID_NAME = "@type";
 
   public static JavaType MAP_TYPE = TypeFactory.defaultInstance().constructType(LinkedHashMap.class);
+
+  public static JavaType LIST_TYPE = TypeFactory.defaultInstance().constructType(ArrayList.class);
 
   public static JavaType OBJECT_TYPE = TypeFactory.defaultInstance().constructType(Object.class);
 

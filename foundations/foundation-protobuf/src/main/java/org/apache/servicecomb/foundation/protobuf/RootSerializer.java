@@ -17,36 +17,31 @@
 package org.apache.servicecomb.foundation.protobuf;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
-import org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.ProtoStreamOutput;
-
-import io.protostuff.runtime.MessageSchema;
+import io.protostuff.ProtobufOutputEx;
+import io.protostuff.SchemaEx;
 
 public class RootSerializer {
-  private MessageSchema schema;
+  private SchemaEx<Object> schema;
 
-  public RootSerializer(MessageSchema schema) {
+  public RootSerializer(SchemaEx<Object> schema) {
     this.schema = schema;
   }
 
-  public MessageSchema getSchema() {
-    return schema;
-  }
-
-  public void setSchema(MessageSchema schema) {
-    this.schema = schema;
-  }
-
-  /**
-   * not same to standard ProtoStuff mechanism
-   * parameter "value" of writeTo is self value, not owner
-   * @param value
-   * @return
-   * @throws IOException
-   */
   public byte[] serialize(Object value) throws IOException {
-    ProtoStreamOutput output = new ProtoStreamOutput();
-    schema.writeTo(output, value);
-    return output.toBytes();
+    ProtobufOutputEx output = new ProtobufOutputEx();
+    if (value != null) {
+      schema.writeTo(output, value);
+    }
+    return output.toByteArray();
+  }
+
+  public void serialize(OutputStream outputStream, Object value) throws IOException {
+    ProtobufOutputEx output = new ProtobufOutputEx();
+    if (value != null) {
+      schema.writeTo(output, value);
+    }
+    output.toOutputStream(outputStream);
   }
 }
