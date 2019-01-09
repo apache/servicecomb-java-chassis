@@ -105,7 +105,7 @@ public class TestOsMeter {
     osMeter.calcMeasurements(1, 1);
     ArrayList<Measurement> measurements = Lists.newArrayList(osMeter.measure());
     Assert.assertEquals(6, measurements.size());
-    Assert.assertEquals(1.75, measurements.get(0).value(), 0.0);
+    Assert.assertEquals(0.875, measurements.get(0).value(), 0.0);
     Assert.assertEquals(0.5, measurements.get(1).value(), 0.0);
     Assert.assertEquals(1.0, measurements.get(2).value(), 0.0);
     Assert.assertEquals(1.0, measurements.get(3).value(), 0.0);
