@@ -20,12 +20,14 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.serializer;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
+import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.BeanDescriptor;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
 
@@ -99,7 +101,24 @@ public class MessageWriteSchema<T> implements SchemaEx<T> {
 
   @Override
   public void init() {
+    if (ProtoUtils.isWrapProperty(message)) {
+      this.mainPojoFieldMaps = createPropertyWrapperFields(javaType);
+      return;
+    }
+
     this.mainPojoFieldMaps = createPojoFields(javaType);
+  }
+
+  private FieldMapEx<T> createPropertyWrapperFields(JavaType javaType) {
+    Field protoField = message.getField(1);
+
+    PropertyDescriptor propertyDescriptor = new PropertyDescriptor();
+    propertyDescriptor.setName(protoField.getName());
+    propertyDescriptor.setJavaType(javaType);
+
+    FieldSchema<T> fieldSchema = protoMapper.getSerializerSchemaManager()
+        .createSchemaField(protoField, propertyDescriptor);
+    return FieldMapEx.createFieldMap(Arrays.asList(fieldSchema));
   }
 
   private FieldMapEx<T> createPojoFields(Type type) {

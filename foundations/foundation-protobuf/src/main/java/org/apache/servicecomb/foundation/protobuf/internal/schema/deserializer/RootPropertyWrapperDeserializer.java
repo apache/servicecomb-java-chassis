@@ -14,24 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.foundation.protobuf.internal;
+package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer;
 
 import java.io.IOException;
 
 import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyWrapper;
 
-public class RootPropertyWrapDeserializer extends RootDeserializer {
-  private final RootDeserializer rootDeserializer;
+public class RootPropertyWrapperDeserializer<T> extends RootDeserializer<T> {
+  private final RootDeserializer<PropertyWrapper<T>> deserializer;
 
-  public RootPropertyWrapDeserializer(RootDeserializer rootDeserializer) {
-    super(null, null);
-    this.rootDeserializer = rootDeserializer;
+  public RootPropertyWrapperDeserializer(RootDeserializer<PropertyWrapper<T>> deserializer) {
+    super(null);
+    this.deserializer = deserializer;
   }
 
   @Override
-  public <T> T deserialize(byte[] bytes) throws IOException {
-    PropertyWrapper<T> propertyWrapper = rootDeserializer.deserialize(bytes);
-    return propertyWrapper.value;
+  public T deserialize(byte[] bytes) throws IOException {
+    PropertyWrapper<T> propertyWrapper = deserializer.deserialize(bytes);
+    return propertyWrapper.getValue();
   }
 }
