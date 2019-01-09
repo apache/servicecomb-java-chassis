@@ -23,11 +23,11 @@ import org.apache.servicecomb.foundation.protobuf.performance.TestBase;
 
 public class PojoList extends TestBase {
   public PojoList() {
-    pojoRoot.setpList(Arrays.asList(
+    pojoRoot.setUsers(Arrays.asList(
         new org.apache.servicecomb.foundation.protobuf.internal.model.User().name("name1"),
         new org.apache.servicecomb.foundation.protobuf.internal.model.User().name("name2")));
 
-    builder.addPList(User.newBuilder().setName("name1").build())
-        .addPList(User.newBuilder().setName("name2").build());
+    builder.addUsers(User.newBuilder().setName("name1").build())
+        .addUsers(User.newBuilder().setName("name2").build());
   }
 }

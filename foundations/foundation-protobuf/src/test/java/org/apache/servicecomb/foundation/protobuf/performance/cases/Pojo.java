@@ -16,15 +16,13 @@
  */
 package org.apache.servicecomb.foundation.protobuf.performance.cases;
 
-import java.util.Arrays;
-
+import org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot.User;
 import org.apache.servicecomb.foundation.protobuf.performance.TestBase;
 
-public class SimpleList extends TestBase {
-  public SimpleList() {
-    pojoRoot.setStrings(Arrays.asList("string value1", "string value2"));
+public class Pojo extends TestBase {
+  public Pojo() {
+    pojoRoot.setUser(new org.apache.servicecomb.foundation.protobuf.internal.model.User().name("name1"));
 
-    builder.addStrings("string value1")
-        .addStrings("string value2");
+    builder.setUser(User.newBuilder().setName("name1").build());
   }
 }

@@ -29,9 +29,9 @@ public class SCB {
 
   static ProtoMapper protoMapper = factory.createFromName("protobufRoot.proto");
 
-  static RootSerializer serializer = protoMapper.findRootSerializer("Root");
+  static RootSerializer serializer = protoMapper.createRootSerializer("Root", Root.class);
 
-  static RootDeserializer deserializer = protoMapper.createRootDeserializer(Root.class, "Root");
+  static RootDeserializer<Root> deserializer = protoMapper.createRootDeserializer("Root", Root.class);
 
-  static RootDeserializer mapDeserializer = protoMapper.createRootDeserializer(Map.class, "Root");
+  static RootDeserializer<Map<String, Object>> mapDeserializer = protoMapper.createRootDeserializer("Root", Map.class);
 }
