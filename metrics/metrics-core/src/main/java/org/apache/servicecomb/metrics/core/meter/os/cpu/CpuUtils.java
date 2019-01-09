@@ -63,10 +63,6 @@ public final class CpuUtils {
     return summary(stats, 1, 8);
   }
 
-  public static double readProcStatTotal(String[] stats) {
-    return summary(stats, 1, 8);
-  }
-
   private static double readUptimeTotal() {
     String[] uptime = readAndSplitFirstLine(UPTIME);
     return Double.parseDouble(uptime[0]);
@@ -97,7 +93,6 @@ public final class CpuUtils {
         continue;
       }
 
-      /* want under 0.1% error */
       if (0 == (long) ((up2 - up1) * 1000.0 / up1)) {
         break;
       }
@@ -105,7 +100,6 @@ public final class CpuUtils {
 
     seconds = (up1 + up2) / 2;
     long hz = Math.round(jiffies / seconds / Runtime.getRuntime().availableProcessors());
-    /* actual values used by 2.4 kernels: 32 64 100 128 1000 1024 1200 */
     /* S/390 (sometimes) */
     if (isBetween(hz, 9, 11)) {
       return 10;

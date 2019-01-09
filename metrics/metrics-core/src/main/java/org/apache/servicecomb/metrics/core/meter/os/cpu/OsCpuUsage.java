@@ -66,6 +66,5 @@ public class OsCpuUsage extends AbstractCpuUsage {
     if (usage > 1) {
       usage = 1;
     }
-    usage *= cpuCount;
   }
 }

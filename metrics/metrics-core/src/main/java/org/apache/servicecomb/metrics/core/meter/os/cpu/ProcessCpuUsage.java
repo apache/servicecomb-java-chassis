@@ -27,6 +27,8 @@ import com.netflix.spectator.api.Id;
  * pid  comm      state  ppid  pgrp  session  tty_nr  tpgid  flags     minflt  cminflt   majflt  cmajflt  utime   stime  cutime cstime
  * 0    1         2      3     4     5        6       7      8         9       10        11      12       13      14     15     16
  * busy = utime + stime
+ * CMD: /proc/uptime
+ * total = uptime[0] * cpuNum * userHZ
  *
  */
 public class ProcessCpuUsage extends AbstractCpuUsage {
@@ -59,5 +61,6 @@ public class ProcessCpuUsage extends AbstractCpuUsage {
     if (usage > 1) {
       usage = 1;
     }
+    usage *= cpuCount;
   }
 }

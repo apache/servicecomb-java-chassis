@@ -32,7 +32,6 @@ import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.metrics.core.VertxMetersInitializer;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
-import org.apache.servicecomb.metrics.core.meter.os.CpuMeter;
 import org.apache.servicecomb.metrics.core.meter.os.NetMeter;
 import org.apache.servicecomb.metrics.core.meter.os.OsMeter;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
@@ -176,7 +175,8 @@ public class DefaultLogPublisher implements MetricsInitializer {
     double processRate = processNode.summary();
 
     appendLine(sb, "  cpu:");
-    appendLine(sb, "    all: %.2f%%    process: %.2f%%", allRate * 100, processRate * 100);
+    appendLine(sb, "    all: %.2f%%    process: %.2f%%    idle: %.2f%%", allRate * 100, processRate * 100,
+        (1 - allRate) * 100);
   }
 
 
