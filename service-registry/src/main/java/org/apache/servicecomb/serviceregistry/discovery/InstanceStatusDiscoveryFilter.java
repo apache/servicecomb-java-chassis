@@ -22,19 +22,14 @@ import java.util.Map;
 
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.netflix.config.DynamicPropertyFactory;
 
 public class InstanceStatusDiscoveryFilter extends AbstractDiscoveryFilter {
-  private static final Logger LOGGER = LoggerFactory.getLogger(InstanceStatusDiscoveryFilter.class);
-
   private static final String UP_INSTANCES = "upInstances";
 
   @Override
   public int getOrder() {
-    // OperationInstancesDiscoveryFilter should execute first
     return -20000;
   }
 
