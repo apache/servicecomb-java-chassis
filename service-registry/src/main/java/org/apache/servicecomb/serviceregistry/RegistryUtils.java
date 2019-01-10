@@ -146,7 +146,10 @@ public final class RegistryUtils {
   }
 
   /**
-   * 对于配置为0.0.0.0的地址，通过查询网卡地址，转换为实际监听的地址。
+   * In the case that listening address configured as 0.0.0.0, the publish address will be determined
+   * by the query result for the net interfaces.
+   *
+   * @return the publish address, or {@code null} if the param {@code address} is null.
    */
   public static String getPublishAddress(String schema, String address) {
     if (address == null) {
@@ -155,7 +158,7 @@ public final class RegistryUtils {
 
     try {
       URI originalURI = new URI(schema + "://" + address);
-      IpPort ipPort = NetUtils.parseIpPort(originalURI.getAuthority());
+      IpPort ipPort = NetUtils.parseIpPort(originalURI);
       if (ipPort == null) {
         LOGGER.warn("address {} not valid.", address);
         return null;

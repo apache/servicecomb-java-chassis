@@ -61,12 +61,12 @@ public class TestAbstractTransport {
     }
 
     @Override
-    public boolean init() throws Exception {
+    public boolean init() {
       return true;
     }
 
     @Override
-    public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    public void send(Invocation invocation, AsyncResponse asyncResp) {
     }
   }
 
@@ -104,7 +104,7 @@ public class TestAbstractTransport {
   }
 
   @Test
-  public void testSetListenAddressWithoutSchemaChineseSpaceOldSC() throws UnsupportedEncodingException {
+  public void testSetListenAddressWithoutSchemaChineseSpaceOldSC() {
     MyAbstractTransport transport = new MyAbstractTransport();
     try {
       transport.setListenAddressWithoutSchema("127.0.0.1:9090", Collections.singletonMap("country", "中 国"));
@@ -120,14 +120,14 @@ public class TestAbstractTransport {
   }
 
   @Test
-  public void testSetListenAddressWithoutSchemaNormalNotEncode() throws UnsupportedEncodingException {
+  public void testSetListenAddressWithoutSchemaNormalNotEncode() {
     MyAbstractTransport transport = new MyAbstractTransport();
     transport.setListenAddressWithoutSchema("127.0.0.1:9090", Collections.singletonMap("country", "chinese"));
     Assert.assertEquals("my://127.0.0.1:9090?country=chinese", transport.getEndpoint().getEndpoint());
   }
 
   @Test
-  public void testSetListenAddressWithoutSchemaAlreadyHaveQuery() throws UnsupportedEncodingException {
+  public void testSetListenAddressWithoutSchemaAlreadyHaveQuery() {
     MyAbstractTransport transport = new MyAbstractTransport();
     transport.setListenAddressWithoutSchema("127.0.0.1:9090?a=aValue",
         Collections.singletonMap("country", "chinese"));
@@ -135,7 +135,7 @@ public class TestAbstractTransport {
   }
 
   @Test
-  public void testMyAbstractTransport() throws Exception {
+  public void testMyAbstractTransport() {
     MyAbstractTransport transport = new MyAbstractTransport();
     transport.setListenAddressWithoutSchema("127.0.0.1:9090");
     Assert.assertEquals("my", transport.getName());
@@ -149,8 +149,8 @@ public class TestAbstractTransport {
     Assert.assertEquals(30000, AbstractTransport.getReqTimeout("sayHi", "hello", "test"));
   }
 
-  @Test(expected = NumberFormatException.class)
-  public void testMyAbstractTransportException(@Mocked TransportManager manager) throws Exception {
+  @Test(expected = IllegalArgumentException.class)
+  public void testMyAbstractTransportException(@Mocked TransportManager manager) {
     MyAbstractTransport transport = new MyAbstractTransport();
 
     transport.setListenAddressWithoutSchema(":127.0.0.1:9090");
@@ -160,7 +160,7 @@ public class TestAbstractTransport {
    * Tests the request call timeout for service level timeout value
    */
   @Test
-  public void testRequestCfgService() throws Exception {
+  public void testRequestCfgService() {
     System.setProperty("servicecomb.request.hello1.timeout", "3000");
     //check for service level timeout value
     Assert.assertEquals(3000, AbstractTransport.getReqTimeout("sayHello1", "sayHelloSchema1", "hello1"));
@@ -171,7 +171,7 @@ public class TestAbstractTransport {
    * Tests the request call timeout for schema level timeout value
    */
   @Test
-  public void testRequestCfgSchema() throws Exception {
+  public void testRequestCfgSchema() {
     System.setProperty("servicecomb.request.hello2.sayHelloSchema2.timeout", "2000");
 
     Assert.assertEquals(2000, AbstractTransport.getReqTimeout("sayHello2", "sayHelloSchema2", "hello2"));
@@ -182,7 +182,7 @@ public class TestAbstractTransport {
    * Tests the request call timeout for operatation level timeout value
    */
   @Test
-  public void testRequestCfgOperation() throws Exception {
+  public void testRequestCfgOperation() {
     System.setProperty("servicecomb.request.hello3.sayHelloSchema3.sayHello3.timeout", "1000");
 
     Assert.assertEquals(1000, AbstractTransport.getReqTimeout("sayHello3", "sayHelloSchema3", "hello3"));

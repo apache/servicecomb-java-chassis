@@ -137,7 +137,7 @@ public final class ServiceRegistryConfig {
       try {
         URI uri = new URI(anUriList.trim());
         this.ssl = "https".equals(uri.getScheme());
-        ipPortList.add(NetUtils.parseIpPort(uri.getScheme(), uri.getAuthority()));
+        ipPortList.add(NetUtils.parseIpPort(uri));
       } catch (Exception e) {
         LOGGER.error("servicecomb.service.registry.address invalid : {}", anUriList, e);
       }

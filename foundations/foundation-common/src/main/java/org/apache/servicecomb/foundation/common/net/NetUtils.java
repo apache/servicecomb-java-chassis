@@ -70,6 +70,7 @@ public final class NetUtils {
         hostAddress = availabelAddress.getHostAddress();
         LOGGER.warn("cannot find a proper host address, choose {}, may not be correct.", hostAddress);
       } else {
+        LOGGER.info("get localhost address: {}", localHost.getHostAddress());
         hostAddress = localHost.getHostAddress();
       }
 
@@ -124,32 +125,77 @@ public final class NetUtils {
   }
 
   /**
-   * address ip:port格式
+   * The format of address should be {@code IPv4:port} or {@code [IPv6]:port}, or {@code host:port},
+   * or you will not get expected result.
+   *
+   * Note that the IPv6 address should be wrapped by square brackets.
+   * @return IpPort parsed from input param, or {@code null} if the param is null.
    */
   public static IpPort parseIpPort(String address) {
     if (address == null) {
       return null;
     }
 
-    int idx = address.indexOf(':');
-    if (idx == -1) {
-      return null;
-    }
-    String hostOrIp = address.substring(0, idx);
-    int port = Integer.parseInt(address.substring(idx + 1));
-
-    return new IpPort(hostOrIp, port);
+    URI uri = URI.create("http://" + address);
+    return parseIpPort(uri, true);
   }
 
+  /**
+   * Parse a {@link URI} into an {@link IpPort}.
+   *
+   * <p>
+   *   A uri without port is allowed, in which case the port will be inferred from the scheme. {@code http} is 80, and
+   *   {@code https} is 443.
+   * </p>
+   * <p>
+   *   The host of the {@code uri} should not be null, or it will be treated as an illegal param,
+   *   and an {@link IllegalArgumentException} will be thrown.
+   * </p>
+   */
+  public static IpPort parseIpPort(URI uri) {
+    return parseIpPort(uri, false);
+  }
+
+  /**
+   * Parse a {@link URI} into an {@link IpPort}
+   * @param uri a uri representing {@link IpPort}
+   * @param ignorePortUndefined whether the port should be inferred from scheme, when the port part of {@code uri} is {@code -1}.
+   * If {@code true} the undefined port is ignored;
+   * otherwise a port will be inferred from scheme: {@code http} is 80, and {@code https} is 443.
+   */
+  public static IpPort parseIpPort(URI uri, boolean ignorePortUndefined) {
+    if (null == uri.getHost()) {
+      // if the format of address is legal but the value is out of range, URI#create(String) will not throw exception
+      // but return a URI with null host.
+      throw new IllegalArgumentException("Illegal uri: [" + uri + "]");
+    }
+
+    IpPort ipPort = new IpPort(uri.getHost(), uri.getPort());
+    if (-1 != ipPort.getPort() || ignorePortUndefined) {
+      return ipPort;
+    }
+
+    if (uri.getScheme().equals("http")) {
+      ipPort.setPort(80);
+    }
+    if (uri.getScheme().equals("https")) {
+      ipPort.setPort(443);
+    }
+
+    return ipPort;
+  }
+
+  /**
+   * @param uriAddress the address containing IP and port info.
+   * @return IpPort parsed from input param, or {@code null} if the param is null.
+   */
   public static IpPort parseIpPortFromURI(String uriAddress) {
     if (uriAddress == null) {
       return null;
     }
 
     try {
-      URI uri = new URI(uriAddress);
-      String authority = uri.getAuthority();
-      return parseIpPort(uri.getScheme(), authority);
+      return parseIpPort(new URI(uriAddress));
     } catch (URISyntaxException e) {
       return null;
     }
@@ -159,17 +205,7 @@ public final class NetUtils {
     if (authority == null) {
       return null;
     }
-    int idx = authority.indexOf(':');
-    if (idx != -1) {
-      return parseIpPort(authority);
-    }
-    if (scheme.equals("http")) {
-      return new IpPort(authority, 80);
-    }
-    if (scheme.equals("https")) {
-      return new IpPort(authority, 443);
-    }
-    return null;
+    return parseIpPort(URI.create(scheme + "://" + authority));
   }
 
   /**
@@ -184,7 +220,7 @@ public final class NetUtils {
     }
     try {
       URI originalURI = new URI(schema + "://" + address);
-      IpPort ipPort = NetUtils.parseIpPort(originalURI.getAuthority());
+      IpPort ipPort = NetUtils.parseIpPort(originalURI);
       if (ipPort == null) {
         LOGGER.error("address {} is not valid.", address);
         return null;
