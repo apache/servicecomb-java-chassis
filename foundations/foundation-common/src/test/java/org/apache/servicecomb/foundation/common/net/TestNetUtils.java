@@ -17,11 +17,14 @@
 
 package org.apache.servicecomb.foundation.common.net;
 
+import static org.junit.Assert.fail;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,18 +44,69 @@ public class TestNetUtils {
   }
 
   @Test
-  public void testNetutils() {
+  public void testNetUtils() {
     Assert.assertEquals("127.0.0.1", NetUtils.parseIpPort("127.0.0.1:8080").getHostOrIp());
     Assert.assertEquals(8080, NetUtils.parseIpPort("127.0.0.1:8080").getPort());
-    Assert.assertEquals(null, NetUtils.parseIpPort(null));
-    Assert.assertEquals(null, NetUtils.parseIpPort("127.0.0.18080"));
+    Assert.assertEquals("127.0.0.1", NetUtils.parseIpPort("127.0.0.1").getHostOrIp());
+    Assert.assertEquals(-1, NetUtils.parseIpPort("127.0.0.1").getPort());
+    Assert.assertEquals(null, NetUtils.parseIpPort((String) null));
     Assert.assertEquals(null, NetUtils.parseIpPortFromURI(null));
-    Assert.assertEquals(null, NetUtils.parseIpPortFromURI("ss"));
     Assert.assertEquals("127.0.0.1", NetUtils.parseIpPortFromURI("rest://127.0.0.1:8080").getHostOrIp());
     Assert.assertEquals(8080, NetUtils.parseIpPortFromURI("http://127.0.0.1:8080").getPort());
     Assert.assertEquals(80, NetUtils.parseIpPortFromURI("http://127.0.0.1").getPort());
     Assert.assertEquals(8080, NetUtils.parseIpPortFromURI("https://127.0.0.1:8080").getPort());
     Assert.assertEquals(443, NetUtils.parseIpPortFromURI("https://127.0.0.1").getPort());
+
+    Assert.assertEquals(30000, NetUtils.parseIpPort("http", "127.0.0.1:30000").getPort());
+    Assert.assertEquals("127.0.0.1", NetUtils.parseIpPort("http", "127.0.0.1:30000").getHostOrIp());
+    Assert.assertEquals(30000, NetUtils.parseIpPort("https", "127.0.0.1:30000").getPort());
+    Assert.assertEquals("127.0.0.1", NetUtils.parseIpPort("https", "127.0.0.1:30000").getHostOrIp());
+    Assert.assertEquals(80, NetUtils.parseIpPort("http", "127.0.0.1").getPort());
+    Assert.assertEquals("127.0.0.1", NetUtils.parseIpPort("http", "127.0.0.1").getHostOrIp());
+    Assert.assertEquals(443, NetUtils.parseIpPort("https", "127.0.0.1").getPort());
+    Assert.assertEquals("127.0.0.1", NetUtils.parseIpPort("https", "127.0.0.1").getHostOrIp());
+    Assert.assertNull(NetUtils.parseIpPort("http", null));
+
+    checkException(v -> NetUtils.parseIpPort("127.0.0.18080"));
+    checkException(v -> NetUtils.parseIpPortFromURI("ss"));
+  }
+
+  @Test
+  public void testNetUtilsIPv6() {
+    Assert.assertEquals("[::1]", NetUtils.parseIpPort("[::1]:8080").getHostOrIp());
+    Assert.assertEquals("[::]", NetUtils.parseIpPort("[::]:8080").getHostOrIp());
+    Assert.assertEquals("[fe80::f816:3eff:feda:38cd%eth0]",
+        NetUtils.parseIpPort("[fe80::f816:3eff:feda:38cd%eth0]:8080").getHostOrIp());
+    Assert.assertEquals("[fe80::38f7:44b8:8ab1:468%16]",
+        NetUtils.parseIpPort("[fe80::38f7:44b8:8ab1:468%16]:8080").getHostOrIp());
+    Assert.assertEquals(8080, NetUtils.parseIpPort("[::1]:8080").getPort());
+    Assert.assertEquals(8080, NetUtils.parseIpPort("[::]:8080").getPort());
+    Assert.assertEquals(8080, NetUtils.parseIpPort("[fe80::f816:3eff:feda:38cd%eth0]:8080").getPort());
+    Assert.assertEquals(8080, NetUtils.parseIpPort("[fe80::38f7:44b8:8ab1:468%16]:8080").getPort());
+
+    Assert.assertEquals("[::1]", NetUtils.parseIpPortFromURI("rest://[::1]:8080").getHostOrIp());
+    Assert.assertEquals("[::]", NetUtils.parseIpPortFromURI("rest://[::]:8080").getHostOrIp());
+    Assert.assertEquals("[fe80::f816:3eff:feda:38cd%eth0]",
+        NetUtils.parseIpPortFromURI("rest://[fe80::f816:3eff:feda:38cd%eth0]:8080").getHostOrIp());
+    Assert.assertEquals("[fe80::38f7:44b8:8ab1:468%16]",
+        NetUtils.parseIpPortFromURI("rest://[fe80::38f7:44b8:8ab1:468%16]:8080").getHostOrIp());
+    Assert.assertEquals(8080, NetUtils.parseIpPortFromURI("rest://[::1]:8080").getPort());
+    Assert.assertEquals(80, NetUtils.parseIpPortFromURI("http://[::1]").getPort());
+    Assert.assertEquals(8080, NetUtils.parseIpPortFromURI("https://[::1]:8080").getPort());
+    Assert.assertEquals(443, NetUtils.parseIpPortFromURI("https://[::1]").getPort());
+
+    Assert.assertEquals(30000, NetUtils.parseIpPort("http", "[fe80::f816:3eff:feda:38cd%eth0]:30000").getPort());
+    Assert.assertEquals("[fe80::f816:3eff:feda:38cd%eth0]",
+        NetUtils.parseIpPort("http", "[fe80::f816:3eff:feda:38cd%eth0]:30000").getHostOrIp());
+    Assert.assertEquals(30000, NetUtils.parseIpPort("https", "[fe80::f816:3eff:feda:38cd%eth0]:30000").getPort());
+    Assert.assertEquals("[fe80::f816:3eff:feda:38cd%eth0]",
+        NetUtils.parseIpPort("https", "[fe80::f816:3eff:feda:38cd%eth0]:30000").getHostOrIp());
+    Assert.assertEquals(80, NetUtils.parseIpPort("http", "[fe80::f816:3eff:feda:38cd%eth0]").getPort());
+    Assert.assertEquals("[fe80::f816:3eff:feda:38cd%eth0]",
+        NetUtils.parseIpPort("http", "[fe80::f816:3eff:feda:38cd%eth0]").getHostOrIp());
+    Assert.assertEquals(443, NetUtils.parseIpPort("https", "[fe80::f816:3eff:feda:38cd%eth0]").getPort());
+    Assert.assertEquals("[fe80::f816:3eff:feda:38cd%eth0]",
+        NetUtils.parseIpPort("https", "[fe80::f816:3eff:feda:38cd%eth0]").getHostOrIp());
   }
 
   @Test
@@ -64,8 +118,9 @@ public class TestNetUtils {
   @Test
   public void testGetRealListenAddress() {
     Assert.assertNull(NetUtils.getRealListenAddress("http", null));
-    Assert.assertNull(NetUtils.getRealListenAddress("http:1", "1.1.1.1:8080"));
     Assert.assertEquals("http://1.1.1.1:8080", NetUtils.getRealListenAddress("http", "1.1.1.1:8080"));
+
+    checkException(v -> NetUtils.getRealListenAddress("http:1", "1.1.1.1:8080"));
   }
 
   @Test
@@ -82,7 +137,7 @@ public class TestNetUtils {
 
     try {
       NetUtils.ensureGetInterfaceAddress("xxx");
-      Assert.fail("must throw exception");
+      fail("must throw exception");
     } catch (IllegalArgumentException e) {
       Assert.assertEquals("Can not find address for interface name: xxx", e.getMessage());
     }
@@ -109,7 +164,7 @@ public class TestNetUtils {
   }
 
   @Test
-  public void humanReadableBytes() throws IOException {
+  public void humanReadableBytes() {
     Assert.assertEquals("0", NetUtils.humanReadableBytes(0L));
     Assert.assertEquals("1", NetUtils.humanReadableBytes(1L));
     Assert.assertEquals("1023", NetUtils.humanReadableBytes(1023L));
@@ -157,5 +212,14 @@ public class TestNetUtils {
     Assert.assertNotEquals(null, NetUtils.getHostAddress());
     Deencapsulation.setField(NetUtils.class, "hostAddress", null);
     Assert.assertNotEquals(null, NetUtils.getHostAddress());
+  }
+
+  public void checkException(Consumer<Void> testedBehavior) {
+    try {
+      testedBehavior.accept(null);
+      fail("IllegalArgumentException is expected!");
+    } catch (Exception e) {
+      Assert.assertEquals(IllegalArgumentException.class, e.getClass());
+    }
   }
 }
