@@ -42,7 +42,7 @@ public class TestMessageSchema extends TestSchemaBase {
   @Test
   public void generic() throws Throwable {
     JavaType javaType = TypeFactory.defaultInstance().constructParametricType(CustomGeneric.class, User.class);
-    RootDeserializer genericDeserializer = protoMapper.createRootDeserializer(javaType, "Root");
+    RootDeserializer<CustomGeneric<User>> genericDeserializer = protoMapper.createRootDeserializer("Root", javaType);
 
     builder.setUser(ProtobufRoot.User.newBuilder().setName("name1").build());
     check(genericDeserializer, mapRootDeserializer, rootSerializer, false);

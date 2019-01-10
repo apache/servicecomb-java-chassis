@@ -18,7 +18,7 @@ package org.apache.servicecomb.foundation.protobuf.internal;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -72,20 +72,43 @@ public class TestModelWrap {
     public Map<String, Map<String, Map<String, User>>> mapMapMapUser;
 
     public void init() {
-      listListUser = Arrays.asList(Arrays.asList(user));
-      listMapUser = Arrays.asList(Collections.singletonMap(user.name, user));
-      mapListUser = Collections.singletonMap("k1", Arrays.asList(user));
-      mapMapUser = Collections.singletonMap("k1", Collections.singletonMap(user.name, user));
+      List<User> listUser = Arrays.asList(user, user);
 
-      listListListUser = Arrays.asList(Arrays.asList(Arrays.asList(user)));
-      listListMapUser = Arrays.asList(Arrays.asList(Collections.singletonMap(user.name, user)));
-      listMapListUser = Arrays.asList(Collections.singletonMap("k1", Arrays.asList(user)));
-      listMapMapUser = Arrays.asList(Collections.singletonMap("k1", Collections.singletonMap(user.name, user)));
-      mapListListUser = Collections.singletonMap("k1", Arrays.asList(Arrays.asList(user)));
-      mapListMapUser = Collections.singletonMap("k1", Arrays.asList(Collections.singletonMap(user.name, user)));
-      mapMapListUser = Collections.singletonMap("k1", Collections.singletonMap("k1", Arrays.asList(user)));
-      mapMapMapUser = Collections
-          .singletonMap("k1", Collections.singletonMap("k1", Collections.singletonMap(user.name, user)));
+      Map<String, User> mapUser = new LinkedHashMap<>();
+      mapUser.put("k1", user);
+      mapUser.put("k2", user);
+
+      listListUser = Arrays.asList(listUser, listUser);
+      listMapUser = Arrays.asList(mapUser, mapUser);
+
+      mapListUser = new LinkedHashMap<>();
+      mapListUser.put("k1", listUser);
+      mapListUser.put("k2", listUser);
+
+      mapMapUser = new LinkedHashMap<>();
+      mapMapUser.put("k1", mapUser);
+      mapMapUser.put("k2", mapUser);
+
+      listListListUser = Arrays.asList(listListUser, listListUser);
+      listListMapUser = Arrays.asList(listMapUser, listMapUser);
+      listMapListUser = Arrays.asList(mapListUser, mapListUser);
+      listMapMapUser = Arrays.asList(mapMapUser, mapMapUser);
+
+      mapListListUser = new LinkedHashMap<>();
+      mapListListUser.put("k1", listListUser);
+      mapListListUser.put("k2", listListUser);
+
+      mapListMapUser = new LinkedHashMap<>();
+      mapListMapUser.put("k1", listMapUser);
+      mapListMapUser.put("k2", listMapUser);
+
+      mapMapListUser = new LinkedHashMap<>();
+      mapMapListUser.put("k1", mapListUser);
+      mapMapListUser.put("k2", mapListUser);
+
+      mapMapMapUser = new LinkedHashMap<>();
+      mapMapMapUser.put("k1", mapMapUser);
+      mapMapMapUser.put("k2", mapMapUser);
     }
   }
 
@@ -133,19 +156,36 @@ public class TestModelWrap {
       ProtoMapMapUser protoMapMapUser = new ProtoMapMapUser();
       protoMapMapUser.init();
 
-      listListUser = Arrays.asList(protoListUser);
-      listMapUser = Arrays.asList(protoMapUser);
-      mapListUser = Collections.singletonMap("k1", protoListUser);
-      mapMapUser = Collections.singletonMap("k1", protoMapUser);
+      listListUser = Arrays.asList(protoListUser, protoListUser);
+      listMapUser = Arrays.asList(protoMapUser, protoMapUser);
+      mapListUser = new LinkedHashMap<>();
+      mapListUser.put("k1", protoListUser);
+      mapListUser.put("k2", protoListUser);
 
-      listListListUser = Arrays.asList(protoListListUser);
-      listListMapUser = Arrays.asList(protoListMapUser);
-      listMapListUser = Arrays.asList(protoMapListUser);
-      listMapMapUser = Arrays.asList(protoMapMapUser);
-      mapListListUser = Collections.singletonMap("k1", protoListListUser);
-      mapListMapUser = Collections.singletonMap("k1", protoListMapUser);
-      mapMapListUser = Collections.singletonMap("k1", protoMapListUser);
-      mapMapMapUser = Collections.singletonMap("k1", protoMapMapUser);
+      mapMapUser = new LinkedHashMap<>();
+      mapMapUser.put("k1", protoMapUser);
+      mapMapUser.put("k2", protoMapUser);
+
+      listListListUser = Arrays.asList(protoListListUser, protoListListUser);
+      listListMapUser = Arrays.asList(protoListMapUser, protoListMapUser);
+      listMapListUser = Arrays.asList(protoMapListUser, protoMapListUser);
+      listMapMapUser = Arrays.asList(protoMapMapUser, protoMapMapUser);
+
+      mapListListUser = new LinkedHashMap<>();
+      mapListListUser.put("k1", protoListListUser);
+      mapListListUser.put("k2", protoListListUser);
+
+      mapListMapUser = new LinkedHashMap<>();
+      mapListMapUser.put("k1", protoListMapUser);
+      mapListMapUser.put("k2", protoListMapUser);
+
+      mapMapListUser = new LinkedHashMap<>();
+      mapMapListUser.put("k1", protoMapListUser);
+      mapMapListUser.put("k2", protoMapListUser);
+
+      mapMapMapUser = new LinkedHashMap<>();
+      mapMapMapUser.put("k1", protoMapMapUser);
+      mapMapMapUser.put("k2", protoMapMapUser);
     }
   }
 
@@ -155,7 +195,7 @@ public class TestModelWrap {
     public void init() {
       ProtoListUser protoListUser = new ProtoListUser();
       protoListUser.init();
-      value = Arrays.asList(protoListUser);
+      value = Arrays.asList(protoListUser, protoListUser);
     }
   }
 
@@ -165,7 +205,7 @@ public class TestModelWrap {
     public void init() {
       ProtoMapUser protoMapUser = new ProtoMapUser();
       protoMapUser.init();
-      value = Arrays.asList(protoMapUser);
+      value = Arrays.asList(protoMapUser, protoMapUser);
     }
   }
 
@@ -175,7 +215,9 @@ public class TestModelWrap {
     public void init() {
       ProtoListUser protoListUser = new ProtoListUser();
       protoListUser.init();
-      value = Collections.singletonMap("k1", protoListUser);
+      value = new LinkedHashMap<>();
+      value.put("k1", protoListUser);
+      value.put("k2", protoListUser);
     }
   }
 
@@ -185,7 +227,9 @@ public class TestModelWrap {
     public void init() {
       ProtoMapUser protoMapUser = new ProtoMapUser();
       protoMapUser.init();
-      value = Collections.singletonMap("k1", protoMapUser);
+      value = new LinkedHashMap<>();
+      value.put("k1", protoMapUser);
+      value.put("k2", protoMapUser);
     }
   }
 
@@ -193,7 +237,7 @@ public class TestModelWrap {
     public List<User> value;
 
     public void init() {
-      value = Arrays.asList(user);
+      value = Arrays.asList(user, user);
     }
   }
 
@@ -201,20 +245,26 @@ public class TestModelWrap {
     public Map<String, User> value;
 
     public void init() {
-      value = Collections.singletonMap(user.name, user);
+      value = new LinkedHashMap<>();
+      value.put("k1", user);
+      value.put("k2", user);
     }
   }
 
   @SuppressWarnings("unchecked")
   @Test
   public void pojoModel() throws IOException {
-    RootSerializer pojoSerializer = modelProtoMapper.findRootSerializer("PojoModel");
-    RootDeserializer pojoMapDeserializer = modelProtoMapper.createRootDeserializer(Map.class, "PojoModel");
-    RootDeserializer pojoModelDeserializer = modelProtoMapper.createRootDeserializer(PojoModel.class, "PojoModel");
+    RootSerializer pojoSerializer = modelProtoMapper.createRootSerializer("PojoModel", PojoModel.class);
+    RootDeserializer<Map<String, Object>> pojoMapDeserializer = modelProtoMapper
+        .createRootDeserializer("PojoModel", Map.class);
+    RootDeserializer<PojoModel> pojoModelDeserializer = modelProtoMapper
+        .createRootDeserializer("PojoModel", PojoModel.class);
 
-    RootSerializer protoSerializer = modelProtoMapper.findRootSerializer("ProtoModel");
-    RootDeserializer protoMapDeserializer = modelProtoMapper.createRootDeserializer(Map.class, "ProtoModel");
-    RootDeserializer protoModelDeserializer = modelProtoMapper.createRootDeserializer(ProtoModel.class, "ProtoModel");
+    RootSerializer protoSerializer = modelProtoMapper.createRootSerializer("ProtoModel", ProtoModel.class);
+    RootDeserializer<Map<String, Object>> protoMapDeserializer = modelProtoMapper
+        .createRootDeserializer("ProtoModel", Map.class);
+    RootDeserializer<ProtoModel> protoModelDeserializer = modelProtoMapper
+        .createRootDeserializer("ProtoModel", ProtoModel.class);
 
     PojoModel pojoModel = new PojoModel();
     pojoModel.init();

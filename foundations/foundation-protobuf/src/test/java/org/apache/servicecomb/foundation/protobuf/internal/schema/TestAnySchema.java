@@ -32,13 +32,11 @@ import org.junit.Test;
 import com.google.protobuf.Any;
 
 public class TestAnySchema extends TestSchemaBase {
-  public TestAnySchema() {
-    initField("any");
-  }
-
   @Test
   public void empty() throws Throwable {
-    Assert.assertEquals(0, serFieldSchema.writeTo(null).length);
+    scbMap = new HashMap<>();
+    scbMap.put("any", null);
+    Assert.assertEquals(0, rootSerializer.serialize(scbMap).length);
   }
 
   @Test
@@ -85,7 +83,7 @@ public class TestAnySchema extends TestSchemaBase {
     Assert.assertThat(root.getAny(), Matchers.instanceOf(Map.class));
     Assert.assertThat((Map<? extends String, ? extends String>) root.getAny(), Matchers.hasEntry("name", "n1"));
 
-    RootDeserializer deserializer = protoMapper.createRootDeserializer(Map.class, "Root");
+    RootDeserializer<Map<String, Object>> deserializer = protoMapper.createRootDeserializer("Root", Map.class);
     map = deserializer.deserialize(scbRootBytes);
     Assert.assertThat((Map<? extends String, ? extends String>) map.get("any"), Matchers.hasEntry("name", "n1"));
   }
