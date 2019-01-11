@@ -48,23 +48,10 @@ public class OsCpuUsage extends AbstractCpuUsage {
   }
 
   private void update(String[] stats) {
-
     long currentIdle = Long.parseLong(stats[4]);
+    double totalCpu = CpuUtils.summary(stats, 1, 8);
     idle.update(currentIdle);
-
-    long totalCpu = 0L;
-    for (int i = 1; i < 9; i++) {
-      totalCpu += Long.parseLong(stats[i]);
-    }
     total.update(totalCpu);
-    updateUsage(total.period - idle.period, total.period);
-  }
-
-  @Override
-  protected void updateUsage(double periodBusy, double periodTotal) {
-    usage = periodTotal == 0 ? 0 : periodBusy / periodTotal;
-    if (usage > 1) {
-      usage = 1;
-    }
+    updateUsage(total.period - idle.period, total.period, false);
   }
 }

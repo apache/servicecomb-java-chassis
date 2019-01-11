@@ -175,8 +175,8 @@ public class DefaultLogPublisher implements MetricsInitializer {
     double processRate = processNode.summary();
 
     appendLine(sb, "  cpu:");
-    appendLine(sb, "    all: %.2f%%    process: %.2f%%    idle: %.2f%%", allRate * 100, processRate * 100,
-        (1 - allRate) * 100);
+    appendLine(sb, "    all usage: %.2f%%    all idle: %.2f%%    process: %.2f%%", allRate * 100,
+        (1 - allRate) * 100, processRate * 100);
   }
 
 

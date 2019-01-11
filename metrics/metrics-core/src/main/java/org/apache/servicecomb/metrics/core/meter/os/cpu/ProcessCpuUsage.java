@@ -16,6 +16,9 @@
  */
 package org.apache.servicecomb.metrics.core.meter.os.cpu;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.netflix.spectator.api.Id;
 
 /*
@@ -32,6 +35,8 @@ import com.netflix.spectator.api.Id;
  *
  */
 public class ProcessCpuUsage extends AbstractCpuUsage {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProcessCpuUsage.class);
+
   private Period busy = new Period();
 
   private Period total = new Period();
@@ -43,24 +48,14 @@ public class ProcessCpuUsage extends AbstractCpuUsage {
   }
 
   public void update() {
-    String[] stats = CpuUtils.readAndSplitFirstLine(CpuUtils.SELF_PROCESS);
-    String[] uptime = CpuUtils.readAndSplitFirstLine(CpuUtils.UPTIME);
-
-    if (stats == null || stats.length < 15 || uptime == null) {
-      return;
+    try {
+      double processBusy = CpuUtils.readProcSelfBusy();
+      double uptime = CpuUtils.readUptimeTotal();
+      busy.update(processBusy);
+      total.update(uptime * userHZ * cpuCount);
+      updateUsage(busy.period, total.period, true);
+    } catch (Throwable e) {
+      LOGGER.error("Failed to update process usage", e);
     }
-    busy.update(Double.parseDouble(stats[13]) + Double.parseDouble(stats[14]));
-    total.update(Double.parseDouble(uptime[0]) * userHZ * cpuCount);
-
-    updateUsage(busy.period, total.period);
-  }
-
-  @Override
-  protected void updateUsage(double periodBusy, double periodTotal) {
-    usage = periodTotal == 0 ? 0 : periodBusy / periodTotal;
-    if (usage > 1) {
-      usage = 1;
-    }
-    usage *= cpuCount;
   }
 }

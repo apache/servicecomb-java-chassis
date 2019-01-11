@@ -37,10 +37,6 @@ public final class CpuUtils {
   private CpuUtils() {
   }
 
-  public static String[] readAndSplitFirstLine(String filePath) {
-    return readAndSplitFirstLine(new File(filePath));
-  }
-
   public static String[] readAndSplitFirstLine(File file) {
     try {
       return Files.asCharSource(file, StandardCharsets.UTF_8).readFirstLine().trim().split("\\s+");
@@ -58,12 +54,17 @@ public final class CpuUtils {
     return total;
   }
 
-  private static double readProcStatTotal() {
+  public static double readProcSelfBusy() {
+    String[] stats = readAndSplitFirstLine(SELF_PROCESS);
+    return summary(stats, 13, 2);
+  }
+
+  public static double readProcStatTotal() {
     String[] stats = readAndSplitFirstLine(PROC_STAT);
     return summary(stats, 1, 8);
   }
 
-  private static double readUptimeTotal() {
+  public static double readUptimeTotal() {
     String[] uptime = readAndSplitFirstLine(UPTIME);
     return Double.parseDouble(uptime[0]);
   }
