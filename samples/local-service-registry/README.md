@@ -33,13 +33,14 @@ Please find the details as follows.
 ```java
     public class xxxClient {
       public static void main(String[] args) {
-　　    System.setProperty("local.registry.file", "/yourpath/registry.yaml");
-        //your code
-　　    System.clearProperty("local.registry.file");
+      //"yourregistry.yaml" should be put in resource directory
+　　    System.setProperty("local.registry.file", "yourregistry.yaml");
+
+      //your code
       }
     }
 ```
-   If file present in this path "local.registry.file" then registry mode is Local registry mode. It will not connect to service center.
+   if file present in this path "local.registry.file" then registry mode is Local registry mode. It will not connect to service center.
 
 * Add provider's schema file at below location of consumer side
 
