@@ -30,7 +30,8 @@ public class LocalRegistryClient {
   private static RestTemplate templateNew = RestTemplateBuilder.create();
 
   public static void main(String[] args) throws Exception {
-    System.setProperty("local.registry.file", "src/main/resources/registry.yaml");
+    System.setProperty("local.registry.file", "registry.yaml");
+
     init();
 
     run();
