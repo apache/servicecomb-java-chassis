@@ -53,5 +53,13 @@ public abstract class AbstractCpuUsage {
     this.usage = usage;
   }
 
-  protected abstract void updateUsage(double periodBusy, double periodTotal);
+  protected void updateUsage(double periodBusy, double periodTotal, boolean irixMode) {
+    usage = periodTotal == 0 ? 0 : periodBusy / periodTotal;
+    if (usage > 1) {
+      usage = 1;
+    }
+    if (irixMode) {
+      usage *= cpuCount;
+    }
+  }
 }

@@ -238,7 +238,7 @@ public class TestDefaultLogPublisher {
     Assert.assertEquals("\n"
             + "os:\n"
             + "  cpu:\n"
-            + "    all: 100.00%    process: 100.00%    idle: 0.00%\n"
+            + "    all usage: 100.00%    all idle: 0.00%    process: 100.00%\n"
             + "  net:\n"
             + "    send(Bps)    recv(Bps)    send(pps)    recv(pps)    interface\n"
             + "    1            1            1            1            eth0\n"
