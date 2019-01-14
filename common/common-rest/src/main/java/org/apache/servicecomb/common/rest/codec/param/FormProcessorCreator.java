@@ -18,7 +18,6 @@
 package org.apache.servicecomb.common.rest.codec.param;
 
 import java.lang.reflect.Type;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,7 +28,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
-import org.apache.servicecomb.foundation.vertx.http.FileUploadPart;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -41,6 +39,7 @@ import io.swagger.models.properties.FileProperty;
 import io.swagger.models.properties.Property;
 
 public class FormProcessorCreator implements ParamValueProcessorCreator {
+
   public static final String PARAMTYPE = "formData";
 
   public static class FormProcessor extends AbstractParamProcessor {
@@ -108,9 +107,7 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
     FormParameter formParameter = (FormParameter) parameter;
     if ("array".equals(formParameter.getType())) {
       Property items = formParameter.getItems();
-      if (items != null) {
-        return new FileProperty().getType().equals(items.getType());
-      }
+      return new FileProperty().getType().equals(items.getType());
     }
     return new FileProperty().getType().equals(formParameter.getType());
   }
@@ -126,10 +123,10 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
         JavaType contentType = targetType.getContentType();
         if (contentType != null && contentType.getRawClass().equals(Part.class)) {
           //get all parts
-          Collection<Part> parts = request.getParts();
-          List<Part> collect = parts.stream().filter(part -> part.getName().equals(paramPath))
+          return request.getParts()
+              .stream()
+              .filter(part -> part.getName().equals(paramPath))
               .collect(Collectors.toList());
-          return collect;
         }
       }
       return request.getPart(paramPath);

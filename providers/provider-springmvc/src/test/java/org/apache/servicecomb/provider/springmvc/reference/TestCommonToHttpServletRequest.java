@@ -33,15 +33,10 @@ import javax.servlet.http.Part;
 import javax.ws.rs.core.HttpHeaders;
 
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.common.rest.codec.param.FormProcessorCreator.PartProcessor;
-import org.apache.servicecomb.common.rest.definition.RestParam;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
-
-import mockit.Expectations;
-import mockit.Mocked;
 
 public class TestCommonToHttpServletRequest {
   @Test
@@ -63,24 +58,11 @@ public class TestCommonToHttpServletRequest {
   }
 
   @Test
-  public void testConstructNormal(@Mocked RestParam param1, @Mocked RestParam param2,
-      @Mocked PartProcessor partProcessor) {
-    List<RestParam> restParams = new ArrayList<>();
-    restParams.add(param1);
-    restParams.add(param2);
-    new Expectations() {
-      {
-        param1.getParamProcessor();
-        result = partProcessor;
-        param1.getParamName();
-        result = "test1";
-        param2.getParamProcessor();
-        result = partProcessor;
-        param2.getParamName();
-        result = "test2";
-      }
-    };
-    HttpServletRequest request = new CommonToHttpServletRequest(null, null, null, null, false, restParams);
+  public void testConstructNormal() {
+    List<String> fileKeys = new ArrayList<>();
+    fileKeys.add("test1");
+    fileKeys.add("test2");
+    HttpServletRequest request = new CommonToHttpServletRequest(null, null, null, null, false, fileKeys);
     Assert.assertEquals(2, ((CommonToHttpServletRequest) request).getFileKeys().size());
     Assert.assertEquals("test1", ((CommonToHttpServletRequest) request).getFileKeys().get(0));
     Assert.assertEquals("test2", ((CommonToHttpServletRequest) request).getFileKeys().get(1));
@@ -270,25 +252,12 @@ public class TestCommonToHttpServletRequest {
   }
 
   @Test
-  public void testGetParts(@Mocked RestParam param1, @Mocked RestParam param2,
-      @Mocked PartProcessor partProcessor) {
-    List<RestParam> restParams = new ArrayList<>();
-    restParams.add(param1);
-    restParams.add(param2);
+  public void testGetParts() {
+    List<String> restParams = new ArrayList<>();
+    restParams.add("test1");
+    restParams.add("test2");
     File file1 = new File("file1.txt");
     File file2 = new File("file2.txt");
-    new Expectations() {
-      {
-        param1.getParamProcessor();
-        result = partProcessor;
-        param1.getParamName();
-        result = "test1";
-        param2.getParamProcessor();
-        result = partProcessor;
-        param2.getParamName();
-        result = "test2";
-      }
-    };
     File[] files = {file1, file2};
     List<File> list = Arrays.asList(files);
     Map<String, Object> objectMap = new HashMap<>();
