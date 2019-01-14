@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.common.rest.codec.param;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -27,6 +28,8 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import com.google.common.collect.Multimap;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
@@ -129,9 +132,9 @@ public class TestRestClientRequestImpl {
 
     restClientRequest.attach(fileName, part);
 
-    Map<String, Part> uploads = Deencapsulation.getField(restClientRequest, "uploads");
+    Multimap<String, Part> uploads = Deencapsulation.getField(restClientRequest, "uploads");
     Assert.assertEquals(1, uploads.size());
-    Assert.assertThat(uploads, Matchers.hasEntry(fileName, part));
+    Assert.assertThat(uploads.asMap(), Matchers.hasEntry(fileName, Arrays.asList(part)));
   }
 
   @Test
@@ -140,7 +143,7 @@ public class TestRestClientRequestImpl {
 
     restClientRequest.attach("fileName", null);
 
-    Map<String, Part> uploads = Deencapsulation.getField(restClientRequest, "uploads");
+    Multimap<String, Part> uploads = Deencapsulation.getField(restClientRequest, "uploads");
     Assert.assertTrue(uploads.isEmpty());
   }
 

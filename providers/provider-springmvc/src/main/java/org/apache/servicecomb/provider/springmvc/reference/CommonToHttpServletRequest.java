@@ -35,8 +35,6 @@ import javax.servlet.http.Part;
 import javax.ws.rs.core.HttpHeaders;
 
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.common.rest.codec.param.FormProcessorCreator.PartProcessor;
-import org.apache.servicecomb.common.rest.definition.RestParam;
 import org.apache.servicecomb.foundation.common.part.FilePart;
 import org.apache.servicecomb.foundation.common.part.InputStreamPart;
 import org.apache.servicecomb.foundation.common.part.ResourcePart;
@@ -59,15 +57,9 @@ public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
 
   @SuppressWarnings("unchecked")
   public CommonToHttpServletRequest(Map<String, String> pathParams, Map<String, List<String>> queryParams,
-      Map<String, List<String>> httpHeaders, Object bodyObject, boolean isFormData, List<RestParam> paramList) {
+      Map<String, List<String>> httpHeaders, Object bodyObject, boolean isFormData, List<String> fileKeys) {
     setAttribute(RestConst.PATH_PARAMETERS, pathParams);
-    if (paramList != null && paramList.size() != 0) {
-      for (RestParam param : paramList) {
-        if (param.getParamProcessor() instanceof PartProcessor) {
-          fileKeys.add(param.getParamName());
-        }
-      }
-    }
+    this.fileKeys = fileKeys;
     if (isFormData) {
       setAttribute(RestConst.FORM_PARAMETERS, (Map<String, Object>) bodyObject);
     } else {
@@ -228,7 +220,6 @@ public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
   }
 
   private void filePartListWithForm(List<Part> partList, Map<String, Object> form) {
-
     for (String key : fileKeys) {
       Object value = form.get(key);
       if (value == null) {
@@ -236,20 +227,19 @@ public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
       }
       if (Collection.class.isInstance(value)) {
         Collection<?> collection = (Collection<?>) value;
-        if (collection.isEmpty()) {
-          continue;
-        }
         for (Object part : collection) {
           partList.add(getSinglePart(key, part));
         }
-      } else if (value.getClass().isArray()) {
+        continue;
+      }
+      if (value.getClass().isArray()) {
         Object[] params = (Object[]) value;
         for (int i = 0; i < params.length; i++) {
           partList.add(getSinglePart(key, params[i]));
         }
-      } else {
-        partList.add(getSinglePart(key, value));
+        continue;
       }
+      partList.add(getSinglePart(key, value));
     }
   }
 

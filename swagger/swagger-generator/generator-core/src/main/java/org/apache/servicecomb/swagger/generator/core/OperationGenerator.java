@@ -359,7 +359,7 @@ public class OperationGenerator {
     }
   }
 
-  // if is list<?> check and get respond type
+  // check whether is ArrayList , LinkedArrayList ...  or not
   private Type checkAndGetType(Type type) {
     if (ParameterizedType.class.isAssignableFrom(type.getClass())) {
       ParameterizedType targetType = (ParameterizedType) type;

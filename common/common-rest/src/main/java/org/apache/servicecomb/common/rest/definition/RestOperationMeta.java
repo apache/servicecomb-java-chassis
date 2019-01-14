@@ -30,6 +30,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.common.rest.codec.param.FormProcessorCreator.PartProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.path.PathRegExp;
@@ -63,6 +64,8 @@ public class RestOperationMeta {
 
   // key为参数名
   protected Map<String, RestParam> paramMap = new LinkedHashMap<>();
+
+  protected List<String> fileKeys = new ArrayList<>();
 
   // key为数据类型，比如json之类
   private Map<String, ProduceProcessor> produceProcessorMap = new LinkedHashMap<>();
@@ -219,6 +222,9 @@ public class RestOperationMeta {
   }
 
   private void addParam(RestParam param) {
+    if (param.getParamProcessor() instanceof PartProcessor) {
+      fileKeys.add(param.getParamName());
+    }
     paramList.add(param);
     paramMap.put(param.getParamName(), param);
   }
@@ -256,6 +262,10 @@ public class RestOperationMeta {
 
   public String getHttpMethod() {
     return operationMeta.getHttpMethod();
+  }
+
+  public List<String> getFileKeys() {
+    return fileKeys;
   }
 
   public List<String> getProduces() {
