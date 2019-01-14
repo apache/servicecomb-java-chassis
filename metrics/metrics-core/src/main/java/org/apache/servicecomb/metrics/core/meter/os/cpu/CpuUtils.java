@@ -37,13 +37,8 @@ public final class CpuUtils {
   private CpuUtils() {
   }
 
-  public static String[] readAndSplitFirstLine(File file) {
-    try {
-      return Files.asCharSource(file, StandardCharsets.UTF_8).readFirstLine().trim().split("\\s+");
-    } catch (IOException | NullPointerException e) {
-      LOGGER.error(String.format("Failed to read file %s", file.getName()), e);
-    }
-    return null;
+  public static String[] readAndSplitFirstLine(File file) throws IOException {
+    return Files.asCharSource(file, StandardCharsets.UTF_8).readFirstLine().trim().split("\\s+");
   }
 
   public static double summary(String[] stats, int start, int len) {
@@ -54,17 +49,17 @@ public final class CpuUtils {
     return total;
   }
 
-  public static double readProcSelfBusy() {
+  public static double readProcSelfBusy() throws IOException {
     String[] stats = readAndSplitFirstLine(SELF_PROCESS);
     return summary(stats, 13, 2);
   }
 
-  public static double readProcStatTotal() {
+  public static double readProcStatTotal() throws IOException {
     String[] stats = readAndSplitFirstLine(PROC_STAT);
     return summary(stats, 1, 8);
   }
 
-  public static double readUptimeTotal() {
+  public static double readUptimeTotal() throws IOException {
     String[] uptime = readAndSplitFirstLine(UPTIME);
     return Double.parseDouble(uptime[0]);
   }

@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.metrics.core.meter.os.cpu;
 
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,15 +49,11 @@ public class ProcessCpuUsage extends AbstractCpuUsage {
     super(id);
   }
 
-  public void update() {
-    try {
-      double processBusy = CpuUtils.readProcSelfBusy();
-      double uptime = CpuUtils.readUptimeTotal();
-      busy.update(processBusy);
-      total.update(uptime * userHZ * cpuCount);
-      updateUsage(busy.period, total.period, true);
-    } catch (Throwable e) {
-      LOGGER.error("Failed to update process usage", e);
-    }
+  public void update() throws IOException {
+    double processBusy = CpuUtils.readProcSelfBusy();
+    double uptime = CpuUtils.readUptimeTotal();
+    busy.update(processBusy);
+    total.update(uptime * userHZ * cpuCount);
+    updateUsage(busy.period, total.period, true);
   }
 }

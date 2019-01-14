@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.metrics.core.meter.os.cpu;
 
+import java.io.IOException;
+
 import com.netflix.spectator.api.Id;
 
 /*
@@ -39,15 +41,8 @@ public class OsCpuUsage extends AbstractCpuUsage {
     super(id);
   }
 
-  public void update() {
+  public void update() throws IOException {
     String[] stats = CpuUtils.readAndSplitFirstLine(CpuUtils.PROC_STAT);
-    if (stats == null) {
-      return;
-    }
-    update(stats);
-  }
-
-  private void update(String[] stats) {
     long currentIdle = Long.parseLong(stats[4]);
     double totalCpu = CpuUtils.summary(stats, 1, 8);
     idle.update(currentIdle);
