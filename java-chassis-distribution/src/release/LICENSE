@@ -420,11 +420,11 @@ Apache HttpCore (http://hc.apache.org/httpcomponents-core-ga) org.apache.httpcom
 Apache Log4j (http://logging.apache.org/log4j/1.2/) log4j:log4j:bundle:1.2.17
 archaius-core (https://github.com/Netflix/archaius) com.netflix.archaius:archaius-core:jar:0.7.3
 Bean Validation API (http://beanvalidation.org) javax.validation:validation-api:jar:2.0.0.Final
-brave (https://github.com/kristofa/brave/brave) io.zipkin.brave:brave:jar:4.13.1
-Brave Context: Log4J 1.2 (https://github.com/kristofa/brave/brave-context-parent/brave-context-log4j12) io.zipkin.brave:brave-context-log4j12:jar:4.13.1
-Brave Instrumentation: Http Adapters (https://github.com/kristofa/brave/brave-instrumentation-parent/brave-instrumentation-http) io.zipkin.brave:brave-instrumentation-http:jar:4.13.1
-Brave Instrumentation: Servlet (https://github.com/kristofa/brave/brave-instrumentation-parent/brave-instrumentation-servlet) io.zipkin.brave:brave-instrumentation-servlet:jar:4.13.1
-Brave Spring Factory Beans (https://github.com/kristofa/brave/brave-spring-beans) io.zipkin.brave:brave-spring-beans:jar:4.13.1
+brave (https://github.com/openzipkin/brave) io.zipkin.brave:brave:jar:5.6.0
+Brave Context: Log4J 1.2 (https://github.com/openzipkin/brave/tree/master/context/log4j12) io.zipkin.brave:brave-context-log4j12:jar:5.6.0
+Brave Instrumentation: Http Adapters (https://github.com/openzipkin/brave/tree/master/instrumentation/http) io.zipkin.brave:brave-instrumentation-http:jar:5.6.0
+Brave Instrumentation: Servlet (https://github.com/openzipkin/brave/tree/master/instrumentation/servlet) io.zipkin.brave:brave-instrumentation-servlet:jar:5.6.0
+Brave Spring Factory Beans (https://github.com/openzipkin/brave/tree/master/spring-beans) io.zipkin.brave:brave-spring-beans:jar:5.6.0
 ClassMate (http://github.com/cowtowncoder/java-classmate) com.fasterxml:classmate:bundle:1.3.4
 Commons IO (http://commons.apache.org/io/) commons-io:commons-io:jar:2.4
 Commons Lang (http://commons.apache.org/lang/) commons-lang:commons-lang:jar:2.6
@@ -528,9 +528,8 @@ Vert.x Core (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/
 vertx-auth-common (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-auth/vertx-auth-common) io.vertx:vertx-auth-common:jar:3.5.3
 vertx-web (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-web-parent/vertx-web) io.vertx:vertx-web:jar:3.5.3
 Woodstox (https://github.com/FasterXML/woodstox) com.fasterxml.woodstox:woodstox-core:bundle:5.0.3
-Zipkin Reporter Spring Factory Beans (https://github.com/openzipkin/zipkin-reporter-java/zipkin-reporter-spring-beans) io.zipkin.reporter2:zipkin-reporter-spring-beans:jar:2.2.2
-Zipkin Reporter: Core (https://github.com/openzipkin/zipkin-reporter-java/zipkin-reporter) io.zipkin.reporter2:zipkin-reporter:jar:2.5.0
-Zipkin Sender: OkHttp 3 (https://github.com/openzipkin/zipkin-reporter-java/zipkin-sender-okhttp3) io.zipkin.reporter2:zipkin-sender-okhttp3:jar:2.2.2
-Zipkin v1 (https://github.com/openzipkin/zipkin/) io.zipkin.java:zipkin:jar:2.4.2
-Zipkin v2 (https://github.com/openzipkin/zipkin/) io.zipkin.zipkin2:zipkin:jar:2.4.2
+Zipkin Reporter Spring Factory Beans (https://github.com/openzipkin/zipkin-reporter-java/zipkin-reporter-spring-beans) io.zipkin.reporter2:zipkin-reporter-spring-beans:jar:2.7.13
+Zipkin Reporter: Core (https://github.com/openzipkin/zipkin-reporter-java/zipkin-reporter) io.zipkin.reporter2:zipkin-reporter:jar:2.7.13
+Zipkin Sender: OkHttp 3 (https://github.com/openzipkin/zipkin-reporter-java/zipkin-sender-okhttp3) io.zipkin.reporter2:zipkin-sender-okhttp3:jar:2.7.13
+Zipkin v2 (https://github.com/openzipkin/zipkin/) io.zipkin.zipkin2:zipkin:jar:2.9.3
 zuul-core (https://github.com/Netflix/zuul) com.netflix.zuul:zuul-core:jar:1.3.0

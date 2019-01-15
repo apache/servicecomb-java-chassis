@@ -20,12 +20,9 @@ package org.apache.servicecomb.tests.tracing;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_TRACING_COLLECTOR_ADDRESS;
 import static org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
-import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.springframework.http.HttpStatus.OK;
 
 import java.lang.invoke.MethodHandles;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,12 +33,10 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import zipkin.junit.ZipkinRule;
 import zipkin2.Span;
-import zipkin2.codec.SpanBytesDecoder;
+import zipkin2.junit.ZipkinRule;
 
 public class TracingTestBase {
 
@@ -81,16 +76,7 @@ public class TracingTestBase {
       Thread.currentThread().interrupt();
     }
 
-    String url = zipkin.httpUrl() + "/api/v2/trace/{traceId}";
-    log.info("rest url:" + url);
-    ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class, traceId(loggedIds));
-
-    assertThat(responseEntity.getStatusCode(), is(OK));
-    String body = responseEntity.getBody();
-    log.info("Received trace json: {}", body);
-    List<Span> spans = new ArrayList<>();
-    SpanBytesDecoder.JSON_V2.decodeList(body.getBytes(), spans);
-
+    List<Span> spans = zipkin.getTrace(traceId(loggedIds));
     List<String> tracedValues = tracedValues(spans);
     tracedValues.forEach(value -> log.info("Received value {}", value));
     log.info("values: " + String.join(",", values));

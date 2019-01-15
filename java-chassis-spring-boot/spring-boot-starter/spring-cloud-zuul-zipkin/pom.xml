@@ -44,7 +44,7 @@
     </dependency>
 
     <dependency>
-      <groupId>io.zipkin.java</groupId>
+      <groupId>io.zipkin.zipkin2</groupId>
       <artifactId>zipkin</artifactId>
       <scope>provided</scope>
     </dependency>
