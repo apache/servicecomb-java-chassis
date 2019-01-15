@@ -33,9 +33,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import brave.Tracing;
-import brave.context.log4j12.MDCCurrentTraceContext;
+import brave.context.log4j12.MDCScopeDecorator;
 import brave.http.HttpTracing;
 import brave.propagation.CurrentTraceContext;
+import brave.propagation.ThreadLocalCurrentTraceContext;
 import zipkin2.Span;
 import zipkin2.codec.SpanBytesEncoder;
 import zipkin2.reporter.AsyncReporter;
@@ -89,7 +90,7 @@ class TracingConfiguration {
 
   @Bean
   CurrentTraceContext currentTraceContext() {
-    return MDCCurrentTraceContext.create();
+    return ThreadLocalCurrentTraceContext.newBuilder().addScopeDecorator(MDCScopeDecorator.create()).build();
   }
 
   @Bean

@@ -43,7 +43,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import brave.Tracing;
-import brave.propagation.StrictCurrentTraceContext;
+import brave.propagation.StrictScopeDecorator;
+import brave.propagation.ThreadLocalCurrentTraceContext;
 import zipkin2.Span;
 
 @RunWith(SpringRunner.class)
@@ -107,7 +108,8 @@ public class ZipkinSpanAspectTest {
     @Bean
     Tracing tracing(Queue<Span> spans) {
       return Tracing.newBuilder()
-          .currentTraceContext(new StrictCurrentTraceContext())
+          .currentTraceContext(
+              ThreadLocalCurrentTraceContext.newBuilder().addScopeDecorator(StrictScopeDecorator.create()).build())
           .spanReporter(spans::add)
           .build();
     }

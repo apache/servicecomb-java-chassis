@@ -46,7 +46,8 @@ import org.junit.Test;
 import brave.Span;
 import brave.Tracer.SpanInScope;
 import brave.Tracing;
-import brave.propagation.StrictCurrentTraceContext;
+import brave.propagation.StrictScopeDecorator;
+import brave.propagation.ThreadLocalCurrentTraceContext;
 
 public class ZipkinTracingAdviserTest {
   private static final int nThreads = 10;
@@ -64,9 +65,11 @@ public class ZipkinTracingAdviserTest {
   private final Map<String, Queue<zipkin2.Span>> traces = new ConcurrentHashMap<>();
 
   private final Tracing tracing = Tracing.newBuilder()
-      .currentTraceContext(new StrictCurrentTraceContext())
-      .spanReporter(e -> traces.computeIfAbsent(e.traceId(), id -> new ConcurrentLinkedDeque<>()).add(e))
-      .build();
+      .currentTraceContext(
+          ThreadLocalCurrentTraceContext.newBuilder().addScopeDecorator(StrictScopeDecorator.create()).build()).
+          spanReporter(e -> traces.computeIfAbsent(e.traceId(), id -> new ConcurrentLinkedDeque<>()).
+              add(e)).
+          build();
 
   private final ZipkinTracingAdviser tracingAdviser = new ZipkinTracingAdviser(tracing.tracer());
 

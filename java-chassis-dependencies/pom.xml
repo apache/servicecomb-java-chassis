@@ -51,9 +51,9 @@
     <narayana.version>5.3.2.Final</narayana.version>
     <cxf.version>3.1.6</cxf.version>
     <logback.version>1.1.7</logback.version>
-    <brave.version>4.13.1</brave.version>
-    <zipkin.version>2.4.2</zipkin.version>
-    <zipkin-reporter.version>2.2.2</zipkin-reporter.version>
+    <brave.version>5.6.0</brave.version>
+    <zipkin.version>2.9.3</zipkin.version>
+    <zipkin-reporter.version>2.7.13</zipkin-reporter.version>
   </properties>
 
   <dependencyManagement>
@@ -696,9 +696,8 @@
         <version>${zipkin.version}</version>
       </dependency>
       <dependency>
-        <!-- only needed in test phase for mocking brave -->
-        <groupId>io.zipkin.java</groupId>
-        <artifactId>zipkin</artifactId>
+        <groupId>io.zipkin.zipkin2</groupId>
+        <artifactId>zipkin-junit</artifactId>
         <version>${zipkin.version}</version>
         <scope>test</scope>
       </dependency>
