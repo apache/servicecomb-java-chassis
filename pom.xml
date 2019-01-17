@@ -441,6 +441,16 @@
                 </goals>
               </execution>
             </executions>
+            <configuration>
+              <tags>
+                <tag>
+                  <!-- to avoid protostuff javadoc problem. -->
+                  <name>created</name>
+                  <placement>t</placement>
+                  <head>Date created:</head>
+                </tag>
+              </tags>
+            </configuration>
           </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
