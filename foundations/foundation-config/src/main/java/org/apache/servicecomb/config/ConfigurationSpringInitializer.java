@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
@@ -33,6 +35,7 @@ import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.StringUtils;
 
@@ -63,6 +66,22 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
     ConfigUtil.addExtraConfig(EXTRA_CONFIG_SOURCE_PREFIX + environmentName, extraConfig);
 
     ConfigUtil.installDynamicConfig();
+
+    setUpSpringPropertySource(environment);
+  }
+
+  private void setUpSpringPropertySource(Environment environment) {
+    ConfigCenterConfigurationSource configCenterConfigurationSource =
+        SPIServiceUtils.getTargetService(ConfigCenterConfigurationSource.class);
+    if (configCenterConfigurationSource != null && environment instanceof ConfigurableEnvironment) {
+      ConfigurableEnvironment ce = (ConfigurableEnvironment) environment;
+      try {
+        ce.getPropertySources()
+            .addFirst(new MapPropertySource("dynamic-source", configCenterConfigurationSource.getCurrentData()));
+      } catch (Exception e) {
+        LOGGER.warn("set up spring property source failed. msg: {}", e.getMessage());
+      }
+    }
   }
 
   @Override

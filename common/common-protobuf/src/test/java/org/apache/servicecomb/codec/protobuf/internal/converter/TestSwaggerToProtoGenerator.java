@@ -45,6 +45,7 @@ public class TestSwaggerToProtoGenerator {
     SwaggerToProtoGenerator generator = new SwaggerToProtoGenerator("a.b", swagger);
     Proto proto = generator.convert();
 
-    Assert.assertEquals(protoContent, new ProtoToStringGenerator(proto).protoToString());
+    Assert.assertEquals(protoContent.replaceAll("\r\n", "\n"),
+        new ProtoToStringGenerator(proto).protoToString().replaceAll("\r\n", "\n"));
   }
 }
