@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package ${groupId};
+package ${package};
 
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.web.client.RestTemplate;
