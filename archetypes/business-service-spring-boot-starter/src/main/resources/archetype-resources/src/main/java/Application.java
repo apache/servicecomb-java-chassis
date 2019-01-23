@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package ${groupId};
+package ${package};
 
 import org.apache.servicecomb.springboot.starter.provider.EnableServiceComb;
 import org.springframework.boot.SpringApplication;

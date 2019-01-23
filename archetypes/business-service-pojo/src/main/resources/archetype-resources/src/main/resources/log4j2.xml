@@ -16,11 +16,26 @@
   ~ limitations under the License.
   -->
 
-<beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:context="http://www.springframework.org/schema/context"
-  xsi:schemaLocation="http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+<!--this is sample configuration, please modify as your wish-->
+<configuration>
+  <Properties>
+    <Property name="log_path">./target/log</Property>
+  </Properties>
 
-  <!--change to your schema(impl) bean package-->
-  <context:component-scan base-package="${groupId}"/>
-</beans>
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="[%d][%t][%p][%c:%L] %m%n"/>
+    </Console>
+    <RollingFile name="DailyRollingFile" fileName="${log_path}/output.log"
+      filePattern="${log_path}/%d{yyyy-MM-dd}.log">
+      <PatternLayout pattern="[%d][%t][%p][%c:%L] %m%n"/>
+      <TimeBasedTriggeringPolicy interval="1"/>
+    </RollingFile>
+  </Appenders>
+  <Loggers>
+    <Root level="info">
+      <AppenderRef ref="Console"/>
+      <AppenderRef ref="DailyRollingFile"/>
+    </Root>
+  </Loggers>
+</configuration>
