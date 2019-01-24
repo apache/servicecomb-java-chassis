@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.converter.property.StringPropertyConverter;
+import org.apache.servicecomb.swagger.extend.module.EnumModuleExt;
 import org.apache.servicecomb.swagger.extend.property.creator.ByteArrayPropertyCreator;
 import org.apache.servicecomb.swagger.extend.property.creator.BytePropertyCreator;
 import org.apache.servicecomb.swagger.extend.property.creator.InputStreamPropertyCreator;
@@ -35,6 +36,7 @@ import org.apache.servicecomb.swagger.extend.property.creator.ShortPropertyCreat
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.annotations.VisibleForTesting;
 
 import io.swagger.converter.ModelConverter;
@@ -50,7 +52,7 @@ public class ModelResolverExt extends ModelResolver {
   private Map<Class<?>, PropertyCreator> propertyCreatorMap = new HashMap<>();
 
   public ModelResolverExt() {
-    super(Json.mapper());
+    super(findMapper());
 
     addPropertyCreator(new BytePropertyCreator());
     addPropertyCreator(new ShortPropertyCreator());
@@ -58,6 +60,12 @@ public class ModelResolverExt extends ModelResolver {
     addPropertyCreator(new InputStreamPropertyCreator());
     addPropertyCreator(new PartPropertyCreator());
     loadPropertyCreators();
+  }
+
+  private static ObjectMapper findMapper() {
+    ObjectMapper mapper = Json.mapper();
+    mapper.registerModule(new EnumModuleExt());
+    return mapper;
   }
 
   private void addPropertyCreator(PropertyCreator creator) {
