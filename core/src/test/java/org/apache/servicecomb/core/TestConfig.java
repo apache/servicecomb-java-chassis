@@ -24,7 +24,6 @@ import java.util.Properties;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
 
-import org.apache.servicecomb.core.config.ConfigurationSpringInitializer;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
@@ -35,18 +34,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestConfig {
-  class MyConfigurationSpringInitializer extends ConfigurationSpringInitializer {
-    Properties p;
-
-    MyConfigurationSpringInitializer(Properties p) {
-      this.p = p;
-    }
-
-    public void test() throws Exception {
-      this.loadProperties(p);
-    }
-  }
-
   @Test
   public void testConstants() {
     Assert.assertEquals("x-cse-context", Const.CSE_CONTEXT);
@@ -125,20 +112,5 @@ public class TestConfig {
     response = Response.create(400, "test", "errorData");
     exception = response.getResult();
     Assert.assertEquals("errorData", exception.getErrorData());
-  }
-
-  @Test
-  public void testConfigurationSpringInitializer() throws Exception {
-    Properties p = new Properties();
-    MyConfigurationSpringInitializer oConf = new MyConfigurationSpringInitializer(p);
-    oConf.setConfigId("testkey:testvalue,testkey2:testvalue2");
-    boolean failed = false;
-    try {
-      oConf.test();
-    } catch (Exception e) {
-      Assert.assertEquals(e.getMessage().contains("can not find config for testkey:testvalue"), true);
-      failed = true;
-    }
-    Assert.assertEquals(failed, true);
   }
 }

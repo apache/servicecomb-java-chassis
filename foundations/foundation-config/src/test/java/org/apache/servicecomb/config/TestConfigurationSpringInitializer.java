@@ -34,9 +34,9 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Matchers;
 import org.mockito.Mockito;
 import org.mockito.stubbing.Answer;
-import org.springframework.core.Ordered;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
@@ -64,10 +64,6 @@ public class TestConfigurationSpringInitializer {
   public void testAll() {
     ConfigurationSpringInitializer configurationSpringInitializer = new ConfigurationSpringInitializer();
     ConfigUtil.installDynamicConfig();
-
-    Assert.assertEquals(Ordered.LOWEST_PRECEDENCE / 2, configurationSpringInitializer.getOrder());
-    Assert.assertEquals(true,
-        Deencapsulation.getField(configurationSpringInitializer, "ignoreUnresolvablePlaceholders"));
 
     Object o = ConfigUtil.getProperty("zq");
     @SuppressWarnings("unchecked")
@@ -151,7 +147,7 @@ public class TestConfigurationSpringInitializer {
         fail("get unexpected property name: " + propertyName);
       }
       return value;
-    }).when(environment).getProperty(anyString());
+    }).when(environment).getProperty(anyString(), Matchers.eq(Object.class));
 
     new ConfigurationSpringInitializer().setEnvironment(environment);
 
@@ -175,6 +171,7 @@ public class TestConfigurationSpringInitializer {
     Map<String, Object> map0 = new HashMap<>(1);
     map0.put("spring.config.name", "application");
     propertySources0.addFirst(new MapPropertySource("mapPropertySource0", map0));
+    Mockito.when(environment0.getProperty("spring.config.name", Object.class)).thenReturn("application");
     Mockito.when(environment0.getProperty("spring.config.name")).thenReturn("application");
 
     // get environment name from spring.application.name
@@ -184,6 +181,7 @@ public class TestConfigurationSpringInitializer {
     Map<String, Object> map1 = new HashMap<>(1);
     map1.put("spring.application.name", "bootstrap");
     propertySources1.addFirst(new MapPropertySource("mapPropertySource1", map1));
+    Mockito.when(environment1.getProperty("spring.application.name", Object.class)).thenReturn("bootstrap");
     Mockito.when(environment1.getProperty("spring.application.name")).thenReturn("bootstrap");
 
     // get environment name from className+hashcode
@@ -193,6 +191,7 @@ public class TestConfigurationSpringInitializer {
     Map<String, Object> map2 = new HashMap<>(1);
     map2.put("key2", "value2");
     propertySources2.addFirst(new MapPropertySource("mapPropertySource2", map2));
+    Mockito.when(environment2.getProperty("key2", Object.class)).thenReturn("value2");
     Mockito.when(environment2.getProperty("key2")).thenReturn("value2");
 
     ConfigurationSpringInitializer configurationSpringInitializer = new ConfigurationSpringInitializer();
