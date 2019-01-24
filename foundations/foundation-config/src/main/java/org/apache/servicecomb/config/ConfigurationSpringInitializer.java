@@ -20,6 +20,7 @@ package org.apache.servicecomb.config;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -39,9 +40,26 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.StringUtils;
 
+import com.google.common.collect.Lists;
+import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicPropertyFactory;
 
+/**
+ *  Adapt spring PropertySource and Archaius Configuration
+ *  spring     vs      archaius
+ *        (add)     |      dynamic(configcenter)
+ *  system property           |      system property
+ *  environment               |      environment
+ *  *properties/*.yml        |       (add)
+ *       (add)                |      microservice.yaml
+ *
+ *  add dynamic configuration, microserive.yaml to spring, add *properties/*.yml to archaius
+ *
+ *  NOTICE: we are not duplicate spring system property and environment property source, this will cause some problem
+ *  related to precedence of a KEY-VAlUE. That is cse.test in dynamic config may not override servicecomb.test in yml.
+ *  Users need to use the same key as what is in config file to override.
+ */
 public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigurer implements EnvironmentAware {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationSpringInitializer.class);
 
@@ -71,19 +89,40 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
   }
 
   private void setUpSpringPropertySource(Environment environment) {
-    ConfigCenterConfigurationSource configCenterConfigurationSource =
-        SPIServiceUtils.getTargetService(ConfigCenterConfigurationSource.class);
-    if (configCenterConfigurationSource != null && environment instanceof ConfigurableEnvironment) {
+    if (environment instanceof ConfigurableEnvironment) {
       ConfigurableEnvironment ce = (ConfigurableEnvironment) environment;
-      try {
-        ce.getPropertySources()
-            .addFirst(new MapPropertySource("dynamic-source", configCenterConfigurationSource.getCurrentData()));
-      } catch (Exception e) {
-        LOGGER.warn("set up spring property source failed. msg: {}", e.getMessage());
+      ConfigCenterConfigurationSource configCenterConfigurationSource =
+          SPIServiceUtils.getTargetService(ConfigCenterConfigurationSource.class);
+      if (configCenterConfigurationSource != null) {
+        try {
+          ce.getPropertySources()
+              .addFirst(new MapPropertySource("dynamic-source", configCenterConfigurationSource.getCurrentData()));
+        } catch (Exception e) {
+          LOGGER.warn("set up spring property source failed. msg: {}", e.getMessage());
+        }
       }
+      ConcurrentCompositeConfiguration concurrentCompositeConfiguration = ConfigUtil.createLocalConfig();
+      ce.getPropertySources().addLast(
+          new EnumerablePropertySource<ConcurrentCompositeConfiguration>("microservice.yaml",
+              concurrentCompositeConfiguration) {
+            private String[] propertyNames = null;
+
+            @Override
+            public String[] getPropertyNames() {
+              if (propertyNames == null) {
+                List<String> keyList = Lists.newArrayList(this.source.getKeys());
+                propertyNames = keyList.toArray(new String[keyList.size()]);
+              }
+              return propertyNames;
+            }
+
+            @Override
+            public Object getProperty(String s) {
+              return this.source.getProperty(s);
+            }
+          });
     }
   }
-
   @Override
   protected Properties mergeProperties() throws IOException {
     Properties properties = super.mergeProperties();
@@ -157,7 +196,7 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
     if (propertySource instanceof EnumerablePropertySource) {
       EnumerablePropertySource<?> enumerablePropertySource = (EnumerablePropertySource<?>) propertySource;
       for (String propertyName : enumerablePropertySource.getPropertyNames()) {
-        configFromSpringBoot.put(propertyName, environment.getProperty(propertyName));
+        configFromSpringBoot.put(propertyName, environment.getProperty(propertyName, Object.class));
       }
       return;
     }

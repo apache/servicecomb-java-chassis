@@ -24,16 +24,11 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-
 import org.apache.servicecomb.foundation.common.config.impl.PropertiesLoader;
-import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.util.StringUtils;
-import org.w3c.dom.Document;
 
 public class PaaSResourceUtils extends org.springframework.util.ResourceUtils {
   public static final String PROPERTIES_SUFFIX = ".properties";
@@ -143,21 +138,5 @@ public class PaaSResourceUtils extends org.springframework.util.ResourceUtils {
 
   public static List<Resource> getSortedXmls(String locationPattern) {
     return getSortedResources(locationPattern, XML_SUFFIX);
-  }
-
-  @SuppressWarnings("unchecked")
-  public static <T> T loadConfigAs(String configId, Class<?> clazz) throws Exception {
-    Object config = ConfigMgr.INSTANCE.getConfig(configId);
-    if (Properties.class.isInstance(config)) {
-      return (T) JsonUtils.convertValue(config, clazz);
-    }
-
-    if (Document.class.isInstance(config)) {
-      JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
-      Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-      return (T) jaxbUnmarshaller.unmarshal((Document) config, clazz).getValue();
-    }
-
-    throw new Exception("not support");
   }
 }
