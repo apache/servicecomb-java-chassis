@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.transport.rest.client;
 
+import org.apache.servicecomb.transport.common.TransportConfigUtils;
+
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.http.HttpClientOptions;
@@ -37,7 +39,9 @@ public final class TransportClientConfig {
   }
 
   public static int getThreadCount() {
-    return DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.rest.client.thread-count", 1).get();
+    return TransportConfigUtils.readVerticleCount(
+        "servicecomb.rest.client.verticle-count",
+        "servicecomb.rest.client.thread-count");
   }
 
   public static int getHttp2ConnectionMaxPoolSize() {
@@ -57,7 +61,6 @@ public final class TransportClientConfig {
         .getIntProperty("servicecomb.rest.client.http2.idleTimeoutInSeconds", TCPSSLOptions.DEFAULT_IDLE_TIMEOUT)
         .get();
   }
-
 
   public static boolean getUseAlpn() {
     return DynamicPropertyFactory.getInstance()
@@ -82,7 +85,6 @@ public final class TransportClientConfig {
         .getBooleanProperty("servicecomb.rest.client.connection.keepAlive", HttpClientOptions.DEFAULT_KEEP_ALIVE)
         .get();
   }
-
 
   public static boolean getConnectionCompression() {
     return DynamicPropertyFactory.getInstance()

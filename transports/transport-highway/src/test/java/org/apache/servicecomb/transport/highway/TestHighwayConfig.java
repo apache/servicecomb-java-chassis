@@ -27,13 +27,16 @@ public class TestHighwayConfig {
   public void tearDown() {
     ArchaiusUtils.resetConfig();
   }
+
   @Test
   public void getServerThreadCount() {
+    ArchaiusUtils.setProperty("servicecomb.highway.server.verticle-count", 1);
     Assert.assertEquals(HighwayConfig.getServerThreadCount(), 1);
   }
 
   @Test
   public void getClientThreadCount() {
+    ArchaiusUtils.setProperty("servicecomb.highway.client.verticle-count", 1);
     Assert.assertEquals(HighwayConfig.getClientThreadCount(), 1);
   }
 

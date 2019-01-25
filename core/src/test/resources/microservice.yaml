@@ -23,19 +23,7 @@ servicecomb:
   service:
     registry:
       address: http://127.0.0.1:30100
-  rest:
-    client:
-      thread-count: 10
-      connection-pool-per-thread: 1
-    server:
-      thread-count: 10
-  highway:
-    thread-count: 1
-    connection-pool-per-thread: 10
   handler:
     chain:
       Consumer:
         default: simpleLB
-  metrics:
-    cycle:
-      ms: 1000

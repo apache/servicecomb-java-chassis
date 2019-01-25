@@ -26,4 +26,4 @@ servicecomb:
   rest:
     address: 127.0.0.1:7070
     server:
-      thread-count: 10
+      verticle-count: 10

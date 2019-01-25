@@ -26,4 +26,4 @@ servicecomb:
   rest:
     address: 127.0.0.1:8091
     server:
-      thread-count: 1
+      verticle-count: 1
