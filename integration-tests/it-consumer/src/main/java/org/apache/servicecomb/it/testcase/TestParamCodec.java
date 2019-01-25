@@ -19,12 +19,15 @@ package org.apache.servicecomb.it.testcase;
 
 import static org.junit.Assert.assertEquals;
 
+import org.apache.servicecomb.foundation.test.scaffolding.model.Media;
 import org.apache.servicecomb.it.Consumers;
 import org.junit.Test;
 
 public class TestParamCodec {
   interface ParamCodecSchemaIntf {
     String spaceCharCodec(String pathVal, String q);
+
+    Media enumSpecialName(Media media);
   }
 
   static Consumers<ParamCodecSchemaIntf> consumers = new Consumers<>("paramCodec", ParamCodecSchemaIntf.class);
@@ -42,5 +45,28 @@ public class TestParamCodec {
     String result = consumers.getSCBRestTemplate()
         .getForObject("/spaceCharCodec/" + paramString + "?q=" + paramString, String.class);
     assertEquals(paramString + " +%20%% " + paramString + " true", result);
+  }
+
+  @Test
+  public void enumSpecialName_intf() {
+    assertEquals(Media.AAC, consumers.getIntf().enumSpecialName(Media.AAC));
+    assertEquals(Media.FLAC, consumers.getIntf().enumSpecialName(Media.FLAC));
+    assertEquals(Media.H_264, consumers.getIntf().enumSpecialName(Media.H_264));
+    assertEquals(Media.MPEG_2, consumers.getIntf().enumSpecialName(Media.MPEG_2));
+    assertEquals(Media.WMV, consumers.getIntf().enumSpecialName(Media.WMV));
+  }
+
+  @Test
+  public void enumSpecialName_rt() {
+    assertEquals(Media.AAC,
+        consumers.getSCBRestTemplate().postForObject("/enum/enumSpecialName", Media.AAC, Media.class));
+    assertEquals(Media.FLAC,
+        consumers.getSCBRestTemplate().postForObject("/enum/enumSpecialName", Media.FLAC, Media.class));
+    assertEquals(Media.H_264,
+        consumers.getSCBRestTemplate().postForObject("/enum/enumSpecialName", Media.H_264, Media.class));
+    assertEquals(Media.MPEG_2,
+        consumers.getSCBRestTemplate().postForObject("/enum/enumSpecialName", Media.MPEG_2, Media.class));
+    assertEquals(Media.WMV,
+        consumers.getSCBRestTemplate().postForObject("/enum/enumSpecialName", Media.WMV, Media.class));
   }
 }
