@@ -92,4 +92,10 @@ public final class TransportClientConfig {
             HttpClientOptions.DEFAULT_TRY_USE_COMPRESSION)
         .get();
   }
+
+  public static int getMaxHeaderSize() {
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.rest.client.maxHeaderSize", HttpClientOptions.DEFAULT_MAX_HEADER_SIZE)
+        .get();
+  }
 }
