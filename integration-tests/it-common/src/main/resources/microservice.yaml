@@ -36,16 +36,16 @@ servicecomb:
   rest:
     address: 0.0.0.0:0
     server:
-      thread-count: 8
+      verticle-count: 8
     client:
-      thread-count: 8
+      verticle-count: 8
       connection:
         maxPoolSize: 30
   highway:
     address: 0.0.0.0:0
     server:
-      thread-count: 8
+      verticle-count: 8
     client:
-      thread-count: 8
+      verticle-count: 8
   uploads:
     directory: target

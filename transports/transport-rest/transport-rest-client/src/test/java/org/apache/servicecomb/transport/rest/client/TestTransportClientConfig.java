@@ -17,12 +17,14 @@
 
 package org.apache.servicecomb.transport.rest.client;
 
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class TestTransportClientConfig {
   @Test
   public void getThreadCount() {
+    ArchaiusUtils.setProperty("servicecomb.rest.client.verticle-count", 1);
     Assert.assertEquals(1, TransportClientConfig.getThreadCount());
   }
 
@@ -60,7 +62,6 @@ public class TestTransportClientConfig {
   public void getConnectionKeepAlive() {
     Assert.assertTrue(TransportClientConfig.getConnectionKeepAlive());
   }
-
 
   @Test
   public void getConnectionCompression() {
