@@ -39,8 +39,8 @@ import org.apache.servicecomb.it.testcase.TestParamCodec;
 import org.apache.servicecomb.it.testcase.TestParamCodecEdge;
 import org.apache.servicecomb.it.testcase.TestRequestBodySpringMvcSchema;
 import org.apache.servicecomb.it.testcase.TestRestController;
-import org.apache.servicecomb.it.testcase.TestRestServerConfig;
 import org.apache.servicecomb.it.testcase.TestRestServerConfigEdge;
+import org.apache.servicecomb.it.testcase.TestRestVertxTransportConfig;
 import org.apache.servicecomb.it.testcase.TestTrace;
 import org.apache.servicecomb.it.testcase.TestTraceEdge;
 import org.apache.servicecomb.it.testcase.TestUpload;
@@ -150,7 +150,7 @@ public class ConsumerMain {
     ITJUnitUtils.run(Test3rdPartyInvocation.class);
 
     // about url len, different deploy have different url len, so only test standalone
-    ITJUnitUtils.runWithRest(TestRestServerConfig.class);
+    ITJUnitUtils.runWithRest(TestRestVertxTransportConfig.class);
     ITJUnitUtils.run(TestRestServerConfigEdge.class);
 
     // currently, only support vertx download
@@ -161,7 +161,7 @@ public class ConsumerMain {
     runShareTestCases();
 
     //as setMaxInitialLineLength() is not work for http2, do not need
-    // ITJUnitUtils.runWithRest(TestRestServerConfig.class)
+    // ITJUnitUtils.runWithRest(TestRestVertxTransportConfig.class)
     ITJUnitUtils.run(TestRestServerConfigEdge.class);
   }
 
@@ -169,7 +169,7 @@ public class ConsumerMain {
     runShareTestCases();
 
     //as setMaxInitialLineLength() is not work for http2, do not need
-    // ITJUnitUtils.runWithRest(TestRestServerConfig.class)
+    // ITJUnitUtils.runWithRest(TestRestVertxTransportConfig.class)
     ITJUnitUtils.run(TestRestServerConfigEdge.class);
   }
 

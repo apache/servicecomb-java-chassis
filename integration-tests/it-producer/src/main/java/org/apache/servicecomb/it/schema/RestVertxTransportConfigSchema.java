@@ -22,13 +22,26 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
 import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-@RestSchema(schemaId = "restServerConfig")
-@Path("/v1/restServerConfig")
-public class RestServerConfigSchema {
+import com.google.common.base.Strings;
+
+@RestSchema(schemaId = "restVertxTransportConfig")
+@Path("/v1/restVertxTransportConfig")
+public class RestVertxTransportConfigSchema {
   @Path("/testMaxInitialLineLength")
   @GET
   public String testMaxInitialLineLength(@QueryParam("q") String q) {
     return "OK";
+  }
+
+  @Path("/testClientReceiveHeaderSize")
+  @GET
+  public ResponseEntity<String> testClientReceiveHeaderSize(@QueryParam("headerSize") int headerSize) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("longHeader", Strings.repeat("a", headerSize));
+    return new ResponseEntity<>("OK", headers, HttpStatus.OK);
   }
 }

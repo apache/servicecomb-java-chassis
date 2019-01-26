@@ -17,3 +17,7 @@
 
 service_description:
   name: it-consumer
+servicecomb:
+  rest:
+    client:
+      maxHeaderSize: 10000
