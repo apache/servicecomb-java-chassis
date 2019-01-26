@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.it.testcase;
 
+import static org.junit.Assert.fail;
+
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Assert;
@@ -24,18 +26,28 @@ import org.junit.Test;
 
 import com.google.common.base.Strings;
 
-public class TestRestServerConfig {
+import io.netty.handler.codec.TooLongFrameException;
+
+public class TestRestVertxTransportConfig {
   // GET /v1/restServerConfig/testMaxInitialLineLength?q=...... HTTP/1.1
   private static final String INITIAL_LINE_SUFFIX = " HTTP/1.1";
 
-  private static final String INITIAL_LINE_PREFIX = "GET /v1/restServerConfig/testMaxInitialLineLength?q=";
+  private static final String INITIAL_LINE_PREFIX = "GET /v1/restVertxTransportConfig/testMaxInitialLineLength?q=";
 
-  interface RestServerConfigSchemaIntf {
+  private static final String RESPONSE_HEADER = "HTTP/1.1 200 OK\n"
+      + "Content-Type: application/json; charset=utf-8\n"
+      + "Content-Length: 4"
+      + "longHeader: \n";
+
+  interface RestVertxTransportConfigIntf {
+
     String testMaxInitialLineLength(String q);
+
+    String testClientReceiveHeaderSize(int headerSize);
   }
 
-  static Consumers<RestServerConfigSchemaIntf> consumers = new Consumers<>("restServerConfig",
-      RestServerConfigSchemaIntf.class);
+  static Consumers<RestVertxTransportConfigIntf> consumers = new Consumers<>("restVertxTransportConfig",
+      RestVertxTransportConfigIntf.class);
 
   /**
    * Max initial line length is set to 5000
@@ -52,9 +64,29 @@ public class TestRestServerConfig {
     String q = Strings.repeat("q", 5001 - INITIAL_LINE_PREFIX.length() - INITIAL_LINE_SUFFIX.length());
     try {
       consumers.getIntf().testMaxInitialLineLength(q);
-      Assert.fail("an exception is expected!");
+      fail("an exception is expected!");
     } catch (InvocationException e) {
       Assert.assertEquals(414, e.getStatusCode());
+    }
+  }
+
+  /**
+   * The max response header size the client side can receive is set to 10000
+   */
+  @Test
+  public void testMaxResponseHeaderSize10000() {
+    String response = consumers.getIntf().testClientReceiveHeaderSize(10000 - RESPONSE_HEADER.length());
+    Assert.assertEquals("OK", response);
+  }
+
+  @Test
+  public void testMaxResponseHeaderSize10001() {
+    try {
+      consumers.getIntf().testClientReceiveHeaderSize(100001 - RESPONSE_HEADER.length());
+      fail("an exception is expected!");
+    } catch (InvocationException e) {
+      Assert.assertEquals(TooLongFrameException.class, e.getCause().getClass());
+      Assert.assertEquals("HTTP header is larger than 10000 bytes.", e.getCause().getMessage());
     }
   }
 }
