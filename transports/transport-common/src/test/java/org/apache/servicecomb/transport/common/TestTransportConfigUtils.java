@@ -56,7 +56,7 @@ public class TestTransportConfigUtils {
 
     LogCollector collector = new LogCollector();
     Assert.assertEquals(10, TransportConfigUtils.readVerticleCount(key, deprecatedKey));
-    Assert.assertEquals("thread-count is ambiguous, and deprecated, suggest to use verticle-count.",
+    Assert.assertEquals("thread-count is ambiguous, and deprecated, recommended to use verticle-count.",
         collector.getEvents().get(0).getMessage());
     collector.teardown();
   }

@@ -32,7 +32,7 @@ import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.core.executor.FixedThreadExecutor;
+import org.apache.servicecomb.core.executor.GroupExecutor;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.hamcrest.Matchers;
@@ -64,13 +64,12 @@ public class TestThreadPoolMetersInitializer {
   BlockingQueue<Runnable> queue;
 
   @Mocked
-  FixedThreadExecutor fixedThreadExecutor;
+  GroupExecutor groupExecutor;
 
   ExecutorService executor = Mockito.mock(ExecutorService.class);
 
   @Mocked
   ApplicationContext applicationContext;
-
 
   @Mocked
   MicroserviceMeta microserviceMeta;
@@ -94,7 +93,7 @@ public class TestThreadPoolMetersInitializer {
     };
     Map<String, Executor> beanExecutors = new HashMap<>();
     beanExecutors.put("executor", executor);
-    beanExecutors.put("fixedThreadExecutor", fixedThreadExecutor);
+    beanExecutors.put("groupExecutor", groupExecutor);
     beanExecutors.put("threadPoolExecutor", threadPoolExecutor);
     new Expectations(BeanUtils.class) {
       {
@@ -115,9 +114,9 @@ public class TestThreadPoolMetersInitializer {
         operationMetaSameExecutor.getExecutor();
         result = executor;
         operationMetaFixedThreadExecutor.getExecutor();
-        result = fixedThreadExecutor;
+        result = groupExecutor;
 
-        fixedThreadExecutor.getExecutorList();
+        groupExecutor.getExecutorList();
         result = Arrays.asList(threadPoolExecutor);
 
         queue.size();
@@ -142,12 +141,12 @@ public class TestThreadPoolMetersInitializer {
     });
 
     Assert.assertThat(result,
-        Matchers.containsInAnyOrder("[Measurement(threadpool.maxThreads:id=fixedThreadExecutor-group0,0,0.0)]",
-            "[Measurement(threadpool.completedTaskCount:id=fixedThreadExecutor-group0,0,0.0)]",
-            "[Measurement(threadpool.currentThreadsBusy:id=fixedThreadExecutor-group0,0,0.0)]",
-            "[Measurement(threadpool.corePoolSize:id=fixedThreadExecutor-group0,0,0.0)]",
-            "[Measurement(threadpool.poolSize:id=fixedThreadExecutor-group0,0,0.0)]",
-            "[Measurement(threadpool.queueSize:id=fixedThreadExecutor-group0,0,10.0)]",
-            "[Measurement(threadpool.taskCount:id=fixedThreadExecutor-group0,0,0.0)]"));
+        Matchers.containsInAnyOrder("[Measurement(threadpool.maxThreads:id=groupExecutor-group0,0,0.0)]",
+            "[Measurement(threadpool.completedTaskCount:id=groupExecutor-group0,0,0.0)]",
+            "[Measurement(threadpool.currentThreadsBusy:id=groupExecutor-group0,0,0.0)]",
+            "[Measurement(threadpool.corePoolSize:id=groupExecutor-group0,0,0.0)]",
+            "[Measurement(threadpool.poolSize:id=groupExecutor-group0,0,0.0)]",
+            "[Measurement(threadpool.queueSize:id=groupExecutor-group0,0,10.0)]",
+            "[Measurement(threadpool.taskCount:id=groupExecutor-group0,0,0.0)]"));
   }
 }

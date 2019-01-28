@@ -40,7 +40,7 @@ servicecomb:
   executor:
     default:
       group: 4
-      thread-per-group: 4
+      maxThreads-per-group: 4
   references:
     transport: highway
   metrics:
