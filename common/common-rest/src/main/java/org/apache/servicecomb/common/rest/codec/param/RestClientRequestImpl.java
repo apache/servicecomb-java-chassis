@@ -85,18 +85,18 @@ public class RestClientRequestImpl implements RestClientRequest {
 
   @Override
   @SuppressWarnings("unchecked")
-  public void attach(String name, Object part) {
-    if (null == part) {
+  public void attach(String name, Object partOrList) {
+    if (null == partOrList) {
       LOGGER.debug("null file is ignored, file name = [{}]", name);
       return;
     }
-    if (List.class.isAssignableFrom(part.getClass())) {
-      List<Part> parts = (List<Part>) part;
+    if (List.class.isAssignableFrom(partOrList.getClass())) {
+      List<Part> parts = (List<Part>) partOrList;
       uploads.putAll(name, parts);
       return;
     }
     // must be part
-    uploads.put(name, (Part) part);
+    uploads.put(name, (Part) partOrList);
   }
 
   @Override

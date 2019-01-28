@@ -39,5 +39,5 @@ public interface RestClientRequest {
 
   Buffer getBodyBuffer() throws Exception;
 
-  void attach(String name, Object part);
+  void attach(String name, Object partOrList);
 }
