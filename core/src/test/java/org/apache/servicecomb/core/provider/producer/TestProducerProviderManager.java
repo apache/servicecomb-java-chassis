@@ -27,7 +27,7 @@ import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.core.executor.FixedThreadExecutor;
+import org.apache.servicecomb.core.executor.GroupExecutor;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.junit.Assert;
 import org.junit.Test;
@@ -62,7 +62,7 @@ public class TestProducerProviderManager {
 
   @Test
   public void onBootEvent_close(@Mocked MicroserviceMeta microserviceMeta, @Mocked OperationMeta op1,
-      @Mocked OperationMeta op2, @Mocked FixedThreadExecutor closeable) {
+      @Mocked OperationMeta op2, @Mocked GroupExecutor closeable) {
     AtomicInteger count = new AtomicInteger();
     ExecutorService executorService = new MockUp<ExecutorService>() {
       @Mock

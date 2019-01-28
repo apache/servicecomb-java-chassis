@@ -23,6 +23,6 @@
   <bean class="org.apache.servicecomb.core.CseApplicationListener">
   </bean>
 
-  <bean id="servicecomb.executor.default" class="org.apache.servicecomb.core.executor.FixedThreadExecutor"></bean>
+  <bean id="servicecomb.executor.default" class="org.apache.servicecomb.core.executor.GroupExecutor"></bean>
   <bean id="servicecomb.executor.reactive" class="org.apache.servicecomb.core.executor.ReactiveExecutor"></bean>
 </beans>

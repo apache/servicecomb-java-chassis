@@ -37,7 +37,7 @@ public final class TransportConfigUtils {
 
     count = DynamicPropertyFactory.getInstance().getIntProperty(deprecatedKey, -1).get();
     if (count > 0) {
-      LOGGER.warn("{} is ambiguous, and deprecated, suggest to use {}.", deprecatedKey, key);
+      LOGGER.warn("{} is ambiguous, and deprecated, recommended to use {}.", deprecatedKey, key);
       return count;
     }
 

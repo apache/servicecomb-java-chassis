@@ -25,7 +25,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.core.executor.FixedThreadExecutor;
+import org.apache.servicecomb.core.executor.GroupExecutor;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
@@ -56,8 +56,8 @@ public class ThreadPoolMetersInitializer implements MetricsInitializer {
         continue;
       }
 
-      if (FixedThreadExecutor.class.isInstance(executor)) {
-        createThreadPoolMeters(entry.getKey(), (FixedThreadExecutor) executor);
+      if (GroupExecutor.class.isInstance(executor)) {
+        createThreadPoolMeters(entry.getKey(), (GroupExecutor) executor);
         continue;
       }
 
@@ -75,9 +75,9 @@ public class ThreadPoolMetersInitializer implements MetricsInitializer {
     return operationExecutors;
   }
 
-  protected void createThreadPoolMeters(String threadPoolName, FixedThreadExecutor fixedThreadExecutor) {
-    for (int idx = 0; idx < fixedThreadExecutor.getExecutorList().size(); idx++) {
-      Executor executor = fixedThreadExecutor.getExecutorList().get(idx);
+  protected void createThreadPoolMeters(String threadPoolName, GroupExecutor groupExecutor) {
+    for (int idx = 0; idx < groupExecutor.getExecutorList().size(); idx++) {
+      Executor executor = groupExecutor.getExecutorList().get(idx);
       createThreadPoolMeters(threadPoolName + "-group" + idx, executor);
     }
   }

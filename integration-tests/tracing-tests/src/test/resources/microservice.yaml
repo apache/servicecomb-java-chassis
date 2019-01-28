@@ -38,4 +38,4 @@ servicecomb:
       address: http://localhost:9411
   executor:
     default:
-      thread-per-group: 10
+      maxThreads-per-group: 10
