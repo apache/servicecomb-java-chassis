@@ -54,7 +54,7 @@ public final class HighwayCodec {
     Object[] args = schema.readObject(bodyBuffer);
 
     invocation.setSwaggerArguments(args);
-    invocation.setContext(header.getContext());
+    invocation.mergeContext(header.getContext());
   }
 
   public static RequestHeader readRequestHeader(Buffer headerBuffer) throws Exception {

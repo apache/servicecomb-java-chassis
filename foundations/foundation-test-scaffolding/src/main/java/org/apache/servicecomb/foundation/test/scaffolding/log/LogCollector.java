@@ -58,6 +58,10 @@ public class LogCollector {
     return events;
   }
 
+  public LoggingEvent getLastEvents() {
+    return events.get(events.size() - 1);
+  }
+
   public void teardown() {
     Logger.getRootLogger().removeAppender(appender);
   }

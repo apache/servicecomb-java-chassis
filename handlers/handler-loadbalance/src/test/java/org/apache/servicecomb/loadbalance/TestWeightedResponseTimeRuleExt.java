@@ -121,6 +121,6 @@ public class TestWeightedResponseTimeRuleExt {
     }
     long taken = System.currentTimeMillis() - begin;
     System.out.println("taken " + taken);
-    Assert.assertEquals("actually taken: " + taken, taken < 200 * 2, true); // 5 * times make slow machine happy
+    Assert.assertEquals("actually taken: " + taken, taken < 200 * 5, true); // 5 * times make slow machine happy
   }
 }

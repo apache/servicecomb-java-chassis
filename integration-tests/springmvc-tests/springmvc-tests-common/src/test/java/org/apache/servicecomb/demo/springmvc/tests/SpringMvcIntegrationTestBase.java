@@ -48,6 +48,7 @@ import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.provider.springmvc.reference.async.CseAsyncRestTemplate;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -66,6 +67,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.client.AsyncRestTemplate;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Ignore
@@ -321,10 +323,14 @@ public class SpringMvcIntegrationTestBase {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
-    ResponseEntity<String> response = restTemplate
-        .postForEntity(codeFirstUrl + "uploadWithoutAnnotation", new HttpEntity<>(map, headers), String.class);
-    assertThat(response.getStatusCodeValue(), is(590));
-    assertThat(response.getBody(), is("CommonExceptionData [message=Cse Internal Server Error]"));
+    ResponseEntity<String> response = null;
+    try {
+      response = restTemplate
+          .postForEntity(codeFirstUrl + "uploadWithoutAnnotation", new HttpEntity<>(map, headers), String.class);
+      assertEquals("required is true, throw exception", "but not throw exception");
+    } catch (RestClientException e) {
+      assertEquals("400 Bad Request",e.getMessage());
+    }
   }
 
   @Test

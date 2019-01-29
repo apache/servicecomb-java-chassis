@@ -150,6 +150,9 @@ public class LoadbalanceHandler implements Handler {
 
   private String strategy = null;
 
+  public LoadbalanceHandler(DiscoveryTree discoveryTree) {
+    this.discoveryTree = discoveryTree;
+  }
 
   public LoadbalanceHandler() {
     preCheck();
@@ -317,7 +320,8 @@ public class LoadbalanceHandler implements Handler {
       public void onExecutionFailed(ExecutionContext<Invocation> context, Throwable finalException,
           ExecutionInfo info) {
         LOGGER.error("Invoke all server failed. Operation {}, e={}",
-            context.getRequest().getInvocationQualifiedName(), ExceptionUtils.getExceptionMessageWithoutTrace(finalException));
+            context.getRequest().getInvocationQualifiedName(),
+            ExceptionUtils.getExceptionMessageWithoutTrace(finalException));
         if (orginExecutor != null) {
           orginExecutor.execute(() -> {
             fail(finalException);
@@ -379,7 +383,7 @@ public class LoadbalanceHandler implements Handler {
               }
             });
           } catch (Exception e) {
-            LOGGER.error("execution error, msg is " + e.getMessage());
+            LOGGER.error("execution error, msg is {}", ExceptionUtils.getExceptionMessageWithoutTrace(e));
             f.onError(e);
           }
         });

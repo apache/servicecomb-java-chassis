@@ -94,10 +94,10 @@ public class TestDefaultRetryhandler {
     boolean retriable = retryHandler.isRetriableException(root, false);
     Assert.assertTrue(retriable);
 
-    target = new NoRouteToHostException("Cannot assign requested address");
+    target = new NoRouteToHostException("No route to host");
     root = new Exception(target);
     retriable = retryHandler.isRetriableException(root, false);
-    Assert.assertFalse(retriable);
+    Assert.assertTrue(retriable);
   }
 
   @Test

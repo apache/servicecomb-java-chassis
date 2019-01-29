@@ -16,6 +16,11 @@
  */
 package org.apache.servicecomb.serviceregistry.registry;
 
+import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY;
+import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.CONFIG_QUALIFIED_INSTANCE_INITIAL_STATUS;
+import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_INSTANCE_INITIAL_STATUS;
+import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_MICROSERVICE_VERSION;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
@@ -23,11 +28,13 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -128,7 +135,8 @@ public class TestRemoteServiceRegistry {
 
   @Test
   public void onPullMicroserviceVersionsInstancesEvent(@Injectable ServiceRegistryConfig config,
-      @Injectable MicroserviceDefinition definition, @Mocked MicroserviceVersions microserviceVersions) {
+      @Injectable MicroserviceDefinition definition, @Mocked MicroserviceVersions microserviceVersions,
+      @Mocked Configuration configuration) {
     PullMicroserviceVersionsInstancesEvent event = new PullMicroserviceVersionsInstancesEvent(microserviceVersions, 1);
 
     ScheduledThreadPoolExecutor taskPool = new MockUp<ScheduledThreadPoolExecutor>() {
@@ -140,6 +148,18 @@ public class TestRemoteServiceRegistry {
         throw new Error("ok");
       }
     }.getMockInstance();
+
+    new Expectations() {
+      {
+        definition.getConfiguration();
+        result = configuration;
+        configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY,
+            DEFAULT_MICROSERVICE_VERSION);
+        result = "1.0.0";
+        configuration.getString(CONFIG_QUALIFIED_INSTANCE_INITIAL_STATUS, DEFAULT_INSTANCE_INITIAL_STATUS);
+        result = MicroserviceInstanceStatus.UP.name();
+      }
+    };
 
     expectedException.expect(Error.class);
     expectedException.expectMessage(Matchers.is("ok"));

@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.common.rest;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -49,10 +51,11 @@ import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
+import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletResponse;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.response.Headers;
@@ -188,8 +191,8 @@ public class TestAbstractRestInvocation {
       restInvocation.initProduceProcessor();
       Assert.fail("must throw exception");
     } catch (InvocationException e) {
-      Assert.assertEquals(Status.NOT_ACCEPTABLE, e.getStatus());
-      Assert.assertEquals("Accept null is not supported", ((CommonExceptionData) e.getErrorData()).getMessage());
+      assertEquals(Status.NOT_ACCEPTABLE, e.getStatus());
+      assertEquals("Accept null is not supported", ((CommonExceptionData) e.getErrorData()).getMessage());
     }
   }
 
@@ -251,9 +254,37 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
+  public void setContextTraceId() throws Exception {
+    Map<String, String> context = new HashMap<>();
+    new Expectations() {
+      {
+        requestEx.getHeader(Const.CSE_CONTEXT);
+        result = JsonUtils.writeValueAsString(context);
+      }
+    };
+    invocation.addContext("X-B3-traceId", "value1");
+    //if request has no traceId, use invocation's traceId
+    restInvocation.setContext();
+    Assert.assertThat(invocation.getContext().size(), Matchers.is(1));
+    Assert.assertThat(invocation.getContext(), Matchers.hasEntry("X-B3-traceId", "value1"));
+
+    context.put("X-B3-traceId", "value2");
+    new Expectations() {
+      {
+        requestEx.getHeader(Const.CSE_CONTEXT);
+        result = JsonUtils.writeValueAsString(context);
+      }
+    };
+    //if request has traceId, use request's traceId
+    restInvocation.setContext();
+    Assert.assertThat(invocation.getContext().size(), Matchers.is(1));
+    Assert.assertThat(invocation.getContext(), Matchers.hasEntry("X-B3-traceId", "value2"));
+  }
+
+  @Test
   public void getContext() {
     invocation.addContext("key", "test");
-    Assert.assertEquals("test", restInvocation.getContext("key"));
+    assertEquals("test", restInvocation.getContext("key"));
   }
 
   @Test
@@ -401,7 +432,7 @@ public class TestAbstractRestInvocation {
 
     restInvocation.invoke();
 
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartServerFiltersRequest());
+    assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartServerFiltersRequest());
   }
 
   @Test
@@ -571,7 +602,7 @@ public class TestAbstractRestInvocation {
     initRestInvocation();
 
     restInvocation.sendResponse(response);
-    Assert.assertEquals(expected, result);
+    assertEquals(expected, result);
   }
 
   @Test
@@ -658,7 +689,7 @@ public class TestAbstractRestInvocation {
       restInvocation.sendResponse(response);
       Assert.fail("must throw exception");
     } catch (Error e) {
-      Assert.assertEquals(headers.getHeaderMap(), resultHeaders.getHeaderMap());
+      assertEquals(headers.getHeaderMap(), resultHeaders.getHeaderMap());
     }
   }
 
@@ -693,8 +724,8 @@ public class TestAbstractRestInvocation {
     initRestInvocation();
 
     restInvocation.sendResponse(response);
-    Assert.assertEquals("\"ok\"", buffer.toString());
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishServerFiltersResponse());
+    assertEquals("\"ok\"", buffer.toString());
+    assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishServerFiltersResponse());
   }
 
   @Test
@@ -747,7 +778,7 @@ public class TestAbstractRestInvocation {
     restInvocation.setHttpServerFilters(httpServerFilters);
 
     restInvocation.sendResponse(response);
-    Assert.assertEquals("\"ok\"-filter", buffer.toString());
+    assertEquals("\"ok\"-filter", buffer.toString());
   }
 
   @Test
@@ -905,10 +936,10 @@ public class TestAbstractRestInvocation {
     EventManager.unregister(subscriber);
 
     Assert.assertTrue(result.value);
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStart());
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartSchedule());
+    assertEquals(nanoTime, invocation.getInvocationStageTrace().getStart());
+    assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartSchedule());
     Assert.assertSame(invocation, eventHolder.value.getInvocation());
-    Assert.assertEquals("tid", invocation.getTraceId());
+    assertEquals("tid", invocation.getTraceId());
   }
 
   @Test
@@ -936,19 +967,14 @@ public class TestAbstractRestInvocation {
 
     Assert.assertTrue(result.value);
     Assert.assertSame(invocation, restInvocation.invocation);
-    Assert.assertEquals(time, invocation.getInvocationStageTrace().getStartExecution());
+    assertEquals(time, invocation.getInvocationStageTrace().getStartExecution());
   }
 
   @Test
   public void doInvoke(@Mocked Endpoint endpoint, @Mocked OperationMeta operationMeta,
       @Mocked Object[] swaggerArguments, @Mocked SchemaMeta schemaMeta) throws Throwable {
     Response response = Response.ok("ok");
-    Handler handler = new Handler() {
-      @Override
-      public void handle(Invocation invocation, AsyncResponse asyncResp) {
-        asyncResp.complete(response);
-      }
-    };
+    Handler handler = (invocation, asyncResp) -> asyncResp.complete(response);
     List<Handler> handlerChain = Arrays.asList(handler);
     Deencapsulation.setField(invocation, "handlerList", handlerChain);
 
@@ -964,7 +990,94 @@ public class TestAbstractRestInvocation {
     restInvocation.doInvoke();
 
     Assert.assertSame(response, result.value);
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartHandlersRequest());
-    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishHandlersResponse());
+    assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartHandlersRequest());
+    assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishHandlersResponse());
+  }
+
+  @Test
+  public void scheduleInvocation_invocationContextDeserializeError() {
+    requestEx = new AbstractHttpServletRequest() {
+      @Override
+      public String getHeader(String name) {
+        return "{\"x-cse-src-microservice\":'source\"}";
+      }
+    };
+    Holder<Integer> status = new Holder<>();
+    Holder<String> reasonPhrase = new Holder<>();
+    Holder<Integer> endCount = new Holder<>(0);
+    responseEx = new AbstractHttpServletResponse() {
+      @SuppressWarnings("deprecation")
+      @Override
+      public void setStatus(int sc, String sm) {
+        status.value = sc;
+        reasonPhrase.value = sm;
+      }
+
+      @Override
+      public void flushBuffer() {
+        endCount.value = endCount.value + 1;
+      }
+
+      @Override
+      public void setContentType(String type) {
+        assertEquals("application/json; charset=utf-8", type);
+      }
+    };
+    restInvocation.requestEx = requestEx;
+    restInvocation.responseEx = responseEx;
+
+    restInvocation.scheduleInvocation();
+
+    assertEquals(Integer.valueOf(590), status.value);
+    assertEquals("Cse Internal Server Error", reasonPhrase.value);
+    assertEquals(Integer.valueOf(1), endCount.value);
+  }
+
+  @SuppressWarnings("deprecation")
+  @Test
+  public void scheduleInvocation_flowControlReject() {
+    new Expectations() {
+      {
+        operationMeta.getProviderQpsFlowControlHandler();
+        result = (Handler) (invocation, asyncResp) -> asyncResp.producerFail(new InvocationException(
+            new HttpStatus(429, "Too Many Requests"),
+            new CommonExceptionData("rejected by qps flowcontrol")));
+      }
+    };
+    Holder<Integer> status = new Holder<>();
+    Holder<String> reasonPhrase = new Holder<>();
+    Holder<Integer> endCount = new Holder<>(0);
+    Holder<String> responseBody = new Holder<>();
+    responseEx = new AbstractHttpServletResponse() {
+      @SuppressWarnings("deprecation")
+      @Override
+      public void setStatus(int sc, String sm) {
+        status.value = sc;
+        reasonPhrase.value = sm;
+      }
+
+      @Override
+      public void flushBuffer() {
+        endCount.value = endCount.value + 1;
+      }
+
+      @Override
+      public void setContentType(String type) {
+        assertEquals("application/json; charset=utf-8", type);
+      }
+
+      @Override
+      public void setBodyBuffer(Buffer bodyBuffer) {
+        responseBody.value = bodyBuffer.toString();
+      }
+    };
+    setup();
+
+    restInvocation.scheduleInvocation();
+
+    assertEquals(Integer.valueOf(429), status.value);
+    assertEquals("Too Many Requests", reasonPhrase.value);
+    assertEquals("{\"message\":\"rejected by qps flowcontrol\"}", responseBody.value);
+    assertEquals(Integer.valueOf(1), endCount.value);
   }
 }

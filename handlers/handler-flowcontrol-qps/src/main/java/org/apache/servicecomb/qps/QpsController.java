@@ -59,15 +59,13 @@ public class QpsController {
     long msNow = System.currentTimeMillis();
     //Time jump cause the new request injected
     if (msNow - msCycleBegin > CYCLE_LENGTH || msNow < msCycleBegin) {
-     
-      //no need worry about concurrency porbleam  
+      //no need worry about concurrency problem
       lastRequestCount = newCount;
       msCycleBegin = msNow;
     }
 
     // Configuration update and use is at the situation of multi-threaded concurrency
     // It is possible that operation level updated to null,but schema level or microservice level does not updated
-    
     int limitValue = (qpsLimit == null) ? Integer.MAX_VALUE : qpsLimit;
     return newCount - lastRequestCount >= limitValue;
   }

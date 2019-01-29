@@ -32,8 +32,16 @@ public class ProviderQpsFlowControlHandler implements Handler {
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    if (!Config.INSTANCE.isProviderEnabled()) {
+    if (invocation.getHandlerIndex() > 0) {
+      // handlerIndex > 0, which means this handler is executed in handler chain.
+      // As this flow control logic has been executed in advance, this time it should be ignored.
       invocation.next(asyncResp);
+      return;
+    }
+
+    // The real executing position of this handler is no longer in handler chain, but in AbstractRestInvocation.
+    // Therefore, the Invocation#next() method should not be called below.
+    if (!Config.INSTANCE.isProviderEnabled()) {
       return;
     }
 
@@ -42,11 +50,7 @@ public class ProviderQpsFlowControlHandler implements Handler {
         StringUtils.isEmpty(microserviceName)
             ? qpsControllerMgr.getGlobalQpsController()
             : qpsControllerMgr.getOrCreate(microserviceName, invocation);
-    if (isLimitNewRequest(qpsController, asyncResp)) {
-      return;
-    }
-
-    invocation.next(asyncResp);
+    isLimitNewRequest(qpsController, asyncResp);
   }
 
   private boolean isLimitNewRequest(QpsController qpsController, AsyncResponse asyncResp) {

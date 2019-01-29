@@ -26,7 +26,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <java-chassis.version>1.1.0-SNAPSHOT</java-chassis.version>
+    <java-chassis.version>1.2.0-SNAPSHOT</java-chassis.version>
   </properties>
 
   <dependencyManagement>
@@ -56,8 +56,16 @@
       <artifactId>provider-jaxrs</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
     </dependency>
 
     <!--for consumer-->
@@ -80,7 +88,7 @@
               <addClasspath>true</addClasspath>
               <classpathPrefix>lib/</classpathPrefix>
               <!--change to your main class-->
-              <mainClass>${your-package}.Application</mainClass>
+              <mainClass>${package}.Application</mainClass>
             </manifest>
             <manifestEntries>
               <Class-Path>. </Class-Path>

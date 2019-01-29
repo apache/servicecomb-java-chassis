@@ -22,14 +22,17 @@ import java.util.Collections;
 import java.util.Enumeration;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.models.parameters.HeaderParameter;
 import io.swagger.models.parameters.Parameter;
@@ -40,31 +43,39 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator {
   public static final String PARAMTYPE = "header";
 
   public static class HeaderProcessor extends AbstractParamProcessor {
-    public HeaderProcessor(String paramPath, JavaType targetType, Object defaultValue) {
-      super(paramPath, targetType, defaultValue);
+    // This configuration is used for temporary use only. Do not use it if you are sure how it works. And may be deleted in future.
+    private boolean ignoreRequiredCheck = DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.rest.parameter.header.ignoreRequiredCheck", false).get();
+
+    public HeaderProcessor(String paramPath, JavaType targetType, Object defaultValue, boolean required) {
+      super(paramPath, targetType, defaultValue, required);
     }
 
     @Override
-    public Object getValue(HttpServletRequest request) throws Exception {
+    public Object getValue(HttpServletRequest request) {
       Object value = null;
       if (targetType.isContainerType()) {
         Enumeration<String> headerValues = request.getHeaders(paramPath);
         if (headerValues == null) {
+          //Even if the paramPath does not exist, headerValues won't be null at now
           return null;
         }
-
         value = Collections.list(headerValues);
       } else {
         value = request.getHeader(paramPath);
         if (value == null) {
-          Object defaultValue = getDefaultValue();
-          if (defaultValue != null) {
-            value = defaultValue;
-          }
+          value = checkRequiredAndDefaultValue();
         }
       }
 
       return convertValue(value, targetType);
+    }
+
+    private Object checkRequiredAndDefaultValue() {
+      if (!ignoreRequiredCheck && isRequired()) {
+        throw new InvocationException(Status.BAD_REQUEST, "Parameter is required.");
+      }
+      return getDefaultValue();
     }
 
     @Override
@@ -91,6 +102,7 @@ public class HeaderProcessorCreator implements ParamValueProcessorCreator {
   @Override
   public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
     JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
-    return new HeaderProcessor(parameter.getName(), targetType, ((HeaderParameter) parameter).getDefaultValue());
+    return new HeaderProcessor(parameter.getName(), targetType, ((HeaderParameter) parameter).getDefaultValue(),
+        parameter.getRequired());
   }
 }

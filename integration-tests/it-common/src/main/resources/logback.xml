@@ -23,6 +23,7 @@
       <pattern>%d [%level] [%thread] - %msg (%F:%L\)%n</pattern>
     </encoder>
   </appender>
+  <logger name="org.apache.servicecomb.common.javassist.JavassistUtils" level="WARN"/>
   <root level="INFO">
     <appender-ref ref="STDOUT"/>
   </root>

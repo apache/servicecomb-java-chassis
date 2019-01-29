@@ -16,12 +16,10 @@
  */
 package org.apache.servicecomb.metrics.core.meter.os;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.servicecomb.metrics.core.meter.os.cpu.OsCpuUsage;
+import org.apache.servicecomb.metrics.core.meter.os.cpu.ProcessCpuUsage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,77 +29,42 @@ import com.netflix.spectator.api.Measurement;
 public class CpuMeter {
   private static final Logger LOGGER = LoggerFactory.getLogger(CpuMeter.class);
 
-  private double rate;
+  // read from /proc/stat
+  private OsCpuUsage allCpuUsage;
 
-  private long lastTotalTime;
-
-  private long lastIdleTime;
-
-  private int cpuNum;
-
-  private Id id;
+  // read from /proc/self/stat /proc/uptime
+  private ProcessCpuUsage processCpuUsage;
 
   public CpuMeter(Id id) {
-    this.id = id;
-    this.cpuNum = Runtime.getRuntime().availableProcessors();
-    refreshCpu();
-    rate = 0.0;
+    allCpuUsage = new OsCpuUsage(id.withTag(OsMeter.OS_TYPE, OsMeter.OS_TYPE_ALL_CPU));
+    processCpuUsage = new ProcessCpuUsage(id.withTag(OsMeter.OS_TYPE, OsMeter.OS_TYPE_PROCESS_CPU));
+
+    //must refresh all first
+    update();
+    allCpuUsage.setUsage(0);
+    processCpuUsage.setUsage(0);
   }
 
   public void calcMeasurements(List<Measurement> measurements, long msNow) {
-    refreshCpu();
-    measurements.add(new Measurement(id, msNow, rate));
+    update();
+    measurements.add(new Measurement(allCpuUsage.getId(), msNow, allCpuUsage.getUsage()));
+    measurements.add(new Measurement(processCpuUsage.getId(), msNow, processCpuUsage.getUsage()));
   }
 
-  /*
-   * unit : 1 jiffies = 10ms = 0.01 s
-   * more details :
-   * http://man7.org/linux/man-pages/man5/proc.5.html
-   * cpu  2445171 599297 353967 24490633 11242   0    10780    2993             0      0
-   * cpu  user    nice   system idle     iowait  irq  softirq  stealstolen      guest  guest_nice
-   * 0    1       2      3      4        5        6   7        8
-   * cpuTotal = user + nice + system + idle + iowait + irq + softirq + stealstolen
-   */
-  protected void refreshCpu() {
+  public void update() {
     try {
-      File file = new File("/proc/stat");
-      //just use first line
-      String cpuStr = FileUtils.readLines(file, StandardCharsets.UTF_8).get(0);
-      String[] cpuInfo = cpuStr.trim().split("\\s+");
-      long idle = Long.parseLong(cpuInfo[4]);
-      long total = 0L;
-      for (int i = 1; i <= 8; i++) {
-        total += Long.parseLong(cpuInfo[i]);
-      }
-      //just check, make sure it's safe
-      if (total != lastTotalTime) {
-        rate = 1.0 - (double) (idle - lastIdleTime) / (total - lastTotalTime);
-        rate *= cpuNum;
-      }
-      lastTotalTime = total;
-      lastIdleTime = idle;
-    } catch (IOException e) {
-      LOGGER.error("Failed to read current cpu info.", e);
+      allCpuUsage.update();
+      processCpuUsage.update();
+    } catch (Throwable e) {
+      LOGGER.error("Failed to update usage", e);
     }
   }
 
-  public double getRate() {
-    return rate;
+  public OsCpuUsage getAllCpuUsage() {
+    return allCpuUsage;
   }
 
-  public long getLastTotalTime() {
-    return lastTotalTime;
-  }
-
-  public long getLastIdleTime() {
-    return lastIdleTime;
-  }
-
-  public int getCpuNum() {
-    return cpuNum;
-  }
-
-  public Id getId() {
-    return id;
+  public ProcessCpuUsage getProcessCpuUsage() {
+    return processCpuUsage;
   }
 }

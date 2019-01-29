@@ -45,7 +45,11 @@ public class TestCookieProcessor {
   RestClientRequest clientRequest;
 
   private CookieProcessor createProcessor(String name, Class<?> type) {
-    return new CookieProcessor(name, TypeFactory.defaultInstance().constructType(type), null);
+    return new CookieProcessor(name, TypeFactory.defaultInstance().constructType(type), null, true);
+  }
+
+  private CookieProcessor createProcessor(String name, Class<?> type, String defaultValue, boolean required) {
+    return new CookieProcessor(name, TypeFactory.defaultInstance().constructType(type), defaultValue, required);
   }
 
   private void createClientRequest() {
@@ -66,9 +70,27 @@ public class TestCookieProcessor {
       }
     };
 
-    CookieProcessor processor = createProcessor("c1", String.class);
+    CookieProcessor processor = createProcessor("c1", String.class, null, false);
     Object value = processor.getValue(request);
     Assert.assertNull(value);
+  }
+
+  @Test
+  public void testNoCookieAndRequired() throws Exception {
+    new Expectations() {
+      {
+        request.getCookies();
+        result = null;
+      }
+    };
+
+    CookieProcessor processor = createProcessor("c1", String.class, null, true);
+    try {
+      processor.getValue(request);
+      Assert.assertEquals("required is true, throw exception", "not throw exception");
+    } catch (Exception e) {
+      Assert.assertTrue(e.getMessage().contains("Parameter is required."));
+    }
   }
 
   @Test
@@ -81,7 +103,7 @@ public class TestCookieProcessor {
       }
     };
 
-    CookieProcessor processor = createProcessor("c2", String.class);
+    CookieProcessor processor = createProcessor("c2", String.class, null, false);
     Object value = processor.getValue(request);
     Assert.assertNull(value);
   }
@@ -99,6 +121,40 @@ public class TestCookieProcessor {
     CookieProcessor processor = createProcessor("c1", String.class);
     Object value = processor.getValue(request);
     Assert.assertEquals("c1v", value);
+  }
+
+  @Test
+  public void testGetValueRequiredTrue() throws Exception {
+    Cookie[] cookies = new Cookie[] {new Cookie("c1", null)};
+    new Expectations() {
+      {
+        request.getCookies();
+        result = cookies;
+      }
+    };
+
+    CookieProcessor processor = createProcessor("c1", String.class, null, true);
+    try {
+      processor.getValue(request);
+      Assert.assertEquals("required is true, throw exception", "not throw exception");
+    } catch (Exception e) {
+      Assert.assertTrue(e.getMessage().contains("Parameter is required."));
+    }
+  }
+
+  @Test
+  public void testGetValueRequiredFalse() throws Exception {
+    Cookie[] cookies = new Cookie[] {new Cookie("c1", null)};
+    new Expectations() {
+      {
+        request.getCookies();
+        result = cookies;
+      }
+    };
+
+    CookieProcessor processor = createProcessor("c1", String.class, "test", false);
+    Object result = processor.getValue(request);
+    Assert.assertEquals("test", result);
   }
 
   @SuppressWarnings("deprecation")

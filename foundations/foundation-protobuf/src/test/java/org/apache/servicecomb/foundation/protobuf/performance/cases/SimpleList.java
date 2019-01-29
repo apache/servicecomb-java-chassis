@@ -22,9 +22,9 @@ import org.apache.servicecomb.foundation.protobuf.performance.TestBase;
 
 public class SimpleList extends TestBase {
   public SimpleList() {
-    pojoRoot.setsList(Arrays.asList("string value1", "string value2"));
+    pojoRoot.setStrings(Arrays.asList("string value1", "string value2"));
 
-    builder.addSList("string value1")
-        .addSList("string value2");
+    builder.addStrings("string value1")
+        .addStrings("string value2");
   }
 }

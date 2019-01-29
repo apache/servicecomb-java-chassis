@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package ${groupId};
+package ${package};
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

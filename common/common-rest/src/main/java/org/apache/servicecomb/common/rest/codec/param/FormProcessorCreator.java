@@ -18,13 +18,17 @@
 package org.apache.servicecomb.common.rest.codec.param;
 
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -32,13 +36,15 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.swagger.models.parameters.FormParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.FileProperty;
+import io.swagger.models.properties.Property;
 
 public class FormProcessorCreator implements ParamValueProcessorCreator {
+
   public static final String PARAMTYPE = "formData";
 
   public static class FormProcessor extends AbstractParamProcessor {
-    public FormProcessor(String paramPath, JavaType targetType, Object defaultValue) {
-      super(paramPath, targetType, defaultValue);
+    public FormProcessor(String paramPath, JavaType targetType, Object defaultValue, boolean required) {
+      super(paramPath, targetType, defaultValue, required);
     }
 
     @Override
@@ -50,18 +56,23 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
       }
 
       if (targetType.isContainerType()) {
+        //Even if the paramPath does not exist, it won't be null at now
         return convertValue(request.getParameterValues(paramPath), targetType);
       }
 
       Object value = request.getParameter(paramPath);
       if (value == null) {
-        Object defaultValue = getDefaultValue();
-        if (defaultValue != null) {
-          value = defaultValue;
-        }
+        value = checkRequiredAndDefaultValue();
       }
 
       return convertValue(value, targetType);
+    }
+
+    private Object checkRequiredAndDefaultValue() {
+      if (isRequired()) {
+        throw new InvocationException(Status.BAD_REQUEST, "Parameter is required.");
+      }
+      return getDefaultValue();
     }
 
     @Override
@@ -84,28 +95,46 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
     JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
 
     if (isPart(parameter)) {
-      return new PartProcessor(parameter.getName(), targetType, ((FormParameter) parameter).getDefaultValue());
+      return new PartProcessor(parameter.getName(), targetType, ((FormParameter) parameter).getDefaultValue(),
+          parameter.getRequired());
     }
-    return new FormProcessor(parameter.getName(), targetType, ((FormParameter) parameter).getDefaultValue());
+    return new FormProcessor(parameter.getName(), targetType, ((FormParameter) parameter).getDefaultValue(),
+        parameter.getRequired());
   }
 
   private boolean isPart(Parameter parameter) {
-    return new FileProperty().getType().equals(((FormParameter) parameter).getType());
+    //only check
+    FormParameter formParameter = (FormParameter) parameter;
+    if ("array".equals(formParameter.getType())) {
+      Property items = formParameter.getItems();
+      return new FileProperty().getType().equals(items.getType());
+    }
+    return new FileProperty().getType().equals(formParameter.getType());
   }
 
-  private static class PartProcessor extends AbstractParamProcessor {
-    PartProcessor(String paramPath, JavaType targetType, Object defaultValue) {
-      super(paramPath, targetType, defaultValue);
+  public static class PartProcessor extends AbstractParamProcessor {
+    PartProcessor(String paramPath, JavaType targetType, Object defaultValue, boolean required) {
+      super(paramPath, targetType, defaultValue, required);
     }
 
     @Override
     public Object getValue(HttpServletRequest request) throws Exception {
+      if (List.class.isAssignableFrom(targetType.getRawClass())) {
+        JavaType contentType = targetType.getContentType();
+        if (contentType != null && contentType.getRawClass().equals(Part.class)) {
+          //get all parts
+          return request.getParts()
+              .stream()
+              .filter(part -> part.getName().equals(paramPath))
+              .collect(Collectors.toList());
+        }
+      }
       return request.getPart(paramPath);
     }
 
     @Override
     public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
-      clientRequest.attach(paramPath, (Part) arg);
+      clientRequest.attach(paramPath, arg);
     }
 
     @Override

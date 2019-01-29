@@ -26,17 +26,21 @@ servicecomb:
   rest:
     address: 0.0.0.0:8080?sslEnabled=false
     server:
-      thread-count: 8
+      verticle-count: 8
     client:
-      thread-count: 8
+      verticle-count: 8
       connection:
         maxPoolSize: 30
   highway:
     address: 0.0.0.0:7070?sslEnabled=false
     server:
-      thread-count: 8
+      verticle-count: 8
     client:
-      thread-count: 8
+      verticle-count: 8
+  executor:
+    default:
+      group: 4
+      thread-per-group: 4
   references:
     transport: highway
   metrics:

@@ -20,8 +20,10 @@ package org.apache.servicecomb.config.client;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_SERVICECOMB_ENV;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.SERVICECOMB_ENV;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.servicecomb.deployment.Deployment;
+import org.apache.servicecomb.deployment.DeploymentProvider;
 
 import com.google.common.base.Joiner;
 import com.netflix.config.ConcurrentCompositeConfiguration;
@@ -32,8 +34,6 @@ public final class ConfigCenterConfig {
   private static ConcurrentCompositeConfiguration finalConfig;
 
   private static final String AUTO_DISCOVERY_ENABLED = "servicecomb.service.registry.autodiscovery";
-
-  private static final String SERVER_URL_KEY = "servicecomb.config.client.serverUri";
 
   private static final String REFRESH_MODE = "servicecomb.config.client.refreshMode";
 
@@ -137,11 +137,11 @@ public final class ConfigCenterConfig {
   }
 
   public String getProxyUsername() {
-    return finalConfig.getString(PROXY_USERNAME, "");
+    return finalConfig.getString(PROXY_USERNAME, null);
   }
 
   public String getProxyPasswd() {
-    return finalConfig.getString(PROXY_PASSWD, "");
+    return finalConfig.getString(PROXY_PASSWD, null);
   }
 
   @SuppressWarnings("unchecked")
@@ -172,12 +172,7 @@ public final class ConfigCenterConfig {
   }
 
   public List<String> getServerUri() {
-    String[] result = finalConfig.getStringArray(SERVER_URL_KEY);
-    List<String> configCenterUris = new ArrayList<>(result.length);
-    for (int i = 0; i < result.length; i++) {
-      configCenterUris.add(result[i]);
-    }
-    return configCenterUris;
+    return Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_CONFIG_CENTER).getAccessURL();
   }
 
   public boolean getAutoDiscoveryEnabled() {

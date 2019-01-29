@@ -22,6 +22,7 @@ import org.apache.servicecomb.it.deploy.Deploys;
 import org.apache.servicecomb.it.deploy.MicroserviceDeploy;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.it.schema.TestApiOperation;
+import org.apache.servicecomb.it.testcase.TestAcceptType;
 import org.apache.servicecomb.it.testcase.TestAnnotatedAttribute;
 import org.apache.servicecomb.it.testcase.TestApiParam;
 import org.apache.servicecomb.it.testcase.TestChangeTransport;
@@ -30,6 +31,7 @@ import org.apache.servicecomb.it.testcase.TestDefaultJsonValueJaxrsSchema;
 import org.apache.servicecomb.it.testcase.TestDefaultValue;
 import org.apache.servicecomb.it.testcase.TestDownload;
 import org.apache.servicecomb.it.testcase.TestDownloadSlowStreamEdge;
+import org.apache.servicecomb.it.testcase.TestExceptionConvertEdge;
 import org.apache.servicecomb.it.testcase.TestGenericEdge;
 import org.apache.servicecomb.it.testcase.TestIgnoreMethod;
 import org.apache.servicecomb.it.testcase.TestIgnoreStaticMethod;
@@ -41,6 +43,7 @@ import org.apache.servicecomb.it.testcase.TestRestServerConfig;
 import org.apache.servicecomb.it.testcase.TestRestServerConfigEdge;
 import org.apache.servicecomb.it.testcase.TestTrace;
 import org.apache.servicecomb.it.testcase.TestTraceEdge;
+import org.apache.servicecomb.it.testcase.TestUpload;
 import org.apache.servicecomb.it.testcase.base.TestGeneric;
 import org.apache.servicecomb.it.testcase.thirdparty.Test3rdPartyInvocation;
 
@@ -102,11 +105,11 @@ public class ConsumerMain {
 
     // only rest support default value feature
     ITJUnitUtils.runWithRest(TestDefaultValue.class);
+    ITJUnitUtils.runWithRest(TestAcceptType.class);
 
-    // currently have bug with http2
-    if (!ITJUnitUtils.getProducerName().endsWith("-h2") && !ITJUnitUtils.getProducerName().endsWith("-h2c")) {
-      ITJUnitUtils.runWithRest(TestDownload.class);
-    }
+    ITJUnitUtils.runWithRest(TestUpload.class);
+    ITJUnitUtils.runWithRest(TestDownload.class);
+    ITJUnitUtils.runWithHighwayAndRest(TestExceptionConvertEdge.class);
 
     ITJUnitUtils.runWithHighwayAndRest(TestTrace.class);
     ITJUnitUtils.run(TestTraceEdge.class);
@@ -121,6 +124,7 @@ public class ConsumerMain {
     ITJUnitUtils.run(TestRequestBodySpringMvcSchema.class);
     ITJUnitUtils.run(TestDefaultJsonValueJaxrsSchema.class);
     ITJUnitUtils.run(TestRestController.class);
+    ITJUnitUtils.runWithRest(TestRestController.class);
   }
 
   interface ITTask {

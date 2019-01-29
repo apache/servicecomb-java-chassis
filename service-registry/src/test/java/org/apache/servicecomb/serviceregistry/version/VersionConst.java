@@ -18,11 +18,11 @@
 package org.apache.servicecomb.serviceregistry.version;
 
 public interface VersionConst {
-  Version v0 = new Version((short) 0, (short) 0, (short) 0);
+  Version v0 = new Version((short) 0, (short) 0, (short) 0, (short) 0);
 
   Version v1 = new Version("1");
 
-  Version v1Max = new Version((short) 1, Short.MAX_VALUE, Short.MAX_VALUE);
+  Version v1Max = new Version((short) 1, Short.MAX_VALUE, Short.MAX_VALUE, Short.MAX_VALUE);
 
   Version v2 = new Version("2");
 }

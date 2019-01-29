@@ -18,33 +18,53 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema;
 
 import java.io.IOException;
 
-import io.protostuff.Input;
-import io.protostuff.Output;
-import io.protostuff.Schema;
+import org.apache.servicecomb.foundation.common.utils.bean.Getter;
+import org.apache.servicecomb.foundation.common.utils.bean.Setter;
+import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
+
+import io.protostuff.InputEx;
+import io.protostuff.OutputEx;
+import io.protostuff.SchemaEx;
 import io.protostuff.compiler.model.Field;
+import io.protostuff.runtime.FieldSchema;
 
-public class MessageAsFieldSchema extends FieldSchema {
-  private Schema<Object> schema;
+public class MessageAsFieldSchema<T> extends FieldSchema<T> {
+  protected final SchemaEx<Object> schema;
 
-  public MessageAsFieldSchema(Field protoField, Schema<Object> schema) {
-    super(protoField);
+  protected final Getter<T, Object> getter;
+
+  protected final Setter<T, Object> setter;
+
+  public MessageAsFieldSchema(Field protoField, PropertyDescriptor propertyDescriptor, SchemaEx<Object> schema) {
+    super(protoField, propertyDescriptor.getJavaType());
     this.schema = schema;
+    this.getter = propertyDescriptor.getGetter();
+    this.setter = propertyDescriptor.getSetter();
   }
 
   @Override
-  public void writeTo(Output output, Object value) throws IOException {
-    output.writeObject(number, value, schema, false);
+  public final void getAndWriteTo(OutputEx output, T message) throws IOException {
+    Object value = getter.get(message);
+    if (value == null) {
+      return;
+    }
+
+    output.writeObject(tag, tagSize, value, schema);
   }
 
   @Override
-  public Object readFrom(Input input) throws IOException {
-    return input.mergeObject(null, schema);
+  public final void writeTo(OutputEx output, Object value) throws IOException {
+    output.writeObject(tag, tagSize, value, schema);
   }
 
   @Override
-  public void mergeFrom(Input input, Object message) throws IOException {
-    Object existing = getter.get(message);
-    Object fieldValue = input.mergeObject(existing, schema);
-    setter.set(message, fieldValue);
+  public final int mergeFrom(InputEx input, T message) throws IOException {
+    Object value = getter.get(message);
+    if (value == null) {
+      value = schema.newMessage();
+      setter.set(message, value);
+    }
+    input.mergeObject(value, schema);
+    return input.readFieldNumber();
   }
 }

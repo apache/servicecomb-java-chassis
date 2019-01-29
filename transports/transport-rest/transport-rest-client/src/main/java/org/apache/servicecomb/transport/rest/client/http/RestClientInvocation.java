@@ -43,6 +43,7 @@ import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultHttpSocketM
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;

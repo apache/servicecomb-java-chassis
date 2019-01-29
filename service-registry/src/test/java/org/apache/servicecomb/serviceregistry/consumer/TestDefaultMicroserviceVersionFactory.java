@@ -43,6 +43,6 @@ public class TestDefaultMicroserviceVersionFactory {
 
     MicroserviceVersion microserviceVersion = new DefaultMicroserviceVersionFactory().create("", microserviceId);
     Assert.assertSame(microservice, microserviceVersion.getMicroservice());
-    Assert.assertEquals("1.0.0", microserviceVersion.getVersion().getVersion());
+    Assert.assertEquals("1.0.0.0", microserviceVersion.getVersion().getVersion());
   }
 }

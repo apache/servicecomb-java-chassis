@@ -139,19 +139,23 @@ public class DefaultLogPublisher implements MetricsInitializer {
     }
 
     appendLine(sb, "  net:");
-    appendLine(sb, "    send         receive      interface");
+    appendLine(sb, "    send(Bps)    recv(Bps)    send(pps)    recv(pps)    interface");
 
     StringBuilder tmpSb = new StringBuilder();
     for (MeasurementNode interfaceNode : netNode.getChildren().values()) {
       double sendRate = interfaceNode.findChild(NetMeter.TAG_SEND.value()).summary();
+      double sendPacketsRate = interfaceNode.findChild(NetMeter.TAG_PACKETS_SEND.value()).summary();
       double receiveRate = interfaceNode.findChild(NetMeter.TAG_RECEIVE.value()).summary();
-      if (sendRate == 0 && receiveRate == 0) {
+      double receivePacketsRate = interfaceNode.findChild(NetMeter.TAG_PACKETS_RECEIVE.value()).summary();
+      if (sendRate == 0 && receiveRate == 0 && receivePacketsRate == 0 && sendPacketsRate == 0) {
         continue;
       }
 
-      appendLine(tmpSb, "    %-12s %-12s %s",
+      appendLine(tmpSb, "    %-12s %-12s %-12s %-12s %s",
           NetUtils.humanReadableBytes((long) sendRate),
           NetUtils.humanReadableBytes((long) receiveRate),
+          NetUtils.humanReadableBytes((long) sendPacketsRate),
+          NetUtils.humanReadableBytes((long) receivePacketsRate),
           interfaceNode.getName());
     }
     if (tmpSb.length() != 0) {
@@ -160,10 +164,19 @@ public class DefaultLogPublisher implements MetricsInitializer {
   }
 
   private void printCpuLog(StringBuilder sb, MeasurementNode osNode) {
-    MeasurementNode cpuNode = osNode.findChild(OsMeter.OS_TYPE_CPU);
-    if (cpuNode != null && !cpuNode.getMeasurements().isEmpty()) {
-      appendLine(sb, "  cpu: %.2f%%", cpuNode.summary() * 100);
+    MeasurementNode cpuNode = osNode.findChild(OsMeter.OS_TYPE_ALL_CPU);
+    MeasurementNode processNode = osNode.findChild(OsMeter.OS_TYPE_PROCESS_CPU);
+    if (cpuNode == null || cpuNode.getMeasurements().isEmpty() ||
+        processNode == null || processNode.getMeasurements().isEmpty()) {
+      return;
     }
+
+    double allRate = cpuNode.summary();
+    double processRate = processNode.summary();
+
+    appendLine(sb, "  cpu:");
+    appendLine(sb, "    all usage: %.2f%%    all idle: %.2f%%    process: %.2f%%", allRate * 100,
+        (1 - allRate) * 100, processRate * 100);
   }
 
 

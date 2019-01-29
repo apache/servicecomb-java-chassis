@@ -29,7 +29,6 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.Part;
@@ -42,20 +41,25 @@ import org.apache.servicecomb.foundation.common.part.ResourcePart;
 import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 import org.springframework.core.io.Resource;
 
+import com.google.common.annotations.VisibleForTesting;
+
 // restTemplate convert parameters to invocation args.
 public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
   private Map<String, List<String>> queryParams;
 
   private Map<String, List<String>> httpHeaders;
 
+  //contains all the file key in the parts
+  private List<String> fileKeys = new ArrayList<>();
+
   // gen by httpHeaders
   private Cookie[] cookies;
 
   @SuppressWarnings("unchecked")
   public CommonToHttpServletRequest(Map<String, String> pathParams, Map<String, List<String>> queryParams,
-      Map<String, List<String>> httpHeaders, Object bodyObject, boolean isFormData) {
+      Map<String, List<String>> httpHeaders, Object bodyObject, boolean isFormData, List<String> fileKeys) {
     setAttribute(RestConst.PATH_PARAMETERS, pathParams);
-
+    this.fileKeys = fileKeys;
     if (isFormData) {
       setAttribute(RestConst.FORM_PARAMETERS, (Map<String, Object>) bodyObject);
     } else {
@@ -64,6 +68,12 @@ public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
 
     this.queryParams = queryParams;
     this.httpHeaders = httpHeaders;
+  }
+
+  @SuppressWarnings("unchecked")
+  public CommonToHttpServletRequest(Map<String, String> pathParams, Map<String, List<String>> queryParams,
+      Map<String, List<String>> httpHeaders, Object bodyObject, boolean isFormData) {
+    this(pathParams, queryParams, httpHeaders, bodyObject, isFormData, null);
   }
 
   @Override
@@ -164,8 +174,12 @@ public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
   }
 
   @Override
-  public Part getPart(String name) throws IOException, ServletException {
+  public Part getPart(String name) {
     Object value = findPartInputValue(name);
+    return getSinglePart(name, value);
+  }
+
+  private Part getSinglePart(String name, Object value) {
     if (value == null) {
       return null;
     }
@@ -196,6 +210,39 @@ public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
             value.getClass().getName()));
   }
 
+  @Override
+  public Collection<Part> getParts() {
+    @SuppressWarnings("unchecked")
+    Map<String, Object> form = (Map<String, Object>) getAttribute(RestConst.FORM_PARAMETERS);
+    List<Part> partList = new ArrayList<>();
+    filePartListWithForm(partList, form);
+    return partList;
+  }
+
+  private void filePartListWithForm(List<Part> partList, Map<String, Object> form) {
+    for (String key : fileKeys) {
+      Object value = form.get(key);
+      if (value == null) {
+        continue;
+      }
+      if (Collection.class.isInstance(value)) {
+        Collection<?> collection = (Collection<?>) value;
+        for (Object part : collection) {
+          partList.add(getSinglePart(key, part));
+        }
+        continue;
+      }
+      if (value.getClass().isArray()) {
+        Object[] params = (Object[]) value;
+        for (int i = 0; i < params.length; i++) {
+          partList.add(getSinglePart(key, params[i]));
+        }
+        continue;
+      }
+      partList.add(getSinglePart(key, value));
+    }
+  }
+
   protected Object findPartInputValue(String name) {
     @SuppressWarnings("unchecked")
     Map<String, Object> form = (Map<String, Object>) getAttribute(RestConst.FORM_PARAMETERS);
@@ -213,5 +260,10 @@ public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
       value = collection.iterator().next();
     }
     return value;
+  }
+
+  @VisibleForTesting
+  public List<String> getFileKeys() {
+    return fileKeys;
   }
 }

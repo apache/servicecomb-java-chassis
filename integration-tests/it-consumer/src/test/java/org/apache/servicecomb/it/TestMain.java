@@ -23,8 +23,13 @@ import org.junit.Test;
 public class TestMain {
   @Test
   public void testMain() throws Throwable {
-    ConsumerMain.autoExit = false;
-    ConsumerMain.main(new String[] {});
-    Assert.assertTrue(ITJUnitUtils.getFailures().isEmpty());
+    try {
+      ConsumerMain.autoExit = false;
+      ConsumerMain.main(new String[] {});
+      Assert.assertTrue(ITJUnitUtils.getFailures().isEmpty());
+    } catch (Throwable throwable) {
+      throwable.printStackTrace();
+      Assert.fail(throwable.getMessage());
+    }
   }
 }

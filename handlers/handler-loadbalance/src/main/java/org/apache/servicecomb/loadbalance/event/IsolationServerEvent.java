@@ -16,11 +16,20 @@
  */
 package org.apache.servicecomb.loadbalance.event;
 
+import org.apache.servicecomb.core.Endpoint;
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.event.AlarmEvent;
+import org.apache.servicecomb.loadbalance.ServiceCombServerStats;
+import org.apache.servicecomb.loadbalance.filter.IsolationDiscoveryFilter;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 
 public class IsolationServerEvent extends AlarmEvent {
 
   private String microserviceName;
+
+  private Endpoint endpoint;
+
+  private MicroserviceInstance instance;
 
   //当前实例总请求数
   private long currentTotalRequest;
@@ -31,6 +40,8 @@ public class IsolationServerEvent extends AlarmEvent {
   //当前实例出错百分比
   private double currentErrorPercentage;
 
+  private int minIsolationTime;
+
   private long enableRequestThreshold;
 
   private int continuousFailureThreshold;
@@ -39,18 +50,21 @@ public class IsolationServerEvent extends AlarmEvent {
 
   private long singleTestTime;
 
-  public IsolationServerEvent(String microserviceName, long totalRequest, long currentCountinuousFailureCount,
-      double currentErrorPercentage, int continuousFailureThreshold,
-      int errorThresholdPercentage, long enableRequestThreshold, long singleTestTime, Type type) {
+  public IsolationServerEvent(Invocation invocation, MicroserviceInstance instance,
+      ServiceCombServerStats serverStats,
+      IsolationDiscoveryFilter.Settings settings, Type type) {
     super(type);
-    this.microserviceName = microserviceName;
-    this.currentTotalRequest = totalRequest;
-    this.currentCountinuousFailureCount = currentCountinuousFailureCount;
-    this.currentErrorPercentage = currentErrorPercentage;
-    this.enableRequestThreshold = enableRequestThreshold;
-    this.continuousFailureThreshold = continuousFailureThreshold;
-    this.errorThresholdPercentage = errorThresholdPercentage;
-    this.singleTestTime = singleTestTime;
+    this.microserviceName = invocation.getMicroserviceName();
+    this.endpoint = invocation.getEndpoint();
+    this.currentTotalRequest = serverStats.getTotalRequests();
+    this.currentCountinuousFailureCount = serverStats.getCountinuousFailureCount();
+    this.currentErrorPercentage = serverStats.getFailedRate();
+    this.minIsolationTime = settings.minIsolationTime;
+    this.enableRequestThreshold = settings.enableRequestThreshold;
+    this.continuousFailureThreshold = settings.continuousFailureThreshold;
+    this.errorThresholdPercentage = settings.errorThresholdPercentage;
+    this.singleTestTime = settings.singleTestTime;
+    this.instance = instance;
   }
 
   public String getMicroserviceName() {
@@ -83,5 +97,17 @@ public class IsolationServerEvent extends AlarmEvent {
 
   public long getSingleTestTime() {
     return singleTestTime;
+  }
+
+  public MicroserviceInstance getInstance() {
+    return instance;
+  }
+
+  public int getMinIsolationTime() {
+    return minIsolationTime;
+  }
+
+  public Endpoint getEndpoint() {
+    return endpoint;
   }
 }

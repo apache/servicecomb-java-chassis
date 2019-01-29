@@ -17,7 +17,14 @@
 
 package org.apache.servicecomb.serviceregistry.discovery;
 
+import java.util.HashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public abstract class AbstractDiscoveryFilter implements DiscoveryFilter {
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractDiscoveryFilter.class);
+
   @Override
   public DiscoveryTreeNode discovery(DiscoveryContext context, DiscoveryTreeNode parent) {
     if (!parent.childrenInited()) {
@@ -30,7 +37,12 @@ public abstract class AbstractDiscoveryFilter implements DiscoveryFilter {
     }
 
     String childName = findChildName(context, parent);
-    return parent.child(childName);
+    DiscoveryTreeNode node = parent.child(childName);
+    if (node == null) {
+      LOGGER.warn("discovery filter {} return null.", this.getClass().getName());
+      return new DiscoveryTreeNode().subName(parent, "empty").data(new HashMap<>());
+    }
+    return node;
   }
 
   protected abstract void init(DiscoveryContext context, DiscoveryTreeNode parent);

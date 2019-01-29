@@ -42,6 +42,10 @@ public class ProtoMapperFactory {
     beanDescriptorManager = new BeanDescriptorManager(jsonMapper.getSerializationConfig());
   }
 
+  public ObjectMapper getJsonMapper() {
+    return jsonMapper;
+  }
+
   public BeanDescriptorManager getBeanDescriptorManager() {
     return beanDescriptorManager;
   }

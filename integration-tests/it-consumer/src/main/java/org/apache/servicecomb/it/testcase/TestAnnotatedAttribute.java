@@ -17,11 +17,13 @@
 package org.apache.servicecomb.it.testcase;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.it.Consumers;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -51,6 +53,16 @@ public class TestAnnotatedAttribute {
   @Test
   public void fromCookie_springmvc_rt() {
     fromCookie_rt(consumersSpringmvc);
+  }
+
+  @Test
+  public void fromCookieRequired_springmvc_rt() {
+    fromCookieRequired_rt(consumersSpringmvc);
+  }
+
+  @Test
+  public void fromCookieDefaultValue_springmvc_rt() {
+    fromCookieDefaultValue_rt(consumersSpringmvc);
   }
 
   @Test
@@ -107,6 +119,76 @@ public class TestAnnotatedAttribute {
             requestEntity,
             String.class);
     assertEquals("default,fromValue,fromName", result.getBody());
+  }
+
+  protected void fromCookieRequired_rt(Consumers<AnnotatedAttributeIntf> consumers) {
+    HttpHeaders headers = new HttpHeaders();
+    HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+    try {
+      consumers.getSCBRestTemplate()
+          .exchange("/fromCookieRequired",
+              HttpMethod.GET,
+              requestEntity,
+              String.class);
+      assertEquals("required is true, throw exception", "but not throw exception");
+    } catch (InvocationException e) {
+      assertEquals(400, e.getStatusCode());
+      assertTrue(
+          e.getMessage()
+              .contains("InvocationException: code=400;msg=CommonExceptionData [message=Parameter is not valid"));
+    }
+    headers.add(HttpHeaders.COOKIE, "input1=default1");
+    requestEntity = new HttpEntity<>(headers);
+    try {
+      consumers.getSCBRestTemplate()
+          .exchange("/fromCookieRequired",
+              HttpMethod.GET,
+              requestEntity,
+              String.class);
+      assertEquals("required is true, throw exception", "but not throw exception");
+    } catch (InvocationException e) {
+      assertEquals(400, e.getStatusCode());
+      assertTrue(
+          e.getMessage()
+              .contains("InvocationException: code=400;msg=CommonExceptionData [message=Parameter is not valid"));
+    }
+    headers.add(HttpHeaders.COOKIE, "input=joker");
+    requestEntity = new HttpEntity<>(headers);
+    ResponseEntity<String> result = consumers.getSCBRestTemplate()
+        .exchange("/fromCookieRequired",
+            HttpMethod.GET,
+            requestEntity,
+            String.class);
+    assertEquals("joker", result.getBody());
+  }
+
+  protected void fromCookieDefaultValue_rt(Consumers<AnnotatedAttributeIntf> consumers) {
+    HttpHeaders headers = new HttpHeaders();
+    HttpEntity<?> requestEntity = new HttpEntity<>(headers);
+    ResponseEntity<String> result = consumers.getSCBRestTemplate()
+        .exchange("/fromCookieDefaultValue",
+            HttpMethod.GET,
+            requestEntity,
+            String.class);
+    assertEquals("default", result.getBody());
+
+    headers.add(HttpHeaders.COOKIE, "input1=jokers");
+    requestEntity = new HttpEntity<>(headers);
+    result = consumers.getSCBRestTemplate()
+        .exchange("/fromCookieDefaultValue",
+            HttpMethod.GET,
+            requestEntity,
+            String.class);
+    assertEquals("default", result.getBody());
+
+    headers.add(HttpHeaders.COOKIE, "input=joker");
+    requestEntity = new HttpEntity<>(headers);
+    result = consumers.getSCBRestTemplate()
+        .exchange("/fromCookieDefaultValue",
+            HttpMethod.GET,
+            requestEntity,
+            String.class);
+    assertEquals("joker", result.getBody());
   }
 
   protected void fromPath_rt(Consumers<AnnotatedAttributeIntf> consumers) {

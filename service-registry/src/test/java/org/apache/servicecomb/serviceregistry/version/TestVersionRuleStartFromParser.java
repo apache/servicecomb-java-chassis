@@ -34,7 +34,7 @@ public class TestVersionRuleStartFromParser {
 
   @Test
   public void parseNormal() {
-    Assert.assertEquals("1.0.0+", versionRule.getVersionRule());
+    Assert.assertEquals("1.0.0.0+", versionRule.getVersionRule());
   }
 
   @Test

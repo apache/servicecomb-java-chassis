@@ -29,7 +29,7 @@
 
   <groupId>org.apache.servicecomb</groupId>
   <artifactId>java-chassis</artifactId>
-  <version>1.1.0-SNAPSHOT</version>
+  <version>1.2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>ServiceComb Java Chassis</name>
@@ -108,6 +108,7 @@
     <module>java-chassis-dependencies</module>
     <module>common</module>
     <module>foundations</module>
+    <module>deployment</module>
     <module>handlers</module>
     <module>providers</module>
     <module>transports</module>
@@ -195,6 +196,7 @@
             <!-- Skip the source files which are forked from vertx -->
             <exclude>**/io/vertx/ext/web/impl/MimeTypesUtils.java</exclude>
             <exclude>**/java/org/apache/servicecomb/transport/rest/vertx/RestBodyHandler.java</exclude>
+            <exclude>**/java/org/apache/servicecomb/foundation/vertx/stream/PumpImplEx.java</exclude>
             <!--Skip protobuf generated file-->
             <exclude>**/java/org/apache/servicecomb/foundation/protobuf/internal/model/ProtobufRoot.java</exclude>
           </excludes>
@@ -439,6 +441,16 @@
                 </goals>
               </execution>
             </executions>
+            <configuration>
+              <tags>
+                <tag>
+                  <!-- to avoid protostuff javadoc problem. -->
+                  <name>created</name>
+                  <placement>t</placement>
+                  <head>Date created:</head>
+                </tag>
+              </tags>
+            </configuration>
           </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>

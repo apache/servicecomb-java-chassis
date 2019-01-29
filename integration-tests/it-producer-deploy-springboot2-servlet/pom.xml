@@ -22,14 +22,14 @@
 
   <groupId>org.apache.servicecomb.tests</groupId>
   <artifactId>it-producer-deploy-springboot2-servlet</artifactId>
-  <version>1.1.0-SNAPSHOT</version>
+  <version>1.2.0-SNAPSHOT</version>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>java-chassis-dependencies-springboot2</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <version>1.2.0-SNAPSHOT</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -40,7 +40,7 @@
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>it-producer</artifactId>
-      <version>1.1.0-SNAPSHOT</version>
+      <version>1.2.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
@@ -92,6 +92,7 @@
               <!-- Skip the source files which are forked from vertx -->
               <exclude>**/io/vertx/ext/web/impl/MimeTypesUtils.java</exclude>
               <exclude>**/java/org/apache/servicecomb/transport/rest/vertx/RestBodyHandler.java</exclude>
+              <exclude>**/java/org/apache/servicecomb/foundation/vertx/stream/PumpImplEx.java</exclude>
               <!--Skip protobuf generated file-->
               <exclude>**/java/org/apache/servicecomb/foundation/protobuf/internal/model/ProtobufRoot.java</exclude>
             </excludes>

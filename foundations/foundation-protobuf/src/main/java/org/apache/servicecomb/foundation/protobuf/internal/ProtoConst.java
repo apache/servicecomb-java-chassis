@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.foundation.protobuf.internal;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import org.apache.servicecomb.foundation.protobuf.internal.parser.ProtoParser;
@@ -30,7 +31,11 @@ public final class ProtoConst {
   private ProtoConst() {
   }
 
-  public static String OP_HINT = " scb:";
+  public static String ANNOTATION_WRAP_ARGUMENTS = "@WrapArguments";
+
+  public static String ANNOTATION_WRAP_PROPERTY = "@WrapProperty";
+
+  public static String ANNOTATION_RPC = "@Rpc";
 
   public static String PACK_SCHEMA = "type.googleapis.com/";
 
@@ -39,6 +44,10 @@ public final class ProtoConst {
   public static String JSON_ID_NAME = "@type";
 
   public static JavaType MAP_TYPE = TypeFactory.defaultInstance().constructType(LinkedHashMap.class);
+
+  public static JavaType LIST_TYPE = TypeFactory.defaultInstance().constructType(ArrayList.class);
+
+  public static JavaType OBJECT_TYPE = TypeFactory.defaultInstance().constructType(Object.class);
 
   public static Proto ANY_PROTO;
 

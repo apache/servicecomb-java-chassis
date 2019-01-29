@@ -78,16 +78,12 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
       return;
     }
 
-    File file = new File(LOCAL_REGISTRY_FILE);
-    if (!file.exists()) {
+    InputStream is = this.getClass().getClassLoader().getResourceAsStream(LOCAL_REGISTRY_FILE);
+    if (is == null) {
       return;
     }
 
-    try (InputStream is = new FileInputStream(file)) {
-      initFromData(is);
-    } catch (IOException e) {
-      LOGGER.error("can not load local registry file:" + LOCAL_REGISTRY_FILE, e);
-    }
+    initFromData(is);
   }
 
   public LocalServiceRegistryClientImpl(InputStream is) {
@@ -219,6 +215,9 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
 
   @Override
   public boolean unregisterMicroserviceInstance(String microserviceId, String microserviceInstanceId) {
+    if (microserviceId == null) {
+      return true;
+    }
     Map<String, MicroserviceInstance> instanceMap = microserviceInstanceMap.get(microserviceId);
     if (instanceMap != null) {
       instanceMap.remove(microserviceInstanceId);

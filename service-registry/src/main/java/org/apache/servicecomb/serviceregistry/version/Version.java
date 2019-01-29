@@ -23,13 +23,15 @@ import org.apache.commons.lang.ArrayUtils;
 
 // short version is enough
 public class Version implements Comparable<Version> {
-  private static final String[] ZERO = new String[] {"0", "0", "0"};
+  private static final String[] ZERO = new String[] {"0", "0", "0", "0"};
 
   private final short major;
 
   private final short minor;
 
   private final short patch;
+
+  private final short build;
 
   private final String version;
 
@@ -38,20 +40,22 @@ public class Version implements Comparable<Version> {
   // 1
   // 1.0
   // 1.0.0
+  // 1.0.0.0
   public Version(String version) {
     Objects.requireNonNull(version);
 
     String[] versions = version.split("\\.", -1);
-    if (versions.length > 3) {
+    if (versions.length > 4) {
       throw new IllegalStateException(String.format("Invalid version \"%s\".", version));
     }
 
-    if (versions.length < 3) {
+    if (versions.length < 4) {
       versions = (String[]) ArrayUtils.addAll(versions, ZERO);
     }
     this.major = parseNumber("major", version, versions[0]);
     this.minor = parseNumber("minor", version, versions[1]);
     this.patch = parseNumber("patch", version, versions[2]);
+    this.build = parseNumber("build", version, versions[3]);
 
     this.version = combineStringVersion();
     this.numberVersion = combineVersion();
@@ -62,8 +66,8 @@ public class Version implements Comparable<Version> {
     try {
       value = Short.parseShort(version);
     } catch (NumberFormatException e) {
-      throw new IllegalStateException(String.format("Invalid %s \"%s\", version \"%s\".", name, version, allVersion),
-          e);
+      throw new IllegalStateException(
+          String.format("Invalid %s \"%s\", version \"%s\".", name, version, allVersion), e);
     }
 
     if (value < 0) {
@@ -74,20 +78,22 @@ public class Version implements Comparable<Version> {
     return value;
   }
 
-  public Version(short major, short minor, short patch) {
+  public Version(short major, short minor, short patch, short build) {
     this.major = major;
     this.minor = minor;
     this.patch = patch;
+    this.build = build;
     this.version = combineStringVersion();
     this.numberVersion = combineVersion();
   }
 
   private String combineStringVersion() {
-    return major + "." + minor + "." + patch;
+    return major + "." + minor + "." + patch + "." + build;
   }
 
+  // 1.0.0 equals 1.0.0.0
   private long combineVersion() {
-    return (long) major << 32 | (long) minor << 16 | (long) patch;
+    return (long) major << 48 | (long) minor << 32 | (long) patch << 16 | (long) build;
   }
 
   public short getMajor() {
@@ -100,6 +106,10 @@ public class Version implements Comparable<Version> {
 
   public short getPatch() {
     return patch;
+  }
+
+  public short getBuild() {
+    return build;
   }
 
   public String getVersion() {

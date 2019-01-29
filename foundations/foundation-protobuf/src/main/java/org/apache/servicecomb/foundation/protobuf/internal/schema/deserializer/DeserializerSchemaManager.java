@@ -16,168 +16,222 @@
  */
 package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import static org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils.isWrapProperty;
 
-import org.apache.servicecomb.foundation.common.utils.bean.MapGetter;
-import org.apache.servicecomb.foundation.common.utils.bean.MapSetter;
+import java.lang.reflect.Type;
+
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
 import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
-import org.apache.servicecomb.foundation.protobuf.internal.bean.BeanDescriptor;
-import org.apache.servicecomb.foundation.protobuf.internal.bean.BeanFactory;
+import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
+import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.AnySchema;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.FieldSchema;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.MapSchema;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.MessageAsFieldSchema;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.RepeatedSchema;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.SchemaCreateContext;
+import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyWrapper;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.SchemaManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.any.AnyEntrySchema;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.AnyRepeatedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.BytesRepeatedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.MessageRepeatedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.PropertyWrapperRepeatedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.StringRepeatedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.bools.impl.BoolNotPackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.bools.impl.BoolPackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.doubles.impl.DoubleNotPackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.doubles.impl.DoublePackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.enums.EnumNotPackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.enums.EnumPackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.floats.impl.FloatNotPackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.floats.impl.FloatPackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.ints.impl.Fixed32NotPackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.ints.impl.Fixed32PackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.ints.impl.Int32NotPackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.ints.impl.Int32PackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.ints.impl.SFixed32NotPackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.ints.impl.SFixed32PackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.ints.impl.SInt32NotPackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.ints.impl.SInt32PackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.ints.impl.UInt32NotPackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.ints.impl.UInt32PackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.longs.impl.Fixed64NotPackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.longs.impl.Fixed64PackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.longs.impl.Int64NotPackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.longs.impl.Int64PackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.longs.impl.SFixed64NotPackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.longs.impl.SFixed64PackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.longs.impl.SInt64NotPackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.longs.impl.SInt64PackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.longs.impl.UInt64NotPackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.repeated.impl.longs.impl.UInt64PackedReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.BoolReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.BytesReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.DoubleReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.EnumsReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.Fixed32ReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.Fixed64ReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.FloatReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.Int32ReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.Int64ReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.SFixed32ReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.SFixed64ReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.SInt32ReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.SInt64ReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.StringReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.UInt32ReadSchemas;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.UInt64ReadSchemas;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import io.protostuff.SchemaEx;
 import io.protostuff.compiler.model.Field;
 import io.protostuff.compiler.model.Message;
-import io.protostuff.runtime.MessageSchema;
-import io.protostuff.runtime.RuntimeEnv;
+import io.protostuff.compiler.model.ScalarFieldType;
+import io.protostuff.runtime.FieldSchema;
 
 public class DeserializerSchemaManager extends SchemaManager {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DeserializerSchemaManager.class);
-
   public DeserializerSchemaManager(ProtoMapper protoMapper) {
     super(protoMapper);
   }
 
-  public RootDeserializer createRootDeserializer(JavaType javaType, String shortMessageName) {
-    Message message = proto.getMessage(shortMessageName);
-    if (message == null) {
-      throw new IllegalStateException("can not find proto message to create deserializer, name=" + shortMessageName);
-    }
-
-    return createRootDeserializer(javaType, message);
+  public <T> RootDeserializer<T> createRootDeserializer(Message message, Type type) {
+    JavaType javaType = TypeFactory.defaultInstance().constructType(type);
+    SchemaEx<T> messageSchema = getOrCreateMessageSchema(message, javaType);
+    return new RootDeserializer<>(messageSchema);
   }
 
-  public RootDeserializer createRootDeserializer(JavaType javaType, Message message) {
-    SchemaCreateContext context = new SchemaCreateContext();
-    MessageSchema schema = createSchema(context, javaType, message);
-
-    BeanDescriptor beanDescriptor = protoMapper.getBeanDescriptorManager().getOrCreateBeanDescriptor(javaType);
-    return new RootDeserializer(beanDescriptor, schema);
-  }
-
-  protected MessageSchema createSchema(SchemaCreateContext context, JavaType javaType,
-      Message message) {
-    MessageSchema schema = context.getSchemas().get(message.getName());
-    if (schema != null) {
-      return schema;
-    }
-
-    schema = new MessageSchema();
-    context.getSchemas().put(message.getName(), schema);
-
-    doCreateSchema(context, schema, javaType, message);
-    return schema;
-  }
-
-  @SuppressWarnings("unchecked")
-  protected void doCreateSchema(SchemaCreateContext context, MessageSchema schema,
-      JavaType javaType,
-      Message message) {
-    if (Map.class.isAssignableFrom(javaType.getRawClass())) {
-      doCreateSchemaToMap(context, schema, javaType, message);
-      return;
-    }
-
-    BeanDescriptor beanDescriptor = protoMapper.getBeanDescriptorManager().getOrCreateBeanDescriptor(javaType);
-
-    List<io.protostuff.runtime.Field<Object>> fieldSchemas = new ArrayList<>();
-    for (PropertyDescriptor propertyDescriptor : beanDescriptor.getPropertyDescriptors().values()) {
-      Field protoField = message.getField(propertyDescriptor.getName());
-      if (protoField == null) {
-        LOGGER.info("java field {}:{} not exist in proto message {}, ignore it.",
-            beanDescriptor.getJavaType().getRawClass().getName(),
-            propertyDescriptor.getName(), message.getCanonicalName());
-        continue;
+  @Override
+  protected <T> SchemaEx<T> newMessageSchema(Message message, JavaType javaType) {
+    if (ProtoUtils.isWrapProperty(message) && javaType.getRawClass() != PropertyWrapper.class) {
+      Field protoField = message.getField(1);
+      if (javaType.isJavaLangObject()) {
+        javaType =
+            protoField.isRepeated() && protoField.getType().isMessage() && !protoField.isMap() ? ProtoConst.LIST_TYPE
+                : ProtoConst.MAP_TYPE;
       }
-      if (propertyDescriptor.getSetter() == null) {
-        LOGGER.info("no setter for java field {}:{} in proto message {}, ignore it.",
-            beanDescriptor.getJavaType().getRawClass().getName(),
-            propertyDescriptor.getName(), message.getCanonicalName());
-        continue;
-      }
-
-      FieldSchema fieldSchema = createSchemaField(context, propertyDescriptor.getJavaType(), protoField,
-          protoField.isRepeated());
-      fieldSchema.setGetter(propertyDescriptor.getGetter());
-      fieldSchema.setSetter(propertyDescriptor.getSetter());
-      if (isAnyField(protoField, protoField.isRepeated())) {
-        fieldSchema.setFactory(BeanFactory::mapFactory);
-      } else {
-        fieldSchema.setFactory(propertyDescriptor.getFactory());
-      }
-      fieldSchemas.add(fieldSchema);
+      javaType = TypeFactory.defaultInstance().constructParametricType(PropertyWrapper.class, javaType);
     }
 
-    schema.init(protoMapper, (Class<Object>) javaType.getRawClass(),
-        fieldSchemas,
-        RuntimeEnv.newInstantiator((Class<Object>) javaType.getRawClass()), message);
+    if (javaType.isJavaLangObject()) {
+      javaType = ProtoConst.MAP_TYPE;
+    }
+
+    return new MessageReadSchema<>(protoMapper, message, javaType);
   }
 
-  @SuppressWarnings("unchecked")
-  protected void doCreateSchemaToMap(SchemaCreateContext context,
-      MessageSchema schema, JavaType mapJavaType,
-      Message message) {
-    List<io.protostuff.runtime.Field<Object>> fieldSchemas = new ArrayList<>();
-    for (Field protoField : message.getFields()) {
-      FieldSchema fieldSchema = createSchemaField(context, mapJavaType, protoField, protoField.isRepeated());
-      fieldSchema.setGetter(new MapGetter(protoField.getName()));
-      fieldSchema.setSetter(new MapSetter(protoField.getName()));
-      fieldSchema.setFactory(BeanFactory.createFactory(protoField));
-      fieldSchemas.add(fieldSchema);
-    }
-
-    schema.init(protoMapper, (Class<Object>) mapJavaType.getRawClass(),
-        fieldSchemas,
-        RuntimeEnv.newInstantiator((Class<Object>) (Object) LinkedHashMap.class), message);
-  }
-
-  protected FieldSchema createSchemaField(SchemaCreateContext context, JavaType javaType, Field protoField,
-      boolean repeated) {
-    if (protoField.isMap()) {
-      Message entryMessage = (Message) protoField.getType();
-      FieldSchema keySchema = createSchemaField(context, javaType.getKeyType(), entryMessage.getField(1), false);
-      FieldSchema valueSchema = createSchemaField(context, javaType.getContentType(), entryMessage.getField(2), false);
-      return new MapSchema(protoField, keySchema, valueSchema);
-    }
-
-    if (protoField.isOneofPart()) {
-      throw new IllegalStateException("not IMPL oneof  now.");
-    }
-
-    if (repeated) {
-      FieldSchema schema = createSchemaField(context, javaType.getContentType(), protoField, false);
-      return new RepeatedSchema(protoField, schema);
-    }
-
-    if (isAnyField(protoField, repeated)) {
-      return new AnySchema(protoMapper, protoField);
-    }
-
+  protected <T> FieldSchema<T> createScalarField(Field protoField, PropertyDescriptor propertyDescriptor) {
     if (protoField.getType().isEnum()) {
-      return new EnumDeserializerSchema(protoField, javaType);
+      return EnumsReadSchemas.create(protoField, propertyDescriptor);
+    }
+
+    switch ((ScalarFieldType) protoField.getType()) {
+      case INT32:
+        return Int32ReadSchemas.create(protoField, propertyDescriptor);
+      case UINT32:
+        return UInt32ReadSchemas.create(protoField, propertyDescriptor);
+      case SINT32:
+        return SInt32ReadSchemas.create(protoField, propertyDescriptor);
+      case FIXED32:
+        return Fixed32ReadSchemas.create(protoField, propertyDescriptor);
+      case SFIXED32:
+        return SFixed32ReadSchemas.create(protoField, propertyDescriptor);
+      case INT64:
+        return Int64ReadSchemas.create(protoField, propertyDescriptor);
+      case UINT64:
+        return UInt64ReadSchemas.create(protoField, propertyDescriptor);
+      case SINT64:
+        return SInt64ReadSchemas.create(protoField, propertyDescriptor);
+      case FIXED64:
+        return Fixed64ReadSchemas.create(protoField, propertyDescriptor);
+      case SFIXED64:
+        return SFixed64ReadSchemas.create(protoField, propertyDescriptor);
+      case FLOAT:
+        return FloatReadSchemas.create(protoField, propertyDescriptor);
+      case DOUBLE:
+        return DoubleReadSchemas.create(protoField, propertyDescriptor);
+      case BOOL:
+        return BoolReadSchemas.create(protoField, propertyDescriptor);
+      case STRING:
+        return StringReadSchemas.create(protoField, propertyDescriptor);
+      case BYTES:
+        return BytesReadSchemas.create(protoField, propertyDescriptor);
+      default:
+        throw new IllegalStateException("unknown proto field type: " + protoField.getType());
+    }
+  }
+
+  @Override
+  protected <T> FieldSchema<T> createRepeatedSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
+    boolean packed = ProtoUtils.isPacked(protoField);
+    if (protoField.getType().isEnum()) {
+      return packed ? EnumPackedReadSchemas.create(protoField, propertyDescriptor) :
+          EnumNotPackedReadSchemas.create(protoField, propertyDescriptor);
     }
 
     if (protoField.getType().isScalar()) {
-      return createScalarField(protoField);
+      switch ((ScalarFieldType) protoField.getType()) {
+        case INT32:
+          return packed ? Int32PackedReadSchemas.create(protoField, propertyDescriptor) :
+              Int32NotPackedReadSchemas.create(protoField, propertyDescriptor);
+        case UINT32:
+          return packed ? UInt32PackedReadSchemas.create(protoField, propertyDescriptor) :
+              UInt32NotPackedReadSchemas.create(protoField, propertyDescriptor);
+        case SINT32:
+          return packed ? SInt32PackedReadSchemas.create(protoField, propertyDescriptor) :
+              SInt32NotPackedReadSchemas.create(protoField, propertyDescriptor);
+        case FIXED32:
+          return packed ? Fixed32PackedReadSchemas.create(protoField, propertyDescriptor) :
+              Fixed32NotPackedReadSchemas.create(protoField, propertyDescriptor);
+        case SFIXED32:
+          return packed ? SFixed32PackedReadSchemas.create(protoField, propertyDescriptor) :
+              SFixed32NotPackedReadSchemas.create(protoField, propertyDescriptor);
+        case INT64:
+          return packed ? Int64PackedReadSchemas.create(protoField, propertyDescriptor) :
+              Int64NotPackedReadSchemas.create(protoField, propertyDescriptor);
+        case UINT64:
+          return packed ? UInt64PackedReadSchemas.create(protoField, propertyDescriptor) :
+              UInt64NotPackedReadSchemas.create(protoField, propertyDescriptor);
+        case SINT64:
+          return packed ? SInt64PackedReadSchemas.create(protoField, propertyDescriptor) :
+              SInt64NotPackedReadSchemas.create(protoField, propertyDescriptor);
+        case FIXED64:
+          return packed ? Fixed64PackedReadSchemas.create(protoField, propertyDescriptor) :
+              Fixed64NotPackedReadSchemas.create(protoField, propertyDescriptor);
+        case SFIXED64:
+          return packed ? SFixed64PackedReadSchemas.create(protoField, propertyDescriptor) :
+              SFixed64NotPackedReadSchemas.create(protoField, propertyDescriptor);
+        case FLOAT:
+          return packed ? FloatPackedReadSchemas.create(protoField, propertyDescriptor) :
+              FloatNotPackedReadSchemas.create(protoField, propertyDescriptor);
+        case DOUBLE:
+          return packed ? DoublePackedReadSchemas.create(protoField, propertyDescriptor) :
+              DoubleNotPackedReadSchemas.create(protoField, propertyDescriptor);
+        case BOOL:
+          return packed ? BoolPackedReadSchemas.create(protoField, propertyDescriptor) :
+              BoolNotPackedReadSchemas.create(protoField, propertyDescriptor);
+        case STRING:
+          return StringRepeatedReadSchemas.create(protoField, propertyDescriptor);
+        case BYTES:
+          return BytesRepeatedReadSchemas.create(protoField, propertyDescriptor);
+      }
     }
 
-    // message
-    MessageSchema messageSchema = createSchema(context, javaType, (Message) protoField.getType());
-    MessageAsFieldSchema messageAsFieldSchema = new MessageAsFieldSchema(protoField, messageSchema);
-    return messageAsFieldSchema;
+    if (ProtoUtils.isAnyField(protoField)) {
+      AnyEntrySchema anyEntrySchema = new AnyEntrySchema(protoMapper);
+      return AnyRepeatedReadSchemas.create(protoField, propertyDescriptor, anyEntrySchema);
+    }
+
+    if (protoField.getType().isMessage()) {
+      JavaType contentType = propertyDescriptor.getJavaType().getContentType();
+      if (contentType == null) {
+        contentType = ProtoConst.OBJECT_TYPE;
+      }
+      SchemaEx<Object> contentSchema = getOrCreateMessageSchema((Message) protoField.getType(), contentType);
+      if (isWrapProperty((Message) protoField.getType())) {
+        return PropertyWrapperRepeatedReadSchemas.create(protoField, propertyDescriptor, contentSchema);
+      }
+
+      return MessageRepeatedReadSchemas.create(protoField, propertyDescriptor, contentSchema);
+    }
+    ProtoUtils.throwNotSupportMerge(protoField, propertyDescriptor.getJavaType());
+    return null;
   }
 }

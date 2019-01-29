@@ -108,7 +108,6 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
           LOGGER.info("Empty content and required is false, taken as null");
           return null;
         }
-        LOGGER.warn("Mismatched content. Msg=" + e.getMessage());
         throw e;
       }
     }

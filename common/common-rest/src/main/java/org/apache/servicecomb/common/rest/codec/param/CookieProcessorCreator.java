@@ -21,9 +21,12 @@ import java.lang.reflect.Type;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -35,31 +38,36 @@ public class CookieProcessorCreator implements ParamValueProcessorCreator {
   public static final String PARAMTYPE = "cookie";
 
   public static class CookieProcessor extends AbstractParamProcessor {
-    public CookieProcessor(String paramPath, JavaType targetType, Object defaultValue) {
-      super(paramPath, targetType, defaultValue);
+    public CookieProcessor(String paramPath, JavaType targetType, Object defaultValue, boolean required) {
+      super(paramPath, targetType, defaultValue, required);
     }
 
     @Override
-    public Object getValue(HttpServletRequest request) throws Exception {
+    public Object getValue(HttpServletRequest request) {
       Cookie[] cookies = request.getCookies();
-      if (cookies == null) {
-        return null;
+      Object value = null;
+      if (cookies == null || cookies.length == 0) {
+        value = checkRequiredAndDefaultValue();
+        return convertValue(value, targetType);
       }
 
-      String value = null;
       for (Cookie cookie : cookies) {
         if (paramPath.equals(cookie.getName())) {
           value = cookie.getValue();
-          if (value == null) {
-            Object defaultValue = getDefaultValue();
-            if (defaultValue != null) {
-              value = defaultValue.toString();
-            }
-          }
+          break;
         }
       }
-
+      if (value == null) {
+        value = checkRequiredAndDefaultValue();
+      }
       return convertValue(value, targetType);
+    }
+
+    private Object checkRequiredAndDefaultValue() {
+      if (isRequired()) {
+        throw new InvocationException(Status.BAD_REQUEST, "Parameter is required.");
+      }
+      return getDefaultValue();
     }
 
     @Override
@@ -81,6 +89,7 @@ public class CookieProcessorCreator implements ParamValueProcessorCreator {
   @Override
   public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
     JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
-    return new CookieProcessor(parameter.getName(), targetType, ((CookieParameter) parameter).getDefaultValue());
+    return new CookieProcessor(parameter.getName(), targetType, ((CookieParameter) parameter).getDefaultValue(),
+        parameter.getRequired());
   }
 }

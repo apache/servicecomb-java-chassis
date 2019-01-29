@@ -211,7 +211,11 @@ public class SCBEngine {
       } catch (TimeoutException e) {
         LOGGER.warn("{}", e.getMessage());
       } catch (Throwable e) {
-        destroy();
+        try {
+          destroy();
+        } catch (Exception exception) {
+          LOGGER.info("destroy has some error.", exception);
+        }
         status = SCBStatus.FAILED;
         throw new IllegalStateException("ServiceComb init failed.", e);
       }

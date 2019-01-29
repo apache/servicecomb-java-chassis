@@ -16,76 +16,162 @@
  */
 package org.apache.servicecomb.foundation.protobuf.internal.schema;
 
+import static org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils.isAnyField;
+import static org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils.isWrapProperty;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.foundation.common.utils.bean.MapGetter;
+import org.apache.servicecomb.foundation.common.utils.bean.MapSetter;
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.scalar.BoolSchema;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.scalar.BytesSchema;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.scalar.DoubleSchema;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.scalar.Fixed32Schema;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.scalar.Fixed64Schema;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.scalar.FloatSchema;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.scalar.Int32Schema;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.scalar.Int64Schema;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.scalar.SFixed32Schema;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.scalar.SFixed64Schema;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.scalar.SInt32Schema;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.scalar.SInt64Schema;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.scalar.StringSchema;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.scalar.UInt32Schema;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.scalar.UInt64Schema;
+import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
+import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.any.AnySchema;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.map.MapEntry;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.map.MapSchema;
 
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
+import io.protostuff.SchemaEx;
 import io.protostuff.compiler.model.Field;
+import io.protostuff.compiler.model.Message;
 import io.protostuff.compiler.model.Proto;
-import io.protostuff.compiler.model.ScalarFieldType;
+import io.protostuff.runtime.FieldMapEx;
+import io.protostuff.runtime.FieldSchema;
 
-public class SchemaManager {
+public abstract class SchemaManager {
   protected final ProtoMapper protoMapper;
 
   protected final Proto proto;
+
+  // key is canonical message name + ":" + canonical type name
+  protected Map<String, SchemaEx<?>> canonicalSchemas = new ConcurrentHashMapEx<>();
 
   public SchemaManager(ProtoMapper protoMapper) {
     this.protoMapper = protoMapper;
     this.proto = protoMapper.getProto();
   }
 
-  protected boolean isAnyField(Field protoField, boolean repeated) {
-    return !repeated && protoField.getType().getCanonicalName().equals(ProtoConst.ANY.getCanonicalName());
+  public Map<String, SchemaEx<?>> getCanonicalSchemas() {
+    return canonicalSchemas;
   }
 
-  protected FieldSchema createScalarField(Field protoField) {
-    switch ((ScalarFieldType) protoField.getType()) {
-      case INT32:
-        return new Int32Schema(protoField);
-      case UINT32:
-        return new UInt32Schema(protoField);
-      case SINT32:
-        return new SInt32Schema(protoField);
-      case FIXED32:
-        return new Fixed32Schema(protoField);
-      case SFIXED32:
-        return new SFixed32Schema(protoField);
-      case INT64:
-        return new Int64Schema(protoField);
-      case UINT64:
-        return new UInt64Schema(protoField);
-      case SINT64:
-        return new SInt64Schema(protoField);
-      case FIXED64:
-        return new Fixed64Schema(protoField);
-      case SFIXED64:
-        return new SFixed64Schema(protoField);
-      case FLOAT:
-        return new FloatSchema(protoField);
-      case DOUBLE:
-        return new DoubleSchema(protoField);
-      case BOOL:
-        return new BoolSchema(protoField);
-      case STRING:
-        return new StringSchema(protoField);
-      case BYTES:
-        return new BytesSchema(protoField);
-      default:
-        throw new IllegalStateException("unknown proto field type: " + protoField.getType());
-    }
+  protected String generateCacheKey(Message message, JavaType javaType) {
+    return message.getCanonicalName() + ":" + javaType.toCanonical();
   }
+
+  protected abstract <T> SchemaEx<T> newMessageSchema(Message message, JavaType javaType);
+
+  /**
+   *
+   * @param protoField
+   * @param propertyDescriptor provide getter/setter/javaType
+   * @return
+   */
+  protected abstract <T> FieldSchema<T> createScalarField(Field protoField, PropertyDescriptor propertyDescriptor);
+
+  @SuppressWarnings("unchecked")
+  protected <T> SchemaEx<T> getOrCreateMessageSchema(Message message, JavaType javaType) {
+    String cacheKey = generateCacheKey(message, javaType);
+    SchemaEx<T> messageSchema = (SchemaEx<T>) canonicalSchemas.get(cacheKey);
+    if (messageSchema == null) {
+      // messageSchema already put into canonicalSchemas inside createMessageSchema
+      messageSchema = createMessageSchema(message, javaType);
+    }
+    return messageSchema;
+  }
+
+  @SuppressWarnings("unchecked")
+  protected <T> SchemaEx<T> findSchema(String key) {
+    return (SchemaEx<T>) canonicalSchemas.get(key);
+  }
+
+  protected <T> SchemaEx<T> createMessageSchema(Message message, JavaType javaType) {
+    String cacheKey = generateCacheKey(message, javaType);
+    SchemaEx<T> schema = findSchema(cacheKey);
+    if (schema != null) {
+      return schema;
+    }
+
+    schema = newMessageSchema(message, javaType);
+    canonicalSchemas.put(cacheKey, schema);
+
+    schema.init();
+    return schema;
+  }
+
+  protected <T> FieldSchema<T> createMapFieldSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
+    JavaType javaType = propertyDescriptor.getJavaType();
+    if (javaType.isJavaLangObject()) {
+      javaType = ProtoConst.MAP_TYPE;
+    }
+
+    JavaType entryType = TypeFactory.defaultInstance().constructParametricType(MapEntry.class,
+        javaType.getKeyType(),
+        javaType.getContentType());
+    SchemaEx<Entry<Object, Object>> entrySchema = getOrCreateMessageSchema((Message) protoField.getType(),
+        entryType);
+    return new MapSchema<>(protoField, propertyDescriptor, entrySchema);
+  }
+
+  // normal message write from or read to a map
+  public FieldMapEx<Map<Object, Object>> createMapFields(Message message) {
+    List<FieldSchema<Map<Object, Object>>> fieldSchemas = new ArrayList<>();
+    for (Field protoField : message.getFields()) {
+      PropertyDescriptor propertyDescriptor = new PropertyDescriptor();
+      propertyDescriptor.setJavaType(ProtoConst.OBJECT_TYPE);
+      propertyDescriptor.setGetter(new MapGetter<>(protoField.getName()));
+      propertyDescriptor.setSetter(new MapSetter<>(protoField.getName()));
+
+      FieldSchema<Map<Object, Object>> fieldSchema = createSchemaField(protoField, propertyDescriptor);
+      fieldSchemas.add(fieldSchema);
+    }
+
+    return FieldMapEx.createFieldMap(fieldSchemas);
+  }
+
+  public <T> FieldSchema<T> createSchemaField(Field protoField, PropertyDescriptor propertyDescriptor) {
+    // map is a special repeated
+    if (protoField.isMap()) {
+      return createMapFieldSchema(protoField, propertyDescriptor);
+    }
+
+    if (protoField.isRepeated()) {
+      return createRepeatedSchema(protoField, propertyDescriptor);
+    }
+
+    if (isAnyField(protoField)) {
+      return new AnySchema<>(protoMapper, protoField, propertyDescriptor);
+    }
+
+    if (protoField.getType().isScalar()) {
+      return createScalarField(protoField, propertyDescriptor);
+    }
+
+    // message
+    if (protoField.getType().isMessage()) {
+      SchemaEx<Object> messageSchema = getOrCreateMessageSchema((Message) protoField.getType(),
+          propertyDescriptor.getJavaType());
+      if (isWrapProperty((Message) protoField.getType())) {
+        return new PropertyWrapperAsFieldSchema<>(protoField, propertyDescriptor, messageSchema);
+      }
+
+      return new MessageAsFieldSchema<>(protoField, propertyDescriptor, messageSchema);
+    }
+
+    if (protoField.isOneofPart()) {
+      throw new IllegalStateException("not IMPL oneof now.");
+    }
+
+    ProtoUtils.throwNotSupportWrite(protoField, propertyDescriptor.getJavaType().getRawClass());
+    return null;
+  }
+
+  protected abstract <T> FieldSchema<T> createRepeatedSchema(Field protoField, PropertyDescriptor propertyDescriptor);
 }

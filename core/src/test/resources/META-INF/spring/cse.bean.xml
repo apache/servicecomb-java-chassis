@@ -19,9 +19,6 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-  <bean class="org.apache.servicecomb.core.config.ConfigurationSpringInitializer">
-    <property name="configId" value="config"/>
-  </bean>
 
   <bean class="org.apache.servicecomb.core.CseApplicationListener">
   </bean>

@@ -21,6 +21,7 @@ import java.util.concurrent.CountDownLatch;
 
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
@@ -39,6 +40,8 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestClientHttp {
+  private Microservice microservice = new Microservice();
+
   @SuppressWarnings("unchecked")
   @Test
   public void testServiceRegistryClientImpl(@Mocked IpPortManager manager) {
@@ -49,7 +52,12 @@ public class TestClientHttp {
         result = ipPort;
       }
     };
-
+    new MockUp<RegistryUtils>() {
+      @Mock
+      Microservice getMicroservice() {
+        return microservice;
+      }
+    };
     new MockUp<CountDownLatch>() {
       @Mock
       public void await() throws InterruptedException {

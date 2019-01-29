@@ -19,6 +19,7 @@ package org.apache.servicecomb.it.testcase;
 import static org.junit.Assert.assertEquals;
 
 import org.apache.servicecomb.it.Consumers;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Test;
 
 public class TestDefaultValue {
@@ -217,6 +218,17 @@ public class TestDefaultValue {
   }
 
   @Test
+  public void stringQueryRequiredTrue_springmvc_rt() {
+    try {
+      consumersSpringmvc.getSCBRestTemplate().getForObject("/stringQueryRequiredTrue", String.class);
+      assertEquals("required is true, throw exception", "not throw exception");
+    } catch (InvocationException e) {
+      assertEquals(400, e.getStatusCode());
+      assertEquals(true, e.getMessage().contains("Parameter is not valid"));
+    }
+  }
+
+  @Test
   public void intHeader_springmvc_intf() {
     assertEquals(defaultInt, consumersSpringmvc.getIntf().intHeader(null));
   }
@@ -246,6 +258,17 @@ public class TestDefaultValue {
   public void stringHeader_springmvc_rt() {
     assertEquals(defaultStr,
         consumersSpringmvc.getSCBRestTemplate().getForObject("/stringHeader", String.class));
+  }
+
+  @Test
+  public void stringHeaderRequiredTrue_springmvc_rt() {
+    try {
+      consumersSpringmvc.getSCBRestTemplate().getForObject("/stringHeaderRequiredTrue", String.class);
+      assertEquals("required is true, throw exception", "not throw exception");
+    } catch (InvocationException e) {
+      assertEquals(400, e.getStatusCode());
+      assertEquals(true, e.getMessage().contains("Parameter is not valid"));
+    }
   }
 
   @Test
@@ -279,6 +302,17 @@ public class TestDefaultValue {
   public void stringForm_springmvc_rt() {
     assertEquals(defaultStr,
         consumersSpringmvc.getSCBRestTemplate().postForObject("/stringForm", null, String.class));
+  }
+
+  @Test
+  public void stringFormRequiredTrue_springmvc_rt() {
+    try {
+      consumersSpringmvc.getSCBRestTemplate().getForObject("/stringFormRequiredTrue", String.class);
+      assertEquals("required is true, throw exception", "not throw exception");
+    } catch (InvocationException e) {
+      assertEquals(400, e.getStatusCode());
+      assertEquals(true, e.getMessage().contains("Parameter is not valid"));
+    }
   }
 
   @Test

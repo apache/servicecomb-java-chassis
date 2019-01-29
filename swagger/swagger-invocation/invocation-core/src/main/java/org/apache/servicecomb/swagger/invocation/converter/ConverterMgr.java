@@ -37,6 +37,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.inject.util.Types;
+
 @Component
 public class ConverterMgr {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConverterMgr.class);
@@ -99,13 +101,33 @@ public class ConverterMgr {
     return findCommonConverter(target);
   }
 
+
   protected Converter findSrcTarget(Type src, Type target) {
     Map<Type, Converter> map = srcTargetMap.get(src);
-    if (map == null) {
-      return null;
+    if (map != null) {
+      Converter converter = map.get(target);
+      if (converter == null) {
+        //maybe target class is ArrayList...
+        Type realTarget = checkAndGetType(target);
+        if (realTarget != null) {
+          converter = map.get(realTarget);
+        }
+      }
+      return converter;
     }
+    return null;
+  }
 
-    return map.get(target);
+  // check whether is ArrayList , LinkedArrayList ...  or not
+  private Type checkAndGetType(Type type) {
+    if (ParameterizedType.class.isAssignableFrom(type.getClass())) {
+      ParameterizedType targetType = (ParameterizedType) type;
+      Class<?> targetCls = (Class<?>) targetType.getRawType();
+      if (List.class.isAssignableFrom(targetCls)) {
+        return Types.newParameterizedType(List.class, (Class<?>) targetType.getActualTypeArguments()[0]);
+      }
+    }
+    return null;
   }
 
   protected Converter findCommonConverter(Type target) {

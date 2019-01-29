@@ -33,6 +33,7 @@ public class DefaultExceptionToProducerResponseConverter implements ExceptionToP
   @Override
   public Response convert(SwaggerInvocation swaggerInvocation, Throwable e) {
     LOGGER.error("invoke failed, invocation={}", swaggerInvocation.getInvocationQualifiedName(), e);
-    return Response.producerFailResp(e);
+    //not only producer but also consumer
+    return Response.failResp(swaggerInvocation.getInvocationType(), e);
   }
 }

@@ -18,10 +18,12 @@
 package org.apache.servicecomb.it.schema;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
+import org.apache.servicecomb.foundation.test.scaffolding.model.Media;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 
 @RestSchema(schemaId = "paramCodec")
@@ -35,5 +37,14 @@ public class ParamCodecSchema {
   public String spaceCharCodec(@PathParam("pathVal") String pathVal, @QueryParam("q") String q) {
     String expectedParamString = "a%2B+%20b%% %20c";
     return pathVal + " +%20%% " + q + " " + (expectedParamString.equals(pathVal) && expectedParamString.equals(q));
+  }
+
+  /**
+   * Test special enum name tagged by {@link com.fasterxml.jackson.annotation.JsonProperty}
+   */
+  @Path("enum/enumSpecialName")
+  @POST
+  public Media enumSpecialName(Media media) {
+    return media;
   }
 }

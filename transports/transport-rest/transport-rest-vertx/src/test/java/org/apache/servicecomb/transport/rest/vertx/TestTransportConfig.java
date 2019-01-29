@@ -24,6 +24,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import mockit.Mock;
+import mockit.MockUp;
+
 public class TestTransportConfig {
 
   @Before
@@ -49,6 +52,12 @@ public class TestTransportConfig {
 
   @Test
   public void testGetThreadCountNull() {
+    new MockUp<Runtime>() {
+      @Mock
+      int availableProcessors() {
+        return 1;
+      }
+    };
     Assert.assertEquals(1, TransportConfig.getThreadCount());
   }
 
@@ -154,7 +163,6 @@ public class TestTransportConfig {
     ArchaiusUtils.setProperty("servicecomb.rest.server.http2.useAlpnEnabled", false);
     Assert.assertFalse(TransportConfig.getUseAlpn());
   }
-
 
   @Test
   public void testGetMaxInitialLineLength() {

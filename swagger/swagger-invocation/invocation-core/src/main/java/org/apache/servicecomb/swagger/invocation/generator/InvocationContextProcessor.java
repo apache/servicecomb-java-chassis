@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.swagger.invocation.generator;
 
+import java.lang.reflect.Type;
+
 import org.apache.servicecomb.swagger.extend.parameter.InvocationContextParameter;
 import org.apache.servicecomb.swagger.generator.core.CommonParameterTypeProcessor;
 import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
@@ -24,7 +26,7 @@ import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 
 public class InvocationContextProcessor implements CommonParameterTypeProcessor {
   @Override
-  public Class<?> getParameterType() {
+  public Type getParameterType() {
     return InvocationContext.class;
   }
 

@@ -25,13 +25,15 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.apache.servicecomb.foundation.common.utils.bean.Getter;
+import org.apache.servicecomb.foundation.common.utils.bean.IntGetter;
+import org.apache.servicecomb.foundation.common.utils.bean.IntSetter;
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class TestLambdaMetafactoryUtils {
-  public static class Model {
+  static class Model {
     private int f1;
 
     public int getF1() {
@@ -68,13 +70,13 @@ public class TestLambdaMetafactoryUtils {
   @SuppressWarnings("unchecked")
   @Test
   public void createGetterSetterByMethod() throws Throwable {
-    Getter getter = LambdaMetafactoryUtils.createGetter(Model.class.getMethod("getF1"));
-    Setter setter = LambdaMetafactoryUtils.createSetter(Model.class.getMethod("setF1", int.class));
+    IntGetter<Model> getter = LambdaMetafactoryUtils.createGetter(Model.class.getMethod("getF1"));
+    IntSetter<Model> setter = LambdaMetafactoryUtils.createSetter(Model.class.getMethod("setF1", int.class));
     BiFunction<Object, Object, Object> echo = LambdaMetafactoryUtils
         .createLambda(Model.class.getMethod("echo", List.class), BiFunction.class);
 
     setter.set(model, 1);
-    int f1 = (int) getter.get(model);
+    int f1 = getter.get(model);
     Assert.assertEquals(1, f1);
     Assert.assertThat((List<Integer>) echo.apply(model, Arrays.asList(2)), Matchers.contains(2));
   }
@@ -82,8 +84,8 @@ public class TestLambdaMetafactoryUtils {
   @Test
   public void createGetterSetterByField() throws Throwable {
     Field f1 = Model.class.getDeclaredField("f1");
-    Getter getter = LambdaMetafactoryUtils.createGetter(f1);
-    Setter setter = LambdaMetafactoryUtils.createSetter(f1);
+    Getter<Model, Integer> getter = LambdaMetafactoryUtils.createGetter(f1);
+    Setter<Model, Integer> setter = LambdaMetafactoryUtils.createSetter(f1);
 
     setter.set(model, 1);
     Assert.assertEquals(1, (int) getter.get(model));

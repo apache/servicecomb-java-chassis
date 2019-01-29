@@ -34,7 +34,7 @@ public class ServerEndpointsLogPublisher extends AbstractMeasurementNodeLogPubli
   public void print(boolean printDetail) {
     appendLine(sb, "    server.endpoints:");
     appendLine(sb,
-        "      listen                connectCount    disconnectCount rejectByLimit   connections  send         receive");
+        "      listen                connectCount    disconnectCount rejectByLimit   connections  send(Bps)    receive(Bps)");
 
     double connect = 0;
     double disconnect = 0;

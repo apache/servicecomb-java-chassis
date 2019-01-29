@@ -20,10 +20,12 @@ package org.apache.servicecomb.common.rest.codec.param;
 import java.lang.reflect.Type;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.swagger.converter.property.SwaggerParamCollectionFormat;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -44,21 +46,27 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
     private boolean ignoreDefaultValue = DynamicPropertyFactory.getInstance()
         .getBooleanProperty("servicecomb.rest.parameter.query.ignoreDefaultValue", false).get();
 
+    // This configuration is used for temporary use only. Do not use it if you are sure how it works. And may be deleted in future.
+    private boolean ignoreRequiredCheck = DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.rest.parameter.query.ignoreRequiredCheck", false).get();
+
     private SwaggerParamCollectionFormat collectionFormat;
 
-    public QueryProcessor(String paramPath, JavaType targetType, Object defaultValue, String collectionFormat) {
-      super(paramPath, targetType, defaultValue);
+    public QueryProcessor(String paramPath, JavaType targetType, Object defaultValue, boolean required,
+        String collectionFormat) {
+      super(paramPath, targetType, defaultValue, required);
       if (StringUtils.isNoneEmpty(collectionFormat)) {
         this.collectionFormat = SwaggerParamCollectionFormat.valueOf(collectionFormat.toUpperCase());
       }
     }
 
     @Override
-    public Object getValue(HttpServletRequest request) throws Exception {
+    public Object getValue(HttpServletRequest request) {
       Object value = null;
       if (targetType.isContainerType()
           && SwaggerParamCollectionFormat.MULTI.equals(collectionFormat)) {
         value = request.getParameterValues(paramPath);
+        //Even if the paramPath does not exist, value won't be null at now
       } else {
         value = request.getParameter(paramPath);
         // make some old systems happy
@@ -68,10 +76,7 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
           }
         }
         if (value == null) {
-          Object defaultValue = getDefaultValue();
-          if (!ignoreDefaultValue && defaultValue != null) {
-            value = defaultValue;
-          }
+          value = checkRequiredAndDefaultValue();
         }
         if (null != collectionFormat) {
           value = collectionFormat.splitParam((String) value);
@@ -79,6 +84,17 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
       }
 
       return convertValue(value, targetType);
+    }
+
+    private Object checkRequiredAndDefaultValue() {
+      if (!ignoreRequiredCheck && isRequired()) {
+        throw new InvocationException(Status.BAD_REQUEST, "Parameter is required.");
+      }
+      Object defaultValue = getDefaultValue();
+      if (!ignoreDefaultValue && defaultValue != null) {
+        return defaultValue;
+      }
+      return null;
     }
 
     @Override
@@ -105,6 +121,7 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
     QueryParameter queryParameter = (QueryParameter) parameter;
     JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
     return new QueryProcessor(parameter.getName(), targetType, queryParameter.getDefaultValue(),
+        parameter.getRequired(),
         queryParameter.getCollectionFormat());
   }
 }

@@ -26,9 +26,9 @@ servicecomb:
   rest:
     address: 127.0.0.1:18080
     server:
-      thread-count: 8
+      verticle-count: 8
     client:
-      thread-count: 8
+      verticle-count: 8
   handler:
     chain:
       Consumer:

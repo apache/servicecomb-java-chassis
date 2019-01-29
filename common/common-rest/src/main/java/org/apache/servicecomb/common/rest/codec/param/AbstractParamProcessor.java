@@ -26,17 +26,24 @@ public abstract class AbstractParamProcessor implements ParamValueProcessor {
 
   protected Object defaultValue;
 
+  protected boolean required = false;
+
   public Object getDefaultValue() {
     return defaultValue;
   }
 
-  public AbstractParamProcessor(String paramPath, JavaType targetType, Object defaultValue) {
+  public AbstractParamProcessor(String paramPath, JavaType targetType, Object defaultValue, boolean required) {
     this.paramPath = paramPath;
     this.targetType = targetType;
     this.defaultValue = defaultValue;
+    this.required = required;
   }
 
   public String getParameterPath() {
     return paramPath;
+  }
+
+  public boolean isRequired() {
+    return required;
   }
 }

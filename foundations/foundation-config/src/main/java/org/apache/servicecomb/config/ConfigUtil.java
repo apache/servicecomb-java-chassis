@@ -210,7 +210,7 @@ public final class ConfigUtil {
     }
 
     if (!configCenterConfigurationSource.isValidSource(localConfiguration)) {
-      LOGGER.info("Config Source serverUri is not correctly configured.");
+      LOGGER.warn("Config Source serverUri is not correctly configured.");
       return null;
     }
     return configCenterConfigurationSource;

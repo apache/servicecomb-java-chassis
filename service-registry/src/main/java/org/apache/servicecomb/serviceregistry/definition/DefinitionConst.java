@@ -17,9 +17,13 @@
 
 package org.apache.servicecomb.serviceregistry.definition;
 
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
+
 public interface DefinitionConst {
 
   String CONFIG_QUALIFIED_INSTANCE_ENVIRONMENT_KEY = "instance_description.environment";
+
+  String CONFIG_QUALIFIED_INSTANCE_INITIAL_STATUS = "instance_description.initialStatus";
 
   String CONFIG_ALLOW_CROSS_APP_KEY = "allowCrossApp";
 
@@ -30,6 +34,8 @@ public interface DefinitionConst {
   String DEFAULT_STAGE = "prod";
 
   String DEFAULT_INSTANCE_ENVIRONMENT = "production";
+
+  String DEFAULT_INSTANCE_INITIAL_STATUS = MicroserviceInstanceStatus.UP.name();
 
   String VERSION_RULE_LATEST = "latest";
 

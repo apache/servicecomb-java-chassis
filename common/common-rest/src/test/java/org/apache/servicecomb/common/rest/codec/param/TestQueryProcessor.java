@@ -34,7 +34,13 @@ public class TestQueryProcessor {
   HttpServletRequest request;
 
   private ParamValueProcessor createProcessor(String name, Class<?> type, String collectionFormat) {
-    return new QueryProcessor(name, TypeFactory.defaultInstance().constructType(type), null, collectionFormat);
+    return new QueryProcessor(name, TypeFactory.defaultInstance().constructType(type), null, true, collectionFormat);
+  }
+
+  private ParamValueProcessor createProcessor(String name, Class<?> type, String defaultValue, boolean required,
+      String collectionFormat) {
+    return new QueryProcessor(name, TypeFactory.defaultInstance().constructType(type), defaultValue, required,
+        collectionFormat);
   }
 
   @Test
@@ -83,5 +89,37 @@ public class TestQueryProcessor {
   public void testGetProcessorType() {
     ParamValueProcessor processor = createProcessor("name", String.class, "multi");
     Assert.assertEquals("query", processor.getProcessorType());
+  }
+
+  @Test
+  public void testGetValueRequiredTrue() throws Exception {
+    new Expectations() {
+      {
+        request.getParameter("name");
+        result = null;
+      }
+    };
+
+    ParamValueProcessor processor = createProcessor("name", String.class, "multi");
+    try {
+      processor.getValue(request);
+      Assert.assertEquals("required is true, throw exception", "not throw exception");
+    } catch (Exception e) {
+      Assert.assertTrue(e.getMessage().contains("Parameter is required."));
+    }
+  }
+
+  @Test
+  public void testGetValueRequiredFalse() throws Exception {
+    new Expectations() {
+      {
+        request.getParameter("name");
+        result = null;
+      }
+    };
+
+    ParamValueProcessor processor = createProcessor("name", String.class, "test", false, "multi");
+    Object result = processor.getValue(request);
+    Assert.assertEquals("test", result);
   }
 }

@@ -25,10 +25,6 @@
   <!-- <context:spring-configured /> -->
   <context:component-scan base-package="${scb-scan-package:org.apache.servicecomb}"/>
 
-  <bean class="org.apache.servicecomb.core.config.ConfigurationSpringInitializer">
-    <property name="configId" value="config"/>
-  </bean>
-
   <bean class="org.apache.servicecomb.core.CseContext" factory-method="getInstance"/>
 
   <bean class="org.apache.servicecomb.core.CseApplicationListener">

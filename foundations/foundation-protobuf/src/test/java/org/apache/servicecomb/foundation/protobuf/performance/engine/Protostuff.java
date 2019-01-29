@@ -35,7 +35,9 @@ public class Protostuff implements ProtubufCodecEngine {
   public byte[] serialize(Object model) throws IOException {
     LinkedBuffer linkedBuffer = LinkedBuffer.allocate();
     ProtobufOutput output = new ProtobufOutput(linkedBuffer);
-    rootSchema.writeTo(output, (Root) model);
+    if (model != null) {
+      rootSchema.writeTo(output, (Root) model);
+    }
     return output.toByteArray();
   }
 

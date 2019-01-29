@@ -21,9 +21,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.apache.servicecomb.transport.common.TransportConfigUtils;
 import org.springframework.util.StringUtils;
 
-import com.netflix.config.DynamicIntProperty;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
@@ -31,9 +31,6 @@ import io.vertx.core.Verticle;
 import io.vertx.core.http.HttpServerOptions;
 
 public final class TransportConfig {
-
-  public static final int DEFAULT_SERVER_THREAD_COUNT = 1;
-
   public static final int DEFAULT_SERVER_CONNECTION_IDLE_TIMEOUT_SECOND = 60;
 
   public static final boolean DEFAULT_SERVER_COMPRESSION_SUPPORT = false;
@@ -63,10 +60,9 @@ public final class TransportConfig {
   }
 
   public static int getThreadCount() {
-    DynamicIntProperty address =
-        DynamicPropertyFactory.getInstance()
-            .getIntProperty("servicecomb.rest.server.thread-count", DEFAULT_SERVER_THREAD_COUNT);
-    return address.get();
+    return TransportConfigUtils.readVerticleCount(
+        "servicecomb.rest.server.verticle-count",
+        "servicecomb.rest.server.thread-count");
   }
 
   public static int getConnectionIdleTimeoutInSeconds() {

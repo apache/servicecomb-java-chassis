@@ -17,11 +17,9 @@
 package org.apache.servicecomb.foundation.protobuf.internal.schema.scalar;
 
 public class TestSFixed32Schema extends TestNumberBaseSchema {
-  @Override
-  protected void init() {
-    fieldName = "sfixed32";
+  public TestSFixed32Schema() {
     minValue = Integer.MIN_VALUE;
     maxValue = Integer.MAX_VALUE;
-    super.init();
+    initFields("sfixed32", "objSfixed32");
   }
 }

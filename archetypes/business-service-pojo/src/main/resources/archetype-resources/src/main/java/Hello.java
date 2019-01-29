@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package ${groupId};
+package ${package};
 
 public interface Hello {
   String hello();

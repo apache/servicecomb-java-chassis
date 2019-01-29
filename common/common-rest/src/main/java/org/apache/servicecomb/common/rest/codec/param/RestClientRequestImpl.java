@@ -24,6 +24,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
@@ -39,6 +40,9 @@ import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+
 import io.vertx.core.Context;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
@@ -52,7 +56,7 @@ public class RestClientRequestImpl implements RestClientRequest {
 
   protected AsyncResponse asyncResp;
 
-  private final Map<String, Part> uploads = new HashMap<>();
+  private final Multimap<String, Part> uploads = ArrayListMultimap.create();
 
   protected HttpClientRequest request;
 
@@ -80,12 +84,19 @@ public class RestClientRequestImpl implements RestClientRequest {
   }
 
   @Override
-  public void attach(String name, Part part) {
+  @SuppressWarnings("unchecked")
+  public void attach(String name, Object part) {
     if (null == part) {
       LOGGER.debug("null file is ignored, file name = [{}]", name);
       return;
     }
-    uploads.put(name, part);
+    if (List.class.isAssignableFrom(part.getClass())) {
+      List<Part> parts = (List<Part>) part;
+      uploads.putAll(name, parts);
+      return;
+    }
+    // must be part
+    uploads.put(name, (Part) part);
   }
 
   @Override
@@ -155,7 +166,7 @@ public class RestClientRequestImpl implements RestClientRequest {
   }
 
   private void attachFiles(String boundary) {
-    Iterator<Entry<String, Part>> uploadsIterator = uploads.entrySet().iterator();
+    Iterator<Entry<String, Part>> uploadsIterator = uploads.entries().iterator();
     attachFile(boundary, uploadsIterator);
   }
 
@@ -172,7 +183,6 @@ public class RestClientRequestImpl implements RestClientRequest {
     String name = entry.getKey();
     Part part = entry.getValue();
     String filename = part.getSubmittedFileName();
-
     Buffer fileHeader = fileBoundaryInfo(boundary, name, part);
     request.write(fileHeader);
 

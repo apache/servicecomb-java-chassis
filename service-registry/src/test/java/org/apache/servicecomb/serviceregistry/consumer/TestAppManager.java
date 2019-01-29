@@ -78,7 +78,7 @@ public class TestAppManager {
 
     MicroserviceVersionRule microserviceVersionRule =
         appManager.getOrCreateMicroserviceVersionRule(appId, serviceName, versionRule);
-    Assert.assertEquals("0.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
+    Assert.assertEquals("0.0.0.0+", microserviceVersionRule.getVersionRule().getVersionRule());
     Assert.assertNull(microserviceVersionRule.getLatestMicroserviceVersion());
   }
 

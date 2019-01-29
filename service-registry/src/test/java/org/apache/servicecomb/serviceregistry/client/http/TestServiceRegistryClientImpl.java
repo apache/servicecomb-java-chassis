@@ -20,8 +20,11 @@ package org.apache.servicecomb.serviceregistry.client.http;
 import static org.hamcrest.core.Is.is;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.Response.Status;
 
@@ -29,6 +32,7 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.servicecomb.foundation.common.net.IpPort;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterConfig;
@@ -46,6 +50,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
@@ -65,6 +73,8 @@ public class TestServiceRegistryClientImpl {
 
   private ServiceRegistryClientImpl oClient = null;
 
+  private Microservice microservice = new Microservice();
+
   @Before
   public void setUp() throws Exception {
     oClient = new ServiceRegistryClientImpl(ipPortManager);
@@ -72,6 +82,13 @@ public class TestServiceRegistryClientImpl {
     new MockUp<RestUtils>() {
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+      }
+    };
+
+    new MockUp<RegistryUtils>() {
+      @Mock
+      Microservice getMicroservice() {
+        return microservice;
       }
     };
 
@@ -343,8 +360,21 @@ public class TestServiceRegistryClientImpl {
         Assert.assertEquals("global=true", requestParam.getQueryParams());
       }
     };
+
+    LoadingCache<String, Map<String, String>> oldCache = Deencapsulation.getField(oClient, "schemaCache");
+    LoadingCache<String, Map<String, String>> newCache = CacheBuilder.newBuilder()
+        .expireAfterAccess(60, TimeUnit.SECONDS).build(new CacheLoader<String, Map<String, String>>() {
+          public Map<String, String> load(String key) {
+            Map<String, String> schemas = new HashMap<>();
+            return schemas;
+          }
+        });
+    Deencapsulation.setField(oClient, "schemaCache", newCache);
+
     String str = oClient.getAggregatedSchema(microserviceId, schemaId);
     Assert.assertEquals("schema", str);
+
+    Deencapsulation.setField(oClient, "schemaCache", oldCache);
   }
 
   @Test
@@ -424,17 +454,11 @@ public class TestServiceRegistryClientImpl {
 
   @Test
   public void findServiceInstance_consumerId_null() {
-    new MockUp<IpPortManager>(ipPortManager) {
-      @Mock
-      IpPort getAvailableAddress() {
-        throw new Error("must not invoke this.");
-      }
-    };
     new MockUp<RestUtils>() {
       @Mock
       void get(IpPort ipPort, String uri, RequestParam requestParam,
           Handler<RestResponse> responseHandler) {
-        Assert.assertEquals("global=true", requestParam.getQueryParams());
+        Assert.assertEquals("appId=appId&global=true&serviceName=serviceName&version=1.0.0%2B", requestParam.getQueryParams());
       }
     };
     Assert.assertNull(oClient.findServiceInstance(null, "appId", "serviceName", "1.0.0+"));

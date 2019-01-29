@@ -17,7 +17,8 @@
 
 package org.apache.servicecomb.transport.highway;
 
-import com.netflix.config.DynamicIntProperty;
+import org.apache.servicecomb.transport.common.TransportConfigUtils;
+
 import com.netflix.config.DynamicLongProperty;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
@@ -45,14 +46,14 @@ public final class HighwayConfig {
   }
 
   public static int getServerThreadCount() {
-    DynamicIntProperty address =
-        DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.highway.server.thread-count", 1);
-    return address.get();
+    return TransportConfigUtils.readVerticleCount(
+        "servicecomb.highway.server.verticle-count",
+        "servicecomb.highway.server.thread-count");
   }
 
   public static int getClientThreadCount() {
-    DynamicIntProperty address =
-        DynamicPropertyFactory.getInstance().getIntProperty("servicecomb.highway.client.thread-count", 1);
-    return address.get();
+    return TransportConfigUtils.readVerticleCount(
+        "servicecomb.highway.client.verticle-count",
+        "servicecomb.highway.client.thread-count");
   }
 }

@@ -45,6 +45,9 @@ public class SimpleSubscriber {
     try {
       lambda = LambdaMetafactoryUtils.createLambda(instance, method, Consumer.class);
     } catch (Throwable throwable) {
+      // because enhance LambdaMetafactoryUtils to support ALL_MODES by reflect
+      // never run into this branch.
+      // otherwise create a listener instance of anonymous class will run into this branch
       LOGGER.warn("Failed to create lambda for method: {}, fallback to reflect.", method);
       lambda = event -> {
         try {
@@ -70,7 +73,11 @@ public class SimpleSubscriber {
   }
 
   public void dispatchEvent(Object event) {
-    dispatcher.accept(event);
+    try {
+      dispatcher.accept(event);
+    } catch (Throwable e) {
+      LOGGER.error("event process should not throw error. ", e);
+    }
   }
 
   private void syncDispatch(Object event) {

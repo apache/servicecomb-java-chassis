@@ -22,9 +22,9 @@ servicecomb:
   handler:
     chain:
       Consumer:
-        default: loadbalance
+        default: globalExceptionHandler,loadbalance
         service:
-          it-auth: loadbalance
+          it-auth: globalExceptionHandler,loadbalance
   # this is not the majority, not testing this feature by default
   #  rest:
   #    parameter:
@@ -47,6 +47,9 @@ servicecomb:
           transport: rest
         queryInput:
           transport: rest
+      org.apache.servicecomb.it.schema.RestControllerSchema:
+        restControllerSchemaQueries:
+          transport: rest
     it-producer-h2:
       generic:
         genericUser:
@@ -60,6 +63,9 @@ servicecomb:
         jsonInput:
           transport: rest
         queryInput:
+          transport: rest
+      org.apache.servicecomb.it.schema.RestControllerSchema:
+        restControllerSchemaQueries:
           transport: rest
     it-producer-h2c:
       generic:
@@ -75,6 +81,9 @@ servicecomb:
           transport: rest
         queryInput:
           transport: rest
+      org.apache.servicecomb.it.schema.RestControllerSchema:
+        restControllerSchemaQueries:
+          transport: rest
     it-producer-deploy-springboot2-servlet:
       generic:
         genericUser:
@@ -89,6 +98,9 @@ servicecomb:
           transport: rest
         queryInput:
           transport: rest
+      org.apache.servicecomb.it.schema.RestControllerSchema:
+        restControllerSchemaQueries:
+          transport: rest
     it-producer-deploy-springboot2-standalone:
       generic:
         genericUser:
@@ -102,6 +114,9 @@ servicecomb:
         jsonInput:
           transport: rest
         queryInput:
+          transport: rest
+      org.apache.servicecomb.it.schema.RestControllerSchema:
+        restControllerSchemaQueries:
           transport: rest
   http:
     dispatcher:
@@ -124,3 +139,9 @@ servicecomb:
               path: "/url/business/v2/.*"
               microserviceName: business
               versionRule: 2.0.0-3.0.0
+  request:
+    it-producer:
+      edgeExceptionConvertSchema:
+        timeout: 30000
+        add:
+          timeout: 1000

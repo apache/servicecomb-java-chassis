@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -60,7 +61,7 @@ public class SwaggerToProtoGenerator {
 
   private final Set<String> messages = new HashSet<>();
 
-  private final List<Runnable> pending = new ArrayList<>();
+  private List<Runnable> pending = new ArrayList<>();
 
   // not java package
   // better to be: app_${app}.mid_{microservice}.sid_{schemaId}
@@ -72,8 +73,15 @@ public class SwaggerToProtoGenerator {
   public Proto convert() {
     convertDefinitions();
     convertOperations();
-    for (Runnable runnable : pending) {
-      runnable.run();
+    for (; ; ) {
+      List<Runnable> oldPending = pending;
+      pending = new ArrayList<>();
+      for (Runnable runnable : oldPending) {
+        runnable.run();
+      }
+      if (pending.isEmpty()) {
+        break;
+      }
     }
 
     return createProto();
@@ -89,6 +97,7 @@ public class SwaggerToProtoGenerator {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private void convertDefinition(String modelName, ModelImpl model) {
     Map<String, Property> properties = model.getProperties();
     if (properties == null) {
@@ -96,12 +105,23 @@ public class SwaggerToProtoGenerator {
       properties = Collections.emptyMap();
     }
 
-    // complex
-    messages.add(modelName);
-    appendLine(msgStringBuilder, "message %s {", modelName);
+    createMessage(modelName, (Map<String, Object>) (Object) properties);
+  }
+
+  private void createMessage(String protoName, Map<String, Object> properties, String... annotations) {
+    if (!messages.add(protoName)) {
+      // already created
+      return;
+    }
+
+    for (String annotation : annotations) {
+      msgStringBuilder.append("//");
+      appendLine(msgStringBuilder, annotation);
+    }
+    appendLine(msgStringBuilder, "message %s {", protoName);
     int tag = 1;
-    for (Entry<String, Property> entry : properties.entrySet()) {
-      Property property = entry.getValue();
+    for (Entry<String, Object> entry : properties.entrySet()) {
+      Object property = entry.getValue();
       String propertyType = convertSwaggerType(property);
 
       appendLine(msgStringBuilder, "  %s %s = %d;", propertyType, entry.getKey(), tag);
@@ -140,14 +160,14 @@ public class SwaggerToProtoGenerator {
       return type;
     }
 
-    Property property = adapter.getArrayItem();
-    if (property != null) {
-      return "repeated " + convertSwaggerType(property);
+    Property itemProperty = adapter.getArrayItem();
+    if (itemProperty != null) {
+      return "repeated " + convertArrayOrMapItem(itemProperty);
     }
 
-    property = adapter.getMapItem();
-    if (property != null) {
-      return String.format("map<string, %s>", convertSwaggerType(property));
+    itemProperty = adapter.getMapItem();
+    if (itemProperty != null) {
+      return String.format("map<string, %s>", convertArrayOrMapItem(itemProperty));
     }
 
     if (adapter.isObject()) {
@@ -158,6 +178,44 @@ public class SwaggerToProtoGenerator {
     throw new IllegalStateException(String
         .format("not support swagger type, class=%s, content=%s.", swaggerType.getClass().getName(),
             Json.encode(swaggerType)));
+  }
+
+  private String convertArrayOrMapItem(Property itemProperty) {
+    SwaggerTypeAdapter itemAdapter = SwaggerTypeAdapter.create(itemProperty);
+    // List<List<>>, need to wrap
+    if (itemAdapter.getArrayItem() != null) {
+      String protoName = generateWrapPropertyName(List.class.getSimpleName(), itemAdapter.getArrayItem());
+      pending.add(() -> wrapPropertyToMessage(protoName, itemProperty));
+      return protoName;
+    }
+
+    // List<Map<>>, need to wrap
+    if (itemAdapter.getMapItem() != null) {
+      String protoName = generateWrapPropertyName(Map.class.getSimpleName(), itemAdapter.getMapItem());
+      pending.add(() -> wrapPropertyToMessage(protoName, itemProperty));
+      return protoName;
+    }
+
+    return convertSwaggerType(itemProperty);
+  }
+
+  private String generateWrapPropertyName(String prefix, Property property) {
+    SwaggerTypeAdapter adapter = SwaggerTypeAdapter.create(property);
+    // List<List<>>, need to wrap
+    if (adapter.getArrayItem() != null) {
+      return generateWrapPropertyName(prefix + List.class.getSimpleName(), adapter.getArrayItem());
+    }
+
+    // List<Map<>>, need to wrap
+    if (adapter.getMapItem() != null) {
+      return generateWrapPropertyName(prefix + Map.class.getSimpleName(), adapter.getMapItem());
+    }
+
+    return prefix + StringUtils.capitalize(convertSwaggerType(adapter));
+  }
+
+  private void wrapPropertyToMessage(String protoName, Property property) {
+    createMessage(protoName, Collections.singletonMap("value", property), ProtoConst.ANNOTATION_WRAP_PROPERTY);
   }
 
   private String tryFindEnumType(List<String> enums) {
@@ -225,19 +283,19 @@ public class SwaggerToProtoGenerator {
     appendLine(serviceBuilder, "service MainService {");
     for (Path path : paths.values()) {
       for (Operation operation : path.getOperationMap().values()) {
-        convertOpeation(operation);
+        convertOperation(operation);
       }
     }
     serviceBuilder.setLength(serviceBuilder.length() - 1);
     appendLine(serviceBuilder, "}");
   }
 
-  private void convertOpeation(Operation operation) {
+  private void convertOperation(Operation operation) {
     ProtoMethod protoMethod = new ProtoMethod();
     fillRequestType(operation, protoMethod);
     fillResponseType(operation, protoMethod);
 
-    appendLine(serviceBuilder, "  //%s%s", ProtoConst.OP_HINT, Json.encode(protoMethod));
+    appendLine(serviceBuilder, "  //%s%s", ProtoConst.ANNOTATION_RPC, Json.encode(protoMethod));
     appendLine(serviceBuilder, "  rpc %s (%s) returns (%s);\n", operation.getOperationId(),
         protoMethod.getArgTypeName(),
         protoMethod.findResponse(Status.OK.getStatusCode()).getTypeName());
@@ -259,26 +317,23 @@ public class SwaggerToProtoGenerator {
       }
     }
 
-    String wrapName = operation.getOperationId() + "RequestWrap";
+    String wrapName = StringUtils.capitalize(operation.getOperationId()) + "RequestWrap";
     createWrapArgs(wrapName, parameters);
 
-    protoMethod.setArgWrapped(true);
     protoMethod.setArgTypeName(wrapName);
   }
 
   private void fillResponseType(Operation operation, ProtoMethod protoMethod) {
     for (Entry<String, Response> entry : operation.getResponses().entrySet()) {
       String type = convertSwaggerType(entry.getValue().getSchema());
+      boolean wrapped = !messages.contains(type);
 
       ProtoResponse protoResponse = new ProtoResponse();
-      protoResponse.setWrapped(!messages.contains(type));
       protoResponse.setTypeName(type);
 
-      if (protoResponse.isWrapped()) {
-        String wrapName = operation.getOperationId() + "ResponseWrap" + entry.getKey();
-        appendLine(msgStringBuilder, "message %s {", wrapName);
-        appendLine(msgStringBuilder, "  %s response = 1;", type);
-        appendLine(msgStringBuilder, "}");
+      if (wrapped) {
+        String wrapName = StringUtils.capitalize(operation.getOperationId()) + "ResponseWrap" + entry.getKey();
+        wrapPropertyToMessage(wrapName, entry.getValue().getSchema());
 
         protoResponse.setTypeName(wrapName);
       }
@@ -287,16 +342,11 @@ public class SwaggerToProtoGenerator {
   }
 
   private void createWrapArgs(String wrapName, List<Parameter> parameters) {
-    appendLine(msgStringBuilder, "message %s {", wrapName);
-
-    int idx = 1;
+    Map<String, Object> properties = new LinkedHashMap<>();
     for (Parameter parameter : parameters) {
-      String type = convertSwaggerType(parameter);
-      appendLine(msgStringBuilder, "  %s %s = %d;", type, parameter.getName(), idx);
-      idx++;
+      properties.put(parameter.getName(), parameter);
     }
-
-    appendLine(msgStringBuilder, "}");
+    createMessage(wrapName, properties, ProtoConst.ANNOTATION_WRAP_ARGUMENTS);
   }
 
   protected Proto createProto() {

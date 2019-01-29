@@ -34,6 +34,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.serviceregistry.config.ConfigurePropertyUtils;
 import org.apache.servicecomb.serviceregistry.config.MicroservicePropertiesLoader;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
+import org.apache.servicecomb.serviceregistry.version.Version;
 
 public class MicroserviceFactory {
   public Microservice create(String appId, String microserviceName) {
@@ -53,8 +54,11 @@ public class MicroserviceFactory {
     microservice.setServiceName(configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY,
         DEFAULT_MICROSERVICE_NAME));
     microservice.setAppId(configuration.getString(CONFIG_APPLICATION_ID_KEY, DEFAULT_APPLICATION_ID));
-    microservice.setVersion(configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY,
-        DEFAULT_MICROSERVICE_VERSION));
+    String version = configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY,
+        DEFAULT_MICROSERVICE_VERSION);
+    // just check version format
+    new Version(version);
+    microservice.setVersion(version);
     setDescription(configuration, microservice);
     microservice.setLevel(configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_ROLE_KEY, "FRONT"));
     microservice.setPaths(ConfigurePropertyUtils.getMicroservicePaths(configuration));

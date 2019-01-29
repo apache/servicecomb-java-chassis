@@ -36,9 +36,8 @@ class TraceContextConfig {
   }
 
   private static class ParentAwareMDCCurrentTraceContext extends CurrentTraceContext {
-    @SuppressWarnings("deprecation")
     static ParentAwareMDCCurrentTraceContext create() {
-      return new ParentAwareMDCCurrentTraceContext(new Default());
+      return new ParentAwareMDCCurrentTraceContext(Default.inheritable());
     }
 
     private final CurrentTraceContext delegate;

@@ -49,7 +49,11 @@ public class TestHeaderProcessor {
   RestClientRequest clientRequest;
 
   private HeaderProcessor createProcessor(String name, Class<?> type) {
-    return new HeaderProcessor(name, TypeFactory.defaultInstance().constructType(type), null);
+    return new HeaderProcessor(name, TypeFactory.defaultInstance().constructType(type), null, true);
+  }
+
+  private HeaderProcessor createProcessor(String name, Class<?> type, String defaultValue, boolean required) {
+    return new HeaderProcessor(name, TypeFactory.defaultInstance().constructType(type), defaultValue, required);
   }
 
   private void createClientRequest() {
@@ -102,9 +106,41 @@ public class TestHeaderProcessor {
       }
     };
 
-    HeaderProcessor processor = createProcessor("h1", String[].class);
+    HeaderProcessor processor = createProcessor("h1", String[].class, null, false);
     String[] value = (String[]) processor.getValue(request);
     Assert.assertNull(value);
+  }
+
+  @Test
+  public void testGetValueRequiredTrue() throws Exception {
+    new Expectations() {
+      {
+        request.getHeader("h1");
+        result = null;
+      }
+    };
+
+    HeaderProcessor processor = createProcessor("h1", String.class);
+    try {
+      processor.getValue(request);
+      Assert.assertEquals("required is true, throw exception", "not throw exception");
+    } catch (Exception e) {
+      Assert.assertTrue(e.getMessage().contains("Parameter is required."));
+    }
+  }
+
+  @Test
+  public void testGetValueRequiredFalse() throws Exception {
+    new Expectations() {
+      {
+        request.getHeader("h1");
+        result = null;
+      }
+    };
+
+    HeaderProcessor processor = createProcessor("h1", String.class, "test", false);
+    Object value = processor.getValue(request);
+    Assert.assertEquals("test", value);
   }
 
   @Test
@@ -133,7 +169,7 @@ public class TestHeaderProcessor {
 
     HeaderProcessor processor =
         new HeaderProcessor("h1", TypeFactory.defaultInstance().constructCollectionType(List.class, String.class),
-            null);
+            null, true);
     Object value = processor.getValue(request);
     Assert.assertThat((List<String>) value, Matchers.contains("h1v"));
   }
@@ -149,7 +185,8 @@ public class TestHeaderProcessor {
     };
 
     HeaderProcessor processor =
-        new HeaderProcessor("h1", TypeFactory.defaultInstance().constructCollectionType(Set.class, String.class), null);
+        new HeaderProcessor("h1", TypeFactory.defaultInstance().constructCollectionType(Set.class, String.class), null,
+            true);
     Object value = processor.getValue(request);
     Assert.assertThat((Set<String>) value, Matchers.contains("h1v"));
   }

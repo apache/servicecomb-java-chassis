@@ -26,6 +26,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.servicecomb.metrics.core.meter.os.net.InterfaceUsage;
+import org.apache.servicecomb.metrics.core.meter.os.net.NetStat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,101 +45,47 @@ public class NetMeter {
 
   public static final Tag TAG_RECEIVE = new BasicTag(STATISTIC, "receive");
 
+  public static final Tag TAG_PACKETS_RECEIVE = new BasicTag(STATISTIC, "receivePackets");
+
   public static final Tag TAG_SEND = new BasicTag(STATISTIC, "send");
+
+  public static final Tag TAG_PACKETS_SEND = new BasicTag(STATISTIC, "sendPackets");
 
   private final Id id;
 
-  private Map<String, InterfaceInfo> interfaceInfoMap = new ConcurrentHashMap<>();
-
-  public static class InterfaceInfo {
-    private final String name;
-
-    private Id sendId;
-
-    private Id receiveId;
-
-    //receive bytes
-    private long lastRxBytes;
-
-    //transmit bytes
-    private long lastTxBytes;
-
-    // bytes per second
-    private double sendRate;
-
-    private double receiveRate;
-
-    InterfaceInfo(Id id, String name) {
-      this.name = name;
-      id = id.withTag(INTERFACE, name);
-      this.sendId = id.withTag(TAG_SEND);
-      this.receiveId = id.withTag(TAG_RECEIVE);
-    }
-
-    public void update(String interfaceData, long secondInterval) {
-      String[] netInfo = interfaceData.trim().split("\\s+");
-      long rxBytes = Long.parseLong(netInfo[0]);
-      long txBytes = Long.parseLong(netInfo[8]);
-      sendRate = (double) (txBytes - lastTxBytes) / secondInterval;
-      receiveRate = (double) (rxBytes - lastRxBytes) / secondInterval;
-      lastRxBytes = rxBytes;
-      lastTxBytes = txBytes;
-    }
-
-    public String getName() {
-      return name;
-    }
-
-    public long getLastRxBytes() {
-      return lastRxBytes;
-    }
-
-    public long getLastTxBytes() {
-      return lastTxBytes;
-    }
-
-    public double getSendRate() {
-      return sendRate;
-    }
-
-    public double getReceiveRate() {
-      return receiveRate;
-    }
-  }
+  private Map<String, InterfaceUsage> interfaceUsageMap = new ConcurrentHashMap<>();
 
   public NetMeter(Id id) {
     this.id = id;
-
-    // init lastRxBytes and lastTxBytes
+    // init lastRxBytes, lastRxPackets, lastTxBytes, lastTxPackets
     refreshNet(1);
-    for (InterfaceInfo interfaceInfo : interfaceInfoMap.values()) {
-      interfaceInfo.sendRate = 0;
-      interfaceInfo.receiveRate = 0;
-    }
+    interfaceUsageMap.values().forEach(interfaceUsage -> {
+      interfaceUsage.getNetStats().forEach(NetStat::clearRate);
+    });
   }
 
   public void calcMeasurements(List<Measurement> measurements, long msNow, long secondInterval) {
     refreshNet(secondInterval);
 
-    for (InterfaceInfo interfaceInfo : interfaceInfoMap.values()) {
-      measurements.add(new Measurement(interfaceInfo.sendId, msNow, interfaceInfo.sendRate));
-      measurements.add(new Measurement(interfaceInfo.receiveId, msNow, interfaceInfo.receiveRate));
-    }
+    interfaceUsageMap.values().forEach(interfaceUsage -> {
+      interfaceUsage.calcMeasurements(measurements, msNow);
+    });
   }
+
 
   /*
    * Inter-|   Receive                                                            |  Transmit
    *  face |bytes      packets     errs drop fifo  frame      compressed multicast|bytes       packets     errs   drop  fifo colls carrier compressed
    *  eth0: 2615248100 32148518    0    0    0     0          0          0         87333034794 21420267    0      0     0     0    0    0
-   *        0          1           2    3    4     5          6          7          8
+   *        0          1           2    3    4     5          6          7          8          9
    */
   protected void refreshNet(long secondInterval) {
     try {
       File file = new File("/proc/net/dev");
       List<String> netInfo = FileUtils.readLines(file, StandardCharsets.UTF_8);
-      //the first two lines is useless
-
       Set<String> nameSet = new HashSet<>();
+
+      //the first two lines is useless
       for (int i = 2; i < netInfo.size(); i++) {
         String interfaceData = netInfo.get(i);
         String[] strings = interfaceData.split(":");
@@ -149,14 +97,14 @@ public class NetMeter {
         String name = strings[0].trim();
         nameSet.add(name);
 
-        InterfaceInfo interfaceInfo = interfaceInfoMap.computeIfAbsent(name, key -> new InterfaceInfo(id, key));
-        interfaceInfo.update(strings[1], secondInterval);
+        InterfaceUsage interfaceUsage = interfaceUsageMap.computeIfAbsent(name, key -> new InterfaceUsage(id, key));
+        interfaceUsage.update(strings[1], secondInterval);
       }
 
       // clear deleted interfaces
-      for (String interfaceName : interfaceInfoMap.keySet()) {
+      for (String interfaceName : interfaceUsageMap.keySet()) {
         if (!nameSet.contains(interfaceName)) {
-          this.interfaceInfoMap.remove(interfaceName);
+          this.interfaceUsageMap.remove(interfaceName);
         }
       }
     } catch (IOException e) {
@@ -164,7 +112,7 @@ public class NetMeter {
     }
   }
 
-  public Map<String, InterfaceInfo> getInterfaceInfoMap() {
-    return interfaceInfoMap;
+  public Map<String, InterfaceUsage> getInterfaceUsageMap() {
+    return interfaceUsageMap;
   }
 }

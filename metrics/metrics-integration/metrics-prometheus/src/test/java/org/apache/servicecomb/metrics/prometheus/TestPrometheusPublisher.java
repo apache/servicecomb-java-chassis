@@ -96,8 +96,8 @@ public class TestPrometheusPublisher {
     URL url = new URL("http://localhost:" + server.getAddress().getPort() + "/metrics");
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     try (InputStream is = conn.getInputStream()) {
-      Assert.assertEquals("# HELP ServiceComb Metrics ServiceComb Metrics\n" +
-          "# TYPE ServiceComb Metrics untyped\n" +
+      Assert.assertEquals("# HELP ServiceComb_Metrics ServiceComb Metrics\n" +
+          "# TYPE ServiceComb_Metrics untyped\n" +
           "count_name{tag1=\"tag1v\",tag2=\"tag2v\",} 1.0\n", IOUtils.toString(is));
     }
 

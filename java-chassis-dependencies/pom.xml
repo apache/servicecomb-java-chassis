@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.servicecomb</groupId>
     <artifactId>java-chassis</artifactId>
-    <version>1.1.0-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>java-chassis-dependencies</artifactId>
@@ -34,7 +34,7 @@
     <jackson.version>2.9.6</jackson.version>
     <vertx.version>3.5.3</vertx.version>
     <tec.zkclient.version>0.8</tec.zkclient.version>
-    <spring.version>4.3.16.RELEASE</spring.version>
+    <spring.version>4.3.20.RELEASE</spring.version>
     <slf4j.version>1.7.7</slf4j.version>
     <log4j.version>1.2.17</log4j.version>
     <log4j2.version>2.8.2</log4j2.version>
@@ -51,9 +51,9 @@
     <narayana.version>5.3.2.Final</narayana.version>
     <cxf.version>3.1.6</cxf.version>
     <logback.version>1.1.7</logback.version>
-    <brave.version>4.13.1</brave.version>
-    <zipkin.version>2.4.2</zipkin.version>
-    <zipkin-reporter.version>2.2.2</zipkin-reporter.version>
+    <brave.version>5.6.0</brave.version>
+    <zipkin.version>2.9.3</zipkin.version>
+    <zipkin-reporter.version>2.7.13</zipkin-reporter.version>
   </properties>
 
   <dependencyManagement>
@@ -93,7 +93,7 @@
       <dependency>
         <groupId>com.netflix.hystrix</groupId>
         <artifactId>hystrix-core</artifactId>
-        <version>1.5.10</version>
+        <version>1.5.12</version>
       </dependency>
       <dependency>
         <groupId>ch.qos.logback</groupId>
@@ -185,7 +185,7 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>21.0</version>
+        <version>25.1-jre</version>
       </dependency>
 
       <dependency>
@@ -696,9 +696,8 @@
         <version>${zipkin.version}</version>
       </dependency>
       <dependency>
-        <!-- only needed in test phase for mocking brave -->
-        <groupId>io.zipkin.java</groupId>
-        <artifactId>zipkin</artifactId>
+        <groupId>io.zipkin.zipkin2</groupId>
+        <artifactId>zipkin-junit</artifactId>
         <version>${zipkin.version}</version>
         <scope>test</scope>
       </dependency>
@@ -755,52 +754,6 @@
       </dependency>
 
       <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>foundation-common</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>foundation-protobuf</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>foundation-test-scaffolding</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>foundation-ssl</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>foundation-config</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>config-cc</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>config-apollo</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>foundation-vertx</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>foundation-metrics</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
         <groupId>com.fasterxml.jackson.dataformat</groupId>
         <artifactId>jackson-dataformat-yaml</artifactId>
         <version>${jackson.version}</version>
@@ -841,214 +794,307 @@
         <version>${swagger.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>java-chassis-core</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <groupId>com.google.protobuf</groupId>
+        <artifactId>protobuf-java</artifactId>
+        <version>3.5.1</version>
+      </dependency>
+
+      <!-- This project modules -->
+      <dependency>
+        <groupId>org.apache.servicecomb.archetypes</groupId>
+        <artifactId>business-service-jaxrs-archetype</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>handler-bizkeeper</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <groupId>org.apache.servicecomb.archetypes</groupId>
+        <artifactId>business-service-pojo-archetype</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>handler-loadbalance</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <groupId>org.apache.servicecomb.archetypes</groupId>
+        <artifactId>business-service-spring-boot-starter-archetype</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>handler-flowcontrol-qps</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>handler-publickey-auth</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>handler-fault-injection</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>common-rest</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>transport-rest-client</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>transport-rest-vertx</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>transport-rest-servlet</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>common-protobuf</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <groupId>org.apache.servicecomb.archetypes</groupId>
+        <artifactId>business-service-springmvc-archetype</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>common-javassist</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>swagger-generator-core</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <artifactId>common-protobuf</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>swagger-generator-jaxrs</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <artifactId>common-rest</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>swagger-generator-springmvc</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <artifactId>java-chassis-core</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>swagger-invocation-core</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <artifactId>deployment</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>swagger-invocation-jaxrs</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <artifactId>config-apollo</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>swagger-invocation-springmvc</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>swagger-invocation-validator</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>service-registry</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>provider-pojo</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>provider-rest-common</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>provider-jaxrs</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>provider-springmvc</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>transport-highway</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-boot-starter-configuration</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-boot-starter-servicecomb</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-boot-starter-provider</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-boot-starter-discovery</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-boot-starter-registry</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-boot-starter-transport</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-cloud-zuul</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-cloud-zuul-zipkin</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>handler-tracing-zipkin</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>tracing-common</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>tracing-zipkin</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <artifactId>config-cc</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>edge-core</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>metrics-core</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <artifactId>foundation-common</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>metrics-common</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <artifactId>foundation-config</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>metrics-prometheus</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <artifactId>foundation-metrics</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>foundation-protobuf</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>foundation-ssl</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>foundation-test-scaffolding</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>foundation-vertx</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>handler-bizkeeper</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>handler-fault-injection</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>handler-flowcontrol-qps</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>handler-loadbalance</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>handler-publickey-auth</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>handler-tracing-zipkin</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>spring-boot2-starter</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>spring-boot2-starter-discovery</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>spring-boot2-starter-servlet</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>spring-boot2-starter-standalone</artifactId>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>spring-boot-common</artifactId>
-        <version>1.1.0-SNAPSHOT</version>
+        <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.google.protobuf</groupId>
-        <artifactId>protobuf-java</artifactId>
-        <version>3.5.1</version>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>spring-boot-starter-configuration</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>spring-boot-starter-discovery</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>spring-boot-starter-provider</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>spring-boot-starter-registry</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>spring-boot-starter-servicecomb</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>spring-boot-starter-transport</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>spring-cloud-zuul</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>spring-cloud-zuul-zipkin</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>metrics-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>metrics-prometheus</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>provider-jaxrs</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>provider-pojo</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>provider-rest-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>provider-springmvc</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>service-registry</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>swagger-generator-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>swagger-generator-jaxrs</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>swagger-generator-springmvc</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>swagger-invocation-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>swagger-invocation-jaxrs</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>swagger-invocation-springmvc</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>swagger-invocation-validator</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>tracing-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>tracing-zipkin</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>transport-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>transport-highway</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>transport-rest-client</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>transport-rest-servlet</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>transport-rest-vertx</artifactId>
+        <version>${project.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

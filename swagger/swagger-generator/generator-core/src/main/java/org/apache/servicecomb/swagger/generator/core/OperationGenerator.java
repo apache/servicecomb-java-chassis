@@ -19,6 +19,7 @@ package org.apache.servicecomb.swagger.generator.core;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,6 +37,8 @@ import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
+
+import com.google.inject.util.Types;
 
 import io.swagger.models.HttpMethod;
 import io.swagger.models.Operation;
@@ -344,9 +347,28 @@ public class OperationGenerator {
 
   protected void processByParameterType(Type parameterType, int paramIdx) {
     ParameterTypeProcessor processor = context.findParameterTypeProcessor(parameterType);
+    if (processor == null) {
+      //maybe is ArrayList ...
+      Type realType = checkAndGetType(parameterType);
+      if (realType != null) {
+        processor = context.findParameterTypeProcessor(realType);
+      }
+    }
     if (processor != null) {
       processor.process(this, paramIdx);
     }
+  }
+
+  // check whether is ArrayList , LinkedArrayList ...  or not
+  private Type checkAndGetType(Type type) {
+    if (ParameterizedType.class.isAssignableFrom(type.getClass())) {
+      ParameterizedType targetType = (ParameterizedType) type;
+      Class<?> targetCls = (Class<?>) targetType.getRawType();
+      if (List.class.isAssignableFrom(targetCls)) {
+        return Types.newParameterizedType(List.class, (Class<?>) targetType.getActualTypeArguments()[0]);
+      }
+    }
+    return null;
   }
 
   public void correctOperation() {

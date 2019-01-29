@@ -28,7 +28,7 @@ public class TestVersionRuleFixedParser {
   @Test
   public void parseNormal() {
     versionRule = parser.parse("1");
-    Assert.assertEquals("1.0.0", versionRule.getVersionRule());
+    Assert.assertEquals("1.0.0.0", versionRule.getVersionRule());
   }
 
   @Test

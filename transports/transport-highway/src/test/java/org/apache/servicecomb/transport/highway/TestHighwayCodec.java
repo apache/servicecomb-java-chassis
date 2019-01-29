@@ -80,7 +80,7 @@ public class TestHighwayCodec {
   }
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
     serviceRegistry.init();
     RegistryUtils.setServiceRegistry(serviceRegistry);
@@ -105,7 +105,7 @@ public class TestHighwayCodec {
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
 
     header = null;
 
@@ -163,6 +163,26 @@ public class TestHighwayCodec {
     Response response = HighwayCodec.decodeResponse(invocation, operationProtobuf, tcp);
     Assert.assertEquals("10", invocation.getContext().get("a"));
     Assert.assertEquals(200, response.getStatusCode());
+  }
+
+  @Test
+  public void testDecodeRequestTraceId(@Mocked Endpoint endpoint) throws Exception {
+    commonMock();
+
+    Invocation invocation = new Invocation(endpoint, operationMeta, null);
+
+    invocation.addContext("X-B3-traceId", "test1");
+    Assert.assertEquals("test1", invocation.getContext("X-B3-traceId"));
+
+    RequestHeader headers = new RequestHeader();
+    Map<String, String> context = new HashMap<>();
+    headers.setContext(context);
+    HighwayCodec.decodeRequest(invocation, headers, operationProtobuf, bodyBuffer);
+    Assert.assertEquals("test1", invocation.getContext("X-B3-traceId"));
+
+    context.put("X-B3-traceId", "test2");
+    HighwayCodec.decodeRequest(invocation, headers, operationProtobuf, bodyBuffer);
+    Assert.assertEquals("test2", invocation.getContext("X-B3-traceId"));
   }
 
   @Test

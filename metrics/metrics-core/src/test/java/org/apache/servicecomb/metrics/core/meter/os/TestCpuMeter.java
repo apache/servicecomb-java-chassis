@@ -17,14 +17,19 @@
 package org.apache.servicecomb.metrics.core.meter.os;
 
 import java.io.File;
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.servicecomb.metrics.core.meter.os.cpu.CpuUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.google.common.io.CharSource;
+import com.google.common.io.Files;
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
 
@@ -36,19 +41,24 @@ import mockit.Mocked;
 public class TestCpuMeter {
 
   @Test
-  public void testRefreshCpuSuccess(@Mocked Id id, @Mocked Runtime runtime) {
-    List<String> list = new ArrayList<>();
-    list.add("cpu  1 1 1 1 1 1 1 1 0 0");
-    new MockUp<FileUtils>() {
+  public void testRefreshCpuSuccess(@Mocked Id id, @Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean,
+      @Mocked CharSource charSource) throws IOException {
+    new MockUp<Files>() {
       @Mock
-      public List<String> readLines(File file, Charset encoding) {
-        return list;
+      public CharSource asCharSource(File file, Charset encoding) {
+        return charSource;
       }
     };
-    new Expectations() {
-      {
-        runtime.availableProcessors();
-        result = 2;
+    new MockUp<ManagementFactory>() {
+      @Mock
+      RuntimeMXBean getRuntimeMXBean() {
+        return mxBean;
+      }
+    };
+    new MockUp<CpuUtils>() {
+      @Mock
+      public int calcHertz() {
+        return 4;
       }
     };
     new MockUp<Runtime>() {
@@ -57,33 +67,50 @@ public class TestCpuMeter {
         return runtime;
       }
     };
-    CpuMeter cpuMeter = new CpuMeter(id);
-    Assert.assertEquals(0.0, cpuMeter.getRate(), 0.0);
-    Assert.assertEquals(8, cpuMeter.getLastTotalTime());
-    Assert.assertEquals(1, cpuMeter.getLastIdleTime());
-    Assert.assertEquals(2, cpuMeter.getCpuNum());
-    list.add(0, "cpu  2 2 2 2 2 2 2 2 0 0");
-    cpuMeter.refreshCpu();
-    Assert.assertEquals(1.75, cpuMeter.getRate(), 0.0);
-    Assert.assertEquals(16, cpuMeter.getLastTotalTime());
-    Assert.assertEquals(2, cpuMeter.getLastIdleTime());
-    Assert.assertEquals(2, cpuMeter.getCpuNum());
-  }
-
-  @Test
-  public void testRefreshError(@Mocked Id id, @Mocked Runtime runtime) {
-    List<String> list = new ArrayList<>();
-    list.add("cpu  1 1 1 1 1 1 1 1 0 0");
-    new MockUp<FileUtils>() {
-      @Mock
-      public List<String> readLines(File file, Charset encoding) {
-        return list;
-      }
-    };
     new Expectations() {
       {
         runtime.availableProcessors();
         result = 2;
+        charSource.readFirstLine();
+        result = "1 1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1";
+      }
+    };
+    CpuMeter cpuMeter = new CpuMeter(id);
+    Assert.assertEquals(0.0, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
+    Assert.assertEquals(0.0, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
+
+    new Expectations() {
+      {
+        charSource.readFirstLine();
+        result = "2 2 2 2 2 2 2 2 2 0 0 2 2 2 2 2 2 2 2 2 2";
+      }
+    };
+    cpuMeter.update();
+
+    Assert.assertEquals(0.875, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
+    Assert.assertEquals(0.5, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
+  }
+
+  @Test
+  public void testRefreshError(@Mocked Id id, @Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean,
+      @Mocked CharSource charSource) throws IOException {
+
+    new MockUp<Files>() {
+      @Mock
+      public CharSource asCharSource(File file, Charset encoding) {
+        return charSource;
+      }
+    };
+    new MockUp<CpuUtils>() {
+      @Mock
+      public int calcHertz() {
+        return 4;
+      }
+    };
+    new MockUp<ManagementFactory>() {
+      @Mock
+      RuntimeMXBean getRuntimeMXBean() {
+        return mxBean;
       }
     };
     new MockUp<Runtime>() {
@@ -92,33 +119,50 @@ public class TestCpuMeter {
         return runtime;
       }
     };
+    new Expectations() {
+      {
+        runtime.availableProcessors();
+        result = 2;
+        charSource.readFirstLine();
+        result = "1 1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1";
+      }
+    };
     CpuMeter cpuMeter = new CpuMeter(id);
-    Assert.assertEquals(0.0, cpuMeter.getRate(), 0.0);
-    Assert.assertEquals(8, cpuMeter.getLastTotalTime());
-    Assert.assertEquals(1, cpuMeter.getLastIdleTime());
-    Assert.assertEquals(2, cpuMeter.getCpuNum());
-    list.add(0, "cpu  1 1 1 1 1 1 1 1 0 0");
-    cpuMeter.refreshCpu();
-    Assert.assertEquals(0.0, cpuMeter.getRate(), 0.0);
-    Assert.assertEquals(8, cpuMeter.getLastTotalTime());
-    Assert.assertEquals(1, cpuMeter.getLastIdleTime());
+    Assert.assertEquals(0.0, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
+    Assert.assertEquals(0.0, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
+    new Expectations() {
+      {
+        charSource.readFirstLine();
+        result = "1 1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1";
+      }
+    };
+    cpuMeter.update();
+
+    Assert.assertEquals(0.0, cpuMeter.getAllCpuUsage().getUsage(), 0.0);
+    Assert.assertEquals(0.0, cpuMeter.getProcessCpuUsage().getUsage(), 0.0);
   }
 
   @Test
-  public void testCalcMeasurements(@Mocked Id id, @Mocked Runtime runtime) {
+  public void testCalcMeasurements(@Mocked Id id, @Mocked Runtime runtime, @Mocked RuntimeMXBean mxBean,
+      @Mocked CharSource charSource) throws IOException {
     List<Measurement> measurements = new ArrayList<>();
-    List<String> list = new ArrayList<>();
-    list.add("cpu  1 1 1 1 1 1 1 1 0 0");
-    new MockUp<FileUtils>() {
+
+    new MockUp<Files>() {
       @Mock
-      public List<String> readLines(File file, Charset encoding) {
-        return list;
+      public CharSource asCharSource(File file, Charset encoding) {
+        return charSource;
       }
     };
-    new Expectations() {
-      {
-        runtime.availableProcessors();
-        result = 2;
+    new MockUp<CpuUtils>() {
+      @Mock
+      public int calcHertz() {
+        return 4;
+      }
+    };
+    new MockUp<ManagementFactory>() {
+      @Mock
+      RuntimeMXBean getRuntimeMXBean() {
+        return mxBean;
       }
     };
     new MockUp<Runtime>() {
@@ -127,12 +171,29 @@ public class TestCpuMeter {
         return runtime;
       }
     };
+    new Expectations() {
+      {
+        runtime.availableProcessors();
+        result = 2;
+        charSource.readFirstLine();
+        result = "1 1 1 1 1 1 1 1 1 0 0 1 1 1 1 1 1 1 1";
+      }
+    };
     CpuMeter cpuMeter = new CpuMeter(id);
-    list.add(0, "cpu  2 2 2 2 2 2 2 2 0 0");
+
+    new Expectations() {
+      {
+        charSource.readFirstLine();
+        result = "2 2 2 2 2 2 2 2 2 0 0 2 2 2 2 2 2 2 2 2 2";
+      }
+    };
     cpuMeter.calcMeasurements(measurements, 0);
-    Assert.assertEquals(1, measurements.size());
+    Assert.assertEquals(2, measurements.size());
     Measurement measurement = measurements.get(0);
     Assert.assertEquals(0, measurement.timestamp());
-    Assert.assertEquals(1.75, measurement.value(), 0.0);
+    Assert.assertEquals(0.875, measurement.value(), 0.0);
+    measurement = measurements.get(1);
+    Assert.assertEquals(0, measurement.timestamp());
+    Assert.assertEquals(0.5, measurement.value(), 0.0);
   }
 }

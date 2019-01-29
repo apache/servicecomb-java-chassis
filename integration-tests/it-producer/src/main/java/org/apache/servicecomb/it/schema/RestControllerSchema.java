@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.it.schema;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,5 +27,12 @@ public class RestControllerSchema {
   @GetMapping(path = "restControllerSchemaQuery")
   public int intQuery(@RequestParam(name = "input", required = false, defaultValue = "13") int input) {
     return input;
+  }
+
+  @GetMapping(path = "/v1/restControllerSchemaQueries")
+  public String restControllerSchemaQueries(@RequestParam(name = "a", required = false) String a,
+      @RequestParam(name = "b", required = false) String b,
+      @RequestParam(name = "c", required = false) String c, HttpServletRequest request) {
+    return request.getRequestURI() + "?" + request.getQueryString();
   }
 }

@@ -55,20 +55,21 @@ public final class RestCodec {
       RestOperationMeta restOperation) throws InvocationException {
     List<RestParam> paramList = restOperation.getParamList();
 
-    try {
-      Object[] paramValues = new Object[paramList.size()];
-      for (int idx = 0; idx < paramList.size(); idx++) {
-        RestParam param = paramList.get(idx);
+    Object[] paramValues = new Object[paramList.size()];
+    for (int idx = 0; idx < paramList.size(); idx++) {
+      RestParam param = paramList.get(idx);
+      try {
         paramValues[idx] = param.getParamProcessor().getValue(request);
+      } catch (Exception e) {
+        // Avoid information leak of user input.
+        throw new InvocationException(Status.BAD_REQUEST,
+            String.format("Parameter is not valid for operation [%s]. Parameter is [%s]. Processor is [%s].",
+                restOperation.getOperationMeta().getMicroserviceQualifiedName(),
+                param.getParamName(),
+                param.getParamProcessor().getProcessorType()));
       }
-
-      return paramValues;
-    } catch (Exception e) {
-      LOG.error("Parameter is not valid for operation {}. ",
-          restOperation.getOperationMeta().getMicroserviceQualifiedName(),
-          e);
-      // give standard http error code for invalid parameter
-      throw new InvocationException(Status.BAD_REQUEST, "Parameter is not valid.");
     }
+
+    return paramValues;
   }
 }

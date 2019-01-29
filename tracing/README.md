@@ -11,6 +11,14 @@ interest.
     </dependency>
 ```
 2. Enable tracing with annotation `@EnableZipkinTracing` on your application entry or configuration
+
+Import `tracing.zipkin.EnableZipkinTracing` package
+
+```
+import org.apache.servicecomb.tracing.zipkin.EnableZipkinTracing;
+```
+Add annotation `@EnableZipkinTracing`
+
 ```
 @SpringBootApplication
 @EnableZipkinTracing
@@ -21,6 +29,14 @@ public class ZipkinSpanTestApplication {
 }
 ```
 3. Add new span to the point of interest with annotation `@Span`
+
+Import `tracing.Span` package
+
+```
+import org.apache.servicecomb.tracing.Span;
+```
+Add annotation `@Span`
+
 ```
 @Component
 public class SlowRepoImpl implements SlowRepo {

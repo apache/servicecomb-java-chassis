@@ -17,11 +17,9 @@
 package org.apache.servicecomb.foundation.protobuf.internal.schema.scalar;
 
 public class TestUInt32Schema extends TestNumberBaseSchema {
-  @Override
-  protected void init() {
-    fieldName = "uint32";
+  public TestUInt32Schema() {
     minValue = Integer.MIN_VALUE;
     maxValue = Integer.MAX_VALUE;
-    super.init();
+    initFields("uint32", "objUint32");
   }
 }

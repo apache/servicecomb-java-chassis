@@ -36,7 +36,7 @@ public class TestVersion {
   @Test
   public void constructFromStringNormalOnlyMajor() {
     version = new Version("1");
-    Assert.assertEquals("1.0.0", version.getVersion());
+    Assert.assertEquals("1.0.0.0", version.getVersion());
     Assert.assertEquals(1, version.getMajor());
     Assert.assertEquals(0, version.getMinor());
     Assert.assertEquals(0, version.getPatch());
@@ -45,20 +45,32 @@ public class TestVersion {
   @Test
   public void constructFromStringNormalOnlyMajorMinor() {
     version = new Version("1.1");
-    Assert.assertEquals("1.1.0", version.getVersion());
+    Assert.assertEquals("1.1.0.0", version.getVersion());
     Assert.assertEquals(1, version.getMajor());
     Assert.assertEquals(1, version.getMinor());
     Assert.assertEquals(0, version.getPatch());
   }
 
   @Test
-  public void constructFromStringNormalAll() {
+  public void constructFromStringOnlyMajorMinorPatch() {
     version = new Version("1.1.1");
-    Assert.assertEquals("1.1.1", version.getVersion());
+    Assert.assertEquals("1.1.1.0", version.getVersion());
     Assert.assertEquals(1, version.getMajor());
     Assert.assertEquals(1, version.getMinor());
     Assert.assertEquals(1, version.getPatch());
+    Assert.assertEquals(0, version.getBuild());
   }
+
+  @Test
+  public void constructFromStringNormal() {
+    version = new Version("1.1.1.1");
+    Assert.assertEquals("1.1.1.1", version.getVersion());
+    Assert.assertEquals(1, version.getMajor());
+    Assert.assertEquals(1, version.getMinor());
+    Assert.assertEquals(1, version.getPatch());
+    Assert.assertEquals(1, version.getBuild());
+  }
+
 
   @Test
   public void constructFromStringInvalidNull() {
@@ -119,54 +131,72 @@ public class TestVersion {
   }
 
   @Test
-  public void constructFromStringInvalidTooManyPart() {
+  public void constructFromStringInvalidPatchDot() {
     expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers.is("Invalid version \"1.1.1.\"."));
+    expectedException.expectMessage(Matchers.is("Invalid build \"\", version \"1.1.1.\"."));
+    expectedException.expectCause(Matchers.instanceOf(NumberFormatException.class));
 
     version = new Version("1.1.1.");
   }
 
   @Test
+  public void constructFromStringInvalidBuildNegative() {
+    expectedException.expect(IllegalStateException.class);
+    expectedException.expectMessage(Matchers.is("build \"-1\" can not be negative, version \"1.1.1.-1\"."));
+
+    version = new Version("1.1.1.-1");
+  }
+
+  @Test
+  public void constructFromStringInvalidTooManyPart() {
+    expectedException.expect(IllegalStateException.class);
+    expectedException.expectMessage(Matchers.is("Invalid version \"1.1.1.1.\"."));
+    version = new Version("1.1.1.1.");
+  }
+
+  @Test
   public void constructFromNumber() {
-    version = new Version(s1, s1, s1);
-    Assert.assertEquals("1.1.1", version.getVersion());
+    version = new Version(s1, s1, s1, s1);
+    Assert.assertEquals("1.1.1.1", version.getVersion());
     Assert.assertEquals(1, version.getMajor());
     Assert.assertEquals(1, version.getMinor());
+    Assert.assertEquals(1, version.getPatch());
     Assert.assertEquals(1, version.getPatch());
   }
 
   @Test
   public void testToString() {
-    version = new Version(s1, s1, s1);
-    Assert.assertEquals("1.1.1", version.toString());
+    version = new Version(s1, s1, s1, s1);
+    Assert.assertEquals("1.1.1.1", version.toString());
   }
 
   @Test
   public void testHashCode() {
-    version = new Version(s1, s1, s1);
+    version = new Version(s1, s1, s1, s1);
     Assert.assertEquals(version.getVersion().hashCode(), version.hashCode());
   }
 
   @Test
   public void testEquals() {
-    version = new Version(s1, s1, s1);
+    version = new Version(s1, s1, s1, s1);
 
     Assert.assertTrue(version.equals(version));
-    Assert.assertTrue(version.equals(new Version(s1, s1, s1)));
+    Assert.assertTrue(version.equals(new Version(s1, s1, s1, s1)));
     Assert.assertFalse(version.equals(null));
   }
 
   @Test
   public void compareTo() {
-    version = new Version(s1, s1, s1);
+    version = new Version(s1, s1, s1, s1);
 
     Assert.assertEquals(0, version.compareTo(version));
-    Assert.assertEquals(0, version.compareTo(new Version(s1, s1, s1)));
+    Assert.assertEquals(0, version.compareTo(new Version(s1, s1, s1, s1)));
 
-    Assert.assertEquals(-1, version.compareTo(new Version(s1, s1, s2)));
-    Assert.assertEquals(-1, version.compareTo(new Version(s1, s2, s1)));
-    Assert.assertEquals(-1, version.compareTo(new Version(s2, s1, s1)));
+    Assert.assertEquals(-1, version.compareTo(new Version(s1, s1, s2, s1)));
+    Assert.assertEquals(-1, version.compareTo(new Version(s1, s2, s1, s1)));
+    Assert.assertEquals(-1, version.compareTo(new Version(s2, s1, s1, s1)));
 
-    Assert.assertEquals(1, version.compareTo(new Version((short) 0, Short.MAX_VALUE, Short.MAX_VALUE)));
+    Assert.assertEquals(1, version.compareTo(new Version((short) 0,
+        Short.MAX_VALUE, Short.MAX_VALUE, Short.MAX_VALUE)));
   }
 }
