@@ -135,6 +135,14 @@ public class TestAbstractTransport {
   }
 
   @Test
+  public void testSetListenAddressWithoutSchemaAnyIPAddr() {
+    MyAbstractTransport transport = new MyAbstractTransport();
+    transport.setListenAddressWithoutSchema("0.0.0.0:9090", null);
+    Assert.assertNotEquals("my://0.0.0.0:9090", transport.getEndpoint().getEndpoint());
+    Assert.assertEquals(transport.getEndpoint().getEndpoint(), transport.getPublishEndpoint().getEndpoint());
+  }
+
+  @Test
   public void testMyAbstractTransport() {
     MyAbstractTransport transport = new MyAbstractTransport();
     transport.setListenAddressWithoutSchema("127.0.0.1:9090");

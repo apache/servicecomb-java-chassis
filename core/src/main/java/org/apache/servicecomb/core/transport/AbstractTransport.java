@@ -92,10 +92,9 @@ public abstract class AbstractTransport implements Transport {
       Map<String, String> pairs) {
     addressWithoutSchema = genAddressWithoutSchema(addressWithoutSchema, pairs);
 
-    this.endpoint = new Endpoint(this, NetUtils.getRealListenAddress(getName(), addressWithoutSchema));
+    this.endpoint = new Endpoint(this, RegistryUtils.getPublishAddress(getName(), addressWithoutSchema));
     if (this.endpoint.getEndpoint() != null) {
-      this.publishEndpoint = new Endpoint(this, RegistryUtils.getPublishAddress(getName(),
-          addressWithoutSchema));
+      this.publishEndpoint = this.endpoint;
     } else {
       this.publishEndpoint = null;
     }
