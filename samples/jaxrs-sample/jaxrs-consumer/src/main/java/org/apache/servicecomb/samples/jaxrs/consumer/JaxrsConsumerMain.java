@@ -17,7 +17,6 @@
 package org.apache.servicecomb.samples.jaxrs.consumer;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.samples.common.schema.Hello;
@@ -31,8 +30,8 @@ public class JaxrsConsumerMain {
   @RpcReference(microserviceName = "jaxrs", schemaId = "jaxrsHello")
   private static Hello hello;
 
-  public static void main(String[] args) throws Exception {
-    init();
+  public static void main(String[] args) {
+    BeanUtils.init();
     System.out.println(hello.sayHi("Java Chassis"));
     Person person = new Person();
     person.setName("ServiceComb/Java Chassis");
@@ -41,10 +40,5 @@ public class JaxrsConsumerMain {
     RestTemplate restTemplate = RestTemplateBuilder.create();
     String result = restTemplate.getForObject("cse://jaxrs/jaxrshello/saybye", String.class);
     System.out.println(result);
-  }
-
-  public static void init() throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
   }
 }

@@ -17,7 +17,6 @@
 package org.apache.servicecomb.samples.customerhandler.consumer;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.samples.common.schema.Hello;
 import org.apache.servicecomb.samples.common.schema.models.Person;
@@ -29,16 +28,11 @@ public class CustomHandlerCustomerMain {
   @RpcReference(microserviceName = "customerhandler", schemaId = "hello")
   private static Hello hello;
 
-  public static void main(String[] args) throws Exception {
-    init();
+  public static void main(String[] args) {
+    BeanUtils.init();
     System.out.println(hello.sayHi("Java Chassis"));
     Person person = new Person();
     person.setName("ServiceComb/Java Chassis");
     System.out.println(hello.sayHello(person));
-  }
-
-  public static void init() throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
   }
 }

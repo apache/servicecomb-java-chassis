@@ -16,13 +16,11 @@
  */
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 
 import com.netflix.config.DynamicPropertyFactory;
 
 public class MainServer {
   public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
     BeanUtils.init();
     while (true) {
       System.out.println(DynamicPropertyFactory.getInstance().getStringProperty("timeout", "default"));

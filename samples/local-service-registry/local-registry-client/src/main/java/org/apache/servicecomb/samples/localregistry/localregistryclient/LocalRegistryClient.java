@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.samples.common.schema.models.Person;
 import org.springframework.web.client.RestTemplate;
@@ -29,24 +28,19 @@ import org.springframework.web.client.RestTemplate;
 public class LocalRegistryClient {
   private static RestTemplate templateNew = RestTemplateBuilder.create();
 
-  public static void main(String[] args) throws Exception {
+  public static void main(String[] args) {
     System.setProperty("local.registry.file", "registry.yaml");
 
-    init();
+    BeanUtils.init();
 
     run();
   }
 
-  public static void init() throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
-  }
-
-  public static void run() throws Exception {
+  public static void run() {
     testLocalRegistry(templateNew);
   }
 
-  private static void testLocalRegistry(RestTemplate template) throws Exception {
+  private static void testLocalRegistry(RestTemplate template) {
     String microserviceName = "localserv";
     String cseUrlPrefix = "cse://" + microserviceName + "/localservregistry/";
 

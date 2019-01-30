@@ -25,7 +25,7 @@
       <PatternLayout pattern="[%d] [%t] [%p] [%c:%L] [%marker] %m%n"/>
     </Console>
     <RollingRandomAccessFile name="RollingRandomAccessFile" fileName="${log_path}/output.log"
-      filePattern="${log_path}/log4j2Sample-%d{yyyy-MM-dd}-%i.log">
+      filePattern="${log_path}/provider-%d{yyyy-MM-dd}-%i.log">
       <PatternLayout pattern="[%d] [%t] [%p] [%c:%L] [%marker] %m%n"/>
       <Policies>
         <SizeBasedTriggeringPolicy size="200 MB"/>

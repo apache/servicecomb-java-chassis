@@ -17,7 +17,6 @@
 package org.apache.servicecomb.samples.springmvc.consumer;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.provider.springmvc.reference.async.CseAsyncRestTemplate;
@@ -43,7 +42,7 @@ public class SpringmvcConsumerMain {
   private static Hello hello;
 
   public static void main(String[] args) throws Exception {
-    init();
+    BeanUtils.init();
     Person person = new Person();
     person.setName("ServiceComb/Java Chassis");
 
@@ -88,10 +87,5 @@ public class SpringmvcConsumerMain {
             System.out.println("AsyncRestTemplate Consumer sayHello services: " + result.getBody());
           }
         });
-  }
-
-  public static void init() throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
   }
 }
