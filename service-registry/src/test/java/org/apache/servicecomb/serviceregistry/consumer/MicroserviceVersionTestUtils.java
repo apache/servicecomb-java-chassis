@@ -25,9 +25,7 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public interface MicroserviceVersionTestUtils {
-
-
-  public static MicroserviceVersion createMicroserviceVersion(String microserviceId, String version,
+  static MicroserviceVersion createMicroserviceVersion(String microserviceId, String version,
       @Mocked ServiceRegistry serviceRegistry) {
 
     Microservice microservice = new Microservice();

@@ -40,6 +40,10 @@ public class MicroserviceVersion {
     this.version = new Version(microservice.getVersion());
   }
 
+  public String getMicroserviceId() {
+    return microservice.getServiceId();
+  }
+
   public Microservice getMicroservice() {
     return microservice;
   }
