@@ -44,6 +44,10 @@ public class Microservice {
 
   private String serviceName;
 
+  /**
+   * for governance
+   * when invoke cross app, if not use alias name, then {microservice}:{schema}:{operation} will conflict
+   */
   private String alias;
 
   private String version;
