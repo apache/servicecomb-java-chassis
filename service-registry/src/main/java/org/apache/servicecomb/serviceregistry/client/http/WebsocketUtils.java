@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.HttpMethod;
 
 /**
  * Created by on 2017/4/28.
@@ -44,8 +45,8 @@ public final class WebsocketUtils {
       client.websocket(ipPort.getPort(),
           ipPort.getHostOrIp(),
           url,
-          RestUtils.getDefaultHeaders().addAll(RestUtils
-              .getSignAuthHeaders(RestUtils.createSignRequest(null, ipPort, new RequestParam(), url, new HashMap<>()))),
+          RestUtils.getDefaultHeaders().addAll(RestUtils.getSignAuthHeaders(
+              RestUtils.createSignRequest(HttpMethod.GET.name(), ipPort, new RequestParam(), url, new HashMap<>()))),
           ws -> {
             onOpen.handle(null);
 
