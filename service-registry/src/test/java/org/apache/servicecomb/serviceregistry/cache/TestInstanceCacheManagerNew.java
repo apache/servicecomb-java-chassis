@@ -17,53 +17,48 @@
 
 package org.apache.servicecomb.serviceregistry.cache;
 
-import org.apache.servicecomb.foundation.common.cache.VersionedCache;
+import org.apache.servicecomb.serviceregistry.MockMicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceManager;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.junit.Assert;
 import org.junit.Test;
 
-import mockit.Expectations;
-import mockit.Mocked;
-
 public class TestInstanceCacheManagerNew {
-  @Test
-  public void getOrCreate(@Mocked AppManager appManager, @Mocked MicroserviceVersionRule microserviceVersionRule,
-      @Mocked InstanceCache instanceCache) {
-    InstanceCacheManagerNew mgr = new InstanceCacheManagerNew(appManager);
-    String appId = "app";
-    String microserviceName = "ms";
-    String versionRule = DefinitionConst.VERSION_RULE_ALL;
-    new Expectations() {
-      {
-        appManager.getOrCreateMicroserviceVersionRule(appId, microserviceName, versionRule);
-        result = microserviceVersionRule;
-        microserviceVersionRule.getInstanceCache();
-        result = instanceCache;
-      }
-    };
+  MockMicroserviceVersions mockMicroserviceVersions = new MockMicroserviceVersions();
 
-    Assert.assertSame(instanceCache, mgr.getOrCreate(appId, microserviceName, versionRule));
+  AppManager appManager = mockMicroserviceVersions.getAppManager();
+
+  MicroserviceManager microserviceManager = appManager
+      .getOrCreateMicroserviceManager(mockMicroserviceVersions.getAppId());
+
+  InstanceCacheManagerNew mgr = new InstanceCacheManagerNew(mockMicroserviceVersions.getAppManager());
+
+  @Test
+  public void getOrCreate() {
+    mockMicroserviceVersions.update_all();
+    microserviceManager.getVersionsByName()
+        .put(mockMicroserviceVersions.getMicroserviceName(), mockMicroserviceVersions);
+
+    Assert.assertEquals(8,
+        mgr
+            .getOrCreate(mockMicroserviceVersions.getAppId(),
+                mockMicroserviceVersions.getMicroserviceName(),
+                DefinitionConst.VERSION_RULE_ALL)
+            .getInstanceMap().size());
   }
 
   @Test
-  public void getOrCreateVersionedCache(@Mocked AppManager appManager,
-      @Mocked MicroserviceVersionRule microserviceVersionRule,
-      @Mocked VersionedCache versionedCache) {
-    InstanceCacheManagerNew mgr = new InstanceCacheManagerNew(appManager);
-    String appId = "app";
-    String microserviceName = "ms";
-    String versionRule = DefinitionConst.VERSION_RULE_ALL;
-    new Expectations() {
-      {
-        appManager.getOrCreateMicroserviceVersionRule(appId, microserviceName, versionRule);
-        result = microserviceVersionRule;
-        microserviceVersionRule.getVersionedCache();
-        result = versionedCache;
-      }
-    };
+  public void getOrCreateVersionedCache() {
+    mockMicroserviceVersions.update_all();
+    microserviceManager.getVersionsByName()
+        .put(mockMicroserviceVersions.getMicroserviceName(), mockMicroserviceVersions);
 
-    Assert.assertSame(versionedCache, mgr.getOrCreateVersionedCache(appId, microserviceName, versionRule));
+    Assert.assertEquals(8,
+        mgr
+            .getOrCreateVersionedCache(mockMicroserviceVersions.getAppId(),
+                mockMicroserviceVersions.getMicroserviceName(),
+                DefinitionConst.VERSION_RULE_ALL)
+            .mapData().size());
   }
 }

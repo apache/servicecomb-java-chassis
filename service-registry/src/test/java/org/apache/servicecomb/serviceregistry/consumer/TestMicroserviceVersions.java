@@ -35,7 +35,6 @@ import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceC
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.task.event.MicroserviceNotExistEvent;
 import org.apache.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
-import org.apache.servicecomb.serviceregistry.version.Version;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -260,21 +259,11 @@ public class TestMicroserviceVersions {
   }
 
   @Test
-  public void createAndInitMicroserviceVersionRule(@Mocked MicroserviceVersion microserviceVersion) {
+  public void createAndInitMicroserviceVersionRule() {
     String microserviceId = "1";
     createMicroservice(microserviceId);
 
-    Version version = new Version("1.0.0");
-
-    new Expectations() {
-      {
-        microserviceVersion.getVersion();
-        result = version;
-        microserviceVersion.getMicroservice();
-        result = microservices.get(microserviceId);
-      }
-    };
-
+    MicroserviceVersion microserviceVersion = new MicroserviceVersion(microservices.get(microserviceId));
     microserviceVersions.getVersions().put(microserviceId, microserviceVersion);
 
     MicroserviceVersionRule microserviceVersionRule =

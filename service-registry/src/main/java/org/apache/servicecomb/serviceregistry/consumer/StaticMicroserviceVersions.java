@@ -60,15 +60,11 @@ public class StaticMicroserviceVersions extends MicroserviceVersions {
     // ensure microserviceVersion exists
     versions.computeIfAbsent(serviceId, microserviceId -> {
       StaticMicroservice microservice = createMicroservice(parsedVersion, serviceId);
-      MicroserviceVersion microserviceVersion = appManager.getStaticMicroserviceVersionFactory().create(microservice);
-      for (MicroserviceVersionRule microserviceVersionRule : versionRules.values()) {
-        microserviceVersionRule.addMicroserviceVersion(microserviceVersion);
-      }
-      return microserviceVersion;
+      return appManager.getStaticMicroserviceVersionFactory().create(microservice);
     });
 
     for (MicroserviceVersionRule microserviceVersionRule : versionRules.values()) {
-      microserviceVersionRule.setInstances(this.instances);
+      microserviceVersionRule.update(versions, instances);
     }
   }
 
