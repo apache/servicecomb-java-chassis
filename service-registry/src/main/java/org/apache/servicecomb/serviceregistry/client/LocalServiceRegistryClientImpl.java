@@ -19,9 +19,6 @@ package org.apache.servicecomb.serviceregistry.client;
 
 import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_APPLICATION_ID;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -279,7 +276,7 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
       String strVersionRule) {
     MicroserviceInstances instances =
         findServiceInstances(selfMicroserviceId, appId, serviceName, strVersionRule, null);
-    if(instances.isMicroserviceNotExist()) {
+    if (instances.isMicroserviceNotExist()) {
       return null;
     }
     return instances.getInstancesResponse().getInstances();

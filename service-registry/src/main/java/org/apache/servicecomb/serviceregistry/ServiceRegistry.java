@@ -54,6 +54,11 @@ public interface ServiceRegistry {
 
   boolean updateMicroserviceProperties(Map<String, String> properties);
 
+  /**
+   * full update, not increase update
+   * @param instanceProperties
+   * @return
+   */
   boolean updateInstanceProperties(Map<String, String> instanceProperties);
 
   Microservice getRemoteMicroservice(String microserviceId);
