@@ -23,4 +23,10 @@ public final class StringBuilderUtils {
   public static void appendLine(StringBuilder sb, String fmt, Object... args) {
     sb.append(String.format(fmt, args)).append("\n");
   }
+
+  public static StringBuilder deleteLast(StringBuilder sb, int count) {
+    int min = Math.min(sb.length(), count);
+    sb.setLength(sb.length() - min);
+    return sb;
+  }
 }

@@ -42,7 +42,7 @@ import com.google.common.eventbus.Subscribe;
 public class MicroserviceVersions {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceVersions.class);
 
-  AppManager appManager;
+  protected AppManager appManager;
 
   private String appId;
 
@@ -89,6 +89,10 @@ public class MicroserviceVersions {
 
   public boolean isValidated() {
     return validated;
+  }
+
+  public AppManager getAppManager() {
+    return appManager;
   }
 
   public String getAppId() {
@@ -176,18 +180,12 @@ public class MicroserviceVersions {
       instances = mergeInstances(pulledInstances, instances);
       for (MicroserviceInstance instance : instances) {
         // ensure microserviceVersion exists
-        versions.computeIfAbsent(instance.getServiceId(), microserviceId -> {
-          MicroserviceVersion microserviceVersion =
-              appManager.getMicroserviceVersionFactory().create(microserviceName, microserviceId);
-          for (MicroserviceVersionRule microserviceVersionRule : versionRules.values()) {
-            microserviceVersionRule.addMicroserviceVersion(microserviceVersion);
-          }
-          return microserviceVersion;
-        });
+        versions.computeIfAbsent(instance.getServiceId(),
+            microserviceId -> appManager.getMicroserviceVersionFactory().create(microserviceName, microserviceId));
       }
 
       for (MicroserviceVersionRule microserviceVersionRule : versionRules.values()) {
-        microserviceVersionRule.setInstances(instances);
+        microserviceVersionRule.update(versions, instances);
       }
       revision = rev;
     }
@@ -233,10 +231,7 @@ public class MicroserviceVersions {
 
     MicroserviceVersionRule microserviceVersionRule =
         new MicroserviceVersionRule(appId, microserviceName, strVersionRule);
-    for (MicroserviceVersion microserviceVersion : versions.values()) {
-      microserviceVersionRule.addMicroserviceVersion(microserviceVersion);
-    }
-    microserviceVersionRule.setInstances(instances);
+    microserviceVersionRule.update(versions, instances);
     return microserviceVersionRule;
   }
 

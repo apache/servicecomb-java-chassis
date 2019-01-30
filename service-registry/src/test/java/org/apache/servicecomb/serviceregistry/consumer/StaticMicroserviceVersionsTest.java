@@ -27,15 +27,11 @@ import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.registry.AbstractServiceRegistry;
 import org.apache.servicecomb.serviceregistry.version.Version;
-import org.apache.servicecomb.serviceregistry.version.VersionUtils;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
-
-import mockit.Mock;
-import mockit.MockUp;
 
 public class StaticMicroserviceVersionsTest {
 
@@ -135,17 +131,7 @@ public class StaticMicroserviceVersionsTest {
   private StaticMicroserviceVersions createStaticMicroserviceVersions() {
     EventBus eventBus = new EventBus();
     AppManager appManager = new AppManager(eventBus);
-    appManager.setStaticMicroserviceVersionFactory(microservice -> new MockUp<MicroserviceVersion>() {
-      @Mock
-      public Version getVersion() {
-        return VersionUtils.getOrCreate(microservice.getVersion());
-      }
-
-      @Mock
-      public Microservice getMicroservice() {
-        return microservice;
-      }
-    }.getMockInstance());
+    appManager.setStaticMicroserviceVersionFactory(microservice -> new MicroserviceVersion(microservice));
     return new StaticMicroserviceVersions(
         appManager, APP_ID, MICROSERVICE_NAME, TestServiceIntf.class);
   }
