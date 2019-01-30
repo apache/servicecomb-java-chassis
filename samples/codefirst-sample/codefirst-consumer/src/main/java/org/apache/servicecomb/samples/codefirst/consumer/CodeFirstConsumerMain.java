@@ -17,7 +17,6 @@
 package org.apache.servicecomb.samples.codefirst.consumer;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.samples.common.schema.Hello;
 import org.apache.servicecomb.samples.common.schema.models.Person;
@@ -35,8 +34,8 @@ public class CodeFirstConsumerMain {
   @RpcReference(microserviceName = "codefirst", schemaId = "codeFirstHello")
   private static Hello hello;
 
-  public static void main(String[] args) throws Exception {
-    init();
+  public static void main(String[] args) {
+    BeanUtils.init();
     System.out.println(hello.sayHi("Java Chassis"));
     System.out.println(jaxrsHello.sayHi("Java Chassis"));
     System.out.println(springmvcHello.sayHi("Java Chassis"));
@@ -45,10 +44,5 @@ public class CodeFirstConsumerMain {
     System.out.println(hello.sayHello(person));
     System.out.println(jaxrsHello.sayHello(person));
     System.out.println(springmvcHello.sayHello(person));
-  }
-
-  public static void init() throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
   }
 }

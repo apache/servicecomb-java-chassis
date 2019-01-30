@@ -17,7 +17,6 @@
 package org.apache.servicecomb.samples.auth.consumer;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.samples.common.schema.models.Person;
 import org.springframework.stereotype.Component;
@@ -28,8 +27,8 @@ public class AuthConsumerMain {
 
   private static RestTemplate restTemplate = RestTemplateBuilder.create();
 
-  public static void main(String[] args) throws Exception {
-    init();
+  public static void main(String[] args) {
+    BeanUtils.init();
     Person person = new Person();
     person.setName("ServiceComb/Authenticate");
     System.out
@@ -45,10 +44,5 @@ public class AuthConsumerMain {
         String.class);
     System.out.println(sayHiResult);
     System.out.println(sayHelloResult);
-  }
-
-  public static void init() throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
   }
 }

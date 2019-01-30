@@ -17,7 +17,6 @@
 package org.apache.servicecomb.samples.pojo.consumer;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.samples.common.schema.Hello;
 import org.apache.servicecomb.samples.common.schema.models.Person;
@@ -33,19 +32,12 @@ public class PojoConsumerMain {
   @RpcReference(microserviceName = "hello", schemaId = "codeFirstCompute")
   public static Compute compute;
 
-  public static void main(String[] args)
-      throws Exception {
-    init();
+  public static void main(String[] args) {
+    BeanUtils.init();
     System.out.println(hello.sayHi("Java Chassis"));
     Person person = new Person();
     person.setName("ServiceComb/Java Chassis");
     System.out.println(hello.sayHello(person));
     System.out.println("a=1, b=2, result=" + compute.add(1, 2));
-  }
-
-  public static void init()
-      throws Exception {
-    Log4jUtils.init();
-    BeanUtils.init();
   }
 }

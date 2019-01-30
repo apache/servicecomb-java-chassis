@@ -18,13 +18,10 @@
 package org.apache.servicecomb.samples.localregistry.localregistryserver;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 
 public class LocalRegistryServer {
-  public static void main(String[] args) throws Exception {
+  public static void main(String[] args) {
     System.setProperty("local.registry.file", "notExistJustForceLocal");
-
-    Log4jUtils.init();
     BeanUtils.init();
   }
 }

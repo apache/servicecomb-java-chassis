@@ -17,7 +17,6 @@
 package org.apache.servicecomb.samples.trust.consumer;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.samples.trust.Compute;
 import org.springframework.stereotype.Component;
@@ -27,15 +26,8 @@ public class HackerMain {
   @RpcReference(microserviceName = "store", schemaId = "codeFirstCompute")
   public static Compute compute;
 
-  public static void main(String[] args)
-      throws Exception {
-    init();
-    System.out.println("a=1, b=2, result=" + compute.add(1, 2));
-  }
-
-  public static void init()
-      throws Exception {
-    Log4jUtils.init();
+  public static void main(String[] args) {
     BeanUtils.init();
+    System.out.println("a=1, b=2, result=" + compute.add(1, 2));
   }
 }
