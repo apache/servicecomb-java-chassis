@@ -25,13 +25,14 @@ import org.springframework.util.StringUtils;
 
 import io.vertx.core.VertxOptions;
 import io.vertx.core.json.JsonObject;
+import io.vertx.core.net.impl.transport.Transport;
 
 public class VertxImplEx extends VertxImpl {
   private AtomicLong eventLoopContextCreated = new AtomicLong();
 
   public VertxImplEx(String name, VertxOptions vertxOptions) {
-    super(vertxOptions);
-
+    super(vertxOptions, Transport.transport(vertxOptions.getPreferNativeTransport()));
+    init();
     if (StringUtils.isEmpty(name)) {
       return;
     }

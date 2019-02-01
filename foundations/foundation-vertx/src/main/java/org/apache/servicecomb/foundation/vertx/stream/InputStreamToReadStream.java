@@ -191,7 +191,7 @@ public class InputStreamToReadStream implements ReadStream<Buffer> {
     if (closed) {
       return;
     }
-    
+
     closed = true;
     if (!autoCloseInputStream) {
       return;
@@ -208,6 +208,11 @@ public class InputStreamToReadStream implements ReadStream<Buffer> {
   public ReadStream<Buffer> endHandler(Handler<Void> handler) {
     check();
     this.endHandler = handler;
+    return this;
+  }
+
+  @Override
+  public ReadStream<Buffer> fetch(long amount) {
     return this;
   }
 }

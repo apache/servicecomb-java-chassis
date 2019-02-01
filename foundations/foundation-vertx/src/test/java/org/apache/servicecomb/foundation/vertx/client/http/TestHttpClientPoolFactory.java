@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
-import io.vertx.core.impl.ContextImpl;
+import io.vertx.core.impl.ContextInternal;
 import io.vertx.core.impl.VertxImpl;
 import io.vertx.core.impl.VertxInternal;
 import mockit.Expectations;
@@ -33,7 +33,7 @@ public class TestHttpClientPoolFactory {
   HttpClientPoolFactory factory = new HttpClientPoolFactory(httpClientOptions);
 
   @Test
-  public void createClientPool(@Mocked VertxInternal vertx, @Mocked ContextImpl context,
+  public void createClientPool(@Mocked VertxInternal vertx, @Mocked ContextInternal context,
       @Mocked HttpClient httpClient) {
     new Expectations(VertxImpl.class) {
       {

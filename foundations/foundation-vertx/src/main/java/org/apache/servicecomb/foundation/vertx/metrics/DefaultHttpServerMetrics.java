@@ -62,12 +62,7 @@ public class DefaultHttpServerMetrics implements HttpServerMetrics<Object, Objec
   }
 
   @Override
-  public Object upgrade(Object requestMetric, ServerWebSocket serverWebSocket) {
-    return null;
-  }
-
-  @Override
-  public Object connected(DefaultHttpSocketMetric socketMetric, ServerWebSocket serverWebSocket) {
+  public Object connected(DefaultHttpSocketMetric socketMetric, Object requestMetric, ServerWebSocket serverWebSocket) {
     return null;
   }
 

@@ -26,7 +26,6 @@ public class TestTransportVertxFactory {
 
     Assert.assertNotNull(vertxFactory.getTransportVertx());
     Assert.assertSame(vertxFactory.getTransportVertx(), vertxFactory.getTransportVertx());
-    Assert.assertSame(vertxFactory.getTransportVertx(), vertxFactory.getMetricsFactory().getVertxMetrics().getVertx());
 
     vertxFactory.getTransportVertx().close();
   }

@@ -60,18 +60,29 @@ public class RestBodyHandler implements BodyHandler {
   private static final String BODY_HANDLED = "__body-handled";
 
   private long bodyLimit = DEFAULT_BODY_LIMIT;
-
+  private boolean handleFileUploads;
   private String uploadsDir;
 
   private boolean mergeFormAttributes = DEFAULT_MERGE_FORM_ATTRIBUTES;
 
   private boolean deleteUploadedFilesOnEnd = DEFAULT_DELETE_UPLOADED_FILES_ON_END;
+  private boolean isPreallocateBodyBuffer = DEFAULT_PREALLOCATE_BODY_BUFFER;
+  private static final int DEFAULT_INITIAL_BODY_BUFFER_SIZE = 1024; //bytes
 
   public RestBodyHandler() {
-    setUploadsDirectory(DEFAULT_UPLOADS_DIRECTORY);
+    this(true, DEFAULT_UPLOADS_DIRECTORY);
+  }
+
+  public RestBodyHandler(boolean handleFileUploads) {
+    this(handleFileUploads, DEFAULT_UPLOADS_DIRECTORY);
   }
 
   public RestBodyHandler(String uploadDirectory) {
+    this(true, uploadDirectory);
+  }
+
+  private RestBodyHandler(boolean handleFileUploads, String uploadDirectory) {
+    this.handleFileUploads = handleFileUploads;
     setUploadsDirectory(uploadDirectory);
   }
 
@@ -86,7 +97,8 @@ public class RestBodyHandler implements BodyHandler {
     // we need to keep state since we can be called again on reroute
     Boolean handled = context.get(BODY_HANDLED);
     if (handled == null || !handled) {
-      BHandler handler = new BHandler(context);
+      long contentLength = isPreallocateBodyBuffer ? parseContentLengthHeader(request) : -1;
+      BHandler handler = new BHandler(context, contentLength);
       request.handler(handler);
       request.endHandler(v -> handler.end());
       context.put(BODY_HANDLED, true);
@@ -98,6 +110,12 @@ public class RestBodyHandler implements BodyHandler {
 
       context.next();
     }
+  }
+
+  @Override
+  public BodyHandler setHandleFileUploads(boolean handleFileUploads) {
+    this.handleFileUploads = handleFileUploads;
+    return this;
   }
 
   @Override
@@ -124,11 +142,32 @@ public class RestBodyHandler implements BodyHandler {
     return this;
   }
 
+  @Override
+  public BodyHandler setPreallocateBodyBuffer(boolean isPreallocateBodyBuffer) {
+    this.isPreallocateBodyBuffer = isPreallocateBodyBuffer;
+    return this;
+  }
+
+  private long parseContentLengthHeader(HttpServerRequest request) {
+    String contentLength = request.getHeader(HttpHeaders.CONTENT_LENGTH);
+    if(contentLength == null || contentLength.isEmpty()) {
+      return -1;
+    }
+    try {
+      long parsedContentLength = Long.parseLong(contentLength);
+      return  parsedContentLength < 0 ? null : parsedContentLength;
+    }
+    catch (NumberFormatException ex) {
+      return -1;
+    }
+  }
+
   private class BHandler implements Handler<Buffer> {
+    private static final int MAX_PREALLOCATED_BODY_BUFFER_BYTES = 65535;
 
     private RoutingContext context;
 
-    private Buffer body = Buffer.buffer();
+    private Buffer body;
 
     private boolean failed;
 
@@ -144,7 +183,7 @@ public class RestBodyHandler implements BodyHandler {
 
     private final boolean isUrlEncoded;
 
-    BHandler(RoutingContext context) {
+    BHandler(RoutingContext context, long contentLength) {
       this.context = context;
       Set<FileUpload> fileUploads = context.fileUploads();
 
@@ -158,9 +197,13 @@ public class RestBodyHandler implements BodyHandler {
         isUrlEncoded = lowerCaseContentType.startsWith(HttpHeaderValues.APPLICATION_X_WWW_FORM_URLENCODED.toString());
       }
 
+      initBodyBuffer(contentLength);
+
       if (isMultipart || isUrlEncoded) {
-        makeUploadDir(context.vertx().fileSystem());
         context.request().setExpectMultipart(true);
+        if (handleFileUploads) {
+          makeUploadDir(context.vertx().fileSystem());
+        }
         context.request().uploadHandler(upload -> {
           // *** cse begin ***
           if (uploadsDir == null) {
@@ -180,23 +223,44 @@ public class RestBodyHandler implements BodyHandler {
               return;
             }
           }
-          // we actually upload to a file with a generated filename
-          uploadCount.incrementAndGet();
-          String uploadedFileName = new File(uploadsDir, UUID.randomUUID().toString()).getPath();
-          upload.streamToFileSystem(uploadedFileName);
-          FileUploadImpl fileUpload = new FileUploadImpl(uploadedFileName, upload);
-          fileUploads.add(fileUpload);
-          upload.exceptionHandler(t -> {
-            deleteFileUploads();
-            context.fail(t);
-          });
-          upload.endHandler(v -> uploadEnded());
+          if (handleFileUploads) {
+            // we actually upload to a file with a generated filename
+            uploadCount.incrementAndGet();
+            String uploadedFileName = new File(uploadsDir, UUID.randomUUID().toString()).getPath();
+            upload.streamToFileSystem(uploadedFileName);
+            FileUploadImpl fileUpload = new FileUploadImpl(uploadedFileName, upload);
+            fileUploads.add(fileUpload);
+            upload.exceptionHandler(t -> {
+              deleteFileUploads();
+              context.fail(t);
+            });
+            upload.endHandler(v -> uploadEnded());
+          }
         });
       }
       context.request().exceptionHandler(t -> {
         deleteFileUploads();
         context.fail(t);
       });
+    }
+
+    private void initBodyBuffer(long contentLength) {
+      int initialBodyBufferSize;
+      if(contentLength < 0) {
+        initialBodyBufferSize = DEFAULT_INITIAL_BODY_BUFFER_SIZE;
+      }
+      else if(contentLength > MAX_PREALLOCATED_BODY_BUFFER_BYTES) {
+        initialBodyBufferSize = MAX_PREALLOCATED_BODY_BUFFER_BYTES;
+      }
+      else {
+        initialBodyBufferSize = (int) contentLength;
+      }
+
+      if(bodyLimit != -1) {
+        initialBodyBufferSize = (int)Math.min(initialBodyBufferSize, bodyLimit);
+      }
+
+      this.body = Buffer.buffer(initialBodyBufferSize);
     }
 
     private void makeUploadDir(FileSystem fileSystem) {
@@ -271,7 +335,7 @@ public class RestBodyHandler implements BodyHandler {
     }
 
     private void deleteFileUploads() {
-      if (cleanup.compareAndSet(false, true)) {
+      if (cleanup.compareAndSet(false, true) && handleFileUploads) {
         for (FileUpload fileUpload : context.fileUploads()) {
           FileSystem fileSystem = context.vertx().fileSystem();
           String uploadedFileName = fileUpload.uploadedFileName();

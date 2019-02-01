@@ -74,7 +74,7 @@ public class TestVertxMetersInitializer {
       });
 
       HttpServer server = vertx.createHttpServer();
-      server.requestHandler(mainRouter::accept);
+      server.requestHandler(mainRouter);
       server.listen(0, "0.0.0.0", ar -> {
         if (ar.succeeded()) {
           port = ar.result().actualPort();
@@ -88,6 +88,7 @@ public class TestVertxMetersInitializer {
   }
 
   public static class TestClientVerticle extends AbstractVerticle {
+    @SuppressWarnings("deprecation")
     @Override
     public void start(Future<Void> startFuture) {
       HttpClient client = vertx.createHttpClient();

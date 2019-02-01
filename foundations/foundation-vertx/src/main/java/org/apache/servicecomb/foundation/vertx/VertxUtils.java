@@ -41,7 +41,7 @@ import io.vertx.core.Verticle;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.impl.FileResolver;
+import io.vertx.core.file.impl.FileResolver;
 import io.vertx.core.impl.VertxImplEx;
 import io.vertx.core.logging.SLF4JLogDelegateFactory;
 

@@ -436,14 +436,14 @@ Google Guice - Extensions - AssistedInject (https://github.com/google/guice/exte
 Google Guice - Extensions - MultiBindings (https://github.com/google/guice/extensions-parent/guice-multibindings) com.google.inject.extensions:guice-multibindings:jar:4.1.0
 Hibernate Validator Engine (http://hibernate.org/validator/hibernate-validator) org.hibernate:hibernate-validator:jar:6.0.2.Final
 hystrix-core (https://github.com/Netflix/Hystrix) com.netflix.hystrix:hystrix-core:jar:1.5.12
-Jackson dataformat: protobuf (http://github.com/FasterXML/jackson-dataformats-binary) com.fasterxml.jackson.dataformat:jackson-dataformat-protobuf:bundle:2.9.6
+Jackson dataformat: protobuf (http://github.com/FasterXML/jackson-dataformats-binary) com.fasterxml.jackson.dataformat:jackson-dataformat-protobuf:bundle:2.9.8
 Jackson module: Afterburner (https://github.com/FasterXML/jackson-modules-base) com.fasterxml.jackson.module:jackson-module-afterburner:bundle:2.8.11
 Jackson module: JAXB-annotations (http://github.com/FasterXML/jackson-module-jaxb-annotations) com.fasterxml.jackson.module:jackson-module-jaxb-annotations:bundle:2.8.11
-Jackson-annotations (http://github.com/FasterXML/jackson) com.fasterxml.jackson.core:jackson-annotations:bundle:2.9.6
-Jackson-core (https://github.com/FasterXML/jackson-core) com.fasterxml.jackson.core:jackson-core:bundle:2.9.6
-jackson-databind (http://github.com/FasterXML/jackson) com.fasterxml.jackson.core:jackson-databind:bundle:2.9.6
-Jackson-dataformat-XML (http://wiki.fasterxml.com/JacksonExtensionXmlDataBinding) com.fasterxml.jackson.dataformat:jackson-dataformat-xml:bundle:2.9.6
-Jackson-dataformat-YAML (https://github.com/FasterXML/jackson-dataformats-text) com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:bundle:2.9.6
+Jackson-annotations (http://github.com/FasterXML/jackson) com.fasterxml.jackson.core:jackson-annotations:bundle:2.9.8
+Jackson-core (https://github.com/FasterXML/jackson-core) com.fasterxml.jackson.core:jackson-core:bundle:2.9.8
+jackson-databind (http://github.com/FasterXML/jackson) com.fasterxml.jackson.core:jackson-databind:bundle:2.9.8
+Jackson-dataformat-XML (http://wiki.fasterxml.com/JacksonExtensionXmlDataBinding) com.fasterxml.jackson.dataformat:jackson-dataformat-xml:bundle:2.9.8
+Jackson-dataformat-YAML (https://github.com/FasterXML/jackson-dataformats-text) com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:bundle:2.9.8
 Javassist (http://www.javassist.org/) org.javassist:javassist:bundle:3.18.1-GA
 javax.inject (http://code.google.com/p/atinject/) javax.inject:javax.inject:jar:1
 JBoss Logging 3 (http://www.jboss.org) org.jboss.logging:jboss-logging:jar:3.3.2.Final
@@ -451,19 +451,19 @@ json-lib (http://json-lib.sourceforge.net) net.sf.json-lib:json-lib:jar:2.4
 Log4j Implemented Over SLF4J (http://www.slf4j.org) org.slf4j:log4j-over-slf4j:jar:1.7.7
 netflix-commons-util (https://github.com/Netflix/netflix-commons) com.netflix.netflix-commons:netflix-commons-util:jar:0.1.1
 netflix-statistics (https://github.com/Netflix/netflix-commons) com.netflix.netflix-commons:netflix-statistics:jar:0.1.1
-Netty/Buffer (http://netty.io/netty-buffer/) io.netty:netty-buffer:jar:4.1.24.Final
-Netty/Codec (http://netty.io/netty-codec/) io.netty:netty-codec:jar:4.1.24.Final
-Netty/Codec/DNS (http://netty.io/netty-codec-dns/) io.netty:netty-codec-dns:jar:4.1.24.Final
-Netty/Codec/HTTP (http://netty.io/netty-codec-http/) io.netty:netty-codec-http:jar:4.1.24.Final
-Netty/Codec/HTTP2 (http://netty.io/netty-codec-http2/) io.netty:netty-codec-http2:jar:4.1.24.Final
-Netty/Codec/Socks (http://netty.io/netty-codec-socks/) io.netty:netty-codec-socks:jar:4.1.24.Final
-Netty/Common (http://netty.io/netty-common/) io.netty:netty-common:jar:4.1.24.Final
-Netty/Handler (http://netty.io/netty-handler/) io.netty:netty-handler:jar:4.1.24.Final
-Netty/Handler/Proxy (http://netty.io/netty-handler-proxy/) io.netty:netty-handler-proxy:jar:4.1.24.Final
-Netty/Resolver (http://netty.io/netty-resolver/) io.netty:netty-resolver:jar:4.1.24.Final
-Netty/Resolver/DNS (http://netty.io/netty-resolver-dns/) io.netty:netty-resolver-dns:jar:4.1.24.Final
-Netty/TomcatNative(https://netty.io/wiki/forked-tomcat-native.html) io.netty:netty-tcnative-boringssl-static:2.0.7.Final
-Netty/Transport (http://netty.io/netty-transport/) io.netty:netty-transport:jar:4.1.24.Final
+Netty/Buffer (http://netty.io/netty-buffer/) io.netty:netty-buffer:jar:4.1.28.Final
+Netty/Codec (http://netty.io/netty-codec/) io.netty:netty-codec:jar:4.1.28.Final
+Netty/Codec/DNS (http://netty.io/netty-codec-dns/) io.netty:netty-codec-dns:jar:4.1.28.Final
+Netty/Codec/HTTP (http://netty.io/netty-codec-http/) io.netty:netty-codec-http:jar:4.1.28.Final
+Netty/Codec/HTTP2 (http://netty.io/netty-codec-http2/) io.netty:netty-codec-http2:jar:4.1.28.Final
+Netty/Codec/Socks (http://netty.io/netty-codec-socks/) io.netty:netty-codec-socks:jar:4.1.28.Final
+Netty/Common (http://netty.io/netty-common/) io.netty:netty-common:jar:4.1.28.Final
+Netty/Handler (http://netty.io/netty-handler/) io.netty:netty-handler:jar:4.1.28.Final
+Netty/Handler/Proxy (http://netty.io/netty-handler-proxy/) io.netty:netty-handler-proxy:jar:4.1.28.Final
+Netty/Resolver (http://netty.io/netty-resolver/) io.netty:netty-resolver:jar:4.1.28.Final
+Netty/Resolver/DNS (http://netty.io/netty-resolver-dns/) io.netty:netty-resolver-dns:jar:4.1.28.Final
+Netty/TomcatNative(https://netty.io/wiki/forked-tomcat-native.html) io.netty:netty-tcnative-boringssl-static:2.0.14.Final
+Netty/Transport (http://netty.io/netty-transport/) io.netty:netty-transport:jar:4.1.28.Final
 OkHttp (https://github.com/square/okhttp/okhttp) com.squareup.okhttp3:okhttp:jar:3.4.1
 Okio (https://github.com/square/okio/okio) com.squareup.okio:okio:jar:1.9.0
 Prometheus Java Simpleclient (http://github.com/prometheus/client_java/simpleclient) io.prometheus:simpleclient:bundle:0.1.0
@@ -523,10 +523,10 @@ tomcat-embed-core (http://tomcat.apache.org/) org.apache.tomcat.embed:tomcat-emb
 tomcat-embed-el (http://tomcat.apache.org/) org.apache.tomcat.embed:tomcat-embed-el:jar:8.0.33
 tomcat-embed-logging-juli (http://tomcat.apache.org/) org.apache.tomcat.embed:tomcat-embed-logging-juli:jar:8.0.33
 tomcat-embed-websocket (http://tomcat.apache.org/) org.apache.tomcat.embed:tomcat-embed-websocket:jar:8.0.33
-Vert.x Bridge Common (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-bridge-common) io.vertx:vertx-bridge-common:jar:3.5.3
-Vert.x Core (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-core) io.vertx:vertx-core:jar:3.5.3
-vertx-auth-common (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-auth/vertx-auth-common) io.vertx:vertx-auth-common:jar:3.5.3
-vertx-web (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-web-parent/vertx-web) io.vertx:vertx-web:jar:3.5.3
+Vert.x Bridge Common (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-bridge-common) io.vertx:vertx-bridge-common:jar:3.6.2
+Vert.x Core (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-core) io.vertx:vertx-core:jar:3.6.2
+vertx-auth-common (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-auth/vertx-auth-common) io.vertx:vertx-auth-common:jar:3.6.2
+vertx-web (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-web-parent/vertx-web) io.vertx:vertx-web:jar:3.6.2
 Woodstox (https://github.com/FasterXML/woodstox) com.fasterxml.woodstox:woodstox-core:bundle:5.0.3
 Zipkin Reporter Spring Factory Beans (https://github.com/openzipkin/zipkin-reporter-java/zipkin-reporter-spring-beans) io.zipkin.reporter2:zipkin-reporter-spring-beans:jar:2.7.13
 Zipkin Reporter: Core (https://github.com/openzipkin/zipkin-reporter-java/zipkin-reporter) io.zipkin.reporter2:zipkin-reporter:jar:2.7.13

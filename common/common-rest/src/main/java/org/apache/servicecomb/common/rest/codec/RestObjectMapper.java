@@ -23,7 +23,6 @@ import java.util.Date;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser.Feature;
-import com.fasterxml.jackson.core.base.DoSFix;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonSerializer;
@@ -35,9 +34,6 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.vertx.core.json.JsonObject;
 
 public class RestObjectMapper extends AbstractRestObjectMapper {
-  static {
-    DoSFix.init();
-  }
 
   private static class JsonObjectSerializer extends JsonSerializer<JsonObject> {
     @Override
@@ -52,7 +48,6 @@ public class RestObjectMapper extends AbstractRestObjectMapper {
 
   @SuppressWarnings("deprecation")
   public RestObjectMapper() {
-    super(DoSFix.createJsonFactory());
 
     // swagger中要求date使用ISO8601格式传递，这里与之做了功能绑定，这在cse中是没有问题的
     setDateFormat(new com.fasterxml.jackson.databind.util.ISO8601DateFormat() {

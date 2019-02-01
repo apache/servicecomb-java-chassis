@@ -83,6 +83,7 @@ final class RestUtils {
             .append(queryParams);
       }
 
+      @SuppressWarnings("deprecation")
       HttpClientRequest httpClientRequest = httpClient
           .request(httpMethod, ipPort.getPort(), ipPort.getHostOrIp(), url.toString(), response -> {
             responseHandler.handle(new RestResponse(requestContext, response));

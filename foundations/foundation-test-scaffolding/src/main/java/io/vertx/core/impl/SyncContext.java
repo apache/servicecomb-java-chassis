@@ -55,10 +55,10 @@ public class SyncContext extends EventLoopContext {
   }
 
   @Override
-  public <T> void executeBlocking(Action<T> action, Handler<AsyncResult<T>> resultHandler) {
+  public <T> void executeBlockingInternal(Handler<Future<T>> action, Handler<AsyncResult<T>> resultHandler) {
     syncExecuteBlocking((future) -> {
       try {
-        future.complete(action.perform());
+        action.handle(future);
       } catch (Throwable e) {
         future.fail(e);
       }
@@ -72,7 +72,7 @@ public class SyncContext extends EventLoopContext {
   }
 
   @Override
-  <T> void executeBlocking(Action<T> action, Handler<Future<T>> blockingCodeHandler,
+  <T> void executeBlocking(Handler<Future<T>> blockingCodeHandler,
       Handler<AsyncResult<T>> resultHandler,
       Executor exec, TaskQueue queue, @SuppressWarnings("rawtypes") PoolMetrics metrics) {
     syncExecuteBlocking(blockingCodeHandler, resultHandler);

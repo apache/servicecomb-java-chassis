@@ -130,7 +130,7 @@ public class TestRestClientInvocation {
     };
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "deprecation"})
   @Before
   public void setup() {
     Deencapsulation.setField(restClientInvocation, "clientRequest", request);

@@ -163,6 +163,7 @@ public class ConfigCenterClient {
       String configCenter = memberDiscovery.getConfigServer();
       IpPort ipPort = NetUtils.parseIpPortFromURI(configCenter);
       clientMgr.findThreadBindClientPool().runOnContext(client -> {
+        @SuppressWarnings("deprecation")
         HttpClientRequest request =
             client.get(ipPort.getPort(), ipPort.getHostOrIp(), uriConst.MEMBERS, rsp -> {
               if (rsp.statusCode() == HttpResponseStatus.OK.code()) {
@@ -374,6 +375,7 @@ public class ConfigCenterClient {
           + ParseConfigUtils.getInstance().getCurrentVersionInfo();
       clientMgr.findThreadBindClientPool().runOnContext(client -> {
         IpPort ipPort = NetUtils.parseIpPortFromURI(configcenter);
+        @SuppressWarnings("deprecation")
         HttpClientRequest request = client.get(ipPort.getPort(), ipPort.getHostOrIp(), path, rsp -> {
           if (rsp.statusCode() == HttpResponseStatus.OK.code()) {
             rsp.bodyHandler(buf -> {

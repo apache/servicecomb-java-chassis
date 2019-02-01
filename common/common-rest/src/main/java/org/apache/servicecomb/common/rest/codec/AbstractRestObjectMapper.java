@@ -17,15 +17,10 @@
 
 package org.apache.servicecomb.common.rest.codec;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class AbstractRestObjectMapper extends ObjectMapper {
   private static final long serialVersionUID = 189026839992490564L;
-
-  public AbstractRestObjectMapper(JsonFactory jsonFactory) {
-    super(jsonFactory);
-  }
 
   abstract public String convertToString(Object value) throws Exception;
 }
