@@ -139,7 +139,7 @@ public final class ConfigUtil {
             configMapEntry.getKey()));
     // we have already copy the cse config to the serviceComb config when we load the config from local yaml files
     // hence, we do not need duplicate copy it.
-    config.addConfiguration( new DynamicConfiguration(
+    config.addConfiguration(new DynamicConfiguration(
             new MicroserviceConfigurationSource(configModelList), new NeverStartPollingScheduler()),
         "configFromYamlFile");
     duplicateCseConfigToServicecombAtFront(config,
