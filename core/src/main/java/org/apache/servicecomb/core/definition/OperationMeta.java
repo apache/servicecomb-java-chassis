@@ -21,11 +21,12 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
+import org.apache.servicecomb.config.inject.ConfigObjectFactory;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.executor.ExecutorManager;
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
 import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
 
@@ -58,7 +59,7 @@ public class OperationMeta {
 
   // transport、provider、consumer端都可能需要扩展数据
   // 为避免每个地方都做复杂的层次管理，直接在这里保存扩展数据
-  private Map<String, Object> extData = new ConcurrentHashMap<>();
+  private Map<String, Object> extData = new ConcurrentHashMapEx<>();
 
   // providerQpsFlowControlHandler is a temporary filed, only for internal usage
   private Handler providerQpsFlowControlHandler;
@@ -67,6 +68,8 @@ public class OperationMeta {
   private boolean providerQpsFlowControlHandlerSearched;
 
   private String transport = null;
+
+  private OperationConfig config;
 
   public void init(SchemaMeta schemaMeta, Method method, String operationPath, String httpMethod,
       Operation swaggerOperation) {
@@ -77,6 +80,23 @@ public class OperationMeta {
     this.method = method;
     this.httpMethod = httpMethod.toUpperCase(Locale.US);
     this.swaggerOperation = swaggerOperation;
+    this.config = new ConfigObjectFactory().create(OperationConfig.class,
+        "op-any-priority", schemaMeta.getMicroserviceMeta().isConsumer() ?
+            OperationConfig.CONSUMER_OP_ANY_PRIORITY : OperationConfig.PRODUCER_OP_ANY_PRIORITY,
+        "consumer-op-any_priority", OperationConfig.CONSUMER_OP_ANY_PRIORITY,
+        "producer-op-any_priority", OperationConfig.PRODUCER_OP_ANY_PRIORITY,
+
+        "op-priority", schemaMeta.getMicroserviceMeta().isConsumer() ?
+            OperationConfig.CONSUMER_OP_PRIORITY : OperationConfig.PRODUCER_OP_PRIORITY,
+        "consumer-op-priority", OperationConfig.CONSUMER_OP_PRIORITY,
+        "producer-op-priority", OperationConfig.PRODUCER_OP_PRIORITY,
+
+        "consumer-producer", schemaMeta.getMicroserviceMeta().isConsumer() ? "Consumer" : "Provider",
+        "consumer-provider", schemaMeta.getMicroserviceMeta().isConsumer() ? "Consumer" : "Provider",
+
+        "service", schemaMeta.getMicroserviceName(),
+        "schema", schemaMeta.getSchemaId(),
+        "operation", swaggerOperation.getOperationId());
 
     executor = ExecutorManager.findExecutor(this);
 
@@ -87,6 +107,10 @@ public class OperationMeta {
     transport = DynamicPropertyFactory.getInstance()
         .getStringProperty("servicecomb.operation."
             + microserviceQualifiedName + ".transport", null).get();
+  }
+
+  public OperationConfig getConfig() {
+    return config;
   }
 
   public String getTransport() {
@@ -153,6 +177,10 @@ public class OperationMeta {
   @SuppressWarnings("unchecked")
   public <T> T getExtData(String key) {
     return (T) extData.get(key);
+  }
+
+  public Map<String, Object> getExtData() {
+    return extData;
   }
 
   public Executor getExecutor() {

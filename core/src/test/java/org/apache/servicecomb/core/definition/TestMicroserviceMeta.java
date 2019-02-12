@@ -30,6 +30,11 @@ public class TestMicroserviceMeta {
   MicroserviceMeta microserviceMeta = new MicroserviceMeta("app:microservice");
 
   @Test
+  public void isConsumer() {
+    Assert.assertTrue(microserviceMeta.isConsumer());
+  }
+
+  @Test
   public void classloader() {
     ClassLoader loader = new MicroserviceClassLoader("", "", "");
     microserviceMeta.setClassLoader(loader);

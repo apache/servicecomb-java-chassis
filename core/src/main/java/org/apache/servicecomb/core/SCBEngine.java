@@ -103,13 +103,11 @@ public class SCBEngine {
     return eventBus;
   }
 
-  public void setProducerProviderManager(
-      ProducerProviderManager producerProviderManager) {
+  public void setProducerProviderManager(ProducerProviderManager producerProviderManager) {
     this.producerProviderManager = producerProviderManager;
   }
 
-  public void setConsumerProviderManager(
-      ConsumerProviderManager consumerProviderManager) {
+  public void setConsumerProviderManager(ConsumerProviderManager consumerProviderManager) {
     this.consumerProviderManager = consumerProviderManager;
   }
 
@@ -121,8 +119,7 @@ public class SCBEngine {
     this.transportManager = transportManager;
   }
 
-  public void setSchemaListenerManager(
-      SchemaListenerManager schemaListenerManager) {
+  public void setSchemaListenerManager(SchemaListenerManager schemaListenerManager) {
     this.schemaListenerManager = schemaListenerManager;
   }
 
