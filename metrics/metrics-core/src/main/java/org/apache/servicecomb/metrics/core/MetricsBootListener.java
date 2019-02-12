@@ -27,6 +27,7 @@ import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
 import org.apache.servicecomb.metrics.core.publish.MetricsRestPublisher;
+import org.apache.servicecomb.metrics.core.publish.SlowInvocationLogger;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -36,8 +37,14 @@ public class MetricsBootListener implements BootListener {
   @Inject
   private ProducerSchemaFactory producerSchemaFactory;
 
+  private SlowInvocationLogger slowInvocationLogger;
+
   public MetricsBootstrap getMetricsBootstrap() {
     return metricsBootstrap;
+  }
+
+  public SlowInvocationLogger getSlowInvocationLogger() {
+    return slowInvocationLogger;
   }
 
   @Override
@@ -47,6 +54,7 @@ public class MetricsBootListener implements BootListener {
         registerSchemas();
         break;
       case AFTER_REGISTRY:
+        slowInvocationLogger = new SlowInvocationLogger(event.getScbEngine());
         metricsBootstrap.start(new GlobalRegistry(), EventManager.getEventBus());
         break;
       case BEFORE_CLOSE:
