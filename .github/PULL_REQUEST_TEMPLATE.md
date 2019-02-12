@@ -4,7 +4,7 @@ Follow this checklist to help us incorporate your contribution quickly and easil
  - [ ] Each commit in the pull request should have a meaningful subject line and body.
  - [ ] Format the pull request title like `[SCB-XXX] Fixes bug in ApproximateQuantiles`, where you replace `SCB-XXX` with the appropriate JIRA issue.
  - [ ] Write a pull request description that is detailed enough to understand what the pull request does, how, and why.
- - [ ] Run `mvn clean install` to make sure basic checks pass. A more thorough check will be performed on your pull request automatically.
+ - [ ] Run `mvn clean install -Pit` to make sure basic checks pass. A more thorough check will be performed on your pull request automatically.
  - [ ] If this contribution is large, please file an Apache [Individual Contributor License Agreement](https://www.apache.org/licenses/icla.pdf).
 
 ---
