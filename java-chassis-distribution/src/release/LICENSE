@@ -514,6 +514,7 @@ spring-cloud-starter-archaius (https://projects.spring.io/spring-cloud) org.spri
 spring-cloud-starter-hystrix (https://projects.spring.io/spring-cloud) org.springframework.cloud:spring-cloud-starter-hystrix:jar:1.4.4.RELEASE
 spring-cloud-starter-ribbon (https://projects.spring.io/spring-cloud) org.springframework.cloud:spring-cloud-starter-ribbon:jar:1.4.4.RELEASE
 spring-cloud-starter-zuul (https://projects.spring.io/spring-cloud) org.springframework.cloud:spring-cloud-starter-zuul:jar:1.4.4.RELEASE
+spring-cloud-starter-gateway (https://projects.spring.io/spring-cloud) org.springframework.cloud:spring-cloud-starter-gateway:jar:2.0.0.RELEASE
 spring-security-crypto (http://spring.io/spring-security) org.springframework.security:spring-security-crypto:jar:4.1.4.RELEASE
 spring-security-rsa (http://github.com/spring-projects/spring-security-oauth) org.springframework.security:spring-security-rsa:jar:1.0.3.RELEASE
 swagger-annotations (https://github.com/swagger-api/swagger-core/modules/swagger-annotations) io.swagger:swagger-annotations:bundle:1.5.12
