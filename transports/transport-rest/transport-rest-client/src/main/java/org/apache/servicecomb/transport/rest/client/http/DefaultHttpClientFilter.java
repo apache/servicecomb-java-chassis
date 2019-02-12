@@ -128,6 +128,9 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
     Response response = extractResponse(invocation, responseEx);
 
     for (String headerName : responseEx.getHeaderNames()) {
+      if (headerName.equals(":status")) {
+        continue;
+      }
       Collection<String> headerValues = responseEx.getHeaders(headerName);
       for (String headerValue : headerValues) {
         response.getHeaders().addHeader(headerName, headerValue);
