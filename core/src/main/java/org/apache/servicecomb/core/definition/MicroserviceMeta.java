@@ -53,11 +53,23 @@ public class MicroserviceMeta extends CommonService<OperationMeta> {
 
   private Map<String, Object> extData = new ConcurrentHashMap<>();
 
+  private boolean consumer = true;
+
   public MicroserviceMeta(String microserviceName) {
     classLoader = JvmUtils.findClassLoader();
     parseMicroserviceName(microserviceName);
     createOperationMgr("Operation meta mgr for microservice " + microserviceName);
     idSchemaMetaMgr = new RegisterManager<>("Schema meta id mgr for microservice " + microserviceName);
+  }
+
+  public boolean isConsumer() {
+    return consumer;
+  }
+
+  public MicroserviceMeta setConsumer(boolean consumer) {
+    this.consumer = consumer;
+
+    return this;
   }
 
   public void regSchemaMeta(SchemaMeta schemaMeta) {

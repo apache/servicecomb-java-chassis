@@ -17,10 +17,15 @@
 
 package org.apache.servicecomb.core.definition;
 
+import java.util.concurrent.TimeUnit;
+
 import org.apache.servicecomb.core.unittest.UnitTestMeta;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.swagger.extend.annotations.ResponseHeaders;
 import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.swagger.annotations.ApiResponse;
@@ -38,6 +43,16 @@ public class TestOperationMeta {
     public int test(int x) {
       return 100;
     }
+  }
+
+  @BeforeClass
+  public static void setup() {
+    ArchaiusUtils.resetConfig();
+  }
+
+  @AfterClass
+  public static void teardown() {
+    ArchaiusUtils.resetConfig();
   }
 
   @Test
@@ -73,5 +88,23 @@ public class TestOperationMeta {
     Assert.assertEquals("Ljava/util/List<Ljava/lang/String;>;",
         responseMeta.getHeaders().get("h2").getGenericSignature());
     Assert.assertEquals("Ljava/lang/Integer;", responseMeta.getHeaders().get("h3").getGenericSignature());
+  }
+
+  @Test
+  public void opConfig() {
+    UnitTestMeta meta = new UnitTestMeta();
+    SchemaMeta schemaMeta = meta.getOrCreateSchemaMeta(Impl.class);
+    OperationMeta operationMeta = schemaMeta.findOperation("test");
+
+    OperationConfig config = operationMeta.getConfig();
+    Assert.assertFalse(config.isSlowInvocationEnabled());
+    Assert.assertEquals(1000, config.getMsSlowInvocation());
+    Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(1000), config.getNanoSlowInvocation());
+
+    ArchaiusUtils.setProperty("servicecomb.Consumer.invocation.slow.enabled.perfClient", true);
+    ArchaiusUtils.setProperty("servicecomb.Consumer.invocation.slow.msTime.perfClient", 2000);
+    Assert.assertTrue(config.isSlowInvocationEnabled());
+    Assert.assertEquals(2000, config.getMsSlowInvocation());
+    Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(2000), config.getNanoSlowInvocation());
   }
 }
