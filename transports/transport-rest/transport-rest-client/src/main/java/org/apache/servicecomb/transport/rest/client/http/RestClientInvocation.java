@@ -28,7 +28,6 @@ import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
-import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
@@ -43,7 +42,6 @@ import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultHttpSocketM
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -125,11 +123,7 @@ public class RestClientInvocation {
     invocation.getInvocationStageTrace().startSend();
     httpClientWithContext.runOnContext(httpClient -> {
       this.setCseContext();
-      //set the timeout based on priority. the priority is follows.
-      //high priotiry: 1) operational level 2)schema level 3) service level 4) global level : low priotiry.
-      clientRequest.setTimeout(AbstractTransport.getReqTimeout(invocation.getOperationName(),
-          invocation.getSchemaId(),
-          invocation.getMicroserviceName()));
+      clientRequest.setTimeout(operationMeta.getConfig().getMsRequestTimeout());
       try {
         restClientRequest.end();
       } catch (Throwable e) {

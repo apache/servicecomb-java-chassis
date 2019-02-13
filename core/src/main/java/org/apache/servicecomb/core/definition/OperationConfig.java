@@ -69,6 +69,13 @@ public class OperationConfig {
 
   private long nanoHighwayRequestWaitInPoolTimeout;
 
+  @InjectProperty(keys = {
+      "Provider.requestWaitInPoolTimeout${op-priority}",
+      "rest.server.requestWaitInPoolTimeout"}, defaultValue = "30000")
+  private long msRestRequestWaitInPoolTimeout;
+
+  private long nanoRestRequestWaitInPoolTimeout;
+
   public boolean isSlowInvocationEnabled() {
     return slowInvocationEnabled;
   }
@@ -109,5 +116,18 @@ public class OperationConfig {
 
   public long getNanoHighwayRequestWaitInPoolTimeout() {
     return nanoHighwayRequestWaitInPoolTimeout;
+  }
+
+  public long getMsRestRequestWaitInPoolTimeout() {
+    return msRestRequestWaitInPoolTimeout;
+  }
+
+  public void setMsRestRequestWaitInPoolTimeout(long msRestRequestWaitInPoolTimeout) {
+    this.msRestRequestWaitInPoolTimeout = msRestRequestWaitInPoolTimeout;
+    this.nanoRestRequestWaitInPoolTimeout = TimeUnit.MILLISECONDS.toNanos(msRestRequestWaitInPoolTimeout);
+  }
+
+  public long getNanoRestRequestWaitInPoolTimeout() {
+    return nanoRestRequestWaitInPoolTimeout;
   }
 }
