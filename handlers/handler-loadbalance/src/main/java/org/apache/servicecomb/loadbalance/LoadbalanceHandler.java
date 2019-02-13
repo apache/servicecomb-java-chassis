@@ -240,6 +240,7 @@ public class LoadbalanceHandler implements Handler {
     }
     chosenLB.getLoadBalancerStats().incrementNumRequests(server);
     invocation.setEndpoint(server.getEndpoint());
+    ServiceCombLoadBalancerStats.INSTANCE.markLastVisitTime(server);
     invocation.next(resp -> {
       // this stats is for WeightedResponseTimeRule
       chosenLB.getLoadBalancerStats().noteResponseTime(server, (System.currentTimeMillis() - time));
@@ -364,6 +365,7 @@ public class LoadbalanceHandler implements Handler {
             chosenLB.getLoadBalancerStats().incrementNumRequests(s);
             invocation.setHandlerIndex(currentHandler); // for retry
             invocation.setEndpoint(server.getEndpoint());
+            ServiceCombLoadBalancerStats.INSTANCE.markLastVisitTime(server);
             invocation.next(resp -> {
               if (isFailedResponse(resp)) {
                 LOGGER.error("service {}, call error, msg is {}, server is {} ",

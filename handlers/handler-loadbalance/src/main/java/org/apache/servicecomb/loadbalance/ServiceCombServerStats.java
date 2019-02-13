@@ -52,7 +52,6 @@ public class ServiceCombServerStats {
   public void markSuccess() {
     long time = System.currentTimeMillis();
     ensureWindow(time);
-    lastVisitTime = time;
     lastActiveTime = time;
     totalRequests.incrementAndGet();
     successRequests.incrementAndGet();
@@ -62,7 +61,6 @@ public class ServiceCombServerStats {
   public void markFailure() {
     long time = System.currentTimeMillis();
     ensureWindow(time);
-    lastVisitTime = time;
 
     // when isolated, do not update any failure statistics, or we can not recover from failure very quickly
     if (!isolated) {
@@ -70,6 +68,11 @@ public class ServiceCombServerStats {
       failedRequests.incrementAndGet();
       continuousFailureCount.incrementAndGet();
     }
+  }
+
+  public void markLastVisitTime() {
+    long time = System.currentTimeMillis();
+    this.lastVisitTime = time;
   }
 
   private void ensureWindow(long time) {

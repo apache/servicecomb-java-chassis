@@ -94,6 +94,14 @@ public class ServiceCombLoadBalancerStats {
     }
   }
 
+  public void markLastVisitTime(ServiceCombServer server) {
+    try {
+      serverStatsCache.get(server).markLastVisitTime();
+    } catch (ExecutionException e) {
+      LOGGER.error("Not expected to happen, maybe a bug.", e);
+    }
+  }
+
   public ServiceCombServerStats getServiceCombServerStats(ServiceCombServer server) {
     try {
       return serverStatsCache.get(server);
