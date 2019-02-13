@@ -104,7 +104,7 @@ public class TcpClientConnection extends TcpConnection {
   }
 
   public void send(AbstractTcpClientPackage tcpClientPackage, TcpResponseCallback callback) {
-    requestMap.put(tcpClientPackage.getMsgId(), new TcpRequest(clientConfig.getRequestTimeoutMillis(), callback));
+    requestMap.put(tcpClientPackage.getMsgId(), new TcpRequest(tcpClientPackage.getMsRequestTimeout(), callback));
 
     if (writeToBufferQueue(tcpClientPackage)) {
       return;
@@ -236,7 +236,7 @@ public class TcpClientConnection extends TcpConnection {
 
     try (TcpOutputStream os = createLogin()) {
       requestMap.put(os.getMsgId(),
-          new TcpRequest(clientConfig.getRequestTimeoutMillis(), this::onLoginResponse));
+          new TcpRequest(clientConfig.getMsLoginTimeout(), this::onLoginResponse));
       netSocket.write(os.getBuffer());
     }
   }

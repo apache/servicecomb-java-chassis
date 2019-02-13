@@ -53,6 +53,22 @@ public class OperationConfig {
 
   private long nanoSlowInvocation;
 
+  /**
+   * consumer request timeout
+   */
+  @InjectProperty(keys = {"request.${op-any-priority}.timeout", "request.timeout"}, defaultValue = "30000")
+  private long msRequestTimeout;
+
+  /**
+   * producer wait in thread pool timeout
+   */
+  @InjectProperty(keys = {
+      "Provider.requestWaitInPoolTimeout${op-priority}",
+      "highway.server.requestWaitInPoolTimeout"}, defaultValue = "30000")
+  private long msHighwayRequestWaitInPoolTimeout;
+
+  private long nanoHighwayRequestWaitInPoolTimeout;
+
   public boolean isSlowInvocationEnabled() {
     return slowInvocationEnabled;
   }
@@ -72,5 +88,26 @@ public class OperationConfig {
 
   public long getNanoSlowInvocation() {
     return nanoSlowInvocation;
+  }
+
+  public long getMsRequestTimeout() {
+    return msRequestTimeout;
+  }
+
+  public void setMsRequestTimeout(long msRequestTimeout) {
+    this.msRequestTimeout = msRequestTimeout;
+  }
+
+  public long getMsHighwayRequestWaitInPoolTimeout() {
+    return msHighwayRequestWaitInPoolTimeout;
+  }
+
+  public void setMsHighwayRequestWaitInPoolTimeout(long msHighwayRequestWaitInPoolTimeout) {
+    this.msHighwayRequestWaitInPoolTimeout = msHighwayRequestWaitInPoolTimeout;
+    this.nanoHighwayRequestWaitInPoolTimeout = TimeUnit.MILLISECONDS.toNanos(msHighwayRequestWaitInPoolTimeout);
+  }
+
+  public long getNanoHighwayRequestWaitInPoolTimeout() {
+    return nanoHighwayRequestWaitInPoolTimeout;
   }
 }

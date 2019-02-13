@@ -37,16 +37,10 @@ import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.netflix.config.DynamicPropertyFactory;
-
 import io.vertx.core.Vertx;
 
 public abstract class AbstractTransport implements Transport {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTransport.class);
-
-  public static final String PROP_ROOT = "servicecomb.request";
-
-  public static final String PROP_TIMEOUT = ".timeout";
 
   /*
    * 用于参数传递：比如向RestServerVerticle传递endpoint地址。
@@ -54,8 +48,6 @@ public abstract class AbstractTransport implements Transport {
   public static final String ENDPOINT_KEY = "servicecomb.endpoint";
 
   private static final long REQUEST_TIMEOUT_CFG_FAIL = -1;
-
-  private static final long DEFAULT_TIMEOUT_MILLIS = 30000;
 
   // 所有transport使用同一个vertx实例，避免创建太多的线程
   private static TransportVertxFactory transportVertxFactory = new TransportVertxFactory();
@@ -157,36 +149,5 @@ public abstract class AbstractTransport implements Transport {
       return null;
     }
     return new URIEndpointObject(address);
-  }
-
-  /**
-   * Handles the request timeout configurations. 
-   * @param operationName operation name
-   * @param schema schema id
-   * @param microservice micro service name
-   * @return configured value
-   */
-  public static long getReqTimeout(String operationName, String schema, String microservice) {
-    return getLongProperty(DEFAULT_TIMEOUT_MILLIS,
-        PROP_ROOT + "." + microservice + "." + schema + "." + operationName + PROP_TIMEOUT,
-        PROP_ROOT + "." + microservice + "." + schema + PROP_TIMEOUT,
-        PROP_ROOT + "." + microservice + PROP_TIMEOUT,
-        PROP_ROOT + PROP_TIMEOUT);
-  }
-
-  /**
-   * Handles the request timeout configurations. 
-   * @param defaultValue
-   * @param keys list of keys
-   * @return configured value
-   */
-  private static long getLongProperty(long defaultValue, String... keys) {
-    for (String key : keys) {
-      long property = DynamicPropertyFactory.getInstance().getLongProperty(key, REQUEST_TIMEOUT_CFG_FAIL).get();
-      if (property != REQUEST_TIMEOUT_CFG_FAIL) {
-        return property;
-      }
-    }
-    return defaultValue;
   }
 }

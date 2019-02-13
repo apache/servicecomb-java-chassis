@@ -35,7 +35,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.util.ReflectionUtils;
 
 import com.netflix.config.DynamicProperty;
@@ -146,7 +145,6 @@ public class TestAbstractTransport {
     transport.setListenAddressWithoutSchema(null);
     Assert.assertNull(transport.getEndpoint().getEndpoint());
     Assert.assertNull(transport.parseAddress(null));
-    Assert.assertEquals(30000, AbstractTransport.getReqTimeout("sayHi", "hello", "test"));
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -154,56 +152,5 @@ public class TestAbstractTransport {
     MyAbstractTransport transport = new MyAbstractTransport();
 
     transport.setListenAddressWithoutSchema(":127.0.0.1:9090");
-  }
-
-  /**
-   * Tests the request call timeout for service level timeout value
-   */
-  @Test
-  public void testRequestCfgService() {
-    System.setProperty("servicecomb.request.hello1.timeout", "3000");
-    //check for service level timeout value
-    Assert.assertEquals(3000, AbstractTransport.getReqTimeout("sayHello1", "sayHelloSchema1", "hello1"));
-    System.getProperties().remove("servicecomb.request.hello1.timeout");
-  }
-
-  /**
-   * Tests the request call timeout for schema level timeout value
-   */
-  @Test
-  public void testRequestCfgSchema() {
-    System.setProperty("servicecomb.request.hello2.sayHelloSchema2.timeout", "2000");
-
-    Assert.assertEquals(2000, AbstractTransport.getReqTimeout("sayHello2", "sayHelloSchema2", "hello2"));
-    System.getProperties().remove("servicecomb.request.hello2.sayHelloSchema2.timeout");
-  }
-
-  /**
-   * Tests the request call timeout for operatation level timeout value
-   */
-  @Test
-  public void testRequestCfgOperation() {
-    System.setProperty("servicecomb.request.hello3.sayHelloSchema3.sayHello3.timeout", "1000");
-
-    Assert.assertEquals(1000, AbstractTransport.getReqTimeout("sayHello3", "sayHelloSchema3", "hello3"));
-    System.getProperties().remove("servicecomb.request.hello3.sayHelloSchema3.sayHello3.timeout");
-  }
-
-  /**
-   * Tests the request call timeout with configuration change event for operation level config.
-   */
-  @Test
-  public void testRequestTimeoutCfgEvent() {
-    System.setProperty("servicecomb.request.hello4.sayHelloSchema4.sayHello4.timeout", "1000");
-    Invocation invocation = Mockito.mock(Invocation.class);
-    Mockito.when(invocation.getOperationName()).thenReturn("sayHello4");
-    Mockito.when(invocation.getSchemaId()).thenReturn("sayHelloSchema4");
-    Mockito.when(invocation.getMicroserviceName()).thenReturn("hello4");
-    Assert.assertEquals(1000, AbstractTransport.getReqTimeout("sayHello4", "sayHelloSchema4", "hello4"));
-
-    updateProperty("servicecomb.request.hello4.sayHelloSchema4.sayHello4.timeout", 2000);
-
-    Assert.assertEquals(2000, AbstractTransport.getReqTimeout("sayHello4", "sayHelloSchema4", "hello4"));
-    System.getProperties().remove("servicecomb.request.hello4.sayHelloSchema4.sayHello4.timeout");
   }
 }

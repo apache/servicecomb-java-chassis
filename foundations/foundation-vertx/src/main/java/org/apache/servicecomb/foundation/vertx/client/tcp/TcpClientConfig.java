@@ -20,20 +20,19 @@ package org.apache.servicecomb.foundation.vertx.client.tcp;
 import io.vertx.core.net.NetClientOptions;
 
 public class TcpClientConfig extends NetClientOptions {
-  private static final int DEFAULT_TIMEOUT = 30000;
+  public static final int DEFAULT_LOGIN_TIMEOUT = 30000;
 
-  private long msRequestTimeout;
+  private long msLoginTimeout;
 
   public TcpClientConfig() {
-    // 30 second
-    msRequestTimeout = DEFAULT_TIMEOUT;
+    msLoginTimeout = DEFAULT_LOGIN_TIMEOUT;
   }
 
-  public long getRequestTimeoutMillis() {
-    return msRequestTimeout;
+  public long getMsLoginTimeout() {
+    return msLoginTimeout;
   }
 
-  public void setRequestTimeoutMillis(long msTimeout) {
-    this.msRequestTimeout = msTimeout;
+  public void setMsLoginTimeout(long msLoginTimeout) {
+    this.msLoginTimeout = msLoginTimeout;
   }
 }

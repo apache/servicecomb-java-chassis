@@ -24,9 +24,9 @@ public class TestTcpClientConfig {
   @Test
   public void testTcpClientConfig() {
     TcpClientConfig config = new TcpClientConfig();
-    Assert.assertEquals(config.getRequestTimeoutMillis(), 30000);
+    Assert.assertEquals(config.getMsLoginTimeout(), 30000);
     Assert.assertEquals(config.isSsl(), false);
-    config.setRequestTimeoutMillis(500);
-    Assert.assertEquals(config.getRequestTimeoutMillis(), 500);
+    config.setMsLoginTimeout(500);
+    Assert.assertEquals(config.getMsLoginTimeout(), 500);
   }
 }

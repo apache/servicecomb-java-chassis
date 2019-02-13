@@ -21,7 +21,6 @@ import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
@@ -34,6 +33,8 @@ import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
@@ -61,6 +62,9 @@ public class HighwayClient {
 
   private TcpClientConfig createTcpClientConfig() {
     TcpClientConfig tcpClientConfig = new TcpClientConfig();
+    // global request timeout to be login timeout
+    tcpClientConfig.setMsLoginTimeout(DynamicPropertyFactory.getInstance()
+        .getLongProperty("servicecomb.request.timeout", TcpClientConfig.DEFAULT_LOGIN_TIMEOUT).get());
 
     SSLOptionFactory factory =
         SSLOptionFactory.createSSLOptionFactory(SSL_KEY, null);
@@ -90,13 +94,8 @@ public class HighwayClient {
 
     invocation.getInvocationStageTrace().finishGetConnection(System.nanoTime());
 
-    //set the timeout based on priority. the priority is follows.
-    //high priotiry: 1) operational level 2)schema level 3) service level 4) global level : low priotiry.
-    TcpClientConfig tcpClientConfig = tcpClient.getClientConfig();
-    tcpClientConfig.setRequestTimeoutMillis(AbstractTransport.getReqTimeout(invocation.getOperationName(),
-        invocation.getSchemaId(),
-        invocation.getMicroserviceName()));
-    HighwayClientPackage clientPackage = new HighwayClientPackage(invocation, operationProtobuf, tcpClient);
+    HighwayClientPackage clientPackage = new HighwayClientPackage(invocation, operationProtobuf,
+        operationMeta.getConfig().getMsRequestTimeout());
 
     LOGGER.debug("Sending request by highway, qualifiedName={}, endpoint={}.",
         invocation.getMicroserviceQualifiedName(),

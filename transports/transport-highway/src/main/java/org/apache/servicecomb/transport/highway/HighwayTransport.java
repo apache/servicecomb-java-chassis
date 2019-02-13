@@ -32,7 +32,6 @@ import io.vertx.core.DeploymentOptions;
 
 @Component
 public class HighwayTransport extends AbstractTransport {
-
   private HighwayClient highwayClient = new HighwayClient();
 
   @Override
