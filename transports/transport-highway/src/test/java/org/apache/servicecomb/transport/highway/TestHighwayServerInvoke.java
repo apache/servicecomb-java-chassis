@@ -151,7 +151,7 @@ public class TestHighwayServerInvoke {
     OperationMeta operationMeta = schemaMeta.ensureFindOperation("add");
     operationMeta.setExecutor(new ReactiveExecutor());
 
-    HighwayServerInvoke highwayServerInvoke = new HighwayServerInvoke();
+    HighwayServerInvoke highwayServerInvoke = new HighwayServerInvoke(null);
 
     RequestHeader requestHeader = MockUtil.getInstance().requestHeader;
 
@@ -199,7 +199,7 @@ public class TestHighwayServerInvoke {
     requestHeader.setSchemaId(schemaMeta.getSchemaId());
     requestHeader.setOperationName(operationMeta.getOperationId());
 
-    HighwayServerInvoke highwayServerInvoke = new HighwayServerInvoke();
+    HighwayServerInvoke highwayServerInvoke = new HighwayServerInvoke(null);
 
     assertTrue(highwayServerInvoke.init(connection, 0, requestHeader, null));
     MockUtil.getInstance().decodeRequestSucc = true;

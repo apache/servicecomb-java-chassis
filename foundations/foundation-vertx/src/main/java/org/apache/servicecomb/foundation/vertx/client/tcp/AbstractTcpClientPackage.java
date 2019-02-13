@@ -27,12 +27,22 @@ public abstract class AbstractTcpClientPackage {
     return reqId.getAndIncrement();
   }
 
+  private long msRequestTimeout;
+
   private long finishWriteToBuffer;
 
   protected long msgId = getAndIncRequestId();
 
   public long getMsgId() {
     return msgId;
+  }
+
+  public long getMsRequestTimeout() {
+    return msRequestTimeout;
+  }
+
+  public void setMsRequestTimeout(long msRequestTimeout) {
+    this.msRequestTimeout = msRequestTimeout;
   }
 
   public long getFinishWriteToBuffer() {

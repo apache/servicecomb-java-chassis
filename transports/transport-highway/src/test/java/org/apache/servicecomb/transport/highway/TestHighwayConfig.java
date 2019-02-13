@@ -18,13 +18,19 @@
 package org.apache.servicecomb.transport.highway;
 
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class TestHighwayConfig {
-  @After
-  public void tearDown() {
+  @BeforeClass
+  public static void setup() {
+    ArchaiusUtils.resetConfig();
+  }
+
+  @AfterClass
+  public static void tearDown() {
     ArchaiusUtils.resetConfig();
   }
 
@@ -43,12 +49,5 @@ public class TestHighwayConfig {
   @Test
   public void getAddress() {
     Assert.assertEquals(HighwayConfig.getAddress(), null);
-  }
-
-  @Test
-  public void testTimeoutConfig() {
-    Assert.assertEquals(HighwayConfig.getRequestWaitInPoolTimeout(), 30000);
-    ArchaiusUtils.setProperty(HighwayConfig.KEY_SERVICECOMB_REQUEST_WAIT_IN_POOL_TIMEOUT, 50000);
-    Assert.assertEquals(HighwayConfig.getRequestWaitInPoolTimeout(), 50000);
   }
 }

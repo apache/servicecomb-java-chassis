@@ -19,24 +19,11 @@ package org.apache.servicecomb.transport.highway;
 
 import org.apache.servicecomb.transport.common.TransportConfigUtils;
 
-import com.netflix.config.DynamicLongProperty;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
 public final class HighwayConfig {
   private HighwayConfig() {
-  }
-
-  public static final String KEY_SERVICECOMB_REQUEST_WAIT_IN_POOL_TIMEOUT = "servicecomb.highway.server.requestWaitInPoolTimeout";
-
-  public static final long DEFAULT_REQUEST_WAIT_IN_POOL_TIMEOUT = 30000;
-
-  private static final DynamicLongProperty requestWaitInPoolTimeoutProperty =
-      DynamicPropertyFactory.getInstance().getLongProperty(KEY_SERVICECOMB_REQUEST_WAIT_IN_POOL_TIMEOUT,
-          DEFAULT_REQUEST_WAIT_IN_POOL_TIMEOUT);
-
-  public static long getRequestWaitInPoolTimeout() {
-    return requestWaitInPoolTimeoutProperty.get();
   }
 
   public static String getAddress() {

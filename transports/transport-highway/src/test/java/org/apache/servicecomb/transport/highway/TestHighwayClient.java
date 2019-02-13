@@ -20,21 +20,21 @@ package org.apache.servicecomb.transport.highway;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.ws.Holder;
 
-import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.definition.OperationConfig;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.ReactiveExecutor;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
-import org.apache.servicecomb.core.transport.AbstractTransport;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
 import org.apache.servicecomb.foundation.vertx.client.tcp.AbstractTcpClientPackage;
 import org.apache.servicecomb.foundation.vertx.client.tcp.NetClientWrapper;
+import org.apache.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpData;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpResponseCallback;
 import org.apache.servicecomb.foundation.vertx.server.TcpParser;
@@ -43,12 +43,11 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.transport.highway.message.LoginRequest;
 import org.apache.servicecomb.transport.highway.message.RequestHeader;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 import io.netty.buffer.ByteBuf;
 import io.protostuff.runtime.ProtobufCompatibleUtils;
@@ -79,11 +78,9 @@ public class TestHighwayClient {
   static long nanoTime = 123;
 
   @BeforeClass
-  public static void beforeCls() {
-    ConfigUtil.installDynamicConfig();
-    AbstractConfiguration configuration =
-        (AbstractConfiguration) DynamicPropertyFactory.getBackingConfigurationSource();
-    configuration.addProperty(REQUEST_TIMEOUT_KEY, 2000);
+  public static void setup() {
+    ArchaiusUtils.resetConfig();
+    ArchaiusUtils.setProperty(REQUEST_TIMEOUT_KEY, 2000);
 
     new MockUp<System>() {
       @Mock
@@ -93,9 +90,15 @@ public class TestHighwayClient {
     };
   }
 
+  @AfterClass
+  public static void teardown() {
+    ArchaiusUtils.resetConfig();
+  }
+
   @Test
-  public void testRequestTimeout() {
-    Assert.assertEquals(AbstractTransport.getReqTimeout("sayHi", "hello", "test"), 2000);
+  public void testLoginTimeout(@Mocked Vertx vertx) {
+    TcpClientConfig tcpClientConfig = Deencapsulation.invoke(client, "createTcpClientConfig");
+    Assert.assertEquals(2000, tcpClientConfig.getMsLoginTimeout());
   }
 
   @Test
@@ -172,6 +175,7 @@ public class TestHighwayClient {
     Mockito.when(invocation.getEndpoint().getEndpoint()).thenReturn("endpoint");
     Mockito.when(invocation.getResponseExecutor()).thenReturn(new ReactiveExecutor());
     Mockito.when(invocation.getInvocationStageTrace()).thenReturn(invocationStageTrace);
+    Mockito.when(operationMeta.getConfig()).thenReturn(Mockito.mock(OperationConfig.class));
 
     Holder<Object> result = new Holder<>();
     client.send(invocation, ar -> {

@@ -97,6 +97,8 @@ public class TestOperationMeta {
     OperationMeta operationMeta = schemaMeta.findOperation("test");
 
     OperationConfig config = operationMeta.getConfig();
+
+    // slow invocation
     Assert.assertFalse(config.isSlowInvocationEnabled());
     Assert.assertEquals(1000, config.getMsSlowInvocation());
     Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(1000), config.getNanoSlowInvocation());
@@ -106,5 +108,41 @@ public class TestOperationMeta {
     Assert.assertTrue(config.isSlowInvocationEnabled());
     Assert.assertEquals(2000, config.getMsSlowInvocation());
     Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(2000), config.getNanoSlowInvocation());
+
+    // consumer request timeout
+    Assert.assertEquals(30000, config.getMsRequestTimeout());
+
+    ArchaiusUtils.setProperty("servicecomb.request.perfClient.timeout", 2);
+    Assert.assertEquals(2, config.getMsRequestTimeout());
+    ArchaiusUtils.setProperty(
+        "servicecomb.request.perfClient.org.apache.servicecomb.core.definition.TestOperationMeta$Impl.timeout", 3);
+    Assert.assertEquals(3, config.getMsRequestTimeout());
+    ArchaiusUtils.setProperty(
+        "servicecomb.request.perfClient.org.apache.servicecomb.core.definition.TestOperationMeta$Impl.test.timeout", 4);
+    Assert.assertEquals(4, config.getMsRequestTimeout());
+
+    // highway wait in thread pool timeout
+    Assert.assertEquals(30000, config.getMsHighwayRequestWaitInPoolTimeout());
+    Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(30000), config.getNanoHighwayRequestWaitInPoolTimeout());
+
+    ArchaiusUtils.setProperty("servicecomb.Provider.requestWaitInPoolTimeout", 1);
+    Assert.assertEquals(1, config.getMsHighwayRequestWaitInPoolTimeout());
+    Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(1), config.getNanoHighwayRequestWaitInPoolTimeout());
+
+    ArchaiusUtils.setProperty("servicecomb.Provider.requestWaitInPoolTimeout.perfClient", 2);
+    Assert.assertEquals(2, config.getMsHighwayRequestWaitInPoolTimeout());
+    Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(2), config.getNanoHighwayRequestWaitInPoolTimeout());
+
+    ArchaiusUtils.setProperty(
+        "servicecomb.Provider.requestWaitInPoolTimeout.perfClient.org.apache.servicecomb.core.definition.TestOperationMeta$Impl",
+        3);
+    Assert.assertEquals(3, config.getMsHighwayRequestWaitInPoolTimeout());
+    Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(3), config.getNanoHighwayRequestWaitInPoolTimeout());
+
+    ArchaiusUtils.setProperty(
+        "servicecomb.Provider.requestWaitInPoolTimeout.perfClient.org.apache.servicecomb.core.definition.TestOperationMeta$Impl.test",
+        4);
+    Assert.assertEquals(4, config.getMsHighwayRequestWaitInPoolTimeout());
+    Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(4), config.getNanoHighwayRequestWaitInPoolTimeout());
   }
 }

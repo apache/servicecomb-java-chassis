@@ -26,13 +26,10 @@ public class HighwayClientPackage extends AbstractTcpClientPackage {
 
   private OperationProtobuf operationProtobuf;
 
-  private HighwayClientConnection tcpClient;
-
-  public HighwayClientPackage(Invocation invocation, OperationProtobuf operationProtobuf,
-      HighwayClientConnection tcpClient) {
+  public HighwayClientPackage(Invocation invocation, OperationProtobuf operationProtobuf, long msRequestTimeout) {
     this.invocation = invocation;
     this.operationProtobuf = operationProtobuf;
-    this.tcpClient = tcpClient;
+    this.setMsRequestTimeout(msRequestTimeout);
   }
 
   @Override
