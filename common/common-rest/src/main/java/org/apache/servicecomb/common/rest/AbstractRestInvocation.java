@@ -187,7 +187,7 @@ public abstract class AbstractRestInvocation {
 
   private boolean isInQueueTimeout() {
     return System.nanoTime() - invocation.getInvocationStageTrace().getStart() >
-        CommonRestConfig.getRequestWaitInPoolTimeout() * 1_000_000;
+        invocation.getOperationMeta().getConfig().getNanoRestRequestWaitInPoolTimeout();
   }
 
   protected void runOnExecutor() {

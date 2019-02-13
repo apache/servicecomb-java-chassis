@@ -38,6 +38,7 @@ import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder;
 import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.definition.OperationConfig;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.ReactiveExecutor;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
@@ -141,6 +142,7 @@ public class TestRestClientInvocation {
     when(swaggerRestOperation.getPathBuilder()).thenReturn(urlPathBuilder);
     when(swaggerRestOperation.getHttpMethod()).thenReturn("GET");
     when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerRestOperation);
+    when(operationMeta.getConfig()).thenReturn(new OperationConfig());
     when(invocation.getEndpoint()).thenReturn(endpoint);
     when(endpoint.getAddress()).thenReturn(address);
     when(invocation.getHandlerContext()).then(answer -> handlerContext);

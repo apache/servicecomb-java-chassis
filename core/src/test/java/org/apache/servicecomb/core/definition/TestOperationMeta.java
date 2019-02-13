@@ -99,29 +99,53 @@ public class TestOperationMeta {
     OperationConfig config = operationMeta.getConfig();
 
     // slow invocation
-    Assert.assertFalse(config.isSlowInvocationEnabled());
-    Assert.assertEquals(1000, config.getMsSlowInvocation());
-    Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(1000), config.getNanoSlowInvocation());
-
-    ArchaiusUtils.setProperty("servicecomb.Consumer.invocation.slow.enabled.perfClient", true);
-    ArchaiusUtils.setProperty("servicecomb.Consumer.invocation.slow.msTime.perfClient", 2000);
-    Assert.assertTrue(config.isSlowInvocationEnabled());
-    Assert.assertEquals(2000, config.getMsSlowInvocation());
-    Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(2000), config.getNanoSlowInvocation());
+    slowInvocation(config);
 
     // consumer request timeout
-    Assert.assertEquals(30000, config.getMsRequestTimeout());
-
-    ArchaiusUtils.setProperty("servicecomb.request.perfClient.timeout", 2);
-    Assert.assertEquals(2, config.getMsRequestTimeout());
-    ArchaiusUtils.setProperty(
-        "servicecomb.request.perfClient.org.apache.servicecomb.core.definition.TestOperationMeta$Impl.timeout", 3);
-    Assert.assertEquals(3, config.getMsRequestTimeout());
-    ArchaiusUtils.setProperty(
-        "servicecomb.request.perfClient.org.apache.servicecomb.core.definition.TestOperationMeta$Impl.test.timeout", 4);
-    Assert.assertEquals(4, config.getMsRequestTimeout());
+    consumerRequestTimeout(config);
 
     // highway wait in thread pool timeout
+    highwayWaitInPool(config);
+
+    // rest wait in thread pool timeout
+    restWaitInPool(config);
+  }
+
+  private void restWaitInPool(OperationConfig config) {
+    ArchaiusUtils.updateProperty("servicecomb.Provider.requestWaitInPoolTimeout", null);
+    ArchaiusUtils.updateProperty("servicecomb.Provider.requestWaitInPoolTimeout.perfClient", null);
+    ArchaiusUtils.updateProperty(
+        "servicecomb.Provider.requestWaitInPoolTimeout.perfClient.org.apache.servicecomb.core.definition.TestOperationMeta$Impl",
+        null);
+    ArchaiusUtils.updateProperty(
+        "servicecomb.Provider.requestWaitInPoolTimeout.perfClient.org.apache.servicecomb.core.definition.TestOperationMeta$Impl.test",
+        null);
+
+    Assert.assertEquals(30000, config.getMsRestRequestWaitInPoolTimeout());
+    Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(30000), config.getNanoRestRequestWaitInPoolTimeout());
+
+    ArchaiusUtils.setProperty("servicecomb.Provider.requestWaitInPoolTimeout", 1);
+    Assert.assertEquals(1, config.getMsRestRequestWaitInPoolTimeout());
+    Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(1), config.getNanoRestRequestWaitInPoolTimeout());
+
+    ArchaiusUtils.setProperty("servicecomb.Provider.requestWaitInPoolTimeout.perfClient", 2);
+    Assert.assertEquals(2, config.getMsRestRequestWaitInPoolTimeout());
+    Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(2), config.getNanoRestRequestWaitInPoolTimeout());
+
+    ArchaiusUtils.setProperty(
+        "servicecomb.Provider.requestWaitInPoolTimeout.perfClient.org.apache.servicecomb.core.definition.TestOperationMeta$Impl",
+        3);
+    Assert.assertEquals(3, config.getMsRestRequestWaitInPoolTimeout());
+    Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(3), config.getNanoRestRequestWaitInPoolTimeout());
+
+    ArchaiusUtils.setProperty(
+        "servicecomb.Provider.requestWaitInPoolTimeout.perfClient.org.apache.servicecomb.core.definition.TestOperationMeta$Impl.test",
+        4);
+    Assert.assertEquals(4, config.getMsRestRequestWaitInPoolTimeout());
+    Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(4), config.getNanoRestRequestWaitInPoolTimeout());
+  }
+
+  private void highwayWaitInPool(OperationConfig config) {
     Assert.assertEquals(30000, config.getMsHighwayRequestWaitInPoolTimeout());
     Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(30000), config.getNanoHighwayRequestWaitInPoolTimeout());
 
@@ -144,5 +168,30 @@ public class TestOperationMeta {
         4);
     Assert.assertEquals(4, config.getMsHighwayRequestWaitInPoolTimeout());
     Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(4), config.getNanoHighwayRequestWaitInPoolTimeout());
+  }
+
+  private void consumerRequestTimeout(OperationConfig config) {
+    Assert.assertEquals(30000, config.getMsRequestTimeout());
+
+    ArchaiusUtils.setProperty("servicecomb.request.perfClient.timeout", 2);
+    Assert.assertEquals(2, config.getMsRequestTimeout());
+    ArchaiusUtils.setProperty(
+        "servicecomb.request.perfClient.org.apache.servicecomb.core.definition.TestOperationMeta$Impl.timeout", 3);
+    Assert.assertEquals(3, config.getMsRequestTimeout());
+    ArchaiusUtils.setProperty(
+        "servicecomb.request.perfClient.org.apache.servicecomb.core.definition.TestOperationMeta$Impl.test.timeout", 4);
+    Assert.assertEquals(4, config.getMsRequestTimeout());
+  }
+
+  private void slowInvocation(OperationConfig config) {
+    Assert.assertFalse(config.isSlowInvocationEnabled());
+    Assert.assertEquals(1000, config.getMsSlowInvocation());
+    Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(1000), config.getNanoSlowInvocation());
+
+    ArchaiusUtils.setProperty("servicecomb.Consumer.invocation.slow.enabled.perfClient", true);
+    ArchaiusUtils.setProperty("servicecomb.Consumer.invocation.slow.msTime.perfClient", 2000);
+    Assert.assertTrue(config.isSlowInvocationEnabled());
+    Assert.assertEquals(2000, config.getMsSlowInvocation());
+    Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(2000), config.getNanoSlowInvocation());
   }
 }
