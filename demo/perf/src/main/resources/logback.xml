@@ -20,7 +20,7 @@
   <jmxConfigurator/>
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
-      <pattern>%d [%level] [%thread] - %msg (%F:%L\)%n</pattern>
+      <pattern>%d[%level][%thread][%marker] - %msg (%F:%L\)%n</pattern>
     </encoder>
   </appender>
   <root level="INFO">

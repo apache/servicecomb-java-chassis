@@ -70,12 +70,11 @@ public class SlowInvocationLogger {
   private void logSlowProducer(Invocation invocation, Response response, OperationConfig operationConfig) {
     RestOperationMeta restOperationMeta = invocation.getOperationMeta().getExtData(RestConst.SWAGGER_REST_OPERATION);
     InvocationStageTrace stageTrace = invocation.getInvocationStageTrace();
-    LOGGER.warn(""
+    LOGGER.warn(invocation.getMarker(), ""
             + "slow({} ms) invocation, {}:\n"
             + "  http method: {}\n"
             + "  url        : {}\n"
             + "  status code: {}\n"
-            + "  traceId    : {}\n"
             + "  total      : {} ms\n"
             + "    prepare                : {} ms\n"
             + "    threadPoolQueue        : {} ms\n"
@@ -91,7 +90,6 @@ public class SlowInvocationLogger {
         restOperationMeta.getHttpMethod(),
         restOperationMeta.getAbsolutePath(),
         response.getStatusCode(),
-        invocation.getTraceId(),
         formatTime(stageTrace.calcTotalTime()),
         formatTime(stageTrace.calcInvocationPrepareTime()),
         formatTime(stageTrace.calcThreadPoolQueueTime()),
@@ -107,12 +105,11 @@ public class SlowInvocationLogger {
   private void logSlowConsumer(Invocation invocation, Response response, OperationConfig operationConfig) {
     RestOperationMeta restOperationMeta = invocation.getOperationMeta().getExtData(RestConst.SWAGGER_REST_OPERATION);
     InvocationStageTrace stageTrace = invocation.getInvocationStageTrace();
-    LOGGER.warn(""
+    LOGGER.warn(invocation.getMarker(), ""
             + "slow({} ms) invocation, {}:\n"
             + "  http method: {}\n"
             + "  url        : {}\n"
             + "  status code: {}\n"
-            + "  traceId    : {}\n"
             + "  total      : {} ms\n"
             + "    prepare                : {} ms\n"
             + "    handlers request       : {} ms\n"
@@ -129,7 +126,6 @@ public class SlowInvocationLogger {
         restOperationMeta.getHttpMethod(),
         restOperationMeta.getAbsolutePath(),
         response.getStatusCode(),
-        invocation.getTraceId(),
         formatTime(stageTrace.calcTotalTime()),
         formatTime(stageTrace.calcInvocationPrepareTime()),
         formatTime(stageTrace.calcHandlersRequestTime()),
@@ -147,12 +143,11 @@ public class SlowInvocationLogger {
   private void logSlowEdge(Invocation invocation, Response response, OperationConfig operationConfig) {
     RestOperationMeta restOperationMeta = invocation.getOperationMeta().getExtData(RestConst.SWAGGER_REST_OPERATION);
     InvocationStageTrace stageTrace = invocation.getInvocationStageTrace();
-    LOGGER.warn(""
+    LOGGER.warn(invocation.getMarker(), ""
             + "slow({} ms) invocation, {}:\n"
             + "  http method: {}\n"
             + "  url        : {}\n"
             + "  status code: {}\n"
-            + "  traceId    : {}\n"
             + "  total      : {} ms\n"
             + "    prepare                : {} ms\n"
             + "    threadPoolQueue        : {} ms\n"
@@ -173,7 +168,6 @@ public class SlowInvocationLogger {
         restOperationMeta.getHttpMethod(),
         restOperationMeta.getAbsolutePath(),
         response.getStatusCode(),
-        invocation.getTraceId(),
         formatTime(stageTrace.calcTotalTime()),
         formatTime(stageTrace.calcInvocationPrepareTime()),
         formatTime(stageTrace.calcThreadPoolQueueTime()),
