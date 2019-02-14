@@ -294,4 +294,21 @@ public class TestInvocation {
 
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishBusiness());
   }
+
+  @Test
+  public void marker(@Mocked ReferenceConfig referenceConfig) {
+    Invocation.INVOCATION_ID.set(0);
+
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, swaggerArguments);
+    invocation.addContext(Const.TRACE_ID_NAME, "abc");
+    invocation.onStart(0);
+    Assert.assertEquals("abc-0", invocation.getMarker().toString());
+    Assert.assertEquals("abc-0", invocation.getMarker().getName());
+
+    invocation = new Invocation(referenceConfig, operationMeta, swaggerArguments);
+    invocation.addContext(Const.TRACE_ID_NAME, "abc");
+    invocation.onStart(0);
+    Assert.assertEquals("abc-1", invocation.getMarker().toString());
+    Assert.assertEquals("abc-1", invocation.getMarker().getName());
+  }
 }

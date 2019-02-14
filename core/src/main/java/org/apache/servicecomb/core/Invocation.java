@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -31,6 +32,7 @@ import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
+import org.apache.servicecomb.core.tracing.ScbMarker;
 import org.apache.servicecomb.core.tracing.TraceIdGenerator;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
@@ -42,6 +44,8 @@ import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 
 public class Invocation extends SwaggerInvocation {
   private static final Collection<TraceIdGenerator> TRACE_ID_GENERATORS = loadTraceIdGenerators();
+
+  protected static final AtomicLong INVOCATION_ID = new AtomicLong();
 
   static Collection<TraceIdGenerator> loadTraceIdGenerators() {
     return SPIServiceUtils.getPriorityHighestServices(generator -> generator.getName(), TraceIdGenerator.class);
@@ -82,6 +86,12 @@ public class Invocation extends SwaggerInvocation {
   // not extend InvocationType
   // because isEdge() only affect to apm/metrics output, no need to change so many logic
   private boolean edge;
+
+  private long invocationId;
+
+  public long getInvocationId() {
+    return invocationId;
+  }
 
   public HttpServletRequestEx getRequestEx() {
     return requestEx;
@@ -126,6 +136,7 @@ public class Invocation extends SwaggerInvocation {
   }
 
   private void init(OperationMeta operationMeta, Object[] swaggerArguments) {
+    this.invocationId = INVOCATION_ID.getAndIncrement();
     this.schemaMeta = operationMeta.getSchemaMeta();
     this.operationMeta = operationMeta;
     this.swaggerArguments = swaggerArguments;
@@ -237,6 +248,8 @@ public class Invocation extends SwaggerInvocation {
     for (TraceIdGenerator traceIdGenerator : TRACE_ID_GENERATORS) {
       initTraceId(traceIdGenerator);
     }
+
+    marker = new ScbMarker(this);
   }
 
   protected void initTraceId(TraceIdGenerator traceIdGenerator) {
