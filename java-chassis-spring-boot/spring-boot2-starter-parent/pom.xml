@@ -41,6 +41,7 @@
     <module>spring-boot2-starter-servlet</module>
     <module>spring-boot2-starter-standalone</module>
     <module>spring-boot2-starter-discovery</module>
+    <module>spring-boot2-starter-gateway</module>   
   </modules>
 
   <build>
