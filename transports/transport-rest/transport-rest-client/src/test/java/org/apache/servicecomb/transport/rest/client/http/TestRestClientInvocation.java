@@ -42,8 +42,11 @@ import org.apache.servicecomb.core.definition.OperationConfig;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.ReactiveExecutor;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
+import org.apache.servicecomb.core.tracing.ScbMarker;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
@@ -60,13 +63,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import io.vertx.core.Context;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
-import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.RequestOptions;
 import io.vertx.core.http.impl.Http1xConnectionBaseEx;
 import io.vertx.core.net.NetSocket;
@@ -146,10 +150,11 @@ public class TestRestClientInvocation {
     when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerRestOperation);
     when(operationMeta.getConfig()).thenReturn(new OperationConfig());
     when(invocation.getEndpoint()).thenReturn(endpoint);
+    when(invocation.getMarker()).thenReturn(new ScbMarker(invocation));
     when(endpoint.getAddress()).thenReturn(address);
     when(invocation.getHandlerContext()).then(answer -> handlerContext);
     when(invocation.getInvocationStageTrace()).thenReturn(invocationStageTrace);
-    when(httpClient.request((HttpMethod) Mockito.any(), (RequestOptions) Mockito.any(), Mockito.any()))
+    when(httpClient.request(Mockito.any(), (RequestOptions) Mockito.any(), Mockito.any()))
         .thenReturn(request);
 
     doAnswer(a -> {
@@ -215,10 +220,16 @@ public class TestRestClientInvocation {
   }
 
   @Test
-  public void testSetCseContext_failed() {
+  public void testSetCseContext_failed() throws JsonProcessingException {
     LogCollector logCollector = new LogCollector();
     logCollector.setLogLevel(RestClientInvocation.class.getName(), Level.DEBUG);
-    Deencapsulation.setField(restClientInvocation, "invocation", null);
+
+    new Expectations(JsonUtils.class) {
+      {
+        JsonUtils.writeValueAsString(any);
+        result = new RuntimeExceptionWithoutStackTrace();
+      }
+    };
 
     restClientInvocation.setCseContext();
 
