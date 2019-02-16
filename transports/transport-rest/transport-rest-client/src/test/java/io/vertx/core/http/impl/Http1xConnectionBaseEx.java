@@ -14,12 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.vertx.core.http.impl;
 
-import org.mockito.Mockito;
+import io.netty.channel.ChannelHandlerContext;
+import io.vertx.core.impl.ContextInternal;
+import io.vertx.core.impl.VertxInternal;
+import io.vertx.core.spi.metrics.NetworkMetrics;
 
-public class VertxImplTestUtils {
-  public static Http1xConnectionBase mockClientConnection() {
-    return Mockito.mock(Http1xConnectionBase.class);
+public abstract  class Http1xConnectionBaseEx extends Http1xConnectionBase{
+  public Http1xConnectionBaseEx(VertxInternal vertx, ChannelHandlerContext chctx,
+      ContextInternal context) {
+    super(vertx, chctx, context);
   }
+  
 }
