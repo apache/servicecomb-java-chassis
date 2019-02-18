@@ -217,8 +217,7 @@ This product bundles files from vertx which is licensed under the Apache License
 For details, see https://github.com/vert-x3/vertx-web
 
 ================================================================
-For transports/transport-rest/transport-rest-client/src/test/java/io/vertx/core/net/impl/ConnectionBase.java
-    foundations/foundation-vertx/src/main/java/io/vertx/core/impl/VertxImpl.java
+For foundations/foundation-vertx/src/main/java/io/vertx/core/impl/VertxImpl.java
     foundations/foundation-test-scaffolding/src/main/java/io/vertx/core/impl/VertxImpl.java
     foundations/foundation-vertx/src/main/java/org/apache/servicecomb/foundation/vertx/stream/PumpImplEx.java
 ================================================================
