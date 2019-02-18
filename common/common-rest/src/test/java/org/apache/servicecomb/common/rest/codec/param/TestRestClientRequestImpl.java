@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.servlet.http.Part;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import org.hamcrest.Matchers;
@@ -35,7 +36,6 @@ import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.CaseInsensitiveHeaders;
 import io.vertx.core.http.HttpClientRequest;
-import io.vertx.core.http.HttpHeaders;
 import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mock;

@@ -35,6 +35,7 @@ public class TransportVertxFactory {
   public TransportVertxFactory() {
     vertxOptions.setMetricsOptions(metricsOptionsEx);
     transportVertx = VertxUtils.getOrCreateVertxByName("transport", vertxOptions);
+    metricsFactory.setVertx(transportVertx, vertxOptions);
   }
 
   public DefaultVertxMetricsFactory getMetricsFactory() {

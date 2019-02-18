@@ -94,9 +94,10 @@ public class TestDefaultTcpClientMetrics {
   @Before
   public void setup() {
     vertxOptions.setMetricsOptions(metricsOptionsEx);
-    defaultVertxMetrics = new DefaultVertxMetrics(vertx, vertxOptions);
-    clientMetrics_a = (DefaultTcpClientMetrics) defaultVertxMetrics.createMetrics(options);
-    clientMetrics_b = (DefaultTcpClientMetrics) defaultVertxMetrics.createMetrics(options);
+    defaultVertxMetrics = new DefaultVertxMetrics(vertxOptions);
+    defaultVertxMetrics.setVertx(vertx);
+    clientMetrics_a = (DefaultTcpClientMetrics) defaultVertxMetrics.createNetClientMetrics(options);
+    clientMetrics_b = (DefaultTcpClientMetrics) defaultVertxMetrics.createNetClientMetrics(options);
 
     nanoTime = 1;
 

@@ -65,14 +65,13 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
-import io.vertx.core.http.HttpConnection;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.RequestOptions;
-import io.vertx.core.http.impl.VertxImplTestUtils;
+import io.vertx.core.http.impl.Http1xConnectionBaseEx;
 import io.vertx.core.net.NetSocket;
 import io.vertx.core.net.SocketAddress;
-import io.vertx.core.net.impl.ConnectionBase;
 import mockit.Deencapsulation;
+import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
@@ -120,6 +119,9 @@ public class TestRestClientInvocation {
 
   static long nanoTime = 123;
 
+  @Mocked
+  Http1xConnectionBaseEx connectionBase;
+
   @BeforeClass
   public static void classSetup() {
     new MockUp<System>() {
@@ -130,7 +132,7 @@ public class TestRestClientInvocation {
     };
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "deprecation"})
   @Before
   public void setup() {
     Deencapsulation.setField(restClientInvocation, "clientRequest", request);
@@ -147,15 +149,6 @@ public class TestRestClientInvocation {
     when(invocation.getInvocationStageTrace()).thenReturn(invocationStageTrace);
     when(httpClient.request((HttpMethod) Mockito.any(), (RequestOptions) Mockito.any(), Mockito.any()))
         .thenReturn(request);
-
-    ConnectionBase connectionBase = VertxImplTestUtils.mockClientConnection();
-    when(connectionBase.metric()).thenReturn(Mockito.mock(DefaultHttpSocketMetric.class));
-    when(request.connection()).thenReturn((HttpConnection) connectionBase);
-
-    DefaultHttpSocketMetric httpSocketMetric = new DefaultHttpSocketMetric(Mockito.mock(DefaultEndpointMetric.class));
-    httpSocketMetric.requestBegin();
-    httpSocketMetric.requestEnd();
-    when(connectionBase.metric()).thenReturn(httpSocketMetric);
 
     doAnswer(a -> {
       exceptionHandler = (Handler<Throwable>) a.getArguments()[0];
@@ -318,6 +311,23 @@ public class TestRestClientInvocation {
 
     when(invocation.getResponseExecutor()).thenReturn(new ReactiveExecutor());
 
+    new Expectations() {
+      {
+        connectionBase.metric();
+        result = Mockito.mock(DefaultHttpSocketMetric.class);
+      }
+    };
+
+    DefaultHttpSocketMetric httpSocketMetric = new DefaultHttpSocketMetric(Mockito.mock(DefaultEndpointMetric.class));
+    httpSocketMetric.requestBegin();
+    httpSocketMetric.requestEnd();
+    new Expectations() {
+      {
+        connectionBase.metric();
+        result = httpSocketMetric;
+      }
+    };
+    when(request.connection()).thenReturn(connectionBase);
     restClientInvocation.processResponseBody(null);
 
     Assert.assertSame(resp, response);
@@ -342,7 +352,23 @@ public class TestRestClientInvocation {
     }
 
     when(invocation.getResponseExecutor()).thenReturn(new ReactiveExecutor());
+    new Expectations() {
+      {
+        connectionBase.metric();
+        result = Mockito.mock(DefaultHttpSocketMetric.class);
+      }
+    };
 
+    DefaultHttpSocketMetric httpSocketMetric = new DefaultHttpSocketMetric(Mockito.mock(DefaultEndpointMetric.class));
+    httpSocketMetric.requestBegin();
+    httpSocketMetric.requestEnd();
+    new Expectations() {
+      {
+        connectionBase.metric();
+        result = httpSocketMetric;
+      }
+    };
+    when(request.connection()).thenReturn(connectionBase);
     restClientInvocation.processResponseBody(null);
 
     Assert.assertThat(((InvocationException) response.getResult()).getCause(), Matchers.instanceOf(Error.class));

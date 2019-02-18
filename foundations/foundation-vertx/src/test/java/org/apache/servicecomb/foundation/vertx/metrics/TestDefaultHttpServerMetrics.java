@@ -93,18 +93,18 @@ public class TestDefaultHttpServerMetrics {
   @Before
   public void setup() {
     vertxOptions.setMetricsOptions(metricsOptionsEx);
-    defaultVertxMetrics = new DefaultVertxMetrics(vertx, vertxOptions);
+    defaultVertxMetrics = new DefaultVertxMetrics(vertxOptions);
 
     metrics_listen1_server1 = (DefaultHttpServerMetrics) defaultVertxMetrics
-        .createMetrics(listen1_server1, listen1_addr, options);
+        .createHttpServerMetrics(options, listen1_addr);
     metrics_listen1_server2 = (DefaultHttpServerMetrics) defaultVertxMetrics
-        .createMetrics(listen1_server2, listen1_addr, options);
+        .createHttpServerMetrics(options, listen1_addr);
     endpointMetric1 = metrics_listen1_server1.getEndpointMetric();
 
     metrics_listen2_server1 = (DefaultHttpServerMetrics) defaultVertxMetrics
-        .createMetrics(listen2_server1, listen2_addr, options);
+        .createHttpServerMetrics(options, listen2_addr);
     metrics_listen2_server2 = (DefaultHttpServerMetrics) defaultVertxMetrics
-        .createMetrics(listen2_server2, listen2_addr, options);
+        .createHttpServerMetrics(options, listen2_addr);
     endpointMetric2 = metrics_listen2_server1.getEndpointMetric();
 
     socketMetric_listen1_1 = metrics_listen1_server1.connected(anyRemoteAddr, remoteName);
@@ -198,8 +198,7 @@ public class TestDefaultHttpServerMetrics {
     metrics_listen1_server1.requestReset(null);
     metrics_listen1_server1.responsePushed(null, null, null, null);
     metrics_listen1_server1.responseEnd(null, null);
-    metrics_listen1_server1.upgrade(null, null);
-    metrics_listen1_server1.connected((DefaultHttpSocketMetric) null, null);
+    metrics_listen1_server1.connected((DefaultHttpSocketMetric) null, null, null);
     metrics_listen1_server1.disconnected(null);
     metrics_listen1_server1.exceptionOccurred(null, null, null);
     metrics_listen1_server1.close();

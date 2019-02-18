@@ -24,9 +24,7 @@ import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultServerEndpo
 
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
-import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientOptions;
-import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerOptions;
 import io.vertx.core.metrics.impl.DummyVertxMetrics;
 import io.vertx.core.net.NetClientOptions;
@@ -37,8 +35,6 @@ import io.vertx.core.spi.metrics.HttpServerMetrics;
 import io.vertx.core.spi.metrics.TCPMetrics;
 
 public class DefaultVertxMetrics extends DummyVertxMetrics {
-  private final Vertx vertx;
-
   private VertxOptions vertxOptions;
 
   // to support listen multiple addresses, must use a map to manage the metric
@@ -46,15 +42,10 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
 
   private volatile DefaultClientEndpointMetricManager clientEndpointMetricManager;
 
-  public DefaultVertxMetrics(Vertx vertx, VertxOptions vertxOptions) {
-    this.vertx = vertx;
+  public DefaultVertxMetrics(VertxOptions vertxOptions) {
     this.vertxOptions = vertxOptions;
-    this.clientEndpointMetricManager = new DefaultClientEndpointMetricManager(vertx,
+    this.clientEndpointMetricManager = new DefaultClientEndpointMetricManager(
         (MetricsOptionsEx) vertxOptions.getMetricsOptions());
-  }
-
-  public Vertx getVertx() {
-    return vertx;
   }
 
   public DefaultClientEndpointMetricManager getClientEndpointMetricManager() {
@@ -66,27 +57,27 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
   }
 
   @Override
-  public HttpServerMetrics<?, ?, ?> createMetrics(HttpServer server, SocketAddress localAddress,
-      HttpServerOptions options) {
+  public HttpServerMetrics<?, ?, ?> createHttpServerMetrics(HttpServerOptions options, SocketAddress localAddress
+  ) {
     DefaultServerEndpointMetric endpointMetric = serverEndpointMetricMap
         .computeIfAbsent(localAddress, DefaultServerEndpointMetric::new);
     return new DefaultHttpServerMetrics(endpointMetric);
   }
 
   @Override
-  public HttpClientMetrics<?, ?, ?, ?, ?> createMetrics(HttpClient client, HttpClientOptions options) {
+  public HttpClientMetrics<?, ?, ?, ?, ?> createHttpClientMetrics(HttpClientOptions options) {
     return new DefaultHttpClientMetrics(clientEndpointMetricManager);
   }
 
   @Override
-  public TCPMetrics<?> createMetrics(SocketAddress localAddress, NetServerOptions options) {
+  public TCPMetrics<?> createNetServerMetrics(NetServerOptions options, SocketAddress localAddress) {
     DefaultServerEndpointMetric endpointMetric = serverEndpointMetricMap
         .computeIfAbsent(localAddress, DefaultServerEndpointMetric::new);
     return new DefaultTcpServerMetrics(endpointMetric);
   }
 
   @Override
-  public TCPMetrics<?> createMetrics(NetClientOptions options) {
+  public TCPMetrics<?> createNetClientMetrics(NetClientOptions options) {
     return new DefaultTcpClientMetrics(clientEndpointMetricManager);
   }
 
@@ -99,5 +90,9 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
   @Override
   public boolean isEnabled() {
     return true;
+  }
+
+  public void setVertx(Vertx vertx) {
+    clientEndpointMetricManager.setVertx(vertx);
   }
 }

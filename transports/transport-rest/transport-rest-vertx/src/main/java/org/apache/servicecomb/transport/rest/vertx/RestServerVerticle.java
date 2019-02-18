@@ -92,7 +92,7 @@ public class RestServerVerticle extends AbstractVerticle {
       mountCorsHandler(mainRouter);
       initDispatcher(mainRouter);
       HttpServer httpServer = createHttpServer();
-      httpServer.requestHandler(mainRouter::accept);
+      httpServer.requestHandler(mainRouter);
       httpServer.connectionHandler(connection -> {
         DefaultHttpServerMetrics serverMetrics = (DefaultHttpServerMetrics) ((ConnectionBase) connection).metrics();
         DefaultServerEndpointMetric endpointMetric = serverMetrics.getEndpointMetric();

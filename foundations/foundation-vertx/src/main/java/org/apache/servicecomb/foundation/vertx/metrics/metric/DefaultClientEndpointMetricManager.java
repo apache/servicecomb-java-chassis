@@ -30,20 +30,19 @@ import io.vertx.core.Vertx;
 import io.vertx.core.net.SocketAddress;
 
 public class DefaultClientEndpointMetricManager {
-  private final Vertx vertx;
-
   private final MetricsOptionsEx metricsOptionsEx;
 
   // to avoid save too many endpoint that not exist any more
   // must check expired periodically
   private Map<SocketAddress, DefaultClientEndpointMetric> clientEndpointMetricMap = new ConcurrentHashMapEx<>();
 
+  private Vertx vertx;
+
   private final ReadWriteLock rwlock = new ReentrantReadWriteLock();
 
   private AtomicBoolean inited = new AtomicBoolean(false);
 
-  public DefaultClientEndpointMetricManager(Vertx vertx, MetricsOptionsEx metricsOptionsEx) {
-    this.vertx = vertx;
+  public DefaultClientEndpointMetricManager(MetricsOptionsEx metricsOptionsEx) {
     this.metricsOptionsEx = metricsOptionsEx;
   }
 
@@ -87,5 +86,9 @@ public class DefaultClientEndpointMetricManager {
         }
       }
     }
+  }
+
+  public void setVertx(Vertx vertx) {
+    this.vertx = vertx;
   }
 }

@@ -44,9 +44,9 @@ public class DefaultVertxMetricsFactory implements VertxMetricsFactory {
   }
 
   @Override
-  public synchronized VertxMetrics metrics(Vertx vertx, VertxOptions options) {
+  public synchronized VertxMetrics metrics(VertxOptions options) {
     if (vertxMetrics == null) {
-      vertxMetrics = new DefaultVertxMetrics(vertx, options);
+      vertxMetrics = new DefaultVertxMetrics(options);
     }
     return vertxMetrics;
   }
@@ -57,5 +57,12 @@ public class DefaultVertxMetricsFactory implements VertxMetricsFactory {
     metricsOptions.setFactory(this);
     metricsOptions.setEnabled(true);
     return metricsOptions;
+  }
+
+  public void setVertx(Vertx vertx, VertxOptions options) {
+    if (vertxMetrics == null) {
+      vertxMetrics = new DefaultVertxMetrics(options);
+    }
+    vertxMetrics.setVertx(vertx);
   }
 }

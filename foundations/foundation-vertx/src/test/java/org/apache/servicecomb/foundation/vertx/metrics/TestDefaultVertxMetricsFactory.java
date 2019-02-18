@@ -38,13 +38,12 @@ public class TestDefaultVertxMetricsFactory {
   public void metrics() {
     MetricsOptions metricsOptions = factory.newOptions();
     options.setMetricsOptions(metricsOptions);
-    VertxMetrics vertxMetrics = factory.metrics(vertx, options);
+    VertxMetrics vertxMetrics = factory.metrics(options);
 
     Assert.assertSame(factory, metricsOptions.getFactory());
     Assert.assertTrue(metricsOptions.isEnabled());
 
     Assert.assertSame(factory.getVertxMetrics(), vertxMetrics);
-    Assert.assertSame(vertx, ((DefaultVertxMetrics) vertxMetrics).getVertx());
     Assert.assertTrue(vertxMetrics.isMetricsEnabled());
     Assert.assertTrue(vertxMetrics.isEnabled());
   }

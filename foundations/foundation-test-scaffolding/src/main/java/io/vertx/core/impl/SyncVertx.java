@@ -20,6 +20,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.net.impl.transport.Transport;
 
 /**
  * after test finished, need to invoke vertx.close
@@ -28,10 +29,12 @@ public class SyncVertx extends VertxImpl {
   private ContextImpl context = new SyncContext(this);
 
   public SyncVertx() {
-    this(null, null);
+    this(new VertxOptions(), null);
   }
 
   protected SyncVertx(VertxOptions options, Handler<AsyncResult<Vertx>> resultHandler) {
+    super(options, Transport.transport(options.getPreferNativeTransport()));
+    init();
   }
 
   @Override

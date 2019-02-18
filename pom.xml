@@ -195,6 +195,7 @@
             <exclude>**/target/**</exclude>
             <!-- Skip the source files which are forked from vertx -->
             <exclude>**/io/vertx/ext/web/impl/MimeTypesUtils.java</exclude>
+            <exclude>**/io/vertx/core/impl/VertxImpl.java</exclude>
             <exclude>**/java/org/apache/servicecomb/transport/rest/vertx/RestBodyHandler.java</exclude>
             <exclude>**/java/org/apache/servicecomb/foundation/vertx/stream/PumpImplEx.java</exclude>
             <!--Skip protobuf generated file-->

@@ -99,9 +99,10 @@ public class TestDefaultHttpClientMetrics {
   @Before
   public void setup() {
     vertxOptions.setMetricsOptions(metricsOptionsEx);
-    defaultVertxMetrics = new DefaultVertxMetrics(vertx, vertxOptions);
-    clientMetrics_a = (DefaultHttpClientMetrics) defaultVertxMetrics.createMetrics(anyHttpClient, options);
-    clientMetrics_b = (DefaultHttpClientMetrics) defaultVertxMetrics.createMetrics(anyHttpClient, options);
+    defaultVertxMetrics = new DefaultVertxMetrics(vertxOptions);
+    defaultVertxMetrics.setVertx(vertx);
+    clientMetrics_a = (DefaultHttpClientMetrics) defaultVertxMetrics.createHttpClientMetrics(options);
+    clientMetrics_b = (DefaultHttpClientMetrics) defaultVertxMetrics.createHttpClientMetrics(options);
 
     nanoTime = 1;
 

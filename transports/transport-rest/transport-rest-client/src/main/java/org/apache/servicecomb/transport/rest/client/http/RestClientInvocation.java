@@ -146,6 +146,7 @@ public class RestClientInvocation {
     return HttpMethod.valueOf(method);
   }
 
+  @SuppressWarnings("deprecation")
   void createRequest(IpPort ipPort, String path) {
     URIEndpointObject endpoint = (URIEndpointObject) invocation.getEndpoint().getAddress();
     RequestOptions requestOptions = new RequestOptions();
