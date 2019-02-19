@@ -18,6 +18,7 @@ package org.apache.servicecomb.serviceregistry.task;
 
 import javax.xml.ws.Holder;
 
+import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
 import org.apache.servicecomb.serviceregistry.api.MicroserviceKey;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
@@ -93,7 +94,7 @@ public class TestMicroserviceWatchTask {
       @Mock
       void watch(String selfMicroserviceId, AsyncResultCallback<MicroserviceInstanceChangedEvent> callback,
           AsyncResultCallback<Void> onOpen, AsyncResultCallback<Void> onClose) {
-        callback.fail(new Error("test failed"));
+        callback.fail(new RuntimeExceptionWithoutStackTrace("test failed"));
       }
     };
 
@@ -166,7 +167,7 @@ public class TestMicroserviceWatchTask {
       @Mock
       void watch(String selfMicroserviceId, AsyncResultCallback<MicroserviceInstanceChangedEvent> callback,
           AsyncResultCallback<Void> onOpen, AsyncResultCallback<Void> onClose) {
-        throw new Error("called watch");
+        throw new RuntimeExceptionWithoutStackTrace("called watch");
       }
     };
 

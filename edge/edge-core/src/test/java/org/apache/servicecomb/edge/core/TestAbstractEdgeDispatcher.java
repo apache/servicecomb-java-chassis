@@ -20,6 +20,7 @@ package org.apache.servicecomb.edge.core;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -44,7 +45,6 @@ public class TestAbstractEdgeDispatcher {
     }
   }
 
-
   @Test
   public void onFailure(@Mocked RoutingContext context) {
     Map<String, Object> map = new HashMap<>();
@@ -65,7 +65,7 @@ public class TestAbstractEdgeDispatcher {
     new Expectations() {
       {
         context.failure();
-        returns(new Error("failed"), null);
+        returns(new RuntimeExceptionWithoutStackTrace("failed"), null);
         context.response();
         result = response;
       }

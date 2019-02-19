@@ -18,6 +18,7 @@ package org.apache.servicecomb.core;
 
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -55,12 +56,12 @@ public class TestResponse {
     ar.complete(r);
     Assert.assertEquals(r, response);
 
-    ar.consumerFail(new Error("abc"));
+    ar.consumerFail(new RuntimeExceptionWithoutStackTrace("abc"));
     CommonExceptionData data = (CommonExceptionData) ((InvocationException) response.getResult()).getErrorData();
     Assert.assertEquals("Cse Internal Bad Request", data.getMessage());
     Assert.assertEquals(ExceptionFactory.CONSUMER_INNER_STATUS_CODE, response.getStatusCode());
 
-    ar.fail(InvocationType.CONSUMER, new Error("abc"));
+    ar.fail(InvocationType.CONSUMER, new RuntimeExceptionWithoutStackTrace("abc"));
     data = (CommonExceptionData) ((InvocationException) response.getResult()).getErrorData();
     Assert.assertEquals("Cse Internal Bad Request", data.getMessage());
     Assert.assertEquals(ExceptionFactory.CONSUMER_INNER_STATUS_CODE, response.getStatusCode());
@@ -74,12 +75,12 @@ public class TestResponse {
     Assert.assertEquals("def", ((InvocationException) response.getResult()).getErrorData());
     Assert.assertEquals(300, response.getStatusCode());
 
-    ar.producerFail(new Error("abc"));
+    ar.producerFail(new RuntimeExceptionWithoutStackTrace("abc"));
     data = (CommonExceptionData) ((InvocationException) response.getResult()).getErrorData();
     Assert.assertEquals("Cse Internal Server Error", data.getMessage());
     Assert.assertEquals(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, response.getStatusCode());
 
-    ar.fail(InvocationType.PRODUCER, new Error("abc"));
+    ar.fail(InvocationType.PRODUCER, new RuntimeExceptionWithoutStackTrace("abc"));
     data = (CommonExceptionData) ((InvocationException) response.getResult()).getErrorData();
     Assert.assertEquals("Cse Internal Server Error", data.getMessage());
     Assert.assertEquals(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, response.getStatusCode());
