@@ -28,6 +28,7 @@ import javax.servlet.http.Part;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.servicecomb.foundation.common.part.InputStreamPart;
+import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -159,7 +160,7 @@ public class TestStandardHttpServletResponseEx {
 
   @Test
   public void sendPart_failed(@Mocked Part part) throws Throwable {
-    Error error = new Error();
+    RuntimeException error = new RuntimeExceptionWithoutStackTrace();
     new Expectations() {
       {
         response.getOutputStream();

@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpClientConnection.Status;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 import org.junit.Assert;
@@ -210,7 +211,7 @@ public class TestTcpClientConnection {
     }));
 
     FutureFactoryImpl futureFactory = new FutureFactoryImpl();
-    Error error = new Error();
+    RuntimeException error = new RuntimeExceptionWithoutStackTrace();
     new MockUp<NetClientWrapper>(netClientWrapper) {
       @Mock
       void connect(boolean ssl, int port, String host, Handler<AsyncResult<NetSocket>> connectHandler) {

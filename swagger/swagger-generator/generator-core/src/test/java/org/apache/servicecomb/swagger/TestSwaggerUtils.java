@@ -22,12 +22,11 @@ import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
+import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
@@ -51,11 +50,11 @@ public class TestSwaggerUtils {
   }
 
   @Test
-  public void swaggerToStringException(@Mocked Swagger swagger) throws JsonProcessingException {
+  public void swaggerToStringException(@Mocked Swagger swagger) {
     new Expectations() {
       {
         swagger.getBasePath();
-        result = new Error("failed");
+        result = new RuntimeExceptionWithoutStackTrace();
       }
     };
     expectedException.expect(ServiceCombException.class);
@@ -84,7 +83,7 @@ public class TestSwaggerUtils {
     new Expectations(IOUtils.class) {
       {
         IOUtils.toString(url);
-        result = new Error("failed");
+        result = new RuntimeExceptionWithoutStackTrace("failed");
       }
     };
 
@@ -174,7 +173,6 @@ public class TestSwaggerUtils {
 
     Assert.assertEquals("response of 200", response.getDescription());
   }
-
 
   @Test(expected = ServiceCombException.class)
   public void testInvalidate() throws Exception {

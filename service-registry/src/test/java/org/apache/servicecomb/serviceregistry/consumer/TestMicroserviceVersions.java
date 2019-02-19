@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.Const;
@@ -183,7 +184,7 @@ public class TestMicroserviceVersions {
       @Mock
       MicroserviceInstances findServiceInstances(String appId, String serviceName,
           String versionRule, String revision) {
-        throw new Error("must not pull");
+        throw new RuntimeExceptionWithoutStackTrace("must not pull");
       }
     };
 
@@ -323,7 +324,7 @@ public class TestMicroserviceVersions {
     new MockUp<MicroserviceVersions>(microserviceVersions) {
       @Mock
       void setInstances(List<MicroserviceInstance> pulledInstances, String rev) {
-        throw new Error("failed to set instances");
+        throw new RuntimeExceptionWithoutStackTrace("failed to set instances");
       }
     };
 
