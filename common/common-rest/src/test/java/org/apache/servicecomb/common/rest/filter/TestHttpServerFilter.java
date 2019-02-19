@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -44,12 +45,12 @@ public class TestHttpServerFilter {
     HttpServerFilter filter = new HttpServerFilterBaseForTest() {
       @Override
       public void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
-        throw new Error("");
+        throw new RuntimeExceptionWithoutStackTrace();
       }
     };
 
     expectedException.expect(ExecutionException.class);
-    expectedException.expectCause(Matchers.instanceOf(Error.class));
+    expectedException.expectCause(Matchers.instanceOf(RuntimeExceptionWithoutStackTrace.class));
 
     CompletableFuture<Void> future = filter.beforeSendResponseAsync(null, null);
     future.get();

@@ -28,6 +28,7 @@ import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.provider.pojo.Invoker.InvokerMeta;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
@@ -162,7 +163,7 @@ public class TestInvoker {
   public void syncInvoke_failed(@Mocked Invocation invocation,
       @Mocked SwaggerConsumerOperation consumerOperation,
       @Mocked ConsumerResponseMapper mapper) {
-    Throwable error = new Error("failed");
+    Throwable error = new RuntimeExceptionWithoutStackTrace("failed");
     Response response = Response.createConsumerFail(error);
     new MockUp<InvokerUtils>() {
       @Mock
@@ -212,7 +213,7 @@ public class TestInvoker {
   public void completableFutureInvoke_failed(@Mocked Invocation invocation,
       @Mocked SwaggerConsumerOperation consumerOperation,
       @Mocked ConsumerResponseMapper mapper) {
-    Throwable error = new Error("failed");
+    Throwable error = new RuntimeExceptionWithoutStackTrace("failed");
     Response response = Response.createConsumerFail(error);
     new MockUp<InvokerUtils>() {
       @Mock

@@ -196,7 +196,7 @@ public class TestRestClientInvocation {
 
   @Test
   public void invoke_requestThrow() throws Exception {
-    Throwable t = new Error();
+    Throwable t = new RuntimeExceptionWithoutStackTrace();
     doAnswer(a -> {
       exceptionHandler.handle(t);
       return null;
@@ -296,7 +296,7 @@ public class TestRestClientInvocation {
     }).when(httpClientResponse).exceptionHandler(any());
 
     restClientInvocation.handleResponse(httpClientResponse);
-    Error error = new Error();
+    RuntimeException error = new RuntimeExceptionWithoutStackTrace();
     exceptionHandler.handle(error);
 
     Assert.assertThat(((InvocationException) response.getResult()).getCause(), Matchers.sameInstance(error));

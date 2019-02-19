@@ -30,6 +30,7 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
+import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
@@ -168,7 +169,7 @@ public class TestInvokerUtils {
     new MockUp<Invocation>(invocation) {
       @Mock
       void next(AsyncResponse asyncResp) {
-        throw new Error();
+        throw new RuntimeExceptionWithoutStackTrace();
       }
     };
 

@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.jar.JarFile;
 
+import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -124,11 +125,11 @@ public class TestJvmUtils {
     URL url = PowerMockito.mock(URL.class);
 
     String command = "a.jar";
-    String manifestUri = "jar:file:/" + new File(command).getAbsolutePath() + "!/" + JarFile.MANIFEST_NAME;
+    String manifestUri = "jar:file:" + new File(command).getAbsolutePath() + "!/" + JarFile.MANIFEST_NAME;
 
     PowerMockito.whenNew(URL.class).withParameterTypes(String.class)
         .withArguments(manifestUri).thenReturn(url);
-    PowerMockito.when(url.openStream()).thenThrow(new Error());
+    PowerMockito.when(url.openStream()).thenThrow(new RuntimeExceptionWithoutStackTrace());
 
     System.setProperty(JvmUtils.SUN_JAVA_COMMAND, command + " arg");
 
