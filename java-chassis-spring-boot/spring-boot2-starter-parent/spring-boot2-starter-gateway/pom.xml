@@ -55,10 +55,6 @@
           <groupId>org.apache.servicecomb</groupId>
           <artifactId>provider-springmvc</artifactId>
         </exclusion>
-        <exclusion>
-          <groupId>org.springframework.cloud</groupId>
-          <artifactId>spring-cloud-starter-netflix-zuul</artifactId>
-        </exclusion>
       </exclusions>
     </dependency>
   </dependencies>
