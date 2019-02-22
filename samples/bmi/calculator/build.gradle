@@ -21,7 +21,7 @@ dependencies {
     compile(group: 'org.springframework.boot', name: 'spring-boot-starter') {
         exclude(module: 'commons-logging')
     }
-    compile group: 'org.apache.servicecomb', name: 'spring-boot-starter-provider'
+    compile group: 'org.apache.servicecomb', name: 'provider-spring-boot-starter'
     compile group: 'org.apache.servicecomb', name: 'handler-flowcontrol-qps'
     compile group: 'org.apache.servicecomb', name: 'handler-bizkeeper'
     compile group: 'org.apache.servicecomb', name: 'handler-tracing-zipkin'

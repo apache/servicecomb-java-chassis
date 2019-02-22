@@ -91,17 +91,17 @@
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-boot2-starter-servlet</artifactId>
+        <artifactId>servlet-spring-boot2-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-boot2-starter-standalone</artifactId>
+        <artifactId>standalone-spring-boot2-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-boot2-starter-discovery</artifactId>
+        <artifactId>discovery-spring-boot2-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
 

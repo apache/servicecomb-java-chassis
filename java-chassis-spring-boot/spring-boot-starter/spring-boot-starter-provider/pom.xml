@@ -26,13 +26,13 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>spring-boot-starter-provider</artifactId>
+  <artifactId>provider-spring-boot-starter</artifactId>
   <name>Java Chassis::Spring Boot Starter::Provider</name>
 
   <dependencies>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>spring-boot-starter-servicecomb</artifactId>
+      <artifactId>servicecomb-spring-boot-starter</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>

@@ -21,8 +21,8 @@ dependencies {
     compile(group: 'org.springframework.boot', name: 'spring-boot-starter') {
         exclude(module: 'commons-logging')
     }
-    compile group: 'org.apache.servicecomb', name: 'spring-boot-starter-servicecomb'
-    compile group: 'org.apache.servicecomb', name: 'spring-boot-starter-discovery'
+    compile group: 'org.apache.servicecomb', name: 'servicecomb-spring-boot-starter'
+    compile group: 'org.apache.servicecomb', name: 'discovery-spring-boot-starter'
     compile group: 'org.apache.servicecomb', name: 'spring-cloud-zuul'
     compile group: 'org.apache.servicecomb', name: 'spring-cloud-zuul-zipkin'
 }

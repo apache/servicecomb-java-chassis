@@ -27,7 +27,7 @@
 
   <groupId>org.apache.servicecomb.archetypes</groupId>
   <name>Java Chassis::Archetypes::Spring Boot Starter</name>
-  <artifactId>business-service-spring-boot-starter-archetype</artifactId>
+  <artifactId>business-service-archetype-spring-boot-starter</artifactId>
   <packaging>maven-archetype</packaging>
   <modelVersion>4.0.0</modelVersion>
 
