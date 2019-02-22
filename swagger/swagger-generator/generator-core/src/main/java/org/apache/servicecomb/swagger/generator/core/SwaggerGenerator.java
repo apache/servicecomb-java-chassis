@@ -249,6 +249,10 @@ public class SwaggerGenerator {
     if (Modifier.isStatic(modifiers)) {
       return true;
     }
+    // skip bridge method
+    if (method.isBridge()) {
+        return true;
+    }
 
     ApiOperation apiOperation = method.getAnnotation(ApiOperation.class);
     if (apiOperation != null && apiOperation.hidden()) {
