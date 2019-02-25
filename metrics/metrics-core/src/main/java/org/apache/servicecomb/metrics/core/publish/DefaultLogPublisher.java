@@ -48,7 +48,7 @@ import com.google.common.eventbus.Subscribe;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.spectator.api.Meter;
 
-import io.vertx.core.impl.VertxImplEx;
+import io.vertx.core.Vertx;
 
 public class DefaultLogPublisher implements MetricsInitializer {
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultLogPublisher.class);
@@ -432,10 +432,11 @@ public class DefaultLogPublisher implements MetricsInitializer {
 
     appendLine(sb, "  instances:");
     appendLine(sb, "    name       eventLoopContext-created");
-    for (Entry<String, VertxImplEx> entry : VertxUtils.getVertxMap().entrySet()) {
+    for (Entry<String, Vertx> entry : VertxUtils.getVertxMap().entrySet()) {
       appendLine(sb, "    %-10s %d",
           entry.getKey(),
-          entry.getValue().getEventLoopContextCreatedCount());
+          // TODO will be fixed by next vertx update.entry.getValue().getEventLoopContextCreatedCount()
+          0);
     }
 
     ClientEndpointsLogPublisher client = new ClientEndpointsLogPublisher(tree, sb,
