@@ -158,7 +158,7 @@ public class ServletUtils {
     }
 
     File dir = createUploadDir(servletContext, multipartConfig.getLocation());
-    LOGGER.info("set uploads directory to {}.", dir.getAbsolutePath());
+    LOGGER.info("set uploads directory to \"{}\".", dir.getAbsolutePath());
 
     List<ServletRegistration> servlets = findServletRegistrations(servletContext, RestServlet.class);
     for (ServletRegistration servletRegistration : servlets) {
