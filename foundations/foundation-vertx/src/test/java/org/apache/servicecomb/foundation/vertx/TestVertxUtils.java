@@ -20,10 +20,14 @@ package org.apache.servicecomb.foundation.vertx;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.CountDownLatch;
 
 import javax.xml.ws.Holder;
 
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
 import org.junit.Assert;
 import org.junit.Test;
@@ -33,6 +37,7 @@ import io.netty.buffer.Unpooled;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.file.impl.FileResolver;
 
 public class TestVertxUtils {
   @Test
@@ -49,6 +54,22 @@ public class TestVertxUtils {
 
     Assert.assertEquals(name.value, "ut-vert.x-eventloop-thread-0");
     VertxUtils.closeVertxByName("ut");
+  }
+
+  @Test
+  public void testCreateVertxWithFileCPResolving() throws InterruptedException {
+    ArchaiusUtils.resetConfig();
+    ArchaiusUtils.setProperty(FileResolver.DISABLE_CP_RESOLVING_PROP_NAME, true);
+    String cacheDirBase = System.getProperty(FileResolver.CACHE_DIR_BASE_PROP_NAME, ".vertx");
+    Path path = Paths.get(cacheDirBase);
+    try {
+      Files.deleteIfExists(path);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+    VertxUtils.getOrCreateVertxByName("testCreateVertxWithFileCPResolving", null);
+    Assert.assertTrue(Files.exists(path));
+    VertxUtils.closeVertxByName("testCreateVertxWithFileCPResolving");
   }
 
   @Test
