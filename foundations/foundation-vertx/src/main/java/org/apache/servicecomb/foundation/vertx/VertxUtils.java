@@ -160,8 +160,8 @@ public final class VertxUtils {
    */
   protected static void configureVertxFileCaching(VertxOptions vertxOptions) {
     boolean disableFileCPResolving = DynamicPropertyFactory.getInstance()
-        .getBooleanProperty(FileResolver.DISABLE_CP_RESOLVING_PROP_NAME, false).get();
-    vertxOptions.getFileSystemOptions().setClassPathResolvingEnabled(disableFileCPResolving);
+        .getBooleanProperty(FileResolver.DISABLE_CP_RESOLVING_PROP_NAME, true).get();
+    vertxOptions.getFileSystemOptions().setClassPathResolvingEnabled(!disableFileCPResolving);
   }
 
   // try to reference byte[]

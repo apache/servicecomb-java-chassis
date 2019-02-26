@@ -18,17 +18,17 @@
 package org.apache.servicecomb.foundation.vertx;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.concurrent.CountDownLatch;
 
 import javax.xml.ws.Holder;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -40,6 +40,14 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.file.impl.FileResolver;
 
 public class TestVertxUtils {
+
+  @AfterClass
+  public static void teardown() throws IOException {
+    String cacheDirBase = System.getProperty(FileResolver.CACHE_DIR_BASE_PROP_NAME, ".vertx");
+    File file = new File(cacheDirBase);
+    FileUtils.forceDelete(file);
+  }
+
   @Test
   public void testGetOrCreateVertx() throws InterruptedException {
     Vertx vertx = VertxUtils.getOrCreateVertxByName("ut", null);
@@ -57,18 +65,13 @@ public class TestVertxUtils {
   }
 
   @Test
-  public void testCreateVertxWithFileCPResolving() throws InterruptedException {
+  public void testCreateVertxWithFileCPResolving() throws IOException {
     ArchaiusUtils.resetConfig();
-    ArchaiusUtils.setProperty(FileResolver.DISABLE_CP_RESOLVING_PROP_NAME, true);
-    String cacheDirBase = System.getProperty(FileResolver.CACHE_DIR_BASE_PROP_NAME, ".vertx");
-    Path path = Paths.get(cacheDirBase);
-    try {
-      Files.deleteIfExists(path);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
+    ArchaiusUtils.setProperty(FileResolver.DISABLE_CP_RESOLVING_PROP_NAME, false);
     VertxUtils.getOrCreateVertxByName("testCreateVertxWithFileCPResolving", null);
-    Assert.assertTrue(Files.exists(path));
+    String cacheDirBase = System.getProperty(FileResolver.CACHE_DIR_BASE_PROP_NAME, ".vertx");
+    File file = new File(cacheDirBase);
+    Assert.assertTrue(file.exists());
     VertxUtils.closeVertxByName("testCreateVertxWithFileCPResolving");
   }
 
