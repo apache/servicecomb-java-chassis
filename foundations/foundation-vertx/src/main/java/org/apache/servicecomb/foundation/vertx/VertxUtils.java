@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.reflect.Field;
-import java.lang.reflect.Proxy;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
@@ -37,6 +36,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.netty.buffer.ByteBuf;
 import io.vertx.core.AbstractVerticle;
@@ -78,7 +79,6 @@ public final class VertxUtils {
 
   public static <T extends AbstractVerticle> void deployVerticle(Vertx vertx, Class<T> cls, int instanceCount) {
     DeploymentOptions options = new DeploymentOptions().setInstances(instanceCount);
-
     vertx.deployVerticle(cls.getName(), options);
   }
 
@@ -134,7 +134,7 @@ public final class VertxUtils {
       LOGGER.info("in debug mode, disable blocked thread check.");
     }
 
-    configureVertxFileCaching();
+    configureVertxFileCaching(vertxOptions);
     Vertx vertx = Vertx.vertx(vertxOptions);
     enhanceVertx(name, vertx);
     return vertx;
@@ -158,10 +158,10 @@ public final class VertxUtils {
   /**
    * 配置vertx的文件缓存功能，默认关闭
    */
-  protected static void configureVertxFileCaching() {
-    if (System.getProperty(FileResolver.DISABLE_CP_RESOLVING_PROP_NAME) == null) {
-      System.setProperty(FileResolver.DISABLE_CP_RESOLVING_PROP_NAME, "true");
-    }
+  protected static void configureVertxFileCaching(VertxOptions vertxOptions) {
+    boolean disableFileCPResolving = DynamicPropertyFactory.getInstance()
+        .getBooleanProperty(FileResolver.DISABLE_CP_RESOLVING_PROP_NAME, true).get();
+    vertxOptions.getFileSystemOptions().setClassPathResolvingEnabled(!disableFileCPResolving);
   }
 
   // try to reference byte[]

@@ -86,3 +86,5 @@ ssl.keyStoreValue: Changeme_123
 ssl.crl: revoke.crl
 ssl.sslCustomClass: org.apache.servicecomb.demo.DemoSSLCustom
 
+vertx.disableFileCPResolving: false  # false: create the .vertx directory, true: do not create
+
