@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.foundation.common.utils;
 
+import java.math.BigDecimal;
+
 import org.aspectj.lang.annotation.Aspect;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -69,6 +71,8 @@ public class TestBeanUtils {
       {
         JvmUtils.findMainClass();
         result = null;
+        JvmUtils.findMainClassByStackTrace();
+        result = null;
       }
     };
 
@@ -83,6 +87,8 @@ public class TestBeanUtils {
     new Expectations(JvmUtils.class) {
       {
         JvmUtils.findMainClass();
+        result = TestBeanUtils.class;
+        JvmUtils.findMainClassByStackTrace();
         result = TestBeanUtils.class;
       }
     };
@@ -99,12 +105,14 @@ public class TestBeanUtils {
       {
         JvmUtils.findMainClass();
         result = String.class;
+        JvmUtils.findMainClassByStackTrace();
+        result = BigDecimal.class;
       }
     };
 
     BeanUtils.prepareServiceCombScanPackage();
 
-    Assert.assertEquals("org.apache.servicecomb,java.lang", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
+    Assert.assertEquals("org.apache.servicecomb,java.lang,java.math", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
   }
 
   @Test
@@ -113,6 +121,8 @@ public class TestBeanUtils {
     new Expectations(JvmUtils.class) {
       {
         JvmUtils.findMainClass();
+        result = null;
+        JvmUtils.findMainClassByStackTrace();
         result = null;
       }
     };
@@ -128,6 +138,8 @@ public class TestBeanUtils {
     new Expectations(JvmUtils.class) {
       {
         JvmUtils.findMainClass();
+        result = TestBeanUtils.class;
+        JvmUtils.findMainClassByStackTrace();
         result = TestBeanUtils.class;
       }
     };
