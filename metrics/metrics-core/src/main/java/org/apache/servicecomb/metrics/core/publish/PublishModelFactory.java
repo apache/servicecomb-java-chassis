@@ -60,7 +60,8 @@ public class PublishModelFactory {
         MeterInvocationConst.TAG_TRANSPORT,
         MeterInvocationConst.TAG_OPERATION,
         MeterInvocationConst.TAG_STATUS,
-        MeterInvocationConst.TAG_STAGE,
+        MeterInvocationConst.TAG_TYPE,
+        new DefaultTagFinder(MeterInvocationConst.TAG_STAGE, true),
         MeterInvocationConst.TAG_STATISTIC);
 
     //os config

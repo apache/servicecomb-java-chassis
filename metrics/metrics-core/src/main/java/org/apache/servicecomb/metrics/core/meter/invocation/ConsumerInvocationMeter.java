@@ -43,13 +43,13 @@ public class ConsumerInvocationMeter extends AbstractInvocationMeter {
 
   public ConsumerInvocationMeter(Registry registry, Id id) {
     super(registry, id);
-    clientFiltersRequestTimer = creatStageTimer(MeterInvocationConst.STAGE_CLIENT_FILTERS_REQUEST);
-    consumerSendRequestTimer = creatStageTimer(MeterInvocationConst.STAGE_CONSUMER_SEND_REQUEST);
-    consumerGetConnectionTimer = creatStageTimer(MeterInvocationConst.STAGE_CONSUMER_GET_CONNECTION);
-    consumerWriteToBufTimer = creatStageTimer(MeterInvocationConst.STAGE_CONSUMER_WRITE_TO_BUF);
-    consumerWakeConsumerTimer = creatStageTimer(MeterInvocationConst.STAGE_CONSUMER_WAKE_CONSUMER);
-    clientFiltersResponseTimer = creatStageTimer(MeterInvocationConst.STAGE_CLIENT_FILTERS_RESPONSE);
-    consumerWaitResponseTimer = creatStageTimer(MeterInvocationConst.STAGE_CONSUMER_WAIT_RESPONSE);
+    clientFiltersRequestTimer = createStageTimer(MeterInvocationConst.STAGE_CLIENT_FILTERS_REQUEST);
+    consumerSendRequestTimer = createStageTimer(MeterInvocationConst.STAGE_CONSUMER_SEND_REQUEST);
+    consumerGetConnectionTimer = createStageTimer(MeterInvocationConst.STAGE_CONSUMER_GET_CONNECTION);
+    consumerWriteToBufTimer = createStageTimer(MeterInvocationConst.STAGE_CONSUMER_WRITE_TO_BUF);
+    consumerWakeConsumerTimer = createStageTimer(MeterInvocationConst.STAGE_CONSUMER_WAKE_CONSUMER);
+    clientFiltersResponseTimer = createStageTimer(MeterInvocationConst.STAGE_CLIENT_FILTERS_RESPONSE);
+    consumerWaitResponseTimer = createStageTimer(MeterInvocationConst.STAGE_CONSUMER_WAIT_RESPONSE);
   }
 
   @Override
