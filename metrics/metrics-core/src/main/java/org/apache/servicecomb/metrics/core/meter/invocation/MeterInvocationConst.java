@@ -28,7 +28,11 @@ public interface MeterInvocationConst {
 
   String TAG_TRANSPORT = "transport";
 
+  String TAG_TYPE = "type";
+
   String TAG_STAGE = "stage";
+
+  String TAG_LATENCY_DISTRIBUTION = "latencyDistribution";
 
   String TAG_STATUS = "status";
 

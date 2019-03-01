@@ -16,14 +16,19 @@
  */
 package org.apache.servicecomb.metrics.core.publish.model.invocation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class OperationPerf {
   private String operation;
 
   private Map<String, PerfInfo> stages = new HashMap<>();
+
+  private List<Integer> latencyDistribution = new ArrayList<>();
 
   public String getOperation() {
     return operation;
@@ -37,6 +42,14 @@ public class OperationPerf {
     return stages;
   }
 
+  public List<Integer> getLatencyDistribution() {
+    return latencyDistribution;
+  }
+
+  public void setLatencyDistribution(List<Integer> latencyDistribution) {
+    this.latencyDistribution = latencyDistribution;
+  }
+
   public void setStages(Map<String, PerfInfo> stages) {
     this.stages = stages;
   }
@@ -46,11 +59,30 @@ public class OperationPerf {
   }
 
   public void add(OperationPerf operationPerf) {
-    for (Entry<String, PerfInfo> entry : operationPerf.stages.entrySet()) {
-      PerfInfo perfInfo = stages.computeIfAbsent(entry.getKey(), n -> {
-        return new PerfInfo();
-      });
-      perfInfo.add(entry.getValue());
+    operationPerf.stages.forEach((key, value) -> {
+      PerfInfo perfInfo = stages.computeIfAbsent(key, n -> new PerfInfo());
+      perfInfo.add(value);
+    });
+    if (latencyDistribution.size() <= operationPerf.latencyDistribution.size()) {
+      latencyDistribution = IntStream.range(0, operationPerf.latencyDistribution.size())
+          .map(i -> {
+            if (latencyDistribution.size() > i) {
+              return latencyDistribution.get(i) + operationPerf.latencyDistribution.get(i);
+            }
+            return operationPerf.latencyDistribution.get(i);
+          })
+          .boxed()
+          .collect(Collectors.toList());
+      return;
     }
+    latencyDistribution = IntStream.range(0, latencyDistribution.size())
+        .map(i -> {
+          if (operationPerf.latencyDistribution.size() > i) {
+            return latencyDistribution.get(i) + operationPerf.latencyDistribution.get(i);
+          }
+          return latencyDistribution.get(i);
+        })
+        .boxed()
+        .collect(Collectors.toList());
   }
 }

@@ -20,6 +20,8 @@ import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
+import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
+import org.apache.servicecomb.foundation.metrics.meter.LatencyDistribution;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.metrics.core.InvocationMetersInitializer;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
@@ -62,6 +64,8 @@ public class TestInvocationPublishModelFactory {
 
   @Test
   public void createDefaultPublishModel() {
+    String metricsLatency = LatencyDistribution.METRICS_LATENCY;
+    ReflectUtils.setField(LatencyDistribution.class, null, "METRICS_LATENCY", "1,100");
     globalRegistry.add(registry);
     invocationMetersInitializer.init(globalRegistry, eventBus, null);
     prepareInvocation();
@@ -135,7 +139,8 @@ public class TestInvocationPublishModelFactory {
         + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
         + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
         + "              }\n"
-        + "            }\n"
+        + "            },\n"
+        + "            \"latencyDistribution\" : [ 1, 0, 0 ]\n"
         + "          } ],\n"
         + "          \"summary\" : {\n"
         + "            \"operation\" : \"\",\n"
@@ -195,7 +200,8 @@ public class TestInvocationPublishModelFactory {
         + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
         + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
         + "              }\n"
-        + "            }\n"
+        + "            },\n"
+        + "            \"latencyDistribution\" : [ 1, 0, 0 ]\n"
         + "          }\n"
         + "        }\n"
         + "      }\n"
@@ -260,7 +266,8 @@ public class TestInvocationPublishModelFactory {
         + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
         + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
         + "              }\n"
-        + "            }\n"
+        + "            },\n"
+        + "            \"latencyDistribution\" : [ 1, 0, 0 ]\n"
         + "          } ],\n"
         + "          \"summary\" : {\n"
         + "            \"operation\" : \"\",\n"
@@ -310,7 +317,8 @@ public class TestInvocationPublishModelFactory {
         + "                \"msTotalTime\" : 1.0000000000000002E-6,\n"
         + "                \"msMaxLatency\" : 1.0000000000000002E-6\n"
         + "              }\n"
-        + "            }\n"
+        + "            },\n"
+        + "            \"latencyDistribution\" : [ 1, 0, 0 ]\n"
         + "          }\n"
         + "        }\n"
         + "      }\n"
@@ -319,6 +327,7 @@ public class TestInvocationPublishModelFactory {
         + "}";
     Assert.assertEquals(Json.encodePrettily(Json.decodeValue(expect, Object.class)),
         Json.encodePrettily(model.getProducer()));
+    ReflectUtils.setField(LatencyDistribution.class, null, "METRICS_LATENCY", metricsLatency);
   }
 
   protected void prepareInvocation() {

@@ -17,6 +17,7 @@
 package org.apache.servicecomb.metrics.core.publish.model.invocation;
 
 import java.util.HashMap;
+import java.util.List;
 
 import javax.ws.rs.core.Response.Status;
 
@@ -57,10 +58,16 @@ public class Utils {
 
   public static MeasurementNode createStatusNode(String status, MeasurementNode... stageNodes) {
     MeasurementNode statusNode = new MeasurementNode(status, new HashMap<>());
-
+    MeasurementNode typeNode = new MeasurementNode(MeterInvocationConst.TAG_STAGE, new HashMap<>());
+    MeasurementNode latencyNode = new MeasurementNode(MeterInvocationConst.TAG_LATENCY_DISTRIBUTION, new HashMap<>());
+    List<Measurement> measurements = latencyNode.getMeasurements();
+    measurements.add(new Measurement(null, 0L, 1));
+    measurements.add(new Measurement(null, 0L, 2));
     for (MeasurementNode stageNode : stageNodes) {
-      statusNode.getChildren().put(stageNode.getName(), stageNode);
+      typeNode.getChildren().put(stageNode.getName(), stageNode);
     }
+    statusNode.getChildren().put(latencyNode.getName(), latencyNode);
+    statusNode.getChildren().put(typeNode.getName(), typeNode);
     return statusNode;
   }
 

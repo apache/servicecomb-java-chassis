@@ -40,11 +40,11 @@ public class ProducerInvocationMeter extends AbstractInvocationMeter {
   public ProducerInvocationMeter(Registry registry, Id id) {
     super(registry, id);
 
-    executorQueueTimer = creatStageTimer(MeterInvocationConst.STAGE_EXECUTOR_QUEUE);
-    executionTimer = creatStageTimer(MeterInvocationConst.STAGE_EXECUTION);
-    serverFiltersRequestTimer = creatStageTimer(MeterInvocationConst.STAGE_SERVER_FILTERS_REQUEST);
-    serverFiltersResponseTimer = creatStageTimer(MeterInvocationConst.STAGE_SERVER_FILTERS_RESPONSE);
-    sendResponseTimer = creatStageTimer(MeterInvocationConst.STAGE_PRODUCER_SEND_RESPONSE);
+    executorQueueTimer = createStageTimer(MeterInvocationConst.STAGE_EXECUTOR_QUEUE);
+    executionTimer = createStageTimer(MeterInvocationConst.STAGE_EXECUTION);
+    serverFiltersRequestTimer = createStageTimer(MeterInvocationConst.STAGE_SERVER_FILTERS_REQUEST);
+    serverFiltersResponseTimer = createStageTimer(MeterInvocationConst.STAGE_SERVER_FILTERS_RESPONSE);
+    sendResponseTimer = createStageTimer(MeterInvocationConst.STAGE_PRODUCER_SEND_RESPONSE);
   }
 
   @Override

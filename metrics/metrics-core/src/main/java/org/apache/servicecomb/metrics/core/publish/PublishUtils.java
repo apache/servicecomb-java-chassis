@@ -18,8 +18,10 @@ package org.apache.servicecomb.metrics.core.publish;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
+import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerf;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroup;
 import org.apache.servicecomb.metrics.core.publish.model.invocation.OperationPerfGroups;
@@ -33,7 +35,6 @@ public final class PublishUtils {
 
   public static PerfInfo createPerfInfo(MeasurementNode stageNode) {
     PerfInfo perfInfo = new PerfInfo();
-
     perfInfo.setTps((int) stageNode.findChild(Statistic.count.name()).summary());
     perfInfo.setMsTotalTime(stageNode.findChild(Statistic.totalTime.name()).summary() * 1000);
     // when UT with DefaultRegistry, there is no max value
@@ -41,7 +42,6 @@ public final class PublishUtils {
     if (maxNode != null) {
       perfInfo.setMsMaxLatency(maxNode.summary() * 1000);
     }
-
     return perfInfo;
   }
 
@@ -49,11 +49,18 @@ public final class PublishUtils {
     OperationPerf operationPerf = new OperationPerf();
 
     operationPerf.setOperation(operation);
-    for (MeasurementNode stageNode : statusNode.getChildren().values()) {
-      PerfInfo perfInfo = createPerfInfo(stageNode);
-      operationPerf.getStages().put(stageNode.getName(), perfInfo);
+    MeasurementNode stageNode = statusNode.findChild(MeterInvocationConst.TAG_STAGE);
+    MeasurementNode latencyNode = statusNode.findChild(MeterInvocationConst.TAG_LATENCY_DISTRIBUTION);
+    stageNode.getChildren().values().forEach(mNode -> {
+      PerfInfo perfInfo = createPerfInfo(mNode);
+      operationPerf.getStages().put(mNode.getName(), perfInfo);
+    });
+    if (latencyNode != null && latencyNode.getMeasurements() != null) {
+      operationPerf.setLatencyDistribution(latencyNode.getMeasurements().stream()
+          .map(measurement -> (int) measurement.value())
+          .collect(Collectors.toList())
+      );
     }
-
     return operationPerf;
   }
 
@@ -61,13 +68,9 @@ public final class PublishUtils {
       MeasurementNode statusNode) {
     Map<String, OperationPerfGroup> statusMap = operationPerfGroups
         .getGroups()
-        .computeIfAbsent(transport, tn -> {
-          return new HashMap<>();
-        });
-    OperationPerfGroup group = statusMap.computeIfAbsent(statusNode.getName(), status -> {
-      return new OperationPerfGroup(transport, status);
-    });
-
+        .computeIfAbsent(transport, tn -> new HashMap<>());
+    OperationPerfGroup group = statusMap
+        .computeIfAbsent(statusNode.getName(), status -> new OperationPerfGroup(transport, status));
     OperationPerf operationPerf = createOperationPerf(operation, statusNode);
     group.addOperationPerf(operationPerf);
   }

@@ -23,6 +23,7 @@ import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.metrics.meter.AbstractPeriodMeter;
 import org.apache.servicecomb.foundation.metrics.meter.SimpleTimer;
+import org.apache.servicecomb.foundation.metrics.meter.LatencyDistribution;
 
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
@@ -43,20 +44,28 @@ public abstract class AbstractInvocationMeter extends AbstractPeriodMeter {
   // handler response
   private SimpleTimer handlersResponseTimer;
 
+  // latency distribution
+  private LatencyDistribution latencyDistribution;
+
   private long lastUpdated;
 
   public AbstractInvocationMeter(Registry registry, Id id) {
     this.registry = registry;
     this.id = id;
-
-    totalTimer = creatStageTimer(MeterInvocationConst.STAGE_TOTAL);
-    prepareTimer = creatStageTimer(MeterInvocationConst.STAGE_PREPARE);
-    handlersRequestTimer = creatStageTimer(MeterInvocationConst.STAGE_HANDLERS_REQUEST);
-    handlersResponseTimer = creatStageTimer(MeterInvocationConst.STAGE_HANDLERS_RESPONSE);
+    latencyDistribution = createLatencyDistribution(MeterInvocationConst.TAG_LATENCY_DISTRIBUTION);
+    totalTimer = createStageTimer(MeterInvocationConst.STAGE_TOTAL);
+    prepareTimer = createStageTimer(MeterInvocationConst.STAGE_PREPARE);
+    handlersRequestTimer = createStageTimer(MeterInvocationConst.STAGE_HANDLERS_REQUEST);
+    handlersResponseTimer = createStageTimer(MeterInvocationConst.STAGE_HANDLERS_RESPONSE);
   }
 
-  protected SimpleTimer creatStageTimer(String stageValue) {
-    return createTimer(id.withTag(MeterInvocationConst.TAG_STAGE, stageValue));
+  protected LatencyDistribution createLatencyDistribution(String tagValue) {
+    return new LatencyDistribution(id.withTag(MeterInvocationConst.TAG_TYPE, tagValue));
+  }
+
+  protected SimpleTimer createStageTimer(String stageValue) {
+    return createTimer(id.withTag(MeterInvocationConst.TAG_TYPE, MeterInvocationConst.TAG_STAGE)
+        .withTag(MeterInvocationConst.TAG_STAGE, stageValue));
   }
 
   protected SimpleTimer createTimer(String tagKey, String tagValue) {
@@ -71,6 +80,7 @@ public abstract class AbstractInvocationMeter extends AbstractPeriodMeter {
     lastUpdated = registry.clock().wallTime();
 
     InvocationStageTrace stageTrace = event.getInvocation().getInvocationStageTrace();
+    latencyDistribution.record((long) stageTrace.calcTotalTime());
     totalTimer.record((long) stageTrace.calcTotalTime());
     handlersRequestTimer.record((long) stageTrace.calcHandlersRequestTime());
     handlersResponseTimer.record((long) stageTrace.calcHandlersResponseTime());
@@ -86,6 +96,7 @@ public abstract class AbstractInvocationMeter extends AbstractPeriodMeter {
 
   @Override
   public void calcMeasurements(List<Measurement> measurements, long msNow, long secondInterval) {
+    latencyDistribution.calcMeasurements(measurements, msNow, secondInterval);
     totalTimer.calcMeasurements(measurements, msNow, secondInterval);
     handlersRequestTimer.calcMeasurements(measurements, msNow, secondInterval);
     handlersResponseTimer.calcMeasurements(measurements, msNow, secondInterval);
