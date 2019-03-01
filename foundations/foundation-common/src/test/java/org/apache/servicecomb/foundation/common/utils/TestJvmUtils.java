@@ -33,6 +33,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({JvmUtils.class})
 public class TestJvmUtils {
@@ -84,16 +85,16 @@ public class TestJvmUtils {
 
   @Test
   public void findMainClass_jar_normal() throws Exception {
-    String content = String.format("Manifest-Version: 1.0\nMain-Class: %s\n", TestJvmUtils.class.getName());
-    InputStream inputStream = new ByteArrayInputStream(content.getBytes());
 
     URL url = PowerMockito.mock(URL.class);
 
     String command = "a.jar";
     String manifestUri = "jar:file:" + new File(command).getAbsolutePath() + "!/" + JarFile.MANIFEST_NAME;
-
     PowerMockito.whenNew(URL.class).withParameterTypes(String.class)
         .withArguments(manifestUri).thenReturn(url);
+
+    String content = String.format("Manifest-Version: 1.0\nMain-Class: %s\n", TestJvmUtils.class.getName());
+    InputStream inputStream = new ByteArrayInputStream(content.getBytes());
     PowerMockito.when(url.openStream()).thenReturn(inputStream);
 
     System.setProperty(JvmUtils.SUN_JAVA_COMMAND, command + " arg");
@@ -123,8 +124,8 @@ public class TestJvmUtils {
   @Test
   public void findMainClass_jar_readFailed() throws Exception {
     URL url = PowerMockito.mock(URL.class);
-
     String command = "a.jar";
+
     String manifestUri = "jar:file:" + new File(command).getAbsolutePath() + "!/" + JarFile.MANIFEST_NAME;
 
     PowerMockito.whenNew(URL.class).withParameterTypes(String.class)
@@ -135,4 +136,61 @@ public class TestJvmUtils {
 
     Assert.assertNull(JvmUtils.findMainClass());
   }
+
+
+  @Test
+  public void findMainClassByStackTrace_normal() throws Exception{
+    RuntimeException re = PowerMockito.mock(RuntimeException.class);
+    PowerMockito.when(re.getStackTrace()).thenReturn(new StackTraceElement[]{
+        new StackTraceElement("declaring.class.fileName", "methodName", "fileName", 100),
+        new StackTraceElement("java.lang.String", "main", "fileName", 120)
+    });
+    PowerMockito.whenNew(RuntimeException.class).withNoArguments().thenReturn(re);
+
+    Assert.assertEquals(String.class, JvmUtils.findMainClassByStackTrace());
+  }
+
+  @Test
+  public void findMainClassByStackTrace_invalidClass() throws Exception{
+    RuntimeException re = PowerMockito.mock(RuntimeException.class);
+    PowerMockito.when(re.getStackTrace()).thenReturn(new StackTraceElement[]{
+        new StackTraceElement("declaring.class.fileName", "methodName", "fileName", 100),
+        new StackTraceElement("InvalidClass", "main", "fileName", 120)
+    });
+    PowerMockito.whenNew(RuntimeException.class).withNoArguments().thenReturn(re);
+
+    Assert.assertNull(JvmUtils.findMainClassByStackTrace());
+  }
+
+
+  @Test
+  public void findMainClassByStackTrace_withoutMainMethod() throws Exception{
+    RuntimeException re = PowerMockito.mock(RuntimeException.class);
+    PowerMockito.when(re.getStackTrace()).thenReturn(new StackTraceElement[]{
+        new StackTraceElement("declaring.class.fileName", "methodName", "fileName", 100),
+        new StackTraceElement("InvalidClass", "methodName", "fileName", 120)
+    });
+    PowerMockito.whenNew(RuntimeException.class).withNoArguments().thenReturn(re);
+
+    Assert.assertNull(JvmUtils.findMainClassByStackTrace());
+  }
+
+  @Test
+  public void findMainClassByStackTrace_emptyStackTrace() throws Exception{
+    RuntimeException re = PowerMockito.mock(RuntimeException.class);
+    PowerMockito.when(re.getStackTrace()).thenReturn(new StackTraceElement[]{});
+    PowerMockito.whenNew(RuntimeException.class).withNoArguments().thenReturn(re);
+
+    Assert.assertNull(JvmUtils.findMainClassByStackTrace());
+  }
+
+  @Test
+  public void findMainClassByStackTrace_nullStackTrace() throws Exception{
+    RuntimeException re = PowerMockito.mock(RuntimeException.class);
+    PowerMockito.when(re.getStackTrace()).thenReturn(null);
+    PowerMockito.whenNew(RuntimeException.class).withNoArguments().thenReturn(re);
+
+    Assert.assertNull(JvmUtils.findMainClassByStackTrace());
+  }
+
 }

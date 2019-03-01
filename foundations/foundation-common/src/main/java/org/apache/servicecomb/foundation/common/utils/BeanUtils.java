@@ -21,12 +21,17 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.TargetClassAware;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 
 public final class BeanUtils {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(BeanUtils.class);
+
   public static final String DEFAULT_BEAN_RESOURCE = "classpath*:META-INF/spring/*.bean.xml";
 
   public static final String SCB_SCAN_PACKAGE = "scb-scan-package";
@@ -49,6 +54,16 @@ public final class BeanUtils {
     context = new ClassPathXmlApplicationContext(configLocations);
   }
 
+  private static void addItem(Set<String> set, String item){
+
+    for(String it: set){
+      if(item.startsWith(it)){
+        return;
+      }
+     }
+    set.add(item);
+  }
+
   public static void prepareServiceCombScanPackage() {
     Set<String> scanPackags = new LinkedHashSet<>();
     // add exists settings
@@ -56,25 +71,26 @@ public final class BeanUtils {
     if (exists != null) {
       for (String exist : exists.trim().split(",")) {
         if (!exist.isEmpty()) {
-          scanPackags.add(exist.trim());
+          addItem(scanPackags, exist.trim());
         }
       }
     }
 
     // ensure servicecomb package exist
-    scanPackags.add(SCB_PACKAGE);
+    addItem(scanPackags, SCB_PACKAGE);
 
     // add main class package
-    Class<?> mainClass = JvmUtils.findMainClass();
-    if (mainClass != null) {
-      String pkg = mainClass.getPackage().getName();
-      if (!pkg.startsWith(SCB_PACKAGE)) {
-        scanPackags.add(pkg);
+    for (Class<?> mainClass : new Class<?>[] {JvmUtils.findMainClass(), JvmUtils.findMainClassByStackTrace()}) {
+      if (mainClass != null) {
+        String pkg = mainClass.getPackage().getName();
+        addItem(scanPackags, pkg);
       }
     }
 
     // finish
-    System.setProperty(SCB_SCAN_PACKAGE, StringUtils.join(scanPackags, ","));
+    String scbScanPackages = StringUtils.join(scanPackags, ",");
+    System.setProperty(SCB_SCAN_PACKAGE, scbScanPackages);
+    LOGGER.info("Scb scan package list: " + scbScanPackages);
   }
 
   public static ApplicationContext getContext() {
