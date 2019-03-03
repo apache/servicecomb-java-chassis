@@ -22,11 +22,11 @@
   </Properties>
   <Appenders>
     <Console name="Console" target="SYSTEM_OUT">
-      <PatternLayout pattern="[%d] [%t] [%p] [%c:%L] [%marker] %m%n"/>
+      <PatternLayout pattern="[%d][%p][%t][%F][%marker]%m %l%n"/>
     </Console>
     <RollingRandomAccessFile name="RollingRandomAccessFile" fileName="${log_path}/output.log"
       filePattern="${log_path}/provider-%d{yyyy-MM-dd}-%i.log">
-      <PatternLayout pattern="[%d] [%t] [%p] [%c:%L] [%marker] %m%n"/>
+      <PatternLayout pattern="[%d][%p][%t][%F][%marker]%m %l%n"/>
       <Policies>
         <SizeBasedTriggeringPolicy size="200 MB"/>
       </Policies>
