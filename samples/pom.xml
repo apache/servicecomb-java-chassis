@@ -72,6 +72,14 @@
           <encoding>UTF-8</encoding>
           <source>1.8</source>
           <target>1.8</target>
+          <compilerArgs>
+            <arg>-Werror</arg>
+            <arg>-Xlint:all</arg>
+            <!--not care for jdk8/jdk7 compatible problem-->
+            <arg>-Xlint:-classfile</arg>
+            <!--not care for annotation not processed-->
+            <arg>-Xlint:-processing</arg>
+          </compilerArgs>
         </configuration>
       </plugin>
       <plugin>
