@@ -401,11 +401,11 @@ public class TestConfigObjectFactory {
 
     Assert.assertEquals(0, config.floatValue, 0);
 
-    ArchaiusUtils.setProperty("root.l1-1", String.valueOf(Float.MAX_VALUE));
-    Assert.assertEquals(Float.MAX_VALUE, config.floatValue, 0);
+    ArchaiusUtils.setProperty("root.l1-2", String.valueOf(1f));
+    Assert.assertEquals(1f, config.floatValue, 0);
 
-    ArchaiusUtils.setProperty("root.l1-2", String.valueOf(Float.MAX_VALUE - 1));
-    Assert.assertEquals(Float.MAX_VALUE - 1, config.floatValue, 0);
+    ArchaiusUtils.setProperty("root.l1-1", String.valueOf(2f));
+    Assert.assertEquals(2f, config.floatValue, 0);
   }
 
   @Test
