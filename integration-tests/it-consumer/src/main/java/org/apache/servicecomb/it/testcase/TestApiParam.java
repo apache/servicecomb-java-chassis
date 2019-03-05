@@ -102,7 +102,6 @@ public class TestApiParam {
 
     Assert.assertTrue(parameter.getRequired());
     Assert.assertTrue(parameter.isReadOnly());
-    Assert.assertTrue(parameter.getAllowEmptyValue());
     Assert.assertEquals("inputEx", parameter.getName());
     Assert.assertEquals(10L, ((QueryParameter) parameter).getExample());
     Assert.assertNull(((QueryParameter) parameter).getCollectionFormat());
@@ -114,7 +113,6 @@ public class TestApiParam {
 
     Assert.assertTrue(parameter.getRequired());
     Assert.assertTrue(parameter.isReadOnly());
-    Assert.assertTrue(parameter.getAllowEmptyValue());
     Assert.assertEquals("inputEx", parameter.getName());
     Assert.assertEquals("10", ((QueryParameter) parameter).getExample());
     Assert.assertEquals("csv", ((QueryParameter) parameter).getCollectionFormat());
