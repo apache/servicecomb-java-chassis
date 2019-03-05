@@ -24,19 +24,21 @@ import javax.ws.rs.core.Response;
 
 import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.ResponseTypeProcessor;
+import org.apache.servicecomb.swagger.generator.core.processor.response.DefaultResponseTypeProcessor;
 import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
 
 import io.swagger.converter.ModelConverters;
+import io.swagger.models.Model;
 import io.swagger.models.properties.Property;
 
-public class JaxrsResponseProcessor implements ResponseTypeProcessor {
+public class JaxrsResponseProcessor extends DefaultResponseTypeProcessor {
   @Override
   public Class<?> getResponseType() {
     return Response.class;
   }
 
   @Override
-  public Property process(OperationGenerator operationGenerator) {
+  public Model process(OperationGenerator operationGenerator, Type genericResponseType) {
     // Response完全表达应答类型
     // 如果produces是text，那么可以假设是string，否则只能报错
     List<String> produces = operationGenerator.getOperation().getProduces();
@@ -45,12 +47,10 @@ public class JaxrsResponseProcessor implements ResponseTypeProcessor {
     }
     if (produces != null) {
       if (produces.contains(MediaType.TEXT_PLAIN)) {
-        Type responseType = String.class;
-        ParamUtils.addDefinitions(operationGenerator.getSwagger(), responseType);
-        return ModelConverters.getInstance().readAsProperty(responseType);
+        return doProcess(operationGenerator, String.class);
       }
     }
 
-    throw new Error("Use ApiOperation or ApiResponses to declare response type");
+    throw new IllegalStateException("Use ApiOperation or ApiResponses to declare response type");
   }
 }

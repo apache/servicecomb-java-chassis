@@ -188,7 +188,7 @@ public class SwaggerToClassGenerator {
     for (Path path : swagger.getPaths().values()) {
       for (Operation operation : path.getOperations()) {
         for (Response response : operation.getResponses().values()) {
-          convert(response.getSchema());
+          convert(response.getResponseSchema());
 
           Map<String, Property> headers = response.getHeaders();
           if (headers == null) {
@@ -215,7 +215,7 @@ public class SwaggerToClassGenerator {
       for (Path path : swagger.getPaths().values()) {
         for (Operation operation : path.getOperations()) {
           Response result = operation.getResponses().get(SwaggerConst.SUCCESS_KEY);
-          JavaType resultJavaType = swaggerObjectMap.get(result.getSchema());
+          JavaType resultJavaType = swaggerObjectMap.get(result.getResponseSchema());
 
           MethodConfig methodConfig = new MethodConfig();
           methodConfig.setName(operation.getOperationId());

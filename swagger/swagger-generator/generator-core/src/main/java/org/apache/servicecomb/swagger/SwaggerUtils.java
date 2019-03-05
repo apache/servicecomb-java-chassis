@@ -77,7 +77,7 @@ public final class SwaggerUtils {
    */
   public static void validateSwagger(Swagger swagger) {
     Map<String, Path> paths = swagger.getPaths();
-    if(paths != null) {
+    if (paths != null) {
       for (Path path : paths.values()) {
         Operation operation = path.getPost();
         if (operation != null) {

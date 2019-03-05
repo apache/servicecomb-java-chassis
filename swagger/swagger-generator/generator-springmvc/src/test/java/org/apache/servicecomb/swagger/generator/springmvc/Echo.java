@@ -17,8 +17,12 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -48,5 +52,10 @@ public class Echo {
 
   @RequestMapping
   public void enumBody(@RequestBody Color color) {
+  }
+
+  @RequestMapping
+  public CompletableFuture<ResponseEntity<List<String>>> asyncResponseEntity() {
+    return null;
   }
 }

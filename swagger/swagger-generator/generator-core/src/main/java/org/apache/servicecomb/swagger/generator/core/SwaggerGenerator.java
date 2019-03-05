@@ -251,7 +251,7 @@ public class SwaggerGenerator {
     }
     // skip bridge method
     if (method.isBridge()) {
-        return true;
+      return true;
     }
 
     ApiOperation apiOperation = method.getAnnotation(ApiOperation.class);

@@ -16,11 +16,13 @@
  */
 package org.apache.servicecomb.swagger.generator.core;
 
-import io.swagger.models.properties.Property;
+import java.lang.reflect.Type;
+
+import io.swagger.models.Model;
 
 public interface ResponseTypeProcessor {
   Class<?> getResponseType();
 
   // void的场景，不会到processor中来处理
-  Property process(OperationGenerator operationGenerator);
+  Model process(OperationGenerator operationGenerator, Type genericResponseType);
 }
