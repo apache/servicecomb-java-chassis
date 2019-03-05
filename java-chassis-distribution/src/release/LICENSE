@@ -517,9 +517,9 @@ spring-cloud-starter-zuul (https://projects.spring.io/spring-cloud) org.springfr
 spring-cloud-starter-gateway (https://projects.spring.io/spring-cloud) org.springframework.cloud:spring-cloud-starter-gateway:jar:2.0.0.RELEASE
 spring-security-crypto (http://spring.io/spring-security) org.springframework.security:spring-security-crypto:jar:4.1.4.RELEASE
 spring-security-rsa (http://github.com/spring-projects/spring-security-oauth) org.springframework.security:spring-security-rsa:jar:1.0.3.RELEASE
-swagger-annotations (https://github.com/swagger-api/swagger-core/modules/swagger-annotations) io.swagger:swagger-annotations:bundle:1.5.12
-swagger-core (https://github.com/swagger-api/swagger-core/modules/swagger-core) io.swagger:swagger-core:bundle:1.5.12
-swagger-models (https://github.com/swagger-api/swagger-core/modules/swagger-models) io.swagger:swagger-models:bundle:1.5.12
+swagger-annotations (https://github.com/swagger-api/swagger-core/modules/swagger-annotations) io.swagger:swagger-annotations:bundle:1.5.22
+swagger-core (https://github.com/swagger-api/swagger-core/modules/swagger-core) io.swagger:swagger-core:bundle:1.5.22
+swagger-models (https://github.com/swagger-api/swagger-core/modules/swagger-models) io.swagger:swagger-models:bundle:1.5.22
 tomcat-embed-core (http://tomcat.apache.org/) org.apache.tomcat.embed:tomcat-embed-core:jar:8.0.33
 tomcat-embed-el (http://tomcat.apache.org/) org.apache.tomcat.embed:tomcat-embed-el:jar:8.0.33
 tomcat-embed-logging-juli (http://tomcat.apache.org/) org.apache.tomcat.embed:tomcat-embed-logging-juli:jar:8.0.33
