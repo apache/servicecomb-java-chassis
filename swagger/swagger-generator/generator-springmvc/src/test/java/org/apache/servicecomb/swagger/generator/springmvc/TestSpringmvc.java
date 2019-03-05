@@ -199,4 +199,10 @@ public class TestSpringmvc {
     UnitTestSwaggerUtils
         .testSwagger(classLoader, "schemas/enumBody.yaml", context, Echo.class, "enumBody");
   }
+
+  @Test
+  public void testAsyncResponseEntity() {
+    UnitTestSwaggerUtils
+        .testSwagger(classLoader, "schemas/asyncResponseEntity.yaml", context, Echo.class, "asyncResponseEntity");
+  }
 }

@@ -16,12 +16,23 @@
  */
 package org.apache.servicecomb.swagger.generator.springmvc.processor.response;
 
-import org.apache.servicecomb.swagger.generator.core.processor.response.AbstractOneGenericResponseProcessor;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+
+import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.core.processor.response.DefaultResponseTypeProcessor;
 import org.springframework.http.ResponseEntity;
 
-public class ResponseEntityProcessor extends AbstractOneGenericResponseProcessor {
+import io.swagger.models.Model;
+
+public class ResponseEntityProcessor extends DefaultResponseTypeProcessor {
   @Override
   public Class<?> getResponseType() {
     return ResponseEntity.class;
+  }
+
+  @Override
+  public Model process(OperationGenerator operationGenerator, Type genericResponseType) {
+    return doProcess(operationGenerator, ((ParameterizedType) genericResponseType).getActualTypeArguments()[0]);
   }
 }

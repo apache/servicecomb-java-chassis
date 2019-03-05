@@ -56,6 +56,7 @@ import io.swagger.models.properties.FileProperty;
 import io.swagger.models.properties.LongProperty;
 import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;
+import io.swagger.models.utils.PropertyModelConverter;
 import io.swagger.util.ParameterProcessor;
 import io.swagger.util.ReflectionUtils;
 
@@ -144,8 +145,8 @@ public final class AnnotationUtils {
     if (StringUtils.isNotEmpty(sourceResp.getDescription()) && StringUtils.isEmpty(response.getDescription())) {
       response.setDescription(sourceResp.getDescription());
     }
-    if (sourceResp.getSchema() != null && response.getSchema() == null) {
-      response.setSchema(sourceResp.getSchema());
+    if (sourceResp.getResponseSchema() != null && response.getResponseSchema() == null) {
+      response.setResponseSchema(sourceResp.getResponseSchema());
     }
     if (sourceResp.getExamples() != null && response.getExamples() == null) {
       response.setExamples(sourceResp.getExamples());
@@ -162,7 +163,10 @@ public final class AnnotationUtils {
     Response response = new Response();
 
     Property property = generateResponseProperty(swagger, responseConfig);
-    response.setSchema(property);
+    if (property != null) {
+      Model model = new PropertyModelConverter().propertyToModel(property);
+      response.setResponseSchema(model);
+    }
     response.setDescription(responseConfig.getDescription());
 
     if (responseConfig.getResponseHeaders() != null) {

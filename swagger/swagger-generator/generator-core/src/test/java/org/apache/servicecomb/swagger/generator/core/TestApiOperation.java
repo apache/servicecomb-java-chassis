@@ -34,14 +34,14 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.ResponseHeader;
+import io.swagger.models.ArrayModel;
+import io.swagger.models.Model;
+import io.swagger.models.ModelImpl;
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
 import io.swagger.models.Response;
 import io.swagger.models.Scheme;
 import io.swagger.models.Swagger;
-import io.swagger.models.properties.ArrayProperty;
-import io.swagger.models.properties.MapProperty;
-import io.swagger.models.properties.Property;
 
 public class TestApiOperation {
   SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
@@ -110,22 +110,23 @@ public class TestApiOperation {
 
   private void testSet(Path path) {
     Operation operation = path.getPost();
-    Property result200 = operation.getResponses().get("200").getSchema();
-    Assert.assertEquals(ArrayProperty.class, result200.getClass());
-    Assert.assertEquals(true, ((ArrayProperty) result200).getUniqueItems());
+    Model result200 = operation.getResponses().get("200").getResponseSchema();
+    Assert.assertEquals(ArrayModel.class, result200.getClass());
+    Assert.assertEquals(true, ((ArrayModel) result200).getUniqueItems());
   }
 
   private void testList(Path path) {
     Operation operation = path.getPost();
-    Property result200 = operation.getResponses().get("200").getSchema();
-    Assert.assertEquals(ArrayProperty.class, result200.getClass());
-    Assert.assertEquals(null, ((ArrayProperty) result200).getUniqueItems());
+    Model result200 = operation.getResponses().get("200").getResponseSchema();
+    Assert.assertEquals(ArrayModel.class, result200.getClass());
+    Assert.assertEquals(null, ((ArrayModel) result200).getUniqueItems());
   }
 
   private void testMap(Path path) {
     Operation operation = path.getPost();
-    Property result200 = operation.getResponses().get("200").getSchema();
-    Assert.assertEquals(MapProperty.class, result200.getClass());
+    Model result200 = operation.getResponses().get("200").getResponseSchema();
+    Assert.assertEquals(ModelImpl.class, result200.getClass());
+    Assert.assertTrue(((ModelImpl) result200).getAdditionalProperties() != null);
   }
 
   private void testPrimitive(Path path) {
@@ -133,11 +134,11 @@ public class TestApiOperation {
 
     Assert.assertEquals(2, operation.getResponses().size());
 
-    Property result200 = operation.getResponses().get("200").getSchema();
+    ModelImpl result200 = (ModelImpl) operation.getResponses().get("200").getResponseSchema();
     Assert.assertEquals("integer", result200.getType());
     Assert.assertEquals("int32", result200.getFormat());
 
-    Property result202 = operation.getResponses().get("202").getSchema();
+    ModelImpl result202 = (ModelImpl) operation.getResponses().get("202").getResponseSchema();
     Assert.assertEquals("string", result202.getType());
     Assert.assertEquals(null, result202.getFormat());
   }
@@ -159,11 +160,11 @@ public class TestApiOperation {
 
     Response response = responseMap.get(SwaggerConst.SUCCESS_KEY);
     Assert.assertNotNull(response);
-    Assert.assertEquals(null, response.getSchema());
+    Assert.assertEquals(null, response.getResponseSchema());
 
     response = responseMap.get("202");
     Assert.assertNotNull(response);
-    Assert.assertEquals(null, response.getSchema());
+    Assert.assertEquals(null, response.getResponseSchema());
 
     Assert.assertEquals(1, response.getHeaders().size());
     Assert.assertEquals("integer", response.getHeaders().get("h1").getType());

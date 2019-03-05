@@ -116,7 +116,7 @@ public class TestApiResponse {
     Assert.assertEquals("testSingle", operation.getOperationId());
 
     Response response = operation.getResponses().get("200");
-    Assert.assertEquals(Integer.class, ClassUtilsForTest.findJavaType(generator, response.getSchema()).getRawClass());
+    Assert.assertEquals(Integer.class, ClassUtilsForTest.findJavaType(generator, response.getResponseSchema()).getRawClass());
   }
 
   public void checkMulti(SwaggerGenerator generator) {
@@ -128,9 +128,9 @@ public class TestApiResponse {
     Assert.assertEquals("testMulti", operation.getOperationId());
 
     Response response = operation.getResponses().get("200");
-    Assert.assertEquals(Integer.class, ClassUtilsForTest.findJavaType(generator, response.getSchema()).getRawClass());
+    Assert.assertEquals(Integer.class, ClassUtilsForTest.findJavaType(generator, response.getResponseSchema()).getRawClass());
 
     response = operation.getResponses().get("301");
-    Assert.assertEquals(String.class, ClassUtilsForTest.findJavaType(generator, response.getSchema()).getRawClass());
+    Assert.assertEquals(String.class, ClassUtilsForTest.findJavaType(generator, response.getResponseSchema()).getRawClass());
   }
 }
