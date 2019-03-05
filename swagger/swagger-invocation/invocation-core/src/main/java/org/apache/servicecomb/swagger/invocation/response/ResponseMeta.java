@@ -37,7 +37,7 @@ public class ResponseMeta {
 
   public void init(SwaggerToClassGenerator swaggerToClassGenerator, Response response) {
     if (javaType == null) {
-      javaType = swaggerToClassGenerator.convert(response.getSchema());
+      javaType = swaggerToClassGenerator.convert(response.getResponseSchema());
     }
 
     if (response.getHeaders() == null) {
