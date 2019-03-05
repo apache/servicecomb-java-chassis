@@ -18,24 +18,24 @@ package org.apache.servicecomb.codec.protobuf.internal.converter;
 
 import java.util.List;
 
-import io.swagger.models.properties.ArrayProperty;
-import io.swagger.models.properties.MapProperty;
+import io.swagger.models.ArrayModel;
+import io.swagger.models.Model;
+import io.swagger.models.ModelImpl;
+import io.swagger.models.RefModel;
 import io.swagger.models.properties.ObjectProperty;
 import io.swagger.models.properties.Property;
-import io.swagger.models.properties.RefProperty;
-import io.swagger.models.properties.StringProperty;
 
-public class PropertyAdapter implements SwaggerTypeAdapter {
-  private final Property property;
+public class ModelAdapter implements SwaggerTypeAdapter {
+  private final Model model;
 
-  public PropertyAdapter(Property property) {
-    this.property = property;
+  public ModelAdapter(Model model) {
+    this.model = model;
   }
 
   @Override
   public String getRefType() {
-    if (property instanceof RefProperty) {
-      return ((RefProperty) property).getSimpleRef();
+    if (model instanceof RefModel) {
+      return ((RefModel) model).getSimpleRef();
     }
 
     return null;
@@ -43,8 +43,8 @@ public class PropertyAdapter implements SwaggerTypeAdapter {
 
   @Override
   public Property getArrayItem() {
-    if (property instanceof ArrayProperty) {
-      return ((ArrayProperty) property).getItems();
+    if (model instanceof ArrayModel) {
+      return ((ArrayModel) model).getItems();
     }
 
     return null;
@@ -52,8 +52,8 @@ public class PropertyAdapter implements SwaggerTypeAdapter {
 
   @Override
   public Property getMapItem() {
-    if (property instanceof MapProperty) {
-      return ((MapProperty) property).getAdditionalProperties();
+    if (model instanceof ModelImpl) {
+      return ((ModelImpl) model).getAdditionalProperties();
     }
 
     return null;
@@ -61,8 +61,8 @@ public class PropertyAdapter implements SwaggerTypeAdapter {
 
   @Override
   public List<String> getEnum() {
-    if (property instanceof StringProperty) {
-      return ((StringProperty) property).getEnum();
+    if (model instanceof ModelImpl) {
+      return ((ModelImpl) model).getEnum();
     }
 
     return null;
@@ -70,16 +70,31 @@ public class PropertyAdapter implements SwaggerTypeAdapter {
 
   @Override
   public String getType() {
-    return property.getType();
+    if (model instanceof ModelImpl) {
+      return ((ModelImpl) model).getType();
+    }
+
+    return null;
   }
 
   @Override
   public String getFormat() {
-    return property.getFormat();
+    if (model instanceof ModelImpl) {
+      return ((ModelImpl) model).getFormat();
+    }
+
+    return null;
   }
 
   @Override
   public boolean isJavaLangObject() {
-    return property instanceof ObjectProperty;
+    if (model instanceof ModelImpl) {
+      ModelImpl modelImpl = (ModelImpl) model;
+      return ObjectProperty.TYPE.equals(modelImpl.getType())
+          && modelImpl.getProperties() == null
+          && modelImpl.getName() == null;
+    }
+
+    return false;
   }
 }

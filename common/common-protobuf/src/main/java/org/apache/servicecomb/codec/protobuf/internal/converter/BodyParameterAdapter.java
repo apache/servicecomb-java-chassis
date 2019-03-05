@@ -88,7 +88,7 @@ public class BodyParameterAdapter implements SwaggerTypeAdapter {
   }
 
   @Override
-  public boolean isObject() {
+  public boolean isJavaLangObject() {
     if (model instanceof ModelImpl) {
       ModelImpl modelImpl = (ModelImpl) model;
       return (ObjectProperty.TYPE.equals(modelImpl.getType())
