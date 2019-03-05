@@ -170,7 +170,7 @@ public class SwaggerToProtoGenerator {
       return String.format("map<string, %s>", convertArrayOrMapItem(itemProperty));
     }
 
-    if (adapter.isObject()) {
+    if (adapter.isJavaLangObject()) {
       addImports(ProtoConst.ANY_PROTO);
       return ProtoConst.ANY.getCanonicalName();
     }
@@ -214,7 +214,7 @@ public class SwaggerToProtoGenerator {
     return prefix + StringUtils.capitalize(convertSwaggerType(adapter));
   }
 
-  private void wrapPropertyToMessage(String protoName, Property property) {
+  private void wrapPropertyToMessage(String protoName, Object property) {
     createMessage(protoName, Collections.singletonMap("value", property), ProtoConst.ANNOTATION_WRAP_PROPERTY);
   }
 
@@ -325,7 +325,7 @@ public class SwaggerToProtoGenerator {
 
   private void fillResponseType(Operation operation, ProtoMethod protoMethod) {
     for (Entry<String, Response> entry : operation.getResponses().entrySet()) {
-      String type = convertSwaggerType(entry.getValue().getSchema());
+      String type = convertSwaggerType(entry.getValue().getResponseSchema());
       boolean wrapped = !messages.contains(type);
 
       ProtoResponse protoResponse = new ProtoResponse();
@@ -333,7 +333,7 @@ public class SwaggerToProtoGenerator {
 
       if (wrapped) {
         String wrapName = StringUtils.capitalize(operation.getOperationId()) + "ResponseWrap" + entry.getKey();
-        wrapPropertyToMessage(wrapName, entry.getValue().getSchema());
+        wrapPropertyToMessage(wrapName, entry.getValue().getResponseSchema());
 
         protoResponse.setTypeName(wrapName);
       }
