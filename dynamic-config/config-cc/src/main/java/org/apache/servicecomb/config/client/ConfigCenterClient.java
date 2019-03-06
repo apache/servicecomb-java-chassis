@@ -23,6 +23,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -183,6 +184,7 @@ public class ConfigCenterClient {
             .addAll(provider.getSignAuthHeaders(signReq)));
         request.exceptionHandler(e -> {
           LOGGER.error("Fetch member from {} failed. Error message is [{}].", configCenter, e.getMessage());
+          logIfDnsFailed(e);
         });
         request.end();
       });
@@ -428,6 +430,7 @@ public class ConfigCenterClient {
           LOGGER.error("Config update from {} failed. Error message is [{}].",
               configcenter,
               e.getMessage());
+          logIfDnsFailed(e);
           latch.countDown();
         });
         request.end();
@@ -475,5 +478,11 @@ public class ConfigCenterClient {
     signReq.setHttpMethod(method);
     signReq.setContent(content);
     return signReq;
+  }
+
+  private void logIfDnsFailed(Throwable e) {
+    if (e instanceof UnknownHostException) {
+      LOGGER.error("DNS resolve failed!", e);
+    }
   }
 }
