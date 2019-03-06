@@ -122,6 +122,7 @@
     <module>archetypes</module>
     <module>java-chassis-dependencies-springboot2</module>
     <module>java-chassis-spring-boot</module>
+    <module>solutions</module>
   </modules>
 
   <reporting>
