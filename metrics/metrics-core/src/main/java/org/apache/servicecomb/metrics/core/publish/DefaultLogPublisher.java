@@ -18,7 +18,6 @@ package org.apache.servicecomb.metrics.core.publish;
 
 import static org.apache.servicecomb.foundation.common.utils.StringBuilderUtils.appendLine;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,8 +26,8 @@ import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
-import org.apache.servicecomb.foundation.metrics.meter.LatencyDistribution;
-import org.apache.servicecomb.foundation.metrics.meter.LatencyDistribution.LatencyScope;
+import org.apache.servicecomb.foundation.metrics.meter.LatencyDistributionConfig;
+import org.apache.servicecomb.foundation.metrics.meter.LatencyScopeConfig;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
@@ -46,6 +45,7 @@ import org.apache.servicecomb.metrics.core.publish.model.invocation.PerfInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.netflix.config.DynamicPropertyFactory;
@@ -83,23 +83,19 @@ public class DefaultLogPublisher implements MetricsInitializer {
 
   private static final int LEAST_LATENCY_SCOPE_STR_LENGTH = 7;
 
-  /**
-   *   list of latency scope str parsed
-   *   from property {@link LatencyDistribution#METRICS_LATENCY}
-   */
-  private List<String> sortedLatencyScopeStr;
+  private LatencyDistributionConfig latencyDistributionConfig;
 
   /**
-   * the str format of latency scope.
-   *  more details {@link DefaultLogPublisher#getLatencyScopeFormat(List)}
+   * if config is 0,1,10,100 then header will be:<br>
+   *   [0,1)  [1,10) [10,100) [100,)
    */
-  private String latencyScopeStrFormat;
+  private String latencyDistributionHeader = "";
 
   /**
-   * the header of latencyScope. for example:
-   *   "[0,1)  [1,2)  [2,3)  [3,10)  [10, )  "
+   * if config is 0,1,10,100 then format will be:<br>
+   *   %-7d %-7d %-9d %-7d
    */
-  private String latencyScopeStrHeader;
+  private String latencyDistributionFormat = "";
 
   @Override
   public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
@@ -109,30 +105,29 @@ public class DefaultLogPublisher implements MetricsInitializer {
       return;
     }
 
-    sortedLatencyScopeStr = parseSortedLatencyScopeStr(LatencyDistribution.METRICS_LATENCY);
-    latencyScopeStrFormat = getLatencyScopeFormat(sortedLatencyScopeStr);
-    latencyScopeStrHeader = String.format(latencyScopeStrFormat, sortedLatencyScopeStr.toArray());
+    initLatencyDistribution();
+
     eventBus.register(this);
   }
 
-  public List<String> parseSortedLatencyScopeStr(String property) {
-    List<String> results = new ArrayList<>();
-    try {
-      String[] arrays = property.trim().split(",");
-      if (arrays.length == 0) {
-        return results;
+  private void initLatencyDistribution() {
+    String config = DynamicPropertyFactory.getInstance()
+        .getStringProperty(MeterInvocationConst.CONFIG_LATENCY_DISTRIBUTION, null)
+        .get();
+    latencyDistributionConfig = new LatencyDistributionConfig(config);
+    String header;
+    for (LatencyScopeConfig scopeConfig : latencyDistributionConfig.getScopeConfigs()) {
+      if (scopeConfig.getMsMax() == Long.MAX_VALUE) {
+        header = String.format("[%d,) ", scopeConfig.getMsMin());
+      } else {
+        header = String.format("[%d,%d) ", scopeConfig.getMsMin(), scopeConfig.getMsMax());
       }
-      results.add(LatencyScope.getStandardLatencyScopeStr("0", arrays[0], LEAST_LATENCY_SCOPE_STR_LENGTH));
-      for (int i = 1; i < arrays.length; i++) {
-        results.add(LatencyScope.getStandardLatencyScopeStr(
-            arrays[i - 1], arrays[i], LEAST_LATENCY_SCOPE_STR_LENGTH));
-      }
-      results.add(LatencyScope.getStandardLatencyScopeStr(
-          arrays[arrays.length - 1], " ", LEAST_LATENCY_SCOPE_STR_LENGTH));
-    } catch (Throwable e) {
-      LOGGER.error("Failed to parse property servicecomb.metrics.invocation.latency.buckets", e);
+      header = Strings.padEnd(header, LEAST_LATENCY_SCOPE_STR_LENGTH, ' ');
+      latencyDistributionHeader += header;
+
+      String format = "%-" + (header.length() - 1) + "d ";
+      latencyDistributionFormat += format;
     }
-    return results;
   }
 
   @Subscribe
@@ -242,8 +237,11 @@ public class DefaultLogPublisher implements MetricsInitializer {
     if (edgePerf == null) {
       return;
     }
-    sb.append("edge:\n  simple:\n    status      tps    latency            ")
-        .append(latencyScopeStrHeader)
+    sb.append(""
+        + "edge:\n"
+        + "  simple:\n"
+        + "    status      tps    latency            ")
+        .append(latencyDistributionHeader)
         .append("operation\n");
     StringBuilder detailsBuilder = new StringBuilder();
     //print sample
@@ -258,14 +256,16 @@ public class DefaultLogPublisher implements MetricsInitializer {
     sb.append("  details:\n").append(detailsBuilder);
   }
 
-
   protected void printConsumerLog(DefaultPublishModel model, StringBuilder sb) {
     OperationPerfGroups consumerPerf = model.getConsumer().getOperationPerfGroups();
     if (consumerPerf == null) {
       return;
     }
-    sb.append("consumer:\n  simple:\n    status      tps    latency            ")
-        .append(latencyScopeStrHeader)
+    sb.append(""
+        + "consumer:\n"
+        + "  simple:\n"
+        + "    status      tps    latency            ")
+        .append(latencyDistributionHeader)
         .append("operation\n");
     StringBuilder detailsBuilder = new StringBuilder();
     //print sample
@@ -280,14 +280,16 @@ public class DefaultLogPublisher implements MetricsInitializer {
     sb.append("  details:\n").append(detailsBuilder);
   }
 
-
   protected void printProducerLog(DefaultPublishModel model, StringBuilder sb) {
     OperationPerfGroups producerPerf = model.getProducer().getOperationPerfGroups();
     if (producerPerf == null) {
       return;
     }
-    sb.append("producer:\n  simple:\n    status      tps    latency            ")
-        .append(latencyScopeStrHeader)
+    sb.append(""
+        + "producer:\n"
+        + "  simple:\n"
+        + "    status      tps    latency            ")
+        .append(latencyDistributionHeader)
         .append("operation\n");
     // use detailsBuilder, we can traverse the map only once
     StringBuilder detailsBuilder = new StringBuilder();
@@ -309,70 +311,33 @@ public class DefaultLogPublisher implements MetricsInitializer {
     for (int i = 0; i < perfGroup.getOperationPerfs().size(); i++) {
       OperationPerf operationPerf = perfGroup.getOperationPerfs().get(i);
       PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
-      //may be null
-      List<Integer> latencyDistribution = operationPerf.getLatencyDistribution();
       if (i == 0) {
         // first line
         String status = perfGroup.getTransport() + "." + perfGroup.getStatus();
         sb.append(String.format(FIRST_LINE_SIMPLE_FORMAT, status,
             stageTotal.getTps(),
             getDetailsFromPerf(stageTotal),
-            getLatencyScopeStrFromPerf(latencyDistribution),
+            formatLatencyDistribution(operationPerf),
             operationPerf.getOperation()));
       } else {
         sb.append(String.format(SIMPLE_FORMAT, stageTotal.getTps(),
             getDetailsFromPerf(stageTotal),
-            getLatencyScopeStrFromPerf(latencyDistribution),
+            formatLatencyDistribution(operationPerf),
             operationPerf.getOperation()));
       }
     }
     OperationPerf summaryOperation = perfGroup.getSummary();
     PerfInfo stageSummaryTotal = summaryOperation.findStage(MeterInvocationConst.STAGE_TOTAL);
-    List<Integer> latencyDistributionSummary = summaryOperation.getLatencyDistribution();
     //print summary
     sb.append(String.format(SIMPLE_FORMAT, stageSummaryTotal.getTps(),
         getDetailsFromPerf(stageSummaryTotal),
-        getLatencyScopeStrFromPerf(latencyDistributionSummary),
+        formatLatencyDistribution(summaryOperation),
         "(summary)"));
     return sb;
   }
 
-  private String getLatencyScopeStrFromPerf(List<Integer> values) {
-    if (values == null || sortedLatencyScopeStr == null) {
-      return "";
-    }
-    return String.format(latencyScopeStrFormat, values.toArray());
-  }
-
-  /**
-   * <p>
-   *     get respond str format from list of str. for example
-   *    {@code
-   *         List<String> strList = Arrays.asList("[0,1) ", "[1,4) ", "[4, ) ");
-   *         String strFormat = getLatencyScopeFormat(strList);
-   *         System.out.println(String.format(strFormat,strList.toArray()));
-   *         System.out.println(String.format(strFormat, 1, 23, 433));
-   *         System.out.println(String.format(strFormat, 121, 2, 4));
-   *    }
-   *    In the example above, result is showed as bellow:
-   *        [0,1)  [1,4)  [4, )
-   *        1      23     433
-   *        121    2      4
-   * </p>
-   * @param latencyIntervals list of str
-   * @return str format
-   */
-  private String getLatencyScopeFormat(List<String> latencyIntervals) {
-    StringBuilder stringBuilder = new StringBuilder();
-    if (latencyIntervals == null || latencyIntervals.size() == 0) {
-      return stringBuilder.toString();
-    }
-    latencyIntervals.forEach(latency -> {
-      stringBuilder.append("%-")
-          .append(latency.length())
-          .append("s ");
-    });
-    return stringBuilder.toString();
+  private String formatLatencyDistribution(OperationPerf operationPerf) {
+    return String.format(latencyDistributionFormat, (Object[])operationPerf.getLatencyDistribution());
   }
 
   private StringBuilder printProducerDetailsPerf(OperationPerfGroup perfGroup) {

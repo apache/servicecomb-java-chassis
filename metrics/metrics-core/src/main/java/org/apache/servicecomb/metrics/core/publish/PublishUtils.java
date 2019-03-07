@@ -18,7 +18,6 @@ package org.apache.servicecomb.metrics.core.publish;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
 import org.apache.servicecomb.metrics.core.meter.invocation.MeterInvocationConst;
@@ -50,16 +49,16 @@ public final class PublishUtils {
 
     operationPerf.setOperation(operation);
     MeasurementNode stageNode = statusNode.findChild(MeterInvocationConst.TAG_STAGE);
-    MeasurementNode latencyNode = statusNode.findChild(MeterInvocationConst.TAG_LATENCY_DISTRIBUTION);
     stageNode.getChildren().values().forEach(mNode -> {
       PerfInfo perfInfo = createPerfInfo(mNode);
       operationPerf.getStages().put(mNode.getName(), perfInfo);
     });
+
+    MeasurementNode latencyNode = statusNode.findChild(MeterInvocationConst.TAG_LATENCY_DISTRIBUTION);
     if (latencyNode != null && latencyNode.getMeasurements() != null) {
       operationPerf.setLatencyDistribution(latencyNode.getMeasurements().stream()
-          .map(measurement -> (int) measurement.value())
-          .collect(Collectors.toList())
-      );
+          .map(m -> (int) m.value())
+          .toArray(Integer[]::new));
     }
     return operationPerf;
   }
