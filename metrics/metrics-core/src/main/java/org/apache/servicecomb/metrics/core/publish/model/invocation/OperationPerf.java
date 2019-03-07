@@ -16,19 +16,16 @@
  */
 package org.apache.servicecomb.metrics.core.publish.model.invocation;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 public class OperationPerf {
   private String operation;
 
   private Map<String, PerfInfo> stages = new HashMap<>();
 
-  private List<Integer> latencyDistribution = new ArrayList<>();
+  private Integer[] latencyDistribution;
 
   public String getOperation() {
     return operation;
@@ -42,11 +39,11 @@ public class OperationPerf {
     return stages;
   }
 
-  public List<Integer> getLatencyDistribution() {
+  public Integer[] getLatencyDistribution() {
     return latencyDistribution;
   }
 
-  public void setLatencyDistribution(List<Integer> latencyDistribution) {
+  public void setLatencyDistribution(Integer[] latencyDistribution) {
     this.latencyDistribution = latencyDistribution;
   }
 
@@ -63,26 +60,17 @@ public class OperationPerf {
       PerfInfo perfInfo = stages.computeIfAbsent(key, n -> new PerfInfo());
       perfInfo.add(value);
     });
-    if (latencyDistribution.size() <= operationPerf.latencyDistribution.size()) {
-      latencyDistribution = IntStream.range(0, operationPerf.latencyDistribution.size())
-          .map(i -> {
-            if (latencyDistribution.size() > i) {
-              return latencyDistribution.get(i) + operationPerf.latencyDistribution.get(i);
-            }
-            return operationPerf.latencyDistribution.get(i);
-          })
-          .boxed()
-          .collect(Collectors.toList());
+
+    if (operationPerf.getLatencyDistribution() == null) {
       return;
     }
-    latencyDistribution = IntStream.range(0, latencyDistribution.size())
-        .map(i -> {
-          if (operationPerf.latencyDistribution.size() > i) {
-            return latencyDistribution.get(i) + operationPerf.latencyDistribution.get(i);
-          }
-          return latencyDistribution.get(i);
-        })
-        .boxed()
-        .collect(Collectors.toList());
+
+    if (latencyDistribution == null) {
+      latencyDistribution = new Integer[operationPerf.getLatencyDistribution().length];
+      Arrays.fill(latencyDistribution, 0);
+    }
+    for (int idx = 0; idx < operationPerf.getLatencyDistribution().length; idx++) {
+      latencyDistribution[idx] += operationPerf.getLatencyDistribution()[idx];
+    }
   }
 }

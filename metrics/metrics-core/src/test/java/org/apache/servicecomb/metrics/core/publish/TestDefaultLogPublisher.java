@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.metrics.core.publish;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -27,10 +26,8 @@ import javax.xml.ws.Holder;
 
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
-import org.apache.servicecomb.foundation.metrics.meter.LatencyDistribution;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
@@ -139,8 +136,7 @@ public class TestDefaultLogPublisher {
   public void onPolledEvent(@Mocked VertxImpl vertxImpl, @Mocked MeasurementTree tree,
       @Mocked GlobalRegistry globalRegistry, @Mocked EventBus eventBus, @Mocked MetricsBootstrapConfig config) {
     ArchaiusUtils.setProperty("servicecomb.metrics.publisher.defaultLog.enabled", true);
-    String metricsLatency = LatencyDistribution.METRICS_LATENCY;
-    ReflectUtils.setField(LatencyDistribution.class, null, "METRICS_LATENCY", "1,100");
+    ArchaiusUtils.setProperty("servicecomb.metrics.invocation.latencyDistribution", "0,1,100");
     publisher.init(globalRegistry, eventBus, config);
     new Expectations(VertxUtils.class) {
       {
@@ -156,13 +152,9 @@ public class TestDefaultLogPublisher {
     perfTotal.setTps(10_0000);
     perfTotal.setMsTotalTime(30000L * 1_0000);
     perfTotal.setMsMaxLatency(30000);
-    List<Integer> list = new ArrayList<>();
-    list.add(12);
-    list.add(120);
-    list.add(1200);
     OperationPerf operationPerf = new OperationPerf();
     operationPerf.setOperation("op");
-    operationPerf.setLatencyDistribution(list);
+    operationPerf.setLatencyDistribution(new Integer[] {12, 120, 1200});
     operationPerf.getStages().put(MeterInvocationConst.STAGE_TOTAL, perfTotal);
     operationPerf.getStages().put(MeterInvocationConst.STAGE_EXECUTOR_QUEUE, perfTotal);
     operationPerf.getStages().put(MeterInvocationConst.STAGE_EXECUTION, perfTotal);
@@ -261,9 +253,9 @@ public class TestDefaultLogPublisher {
             + "  0        0          0        0           0         0.0       0.0          test\n"
             + "consumer:\n"
             + "  simple:\n"
-            + "    status      tps    latency            [0,1)  [1,100) [100, ) operation\n"
-            + "    rest.OK     100000 3000.000/30000.000 12     120     1200    op\n"
-            + "                100000 3000.000/30000.000 12     120     1200    (summary)\n"
+            + "    status      tps    latency            [0,1)  [1,100) [100,) operation\n"
+            + "    rest.OK     100000 3000.000/30000.000 12     120     1200   op\n"
+            + "                100000 3000.000/30000.000 12     120     1200   (summary)\n"
             + "  details:\n"
             + "    rest.OK:\n"
             + "      op:\n"
@@ -272,15 +264,14 @@ public class TestDefaultLogPublisher {
             + "        cFiltersResp: 3000.000/30000.000 handlersResp: 3000.000/30000.000\n"
             + "producer:\n"
             + "  simple:\n"
-            + "    status      tps    latency            [0,1)  [1,100) [100, ) operation\n"
-            + "    rest.OK     100000 3000.000/30000.000 12     120     1200    op\n"
-            + "                100000 3000.000/30000.000 12     120     1200    (summary)\n"
+            + "    status      tps    latency            [0,1)  [1,100) [100,) operation\n"
+            + "    rest.OK     100000 3000.000/30000.000 12     120     1200   op\n"
+            + "                100000 3000.000/30000.000 12     120     1200   (summary)\n"
             + "  details:\n"
             + "    rest.OK:\n"
             + "      op:\n"
             + "        prepare: 3000.000/30000.000 queue       : 3000.000/30000.000 filtersReq : 3000.000/30000.000 handlersReq: 3000.000/30000.000\n"
             + "        execute: 3000.000/30000.000 handlersResp: 3000.000/30000.000 filtersResp: 3000.000/30000.000 sendResp   : 3000.000/30000.000\n",
         event.getMessage());
-    ReflectUtils.setField(LatencyDistribution.class, null, "METRICS_LATENCY", metricsLatency);
   }
 }

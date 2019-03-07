@@ -22,9 +22,10 @@ import java.util.List;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.metrics.meter.AbstractPeriodMeter;
+import org.apache.servicecomb.foundation.metrics.meter.LatencyDistributionMeter;
 import org.apache.servicecomb.foundation.metrics.meter.SimpleTimer;
-import org.apache.servicecomb.foundation.metrics.meter.LatencyDistribution;
 
+import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
 import com.netflix.spectator.api.Registry;
@@ -45,22 +46,25 @@ public abstract class AbstractInvocationMeter extends AbstractPeriodMeter {
   private SimpleTimer handlersResponseTimer;
 
   // latency distribution
-  private LatencyDistribution latencyDistribution;
+  private LatencyDistributionMeter latencyDistributionMeter;
 
   private long lastUpdated;
 
   public AbstractInvocationMeter(Registry registry, Id id) {
     this.registry = registry;
     this.id = id;
-    latencyDistribution = createLatencyDistribution(MeterInvocationConst.TAG_LATENCY_DISTRIBUTION);
+    latencyDistributionMeter = createLatencyDistribution(MeterInvocationConst.TAG_LATENCY_DISTRIBUTION);
     totalTimer = createStageTimer(MeterInvocationConst.STAGE_TOTAL);
     prepareTimer = createStageTimer(MeterInvocationConst.STAGE_PREPARE);
     handlersRequestTimer = createStageTimer(MeterInvocationConst.STAGE_HANDLERS_REQUEST);
     handlersResponseTimer = createStageTimer(MeterInvocationConst.STAGE_HANDLERS_RESPONSE);
   }
 
-  protected LatencyDistribution createLatencyDistribution(String tagValue) {
-    return new LatencyDistribution(id.withTag(MeterInvocationConst.TAG_TYPE, tagValue));
+  protected LatencyDistributionMeter createLatencyDistribution(String tagValue) {
+    String config = DynamicPropertyFactory.getInstance()
+        .getStringProperty(MeterInvocationConst.CONFIG_LATENCY_DISTRIBUTION, null)
+        .get();
+    return new LatencyDistributionMeter(id.withTag(MeterInvocationConst.TAG_TYPE, tagValue), config);
   }
 
   protected SimpleTimer createStageTimer(String stageValue) {
@@ -80,7 +84,7 @@ public abstract class AbstractInvocationMeter extends AbstractPeriodMeter {
     lastUpdated = registry.clock().wallTime();
 
     InvocationStageTrace stageTrace = event.getInvocation().getInvocationStageTrace();
-    latencyDistribution.record((long) stageTrace.calcTotalTime());
+    latencyDistributionMeter.record((long) stageTrace.calcTotalTime());
     totalTimer.record((long) stageTrace.calcTotalTime());
     handlersRequestTimer.record((long) stageTrace.calcHandlersRequestTime());
     handlersResponseTimer.record((long) stageTrace.calcHandlersResponseTime());
@@ -96,7 +100,7 @@ public abstract class AbstractInvocationMeter extends AbstractPeriodMeter {
 
   @Override
   public void calcMeasurements(List<Measurement> measurements, long msNow, long secondInterval) {
-    latencyDistribution.calcMeasurements(measurements, msNow, secondInterval);
+    latencyDistributionMeter.calcMeasurements(measurements, msNow, secondInterval);
     totalTimer.calcMeasurements(measurements, msNow, secondInterval);
     handlersRequestTimer.calcMeasurements(measurements, msNow, secondInterval);
     handlersResponseTimer.calcMeasurements(measurements, msNow, secondInterval);

@@ -17,7 +17,6 @@
 package org.apache.servicecomb.metrics.core.publish;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.core.Response.Status;
@@ -56,13 +55,13 @@ public class TestPublishUtils {
     OperationPerf opPerf = Utils.createOperationPerf(op);
 
     PerfInfo perfInfo = opPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
-    List<Integer> latencyDistribution = opPerf.getLatencyDistribution();
+    Integer[] latencyDistribution = opPerf.getLatencyDistribution();
     Assert.assertEquals(10, perfInfo.getTps());
     Assert.assertEquals(1000, perfInfo.calcMsLatency(), 0);
     Assert.assertEquals(100000, perfInfo.getMsMaxLatency(), 0);
-    Assert.assertEquals(2, latencyDistribution.size());
-    Assert.assertEquals(1, latencyDistribution.get(0).intValue());
-    Assert.assertEquals(2, latencyDistribution.get(1).intValue());
+    Assert.assertEquals(2, latencyDistribution.length);
+    Assert.assertEquals(1, latencyDistribution[0].intValue());
+    Assert.assertEquals(2, latencyDistribution[1].intValue());
   }
 
   @Test
@@ -77,13 +76,13 @@ public class TestPublishUtils {
     OperationPerfGroup group = statusMap.get(Status.OK.name());
 
     PerfInfo perfInfo = group.getSummary().findStage(MeterInvocationConst.STAGE_TOTAL);
-    List<Integer> latencyDistribution = group.getSummary().getLatencyDistribution();
+    Integer[] latencyDistribution = group.getSummary().getLatencyDistribution();
     Assert.assertEquals(10, perfInfo.getTps());
     Assert.assertEquals(1000, perfInfo.calcMsLatency(), 0);
     Assert.assertEquals(100000, perfInfo.getMsMaxLatency(), 0);
-    Assert.assertEquals(2, latencyDistribution.size());
-    Assert.assertEquals(1, latencyDistribution.get(0).intValue());
-    Assert.assertEquals(2, latencyDistribution.get(1).intValue());
+    Assert.assertEquals(2, latencyDistribution.length);
+    Assert.assertEquals(1, latencyDistribution[0].intValue());
+    Assert.assertEquals(2, latencyDistribution[1].intValue());
   }
 
   @Test

@@ -21,6 +21,8 @@ import com.netflix.spectator.api.Statistic;
 public interface MeterInvocationConst {
   String INVOCATION_NAME = "servicecomb.invocation";
 
+  String CONFIG_LATENCY_DISTRIBUTION = "servicecomb.metrics.invocation.latencyDistribution";
+
   // consumer or producer
   String TAG_ROLE = "role";
 
