@@ -1079,6 +1079,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
+        <artifactId>inspector</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
         <artifactId>tracing-common</artifactId>
         <version>${project.version}</version>
       </dependency>

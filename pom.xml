@@ -122,6 +122,7 @@
     <module>archetypes</module>
     <module>java-chassis-dependencies-springboot2</module>
     <module>java-chassis-spring-boot</module>
+    <module>inspector</module>
     <module>solutions</module>
   </modules>
 
@@ -194,6 +195,9 @@
             <exclude>**/**.log</exclude>
             <!-- Skip the target files -->
             <exclude>**/target/**</exclude>
+            <!-- Skip web resource files -->
+            <exclude>**/resources/webroot/images/*.png</exclude>
+            <exclude>**/resources/webroot/images/*.jpg</exclude>
             <!-- Skip the source files which are forked from vertx -->
             <exclude>**/io/vertx/ext/web/impl/MimeTypesUtils.java</exclude>
             <exclude>**/io/vertx/core/impl/VertxImpl.java</exclude>
