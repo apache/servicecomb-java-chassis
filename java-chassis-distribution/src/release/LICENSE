@@ -534,3 +534,5 @@ Zipkin Reporter: Core (https://github.com/openzipkin/zipkin-reporter-java/zipkin
 Zipkin Sender: OkHttp 3 (https://github.com/openzipkin/zipkin-reporter-java/zipkin-sender-okhttp3) io.zipkin.reporter2:zipkin-sender-okhttp3:jar:2.7.13
 Zipkin v2 (https://github.com/openzipkin/zipkin/) io.zipkin.zipkin2:zipkin:jar:2.9.3
 zuul-core (https://github.com/Netflix/zuul) com.netflix.zuul:zuul-core:jar:1.3.0
+asciidoctorj (https://github.com/asciidoctor/asciidoctorj) org.asciidoctor:asciidoctorj:jar:1.6.2
+swagger2markup (https://github.com/Swagger2Markup/swagger2markup) io.github.swagger2markup:swagger2markup:jar:1.3.3

@@ -338,6 +338,8 @@
               <arg>-Xlint:all</arg>
               <!--not care for jdk8/jdk7 compatible problem-->
               <arg>-Xlint:-classfile</arg>
+              <!--not care for annotations not processed-->
+              <arg>-Xlint:-processing</arg>
             </compilerArgs>
           </configuration>
         </plugin>
