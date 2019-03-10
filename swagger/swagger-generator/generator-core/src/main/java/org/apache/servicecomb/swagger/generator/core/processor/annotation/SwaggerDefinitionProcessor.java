@@ -97,7 +97,13 @@ public class SwaggerDefinitionProcessor implements ClassAnnotationProcessor {
 
     Stream<io.swagger.annotations.Tag> stream =
         Arrays.asList(definitionAnnotation.tags()).stream();
-    List<Tag> tags = stream.map(this::convertTag).collect(Collectors.toList());
+    List<Tag> tags = stream
+        .filter(t -> !t.name().isEmpty())
+        .map(this::convertTag)
+        .collect(Collectors.toList());
+    if (tags.isEmpty()) {
+      return;
+    }
     swagger.setTags(tags);
   }
 
@@ -130,6 +136,9 @@ public class SwaggerDefinitionProcessor implements ClassAnnotationProcessor {
   }
 
   private Scheme convertScheme(io.swagger.annotations.SwaggerDefinition.Scheme annotationScheme) {
+    if (SwaggerDefinition.Scheme.DEFAULT.equals(annotationScheme)) {
+      return Scheme.HTTP;
+    }
     return Scheme.forValue(annotationScheme.name());
   }
 
