@@ -105,6 +105,12 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>metrics-core</artifactId>
     </dependency>
+
+    <!-- inspector -->
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>inspector</artifactId>
+    </dependency>
   </dependencies>
 
 </project>
