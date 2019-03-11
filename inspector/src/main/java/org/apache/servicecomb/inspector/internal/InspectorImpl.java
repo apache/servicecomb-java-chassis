@@ -19,7 +19,6 @@ package org.apache.servicecomb.inspector.internal;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Map;
@@ -89,30 +88,33 @@ public class InspectorImpl {
   @Path("/download/schemas")
   @GET
   @ApiResponse(code = 200, message = "", response = File.class)
-  public Response downloadSchemas(@QueryParam("format") SchemaFormat format) throws IOException {
+  public Response downloadSchemas(@QueryParam("format") SchemaFormat format) {
     if (format == null) {
       format = SchemaFormat.SWAGGER;
     }
 
     // normally, schema will not be too big, just save them in memory temporarily
     ByteArrayOutputStream os = new ByteArrayOutputStream();
-    ZipOutputStream zos = new ZipOutputStream(os);
-    for (Entry<String, String> entry : schemas.entrySet()) {
-      // begin writing a new ZIP entry, positions the stream to the start of the entry data
-      zos.putNextEntry(new ZipEntry(entry.getKey() + format.getSuffix()));
+    try (ZipOutputStream zos = new ZipOutputStream(os)) {
+      for (Entry<String, String> entry : schemas.entrySet()) {
+        // begin writing a new ZIP entry, positions the stream to the start of the entry data
+        zos.putNextEntry(new ZipEntry(entry.getKey() + format.getSuffix()));
 
-      String content = entry.getValue();
-      if (SchemaFormat.HTML.equals(format)) {
-        content = swaggerToHtml(content);
+        String content = entry.getValue();
+        if (SchemaFormat.HTML.equals(format)) {
+          content = swaggerToHtml(content);
+        }
+        zos.write(content.getBytes(StandardCharsets.UTF_8));
+        zos.closeEntry();
       }
-      zos.write(content.getBytes(StandardCharsets.UTF_8));
-      zos.closeEntry();
+    } catch (Throwable e) {
+      String msg = "failed to create schemas zip file, format=" + format + ".";
+      LOGGER.error(msg, e);
+      return Response.failResp(new InvocationException(Status.INTERNAL_SERVER_ERROR, msg));
     }
-    zos.close();
 
     Part part = new InputStreamPart(null, new ByteArrayInputStream(os.toByteArray()))
         .setSubmittedFileName(RegistryUtils.getMicroservice().getServiceName() + format.getSuffix() + ".zip");
-
     return Response.ok(part);
   }
 
@@ -195,7 +197,7 @@ public class InspectorImpl {
   @Path("/{path : .+}")
   @GET
   @ApiResponse(code = 200, message = "", response = File.class)
-  public Response getStaticResource(@PathParam("path") String path) throws IOException {
+  public Response getStaticResource(@PathParam("path") String path) {
     return resourceHandler.handle(path);
   }
 }

@@ -31,6 +31,8 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.config.inject.ConfigObjectFactory;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
+import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.inspector.internal.swagger.SchemaFormat;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
@@ -141,6 +143,31 @@ public class TestInspectorImpl {
       Assert.assertEquals(schemas.size(), unziped.size());
       Assert.assertTrue(unziped.get("schema1.html").endsWith("</html>"));
       Assert.assertTrue(unziped.get("schema2.html").endsWith("</html>"));
+    }
+  }
+
+  @Test
+  public void downloadSchemas_failed() {
+    SchemaFormat format = SchemaFormat.SWAGGER;
+    new Expectations(format) {
+      {
+        format.getSuffix();
+        result = new RuntimeExceptionWithoutStackTrace("zip failed.");
+      }
+    };
+
+    try (LogCollector logCollector = new LogCollector()) {
+      Response response = inspector.downloadSchemas(format);
+
+      Assert.assertEquals("failed to create schemas zip file, format=SWAGGER.",
+          logCollector.getLastEvents().getMessage());
+
+      InvocationException invocationException = response.getResult();
+      Assert.assertEquals(Status.INTERNAL_SERVER_ERROR, invocationException.getStatus());
+      Assert.assertEquals("failed to create schemas zip file, format=SWAGGER.",
+          ((CommonExceptionData) invocationException.getErrorData()).getMessage());
+      Assert.assertEquals(Status.INTERNAL_SERVER_ERROR.getStatusCode(), response.getStatusCode());
+      Assert.assertEquals(Status.INTERNAL_SERVER_ERROR.getReasonPhrase(), response.getReasonPhrase());
     }
   }
 
