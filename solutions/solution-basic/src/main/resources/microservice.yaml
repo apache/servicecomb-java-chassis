@@ -41,6 +41,6 @@ servicecomb:
   accesslog:
     enabled: true
   metrics:
-    publisher:
-      defaultLog:
-        enabled: true
+    publisher.defaultLog:
+      enabled: true
+      endpoints.client.detail.enabled: true
