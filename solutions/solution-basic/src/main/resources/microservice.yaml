@@ -41,6 +41,12 @@ servicecomb:
   accesslog:
     enabled: true
   metrics:
+    invocation:
+      latencyDistribution: 0,1,3,10,100
     publisher.defaultLog:
       enabled: true
       endpoints.client.detail.enabled: true
+
+# inspector
+  inspector:
+    enabled: true
