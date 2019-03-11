@@ -19,6 +19,7 @@ package org.apache.servicecomb.swagger.generator.core.processor.response;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import io.swagger.util.ReflectionUtils;
 import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.ResponseTypeProcessor;
 import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
@@ -60,6 +61,9 @@ public class DefaultResponseTypeProcessor implements ResponseTypeProcessor {
   }
 
   protected Model doProcess(OperationGenerator operationGenerator, Type responseType) {
+    if (ReflectionUtils.isVoid(responseType)) {
+      return null;
+    }
     ParamUtils.addDefinitions(operationGenerator.getSwagger(), responseType);
     Property property = ModelConverters.getInstance().readAsProperty(responseType);
     return new PropertyModelConverter().propertyToModel(property);
