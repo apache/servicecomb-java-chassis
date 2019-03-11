@@ -208,12 +208,11 @@ public class TestSlowInvocationLogger {
             + "    prepare                : 0.0 ms\n"
             + "    threadPoolQueue        : 0.0 ms\n"
             + "    server filters request : 0.0 ms\n"
-            + "    server filters request : 0.0 ms\n"
             + "    handlers request       : 0.0 ms\n"
             + "    business execute       : 0.0 ms\n"
             + "    handlers response      : 0.0 ms\n"
             + "    server filters response: 0.0 ms\n"
-            + "    send response          : {} ms",
+            + "    send response          : 0.0 ms",
         logCollector.getEvents().get(0).getMessage());
   }
 }
