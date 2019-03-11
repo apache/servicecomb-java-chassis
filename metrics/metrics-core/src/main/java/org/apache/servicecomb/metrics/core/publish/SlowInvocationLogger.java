@@ -79,7 +79,6 @@ public class SlowInvocationLogger {
             + "    prepare                : {} ms\n"
             + "    threadPoolQueue        : {} ms\n"
             + "    server filters request : {} ms\n"
-            + "    server filters request : {} ms\n"
             + "    handlers request       : {} ms\n"
             + "    business execute       : {} ms\n"
             + "    handlers response      : {} ms\n"
