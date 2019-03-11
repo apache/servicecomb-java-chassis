@@ -25,9 +25,13 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 // TODO: LRU cache for small resource in jar?
 public abstract class StaticResourceHandler {
+  private static final Logger LOGGER = LoggerFactory.getLogger(StaticResourceHandler.class);
+
   private String webRoot = "webroot/";
 
   public void setWebRoot(String webRoot) {
@@ -36,14 +40,22 @@ public abstract class StaticResourceHandler {
 
   protected abstract Part findResource(String path) throws IOException;
 
-  public Response handle(String path) throws IOException {
+  public Response handle(String path) {
     path = URI.create(webRoot + path).normalize().getPath();
     if (!path.startsWith(webRoot)) {
       // maybe request of attack, just return 404
       return Response.failResp(new InvocationException(Status.NOT_FOUND, Status.NOT_FOUND.getReasonPhrase()));
     }
 
-    Part part = findResource(path);
+    Part part;
+    try {
+      part = findResource(path);
+    } catch (Throwable e) {
+      LOGGER.error("failed to process static resource, path={}", path, e);
+      return Response
+          .failResp(new InvocationException(Status.INTERNAL_SERVER_ERROR, "failed to process static resource."));
+    }
+
     if (part == null) {
       return Response.failResp(new InvocationException(Status.NOT_FOUND, Status.NOT_FOUND.getReasonPhrase()));
     }

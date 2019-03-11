@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.foundation.test.scaffolding.log;
 
+import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
-public class LogCollector {
+public class LogCollector implements Closeable {
   List<LoggingEvent> events = new ArrayList<>();
 
   Appender appender = new AppenderSkeleton() {
@@ -68,5 +69,10 @@ public class LogCollector {
 
   public void clear() {
     events = new ArrayList<>();
+  }
+
+  @Override
+  public void close() {
+    teardown();
   }
 }
