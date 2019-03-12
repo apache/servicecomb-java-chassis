@@ -45,9 +45,18 @@ servicecomb:
     transport: highway
   metrics:
     window_time: 1000
+    invocation.latencyDistribution: 0,1,3,10,100
+    Consumer.invocation.slow:
+      enabled: true
+      msTime: 40
+    Provider.invocation.slow:
+      enabled: true
+      msTime: 40
     publisher.defaultLog:
       enabled: true
       endpoints.client.detail.enabled: true
+      invocation.latencyDistribution:
+        minScopeLength: 9
 
 sync-count: 10
 async-count: 20
