@@ -37,7 +37,7 @@ if [ "$1" == "install" ]; then
             exit 1
         fi
         
-        mvn clean install -Ddocker.showLogs -Pdocker -Pjacoco -Pit -Pcoverage coveralls:report
+        mvn clean install -Pdocker -Pjacoco -Pit -Pcoverage coveralls:report
 	if [ $? == 0 ]; then
 	    echo "${green}Installation Success..${reset}"
 	else

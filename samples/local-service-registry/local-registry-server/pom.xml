@@ -72,6 +72,7 @@
       <plugin>
         <groupId>com.github.odavid.maven.plugins</groupId>
         <artifactId>mixin-maven-plugin</artifactId>
+        <version>0.1-alpha-39</version>
         <configuration>
           <mixins>
             <mixin>
