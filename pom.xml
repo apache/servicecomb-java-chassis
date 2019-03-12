@@ -104,8 +104,8 @@
   </distributionManagement>
 
   <modules>
-    <module>parent</module>
     <module>java-chassis-dependencies</module>
+    <module>parents</module>
     <module>common</module>
     <module>foundations</module>
     <module>deployment</module>
@@ -120,7 +120,6 @@
     <module>metrics</module>
     <module>dynamic-config</module>
     <module>archetypes</module>
-    <module>java-chassis-dependencies-springboot2</module>
     <module>java-chassis-spring-boot</module>
     <module>inspector</module>
     <module>solutions</module>

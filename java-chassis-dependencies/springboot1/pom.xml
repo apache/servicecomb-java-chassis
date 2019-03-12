@@ -22,20 +22,40 @@
 
   <parent>
     <groupId>org.apache.servicecomb</groupId>
-    <artifactId>java-chassis</artifactId>
+    <artifactId>java-chassis-dependencies-parent</artifactId>
     <version>1.2.0-SNAPSHOT</version>
   </parent>
 
-  <artifactId>java-chassis-dependencies-parent</artifactId>
-  <name>Java Chassis::Dependencies</name>
+  <artifactId>java-chassis-dependencies-springboot1</artifactId>
+  <name>Java Chassis::Dependencies::Springboot1</name>
   <packaging>pom</packaging>
 
-  <modules>
-    <module>default</module>
-    <module>spring4</module>
-    <module>spring5</module>
-    <module>springboot1</module>
-    <module>springboot2</module>
-  </modules>
+  <properties>
+    <spring.boot.version>1.5.14.RELEASE</spring.boot.version>
+  </properties>
 
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring.boot.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>java-chassis-parent-spring4</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 </project>

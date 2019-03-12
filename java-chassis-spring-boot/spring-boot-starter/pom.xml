@@ -22,7 +22,7 @@
     <groupId>org.apache.servicecomb</groupId>
     <artifactId>java-chassis-parent</artifactId>
     <version>1.2.0-SNAPSHOT</version>
-    <relativePath>../../parent</relativePath>
+    <relativePath>../../parents/springboot1</relativePath>
   </parent>
   <artifactId>spring-boot-starter-parent</artifactId>
   <name>Java Chassis::Spring Boot Starter::Parent</name>

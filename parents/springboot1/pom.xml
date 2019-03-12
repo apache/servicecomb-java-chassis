@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -17,23 +16,29 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <parent>
-    <groupId>org.apache.servicecomb</groupId>
-    <artifactId>java-chassis-parent</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
-    <relativePath>../parents/default</relativePath>
-  </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>dynamic-config</artifactId>
-  <name>Java Chassis::Dynamic Config</name>
-  <packaging>pom</packaging>
-  <modules>
-    <module>config-apollo</module>
-    <module>config-cc</module>
-  </modules>
+  <parent>
+    <groupId>org.apache.servicecomb</groupId>
+    <artifactId>java-chassis-dependencies</artifactId>
+    <version>1.2.0-SNAPSHOT</version>
+    <relativePath>../../java-chassis-dependencies/springboot1</relativePath>
+  </parent>
 
+  <artifactId>java-chassis-parent-springboot1</artifactId>
+  <packaging>pom</packaging>
+
+  <name>Java Chassis::Parent::Springboot1</name>
+  <description>Java Chassis Parent Springboot1</description>
+  <url>https://github.com/apache/servicecomb-java-chassis</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <java.version>1.8</java.version>
+
+    <argLine>-Dfile.encoding=UTF-8</argLine>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 </project>

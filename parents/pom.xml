@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -17,23 +16,27 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <parent>
-    <groupId>org.apache.servicecomb</groupId>
-    <artifactId>java-chassis-parent</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
-    <relativePath>../parents/default</relativePath>
-  </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>dynamic-config</artifactId>
-  <name>Java Chassis::Dynamic Config</name>
+
+  <parent>
+    <groupId>org.apache.servicecomb</groupId>
+    <artifactId>java-chassis</artifactId>
+    <version>1.2.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>java-chassis-parents</artifactId>
+  <name>Java Chassis::Parents</name>
   <packaging>pom</packaging>
+
   <modules>
-    <module>config-apollo</module>
-    <module>config-cc</module>
+    <module>default</module>
+    <module>spring4</module>
+    <module>spring5</module>
+    <module>springboot1</module>
+    <module>springboot2</module>
   </modules>
 
 </project>

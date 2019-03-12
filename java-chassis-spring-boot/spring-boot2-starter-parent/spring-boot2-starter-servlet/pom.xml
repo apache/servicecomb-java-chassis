@@ -27,6 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>spring-boot2-starter-servlet</artifactId>
+  <name>Java Chassis::Spring Boot2 Starter::Servlet</name>
 
   <dependencies>
     <dependency>
