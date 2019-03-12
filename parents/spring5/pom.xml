@@ -22,7 +22,7 @@
 
   <parent>
     <groupId>org.apache.servicecomb</groupId>
-    <artifactId>java-chassis-dependencies</artifactId>
+    <artifactId>java-chassis-dependencies-spring5</artifactId>
     <version>1.2.0-SNAPSHOT</version>
     <relativePath>../../java-chassis-dependencies/spring5</relativePath>
   </parent>

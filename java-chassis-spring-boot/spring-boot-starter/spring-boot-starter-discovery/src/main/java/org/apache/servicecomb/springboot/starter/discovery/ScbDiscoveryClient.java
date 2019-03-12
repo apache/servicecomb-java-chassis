@@ -28,8 +28,8 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 public class ScbDiscoveryClient extends AbstractDiscoveryClient implements DiscoveryClient {
 
   public ScbDiscoveryClient() {
-    super(new InstanceDiscoveryFilter((String name, URIEndpointObject uri) ->
-        new DefaultServiceInstance(name, uri.getHostOrIp(), uri.getPort(), uri.isSslEnabled())));
+    super(new InstanceDiscoveryFilter((String instanceId, String serviceId, URIEndpointObject uri) ->
+        new DefaultServiceInstance(serviceId, uri.getHostOrIp(), uri.getPort(), uri.isSslEnabled())));
   }
 
   @Override

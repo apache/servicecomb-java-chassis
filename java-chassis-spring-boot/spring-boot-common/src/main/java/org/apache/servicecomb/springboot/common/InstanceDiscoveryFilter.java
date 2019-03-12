@@ -33,12 +33,12 @@ public class InstanceDiscoveryFilter implements DiscoveryFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(InstanceDiscoveryFilter.class);
 
   public interface InstanceFactory {
-    Object createInstance(String name, URIEndpointObject uri);
+    Object createInstance(String instanceId, String serviceId, URIEndpointObject uri);
   }
 
   InstanceFactory instanceFactory;
 
-  public InstanceDiscoveryFilter(InstanceFactory factory){
+  public InstanceDiscoveryFilter(InstanceFactory factory) {
     instanceFactory = factory;
   }
 
@@ -67,7 +67,7 @@ public class InstanceDiscoveryFilter implements DiscoveryFilter {
           continue;
         }
         URIEndpointObject uri = new URIEndpointObject(endpoint);
-        instances.add(instanceFactory.createInstance(serviceName, uri));
+        instances.add(instanceFactory.createInstance(instance.getInstanceId(), instance.getServiceId(), uri));
       }
     }
 
