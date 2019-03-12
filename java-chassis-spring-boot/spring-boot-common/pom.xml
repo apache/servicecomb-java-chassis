@@ -23,11 +23,13 @@
     <artifactId>java-chassis-parent</artifactId>
     <groupId>org.apache.servicecomb</groupId>
     <version>1.2.0-SNAPSHOT</version>
-    <relativePath>../../parent</relativePath>
+    <relativePath>../../parents</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>spring-boot-common</artifactId>
+  <name>Java Chassis::Foundations::Spring Boot Common</name>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>

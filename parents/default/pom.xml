@@ -24,13 +24,13 @@
     <groupId>org.apache.servicecomb</groupId>
     <artifactId>java-chassis-dependencies</artifactId>
     <version>1.2.0-SNAPSHOT</version>
-    <relativePath>../java-chassis-dependencies</relativePath>
+    <relativePath>../../java-chassis-dependencies/default</relativePath>
   </parent>
 
   <artifactId>java-chassis-parent</artifactId>
   <packaging>pom</packaging>
 
-  <name>Java Chassis::Parent</name>
+  <name>Java Chassis::Parent::Default</name>
   <description>Java Chassis Parent</description>
   <url>https://github.com/apache/servicecomb-java-chassis</url>
 
