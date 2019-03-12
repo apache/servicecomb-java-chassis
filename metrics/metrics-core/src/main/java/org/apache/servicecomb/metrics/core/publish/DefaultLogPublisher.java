@@ -81,8 +81,6 @@ public class DefaultLogPublisher implements MetricsInitializer {
       + "        waitResp    : %-18s wakeConsumer: %-18s cFiltersResp: %-18s handlersResp: %s\n"
       + "        sFiltersResp: %-18s sendResp    : %s\n";
 
-  private static final int LEAST_LATENCY_SCOPE_STR_LENGTH = 7;
-
   private LatencyDistributionConfig latencyDistributionConfig;
 
   /**
@@ -111,6 +109,11 @@ public class DefaultLogPublisher implements MetricsInitializer {
   }
 
   private void initLatencyDistribution() {
+    // default length is 7 which include a space, one minute 999999 requests, TPS is 16666, mostly it's enough
+    int leastLatencyScopeStrLength = DynamicPropertyFactory.getInstance()
+        .getIntProperty(MeterInvocationConst.CONFIG_LATENCY_DISTRIBUTION_MIN_SCOPE_LEN, 7)
+        .get();
+
     String config = DynamicPropertyFactory.getInstance()
         .getStringProperty(MeterInvocationConst.CONFIG_LATENCY_DISTRIBUTION, null)
         .get();
@@ -122,7 +125,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
       } else {
         header = String.format("[%d,%d) ", scopeConfig.getMsMin(), scopeConfig.getMsMax());
       }
-      header = Strings.padEnd(header, LEAST_LATENCY_SCOPE_STR_LENGTH, ' ');
+      header = Strings.padEnd(header, leastLatencyScopeStrLength, ' ');
       latencyDistributionHeader += header;
 
       String format = "%-" + (header.length() - 1) + "d ";
@@ -337,7 +340,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
   }
 
   private String formatLatencyDistribution(OperationPerf operationPerf) {
-    return String.format(latencyDistributionFormat, (Object[])operationPerf.getLatencyDistribution());
+    return String.format(latencyDistributionFormat, (Object[]) operationPerf.getLatencyDistribution());
   }
 
   private StringBuilder printProducerDetailsPerf(OperationPerfGroup perfGroup) {
