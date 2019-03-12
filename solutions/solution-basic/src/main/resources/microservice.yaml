@@ -41,8 +41,15 @@ servicecomb:
   accesslog:
     enabled: true
   metrics:
+    window_time: 60000
     invocation:
-      latencyDistribution: 0,1,3,10,100
+      latencyDistribution: 0,1,10,100,1000
+    Consumer.invocation.slow:
+      enabled: true
+      msTime: 1000
+    Provider.invocation.slow:
+      enabled: true
+      msTime: 1000
     publisher.defaultLog:
       enabled: true
       endpoints.client.detail.enabled: true
