@@ -45,10 +45,12 @@ public class OperationConfig {
       ".${schema}",
       "");
 
-  @InjectProperty(keys = "${consumer-producer}.invocation.slow.enabled${op-priority}", defaultValue = "false")
+  @InjectProperty(keys = {"metrics.${consumer-producer}.invocation.slow.enabled${op-priority}",
+      "${consumer-producer}.invocation.slow.enabled${op-priority}"}, defaultValue = "false")
   private boolean slowInvocationEnabled;
 
-  @InjectProperty(keys = {"${consumer-producer}.invocation.slow.msTime${op-priority}"}, defaultValue = "1000")
+  @InjectProperty(keys = {"metrics.${consumer-producer}.invocation.slow.msTime${op-priority}",
+      "${consumer-producer}.invocation.slow.msTime${op-priority}"}, defaultValue = "1000")
   private long msSlowInvocation;
 
   private long nanoSlowInvocation;

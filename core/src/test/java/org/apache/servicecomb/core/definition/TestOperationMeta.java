@@ -193,5 +193,18 @@ public class TestOperationMeta {
     Assert.assertTrue(config.isSlowInvocationEnabled());
     Assert.assertEquals(2000, config.getMsSlowInvocation());
     Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(2000), config.getNanoSlowInvocation());
+
+    // new configuration key, has high priority
+    ArchaiusUtils.setProperty("servicecomb.metrics.Consumer.invocation.slow.enabled", false);
+    ArchaiusUtils.setProperty("servicecomb.metrics.Consumer.invocation.slow.msTime", 3000);
+    Assert.assertFalse(config.isSlowInvocationEnabled());
+    Assert.assertEquals(3000, config.getMsSlowInvocation());
+    Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(3000), config.getNanoSlowInvocation());
+
+    ArchaiusUtils.setProperty("servicecomb.metrics.Consumer.invocation.slow.enabled.perfClient", true);
+    ArchaiusUtils.setProperty("servicecomb.metrics.Consumer.invocation.slow.msTime.perfClient", 4000);
+    Assert.assertTrue(config.isSlowInvocationEnabled());
+    Assert.assertEquals(4000, config.getMsSlowInvocation());
+    Assert.assertEquals(TimeUnit.MILLISECONDS.toNanos(4000), config.getNanoSlowInvocation());
   }
 }
