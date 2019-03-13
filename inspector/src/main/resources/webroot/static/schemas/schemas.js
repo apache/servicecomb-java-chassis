@@ -65,9 +65,12 @@ function showSchemaAsSwagger(url) {
   // this cdn return html as text/plain, so we must let iframe load it as html
   ajaxGet("https://cdn.jsdelivr.net/npm/swagger-editor-dist@3.6.24/index.html",
       function (html) {
-        var base = '<base href="https://cdn.jsdelivr.net/npm/swagger-editor-dist@3.6.24/">';
-        var title = "<title>Swagger Editor</title>";
-        html = html.replace(title, title + base);
+        html = html.replace('<style>',
+            '<base href="https://cdn.jsdelivr.net/npm/swagger-editor-dist@3.6.24/">\n'
+            + '  <style>\n'
+            + '  .swagger-ui .info .title {'
+            + '    word-break: break-all;\n'
+            + '  }\n');
         frame.location = getBlobURL(html, "text/html");
       });
 }
