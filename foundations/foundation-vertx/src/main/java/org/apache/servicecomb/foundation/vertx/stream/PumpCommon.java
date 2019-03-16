@@ -23,6 +23,7 @@ import org.apache.servicecomb.foundation.common.io.AsyncCloseable;
 import io.vertx.core.Context;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientResponse;
+import io.vertx.core.streams.Pump;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.core.streams.WriteStream;
 
@@ -63,7 +64,7 @@ public class PumpCommon {
     // belongs to difference eventloop
     // maybe will cause deadlock
     // if happened, vertx will print deadlock stacks
-    PumpImplEx.getPumpImplEx(readStream, writeStream).start();
+    Pump.pump(readStream, writeStream).start();
     try {
       context.runOnContext(v -> readStream.resume());
     } catch (Throwable e) {
