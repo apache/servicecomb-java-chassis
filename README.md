@@ -63,6 +63,32 @@ The first build may take a longer than expected as Maven downloads all the depen
 
 [Download Java-Chassis](http://servicecomb.apache.org/release/java-chassis-downloads/)
 
+## Get The Latest SNAPSHOT
+
+We publish the snapshot version to Apache nexus repo, please add below repositories into your pom.xml.
+
+       <repositories>
+          <repository>
+            <releases />
+            <snapshots>
+              <enabled>true</enabled>
+            </snapshots>
+            <id>repo.apache.snapshot</id>
+            <url>https://repository.apache.org/content/repositories/snapshots/</url>
+          </repository>
+        </repositories>
+        <pluginRepositories>
+          <pluginRepository>
+            <releases />
+            <snapshots>
+              <enabled>true</enabled>
+            </snapshots>
+            <id>repo.apache.snapshot</id>
+            <url>https://repository.apache.org/content/repositories/snapshots/</url>
+          </pluginRepository>
+        </pluginRepositories>
+
+
 
 ## Contact
 
