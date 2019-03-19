@@ -101,14 +101,13 @@ public class RestTransportClient {
 
   public void send(Invocation invocation, AsyncResponse asyncResp) {
     URIEndpointObject endpoint = (URIEndpointObject) invocation.getEndpoint().getAddress();
-    HttpClientWithContext httpClientWithContext;
 
+    ClientPoolManager<HttpClientWithContext> currentClientMgr = clientMgr;
     if (endpoint.isHttp2Enabled()) {
-      httpClientWithContext = findHttp2ClientPool(invocation);
-    } else {
-      httpClientWithContext = findHttpClientPool(invocation);
+      currentClientMgr = clientMgrHttp2;
     }
 
+    HttpClientWithContext httpClientWithContext = findHttpClientPool(currentClientMgr, invocation);
     RestClientInvocation restClientInvocation = new RestClientInvocation(httpClientWithContext, httpClientFilters);
 
     try {
@@ -119,11 +118,8 @@ public class RestTransportClient {
     }
   }
 
-  protected HttpClientWithContext findHttpClientPool(Invocation invocation) {
-    return clientMgr.findClientPool(invocation.isSync());
-  }
-
-  public HttpClientWithContext findHttp2ClientPool(Invocation invocation) {
-    return clientMgrHttp2.findClientPool(invocation.isSync());
+  protected HttpClientWithContext findHttpClientPool(ClientPoolManager<HttpClientWithContext> currentClientMgr,
+      Invocation invocation) {
+    return currentClientMgr.findClientPool(invocation.isSync());
   }
 }
