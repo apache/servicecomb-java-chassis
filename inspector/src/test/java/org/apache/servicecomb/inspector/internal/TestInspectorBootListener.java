@@ -25,8 +25,6 @@ import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.definition.schema.ProducerSchemaFactory;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
-import org.apache.servicecomb.inspector.internal.InspectorBootListener;
-import org.apache.servicecomb.inspector.internal.InspectorConfig;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.junit.AfterClass;
@@ -64,16 +62,16 @@ public class TestInspectorBootListener {
     BootEvent event = new BootEvent();
     InspectorBootListener listener = new InspectorBootListener();
 
-    LogCollector logCollector = new LogCollector();
-    for (EventType eventType : EventType.values()) {
-      if (!EventType.AFTER_TRANSPORT.equals(eventType)) {
-        event.setEventType(eventType);
-        listener.onBootEvent(event);
+    try (LogCollector logCollector = new LogCollector()) {
+      for (EventType eventType : EventType.values()) {
+        if (!EventType.AFTER_TRANSPORT.equals(eventType)) {
+          event.setEventType(eventType);
+          listener.onBootEvent(event);
+        }
       }
-    }
-    logCollector.teardown();
 
-    Assert.assertTrue(logCollector.getEvents().isEmpty());
+      Assert.assertTrue(logCollector.getEvents().isEmpty());
+    }
   }
 
   @Test
@@ -82,11 +80,11 @@ public class TestInspectorBootListener {
     BootEvent event = new BootEvent();
     event.setEventType(EventType.AFTER_TRANSPORT);
 
-    LogCollector logCollector = new LogCollector();
-    new InspectorBootListener().onBootEvent(event);
-    logCollector.teardown();
+    try (LogCollector logCollector = new LogCollector()) {
+      new InspectorBootListener().onBootEvent(event);
 
-    Assert.assertEquals("inspector is not enabled.", logCollector.getLastEvents().getMessage());
+      Assert.assertEquals("inspector is not enabled.", logCollector.getLastEvents().getMessage());
+    }
   }
 
   @Test
@@ -102,12 +100,12 @@ public class TestInspectorBootListener {
     BootEvent event = new BootEvent();
     event.setEventType(EventType.AFTER_TRANSPORT);
 
-    LogCollector logCollector = new LogCollector();
-    InspectorBootListener listener = new InspectorBootListener();
-    Deencapsulation.setField(listener, "producerSchemaFactory", producerSchemaFactory);
-    listener.onBootEvent(event);
-    logCollector.teardown();
+    try (LogCollector logCollector = new LogCollector()) {
+      InspectorBootListener listener = new InspectorBootListener();
+      Deencapsulation.setField(listener, "producerSchemaFactory", producerSchemaFactory);
+      listener.onBootEvent(event);
 
-    Assert.assertEquals("inspector is enabled.", logCollector.getLastEvents().getMessage());
+      Assert.assertEquals("inspector is enabled.", logCollector.getLastEvents().getMessage());
+    }
   }
 }

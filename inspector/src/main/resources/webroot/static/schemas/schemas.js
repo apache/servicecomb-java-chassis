@@ -30,6 +30,7 @@ function initSchemas() {
 }
 
 function initSchemasTree(schemas) {
+  schemas = schemas.sort();
   var eleSchemas = document.getElementById("schemas");
   var childrenContent = "<tree-children>";
   for (var idx in schemas) {
