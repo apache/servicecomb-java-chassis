@@ -20,11 +20,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
+import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.OperationConfig;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +64,16 @@ public class SlowInvocationLogger {
     logSlowConsumer(invocation, event.getResponse(), operationConfig);
   }
 
+  private String collectClientAddress(Invocation invocation) {
+    HttpServletRequestEx requestEx = invocation.getRequestEx();
+    return requestEx == null ? "unknown" : requestEx.getRemoteAddr() + ":" + requestEx.getRemotePort();
+  }
+
+  private String collectTargetAddress(Invocation invocation) {
+    Endpoint endpoint = invocation.getEndpoint();
+    return endpoint == null ? "unknown" : endpoint.getEndpoint();
+  }
+
   private String formatTime(double doubleNano) {
     long micros = TimeUnit.NANOSECONDS.toMicros((long) doubleNano);
     return micros / 1000 + "." + micros % 1000;
@@ -74,6 +86,7 @@ public class SlowInvocationLogger {
             + "slow({} ms) invocation, {}:\n"
             + "  http method: {}\n"
             + "  url        : {}\n"
+            + "  client     : {}\n"
             + "  status code: {}\n"
             + "  total      : {} ms\n"
             + "    prepare                : {} ms\n"
@@ -88,6 +101,7 @@ public class SlowInvocationLogger {
         invocation.getInvocationQualifiedName(),
         restOperationMeta.getHttpMethod(),
         restOperationMeta.getAbsolutePath(),
+        collectClientAddress(invocation),
         response.getStatusCode(),
         formatTime(stageTrace.calcTotalTime()),
         formatTime(stageTrace.calcInvocationPrepareTime()),
@@ -108,6 +122,7 @@ public class SlowInvocationLogger {
             + "slow({} ms) invocation, {}:\n"
             + "  http method: {}\n"
             + "  url        : {}\n"
+            + "  server     : {}\n"
             + "  status code: {}\n"
             + "  total      : {} ms\n"
             + "    prepare                : {} ms\n"
@@ -124,6 +139,7 @@ public class SlowInvocationLogger {
         invocation.getInvocationQualifiedName(),
         restOperationMeta.getHttpMethod(),
         restOperationMeta.getAbsolutePath(),
+        collectTargetAddress(invocation),
         response.getStatusCode(),
         formatTime(stageTrace.calcTotalTime()),
         formatTime(stageTrace.calcInvocationPrepareTime()),
@@ -146,6 +162,7 @@ public class SlowInvocationLogger {
             + "slow({} ms) invocation, {}:\n"
             + "  http method: {}\n"
             + "  url        : {}\n"
+            + "  server     : {}\n"
             + "  status code: {}\n"
             + "  total      : {} ms\n"
             + "    prepare                : {} ms\n"
@@ -166,6 +183,7 @@ public class SlowInvocationLogger {
         invocation.getInvocationQualifiedName(),
         restOperationMeta.getHttpMethod(),
         restOperationMeta.getAbsolutePath(),
+        collectTargetAddress(invocation),
         response.getStatusCode(),
         formatTime(stageTrace.calcTotalTime()),
         formatTime(stageTrace.calcInvocationPrepareTime()),

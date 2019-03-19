@@ -18,6 +18,7 @@ package org.apache.servicecomb.metrics.core.publish;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
+import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.OperationConfig;
@@ -26,6 +27,7 @@ import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.After;
 import org.junit.Assert;
@@ -102,9 +104,13 @@ public class TestSlowInvocationLogger {
   }
 
   @Test
-  public void consumerSlow() {
+  public void consumerSlow(@Mocked Endpoint endpoint) {
     new Expectations() {
       {
+        invocation.getEndpoint();
+        result = endpoint;
+        endpoint.getEndpoint();
+        result = "rest://1.1.1.1:1234";
         invocation.isConsumer();
         result = true;
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
@@ -123,6 +129,7 @@ public class TestSlowInvocationLogger {
             + "slow(0 ms) invocation, null:\n"
             + "  http method: null\n"
             + "  url        : null\n"
+            + "  server     : rest://1.1.1.1:1234\n"
             + "  status code: 0\n"
             + "  total      : 0.0 ms\n"
             + "    prepare                : 0.0 ms\n"
@@ -139,9 +146,13 @@ public class TestSlowInvocationLogger {
   }
 
   @Test
-  public void edgeSlow() {
+  public void edgeSlow(@Mocked Endpoint endpoint) {
     new Expectations() {
       {
+        invocation.getEndpoint();
+        result = endpoint;
+        endpoint.getEndpoint();
+        result = "rest://1.1.1.1:1234";
         invocation.isConsumer();
         result = true;
         invocation.isEdge();
@@ -162,6 +173,7 @@ public class TestSlowInvocationLogger {
             + "slow(0 ms) invocation, null:\n"
             + "  http method: null\n"
             + "  url        : null\n"
+            + "  server     : rest://1.1.1.1:1234\n"
             + "  status code: 0\n"
             + "  total      : 0.0 ms\n"
             + "    prepare                : 0.0 ms\n"
@@ -182,9 +194,15 @@ public class TestSlowInvocationLogger {
   }
 
   @Test
-  public void producerSlow() {
+  public void producerSlow(@Mocked HttpServletRequestEx requestEx) {
     new Expectations() {
       {
+        invocation.getRequestEx();
+        result = requestEx;
+        requestEx.getRemoteAddr();
+        result = "1.1.1.1";
+        requestEx.getRemotePort();
+        result = 1234;
         invocation.isConsumer();
         result = false;
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
@@ -203,6 +221,7 @@ public class TestSlowInvocationLogger {
             + "slow(0 ms) invocation, null:\n"
             + "  http method: null\n"
             + "  url        : null\n"
+            + "  client     : 1.1.1.1:1234\n"
             + "  status code: 0\n"
             + "  total      : 0.0 ms\n"
             + "    prepare                : 0.0 ms\n"
