@@ -17,6 +17,7 @@
 package org.apache.servicecomb.edge.core;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import org.apache.servicecomb.transport.rest.client.RestTransportClient;
 
@@ -24,7 +25,8 @@ import io.vertx.core.Context;
 
 public class EdgeRestTransportClient extends RestTransportClient {
   @Override
-  protected HttpClientWithContext findHttpClientPool(Invocation invocation) {
+  protected HttpClientWithContext findHttpClientPool(ClientPoolManager<HttpClientWithContext> clientMgr,
+      Invocation invocation) {
     Context invocationContext = (Context) invocation.getHandlerContext().get(EdgeInvocation.EDGE_INVOCATION_CONTEXT);
     return clientMgr.findClientPool(invocation.isSync(), invocationContext);
   }
