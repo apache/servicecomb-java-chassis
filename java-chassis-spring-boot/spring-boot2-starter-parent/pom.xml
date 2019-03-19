@@ -31,12 +31,6 @@
   <name>Java Chassis::Spring Boot2 Starter::Parent</name>
   <packaging>pom</packaging>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <java.version>1.8</java.version>
-    <argLine>-Dfile.encoding=UTF-8</argLine>
-  </properties>
-
   <modules>
     <module>spring-boot2-starter</module>
     <module>spring-boot2-starter-servlet</module>
