@@ -33,12 +33,4 @@
   <name>Java Chassis::Parent::Springboot2</name>
   <description>Java Chassis Parent Springboot2</description>
   <url>https://github.com/apache/servicecomb-java-chassis</url>
-
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <java.version>1.8</java.version>
-
-    <argLine>-Dfile.encoding=UTF-8</argLine>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
 </project>
