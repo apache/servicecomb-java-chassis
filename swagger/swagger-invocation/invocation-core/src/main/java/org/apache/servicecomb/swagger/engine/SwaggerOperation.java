@@ -14,24 +14,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.swagger.engine;
 
-package org.apache.servicecomb.swagger.invocation.arguments.consumer;
+import io.swagger.models.HttpMethod;
+import io.swagger.models.Operation;
+import io.swagger.models.Swagger;
 
-import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
-import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
+public class SwaggerOperation {
+  private Swagger swagger;
 
-public final class ConsumerArgumentSame implements ArgumentMapper {
-  private int consumerIdx;
+  private HttpMethod httpMethod;
 
-  private int swaggerIdx;
+  private Operation operation;
 
-  public ConsumerArgumentSame(int consumerIdx, int swaggerIdx) {
-    this.consumerIdx = consumerIdx;
-    this.swaggerIdx = swaggerIdx;
+  public SwaggerOperation(Swagger swagger, HttpMethod httpMethod, Operation operation) {
+    this.swagger = swagger;
+    this.httpMethod = httpMethod;
+    this.operation = operation;
   }
 
-  @Override
-  public void mapArgument(SwaggerInvocation invocation, Object[] consumerArguments) {
-    invocation.setSwaggerArgument(swaggerIdx, consumerArguments[consumerIdx]);
+  public Swagger getSwagger() {
+    return swagger;
+  }
+
+  public HttpMethod getHttpMethod() {
+    return httpMethod;
+  }
+
+  public Operation getOperation() {
+    return operation;
+  }
+
+  public String getOperationId() {
+    return operation.getOperationId();
   }
 }

@@ -22,22 +22,16 @@ import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgu
 import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
 
 public class SwaggerConsumerOperation {
-  private String name;
-
   private Method consumerMethod;
 
-  private Method swaggerMethod;
+  private SwaggerOperation swaggerOperation;
 
   private ConsumerArgumentsMapper argumentsMapper;
 
   private ConsumerResponseMapper responseMapper;
 
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
+  public String getConsumerMethodName() {
+    return consumerMethod.getName();
   }
 
   public Method getConsumerMethod() {
@@ -48,12 +42,12 @@ public class SwaggerConsumerOperation {
     this.consumerMethod = consumerMethod;
   }
 
-  public Method getSwaggerMethod() {
-    return swaggerMethod;
+  public SwaggerOperation getSwaggerOperation() {
+    return swaggerOperation;
   }
 
-  public void setSwaggerMethod(Method swaggerMethod) {
-    this.swaggerMethod = swaggerMethod;
+  public void setSwaggerOperation(SwaggerOperation swaggerOperation) {
+    this.swaggerOperation = swaggerOperation;
   }
 
   public ConsumerArgumentsMapper getArgumentsMapper() {

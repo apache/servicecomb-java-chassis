@@ -34,12 +34,16 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import io.swagger.models.Model;
+import io.swagger.models.ModelImpl;
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
+import io.swagger.models.RefModel;
 import io.swagger.models.Response;
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.Parameter;
+import io.swagger.models.properties.Property;
 import io.swagger.util.Yaml;
 
 public final class SwaggerUtils {
@@ -140,5 +144,22 @@ public final class SwaggerUtils {
         correctResponses(operation);
       }
     }
+  }
+
+  public static Map<String, Property> getBodyProperties(Swagger swagger, Parameter parameter) {
+    if (!(parameter instanceof BodyParameter)) {
+      return null;
+    }
+
+    Model model = ((BodyParameter) parameter).getSchema();
+    if (model instanceof RefModel) {
+      model = swagger.getDefinitions().get(((RefModel) model).getSimpleRef());
+    }
+
+    if (model instanceof ModelImpl) {
+      return model.getProperties();
+    }
+
+    return null;
   }
 }

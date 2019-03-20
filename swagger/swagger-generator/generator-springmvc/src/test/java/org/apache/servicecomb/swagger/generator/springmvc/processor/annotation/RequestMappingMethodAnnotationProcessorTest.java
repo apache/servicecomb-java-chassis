@@ -21,6 +21,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
+import org.apache.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -33,7 +34,7 @@ public class RequestMappingMethodAnnotationProcessorTest {
   @Test
   public void testProcess() throws NoSuchMethodException {
     RequestMappingMethodAnnotationProcessor processor = new RequestMappingMethodAnnotationProcessor();
-    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(null, null);
+    SwaggerGenerator swaggerGenerator = new SwaggerGenerator((SwaggerGeneratorContext) null, null);
     OperationGenerator operationGenerator = new OperationGenerator(swaggerGenerator, null);
     Operation operation = operationGenerator.getOperation();
 

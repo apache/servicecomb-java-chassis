@@ -71,7 +71,7 @@ public abstract class ArgumentsMapperFactory<T> {
 
   protected ContextArgumentMapperFactory findFactory(Type type) {
     if (type.getClass().equals(Class.class)) {
-      return factoryMap.get((Class<?>) type);
+      return factoryMap.get(type);
     }
     return null;
   }

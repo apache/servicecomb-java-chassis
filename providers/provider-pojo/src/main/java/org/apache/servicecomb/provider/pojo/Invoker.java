@@ -111,8 +111,8 @@ public class Invoker implements InvocationHandler {
               consumerIntf.getName()));
     }
 
-    SwaggerConsumer swaggerConsumer = CseContext.getInstance().getSwaggerEnvironment().createConsumer(consumerIntf,
-        schemaMeta.getSwaggerIntf());
+    SwaggerConsumer swaggerConsumer = CseContext.getInstance()
+        .getSwaggerEnvironment().createConsumer(consumerIntf, schemaMeta.getSwagger());
     return new InvokerMeta(referenceConfig, microserviceMeta, schemaMeta, swaggerConsumer);
   }
 
@@ -147,7 +147,7 @@ public class Invoker implements InvocationHandler {
 
     Invocation invocation = InvocationFactory
         .forConsumer(currentInvokerMeta.referenceConfig, currentInvokerMeta.schemaMeta,
-            consumerOperation.getSwaggerMethod().getName(), null);
+            consumerOperation.getSwaggerOperation().getOperationId(), null);
 
     consumerOperation.getArgumentsMapper().toInvocation(args, invocation);
 

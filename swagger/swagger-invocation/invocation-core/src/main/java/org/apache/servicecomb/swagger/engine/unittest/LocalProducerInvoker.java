@@ -74,7 +74,7 @@ public class LocalProducerInvoker implements InvocationHandler {
     invocation = new SwaggerInvocation();
 
     SwaggerConsumerOperation consumerOp = consumer.findOperation(method.getName());
-    SwaggerProducerOperation producerOp = producer.findOperation(consumerOp.getSwaggerMethod().getName());
+    SwaggerProducerOperation producerOp = producer.findOperation(consumerOp.getSwaggerOperation().getOperationId());
 
     consumerOp.getArgumentsMapper().toInvocation(args, invocation);
 

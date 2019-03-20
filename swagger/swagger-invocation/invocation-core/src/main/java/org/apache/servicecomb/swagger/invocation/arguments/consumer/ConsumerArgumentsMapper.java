@@ -17,39 +17,34 @@
 
 package org.apache.servicecomb.swagger.invocation.arguments.consumer;
 
-import java.util.List;
-
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
-import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
 
 /**
- * 将consumer参数保存到invocation中去(args/context)
- * 比如契约原型是         int add(int x, int y)
- * 而consumer原型是int add(InvocationContext context, int x, int y)
+ * <pre>
+ * for scenes that consumer arguments not same to contract arguments, eg:
+ * 1.consumer: int add(QueryWrapper query)
+ *             class QueryWrapper {
+ *               public int x;
+ *               public int y;
+ *             }
+ *   contract: int add(int x, int y)
  *
- * 除了context参数，剩下的参数，必须与契约中的一一匹配，包括顺序、类型
+ * 2.consumer: int add(InvocationContext context, int x, int y);
+ *   contract: int add(int x, int y)
+ *
+ * 3.consumer: int add(int x, int y)
+ *   contract: int add(BodyRequest body)
+ *             class BodyRequest {
+ *               public int x;
+ *               public int y;
+ *             }
+ *
+ * notice:
+ *   no convert logic when map arguments
+ *   map arguments by name, DO NOT use duplicated contract argument names
+ * </pre>
+ *
  */
-public class ConsumerArgumentsMapper {
-  private List<ArgumentMapper> consumerArgMapperList;
-
-  private int swaggerParameterCount;
-
-  // for test
-  public ArgumentMapper getArgumentMapper(int idx) {
-    return consumerArgMapperList.get(idx);
-  }
-
-  public ConsumerArgumentsMapper(List<ArgumentMapper> consumerArgMapperList, int swaggerParameterCount) {
-    this.consumerArgMapperList = consumerArgMapperList;
-    this.swaggerParameterCount = swaggerParameterCount;
-  }
-
-  public void toInvocation(Object[] consumerArguments, SwaggerInvocation invocation) {
-    Object[] swaggerArguments = new Object[swaggerParameterCount];
-    invocation.setSwaggerArguments(swaggerArguments);
-
-    for (ArgumentMapper argMapper : consumerArgMapperList) {
-      argMapper.mapArgument(invocation, consumerArguments);
-    }
-  }
+public interface ConsumerArgumentsMapper {
+  void toInvocation(Object[] consumerArguments, SwaggerInvocation invocation);
 }

@@ -14,24 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.swagger.invocation.arguments.consumer;
 
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
-import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
 
-public final class ConsumerArgumentSame implements ArgumentMapper {
-  private int consumerIdx;
-
-  private int swaggerIdx;
-
-  public ConsumerArgumentSame(int consumerIdx, int swaggerIdx) {
-    this.consumerIdx = consumerIdx;
-    this.swaggerIdx = swaggerIdx;
-  }
-
+public class ArgumentsMapperDirectReuse implements ConsumerArgumentsMapper {
   @Override
-  public void mapArgument(SwaggerInvocation invocation, Object[] consumerArguments) {
-    invocation.setSwaggerArgument(swaggerIdx, consumerArguments[consumerIdx]);
+  public void toInvocation(Object[] consumerArguments, SwaggerInvocation invocation) {
+    invocation.setSwaggerArguments(consumerArguments);
   }
 }

@@ -21,16 +21,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapperConfig;
+import org.apache.servicecomb.swagger.invocation.arguments.ContextArgumentMapperFactory;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapper;
-import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapperFactory;
+import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapperCreator;
 import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapperFactory;
 import org.apache.servicecomb.swagger.invocation.converter.ConverterMgr;
@@ -46,6 +49,8 @@ import org.springframework.stereotype.Component;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.models.Operation;
+import io.swagger.models.Swagger;
+import io.swagger.util.Json;
 
 @Component
 public class SwaggerEnvironment {
@@ -66,11 +71,13 @@ public class SwaggerEnvironment {
   private ResponseMapperFactorys<ProducerResponseMapper> producerResponseMapperFactorys =
       new ResponseMapperFactorys<>(ProducerResponseMapperFactory.class);
 
-  @Inject
-  private ConsumerArgumentsMapperFactory consumerArgumentsFactory;
-
   private ResponseMapperFactorys<ConsumerResponseMapper> consumerResponseMapperFactorys =
       new ResponseMapperFactorys<>(ConsumerResponseMapperFactory.class);
+
+  private Map<Class<?>, ContextArgumentMapperFactory> contextFactorys = SPIServiceUtils
+      .getOrLoadSortedService(ContextArgumentMapperFactory.class)
+      .stream()
+      .collect(Collectors.toMap(ContextArgumentMapperFactory::getContextClass, Function.identity()));
 
   @Inject
   public void setConverterMgr(ConverterMgr converterMgr) {
@@ -82,8 +89,7 @@ public class SwaggerEnvironment {
     return compositeSwaggerGeneratorContext;
   }
 
-  public void setCompositeSwaggerGeneratorContext(
-      CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext) {
+  public void setCompositeSwaggerGeneratorContext(CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext) {
     this.compositeSwaggerGeneratorContext = compositeSwaggerGeneratorContext;
   }
 
@@ -95,28 +101,15 @@ public class SwaggerEnvironment {
     this.producerArgumentsFactory = producerArgumentsFactory;
   }
 
-  public ConsumerArgumentsMapperFactory getConsumerArgumentsFactory() {
-    return consumerArgumentsFactory;
-  }
+  public SwaggerConsumer createConsumer(Class<?> consumerIntf, Swagger swagger) {
+    SwaggerOperations swaggerOperations = new SwaggerOperations(swagger);
 
-  public void setConsumerArgumentsFactory(ConsumerArgumentsMapperFactory consumerArgumentsFactory) {
-    this.consumerArgumentsFactory = consumerArgumentsFactory;
-  }
-
-  public SwaggerConsumer createConsumer(Class<?> consumerIntf) {
-    // consumer interface equals to contract interface
-    return createConsumer(consumerIntf, consumerIntf);
-  }
-
-  public SwaggerConsumer createConsumer(Class<?> consumerIntf, Class<?> swaggerIntf) {
     SwaggerConsumer consumer = new SwaggerConsumer();
     consumer.setConsumerIntf(consumerIntf);
-    consumer.setSwaggerIntf(swaggerIntf);
     for (Method consumerMethod : consumerIntf.getMethods()) {
-      String swaggerMethodName = findSwaggerMethodName(consumerMethod);
-      // consumer参数不一定等于swagger参数
-      Method swaggerMethod = ReflectUtils.findMethod(swaggerIntf, swaggerMethodName);
-      if (swaggerMethod == null) {
+      String operationId = findOperationId(consumerMethod);
+      SwaggerOperation swaggerOperation = swaggerOperations.findOperation(operationId);
+      if (swaggerOperation == null) {
         // consumer method set bigger than contract, it's invalid
         // but we need to support consumer upgrade before producer, so only log and ignore it.
         LOGGER.warn("consumer method {}:{} not exist in contract.",
@@ -125,20 +118,20 @@ public class SwaggerEnvironment {
         continue;
       }
 
-      ArgumentsMapperConfig config = new ArgumentsMapperConfig();
-      config.setSwaggerMethod(swaggerMethod);
-      config.setProviderMethod(consumerMethod);
-
-      ConsumerArgumentsMapper argsMapper =
-          consumerArgumentsFactory.createArgumentsMapper(config);
-      ConsumerResponseMapper responseMapper = consumerResponseMapperFactorys.createResponseMapper(
-          swaggerMethod.getGenericReturnType(),
-          consumerMethod.getGenericReturnType());
+      ConsumerArgumentsMapperCreator creator = new ConsumerArgumentsMapperCreator(
+          Json.mapper().getSerializationConfig(),
+          contextFactorys,
+          consumerMethod,
+          swaggerOperation);
+      ConsumerArgumentsMapper argsMapper = creator.createArgumentsMapper();
+      ConsumerResponseMapper responseMapper = null;
+//      consumerResponseMapperFactorys.createResponseMapper(
+//          swaggerOperation.getGenericReturnType(),
+//          consumerMethod.getGenericReturnType());
 
       SwaggerConsumerOperation op = new SwaggerConsumerOperation();
-      op.setName(consumerMethod.getName());
       op.setConsumerMethod(consumerMethod);
-      op.setSwaggerMethod(swaggerMethod);
+      op.setSwaggerOperation(swaggerOperation);
       op.setArgumentsMapper(argsMapper);
       op.setResponseMapper(responseMapper);
 
@@ -148,7 +141,7 @@ public class SwaggerEnvironment {
     return consumer;
   }
 
-  protected String findSwaggerMethodName(Method consumerMethod) {
+  protected String findOperationId(Method consumerMethod) {
     ApiOperation apiOperationAnnotation = consumerMethod.getAnnotation(ApiOperation.class);
     if (apiOperationAnnotation == null || StringUtils.isEmpty(apiOperationAnnotation.nickname())) {
       return consumerMethod.getName();

@@ -20,13 +20,8 @@ package org.apache.servicecomb.swagger.invocation.arguments.consumer;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
 import org.apache.servicecomb.swagger.invocation.arguments.ContextArgumentMapperFactory;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
 
-@Component
-@Qualifier("consumer")
 public class ConsumerInvocationContextMapperFactory implements ContextArgumentMapperFactory {
-
   @Override
   public Class<?> getContextClass() {
     return InvocationContext.class;

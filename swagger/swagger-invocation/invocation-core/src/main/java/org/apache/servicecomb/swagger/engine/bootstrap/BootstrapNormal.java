@@ -21,8 +21,6 @@ import java.util.Arrays;
 import org.apache.servicecomb.swagger.engine.SwaggerBootstrap;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
-import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapperFactory;
-import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerInvocationContextMapperFactory;
 import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapperFactory;
 import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerInvocationContextMapperFactory;
 import org.apache.servicecomb.swagger.invocation.converter.ConverterMgr;
@@ -37,11 +35,6 @@ public class BootstrapNormal implements SwaggerBootstrap {
     producerArgumentsFactory.setFactoryList(Arrays.asList(new ProducerInvocationContextMapperFactory()));
     producerArgumentsFactory.setConverterMgr(converterMgr);
     env.setProducerArgumentsFactory(producerArgumentsFactory);
-
-    ConsumerArgumentsMapperFactory consumerArgumentsFactory = new ConsumerArgumentsMapperFactory();
-    consumerArgumentsFactory.setFactoryList(Arrays.asList(new ConsumerInvocationContextMapperFactory()));
-    consumerArgumentsFactory.setConverterMgr(converterMgr);
-    env.setConsumerArgumentsFactory(consumerArgumentsFactory);
 
     env.setConverterMgr(converterMgr);
     env.setCompositeSwaggerGeneratorContext(new CompositeSwaggerGeneratorContext());
