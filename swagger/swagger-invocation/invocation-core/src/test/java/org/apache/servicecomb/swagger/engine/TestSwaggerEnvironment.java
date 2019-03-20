@@ -27,6 +27,8 @@ import java.util.List;
 
 import org.apache.servicecomb.common.javassist.JavassistUtils;
 import org.apache.servicecomb.engine.SwaggerEnvironmentForTest;
+import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
+import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.jaxrs.JaxrsSwaggerGeneratorContext;
 import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapperConfig;
@@ -39,6 +41,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.swagger.models.Swagger;
 import mockit.Deencapsulation;
 
 public class TestSwaggerEnvironment {
@@ -90,8 +93,10 @@ public class TestSwaggerEnvironment {
 
   @Test
   public void createConsumer_consumerMethodSetBigger() {
+    CompositeSwaggerGeneratorContext context = new CompositeSwaggerGeneratorContext();
+    Swagger swagger = new SwaggerGenerator(context, ContractIntf.class).generate();
     SwaggerConsumer swaggerConsumer = env.getSwaggerEnvironment()
-        .createConsumer(ConsumerIntf.class, ContractIntf.class);
+        .createConsumer(ConsumerIntf.class, swagger);
 
     Assert.assertNotNull(swaggerConsumer.findOperation("exist"));
     Assert.assertNull(swaggerConsumer.findOperation("notExist"));
