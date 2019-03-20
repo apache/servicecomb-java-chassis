@@ -32,5 +32,6 @@ public class ConsumerInvocationContextMapper implements ArgumentMapper {
   public void mapArgument(SwaggerInvocation invocation, Object[] consumerArguments) {
     InvocationContext context = (InvocationContext) consumerArguments[consumerIdx];
     invocation.addContext(context.getContext());
+    invocation.addLocalContext(context.getLocalContext());
   }
 }

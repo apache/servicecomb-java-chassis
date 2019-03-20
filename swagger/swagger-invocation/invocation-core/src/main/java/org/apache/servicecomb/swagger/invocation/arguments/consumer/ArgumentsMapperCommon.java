@@ -14,24 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.swagger.invocation.arguments.consumer;
+
+import java.util.List;
 
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
 
-public final class ConsumerArgumentSame implements ArgumentMapper {
-  private int consumerIdx;
+/**
+ * map consumer arguments to swagger arguments
+ */
+public class ArgumentsMapperCommon implements ConsumerArgumentsMapper {
+  private List<ArgumentMapper> mappers;
 
-  private int swaggerIdx;
+  private int contractParameterCount;
 
-  public ConsumerArgumentSame(int consumerIdx, int swaggerIdx) {
-    this.consumerIdx = consumerIdx;
-    this.swaggerIdx = swaggerIdx;
+  public ArgumentsMapperCommon(List<ArgumentMapper> mappers, int contractParameterCount) {
+    this.mappers = mappers;
+    this.contractParameterCount = contractParameterCount;
   }
 
   @Override
-  public void mapArgument(SwaggerInvocation invocation, Object[] consumerArguments) {
-    invocation.setSwaggerArgument(swaggerIdx, consumerArguments[consumerIdx]);
+  public void toInvocation(Object[] consumerArguments, SwaggerInvocation invocation) {
+    Object[] swaggerArguments = new Object[contractParameterCount];
+    invocation.setSwaggerArguments(swaggerArguments);
+
+    for (ArgumentMapper argMapper : mappers) {
+      argMapper.mapArgument(invocation, consumerArguments);
+    }
   }
 }

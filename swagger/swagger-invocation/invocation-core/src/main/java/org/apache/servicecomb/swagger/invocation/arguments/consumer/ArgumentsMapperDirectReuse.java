@@ -14,17 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.swagger.invocation.arguments.consumer;
 
-package org.apache.servicecomb.swagger.invocation.generator;
+import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 
-import java.lang.reflect.Type;
-
-import org.apache.servicecomb.swagger.generator.SwaggerContextRegister;
-import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
-
-public class InvocationContextProcessor implements SwaggerContextRegister {
+public class ArgumentsMapperDirectReuse implements ConsumerArgumentsMapper {
   @Override
-  public Type getContextType() {
-    return InvocationContext.class;
+  public void toInvocation(Object[] consumerArguments, SwaggerInvocation invocation) {
+    invocation.setSwaggerArguments(consumerArguments);
   }
 }
