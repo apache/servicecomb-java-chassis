@@ -22,9 +22,8 @@ import java.util.Map;
 public class SwaggerConsumer {
   private Class<?> consumerIntf;
 
-  private Class<?> swaggerIntf;
-
-  private Map<String, SwaggerConsumerOperation> opMap = new HashMap<>();
+  // key is consumer method name
+  private Map<String, SwaggerConsumerOperation> operations = new HashMap<>();
 
   public Class<?> getConsumerIntf() {
     return consumerIntf;
@@ -34,19 +33,15 @@ public class SwaggerConsumer {
     this.consumerIntf = consumerIntf;
   }
 
-  public Class<?> getSwaggerIntf() {
-    return swaggerIntf;
-  }
-
-  public void setSwaggerIntf(Class<?> swaggerIntf) {
-    this.swaggerIntf = swaggerIntf;
-  }
-
   public void addOperation(SwaggerConsumerOperation op) {
-    opMap.put(op.getName(), op);
+    operations.put(op.getConsumerMethodName(), op);
   }
 
-  public SwaggerConsumerOperation findOperation(String name) {
-    return opMap.get(name);
+  public SwaggerConsumerOperation findOperation(String consumerMethodName) {
+    return operations.get(consumerMethodName);
+  }
+
+  public Map<String, SwaggerConsumerOperation> getOperations() {
+    return operations;
   }
 }
