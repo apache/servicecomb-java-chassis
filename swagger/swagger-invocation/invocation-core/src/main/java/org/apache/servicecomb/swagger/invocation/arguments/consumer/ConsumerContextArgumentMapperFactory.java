@@ -14,17 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.swagger.invocation.arguments.consumer;
 
-package org.apache.servicecomb.swagger.invocation.generator;
+import org.apache.servicecomb.swagger.invocation.arguments.ContextArgumentMapperFactory;
 
-import java.lang.reflect.Type;
-
-import org.apache.servicecomb.swagger.generator.SwaggerContextRegister;
-import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
-
-public class InvocationContextProcessor implements SwaggerContextRegister {
-  @Override
-  public Type getContextType() {
-    return InvocationContext.class;
-  }
+public interface ConsumerContextArgumentMapperFactory extends ContextArgumentMapperFactory {
 }
