@@ -17,43 +17,57 @@
 
 package org.apache.servicecomb.swagger.invocation.arguments.consumer;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.servicecomb.foundation.common.utils.bean.Getter;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
 
 /**
  * <pre>
- * Typical scene of transparent RPC
- * all parameters of consumer method wrapped to a bean in contract
+ * consumer: void add(QueryWrapper query)
+ *           class QueryWrapper {
+ *             int x;
+ *             int y;
+ *           }
+ * contract; void add(int x, int y)
  * </pre>
  */
-public final class ConsumerArgumentToBodyField implements ArgumentMapper {
-  private int consumerIdx;
+public final class ConsumerArgumentExtractConsumerFields implements ArgumentMapper {
+  private class FieldMeta {
+    int swaggerIdx;
 
-  private String parameterName;
+    Getter<Object, Object> getter;
 
-  private final int swaggerIdx;
-
-  public ConsumerArgumentToBodyField(int consumerIdx, String parameterName, int swaggerIdx) {
-    this.consumerIdx = consumerIdx;
-    this.parameterName = parameterName;
-    this.swaggerIdx = swaggerIdx;
+    public FieldMeta(int swaggerIdx, Getter<Object, Object> getter) {
+      this.swaggerIdx = swaggerIdx;
+      this.getter = getter;
+    }
   }
 
-  @SuppressWarnings("unchecked")
+  private int consumerIdx;
+
+  private List<FieldMeta> fields = new ArrayList<>();
+
+  public ConsumerArgumentExtractConsumerFields(int consumerIdx) {
+    this.consumerIdx = consumerIdx;
+  }
+
+  public void addField(int swaggerIdx, Getter<Object, Object> getter) {
+    fields.add(new FieldMeta(swaggerIdx, getter));
+  }
+
   @Override
   public void mapArgument(SwaggerInvocation invocation, Object[] consumerArguments) {
     Object consumerArgument = consumerArguments[consumerIdx];
-
-    Object[] contractArguments = invocation.getSwaggerArguments();
-    if (contractArguments[swaggerIdx] == null) {
-      contractArguments[swaggerIdx] = new LinkedHashMap<>();
+    if (consumerArgument == null) {
+      return;
     }
 
-    if (consumerArgument != null) {
-      ((Map<String, Object>) contractArguments[swaggerIdx]).put(parameterName, consumerArgument);
+    Object[] contractArguments = invocation.getSwaggerArguments();
+    for (FieldMeta fieldMeta : fields) {
+      contractArguments[fieldMeta.swaggerIdx] = fieldMeta.getter.get(consumerArgument);
     }
   }
 }
