@@ -123,6 +123,7 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
           });
     }
   }
+
   @Override
   protected Properties mergeProperties() throws IOException {
     Properties properties = super.mergeProperties();
