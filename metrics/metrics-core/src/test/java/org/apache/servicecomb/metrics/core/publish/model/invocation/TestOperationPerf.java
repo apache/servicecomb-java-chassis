@@ -35,12 +35,12 @@ public class TestOperationPerf {
     Assert.assertEquals(op, otherOpPerf.getOperation());
 
     PerfInfo perfInfo = opPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
-    Assert.assertEquals(10, perfInfo.getTps());
+    Assert.assertEquals(10, perfInfo.getTps(), 0);
     Assert.assertEquals(1000, perfInfo.calcMsLatency(), 0);
     Assert.assertEquals(100000, perfInfo.getMsMaxLatency(), 0);
 
     perfInfo = opPerf.findStage(MeterInvocationConst.STAGE_EXECUTION);
-    Assert.assertEquals(10, perfInfo.getTps());
+    Assert.assertEquals(10, perfInfo.getTps(), 0);
     Assert.assertEquals(1000, perfInfo.calcMsLatency(), 0);
     Assert.assertEquals(100000, perfInfo.getMsMaxLatency(), 0);
   }

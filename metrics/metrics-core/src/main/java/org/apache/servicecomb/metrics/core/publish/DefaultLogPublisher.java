@@ -61,9 +61,9 @@ public class DefaultLogPublisher implements MetricsInitializer {
   // for a client, maybe will connect to too many endpoints, so default not print detail, just print summary
   public static final String ENDPOINTS_CLIENT_DETAIL_ENABLED = "servicecomb.metrics.publisher.defaultLog.endpoints.client.detail.enabled";
 
-  private static final String FIRST_LINE_SIMPLE_FORMAT = "    %-11s %-6s %-18s %s%s\n";
+  private static final String FIRST_LINE_SIMPLE_FORMAT = "  %-11s %-8.1f %-18s %s%s\n";
 
-  private static final String SIMPLE_FORMAT = "                %-6s %-18s %s%s\n";
+  private static final String SIMPLE_FORMAT = "              %-8.1f %-18s %s%s\n";
 
   //details
   private static final String PRODUCER_DETAILS_FORMAT = ""
@@ -242,8 +242,8 @@ public class DefaultLogPublisher implements MetricsInitializer {
     }
     sb.append(""
         + "edge:\n"
-        + "  simple:\n"
-        + "    status      tps    latency            ")
+        + " simple:\n"
+        + "  status      tps      latency            ")
         .append(latencyDistributionHeader)
         .append("operation\n");
     StringBuilder detailsBuilder = new StringBuilder();
@@ -256,7 +256,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
         detailsBuilder.append(printEdgeDetailsPerf(perfGroup));
       }
     }
-    sb.append("  details:\n").append(detailsBuilder);
+    sb.append(" details:\n").append(detailsBuilder);
   }
 
   protected void printConsumerLog(DefaultPublishModel model, StringBuilder sb) {
@@ -266,8 +266,8 @@ public class DefaultLogPublisher implements MetricsInitializer {
     }
     sb.append(""
         + "consumer:\n"
-        + "  simple:\n"
-        + "    status      tps    latency            ")
+        + " simple:\n"
+        + "  status      tps      latency            ")
         .append(latencyDistributionHeader)
         .append("operation\n");
     StringBuilder detailsBuilder = new StringBuilder();
@@ -280,7 +280,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
         detailsBuilder.append(printConsumerDetailsPerf(perfGroup));
       }
     }
-    sb.append("  details:\n").append(detailsBuilder);
+    sb.append(" details:\n").append(detailsBuilder);
   }
 
   protected void printProducerLog(DefaultPublishModel model, StringBuilder sb) {
@@ -290,8 +290,8 @@ public class DefaultLogPublisher implements MetricsInitializer {
     }
     sb.append(""
         + "producer:\n"
-        + "  simple:\n"
-        + "    status      tps    latency            ")
+        + " simple:\n"
+        + "  status      tps      latency            ")
         .append(latencyDistributionHeader)
         .append("operation\n");
     // use detailsBuilder, we can traverse the map only once
@@ -306,7 +306,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
       }
     }
     //print details
-    sb.append("  details:\n").append(detailsBuilder);
+    sb.append(" details:\n").append(detailsBuilder);
   }
 
   private StringBuilder printSamplePerf(OperationPerfGroup perfGroup) {

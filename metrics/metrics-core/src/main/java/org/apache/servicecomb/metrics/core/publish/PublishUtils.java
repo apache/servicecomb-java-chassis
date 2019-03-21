@@ -34,7 +34,7 @@ public final class PublishUtils {
 
   public static PerfInfo createPerfInfo(MeasurementNode stageNode) {
     PerfInfo perfInfo = new PerfInfo();
-    perfInfo.setTps((int) stageNode.findChild(Statistic.count.name()).summary());
+    perfInfo.setTps(stageNode.findChild(Statistic.count.name()).summary());
     perfInfo.setMsTotalTime(stageNode.findChild(Statistic.totalTime.name()).summary() * 1000);
     // when UT with DefaultRegistry, there is no max value
     MeasurementNode maxNode = stageNode.findChild(Statistic.max.name());

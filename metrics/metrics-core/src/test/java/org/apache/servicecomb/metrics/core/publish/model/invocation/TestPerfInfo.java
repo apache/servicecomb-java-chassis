@@ -24,7 +24,7 @@ public class TestPerfInfo {
   public void construct() {
     PerfInfo perf = new PerfInfo();
 
-    Assert.assertEquals(0, perf.getTps());
+    Assert.assertEquals(0, perf.getTps(), 0);
     Assert.assertEquals(0, perf.getMsTotalTime(), 0);
     Assert.assertEquals(0, perf.getMsMaxLatency(), 0);
     Assert.assertEquals(0, perf.calcMsLatency(), 0);
@@ -46,7 +46,7 @@ public class TestPerfInfo {
     other.setMsMaxLatency(200);
     sum.add(other);
 
-    Assert.assertEquals(30, sum.getTps());
+    Assert.assertEquals(30, sum.getTps(), 0);
     Assert.assertEquals(30, sum.getMsTotalTime(), 0);
     Assert.assertEquals(200, sum.getMsMaxLatency(), 0);
     Assert.assertEquals(1.0, sum.calcMsLatency(), 0);
@@ -68,7 +68,7 @@ public class TestPerfInfo {
     other.setMsMaxLatency(50);
     sum.add(other);
 
-    Assert.assertEquals(30, sum.getTps());
+    Assert.assertEquals(30, sum.getTps(), 0);
     Assert.assertEquals(1.0, sum.calcMsLatency(), 0);
     Assert.assertEquals(100, sum.getMsMaxLatency(), 0);
   }
@@ -80,6 +80,6 @@ public class TestPerfInfo {
     perf.setMsTotalTime(10);
     perf.setMsMaxLatency(100);
 
-    Assert.assertEquals("PerfInfo [tps=10, msTotalTime=10.0, msLatency=1.0, msMaxLatency=100.0]", perf.toString());
+    Assert.assertEquals("PerfInfo [tps=10.0, msTotalTime=10.0, msLatency=1.0, msMaxLatency=100.0]", perf.toString());
   }
 }
