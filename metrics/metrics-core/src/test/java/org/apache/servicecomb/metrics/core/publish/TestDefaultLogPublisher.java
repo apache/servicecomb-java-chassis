@@ -180,6 +180,7 @@ public class TestDefaultLogPublisher {
         Collections.singletonMap(operationPerfGroup.getStatus(), operationPerfGroup));
     model.getConsumer().setOperationPerfGroups(operationPerfGroups);
     model.getProducer().setOperationPerfGroups(operationPerfGroups);
+    model.getEdge().setOperationPerfGroups(operationPerfGroups);
 
     model.getThreadPools().put("test", new ThreadPoolPublishModel());
     Measurement measurement = new Measurement(null, 0L, 1.0);
@@ -233,9 +234,8 @@ public class TestDefaultLogPublisher {
       }
     };
     publisher.onPolledEvent(new PolledEvent(Collections.emptyList(), Collections.emptyList()));
-    List<LoggingEvent> events = collector.getEvents().stream().filter(e -> {
-      return DefaultLogPublisher.class.getName().equals(e.getLoggerName());
-    }).collect(Collectors.toList());
+    List<LoggingEvent> events = collector.getEvents().stream()
+        .filter(e -> DefaultLogPublisher.class.getName().equals(e.getLoggerName())).collect(Collectors.toList());
     LoggingEvent event = events.get(0);
     Assert.assertEquals("\n"
             + "os:\n"
@@ -252,26 +252,38 @@ public class TestDefaultLogPublisher {
             + "  coreSize maxThreads poolSize currentBusy queueSize taskCount taskFinished name\n"
             + "  0        0          0        0           0         0.0       0.0          test\n"
             + "consumer:\n"
-            + "  simple:\n"
-            + "    status      tps    latency            [0,1)  [1,100) [100,) operation\n"
-            + "    rest.OK     100000 3000.000/30000.000 12     120     1200   op\n"
-            + "                100000 3000.000/30000.000 12     120     1200   (summary)\n"
-            + "  details:\n"
+            + " simple:\n"
+            + "  status      tps      latency            [0,1)  [1,100) [100,) operation\n"
+            + "  rest.OK     100000.0 3000.000/30000.000 12     120     1200   op\n"
+            + "              100000.0 3000.000/30000.000 12     120     1200   (summary)\n"
+            + " details:\n"
             + "    rest.OK:\n"
             + "      op:\n"
             + "        prepare     : 3000.000/30000.000 handlersReq : 3000.000/30000.000 cFiltersReq: 3000.000/30000.000 sendReq     : 3000.000/30000.000\n"
             + "        getConnect  : 3000.000/30000.000 writeBuf    : 3000.000/30000.000 waitResp   : 3000.000/30000.000 wakeConsumer: 3000.000/30000.000\n"
             + "        cFiltersResp: 3000.000/30000.000 handlersResp: 3000.000/30000.000\n"
             + "producer:\n"
-            + "  simple:\n"
-            + "    status      tps    latency            [0,1)  [1,100) [100,) operation\n"
-            + "    rest.OK     100000 3000.000/30000.000 12     120     1200   op\n"
-            + "                100000 3000.000/30000.000 12     120     1200   (summary)\n"
-            + "  details:\n"
+            + " simple:\n"
+            + "  status      tps      latency            [0,1)  [1,100) [100,) operation\n"
+            + "  rest.OK     100000.0 3000.000/30000.000 12     120     1200   op\n"
+            + "              100000.0 3000.000/30000.000 12     120     1200   (summary)\n"
+            + " details:\n"
             + "    rest.OK:\n"
             + "      op:\n"
             + "        prepare: 3000.000/30000.000 queue       : 3000.000/30000.000 filtersReq : 3000.000/30000.000 handlersReq: 3000.000/30000.000\n"
-            + "        execute: 3000.000/30000.000 handlersResp: 3000.000/30000.000 filtersResp: 3000.000/30000.000 sendResp   : 3000.000/30000.000\n",
+            + "        execute: 3000.000/30000.000 handlersResp: 3000.000/30000.000 filtersResp: 3000.000/30000.000 sendResp   : 3000.000/30000.000\n"
+            + "edge:\n"
+            + " simple:\n"
+            + "  status      tps      latency            [0,1)  [1,100) [100,) operation\n"
+            + "  rest.OK     100000.0 3000.000/30000.000 12     120     1200   op\n"
+            + "              100000.0 3000.000/30000.000 12     120     1200   (summary)\n"
+            + " details:\n"
+            + "    rest.OK:\n"
+            + "      op:\n"
+            + "        prepare     : 3000.000/30000.000 queue       : 3000.000/30000.000 sFiltersReq : 3000.000/30000.000 handlersReq : 3000.000/30000.000\n"
+            + "        cFiltersReq : 3000.000/30000.000 sendReq     : 3000.000/30000.000 getConnect  : 3000.000/30000.000 writeBuf    : 3000.000/30000.000\n"
+            + "        waitResp    : 3000.000/30000.000 wakeConsumer: 3000.000/30000.000 cFiltersResp: 3000.000/30000.000 handlersResp: 3000.000/30000.000\n"
+            + "        sFiltersResp: 3000.000/30000.000 sendResp    : 3000.000/30000.000\n",
         event.getMessage());
   }
 }
