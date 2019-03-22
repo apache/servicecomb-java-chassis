@@ -79,6 +79,10 @@ public class SwaggerGenerator {
 
   private String httpMethod;
 
+  public SwaggerGenerator(Class<?> cls) {
+    this(new CompositeSwaggerGeneratorContext().selectContext(cls), cls);
+  }
+
   public SwaggerGenerator(SwaggerGeneratorContext context, Class<?> cls) {
     this.swagger = new Swagger();
     this.context = context;

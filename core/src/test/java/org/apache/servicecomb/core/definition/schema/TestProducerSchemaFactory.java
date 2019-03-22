@@ -38,7 +38,6 @@ import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.engine.bootstrap.BootstrapNormal;
-import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapperFactory;
 import org.apache.servicecomb.swagger.invocation.converter.ConverterMgr;
@@ -96,13 +95,9 @@ public class TestProducerSchemaFactory {
     producerArgsMapperFactory.setConverterMgr(converterMgr);
 
     SchemaLoader schemaLoader = new SchemaLoader();
-    CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext = new CompositeSwaggerGeneratorContext();
 
     producerSchemaFactory.setSwaggerEnv(swaggerEnv);
     ReflectUtils.setField(producerSchemaFactory, "schemaLoader", schemaLoader);
-    ReflectUtils.setField(producerSchemaFactory,
-        "compositeSwaggerGeneratorContext",
-        compositeSwaggerGeneratorContext);
 
     Executor reactiveExecutor = new ReactiveExecutor();
     Executor normalExecutor = (cmd) -> {

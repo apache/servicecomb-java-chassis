@@ -24,13 +24,8 @@ import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.EmbeddedValueResolverAware;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringValueResolver;
 
-@Component
-public class CompositeSwaggerGeneratorContext implements EmbeddedValueResolverAware {
-
+public class CompositeSwaggerGeneratorContext {
   private static final Logger LOGGER = LoggerFactory.getLogger(CompositeSwaggerGeneratorContext.class);
 
   private List<SwaggerGeneratorContext> contextList;
@@ -39,15 +34,6 @@ public class CompositeSwaggerGeneratorContext implements EmbeddedValueResolverAw
 
   public CompositeSwaggerGeneratorContext() {
     contextList = SPIServiceUtils.getSortedService(SwaggerGeneratorContext.class);
-  }
-
-  @Override
-  public void setEmbeddedValueResolver(StringValueResolver resolver) {
-    for (SwaggerGeneratorContext context : contextList) {
-      if (EmbeddedValueResolverAware.class.isInstance(context)) {
-        ((EmbeddedValueResolverAware) context).setEmbeddedValueResolver(resolver);
-      }
-    }
   }
 
   public List<SwaggerGeneratorContext> getContextList() {

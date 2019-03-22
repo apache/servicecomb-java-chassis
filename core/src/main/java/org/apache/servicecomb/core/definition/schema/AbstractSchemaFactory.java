@@ -27,9 +27,7 @@ import org.apache.servicecomb.core.definition.SchemaUtils;
 import org.apache.servicecomb.core.definition.loader.SchemaLoader;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.apache.servicecomb.serviceregistry.api.Const;
-import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
-import org.apache.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
 
 import io.swagger.models.Swagger;
 
@@ -39,11 +37,7 @@ import io.swagger.models.Swagger;
  * 在producer场景中，如果本地没有契约，需要根据实现类动态生成契约
  */
 public abstract class AbstractSchemaFactory<CONTEXT extends SchemaContext> {
-
   protected SchemaLoader schemaLoader;
-
-  @Inject
-  protected CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext;
 
   @Inject
   public void setSchemaLoader(SchemaLoader schemaLoader) {
@@ -93,9 +87,7 @@ public abstract class AbstractSchemaFactory<CONTEXT extends SchemaContext> {
   }
 
   protected SwaggerGenerator generateSwagger(CONTEXT context) {
-    SwaggerGeneratorContext generatorContext =
-        compositeSwaggerGeneratorContext.selectContext(context.getProviderClass());
-    SwaggerGenerator generator = new SwaggerGenerator(generatorContext, context.getProviderClass());
+    SwaggerGenerator generator = new SwaggerGenerator(context.getProviderClass());
     generator.setClassLoader(context.getMicroserviceMeta().getClassLoader());
     generator.setPackageName(
         SchemaUtils.generatePackageName(context.getMicroserviceMeta(), context.getSchemaId()));
