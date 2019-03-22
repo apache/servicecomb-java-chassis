@@ -21,8 +21,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
-
 import io.swagger.models.Operation;
 
 public class ArgumentsMapperConfig {
@@ -32,10 +30,6 @@ public class ArgumentsMapperConfig {
   private Method providerMethod;
 
   private Operation swaggerOperation;
-
-  private SwaggerGeneratorContext swaggerGeneratorContext;
-
-  private Class<?> clz;
 
   // output
   private List<ArgumentMapper> argumentMapperList = new ArrayList<>();
@@ -64,15 +58,6 @@ public class ArgumentsMapperConfig {
     this.swaggerOperation = swaggerOperation;
   }
 
-  public SwaggerGeneratorContext getSwaggerGeneratorContext() {
-    return swaggerGeneratorContext;
-  }
-
-  public void setSwaggerGeneratorContext(
-      SwaggerGeneratorContext swaggerGeneratorContext) {
-    this.swaggerGeneratorContext = swaggerGeneratorContext;
-  }
-
   public List<ArgumentMapper> getArgumentMapperList() {
     return argumentMapperList;
   }
@@ -85,21 +70,12 @@ public class ArgumentsMapperConfig {
     argumentMapperList.add(argumentMapper);
   }
 
-  public Class<?> getClz() {
-    return clz;
-  }
-
-  public void setClz(Class<?> clz) {
-    this.clz = clz;
-  }
-
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("ArgumentsMapperConfig{");
     sb.append("swaggerMethod=").append(swaggerMethod);
     sb.append(", providerMethod=").append(providerMethod);
     sb.append(", swaggerOperation=").append(swaggerOperation);
-    sb.append(", swaggerGeneratorContext=").append(swaggerGeneratorContext);
     sb.append(", argumentMapperList=").append(argumentMapperList);
     sb.append('}');
     return sb.toString();
