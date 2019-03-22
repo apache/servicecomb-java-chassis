@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.apache.servicecomb.samples</groupId>
     <artifactId>samples</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>weak-contract-type-SNAPSHOT</version>
   </parent>
   <artifactId>trust-sample</artifactId>
   <packaging>pom</packaging>

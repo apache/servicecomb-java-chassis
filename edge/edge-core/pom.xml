@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.servicecomb</groupId>
     <artifactId>edge</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>weak-contract-type-SNAPSHOT</version>
   </parent>
   <artifactId>edge-core</artifactId>
   <name>Java Chassis::Edge::Core</name>
