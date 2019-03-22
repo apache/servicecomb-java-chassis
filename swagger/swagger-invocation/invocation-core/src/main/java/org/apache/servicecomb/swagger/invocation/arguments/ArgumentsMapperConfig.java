@@ -21,8 +21,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
-
 import io.swagger.models.Operation;
 
 public class ArgumentsMapperConfig {
@@ -32,8 +30,6 @@ public class ArgumentsMapperConfig {
   private Method providerMethod;
 
   private Operation swaggerOperation;
-
-  private SwaggerGeneratorContext swaggerGeneratorContext;
 
   // output
   private List<ArgumentMapper> argumentMapperList = new ArrayList<>();
@@ -60,15 +56,6 @@ public class ArgumentsMapperConfig {
 
   public void setSwaggerOperation(Operation swaggerOperation) {
     this.swaggerOperation = swaggerOperation;
-  }
-
-  public SwaggerGeneratorContext getSwaggerGeneratorContext() {
-    return swaggerGeneratorContext;
-  }
-
-  public void setSwaggerGeneratorContext(
-      SwaggerGeneratorContext swaggerGeneratorContext) {
-    this.swaggerGeneratorContext = swaggerGeneratorContext;
   }
 
   public List<ArgumentMapper> getArgumentMapperList() {

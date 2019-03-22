@@ -22,40 +22,42 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
-import org.apache.servicecomb.foundation.test.scaffolding.spring.SpringUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.swagger.extend.parameter.HttpRequestParameter;
 import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
-import org.hamcrest.Matchers;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.util.StringValueResolver;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.Extension;
 import io.swagger.annotations.ExtensionProperty;
 import io.swagger.annotations.ResponseHeader;
-import io.swagger.models.ArrayModel;
-import io.swagger.models.ModelImpl;
 import io.swagger.models.Response;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.QueryParameter;
-import io.swagger.models.properties.ArrayProperty;
-import io.swagger.models.properties.StringProperty;
 
 public class TestOperationGenerator {
+  @BeforeClass
+  public static void setup() {
+    ArchaiusUtils.resetConfig();
+  }
+
+  @AfterClass
+  public static void teardown() {
+    ArchaiusUtils.resetConfig();
+  }
+
   @Test
   public void testPathPlaceHolder() {
-    StringValueResolver stringValueResolver =
-        SpringUtils.createStringValueResolver(Collections.singletonMap("var", "varValue"));
+    ArchaiusUtils.setProperty("var", "varValue");
 
     PojoSwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
-    context.setEmbeddedValueResolver(stringValueResolver);
 
     SwaggerGenerator swaggerGenerator = new SwaggerGenerator(context, null);
     OperationGenerator operationGenerator = new OperationGenerator(swaggerGenerator, null);
@@ -155,39 +157,6 @@ public class TestOperationGenerator {
     Assert.assertNotNull(operationGenerator1.getOperation().getVendorExtensions().get("x-class-name"));
   }
 
-  @Test
-  public void testNestedListStringParam() throws NoSuchMethodException {
-    Method function = TestClass.class.getMethod("nestedListString", List.class);
-    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(new PojoSwaggerGeneratorContext(), TestClass.class);
-    OperationGenerator operationGenerator = new OperationGenerator(swaggerGenerator, function);
-    operationGenerator.generate();
-
-    // test response type
-    Map<String, Response> responses = operationGenerator.getOperation().getResponses();
-    Response response = responses.get("200");
-    Assert.assertEquals(ArrayModel.class, response.getResponseSchema().getClass());
-    ArrayModel arrayResponse = (ArrayModel) response.getResponseSchema();
-    Assert.assertEquals("array", arrayResponse.getType());
-    Assert.assertEquals(ArrayProperty.class, arrayResponse.getItems().getClass());
-    ArrayProperty innerArrayPropertyResp = (ArrayProperty) arrayResponse.getItems();
-    Assert.assertEquals("array", innerArrayPropertyResp.getType());
-    Assert.assertEquals(StringProperty.class, innerArrayPropertyResp.getItems().getClass());
-
-    // test param type
-    Assert.assertEquals(1, swaggerGenerator.getSwagger().getDefinitions().size());
-    ModelImpl model = (ModelImpl) swaggerGenerator.getSwagger().getDefinitions().get("nestedListStringBody");
-    Assert.assertNotNull(model);
-    Assert.assertEquals("object", model.getType());
-    Assert.assertEquals("param", model.getName());
-    Assert.assertThat(model.getProperties().keySet(), Matchers.containsInAnyOrder("param"));
-    Assert.assertEquals(ArrayProperty.class, model.getProperties().get("param").getClass());
-    ArrayProperty arrayPropertyParam = (ArrayProperty) model.getProperties().get("param");
-    Assert.assertEquals("array", arrayPropertyParam.getType());
-    Assert.assertEquals(ArrayProperty.class, arrayPropertyParam.getItems().getClass());
-    ArrayProperty innerArrayPropertyParam = (ArrayProperty) arrayPropertyParam.getItems();
-    Assert.assertEquals(StringProperty.class, innerArrayPropertyParam.getItems().getClass());
-  }
-
   private static class TestClass {
 
     @ApiResponse(code = 200, message = "200 is ok............", response = String.class,
@@ -216,10 +185,6 @@ public class TestOperationGenerator {
 
     @SuppressWarnings("unused")
     public void functionWithNoAnnotation() {
-    }
-
-    public List<List<String>> nestedListString(List<List<String>> param) {
-      return param;
     }
   }
 }
