@@ -32,7 +32,6 @@ import org.apache.servicecomb.core.unittest.UnitTestMeta;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.StaticMicroservice;
 import org.apache.servicecomb.swagger.SwaggerUtils;
-import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -50,9 +49,6 @@ public class StaticSchemaFactoryTest {
   public static void beforeClass() {
     System.setProperty(APPLICATION_ID_KEY, APP_ID_VALUE);
     new UnitTestMeta();
-
-    CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext = new CompositeSwaggerGeneratorContext();
-    ReflectUtils.setField(staticSchemaFactory, "compositeSwaggerGeneratorContext", compositeSwaggerGeneratorContext);
 
     SchemaLoader schemaLoader = new SchemaLoader();
     ReflectUtils.setField(staticSchemaFactory, "schemaLoader", schemaLoader);
