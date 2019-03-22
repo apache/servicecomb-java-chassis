@@ -27,7 +27,6 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
-import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapperConfig;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapperFactory;
@@ -51,9 +50,6 @@ import io.swagger.models.Operation;
 public class SwaggerEnvironment {
   private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerEnvironment.class);
 
-  @Inject
-  protected CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext;
-
   /**
    * default producerArgumentsFactory
    */
@@ -76,15 +72,6 @@ public class SwaggerEnvironment {
   public void setConverterMgr(ConverterMgr converterMgr) {
     consumerResponseMapperFactorys.setConverterMgr(converterMgr);
     producerResponseMapperFactorys.setConverterMgr(converterMgr);
-  }
-
-  public CompositeSwaggerGeneratorContext getCompositeSwaggerGeneratorContext() {
-    return compositeSwaggerGeneratorContext;
-  }
-
-  public void setCompositeSwaggerGeneratorContext(
-      CompositeSwaggerGeneratorContext compositeSwaggerGeneratorContext) {
-    this.compositeSwaggerGeneratorContext = compositeSwaggerGeneratorContext;
   }
 
   public ProducerArgumentsMapperFactory getProducerArgumentsFactory() {
@@ -181,7 +168,6 @@ public class SwaggerEnvironment {
       config.setSwaggerMethod(swaggerMethod);
       config.setProviderMethod(producerMethod);
       config.setSwaggerOperation(swaggerOperationMap.get(methodName));
-      config.setSwaggerGeneratorContext(compositeSwaggerGeneratorContext.selectContext(producerCls));
 
       ProducerArgumentsMapperFactory argumentsMapperFactory = selectProducerArgumentsMapperFactory(config);
       ProducerArgumentsMapper argsMapper = argumentsMapperFactory.createArgumentsMapper(config);

@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
 import org.junit.Assert;
@@ -35,8 +34,6 @@ import io.swagger.util.Yaml;
 public final class UnitTestSwaggerUtils {
   private static ObjectWriter writer = Yaml.pretty();
 
-  private static CompositeSwaggerGeneratorContext compositeContext = new CompositeSwaggerGeneratorContext();
-
   private UnitTestSwaggerUtils() {
   }
 
@@ -45,8 +42,7 @@ public final class UnitTestSwaggerUtils {
   }
 
   public static SwaggerGenerator generateSwagger(ClassLoader classLoader, Class<?> cls) {
-    SwaggerGeneratorContext context = compositeContext.selectContext(cls);
-    SwaggerGenerator generator = new SwaggerGenerator(context, cls);
+    SwaggerGenerator generator = new SwaggerGenerator(cls);
     generator.setClassLoader(classLoader);
     generator.generate();
 

@@ -22,30 +22,42 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
 import java.util.List;
 
-import io.swagger.annotations.*;
-import io.swagger.models.Response;
-import org.apache.servicecomb.foundation.test.scaffolding.spring.SpringUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.swagger.extend.parameter.HttpRequestParameter;
 import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.springframework.util.StringValueResolver;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.ExtensionProperty;
+import io.swagger.annotations.ResponseHeader;
+import io.swagger.models.Response;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.QueryParameter;
 
 public class TestOperationGenerator {
+  @BeforeClass
+  public static void setup() {
+    ArchaiusUtils.resetConfig();
+  }
+
+  @AfterClass
+  public static void teardown() {
+    ArchaiusUtils.resetConfig();
+  }
+
   @Test
   public void testPathPlaceHolder() {
-    StringValueResolver stringValueResolver =
-        SpringUtils.createStringValueResolver(Collections.singletonMap("var", "varValue"));
+    ArchaiusUtils.setProperty("var", "varValue");
 
     PojoSwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
-    context.setEmbeddedValueResolver(stringValueResolver);
 
     SwaggerGenerator swaggerGenerator = new SwaggerGenerator(context, null);
     OperationGenerator operationGenerator = new OperationGenerator(swaggerGenerator, null);
@@ -148,21 +160,22 @@ public class TestOperationGenerator {
   private static class TestClass {
 
     @ApiResponse(code = 200, message = "200 is ok............", response = String.class,
-            responseHeaders = @ResponseHeader(name = "x-user-domain", response = String.class))
+        responseHeaders = @ResponseHeader(name = "x-user-domain", response = String.class))
     @ApiOperation(value = "value1", tags = {"tag1", "tag2"},
-            responseHeaders = {@ResponseHeader(name = "x-user-name", response = String.class),
-                    @ResponseHeader(name = "x-user-id", response = String.class)},
-            extensions= {@Extension(name="x-class-name", properties= {@ExtensionProperty(value="value", name = "key")})})
+        responseHeaders = {@ResponseHeader(name = "x-user-name", response = String.class),
+            @ResponseHeader(name = "x-user-id", response = String.class)},
+        extensions = {
+            @Extension(name = "x-class-name", properties = {@ExtensionProperty(value = "value", name = "key")})})
     public void function() {
     }
 
-
     @ApiOperation(value = "value1", tags = {"tag1", "tag2"},
-            responseHeaders = {@ResponseHeader(name = "x-user-name", response = String.class),
-                    @ResponseHeader(name = "x-user-id", response = String.class)},
-            extensions= {@Extension(name="x-class-name", properties= {@ExtensionProperty(value="value", name = "key")})})
+        responseHeaders = {@ResponseHeader(name = "x-user-name", response = String.class),
+            @ResponseHeader(name = "x-user-id", response = String.class)},
+        extensions = {
+            @Extension(name = "x-class-name", properties = {@ExtensionProperty(value = "value", name = "key")})})
     @ApiResponse(code = 200, message = "200 is ok............", response = String.class,
-            responseHeaders = @ResponseHeader(name = "x-user-domain", response = String.class))
+        responseHeaders = @ResponseHeader(name = "x-user-domain", response = String.class))
     public void function1() {
     }
 

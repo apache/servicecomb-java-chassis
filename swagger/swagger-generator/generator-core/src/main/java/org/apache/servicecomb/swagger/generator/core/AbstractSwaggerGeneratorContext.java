@@ -19,7 +19,9 @@ package org.apache.servicecomb.swagger.generator.core;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Collections;
 
+import org.apache.servicecomb.config.inject.PlaceholderResolver;
 import org.apache.servicecomb.foundation.common.RegisterManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
@@ -40,8 +42,6 @@ import org.apache.servicecomb.swagger.generator.core.processor.annotation.Respon
 import org.apache.servicecomb.swagger.generator.core.processor.annotation.SwaggerDefinitionProcessor;
 import org.apache.servicecomb.swagger.generator.core.processor.parametertype.RawJsonRequestBodyProcessor;
 import org.apache.servicecomb.swagger.generator.core.processor.response.DefaultResponseTypeProcessor;
-import org.springframework.context.EmbeddedValueResolverAware;
-import org.springframework.util.StringValueResolver;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -55,8 +55,8 @@ import io.swagger.annotations.SwaggerDefinition;
 /**
  * 根据class反向生成swagger的上下文对象
  */
-public abstract class AbstractSwaggerGeneratorContext implements SwaggerGeneratorContext, EmbeddedValueResolverAware {
-  protected StringValueResolver stringValueResolver;
+public abstract class AbstractSwaggerGeneratorContext implements SwaggerGeneratorContext {
+  protected PlaceholderResolver placeholderResolver = new PlaceholderResolver();
 
   protected AnnotationProcessorManager<ClassAnnotationProcessor> classAnnotationMgr =
       new AnnotationProcessorManager<>(AnnotationType.CLASS);
@@ -92,17 +92,8 @@ public abstract class AbstractSwaggerGeneratorContext implements SwaggerGenerato
   }
 
   @Override
-  public void setEmbeddedValueResolver(StringValueResolver resolver) {
-    this.stringValueResolver = resolver;
-  }
-
-  @Override
   public String resolveStringValue(String strVal) {
-    if (stringValueResolver == null) {
-      return strVal;
-    }
-
-    return stringValueResolver.resolveStringValue(strVal);
+    return placeholderResolver.replace(strVal, Collections.emptyMap()).get(0);
   }
 
   protected void initClassAnnotationMgr() {
