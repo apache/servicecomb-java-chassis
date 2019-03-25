@@ -93,6 +93,22 @@ public class URLPathBuilderTest {
         urlPathBuilder.createRequestPath(args));
   }
 
+  @Test
+  public void testRegexPathParam() throws Exception {
+    Map<String, RestParam> paramMap = new LinkedHashMap<>();
+    addParam("p0", int.class, PathParameter::new, paramMap);
+    addParam("p1", String.class, PathParameter::new, paramMap);
+    addParam("q0", int.class, QueryParameter::new, paramMap);
+    addParam("q1", String.class, QueryParameter::new, paramMap);
+
+    URLPathBuilder urlPathBuilder = new URLPathBuilder("/path/{p0 : .*}/and/{p1:.*}", paramMap);
+    Object[] args = {10, "abcPath", 11, "queryABC"};
+    Assert.assertEquals("/path/10/and/abcPath?q0=11&q1=queryABC",
+        urlPathBuilder.createRequestPath(args));
+    Assert.assertEquals("/path/10/and/abcPath",
+        urlPathBuilder.createPathString(args));
+  }
+
   private void addParam(String paramName, Type paramType,
       ParameterConstructor constructor, Map<String, RestParam> paramMap) {
     Parameter parameter = constructor.construct();
@@ -100,7 +116,7 @@ public class URLPathBuilderTest {
     paramMap.put(paramName, new RestParam(paramMap.size(), parameter, paramType));
   }
 
-  static interface ParameterConstructor {
+  interface ParameterConstructor {
     Parameter construct();
   }
 }

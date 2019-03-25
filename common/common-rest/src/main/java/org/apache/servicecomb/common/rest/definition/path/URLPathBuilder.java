@@ -71,11 +71,17 @@ public class URLPathBuilder {
           tmpPath.setLength(0);
         }
       } else if (currentChar == '}') {
-        if (tmpPath.length() != 0) {
-          RestParam param = paramMap.get(tmpPath.toString());
-          this.pathParamWriterList.add(new PathVarParamWriter(param));
-          tmpPath.setLength(0);
+        if (tmpPath.length() == 0) {
+          continue;
         }
+        String tmpPathStr = tmpPath.toString();
+        String pathParamName = tmpPathStr;
+        if (tmpPathStr.contains(":")) {
+          pathParamName = tmpPathStr.split(":", 2)[0].trim();
+        }
+        RestParam param = paramMap.get(pathParamName);
+        this.pathParamWriterList.add(new PathVarParamWriter(param));
+        tmpPath.setLength(0);
       } else {
         tmpPath.append(currentChar);
       }
