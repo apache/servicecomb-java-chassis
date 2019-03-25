@@ -972,6 +972,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
+        <artifactId>spring-boot2-starter-gateway</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
         <artifactId>spring-boot2-starter-servlet</artifactId>
         <version>${project.version}</version>
       </dependency>
