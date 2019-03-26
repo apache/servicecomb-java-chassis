@@ -31,13 +31,15 @@ import com.netflix.config.DynamicPropertyFactory;
 
 
 public class ZoneAwareDiscoveryFilter extends AbstractDiscoveryFilter {
-  private static final String KEY_ZONE_AWARE_STEP = "_KEY_ZONE_AWARE_STEP";
+  public static final String KEY_ZONE_AWARE_STEP = "_KEY_ZONE_AWARE_STEP";
 
   private static final String GROUP_RegionAndAZMatch = "instancesRegionAndAZMatch";
 
-  private static final String GROUP_instancesAZMatch = "instancesAZMatch";
+  private static final String GROUP_InstancesAZMatch = "instancesAZMatch";
 
-  private static final String GROUP_instancesNoMatch = "instancesNoMatch";
+  private static final String GROUP_InstancesNoMatch = "instancesNoMatch";
+
+  public static final String GROUP_Instances_All = "instancesAll";
 
   @Override
   public int getOrder() {
@@ -77,12 +79,15 @@ public class ZoneAwareDiscoveryFilter extends AbstractDiscoveryFilter {
     children.put(GROUP_RegionAndAZMatch, new DiscoveryTreeNode()
         .subName(parent, GROUP_RegionAndAZMatch)
         .data(instancesRegionAndAZMatch));
-    children.put(GROUP_instancesAZMatch, new DiscoveryTreeNode()
-        .subName(parent, GROUP_instancesAZMatch)
+    children.put(GROUP_InstancesAZMatch, new DiscoveryTreeNode()
+        .subName(parent, GROUP_InstancesAZMatch)
         .data(instancesAZMatch));
-    children.put(GROUP_instancesNoMatch, new DiscoveryTreeNode()
-        .subName(parent, GROUP_instancesNoMatch)
+    children.put(GROUP_InstancesNoMatch, new DiscoveryTreeNode()
+        .subName(parent, GROUP_InstancesNoMatch)
         .data(instancesNoMatch));
+    children.put(GROUP_Instances_All, new DiscoveryTreeNode()
+        .subName(parent, GROUP_Instances_All)
+        .data(instances));
     parent.children(children);
   }
 
@@ -93,10 +98,13 @@ public class ZoneAwareDiscoveryFilter extends AbstractDiscoveryFilter {
       key = GROUP_RegionAndAZMatch;
       context.pushRerunFilter();
     } else if (GROUP_RegionAndAZMatch.equals(key)) {
-      key = GROUP_instancesAZMatch;
+      key = GROUP_InstancesAZMatch;
       context.pushRerunFilter();
-    } else if (GROUP_instancesAZMatch.equals(key)) {
-      key = GROUP_instancesNoMatch;
+    } else if (GROUP_InstancesAZMatch.equals(key)) {
+      key = GROUP_InstancesNoMatch;
+      context.pushRerunFilter();
+    } else if (GROUP_InstancesNoMatch.equals(key)) {
+      key = GROUP_Instances_All;
     } else {
       throw new ServiceCombException("not possible happen, maybe a bug.");
     }

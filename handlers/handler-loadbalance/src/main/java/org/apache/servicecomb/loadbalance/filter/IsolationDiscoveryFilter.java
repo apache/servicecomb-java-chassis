@@ -92,8 +92,11 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
     }
 
     DiscoveryTreeNode child = new DiscoveryTreeNode();
-    if (filteredServers.isEmpty() && DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.loadbalance.filter.isolation.emptyInstanceProtectionEnabled", false).get()) {
+    if (ZoneAwareDiscoveryFilter.GROUP_Instances_All
+        .equals(context.getContextParameter(ZoneAwareDiscoveryFilter.KEY_ZONE_AWARE_STEP)) && filteredServers.isEmpty()
+        && DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.loadbalance.filter.isolation.emptyInstanceProtectionEnabled", false)
+        .get()) {
       LOGGER.warn("All servers have been isolated, allow one of them based on load balance rule.");
       child.data(instances);
     } else {
