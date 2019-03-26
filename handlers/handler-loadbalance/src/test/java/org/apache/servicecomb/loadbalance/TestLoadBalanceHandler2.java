@@ -335,11 +335,11 @@ public class TestLoadBalanceHandler2 {
     ServiceCombServer server2 = server;
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9090");
+    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9091");
     ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server2);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9090");
+    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9091");
     TimeUnit.MILLISECONDS.sleep(20);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
@@ -348,7 +348,7 @@ public class TestLoadBalanceHandler2 {
     ServiceCombLoadBalancerStats.INSTANCE.markFailure(server2);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9090");
+    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9091");
   }
 
   @Test
