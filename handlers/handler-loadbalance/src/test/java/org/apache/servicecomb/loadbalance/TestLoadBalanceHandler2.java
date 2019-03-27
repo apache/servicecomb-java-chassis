@@ -160,26 +160,26 @@ public class TestLoadBalanceHandler2 {
     handler = new LoadbalanceHandler();
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server, null);
+    Assert.assertEquals(null, server);
 
     data.put("noneMatchInstance", noneMatchInstance);
     parent.cacheVersion(1);
     handler = new LoadbalanceHandler();
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9092");
+    Assert.assertEquals("rest://localhost:9092", server.getEndpoint().getEndpoint());
 
     data.put("regionMatchInstance", regionMatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9091");
+    Assert.assertEquals("rest://localhost:9091", server.getEndpoint().getEndpoint());
 
     data.put("allmatchInstance", allmatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9090");
+    Assert.assertEquals("rest://localhost:9090", server.getEndpoint().getEndpoint());
 
     ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
     ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
@@ -191,7 +191,7 @@ public class TestLoadBalanceHandler2 {
     ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.errorThresholdPercentage", "0");
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9090");
+    Assert.assertEquals("rest://localhost:9090", server.getEndpoint().getEndpoint());
 
     //if errorThresholdPercentage greater than 0, it will activate.
     ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.errorThresholdPercentage", "20");
@@ -199,20 +199,20 @@ public class TestLoadBalanceHandler2 {
     ServiceCombServer server2 = server;
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9091");
+    Assert.assertEquals("rest://localhost:9091", server.getEndpoint().getEndpoint());
     ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server2);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9091");
+    Assert.assertEquals("rest://localhost:9091", server.getEndpoint().getEndpoint());
     TimeUnit.MILLISECONDS.sleep(20);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9090");
+    Assert.assertEquals("rest://localhost:9090", server.getEndpoint().getEndpoint());
     ServiceCombLoadBalancerStats.INSTANCE.markFailure(server2);
     ServiceCombLoadBalancerStats.INSTANCE.markFailure(server2);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9091");
+    Assert.assertEquals("rest://localhost:9091", server.getEndpoint().getEndpoint());
   }
 
   @Test
@@ -296,26 +296,26 @@ public class TestLoadBalanceHandler2 {
     handler = new LoadbalanceHandler();
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server, null);
+    Assert.assertEquals(null, server);
 
     data.put("noneMatchInstance", noneMatchInstance);
     parent.cacheVersion(1);
     handler = new LoadbalanceHandler();
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9092");
+    Assert.assertEquals("rest://localhost:9092", server.getEndpoint().getEndpoint());
 
     data.put("regionMatchInstance", regionMatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9091");
+    Assert.assertEquals("rest://localhost:9091", server.getEndpoint().getEndpoint());
 
     data.put("allmatchInstance", allmatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9090");
+    Assert.assertEquals("rest://localhost:9090", server.getEndpoint().getEndpoint());
 
     ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
     ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
@@ -327,7 +327,7 @@ public class TestLoadBalanceHandler2 {
     ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.errorThresholdPercentage", "0");
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9090");
+    Assert.assertEquals("rest://localhost:9090", server.getEndpoint().getEndpoint());
 
     //if errorThresholdPercentage greater than 0, it will activate.
     ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.errorThresholdPercentage", "20");
@@ -335,20 +335,20 @@ public class TestLoadBalanceHandler2 {
     ServiceCombServer server2 = server;
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9091");
+    Assert.assertEquals("rest://localhost:9091", server.getEndpoint().getEndpoint());
     ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server2);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9091");
+    Assert.assertEquals("rest://localhost:9091", server.getEndpoint().getEndpoint());
     TimeUnit.MILLISECONDS.sleep(20);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9090");
+    Assert.assertEquals("rest://localhost:9090", server.getEndpoint().getEndpoint());
     ServiceCombLoadBalancerStats.INSTANCE.markFailure(server2);
     ServiceCombLoadBalancerStats.INSTANCE.markFailure(server2);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:9091");
+    Assert.assertEquals("rest://localhost:9091", server.getEndpoint().getEndpoint());
   }
 
   @Test
@@ -428,32 +428,32 @@ public class TestLoadBalanceHandler2 {
     handler = new LoadbalanceHandler(discoveryTree);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server, null);
+    Assert.assertEquals(null, server);
 
     data.put("noneMatchInstance", noneMatchInstance);
     parent.cacheVersion(1);
     handler = new LoadbalanceHandler();
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:7092");
+    Assert.assertEquals("rest://localhost:7092", server.getEndpoint().getEndpoint());
     handler.handle(invocation, (response) -> {
-      Assert.assertEquals(response.getResult(), "OK");
+      Assert.assertEquals("OK", response.getResult());
     });
 
     data.put("regionMatchInstance", regionMatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:7091");
+    Assert.assertEquals("rest://localhost:7091", server.getEndpoint().getEndpoint());
     handler.handle(invocation, (response) -> {
-      Assert.assertEquals(response.getResult(), "OK");
+      Assert.assertEquals("OK", response.getResult());
     });
 
     data.put("allmatchInstance", allmatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:7090");
+    Assert.assertEquals("rest://localhost:7090", server.getEndpoint().getEndpoint());
 
     ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
     ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
@@ -465,7 +465,7 @@ public class TestLoadBalanceHandler2 {
     ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.errorThresholdPercentage", "0");
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:7090");
+    Assert.assertEquals("rest://localhost:7090", server.getEndpoint().getEndpoint());
 
     //if errorThresholdPercentage greater than 0, it will activate.
     ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.errorThresholdPercentage", "20");
@@ -473,22 +473,22 @@ public class TestLoadBalanceHandler2 {
     ServiceCombServer server2 = server;
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:7091");
+    Assert.assertEquals("rest://localhost:7091", server.getEndpoint().getEndpoint());
     ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server2);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:7091");
+    Assert.assertEquals("rest://localhost:7091", server.getEndpoint().getEndpoint());
     TimeUnit.MILLISECONDS.sleep(20);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:7090");
+    Assert.assertEquals("rest://localhost:7090", server.getEndpoint().getEndpoint());
     ServiceCombLoadBalancerStats.INSTANCE.markFailure(server2);
     ServiceCombLoadBalancerStats.INSTANCE.markFailure(server2);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:7091");
+    Assert.assertEquals("rest://localhost:7091", server.getEndpoint().getEndpoint());
     handler.handle(invocation, (response) -> {
-      Assert.assertEquals(response.getResult(), "OK");
+      Assert.assertEquals("OK", response.getResult());
     });
   }
 
@@ -572,32 +572,32 @@ public class TestLoadBalanceHandler2 {
     handler = new LoadbalanceHandler(discoveryTree);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server, null);
+    Assert.assertEquals(null, server);
 
     data.put("noneMatchInstance", noneMatchInstance);
     parent.cacheVersion(1);
     handler = new LoadbalanceHandler();
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:7092");
+    Assert.assertEquals("rest://localhost:7092", server.getEndpoint().getEndpoint());
     handler.handle(invocation, (response) -> {
-      Assert.assertEquals(response.getResult(), "OK");
+      Assert.assertEquals("OK", response.getResult());
     });
 
     data.put("regionMatchInstance", regionMatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:7091");
+    Assert.assertEquals("rest://localhost:7091", server.getEndpoint().getEndpoint());
     handler.handle(invocation, (response) -> {
-      Assert.assertEquals(response.getResult(), "OK");
+      Assert.assertEquals("OK", response.getResult());
     });
 
     data.put("allmatchInstance", allmatchInstance);
     parent.cacheVersion(parent.cacheVersion() + 1);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:7090");
+    Assert.assertEquals("rest://localhost:7090", server.getEndpoint().getEndpoint());
 
     ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
     ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
@@ -609,7 +609,7 @@ public class TestLoadBalanceHandler2 {
     ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.errorThresholdPercentage", "0");
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:7090");
+    Assert.assertEquals("rest://localhost:7090", server.getEndpoint().getEndpoint());
 
     //if errorThresholdPercentage greater than 0, it will activate.
     ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.errorThresholdPercentage", "20");
@@ -617,22 +617,22 @@ public class TestLoadBalanceHandler2 {
     ServiceCombServer server2 = server;
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:7091");
+    Assert.assertEquals("rest://localhost:7091", server.getEndpoint().getEndpoint());
     ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server2);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:7091");
+    Assert.assertEquals("rest://localhost:7091", server.getEndpoint().getEndpoint());
     TimeUnit.MILLISECONDS.sleep(20);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:7090");
+    Assert.assertEquals("rest://localhost:7090", server.getEndpoint().getEndpoint());
     ServiceCombLoadBalancerStats.INSTANCE.markFailure(server2);
     ServiceCombLoadBalancerStats.INSTANCE.markFailure(server2);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
-    Assert.assertEquals(server.getEndpoint().getEndpoint(), "rest://localhost:7091");
+    Assert.assertEquals("rest://localhost:7091", server.getEndpoint().getEndpoint());
     handler.handle(invocation, (response) -> {
-      Assert.assertEquals(response.getResult(), "OK");
+      Assert.assertEquals("OK", response.getResult());
     });
   }
 

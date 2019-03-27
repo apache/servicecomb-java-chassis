@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
+import com.netflix.config.DynamicBooleanProperty;
 import com.netflix.config.DynamicPropertyFactory;
 
 /**
@@ -44,6 +45,11 @@ import com.netflix.config.DynamicPropertyFactory;
 public class IsolationDiscoveryFilter implements DiscoveryFilter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(IsolationDiscoveryFilter.class);
+
+  private static final String EMPTY_INSTANCE_PROTECTION = "servicecomb.loadbalance.filter.isolation.emptyInstanceProtectionEnabled";
+
+  private final DynamicBooleanProperty emptyProtection = DynamicPropertyFactory.getInstance()
+      .getBooleanProperty(EMPTY_INSTANCE_PROTECTION, false);
 
   public class Settings {
     public int errorThresholdPercentage;
@@ -62,6 +68,13 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
   @Override
   public int getOrder() {
     return 500;
+  }
+
+  public IsolationDiscoveryFilter() {
+    emptyProtection.addCallback(() -> {
+      boolean newValue = emptyProtection.get();
+      LOGGER.info("{} changed from {} to {}", EMPTY_INSTANCE_PROTECTION, emptyProtection, newValue);
+    });
   }
 
   @Override
@@ -94,9 +107,7 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
     DiscoveryTreeNode child = new DiscoveryTreeNode();
     if (ZoneAwareDiscoveryFilter.GROUP_Instances_All
         .equals(context.getContextParameter(ZoneAwareDiscoveryFilter.KEY_ZONE_AWARE_STEP)) && filteredServers.isEmpty()
-        && DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.loadbalance.filter.isolation.emptyInstanceProtectionEnabled", false)
-        .get()) {
+        && emptyProtection.get()) {
       LOGGER.warn("All servers have been isolated, allow one of them based on load balance rule.");
       child.data(instances);
     } else {
