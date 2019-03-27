@@ -21,6 +21,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -190,7 +191,7 @@ public class LoadbalanceHandler implements Handler {
     }
 
     String strategy = Configuration.INSTANCE.getRuleStrategyName(invocation.getMicroserviceName());
-    if (!isEqual(strategy, this.strategy)) {
+    if (!Objects.equals(strategy, this.strategy)) {
       //配置变化，需要重新生成所有的lb实例
       synchronized (lock) {
         clearLoadBalancer();
@@ -420,17 +421,11 @@ public class LoadbalanceHandler implements Handler {
     invocation.addLocalContext(CONTEXT_KEY_SERVER_LIST, serversVersionedCache.data());
 
     return loadBalancerMap
-        .computeIfAbsent(serversVersionedCache.name(), name -> {
-          return createLoadBalancer(invocation.getMicroserviceName());
-        });
+        .computeIfAbsent(serversVersionedCache.name(), name -> createLoadBalancer(invocation.getMicroserviceName()));
   }
 
   private LoadBalancer createLoadBalancer(String microserviceName) {
     RuleExt rule = ExtensionsManager.createLoadBalancerRule(microserviceName);
     return new LoadBalancer(rule, microserviceName);
-  }
-
-  public boolean isEqual(String str1, String str2) {
-    return (str1 == null ? str2 == null : str1.equals(str2));
   }
 }
