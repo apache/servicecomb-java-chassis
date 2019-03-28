@@ -15,4 +15,7 @@
 # limitations under the License.
 #
 
-org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext
+org.apache.servicecomb.swagger.generator.core.processor.annotation.ApiProcessor
+org.apache.servicecomb.swagger.generator.core.processor.annotation.SwaggerDefinitionProcessor
+org.apache.servicecomb.swagger.generator.core.processor.annotation.ApiResponsesClassProcessor
+org.apache.servicecomb.swagger.generator.core.processor.annotation.ApiResponseClassProcessor
