@@ -19,23 +19,20 @@ package org.apache.servicecomb.swagger.generator.core;
 
 import static junit.framework.TestCase.fail;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.reflect.TypeUtils;
+import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.pojo.TestType1;
 import org.apache.servicecomb.swagger.generator.core.pojo.TestType2;
-import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
-import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -60,37 +57,37 @@ public class TestParamUtils {
     when(param.getVendorExtensions()).thenReturn(extensions);
 
     extensions.put(SwaggerConst.EXT_RAW_JSON_TYPE, true);
-    Assert.assertTrue(ClassUtils.isRawJsonType(param));
+    Assert.assertTrue(SwaggerUtils.isRawJsonType(param));
 
     extensions.put(SwaggerConst.EXT_RAW_JSON_TYPE, "test");
-    Assert.assertFalse(ClassUtils.isRawJsonType(param));
+    Assert.assertFalse(SwaggerUtils.isRawJsonType(param));
   }
 
   @Test
   public void isComplexProperty() {
     Property property = new RefProperty("ref");
-    Assert.assertTrue(ParamUtils.isComplexProperty(property));
+    Assert.assertTrue(SwaggerUtils.isComplexProperty(property));
     property = new ObjectProperty();
-    Assert.assertTrue(ParamUtils.isComplexProperty(property));
+    Assert.assertTrue(SwaggerUtils.isComplexProperty(property));
     property = new MapProperty();
-    Assert.assertTrue(ParamUtils.isComplexProperty(property));
+    Assert.assertTrue(SwaggerUtils.isComplexProperty(property));
     property = new ArrayProperty(new ObjectProperty());
-    Assert.assertTrue(ParamUtils.isComplexProperty(property));
+    Assert.assertTrue(SwaggerUtils.isComplexProperty(property));
 
     property = new ArrayProperty(new StringProperty());
-    Assert.assertFalse(ParamUtils.isComplexProperty(property));
+    Assert.assertFalse(SwaggerUtils.isComplexProperty(property));
     property = new StringProperty();
-    Assert.assertFalse(ParamUtils.isComplexProperty(property));
+    Assert.assertFalse(SwaggerUtils.isComplexProperty(property));
   }
 
   @Test
   public void setParameterTypeByTypeNormal() {
     AbstractSerializableParameter<?> parameter = new QueryParameter();
-    ParamUtils.setParameterType(String.class, parameter);
+    SwaggerUtils.setParameterType(String.class, parameter);
     Assert.assertEquals("string", parameter.getType());
 
     parameter = new HeaderParameter();
-    ParamUtils.setParameterType(long.class, parameter);
+    SwaggerUtils.setParameterType(long.class, parameter);
     Assert.assertEquals("integer", parameter.getType());
     Assert.assertEquals("int64", parameter.getFormat());
   }
@@ -100,7 +97,7 @@ public class TestParamUtils {
     AbstractSerializableParameter<?> parameter = new QueryParameter();
     parameter.setName("testName");
     try {
-      ParamUtils.setParameterType(ArrayList.class, parameter);
+      SwaggerUtils.setParameterType(ArrayList.class, parameter);
       Assert.fail("an exception is expected!");
     } catch (IllegalArgumentException e) {
       Assert.assertEquals("not allow such type of param:[class io.swagger.models.properties.ArrayProperty], "
@@ -149,62 +146,7 @@ public class TestParamUtils {
 
   private void testExcep(Type f1, Type f2) {
     Swagger swagger = new Swagger();
-    ParamUtils.addDefinitions(swagger, f1);
-    ParamUtils.addDefinitions(swagger, f2);
-  }
-
-  @Test
-  public void testGenericTypeInheritance() throws Exception {
-    Method hello = IMyService.class.getMethod("hello", AbstractBean.class);
-    assertEquals(PersonBean.class,
-        ParamUtils.getGenericParameterType(IMyService.class, IBaseService.class, hello.getGenericReturnType()));
-    hello = IMyServiceChild.class.getMethod("hello", AbstractBean.class);
-    assertEquals(PersonBean.class,
-        ParamUtils.getGenericParameterType(IMyServiceChild.class, IBaseService.class, hello.getGenericReturnType()));
-
-    try {
-      hello = IMyServiceChild.class.getMethod("hello", AbstractBean.class);
-      assertEquals(PersonBean.class,
-          ParamUtils.getGenericParameterType(IMyServiceChild2.class, IBaseService.class, hello.getGenericReturnType()));
-      Assert.fail("");
-    } catch (IllegalArgumentException e) {
-      Assert.assertEquals("not implement (org.apache.servicecomb.swagger.generator.core.IMyServiceChild2) "
-          + "(org.apache.servicecomb.swagger.generator.core.IBaseService) (T), "
-          + "e.g. extends multiple typed interface or too deep inheritance.", e.getMessage());
-    }
-
-    hello = MyEndpoint.class.getMethod("hello", AbstractBean.class);
-    assertEquals(PersonBean.class,
-        ParamUtils.getGenericParameterType(MyEndpoint.class, AbstractBaseService.class, hello.getGenericReturnType()));
-
-    Method helloBody = IMyService.class.getMethod("helloBody", AbstractBean[].class);
-    assertEquals(PersonBean[].class,
-        ParamUtils.getGenericParameterType(IMyService.class, IBaseService.class, helloBody.getGenericReturnType()));
-
-    helloBody = MyEndpoint.class.getMethod("helloBody", AbstractBean[].class);
-    assertEquals(PersonBean[].class, ParamUtils
-        .getGenericParameterType(MyEndpoint.class, AbstractBaseService.class, helloBody.getGenericReturnType()));
-
-    helloBody = MyEndpoint2.class.getMethod("helloBody", PersonBean[].class);
-    assertEquals(PersonBean[].class, ParamUtils
-        .getGenericParameterType(MyEndpoint2.class, AbstractBaseService.class, helloBody.getGenericReturnType()));
-    assertEquals(PersonBean[].class, ParamUtils
-        .getGenericParameterType(MyEndpoint2.class, AbstractBaseService.class, helloBody.getGenericParameterTypes()[0]));
-
-    Method helloList = IMyService.class.getMethod("helloList", List.class);
-    assertEquals(TypeUtils.parameterize(List.class, PersonBean.class),
-        ParamUtils.getGenericParameterType(IMyService.class, IBaseService.class, helloList.getGenericReturnType()));
-
-    helloList = MyEndpoint.class.getMethod("helloList", List.class);
-    assertEquals(TypeUtils.parameterize(List.class, PersonBean.class), ParamUtils
-        .getGenericParameterType(MyEndpoint.class, AbstractBaseService.class, helloList.getGenericReturnType()));
-
-    Method actual = IMyService.class.getMethod("actual");
-    assertEquals(PersonBean.class,
-        ParamUtils.getGenericParameterType(IMyService.class, IBaseService.class, actual.getGenericReturnType()));
-
-    helloList = MyEndpoint.class.getMethod("actual");
-    assertEquals(PersonBean.class,
-        ParamUtils.getGenericParameterType(MyEndpoint.class, AbstractBaseService.class, actual.getGenericReturnType()));
+    SwaggerUtils.addDefinitions(swagger, f1);
+    SwaggerUtils.addDefinitions(swagger, f2);
   }
 }
