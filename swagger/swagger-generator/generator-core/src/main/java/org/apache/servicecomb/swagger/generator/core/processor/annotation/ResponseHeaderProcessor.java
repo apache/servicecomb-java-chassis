@@ -16,24 +16,30 @@
  */
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
-import org.apache.servicecomb.swagger.generator.core.MethodAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
+import java.lang.reflect.Type;
+
 import org.apache.servicecomb.swagger.generator.core.processor.annotation.models.ResponseHeaderConfig;
+import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
 import io.swagger.annotations.ResponseHeader;
 import io.swagger.models.properties.Property;
 
-public class ResponseHeaderProcessor implements MethodAnnotationProcessor {
+public class ResponseHeaderProcessor implements MethodAnnotationProcessor<ResponseHeader> {
+  @Override
+  public Type getProcessType() {
+    return ResponseHeader.class;
+  }
 
   @Override
-  public void process(Object annotation, OperationGenerator operationGenerator) {
-    ResponseHeader responseHeader = (ResponseHeader) annotation;
-
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ResponseHeader responseHeader) {
     ResponseHeaderConfig config = AnnotationUtils.convert(responseHeader);
     if (config != null) {
       Property property =
-          AnnotationUtils.generateResponseHeaderProperty(operationGenerator.getSwagger(), config);
-      operationGenerator.addResponseHeader(config.getName(), property);
+          AnnotationUtils.generateResponseHeaderProperty(swaggerGenerator.getSwagger(), config);
+      operationGenerator.addMethodResponseHeader(config.getName(), property);
     }
   }
 }

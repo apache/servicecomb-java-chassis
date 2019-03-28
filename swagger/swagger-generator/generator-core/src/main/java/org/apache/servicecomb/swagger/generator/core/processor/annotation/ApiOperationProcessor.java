@@ -17,12 +17,14 @@
 
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.servicecomb.swagger.generator.core.MethodAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.springframework.util.StringUtils;
 
 import io.swagger.annotations.ApiOperation;
@@ -30,13 +32,16 @@ import io.swagger.models.Operation;
 import io.swagger.models.Scheme;
 import io.swagger.util.BaseReaderUtils;
 
-public class ApiOperationProcessor implements MethodAnnotationProcessor {
-
+public class ApiOperationProcessor implements MethodAnnotationProcessor<ApiOperation> {
   private static final String SEPARATOR = ",";
 
+  public Type getProcessType() {
+    return ApiOperation.class;
+  }
+
   @Override
-  public void process(Object annotation, OperationGenerator operationGenerator) {
-    ApiOperation apiOperationAnnotation = (ApiOperation) annotation;
+  public void process(SwaggerGenerator swaggerGenerator,
+      OperationGenerator operationGenerator, ApiOperation apiOperationAnnotation) {
     Operation operation = operationGenerator.getOperation();
 
     operationGenerator.setHttpMethod(apiOperationAnnotation.httpMethod());
@@ -56,7 +61,7 @@ public class ApiOperationProcessor implements MethodAnnotationProcessor {
     convertProduces(apiOperationAnnotation.produces(), operation);
     convertConsumes(apiOperationAnnotation.consumes(), operation);
     convertProtocols(apiOperationAnnotation.protocols(), operation);
-    AnnotationUtils.addResponse(operationGenerator.getSwagger(),
+    AnnotationUtils.addResponse(swaggerGenerator.getSwagger(),
         operation,
         apiOperationAnnotation);
 
