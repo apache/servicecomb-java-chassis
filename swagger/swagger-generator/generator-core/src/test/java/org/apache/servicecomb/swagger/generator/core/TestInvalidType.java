@@ -18,19 +18,16 @@ package org.apache.servicecomb.swagger.generator.core;
 
 import org.apache.servicecomb.swagger.generator.core.schema.InvalidType;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
-import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
 import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestInvalidType {
-  static SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
-
   @Test
   public void testIntf() {
     UnitTestSwaggerUtils.testException(
-        "generate operation swagger failed, org.apache.servicecomb.swagger.generator.core.schema.InvalidType:testIntf",
+        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.core.schema.InvalidType:testIntf.",
+        "failed to fill parameter, parameterName=input.",
         "[simple type, class org.apache.servicecomb.swagger.generator.core.schema.InvalidType$InvalidIntf] is interface. Must be a concrete type.",
-        context,
         InvalidType.class,
         "testIntf");
   }
@@ -38,9 +35,9 @@ public class TestInvalidType {
   @Test
   public void testAbstractClass() {
     UnitTestSwaggerUtils.testException(
-        "generate operation swagger failed, org.apache.servicecomb.swagger.generator.core.schema.InvalidType:testAbstractClass",
+        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.core.schema.InvalidType:testAbstractClass.",
+        "failed to fill parameter, parameterName=input.",
         "[simple type, class org.apache.servicecomb.swagger.generator.core.schema.InvalidType$InvalidClass] is abstract class. Must be a concrete type.",
-        context,
         InvalidType.class,
         "testAbstractClass");
   }
@@ -49,9 +46,8 @@ public class TestInvalidType {
   @Test
   public void testObject() {
     UnitTestSwaggerUtils.testException(
-        "generate operation swagger failed, org.apache.servicecomb.swagger.generator.core.schema.InvalidType:testObject",
+        "generate swagger operation failed, org.apache.servicecomb.swagger.generator.core.schema.InvalidType:testObject",
         "java.lang.Object not support. Must be a concrete type.",
-        context,
         InvalidType.class,
         "testObject");
   }
@@ -60,9 +56,8 @@ public class TestInvalidType {
   @Test
   public void testNotClearList() {
     UnitTestSwaggerUtils.testException(
-        "generate operation swagger failed, org.apache.servicecomb.swagger.generator.core.schema.InvalidType:testNotClearList",
+        "generate swagger operation failed, org.apache.servicecomb.swagger.generator.core.schema.InvalidType:testNotClearList",
         "java.lang.Object not support. Must be a concrete type.",
-        context,
         InvalidType.class,
         "testNotClearList");
   }
@@ -71,9 +66,8 @@ public class TestInvalidType {
   @Test
   public void testNotClearSet() {
     UnitTestSwaggerUtils.testException(
-        "generate operation swagger failed, org.apache.servicecomb.swagger.generator.core.schema.InvalidType:testNotClearSet",
+        "generate swagger operation failed, org.apache.servicecomb.swagger.generator.core.schema.InvalidType:testNotClearSet",
         "java.lang.Object not support. Must be a concrete type.",
-        context,
         InvalidType.class,
         "testNotClearSet");
   }
@@ -82,9 +76,8 @@ public class TestInvalidType {
   @Test
   public void testNotClearMap() {
     UnitTestSwaggerUtils.testException(
-        "generate operation swagger failed, org.apache.servicecomb.swagger.generator.core.schema.InvalidType:testNotClearMap",
+        "generate swagger operation failed, org.apache.servicecomb.swagger.generator.core.schema.InvalidType:testNotClearMap",
         "java.lang.Object not support. Must be a concrete type.",
-        context,
         InvalidType.class,
         "testNotClearMap");
   }
@@ -93,9 +86,8 @@ public class TestInvalidType {
   @Test
   public void testInvalidFieldClass() {
     UnitTestSwaggerUtils.testException(
-        "generate operation swagger failed, org.apache.servicecomb.swagger.generator.core.schema.InvalidType:testInvalidFieldClass",
+        "generate swagger operation failed, org.apache.servicecomb.swagger.generator.core.schema.InvalidType:testInvalidFieldClass",
         "java.lang.Object not support. Must be a concrete type.",
-        context,
         InvalidType.class,
         "testInvalidFieldClass");
   }

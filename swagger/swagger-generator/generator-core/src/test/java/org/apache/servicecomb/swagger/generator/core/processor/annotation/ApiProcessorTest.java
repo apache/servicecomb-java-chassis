@@ -18,102 +18,94 @@
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
 import static org.hamcrest.Matchers.contains;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
-
 import javax.ws.rs.core.MediaType;
 
-import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
-import org.apache.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
+import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
+import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.hamcrest.Matchers;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.models.Swagger;
 
 public class ApiProcessorTest {
-  private ApiProcessor apiProcessor = new ApiProcessor();
-
-  @Test
-  public void process() {
-    SwaggerGenerator swaggerGenerator = getSwaggerGenerator();
-    apiProcessor.process(SwaggerTestTarget.class.getAnnotation(Api.class),
-        swaggerGenerator);
-
-    assertThat(swaggerGenerator.getDefaultTags(), contains("tag1", "tag2"));
-    assertNull(swaggerGenerator.getSwagger().getConsumes());
-    assertNull(swaggerGenerator.getSwagger().getProduces());
-  }
-
-  @Test
-  public void processOnNoTag() {
-    SwaggerGenerator swaggerGenerator = getSwaggerGenerator();
-    apiProcessor.process(SwaggerTestTargetWithNoTag.class.getAnnotation(Api.class), swaggerGenerator);
-
-    Set<String> tags = swaggerGenerator.getDefaultTags();
-    assertEquals(0, tags.size());
-    assertNull(swaggerGenerator.getSwagger().getConsumes());
-    assertNull(swaggerGenerator.getSwagger().getProduces());
-  }
-
-  @Test
-  public void processOverWriteEmptyConsumesAndProduces() {
-    SwaggerGenerator swaggerGenerator = getSwaggerGenerator();
-    swaggerGenerator.getSwagger().setConsumes(Arrays.asList("", "  "));
-    swaggerGenerator.getSwagger().setProduces(Arrays.asList("", "  "));
-    apiProcessor.process(SwaggerTestTargetWithConsumesAndProduces.class.getAnnotation(Api.class), swaggerGenerator);
-
-    List<String> consumes = swaggerGenerator.getSwagger().getConsumes();
-    assertThat(consumes, Matchers.contains(MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON));
-    List<String> produces = swaggerGenerator.getSwagger().getProduces();
-    assertThat(produces, Matchers.contains(MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON));
-  }
-
-  @Test
-  public void processNotOverWriteValidConsumesAndProduces() {
-    SwaggerGenerator swaggerGenerator = getSwaggerGenerator();
-    swaggerGenerator.getSwagger().setConsumes(Collections.singletonList(MediaType.MULTIPART_FORM_DATA));
-    swaggerGenerator.getSwagger().setProduces(Collections.singletonList(MediaType.MULTIPART_FORM_DATA));
-    apiProcessor.process(SwaggerTestTargetWithConsumesAndProduces.class.getAnnotation(Api.class), swaggerGenerator);
-
-    List<String> consumes = swaggerGenerator.getSwagger().getConsumes();
-    assertThat(consumes, Matchers.contains(MediaType.MULTIPART_FORM_DATA));
-    List<String> produces = swaggerGenerator.getSwagger().getProduces();
-    assertThat(produces, Matchers.contains(MediaType.MULTIPART_FORM_DATA));
-  }
-
-  @Test
-  public void processWithConsumesAndProduces() {
-    SwaggerGenerator swaggerGenerator = getSwaggerGenerator();
-    apiProcessor.process(SwaggerTestTargetWithConsumesAndProduces.class.getAnnotation(Api.class), swaggerGenerator);
-
-    List<String> consumes = swaggerGenerator.getSwagger().getConsumes();
-    assertThat(consumes, Matchers.contains(MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON));
-    List<String> produces = swaggerGenerator.getSwagger().getProduces();
-    assertThat(produces, Matchers.contains(MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON));
-  }
-
-  private SwaggerGenerator getSwaggerGenerator() {
-    return new SwaggerGenerator(Mockito.mock(SwaggerGeneratorContext.class),
-        null);
-  }
-
   @Api(tags = {"tag1", "tag2", "", "tag1"})
   private class SwaggerTestTarget {
+    public void op() {
+
+    }
   }
 
   @Api
   private class SwaggerTestTargetWithNoTag {
+    public void op() {
+
+    }
+  }
+
+  @SwaggerDefinition(consumes = {"", " "}, produces = {"", " "})
+  @Api(consumes = MediaType.TEXT_PLAIN + " , " + MediaType.APPLICATION_JSON,
+      produces = MediaType.APPLICATION_XML + "," + MediaType.APPLICATION_JSON)
+  private class OverrideEmptyConsumesAndProduces {
+  }
+
+  @SwaggerDefinition(consumes = MediaType.MULTIPART_FORM_DATA, produces = MediaType.MULTIPART_FORM_DATA)
+  @Api(consumes = MediaType.TEXT_PLAIN + " , " + MediaType.APPLICATION_JSON,
+      produces = MediaType.APPLICATION_XML + "," + MediaType.APPLICATION_JSON)
+  private class OverWriteValidConsumesAndProduces {
   }
 
   @Api(consumes = MediaType.TEXT_PLAIN + " , " + MediaType.APPLICATION_JSON,
       produces = MediaType.APPLICATION_XML + "," + MediaType.APPLICATION_JSON)
-  private class SwaggerTestTargetWithConsumesAndProduces {
+  private class pureApi {
+  }
+
+  @Test
+  public void process() {
+    SwaggerOperations swaggerOperations = SwaggerOperations.generate(SwaggerTestTarget.class);
+    SwaggerOperation swaggerOperation = swaggerOperations.findOperation("op");
+
+    assertThat(swaggerOperation.getOperation().getTags(), contains("tag1", "tag2"));
+    assertThat(swaggerOperation.getSwagger().getConsumes(), Matchers.contains(MediaType.APPLICATION_JSON));
+    assertThat(swaggerOperation.getSwagger().getProduces(), Matchers.contains(MediaType.APPLICATION_JSON));
+  }
+
+  @Test
+  public void processOnNoTag() {
+    SwaggerOperations swaggerOperations = SwaggerOperations.generate(SwaggerTestTargetWithNoTag.class);
+    SwaggerOperation swaggerOperation = swaggerOperations.findOperation("op");
+
+    assertNull(swaggerOperation.getOperation().getTags());
+    assertThat(swaggerOperation.getSwagger().getConsumes(), Matchers.contains(MediaType.APPLICATION_JSON));
+    assertThat(swaggerOperation.getSwagger().getProduces(), Matchers.contains(MediaType.APPLICATION_JSON));
+  }
+
+  @Test
+  public void processOverWriteEmptyConsumesAndProduces() {
+    Swagger swagger = SwaggerGenerator.generate(OverrideEmptyConsumesAndProduces.class);
+
+    assertThat(swagger.getConsumes(), Matchers.contains(MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON));
+    assertThat(swagger.getProduces(), Matchers.contains(MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON));
+  }
+
+  @Test
+  public void processNotOverWriteValidConsumesAndProduces() {
+    Swagger swagger = SwaggerGenerator.generate(OverWriteValidConsumesAndProduces.class);
+
+    assertThat(swagger.getConsumes(), Matchers.contains(MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON));
+    assertThat(swagger.getProduces(), Matchers.contains(MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON));
+  }
+
+  @Test
+  public void processWithConsumesAndProduces() {
+    Swagger swagger = SwaggerGenerator.generate(pureApi.class);
+
+    assertThat(swagger.getConsumes(), Matchers.contains(MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON));
+    assertThat(swagger.getProduces(), Matchers.contains(MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON));
   }
 }
