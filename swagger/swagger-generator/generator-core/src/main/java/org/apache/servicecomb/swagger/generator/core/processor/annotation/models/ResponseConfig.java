@@ -48,10 +48,6 @@ public class ResponseConfig extends ResponseConfigBase {
     return responseHeaders;
   }
 
-  public void setResponseHeaders(List<ResponseHeaderConfig> responseHeaders) {
-    this.responseHeaders = responseHeaders;
-  }
-
   public void setResponseHeaders(ResponseHeader[] responseHeaders) {
     this.responseHeaders = new ArrayList<>();
     for (ResponseHeader header : responseHeaders) {

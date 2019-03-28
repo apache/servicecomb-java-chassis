@@ -16,22 +16,29 @@
  */
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
-import org.apache.servicecomb.swagger.generator.core.MethodAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findMethodAnnotationProcessor;
+
+import java.lang.reflect.Type;
+
+import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-public class ApiResponsesMethodProcessor implements MethodAnnotationProcessor {
+public class ApiResponsesMethodProcessor implements MethodAnnotationProcessor<ApiResponses> {
+  @Override
+  public Type getProcessType() {
+    return ApiResponses.class;
+  }
 
   @Override
-  public void process(Object annotation, OperationGenerator operationGenerator) {
-    ApiResponses apiResponses = (ApiResponses) annotation;
-
-    MethodAnnotationProcessor processor =
-        operationGenerator.getContext().findMethodAnnotationProcessor(ApiResponse.class);
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      ApiResponses apiResponses) {
+    MethodAnnotationProcessor<ApiResponse> processor = findMethodAnnotationProcessor(ApiResponse.class);
     for (ApiResponse apiResponse : apiResponses.value()) {
-      processor.process(apiResponse, operationGenerator);
+      processor.process(swaggerGenerator, operationGenerator, apiResponse);
     }
   }
 }
