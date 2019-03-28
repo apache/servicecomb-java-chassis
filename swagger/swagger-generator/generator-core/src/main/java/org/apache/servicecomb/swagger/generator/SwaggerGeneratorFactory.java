@@ -14,21 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.swagger.generator;
 
-package org.apache.servicecomb.swagger.generator.core.processor.annotation;
+import org.apache.servicecomb.foundation.common.utils.SPIOrder;
 
-import org.apache.servicecomb.swagger.generator.core.ClassAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
+public interface SwaggerGeneratorFactory extends SPIOrder {
+  boolean canProcess(Class<?> cls);
 
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.models.parameters.Parameter;
-
-public class ApiImplicitParamClassProcessor implements ClassAnnotationProcessor {
-  @Override
-  public void process(Object annotation, SwaggerGenerator swaggerGenerator) {
-    ApiImplicitParam paramAnnotation = (ApiImplicitParam) annotation;
-
-    Parameter parameter = AnnotationUtils.createParameter(swaggerGenerator.getSwagger(), paramAnnotation);
-    swaggerGenerator.getSwagger().addParameter(parameter.getName(), parameter);
-  }
+  SwaggerGenerator create(Class<?> cls);
 }
