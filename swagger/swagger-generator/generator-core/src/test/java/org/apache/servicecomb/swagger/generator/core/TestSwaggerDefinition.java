@@ -20,8 +20,8 @@ package org.apache.servicecomb.swagger.generator.core;
 import java.util.Arrays;
 import java.util.Map;
 
-import org.apache.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
-import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -36,8 +36,6 @@ import io.swagger.annotations.Tag;
 import io.swagger.models.Swagger;
 
 public class TestSwaggerDefinition {
-  SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
-
   @SwaggerDefinition(
       basePath = "base",
       host = "host",
@@ -72,11 +70,7 @@ public class TestSwaggerDefinition {
   @SuppressWarnings("unchecked")
   @Test
   public void testSwaggerDefinition() {
-    SwaggerGenerator swaggerGenerator =
-        new SwaggerGeneratorForTest(context, SwaggerAnnotation.class);
-    swaggerGenerator.generate();
-
-    Swagger swagger = swaggerGenerator.getSwagger();
+    Swagger swagger = SwaggerGenerator.generate(SwaggerAnnotation.class);
 
     Assert.assertEquals(SwaggerAnnotation.class.getName(),
         swagger.getInfo().getVendorExtensions().get(SwaggerConst.EXT_JAVA_INTF));
@@ -121,13 +115,7 @@ public class TestSwaggerDefinition {
 
   @Test
   public void testFillDefault() {
-    SwaggerGenerator swaggerGenerator =
-        new SwaggerGeneratorForTest(context, SwaggerNoAnnotation.class);
-    swaggerGenerator.generate();
-    swaggerGenerator.correctSwagger();
-
-    Swagger swagger = swaggerGenerator.getSwagger();
-
+    Swagger swagger = SwaggerGenerator.generate(SwaggerNoAnnotation.class);
     Assert.assertEquals("2.0", swagger.getSwagger());
     Assert.assertEquals("/SwaggerNoAnnotation", swagger.getBasePath());
     Assert.assertEquals("swagger definition for " + SwaggerNoAnnotation.class.getName(),

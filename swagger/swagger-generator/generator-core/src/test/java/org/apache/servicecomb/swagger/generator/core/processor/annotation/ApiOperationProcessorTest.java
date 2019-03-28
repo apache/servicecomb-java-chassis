@@ -21,85 +21,22 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-import java.lang.reflect.Method;
-import java.util.List;
-
 import javax.ws.rs.core.MediaType;
 
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
-import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
+import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
+import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.hamcrest.Matchers;
+import org.junit.AfterClass;
 import org.junit.Test;
 
 import io.swagger.annotations.ApiOperation;
 
 public class ApiOperationProcessorTest {
+  static SwaggerOperations swaggerOperations = SwaggerOperations.generate(TestClass.class);
 
-  @Test
-  public void testConvertTags() throws NoSuchMethodException {
-    ApiOperationProcessor apiOperationProcessor = new ApiOperationProcessor();
-
-    Method function = TestClass.class.getMethod("function");
-    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(new PojoSwaggerGeneratorContext(), TestClass.class);
-    OperationGenerator operationGenerator = new OperationGenerator(swaggerGenerator, function);
-
-    apiOperationProcessor.process(function.getAnnotation(ApiOperation.class),
-        operationGenerator);
-
-    assertThat(operationGenerator.getOperation().getTags(), containsInAnyOrder("tag1", "tag2"));
-  }
-
-  @Test
-  public void testConvertTagsOnMethodWithNoTag() throws NoSuchMethodException {
-    ApiOperationProcessor apiOperationProcessor = new ApiOperationProcessor();
-
-    Method function = TestClass.class.getMethod("functionWithNoTag");
-    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(new PojoSwaggerGeneratorContext(), TestClass.class);
-    OperationGenerator operationGenerator = new OperationGenerator(swaggerGenerator, function);
-
-    apiOperationProcessor.process(function.getAnnotation(ApiOperation.class),
-        operationGenerator);
-
-    List<String> tagList = operationGenerator.getOperation().getTags();
-    assertNull(tagList);
-  }
-
-  @Test
-  public void testMediaType() throws NoSuchMethodException {
-    ApiOperationProcessor apiOperationProcessor = new ApiOperationProcessor();
-
-    Method method = TestClass.class.getMethod("testSingleMediaType", String.class);
-    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(new PojoSwaggerGeneratorContext(), TestClass.class);
-    OperationGenerator operationGenerator = new OperationGenerator(swaggerGenerator, method);
-
-    apiOperationProcessor.process(method.getAnnotation(ApiOperation.class), operationGenerator);
-
-    assertThat(operationGenerator.getOperation().getConsumes(), Matchers.contains(MediaType.TEXT_PLAIN));
-    assertThat(operationGenerator.getOperation().getProduces(), Matchers.contains(MediaType.APPLICATION_XML));
-
-    method = TestClass.class.getMethod("testMultiMediaType", String.class);
-    apiOperationProcessor.process(method.getAnnotation(ApiOperation.class), operationGenerator);
-
-    assertThat(operationGenerator.getOperation().getConsumes(),
-        Matchers.contains(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN));
-    assertThat(operationGenerator.getOperation().getProduces(),
-        Matchers.contains(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML));
-
-    method = TestClass.class.getMethod("testBlankMediaType", String.class);
-    apiOperationProcessor.process(method.getAnnotation(ApiOperation.class), operationGenerator);
-
-    assertThat(operationGenerator.getOperation().getConsumes(),
-        Matchers.contains(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN));
-    assertThat(operationGenerator.getOperation().getProduces(),
-        Matchers.contains(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML));
-
-    operationGenerator.getOperation().addConsumes(MediaType.TEXT_HTML);
-    operationGenerator.getOperation().addProduces(MediaType.TEXT_HTML);
-    assertThat(operationGenerator.getOperation().getConsumes(),
-        Matchers.contains(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN, MediaType.TEXT_HTML));
-    assertThat(operationGenerator.getOperation().getProduces(),
-        Matchers.contains(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.TEXT_HTML));
+  @AfterClass
+  public static void teardown() {
+    swaggerOperations = null;
   }
 
   private static class TestClass {
@@ -127,5 +64,39 @@ public class ApiOperationProcessorTest {
     public String testBlankMediaType(String input) {
       return input;
     }
+  }
+
+  @Test
+  public void testConvertTags() {
+    SwaggerOperation swaggerOperation = swaggerOperations.findOperation("function");
+    assertThat(swaggerOperation.getOperation().getTags(), containsInAnyOrder("tag1", "tag2"));
+  }
+
+  @Test
+  public void testConvertTagsOnMethodWithNoTag() {
+    SwaggerOperation swaggerOperation = swaggerOperations.findOperation("functionWithNoTag");
+    assertNull(swaggerOperation.getOperation().getTags());
+  }
+
+  @Test
+  public void testMediaType() {
+    SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testSingleMediaType");
+    assertThat(swaggerOperation.getOperation().getConsumes(), Matchers.contains(MediaType.TEXT_PLAIN));
+    assertThat(swaggerOperation.getOperation().getProduces(), Matchers.contains(MediaType.APPLICATION_XML));
+
+    swaggerOperation = swaggerOperations.findOperation("testMultiMediaType");
+    assertThat(swaggerOperation.getOperation().getConsumes(),
+        Matchers.contains(MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN));
+    assertThat(swaggerOperation.getOperation().getProduces(),
+        Matchers.contains(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML));
+
+    swaggerOperation = swaggerOperations.findOperation("testBlankMediaType");
+    assertNull(swaggerOperation.getOperation().getConsumes());
+    assertNull(swaggerOperation.getOperation().getProduces());
+
+    swaggerOperation.getOperation().addConsumes(MediaType.TEXT_HTML);
+    swaggerOperation.getOperation().addProduces(MediaType.TEXT_HTML);
+    assertThat(swaggerOperation.getOperation().getConsumes(), Matchers.contains(MediaType.TEXT_HTML));
+    assertThat(swaggerOperation.getOperation().getProduces(), Matchers.contains(MediaType.TEXT_HTML));
   }
 }
