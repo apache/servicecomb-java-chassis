@@ -16,21 +16,27 @@
  */
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
-import org.apache.servicecomb.swagger.generator.core.ClassAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findClassAnnotationProcessor;
+
+import java.lang.reflect.Type;
+
+import org.apache.servicecomb.swagger.generator.ClassAnnotationProcessor;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-public class ApiResponsesClassProcessor implements ClassAnnotationProcessor {
+public class ApiResponsesClassProcessor implements ClassAnnotationProcessor<ApiResponses> {
   @Override
-  public void process(Object annotation, SwaggerGenerator swaggerGenerator) {
-    ApiResponses apiResponses = (ApiResponses) annotation;
+  public Type getProcessType() {
+    return ApiResponses.class;
+  }
 
-    ClassAnnotationProcessor processor =
-        swaggerGenerator.getContext().findClassAnnotationProcessor(ApiResponse.class);
+  @Override
+  public void process(SwaggerGenerator swaggerGenerator, ApiResponses apiResponses) {
+    ClassAnnotationProcessor<ApiResponse> processor = findClassAnnotationProcessor(ApiResponse.class);
     for (ApiResponse apiResponse : apiResponses.value()) {
-      processor.process(apiResponse, swaggerGenerator);
+      processor.process(swaggerGenerator, apiResponse);
     }
   }
 }
