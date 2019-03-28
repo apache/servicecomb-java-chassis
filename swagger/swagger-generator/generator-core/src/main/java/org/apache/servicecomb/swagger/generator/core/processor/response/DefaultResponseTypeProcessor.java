@@ -16,30 +16,34 @@
  */
 package org.apache.servicecomb.swagger.generator.core.processor.response;
 
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findResponseTypeProcessor;
+
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-import io.swagger.util.ReflectionUtils;
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.core.ResponseTypeProcessor;
-import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
+import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.ResponseTypeProcessor;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.Model;
 import io.swagger.models.properties.Property;
 import io.swagger.models.utils.PropertyModelConverter;
+import io.swagger.util.ReflectionUtils;
 
 public class DefaultResponseTypeProcessor implements ResponseTypeProcessor {
   @Override
-  public Class<?> getResponseType() {
+  public Type getProcessType() {
     // not care for this.
     return null;
   }
 
   @Override
-  public Model process(OperationGenerator operationGenerator, Type genericResponseType) {
+  public Model process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      Type genericResponseType) {
     if (!(genericResponseType instanceof ParameterizedType)) {
-      return doProcess(operationGenerator, genericResponseType);
+      return doProcess(swaggerGenerator, operationGenerator, genericResponseType);
     }
 
     // eg:
@@ -52,19 +56,20 @@ public class DefaultResponseTypeProcessor implements ResponseTypeProcessor {
       responseRawType = ((ParameterizedType) responseType).getRawType();
     }
 
-    ResponseTypeProcessor processor = operationGenerator.getContext().findResponseTypeProcessor(responseRawType);
-    if (responseRawType.equals(processor.getResponseType())) {
-      return processor.process(operationGenerator, responseType);
+    ResponseTypeProcessor processor = findResponseTypeProcessor(responseRawType);
+    if (responseRawType.equals(processor.getProcessType())) {
+      return processor.process(swaggerGenerator, operationGenerator, responseType);
     }
 
-    return doProcess(operationGenerator, genericResponseType);
+    return doProcess(swaggerGenerator, operationGenerator, genericResponseType);
   }
 
-  protected Model doProcess(OperationGenerator operationGenerator, Type responseType) {
+  protected Model doProcess(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      Type responseType) {
     if (ReflectionUtils.isVoid(responseType)) {
       return null;
     }
-    ParamUtils.addDefinitions(operationGenerator.getSwagger(), responseType);
+    SwaggerUtils.addDefinitions(swaggerGenerator.getSwagger(), responseType);
     Property property = ModelConverters.getInstance().readAsProperty(responseType);
     return new PropertyModelConverter().propertyToModel(property);
   }
