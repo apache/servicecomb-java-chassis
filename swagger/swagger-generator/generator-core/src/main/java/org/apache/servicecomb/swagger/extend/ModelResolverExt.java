@@ -21,11 +21,11 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.swagger.converter.property.StringPropertyConverter;
 import org.apache.servicecomb.swagger.extend.module.EnumModuleExt;
 import org.apache.servicecomb.swagger.extend.property.creator.ByteArrayPropertyCreator;
 import org.apache.servicecomb.swagger.extend.property.creator.BytePropertyCreator;
@@ -33,6 +33,7 @@ import org.apache.servicecomb.swagger.extend.property.creator.InputStreamPropert
 import org.apache.servicecomb.swagger.extend.property.creator.PartPropertyCreator;
 import org.apache.servicecomb.swagger.extend.property.creator.PropertyCreator;
 import org.apache.servicecomb.swagger.extend.property.creator.ShortPropertyCreator;
+import org.apache.servicecomb.swagger.generator.SwaggerGeneratorFeature;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -81,7 +82,9 @@ public class ModelResolverExt extends ModelResolver {
 
   @VisibleForTesting
   protected void setType(JavaType type, Map<String, Object> vendorExtensions) {
-    vendorExtensions.put(ExtendConst.EXT_JAVA_CLASS, type.toCanonical());
+    if (SwaggerGeneratorFeature.isLocalExtJavaClassInVendor()) {
+      vendorExtensions.put(ExtendConst.EXT_JAVA_CLASS, type.toCanonical());
+    }
   }
 
   private void checkType(JavaType type) {
@@ -148,10 +151,14 @@ public class ModelResolverExt extends ModelResolver {
 
     Property property = super.resolveProperty(propType, context, annotations, next);
     if (StringProperty.class.isInstance(property)) {
-      if (StringPropertyConverter.isEnum((StringProperty) property)) {
+      if (isEnum(((StringProperty) property).getEnum())) {
         setType(propType, property.getVendorExtensions());
       }
     }
     return property;
+  }
+
+  private boolean isEnum(List<String> enums) {
+    return enums != null && !enums.isEmpty();
   }
 }

@@ -19,6 +19,7 @@ package org.apache.servicecomb.config.inject;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -67,6 +68,14 @@ public class PlaceholderResolver {
     int cartesianProductCount = 1;
 
     int varCount = 0;
+  }
+
+  public String replaceFirst(String str) {
+    return replace(str, Collections.emptyMap()).get(0);
+  }
+
+  public String replaceFirst(String str, Map<String, Object> parameters) {
+    return replace(str, parameters).get(0);
   }
 
   public List<String> replace(String str, Map<String, Object> parameters) {
