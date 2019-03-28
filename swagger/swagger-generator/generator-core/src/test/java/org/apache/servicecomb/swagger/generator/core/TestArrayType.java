@@ -16,46 +16,30 @@
  */
 package org.apache.servicecomb.swagger.generator.core;
 
-import java.lang.reflect.Method;
-
-import org.apache.servicecomb.common.javassist.JavassistUtils;
-import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.schema.ArrayType;
-import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
-import org.junit.After;
+import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
+import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.junit.Assert;
 import org.junit.Test;
 
-import javassist.CtClass;
-import javassist.CtMethod;
+import io.swagger.models.ModelImpl;
+import io.swagger.models.parameters.BodyParameter;
+import io.swagger.models.properties.ByteArrayProperty;
 
 public class TestArrayType {
-  ClassLoader classLoader = new ClassLoader() {
-  };
-
-  @After
-  public void tearDown() {
-    JavassistUtils.clearByClassLoader(classLoader);
-  }
-
   @Test
-  public void test() throws Exception {
-    SwaggerGenerator generator = UnitTestSwaggerUtils.generateSwagger(classLoader, ArrayType.class);
-    Class<?> cls = ClassUtilsForTest.getOrCreateInterface(generator);
-    Method method = ReflectUtils.findMethod(cls, "testBytes");
+  public void test() {
+    SwaggerOperations swaggerOperations = SwaggerOperations.generate(ArrayType.class);
+    SwaggerOperation swaggerOperation = swaggerOperations.findOperation("testBytes");
+    BodyParameter bodyParameter = (BodyParameter) swaggerOperation.getOperation().getParameters().get(0);
+    ModelImpl model = SwaggerUtils.getModelImpl(swaggerOperations.getSwagger(), bodyParameter);
 
-    Class<?> param = (Class<?>) method.getParameters()[0].getParameterizedType();
-    Assert.assertEquals(byte[].class, param.getField("value").getType());
-    Assert.assertEquals(byte[].class, method.getReturnType());
-  }
+    Assert.assertEquals(ModelImpl.OBJECT, model.getType());
+    Assert.assertEquals(1, model.getProperties().size());
 
-  public CtMethod findMethod(CtClass cc, String methodName) {
-    for (CtMethod method : cc.getMethods()) {
-      if (methodName.equals(method.getName())) {
-        return method;
-      }
-    }
-
-    return null;
+    ByteArrayProperty byteArrayProperty = (ByteArrayProperty) model.getProperties().get("value");
+    Assert.assertEquals("string", byteArrayProperty.getType());
+    Assert.assertEquals("byte", byteArrayProperty.getFormat());
   }
 }

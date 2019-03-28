@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.servicecomb.swagger.generator.core.SwaggerConst;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.junit.Assert;
 import org.junit.Test;
 

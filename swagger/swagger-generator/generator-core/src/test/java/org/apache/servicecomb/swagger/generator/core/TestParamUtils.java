@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
-import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
+import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -48,37 +48,37 @@ public class TestParamUtils {
     when(param.getVendorExtensions()).thenReturn(extensions);
 
     extensions.put(SwaggerConst.EXT_RAW_JSON_TYPE, true);
-    Assert.assertTrue(ClassUtils.isRawJsonType(param));
+    Assert.assertTrue(SwaggerUtils.isRawJsonType(param));
 
     extensions.put(SwaggerConst.EXT_RAW_JSON_TYPE, "test");
-    Assert.assertFalse(ClassUtils.isRawJsonType(param));
+    Assert.assertFalse(SwaggerUtils.isRawJsonType(param));
   }
 
   @Test
   public void isComplexProperty() {
     Property property = new RefProperty("ref");
-    Assert.assertTrue(ParamUtils.isComplexProperty(property));
+    Assert.assertTrue(SwaggerUtils.isComplexProperty(property));
     property = new ObjectProperty();
-    Assert.assertTrue(ParamUtils.isComplexProperty(property));
+    Assert.assertTrue(SwaggerUtils.isComplexProperty(property));
     property = new MapProperty();
-    Assert.assertTrue(ParamUtils.isComplexProperty(property));
+    Assert.assertTrue(SwaggerUtils.isComplexProperty(property));
     property = new ArrayProperty(new ObjectProperty());
-    Assert.assertTrue(ParamUtils.isComplexProperty(property));
+    Assert.assertTrue(SwaggerUtils.isComplexProperty(property));
 
     property = new ArrayProperty(new StringProperty());
-    Assert.assertFalse(ParamUtils.isComplexProperty(property));
+    Assert.assertFalse(SwaggerUtils.isComplexProperty(property));
     property = new StringProperty();
-    Assert.assertFalse(ParamUtils.isComplexProperty(property));
+    Assert.assertFalse(SwaggerUtils.isComplexProperty(property));
   }
 
   @Test
   public void setParameterTypeByTypeNormal() {
     AbstractSerializableParameter<?> parameter = new QueryParameter();
-    ParamUtils.setParameterType(String.class, parameter);
+    SwaggerUtils.setParameterType(String.class, parameter);
     Assert.assertEquals("string", parameter.getType());
 
     parameter = new HeaderParameter();
-    ParamUtils.setParameterType(long.class, parameter);
+    SwaggerUtils.setParameterType(long.class, parameter);
     Assert.assertEquals("integer", parameter.getType());
     Assert.assertEquals("int64", parameter.getFormat());
   }
@@ -88,7 +88,7 @@ public class TestParamUtils {
     AbstractSerializableParameter<?> parameter = new QueryParameter();
     parameter.setName("testName");
     try {
-      ParamUtils.setParameterType(ArrayList.class, parameter);
+      SwaggerUtils.setParameterType(ArrayList.class, parameter);
       Assert.fail("an exception is expected!");
     } catch (IllegalArgumentException e) {
       Assert.assertEquals("not allow such type of param:[class io.swagger.models.properties.ArrayProperty], "

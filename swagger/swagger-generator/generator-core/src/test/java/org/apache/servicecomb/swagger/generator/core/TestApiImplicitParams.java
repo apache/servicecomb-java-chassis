@@ -17,24 +17,19 @@
 
 package org.apache.servicecomb.swagger.generator.core;
 
-import org.apache.servicecomb.foundation.test.scaffolding.model.User;
-import org.apache.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
-import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.models.Operation;
 import io.swagger.models.Path;
+import io.swagger.models.RefModel;
 import io.swagger.models.Swagger;
-import io.swagger.models.parameters.Parameter;
+import io.swagger.models.parameters.BodyParameter;
 
 public class TestApiImplicitParams {
-  SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
-
   interface ApiImplicitParamsAnnotation {
     @ApiImplicitParams(
         value = {@ApiImplicitParam(
@@ -46,16 +41,12 @@ public class TestApiImplicitParams {
 
   @Test
   public void testBody() {
-    SwaggerGenerator swaggerGenerator =
-        new SwaggerGeneratorForTest(context, ApiImplicitParamsAnnotation.class);
-    swaggerGenerator.generate();
-
-    Swagger swagger = swaggerGenerator.getSwagger();
+    Swagger swagger = SwaggerGenerator.generate(ApiImplicitParamsAnnotation.class);
     Path path = swagger.getPaths().get("/testBody");
     Operation operation = path.getOperations().get(0);
-    Parameter parameter = operation.getParameters().get(0);
+    BodyParameter parameter = (BodyParameter) operation.getParameters().get(0);
 
-    JavaType javaType = ClassUtilsForTest.findJavaType(swaggerGenerator, parameter);
-    Assert.assertEquals(User.class, javaType.getRawClass());
+    Assert.assertEquals("body", parameter.getName());
+    Assert.assertEquals("User", ((RefModel) parameter.getSchema()).getSimpleRef());
   }
 }

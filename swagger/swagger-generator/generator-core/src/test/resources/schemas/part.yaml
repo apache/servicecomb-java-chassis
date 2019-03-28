@@ -27,33 +27,16 @@ consumes:
 produces:
 - "application/json"
 paths:
-  /testList:
+  /part:
     post:
-      operationId: "testList"
+      operationId: "part"
+      consumes:
+      - "multipart/form-data"
       parameters:
-      - in: "body"
-        name: "value"
+      - name: "part"
+        in: "formData"
         required: false
-        schema:
-          $ref: "#/definitions/testListBody"
+        type: "file"
       responses:
         200:
           description: "response of 200"
-definitions:
-  User:
-    type: "object"
-    properties:
-      name:
-        type: "string"
-      friends:
-        type: "array"
-        items:
-          $ref: "#/definitions/User"
-    x-java-class: "org.apache.servicecomb.foundation.test.scaffolding.model.User"
-  testListBody:
-    type: "object"
-    properties:
-      value:
-        type: "array"
-        items:
-          $ref: "#/definitions/User"
