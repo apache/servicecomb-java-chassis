@@ -14,21 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.swagger.generator;
 
-package org.apache.servicecomb.swagger.generator.core.processor.annotation;
+import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.generator.core.MethodAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
+import io.swagger.models.Model;
 
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.models.parameters.Parameter;
+public interface ResponseTypeProcessor {
+  Type getProcessType();
 
-public class ApiImplicitParamMethodProcessor implements MethodAnnotationProcessor {
-  @Override
-  public void process(Object annotation, OperationGenerator operationGenerator) {
-    ApiImplicitParam paramAnnotation = (ApiImplicitParam) annotation;
-
-    Parameter parameter = AnnotationUtils.createParameter(operationGenerator.getSwagger(), paramAnnotation);
-    operationGenerator.addMethodAnnotationParameter(parameter);
-  }
+  Model process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Type genericResponseType);
 }
