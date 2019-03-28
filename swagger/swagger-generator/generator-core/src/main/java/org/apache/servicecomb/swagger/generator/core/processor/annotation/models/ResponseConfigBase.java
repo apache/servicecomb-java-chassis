@@ -33,10 +33,6 @@ public class ResponseConfigBase {
     this.description = description;
   }
 
-  public String getResponseReference() {
-    return responseReference;
-  }
-
   public void setResponseReference(String responseReference) {
     this.responseReference = responseReference;
   }

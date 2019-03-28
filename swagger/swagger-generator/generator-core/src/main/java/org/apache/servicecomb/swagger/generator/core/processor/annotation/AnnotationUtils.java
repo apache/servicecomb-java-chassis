@@ -17,9 +17,6 @@
 
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,33 +28,18 @@ import org.apache.servicecomb.swagger.generator.core.processor.annotation.models
 import org.apache.servicecomb.swagger.generator.core.processor.annotation.models.ResponseHeaderConfig;
 import org.springframework.util.ClassUtils;
 
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.Example;
-import io.swagger.annotations.ExampleProperty;
 import io.swagger.annotations.ResponseHeader;
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.Model;
 import io.swagger.models.Operation;
 import io.swagger.models.Response;
 import io.swagger.models.Swagger;
-import io.swagger.models.parameters.AbstractSerializableParameter;
-import io.swagger.models.parameters.BodyParameter;
-import io.swagger.models.parameters.CookieParameter;
-import io.swagger.models.parameters.FormParameter;
-import io.swagger.models.parameters.HeaderParameter;
-import io.swagger.models.parameters.Parameter;
-import io.swagger.models.parameters.PathParameter;
-import io.swagger.models.parameters.QueryParameter;
 import io.swagger.models.properties.ArrayProperty;
-import io.swagger.models.properties.FileProperty;
-import io.swagger.models.properties.LongProperty;
 import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.utils.PropertyModelConverter;
-import io.swagger.util.ParameterProcessor;
 import io.swagger.util.ReflectionUtils;
 
 public final class AnnotationUtils {
@@ -227,121 +209,5 @@ public final class AnnotationUtils {
         throw new Error("not support responseContainer " + config.getResponseContainer());
     }
     return property;
-  }
-
-  public static Parameter createParameter(Swagger swagger, ApiImplicitParam paramAnnotation) {
-    Parameter parameter = createParameterInstance(paramAnnotation);
-    Type dataType = ReflectionUtils.typeFromString(paramAnnotation.dataType());
-    parameter = ParameterProcessor.applyAnnotations(swagger,
-        parameter,
-        dataType,
-        Arrays.asList(paramAnnotation));
-    return parameter;
-  }
-
-  private static Parameter createParameterInstance(ApiImplicitParam paramAnnotation) {
-    switch (paramAnnotation.paramType()) {
-      case "path":
-        return new PathParameter();
-      case "query":
-        return new QueryParameter();
-      case "body":
-        return new BodyParameter();
-      case "header":
-        return new HeaderParameter();
-      case "form":
-        return new FormParameter();
-      case "cookie":
-        return new CookieParameter();
-      default:
-        throw new Error("not support paramType " + paramAnnotation.paramType());
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  public static <T> T findAnnotation(Annotation[] annotations, Class<T> annotationType) {
-    for (Annotation annotation : annotations) {
-      if (annotation.annotationType().equals(annotationType)) {
-        return (T) annotation;
-      }
-    }
-
-    return null;
-  }
-
-  public static void processApiParam(Annotation[] paramAnnotations, Parameter parameter) {
-    ApiParam param = findAnnotation(paramAnnotations, ApiParam.class);
-    if (param == null) {
-      return;
-    }
-
-    if (parameter instanceof AbstractSerializableParameter) {
-      processApiParam(param, (AbstractSerializableParameter<?>) parameter);
-      return;
-    }
-
-    processApiParam(param, (BodyParameter) parameter);
-  }
-
-  protected static void processApiParam(ApiParam param, BodyParameter p) {
-    if (param.required()) {
-      p.setRequired(true);
-    }
-    if (StringUtils.isNotEmpty(param.name())) {
-      p.setName(param.name());
-    }
-    if (StringUtils.isNotEmpty(param.value())) {
-      p.setDescription(param.value());
-    }
-    if (StringUtils.isNotEmpty(param.access())) {
-      p.setAccess(param.access());
-    }
-
-    Example example = param.examples();
-    if (example != null && example.value() != null) {
-      for (ExampleProperty ex : example.value()) {
-        String mediaType = ex.mediaType();
-        String value = ex.value();
-        if (!mediaType.isEmpty() && !value.isEmpty()) {
-          p.example(mediaType.trim(), value.trim());
-        }
-      }
-    }
-  }
-
-  protected static void processApiParam(ApiParam param, AbstractSerializableParameter<?> p) {
-    if (param.required()) {
-      p.setRequired(true);
-    }
-    if (param.readOnly()) {
-      p.setReadOnly(true);
-    }
-    if (param.allowEmptyValue()) {
-      p.setAllowEmptyValue(true);
-    }
-    if (StringUtils.isNotEmpty(param.name())) {
-      p.setName(param.name());
-    }
-    if (StringUtils.isNotEmpty(param.value())) {
-      p.setDescription(param.value());
-    }
-    if (StringUtils.isNotEmpty(param.example())) {
-      p.setExample(param.example());
-    }
-    if (StringUtils.isNotEmpty(param.access())) {
-      p.setAccess(param.access());
-    }
-    if (StringUtils.isNoneEmpty(param.collectionFormat())) {
-      p.setCollectionFormat(param.collectionFormat());
-    }
-    if (StringUtils.isNotEmpty(param.type())) {
-      if ("java.io.File".equalsIgnoreCase(param.type())) {
-        p.setProperty(new FileProperty());
-      } else if ("long".equalsIgnoreCase(param.type())) {
-        p.setProperty(new LongProperty());
-      } else {
-        p.setType(param.type());
-      }
-    }
   }
 }
