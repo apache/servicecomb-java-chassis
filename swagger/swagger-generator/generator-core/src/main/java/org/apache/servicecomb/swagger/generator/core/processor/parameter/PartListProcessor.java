@@ -14,10 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.swagger.generator.core.processor.parameter;
 
-package org.apache.servicecomb.swagger.extend.parameter;
+import java.lang.reflect.Type;
+import java.util.List;
 
-import io.swagger.models.parameters.AbstractParameter;
+import javax.servlet.http.Part;
 
-public class HttpRequestParameter extends AbstractParameter implements ContextParameter {
+import com.google.inject.util.Types;
+
+public class PartListProcessor extends PartArrayProcessor {
+  @Override
+  public Type getProcessType() {
+    return Types.newParameterizedType(List.class, Part.class);
+  }
 }
