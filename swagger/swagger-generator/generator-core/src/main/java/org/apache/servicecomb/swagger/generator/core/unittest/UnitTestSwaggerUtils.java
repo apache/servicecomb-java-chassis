@@ -19,10 +19,10 @@ package org.apache.servicecomb.swagger.generator.core.unittest;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
-import org.apache.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.junit.Assert;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,18 +35,6 @@ public final class UnitTestSwaggerUtils {
   private static ObjectWriter writer = Yaml.pretty();
 
   private UnitTestSwaggerUtils() {
-  }
-
-  public static SwaggerGenerator generateSwagger(Class<?> cls) {
-    return generateSwagger(Thread.currentThread().getContextClassLoader(), cls);
-  }
-
-  public static SwaggerGenerator generateSwagger(ClassLoader classLoader, Class<?> cls) {
-    SwaggerGenerator generator = new SwaggerGenerator(cls);
-    generator.setClassLoader(classLoader);
-    generator.generate();
-
-    return generator;
   }
 
   public static String loadExpect(String resPath) {
@@ -79,33 +67,31 @@ public final class UnitTestSwaggerUtils {
     }
   }
 
-  public static SwaggerGenerator testSwagger(ClassLoader classLoader, String resPath, SwaggerGeneratorContext context,
-      Class<?> cls,
-      String... methods) {
-    SwaggerGeneratorForTest generator = new SwaggerGeneratorForTest(context, cls);
-    generator.setClassLoader(classLoader);
-    generator.replaceMethods(methods);
+  public static SwaggerGenerator testSwagger(String resPath, Class<?> cls, String... methods) {
+    SwaggerGenerator generator = SwaggerGenerator.create(cls);
+    generator.replaceMethodWhiteList(methods);
+    generator.getSwaggerGeneratorFeature().setPackageName("gen.cse.ms.ut");
 
     Swagger swagger = generator.generate();
-
-    String expectSchema = loadExpect(resPath);
-    Swagger expectSwagger = parse(expectSchema);
-
     String schema = pretty(swagger);
-    swagger = parse(schema);
 
-    if (swagger != null && !swagger.equals(expectSwagger)) {
+    String expectSchema = loadExpect(resPath).replace("\r\n", "\n");
+    int offset = expectSchema.indexOf("---\nswagger: \"2.0\"");
+    if (offset > 0) {
+      expectSchema = expectSchema.substring(offset);
+    }
+
+    if (!Objects.equals(expectSchema, schema)) {
       Assert.assertEquals(expectSchema, schema);
     }
 
     return generator;
   }
 
-  public static Throwable getException(SwaggerGeneratorContext context, Class<?> cls,
-      String... methods) {
+  public static Throwable getException(Class<?> cls, String... methods) {
     try {
-      SwaggerGeneratorForTest generator = new SwaggerGeneratorForTest(context, cls);
-      generator.replaceMethods(methods);
+      SwaggerGenerator generator = SwaggerGenerator.create(cls);
+      generator.replaceMethodWhiteList(methods);
 
       generator.generate();
     } catch (Throwable e) {
@@ -117,17 +103,22 @@ public final class UnitTestSwaggerUtils {
     return null;
   }
 
-  public static void testException(String expectMsgLevel1, String expectMsgLevel2, SwaggerGeneratorContext context,
-      Class<?> cls,
+  public static void testException(String expectMsgLevel1, String expectMsgLevel2, String expectMsgLevel3, Class<?> cls,
       String... methods) {
-    Throwable exception = getException(context, cls, methods);
+    Throwable exception = getException(cls, methods);
+    Assert.assertEquals(expectMsgLevel1, exception.getMessage());
+    Assert.assertEquals(expectMsgLevel2, exception.getCause().getMessage());
+    Assert.assertEquals(expectMsgLevel3, exception.getCause().getCause().getMessage());
+  }
+
+  public static void testException(String expectMsgLevel1, String expectMsgLevel2, Class<?> cls, String... methods) {
+    Throwable exception = getException(cls, methods);
     Assert.assertEquals(expectMsgLevel1, exception.getMessage());
     Assert.assertEquals(expectMsgLevel2, exception.getCause().getMessage());
   }
 
-  public static void testException(String expectMsg, SwaggerGeneratorContext context, Class<?> cls,
-      String... methods) {
-    Throwable exception = getException(context, cls, methods);
+  public static void testException(String expectMsg, Class<?> cls, String... methods) {
+    Throwable exception = getException(cls, methods);
     Assert.assertEquals(expectMsg, exception.getMessage());
   }
 }
