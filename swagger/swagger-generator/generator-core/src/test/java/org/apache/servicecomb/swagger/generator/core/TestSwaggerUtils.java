@@ -17,38 +17,30 @@
 
 package org.apache.servicecomb.swagger.generator.core;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.util.Date;
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.collectParameterName;
 
-import org.apache.servicecomb.common.javassist.JavassistUtils;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
-import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.swagger.generator.core.schema.InvalidResponseHeader;
 import org.apache.servicecomb.swagger.generator.core.schema.RepeatOperation;
 import org.apache.servicecomb.swagger.generator.core.schema.Schema;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
-import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
-import org.junit.After;
-import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import mockit.Expectations;
 
 public class TestSwaggerUtils {
-  ClassLoader classLoader = new ClassLoader() {
-  };
+  @Rule
+  public ExpectedException expectedException = ExpectedException.none();
 
-  SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
-
-  private SwaggerGenerator testSchemaMethod(String resultName, String... methodNames) {
-    return UnitTestSwaggerUtils.testSwagger(classLoader, "schemas/" + resultName + ".yaml",
-        context,
+  private void testSchemaMethod(String resultName, String... methodNames) {
+    UnitTestSwaggerUtils.testSwagger("schemas/" + resultName + ".yaml",
         Schema.class,
         methodNames);
-  }
-
-  @After
-  public void tearDown() {
-    JavassistUtils.clearByClassLoader(classLoader);
   }
 
   @Test
@@ -95,14 +87,7 @@ public class TestSwaggerUtils {
 
   @Test
   public void testEnum() {
-    SwaggerGenerator generator = testSchemaMethod("enum", "testEnum");
-    Class<?> intf = ClassUtilsForTest.getOrCreateInterface(generator);
-
-    Method method = ReflectUtils.findMethod(intf, "testEnum");
-    Class<?> bodyCls = method.getParameterTypes()[0];
-    Field[] fields = bodyCls.getFields();
-    Assert.assertEquals(Color.class, fields[0].getType());
-    Assert.assertEquals(fields[0].getType(), fields[1].getType());
+    testSchemaMethod("enum", "testEnum");
   }
 
   @Test
@@ -189,28 +174,63 @@ public class TestSwaggerUtils {
 
   @Test
   public void testDate() {
-    SwaggerGenerator generator = testSchemaMethod("date", "testDate");
-    Class<?> intf = ClassUtilsForTest.getOrCreateInterface(generator);
+    testSchemaMethod("date", "testDate");
+  }
 
-    Method method = ReflectUtils.findMethod(intf, "testDate");
-    Assert.assertEquals(Date.class, method.getReturnType());
+  @Test
+  public void testPart() {
+    testSchemaMethod("part", "part");
+  }
+
+  @Test
+  public void testPartArray() {
+    testSchemaMethod("partArray", "partArray");
+  }
+
+  @Test
+  public void testPartList() {
+    testSchemaMethod("partList", "partList");
   }
 
   @Test
   public void testRepeatOperation() {
     UnitTestSwaggerUtils.testException(
-        "OperationId must be unique. org.apache.servicecomb.swagger.generator.core.schema.RepeatOperation:add",
-        context,
+        "OperationId must be unique. method=org.apache.servicecomb.swagger.generator.core.schema.RepeatOperation:add.",
         RepeatOperation.class);
   }
 
   @Test
   public void testInvalidResponseHeader() {
     UnitTestSwaggerUtils.testException(
-        "generate operation swagger failed, org.apache.servicecomb.swagger.generator.core.schema.InvalidResponseHeader:test",
+        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.core.schema.InvalidResponseHeader:test.",
         "invalid responseHeader, ResponseHeaderConfig [name=h, ResponseConfigBase [description=, responseReference=null, responseClass=class java.lang.Void, responseContainer=]]",
-        context,
         InvalidResponseHeader.class,
         "test");
+  }
+
+  @Test
+  public void noParameterName() {
+    Method method = ReflectUtils.findMethod(Schema.class, "testint");
+    Parameter parameter = method.getParameters()[0];
+    new Expectations(parameter) {
+      {
+        parameter.isNamePresent();
+        result = false;
+      }
+    };
+
+    expectedException.expect(IllegalStateException.class);
+    expectedException.expectMessage(
+        "parameter name is not present, method=org.apache.servicecomb.swagger.generator.core.schema.Schema:testint\n"
+            + "solution:\n"
+            + "  change pom.xml, add compiler argument: -parameters, for example:\n"
+            + "    <plugin>\n"
+            + "      <groupId>org.apache.maven.plugins</groupId>\n"
+            + "      <artifactId>maven-compiler-plugin</artifactId>\n"
+            + "      <configuration>\n"
+            + "        <compilerArgument>-parameters</compilerArgument>\n"
+            + "      </configuration>\n"
+            + "    </plugin>");
+    collectParameterName(parameter);
   }
 }
