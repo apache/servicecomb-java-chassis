@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;
 
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
+import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGenerator;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -42,9 +42,7 @@ public class TestSwaggerGenerator {
   public void testBasePathPlaceHolder() {
     ArchaiusUtils.setProperty("var", "varValue");
 
-    PojoSwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
-
-    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(context, null);
+    PojoSwaggerGenerator swaggerGenerator = new PojoSwaggerGenerator(null);
     swaggerGenerator.setBasePath("/a/${var}/b");
 
     Assert.assertEquals("/a/varValue/b", swaggerGenerator.getSwagger().getBasePath());
@@ -52,7 +50,7 @@ public class TestSwaggerGenerator {
 
   @Test
   public void testAddDefaultTag() {
-    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(new PojoSwaggerGeneratorContext(), null);
+    PojoSwaggerGenerator swaggerGenerator = new PojoSwaggerGenerator(null);
 
     swaggerGenerator.addDefaultTag("test1");
     swaggerGenerator.addDefaultTag("");

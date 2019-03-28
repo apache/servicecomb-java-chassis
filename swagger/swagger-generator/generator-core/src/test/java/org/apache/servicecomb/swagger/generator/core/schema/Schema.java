@@ -25,6 +25,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+import javax.servlet.http.Part;
+
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
 
@@ -193,5 +195,17 @@ public class Schema {
       List<User> list,
       Map<String, User> map) {
     return Collections.emptyList();
+  }
+
+  public void part(Part part) {
+
+  }
+
+  public void partArray(Part[] part) {
+
+  }
+
+  public void partList(List<Part> part) {
+
   }
 }

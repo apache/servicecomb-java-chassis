@@ -24,9 +24,10 @@ import static org.junit.Assert.assertThat;
 import java.util.Arrays;
 import java.util.Map;
 
-import org.apache.servicecomb.swagger.generator.core.unittest.SwaggerGeneratorForTest;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
-import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
+import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -44,7 +45,12 @@ import io.swagger.models.Scheme;
 import io.swagger.models.Swagger;
 
 public class TestApiOperation {
-  SwaggerGeneratorContext context = new PojoSwaggerGeneratorContext();
+  static SwaggerOperations swaggerOperations = SwaggerOperations.generate(ApiOperationAnnotation.class);
+
+  @AfterClass
+  public static void teardown() {
+    swaggerOperations = null;
+  }
 
   interface ApiOperationAnnotation {
     @ApiOperation(
@@ -86,11 +92,7 @@ public class TestApiOperation {
 
   @Test
   public void testApiOperation() {
-    SwaggerGenerator swaggerGenerator =
-        new SwaggerGeneratorForTest(context, ApiOperationAnnotation.class);
-    swaggerGenerator.generate();
-
-    Swagger swagger = swaggerGenerator.getSwagger();
+    Swagger swagger = swaggerOperations.getSwagger();
     testBase(swagger.getPath("/test"));
     testPrimitive(swagger.getPath("/testPrimitive"));
     testMap(swagger.getPath("/testMap"));
@@ -102,9 +104,8 @@ public class TestApiOperation {
   @Test
   public void testUnknown() {
     UnitTestSwaggerUtils.testException(
-        "generate operation swagger failed, org.apache.servicecomb.swagger.generator.core.TestApiOperation$UnknownResponseContainer:testUnknown",
+        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.core.TestApiOperation$UnknownResponseContainer:testUnknown.",
         "not support responseContainer xxx",
-        context,
         UnknownResponseContainer.class);
   }
 
