@@ -17,14 +17,15 @@
 
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.servicecomb.swagger.generator.core.ClassAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
-import org.springframework.util.StringUtils;
+import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.ClassAnnotationProcessor;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.models.Contact;
@@ -36,17 +37,21 @@ import io.swagger.models.Swagger;
 import io.swagger.models.Tag;
 import io.swagger.util.BaseReaderUtils;
 
-public class SwaggerDefinitionProcessor implements ClassAnnotationProcessor {
+public class SwaggerDefinitionProcessor implements ClassAnnotationProcessor<SwaggerDefinition> {
   @Override
-  public void process(Object annotation, SwaggerGenerator swaggerGenerator) {
-    SwaggerDefinition definitionAnnotation = (SwaggerDefinition) annotation;
+  public Type getProcessType() {
+    return SwaggerDefinition.class;
+  }
+
+  @Override
+  public void process(SwaggerGenerator swaggerGenerator, SwaggerDefinition definitionAnnotation) {
     Swagger swagger = swaggerGenerator.getSwagger();
 
     swaggerGenerator.setBasePath(definitionAnnotation.basePath());
     swagger.setHost(definitionAnnotation.host());
 
-    convertConsumes(definitionAnnotation, swagger);
-    convertProduces(definitionAnnotation, swagger);
+    SwaggerUtils.setConsumes(swagger, definitionAnnotation.consumes());
+    SwaggerUtils.setProduces(swagger, definitionAnnotation.produces());
     convertSchemes(definitionAnnotation, swagger);
     convertTags(definitionAnnotation, swagger);
     convertInfo(definitionAnnotation.info(), swagger);
@@ -140,29 +145,5 @@ public class SwaggerDefinitionProcessor implements ClassAnnotationProcessor {
       return Scheme.HTTP;
     }
     return Scheme.forValue(annotationScheme.name());
-  }
-
-  private void convertProduces(SwaggerDefinition definitionAnnotation, Swagger swagger) {
-    String[] produces = definitionAnnotation.produces();
-    if (produces == null) {
-      return;
-    }
-    List<String> produceList = Arrays.stream(produces).filter(s -> !StringUtils.isEmpty(s))
-        .collect(Collectors.toList());
-    if (!produceList.isEmpty()) {
-      swagger.setProduces(produceList);
-    }
-  }
-
-  private void convertConsumes(SwaggerDefinition definitionAnnotation, Swagger swagger) {
-    String[] consumes = definitionAnnotation.consumes();
-    if (consumes == null) {
-      return;
-    }
-    List<String> consumeList = Arrays.stream(consumes).filter(s -> !StringUtils.isEmpty(s))
-        .collect(Collectors.toList());
-    if (!consumeList.isEmpty()) {
-      swagger.setConsumes(consumeList);
-    }
   }
 }

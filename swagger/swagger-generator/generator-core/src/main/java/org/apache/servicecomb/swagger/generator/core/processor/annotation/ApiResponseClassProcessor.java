@@ -16,17 +16,23 @@
  */
 package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
-import org.apache.servicecomb.swagger.generator.core.ClassAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
+import java.lang.reflect.Type;
+
+import org.apache.servicecomb.swagger.generator.ClassAnnotationProcessor;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
 import io.swagger.annotations.ApiResponse;
 
-public class ApiResponseClassProcessor implements ClassAnnotationProcessor {
+public class ApiResponseClassProcessor implements ClassAnnotationProcessor<ApiResponse> {
   @Override
-  public void process(Object annotation, SwaggerGenerator swaggerGenerator) {
-    // swagger号称不允许独立使用这个标注，不过支持独立使用，也没什么后果
-    ApiResponse apiResponse = (ApiResponse) annotation;
+  public Type getProcessType() {
+    return ApiResponse.class;
+  }
 
+  // swagger declared not to use ApiResponse directly
+  // but support this is not so bad
+  @Override
+  public void process(SwaggerGenerator swaggerGenerator, ApiResponse apiResponse) {
     AnnotationUtils.addResponse(swaggerGenerator.getSwagger(), apiResponse);
   }
 }
