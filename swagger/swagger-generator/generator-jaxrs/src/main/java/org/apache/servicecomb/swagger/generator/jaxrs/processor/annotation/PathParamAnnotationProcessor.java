@@ -17,20 +17,28 @@
 
 package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
+import java.lang.reflect.Type;
+
 import javax.ws.rs.PathParam;
 
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
+import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
+import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
 import io.swagger.models.parameters.PathParameter;
 
-public class PathParamAnnotationProcessor extends AbstractParameterProcessor<PathParameter> {
+public class PathParamAnnotationProcessor extends AbstractSerializableParameterProcessor<PathParameter, PathParam> {
   @Override
-  public PathParameter createParameter() {
-    return new PathParameter();
+  public Type getProcessType() {
+    return PathParam.class;
   }
 
   @Override
-  public String getAnnotationParameterName(Object annotation) {
-    return ((PathParam) annotation).value();
+  public String getParameterName(PathParam parameterAnnotation) {
+    return parameterAnnotation.value();
+  }
+
+  @Override
+  public HttpParameterType getHttpParameterType(PathParam parameterAnnotation) {
+    return HttpParameterType.path;
   }
 }
