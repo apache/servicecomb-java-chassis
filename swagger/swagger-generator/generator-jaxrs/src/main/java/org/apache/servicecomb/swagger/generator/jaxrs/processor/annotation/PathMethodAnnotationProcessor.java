@@ -17,16 +17,22 @@
 
 package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
+import java.lang.reflect.Type;
+
 import javax.ws.rs.Path;
 
-import org.apache.servicecomb.swagger.generator.core.MethodAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
-public class PathMethodAnnotationProcessor implements MethodAnnotationProcessor {
+public class PathMethodAnnotationProcessor implements MethodAnnotationProcessor<Path> {
   @Override
-  public void process(Object annotation, OperationGenerator operationGenerator) {
-    Path path = (Path) annotation;
+  public Type getProcessType() {
+    return Path.class;
+  }
 
+  @Override
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Path path) {
     operationGenerator.setPath(path.value());
   }
 }
