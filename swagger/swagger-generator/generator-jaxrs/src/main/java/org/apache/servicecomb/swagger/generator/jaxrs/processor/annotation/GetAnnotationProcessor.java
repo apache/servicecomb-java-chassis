@@ -17,23 +17,26 @@
 
 package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.Produces;
+import javax.ws.rs.GET;
+import javax.ws.rs.HttpMethod;
 
-import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
-public class ProducesAnnotationProcessor implements MethodAnnotationProcessor<Produces> {
+public class GetAnnotationProcessor implements MethodAnnotationProcessor<Annotation> {
   @Override
   public Type getProcessType() {
-    return Produces.class;
+    return GET.class;
   }
 
   @Override
-  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Produces produces) {
-    SwaggerUtils.setProduces(operationGenerator.getOperation(), produces.value());
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Annotation annotation) {
+    HttpMethod httpMethod = annotation.annotationType().getAnnotation(HttpMethod.class);
+
+    operationGenerator.setHttpMethod(httpMethod.value());
   }
 }

@@ -17,20 +17,28 @@
 
 package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
+import java.lang.reflect.Type;
+
 import javax.ws.rs.FormParam;
 
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
+import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
+import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
 import io.swagger.models.parameters.FormParameter;
 
-public class FormParamAnnotationProcessor extends AbstractParameterProcessor<FormParameter> {
+public class FormParamAnnotationProcessor extends AbstractSerializableParameterProcessor<FormParameter, FormParam> {
   @Override
-  public String getAnnotationParameterName(Object annotation) {
-    return ((FormParam) annotation).value();
+  public Type getProcessType() {
+    return FormParam.class;
   }
 
   @Override
-  public FormParameter createParameter() {
-    return new FormParameter();
+  public String getParameterName(FormParam parameterAnnotation) {
+    return parameterAnnotation.value();
+  }
+
+  @Override
+  public HttpParameterType getHttpParameterType(FormParam parameterAnnotation) {
+    return HttpParameterType.form;
   }
 }

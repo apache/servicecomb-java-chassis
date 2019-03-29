@@ -17,25 +17,23 @@
 
 package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.lang.reflect.Type;
 
 import javax.ws.rs.Consumes;
 
-import org.apache.servicecomb.swagger.generator.core.MethodAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
-import org.springframework.util.StringUtils;
+import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
-public class ConsumesAnnotationProcessor implements MethodAnnotationProcessor {
+public class ConsumesAnnotationProcessor implements MethodAnnotationProcessor<Consumes> {
   @Override
-  public void process(Object annotation, OperationGenerator operationGenerator) {
-    Consumes consumes = (Consumes) annotation;
+  public Type getProcessType() {
+    return Consumes.class;
+  }
 
-    List<String> consumeList = Arrays.stream(consumes.value()).filter(s -> !StringUtils.isEmpty(s))
-        .collect(Collectors.toList());
-    if (!consumeList.isEmpty()) {
-      operationGenerator.getOperation().setConsumes(consumeList);
-    }
+  @Override
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Consumes consumes) {
+    SwaggerUtils.setConsumes(operationGenerator.getOperation(), consumes.value());
   }
 }

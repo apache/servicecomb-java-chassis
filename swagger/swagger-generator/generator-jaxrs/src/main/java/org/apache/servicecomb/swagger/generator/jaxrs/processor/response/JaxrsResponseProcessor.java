@@ -22,32 +22,30 @@ import java.util.List;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.core.ResponseTypeProcessor;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.processor.response.DefaultResponseTypeProcessor;
-import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
 
-import io.swagger.converter.ModelConverters;
 import io.swagger.models.Model;
-import io.swagger.models.properties.Property;
 
 public class JaxrsResponseProcessor extends DefaultResponseTypeProcessor {
   @Override
-  public Class<?> getResponseType() {
+  public Class<?> getProcessType() {
     return Response.class;
   }
 
   @Override
-  public Model process(OperationGenerator operationGenerator, Type genericResponseType) {
-    // Response完全表达应答类型
-    // 如果produces是text，那么可以假设是string，否则只能报错
+  public Model process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      Type genericResponseType) {
+    // Response can not express respone type
+    // if produces is text，then can assume to be string, otherwise can only throw exception
     List<String> produces = operationGenerator.getOperation().getProduces();
     if (produces == null) {
-      produces = operationGenerator.getSwagger().getProduces();
+      produces = swaggerGenerator.getSwagger().getProduces();
     }
     if (produces != null) {
       if (produces.contains(MediaType.TEXT_PLAIN)) {
-        return doProcess(operationGenerator, String.class);
+        return doProcess(swaggerGenerator, operationGenerator, String.class);
       }
     }
 

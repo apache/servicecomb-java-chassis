@@ -17,20 +17,29 @@
 
 package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
+import java.lang.reflect.Type;
+
 import javax.ws.rs.CookieParam;
 
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
+import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
+import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
 import io.swagger.models.parameters.CookieParameter;
 
-public class CookieParamAnnotationProcessor extends AbstractParameterProcessor<CookieParameter> {
+public class CookieParamAnnotationProcessor extends
+    AbstractSerializableParameterProcessor<CookieParameter, CookieParam> {
   @Override
-  public String getAnnotationParameterName(Object annotation) {
-    return ((CookieParam) annotation).value();
+  public Type getProcessType() {
+    return CookieParam.class;
   }
 
   @Override
-  public CookieParameter createParameter() {
-    return new CookieParameter();
+  public String getParameterName(CookieParam parameterAnnotation) {
+    return parameterAnnotation.value();
+  }
+
+  @Override
+  public HttpParameterType getHttpParameterType(CookieParam parameterAnnotation) {
+    return HttpParameterType.cookie;
   }
 }

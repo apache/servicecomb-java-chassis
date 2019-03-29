@@ -17,20 +17,29 @@
 
 package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
+import java.lang.reflect.Type;
+
 import javax.ws.rs.HeaderParam;
 
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
+import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
+import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
 import io.swagger.models.parameters.HeaderParameter;
 
-public class HeaderParamAnnotationProcessor extends AbstractParameterProcessor<HeaderParameter> {
+public class HeaderParamAnnotationProcessor extends
+    AbstractSerializableParameterProcessor<HeaderParameter, HeaderParam> {
   @Override
-  public HeaderParameter createParameter() {
-    return new HeaderParameter();
+  public Type getProcessType() {
+    return HeaderParam.class;
   }
 
   @Override
-  public String getAnnotationParameterName(Object annotation) {
-    return ((HeaderParam) annotation).value();
+  public String getParameterName(HeaderParam annotation) {
+    return annotation.value();
+  }
+
+  @Override
+  public HttpParameterType getHttpParameterType(HeaderParam parameterAnnotation) {
+    return HttpParameterType.header;
   }
 }
