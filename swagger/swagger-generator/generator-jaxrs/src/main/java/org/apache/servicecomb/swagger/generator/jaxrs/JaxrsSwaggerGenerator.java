@@ -15,21 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
+package org.apache.servicecomb.swagger.generator.jaxrs;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 
 import javax.ws.rs.HttpMethod;
 
-import org.apache.servicecomb.swagger.generator.core.MethodAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.core.AbstractOperationGenerator;
+import org.apache.servicecomb.swagger.generator.rest.RestSwaggerGenerator;
 
-public class HttpMethodAnnotationProcessor implements MethodAnnotationProcessor {
+public class JaxrsSwaggerGenerator extends RestSwaggerGenerator {
+  public JaxrsSwaggerGenerator(Class<?> cls) {
+    super(cls);
+  }
+
   @Override
-  public void process(Object annotation, OperationGenerator operationGenerator) {
-    Annotation httpMethodAnnotation = (Annotation) annotation;
-    HttpMethod httpMethod = httpMethodAnnotation.annotationType().getAnnotation(HttpMethod.class);
+  protected boolean isSkipMethod(Method method) {
+    if (super.isSkipMethod(method)) {
+      return true;
+    }
 
-    operationGenerator.setHttpMethod(httpMethod.value());
+    for (Annotation annotation : method.getAnnotations()) {
+      HttpMethod httpMethod = annotation.annotationType().getAnnotation(HttpMethod.class);
+      if (httpMethod != null) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  @Override
+  protected AbstractOperationGenerator createOperationGenerator(Method method) {
+    return new JaxrsOperationGenerator(this, method);
   }
 }
