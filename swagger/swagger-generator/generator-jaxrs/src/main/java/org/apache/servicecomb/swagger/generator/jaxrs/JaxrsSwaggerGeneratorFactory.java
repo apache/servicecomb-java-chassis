@@ -14,20 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.swagger.generator.jaxrs;
 
-package org.apache.servicecomb.swagger.generator.jaxrs.processor.parameter;
+import javax.ws.rs.Path;
 
-import org.apache.servicecomb.swagger.generator.core.DefaultParameterProcessor;
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
+import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGeneratorFactory;
 
-import io.swagger.models.parameters.BodyParameter;
-
-public class JaxrsDefaultParameterProcessor implements DefaultParameterProcessor {
+public class JaxrsSwaggerGeneratorFactory implements SwaggerGeneratorFactory {
+  private static final int ORDER = 2000;
 
   @Override
-  public void process(OperationGenerator operationGenerator, int paramIndex) {
-    BodyParameter bodyParameter = ParamUtils.createBodyParameter(operationGenerator, paramIndex);
-    operationGenerator.addProviderParameter(bodyParameter);
+  public int getOrder() {
+    return ORDER;
+  }
+
+  @Override
+  public boolean canProcess(Class<?> cls) {
+    return SwaggerUtils.hasAnnotation(cls, Path.class);
+  }
+
+  @Override
+  public SwaggerGenerator create(Class<?> cls) {
+    return new JaxrsSwaggerGenerator(cls);
   }
 }
