@@ -17,115 +17,149 @@
 
 package org.apache.servicecomb.swagger.generator.jaxrs;
 
-import org.apache.servicecomb.common.javassist.JavassistUtils;
-import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
-import org.apache.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
-import org.junit.After;
-import org.junit.Assert;
+import org.apache.servicecomb.swagger.generator.jaxrs.model.ConsumesAndProduces;
 import org.junit.Test;
 
 public class TestJaxrs {
-  ClassLoader classLoader = new ClassLoader() {
-  };
-
-  SwaggerGeneratorContext context = new JaxrsSwaggerGeneratorContext();
-
-  @After
-  public void tearDown() {
-    JavassistUtils.clearByClassLoader(classLoader);
-  }
-
   @Test
   public void testMultiDefaultPath() {
     UnitTestSwaggerUtils.testException(
-        "Only allowed one default path. org.apache.servicecomb.swagger.generator.jaxrs.MultiDefaultPath:p2",
-        context,
+        "Only allowed one default path. method=org.apache.servicecomb.swagger.generator.jaxrs.MultiDefaultPath:p2.",
         MultiDefaultPath.class);
   }
 
   @Test
   public void testResponse() {
-    UnitTestSwaggerUtils.testSwagger(classLoader, "schemas/response.yaml", context, Echo.class, "response");
+    UnitTestSwaggerUtils.testSwagger("schemas/response.yaml", Echo.class, "response");
+  }
+
+  @Test
+  public void responseText() {
+    UnitTestSwaggerUtils.testSwagger("schemas/responseText.yaml", Echo.class, "responseText");
   }
 
   @Test
   public void testInvalidResponse() {
     UnitTestSwaggerUtils.testException(
-        "generate operation swagger failed, org.apache.servicecomb.swagger.generator.jaxrs.Echo:invalidResponse",
+        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.jaxrs.Echo:invalidResponse.",
         "Use ApiOperation or ApiResponses to declare response type",
-        context,
         Echo.class,
         "invalidResponse");
   }
 
   @Test
   public void testEcho() {
-    UnitTestSwaggerUtils.testSwagger(classLoader, "schemas/echo.yaml", context, Echo.class, "echo");
+    UnitTestSwaggerUtils.testSwagger("schemas/echo.yaml", Echo.class, "echo");
   }
 
   @Test
   public void testForm() {
-    UnitTestSwaggerUtils.testSwagger(classLoader, "schemas/form.yaml", context, Echo.class, "form");
+    UnitTestSwaggerUtils.testSwagger("schemas/form.yaml", Echo.class, "form");
   }
 
   @Test
   public void testQuery() {
-    UnitTestSwaggerUtils.testSwagger(classLoader, "schemas/query.yaml", context, Echo.class, "query");
+    UnitTestSwaggerUtils.testSwagger("schemas/query.yaml", Echo.class, "query");
   }
 
   @Test
   public void testQueryComplex() {
     UnitTestSwaggerUtils.testException(
-        "generate operation swagger failed, org.apache.servicecomb.swagger.generator.jaxrs.Echo:queryComplex",
-        "not allow complex type for query parameter, method=org.apache.servicecomb.swagger.generator.jaxrs.Echo:queryComplex, paramIdx=0, type=java.util.List<org.apache.servicecomb.foundation.test.scaffolding.model.User>",
-        context,
+        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.jaxrs.Echo:queryComplex.",
+        "failed to fill parameter, parameterName=querys.",
+        "not allow complex type for query parameter, type=java.util.List<org.apache.servicecomb.foundation.test.scaffolding.model.User>.",
         Echo.class,
         "queryComplex");
   }
 
   @Test
   public void testCookie() {
-    UnitTestSwaggerUtils.testSwagger(classLoader, "schemas/cookie.yaml", context, Echo.class, "cookie");
+    UnitTestSwaggerUtils.testSwagger("schemas/cookie.yaml", Echo.class, "cookie");
   }
 
   @Test
   public void testEmptyPath() {
-    UnitTestSwaggerUtils.testSwagger(classLoader, "schemas/emptyPath.yaml", context, Echo.class, "emptyPath");
+    UnitTestSwaggerUtils.testSwagger("schemas/emptyPath.yaml", Echo.class, "emptyPath");
   }
 
   @Test
   public void testNonRestful() {
-    UnitTestSwaggerUtils
-        .testSwagger(classLoader, "schemas/emptyContract.yaml", context, Echo.class, "ignoredNonRestful");
+    UnitTestSwaggerUtils.testSwagger("schemas/emptyContract.yaml", Echo.class, "ignoredNonRestful");
   }
 
   @Test
   public void testClassMethodNoPath() {
     UnitTestSwaggerUtils.testException(
-        "generate operation swagger failed, org.apache.servicecomb.swagger.generator.jaxrs.ClassMethodNoPath:p1",
+        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.jaxrs.ClassMethodNoPath:p1.",
         "Path must not both be empty in class and method",
-        context,
         ClassMethodNoPath.class);
   }
 
   @Test
-  public void testComposite() {
-    CompositeSwaggerGeneratorContext composite = new CompositeSwaggerGeneratorContext();
-    SwaggerGeneratorContext context = composite.selectContext(Echo.class);
-
-    Assert.assertEquals(JaxrsSwaggerGeneratorContext.class, context.getClass());
-  }
-
-  @Test
   public void testRawJsonStringMethod() {
-    UnitTestSwaggerUtils
-        .testSwagger(classLoader, "schemas/rawJsonStringMethod.yaml", context, Echo.class, "rawJsonStringMethod");
+    UnitTestSwaggerUtils.testSwagger("schemas/rawJsonStringMethod.yaml", Echo.class, "rawJsonStringMethod");
   }
 
   @Test
   public void testEnumBody() {
+    UnitTestSwaggerUtils.testSwagger("schemas/enumBody.yaml", Echo.class, "enumBody");
+  }
+
+  @Test
+  public void consumesAndProduces() {
+    UnitTestSwaggerUtils.testSwagger("schemas/consumes.yaml", ConsumesAndProduces.class);
+  }
+
+  @Test
+  public void aggregatedParam() {
+    UnitTestSwaggerUtils.testSwagger("schemas/aggregatedParam.yaml", Echo.class, "aggregatedParam");
+  }
+
+  @Test
+  public void beanParamDefaultBody() {
     UnitTestSwaggerUtils
-        .testSwagger(classLoader, "schemas/enumBody.yaml", context, Echo.class, "enumBody");
+        .testSwagger("schemas/beanParamDefaultBody.yaml", Echo.class, "beanParamDefaultBody");
+  }
+
+  @Test
+  public void beanParamWithJsonIgnoredTagged() {
+    UnitTestSwaggerUtils
+        .testSwagger("schemas/beanParamWithJsonIgnoredTagged.yaml", Echo.class, "beanParamWithJsonIgnoredTagged");
+  }
+
+  @Test
+  public void beanParamWithPart() {
+    UnitTestSwaggerUtils.testSwagger("schemas/beanParamWithPart.yaml", Echo.class, "beanParamWithPart");
+  }
+
+  @Test
+  public void beanParamComplexField() {
+    UnitTestSwaggerUtils.testException(
+        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.jaxrs.Echo:beanParamComplexField.",
+        "failed to fill parameter, parameterName=q.",
+        "not allow complex type for query parameter, type=org.apache.servicecomb.swagger.generator.jaxrs.model.AggregatedParam.",
+        Echo.class,
+        "beanParamComplexField");
+  }
+
+  @Test
+  public void beanParamComplexSetter() {
+    UnitTestSwaggerUtils.testException(
+        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.jaxrs.Echo:beanParamComplexSetter.",
+        "failed to fill parameter, parameterName=h.",
+        "not allow complex type for header parameter, type=org.apache.servicecomb.swagger.generator.jaxrs.model.AggregatedParam.",
+        Echo.class,
+        "beanParamComplexSetter");
+  }
+
+  @Test
+
+  public void beanParamInvalidDefaultBody() {
+    UnitTestSwaggerUtils.testException(
+        "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.jaxrs.Echo:beanParamInvalidDefaultBody.",
+        "defined 2 body parameter.",
+        Echo.class,
+        "beanParamInvalidDefaultBody");
   }
 }
