@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.swagger.extend.introspector;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

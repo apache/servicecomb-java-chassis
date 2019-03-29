@@ -23,16 +23,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.core.annotation.AliasFor;
-
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface RawJsonRequestBody {
-  @AliasFor("name")
+  // aliasFor "name"
   String value() default "";
 
-  @AliasFor("value")
+  // aliasFor "value"
   String name() default "";
 
   boolean required() default true;

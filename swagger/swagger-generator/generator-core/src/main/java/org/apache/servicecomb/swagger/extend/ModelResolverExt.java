@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.extend.module.EnumModuleExt;
@@ -34,7 +35,6 @@ import org.apache.servicecomb.swagger.extend.property.creator.PartPropertyCreato
 import org.apache.servicecomb.swagger.extend.property.creator.PropertyCreator;
 import org.apache.servicecomb.swagger.extend.property.creator.ShortPropertyCreator;
 import org.apache.servicecomb.swagger.generator.SwaggerGeneratorFeature;
-import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;

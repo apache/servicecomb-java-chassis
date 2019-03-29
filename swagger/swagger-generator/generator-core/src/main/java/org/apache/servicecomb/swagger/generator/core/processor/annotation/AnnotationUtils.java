@@ -22,11 +22,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.generator.core.processor.annotation.models.ResponseConfig;
 import org.apache.servicecomb.swagger.generator.core.processor.annotation.models.ResponseConfigBase;
 import org.apache.servicecomb.swagger.generator.core.processor.annotation.models.ResponseHeaderConfig;
-import org.springframework.util.ClassUtils;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
