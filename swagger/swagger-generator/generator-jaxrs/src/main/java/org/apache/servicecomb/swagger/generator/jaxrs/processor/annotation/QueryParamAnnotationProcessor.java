@@ -17,20 +17,28 @@
 
 package org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation;
 
+import java.lang.reflect.Type;
+
 import javax.ws.rs.QueryParam;
 
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
+import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
+import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
 import io.swagger.models.parameters.QueryParameter;
 
-public class QueryParamAnnotationProcessor extends AbstractParameterProcessor<QueryParameter> {
+public class QueryParamAnnotationProcessor extends AbstractSerializableParameterProcessor<QueryParameter, QueryParam> {
   @Override
-  public QueryParameter createParameter() {
-    return new QueryParameter();
+  public Type getProcessType() {
+    return QueryParam.class;
   }
 
   @Override
-  public String getAnnotationParameterName(Object annotation) {
-    return ((QueryParam) annotation).value();
+  public String getParameterName(QueryParam parameterAnnotation) {
+    return parameterAnnotation.value();
+  }
+
+  @Override
+  public HttpParameterType getHttpParameterType(QueryParam parameterAnnotation) {
+    return HttpParameterType.query;
   }
 }
