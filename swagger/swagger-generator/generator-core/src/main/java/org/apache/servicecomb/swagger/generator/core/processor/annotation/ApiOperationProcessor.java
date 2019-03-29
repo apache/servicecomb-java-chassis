@@ -22,10 +22,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
-import org.springframework.util.StringUtils;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.models.Operation;
