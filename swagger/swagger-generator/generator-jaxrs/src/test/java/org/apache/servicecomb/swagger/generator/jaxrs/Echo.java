@@ -19,6 +19,7 @@ package org.apache.servicecomb.swagger.generator.jaxrs;
 
 import java.util.List;
 
+import javax.ws.rs.BeanParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
@@ -29,11 +30,19 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
+import org.apache.servicecomb.swagger.generator.jaxrs.model.AggregatedParam;
+import org.apache.servicecomb.swagger.generator.jaxrs.model.BeanParamComplexField;
+import org.apache.servicecomb.swagger.generator.jaxrs.model.BeanParamComplexSetter;
+import org.apache.servicecomb.swagger.generator.jaxrs.model.BeanParamDefaultBody;
+import org.apache.servicecomb.swagger.generator.jaxrs.model.BeanParamInvalidDefaultBody;
+import org.apache.servicecomb.swagger.generator.jaxrs.model.BeanParamWithJsonIgnoredTagged;
+import org.apache.servicecomb.swagger.generator.jaxrs.model.BeanParamWithPart;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -43,6 +52,12 @@ public class Echo {
   @POST
   @ApiResponse(response = int.class, code = 200, message = "")
   public Response response() {
+    return null;
+  }
+
+  @GET
+  @Produces(MediaType.TEXT_PLAIN)
+  public Response responseText() {
     return null;
   }
 
@@ -106,5 +121,47 @@ public class Echo {
   @Path(value = "enumBody")
   @POST
   public void enumBody(Color color) {
+  }
+
+  @Path("aggregatedParam")
+  @POST
+  public void aggregatedParam(@BeanParam AggregatedParam aggregatedParam) {
+
+  }
+
+  @Path("beanParamWithPart")
+  @POST
+  public void beanParamWithPart(@BeanParam BeanParamWithPart beanParamWithPart) {
+
+  }
+
+  @Path("beanParamComplexField")
+  @POST
+  public void beanParamComplexField(@BeanParam BeanParamComplexField beanParamComplexField) {
+
+  }
+
+  @Path("beanParamComplexSetter")
+  @POST
+  public void beanParamComplexSetter(@BeanParam BeanParamComplexSetter beanParamComplexSetter) {
+
+  }
+
+  @Path("beanParamDefaultBody")
+  @POST
+  public void beanParamDefaultBody(@BeanParam BeanParamDefaultBody beanParamDefaultBody) {
+
+  }
+
+  @Path("beanParamInvalidDefaultBody")
+  @POST
+  public void beanParamInvalidDefaultBody(@BeanParam BeanParamInvalidDefaultBody beanParamInvalidDefaultBody) {
+
+  }
+
+  @Path("beanParamWithJsonIgnoredTaggedBody")
+  @POST
+  public void beanParamWithJsonIgnoredTagged(@BeanParam BeanParamWithJsonIgnoredTagged beanParamWithJsonIgnoredTagged) {
+
   }
 }
