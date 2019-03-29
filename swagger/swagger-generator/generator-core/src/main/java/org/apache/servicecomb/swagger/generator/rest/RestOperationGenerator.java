@@ -18,9 +18,9 @@ package org.apache.servicecomb.swagger.generator.rest;
 
 import java.lang.reflect.Method;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.generator.core.AbstractOperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
-import org.springframework.util.StringUtils;
 
 public abstract class RestOperationGenerator extends AbstractOperationGenerator {
   public RestOperationGenerator(AbstractSwaggerGenerator swaggerGenerator, Method method) {
