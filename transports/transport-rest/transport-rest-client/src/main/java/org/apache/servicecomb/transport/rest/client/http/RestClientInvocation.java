@@ -249,7 +249,12 @@ public class RestClientInvocation {
     }
 
     stageTrace.finishClientFiltersResponse();
-    asyncResp.fail(invocation.getInvocationType(), e);
+
+    try {
+      asyncResp.fail(invocation.getInvocationType(), e);
+    } catch (Throwable e1) {
+      LOGGER.error(invocation.getMarker(), "failed to invoke asyncResp.fail.", e1);
+    }
   }
 
   protected void setCseContext() {
