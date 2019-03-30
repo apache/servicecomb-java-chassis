@@ -61,7 +61,7 @@ public class URIEndpointObject extends IpPort {
 
   public static Map<String, List<String>> splitQuery(URI uri) {
     final Map<String, List<String>> queryPairs = new LinkedHashMap<>();
-    List<NameValuePair> pairs = URLEncodedUtils.parse(uri, StandardCharsets.UTF_8.name());
+    List<NameValuePair> pairs = URLEncodedUtils.parse(uri, StandardCharsets.UTF_8);
     for (NameValuePair pair : pairs) {
       List<String> list = queryPairs.computeIfAbsent(pair.getName(), name -> {
         return new ArrayList<>();

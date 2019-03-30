@@ -66,6 +66,12 @@
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>tracing-zipkin</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>log4j-over-slf4j</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>io.zipkin.zipkin2</groupId>
