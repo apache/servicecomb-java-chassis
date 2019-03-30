@@ -191,7 +191,6 @@ public class TestDefaultHttpServerMetrics {
   @SuppressWarnings("deprecation")
   @Test
   public void meaningless() {
-    Assert.assertSame(listen1_addr, metrics_listen1_server1.getEndpointMetric().getAddress());
     Assert.assertTrue(metrics_listen1_server1.isEnabled());
 
     metrics_listen1_server1.requestBegin(null, null);

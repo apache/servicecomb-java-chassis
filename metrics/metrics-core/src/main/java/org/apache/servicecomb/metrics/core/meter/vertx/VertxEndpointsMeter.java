@@ -27,17 +27,15 @@ import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMet
 import com.netflix.spectator.api.Id;
 import com.netflix.spectator.api.Measurement;
 
-import io.vertx.core.net.SocketAddress;
-
 public class VertxEndpointsMeter extends AbstractPeriodMeter {
-  private Map<SocketAddress, DefaultEndpointMetric> endpointMetricMap;
+  private Map<String, DefaultEndpointMetric> endpointMetricMap;
 
-  private Map<SocketAddress, EndpointMeter> endpointMeterMap = new ConcurrentHashMapEx<>();
+  private Map<String, EndpointMeter> endpointMeterMap = new ConcurrentHashMapEx<>();
 
   @SuppressWarnings("unchecked")
-  public <T extends DefaultEndpointMetric> VertxEndpointsMeter(Id id, Map<SocketAddress, T> endpointMetricMap) {
+  public <T extends DefaultEndpointMetric> VertxEndpointsMeter(Id id, Map<String, T> endpointMetricMap) {
     this.id = id;
-    this.endpointMetricMap = (Map<SocketAddress, DefaultEndpointMetric>) endpointMetricMap;
+    this.endpointMetricMap = (Map<String, DefaultEndpointMetric>) endpointMetricMap;
   }
 
   @Override
