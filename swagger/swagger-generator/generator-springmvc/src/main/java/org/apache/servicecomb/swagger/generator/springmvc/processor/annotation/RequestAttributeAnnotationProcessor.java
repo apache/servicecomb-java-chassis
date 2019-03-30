@@ -17,32 +17,41 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
+import java.lang.reflect.Type;
+
+import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestAttribute;
+
 import io.swagger.models.parameters.FormParameter;
 
-public class RequestAttributeAnnotationProcessor extends AbstractParameterProcessor<FormParameter> {
+public class RequestAttributeAnnotationProcessor extends
+    AbstractSpringmvcSerializableParameterProcessor<FormParameter, RequestAttribute> {
   @Override
-  public FormParameter createParameter() {
-    return new FormParameter();
+  public Type getProcessType() {
+    return RequestAttribute.class;
   }
 
   @Override
-  public String getAnnotationParameterName(Object annotation) {
-    String value = ((RequestAttribute) annotation).value();
+  public String getParameterName(RequestAttribute annotation) {
+    String value = annotation.value();
     if (value.isEmpty()) {
-      value = ((RequestAttribute) annotation).name();
+      value = annotation.name();
     }
     return value;
   }
 
   @Override
-  protected void fillParameter(Object annotation, OperationGenerator operationGenerator, int paramIdx,
-      FormParameter parameter) {
-    super.fillParameter(annotation, operationGenerator, paramIdx, parameter);
+  public HttpParameterType getHttpParameterType(RequestAttribute parameterAnnotation) {
+    return HttpParameterType.form;
+  }
 
-    RequestAttribute requestAttribute = (RequestAttribute) annotation;
-    parameter.setRequired(requestAttribute.required()); 
+  @Override
+  protected boolean readRequired(RequestAttribute requestAttribute) {
+    return requestAttribute.required();
+  }
+
+  @Override
+  protected String pureReadDefaultValue(RequestAttribute requestAttribute) {
+    return null;
   }
 }

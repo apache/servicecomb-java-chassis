@@ -17,49 +17,41 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
-import org.springframework.util.ObjectUtils;
+import java.lang.reflect.Type;
+
+import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.ValueConstants;
 
 import io.swagger.models.parameters.HeaderParameter;
 
-public class RequestHeaderAnnotationProcessor extends AbstractParameterProcessor<HeaderParameter> {
+public class RequestHeaderAnnotationProcessor extends
+    AbstractSpringmvcSerializableParameterProcessor<HeaderParameter, RequestHeader> {
   @Override
-  public HeaderParameter createParameter() {
-    return new HeaderParameter();
+  public Type getProcessType() {
+    return RequestHeader.class;
   }
 
   @Override
-  public String getAnnotationParameterName(Object annotation) {
-    String value = ((RequestHeader) annotation).value();
+  public String getParameterName(RequestHeader annotation) {
+    String value = annotation.value();
     if (value.isEmpty()) {
-      value = ((RequestHeader) annotation).name();
+      value = annotation.name();
     }
     return value;
   }
 
   @Override
-  protected void fillParameter(Object annotation, OperationGenerator operationGenerator, int paramIdx,
-      HeaderParameter parameter) {
-    super.fillParameter(annotation, operationGenerator, paramIdx, parameter);
-
-    Object defaultValue = parameter.getDefaultValue();
-    if (!ObjectUtils.isEmpty(defaultValue)) {
-      parameter.setRequired(false);
-      return;
-    }
-    RequestHeader requestHeader = (RequestHeader) annotation;
-    parameter.setRequired(requestHeader.required());
+  public HttpParameterType getHttpParameterType(RequestHeader parameterAnnotation) {
+    return HttpParameterType.header;
   }
 
   @Override
-  protected String getAnnotationParameterDefaultValue(Object annotation) {
-    String defaultValue = ((RequestHeader) annotation).defaultValue();
-    if (defaultValue.equals(ValueConstants.DEFAULT_NONE)) {
-      return "";
-    }
-    return defaultValue;
+  protected boolean readRequired(RequestHeader requestHeader) {
+    return requestHeader.required();
+  }
+
+  @Override
+  protected String pureReadDefaultValue(RequestHeader requestHeader) {
+    return requestHeader.defaultValue();
   }
 }

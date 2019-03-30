@@ -17,59 +17,40 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.apache.servicecomb.swagger.generator.core.MethodAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
-import org.springframework.util.StringUtils;
+import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.MethodAnnotationProcessor;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import io.swagger.models.Operation;
 
-abstract class AbstractHttpMethodMappingAnnotationProcessor implements MethodAnnotationProcessor {
+abstract class AbstractHttpMethodMappingAnnotationProcessor<ANNOTATION> implements
+    MethodAnnotationProcessor<ANNOTATION> {
+  protected void doProcess(OperationGenerator operationGenerator, String[] paths, String[] pathValues,
+      RequestMethod requestMethod, String[] consumes, String[] produces) {
+    Operation operation = operationGenerator.getOperation();
 
-  protected void processPath(String[] paths, OperationGenerator operationGenerator) {
+    // paths same to pathValues
+    this.processPath(operationGenerator, paths);
+    this.processPath(operationGenerator, pathValues);
+
+    if (requestMethod != null) {
+      operationGenerator.setHttpMethod(requestMethod.name());
+    }
+    SwaggerUtils.setConsumes(operation, consumes);
+    SwaggerUtils.setProduces(operation, produces);
+  }
+
+  protected void processPath(OperationGenerator operationGenerator, String[] paths) {
     if (null == paths || paths.length == 0) {
       return;
     }
 
     // swagger仅支持配一个path，否则将会出现重复的operationId
     if (paths.length > 1) {
-      throw new Error(String.format("not allowed multi path for %s:%s",
-          operationGenerator.getProviderMethod().getDeclaringClass().getName(),
-          operationGenerator.getProviderMethod().getName()));
+      throw new IllegalStateException("not allowed multi path.");
     }
 
     operationGenerator.setPath(paths[0]);
-  }
-
-  protected void processMethod(RequestMethod requestMethod, OperationGenerator operationGenerator) {
-    operationGenerator.setHttpMethod(requestMethod.name());
-  }
-
-  protected void processConsumes(String[] consumes, Operation operation) {
-    if (null == consumes || consumes.length == 0) {
-      return;
-    }
-
-    List<String> consumeList = Arrays.stream(consumes).filter(s -> !StringUtils.isEmpty(s))
-        .collect(Collectors.toList());
-    if (!consumeList.isEmpty()) {
-      operation.setConsumes(consumeList);
-    }
-  }
-
-  protected void processProduces(String[] produces, Operation operation) {
-    if (null == produces || produces.length == 0) {
-      return;
-    }
-
-    List<String> produceList = Arrays.stream(produces).filter(s -> !StringUtils.isEmpty(s))
-        .collect(Collectors.toList());
-    if (!produceList.isEmpty()) {
-      operation.setProduces(produceList);
-    }
   }
 }

@@ -17,49 +17,41 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
+import java.lang.reflect.Type;
+
+import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import io.swagger.models.parameters.QueryParameter;
 
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
-import org.springframework.util.ObjectUtils;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ValueConstants;
-
-public class RequestParamAnnotationProcessor extends AbstractParameterProcessor<QueryParameter> {
+public class RequestParamAnnotationProcessor extends
+    AbstractSpringmvcSerializableParameterProcessor<QueryParameter, RequestParam> {
   @Override
-  public QueryParameter createParameter() {
-    return new QueryParameter();
+  public Type getProcessType() {
+    return RequestParam.class;
   }
 
   @Override
-  public String getAnnotationParameterName(Object annotation) {
-    String value = ((RequestParam) annotation).value();
+  public String getParameterName(RequestParam annotation) {
+    String value = annotation.value();
     if (value.isEmpty()) {
-      value = ((RequestParam) annotation).name();
+      value = annotation.name();
     }
     return value;
   }
 
   @Override
-  protected void fillParameter(Object annotation, OperationGenerator operationGenerator, int paramIdx,
-      QueryParameter parameter) {
-    super.fillParameter(annotation, operationGenerator, paramIdx, parameter);
-
-    Object defaultValue = parameter.getDefaultValue();
-    if (!ObjectUtils.isEmpty(defaultValue)) {
-      parameter.setRequired(false);
-      return;
-    }
-    RequestParam requestParam = (RequestParam) annotation;
-    parameter.setRequired(requestParam.required());
+  public HttpParameterType getHttpParameterType(RequestParam parameterAnnotation) {
+    return HttpParameterType.query;
   }
 
   @Override
-  protected String getAnnotationParameterDefaultValue(Object annotation) {
-    String defaultValue = ((RequestParam) annotation).defaultValue();
-    if (defaultValue.equals(ValueConstants.DEFAULT_NONE)) {
-      return "";
-    }
-    return defaultValue;
+  protected boolean readRequired(RequestParam requestParam) {
+    return requestParam.required();
+  }
+
+  @Override
+  protected String pureReadDefaultValue(RequestParam requestParam) {
+    return requestParam.defaultValue();
   }
 }

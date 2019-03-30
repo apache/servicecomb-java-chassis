@@ -17,46 +17,29 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
+import java.lang.reflect.Type;
+
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
-import io.swagger.models.Operation;
-
-public class RequestMappingMethodAnnotationProcessor extends AbstractHttpMethodMappingAnnotationProcessor {
-
+public class RequestMappingMethodAnnotationProcessor extends
+    AbstractHttpMethodMappingAnnotationProcessor<RequestMapping> {
   @Override
-  public void process(Object annotation, OperationGenerator operationGenerator) {
-    RequestMapping requestMapping = (RequestMapping) annotation;
-    Operation operation = operationGenerator.getOperation();
-
-    // path/value是等同的
-    this.processPath(requestMapping.path(), operationGenerator);
-    this.processPath(requestMapping.value(), operationGenerator);
-    this.processMethod(requestMapping.method(), operationGenerator);
-
-    this.processConsumes(requestMapping.consumes(), operation);
-    this.processProduces(requestMapping.produces(), operation);
-
-    if (StringUtils.isEmpty(operationGenerator.getHttpMethod())
-        && StringUtils.isEmpty(operationGenerator.getSwaggerGenerator().getHttpMethod())) {
-      throw new Error("HttpMethod must not both be empty in class and method");
-    }
+  public Type getProcessType() {
+    return RequestMapping.class;
   }
 
-  private void processMethod(RequestMethod[] requestMethods, OperationGenerator operationGenerator) {
-    if (null == requestMethods || requestMethods.length == 0) {
-      return;
+  @Override
+  public void process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      RequestMapping requestMapping) {
+    if (requestMapping.method().length > 1) {
+      throw new IllegalStateException("not allowed multi http method.");
     }
 
-    if (requestMethods.length > 1) {
-      throw new Error(
-          String.format("not allowed multi http method for %s:%s",
-              operationGenerator.getProviderMethod().getDeclaringClass().getName(),
-              operationGenerator.getProviderMethod().getName()));
-    }
-
-    super.processMethod(requestMethods[0], operationGenerator);
+    doProcess(operationGenerator,
+        requestMapping.path(), requestMapping.value(),
+        requestMapping.method().length == 0 ? null : requestMapping.method()[0],
+        requestMapping.consumes(), requestMapping.produces());
   }
 }
