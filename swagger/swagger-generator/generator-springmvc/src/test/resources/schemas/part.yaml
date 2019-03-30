@@ -31,12 +31,14 @@ produces:
 paths:
   /:
     put:
-      operationId: "asyncResponseEntity"
-      parameters: []
+      operationId: "part"
+      consumes:
+      - "multipart/form-data"
+      parameters:
+      - name: "part"
+        in: "formData"
+        required: false
+        type: "file"
       responses:
         200:
           description: "response of 200"
-          schema:
-            type: "array"
-            items:
-              type: "string"
