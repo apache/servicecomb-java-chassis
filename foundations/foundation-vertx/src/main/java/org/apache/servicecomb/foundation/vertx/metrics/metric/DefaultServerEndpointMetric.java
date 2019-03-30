@@ -18,12 +18,10 @@ package org.apache.servicecomb.foundation.vertx.metrics.metric;
 
 import java.util.concurrent.atomic.LongAdder;
 
-import io.vertx.core.net.SocketAddress;
-
 public class DefaultServerEndpointMetric extends DefaultEndpointMetric {
   private LongAdder rejectByConnectionLimitCount = new LongAdder();
 
-  public DefaultServerEndpointMetric(SocketAddress address) {
+  public DefaultServerEndpointMetric(String address) {
     super(address);
   }
 

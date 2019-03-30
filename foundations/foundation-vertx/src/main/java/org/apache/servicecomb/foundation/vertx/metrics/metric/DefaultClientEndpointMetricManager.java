@@ -17,7 +17,6 @@
 package org.apache.servicecomb.foundation.vertx.metrics.metric;
 
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -27,49 +26,43 @@ import org.apache.servicecomb.foundation.vertx.metrics.MetricsOptionsEx;
 import com.google.common.annotations.VisibleForTesting;
 
 import io.vertx.core.Vertx;
-import io.vertx.core.net.SocketAddress;
 
 public class DefaultClientEndpointMetricManager {
   private final MetricsOptionsEx metricsOptionsEx;
 
   // to avoid save too many endpoint that not exist any more
   // must check expired periodically
-  private Map<SocketAddress, DefaultClientEndpointMetric> clientEndpointMetricMap = new ConcurrentHashMapEx<>();
+  private Map<String, DefaultClientEndpointMetric> clientEndpointMetricMap = new ConcurrentHashMapEx<>();
 
-  private Vertx vertx;
-
+  // clientEndpointMetricMap is thread safe
+  // but get/isExpired/remove is not safe
+  //  1.isExpired
+  //  2.get
+  //  3.remove
+  // will get a removed instance
+  // so must lock the logic
   private final ReadWriteLock rwlock = new ReentrantReadWriteLock();
-
-  private AtomicBoolean inited = new AtomicBoolean(false);
 
   public DefaultClientEndpointMetricManager(MetricsOptionsEx metricsOptionsEx) {
     this.metricsOptionsEx = metricsOptionsEx;
   }
 
-  @VisibleForTesting
-  public DefaultClientEndpointMetric getClientEndpointMetric(SocketAddress serverAddress) {
-    return clientEndpointMetricMap.get(serverAddress);
-  }
-
-  public Map<SocketAddress, DefaultClientEndpointMetric> getClientEndpointMetricMap() {
-    return clientEndpointMetricMap;
-  }
-
-  public DefaultClientEndpointMetric onConnect(SocketAddress serverAddress) {
-    if (inited.compareAndSet(false, true)) {
-      vertx.setPeriodic(metricsOptionsEx.getCheckClientEndpointMetricIntervalInMilliseconds(),
-          this::onCheckClientEndpointMetricExpired);
-    }
-
+  public DefaultClientEndpointMetric getOrCreateEndpointMetric(String address) {
     rwlock.readLock().lock();
     try {
-      DefaultClientEndpointMetric clientEndpointMetric = clientEndpointMetricMap
-          .computeIfAbsent(serverAddress, DefaultClientEndpointMetric::new);
-      clientEndpointMetric.onConnect();
-      return clientEndpointMetric;
+      return clientEndpointMetricMap.computeIfAbsent(address, DefaultClientEndpointMetric::new);
     } finally {
       rwlock.readLock().unlock();
     }
+  }
+
+  @VisibleForTesting
+  public DefaultClientEndpointMetric getClientEndpointMetric(String serverAddress) {
+    return clientEndpointMetricMap.get(serverAddress);
+  }
+
+  public Map<String, DefaultClientEndpointMetric> getClientEndpointMetricMap() {
+    return clientEndpointMetricMap;
   }
 
   @VisibleForTesting
@@ -89,6 +82,7 @@ public class DefaultClientEndpointMetricManager {
   }
 
   public void setVertx(Vertx vertx) {
-    this.vertx = vertx;
+    vertx.setPeriodic(metricsOptionsEx.getCheckClientEndpointMetricIntervalInMilliseconds(),
+        this::onCheckClientEndpointMetricExpired);
   }
 }

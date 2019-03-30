@@ -23,6 +23,9 @@ public class DefaultTcpSocketMetric {
 
   protected long connectedTime = System.nanoTime();
 
+  public DefaultTcpSocketMetric() {
+  }
+
   public DefaultTcpSocketMetric(DefaultEndpointMetric endpointMetric) {
     this.endpointMetric = endpointMetric;
   }
@@ -30,6 +33,11 @@ public class DefaultTcpSocketMetric {
   @SuppressWarnings("unchecked")
   public <T extends DefaultEndpointMetric> T getEndpointMetric() {
     return (T) endpointMetric;
+  }
+
+  public DefaultTcpSocketMetric endpointMetric(DefaultEndpointMetric endpointMetric) {
+    this.endpointMetric = endpointMetric;
+    return this;
   }
 
   public boolean isConnected() {

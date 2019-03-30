@@ -22,11 +22,8 @@ import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMet
 
 import com.netflix.spectator.api.Id;
 
-import io.vertx.core.net.SocketAddress;
-
 public class VertxServerEndpointsMeter extends VertxEndpointsMeter {
-  public <T extends DefaultEndpointMetric> VertxServerEndpointsMeter(
-      Id id, Map<SocketAddress, T> endpointMetricMap) {
+  public <T extends DefaultEndpointMetric> VertxServerEndpointsMeter(Id id, Map<String, T> endpointMetricMap) {
     super(id, endpointMetricMap);
   }
 

@@ -18,13 +18,11 @@ package org.apache.servicecomb.foundation.vertx.metrics.metric;
 
 import java.util.concurrent.atomic.LongAdder;
 
-import io.vertx.core.net.SocketAddress;
-
 /**
  * for one listen address, include multiple httpClient or httpServer
  */
 public class DefaultEndpointMetric {
-  private SocketAddress address;
+  private String address;
 
   // summary of connect times from boot
   // by this, we can know how many new connections connected recently
@@ -38,11 +36,11 @@ public class DefaultEndpointMetric {
 
   private LongAdder bytesWritten = new LongAdder();
 
-  public DefaultEndpointMetric(SocketAddress address) {
+  public DefaultEndpointMetric(String address) {
     this.address = address;
   }
 
-  public SocketAddress getAddress() {
+  public String getAddress() {
     return address;
   }
 
