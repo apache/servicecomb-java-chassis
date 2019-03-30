@@ -34,7 +34,7 @@ public class ServerEndpointsLogPublisher extends AbstractMeasurementNodeLogPubli
   public void print(boolean printDetail) {
     appendLine(sb, "    server.endpoints:");
     appendLine(sb,
-        "      listen                connectCount    disconnectCount rejectByLimit   connections  send(Bps)    receive(Bps)");
+        "      listen                connectCount disconnectCount rejectByLimit connections send(Bps) receive(Bps)");
 
     double connect = 0;
     double disconnect = 0;
@@ -51,7 +51,7 @@ public class ServerEndpointsLogPublisher extends AbstractMeasurementNodeLogPubli
       writeSize += address.findChild(EndpointMeter.BYTES_WRITTEN).summary();
 
       if (printDetail) {
-        appendLine(sb, "      %-21s %-15.0f %-15.0f %-15.0f %-12.0f %-12s %-12s",
+        appendLine(sb, "      %-21s %-12.0f %-15.0f %-13.0f %-11.0f %-9s %s",
             address.getName(),
             address.findChild(EndpointMeter.CONNECT_COUNT).summary(),
             address.findChild(EndpointMeter.DISCONNECT_COUNT).summary(),
@@ -63,7 +63,7 @@ public class ServerEndpointsLogPublisher extends AbstractMeasurementNodeLogPubli
       }
     }
 
-    appendLine(sb, "      %-21s %-15.0f %-15.0f %-15.0f %-12.0f %-12s %-12s",
+    appendLine(sb, "      %-21s %-12.0f %-15.0f %-13.0f %-11.0f %-9s %s",
         "(summary)",
         connect,
         disconnect,
