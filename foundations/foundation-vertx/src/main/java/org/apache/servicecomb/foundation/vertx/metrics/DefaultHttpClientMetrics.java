@@ -48,11 +48,13 @@ public class DefaultHttpClientMetrics implements
 
   @Override
   public Object enqueueRequest(DefaultClientEndpointMetric endpointMetric) {
+    endpointMetric.enqueueRequest();
     return null;
   }
 
   @Override
   public void dequeueRequest(DefaultClientEndpointMetric endpointMetric, Object taskMetric) {
+    endpointMetric.dequeueRequest();
   }
 
   @Override

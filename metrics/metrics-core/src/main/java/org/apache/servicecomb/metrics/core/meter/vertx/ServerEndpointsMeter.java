@@ -22,8 +22,8 @@ import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMet
 
 import com.netflix.spectator.api.Id;
 
-public class VertxServerEndpointsMeter extends VertxEndpointsMeter {
-  public <T extends DefaultEndpointMetric> VertxServerEndpointsMeter(Id id, Map<String, T> endpointMetricMap) {
+public class ServerEndpointsMeter extends VertxEndpointsMeter {
+  public <T extends DefaultEndpointMetric> ServerEndpointsMeter(Id id, Map<String, T> endpointMetricMap) {
     super(id, endpointMetricMap);
   }
 
