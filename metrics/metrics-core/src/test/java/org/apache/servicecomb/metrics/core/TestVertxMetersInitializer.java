@@ -92,7 +92,7 @@ public class TestVertxMetersInitializer {
     @Override
     public void start(Future<Void> startFuture) {
       HttpClient client = vertx.createHttpClient();
-      client.post(port, "127.0.0.1", "/").handler(resp -> {
+      client.post(port, "127.127.127.127", "/").handler(resp -> {
         resp.bodyHandler((buffer) -> {
           startFuture.complete();
         });
@@ -169,17 +169,18 @@ public class TestVertxMetersInitializer {
         + "    transport  0\n"
         + "  transport:\n"
         + "    client.endpoints:\n"
-        + "      remote                connectCount    disconnectCount connections     send(Bps)    receive(Bps)\n";
+        + "      remote                connectCount disconnectCount queue         connections send(Bps) receive(Bps)\n";
     if (printDetail) {
       expect += String.format(
-          "      127.0.0.1:%-5s       1               0               1               4            21          \n",
+          "      127.127.127.127:%-5s 1            0               0             1           4         21\n",
           port);
     }
-    expect += "      (summary)             1               0               1               4            21          \n"
+    expect += ""
+        + "      (summary)             1            0               0             1           4         21\n"
         + "    server.endpoints:\n"
-        + "      listen                connectCount    disconnectCount rejectByLimit   connections  send(Bps)    receive(Bps)\n"
-        + "      0.0.0.0:0             1               0               0               1            21           4           \n"
-        + "      (summary)             1               0               0               1            21           4           \n\n";
+        + "      listen                connectCount disconnectCount rejectByLimit connections send(Bps) receive(Bps)\n"
+        + "      0.0.0.0:0             1            0               0             1           21        4\n"
+        + "      (summary)             1            0               0             1           21        4\n\n";
     Assert.assertEquals(expect, actual);
   }
 }
