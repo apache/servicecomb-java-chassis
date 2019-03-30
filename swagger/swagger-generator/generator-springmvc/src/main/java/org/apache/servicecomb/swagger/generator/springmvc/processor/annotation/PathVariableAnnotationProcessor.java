@@ -17,33 +17,43 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
+import java.lang.reflect.Type;
+
+import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import io.swagger.models.parameters.PathParameter;
 
-public class PathVariableAnnotationProcessor extends AbstractParameterProcessor<PathParameter> {
+public class PathVariableAnnotationProcessor extends
+    AbstractSpringmvcSerializableParameterProcessor<PathParameter, PathVariable> {
   @Override
-  public PathParameter createParameter() {
-    return new PathParameter();
+  public Type getProcessType() {
+    return PathVariable.class;
   }
 
   @Override
-  public String getAnnotationParameterName(Object annotation) {
-    String value = ((PathVariable) annotation).value();
+  public String getParameterName(PathVariable annotation) {
+    String value = annotation.value();
     if (value.isEmpty()) {
-      value = ((PathVariable) annotation).name();
+      value = annotation.name();
     }
     return value;
   }
-  
-  @Override
-  protected void fillParameter(Object annotation, OperationGenerator operationGenerator, int paramIdx,
-      PathParameter parameter) {
-    super.fillParameter(annotation, operationGenerator, paramIdx, parameter);
 
-    PathVariable pathVariable = (PathVariable) annotation;
-    parameter.setRequired(pathVariable.required()); 
+  @Override
+  public HttpParameterType getHttpParameterType(PathVariable parameterAnnotation) {
+    return HttpParameterType.path;
+  }
+
+  @Override
+  protected boolean readRequired(PathVariable pathVariable) {
+    // path always is required
+    return true;
+  }
+
+  @Override
+  protected String pureReadDefaultValue(PathVariable pathVariable) {
+    // no default for path
+    return "";
   }
 }

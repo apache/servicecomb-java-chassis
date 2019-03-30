@@ -17,33 +17,50 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
+import java.lang.reflect.Type;
+
+import org.apache.servicecomb.swagger.generator.ParameterProcessor;
+import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestPart;
 
-import io.swagger.models.parameters.FormParameter;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
-public class RequestPartAnnotationProcessor extends AbstractParameterProcessor<FormParameter> {
+import io.swagger.models.Operation;
+import io.swagger.models.Swagger;
+import io.swagger.models.parameters.FormParameter;
+import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.FileProperty;
+import io.swagger.models.properties.Property;
+
+public class RequestPartAnnotationProcessor implements
+    ParameterProcessor<FormParameter, RequestPart> {
   @Override
-  public FormParameter createParameter() {
-    return new FormParameter();
+  public Type getProcessType() {
+    return RequestPart.class;
   }
 
   @Override
-  public String getAnnotationParameterName(Object annotation) {
-    String value = ((RequestPart) annotation).value();
+  public String getParameterName(RequestPart annotation) {
+    String value = annotation.value();
     if (value.isEmpty()) {
-      value = ((RequestPart) annotation).name();
+      value = annotation.name();
     }
     return value;
   }
 
   @Override
-  protected void fillParameter(Object annotation, OperationGenerator operationGenerator, int paramIdx,
-      FormParameter parameter) {
-    super.fillParameter(annotation, operationGenerator, paramIdx, parameter);
+  public HttpParameterType getHttpParameterType(RequestPart parameterAnnotation) {
+    return HttpParameterType.form;
+  }
 
-    RequestPart requestPart = (RequestPart) annotation;
-    parameter.setRequired(requestPart.required());
+  @Override
+  public void fillParameter(Swagger swagger, Operation operation, FormParameter formParameter, Type type,
+      RequestPart requestPart) {
+    Property property = new FileProperty();
+    if (TypeFactory.defaultInstance().constructType(type).isContainerType()) {
+      property = new ArrayProperty(new FileProperty());
+    }
+    formParameter.setProperty(property);
+    formParameter.setRequired(requestPart.required());
   }
 }
