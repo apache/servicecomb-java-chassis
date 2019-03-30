@@ -17,24 +17,14 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.parameter;
 
-import org.apache.servicecomb.swagger.generator.core.DefaultParameterProcessor;
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
+import java.lang.reflect.Type;
 
-import io.swagger.models.parameters.QueryParameter;
+import org.apache.servicecomb.swagger.generator.core.processor.parameter.PartArrayProcessor;
+import org.springframework.web.multipart.MultipartFile;
 
-public class SpringmvcDefaultSimpleParameterProcessor implements DefaultParameterProcessor {
-
+public class MultipartFileArrayProcessor extends PartArrayProcessor {
   @Override
-  public void process(OperationGenerator operationGenerator, int paramIdx) {
-    String paramName = ParamUtils.getParameterName(operationGenerator.getProviderMethod(), paramIdx);
-
-    QueryParameter queryParameter = new QueryParameter();
-    queryParameter.setName(paramName);
-    ParamUtils.setParameterType(operationGenerator.getSwagger(),
-        operationGenerator.getProviderMethod(),
-        paramIdx,
-        queryParameter);
-    operationGenerator.addProviderParameter(queryParameter);
+  public Type getProcessType() {
+    return MultipartFile[].class;
   }
 }
