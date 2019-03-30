@@ -19,28 +19,12 @@ package org.apache.servicecomb.swagger.generator.springmvc.processor.parameter;
 
 import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.generator.core.CommonParameterTypeProcessor;
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
+import org.apache.servicecomb.swagger.generator.core.processor.parameter.PartArrayProcessor;
 import org.springframework.web.multipart.MultipartFile;
 
-import io.swagger.models.parameters.FormParameter;
-import io.swagger.models.properties.ArrayProperty;
-import io.swagger.models.properties.FileProperty;
-import io.swagger.models.properties.Property;
-
-public class MultipartFileArrayTypeProcessor implements CommonParameterTypeProcessor {
+public class MultipartFileArrayProcessor extends PartArrayProcessor {
   @Override
-  public Type getParameterType() {
+  public Type getProcessType() {
     return MultipartFile[].class;
-  }
-
-  @Override
-  public void process(OperationGenerator operationGenerator, int paramIdx) {
-    FormParameter parameter = new FormParameter();
-    parameter.setName(ParamUtils.getParameterName(operationGenerator.getProviderMethod(), paramIdx));
-    Property property = new ArrayProperty(new FileProperty());
-    parameter.setProperty(property);
-    operationGenerator.addProviderParameter(parameter);
   }
 }
