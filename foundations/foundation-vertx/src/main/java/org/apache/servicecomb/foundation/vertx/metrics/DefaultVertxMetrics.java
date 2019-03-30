@@ -38,7 +38,7 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
   private VertxOptions vertxOptions;
 
   // to support listen multiple addresses, must use a map to manage the metric
-  private Map<SocketAddress, DefaultServerEndpointMetric> serverEndpointMetricMap = new ConcurrentHashMapEx<>();
+  private Map<String, DefaultServerEndpointMetric> serverEndpointMetricMap = new ConcurrentHashMapEx<>();
 
   private volatile DefaultClientEndpointMetricManager clientEndpointMetricManager;
 
@@ -52,7 +52,7 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
     return clientEndpointMetricManager;
   }
 
-  public Map<SocketAddress, DefaultServerEndpointMetric> getServerEndpointMetricMap() {
+  public Map<String, DefaultServerEndpointMetric> getServerEndpointMetricMap() {
     return serverEndpointMetricMap;
   }
 
@@ -60,7 +60,7 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
   public HttpServerMetrics<?, ?, ?> createHttpServerMetrics(HttpServerOptions options, SocketAddress localAddress
   ) {
     DefaultServerEndpointMetric endpointMetric = serverEndpointMetricMap
-        .computeIfAbsent(localAddress, DefaultServerEndpointMetric::new);
+        .computeIfAbsent(localAddress.toString(), DefaultServerEndpointMetric::new);
     return new DefaultHttpServerMetrics(endpointMetric);
   }
 
@@ -72,7 +72,7 @@ public class DefaultVertxMetrics extends DummyVertxMetrics {
   @Override
   public TCPMetrics<?> createNetServerMetrics(NetServerOptions options, SocketAddress localAddress) {
     DefaultServerEndpointMetric endpointMetric = serverEndpointMetricMap
-        .computeIfAbsent(localAddress, DefaultServerEndpointMetric::new);
+        .computeIfAbsent(localAddress.toString(), DefaultServerEndpointMetric::new);
     return new DefaultTcpServerMetrics(endpointMetric);
   }
 

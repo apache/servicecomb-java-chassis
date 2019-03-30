@@ -139,21 +139,27 @@ public class TestDefaultTcpClientMetrics {
 
     nanoTime = 13;
     defaultVertxMetrics.getClientEndpointMetricManager().onCheckClientEndpointMetricExpired(0);
-    Assert.assertNotNull(defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address1));
-    Assert.assertNotNull(defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address2));
+    Assert.assertNotNull(
+        defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address1.toString()));
+    Assert.assertNotNull(
+        defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address2.toString()));
 
     clientMetrics_b.disconnected(socketMetric_b_1, null);
     clientMetrics_b.disconnected(socketMetric_b_2, null);
 
     nanoTime = 23;
     defaultVertxMetrics.getClientEndpointMetricManager().onCheckClientEndpointMetricExpired(0);
-    Assert.assertNotNull(defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address1));
-    Assert.assertNotNull(defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address2));
+    Assert.assertNotNull(
+        defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address1.toString()));
+    Assert.assertNotNull(
+        defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address2.toString()));
 
     nanoTime = 24;
     defaultVertxMetrics.getClientEndpointMetricManager().onCheckClientEndpointMetricExpired(0);
-    Assert.assertNull(defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address1));
-    Assert.assertNull(defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address2));
+    Assert
+        .assertNull(defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address1.toString()));
+    Assert
+        .assertNull(defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address2.toString()));
   }
 
   @Test

@@ -30,7 +30,7 @@ import io.vertx.core.spi.metrics.HttpClientMetrics;
  * important: not singleton, every HttpClient instance relate to a HttpClientMetrics instance
  */
 public class DefaultHttpClientMetrics implements
-    HttpClientMetrics<DefaultHttpSocketMetric, Object, DefaultHttpSocketMetric, Object, Object> {
+    HttpClientMetrics<DefaultHttpSocketMetric, Object, DefaultHttpSocketMetric, DefaultClientEndpointMetric, Object> {
   private final DefaultClientEndpointMetricManager clientEndpointMetricManager;
 
   public DefaultHttpClientMetrics(DefaultClientEndpointMetricManager clientEndpointMetricManager) {
@@ -38,33 +38,35 @@ public class DefaultHttpClientMetrics implements
   }
 
   @Override
-  public Object createEndpoint(String host, int port, int maxPoolSize) {
+  public DefaultClientEndpointMetric createEndpoint(String host, int port, int maxPoolSize) {
+    return this.clientEndpointMetricManager.getOrCreateEndpointMetric(host + ":" + port);
+  }
+
+  @Override
+  public void closeEndpoint(String host, int port, DefaultClientEndpointMetric endpointMetric) {
+  }
+
+  @Override
+  public Object enqueueRequest(DefaultClientEndpointMetric endpointMetric) {
     return null;
   }
 
   @Override
-  public void closeEndpoint(String host, int port, Object endpointMetric) {
+  public void dequeueRequest(DefaultClientEndpointMetric endpointMetric, Object taskMetric) {
   }
 
   @Override
-  public Object enqueueRequest(Object endpointMetric) {
-    return null;
+  public void endpointConnected(DefaultClientEndpointMetric endpointMetric, DefaultHttpSocketMetric socketMetric) {
+    socketMetric.endpointMetric(endpointMetric);
+    endpointMetric.onConnect();
   }
 
   @Override
-  public void dequeueRequest(Object endpointMetric, Object taskMetric) {
+  public void endpointDisconnected(DefaultClientEndpointMetric endpointMetric, DefaultHttpSocketMetric socketMetric) {
   }
 
   @Override
-  public void endpointConnected(Object endpointMetric, DefaultHttpSocketMetric socketMetric) {
-  }
-
-  @Override
-  public void endpointDisconnected(Object endpointMetric, DefaultHttpSocketMetric socketMetric) {
-  }
-
-  @Override
-  public DefaultHttpSocketMetric requestBegin(Object endpointMetric,
+  public DefaultHttpSocketMetric requestBegin(DefaultClientEndpointMetric endpointMetric,
       DefaultHttpSocketMetric socketMetric, SocketAddress localAddress, SocketAddress remoteAddress,
       HttpClientRequest request) {
     socketMetric.requestBegin();
@@ -81,7 +83,7 @@ public class DefaultHttpClientMetrics implements
   }
 
   @Override
-  public DefaultHttpSocketMetric responsePushed(Object endpointMetric,
+  public DefaultHttpSocketMetric responsePushed(DefaultClientEndpointMetric endpointMetric,
       DefaultHttpSocketMetric socketMetric,
       SocketAddress localAddress,
       SocketAddress remoteAddress, HttpClientRequest request) {
@@ -97,7 +99,7 @@ public class DefaultHttpClientMetrics implements
   }
 
   @Override
-  public Object connected(Object endpointMetric, DefaultHttpSocketMetric socketMetric,
+  public Object connected(DefaultClientEndpointMetric endpointMetric, DefaultHttpSocketMetric socketMetric,
       WebSocket webSocket) {
     return null;
   }
@@ -109,8 +111,7 @@ public class DefaultHttpClientMetrics implements
 
   @Override
   public DefaultHttpSocketMetric connected(SocketAddress remoteAddress, String remoteName) {
-    DefaultClientEndpointMetric endpointMetric = this.clientEndpointMetricManager.onConnect(remoteAddress);
-    return new DefaultHttpSocketMetric(endpointMetric);
+    return new DefaultHttpSocketMetric();
   }
 
   @Override

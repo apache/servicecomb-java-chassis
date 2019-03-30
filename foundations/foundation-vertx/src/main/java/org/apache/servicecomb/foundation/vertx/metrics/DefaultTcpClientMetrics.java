@@ -35,7 +35,9 @@ public class DefaultTcpClientMetrics implements TCPMetrics<DefaultTcpSocketMetri
 
   @Override
   public DefaultTcpSocketMetric connected(SocketAddress remoteAddress, String remoteName) {
-    DefaultClientEndpointMetric endpointMetric = this.clientEndpointMetricManager.onConnect(remoteAddress);
+    DefaultClientEndpointMetric endpointMetric = this.clientEndpointMetricManager
+        .getOrCreateEndpointMetric(remoteAddress.toString());
+    endpointMetric.onConnect();
     return new DefaultTcpSocketMetric(endpointMetric);
   }
 

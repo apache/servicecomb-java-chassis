@@ -93,7 +93,10 @@ public class TestDefaultHttpClientMetrics {
 
   private static DefaultHttpSocketMetric initSocketMetric(DefaultHttpClientMetrics metrics,
       SocketAddress address) {
-    return metrics.connected(address, address.toString());
+    DefaultClientEndpointMetric endpointMetric = metrics.createEndpoint(address.host(), address.port(), 0);
+    DefaultHttpSocketMetric socketMetric = metrics.connected(address, address.toString());
+    metrics.endpointConnected(endpointMetric, socketMetric);
+    return socketMetric;
   }
 
   @Before
@@ -144,21 +147,27 @@ public class TestDefaultHttpClientMetrics {
 
     nanoTime = 13;
     defaultVertxMetrics.getClientEndpointMetricManager().onCheckClientEndpointMetricExpired(0);
-    Assert.assertNotNull(defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address1));
-    Assert.assertNotNull(defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address2));
+    Assert.assertNotNull(
+        defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address1.toString()));
+    Assert.assertNotNull(
+        defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address2.toString()));
 
     clientMetrics_b.disconnected(socketMetric_b_1, null);
     clientMetrics_b.disconnected(socketMetric_b_2, null);
 
     nanoTime = 23;
     defaultVertxMetrics.getClientEndpointMetricManager().onCheckClientEndpointMetricExpired(0);
-    Assert.assertNotNull(defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address1));
-    Assert.assertNotNull(defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address2));
+    Assert.assertNotNull(
+        defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address1.toString()));
+    Assert.assertNotNull(
+        defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address2.toString()));
 
     nanoTime = 24;
     defaultVertxMetrics.getClientEndpointMetricManager().onCheckClientEndpointMetricExpired(0);
-    Assert.assertNull(defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address1));
-    Assert.assertNull(defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address2));
+    Assert
+        .assertNull(defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address1.toString()));
+    Assert
+        .assertNull(defaultVertxMetrics.getClientEndpointMetricManager().getClientEndpointMetric(address2.toString()));
   }
 
   @Test
@@ -286,11 +295,8 @@ public class TestDefaultHttpClientMetrics {
   public void meaningless() {
     Assert.assertTrue(clientMetrics_a.isEnabled());
 
-    clientMetrics_a.enqueueRequest(endpointMetric_a_1);
-    clientMetrics_a.dequeueRequest(endpointMetric_a_1, null);
     clientMetrics_a.createEndpoint(null, 0, 0);
     clientMetrics_a.closeEndpoint(null, 0, null);
-    clientMetrics_a.endpointConnected(endpointMetric_a_1, null);
     clientMetrics_a.endpointDisconnected(endpointMetric_a_1, null);
     clientMetrics_a.responseBegin(null, null);
     clientMetrics_a.responsePushed(null, null, null, null, null);

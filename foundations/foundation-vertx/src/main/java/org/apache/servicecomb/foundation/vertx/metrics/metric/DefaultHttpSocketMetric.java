@@ -21,6 +21,9 @@ public class DefaultHttpSocketMetric extends DefaultTcpSocketMetric {
 
   private long requestEndTime;
 
+  public DefaultHttpSocketMetric() {
+  }
+
   public DefaultHttpSocketMetric(DefaultEndpointMetric endpointMetric) {
     super(endpointMetric);
   }
