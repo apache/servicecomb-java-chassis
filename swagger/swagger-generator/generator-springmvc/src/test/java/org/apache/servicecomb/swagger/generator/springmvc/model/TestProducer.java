@@ -14,21 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.generator.springmvc;
+package org.apache.servicecomb.swagger.generator.springmvc.model;
 
-import org.springframework.web.bind.annotation.GetMapping;
+import javax.ws.rs.core.MediaType;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@RequestMapping(path = "abc", method = RequestMethod.POST)
-public class MultiDefaultPath {
-  @GetMapping
-  public void p1() {
-
+@RequestMapping(path = "/")
+public class TestProducer {
+  @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_XML, produces = MediaType.APPLICATION_XML)
+  public String testSingleMediaType(String input) {
+    return input;
   }
 
-  @RequestMapping(method = RequestMethod.GET)
-  public void p2() {
+  @RequestMapping(method = RequestMethod.PUT, consumes = {MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON},
+      produces = {MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON})
+  public String testMultipleMediaType(String input) {
+    return input;
+  }
 
+  @RequestMapping(method = RequestMethod.POST, consumes = "", produces = "")
+  public String testBlankMediaType(String input) {
+    return input;
   }
 }
