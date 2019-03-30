@@ -17,20 +17,24 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
-import java.util.Arrays;
+import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.generator.core.ClassAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
+import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.ClassAnnotationProcessor;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import io.swagger.models.Swagger;
 
-public class RequestMappingClassAnnotationProcessor implements ClassAnnotationProcessor {
+public class RequestMappingClassAnnotationProcessor implements ClassAnnotationProcessor<RequestMapping> {
+  @Override
+  public Type getProcessType() {
+    return RequestMapping.class;
+  }
 
   @Override
-  public void process(Object annotation, SwaggerGenerator swaggerGenerator) {
-    RequestMapping requestMapping = (RequestMapping) annotation;
+  public void process(SwaggerGenerator swaggerGenerator, RequestMapping requestMapping) {
     Swagger swagger = swaggerGenerator.getSwagger();
 
     this.processMethod(requestMapping.method(), swaggerGenerator);
@@ -38,8 +42,8 @@ public class RequestMappingClassAnnotationProcessor implements ClassAnnotationPr
     // path/value是等同的
     this.processPath(requestMapping.path(), swaggerGenerator);
     this.processPath(requestMapping.value(), swaggerGenerator);
-    this.processConsumes(requestMapping.consumes(), swagger);
-    this.processProduces(requestMapping.produces(), swagger);
+    SwaggerUtils.setConsumes(swagger, requestMapping.consumes());
+    SwaggerUtils.setProduces(swagger, requestMapping.produces());
   }
 
   protected void processPath(String[] paths, SwaggerGenerator swaggerGenerator) {
@@ -49,7 +53,8 @@ public class RequestMappingClassAnnotationProcessor implements ClassAnnotationPr
 
     // swagger仅支持配一个basePath
     if (paths.length > 1) {
-      throw new Error("not support multi path for " + swaggerGenerator.getCls().getName());
+      throw new IllegalStateException(
+          String.format("not support multi path, class=%s.", swaggerGenerator.getClazz().getName()));
     }
 
     swaggerGenerator.setBasePath(paths[0]);
@@ -61,26 +66,10 @@ public class RequestMappingClassAnnotationProcessor implements ClassAnnotationPr
     }
 
     if (requestMethods.length > 1) {
-      throw new Error(
-          "not allowed multi http method for " + swaggerGenerator.getCls().getName());
+      throw new IllegalStateException(
+          String.format("not support multi http method, class=%s.", swaggerGenerator.getClazz().getName()));
     }
 
     swaggerGenerator.setHttpMethod(requestMethods[0].name());
-  }
-
-  private void processConsumes(String[] consumes, Swagger swagger) {
-    if (null == consumes || consumes.length == 0) {
-      return;
-    }
-
-    swagger.setConsumes(Arrays.asList(consumes));
-  }
-
-  protected void processProduces(String[] produces, Swagger swagger) {
-    if (null == produces || produces.length == 0) {
-      return;
-    }
-
-    swagger.setProduces(Arrays.asList(produces));
   }
 }
