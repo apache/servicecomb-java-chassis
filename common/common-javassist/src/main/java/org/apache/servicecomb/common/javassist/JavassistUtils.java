@@ -103,7 +103,7 @@ public final class JavassistUtils {
       addEnumConstructor(classPool, ctClass);
       addEnumValuesMethod(ctClass, values);
 
-      return ctClass.toClass(classLoader, null);
+      return (Class<? extends Enum>) ctClass.toClass(classLoader, null);
     } catch (Throwable e) {
       throw new Error(e);
     }

@@ -27,7 +27,6 @@ import org.junit.Test;
 import com.google.common.eventbus.EventBus;
 import com.netflix.servo.DefaultMonitorRegistry;
 import com.netflix.spectator.api.Registry;
-import com.netflix.spectator.servo.ServoRegistry;
 
 import mockit.Deencapsulation;
 
@@ -39,11 +38,13 @@ public class TestDefaultRegistryInitializer {
   DefaultRegistryInitializer registryInitializer = new DefaultRegistryInitializer();
 
   @Test
+  @SuppressWarnings("deprecation")
   public void init() {
     registryInitializer.init(globalRegistry, new EventBus(), new MetricsBootstrapConfig());
 
     Assert.assertEquals(-10, registryInitializer.getOrder());
-    Assert.assertThat(globalRegistry.getDefaultRegistry(), Matchers.instanceOf(ServoRegistry.class));
+    Assert.assertThat(globalRegistry.getDefaultRegistry(),
+        Matchers.instanceOf(com.netflix.spectator.servo.ServoRegistry.class));
     Assert.assertEquals(1, registries.size());
     Assert.assertEquals(1, DefaultMonitorRegistry.getInstance().getRegisteredMonitors().size());
 
