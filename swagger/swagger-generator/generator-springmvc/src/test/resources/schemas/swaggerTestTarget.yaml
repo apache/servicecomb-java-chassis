@@ -19,24 +19,20 @@
 swagger: "2.0"
 info:
   version: "1.0.0"
-  title: "swagger definition for org.apache.servicecomb.swagger.generator.springmvc.Echo"
-  x-java-interface: "gen.cse.ms.ut.EchoIntf"
-basePath: "/Echo"
+  title: "swagger definition for org.apache.servicecomb.swagger.generator.springmvc.model.SwaggerTestTarget"
+  x-java-interface: "gen.cse.ms.ut.SwaggerTestTargetIntf"
+basePath: "/test"
 consumes:
-- "a"
-- "b"
+- "text/plain"
+- "application/json"
 produces:
-- "a"
-- "b"
+- "application/json"
+- "text/plain"
 paths:
   /:
-    put:
-      operationId: "asyncResponseEntity"
+    post:
+      operationId: "method"
       parameters: []
       responses:
         200:
           description: "response of 200"
-          schema:
-            type: "array"
-            items:
-              type: "string"

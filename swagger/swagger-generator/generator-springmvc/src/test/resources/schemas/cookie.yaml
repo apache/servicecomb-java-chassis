@@ -31,12 +31,13 @@ produces:
 paths:
   /:
     put:
-      operationId: "asyncResponseEntity"
-      parameters: []
+      operationId: "cookie"
+      parameters:
+      - name: "cookie"
+        in: "cookie"
+        required: false
+        type: "integer"
+        format: "int32"
       responses:
         200:
           description: "response of 200"
-          schema:
-            type: "array"
-            items:
-              type: "string"

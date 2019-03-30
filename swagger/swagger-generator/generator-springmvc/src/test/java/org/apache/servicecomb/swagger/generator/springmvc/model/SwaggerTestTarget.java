@@ -14,18 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.generator.springmvc;
+package org.apache.servicecomb.swagger.generator.springmvc.model;
 
-import org.apache.servicecomb.swagger.generator.springmvc.processor.response.ResponseEntityProcessor;
-import org.junit.Assert;
-import org.junit.Test;
-import org.springframework.http.ResponseEntity;
+import javax.ws.rs.core.MediaType;
 
-public class TestResponseEntityProcessor {
-  ResponseEntityProcessor processor = new ResponseEntityProcessor();
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-  @Test
-  public void getResponseType() {
-    Assert.assertEquals(ResponseEntity.class, processor.getResponseType());
+@RequestMapping(path = "/test", method = RequestMethod.POST,
+    consumes = {MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON},
+    produces = {MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
+public class SwaggerTestTarget {
+  @RequestMapping
+  public void method() {
+
   }
 }
