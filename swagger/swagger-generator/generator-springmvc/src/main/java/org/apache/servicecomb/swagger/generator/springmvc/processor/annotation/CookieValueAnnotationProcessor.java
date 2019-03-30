@@ -17,49 +17,41 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractParameterProcessor;
-import org.springframework.util.ObjectUtils;
+import java.lang.reflect.Type;
+
+import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.ValueConstants;
 
 import io.swagger.models.parameters.CookieParameter;
 
-public class CookieValueAnnotationProcessor extends AbstractParameterProcessor<CookieParameter> {
+public class CookieValueAnnotationProcessor extends
+    AbstractSpringmvcSerializableParameterProcessor<CookieParameter, CookieValue> {
   @Override
-  public String getAnnotationParameterName(Object annotation) {
-    String value = ((CookieValue) annotation).value();
+  public Type getProcessType() {
+    return CookieValue.class;
+  }
+
+  @Override
+  public String getParameterName(CookieValue annotation) {
+    String value = annotation.value();
     if (value.isEmpty()) {
-      value = ((CookieValue) annotation).name();
+      value = annotation.name();
     }
     return value;
   }
 
   @Override
-  public CookieParameter createParameter() {
-    return new CookieParameter();
+  public HttpParameterType getHttpParameterType(CookieValue parameterAnnotation) {
+    return HttpParameterType.cookie;
   }
 
   @Override
-  protected void fillParameter(Object annotation, OperationGenerator operationGenerator, int paramIdx,
-      CookieParameter parameter) {
-    super.fillParameter(annotation, operationGenerator, paramIdx, parameter);
-
-    Object defaultValue = parameter.getDefaultValue();
-    if (!ObjectUtils.isEmpty(defaultValue)) {
-      parameter.setRequired(false);
-      return;
-    }
-    CookieValue cookie = (CookieValue) annotation;
-    parameter.setRequired(cookie.required());
+  protected boolean readRequired(CookieValue cookieValue) {
+    return cookieValue.required();
   }
 
   @Override
-  protected String getAnnotationParameterDefaultValue(Object annotation) {
-    String defaultValue = ((CookieValue) annotation).defaultValue();
-    if (defaultValue.equals(ValueConstants.DEFAULT_NONE)) {
-      return "";
-    }
-    return defaultValue;
+  protected String pureReadDefaultValue(CookieValue cookieValue) {
+    return cookieValue.defaultValue();
   }
 }

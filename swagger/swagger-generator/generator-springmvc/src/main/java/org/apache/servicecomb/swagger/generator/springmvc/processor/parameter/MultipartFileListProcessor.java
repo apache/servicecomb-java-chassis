@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
+package org.apache.servicecomb.swagger.generator.springmvc.processor.parameter;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.swagger.generator.core.ClassAnnotationProcessor;
-import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
+import java.lang.reflect.Type;
+import java.util.List;
 
-import io.swagger.models.Swagger;
+import org.apache.servicecomb.swagger.generator.core.processor.parameter.PartArrayProcessor;
+import org.springframework.web.multipart.MultipartFile;
 
-public class RestControllerClassAnnotationProcessor implements ClassAnnotationProcessor {
+import com.google.inject.util.Types;
 
+public class MultipartFileListProcessor extends PartArrayProcessor {
   @Override
-  public void process(Object annotation, SwaggerGenerator swaggerGenerator) {
-    Swagger swagger = swaggerGenerator.getSwagger();
-    if (StringUtils.isEmpty(swagger.getBasePath())) {
-      swagger.setBasePath("/");
-    }
+  public Type getProcessType() {
+    return Types.newParameterizedType(List.class, MultipartFile.class);
   }
 }
