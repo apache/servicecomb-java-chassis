@@ -23,6 +23,7 @@ import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNo
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementTree;
 import org.apache.servicecomb.metrics.core.VertxMetersInitializer;
 import org.apache.servicecomb.metrics.core.meter.vertx.EndpointMeter;
+import org.apache.servicecomb.metrics.core.meter.vertx.HttpClientEndpointMeter;
 
 public class ClientEndpointsLogPublisher extends AbstractMeasurementNodeLogPublisher {
   public ClientEndpointsLogPublisher(MeasurementTree tree, StringBuilder sb, String meterName) {
@@ -32,25 +33,28 @@ public class ClientEndpointsLogPublisher extends AbstractMeasurementNodeLogPubli
   @Override
   public void print(boolean printDetail) {
     appendLine(sb, "    client.endpoints:");
-    appendLine(sb, "      remote                connectCount    disconnectCount connections     send(Bps)    receive(Bps)");
+    appendLine(sb, "      remote                connectCount disconnectCount queue         connections send(Bps) receive(Bps)");
 
     double connect = 0;
     double disconnect = 0;
+    double queue = 0;
     double connections = 0;
     double readSize = 0;
     double writeSize = 0;
     for (MeasurementNode address : measurementNode.getChildren().values()) {
       connect += address.findChild(EndpointMeter.CONNECT_COUNT).summary();
       disconnect += address.findChild(EndpointMeter.DISCONNECT_COUNT).summary();
+      queue += address.findChild(HttpClientEndpointMeter.QUEUE_COUNT).summary();
       connections += address.findChild(EndpointMeter.CONNECTIONS).summary();
       readSize += address.findChild(EndpointMeter.BYTES_READ).summary();
       writeSize += address.findChild(EndpointMeter.BYTES_WRITTEN).summary();
 
       if (printDetail) {
-        appendLine(sb, "      %-21s %-15.0f %-15.0f %-15.0f %-12s %-12s",
+        appendLine(sb, "      %-21s %-12.0f %-15.0f %-13.0f %-11.0f %-9s %s",
             address.getName(),
             address.findChild(EndpointMeter.CONNECT_COUNT).summary(),
             address.findChild(EndpointMeter.DISCONNECT_COUNT).summary(),
+            address.findChild(HttpClientEndpointMeter.QUEUE_COUNT).summary(),
             address.findChild(EndpointMeter.CONNECTIONS).summary(),
             NetUtils.humanReadableBytes((long) address.findChild(EndpointMeter.BYTES_WRITTEN).summary()),
             NetUtils.humanReadableBytes((long) address.findChild(EndpointMeter.BYTES_READ).summary())
@@ -58,10 +62,11 @@ public class ClientEndpointsLogPublisher extends AbstractMeasurementNodeLogPubli
       }
     }
 
-    appendLine(sb, "      %-21s %-15.0f %-15.0f %-15.0f %-12s %-12s",
+    appendLine(sb, "      %-21s %-12.0f %-15.0f %-13.0f %-11.0f %-9s %s",
         "(summary)",
         connect,
         disconnect,
+        queue,
         connections,
         NetUtils.humanReadableBytes((long) writeSize),
         NetUtils.humanReadableBytes((long) readSize)
