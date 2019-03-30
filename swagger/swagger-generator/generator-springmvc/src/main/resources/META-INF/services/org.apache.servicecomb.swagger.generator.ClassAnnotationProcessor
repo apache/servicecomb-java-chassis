@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGeneratorContext
+org.apache.servicecomb.swagger.generator.springmvc.processor.annotation.RequestMappingClassAnnotationProcessor
