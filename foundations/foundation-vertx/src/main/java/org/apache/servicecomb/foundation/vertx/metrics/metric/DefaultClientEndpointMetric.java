@@ -16,10 +16,14 @@
  */
 package org.apache.servicecomb.foundation.vertx.metrics.metric;
 
+import java.util.concurrent.atomic.LongAdder;
+
 /**
  * for one listen address, include multiple httpClient or httpServer
  */
 public class DefaultClientEndpointMetric extends DefaultEndpointMetric {
+  private LongAdder queue = new LongAdder();
+
   // control if the metric instance will be expired
   // all invoker about incRefCount/isExpired, must lock: DefaultClientEndpointMetricManager
   // decRefCount no need to lock, because that only cause to be expired later.
@@ -37,6 +41,18 @@ public class DefaultClientEndpointMetric extends DefaultEndpointMetric {
   public void onDisconnect() {
     super.onDisconnect();
     lastNanoTime = System.nanoTime();
+  }
+
+  public long getQueueCount() {
+    return queue.longValue();
+  }
+
+  public void enqueueRequest() {
+    queue.increment();
+  }
+
+  public void dequeueRequest() {
+    queue.decrement();
   }
 
   public boolean isExpired(long nsTimeout) {
