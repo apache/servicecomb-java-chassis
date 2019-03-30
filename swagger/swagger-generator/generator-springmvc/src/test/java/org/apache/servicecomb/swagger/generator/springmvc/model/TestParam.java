@@ -14,21 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.generator.springmvc;
+package org.apache.servicecomb.swagger.generator.springmvc.model;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+public class TestParam {
+  private String name;
 
-@RequestMapping(path = "abc", method = RequestMethod.POST)
-public class MultiDefaultPath {
-  @GetMapping
-  public void p1() {
+  private int age;
 
+  public String getName() {
+    return name;
   }
 
-  @RequestMapping(method = RequestMethod.GET)
-  public void p2() {
+  public TestParam setName(String name) {
+    this.name = name;
+    return this;
+  }
 
+  public int getAge() {
+    return age;
+  }
+
+  public TestParam setAge(int age) {
+    this.age = age;
+    return this;
   }
 }
