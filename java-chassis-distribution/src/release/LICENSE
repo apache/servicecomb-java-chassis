@@ -210,148 +210,189 @@ following licenses.
 
 
 ================================================================
-For Stax2 API org.codehaus.woodstox:stax2-api:bundle:3.1.4
-================================================================
 This product bundles files from stax2 which is licensed under the
 2-Clause BSD license.
 For details, see http://wiki.fasterxml.com/WoodstoxStax2
 You can find a copy of the License at licenses/LICENSE-woodstox-stax2-api
 
-================================================================
-For org.aspectj:aspectjweaver:jar:1.8.8
-================================================================
-This product bundles AspectJ weaver which is licensed under the
-Eclipse Public License v1.0.
-For details, see http://www.aspectj.org
-You can find a copy of the License at licenses/LICENSE-epl-v10
+* Stax2 API (org.codehaus.woodstox:stax2-api:3.1.4 - http://wiki.fasterxml.com/WoodstoxStax2)
 
 ================================================================
-For ch.qos.logback:logback-core:jar:1.1.7,
-ch.qos.logback:logback-classic:jar:1.1.7
+This product bundles libraries which are licensed under the
+Eclipse Public License v1.0.
+You can find a copy of the License at licenses/LICENSE-epl-v10
+
+* AspectJ weaver (org.aspectj:aspectjweaver:1.8.8 - http://www.aspectj.org)
+* JUnit (junit:junit:4.12 - http://junit.org)
+* Dirgra (org.jruby:dirgra:0.3 - https://github.com/jruby/dirgra)
+
+================================================================
+This product bundles libraries which are licensed under the
+Eclipse Public License v2.0.
+You can find a copy of the License at licenses/LICENSE-epl-v20
+
+* jnr-posix (com.github.jnr:jnr-posix:3.0.49 - http://nexus.sonatype.org/oss-repository-hosting.html/jnr-posix)
+* JRuby Core (org.jruby:jruby-core:9.2.6.0 - https://github.com/jruby/jruby/jruby-core)
+* JRuby Lib Setup (org.jruby:jruby-stdlib:9.2.6.0 - https://github.com/jruby/jruby/jruby-stdlib)
+* JRuby Main Maven Artifact (org.jruby:jruby:9.2.6.0 - https://github.com/jruby/jruby/jruby-artifacts/jruby)
+* Vert.x Core (io.vertx:vertx-core:3.6.2 - http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-core)
+* vertx-web (io.vertx:vertx-web:3.6.2 - http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-web-parent/vertx-web)
+
+
+================================================================
+This product bundles libraries which are licensed under the
+Mozilla Public License, Version 2.0
+You can find a copy of the License at licenses/LICENSE-mozilla-v20
+
+* Mozilla Rhino (org.mozilla:rhino:1.7R4 - https://developer.mozilla.org/en/Rhino)
+
+===========================================================================
+This product bundles of Hamcrest which is licensed under BSD 3-Clause License
+For details, see https://github.com/hamcrest/JavaHamcrest/blob/master/LICENSE.txt
+You can find a copy of the License at licenses/LICENSE-hamcrest
+
+* Hamcrest All (org.hamcrest:hamcrest-all:1.3 - https://github.com/hamcrest/JavaHamcrest/hamcrest-all)
+* Hamcrest Core (org.hamcrest:hamcrest-core:1.3 - https://github.com/hamcrest/JavaHamcrest/hamcrest-core)
+* Hamcrest library (org.hamcrest:hamcrest-library:1.3 - https://github.com/hamcrest/JavaHamcrest/hamcrest-library)
+
 ================================================================
 This product bundles Logback which is licensed under the
 Eclipse Public License v1.0.
 For details, see http://logback.qos.ch
 You can find a copy of the License at licenses/LICENSE-logback
 
-================================================================
-For com.sun.jersey:jersey-core:jar:1.19.1,
-com.sun.jersey.contribs:jersey-apache-client4:jar:1.19.1,
-com.sun.jersey:jersey-client:jar:1.19.1
-================================================================
-This product bundles Jersey which is licensed under the
-COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.1.
-For details, see http://jersey.github.io
-You can find a copy of the License at licenses/LICENSE-jersey
+* Logback Classic Module (ch.qos.logback:logback-classic:1.1.7 - http://logback.qos.ch/logback-classic)
+* Logback Core Module (ch.qos.logback:logback-core:1.1.7 - http://logback.qos.ch/logback-core)
 
 ================================================================
-For javax.ws.rs:javax.ws.rs-api:jar:2.0.1
-================================================================
-This product bundles jax-rs which is licensed under the
+This product bundles library which is licensed under the
 COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.1.
-For details, see http://jax-rs-spec.java.net
-You can find a copy of the License at licenses/LICENSE-jax-rs
+You can find a copy of the License at licenses/LICENSE-cddl
 
-================================================================
-For javax.servlet:javax.el:jar:3.0.0
-================================================================
-This product bundles Java EL which is licensed under the
-COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.1.
-For details, see http://el-spec.java.net
-You can find a copy of the License at licenses/LICENSE-javax-el
+* JavaMail API jar (javax.mail:mailapi:1.4.3 - http://java.sun.com/projects/javamail/mailapi)
+* Expression Language 3.0 (org.glassfish:javax.el:3.0.0 - http://el-spec.java.net)
+* Java Servlet API (javax.servlet:javax.servlet-api:3.1.0 - http://servlet-spec.java.net)
+* javax.ws.rs-api (javax.ws.rs:javax.ws.rs-api:2.0.1 - http://jax-rs-spec.java.net)
+* Jersey Apache HTTP Client 4.x (com.sun.jersey.contribs:jersey-apache-client4:1.19.1 - https://jersey.java.net/jersey-contribs/jersey-apache-client4/)
+* jersey-client (com.sun.jersey:jersey-client:1.19.1 - https://jersey.java.net/jersey-client/)
+* jersey-core (com.sun.jersey:jersey-core:1.19.1 - https://jersey.java.net/jersey-core/)
+* JSR 353 (JSON Processing) Default Provider (org.glassfish:javax.json:1.0.4 - http://jsonp.java.net)
 
-================================================================
-For javax.servlet:javax.servlet-api:jar:3.1.0
-================================================================
-This product bundles Java Servlet API which is licensed under the
-COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.1.
-For details, see http://servlet-spec.java.net
-You can find a copy of the License at licenses/LICENSE-javax-servlet
-
-================================================================
-For org.hdrhistogram:HdrHistogram:bundle:2.1.9
 ================================================================
 This product bundles HdrHistogram which is licensed under the
 Public domain.
 For details, see https://github.com/HdrHistogram/HdrHistogram
 You can find a copy of the License at licenses/LICENSE-hdrhistogram
 
+* HdrHistogram (org.hdrhistogram:HdrHistogram:2.1.9 - http://hdrhistogram.github.io/HdrHistogram/)
+
 ================================================================
-For org.bouncycastle:bcpkix-jdk15on:jar:1.55,
-org.bouncycastle:bcprov-jdk15on:jar:1.55
+This product bundles animal-sniffer-annotations which is licensed under the
+MIT license.
+You can find a copy of the License at licenses/LICENSE-animalsniffer
+
+* Animal Sniffer Annotations (org.codehaus.mojo:animal-sniffer-annotations:1.14 - http://mojo.codehaus.org/animal-sniffer/animal-sniffer-annotations)
+
+================================================================
+This product bundles checker-qual jar which is licensed under the
+MIT license.
+For details, see https://github.com/typetools/checker-framework
+You can find a copy of the License at licenses/LICENSE-checkerframework
+
+* Checker Qual (org.checkerframework:checker-qual:2.0.0 - http://checkerframework.org)
+
+================================================================
+This product bundles jcodings which is licensed under the
+MIT license.
+You can find a copy of the License at licenses/LICENSE-jcodings
+
+* JCodings (org.jruby.jcodings:jcodings:1.0.41 - http://nexus.sonatype.org/oss-repository-hosting.html/jcodings)
+
+================================================================
+This product bundles jopt libraries which is licensed under the
+MIT license.
+You can find a copy of the License at licenses/LICENSE-joni
+
+* Joni (org.jruby.joni:joni:2.1.25 - http://nexus.sonatype.org/oss-repository-hosting.html/joni)
+
+================================================================
+This product bundles jsoup which is licensed under the
+MIT license.
+You can find a copy of the License at licenses/LICENSE-jsoup
+
+* jsoup (org.jsoup:jsoup:1.8.1 - http://jsoup.org/)
+
+================================================================
+This product bundles jopt libraries which is licensed under the
+MIT license.
+You can find a copy of the License at licenses/LICENSE-jopt
+
+* JOpt Simple (net.sf.jopt-simple:jopt-simple:5.0.3 - http://pholser.github.io/jopt-simple)
+
 ================================================================
 This product bundles bouncycastle libraries which is licensed under the
 MIT license.
 For details, see http://www.bouncycastle.org/java.html
 You can find a copy of the License at licenses/LICENSE-bouncycastle
 
-================================================================
-For org.slf4j:jul-to-slf4j:jar:1.7.25,
-org.slf4j:slf4j-api:jar:1.7.7,
-org.slf4j:jcl-over-slf4j:jar:1.7.25
+* Bouncy Castle PKIX, CMS, EAC, TSP, PKCS, OCSP, CMP, and CRMF APIs (org.bouncycastle:bcpkix-jdk15on:1.55 - http://www.bouncycastle.org/java.html)
+* Bouncy Castle Provider (org.bouncycastle:bcprov-jdk15on:1.55 - http://www.bouncycastle.org/java.html)
+
 ================================================================
 This product bundles slf4j libraries which is licensed under the
 MIT license.
 For details, see http://www.slf4j.org
 You can find a copy of the License at licenses/LICENSE-slf4j
 
-================================================================
-For javax.ws.rs:jsr311-api:jar:1.1.1
-================================================================
-This product bundles jsr311-api which is licensed under the
-COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.1.
-For details, see https://javaee.github.io/jsr311/
-You can find a copy of the License at licenses/LICENSE-jsr311
+* JCL 1.2 implemented over SLF4J (org.slf4j:jcl-over-slf4j:1.7.25 - http://www.slf4j.org)
+* JUL to SLF4J bridge (org.slf4j:jul-to-slf4j:1.7.25 - http://www.slf4j.org)
+* SLF4J API Module (org.slf4j:slf4j-api:1.7.7 - http://www.slf4j.org)
+* SLF4J Extensions Module (org.slf4j:slf4j-ext:1.7.7 - http://www.slf4j.org)
 
-================================================================
-For org.ow2.asm:asm:jar:5.0.4
 ================================================================
 This product bundles asm which is licensed under the
 3-Clause BSD license.
 For details, see http://asm.ow2.org/
 You can find a copy of the License at licenses/LICENSE-asm
 
-================================================================
-For protobuf-java com.google.protobuf:protobuf-java:jar:3.5.1
+* ASM Analysis (org.ow2.asm:asm-analysis:4.1 - http://asm.objectweb.org/asm-analysis/)
+* ASM Core (org.ow2.asm:asm:5.0.4 - http://asm.objectweb.org/asm/)
+* ASM Tree (org.ow2.asm:asm-tree:4.1 - http://asm.objectweb.org/asm-tree/)
+* ASM Util (org.ow2.asm:asm-util:4.1 - http://asm.objectweb.org/asm-util/)
+
 ================================================================
 This product bundles protobuf which is licensed under the
 3-Clause BSD license.
 For details, see https://github.com/protocolbuffers/protobuf
 You can find a copy of the License at licenses/LICENSE-protobuf
 
-================================================================
-For antlr4 org.antlr:antlr4:jar:4.7,
-org.antlr:antlr4-runtime:jar:4.7,
-org.antlr:antlr-runtime:jar,
-org.antlr:ST4:jar:4.0.8
+* Protocol Buffers [Core] (com.google.protobuf:protobuf-java:3.5.1 - https://developers.google.com/protocol-buffers/protobuf-java/)
+
 ================================================================
 This product bundles antlr which is licensed under the
 3-Clause BSD license.
 For details, see https://www.antlr.org/
 You can find a copy of the License at licenses/LICENSE-antlr
 
-================================================================
-For aopalliance aopalliance:aopalliance:jar:1.0
+* ANTLR 3 Runtime (org.antlr:antlr-runtime:3.5.2 - http://www.antlr.org)
+* StringTemplate 4 (org.antlr:ST4:4.0.8 - http://www.stringtemplate.org)
+* ANTLR 4 Runtime (org.antlr:antlr4-runtime:4.7 - http://www.antlr.org/antlr4-runtime)
+* ANTLR 4 Tool (org.antlr:antlr4:4.7 - http://www.antlr.org)
+
 ================================================================
 This product bundles aopalliance which is licensed under the
 public domain.
 For details, see http://aopalliance.sourceforge.net/
 
-================================================================
-For icu4j com.ibm.icu:icu4j:jar:58.2
+* AOP alliance (aopalliance:aopalliance:1.0 - http://aopalliance.sourceforge.net)
+
 ================================================================
 This product bundles icu4j which is licensed under the
 Unicode/ICU license.
 For details, see http://site.icu-project.org/home
 You can find a copy of the License at licenses/LICENSE-icu4j
 
-================================================================
-For javax.json org.glassfish:javax.json:bundle:1.0.4
-================================================================
-This product bundles javax.json which is licensed under the
-CDDL license.
-For details, see http://jsonp.java.net
-You can find a copy of the License at licenses/LICENSE-jsonp
+* ICU4J (com.ibm.icu:icu4j:58.2 - http://icu-project.org/)
 
 ================================================================
 For abego TreeLayout org.abego.treelayout:org.abego.treelayout.core:bundle:1.0.3
@@ -360,6 +401,8 @@ This product bundles TreeLayout which is licensed under the
 3-Clause BSD license.
 For details, see http://treelayout.sourceforge.net
 You can find a copy of the License at licenses/LICENSE-abego
+
+* abego TreeLayout Core (org.abego.treelayout:org.abego.treelayout.core:1.0.3 - http://treelayout.sourceforge.net)
 
 ================================================================
 For foundations/foundation-vertx/src/main/java/io/vertx/ext/web/impl/MimeTypesUtils.java
@@ -395,138 +438,197 @@ For foundations/foundation-protobuf/src/main/java/io/protostuff/runtime/ArrayFie
     foundations/foundation-protobuf/src/main/java/io/protostuff/SchemaReader.java
     foundations/foundation-protobuf/src/main/java/io/protostuff/SchemaWriter.java
 ================================================================
-This product bundles files from protostuff which is licensed under the Apache License v2.
-For details, see  https://github.com/protostuff/protostuff
-
-================================================================
 This product bundles the following libraries which are licensed
 under the Apache License v2.
 For details, see their respective project links.
 
-Apache Commons BeanUtils (http://commons.apache.org/proper/commons-beanutils/) commons-beanutils:commons-beanutils:jar:1.9.2
-Apache Commons Codec (http://commons.apache.org/proper/commons-codec/) commons-codec:commons-codec:jar:1.10
-Apache Commons Collections (http://commons.apache.org/collections/) commons-collections:commons-collections:jar:3.2.2
-Apache Commons Configuration (http://commons.apache.org/configuration/) commons-configuration:commons-configuration:jar:1.10
-Apache Commons Lang (http://commons.apache.org/proper/commons-lang/) org.apache.commons:commons-lang3:jar:3.6
-Apache Commons Logging (http://commons.apache.org/proper/commons-logging/) commons-logging:commons-logging:jar:1.2
-Apache HttpClient (http://hc.apache.org/httpcomponents-client) org.apache.httpcomponents:httpclient:jar:4.5.2
-Apache HttpCore (http://hc.apache.org/httpcomponents-core-ga) org.apache.httpcomponents:httpcore:jar:4.4.9
-Apache Log4j (http://logging.apache.org/log4j/1.2/) log4j:log4j:bundle:1.2.17
-archaius-core (https://github.com/Netflix/archaius) com.netflix.archaius:archaius-core:jar:0.7.3
-Bean Validation API (http://beanvalidation.org) javax.validation:validation-api:jar:2.0.0.Final
-brave (https://github.com/openzipkin/brave) io.zipkin.brave:brave:jar:5.6.0
-Brave Context: Log4J 1.2 (https://github.com/openzipkin/brave/tree/master/context/log4j12) io.zipkin.brave:brave-context-log4j12:jar:5.6.0
-Brave Instrumentation: Http Adapters (https://github.com/openzipkin/brave/tree/master/instrumentation/http) io.zipkin.brave:brave-instrumentation-http:jar:5.6.0
-Brave Instrumentation: Servlet (https://github.com/openzipkin/brave/tree/master/instrumentation/servlet) io.zipkin.brave:brave-instrumentation-servlet:jar:5.6.0
-Brave Spring Factory Beans (https://github.com/openzipkin/brave/tree/master/spring-beans) io.zipkin.brave:brave-spring-beans:jar:5.6.0
-ClassMate (http://github.com/cowtowncoder/java-classmate) com.fasterxml:classmate:bundle:1.3.4
-Commons IO (http://commons.apache.org/io/) commons-io:commons-io:jar:2.4
-Commons Lang (http://commons.apache.org/lang/) commons-lang:commons-lang:jar:2.6
-ezmorph (http://ezmorph.sourceforge.net) net.sf.ezmorph:ezmorph:jar:1.0.6
-FindBugs-jsr305 (http://findbugs.sourceforge.net/) com.google.code.findbugs:jsr305:jar:3.0.1
-Guava: Google Core Libraries for Java (http://code.google.com/p/guava-libraries/guava) com.google.guava:guava:bundle:25.1-jre
-Guice (https://github.com/google/guice) com.google.inject:guice:jar:4.1.0
-Google Guice - Extensions - AssistedInject (https://github.com/google/guice/extensions-parent/guice-assistedinject) com.google.inject.extensions:guice-assistedinject:jar:4.1.0
-Google Guice - Extensions - MultiBindings (https://github.com/google/guice/extensions-parent/guice-multibindings) com.google.inject.extensions:guice-multibindings:jar:4.1.0
-Hibernate Validator Engine (http://hibernate.org/validator/hibernate-validator) org.hibernate:hibernate-validator:jar:6.0.2.Final
-hystrix-core (https://github.com/Netflix/Hystrix) com.netflix.hystrix:hystrix-core:jar:1.5.12
-Jackson dataformat: protobuf (http://github.com/FasterXML/jackson-dataformats-binary) com.fasterxml.jackson.dataformat:jackson-dataformat-protobuf:bundle:2.9.8
-Jackson module: Afterburner (https://github.com/FasterXML/jackson-modules-base) com.fasterxml.jackson.module:jackson-module-afterburner:bundle:2.8.11
-Jackson module: JAXB-annotations (http://github.com/FasterXML/jackson-module-jaxb-annotations) com.fasterxml.jackson.module:jackson-module-jaxb-annotations:bundle:2.8.11
-Jackson-annotations (http://github.com/FasterXML/jackson) com.fasterxml.jackson.core:jackson-annotations:bundle:2.9.8
-Jackson-core (https://github.com/FasterXML/jackson-core) com.fasterxml.jackson.core:jackson-core:bundle:2.9.8
-jackson-databind (http://github.com/FasterXML/jackson) com.fasterxml.jackson.core:jackson-databind:bundle:2.9.8
-Jackson-dataformat-XML (http://wiki.fasterxml.com/JacksonExtensionXmlDataBinding) com.fasterxml.jackson.dataformat:jackson-dataformat-xml:bundle:2.9.8
-Jackson-dataformat-YAML (https://github.com/FasterXML/jackson-dataformats-text) com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:bundle:2.9.8
-Javassist (http://www.javassist.org/) org.javassist:javassist:bundle:3.18.1-GA
-javax.inject (http://code.google.com/p/atinject/) javax.inject:javax.inject:jar:1
-JBoss Logging 3 (http://www.jboss.org) org.jboss.logging:jboss-logging:jar:3.3.2.Final
-json-lib (http://json-lib.sourceforge.net) net.sf.json-lib:json-lib:jar:2.4
-Log4j Implemented Over SLF4J (http://www.slf4j.org) org.slf4j:log4j-over-slf4j:jar:1.7.7
-netflix-commons-util (https://github.com/Netflix/netflix-commons) com.netflix.netflix-commons:netflix-commons-util:jar:0.1.1
-netflix-statistics (https://github.com/Netflix/netflix-commons) com.netflix.netflix-commons:netflix-statistics:jar:0.1.1
-Netty/Buffer (http://netty.io/netty-buffer/) io.netty:netty-buffer:jar:4.1.28.Final
-Netty/Codec (http://netty.io/netty-codec/) io.netty:netty-codec:jar:4.1.28.Final
-Netty/Codec/DNS (http://netty.io/netty-codec-dns/) io.netty:netty-codec-dns:jar:4.1.28.Final
-Netty/Codec/HTTP (http://netty.io/netty-codec-http/) io.netty:netty-codec-http:jar:4.1.28.Final
-Netty/Codec/HTTP2 (http://netty.io/netty-codec-http2/) io.netty:netty-codec-http2:jar:4.1.28.Final
-Netty/Codec/Socks (http://netty.io/netty-codec-socks/) io.netty:netty-codec-socks:jar:4.1.28.Final
-Netty/Common (http://netty.io/netty-common/) io.netty:netty-common:jar:4.1.28.Final
-Netty/Handler (http://netty.io/netty-handler/) io.netty:netty-handler:jar:4.1.28.Final
-Netty/Handler/Proxy (http://netty.io/netty-handler-proxy/) io.netty:netty-handler-proxy:jar:4.1.28.Final
-Netty/Resolver (http://netty.io/netty-resolver/) io.netty:netty-resolver:jar:4.1.28.Final
-Netty/Resolver/DNS (http://netty.io/netty-resolver-dns/) io.netty:netty-resolver-dns:jar:4.1.28.Final
-Netty/TomcatNative(https://netty.io/wiki/forked-tomcat-native.html) io.netty:netty-tcnative-boringssl-static:2.0.14.Final
-Netty/Transport (http://netty.io/netty-transport/) io.netty:netty-transport:jar:4.1.28.Final
-OkHttp (https://github.com/square/okhttp/okhttp) com.squareup.okhttp3:okhttp:jar:3.4.1
-Okio (https://github.com/square/okio/okio) com.squareup.okio:okio:jar:1.9.0
-Prometheus Java Simpleclient (http://github.com/prometheus/client_java/simpleclient) io.prometheus:simpleclient:bundle:0.1.0
-Prometheus Java Simpleclient Common (http://github.com/prometheus/client_java/simpleclient_common) io.prometheus:simpleclient_common:bundle:0.1.0
-Prometheus Java Simpleclient Httpserver (http://github.com/prometheus/client_java/simpleclient_httpserver) io.prometheus:simpleclient_httpserver:bundle:0.1.0
-ProtoParser (http://github.com/square/protoparser/) com.squareup:protoparser:jar:4.0.3
-protostuff :: api (http://protostuff.io/protostuff-api) io.protostuff:protostuff-api:jar:1.5.2
-protostuff :: collectionschema (http://protostuff.io/protostuff-collectionschema) io.protostuff:protostuff-collectionschema:jar:1.5.2
-protostuff :: core (http://protostuff.io/protostuff-core) io.protostuff:protostuff-core:jar:1.5.2
-protostuff :: runtime (http://protostuff.io/protostuff-runtime) io.protostuff:protostuff-runtime:jar:1.5.2
-protostuff :: parser (https://github.com/protostuff/protostuff-compiler/tree/master/protostuff-parser) io.protostuff:protostuff-parser:jar:2.2.25
-ribbon (https://github.com/Netflix/ribbon) com.netflix.ribbon:ribbon:jar:2.2.2
-ribbon-core (https://github.com/Netflix/ribbon) com.netflix.ribbon:ribbon-core:jar:2.2.2
-ribbon-httpclient (https://github.com/Netflix/ribbon) com.netflix.ribbon:ribbon-httpclient:jar:2.2.5
-ribbon-loadbalancer (https://github.com/Netflix/ribbon) com.netflix.ribbon:ribbon-loadbalancer:jar:2.2.2
-ribbon-transport (https://github.com/Netflix/ribbon) com.netflix.ribbon:ribbon-transport:jar:2.2.2
-rxjava (https://github.com/ReactiveX/RxJava) io.reactivex:rxjava:jar:1.1.6
-rxnetty (https://github.com/ReactiveX/RxNetty) io.reactivex:rxnetty:jar:0.4.9
-rxnetty-contexts (https://github.com/ReactiveX/RxNetty) io.reactivex:rxnetty-contexts:jar:0.4.9
-rxnetty-servo (https://github.com/ReactiveX/RxNetty) io.reactivex:rxnetty-servo:jar:0.4.9
-servo-core (https://github.com/Netflix/servo) com.netflix.servo:servo-core:jar:0.10.1
-servo-internal (https://github.com/Netflix/servo) com.netflix.servo:servo-internal:jar:0.10.1
-SnakeYAML (http://www.snakeyaml.org) org.yaml:snakeyaml:bundle:1.16
-spectator-api (https://github.com/Netflix/spectator) com.netflix.spectator:spectator-api:0.71.0
-spectator-reg-servo (https://github.com/Netflix/spectator) com.netflix.spectator:spectator-reg-servo:0.71.0
-Spring AOP (https://github.com/spring-projects/spring-framework) org.springframework:spring-aop:jar:4.3.20.RELEASE
-Spring Aspects (https://github.com/spring-projects/spring-framework) org.springframework:spring-aspects:jar:4.3.20.RELEASE
-Spring Beans (https://github.com/spring-projects/spring-framework) org.springframework:spring-beans:jar:4.3.20.RELEASE
-Spring Boot (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot:jar:1.5.12.RELEASE
-Spring Boot Actuator (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-actuator:jar:1.5.12.RELEASE
-Spring Boot Actuator Starter (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-starter-actuator:jar:1.5.12.RELEASE
-Spring Boot AOP Starter (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-starter-aop:jar:1.5.12.RELEASE
-Spring Boot AutoConfigure (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-autoconfigure:jar:1.5.12.RELEASE
-Spring Boot Logging Starter (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-starter-logging:jar:1.5.12.RELEASE
-Spring Boot Starter (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-starter:jar:1.5.12.RELEASE
-Spring Boot Tomcat Starter (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-starter-tomcat:jar:1.5.12.RELEASE
-Spring Boot Web Starter (http://projects.spring.io/spring-boot/) org.springframework.boot:spring-boot-starter-web:jar:1.5.12.RELEASE
-Spring Cloud Commons (https://projects.spring.io/spring-cloud/spring-cloud-commons/) org.springframework.cloud:spring-cloud-commons:jar:1.3.3.RELEASE
-Spring Cloud Context (https://projects.spring.io/spring-cloud/spring-cloud-context/) org.springframework.cloud:spring-cloud-context:jar:1.3.3.RELEASE
-Spring Cloud Netflix Core (https://spring.io/spring-cloud/spring-cloud-netflix/spring-cloud-netflix-core) org.springframework.cloud:spring-cloud-netflix-core:jar:1.4.4.RELEASE
-Spring Context (https://github.com/spring-projects/spring-framework) org.springframework:spring-context:jar:4.3.20.RELEASE
-Spring Core (https://github.com/spring-projects/spring-framework) org.springframework:spring-core:jar:4.3.20.RELEASE
-Spring Expression Language (SpEL) (https://github.com/spring-projects/spring-framework) org.springframework:spring-expression:jar:4.3.20.RELEASE
-Spring Web (https://github.com/spring-projects/spring-framework) org.springframework:spring-web:jar:4.3.20.RELEASE
-Spring Web MVC (https://github.com/spring-projects/spring-framework) org.springframework:spring-webmvc:jar:4.3.20.RELEASE
-spring-cloud-starter (https://projects.spring.io/spring-cloud) org.springframework.cloud:spring-cloud-starter:jar:1.3.3.RELEASE
-spring-cloud-starter-archaius (https://projects.spring.io/spring-cloud) org.springframework.cloud:spring-cloud-starter-archaius:jar:1.4.4.RELEASE
-spring-cloud-starter-hystrix (https://projects.spring.io/spring-cloud) org.springframework.cloud:spring-cloud-starter-hystrix:jar:1.4.4.RELEASE
-spring-cloud-starter-ribbon (https://projects.spring.io/spring-cloud) org.springframework.cloud:spring-cloud-starter-ribbon:jar:1.4.4.RELEASE
-spring-cloud-starter-zuul (https://projects.spring.io/spring-cloud) org.springframework.cloud:spring-cloud-starter-zuul:jar:1.4.4.RELEASE
-spring-cloud-starter-gateway (https://projects.spring.io/spring-cloud) org.springframework.cloud:spring-cloud-starter-gateway:jar:2.0.0.RELEASE
-spring-security-crypto (http://spring.io/spring-security) org.springframework.security:spring-security-crypto:jar:4.1.4.RELEASE
-spring-security-rsa (http://github.com/spring-projects/spring-security-oauth) org.springframework.security:spring-security-rsa:jar:1.0.3.RELEASE
-swagger-annotations (https://github.com/swagger-api/swagger-core/modules/swagger-annotations) io.swagger:swagger-annotations:bundle:1.5.22
-swagger-core (https://github.com/swagger-api/swagger-core/modules/swagger-core) io.swagger:swagger-core:bundle:1.5.22
-swagger-models (https://github.com/swagger-api/swagger-core/modules/swagger-models) io.swagger:swagger-models:bundle:1.5.22
-tomcat-embed-core (http://tomcat.apache.org/) org.apache.tomcat.embed:tomcat-embed-core:jar:8.0.33
-tomcat-embed-el (http://tomcat.apache.org/) org.apache.tomcat.embed:tomcat-embed-el:jar:8.0.33
-tomcat-embed-logging-juli (http://tomcat.apache.org/) org.apache.tomcat.embed:tomcat-embed-logging-juli:jar:8.0.33
-tomcat-embed-websocket (http://tomcat.apache.org/) org.apache.tomcat.embed:tomcat-embed-websocket:jar:8.0.33
-Vert.x Bridge Common (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-bridge-common) io.vertx:vertx-bridge-common:jar:3.6.2
-Vert.x Core (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-core) io.vertx:vertx-core:jar:3.6.2
-vertx-auth-common (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-auth/vertx-auth-common) io.vertx:vertx-auth-common:jar:3.6.2
-vertx-web (http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-web-parent/vertx-web) io.vertx:vertx-web:jar:3.6.2
-Woodstox (https://github.com/FasterXML/woodstox) com.fasterxml.woodstox:woodstox-core:bundle:5.0.3
-Zipkin Reporter Spring Factory Beans (https://github.com/openzipkin/zipkin-reporter-java/zipkin-reporter-spring-beans) io.zipkin.reporter2:zipkin-reporter-spring-beans:jar:2.7.13
-Zipkin Reporter: Core (https://github.com/openzipkin/zipkin-reporter-java/zipkin-reporter) io.zipkin.reporter2:zipkin-reporter:jar:2.7.13
-Zipkin Sender: OkHttp 3 (https://github.com/openzipkin/zipkin-reporter-java/zipkin-sender-okhttp3) io.zipkin.reporter2:zipkin-sender-okhttp3:jar:2.7.13
-Zipkin v2 (https://github.com/openzipkin/zipkin/) io.zipkin.zipkin2:zipkin:jar:2.9.3
-zuul-core (https://github.com/Netflix/zuul) com.netflix.zuul:zuul-core:jar:1.3.0
-asciidoctorj (https://github.com/asciidoctor/asciidoctorj) org.asciidoctor:asciidoctorj:jar:1.6.2
-swagger2markup (https://github.com/Swagger2Markup/swagger2markup) io.github.swagger2markup:swagger2markup:jar:1.3.3
+* Apache Commons BeanUtils (commons-beanutils:commons-beanutils:1.9.2 - http://commons.apache.org/proper/commons-beanutils/)
+* Apache Commons Codec (commons-codec:commons-codec:1.10 - http://commons.apache.org/proper/commons-codec/)
+* Apache Commons Collections (commons-collections:commons-collections:3.2.2 - http://commons.apache.org/collections/)
+* Apache Commons Collections (org.apache.commons:commons-collections4:4.1 - http://commons.apache.org/proper/commons-collections/)
+* Apache Commons Configuration (commons-configuration:commons-configuration:1.10 - http://commons.apache.org/configuration/)
+* Apache Commons Configuration (org.apache.commons:commons-configuration2:2.1 - http://commons.apache.org/proper/commons-configuration/)
+* Apache Commons Lang (org.apache.commons:commons-lang3:3.6 - http://commons.apache.org/proper/commons-lang/)
+* Apache Commons Logging (commons-logging:commons-logging:1.2 - http://commons.apache.org/proper/commons-logging/)
+* Apache HttpClient (org.apache.httpcomponents:httpclient:4.5.2 - http://hc.apache.org/httpcomponents-client)
+* Apache HttpCore (org.apache.httpcomponents:httpcore:4.4.9 - http://hc.apache.org/httpcomponents-core-ga)
+* Apache Log4j (log4j:log4j:1.2.17 - http://logging.apache.org/log4j/1.2/)
+* Apache Log4j API (org.apache.logging.log4j:log4j-api:2.8.2 - https://logging.apache.org/log4j/2.x/log4j-api/)
+* Apache Log4j Core (org.apache.logging.log4j:log4j-core:2.8.2 - https://logging.apache.org/log4j/2.x/log4j-core/)
+* Apache Log4j SLF4J Binding (org.apache.logging.log4j:log4j-slf4j-impl:2.8.2 - https://logging.apache.org/log4j/2.x/log4j-slf4j-impl/)
+* archaius-core (com.netflix.archaius:archaius-core:0.7.3 - https://github.com/Netflix/archaius)
+* asciidoctorj (org.asciidoctor:asciidoctorj:1.6.2 - https://github.com/asciidoctor/asciidoctorj)
+* asciidoctorj-api (org.asciidoctor:asciidoctorj-api:1.6.2 - https://github.com/asciidoctor/asciidoctorj)
+* Awaitility (org.awaitility:awaitility:3.0.0 - http://awaitility.org)
+* backport9 (com.headius:backport9:1.1 - http://nexus.sonatype.org/oss-repository-hosting.html/backport9)
+* Bean Validation API (javax.validation:validation-api:2.0.0.Final - http://beanvalidation.org)
+* Brave (io.zipkin.brave:brave:5.6.0 - https://github.com/openzipkin/brave/brave)
+* Brave Context: Log4J 1.2 (io.zipkin.brave:brave-context-log4j12:5.6.0 - https://github.com/openzipkin/brave/brave-context-parent/brave-context-log4j12)
+* Brave Instrumentation: Http Adapters (io.zipkin.brave:brave-instrumentation-http:5.6.0 - https://github.com/openzipkin/brave/brave-instrumentation-parent/brave-instrumentation-http)
+* Brave Instrumentation: Servlet (io.zipkin.brave:brave-instrumentation-servlet:5.6.0 - https://github.com/openzipkin/brave/brave-instrumentation-parent/brave-instrumentation-servlet)
+* Brave Spring Factory Beans (io.zipkin.brave:brave-spring-beans:5.6.0 - https://github.com/openzipkin/brave/brave-spring-beans)
+* ClassMate (com.fasterxml:classmate:1.3.4 - http://github.com/FasterXML/java-classmate)
+* Commons IO (commons-io:commons-io:2.4 - http://commons.apache.org/io/)
+* Commons Lang (commons-lang:commons-lang:2.6 - http://commons.apache.org/lang/)
+* Core Reactor components (io.projectreactor:reactor-core:2.0.8.RELEASE - https://github.com/reactor/reactor)
+* error-prone annotations (com.google.errorprone:error_prone_annotations:2.1.3 - http://nexus.sonatype.org/oss-repository-hosting.html/error_prone_parent/error_prone_annotations)
+* FindBugs-jsr305 (com.google.code.findbugs:jsr305:3.0.1 - http://findbugs.sourceforge.net/)
+* Google Guice - Core Library (com.google.inject:guice:4.1.0 - https://github.com/google/guice/guice)
+* Google Guice - Extensions - AssistedInject (com.google.inject.extensions:guice-assistedinject:4.1.0 - https://github.com/google/guice/extensions-parent/guice-assistedinject)
+* Google Guice - Extensions - MultiBindings (com.google.inject.extensions:guice-multibindings:4.1.0 - https://github.com/google/guice/extensions-parent/guice-multibindings)
+* Guava: Google Core Libraries for Java (com.google.guava:guava:25.1-jre - https://github.com/google/guava/guava)
+* Hibernate Validator Engine (org.hibernate.validator:hibernate-validator:6.0.2.Final - http://hibernate.org/validator/hibernate-validator)
+* hystrix-core (com.netflix.hystrix:hystrix-core:1.5.12 - https://github.com/Netflix/Hystrix)
+* hystrix-javanica (com.netflix.hystrix:hystrix-javanica:1.5.12 - https://github.com/Netflix/Hystrix)
+* hystrix-metrics-event-stream (com.netflix.hystrix:hystrix-metrics-event-stream:1.5.12 - https://github.com/Netflix/Hystrix)
+* hystrix-serialization (com.netflix.hystrix:hystrix-serialization:1.5.12 - https://github.com/Netflix/Hystrix)
+* invokebinder (com.headius:invokebinder:1.11 - http://maven.apache.org)
+* J2ObjC Annotations (com.google.j2objc:j2objc-annotations:1.1 - https://github.com/google/j2objc/)
+* Jackson-annotations (com.fasterxml.jackson.core:jackson-annotations:2.9.8 - http://github.com/FasterXML/jackson)
+* Jackson-core (com.fasterxml.jackson.core:jackson-core:2.9.8 - https://github.com/FasterXML/jackson-core)
+* jackson-databind (com.fasterxml.jackson.core:jackson-databind:2.9.8 - http://github.com/FasterXML/jackson)
+* Jackson-dataformat-XML (com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.8 - http://wiki.fasterxml.com/JacksonExtensionXmlDataBinding)
+* Jackson-dataformat-YAML (com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.9.8 - https://github.com/FasterXML/jackson-dataformats-text)
+* Jackson datatype: jdk8 (com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.8.11 - https://github.com/FasterXML/jackson-modules-java8/jackson-datatype-jdk8)
+* Jackson datatype: JSR310 (com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.8.11 - https://github.com/FasterXML/jackson-modules-java8/jackson-datatype-jsr310)
+* Jackson module: Afterburner (com.fasterxml.jackson.module:jackson-module-afterburner:2.8.11 - https://github.com/FasterXML/jackson-modules-base)
+* Jackson module: JAXB-annotations (com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.8.11 - http://github.com/FasterXML/jackson-module-jaxb-annotations)
+* Jackson-module-parameter-names (com.fasterxml.jackson.module:jackson-module-parameter-names:2.8.11 - https://github.com/FasterXML/jackson-modules-java8/jackson-module-parameter-names)
+* javax.inject (javax.inject:javax.inject:1 - http://code.google.com/p/atinject/)
+* JBoss Logging 3 (org.jboss.logging:jboss-logging:3.3.2.Final - http://www.jboss.org)
+* JCommander (com.beust:jcommander:1.35 - http://beust.com/jcommander)
+* jffi (com.github.jnr:jffi:1.2.18 - http://github.com/jnr/jffi)
+* jnr-constants (com.github.jnr:jnr-constants:0.9.12 - http://github.com/jnr/jnr-constants)
+* jnr-enxio (com.github.jnr:jnr-enxio:0.19 - http://github.com/jnr/jnr-enxio)
+* jnr-netdb (com.github.jnr:jnr-netdb:1.1.6 - http://github.com/jnr/jnr-netdb)
+* jnr-unixsocket (com.github.jnr:jnr-unixsocket:0.20 - http://github.com/jnr/jnr-unixsocket)
+* Joda-Time (joda-time:joda-time:2.9.9 - http://www.joda.org/joda-time/)
+* libphonenumber (com.googlecode.libphonenumber:libphonenumber:8.0.0 - https://github.com/googlei18n/libphonenumber/)
+* markdown_to_asciidoc (nl.jworks.markdown_to_asciidoc:markdown_to_asciidoc:1.0 - no url defined)
+* markup-document-builder (io.github.swagger2markup:markup-document-builder:1.1.2 - https://github.com/Swagger2Markup/markup-document-builder)
+* modulator (com.headius:modulator:1.0 - http://nexus.sonatype.org/oss-repository-hosting.html/modulator)
+* nailgun-server (com.martiansoftware:nailgun-server:0.9.1 - http://martiansoftware.com/nailgun)
+* netflix-commons-util (com.netflix.netflix-commons:netflix-commons-util:0.1.1 - https://github.com/Netflix/netflix-commons)
+* netflix-statistics (com.netflix.netflix-commons:netflix-statistics:0.1.1 - https://github.com/Netflix/netflix-commons)
+* Netty/Buffer (io.netty:netty-buffer:4.1.28.Final - http://netty.io/netty-buffer/)
+* Netty/Codec/DNS (io.netty:netty-codec-dns:4.1.28.Final - http://netty.io/netty-codec-dns/)
+* Netty/Codec/HTTP (io.netty:netty-codec-http:4.1.28.Final - http://netty.io/netty-codec-http/)
+* Netty/Codec/HTTP2 (io.netty:netty-codec-http2:4.1.28.Final - http://netty.io/netty-codec-http2/)
+* Netty/Codec/Socks (io.netty:netty-codec-socks:4.1.28.Final - http://netty.io/netty-codec-socks/)
+* Netty/Codec (io.netty:netty-codec:4.1.28.Final - http://netty.io/netty-codec/)
+* Netty/Common (io.netty:netty-common:4.1.28.Final - http://netty.io/netty-common/)
+* Netty/Handler/Proxy (io.netty:netty-handler-proxy:4.1.28.Final - http://netty.io/netty-handler-proxy/)
+* Netty/Handler (io.netty:netty-handler:4.1.28.Final - http://netty.io/netty-handler/)
+* Netty/Resolver/DNS (io.netty:netty-resolver-dns:4.1.28.Final - http://netty.io/netty-resolver-dns/)
+* Netty/Resolver (io.netty:netty-resolver:4.1.28.Final - http://netty.io/netty-resolver/)
+* Netty/TomcatNative [BoringSSL - Static] (io.netty:netty-tcnative-boringssl-static:2.0.14.Final - https://github.com/netty/netty-tcnative/netty-tcnative-boringssl-static/)
+* Netty/Transport/Native/Epoll (io.netty:netty-transport-native-epoll:4.1.32.Final - http://netty.io/netty-transport-native-epoll/)
+* Netty/Transport/Native/Unix/Common (io.netty:netty-transport-native-unix-common:4.1.32.Final - http://netty.io/netty-transport-native-unix-common/)
+* Netty/Transport (io.netty:netty-transport:4.1.28.Final - http://netty.io/netty-transport/)
+* nio-multipart-parser (org.synchronoss.cloud:nio-multipart-parser:1.1.0 - https://github.com/synchronoss/nio-multipart/nio-multipart-parser)
+* Objenesis (org.objenesis:objenesis:2.5.1 - http://objenesis.org)
+* OkHttp (com.squareup.okhttp3:okhttp:3.4.1 - https://github.com/square/okhttp/okhttp)
+* Okio (com.squareup.okio:okio:1.9.0 - https://github.com/square/okio/okio)
+* options (com.headius:options:1.4 - https://github.com/headius/options)
+* org.synchronoss.cloud:nio-stream-storage (org.synchronoss.cloud:nio-stream-storage:1.1.3 - https://github.com/synchronoss/nio-stream-storage)
+* paleo-core (ch.netzwerg:paleo-core:0.11.0 - no url defined)
+* parboiled-core (org.parboiled:parboiled-core:1.1.6 - http://parboiled.org)
+* parboiled-java (org.parboiled:parboiled-java:1.1.6 - http://parboiled.org)
+* pegdown (org.pegdown:pegdown:1.4.2 - http://pegdown.org)
+* powermock-api-mockito (org.powermock:powermock-api-mockito:1.6.2 - http://www.powermock.org/powermock-api/powermock-api-mockito)
+* powermock-api-support (org.powermock:powermock-api-support:1.6.2 - http://www.powermock.org/powermock-api/powermock-api-support)
+* powermock-core (org.powermock:powermock-core:1.6.2 - http://www.powermock.org)
+* powermock-module-junit4 (org.powermock:powermock-module-junit4:1.6.2 - http://www.powermock.org)
+* powermock-module-junit4-common (org.powermock:powermock-module-junit4-common:1.6.2 - http://www.powermock.org/powermock-modules/powermock-module-junit4-common)
+* powermock-reflect (org.powermock:powermock-reflect:1.6.2 - http://www.powermock.org/powermock-reflect)
+* Prometheus Java Simpleclient (io.prometheus:simpleclient:0.1.0 - http://github.com/prometheus/client_java/simpleclient)
+* Prometheus Java Simpleclient Common (io.prometheus:simpleclient_common:0.1.0 - http://github.com/prometheus/client_java/simpleclient_common)
+* Prometheus Java Simpleclient Httpserver (io.prometheus:simpleclient_httpserver:0.1.0 - http://github.com/prometheus/client_java/simpleclient_httpserver)
+* protostuff :: api (io.protostuff:protostuff-api:1.5.2 - http://protostuff.io/protostuff-api)
+* protostuff :: collectionschema (io.protostuff:protostuff-collectionschema:1.5.2 - http://protostuff.io/protostuff-collectionschema)
+* protostuff :: core (io.protostuff:protostuff-core:1.5.2 - http://protostuff.io/protostuff-core)
+* protostuff :: runtime (io.protostuff:protostuff-runtime:1.5.2 - http://protostuff.io/protostuff-runtime)
+* Protostuff Compiler - Parser (io.protostuff:protostuff-parser:2.2.25 - http://www.protostuff.io/protostuff-parser/)
+* Reactive Streams Netty driver (io.projectreactor.netty:reactor-netty:0.8.4.RELEASE - https://github.com/reactor/reactor-netty)
+* Reactor Extra utilities (io.projectreactor.addons:reactor-extra:3.2.2.RELEASE - https://github.com/reactor/reactor)
+* ribbon (com.netflix.ribbon:ribbon:2.2.2 - https://github.com/Netflix/ribbon)
+* ribbon-core (com.netflix.ribbon:ribbon-core:2.2.2 - https://github.com/Netflix/ribbon)
+* ribbon-httpclient (com.netflix.ribbon:ribbon-httpclient:2.2.5 - https://github.com/Netflix/ribbon)
+* ribbon-loadbalancer (com.netflix.ribbon:ribbon-loadbalancer:2.2.2 - https://github.com/Netflix/ribbon)
+* ribbon-transport (com.netflix.ribbon:ribbon-transport:2.2.2 - https://github.com/Netflix/ribbon)
+* rxjava (io.reactivex:rxjava:1.1.6 - https://github.com/ReactiveX/RxJava)
+* rxnetty (io.reactivex:rxnetty:0.4.9 - https://github.com/ReactiveX/RxNetty)
+* rxnetty-contexts (io.reactivex:rxnetty-contexts:0.4.9 - https://github.com/ReactiveX/RxNetty)
+* rxnetty-servo (io.reactivex:rxnetty-servo:0.4.9 - https://github.com/ReactiveX/RxNetty)
+* servo-core (com.netflix.servo:servo-core:0.10.1 - https://github.com/Netflix/servo)
+* servo-internal (com.netflix.servo:servo-internal:0.10.1 - https://github.com/Netflix/servo)
+* SnakeYAML (org.yaml:snakeyaml:1.16 - http://www.snakeyaml.org)
+* spectator-api (com.netflix.spectator:spectator-api:0.71.0 - https://github.com/Netflix/spectator)
+* spectator-reg-servo (com.netflix.spectator:spectator-reg-servo:0.71.0 - https://github.com/Netflix/spectator)
+* Spring AOP (org.springframework:spring-aop:4.3.20.RELEASE - https://github.com/spring-projects/spring-framework)
+* Spring Aspects (org.springframework:spring-aspects:4.3.20.RELEASE - https://github.com/spring-projects/spring-framework)
+* Spring Beans (org.springframework:spring-beans:4.3.20.RELEASE - https://github.com/spring-projects/spring-framework)
+* Spring Boot (org.springframework.boot:spring-boot:1.5.12.RELEASE - http://projects.spring.io/spring-boot/)
+* Spring Boot Actuator (org.springframework.boot:spring-boot-actuator:1.5.12.RELEASE - http://projects.spring.io/spring-boot/)
+* Spring Boot Actuator Starter (org.springframework.boot:spring-boot-starter-actuator:1.5.12.RELEASE - http://projects.spring.io/spring-boot/)
+* Spring Boot AOP Starter (org.springframework.boot:spring-boot-starter-aop:1.5.12.RELEASE - http://projects.spring.io/spring-boot/)
+* Spring Boot AutoConfigure (org.springframework.boot:spring-boot-autoconfigure:1.5.12.RELEASE - http://projects.spring.io/spring-boot/)
+* Spring Boot Json Starter (org.springframework.boot:spring-boot-starter-json:2.1.2.RELEASE - https://projects.spring.io/spring-boot/#/spring-boot-parent/spring-boot-starters/spring-boot-starter-json)
+* Spring Boot Logging Starter (org.springframework.boot:spring-boot-starter-logging:1.5.12.RELEASE - http://projects.spring.io/spring-boot/)
+* Spring Boot Reactor Netty Starter (org.springframework.boot:spring-boot-starter-reactor-netty:2.1.2.RELEASE - https://projects.spring.io/spring-boot/#/spring-boot-parent/spring-boot-starters/spring-boot-starter-reactor-netty)
+* Spring Boot Starter (org.springframework.boot:spring-boot-starter:1.5.12.RELEASE - http://projects.spring.io/spring-boot/)
+* Spring Boot Tomcat Starter (org.springframework.boot:spring-boot-starter-tomcat:1.5.12.RELEASE - http://projects.spring.io/spring-boot/)
+* Spring Boot WebFlux Starter (org.springframework.boot:spring-boot-starter-webflux:2.1.2.RELEASE - https://projects.spring.io/spring-boot/#/spring-boot-parent/spring-boot-starters/spring-boot-starter-webflux)
+* Spring Boot Web Starter (org.springframework.boot:spring-boot-starter-web:1.5.12.RELEASE - http://projects.spring.io/spring-boot/)
+* Spring Cloud Commons (org.springframework.cloud:spring-cloud-commons:1.3.3.RELEASE - https://projects.spring.io/spring-cloud/spring-cloud-commons/)
+* Spring Cloud Context (org.springframework.cloud:spring-cloud-context:1.3.3.RELEASE - https://projects.spring.io/spring-cloud/spring-cloud-context/)
+* Spring Cloud Gateway Core (org.springframework.cloud:spring-cloud-gateway-core:2.1.0.RELEASE - https://spring.io/spring-cloud/spring-cloud-gateway/spring-cloud-gateway-core)
+* spring-cloud-gateway-webflux (org.springframework.cloud:spring-cloud-gateway-webflux:2.1.0.RELEASE - https://spring.io/spring-cloud/spring-cloud-gateway/spring-cloud-gateway-webflux)
+* Spring Cloud Netflix Core (org.springframework.cloud:spring-cloud-netflix-core:1.4.4.RELEASE - https://spring.io/spring-cloud/spring-cloud-netflix/spring-cloud-netflix-core)
+* spring-cloud-starter (org.springframework.cloud:spring-cloud-starter:1.3.3.RELEASE - https://projects.spring.io/spring-cloud)
+* spring-cloud-starter-gateway (org.springframework.cloud:spring-cloud-starter-gateway:2.1.0.RELEASE - https://projects.spring.io/spring-cloud)
+* spring-cloud-starter-hystrix (org.springframework.cloud:spring-cloud-starter-hystrix:1.4.4.RELEASE - https://projects.spring.io/spring-cloud)
+* Spring Cloud Starter Netflix Archaius (org.springframework.cloud:spring-cloud-starter-netflix-archaius:1.4.4.RELEASE - https://projects.spring.io/spring-cloud)
+* Spring Cloud Starter Netflix Hystrix (org.springframework.cloud:spring-cloud-starter-netflix-hystrix:1.4.4.RELEASE - https://projects.spring.io/spring-cloud)
+* Spring Cloud Starter Netflix Ribbon (org.springframework.cloud:spring-cloud-starter-netflix-ribbon:1.4.4.RELEASE - https://projects.spring.io/spring-cloud)
+* Spring Cloud Starter Netflix Zuul (org.springframework.cloud:spring-cloud-starter-netflix-zuul:1.4.4.RELEASE - https://projects.spring.io/spring-cloud)
+* spring-cloud-starter-ribbon (org.springframework.cloud:spring-cloud-starter-ribbon:1.4.4.RELEASE - https://projects.spring.io/spring-cloud)
+* spring-cloud-starter-zuul (org.springframework.cloud:spring-cloud-starter-zuul:1.4.4.RELEASE - https://projects.spring.io/spring-cloud)
+* Spring Context (org.springframework:spring-context:4.3.20.RELEASE - https://github.com/spring-projects/spring-framework)
+* Spring Core (org.springframework:spring-core:4.3.20.RELEASE - https://github.com/spring-projects/spring-framework)
+* Spring Expression Language (SpEL) (org.springframework:spring-expression:4.3.20.RELEASE - https://github.com/spring-projects/spring-framework)
+* spring-security-crypto (org.springframework.security:spring-security-crypto:4.2.5.RELEASE - http://spring.io/spring-security)
+* spring-security-rsa (org.springframework.security:spring-security-rsa:1.0.3.RELEASE - http://github.com/spring-projects/spring-security-oauth)
+* Spring Web (org.springframework:spring-web:4.3.20.RELEASE - https://github.com/spring-projects/spring-framework)
+* Spring WebFlux (org.springframework:spring-webflux:5.1.4.RELEASE - https://github.com/spring-projects/spring-framework)
+* Spring Web MVC (org.springframework:spring-webmvc:4.3.20.RELEASE - https://github.com/spring-projects/spring-framework)
+* swagger2markup (io.github.swagger2markup:swagger2markup:1.3.3 - https://github.com/Swagger2Markup/swagger2markup)
+* swagger-annotations (io.swagger:swagger-annotations:1.5.22 - https://github.com/swagger-api/swagger-core/modules/swagger-annotations)
+* swagger-compat-spec-parser (io.swagger:swagger-compat-spec-parser:1.0.35 - http://nexus.sonatype.org/oss-repository-hosting.html/swagger-parser-project/modules/swagger-compat-spec-parser)
+* swagger-core (io.swagger:swagger-core:1.5.22 - https://github.com/swagger-api/swagger-core/modules/swagger-core)
+* swagger-models (io.swagger:swagger-models:1.5.22 - https://github.com/swagger-api/swagger-core/modules/swagger-models)
+* swagger-parser (io.swagger:swagger-parser:1.0.35 - http://nexus.sonatype.org/oss-repository-hosting.html/swagger-parser-project/modules/swagger-parser)
+* tomcat-embed-core (org.apache.tomcat.embed:tomcat-embed-core:8.0.33 - http://tomcat.apache.org/)
+* tomcat-embed-el (org.apache.tomcat.embed:tomcat-embed-el:8.0.33 - http://tomcat.apache.org/)
+* tomcat-embed-logging-juli (org.apache.tomcat.embed:tomcat-embed-logging-juli:8.0.33 - http://tomcat.apache.org/)
+* tomcat-embed-websocket (org.apache.tomcat.embed:tomcat-embed-websocket:8.0.33 - http://tomcat.apache.org/)
+* unit-scaffolding (com.github.seanyinx:unit-scaffolding:1.0.0 - https://github.com/seanyinx/test-toolkit/unit-scaffolding)
+* Vavr (io.vavr:vavr:0.9.1 - http://vavr.io)
+* Vavr Match (io.vavr:vavr-match:0.9.1 - http://vavr.io)
+* Woodstox (com.fasterxml.woodstox:woodstox-core:5.0.3 - https://github.com/FasterXML/woodstox)
+* Zipkin Reporter: Core (io.zipkin.reporter2:zipkin-reporter:2.5.0 - https://github.com/openzipkin/zipkin-reporter-java/zipkin-reporter)
+* Zipkin Reporter Spring Factory Beans (io.zipkin.reporter2:zipkin-reporter-spring-beans:2.7.13 - https://github.com/openzipkin/zipkin-reporter-java/zipkin-reporter-spring-beans)
+* Zipkin Sender: OkHttp 3 (io.zipkin.reporter2:zipkin-sender-okhttp3:2.7.13 - https://github.com/openzipkin/zipkin-reporter-java/zipkin-sender-okhttp3)
+* Zipkin v2 (io.zipkin.zipkin2:zipkin:2.9.3 - https://github.com/openzipkin/zipkin/zipkin)
+* zuul-core (com.netflix.zuul:zuul-core:1.3.0 - https://github.com/Netflix/zuul)
+* json-schema-core (com.github.java-json-tools:json-schema-core:1.2.8 - https://github.com/java-json-tools/json-schema-core)
+* json-schema-validator (com.github.java-json-tools:json-schema-validator:2.2.8 - https://github.com/box-metadata/json-schema-validator)
+* btf (com.github.fge:btf:1.2 - https://github.com/fge/btf)
+* jackson-coreutils (com.github.fge:jackson-coreutils:1.6 - https://github.com/fge/jackson-coreutils)
+* json-patch (com.github.fge:json-patch:1.6 - https://github.com/fge/json-patch)
+* msg-simple (com.github.fge:msg-simple:1.1 - https://github.com/fge/msg-simple)
+* uri-template (com.github.fge:uri-template:0.9 - https://github.com/fge/uri-template)
+* Javassist (org.javassist:javassist:3.18.1-GA - http://www.javassist.org/)
+* Vert.x Bridge Common (io.vertx:vertx-bridge-common:3.6.2 - http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-bridge-common)
+* vertx-auth-common (io.vertx:vertx-auth-common:3.6.2 - http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-auth/vertx-auth-common)
+* vertx-web-common (io.vertx:vertx-web-common:3.6.2 - http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-web-parent/vertx-web-common)
