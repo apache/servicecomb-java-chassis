@@ -119,7 +119,7 @@ public abstract class AbstractRestInvocation {
   protected void scheduleInvocation() {
     try {
       createInvocation();
-    } catch (IllegalStateException e) {
+    } catch (Throwable e) {
       sendFailResponse(e);
       return;
     }
@@ -141,28 +141,33 @@ public abstract class AbstractRestInvocation {
       return;
     }
 
-    operationMeta.getExecutor().execute(() -> {
-      synchronized (this.requestEx) {
-        try {
-          if (isInQueueTimeout()) {
-            throw new InvocationException(Status.INTERNAL_SERVER_ERROR, "Timeout when processing the request.");
-          }
-          if (requestEx.getAttribute(RestConst.REST_REQUEST) != requestEx) {
-            // already timeout
-            // in this time, request maybe recycled and reused by web container, do not use requestEx
-            LOGGER.error("Rest request already timeout, abandon execute, method {}, operation {}.",
-                operationMeta.getHttpMethod(),
-                operationMeta.getMicroserviceQualifiedName());
-            return;
-          }
+    try {
+      operationMeta.getExecutor().execute(() -> {
+        synchronized (this.requestEx) {
+          try {
+            if (isInQueueTimeout()) {
+              throw new InvocationException(Status.INTERNAL_SERVER_ERROR, "Timeout when processing the request.");
+            }
+            if (requestEx.getAttribute(RestConst.REST_REQUEST) != requestEx) {
+              // already timeout
+              // in this time, request maybe recycled and reused by web container, do not use requestEx
+              LOGGER.error("Rest request already timeout, abandon execute, method {}, operation {}.",
+                  operationMeta.getHttpMethod(),
+                  operationMeta.getMicroserviceQualifiedName());
+              return;
+            }
 
-          runOnExecutor();
-        } catch (Throwable e) {
-          LOGGER.error("rest server onRequest error", e);
-          sendFailResponse(e);
+            runOnExecutor();
+          } catch (Throwable e) {
+            LOGGER.error("rest server onRequest error", e);
+            sendFailResponse(e);
+          }
         }
-      }
-    });
+      });
+    } catch (Throwable e) {
+      LOGGER.error("failed to schedule invocation, message={}, executor={}.", e.getMessage(), e.getClass().getName());
+      sendFailResponse(e);
+    }
   }
 
   private Holder<Boolean> checkQpsFlowControl(OperationMeta operationMeta) {
@@ -176,7 +181,7 @@ public abstract class AbstractRestInvocation {
           produceProcessor = ProduceProcessorManager.JSON_PROCESSOR;
           sendResponse(response);
         });
-      } catch (Exception e) {
+      } catch (Throwable e) {
         LOGGER.error("failed to execute ProviderQpsFlowControlHandler", e);
         qpsFlowControlReject.value = true;
         sendFailResponse(e);

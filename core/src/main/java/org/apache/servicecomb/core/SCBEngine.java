@@ -298,9 +298,15 @@ public class SCBEngine {
   }
 
   private void validAllInvocationFinished() throws InterruptedException {
+    long start = System.currentTimeMillis();
     while (true) {
-      if (invocationFinishedCounter.get() == invocationStartedCounter.get()) {
+      long remaining = invocationStartedCounter.get() - invocationFinishedCounter.get();
+      if (remaining == 0) {
         return;
+      }
+
+      if (System.currentTimeMillis() - start > TimeUnit.SECONDS.toMillis(30)) {
+        LOGGER.error("wait for all requests timeout, abandon waiting, remaining requests: {}.", remaining);
       }
       TimeUnit.SECONDS.sleep(1);
     }

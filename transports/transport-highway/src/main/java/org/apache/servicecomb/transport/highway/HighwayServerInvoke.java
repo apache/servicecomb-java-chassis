@@ -18,6 +18,7 @@
 package org.apache.servicecomb.transport.highway;
 
 import java.util.Map;
+import java.util.concurrent.RejectedExecutionException;
 
 import javax.ws.rs.core.Response.Status;
 import javax.xml.ws.Holder;
@@ -186,7 +187,10 @@ public class HighwayServerInvoke {
       }
 
       operationMeta.getExecutor().execute(this::runInExecutor);
-    } catch (IllegalStateException e) {
+    } catch (Throwable e) {
+      if (e instanceof RejectedExecutionException) {
+        LOGGER.error("failed to schedule invocation, message={}, executor={}.", e.getMessage(), e.getClass().getName());
+      }
       sendResponse(header.getContext(), Response.providerFailResp(e));
     }
   }
