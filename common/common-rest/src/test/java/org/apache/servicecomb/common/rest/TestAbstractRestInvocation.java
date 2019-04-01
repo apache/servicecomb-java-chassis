@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
+import java.util.concurrent.RejectedExecutionException;
 
 import javax.ws.rs.core.Response.Status;
 import javax.xml.ws.Holder;
@@ -885,17 +886,44 @@ public class TestAbstractRestInvocation {
       protected void runOnExecutor() {
         throw new RuntimeExceptionWithoutStackTrace("run on executor");
       }
-
-      @Override
-      public void sendFailResponse(Throwable throwable) {
-        throw (Error) throwable;
-      }
     };
     restInvocation.requestEx = requestEx;
     restInvocation.restOperationMeta = restOperation;
 
     // will not throw exception
     restInvocation.scheduleInvocation();
+  }
+
+  @Test
+  public void threadPoolReject(@Mocked OperationMeta operationMeta) {
+    RejectedExecutionException rejectedExecutionException = new RejectedExecutionException("reject");
+    Executor executor = (task) -> {
+      throw rejectedExecutionException;
+    };
+
+    new Expectations() {
+      {
+        restOperation.getOperationMeta();
+        result = operationMeta;
+        operationMeta.getExecutor();
+        result = executor;
+      }
+    };
+
+    Holder<Throwable> holder = new Holder<>();
+    requestEx = new AbstractHttpServletRequestForTest();
+    restInvocation = new AbstractRestInvocationForTest() {
+      @Override
+      public void sendFailResponse(Throwable throwable) {
+        holder.value = throwable;
+      }
+    };
+    restInvocation.requestEx = requestEx;
+    restInvocation.restOperationMeta = restOperation;
+
+    restInvocation.scheduleInvocation();
+
+    Assert.assertSame(rejectedExecutionException, holder.value);
   }
 
   @Test
