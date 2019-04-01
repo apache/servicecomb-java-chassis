@@ -208,6 +208,13 @@ separate copyright notices and license terms. Your use of these
 subcomponents is subject to the terms and conditions of the
 following licenses.
 
+================================================================
+This product bundles files from reactive-streams which is licensed under the
+CC0 license.
+For details, see http://www.reactive-streams.org/
+You can find a copy of the License at licenses/LICENSE-reactivestream
+
+reactive-streams (org.reactivestreams:reactive-streams:1.0.0 - http://www.reactive-streams.org/)
 
 ================================================================
 This product bundles files from stax2 which is licensed under the
