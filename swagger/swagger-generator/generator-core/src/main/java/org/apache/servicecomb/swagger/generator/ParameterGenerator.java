@@ -32,18 +32,18 @@ import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import io.swagger.models.parameters.Parameter;
 
 public class ParameterGenerator {
-  public String parameterName;
+  private String parameterName;
 
-  public List<Annotation> annotations;
+  private List<Annotation> annotations;
 
   /**
    * when wrap parameters to body, genericType is null
    */
-  public Type genericType;
+  private Type genericType;
 
-  public HttpParameterType httpParameterType;
+  private HttpParameterType httpParameterType;
 
-  public Parameter generatedParameter;
+  private Parameter generatedParameter;
 
   public ParameterGenerator(String parameterName, List<Annotation> annotations, Type genericType,
       HttpParameterType httpParameterType, Parameter generatedParameter) {
@@ -80,5 +80,33 @@ public class ParameterGenerator {
     this.annotations = annotations;
     this.genericType = collectGenericType(annotations, null);
     this.httpParameterType = collectHttpParameterType(annotations, genericType);
+  }
+
+  public String getParameterName() {
+    return parameterName;
+  }
+
+  public List<Annotation> getAnnotations() {
+    return annotations;
+  }
+
+  public Type getGenericType() {
+    return genericType;
+  }
+
+  public HttpParameterType getHttpParameterType() {
+    return httpParameterType;
+  }
+
+  public void setHttpParameterType(HttpParameterType httpParameterType) {
+    this.httpParameterType = httpParameterType;
+  }
+
+  public Parameter getGeneratedParameter() {
+    return generatedParameter;
+  }
+
+  public void setGeneratedParameter(Parameter generatedParameter) {
+    this.generatedParameter = generatedParameter;
   }
 }
