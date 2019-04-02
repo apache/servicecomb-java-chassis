@@ -31,10 +31,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.processor.response.DefaultResponseTypeProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 
 import io.swagger.models.parameters.Parameter;
 
 public final class SwaggerGeneratorUtils {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerGeneratorUtils.class);
+
   // all static fields load from SPI and stateless
   private static Set<Type> contextTypes = SPIServiceUtils.getOrLoadSortedService(SwaggerContextRegister.class).stream()
       .map(SwaggerContextRegister::getContextType)
@@ -51,19 +57,35 @@ public final class SwaggerGeneratorUtils {
   private static DefaultResponseTypeProcessor defaultResponseTypeProcessor = new DefaultResponseTypeProcessor();
 
   static {
+    // low order value has high priority
     for (ClassAnnotationProcessor<?> processor : SPIServiceUtils
         .getOrLoadSortedService(ClassAnnotationProcessor.class)) {
-      classAnnotationProcessors.put(processor.getProcessType(), processor);
+      if (classAnnotationProcessors.putIfAbsent(processor.getProcessType(), processor) != null) {
+        LOGGER.info("ignore duplicated ClassAnnotationProcessor, type={}, processor={}.",
+            processor.getProcessType().getTypeName(), processor.getClass().getName());
+      }
     }
+
     for (MethodAnnotationProcessor<?> processor : SPIServiceUtils
         .getOrLoadSortedService(MethodAnnotationProcessor.class)) {
-      methodAnnotationProcessors.put(processor.getProcessType(), processor);
+      if (methodAnnotationProcessors.putIfAbsent(processor.getProcessType(), processor) != null) {
+        LOGGER.info("ignore duplicated MethodAnnotationProcessor, type={}, processor={}.",
+            processor.getProcessType().getTypeName(), processor.getClass().getName());
+      }
     }
+
     for (ParameterProcessor<?, ?> processor : SPIServiceUtils.getOrLoadSortedService(ParameterProcessor.class)) {
-      parameterProcessors.put(processor.getProcessType(), processor);
+      if (parameterProcessors.putIfAbsent(processor.getProcessType(), processor) != null) {
+        LOGGER.info("ignore duplicated ParameterProcessor, type={}, processor={}.",
+            processor.getProcessType().getTypeName(), processor.getClass().getName());
+      }
     }
+
     for (ResponseTypeProcessor processor : SPIServiceUtils.getOrLoadSortedService(ResponseTypeProcessor.class)) {
-      responseTypeProcessors.put(processor.getProcessType(), processor);
+      if (responseTypeProcessors.putIfAbsent(processor.getProcessType(), processor) != null) {
+        LOGGER.info("ignore duplicated ResponseTypeProcessor, type={}, processor={}.",
+            processor.getProcessType().getTypeName(), processor.getClass().getName());
+      }
     }
   }
 
@@ -87,16 +109,44 @@ public final class SwaggerGeneratorUtils {
   }
 
   public static ResponseTypeProcessor findResponseTypeProcessor(Type type) {
-    return responseTypeProcessors.getOrDefault(type, defaultResponseTypeProcessor);
+    ResponseTypeProcessor processor = responseTypeProcessors.get(type);
+    if (processor != null) {
+      return processor;
+    }
+
+    if (type instanceof ParameterizedType) {
+      return responseTypeProcessors.getOrDefault(((ParameterizedType) type).getRawType(), defaultResponseTypeProcessor);
+    }
+
+    return defaultResponseTypeProcessor;
   }
 
   public static boolean isContextParameter(Type type) {
     return contextTypes.contains(type);
   }
 
+  public static Annotation[] collectAnnotations(BeanPropertyDefinition propertyDefinition) {
+    List<Annotation> annotations = new ArrayList<>();
+    if (propertyDefinition.getField() != null) {
+      Collections.addAll(annotations, propertyDefinition.getField().getAnnotated().getAnnotations());
+    }
+    if (propertyDefinition.getGetter() != null) {
+      Collections.addAll(annotations, propertyDefinition.getGetter().getAnnotated().getAnnotations());
+    }
+    if (propertyDefinition.getSetter() != null) {
+      Collections.addAll(annotations, propertyDefinition.getSetter().getAnnotated().getAnnotations());
+    }
+    return annotations.toArray(new Annotation[annotations.size()]);
+  }
+
   public static String collectParameterName(java.lang.reflect.Parameter methodParameter) {
     return collectParameterName(methodParameter.getDeclaringExecutable(), methodParameter.getAnnotations(),
         methodParameter.isNamePresent() ? methodParameter.getName() : null);
+  }
+
+  public static String collectParameterName(Method method, BeanPropertyDefinition propertyDefinition) {
+    Annotation[] annotations = collectAnnotations(propertyDefinition);
+    return collectParameterName(method, annotations, propertyDefinition.getName());
   }
 
   public static String collectParameterName(Executable executable, Annotation[] annotations, String defaultName) {
