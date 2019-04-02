@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.swagger.generator.core;
 
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.collectAnnotations;
 import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findMethodAnnotationProcessor;
 import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findParameterProcessors;
 import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findResponseTypeProcessor;
@@ -25,7 +26,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -184,11 +184,11 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     for (ParameterGenerator parameterGenerator : parameterGenerators) {
       scanMethodParameter(parameterGenerator);
 
-      if (!names.add(parameterGenerator.parameterName)) {
+      if (!names.add(parameterGenerator.getParameterName())) {
         throw new IllegalStateException(
-            String.format("not support duplicated parameter, name=%s.", parameterGenerator.parameterName));
+            String.format("not support duplicated parameter, name=%s.", parameterGenerator.getParameterName()));
       }
-      swaggerOperation.addParameter(parameterGenerator.generatedParameter);
+      swaggerOperation.addParameter(parameterGenerator.getGeneratedParameter());
     }
   }
 
@@ -205,7 +205,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
     // 4.check
     //   httpParameterType should not be null
-    long bodyCount = parameterGenerators.stream().filter(p -> p.httpParameterType.equals(HttpParameterType.body))
+    long bodyCount = parameterGenerators.stream().filter(p -> p.getHttpParameterType().equals(HttpParameterType.body))
         .count();
     if (bodyCount > 1) {
       throw new IllegalStateException(String.format("defined %d body parameter.", bodyCount));
@@ -222,8 +222,8 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
         continue;
       }
 
-      validateParameter(parameterGenerator.genericType);
-      if (isContextParameter(parameterGenerator.genericType)) {
+      validateParameter(parameterGenerator.getGenericType());
+      if (isContextParameter(parameterGenerator.getGenericType())) {
         continue;
       }
 
@@ -249,21 +249,11 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
         continue;
       }
 
-      List<Annotation> annotations = new ArrayList<>();
-      if (propertyDefinition.getField() != null) {
-        Collections.addAll(annotations, propertyDefinition.getField().getAnnotated().getAnnotations());
-      }
-      if (propertyDefinition.getGetter() != null) {
-        Collections.addAll(annotations, propertyDefinition.getGetter().getAnnotated().getAnnotations());
-      }
-      if (propertyDefinition.getSetter() != null) {
-        Collections.addAll(annotations, propertyDefinition.getSetter().getAnnotated().getAnnotations());
-      }
-      propertyDefinition.getField().getAllAnnotations();
+      Annotation[] annotations = collectAnnotations(propertyDefinition);
       ParameterGenerator propertyParameterGenerator = new ParameterGenerator(method,
           methodAnnotationMap,
           propertyDefinition.getName(),
-          annotations.toArray(new Annotation[annotations.size()]),
+          annotations,
           propertyDefinition.getField().getAnnotated().getGenericType());
       parameterGenerators.add(propertyParameterGenerator);
     }
@@ -320,24 +310,24 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     try {
       fillParameter(swagger,
           parameter,
-          parameterGenerator.parameterName,
-          parameterGenerator.genericType,
-          parameterGenerator.annotations);
+          parameterGenerator.getParameterName(),
+          parameterGenerator.getGenericType(),
+          parameterGenerator.getAnnotations());
     } catch (Throwable e) {
       throw new IllegalStateException(
           String.format("failed to fill parameter, parameterName=%s.",
-              parameterGenerator.parameterName),
+              parameterGenerator.getParameterName()),
           e);
     }
   }
 
   protected Parameter createParameter(ParameterGenerator parameterGenerator) {
-    if (parameterGenerator.generatedParameter == null) {
-      Parameter parameter = createParameter(parameterGenerator.httpParameterType);
-      parameterGenerator.generatedParameter = parameter;
+    if (parameterGenerator.getGeneratedParameter() == null) {
+      Parameter parameter = createParameter(parameterGenerator.getHttpParameterType());
+      parameterGenerator.setGeneratedParameter(parameter);
     }
-    parameterGenerator.generatedParameter.setName(parameterGenerator.parameterName);
-    return parameterGenerator.generatedParameter;
+    parameterGenerator.getGeneratedParameter().setName(parameterGenerator.getParameterName());
+    return parameterGenerator.getGeneratedParameter();
   }
 
   protected Parameter createParameter(HttpParameterType httpParameterType) {
@@ -492,12 +482,12 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   protected Model createResponseModel() {
-    Type responseType = method.getReturnType();
+    Type responseType = method.getGenericReturnType();
     if (ReflectionUtils.isVoid(responseType)) {
       return null;
     }
 
     ResponseTypeProcessor processor = findResponseTypeProcessor(responseType);
-    return processor.process(swaggerGenerator, this, method.getGenericReturnType());
+    return processor.process(swaggerGenerator, this, responseType);
   }
 }

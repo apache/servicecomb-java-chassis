@@ -200,29 +200,8 @@ public final class SwaggerUtils {
     parameter.setProperty(property);
   }
 
-  /**
-   * Set param type info. For {@linkplain javax.ws.rs.BeanParam BeanParam} scenario.
-   *
-   * @param paramType type of the swagger parameter
-   * @param parameter swagger parameter
-   */
-  public static void setParameterType(Type paramType, AbstractSerializableParameter<?> parameter) {
-    Property property = ModelConverters.getInstance().readAsProperty(paramType);
-
-    if (isComplexProperty(property)) {
-      // cannot set a simple parameter(header, query, etc.) as complex type
-      throw new IllegalArgumentException(
-          String.format(
-              "not allow such type of param:[%s], param name is [%s]",
-              property.getClass(),
-              parameter.getName()));
-    }
-    parameter.setProperty(property);
-  }
-
   public static boolean isComplexProperty(Property property) {
-    if (RefProperty.class.isInstance(property) || ObjectProperty.class.isInstance(property)
-        || MapProperty.class.isInstance(property)) {
+    if (property instanceof RefProperty || property instanceof ObjectProperty || property instanceof MapProperty) {
       return true;
     }
 
@@ -249,29 +228,37 @@ public final class SwaggerUtils {
   }
 
   public static void setCommaConsumes(Swagger swagger, String commaConsumes) {
-    if (org.apache.commons.lang3.StringUtils.isEmpty(commaConsumes)) {
+    if (StringUtils.isEmpty(commaConsumes)) {
       return;
     }
 
     setConsumes(swagger, commaConsumes.split(","));
   }
 
+  public static void setCommaConsumes(Operation operation, String commaConsumes) {
+    if (StringUtils.isEmpty(commaConsumes)) {
+      return;
+    }
+
+    setConsumes(operation, commaConsumes.split(","));
+  }
+
   public static void setConsumes(Operation operation, String... consumes) {
-    List<String> consumeList = convertConsumes(consumes);
+    List<String> consumeList = convertConsumesOrProduces(consumes);
     if (!consumeList.isEmpty()) {
       operation.setConsumes(consumeList);
     }
   }
 
   public static void setConsumes(Swagger swagger, String... consumes) {
-    List<String> consumeList = convertConsumes(consumes);
+    List<String> consumeList = convertConsumesOrProduces(consumes);
     if (!consumeList.isEmpty()) {
       swagger.setConsumes(consumeList);
     }
   }
 
-  public static List<String> convertConsumes(String... consumes) {
-    return Arrays.stream(consumes)
+  public static List<String> convertConsumesOrProduces(String... consumesOrProduces) {
+    return Arrays.stream(consumesOrProduces)
         .map(String::trim)
         .filter(StringUtils::isNotEmpty)
         .collect(Collectors.toList());
@@ -285,17 +272,23 @@ public final class SwaggerUtils {
     setProduces(swagger, commaProduces.split(","));
   }
 
+  public static void setCommaProduces(Operation operation, String commaProduces) {
+    if (StringUtils.isEmpty(commaProduces)) {
+      return;
+    }
+
+    setProduces(operation, commaProduces.split(","));
+  }
+
   public static void setProduces(Operation operation, String... produces) {
-    // same to consumes
-    List<String> produceList = convertConsumes(produces);
+    List<String> produceList = convertConsumesOrProduces(produces);
     if (!produceList.isEmpty()) {
       operation.setProduces(produceList);
     }
   }
 
   public static void setProduces(Swagger swagger, String... produces) {
-    // same to consumes
-    List<String> produceList = convertConsumes(produces);
+    List<String> produceList = convertConsumesOrProduces(produces);
     if (!produceList.isEmpty()) {
       swagger.setProduces(produceList);
     }
@@ -355,15 +348,11 @@ public final class SwaggerUtils {
       return false;
     }
 
-    if (cls == String.class
-        || cls == Date.class
-        || cls == LocalDate.class
-        || cls == byte[].class
-        || Part.class.isAssignableFrom(cls)) {
-      return false;
-    }
-
-    return true;
+    return (cls != String.class
+        && cls != Date.class
+        && cls != LocalDate.class
+        && cls != byte[].class
+        && !Part.class.isAssignableFrom(cls));
   }
 
   public static boolean isFileParameter(Parameter parameter) {
