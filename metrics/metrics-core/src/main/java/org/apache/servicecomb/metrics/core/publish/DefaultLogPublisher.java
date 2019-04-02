@@ -220,14 +220,15 @@ public class DefaultLogPublisher implements MetricsInitializer {
       return;
     }
     sb.append("threadPool:\n");
-    sb.append("  coreSize maxThreads poolSize currentBusy queueSize taskCount taskFinished name\n");
+    sb.append("  coreSize maxThreads poolSize currentBusy rejected queueSize taskCount taskFinished name\n");
     for (Entry<String, ThreadPoolPublishModel> entry : model.getThreadPools().entrySet()) {
       ThreadPoolPublishModel threadPoolPublishModel = entry.getValue();
-      sb.append(String.format("  %-8d %-10d %-8d %-11d %-9d %-9.1f %-12.1f %s\n",
+      sb.append(String.format("  %-8d %-10d %-8d %-11d %-8.0f %-9d %-9.1f %-12.1f %s\n",
           threadPoolPublishModel.getCorePoolSize(),
           threadPoolPublishModel.getMaxThreads(),
           threadPoolPublishModel.getPoolSize(),
           threadPoolPublishModel.getCurrentThreadsBusy(),
+          threadPoolPublishModel.getRejected(),
           threadPoolPublishModel.getQueueSize(),
           threadPoolPublishModel.getAvgTaskCount(),
           threadPoolPublishModel.getAvgCompletedTaskCount(),
