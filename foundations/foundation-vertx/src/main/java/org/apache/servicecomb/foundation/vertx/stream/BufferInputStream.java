@@ -45,7 +45,7 @@ public class BufferInputStream extends ServletInputStream {
 
   @Override
   public int read() {
-    return byteBuf.readByte();
+    return byteBuf.readUnsignedByte();
   }
 
   public boolean readBoolean() {
