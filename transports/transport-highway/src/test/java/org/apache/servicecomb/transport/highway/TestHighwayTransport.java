@@ -50,10 +50,10 @@ public class TestHighwayTransport {
       transport.init();
     } catch (Exception e) {
       status = false;
+    } finally {
+      VertxUtils.blockCloseVertxByName("transport");
     }
     Assert.assertTrue(status);
-
-    VertxUtils.blockCloseVertxByName("transport");
   }
 
   @Test
