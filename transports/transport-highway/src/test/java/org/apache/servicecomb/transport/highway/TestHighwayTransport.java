@@ -53,6 +53,7 @@ public class TestHighwayTransport {
     } finally {
       VertxUtils.blockCloseVertxByName("transport");
     }
+
     Assert.assertTrue(status);
   }
 
