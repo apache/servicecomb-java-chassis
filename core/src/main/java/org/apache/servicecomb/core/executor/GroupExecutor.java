@@ -83,31 +83,31 @@ public class GroupExecutor implements Executor, Closeable {
   }
 
   public void initConfig() {
-    LOGGER.info("JDK standard thread pool rules:\n"
+    LOGGER.info("thread pool rules:\n"
         + "1.use core threads.\n"
-        + "2.if all core threads are busy, then queue the request.\n"
-        + "3.if queue is full, then create new thread util reach the limit of max threads.\n"
+        + "2.if all core threads are busy, then create new thread.\n"
+        + "3.if thread count reach the max limitation, then queue the request.\n"
         + "4.if queue is full, and threads count is max, then reject the request.");
 
-    // the complex logic is to keep compatible
-    // otherwise can throw exception if configuration is invalid.
-    coreThreads = DynamicPropertyFactory.getInstance().getIntProperty(KEY_CORE_THREADS, -1).get();
+    groupCount = DynamicPropertyFactory.getInstance().getIntProperty(KEY_GROUP, 2).get();
+    coreThreads = DynamicPropertyFactory.getInstance().getIntProperty(KEY_CORE_THREADS, 25).get();
 
-    int oldMaxThreads = DynamicPropertyFactory.getInstance().getIntProperty(KEY_OLD_MAX_THREAD, -1).get();
-    maxThreads = DynamicPropertyFactory.getInstance().getIntProperty(KEY_MAX_THREADS, oldMaxThreads).get();
-    maxThreads = Math.max(coreThreads, maxThreads);
-    maxThreads = maxThreads <= 0 ? 100 : maxThreads;
-
-    maxQueueSize = DynamicPropertyFactory.getInstance().getIntProperty(KEY_MAX_QUEUE_SIZE, Integer.MAX_VALUE).get();
-    if (maxQueueSize == Integer.MAX_VALUE) {
+    maxThreads = DynamicPropertyFactory.getInstance().getIntProperty(KEY_MAX_THREADS, -1).get();
+    if (maxThreads <= 0) {
+      maxThreads = DynamicPropertyFactory.getInstance().getIntProperty(KEY_OLD_MAX_THREAD, -1).get();
+      if (maxThreads > 0) {
+        LOGGER.warn("{} is deprecated, recommended to use {}.", KEY_OLD_MAX_THREAD, KEY_MAX_THREADS);
+      } else {
+        maxThreads = 100;
+      }
+    }
+    if (coreThreads > maxThreads) {
+      LOGGER.warn("coreThreads is bigger than maxThreads, change from {} to {}.", coreThreads, maxThreads);
       coreThreads = maxThreads;
-      LOGGER.info("not configured {},  make coreThreads and maxThreads to be {}.", KEY_MAX_QUEUE_SIZE, maxThreads);
-    } else {
-      coreThreads = coreThreads <= 0 ? 25 : coreThreads;
     }
 
-    groupCount = DynamicPropertyFactory.getInstance().getIntProperty(KEY_GROUP, 2).get();
     maxIdleInSecond = DynamicPropertyFactory.getInstance().getIntProperty(KEY_MAX_IDLE_SECOND, 60).get();
+    maxQueueSize = DynamicPropertyFactory.getInstance().getIntProperty(KEY_MAX_QUEUE_SIZE, Integer.MAX_VALUE).get();
 
     LOGGER.info(
         "executor group={}. per group settings, coreThreads={}, maxThreads={}, maxIdleInSecond={}, maxQueueSize={}.",
