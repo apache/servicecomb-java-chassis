@@ -17,7 +17,11 @@
 
 package org.apache.servicecomb.foundation.vertx.stream;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -26,6 +30,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 public class TestBufferInputStream {
 
@@ -45,6 +50,30 @@ public class TestBufferInputStream {
   @Test
   public void testRead() {
     Assert.assertEquals(0, instance.read());
+  }
+
+  @Test
+  public void testReadDecorate() throws IOException {
+    String text = "abcdefg123456789";
+    ByteArrayOutputStream out = new ByteArrayOutputStream();
+    GZIPOutputStream gzipOutputStream = new GZIPOutputStream(out);
+    gzipOutputStream.write(text.getBytes());
+    gzipOutputStream.close();
+
+    ByteBuf buffer = Unpooled.buffer();
+    buffer.writeBytes(out.toByteArray());
+    out.close();
+    BufferInputStream bufferInputStream = new BufferInputStream(buffer);
+    GZIPInputStream gzipInputStream = new GZIPInputStream(bufferInputStream);
+    StringBuffer sb = new StringBuffer();
+    byte[] bufferByte = new byte[256];
+    int n;
+    while ((n = gzipInputStream.read(bufferByte)) >= 0) {
+      sb.append(new String(bufferByte, 0, n));
+    }
+    gzipInputStream.close();
+
+    Assert.assertEquals(text, sb.toString());
   }
 
   @Test
