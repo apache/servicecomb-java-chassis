@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -55,6 +56,16 @@ public class TestGroupExecutor {
   }
 
   @Test
+  public void coreThreads() {
+    groupExecutor.initConfig();
+    Assert.assertEquals(25, groupExecutor.coreThreads);
+
+    ArchaiusUtils.setProperty(GroupExecutor.KEY_CORE_THREADS, 100);
+    groupExecutor.initConfig();
+    Assert.assertEquals(100, groupExecutor.coreThreads);
+  }
+
+  @Test
   public void maxIdleInSecond() {
     groupExecutor.initConfig();
     Assert.assertEquals(60, groupExecutor.maxIdleInSecond);
@@ -75,82 +86,35 @@ public class TestGroupExecutor {
   }
 
   @Test
-  public void threads_NotConfigQueue() {
+  public void maxThreads() {
     groupExecutor.initConfig();
-    Assert.assertEquals(100, groupExecutor.coreThreads);
     Assert.assertEquals(100, groupExecutor.maxThreads);
+
+    LogCollector collector = new LogCollector();
+    ArchaiusUtils.setProperty(GroupExecutor.KEY_OLD_MAX_THREAD, 200);
+    groupExecutor.initConfig();
+    Assert.assertEquals(200, groupExecutor.maxThreads);
+    Assert.assertEquals(
+        "servicecomb.executor.default.thread-per-group is deprecated, recommended to use servicecomb.executor.default.maxThreads-per-group.",
+        collector.getEvents().get(collector.getEvents().size() - 2).getMessage());
+    collector.teardown();
+
+    ArchaiusUtils.setProperty(GroupExecutor.KEY_MAX_THREADS, 300);
+    groupExecutor.initConfig();
+    Assert.assertEquals(300, groupExecutor.maxThreads);
   }
 
   @Test
-  public void threads_NotConfigQueue_onlyOldMax() {
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_OLD_MAX_THREAD, 30);
+  public void adjustCoreThreads() {
+    ArchaiusUtils.setProperty(GroupExecutor.KEY_MAX_THREADS, 10);
 
+    LogCollector collector = new LogCollector();
     groupExecutor.initConfig();
-    Assert.assertEquals(30, groupExecutor.coreThreads);
-    Assert.assertEquals(30, groupExecutor.maxThreads);
-  }
-
-  @Test
-  public void threads_NotConfigQueue_ignoreOldMax() {
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_OLD_MAX_THREAD, 30);
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_CORE_THREADS, 10);
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_MAX_THREADS, 20);
-
-    groupExecutor.initConfig();
-    Assert.assertEquals(20, groupExecutor.coreThreads);
-    Assert.assertEquals(20, groupExecutor.maxThreads);
-  }
-
-  @Test
-  public void threads_NotConfigQueue_adjust() {
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_CORE_THREADS, 30);
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_MAX_THREADS, 20);
-
-    groupExecutor.initConfig();
-    Assert.assertEquals(30, groupExecutor.coreThreads);
-    Assert.assertEquals(30, groupExecutor.maxThreads);
-  }
-
-  @Test
-  public void threads_configQueue() {
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_MAX_QUEUE_SIZE, 100);
-
-    groupExecutor.initConfig();
-    Assert.assertEquals(25, groupExecutor.coreThreads);
-    Assert.assertEquals(100, groupExecutor.maxThreads);
-  }
-
-  @Test
-  public void threads_configQueue_oldOldMax() {
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_MAX_QUEUE_SIZE, 100);
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_OLD_MAX_THREAD, 30);
-
-    groupExecutor.initConfig();
-    Assert.assertEquals(25, groupExecutor.coreThreads);
-    Assert.assertEquals(30, groupExecutor.maxThreads);
-  }
-
-  @Test
-  public void threads_configQueue_ignoreOldMax() {
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_MAX_QUEUE_SIZE, 100);
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_OLD_MAX_THREAD, 30);
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_CORE_THREADS, 10);
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_MAX_THREADS, 20);
-
-    groupExecutor.initConfig();
-    Assert.assertEquals(10, groupExecutor.coreThreads);
-    Assert.assertEquals(20, groupExecutor.maxThreads);
-  }
-
-  @Test
-  public void threads_configQueue_adjust() {
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_MAX_QUEUE_SIZE, 100);
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_CORE_THREADS, 30);
-    ArchaiusUtils.setProperty(GroupExecutor.KEY_MAX_THREADS, 20);
-
-    groupExecutor.initConfig();
-    Assert.assertEquals(30, groupExecutor.coreThreads);
-    Assert.assertEquals(30, groupExecutor.maxThreads);
+    Assert.assertEquals(10, groupExecutor.maxThreads);
+    Assert.assertEquals(
+        "coreThreads is bigger than maxThreads, change from 25 to 10.",
+        collector.getEvents().get(collector.getEvents().size() - 2).getMessage());
+    collector.teardown();
   }
 
   @Test
