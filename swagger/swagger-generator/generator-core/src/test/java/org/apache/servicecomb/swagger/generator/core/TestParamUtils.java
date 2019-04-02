@@ -19,7 +19,6 @@ package org.apache.servicecomb.swagger.generator.core;
 
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,10 +28,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.swagger.models.parameters.AbstractSerializableParameter;
-import io.swagger.models.parameters.HeaderParameter;
 import io.swagger.models.parameters.Parameter;
-import io.swagger.models.parameters.QueryParameter;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.ObjectProperty;
@@ -69,30 +65,5 @@ public class TestParamUtils {
     Assert.assertFalse(SwaggerUtils.isComplexProperty(property));
     property = new StringProperty();
     Assert.assertFalse(SwaggerUtils.isComplexProperty(property));
-  }
-
-  @Test
-  public void setParameterTypeByTypeNormal() {
-    AbstractSerializableParameter<?> parameter = new QueryParameter();
-    SwaggerUtils.setParameterType(String.class, parameter);
-    Assert.assertEquals("string", parameter.getType());
-
-    parameter = new HeaderParameter();
-    SwaggerUtils.setParameterType(long.class, parameter);
-    Assert.assertEquals("integer", parameter.getType());
-    Assert.assertEquals("int64", parameter.getFormat());
-  }
-
-  @Test
-  public void setParameterTypeByTypeOnComplexType() {
-    AbstractSerializableParameter<?> parameter = new QueryParameter();
-    parameter.setName("testName");
-    try {
-      SwaggerUtils.setParameterType(ArrayList.class, parameter);
-      Assert.fail("an exception is expected!");
-    } catch (IllegalArgumentException e) {
-      Assert.assertEquals("not allow such type of param:[class io.swagger.models.properties.ArrayProperty], "
-          + "param name is [testName]", e.getMessage());
-    }
   }
 }

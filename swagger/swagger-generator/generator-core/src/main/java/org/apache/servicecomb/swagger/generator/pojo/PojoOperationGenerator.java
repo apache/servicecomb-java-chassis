@@ -61,15 +61,15 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
   }
 
   private void tryWrapParametersToBody() {
-    List<ParameterGenerator> bodyFields = parameterGenerators.stream().filter(pg -> pg.httpParameterType == null)
+    List<ParameterGenerator> bodyFields = parameterGenerators.stream().filter(pg -> pg.getHttpParameterType() == null)
         .collect(Collectors.toList());
     if (bodyFields.isEmpty()) {
       return;
     }
 
-    if (bodyFields.size() == 1 && SwaggerUtils.isBean(bodyFields.get(0).genericType)) {
+    if (bodyFields.size() == 1 && SwaggerUtils.isBean(bodyFields.get(0).getGenericType())) {
       ParameterGenerator parameterGenerator = bodyFields.get(0);
-      parameterGenerator.httpParameterType = HttpParameterType.body;
+      parameterGenerator.setHttpParameterType(HttpParameterType.body);
       return;
     }
 
@@ -83,9 +83,9 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
     bodyModel = new ModelImpl();
     bodyModel.setType(ModelImpl.OBJECT);
     for (ParameterGenerator parameterGenerator : bodyFields) {
-      SwaggerUtils.addDefinitions(swagger, parameterGenerator.genericType);
-      Property property = ModelConverters.getInstance().readAsProperty(parameterGenerator.genericType);
-      bodyModel.addProperty(parameterGenerator.parameterName, property);
+      SwaggerUtils.addDefinitions(swagger, parameterGenerator.getGenericType());
+      Property property = ModelConverters.getInstance().readAsProperty(parameterGenerator.getGenericType());
+      bodyModel.addProperty(parameterGenerator.getParameterName(), property);
     }
     swagger.addDefinition(simpleRef, bodyModel);
 
@@ -104,7 +104,7 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
     bodyParameter = new BodyParameter();
     bodyParameter.name(simpleRef);
     bodyParameter.setSchema(refModel);
-    bodyParameter.setName(parameterGenerators.size() == 1 ? parameterGenerators.get(0).parameterName : simpleRef);
+    bodyParameter.setName(parameterGenerators.size() == 1 ? parameterGenerators.get(0).getParameterName() : simpleRef);
 
     List<ParameterGenerator> newParameterGenerators = new ArrayList<>();
     newParameterGenerators.add(new ParameterGenerator(
@@ -113,7 +113,8 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
         null,
         HttpParameterType.body,
         bodyParameter));
-    parameterGenerators.stream().filter(p -> p.httpParameterType != null).forEach(p -> newParameterGenerators.add(p));
+    parameterGenerators.stream().filter(p -> p.getHttpParameterType() != null)
+        .forEach(p -> newParameterGenerators.add(p));
     parameterGenerators = newParameterGenerators;
   }
 
@@ -133,7 +134,7 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
 
   @Override
   protected Parameter createParameter(ParameterGenerator parameterGenerator) {
-    if (isWrapBody(parameterGenerator.generatedParameter)) {
+    if (isWrapBody(parameterGenerator.getGeneratedParameter())) {
       return bodyParameter;
     }
 
