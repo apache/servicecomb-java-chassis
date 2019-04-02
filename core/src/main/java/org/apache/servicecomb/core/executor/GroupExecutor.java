@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -73,11 +71,11 @@ public class GroupExecutor implements Executor, Closeable {
     initConfig();
 
     for (int groupIdx = 0; groupIdx < groupCount; groupIdx++) {
-      ThreadPoolExecutor executor = new ThreadPoolExecutor(coreThreads,
+      ThreadPoolExecutorEx executor = new ThreadPoolExecutorEx(coreThreads,
           maxThreads,
           maxIdleInSecond,
           TimeUnit.SECONDS,
-          new LinkedBlockingQueue<>(maxQueueSize));
+          new LinkedBlockingQueueEx<>(maxQueueSize));
       executorList.add(executor);
     }
   }
