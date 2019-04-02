@@ -74,7 +74,7 @@ public class TestThreadPoolPublishModelFactory {
     DefaultPublishModel model = factory.createDefaultPublishModel();
 
     Assert.assertEquals(
-        "{\"test\":{\"avgTaskCount\":0.0,\"avgCompletedTaskCount\":0.0,\"currentThreadsBusy\":0,\"maxThreads\":0,\"poolSize\":0,\"corePoolSize\":0,\"queueSize\":10}}",
+        "{\"test\":{\"avgTaskCount\":0.0,\"avgCompletedTaskCount\":0.0,\"currentThreadsBusy\":0,\"maxThreads\":0,\"poolSize\":0,\"corePoolSize\":0,\"queueSize\":10,\"rejected\":\"NaN\"}}",
         JsonUtils.writeValueAsString(model.getThreadPools()));
   }
 }
