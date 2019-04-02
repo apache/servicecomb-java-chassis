@@ -25,6 +25,7 @@ import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.junit.Assert;
 import org.junit.Test;
@@ -49,7 +50,10 @@ public class TestHighwayTransport {
       transport.init();
     } catch (Exception e) {
       status = false;
+    } finally {
+      VertxUtils.blockCloseVertxByName("transport");
     }
+
     Assert.assertTrue(status);
   }
 
