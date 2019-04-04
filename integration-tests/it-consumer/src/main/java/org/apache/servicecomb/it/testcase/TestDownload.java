@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -56,7 +57,7 @@ public class TestDownload {
 
   private String readFileToString(File file) {
     try {
-      return FileUtils.readFileToString(file);
+      return FileUtils.readFileToString(file, Charset.defaultCharset());
     } catch (IOException e) {
       return "read file failed:" + e.getMessage();
     }

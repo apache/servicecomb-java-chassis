@@ -132,7 +132,7 @@ public class StandardHttpServletRequestEx extends HttpServletRequestWrapper impl
   private Map<String, List<String>> parseUrlEncodedBody() {
     try (InputStream inputStream = getInputStream()) {
       Map<String, List<String>> listMap = new HashMap<>();
-      String body = IOUtils.toString(inputStream);
+      String body = IOUtils.toString(inputStream, Charset.defaultCharset());
       List<NameValuePair> pairs = URLEncodedUtils
           .parse(body, getCharacterEncoding() == null ? null : Charset.forName(getCharacterEncoding()));
       for (NameValuePair pair : pairs) {

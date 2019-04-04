@@ -18,6 +18,7 @@ package org.apache.servicecomb.common.rest.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 
 import javax.servlet.http.Part;
 import javax.ws.rs.core.HttpHeaders;
@@ -49,7 +50,7 @@ public class TestClassPathStaticResourceHandler {
     Part part = response.getResult();
 
     try (InputStream is = part.getInputStream()) {
-      Assert.assertTrue(IOUtils.toString(is).endsWith("<html></html>"));
+      Assert.assertTrue(IOUtils.toString(is, Charset.defaultCharset()).endsWith("<html></html>"));
     }
     Assert.assertEquals("text/html", part.getContentType());
     Assert.assertEquals("text/html", response.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE));

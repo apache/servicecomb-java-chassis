@@ -18,6 +18,7 @@ package org.apache.servicecomb.inspector.internal;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -61,8 +62,10 @@ public class TestInspectorImpl {
     inspectorConfig = new ConfigObjectFactory().create(InspectorConfig.class);
     inspector = new InspectorImpl(inspectorConfig, schemas);
 
-    schemas.put("schema1", IOUtils.toString(TestInspectorImpl.class.getClassLoader().getResource("schema1.yaml")));
-    schemas.put("schema2", IOUtils.toString(TestInspectorImpl.class.getClassLoader().getResource("schema2.yaml")));
+    schemas.put("schema1", IOUtils
+        .toString(TestInspectorImpl.class.getClassLoader().getResource("schema1.yaml"), Charset.defaultCharset()));
+    schemas.put("schema2", IOUtils
+        .toString(TestInspectorImpl.class.getClassLoader().getResource("schema2.yaml"), Charset.defaultCharset()));
   }
 
   @AfterClass
@@ -80,7 +83,7 @@ public class TestInspectorImpl {
         return result;
       }
 
-      result.put(zipEntry.getName(), IOUtils.toString(zis));
+      result.put(zipEntry.getName(), IOUtils.toString(zis, Charset.defaultCharset()));
     }
   }
 
@@ -200,7 +203,7 @@ public class TestInspectorImpl {
     Assert.assertEquals(MediaType.TEXT_HTML, response.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE));
 
     try (InputStream is = part.getInputStream()) {
-      Assert.assertEquals(schemas.get(schemaId), IOUtils.toString(is));
+      Assert.assertEquals(schemas.get(schemaId), IOUtils.toString(is, Charset.defaultCharset()));
     }
   }
 
@@ -221,7 +224,7 @@ public class TestInspectorImpl {
     Assert.assertEquals(MediaType.TEXT_HTML, response.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE));
 
     try (InputStream is = part.getInputStream()) {
-      Assert.assertEquals(schemas.get(schemaId), IOUtils.toString(is));
+      Assert.assertEquals(schemas.get(schemaId), IOUtils.toString(is, Charset.defaultCharset()));
     }
   }
 
@@ -240,7 +243,7 @@ public class TestInspectorImpl {
     Assert.assertEquals(MediaType.TEXT_HTML, response.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE));
 
     try (InputStream is = part.getInputStream()) {
-      Assert.assertTrue(IOUtils.toString(is).endsWith("</html>"));
+      Assert.assertTrue(IOUtils.toString(is, Charset.defaultCharset()).endsWith("</html>"));
     }
   }
 
@@ -259,7 +262,7 @@ public class TestInspectorImpl {
     Assert.assertEquals(MediaType.TEXT_HTML, response.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE));
 
     try (InputStream is = part.getInputStream()) {
-      Assert.assertTrue(IOUtils.toString(is).endsWith("</html>"));
+      Assert.assertTrue(IOUtils.toString(is, Charset.defaultCharset()).endsWith("</html>"));
     }
   }
 
@@ -284,7 +287,7 @@ public class TestInspectorImpl {
     Assert.assertEquals(MediaType.TEXT_HTML, response.getHeaders().getFirst(HttpHeaders.CONTENT_TYPE));
 
     try (InputStream is = part.getInputStream()) {
-      Assert.assertTrue(IOUtils.toString(is).endsWith("</html>"));
+      Assert.assertTrue(IOUtils.toString(is, Charset.defaultCharset()).endsWith("</html>"));
     }
   }
 }

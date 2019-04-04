@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.Charset;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -33,7 +34,6 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.util.ResourceUtils;
 
 import com.netflix.spectator.api.Counter;
 import com.netflix.spectator.api.DefaultRegistry;
@@ -84,7 +84,7 @@ public class TestPrometheusPublisher {
 
   @Test
   public void collect() throws IllegalAccessException, IOException {
-    new Expectations(RegistryUtils.class){
+    new Expectations(RegistryUtils.class) {
       {
         RegistryUtils.getAppId();
         result = "testAppId";
@@ -106,8 +106,9 @@ public class TestPrometheusPublisher {
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
     try (InputStream is = conn.getInputStream()) {
       Assert.assertEquals("# HELP ServiceComb_Metrics ServiceComb Metrics\n" +
-          "# TYPE ServiceComb_Metrics untyped\n" +
-          "count_name{appId=\"testAppId\",tag1=\"tag1v\",tag2=\"tag2v\",} 1.0\n", IOUtils.toString(is));
+              "# TYPE ServiceComb_Metrics untyped\n" +
+              "count_name{appId=\"testAppId\",tag1=\"tag1v\",tag2=\"tag2v\",} 1.0\n",
+          IOUtils.toString(is, Charset.defaultCharset()));
     }
 
     publisher.destroy();

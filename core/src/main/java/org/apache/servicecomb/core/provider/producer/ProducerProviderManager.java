@@ -18,11 +18,11 @@
 package org.apache.servicecomb.core.provider.producer;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.ProducerProvider;
 import org.apache.servicecomb.core.SCBEngine;
@@ -97,7 +97,12 @@ public class ProducerProviderManager implements BootListener {
       }
 
       if (Closeable.class.isInstance(operationMeta.getExecutor())) {
-        IOUtils.closeQuietly((Closeable) operationMeta.getExecutor());
+        Closeable executor = (Closeable) operationMeta.getExecutor();
+        try {
+          executor.close();
+        } catch (final IOException ioe) {
+          // ignore
+        }
         continue;
       }
 
