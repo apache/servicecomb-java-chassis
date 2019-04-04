@@ -70,7 +70,7 @@ public class AbortFaultTest {
 
   @AfterClass
   public static void classTeardown() {
-    VertxUtils.closeVertxByName("faultinjectionTest");
+    VertxUtils.blockCloseVertxByName("faultinjectionTest");
   }
 
   @Test

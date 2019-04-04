@@ -84,7 +84,7 @@ public class TestAbstractTransport {
 
   @AfterClass
   public static void classTeardown() {
-    VertxUtils.closeVertxByName("transport");
+    VertxUtils.blockCloseVertxByName("transport");
   }
 
   @Test

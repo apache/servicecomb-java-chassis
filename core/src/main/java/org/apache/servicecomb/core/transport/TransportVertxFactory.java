@@ -22,27 +22,42 @@ import org.apache.servicecomb.foundation.vertx.metrics.MetricsOptionsEx;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.shareddata.Shareable;
 
 public class TransportVertxFactory {
-  private VertxOptions vertxOptions = new VertxOptions();
+  static class TransportVertxInfo implements Shareable {
+    public VertxOptions vertxOptions = new VertxOptions();
 
-  private DefaultVertxMetricsFactory metricsFactory = new DefaultVertxMetricsFactory();
+    public DefaultVertxMetricsFactory metricsFactory = new DefaultVertxMetricsFactory();
 
-  private MetricsOptionsEx metricsOptionsEx = (MetricsOptionsEx) metricsFactory.newOptions();
+    public MetricsOptionsEx metricsOptionsEx = (MetricsOptionsEx) metricsFactory.newOptions();
 
-  private Vertx transportVertx;
-
-  public TransportVertxFactory() {
-    vertxOptions.setMetricsOptions(metricsOptionsEx);
-    transportVertx = VertxUtils.getOrCreateVertxByName("transport", vertxOptions);
-    metricsFactory.setVertx(transportVertx, vertxOptions);
+    public TransportVertxInfo() {
+      vertxOptions.setMetricsOptions(metricsOptionsEx);
+    }
   }
 
+  private static final String LOCAL_MAP_NAME = "scb";
+
+  private static final String INFO = "transport-vertx-info";
+
   public DefaultVertxMetricsFactory getMetricsFactory() {
-    return metricsFactory;
+    TransportVertxInfo info = (TransportVertxInfo) getTransportVertx().sharedData().getLocalMap(LOCAL_MAP_NAME)
+        .get(INFO);
+    return info.metricsFactory;
   }
 
   public Vertx getTransportVertx() {
-    return transportVertx;
+    return VertxUtils.getVertxMap().computeIfAbsent("transport", this::createTransportVertx);
+  }
+
+  private Vertx createTransportVertx(String name) {
+    TransportVertxInfo info = new TransportVertxInfo();
+
+    Vertx vertx = VertxUtils.init(info.vertxOptions);
+    info.metricsFactory.setVertx(vertx, info.vertxOptions);
+    vertx.sharedData().getLocalMap(LOCAL_MAP_NAME).put(INFO, info);
+
+    return vertx;
   }
 }
