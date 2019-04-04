@@ -27,11 +27,13 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.util.ResourceUtils;
 
 import com.netflix.spectator.api.Counter;
 import com.netflix.spectator.api.DefaultRegistry;
@@ -40,6 +42,7 @@ import com.netflix.spectator.api.Registry;
 import com.sun.net.httpserver.HttpServer;
 
 import io.prometheus.client.exporter.HTTPServer;
+import mockit.Expectations;
 
 @SuppressWarnings("restriction")
 public class TestPrometheusPublisher {
@@ -81,6 +84,12 @@ public class TestPrometheusPublisher {
 
   @Test
   public void collect() throws IllegalAccessException, IOException {
+    new Expectations(RegistryUtils.class){
+      {
+        RegistryUtils.getAppId();
+        result = "testAppId";
+      }
+    };
     ArchaiusUtils.setProperty(PrometheusPublisher.METRICS_PROMETHEUS_ADDRESS, "localhost:0");
     publisher.init(globalRegistry, null, null);
 
@@ -98,7 +107,7 @@ public class TestPrometheusPublisher {
     try (InputStream is = conn.getInputStream()) {
       Assert.assertEquals("# HELP ServiceComb_Metrics ServiceComb Metrics\n" +
           "# TYPE ServiceComb_Metrics untyped\n" +
-          "count_name{tag1=\"tag1v\",tag2=\"tag2v\",} 1.0\n", IOUtils.toString(is));
+          "count_name{appId=\"testAppId\",tag1=\"tag1v\",tag2=\"tag2v\",} 1.0\n", IOUtils.toString(is));
     }
 
     publisher.destroy();

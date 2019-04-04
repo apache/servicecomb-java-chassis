@@ -131,13 +131,13 @@ public class SpringmvcClient {
       String content = restTemplate
           .getForObject("cse://springmvc/codeFirstSpringmvc/prometheusForTest", String.class);
 
-      TestMgr.check(true, content.contains("servicecomb_invocation{operation=\"springmvc.codeFirst.addDate"));
-      TestMgr.check(true, content.contains("servicecomb_invocation{operation=\"springmvc.codeFirst.sayHello"));
-      TestMgr.check(true, content.contains("servicecomb_invocation{operation=\"springmvc.codeFirst.fallbackFromCache"));
-      TestMgr.check(true, content.contains("servicecomb_invocation{operation=\"springmvc.codeFirst.isTrue"));
-      TestMgr.check(true, content.contains("servicecomb_invocation{operation=\"springmvc.codeFirst.add"));
-      TestMgr.check(true, content.contains("servicecomb_invocation{operation=\"springmvc.codeFirst.sayHi2"));
-      TestMgr.check(true, content.contains("servicecomb_invocation{operation=\"springmvc.codeFirst.saySomething"));
+      TestMgr.check(true, content.contains("servicecomb_invocation{appId=\"springmvctest\",operation=\"springmvc.codeFirst.addDate"));
+      TestMgr.check(true, content.contains("servicecomb_invocation{appId=\"springmvctest\",operation=\"springmvc.codeFirst.sayHello"));
+      TestMgr.check(true, content.contains("servicecomb_invocation{appId=\"springmvctest\",operation=\"springmvc.codeFirst.fallbackFromCache"));
+      TestMgr.check(true, content.contains("servicecomb_invocation{appId=\"springmvctest\",operation=\"springmvc.codeFirst.isTrue"));
+      TestMgr.check(true, content.contains("servicecomb_invocation{appId=\"springmvctest\",operation=\"springmvc.codeFirst.add"));
+      TestMgr.check(true, content.contains("servicecomb_invocation{appId=\"springmvctest\",operation=\"springmvc.codeFirst.sayHi2"));
+      TestMgr.check(true, content.contains("servicecomb_invocation{appId=\"springmvctest\",operation=\"springmvc.codeFirst.saySomething"));
 
       String[] metricLines = content.split("\n");
       if (metricLines.length > 0) {

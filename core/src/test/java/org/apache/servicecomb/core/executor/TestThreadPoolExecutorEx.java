@@ -21,11 +21,16 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.function.IntSupplier;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TestThreadPoolExecutorEx {
+  private static final Logger LOGGER = LoggerFactory.getLogger(TestThreadPoolExecutorEx.class);
+
   static class TestTask implements Runnable {
     CountDownLatch notify = new CountDownLatch(1);
 
@@ -119,22 +124,36 @@ public class TestThreadPoolExecutorEx {
     t3.quit();
     Assert.assertEquals(4, executorEx.getPoolSize());
     Assert.assertEquals(1, executorEx.getRejectedCount());
-    Assert.assertEquals(3, executorEx.getNotFinished());
-    // multi thread, not sure
-    // Assert.assertEquals(0, executorEx.getQueue().size());
+    waitForResult(3, executorEx::getNotFinished);
+    waitForResult(0, executorEx.getQueue()::size);
 
     // reuse thread
     t3 = submitTask();
     Assert.assertEquals(4, executorEx.getPoolSize());
     Assert.assertEquals(1, executorEx.getRejectedCount());
-    Assert.assertEquals(4, executorEx.getNotFinished());
-    // multi thread, not sure
-    // Assert.assertEquals(1, executorEx.getQueue().size());
+    waitForResult(4, executorEx::getNotFinished);
+    waitForResult(0, executorEx.getQueue()::size);
 
     t3.quit();
     t4.quit();
     t5.quit();
     t6.quit();
     executorEx.shutdown();
+  }
+
+  private void waitForResult(int expect, IntSupplier supplier) {
+    for (; ; ) {
+      int actual = supplier.getAsInt();
+      if (expect == actual) {
+        return;
+      }
+
+      LOGGER.info("waiting for thread result, expect:{}, actual: {}.", expect, actual);
+      try {
+        TimeUnit.MILLISECONDS.sleep(100);
+      } catch (InterruptedException e) {
+        throw new IllegalStateException(e);
+      }
+    }
   }
 }
