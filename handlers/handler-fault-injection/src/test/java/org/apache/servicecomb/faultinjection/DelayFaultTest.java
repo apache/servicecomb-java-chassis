@@ -71,7 +71,7 @@ public class DelayFaultTest {
 
   @AfterClass
   public static void classTeardown() {
-    VertxUtils.closeVertxByName("faultinjectionTest");
+    VertxUtils.blockCloseVertxByName("faultinjectionTest");
   }
 
   @Test

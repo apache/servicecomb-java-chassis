@@ -216,7 +216,26 @@ public final class VertxUtils {
     try {
       future.get();
     } catch (Throwable e) {
-      LOGGER.error("Failed to close vertx {}.", name, e);
+      LOGGER.error("Failed to wait close vertx {}.", name, e);
+    }
+  }
+
+  public static void blockCloseVertx(Vertx vertx) {
+    CountDownLatch latch = new CountDownLatch(1);
+    vertx.close(ar -> {
+      if (ar.succeeded()) {
+        LOGGER.info("Success to close vertx {}.", vertx);
+      } else {
+        LOGGER.info("Failed to close vertx {}.", vertx);
+      }
+
+      latch.countDown();
+    });
+
+    try {
+      latch.await();
+    } catch (InterruptedException e) {
+      LOGGER.info("Failed to wait close vertx {}.", vertx);
     }
   }
 }

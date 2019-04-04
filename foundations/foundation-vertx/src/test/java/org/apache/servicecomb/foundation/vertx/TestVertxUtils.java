@@ -28,6 +28,7 @@ import javax.xml.ws.Holder;
 import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -39,7 +40,6 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.file.impl.FileResolver;
 
 public class TestVertxUtils {
-
   @Test
   public void testGetOrCreateVertx() throws InterruptedException {
     Vertx vertx = VertxUtils.getOrCreateVertxByName("ut", null);
@@ -86,7 +86,7 @@ public class TestVertxUtils {
   public void testVertxUtilsInitNullOptions() {
     Vertx vertx = VertxUtils.init(null);
     Assert.assertNotEquals(null, vertx);
-    vertx.close();
+    VertxUtils.blockCloseVertx(vertx);
   }
 
   @Test
@@ -96,7 +96,7 @@ public class TestVertxUtils {
 
     Vertx vertx = VertxUtils.init(oOptions);
     Assert.assertNotEquals(null, vertx);
-    vertx.close();
+    VertxUtils.blockCloseVertx(vertx);
   }
 
   @Test

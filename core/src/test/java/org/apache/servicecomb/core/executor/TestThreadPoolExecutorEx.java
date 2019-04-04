@@ -17,6 +17,8 @@
 package org.apache.servicecomb.core.executor;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -27,24 +29,19 @@ public class TestThreadPoolExecutorEx {
   static class TestTask implements Runnable {
     CountDownLatch notify = new CountDownLatch(1);
 
-    CountDownLatch wait = new CountDownLatch(1);
+    Future<?> future;
 
-    public void quit() {
+    public void quit() throws ExecutionException, InterruptedException {
       notify.countDown();
-      try {
-        wait.await();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
+      future.get();
     }
 
     @Override
     public void run() {
       try {
         notify.await();
-        wait.countDown();
       } catch (InterruptedException e) {
-        e.printStackTrace();
+        throw new IllegalStateException(e);
       }
     }
   }
@@ -54,12 +51,12 @@ public class TestThreadPoolExecutorEx {
 
   public TestTask submitTask() {
     TestTask task = new TestTask();
-    executorEx.execute(task);
+    task.future = executorEx.submit(task);
     return task;
   }
 
   @Test
-  public void schedule() {
+  public void schedule() throws ExecutionException, InterruptedException {
     // init
     Assert.assertEquals(0, executorEx.getPoolSize());
     Assert.assertEquals(0, executorEx.getRejectedCount());
