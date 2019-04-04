@@ -19,11 +19,11 @@ package org.apache.servicecomb.it.deploy;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
@@ -93,11 +93,23 @@ public class NormalDeploy {
   }
 
   protected void afterStop() {
-    IOUtils.closeQuietly(subProcessCommandWriter);
+    try {
+      if (subProcessCommandWriter != null) {
+        subProcessCommandWriter.close();
+      }
+    } catch (final IOException ioe) {
+      // ignore
+    }
     subProcessCommandWriter = null;
 
     SubProcessLogger old = subProcessLogger;
-    IOUtils.closeQuietly(subProcessLogger);
+    try {
+      if (subProcessLogger != null) {
+        subProcessLogger.close();
+      }
+    } catch (final IOException ioe) {
+      // ignore
+    }
     subProcessLogger = null;
 
     if (prevFailCount != ITJUnitUtils.getFailures().size()) {

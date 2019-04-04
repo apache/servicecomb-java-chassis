@@ -28,6 +28,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -35,7 +36,6 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.http.Part;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.bootstrap.HttpServer;
 import org.apache.http.impl.bootstrap.ServerBootstrap;
@@ -96,7 +96,7 @@ public class DownloadSchema implements BootListener {
       name = "download-" + UUID.randomUUID().toString() + ".txt";
     }
     File file = new File(tempDir, name);
-    FileUtils.write(file, content);
+    FileUtils.write(file, content, Charset.defaultCharset(), false);
     return file;
   }
 
@@ -227,8 +227,11 @@ public class DownloadSchema implements BootListener {
           break;
         }
       }
-
-      IOUtils.closeQuietly(out);
+      try {
+        out.close();
+      } catch (final IOException ioe) {
+        // ignore
+      }
     });
     slowInputStreamThread.start();
 

@@ -18,6 +18,7 @@
 package org.apache.servicecomb.foundation.vertx.http;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -82,7 +83,7 @@ public class TestStandardHttpServletRequestEx {
     };
 
     ServletInputStream cachedInputStream = requestEx.getInputStream();
-    Assert.assertEquals("abc", IOUtils.toString(cachedInputStream));
+    Assert.assertEquals("abc", IOUtils.toString(cachedInputStream, Charset.defaultCharset()));
     Assert.assertEquals("abc", requestEx.getBodyBuffer().toString());
     // do not create another one
     Assert.assertSame(cachedInputStream, requestEx.getInputStream());

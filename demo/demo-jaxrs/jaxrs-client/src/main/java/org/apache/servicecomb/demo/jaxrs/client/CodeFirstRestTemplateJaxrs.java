@@ -19,6 +19,7 @@ package org.apache.servicecomb.demo.jaxrs.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,7 +63,7 @@ public class CodeFirstRestTemplateJaxrs extends CodeFirstRestTemplate {
   private void testUpload(RestTemplate template, String cseUrlPrefix) throws IOException {
     String file1Content = "Hello World";
     File file1 = File.createTempFile("jaxrstest1", ".txt");
-    FileUtils.writeStringToFile(file1, file1Content);
+    FileUtils.writeStringToFile(file1, file1Content, Charset.defaultCharset(), false);
 
     testFileUpload(template, cseUrlPrefix, file1, file1Content);
     testFileAndStringUpload(template, cseUrlPrefix, file1, file1Content);
@@ -74,7 +75,7 @@ public class CodeFirstRestTemplateJaxrs extends CodeFirstRestTemplate {
     map.put("file1", new FileSystemResource(file1));
     String file2Content = "Hello EveryOne";
     File file2 = File.createTempFile("测试2", ".txt");
-    FileUtils.writeStringToFile(file2, file2Content);
+    FileUtils.writeStringToFile(file2, file2Content, Charset.defaultCharset(), false);
     map.put("file2", new FileSystemResource(file2));
 
     String result1 = template.postForObject(cseUrlPrefix + "/upload1", new HttpEntity<>(new HashMap<>()), String.class);

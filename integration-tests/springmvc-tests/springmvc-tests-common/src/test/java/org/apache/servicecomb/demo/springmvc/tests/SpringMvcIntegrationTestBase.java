@@ -35,6 +35,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,7 +49,6 @@ import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.provider.springmvc.reference.async.CseAsyncRestTemplate;
-import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -329,7 +329,7 @@ public class SpringMvcIntegrationTestBase {
           .postForEntity(codeFirstUrl + "uploadWithoutAnnotation", new HttpEntity<>(map, headers), String.class);
       assertEquals("required is true, throw exception", "but not throw exception");
     } catch (RestClientException e) {
-      assertEquals("400 Bad Request",e.getMessage());
+      assertEquals("400 Bad Request", e.getMessage());
     }
   }
 
@@ -687,7 +687,7 @@ public class SpringMvcIntegrationTestBase {
   private File newFile(String fileContent) throws IOException {
     File file = folder.newFile();
     try (FileOutputStream output = new FileOutputStream(file)) {
-      IOUtils.write(fileContent, output);
+      IOUtils.write(fileContent, output, Charset.defaultCharset());
     }
     return file;
   }

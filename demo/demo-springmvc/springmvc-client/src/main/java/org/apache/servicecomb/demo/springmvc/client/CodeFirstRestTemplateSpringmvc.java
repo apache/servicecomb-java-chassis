@@ -21,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
@@ -120,11 +121,11 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
   private void testUpload(RestTemplate template, String cseUrlPrefix) throws IOException {
     String file1Content = "hello world";
     File file1 = File.createTempFile("测 试", ".txt");
-    FileUtils.writeStringToFile(file1, file1Content);
+    FileUtils.writeStringToFile(file1, file1Content, Charset.defaultCharset(), false);
 
     String file2Content = " bonjour";
     File someFile = File.createTempFile("upload2", ".txt");
-    FileUtils.writeStringToFile(someFile, file2Content);
+    FileUtils.writeStringToFile(someFile, file2Content, Charset.defaultCharset(), false);
 
     String expect = String.format("%s:%s:%s\n"
             + "%s:%s:%s",

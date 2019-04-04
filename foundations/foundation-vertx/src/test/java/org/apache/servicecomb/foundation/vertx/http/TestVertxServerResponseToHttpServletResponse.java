@@ -20,6 +20,7 @@ package org.apache.servicecomb.foundation.vertx.http;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -400,7 +401,7 @@ public class TestVertxServerResponseToHttpServletResponse {
   @Test
   public void clearPartResource_deleteFile() throws IOException {
     File file = new File("target", UUID.randomUUID().toString() + ".txt");
-    FileUtils.write(file, "content");
+    FileUtils.write(file, "content", Charset.defaultCharset());
     FilePart part = new FilePart(null, file).setDeleteAfterFinished(true);
 
     Assert.assertTrue(file.exists());
@@ -411,7 +412,7 @@ public class TestVertxServerResponseToHttpServletResponse {
   @Test
   public void clearPartResource_notDeleteFile() throws IOException {
     File file = new File("target", UUID.randomUUID().toString() + ".txt");
-    FileUtils.write(file, "content");
+    FileUtils.write(file, "content", Charset.defaultCharset());
     FilePart part = new FilePart(null, file);
 
     Assert.assertTrue(file.exists());
