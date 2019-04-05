@@ -36,9 +36,11 @@ import org.apache.servicecomb.swagger.generator.core.processor.response.DefaultR
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 
 import io.swagger.models.parameters.Parameter;
+import io.swagger.util.Json;
 
 public final class SwaggerGeneratorUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerGeneratorUtils.class);
@@ -89,6 +91,9 @@ public final class SwaggerGeneratorUtils {
             processor.getProcessType().getTypeName(), processor.getClass().getName());
       }
     }
+
+    List<Module> modules = SPIServiceUtils.getOrLoadSortedService(Module.class);
+    Json.mapper().registerModules(modules.toArray(new Module[modules.size()]));
   }
 
   private SwaggerGeneratorUtils() {
