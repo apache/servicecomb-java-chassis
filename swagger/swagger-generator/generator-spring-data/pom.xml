@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -15,21 +16,29 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.apache.servicecomb</groupId>
-    <artifactId>swagger</artifactId>
+    <artifactId>swagger-generator</artifactId>
     <version>weak-contract-type-SNAPSHOT</version>
   </parent>
-  <artifactId>swagger-generator</artifactId>
-  <name>Java Chassis::Swagger::Generator</name>
-  <packaging>pom</packaging>
-  <modules>
-    <module>generator-core</module>
-    <module>generator-jaxrs</module>
-    <module>generator-springmvc</module>
-    <module>generator-spring-data</module>
-  </modules>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>swagger-generator-spring-data</artifactId>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>swagger-generator-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-commons</artifactId>
+      <!-- based on business project dependency -->
+      <optional>true</optional>
+    </dependency>
+
+  </dependencies>
 </project>
