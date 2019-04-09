@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.core.definition.loader;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.apache.commons.io.FilenameUtils;
@@ -54,7 +54,7 @@ public class SchemaLoader {
     try {
       String schemaId = FilenameUtils.getBaseName(resource.getFilename());
 
-      String swaggerContent = IOUtils.toString(resource.getURL(), Charset.defaultCharset());
+      String swaggerContent = IOUtils.toString(resource.getURL(), StandardCharsets.UTF_8);
       SchemaMeta schemaMeta = registerSchema(microserviceName, schemaId, swaggerContent);
 
       return schemaMeta;

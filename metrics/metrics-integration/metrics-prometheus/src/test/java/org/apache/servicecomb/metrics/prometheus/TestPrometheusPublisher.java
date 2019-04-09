@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -108,7 +108,7 @@ public class TestPrometheusPublisher {
       Assert.assertEquals("# HELP ServiceComb_Metrics ServiceComb Metrics\n" +
               "# TYPE ServiceComb_Metrics untyped\n" +
               "count_name{appId=\"testAppId\",tag1=\"tag1v\",tag2=\"tag2v\",} 1.0\n",
-          IOUtils.toString(is, Charset.defaultCharset()));
+          IOUtils.toString(is, StandardCharsets.UTF_8));
     }
 
     publisher.destroy();

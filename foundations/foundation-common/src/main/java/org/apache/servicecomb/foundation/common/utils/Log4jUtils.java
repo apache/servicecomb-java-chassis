@@ -19,7 +19,7 @@ package org.apache.servicecomb.foundation.common.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -108,7 +108,7 @@ public final class Log4jUtils {
     }
 
     File mergedfile = new File(res.getFile().getParentFile(), MERGED_FILE);
-    FileUtils.writeStringToFile(mergedfile, content, Charset.defaultCharset(), false);
+    FileUtils.writeStringToFile(mergedfile, content, StandardCharsets.UTF_8, false);
     log.info("Write merged log4j config file to {}", mergedfile.getAbsolutePath());
   }
 

@@ -18,7 +18,7 @@ package org.apache.servicecomb.it.testcase;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,10 +62,10 @@ public class TestUpload {
       File file2 = File.createTempFile("测试啊", ".txt");
       File file3 = File.createTempFile("files", ".yaml");
       File file4 = File.createTempFile("files4", ".yaml");
-      FileUtils.writeStringToFile(file1, "hello1", Charset.defaultCharset(), false);
-      FileUtils.writeStringToFile(file2, "中文 2", Charset.defaultCharset(), false);
-      FileUtils.writeStringToFile(file3, "cse3", Charset.defaultCharset(), false);
-      FileUtils.writeStringToFile(file4, "cse4", Charset.defaultCharset(), false);
+      FileUtils.writeStringToFile(file1, "hello1", StandardCharsets.UTF_8, false);
+      FileUtils.writeStringToFile(file2, "中文 2", StandardCharsets.UTF_8, false);
+      FileUtils.writeStringToFile(file3, "cse3", StandardCharsets.UTF_8, false);
+      FileUtils.writeStringToFile(file4, "cse4", StandardCharsets.UTF_8, false);
       fileSystemResource1 = new FileSystemResource(file1);
       fileSystemResource2 = new FileSystemResource(file2);
       fileSystemResource3 = new FileSystemResource(file3);

@@ -28,7 +28,6 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -96,7 +95,7 @@ public class DownloadSchema implements BootListener {
       name = "download-" + UUID.randomUUID().toString() + ".txt";
     }
     File file = new File(tempDir, name);
-    FileUtils.write(file, content, Charset.defaultCharset(), false);
+    FileUtils.write(file, content, StandardCharsets.UTF_8, false);
     return file;
   }
 

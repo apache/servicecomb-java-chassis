@@ -19,7 +19,7 @@ package org.apache.servicecomb.demo.springmvc.server;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -97,8 +97,8 @@ public class CodeFirstSpringmvc {
 
   private String _fileUpload(MultipartFile file1, Part file2) {
     try (InputStream is1 = file1.getInputStream(); InputStream is2 = file2.getInputStream()) {
-      String content1 = IOUtils.toString(is1, Charset.defaultCharset());
-      String content2 = IOUtils.toString(is2, Charset.defaultCharset());
+      String content1 = IOUtils.toString(is1, StandardCharsets.UTF_8);
+      String content2 = IOUtils.toString(is2, StandardCharsets.UTF_8);
       return String.format("%s:%s:%s\n"
               + "%s:%s:%s",
           file1.getOriginalFilename(),
@@ -123,7 +123,7 @@ public class CodeFirstSpringmvc {
   @PostMapping(path = "/upload1", produces = MediaType.TEXT_PLAIN_VALUE)
   public String fileUpload1(@RequestPart(name = "file1") MultipartFile file1) throws IOException {
     try (InputStream is = file1.getInputStream()) {
-      return IOUtils.toString(is, Charset.defaultCharset());
+      return IOUtils.toString(is, StandardCharsets.UTF_8);
     }
   }
 

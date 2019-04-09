@@ -19,7 +19,7 @@ package org.apache.servicecomb.swagger.generator.core.unittest;
 
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
@@ -61,7 +61,7 @@ public final class UnitTestSwaggerUtils {
     }
 
     try {
-      return IOUtils.toString(url, Charset.defaultCharset());
+      return IOUtils.toString(url, StandardCharsets.UTF_8);
     } catch (IOException e) {
       return e.getMessage();
     }

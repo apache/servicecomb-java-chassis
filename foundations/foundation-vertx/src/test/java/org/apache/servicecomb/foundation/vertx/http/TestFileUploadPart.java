@@ -20,7 +20,7 @@ package org.apache.servicecomb.foundation.vertx.http;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
@@ -48,7 +48,7 @@ public class TestFileUploadPart {
   public static void classSetup() throws IOException {
     file = File.createTempFile("upload", ".txt");
     file.deleteOnExit();
-    FileUtils.writeStringToFile(file, content, Charset.defaultCharset(), false);
+    FileUtils.writeStringToFile(file, content, StandardCharsets.UTF_8, false);
   }
 
   @Before
@@ -65,7 +65,7 @@ public class TestFileUploadPart {
       }
     };
     try (InputStream is = part.getInputStream()) {
-      Assert.assertEquals(content, IOUtils.toString(is, Charset.defaultCharset()));
+      Assert.assertEquals(content, IOUtils.toString(is, StandardCharsets.UTF_8));
     }
   }
 
@@ -133,6 +133,6 @@ public class TestFileUploadPart {
     File targetFile = new File(UUID.randomUUID().toString());
     targetFile.deleteOnExit();
     part.write(targetFile.getAbsolutePath());
-    Assert.assertEquals(content, FileUtils.readFileToString(targetFile, Charset.defaultCharset()));
+    Assert.assertEquals(content, FileUtils.readFileToString(targetFile, StandardCharsets.UTF_8));
   }
 }

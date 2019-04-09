@@ -20,7 +20,7 @@ package org.apache.servicecomb.foundation.common.part;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -41,7 +41,7 @@ public class TestFilePart {
   @BeforeClass
   public static void setup() throws IOException {
     file.delete();
-    FileUtils.write(file, content, Charset.defaultCharset());
+    FileUtils.write(file, content, StandardCharsets.UTF_8);
   }
 
   @AfterClass
@@ -57,7 +57,7 @@ public class TestFilePart {
   @Test
   public void getInputStream() throws IOException {
     try (InputStream is = part.getInputStream()) {
-      Assert.assertEquals(content, IOUtils.toString(is, Charset.defaultCharset()));
+      Assert.assertEquals(content, IOUtils.toString(is, StandardCharsets.UTF_8));
     }
   }
 
@@ -71,7 +71,7 @@ public class TestFilePart {
     File destFile = new File("testFilePartCopy.txt");
 
     part.write(destFile.getPath());
-    Assert.assertEquals(content, FileUtils.readFileToString(destFile, Charset.defaultCharset()));
+    Assert.assertEquals(content, FileUtils.readFileToString(destFile, StandardCharsets.UTF_8));
 
     FilePart destPart = new FilePart(null, destFile);
     destPart.delete();
