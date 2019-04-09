@@ -18,7 +18,7 @@ package org.apache.servicecomb.foundation.protobuf.internal.parser;
 
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -32,7 +32,7 @@ public class TestProtoParser {
   @Test
   public void parse() throws IOException {
     URL url = Thread.currentThread().getContextClassLoader().getResource("protobufRoot.proto");
-    String content = IOUtils.toString(url, Charset.defaultCharset());
+    String content = IOUtils.toString(url, StandardCharsets.UTF_8);
 
     ProtoParser parser = new ProtoParser();
     Proto protoFromContent = parser.parseFromContent(content);

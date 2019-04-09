@@ -18,7 +18,7 @@ package org.apache.servicecomb.codec.protobuf.internal.converter;
 
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchema;
@@ -35,7 +35,7 @@ public class TestSwaggerToProtoGenerator {
   @Test
   public void convert() throws IOException {
     URL url = TestSwaggerToProtoGenerator.class.getClassLoader().getResource("ProtoSchema.proto");
-    String protoContent = IOUtils.toString(url, Charset.defaultCharset());
+    String protoContent = IOUtils.toString(url, StandardCharsets.UTF_8);
     int idx = protoContent.indexOf("syntax = ");
     protoContent = protoContent.substring(idx);
 

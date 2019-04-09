@@ -20,6 +20,7 @@ package org.apache.servicecomb.foundation.vertx.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -132,7 +133,7 @@ public class StandardHttpServletRequestEx extends HttpServletRequestWrapper impl
   private Map<String, List<String>> parseUrlEncodedBody() {
     try (InputStream inputStream = getInputStream()) {
       Map<String, List<String>> listMap = new HashMap<>();
-      String body = IOUtils.toString(inputStream, Charset.defaultCharset());
+      String body = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
       List<NameValuePair> pairs = URLEncodedUtils
           .parse(body, getCharacterEncoding() == null ? null : Charset.forName(getCharacterEncoding()));
       for (NameValuePair pair : pairs) {

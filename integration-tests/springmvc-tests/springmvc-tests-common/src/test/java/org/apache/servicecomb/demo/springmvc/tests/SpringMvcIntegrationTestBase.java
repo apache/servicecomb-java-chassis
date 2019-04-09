@@ -35,7 +35,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -687,7 +687,7 @@ public class SpringMvcIntegrationTestBase {
   private File newFile(String fileContent) throws IOException {
     File file = folder.newFile();
     try (FileOutputStream output = new FileOutputStream(file)) {
-      IOUtils.write(fileContent, output, Charset.defaultCharset());
+      IOUtils.write(fileContent, output, StandardCharsets.UTF_8);
     }
     return file;
   }

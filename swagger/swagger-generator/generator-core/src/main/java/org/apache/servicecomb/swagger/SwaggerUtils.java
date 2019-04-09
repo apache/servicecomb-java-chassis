@@ -19,7 +19,7 @@ package org.apache.servicecomb.swagger;
 
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -57,7 +57,7 @@ public final class SwaggerUtils {
 
   public static Swagger parseSwagger(URL url) {
     try {
-      String swaggerContent = IOUtils.toString(url, Charset.defaultCharset());
+      String swaggerContent = IOUtils.toString(url, StandardCharsets.UTF_8);
       return internalParseSwagger(swaggerContent);
     } catch (Throwable e) {
       throw new ServiceCombException("Parse swagger from url failed, ", e);

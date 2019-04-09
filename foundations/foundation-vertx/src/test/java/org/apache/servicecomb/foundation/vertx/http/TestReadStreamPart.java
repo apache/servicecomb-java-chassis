@@ -20,7 +20,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -187,7 +187,7 @@ public class TestReadStreamPart {
 
     part.saveToFile(file.getAbsolutePath()).get();
 
-    Assert.assertEquals(src, FileUtils.readFileToString(file, Charset.defaultCharset()));
+    Assert.assertEquals(src, FileUtils.readFileToString(file, StandardCharsets.UTF_8));
 
     FileUtils.forceDelete(dir);
     Assert.assertFalse(dir.exists());

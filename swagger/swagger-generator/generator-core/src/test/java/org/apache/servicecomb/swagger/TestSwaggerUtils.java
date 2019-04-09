@@ -19,7 +19,7 @@ package org.apache.servicecomb.swagger;
 
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
@@ -69,7 +69,7 @@ public class TestSwaggerUtils {
     String content = "swagger: \"2.0\"";
     new Expectations(IOUtils.class) {
       {
-        IOUtils.toString(url, Charset.defaultCharset());
+        IOUtils.toString(url, StandardCharsets.UTF_8);
         result = content;
       }
     };
@@ -83,7 +83,7 @@ public class TestSwaggerUtils {
   public void parseSwaggerUrlException(@Mocked URL url) throws IOException {
     new Expectations(IOUtils.class) {
       {
-        IOUtils.toString(url, Charset.defaultCharset());
+        IOUtils.toString(url, StandardCharsets.UTF_8);
         result = new RuntimeExceptionWithoutStackTrace("failed");
       }
     };
