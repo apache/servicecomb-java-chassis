@@ -46,6 +46,7 @@ import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceManager;
 import org.apache.servicecomb.serviceregistry.consumer.StaticMicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
+import org.apache.servicecomb.serviceregistry.swagger.SwaggerLoader;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceServiceCenterTask;
 import org.apache.servicecomb.serviceregistry.task.ServiceCenterTask;
 import org.apache.servicecomb.serviceregistry.task.event.ShutdownEvent;
@@ -79,6 +80,8 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   protected ServiceCenterTask serviceCenterTask;
 
+  protected SwaggerLoader swaggerLoader = new SwaggerLoader(this);
+
   public AbstractServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
       MicroserviceDefinition microserviceDefinition) {
     this.eventBus = eventBus;
@@ -102,6 +105,11 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   }
 
   @Override
+  public SwaggerLoader getSwaggerLoader() {
+    return swaggerLoader;
+  }
+
+  @Override
   public AppManager getAppManager() {
     return appManager;
   }
@@ -111,6 +119,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     return features;
   }
 
+  @Override
   public EventBus getEventBus() {
     return eventBus;
   }
