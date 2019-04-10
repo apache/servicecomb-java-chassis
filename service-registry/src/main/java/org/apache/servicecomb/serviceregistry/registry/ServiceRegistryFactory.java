@@ -58,13 +58,17 @@ public final class ServiceRegistryFactory {
   }
 
   public static ServiceRegistry createLocal() {
+    return createLocal(System.getProperty(LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY));
+  }
+
+  public static ServiceRegistry createLocal(String localFile) {
     EventBus eventBus = new EventBus();
     ServiceRegistryConfig serviceRegistryConfig = ServiceRegistryConfig.INSTANCE;
     MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
     loader.loadAndSort();
 
     MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
-    return new LocalServiceRegistry(eventBus, serviceRegistryConfig, microserviceDefinition);
+    return new LocalServiceRegistry(eventBus, serviceRegistryConfig, microserviceDefinition).localFile(localFile);
   }
 
   public static ServiceRegistry create(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,

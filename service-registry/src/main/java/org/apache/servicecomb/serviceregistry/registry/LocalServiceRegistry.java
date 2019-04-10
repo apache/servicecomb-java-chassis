@@ -24,12 +24,19 @@ import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import com.google.common.eventbus.EventBus;
 
 public class LocalServiceRegistry extends AbstractServiceRegistry {
+  private String localFile;
+
   public LocalServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
       MicroserviceDefinition microserviceDefinition) {
     super(eventBus, serviceRegistryConfig, microserviceDefinition);
   }
 
+  public LocalServiceRegistry localFile(String localFile) {
+    this.localFile = localFile;
+    return this;
+  }
+
   protected ServiceRegistryClient createServiceRegistryClient() {
-    return new LocalServiceRegistryClientImpl();
+    return new LocalServiceRegistryClientImpl(localFile);
   }
 }
