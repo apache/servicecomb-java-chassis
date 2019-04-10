@@ -19,6 +19,7 @@ package org.apache.servicecomb.foundation.test.scaffolding.log;
 import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
@@ -61,6 +62,20 @@ public class LogCollector implements Closeable {
 
   public LoggingEvent getLastEvents() {
     return events.get(events.size() - 1);
+  }
+
+  public List<Throwable> getThrowables() {
+    return events.stream()
+        .filter(e -> e.getThrowableInformation() != null)
+        .map(e -> e.getThrowableInformation().getThrowable())
+        .collect(Collectors.toList());
+  }
+
+  public List<String> getThrowableMessages() {
+    return events.stream()
+        .filter(e -> e.getThrowableInformation() != null)
+        .map(e -> e.getThrowableInformation().getThrowable().getMessage())
+        .collect(Collectors.toList());
   }
 
   public void teardown() {
