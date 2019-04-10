@@ -61,8 +61,8 @@ public abstract class AbstractPropertiesLoader {
         return;
       } else {
         LOGGER.warn("The property `{}` is deprecated and will be removed soon, please use the new property `{}`.",
-            EXTENDED_CLASS_FOR_COMPATIBLE,
-            EXTENDED_CLASS);
+            mergeStrings(getConfigOptionPrefix(), EXTENDED_CLASS_FOR_COMPATIBLE),
+            mergeStrings(getConfigOptionPrefix(), EXTENDED_CLASS));
       }
     }
     try {
