@@ -44,7 +44,6 @@ import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceManager;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionFactory;
 import org.apache.servicecomb.serviceregistry.consumer.StaticMicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceServiceCenterTask;
@@ -90,14 +89,8 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   @Override
   public void init() {
-    try {
-      initAppManager();
-    } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
-      throw new IllegalStateException("Failed to init appManager.", e);
-    }
-
-    initCacheManager();
-
+    appManager = new AppManager(eventBus);
+    instanceCacheManager = new InstanceCacheManagerNew(appManager);
     ipPortManager = new IpPortManager(serviceRegistryConfig, instanceCacheManager);
     if (srClient == null) {
       srClient = createServiceRegistryClient();
@@ -106,27 +99,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     createServiceCenterTask();
 
     eventBus.register(this);
-  }
-
-  protected void initAppManager() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-    appManager = new AppManager(eventBus);
-
-    // we did not remove old InstanceCacheManager now
-    // microserviceVersionFactoryClass is null, means use old InstanceCacheManager
-    // must not throw exception
-    String microserviceVersionFactoryClass = serviceRegistryConfig.getMicroserviceVersionFactory();
-    if (microserviceVersionFactoryClass == null) {
-      return;
-    }
-
-    MicroserviceVersionFactory microserviceVersionFactory =
-        (MicroserviceVersionFactory) Class.forName(microserviceVersionFactoryClass).newInstance();
-    appManager.setMicroserviceVersionFactory(microserviceVersionFactory);
-    LOGGER.info("microserviceVersionFactory is {}.", microserviceVersionFactoryClass);
-  }
-
-  protected void initCacheManager() {
-    instanceCacheManager = new InstanceCacheManagerNew(appManager);
   }
 
   @Override
