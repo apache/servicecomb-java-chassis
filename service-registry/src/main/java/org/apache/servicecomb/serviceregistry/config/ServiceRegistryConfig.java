@@ -20,6 +20,7 @@ package org.apache.servicecomb.serviceregistry.config;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.deployment.DeploymentProvider;
@@ -71,8 +72,6 @@ public final class ServiceRegistryConfig {
 
   public static final String NO_DOMAIN = "default";
 
-  public static final String MICROSERVICE_VERSION_FACTORY = "servicecomb.microserviceVersionFactory";
-
   private boolean ssl = true;
 
   public static final String PROXY_PRE_NAME = "servicecomb.proxy.";
@@ -89,17 +88,6 @@ public final class ServiceRegistryConfig {
 
   private ServiceRegistryConfig() {
 
-  }
-
-  public String getMicroserviceVersionFactory() {
-    return DynamicPropertyFactory.getInstance().getStringProperty(MICROSERVICE_VERSION_FACTORY, null).get();
-  }
-
-  /**
-   * Currently we don't provide configuration about {@link org.apache.servicecomb.serviceregistry.consumer.StaticMicroserviceVersionFactory}
-   */
-  public String getStaticMicroserviceVersionFactory() {
-    return "org.apache.servicecomb.core.definition.StaticMicroserviceVersionMetaFactory";
   }
 
   public HttpVersion getHttpVersion() {
@@ -131,7 +119,8 @@ public final class ServiceRegistryConfig {
   }
 
   public ArrayList<IpPort> getIpPort() {
-    List<String> uriList = Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_SERVICE_CENTER).getAccessURL();
+    List<String> uriList = Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_SERVICE_CENTER)
+        .getAccessURL();
     ArrayList<IpPort> ipPortList = new ArrayList<>();
     uriList.forEach(anUriList -> {
       try {
@@ -209,6 +198,10 @@ public final class ServiceRegistryConfig {
                 DEFAULT_CHECK_INTERVAL_IN_S);
     int interval = property.get();
     return interval < 0 ? DEFAULT_CHECK_INTERVAL_IN_S : interval;
+  }
+
+  public long getMsInstancePullInterval() {
+    return TimeUnit.SECONDS.toMillis(getInstancePullInterval());
   }
 
   public boolean isRegistryAutoDiscovery() {
