@@ -27,9 +27,6 @@ import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.task.HeartbeatResult;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceHeartbeatTask;
-import org.apache.servicecomb.serviceregistry.task.event.PeriodicPullEvent;
-import org.apache.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
-import org.apache.servicecomb.serviceregistry.task.event.ShutdownEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,17 +65,12 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
         },
         (task, executor) -> LOGGER.warn("Too many pending tasks, reject " + task.toString())
     );
+    executorService = taskPool;
   }
 
   @Override
   protected ServiceRegistryClient createServiceRegistryClient() {
     return new ServiceRegistryClientImpl(ipPortManager);
-  }
-
-  @Subscribe
-  public void onShutdown(ShutdownEvent event) {
-    LOGGER.info("service center task is shutdown.");
-    taskPool.shutdownNow();
   }
 
   @Override
@@ -91,7 +83,7 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
         TimeUnit.SECONDS);
 
     taskPool.scheduleAtFixedRate(
-        () -> eventBus.post(new PeriodicPullEvent()),
+        appManager::pullInstances,
         serviceRegistryConfig.getInstancePullInterval(),
         serviceRegistryConfig.getInstancePullInterval(),
         TimeUnit.SECONDS);
@@ -99,11 +91,6 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
     for (ServiceRegistryTaskInitializer initializer : taskInitializers) {
       initializer.init(this);
     }
-  }
-
-  @Subscribe
-  public void onPullMicroserviceVersionsInstancesEvent(PullMicroserviceVersionsInstancesEvent event) {
-    taskPool.schedule(event.getMicroserviceVersions()::pullInstances, event.getMsDelay(), TimeUnit.MILLISECONDS);
   }
 
   @Subscribe

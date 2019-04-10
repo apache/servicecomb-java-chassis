@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
 
 import org.apache.servicecomb.serviceregistry.Features;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
@@ -36,6 +37,7 @@ import org.apache.servicecomb.serviceregistry.api.registry.FrameworkVersions;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManagerNew;
 import org.apache.servicecomb.serviceregistry.client.IpPortManager;
@@ -49,11 +51,14 @@ import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.swagger.SwaggerLoader;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceServiceCenterTask;
 import org.apache.servicecomb.serviceregistry.task.ServiceCenterTask;
+import org.apache.servicecomb.serviceregistry.task.event.RecoveryEvent;
 import org.apache.servicecomb.serviceregistry.task.event.ShutdownEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import com.google.common.util.concurrent.MoreExecutors;
 
 public abstract class AbstractServiceRegistry implements ServiceRegistry {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractServiceRegistry.class);
@@ -82,6 +87,8 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   protected SwaggerLoader swaggerLoader = new SwaggerLoader(this);
 
+  protected ExecutorService executorService = MoreExecutors.newDirectExecutorService();
+
   public AbstractServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
       MicroserviceDefinition microserviceDefinition) {
     this.eventBus = eventBus;
@@ -92,7 +99,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   @Override
   public void init() {
-    appManager = new AppManager(eventBus);
+    appManager = new AppManager(this);
     instanceCacheManager = new InstanceCacheManagerNew(appManager);
     ipPortManager = new IpPortManager(serviceRegistryConfig, instanceCacheManager);
     if (srClient == null) {
@@ -323,5 +330,23 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     }
 
     registerMicroserviceMapping(microserviceName, version, microserviceInstances, schemaIntfCls);
+  }
+
+  @Subscribe
+  public void onShutdown(ShutdownEvent event) {
+    LOGGER.info("service center task is shutdown.");
+    executorService.shutdownNow();
+  }
+
+  // post from watch eventloop, should refresh the exact microservice instances immediately
+  @Subscribe
+  private void onMicroserviceInstanceChanged(MicroserviceInstanceChangedEvent changedEvent) {
+    executorService.execute(() -> appManager.onMicroserviceInstanceChanged(changedEvent));
+  }
+
+  // post from watch eventloop, should refresh all instances immediately
+  @Subscribe
+  public void serviceRegistryRecovery(RecoveryEvent event) {
+    executorService.execute(appManager::pullInstances);
   }
 }

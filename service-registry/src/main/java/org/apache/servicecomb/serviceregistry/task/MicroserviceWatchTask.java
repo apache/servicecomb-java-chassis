@@ -72,9 +72,7 @@ public class MicroserviceWatchTask extends AbstractTask {
 
           onMicroserviceInstanceChanged(changedEvent);
         },
-        open -> {
-          eventBus.post(new RecoveryEvent());
-        },
+        open -> eventBus.post(new RecoveryEvent()),
         close -> {
         });
   }
