@@ -15,12 +15,21 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-springmvctest:
-  - id: "001"
+ms2:
+  - id: "002"
     version: "1.0"
-    appid: myapp
+    appid: default
     schemaIds:
-      - springmvcHello
+      - hello
     instances:
       - endpoints:
-        - rest://127.0.0.1:8080
+          - rest://127.0.0.1:8080
+ms3:
+  - id: "003"
+    version: "1.0"
+    appid: other
+    schemaIds:
+      - hello
+    instances:
+      - endpoints:
+          - rest://127.0.0.1:8081

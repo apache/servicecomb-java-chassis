@@ -55,13 +55,13 @@ public class LocalServiceRegistryClientImplTest {
   @Test
   public void testLoadRegistryFile() {
     Assert.assertNotNull(registryClient);
-    Assert.assertThat(registryClient.getAllMicroservices().size(), Is.is(1));
+    Assert.assertThat(registryClient.getAllMicroservices().size(), Is.is(2));
     List<MicroserviceInstance> m =
-        registryClient.findServiceInstance("", "myapp", "springmvctest", DefinitionConst.VERSION_RULE_ALL);
+        registryClient.findServiceInstance("", "default", "ms2", DefinitionConst.VERSION_RULE_ALL);
     Assert.assertEquals(1, m.size());
 
     MicroserviceInstances microserviceInstances =
-        registryClient.findServiceInstances("", "myapp", "springmvctest", DefinitionConst.VERSION_RULE_ALL, null);
+        registryClient.findServiceInstances("", "default", "ms2", DefinitionConst.VERSION_RULE_ALL, null);
     List<MicroserviceInstance> mi = microserviceInstances.getInstancesResponse().getInstances();
     Assert.assertEquals(1, mi.size());
   }
@@ -185,16 +185,16 @@ public class LocalServiceRegistryClientImplTest {
 
   @Test
   public void testGetSchemas() {
-    Holder<List<GetSchemaResponse>> schemasHolder = registryClient.getSchemas("001");
+    Holder<List<GetSchemaResponse>> schemasHolder = registryClient.getSchemas("002");
     Assert.assertEquals(200, schemasHolder.getStatusCode());
     Assert.assertTrue(schemasHolder.getValue().isEmpty());
   }
 
   @Test
   public void testLoadSchemaIdsFromRegistryFile() {
-    Microservice microservice = registryClient.getMicroservice("001");
+    Microservice microservice = registryClient.getMicroservice("002");
     Assert.assertThat(microservice.getSchemas().size(), Is.is(1));
-    Assert.assertTrue(microservice.getSchemas().contains("springmvcHello"));
+    Assert.assertTrue(microservice.getSchemas().contains("hello"));
   }
 }
 
