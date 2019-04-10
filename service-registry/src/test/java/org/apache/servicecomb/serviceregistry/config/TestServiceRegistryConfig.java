@@ -19,7 +19,6 @@ package org.apache.servicecomb.serviceregistry.config;
 
 import java.util.List;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.deployment.DefaultDeploymentProvider;
 import org.apache.servicecomb.foundation.common.net.IpPort;
@@ -28,8 +27,6 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 public class TestServiceRegistryConfig {
   @BeforeClass
@@ -62,7 +59,6 @@ public class TestServiceRegistryConfig {
     Assert.assertFalse(oConfig.isClientAuthEnabled());
     Assert.assertEquals(ServiceRegistryConfig.NO_TENANT, oConfig.getTenantName());
     Assert.assertNull(oConfig.getSecretKey());
-    Assert.assertNull(ServiceRegistryConfig.INSTANCE.getMicroserviceVersionFactory());
     List<IpPort> ipPorts = oConfig.getIpPort();
     Assert.assertEquals("127.0.0.1:80", ipPorts.get(0).toString());
     Assert.assertEquals("127.0.0.1:443", ipPorts.get(1).toString());
@@ -71,16 +67,5 @@ public class TestServiceRegistryConfig {
     Assert.assertEquals(8080, ServiceRegistryConfig.INSTANCE.getProxyPort());
     Assert.assertNull(ServiceRegistryConfig.INSTANCE.getProxyUsername());
     Assert.assertNull(ServiceRegistryConfig.INSTANCE.getProxyPasswd());
-  }
-
-  @Test
-  public void getMicroserviceVersionFactory() {
-    DynamicPropertyFactory.getInstance();
-    Configuration config = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
-    config.addProperty(ServiceRegistryConfig.MICROSERVICE_VERSION_FACTORY, "test");
-
-    Assert.assertEquals("test", ServiceRegistryConfig.INSTANCE.getMicroserviceVersionFactory());
-
-    config.clearProperty(ServiceRegistryConfig.MICROSERVICE_VERSION_FACTORY);
   }
 }

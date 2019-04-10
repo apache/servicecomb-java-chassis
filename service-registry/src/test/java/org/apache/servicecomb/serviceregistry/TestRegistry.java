@@ -57,7 +57,7 @@ public class TestRegistry {
   private static final AbstractConfiguration inMemoryConfig = new ConcurrentMapConfiguration();
 
   @BeforeClass
-  public static void initSetup() throws Exception {
+  public static void initSetup() {
     AbstractConfiguration dynamicConfig = ConfigUtil.createDynamicConfig();
     ConcurrentCompositeConfiguration configuration = new ConcurrentCompositeConfiguration();
     configuration.addConfiguration(dynamicConfig);
