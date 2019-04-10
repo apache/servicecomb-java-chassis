@@ -20,22 +20,30 @@ package org.apache.servicecomb.serviceregistry.consumer;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import org.apache.servicecomb.serviceregistry.ServiceRegistry;
+import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
+import org.apache.servicecomb.serviceregistry.task.event.SafeModeChangeEvent;
 
 import com.google.common.eventbus.EventBus;
 
 public class AppManager {
-  private EventBus eventBus;
+  private ServiceRegistry serviceRegistry;
 
   // key: appId
   private Map<String, MicroserviceManager> apps = new ConcurrentHashMapEx<>();
 
-  public AppManager(EventBus eventBus) {
-    this.eventBus = eventBus;
+  public AppManager(ServiceRegistry serviceRegistry) {
+    this.serviceRegistry = serviceRegistry;
+
+    getEventBus().register(this);
+  }
+
+  public ServiceRegistry getServiceRegistry() {
+    return serviceRegistry;
   }
 
   public EventBus getEventBus() {
-    return eventBus;
+    return serviceRegistry.getEventBus();
   }
 
   public Map<String, MicroserviceManager> getApps() {
@@ -57,5 +65,24 @@ public class AppManager {
   public MicroserviceVersions getOrCreateMicroserviceVersions(String appId, String microserviceName) {
     MicroserviceManager microserviceManager = getOrCreateMicroserviceManager(appId);
     return microserviceManager.getOrCreateMicroserviceVersions(microserviceName);
+  }
+
+  public void onMicroserviceInstanceChanged(MicroserviceInstanceChangedEvent changedEvent) {
+    MicroserviceManager microserviceManager = apps.get(changedEvent.getKey().getAppId());
+    if (microserviceManager == null) {
+      return;
+    }
+
+    microserviceManager.onMicroserviceInstanceChanged(changedEvent);
+  }
+
+  public void onSafeModeChanged(SafeModeChangeEvent modeChangeEvent) {
+    apps.values().forEach(microserviceManager -> microserviceManager.onSafeModeChanged(modeChangeEvent));
+  }
+
+  public void pullInstances() {
+    for (MicroserviceManager microserviceManager : apps.values()) {
+      microserviceManager.pullInstances();
+    }
   }
 }

@@ -17,27 +17,70 @@
 
 package org.apache.servicecomb.serviceregistry.consumer;
 
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import java.util.Collection;
+import java.util.List;
+
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.definition.MicroserviceMeta;
+import org.apache.servicecomb.serviceregistry.swagger.SwaggerLoader;
 import org.apache.servicecomb.serviceregistry.version.Version;
 
+import io.swagger.models.Swagger;
+
 public class MicroserviceVersion {
+  protected AppManager appManager;
+
+  // because of cross app invoke
+  // microserviceName not always equals microservice.serviceName
+  protected String microserviceName;
+
   protected Version version;
 
   protected Microservice microservice;
 
-  public MicroserviceVersion(String microserviceId) {
-    microservice = RegistryUtils.getServiceRegistry().getAggregatedRemoteMicroservice(microserviceId);
+  protected MicroserviceMeta microserviceMeta;
+
+  protected Collection<MicroserviceInstance> instances;
+
+  public MicroserviceVersion(AppManager appManager, String microserviceId, String microserviceName,
+      Collection<MicroserviceInstance> instances) {
+    Microservice microservice = appManager.getServiceRegistry().getAggregatedRemoteMicroservice(microserviceId);
     if (microservice == null) {
-      throw new IllegalStateException(String.format("Invalid microserviceId %s.", microserviceId));
+      throw new IllegalStateException(
+          String.format("failed to query by microserviceId '%s' from ServiceCenter.", microserviceId));
     }
 
-    this.version = new Version(microservice.getVersion());
+    init(appManager, microservice, microserviceName, instances);
   }
 
-  public MicroserviceVersion(Microservice microservice) {
+  public MicroserviceVersion(AppManager appManager, Microservice microservice, String microserviceName,
+      Collection<MicroserviceInstance> instances) {
+    init(appManager, microservice, microserviceName, instances);
+  }
+
+  protected void init(AppManager appManager, Microservice microservice, String microserviceName,
+      Collection<MicroserviceInstance> instances) {
+    this.appManager = appManager;
     this.microservice = microservice;
+    this.microserviceName = microserviceName;
+    this.instances = instances;
     this.version = new Version(microservice.getVersion());
+    this.microserviceMeta = new MicroserviceMeta(microserviceName);
+    // TODO: get schemas from instance
+    SwaggerLoader swaggerLoader = appManager.getServiceRegistry().getSwaggerLoader();
+    for (String schemaId : microservice.getSchemas()) {
+      Swagger swagger = swaggerLoader.loadSwagger(microservice, microserviceName, schemaId);
+      this.microserviceMeta.registerSchemaMeta(schemaId, swagger);
+    }
+  }
+
+  public void setInstances(List<MicroserviceInstance> instances) {
+    this.instances = instances;
+  }
+
+  public String getMicroserviceName() {
+    return microserviceName;
   }
 
   public String getMicroserviceId() {
@@ -46,6 +89,10 @@ public class MicroserviceVersion {
 
   public Microservice getMicroservice() {
     return microservice;
+  }
+
+  public MicroserviceMeta getMicroserviceMeta() {
+    return microserviceMeta;
   }
 
   public Version getVersion() {
