@@ -18,6 +18,7 @@ package org.apache.servicecomb.foundation.common.event;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -65,7 +66,7 @@ public class SimpleEventBus extends EventBus {
   public void post(Object event) {
     // cache always reset after register/unregister
     // so cache always match latest subscribersMap at last
-    // te worst scenes is invoke collectSubscriberForEvent multiple times, no problem
+    // the worst scenes is invoke collectSubscriberForEvent multiple times, no problem
     List<SimpleSubscriber> subscribers = subscribersCache
         .computeIfAbsent(event.getClass(), this::collectSubscriberForEvent);
     for (SimpleSubscriber subscriber : subscribers) {
@@ -87,6 +88,8 @@ public class SimpleEventBus extends EventBus {
         }
       }
     }
+
+    subscribersForEvent.sort(Comparator.comparingInt(SimpleSubscriber::getOrder));
     return subscribersForEvent;
   }
 }

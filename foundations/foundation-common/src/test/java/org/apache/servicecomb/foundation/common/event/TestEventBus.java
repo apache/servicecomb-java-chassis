@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.google.common.eventbus;
+package org.apache.servicecomb.foundation.common.event;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +23,12 @@ import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.google.common.eventbus.AllowConcurrentEvents;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+
 public class TestEventBus {
-  private EventBus eventBus = new EventBus();
+  private EventBus eventBus = new SimpleEventBus();
 
   private List<Object> events = new ArrayList<>();
 
@@ -39,6 +43,28 @@ public class TestEventBus {
     public void s2(String event) {
       events.add(event);
     }
+  }
+
+  class SubscriberWithOrderForTest {
+    @Subscribe
+    @SubscriberOrder(100)
+    public void s1(String event) {
+      events.add("s1:" + event);
+    }
+
+    @Subscribe
+    @SubscriberOrder(-100)
+    public void s2(String event) {
+      events.add("s2:" + event);
+    }
+  }
+
+  @Test
+  public void order() {
+    eventBus.register(new SubscriberWithOrderForTest());
+
+    eventBus.post("value");
+    Assert.assertThat(events, Matchers.contains("s2:value", "s1:value"));
   }
 
   @Test
