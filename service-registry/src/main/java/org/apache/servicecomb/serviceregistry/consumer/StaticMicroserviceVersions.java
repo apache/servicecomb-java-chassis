@@ -22,12 +22,11 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.api.registry.StaticMicroservice;
 import org.apache.servicecomb.serviceregistry.version.Version;
 
 public class StaticMicroserviceVersions extends MicroserviceVersions {
-
   private Class<?> schemaIntfCls;
 
   private String environment;
@@ -36,7 +35,6 @@ public class StaticMicroserviceVersions extends MicroserviceVersions {
       Class<?> schemaIntfCls) {
     super(appManager, appId, microserviceName);
 
-    validated = true;
     this.schemaIntfCls = schemaIntfCls;
     this.environment = RegistryUtils.getMicroservice().getEnvironment();
   }
@@ -59,10 +57,10 @@ public class StaticMicroserviceVersions extends MicroserviceVersions {
 
     // ensure microserviceVersion exists
     versions.computeIfAbsent(serviceId, microserviceId -> {
-      StaticMicroservice microservice = createMicroservice(parsedVersion, serviceId);
-      return appManager.getStaticMicroserviceVersionFactory().create(microservice);
+      appManager.getServiceRegistry().getSwaggerLoader().registerSwagger(appId, shortName, shortName, schemaIntfCls);
+      Microservice microservice = createMicroservice(parsedVersion, serviceId);
+      return new MicroserviceVersion(appManager, microservice, getMicroserviceName(), instances);
     });
-
     for (MicroserviceVersionRule microserviceVersionRule : versionRules.values()) {
       microserviceVersionRule.update(versions, instances);
     }
@@ -75,14 +73,13 @@ public class StaticMicroserviceVersions extends MicroserviceVersions {
     this.instances.addAll(instances);
   }
 
-  private StaticMicroservice createMicroservice(Version parsedVersion, String serviceId) {
-    StaticMicroservice microservice = new StaticMicroservice();
+  private Microservice createMicroservice(Version parsedVersion, String serviceId) {
+    Microservice microservice = new Microservice();
     microservice.setAppId(this.getAppId());
     microservice.setServiceId(serviceId);
     microservice.setServiceName(this.getMicroserviceName());
     microservice.setVersion(parsedVersion.getVersion());
     microservice.setEnvironment(RegistryUtils.getMicroservice().getEnvironment());
-    microservice.setSchemaIntfCls(this.schemaIntfCls);
     return microservice;
   }
 
