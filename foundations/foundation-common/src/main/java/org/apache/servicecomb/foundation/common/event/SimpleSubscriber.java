@@ -32,6 +32,8 @@ public class SimpleSubscriber {
 
   private Method method;
 
+  private int order;
+
   // generated from method
   private Consumer<Object> lambda;
 
@@ -40,6 +42,11 @@ public class SimpleSubscriber {
   public SimpleSubscriber(Object instance, Method method) {
     this.instance = instance;
     this.method = method;
+
+    SubscriberOrder subscriberOrder = method.getAnnotation(SubscriberOrder.class);
+    if (subscriberOrder != null) {
+      order = subscriberOrder.value();
+    }
 
     method.setAccessible(true);
     try {
@@ -70,6 +77,10 @@ public class SimpleSubscriber {
 
   public Method getMethod() {
     return method;
+  }
+
+  public int getOrder() {
+    return order;
   }
 
   public void dispatchEvent(Object event) {
