@@ -24,18 +24,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.servicecomb.foundation.common.event.SimpleEventBus;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersion;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
+import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import org.apache.servicecomb.serviceregistry.version.Version;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 
-import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
 
@@ -46,9 +45,14 @@ public class MockMicroserviceVersions extends MicroserviceVersions {
   private List<MicroserviceInstance> mockedInstances = new ArrayList<>();
 
   public MockMicroserviceVersions() {
-    super(new AppManager(new SimpleEventBus()), "appId", "msName");
+    super(new AppManager(ServiceRegistryFactory.createLocal()), "appId", "msName");
 
-    appManager.setMicroserviceVersionFactory(this::createMicroserviceVersion);
+    new MockUp<ServiceRegistry>(appManager.getServiceRegistry()) {
+      @Mock
+      Microservice getAggregatedRemoteMicroservice(String microserviceId) {
+        return mockedMicroservices.get(microserviceId);
+      }
+    };
 
     addMock("1.0.0", 2);
     addMock("2.0.0", 2);
@@ -86,7 +90,7 @@ public class MockMicroserviceVersions extends MicroserviceVersions {
   }
 
   public List<MicroserviceInstance> findInstances(String... strVersions) {
-    List<String> unifyVersions = Arrays.asList(strVersions).stream()
+    List<String> unifyVersions = Arrays.stream(strVersions)
         .map(version -> new Version(version).getVersion())
         .collect(Collectors.toList());
 
@@ -138,24 +142,5 @@ public class MockMicroserviceVersions extends MicroserviceVersions {
 
       mockedInstances.add(instance);
     }
-  }
-
-  private MicroserviceVersion createMicroserviceVersion(String microserviceName, String serviceId) {
-    Microservice microservice = mockedMicroservices.get(serviceId);
-
-    ServiceRegistry serviceRegistry = new MockUp<ServiceRegistry>() {
-      @Mock
-      Microservice getAggregatedRemoteMicroservice(String microserviceId) {
-        return microservice;
-      }
-    }.getMockInstance();
-
-    new Expectations(RegistryUtils.class) {
-      {
-        RegistryUtils.getServiceRegistry();
-        result = serviceRegistry;
-      }
-    };
-    return new MicroserviceVersion(serviceId);
   }
 }

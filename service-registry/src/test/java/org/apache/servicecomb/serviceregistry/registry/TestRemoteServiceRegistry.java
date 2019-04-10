@@ -16,33 +16,21 @@
  */
 package org.apache.servicecomb.serviceregistry.registry;
 
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY;
-import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.CONFIG_QUALIFIED_INSTANCE_INITIAL_STATUS;
-import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_INSTANCE_INITIAL_STATUS;
-import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_MICROSERVICE_VERSION;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
-import org.apache.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
 import org.apache.servicecomb.serviceregistry.task.event.ShutdownEvent;
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,12 +38,10 @@ import org.junit.rules.ExpectedException;
 
 import com.google.common.eventbus.EventBus;
 
-import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
-import mockit.Mocked;
 
 public class TestRemoteServiceRegistry {
   class TestingRemoteServiceRegistry extends RemoteServiceRegistry {
@@ -123,51 +109,9 @@ public class TestRemoteServiceRegistry {
 
     bus.post(new ShutdownEvent());
 
-    remote.getTaskPool().schedule(new Runnable() {
-      @Override
-      public void run() {
-
-      }
+    remote.getTaskPool().schedule(() -> {
     }, 0, TimeUnit.SECONDS);
     Assert.assertTrue(remote.getTaskPool().isShutdown());
     RegistryUtils.setServiceRegistry(oldRegistry);
-  }
-
-  @Test
-  public void onPullMicroserviceVersionsInstancesEvent(@Injectable ServiceRegistryConfig config,
-      @Injectable MicroserviceDefinition definition, @Mocked MicroserviceVersions microserviceVersions,
-      @Mocked Configuration configuration) {
-    PullMicroserviceVersionsInstancesEvent event = new PullMicroserviceVersionsInstancesEvent(microserviceVersions, 1);
-
-    ScheduledThreadPoolExecutor taskPool = new MockUp<ScheduledThreadPoolExecutor>() {
-      @Mock
-      ScheduledFuture<?> schedule(Runnable command,
-          long delay,
-          TimeUnit unit) {
-        Assert.assertEquals(1, delay);
-        throw new Error("ok");
-      }
-    }.getMockInstance();
-
-    new Expectations() {
-      {
-        definition.getConfiguration();
-        result = configuration;
-        configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY,
-            DEFAULT_MICROSERVICE_VERSION);
-        result = "1.0.0";
-        configuration.getString(CONFIG_QUALIFIED_INSTANCE_INITIAL_STATUS, DEFAULT_INSTANCE_INITIAL_STATUS);
-        result = MicroserviceInstanceStatus.UP.name();
-      }
-    };
-
-    expectedException.expect(Error.class);
-    expectedException.expectMessage(Matchers.is("ok"));
-
-    EventBus bus = new EventBus();
-    RemoteServiceRegistry remote = new TestingRemoteServiceRegistry(bus, config, definition);
-    bus.register(remote);
-    Deencapsulation.setField(remote, "taskPool", taskPool);
-    bus.post(event);
   }
 }
