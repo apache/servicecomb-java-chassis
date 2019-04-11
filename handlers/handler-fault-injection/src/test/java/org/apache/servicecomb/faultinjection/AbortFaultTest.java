@@ -131,7 +131,7 @@ public class AbortFaultTest {
   @Test
   public void injectFaultNoPercentageConfig() {
     ArchaiusUtils
-        .updateProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", null);
+        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent", null);
 
     assertNull(DynamicProperty
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.percent")

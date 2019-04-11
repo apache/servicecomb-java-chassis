@@ -87,7 +87,7 @@ public class TestSCBEngine {
 
     ArchaiusUtils.setProperty(SCBEngine.CFG_KEY_WAIT_UP_TIMEOUT, 0);
     engine.init();
-    ArchaiusUtils.updateProperty(SCBEngine.CFG_KEY_WAIT_UP_TIMEOUT, null);
+    ArchaiusUtils.setProperty(SCBEngine.CFG_KEY_WAIT_UP_TIMEOUT, null);
 
     Assert.assertEquals(SCBStatus.STARTING, engine.getStatus());
 

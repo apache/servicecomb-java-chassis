@@ -170,7 +170,7 @@ public class DelayFaultTest {
   @Test
   public void injectFaultNoPercentageConfig() {
     ArchaiusUtils
-        .updateProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", null);
+        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent", null);
 
     assertNull(DynamicProperty
         .getInstance("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.percent")

@@ -425,13 +425,13 @@ public class TestConfigObjectFactory {
     ArchaiusUtils.setProperty("override.high", "high");
     Assert.assertEquals("high", config.strValue);
 
-    ArchaiusUtils.updateProperty("override.high", null);
+    ArchaiusUtils.setProperty("override.high", null);
     Assert.assertNull(config.strValue);
 
     ArchaiusUtils.setProperty("override.low", "low");
     Assert.assertEquals("low", config.strValue);
 
-    ArchaiusUtils.updateProperty("override.low", null);
+    ArchaiusUtils.setProperty("override.low", null);
     Assert.assertNull(config.strValue);
   }
 }
