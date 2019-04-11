@@ -112,12 +112,12 @@ public class TestOperationMeta {
   }
 
   private void restWaitInPool(OperationConfig config) {
-    ArchaiusUtils.updateProperty("servicecomb.Provider.requestWaitInPoolTimeout", null);
-    ArchaiusUtils.updateProperty("servicecomb.Provider.requestWaitInPoolTimeout.perfClient", null);
-    ArchaiusUtils.updateProperty(
+    ArchaiusUtils.setProperty("servicecomb.Provider.requestWaitInPoolTimeout", null);
+    ArchaiusUtils.setProperty("servicecomb.Provider.requestWaitInPoolTimeout.perfClient", null);
+    ArchaiusUtils.setProperty(
         "servicecomb.Provider.requestWaitInPoolTimeout.perfClient.org.apache.servicecomb.core.definition.TestOperationMeta$Impl",
         null);
-    ArchaiusUtils.updateProperty(
+    ArchaiusUtils.setProperty(
         "servicecomb.Provider.requestWaitInPoolTimeout.perfClient.org.apache.servicecomb.core.definition.TestOperationMeta$Impl.test",
         null);
 

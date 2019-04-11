@@ -17,38 +17,18 @@
 
 package org.apache.servicecomb.faultinjection;
 
-import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.springframework.util.ReflectionUtils;
-
-import com.netflix.config.DynamicProperty;
 
 /**
  * Tests the fault inject util functionality.
  */
 public class TestFaultInjectUtil {
-  private static Method updatePropertyMethod =
-      ReflectionUtils.findMethod(DynamicProperty.class, "updateProperty", String.class, Object.class);
-
-  static {
-    updatePropertyMethod.setAccessible(true);
-  }
-
-  DelayFault delayFault = Mockito.mock(DelayFault.class);
-
-  AbortFault abortFault = Mockito.mock(AbortFault.class);
-
-  public static void updateProperty(String key, Object value) {
-    ReflectionUtils.invokeMethod(updatePropertyMethod, null, key, value);
-  }
-
   @Test
-  public void testFaultInjectUtil() throws Exception {
+  public void testFaultInjectUtil() {
     AtomicLong count1 = FaultInjectionUtil.getOperMetTotalReq("test");
     Assert.assertEquals(1, count1.get());
     count1.incrementAndGet();

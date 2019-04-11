@@ -18,7 +18,6 @@
 package org.apache.servicecomb.core.transport;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -35,23 +34,12 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.util.ReflectionUtils;
-
-import com.netflix.config.DynamicProperty;
 
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mocked;
 
 public class TestAbstractTransport {
-  private Method updatePropertyMethod =
-      ReflectionUtils.findMethod(DynamicProperty.class, "updateProperty", String.class, Object.class);
-
-  private void updateProperty(String key, Object value) {
-    updatePropertyMethod.setAccessible(true);
-    ReflectionUtils.invokeMethod(updatePropertyMethod, null, key, value);
-  }
-
   class MyAbstractTransport extends AbstractTransport {
 
     @Override

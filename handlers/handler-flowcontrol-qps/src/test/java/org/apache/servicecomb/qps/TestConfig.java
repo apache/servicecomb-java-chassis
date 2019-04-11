@@ -43,17 +43,17 @@ public class TestConfig {
     Config.INSTANCE = new Config();
 
     Assert.assertEquals(true, Config.INSTANCE.isProviderEnabled());
-    ArchaiusUtils.updateProperty(Config.PROVIDER_ENABLED, false);
+    ArchaiusUtils.setProperty(Config.PROVIDER_ENABLED, false);
     Assert.assertEquals(false, Config.INSTANCE.isProviderEnabled());
 
-    ArchaiusUtils.updateProperty(Config.PROVIDER_ENABLED, null);
+    ArchaiusUtils.setProperty(Config.PROVIDER_ENABLED, null);
     Assert.assertEquals(true, Config.INSTANCE.isProviderEnabled());
 
     Assert.assertEquals(true, Config.INSTANCE.isConsumerEnabled());
-    ArchaiusUtils.updateProperty(Config.CONSUMER_ENABLED, false);
+    ArchaiusUtils.setProperty(Config.CONSUMER_ENABLED, false);
     Assert.assertEquals(false, Config.INSTANCE.isConsumerEnabled());
 
-    ArchaiusUtils.updateProperty(Config.CONSUMER_ENABLED, null);
+    ArchaiusUtils.setProperty(Config.CONSUMER_ENABLED, null);
     Assert.assertEquals(true, Config.INSTANCE.isConsumerEnabled());
   }
 }

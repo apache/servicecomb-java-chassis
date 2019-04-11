@@ -45,8 +45,6 @@ public final class ArchaiusUtils {
   private static final Field FIELD_DYNAMIC_PROPERTY_ALL_PROPS = ReflectionUtils
       .findField(DynamicProperty.class, "ALL_PROPS");
 
-  private static Method updatePropertyMethod =
-      ReflectionUtils.findMethod(DynamicProperty.class, "updateProperty", String.class, Object.class);
 
   static {
     FIELD_INSTANCE.setAccessible(true);
@@ -55,7 +53,6 @@ public final class ArchaiusUtils {
     FIELD_INITIALIZED_WITH_DEFAULT_CONFIG.setAccessible(true);
     FIELD_DYNAMIC_PROPERTY_SUPPORTIMPL.setAccessible(true);
     FIELD_DYNAMIC_PROPERTY_ALL_PROPS.setAccessible(true);
-    updatePropertyMethod.setAccessible(true);
   }
 
   private ArchaiusUtils() {
@@ -78,15 +75,11 @@ public final class ArchaiusUtils {
 
     ConcurrentCompositeConfiguration config = (ConcurrentCompositeConfiguration) DynamicPropertyFactory
         .getBackingConfigurationSource();
-    config.getConfiguration(0).addProperty(key, value);
-  }
+    if (value != null) {
+      config.getConfiguration(0).setProperty(key, value);
+      return;
+    }
 
-  /**
-   * difference with setProperty is that, updateProperty value can be null
-   * @param key
-   * @param value
-   */
-  public static void updateProperty(String key, Object value) {
-    ReflectionUtils.invokeMethod(updatePropertyMethod, null, key, value);
+    config.getConfiguration(0).clearProperty(key);
   }
 }

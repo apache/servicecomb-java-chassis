@@ -375,10 +375,10 @@ public class TestFaultInjectHandler {
       validAssert = false;
     }
     Assert.assertTrue(validAssert);
-    TestFaultInjectUtil
-        .updateProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay", 500);
-    TestFaultInjectUtil
-        .updateProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus", 421);
+    ArchaiusUtils
+        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.delay.fixedDelay", 500);
+    ArchaiusUtils
+        .setProperty("servicecomb.governance.Consumer._global.policy.fault.protocols.rest.abort.httpStatus", 421);
 
     Holder<Boolean> isAsserted = new Holder<>(false);
     handler.handle(invocation, ar -> {
@@ -409,7 +409,6 @@ public class TestFaultInjectHandler {
    */
   @Test
   public void testFaultInjectHandlerConfigChangeEvent2() throws Exception {
-
     System.setProperty(
         "servicecomb.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.delay.fixedDelay",
         "1");
@@ -442,10 +441,9 @@ public class TestFaultInjectHandler {
       validAssert = false;
     }
     Assert.assertTrue(validAssert);
-    TestFaultInjectUtil
-        .updateProperty(
-            "servicecomb.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.delay.fixedDelay",
-            500);
+    ArchaiusUtils.setProperty(
+        "servicecomb.governance.Consumer.carts2.schemas.testSchema2.operations.sayBye2.policy.fault.protocols.rest.delay.fixedDelay",
+        500);
 
     Holder<Boolean> isAsserted = new Holder<>(false);
     handler.handle(invocation, ar -> {
@@ -514,10 +512,9 @@ public class TestFaultInjectHandler {
       validAssert = false;
     }
     Assert.assertTrue(validAssert);
-    TestFaultInjectUtil
-        .updateProperty(
-            "servicecomb.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.delay.fixedDelay",
-            500);
+    ArchaiusUtils.setProperty(
+        "servicecomb.governance.Consumer.carts3.schemas.testSchema3.policy.fault.protocols.rest.delay.fixedDelay",
+        500);
 
     Holder<Boolean> isAsserted = new Holder<>(false);
     handler.handle(invocation, ar -> {
@@ -582,8 +579,8 @@ public class TestFaultInjectHandler {
       validAssert = false;
     }
     Assert.assertTrue(validAssert);
-    TestFaultInjectUtil
-        .updateProperty("servicecomb.governance.Consumer.carts4.policy.fault.protocols.rest.delay.fixedDelay", 500);
+    ArchaiusUtils
+        .setProperty("servicecomb.governance.Consumer.carts4.policy.fault.protocols.rest.delay.fixedDelay", 500);
 
     Holder<Boolean> isAsserted = new Holder<>(false);
     handler.handle(invocation, ar -> {
@@ -646,8 +643,8 @@ public class TestFaultInjectHandler {
       validAssert = false;
     }
     Assert.assertTrue(validAssert);
-    TestFaultInjectUtil
-        .updateProperty("servicecomb.governance.Consumer.carts5.policy.fault.protocols.rest.abort.httpStatus", "420");
+    ArchaiusUtils
+        .setProperty("servicecomb.governance.Consumer.carts5.policy.fault.protocols.rest.abort.httpStatus", "420");
 
     Holder<Boolean> isAsserted = new Holder<>(false);
     handler.handle(invocation, ar -> {

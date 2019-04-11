@@ -61,17 +61,17 @@ public class TestPriorityProperty {
     ArchaiusUtils.setProperty(high, 3L);
     Assert.assertEquals(3L, (long) config.getValue());
 
-    ArchaiusUtils.updateProperty(middle, null);
+    ArchaiusUtils.setProperty(middle, null);
     Assert.assertEquals(3L, (long) config.getValue());
     ArchaiusUtils.setProperty(middle, 2L);
 
-    ArchaiusUtils.updateProperty(high, null);
+    ArchaiusUtils.setProperty(high, null);
     Assert.assertEquals(2L, (long) config.getValue());
 
-    ArchaiusUtils.updateProperty(middle, null);
+    ArchaiusUtils.setProperty(middle, null);
     Assert.assertEquals(1L, (long) config.getValue());
 
-    ArchaiusUtils.updateProperty(low, null);
+    ArchaiusUtils.setProperty(low, null);
     Assert.assertEquals(-2L, (long) config.getValue());
   }
 
@@ -89,17 +89,17 @@ public class TestPriorityProperty {
     ArchaiusUtils.setProperty(high, 3);
     Assert.assertEquals(3, (int) config.getValue());
 
-    ArchaiusUtils.updateProperty(middle, null);
+    ArchaiusUtils.setProperty(middle, null);
     Assert.assertEquals(3, (int) config.getValue());
     ArchaiusUtils.setProperty(middle, 2);
 
-    ArchaiusUtils.updateProperty(high, null);
+    ArchaiusUtils.setProperty(high, null);
     Assert.assertEquals(2, (int) config.getValue());
 
-    ArchaiusUtils.updateProperty(middle, null);
+    ArchaiusUtils.setProperty(middle, null);
     Assert.assertEquals(1, (int) config.getValue());
 
-    ArchaiusUtils.updateProperty(low, null);
+    ArchaiusUtils.setProperty(low, null);
     Assert.assertEquals(-2, (int) config.getValue());
   }
 
@@ -117,17 +117,17 @@ public class TestPriorityProperty {
     ArchaiusUtils.setProperty(high, 3);
     Assert.assertEquals("3", config.getValue());
 
-    ArchaiusUtils.updateProperty(middle, null);
+    ArchaiusUtils.setProperty(middle, null);
     Assert.assertEquals("3", config.getValue());
     ArchaiusUtils.setProperty(middle, 2);
 
-    ArchaiusUtils.updateProperty(high, null);
+    ArchaiusUtils.setProperty(high, null);
     Assert.assertEquals("2", config.getValue());
 
-    ArchaiusUtils.updateProperty(middle, null);
+    ArchaiusUtils.setProperty(middle, null);
     Assert.assertEquals("1", config.getValue());
 
-    ArchaiusUtils.updateProperty(low, null);
+    ArchaiusUtils.setProperty(low, null);
     Assert.assertEquals("def", config.getValue());
   }
 
@@ -145,17 +145,17 @@ public class TestPriorityProperty {
     ArchaiusUtils.setProperty(high, true);
     Assert.assertTrue(config.getValue());
 
-    ArchaiusUtils.updateProperty(middle, false);
+    ArchaiusUtils.setProperty(middle, false);
     Assert.assertTrue(config.getValue());
     ArchaiusUtils.setProperty(middle, false);
 
-    ArchaiusUtils.updateProperty(high, null);
+    ArchaiusUtils.setProperty(high, null);
     Assert.assertFalse(config.getValue());
 
-    ArchaiusUtils.updateProperty(middle, null);
+    ArchaiusUtils.setProperty(middle, null);
     Assert.assertTrue(config.getValue());
 
-    ArchaiusUtils.updateProperty(low, null);
+    ArchaiusUtils.setProperty(low, null);
     Assert.assertFalse(config.getValue());
   }
 
@@ -173,17 +173,17 @@ public class TestPriorityProperty {
     ArchaiusUtils.setProperty(high, 3);
     Assert.assertEquals(3, config.getValue(), 0);
 
-    ArchaiusUtils.updateProperty(middle, null);
+    ArchaiusUtils.setProperty(middle, null);
     Assert.assertEquals(3, config.getValue(), 0);
     ArchaiusUtils.setProperty(middle, 2);
 
-    ArchaiusUtils.updateProperty(high, null);
+    ArchaiusUtils.setProperty(high, null);
     Assert.assertEquals(2, config.getValue(), 0);
 
-    ArchaiusUtils.updateProperty(middle, null);
+    ArchaiusUtils.setProperty(middle, null);
     Assert.assertEquals(1, config.getValue(), 0);
 
-    ArchaiusUtils.updateProperty(low, null);
+    ArchaiusUtils.setProperty(low, null);
     Assert.assertEquals(-2, config.getValue(), 0);
   }
 
@@ -201,17 +201,17 @@ public class TestPriorityProperty {
     ArchaiusUtils.setProperty(high, 3);
     Assert.assertEquals(3, config.getValue(), 0);
 
-    ArchaiusUtils.updateProperty(middle, null);
+    ArchaiusUtils.setProperty(middle, null);
     Assert.assertEquals(3, config.getValue(), 0);
     ArchaiusUtils.setProperty(middle, 2);
 
-    ArchaiusUtils.updateProperty(high, null);
+    ArchaiusUtils.setProperty(high, null);
     Assert.assertEquals(2, config.getValue(), 0);
 
-    ArchaiusUtils.updateProperty(middle, null);
+    ArchaiusUtils.setProperty(middle, null);
     Assert.assertEquals(1, config.getValue(), 0);
 
-    ArchaiusUtils.updateProperty(low, null);
+    ArchaiusUtils.setProperty(low, null);
     Assert.assertEquals(-2, config.getValue(), 0);
   }
 }
