@@ -19,6 +19,7 @@ package org.apache.servicecomb.core.definition;
 
 import java.util.concurrent.TimeUnit;
 
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.unittest.UnitTestMeta;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.swagger.extend.annotations.ResponseHeaders;
@@ -30,6 +31,7 @@ import org.junit.Test;
 
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ResponseHeader;
+import mockit.Expectations;
 
 public class TestOperationMeta {
   class Impl {
@@ -92,6 +94,14 @@ public class TestOperationMeta {
 
   @Test
   public void opConfig() {
+    SCBEngine scbEngine = new SCBEngine();
+    new Expectations(SCBEngine.class) {
+      {
+        SCBEngine.getInstance();
+        result = scbEngine;
+      }
+    };
+
     UnitTestMeta meta = new UnitTestMeta();
     SchemaMeta schemaMeta = meta.getOrCreateSchemaMeta(Impl.class);
     OperationMeta operationMeta = schemaMeta.findOperation("test");

@@ -51,4 +51,7 @@ public class MicroserviceVersion {
   public Version getVersion() {
     return version;
   }
+
+  public void destroy() {
+  }
 }

@@ -18,7 +18,6 @@ package org.apache.servicecomb.inspector.internal;
 
 import javax.inject.Inject;
 
-import org.apache.servicecomb.config.inject.ConfigObjectFactory;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.definition.schema.ProducerSchemaFactory;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
@@ -46,7 +45,7 @@ public class InspectorBootListener implements BootListener {
       return;
     }
 
-    inspectorConfig = new ConfigObjectFactory().create(InspectorConfig.class);
+    inspectorConfig = event.getScbEngine().getPriorityPropertyManager().createConfigObject(InspectorConfig.class);
     if (!inspectorConfig.isEnabled()) {
       LOGGER.info("inspector is not enabled.");
       return;

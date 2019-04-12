@@ -260,4 +260,10 @@ public class MicroserviceVersions {
         microserviceName.equals(
             changedEvent.getKey().getAppId() + Const.APP_SERVICE_SEPARATOR + changedEvent.getKey().getServiceName());
   }
+
+  public void destroy() {
+    for (MicroserviceVersion microserviceVersion : versions.values()) {
+      microserviceVersion.destroy();
+    }
+  }
 }
