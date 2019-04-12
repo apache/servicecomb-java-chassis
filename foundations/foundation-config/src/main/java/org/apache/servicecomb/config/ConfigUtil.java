@@ -26,11 +26,14 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.EnvironmentConfiguration;
 import org.apache.commons.configuration.SystemConfiguration;
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.servicecomb.config.archaius.scheduler.NeverStartPollingScheduler;
 import org.apache.servicecomb.config.archaius.sources.ConfigModel;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
@@ -44,6 +47,7 @@ import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConcurrentMapConfiguration;
 import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicConfiguration;
+import com.netflix.config.DynamicProperty;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicWatchedConfiguration;
 import com.netflix.config.WatchedUpdateListener;
@@ -315,6 +319,25 @@ public final class ConfigUtil {
           }
         }
       }
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  public static ConcurrentHashMap<String, DynamicProperty> getAllDynamicProperties() {
+    try {
+      return (ConcurrentHashMap<String, DynamicProperty>) FieldUtils
+          .readDeclaredStaticField(DynamicProperty.class, "ALL_PROPS", true);
+    } catch (IllegalAccessException e) {
+      throw new IllegalStateException(e);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  public static CopyOnWriteArraySet<Runnable> getCallbacks(DynamicProperty property) {
+    try {
+      return (CopyOnWriteArraySet<Runnable>) FieldUtils.readDeclaredField(property, "callbacks", true);
+    } catch (IllegalAccessException e) {
+      throw new IllegalStateException(e);
     }
   }
 }

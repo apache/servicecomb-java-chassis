@@ -16,19 +16,11 @@
  */
 package org.apache.servicecomb.config.priority;
 
-import org.apache.servicecomb.config.priority.impl.BooleanPriorityProperty;
-import org.apache.servicecomb.config.priority.impl.DoublePriorityProperty;
-import org.apache.servicecomb.config.priority.impl.FloatPriorityProperty;
-import org.apache.servicecomb.config.priority.impl.IntPriorityProperty;
-import org.apache.servicecomb.config.priority.impl.LongPriorityProperty;
-import org.apache.servicecomb.config.priority.impl.StringPriorityProperty;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-public class TestPriorityProperty {
+public class TestPriorityProperty extends TestPriorityPropertyBase {
   String high = "ms.schema.op";
 
   String middle = "ms.schema";
@@ -37,19 +29,9 @@ public class TestPriorityProperty {
 
   String[] keys = {high, middle, low};
 
-  @Before
-  public void setup() {
-    ArchaiusUtils.resetConfig();
-  }
-
-  @After
-  public void teardown() {
-    ArchaiusUtils.resetConfig();
-  }
-
   @Test
   public void testLong() {
-    LongPriorityProperty config = new LongPriorityProperty(-1L, -2L, keys);
+    PriorityProperty<Long> config = priorityPropertyManager.createPriorityProperty(Long.class, -1L, -2L, keys);
     Assert.assertEquals(-2L, (long) config.getValue());
 
     ArchaiusUtils.setProperty(low, 1L);
@@ -73,11 +55,13 @@ public class TestPriorityProperty {
 
     ArchaiusUtils.setProperty(low, null);
     Assert.assertEquals(-2L, (long) config.getValue());
+
+    priorityPropertyManager.unregisterPriorityProperty(config);
   }
 
   @Test
   public void testInt() {
-    IntPriorityProperty config = new IntPriorityProperty(-1, -2, keys);
+    PriorityProperty<Integer> config = priorityPropertyManager.createPriorityProperty(Integer.class, -1, -2, keys);
     Assert.assertEquals(-2L, (int) config.getValue());
 
     ArchaiusUtils.setProperty(low, 1);
@@ -101,11 +85,13 @@ public class TestPriorityProperty {
 
     ArchaiusUtils.setProperty(low, null);
     Assert.assertEquals(-2, (int) config.getValue());
+
+    priorityPropertyManager.unregisterPriorityProperty(config);
   }
 
   @Test
   public void testString() {
-    StringPriorityProperty config = new StringPriorityProperty(null, "def", keys);
+    PriorityProperty<String> config = priorityPropertyManager.createPriorityProperty(String.class, null, "def", keys);
     Assert.assertEquals("def", config.getValue());
 
     ArchaiusUtils.setProperty(low, 1);
@@ -129,11 +115,13 @@ public class TestPriorityProperty {
 
     ArchaiusUtils.setProperty(low, null);
     Assert.assertEquals("def", config.getValue());
+
+    priorityPropertyManager.unregisterPriorityProperty(config);
   }
 
   @Test
   public void testBoolean() {
-    BooleanPriorityProperty config = new BooleanPriorityProperty(null, false, keys);
+    PriorityProperty<Boolean> config = priorityPropertyManager.createPriorityProperty(Boolean.class, null, false, keys);
     Assert.assertFalse(config.getValue());
 
     ArchaiusUtils.setProperty(low, true);
@@ -157,11 +145,13 @@ public class TestPriorityProperty {
 
     ArchaiusUtils.setProperty(low, null);
     Assert.assertFalse(config.getValue());
+
+    priorityPropertyManager.unregisterPriorityProperty(config);
   }
 
   @Test
   public void testDouble() {
-    DoublePriorityProperty config = new DoublePriorityProperty(null, -2.0, keys);
+    PriorityProperty<Double> config = priorityPropertyManager.createPriorityProperty(Double.class, null, -2.0, keys);
     Assert.assertEquals(-2, config.getValue(), 0);
 
     ArchaiusUtils.setProperty(low, 1);
@@ -185,11 +175,13 @@ public class TestPriorityProperty {
 
     ArchaiusUtils.setProperty(low, null);
     Assert.assertEquals(-2, config.getValue(), 0);
+
+    priorityPropertyManager.unregisterPriorityProperty(config);
   }
 
   @Test
   public void testFloat() {
-    FloatPriorityProperty config = new FloatPriorityProperty(null, -2.0f, keys);
+    PriorityProperty<Float> config = priorityPropertyManager.createPriorityProperty(Float.class, null, -2.0f, keys);
     Assert.assertEquals(-2, config.getValue(), 0);
 
     ArchaiusUtils.setProperty(low, 1);
@@ -213,5 +205,7 @@ public class TestPriorityProperty {
 
     ArchaiusUtils.setProperty(low, null);
     Assert.assertEquals(-2, config.getValue(), 0);
+
+    priorityPropertyManager.unregisterPriorityProperty(config);
   }
 }
