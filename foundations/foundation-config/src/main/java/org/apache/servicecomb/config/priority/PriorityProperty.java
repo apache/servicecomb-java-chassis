@@ -16,17 +16,23 @@
  */
 package org.apache.servicecomb.config.priority;
 
-import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
-import org.apache.servicecomb.config.priority.impl.PropertyGetter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.netflix.config.Property;
+import com.netflix.config.DynamicProperty;
 
-public abstract class PriorityProperty<T> {
+/**
+ * must create by PriorityPropertyManager<br>
+ *   or register to PriorityPropertyManager manually
+ * @param <T>
+ */
+public class PriorityProperty<T> {
   private static final Logger LOGGER = LoggerFactory.getLogger(PriorityProperty.class);
 
   // priorityKeys[0] has the highest priority
@@ -41,46 +47,120 @@ public abstract class PriorityProperty<T> {
   // when got invalid value by lowest level, will use defaultValue
   private final T defaultValue;
 
-  private Property<T>[] properties;
+  private DynamicProperty[] properties;
 
   private T finalValue;
+
+  private Function<DynamicProperty, T> internalValueReader;
 
   private Consumer<T> callback = v -> {
   };
 
   @SuppressWarnings("unchecked")
-  public PriorityProperty(T invalidValue, T defaultValue, PropertyGetter<T> propertyGetter, String... priorityKeys) {
+  public PriorityProperty(Type type, T invalidValue, T defaultValue, String... priorityKeys) {
+    internalValueReader = collectReader(type);
+
     this.priorityKeys = priorityKeys;
     this.joinedPriorityKeys = Arrays.toString(priorityKeys);
     this.invalidValue = invalidValue;
     this.defaultValue = defaultValue;
 
-    properties = (Property<T>[]) Array.newInstance(Property.class, priorityKeys.length);
+    properties = new DynamicProperty[priorityKeys.length];
     for (int idx = 0; idx < priorityKeys.length; idx++) {
       String key = priorityKeys[idx].trim();
-      // use invalidValue to be defaultValue
-      // only when all priority is invalid, then use defaultValue
-      properties[idx] = propertyGetter.getProperty(key, invalidValue);
-      properties[idx].addCallback(() -> updateFinalValue(false));
+      properties[idx] = DynamicProperty.getInstance(key);
     }
     updateFinalValue(true);
+  }
+
+  private Function<DynamicProperty, T> collectReader(Type type) {
+    if (type == int.class || type == Integer.class) {
+      return this::readInt;
+    }
+
+    if (type == long.class || type == Long.class) {
+      return this::readLong;
+    }
+
+    if (type == String.class) {
+      return this::readString;
+    }
+
+    if (type == boolean.class || type == Boolean.class) {
+      return this::readBoolean;
+    }
+
+    if (type == double.class || type == Double.class) {
+      return this::readDouble;
+    }
+
+    if (type == float.class || type == Float.class) {
+      return this::readFloat;
+    }
+
+    throw new IllegalStateException("not support, type=" + type.getTypeName());
+  }
+
+  @SuppressWarnings("unchecked")
+  protected T readInt(DynamicProperty property) {
+    return (T) property.getInteger();
+  }
+
+  @SuppressWarnings("unchecked")
+  protected T readLong(DynamicProperty property) {
+    return (T) property.getLong();
+  }
+
+  @SuppressWarnings("unchecked")
+  protected T readString(DynamicProperty property) {
+    return (T) property.getString();
+  }
+
+  @SuppressWarnings("unchecked")
+  protected T readBoolean(DynamicProperty property) {
+    return (T) property.getBoolean();
+  }
+
+  @SuppressWarnings("unchecked")
+  protected T readDouble(DynamicProperty property) {
+    return (T) property.getDouble();
+  }
+
+  @SuppressWarnings("unchecked")
+  protected T readFloat(DynamicProperty property) {
+    return (T) property.getFloat();
   }
 
   public String[] getPriorityKeys() {
     return priorityKeys;
   }
 
-  private synchronized void updateFinalValue(boolean init) {
+  public T getDefaultValue() {
+    return defaultValue;
+  }
+
+  public DynamicProperty[] getProperties() {
+    return properties;
+  }
+
+  synchronized void updateFinalValue(boolean init) {
+    T lastValue = finalValue;
+
     String effectiveKey = "default value";
     T value = defaultValue;
-    for (Property<T> property : properties) {
-      if (property.getValue() == null || property.getValue().equals(invalidValue)) {
+    for (DynamicProperty property : properties) {
+      T propValue = internalValueReader.apply(property);
+      if (propValue == null || propValue.equals(invalidValue)) {
         continue;
       }
 
       effectiveKey = property.getName();
-      value = property.getValue();
+      value = propValue;
       break;
+    }
+
+    if (Objects.equals(lastValue, value)) {
+      return;
     }
 
     if (init) {
