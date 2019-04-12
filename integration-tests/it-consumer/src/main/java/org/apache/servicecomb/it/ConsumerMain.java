@@ -25,6 +25,7 @@ import org.apache.servicecomb.it.schema.TestApiOperation;
 import org.apache.servicecomb.it.testcase.TestAcceptType;
 import org.apache.servicecomb.it.testcase.TestAnnotatedAttribute;
 import org.apache.servicecomb.it.testcase.TestApiParam;
+import org.apache.servicecomb.it.testcase.TestAsyncInvoke;
 import org.apache.servicecomb.it.testcase.TestChangeTransport;
 import org.apache.servicecomb.it.testcase.TestDataTypePrimitive;
 import org.apache.servicecomb.it.testcase.TestDefaultJsonValueJaxrsSchema;
@@ -125,6 +126,8 @@ public class ConsumerMain {
     ITJUnitUtils.run(TestDefaultJsonValueJaxrsSchema.class);
     ITJUnitUtils.run(TestRestController.class);
     ITJUnitUtils.runWithRest(TestRestController.class);
+
+    ITJUnitUtils.runWithHighwayAndRest(TestAsyncInvoke.class);
   }
 
   interface ITTask {
