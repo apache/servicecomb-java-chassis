@@ -18,7 +18,6 @@
 package org.apache.servicecomb.foundation.test.scaffolding.config;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.util.ReflectionUtils;
@@ -44,7 +43,6 @@ public final class ArchaiusUtils {
 
   private static final Field FIELD_DYNAMIC_PROPERTY_ALL_PROPS = ReflectionUtils
       .findField(DynamicProperty.class, "ALL_PROPS");
-
 
   static {
     FIELD_INSTANCE.setAccessible(true);
