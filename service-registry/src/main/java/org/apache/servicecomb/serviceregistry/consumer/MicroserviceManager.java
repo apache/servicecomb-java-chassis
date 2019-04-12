@@ -69,6 +69,7 @@ public class MicroserviceManager {
     // otherwise, remove will block the thread forever
     if (versionsByName.containsKey(microserviceName)) {
       MicroserviceVersions microserviceVersions = versionsByName.remove(microserviceName);
+      microserviceVersions.destroy();
       appManager.getEventBus().unregister(microserviceVersions);
       LOGGER.info("remove microservice, appId={}, microserviceName={}.", appId, microserviceName);
     }

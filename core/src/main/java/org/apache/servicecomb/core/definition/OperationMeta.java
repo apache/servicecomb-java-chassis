@@ -23,8 +23,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
-import org.apache.servicecomb.config.inject.ConfigObjectFactory;
 import org.apache.servicecomb.core.Handler;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
@@ -80,7 +80,7 @@ public class OperationMeta {
     this.method = method;
     this.httpMethod = httpMethod.toUpperCase(Locale.US);
     this.swaggerOperation = swaggerOperation;
-    this.config = new ConfigObjectFactory().create(OperationConfig.class,
+    this.config = SCBEngine.getInstance().getPriorityPropertyManager().createConfigObject(OperationConfig.class,
         "op-any-priority", schemaMeta.getMicroserviceMeta().isConsumer() ?
             OperationConfig.CONSUMER_OP_ANY_PRIORITY : OperationConfig.PRODUCER_OP_ANY_PRIORITY,
         "consumer-op-any_priority", OperationConfig.CONSUMER_OP_ANY_PRIORITY,
@@ -214,5 +214,9 @@ public class OperationMeta {
     }
     providerQpsFlowControlHandlerSearched = true;
     return providerQpsFlowControlHandler;
+  }
+
+  public void destroy() {
+    SCBEngine.getInstance().getPriorityPropertyManager().unregisterConfigObject(config);
   }
 }

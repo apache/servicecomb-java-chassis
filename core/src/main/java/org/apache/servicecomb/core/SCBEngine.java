@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
@@ -85,6 +86,8 @@ public class SCBEngine {
 
   private StaticSchemaFactory staticSchemaFactory;
 
+  private PriorityPropertyManager priorityPropertyManager = new PriorityPropertyManager();
+
   private static final SCBEngine INSTANCE = new SCBEngine();
 
   public void setStatus(SCBStatus status) {
@@ -97,6 +100,10 @@ public class SCBEngine {
 
   public static SCBEngine getInstance() {
     return INSTANCE;
+  }
+
+  public PriorityPropertyManager getPriorityPropertyManager() {
+    return priorityPropertyManager;
   }
 
   public EventBus getEventBus() {
@@ -292,6 +299,7 @@ public class SCBEngine {
 
     //Step 6: destroy config center source
     ConfigUtil.destroyConfigCenterConfigurationSource();
+    priorityPropertyManager.close();
 
     //Step 7: notify all component do clean works via AFTER_CLOSE Event
     safeTriggerEvent(EventType.AFTER_CLOSE);

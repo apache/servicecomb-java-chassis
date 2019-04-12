@@ -49,4 +49,13 @@ public class MicroserviceVersionMeta extends MicroserviceVersion {
   public MicroserviceMeta getMicroserviceMeta() {
     return microserviceMeta;
   }
+
+  @Override
+  public void destroy() {
+    for (SchemaMeta schemaMeta : microserviceMeta.getSchemaMetas()) {
+      for (OperationMeta operationMeta : schemaMeta.getOperations()) {
+        operationMeta.destroy();
+      }
+    }
+  }
 }

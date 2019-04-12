@@ -30,7 +30,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.servicecomb.config.inject.ConfigObjectFactory;
+import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
@@ -52,6 +52,8 @@ import mockit.Mocked;
 public class TestInspectorImpl {
   static Map<String, String> schemas = new LinkedHashMap<>();
 
+  static PriorityPropertyManager priorityPropertyManager;
+
   static InspectorConfig inspectorConfig;
 
   static InspectorImpl inspector;
@@ -59,7 +61,8 @@ public class TestInspectorImpl {
   @BeforeClass
   public static void setup() throws IOException {
     ArchaiusUtils.resetConfig();
-    inspectorConfig = new ConfigObjectFactory().create(InspectorConfig.class);
+    priorityPropertyManager = new PriorityPropertyManager();
+    inspectorConfig = priorityPropertyManager.createConfigObject(InspectorConfig.class);
     inspector = new InspectorImpl(inspectorConfig, schemas);
 
     schemas.put("schema1", IOUtils
@@ -70,6 +73,7 @@ public class TestInspectorImpl {
 
   @AfterClass
   public static void teardown() {
+    priorityPropertyManager.unregisterConfigObject(inspectorConfig);
     ArchaiusUtils.resetConfig();
   }
 
