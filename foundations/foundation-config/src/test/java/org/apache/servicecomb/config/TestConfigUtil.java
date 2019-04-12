@@ -31,6 +31,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.servicecomb.config.archaius.sources.ConfigModel;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
@@ -53,7 +55,6 @@ import mockit.Mock;
 import mockit.MockUp;
 
 public class TestConfigUtil {
-
   private static final String systemPropertyName = "servicecomb.cse.servicecomb.system.setting";
 
   private static final String systemExpected = uniquify("ran");
@@ -66,6 +67,8 @@ public class TestConfigUtil {
 
   @BeforeClass
   public static void beforeTest() {
+    Logger.getRootLogger().setLevel(Level.OFF);
+
     ArchaiusUtils.resetConfig();
 
     System.setProperty(systemPropertyName, systemExpected);
@@ -77,6 +80,8 @@ public class TestConfigUtil {
     }
 
     ConfigUtil.installDynamicConfig();
+
+    Logger.getRootLogger().setLevel(Level.INFO);
   }
 
   @AfterClass
@@ -134,45 +139,45 @@ public class TestConfigUtil {
     String expected = "value";
 
     assertThat(DynamicPropertyFactory
-        .getInstance()
-        .getStringProperty("cse.cse.servicecomb.file", null)
-        .get(),
+            .getInstance()
+            .getStringProperty("cse.cse.servicecomb.file", null)
+            .get(),
         equalTo(null));
 
     assertThat(DynamicPropertyFactory
-        .getInstance()
-        .getStringProperty("servicecomb.cse.servicecomb.file", null)
-        .get(),
+            .getInstance()
+            .getStringProperty("servicecomb.cse.servicecomb.file", null)
+            .get(),
         equalTo(expected));
   }
 
   @Test
   public void propertiesFromSystemIsDuplicatedToCse() {
     assertThat(DynamicPropertyFactory
-        .getInstance()
-        .getStringProperty(systemPropertyName, null)
-        .get(),
+            .getInstance()
+            .getStringProperty(systemPropertyName, null)
+            .get(),
         equalTo(systemExpected));
 
     assertThat(DynamicPropertyFactory
-        .getInstance()
-        .getStringProperty("servicecomb.cse.servicecomb.system.setting", null)
-        .get(),
+            .getInstance()
+            .getStringProperty("servicecomb.cse.servicecomb.system.setting", null)
+            .get(),
         equalTo(systemExpected));
   }
 
   @Test
   public void propertiesFromEnvironmentIsDuplicatedToCse() {
     assertThat(DynamicPropertyFactory
-        .getInstance()
-        .getStringProperty(environmentPropertyName, null)
-        .get(),
+            .getInstance()
+            .getStringProperty(environmentPropertyName, null)
+            .get(),
         equalTo(environmentExpected));
 
     assertThat(DynamicPropertyFactory
-        .getInstance()
-        .getStringProperty("servicecomb.cse.servicecomb.environment.setting", null)
-        .get(),
+            .getInstance()
+            .getStringProperty("servicecomb.cse.servicecomb.environment.setting", null)
+            .get(),
         equalTo(environmentExpected));
   }
 

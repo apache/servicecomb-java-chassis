@@ -28,6 +28,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
@@ -50,8 +52,12 @@ import mockit.Deencapsulation;
 public class TestConfigurationSpringInitializer {
   @Before
   public void beforeTest() {
+    Logger.getRootLogger().setLevel(Level.OFF);
+
     ConfigUtil.clearExtraConfig();
     ArchaiusUtils.resetConfig();
+
+    Logger.getRootLogger().setLevel(Level.INFO);
   }
 
   @After
