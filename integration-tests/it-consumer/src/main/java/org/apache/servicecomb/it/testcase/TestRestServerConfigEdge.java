@@ -66,7 +66,59 @@ public class TestRestServerConfigEdge {
       fail("an exception is expected!");
     } catch (RestClientException e) {
       Assert.assertEquals(404, ((HttpClientErrorException) e).getRawStatusCode());
-      Assert.assertEquals("CommonExceptionData [message=Not Found]", ((HttpClientErrorException) e).getStatusText());
+      Assert.assertEquals("Not Found", ((HttpClientErrorException) e).getStatusText());
+      Assert.assertEquals("{\"message\":\"Not Found\"}",
+          ((HttpClientErrorException) e).getResponseBodyAsString());
     }
+  }
+
+  @Test
+  public void testFailureHandlerInDispatcher() throws IOException {
+    String requestUri = client.getUrlPrefix();
+    requestUri = requestUri.substring(0, requestUri.indexOf("rest")) + "dispatcherWithFailureHandler/abc";
+    URL url = new URL(requestUri);
+    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
+    StringBuilder errorBody = new StringBuilder();
+    int statusCode = urlConnection.getResponseCode();
+    String statusMessage = urlConnection.getResponseMessage();
+    try (Scanner scanner = new Scanner(urlConnection.getErrorStream())) {
+      while (scanner.hasNextLine()) {
+        errorBody.append(scanner.nextLine());
+      }
+    } catch (Throwable throwable) {
+      throwable.printStackTrace();
+    }
+    urlConnection.disconnect();
+
+    Assert.assertEquals(460, statusCode);
+    Assert.assertEquals("TestFailureHandlerInDispatcher", statusMessage);
+    Assert.assertEquals("text/plain", urlConnection.getHeaderField("Content-Type"));
+    Assert.assertEquals("test-header-value0", urlConnection.getHeaderField("test-header"));
+    Assert.assertEquals("TestFailureHandlerInDispatcher as expected", errorBody.toString());
+  }
+
+  @Test
+  public void testFailureHandlerInSomewhereElse() throws IOException {
+    String requestUri = client.getUrlPrefix();
+    requestUri = requestUri.substring(0, requestUri.indexOf("rest")) + "dispatcherWithoutFailureHandler/abc";
+    URL url = new URL(requestUri);
+    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+
+    StringBuilder errorBody = new StringBuilder();
+    int statusCode = urlConnection.getResponseCode();
+    String statusMessage = urlConnection.getResponseMessage();
+    try (Scanner scanner = new Scanner(urlConnection.getErrorStream())) {
+      while (scanner.hasNextLine()) {
+        errorBody.append(scanner.nextLine());
+      }
+    } catch (Throwable throwable) {
+      throwable.printStackTrace();
+    }
+    urlConnection.disconnect();
+
+    Assert.assertEquals(461, statusCode);
+    Assert.assertEquals("TestFailureHandlerInSomewhereElse", statusMessage);
+    Assert.assertEquals("\"TestFailureHandlerInSomewhereElse as expected\"", errorBody.toString());
   }
 }
