@@ -36,6 +36,24 @@
 <div class="left">
   <img id="scbLogo" src="static/images/ServiceComb-logo-3.jpg"/>
   <tree id="mainTree">
+    <tree-node id="configs" no-action expanded="true">
+      <tree-face>
+        <tree-node-open-close></tree-node-open-close>
+        <tree-label>configs</tree-label>
+      </tree-face>
+      <tree-children>
+        <tree-node id="dynamicProperties">
+          <tree-face>
+            <tree-label onclick="frame.location = 'static/dynamicProperties.html'">dynamic properties</tree-label>
+          </tree-face>
+        </tree-node>
+        <tree-node id="priorityProperties">
+          <tree-face>
+            <tree-label onclick="frame.location = 'static/priorityProperties.html'">priority properties</tree-label>
+          </tree-face>
+        </tree-node>
+      </tree-children>
+    </tree-node>
     <tree-node id="schemas" no-action expanded="true">
       <tree-face>
         <tree-node-open-close></tree-node-open-close>

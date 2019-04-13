@@ -56,3 +56,37 @@ body {
   display: block;
   width: 50%;
 }
+
+.table-container {
+  width: 100%;
+  margin: 10px;
+  overflow-y: scroll;
+}
+
+.table {
+  border-spacing: 0px;
+  width: 100%;
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
+.table.left-head th {
+  text-align: left;
+}
+
+.table tr:nth-of-type(even) {
+  background: #f8f8f7
+}
+
+.table.fix-head thead th {
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+  z-index: 999;
+  background: #f7f8f7;
+}
+
+.table th, .table td {
+  border: 1px solid #dedede;
+  padding: 8px;
+}
