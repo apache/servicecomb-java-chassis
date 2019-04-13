@@ -26,6 +26,7 @@ public class AppendStyleProcessor extends DocinfoProcessor {
   @Override
   public String process(Document document) {
     return "<style>\n"
+        + "html,body{height:100%;overflow-y:scroll;}"
         + "#header>h1 {overflow: hidden;font-size: 1.75em}\n"
         + "#header,#content,#footnotes,#footer{max-width: 90%}\n"
         + "</style>";
