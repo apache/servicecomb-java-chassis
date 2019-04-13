@@ -53,8 +53,11 @@ public class InspectorBootListener implements BootListener {
 
     LOGGER.info("inspector is enabled.");
     // will not register this schemas to service registry
+    InspectorImpl inspector = new InspectorImpl(inspectorConfig,
+        RegistryUtils.getServiceRegistry().getMicroservice().getSchemaMap());
+    inspector.setPriorityPropertyManager(event.getScbEngine().getPriorityPropertyManager());
     producerSchemaFactory.getOrCreateProducerSchema("inspector",
         InspectorImpl.class,
-        new InspectorImpl(inspectorConfig, RegistryUtils.getServiceRegistry().getMicroservice().getSchemaMap()));
+        inspector);
   }
 }
