@@ -87,10 +87,10 @@ public class RestServerVerticle extends AbstractVerticle {
         return;
       }
       Router mainRouter = Router.router(vertx);
-      mountGlobalRestFailureHandler(mainRouter);
       mountAccessLogHandler(mainRouter);
       mountCorsHandler(mainRouter);
       initDispatcher(mainRouter);
+      mountGlobalRestFailureHandler(mainRouter);
       HttpServer httpServer = createHttpServer();
       httpServer.requestHandler(mainRouter);
       httpServer.connectionHandler(connection -> {
@@ -105,7 +105,7 @@ public class RestServerVerticle extends AbstractVerticle {
         }
       });
       httpServer.exceptionHandler(e -> {
-        if(e instanceof ClosedChannelException) {
+        if (e instanceof ClosedChannelException) {
           // This is quite normal in between browser and ege, so do not print out.
           LOGGER.debug("Unexpected error in server.{}", ExceptionUtils.getExceptionMessageWithoutTrace(e));
         } else {
@@ -125,18 +125,18 @@ public class RestServerVerticle extends AbstractVerticle {
         SPIServiceUtils.getPriorityHighestService(GlobalRestFailureHandler.class);
     Handler<RoutingContext> failureHandler = null == globalRestFailureHandler ?
         ctx -> {
-          if (ctx.response().closed()) {
+          if (ctx.response().closed() || ctx.response().ended()) {
             // response has been sent, do nothing
             LOGGER.error("get a failure with closed response", ctx.failure());
-            ctx.next();
+            return;
           }
           HttpServerResponse response = ctx.response();
           if (ctx.failure() instanceof InvocationException) {
             // ServiceComb defined exception
             InvocationException exception = (InvocationException) ctx.failure();
             response.setStatusCode(exception.getStatusCode());
-            response.setStatusMessage(exception.getErrorData().toString());
-            response.end();
+            response.setStatusMessage(exception.getReasonPhrase());
+            response.end(exception.getErrorData().toString());
             return;
           }
 
