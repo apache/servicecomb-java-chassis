@@ -17,3 +17,5 @@
 
 org.apache.servicecomb.it.edge.EdgeDispatcher
 org.apache.servicecomb.it.edge.encrypt.EncryptEdgeDispatcher
+org.apache.servicecomb.it.edge.DemoDispatcherWithFailureHandler
+org.apache.servicecomb.it.edge.DemoDispatcherWithoutFailureHandler
