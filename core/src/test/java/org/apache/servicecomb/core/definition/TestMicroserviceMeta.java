@@ -17,12 +17,27 @@
 
 package org.apache.servicecomb.core.definition;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.concurrent.Executor;
 
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.classloader.MicroserviceClassLoader;
+import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
+import org.apache.servicecomb.core.definition.loader.SchemaLoader;
+import org.apache.servicecomb.core.definition.schema.StaticSchemaFactory;
+import org.apache.servicecomb.core.definition.schema.StaticSchemaFactoryTest.Test3rdPartyServiceIntf;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.ServiceRegistry;
+import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
+import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
 import org.junit.Assert;
 import org.junit.Test;
 
+import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
 
@@ -94,5 +109,66 @@ public class TestMicroserviceMeta {
           "More than one schema interface is java.lang.Object, please use schemaId to choose a schema.",
           e.getMessage());
     }
+  }
+
+  @Test
+  public void priorityPropertyManager() {
+    ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
+    serviceRegistry.init();
+    RegistryUtils.setServiceRegistry(serviceRegistry);
+
+    SCBEngine scbEngine = new SCBEngine();
+    scbEngine.setStaticSchemaFactory(new StaticSchemaFactory());
+    Deencapsulation.setField(scbEngine.getStaticSchemaFactory(), "compositeSwaggerGeneratorContext",
+        new CompositeSwaggerGeneratorContext());
+    Deencapsulation.setField(scbEngine.getStaticSchemaFactory(), "schemaLoader", new SchemaLoader());
+    new Expectations(SCBEngine.class) {
+      {
+        SCBEngine.getInstance();
+        result = scbEngine;
+      }
+    };
+    new Expectations(BeanUtils.class) {
+      {
+        BeanUtils.getBean(anyString);
+        result = (Executor) Runnable::run;
+      }
+    };
+
+    SchemaListenerManager schemaListenerManager = new SchemaListenerManager();
+    new Expectations(CseContext.class) {
+      {
+        CseContext.getInstance().getSchemaListenerManager();
+        result = schemaListenerManager;
+      }
+    };
+
+    serviceRegistry.registerMicroserviceMappingByEndpoints("ms", "1.0.0", Arrays.asList("rest://localhost:8080"),
+        Test3rdPartyServiceIntf.class);
+    serviceRegistry.getAppManager().getOrCreateMicroserviceVersions("app", "ms");
+
+    Assert.assertEquals(1,
+        serviceRegistry.getAppManager().getOrCreateMicroserviceManager("app").getVersionsByName().size());
+    Assert.assertEquals(0, ConfigUtil.getAllDynamicProperties().values().stream()
+        .mapToInt(p -> ConfigUtil.getCallbacks(p).size())
+        .sum());
+    Assert.assertEquals(2, scbEngine.getPriorityPropertyManager().getConfigObjectMap().size());
+    Assert.assertEquals(0, scbEngine.getPriorityPropertyManager().getPriorityPropertyMap().size());
+
+    Deencapsulation
+        .setField(serviceRegistry.getAppManager().getOrCreateMicroserviceManager("app").getVersionsByName().get("ms"),
+            "validated", false);
+    // should unregister priority properties
+    serviceRegistry.getAppManager().getOrCreateMicroserviceVersions("app", "ms");
+
+    Assert.assertEquals(0,
+        serviceRegistry.getAppManager().getOrCreateMicroserviceManager("app").getVersionsByName().size());
+    Assert.assertEquals(0, ConfigUtil.getAllDynamicProperties().values().stream()
+        .mapToInt(p -> ConfigUtil.getCallbacks(p).size())
+        .sum());
+    Assert.assertEquals(0, scbEngine.getPriorityPropertyManager().getConfigObjectMap().size());
+    Assert.assertEquals(0, scbEngine.getPriorityPropertyManager().getPriorityPropertyMap().size());
+
+    RegistryUtils.setServiceRegistry(null);
   }
 }

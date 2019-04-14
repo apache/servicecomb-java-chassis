@@ -98,7 +98,7 @@ public class StaticSchemaFactoryTest {
   }
 
   @Path("/3rdParty")
-  interface Test3rdPartyServiceIntf {
+  public interface Test3rdPartyServiceIntf {
 
     @Path("/add")
     @GET
