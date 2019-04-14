@@ -20,7 +20,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -30,10 +32,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.config.priority.PriorityProperty;
 import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
+import org.apache.servicecomb.inspector.internal.model.DynamicPropertyView;
+import org.apache.servicecomb.inspector.internal.model.PriorityPropertyView;
 import org.apache.servicecomb.inspector.internal.swagger.SchemaFormat;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
@@ -45,6 +51,8 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.netflix.config.DynamicProperty;
 
 import mockit.Expectations;
 import mockit.Mocked;
@@ -293,5 +301,46 @@ public class TestInspectorImpl {
     try (InputStream is = part.getInputStream()) {
       Assert.assertTrue(IOUtils.toString(is, StandardCharsets.UTF_8).endsWith("</html>"));
     }
+  }
+
+  @Test
+  public void dynamicProperties() {
+    DynamicProperty.getInstance("zzz");
+    ArchaiusUtils.setProperty("zzz", "abc");
+    DynamicProperty.getInstance("yyy").addCallback(() -> {
+    });
+
+    List<DynamicPropertyView> views = inspector.dynamicProperties();
+    Assert.assertThat(views.stream().map(DynamicPropertyView::getCallbackCount).collect(Collectors.toList()),
+        Matchers.contains(1, 0, 0, 0));
+    Assert.assertThat(views.stream().map(DynamicPropertyView::getKey).collect(Collectors.toList()),
+        Matchers.contains("yyy", "zzz", "servicecomb.inspector.enabled",
+            "servicecomb.inspector.swagger.html.asciidoctorCss"));
+
+    ConfigUtil.getAllDynamicProperties().remove("yyy");
+    ConfigUtil.getAllDynamicProperties().remove("zzz");
+    Assert.assertEquals(2, ConfigUtil.getAllDynamicProperties().size());
+  }
+
+  @Test
+  public void priorityProperties() {
+    PriorityPropertyManager priorityPropertyManager = new PriorityPropertyManager();
+    inspector.setPriorityPropertyManager(priorityPropertyManager);
+
+    PriorityProperty<?> priorityProperty = priorityPropertyManager
+        .createPriorityProperty(int.class, 0, 0, "high", "low");
+
+    List<PriorityPropertyView> views = inspector.priorityProperties();
+    Assert.assertEquals(1, views.size());
+    Assert.assertThat(
+        views.get(0).getDynamicProperties().stream().map(DynamicPropertyView::getKey).collect(Collectors.toList()),
+        Matchers.contains("high", "low"));
+
+    priorityPropertyManager.unregisterPriorityProperty(priorityProperty);
+    views = inspector.priorityProperties();
+    Assert.assertTrue(views.isEmpty());
+
+    priorityPropertyManager.close();
+    inspector.setPriorityPropertyManager(null);
   }
 }
