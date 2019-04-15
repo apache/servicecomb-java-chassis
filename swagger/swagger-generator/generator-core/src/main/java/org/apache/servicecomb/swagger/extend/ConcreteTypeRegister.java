@@ -14,19 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.generator.springdata;
+package org.apache.servicecomb.swagger.extend;
 
 import java.lang.reflect.Type;
 import java.util.Set;
 
-import org.apache.servicecomb.swagger.extend.ConcreteInterfaceRegister;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
-public class SpringDataConcreteInterfaceRegister implements ConcreteInterfaceRegister {
-  @Override
-  public void register(Set<Type> types) {
-    types.add(Page.class);
-    types.add(Pageable.class);
-  }
+public interface ConcreteTypeRegister {
+  void register(Set<Type> types);
 }
