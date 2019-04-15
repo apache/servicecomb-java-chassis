@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.servicecomb.swagger.generator.springdata.SpringDataConcreteInterfaceRegister
+org.apache.servicecomb.swagger.generator.springdata.SpringDataConcreteTypeRegister
