@@ -205,7 +205,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
     // 4.check
     //   httpParameterType should not be null
-    long bodyCount = parameterGenerators.stream().filter(p -> p.getHttpParameterType().equals(HttpParameterType.body))
+    long bodyCount = parameterGenerators.stream().filter(p -> p.getHttpParameterType().equals(HttpParameterType.BODY))
         .count();
     if (bodyCount > 1) {
       throw new IllegalStateException(String.format("defined %d body parameter.", bodyCount));
@@ -332,17 +332,17 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
   protected Parameter createParameter(HttpParameterType httpParameterType) {
     switch (httpParameterType) {
-      case path:
+      case PATH:
         return new PathParameter();
-      case query:
+      case QUERY:
         return new QueryParameter();
-      case header:
+      case HEADER:
         return new HeaderParameter();
-      case form:
+      case FORM:
         return new FormParameter();
-      case cookie:
+      case COOKIE:
         return new CookieParameter();
-      case body:
+      case BODY:
         return new BodyParameter();
       default:
         throw new IllegalStateException("not support httpParameterType " + httpParameterType);

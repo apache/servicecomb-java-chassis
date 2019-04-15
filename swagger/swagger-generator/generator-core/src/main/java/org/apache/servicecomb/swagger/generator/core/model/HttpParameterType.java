@@ -21,18 +21,18 @@ import java.util.Locale;
 import org.apache.commons.lang3.StringUtils;
 
 public enum HttpParameterType {
-  path,
-  query,
-  header,
-  cookie,
-  form,
-  body;
+  PATH,
+  QUERY,
+  HEADER,
+  COOKIE,
+  FORM,
+  BODY;
 
   public static HttpParameterType parse(String value) {
     if (StringUtils.isEmpty(value)) {
       return null;
     }
 
-    return HttpParameterType.valueOf(value.toLowerCase(Locale.US));
+    return HttpParameterType.valueOf(value.toUpperCase(Locale.US));
   }
 }

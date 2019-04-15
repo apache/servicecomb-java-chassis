@@ -42,7 +42,7 @@ public class RequestParamAnnotationProcessor extends
 
   @Override
   public HttpParameterType getHttpParameterType(RequestParam parameterAnnotation) {
-    return HttpParameterType.query;
+    return HttpParameterType.QUERY;
   }
 
   @Override

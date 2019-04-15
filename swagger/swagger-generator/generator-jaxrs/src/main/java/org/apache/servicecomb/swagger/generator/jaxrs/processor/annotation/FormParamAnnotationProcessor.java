@@ -21,8 +21,8 @@ import java.lang.reflect.Type;
 
 import javax.ws.rs.FormParam;
 
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
+import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
 
 import io.swagger.models.parameters.FormParameter;
 
@@ -39,6 +39,6 @@ public class FormParamAnnotationProcessor extends AbstractSerializableParameterP
 
   @Override
   public HttpParameterType getHttpParameterType(FormParam parameterAnnotation) {
-    return HttpParameterType.form;
+    return HttpParameterType.FORM;
   }
 }
