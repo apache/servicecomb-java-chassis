@@ -68,7 +68,7 @@ public class ModelResolverExt extends ModelResolver {
 
     SPIServiceUtils.getAllService(PropertyCreator.class)
         .forEach(this::addPropertyCreator);
-    SPIServiceUtils.getAllService(ConcreteInterfaceRegister.class)
+    SPIServiceUtils.getAllService(ConcreteTypeRegister.class)
         .forEach(r -> r.register(concreteInterfaces));
   }
 
