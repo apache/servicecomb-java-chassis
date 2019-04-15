@@ -44,7 +44,7 @@ public class PartArrayProcessor implements ParameterProcessor<FormParameter, Ann
 
   @Override
   public HttpParameterType getHttpParameterType(Annotation parameterAnnotation) {
-    return HttpParameterType.form;
+    return HttpParameterType.FORM;
   }
 
   @Override

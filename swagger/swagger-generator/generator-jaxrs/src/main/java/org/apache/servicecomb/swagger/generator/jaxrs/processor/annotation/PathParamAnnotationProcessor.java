@@ -21,8 +21,8 @@ import java.lang.reflect.Type;
 
 import javax.ws.rs.PathParam;
 
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
+import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
 
 import io.swagger.models.parameters.PathParameter;
 
@@ -39,6 +39,6 @@ public class PathParamAnnotationProcessor extends AbstractSerializableParameterP
 
   @Override
   public HttpParameterType getHttpParameterType(PathParam parameterAnnotation) {
-    return HttpParameterType.path;
+    return HttpParameterType.PATH;
   }
 }
