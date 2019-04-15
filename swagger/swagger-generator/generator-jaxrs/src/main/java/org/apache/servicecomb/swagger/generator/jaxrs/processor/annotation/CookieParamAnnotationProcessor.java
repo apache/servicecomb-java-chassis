@@ -21,8 +21,8 @@ import java.lang.reflect.Type;
 
 import javax.ws.rs.CookieParam;
 
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
+import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
 
 import io.swagger.models.parameters.CookieParameter;
 
@@ -40,6 +40,6 @@ public class CookieParamAnnotationProcessor extends
 
   @Override
   public HttpParameterType getHttpParameterType(CookieParam parameterAnnotation) {
-    return HttpParameterType.cookie;
+    return HttpParameterType.COOKIE;
   }
 }

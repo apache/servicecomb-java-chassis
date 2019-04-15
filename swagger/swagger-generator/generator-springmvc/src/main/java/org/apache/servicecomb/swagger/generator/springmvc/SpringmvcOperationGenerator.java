@@ -42,8 +42,8 @@ public class SpringmvcOperationGenerator extends RestOperationGenerator {
     parameterGenerators.stream()
         .filter(pg -> pg.getHttpParameterType() == null)
         .forEach(pg -> {
-          pg.setHttpParameterType(HttpParameterType.query);
-          pg.setGeneratedParameter(createParameter(HttpParameterType.query));
+          pg.setHttpParameterType(HttpParameterType.QUERY);
+          pg.setGeneratedParameter(createParameter(HttpParameterType.QUERY));
           SwaggerUtils.setParameterType(swagger,
               pg.getGenericType(),
               (AbstractSerializableParameter<?>) pg.getGeneratedParameter());

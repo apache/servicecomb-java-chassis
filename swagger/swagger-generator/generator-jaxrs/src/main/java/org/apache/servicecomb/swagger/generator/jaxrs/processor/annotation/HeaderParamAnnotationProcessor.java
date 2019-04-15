@@ -21,8 +21,8 @@ import java.lang.reflect.Type;
 
 import javax.ws.rs.HeaderParam;
 
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
+import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
 
 import io.swagger.models.parameters.HeaderParameter;
 
@@ -40,6 +40,6 @@ public class HeaderParamAnnotationProcessor extends
 
   @Override
   public HttpParameterType getHttpParameterType(HeaderParam parameterAnnotation) {
-    return HttpParameterType.header;
+    return HttpParameterType.HEADER;
   }
 }

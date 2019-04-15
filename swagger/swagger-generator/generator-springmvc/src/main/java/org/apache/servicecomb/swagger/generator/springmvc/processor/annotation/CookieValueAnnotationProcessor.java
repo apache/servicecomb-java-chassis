@@ -42,7 +42,7 @@ public class CookieValueAnnotationProcessor extends
 
   @Override
   public HttpParameterType getHttpParameterType(CookieValue parameterAnnotation) {
-    return HttpParameterType.cookie;
+    return HttpParameterType.COOKIE;
   }
 
   @Override

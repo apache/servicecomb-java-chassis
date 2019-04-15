@@ -42,7 +42,7 @@ public class RequestHeaderAnnotationProcessor extends
 
   @Override
   public HttpParameterType getHttpParameterType(RequestHeader parameterAnnotation) {
-    return HttpParameterType.header;
+    return HttpParameterType.HEADER;
   }
 
   @Override
