@@ -40,7 +40,7 @@ public class RequestBodyAnnotationProcessor implements ParameterProcessor<BodyPa
 
   @Override
   public HttpParameterType getHttpParameterType(RequestBody parameterAnnotation) {
-    return HttpParameterType.body;
+    return HttpParameterType.BODY;
   }
 
   @Override

@@ -42,7 +42,7 @@ public class PartProcessor implements ParameterProcessor<FormParameter, Annotati
 
   @Override
   public HttpParameterType getHttpParameterType(Annotation parameterAnnotation) {
-    return HttpParameterType.form;
+    return HttpParameterType.FORM;
   }
 
   @Override
