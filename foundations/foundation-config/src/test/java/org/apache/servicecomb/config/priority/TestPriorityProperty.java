@@ -16,9 +16,15 @@
  */
 package org.apache.servicecomb.config.priority;
 
+import java.util.Collections;
+
+import org.apache.commons.configuration.MapConfiguration;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.netflix.config.ConcurrentCompositeConfiguration;
+import com.netflix.config.DynamicPropertyFactory;
 
 public class TestPriorityProperty extends TestPriorityPropertyBase {
   String high = "ms.schema.op";
@@ -207,5 +213,18 @@ public class TestPriorityProperty extends TestPriorityPropertyBase {
     Assert.assertEquals(-2, config.getValue(), 0);
 
     priorityPropertyManager.unregisterPriorityProperty(config);
+  }
+
+  @Test
+  public void globalRefresh() {
+    PriorityProperty<String> property = priorityPropertyManager.createPriorityProperty(String.class, null, null, keys);
+
+    ConcurrentCompositeConfiguration config = (ConcurrentCompositeConfiguration) DynamicPropertyFactory
+        .getBackingConfigurationSource();
+    config.addConfiguration(new MapConfiguration(Collections.singletonMap(high, "high-value")));
+
+    Assert.assertEquals("high-value", property.getValue());
+    
+    priorityPropertyManager.unregisterPriorityProperty(property);
   }
 }

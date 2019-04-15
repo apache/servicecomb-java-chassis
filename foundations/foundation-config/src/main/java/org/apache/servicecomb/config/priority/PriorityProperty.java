@@ -57,7 +57,7 @@ public class PriorityProperty<T> {
   };
 
   @SuppressWarnings("unchecked")
-  public PriorityProperty(Type type, T invalidValue, T defaultValue, String... priorityKeys) {
+  PriorityProperty(Type type, T invalidValue, T defaultValue, String... priorityKeys) {
     internalValueReader = collectReader(type);
 
     this.priorityKeys = priorityKeys;

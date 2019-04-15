@@ -66,8 +66,14 @@ public class PriorityPropertyManager {
       configObjectMap.values().stream().forEach(this::updateCache);
     }
 
-    keyCache.getOrDefault(event.getPropertyName(), Collections.emptyList()).stream()
-        .forEach(p -> p.updateFinalValue(false));
+    if (event.getPropertyName() != null) {
+      keyCache.getOrDefault(event.getPropertyName(), Collections.emptyList()).stream()
+          .forEach(p -> p.updateFinalValue(false));
+      return;
+    }
+
+    // event like add configuration source, need to make a global refresh
+    keyCache.values().stream().flatMap(Collection::stream).forEach(p -> p.updateFinalValue(false));
   }
 
   private void updateCache(Collection<PriorityProperty<?>> properties) {
@@ -122,9 +128,14 @@ public class PriorityPropertyManager {
 
   public <T> T createConfigObject(Class<T> cls, Map<String, Object> parameters) {
     ConfigObjectFactory factory = new ConfigObjectFactory();
-    T configObject = factory.create(cls, parameters);
+    T configObject = factory.create(this, cls, parameters);
     registerConfigObject(configObject, factory.getPriorityProperties());
     return configObject;
+  }
+
+  public <T> PriorityProperty<T> newPriorityProperty(Type cls, T invalidValue, T defaultValue,
+      String... priorityKeys) {
+    return new PriorityProperty<>(cls, invalidValue, defaultValue, priorityKeys);
   }
 
   public <T> PriorityProperty<T> createPriorityProperty(Type cls, T invalidValue, T defaultValue,
