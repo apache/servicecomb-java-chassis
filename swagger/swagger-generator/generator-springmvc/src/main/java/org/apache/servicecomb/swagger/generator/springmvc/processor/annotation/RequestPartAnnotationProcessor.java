@@ -50,7 +50,7 @@ public class RequestPartAnnotationProcessor implements
 
   @Override
   public HttpParameterType getHttpParameterType(RequestPart parameterAnnotation) {
-    return HttpParameterType.form;
+    return HttpParameterType.FORM;
   }
 
   @Override

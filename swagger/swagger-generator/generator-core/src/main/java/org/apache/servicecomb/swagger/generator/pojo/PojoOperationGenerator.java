@@ -69,7 +69,7 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
 
     if (bodyFields.size() == 1 && SwaggerUtils.isBean(bodyFields.get(0).getGenericType())) {
       ParameterGenerator parameterGenerator = bodyFields.get(0);
-      parameterGenerator.setHttpParameterType(HttpParameterType.body);
+      parameterGenerator.setHttpParameterType(HttpParameterType.BODY);
       return;
     }
 
@@ -111,7 +111,7 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
         bodyParameter.getName(),
         Collections.emptyList(),
         null,
-        HttpParameterType.body,
+        HttpParameterType.BODY,
         bodyParameter));
     parameterGenerators.stream().filter(p -> p.getHttpParameterType() != null)
         .forEach(p -> newParameterGenerators.add(p));

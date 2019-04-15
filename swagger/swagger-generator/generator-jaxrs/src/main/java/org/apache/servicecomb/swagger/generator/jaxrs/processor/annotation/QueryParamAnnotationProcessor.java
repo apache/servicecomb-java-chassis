@@ -21,8 +21,8 @@ import java.lang.reflect.Type;
 
 import javax.ws.rs.QueryParam;
 
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
+import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
 
 import io.swagger.models.parameters.QueryParameter;
 
@@ -39,6 +39,6 @@ public class QueryParamAnnotationProcessor extends AbstractSerializableParameter
 
   @Override
   public HttpParameterType getHttpParameterType(QueryParam parameterAnnotation) {
-    return HttpParameterType.query;
+    return HttpParameterType.QUERY;
   }
 }
