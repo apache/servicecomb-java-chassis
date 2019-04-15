@@ -44,7 +44,7 @@ public class JaxrsOperationGenerator extends RestOperationGenerator {
 
     parameterGenerators.stream()
         .filter(pg -> pg.getHttpParameterType() == null)
-        .forEach(pg -> pg.setHttpParameterType(HttpParameterType.body));
+        .forEach(pg -> pg.setHttpParameterType(HttpParameterType.BODY));
   }
 
   @Override

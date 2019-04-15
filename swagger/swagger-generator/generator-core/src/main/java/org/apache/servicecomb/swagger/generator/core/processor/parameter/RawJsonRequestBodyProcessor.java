@@ -47,7 +47,7 @@ public class RawJsonRequestBodyProcessor implements ParameterProcessor<BodyParam
 
   @Override
   public HttpParameterType getHttpParameterType(RawJsonRequestBody parameterAnnotation) {
-    return HttpParameterType.body;
+    return HttpParameterType.BODY;
   }
 
   @Override

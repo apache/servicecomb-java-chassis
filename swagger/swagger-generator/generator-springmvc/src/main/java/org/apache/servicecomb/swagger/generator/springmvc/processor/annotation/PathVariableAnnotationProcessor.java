@@ -42,7 +42,7 @@ public class PathVariableAnnotationProcessor extends
 
   @Override
   public HttpParameterType getHttpParameterType(PathVariable parameterAnnotation) {
-    return HttpParameterType.path;
+    return HttpParameterType.PATH;
   }
 
   @Override

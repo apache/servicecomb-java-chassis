@@ -42,7 +42,7 @@ public class RequestAttributeAnnotationProcessor extends
 
   @Override
   public HttpParameterType getHttpParameterType(RequestAttribute parameterAnnotation) {
-    return HttpParameterType.form;
+    return HttpParameterType.FORM;
   }
 
   @Override
