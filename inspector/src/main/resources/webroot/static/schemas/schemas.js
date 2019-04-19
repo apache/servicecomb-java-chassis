@@ -19,7 +19,9 @@ function initSchemas() {
   var eleFormat = document.getElementById("schema-format");
   eleFormat.onchange = function () {
     localStorage.setItem("schemaFormatIdx", eleFormat.selectedIndex);
-    mainTree.clickActiveTreeNode();
+    if (mainTree.config.activeNodeId != null && mainTree.config.activeNodeId.startsWith("schemas://")) {
+      mainTree.clickActiveTreeNode();
+    }
   };
   var formatIdx = localStorage.getItem("schemaFormatIdx");
   if (formatIdx != null) {
