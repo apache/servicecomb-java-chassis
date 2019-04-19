@@ -219,12 +219,14 @@ public class TestPriorityProperty extends TestPriorityPropertyBase {
   public void globalRefresh() {
     PriorityProperty<String> property = priorityPropertyManager.createPriorityProperty(String.class, null, null, keys);
 
+    Assert.assertNull(property.getValue());
+
     ConcurrentCompositeConfiguration config = (ConcurrentCompositeConfiguration) DynamicPropertyFactory
         .getBackingConfigurationSource();
     config.addConfiguration(new MapConfiguration(Collections.singletonMap(high, "high-value")));
 
     Assert.assertEquals("high-value", property.getValue());
-    
+
     priorityPropertyManager.unregisterPriorityProperty(property);
   }
 }
