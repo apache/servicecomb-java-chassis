@@ -16,6 +16,9 @@
  */
 package org.apache.servicecomb.inspector.internal;
 
+import static org.apache.servicecomb.core.Const.RESTFUL;
+import static org.apache.servicecomb.serviceregistry.api.Const.URL_PREFIX;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -32,9 +35,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.priority.PriorityProperty;
 import org.apache.servicecomb.config.priority.PriorityPropertyManager;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
@@ -46,6 +53,7 @@ import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.apache.servicecomb.transport.rest.servlet.ServletRestTransport;
 import org.hamcrest.Matchers;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -54,34 +62,43 @@ import org.junit.Test;
 
 import com.netflix.config.DynamicProperty;
 
+import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestInspectorImpl {
   static Map<String, String> schemas = new LinkedHashMap<>();
 
-  static PriorityPropertyManager priorityPropertyManager;
-
-  static InspectorConfig inspectorConfig;
-
   static InspectorImpl inspector;
 
   @BeforeClass
   public static void setup() throws IOException {
     ArchaiusUtils.resetConfig();
-    priorityPropertyManager = new PriorityPropertyManager();
-    inspectorConfig = priorityPropertyManager.createConfigObject(InspectorConfig.class);
-    inspector = new InspectorImpl(inspectorConfig, schemas);
-
     schemas.put("schema1", IOUtils
         .toString(TestInspectorImpl.class.getClassLoader().getResource("schema1.yaml"), StandardCharsets.UTF_8));
     schemas.put("schema2", IOUtils
         .toString(TestInspectorImpl.class.getClassLoader().getResource("schema2.yaml"), StandardCharsets.UTF_8));
+
+    inspector = initInspector(null);
+  }
+
+  private static InspectorImpl initInspector(String urlPrefix) {
+    SCBEngine scbEngine = new SCBEngine();
+    scbEngine.setTransportManager(new TransportManager());
+
+    if (StringUtils.isNotEmpty(urlPrefix)) {
+      Map<String, Transport> transportMap = Deencapsulation.getField(scbEngine.getTransportManager(), "transportMap");
+      transportMap.put(RESTFUL, new ServletRestTransport());
+      System.setProperty(URL_PREFIX, urlPrefix);
+    }
+
+    InspectorConfig inspectorConfig = scbEngine.getPriorityPropertyManager().createConfigObject(InspectorConfig.class);
+    return new InspectorImpl(scbEngine, inspectorConfig, new LinkedHashMap<>(schemas));
   }
 
   @AfterClass
   public static void teardown() {
-    priorityPropertyManager.unregisterConfigObject(inspectorConfig);
+    inspector.getScbEngine().getPriorityPropertyManager().unregisterConfigObject(inspector.getInspectorConfig());
     ArchaiusUtils.resetConfig();
   }
 
@@ -342,5 +359,16 @@ public class TestInspectorImpl {
 
     priorityPropertyManager.close();
     inspector.setPriorityPropertyManager(null);
+  }
+
+  @Test
+  public void urlPrefix() {
+    InspectorImpl inspector = initInspector("/webroot/rest");
+
+    Map<String, String> schemas = Deencapsulation.getField(inspector, "schemas");
+    Assert.assertTrue(schemas.get("schema1").indexOf("/webroot/rest/metrics") > 0);
+
+    inspector.getScbEngine().getPriorityPropertyManager().unregisterConfigObject(inspector.getInspectorConfig());
+    System.clearProperty(URL_PREFIX);
   }
 }
