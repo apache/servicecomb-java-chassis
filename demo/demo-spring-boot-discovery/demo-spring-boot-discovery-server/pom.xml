@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.servicecomb.demo</groupId>
     <artifactId>demo-spring-boot-discovery</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.3.0-SNAPSHOT</version>
   </parent>
   <artifactId>demo-spring-boot-discovery-server</artifactId>
   <name>Java Chassis::Demo::Spring Boot Discovery::Server</name>
@@ -54,7 +54,7 @@
             <mixin>
               <groupId>org.apache.servicecomb.demo</groupId>
               <artifactId>docker-build-config</artifactId>
-              <version>1.2.0-SNAPSHOT</version>
+              <version>1.3.0-SNAPSHOT</version>
             </mixin>
           </mixins>
         </configuration>

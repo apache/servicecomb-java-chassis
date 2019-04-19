@@ -25,7 +25,7 @@
   <parent>
     <groupId>org.apache.servicecomb.demo</groupId>
     <artifactId>demo-spring-boot</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.3.0-SNAPSHOT</version>
   </parent>
   <properties>
     <demo.main>org.apache.servicecomb.springboot.jaxrs.server.JaxrsServer</demo.main>
@@ -58,7 +58,7 @@
             <mixin>
               <groupId>org.apache.servicecomb.demo</groupId>
               <artifactId>docker-build-config</artifactId>
-              <version>1.2.0-SNAPSHOT</version>
+              <version>1.3.0-SNAPSHOT</version>
             </mixin>
           </mixins>
         </configuration>

@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.apache.servicecomb.samples</groupId>
     <artifactId>samples</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.3.0-SNAPSHOT</version>
   </parent>
   <artifactId>auth-sample</artifactId>
   <name>Java Chassis::Samples::Auth</name>

@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.servicecomb.demo</groupId>
     <artifactId>demo-crossapp</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
+    <version>1.3.0-SNAPSHOT</version>
   </parent>
   <artifactId>crossapp-client</artifactId>
   <name>Java Chassis::Demo::CrossApp::Client</name>
@@ -60,7 +60,7 @@
             <mixin>
               <groupId>org.apache.servicecomb.demo</groupId>
               <artifactId>docker-run-config</artifactId>
-              <version>1.2.0-SNAPSHOT</version>
+              <version>1.3.0-SNAPSHOT</version>
             </mixin>
           </mixins>
         </configuration>

@@ -26,7 +26,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <java-chassis.version>1.2.0-SNAPSHOT</java-chassis.version>
+    <java-chassis.version>1.3.0-SNAPSHOT</java-chassis.version>
   </properties>
 
   <dependencyManagement>
