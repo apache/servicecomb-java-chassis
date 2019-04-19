@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.inspector.internal;
 
+import static org.apache.servicecomb.serviceregistry.api.Const.URL_PREFIX;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -27,6 +29,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -42,11 +45,15 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.resource.ClassPathStaticResourceHandler;
 import org.apache.servicecomb.common.rest.resource.StaticResourceHandler;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.priority.PriorityProperty;
 import org.apache.servicecomb.config.priority.PriorityPropertyManager;
+import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.common.part.InputStreamPart;
 import org.apache.servicecomb.inspector.internal.model.DynamicPropertyView;
 import org.apache.servicecomb.inspector.internal.model.PriorityPropertyView;
@@ -73,6 +80,7 @@ import io.github.swagger2markup.Swagger2MarkupConverter;
 import io.github.swagger2markup.Swagger2MarkupConverter.Builder;
 import io.github.swagger2markup.builder.Swagger2MarkupConfigBuilder;
 import io.swagger.annotations.ApiResponse;
+import io.swagger.models.Swagger;
 import io.swagger.models.parameters.Parameter;
 
 @Path("/inspector")
@@ -80,6 +88,8 @@ public class InspectorImpl {
   private static final Logger LOGGER = LoggerFactory.getLogger(InspectorImpl.class);
 
   private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+  private final SCBEngine scbEngine;
 
   private InspectorConfig inspectorConfig;
 
@@ -91,9 +101,50 @@ public class InspectorImpl {
 
   private PriorityPropertyManager priorityPropertyManager;
 
-  public InspectorImpl(InspectorConfig inspectorConfig, Map<String, String> schemas) {
+  public InspectorImpl(SCBEngine scbEngine, InspectorConfig inspectorConfig, Map<String, String> schemas) {
+    this.scbEngine = scbEngine;
     this.inspectorConfig = inspectorConfig;
-    this.schemas = schemas;
+    this.schemas = new LinkedHashMap<>(schemas);
+
+    correctBasePathForOnlineTest();
+  }
+
+  public SCBEngine getScbEngine() {
+    return scbEngine;
+  }
+
+  public InspectorConfig getInspectorConfig() {
+    return inspectorConfig;
+  }
+
+  // when work in servlet mode, should concat url prefix
+  // otherwise swagger ide can not run online test
+  //
+  // ServiceComb consumer has not this problem
+  // ServiceComb consumer not care for producer deploy with or without servlet
+  private void correctBasePathForOnlineTest() {
+    Transport restTransport = scbEngine.getTransportManager().findTransport(Const.RESTFUL);
+    if (restTransport == null ||
+        !restTransport.getClass().getName()
+            .equals("org.apache.servicecomb.transport.rest.servlet.ServletRestTransport")) {
+      return;
+    }
+
+    String urlPrefix = System.getProperty(URL_PREFIX);
+    if (StringUtils.isEmpty(urlPrefix)) {
+      return;
+    }
+
+    for (Entry<String, String> entry : schemas.entrySet()) {
+      Swagger swagger = SwaggerUtils.parseSwagger(entry.getValue());
+      if (swagger.getBasePath().startsWith(urlPrefix)) {
+        continue;
+      }
+
+      swagger.setBasePath(urlPrefix + swagger.getBasePath());
+
+      entry.setValue(SwaggerUtils.swaggerToString(swagger));
+    }
   }
 
   public void setPriorityPropertyManager(PriorityPropertyManager priorityPropertyManager) {

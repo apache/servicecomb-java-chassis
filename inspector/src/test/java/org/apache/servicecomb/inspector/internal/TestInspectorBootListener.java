@@ -24,6 +24,7 @@ import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.schema.ProducerSchemaFactory;
+import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
@@ -105,6 +106,7 @@ public class TestInspectorBootListener {
     ArchaiusUtils.setProperty("servicecomb.inspector.enabled", true);
     BootEvent event = new BootEvent();
     event.setScbEngine(new SCBEngine());
+    event.getScbEngine().setTransportManager(new TransportManager());
     event.setEventType(EventType.AFTER_TRANSPORT);
 
     try (LogCollector logCollector = new LogCollector()) {
