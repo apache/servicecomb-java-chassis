@@ -72,6 +72,7 @@ body {
 
 .table.left-head th {
   text-align: left;
+  white-space: nowrap;
 }
 
 .table tr:nth-of-type(even) {
