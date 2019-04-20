@@ -31,12 +31,10 @@ produces:
 paths:
   /:
     put:
-      operationId: "asyncResponseEntity"
+      operationId: "testResponseEntityOptional"
       parameters: []
       responses:
         200:
           description: "response of 200"
           schema:
-            type: "array"
-            items:
-              type: "string"
+            type: "string"

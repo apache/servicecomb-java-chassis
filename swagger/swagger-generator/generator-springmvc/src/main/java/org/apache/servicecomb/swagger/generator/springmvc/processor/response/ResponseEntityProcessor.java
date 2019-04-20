@@ -32,7 +32,7 @@ public class ResponseEntityProcessor extends DefaultResponseTypeProcessor {
   }
 
   @Override
-  public Model process(OperationGenerator operationGenerator, Type genericResponseType) {
-    return doProcess(operationGenerator, ((ParameterizedType) genericResponseType).getActualTypeArguments()[0]);
+  protected Model doProcess(OperationGenerator operationGenerator, Type genericResponseType) {
+    return super.doProcess(operationGenerator, ((ParameterizedType) genericResponseType).getActualTypeArguments()[0]);
   }
 }
