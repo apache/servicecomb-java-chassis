@@ -18,3 +18,4 @@
 org.apache.servicecomb.swagger.invocation.response.producer.CseResponseProducerResponseMapperFactory
 org.apache.servicecomb.swagger.invocation.response.producer.CompletableFutureProducerResponseMapperFactory
 org.apache.servicecomb.swagger.invocation.response.producer.DefaultProducerResponseMapperFactory
+org.apache.servicecomb.swagger.invocation.response.producer.OptionalProducerResponseMapperFactory

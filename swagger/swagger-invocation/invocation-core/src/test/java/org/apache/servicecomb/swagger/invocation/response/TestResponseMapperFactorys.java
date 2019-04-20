@@ -28,6 +28,7 @@ import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerRespo
 import org.apache.servicecomb.swagger.invocation.response.consumer.CseResponseConsumerResponseMapperFactory;
 import org.apache.servicecomb.swagger.invocation.response.consumer.DefaultConsumerResponseMapper;
 import org.apache.servicecomb.swagger.invocation.response.consumer.DefaultConsumerResponseMapperFactory;
+import org.apache.servicecomb.swagger.invocation.response.consumer.OptionalConsumerResponseMapperFactory;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
@@ -53,14 +54,19 @@ public class TestResponseMapperFactorys {
   @Test
   public void construct() {
     Assert.assertThat(factorys,
-        Matchers.contains(Matchers.instanceOf(CseResponseConsumerResponseMapperFactory.class),
+        Matchers.containsInAnyOrder(Matchers.instanceOf(CseResponseConsumerResponseMapperFactory.class),
             Matchers.instanceOf(CompletableFutureConsumerResponseMapperFactory.class),
-            Matchers.instanceOf(DefaultConsumerResponseMapperFactory.class)));
+            Matchers.instanceOf(DefaultConsumerResponseMapperFactory.class),
+            Matchers.instanceOf(OptionalConsumerResponseMapperFactory.class)));
   }
 
   @Test
   public void setConverterMgr() {
-    Assert.assertSame(converterMgr, Deencapsulation.getField(factorys.get(2), "converterMgr"));
+    DefaultConsumerResponseMapperFactory mapper = (DefaultConsumerResponseMapperFactory) factorys.stream()
+        .filter(m -> m instanceof DefaultConsumerResponseMapperFactory)
+        .findFirst()
+        .get();
+    Assert.assertSame(converterMgr, Deencapsulation.getField(mapper, "converterMgr"));
   }
 
   @Test
