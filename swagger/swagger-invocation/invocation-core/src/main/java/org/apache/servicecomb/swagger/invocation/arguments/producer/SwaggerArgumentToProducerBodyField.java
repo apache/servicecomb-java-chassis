@@ -41,6 +41,9 @@ public class SwaggerArgumentToProducerBodyField implements ArgumentMapper {
   @Override
   public void mapArgument(SwaggerInvocation invocation, Object[] producerArguments) {
     Object body = invocation.getSwaggerArgument(0);
+    if (body == null) {
+      return;
+    }
 
     try {
       for (Entry<Integer, FieldInfo> entry : fieldMap.entrySet()) {
