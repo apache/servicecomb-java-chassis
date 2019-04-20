@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
@@ -161,6 +162,14 @@ public class Schema {
   }
 
   public CompletableFuture<String> testCompletableFuture() {
+    return null;
+  }
+
+  public Optional<String> testOptional() {
+    return null;
+  }
+
+  public CompletableFuture<Optional<String>> testCompletableFutureOptional() {
     return null;
   }
 
