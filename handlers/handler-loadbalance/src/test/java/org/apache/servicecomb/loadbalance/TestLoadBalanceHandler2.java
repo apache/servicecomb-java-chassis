@@ -20,10 +20,13 @@ package org.apache.servicecomb.loadbalance;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
@@ -35,7 +38,9 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.core.transport.TransportManager;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.loadbalance.event.IsolationServerEvent;
 import org.apache.servicecomb.loadbalance.filter.IsolationDiscoveryFilter;
 import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
 import org.apache.servicecomb.loadbalance.filter.ZoneAwareDiscoveryFilter;
@@ -54,6 +59,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import com.google.common.eventbus.Subscribe;
 
 /**
  *
@@ -213,6 +220,100 @@ public class TestLoadBalanceHandler2 {
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assert.assertEquals("rest://localhost:9091", server.getEndpoint().getEndpoint());
+  }
+
+  @Test
+  public void testIsolationEventWithEndpoint() throws Exception {
+    ReferenceConfig referenceConfig = Mockito.mock(ReferenceConfig.class);
+    OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
+    when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
+    MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
+    when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
+    when(schemaMeta.getMicroserviceName()).thenReturn("testMicroserviceName");
+    when(microserviceMeta.getAppId()).thenReturn("testApp");
+    when(referenceConfig.getVersionRule()).thenReturn("0.0.0+");
+    when(referenceConfig.getTransport()).thenReturn("rest");
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, new Object[0]);
+
+    InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
+    ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
+    TransportManager transportManager = Mockito.mock(TransportManager.class);
+    Transport transport = Mockito.mock(Transport.class);
+    ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
+
+    // set up data
+    MicroserviceInstance myself = new MicroserviceInstance();
+    DataCenterInfo info = new DataCenterInfo();
+    info.setName("test");
+    info.setRegion("test");
+    info.setAvailableZone("test");
+    myself.setDataCenterInfo(info);
+
+    MicroserviceInstance instance = new MicroserviceInstance();
+    info = new DataCenterInfo();
+    info.setName("test");
+    info.setRegion("test");
+    info.setAvailableZone("test");
+    List<String> allMatchEndpoint = new ArrayList<>();
+    allMatchEndpoint.add("rest://localhost:9090");
+    instance.setEndpoints(allMatchEndpoint);
+    instance.setDataCenterInfo(info);
+    instance.setInstanceId("instance");
+
+    Map<String, MicroserviceInstance> data = new HashMap<>();
+    DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent").data(data);
+    CseContext.getInstance().setTransportManager(transportManager);
+
+    RegistryUtils.setServiceRegistry(serviceRegistry);
+
+    when(serviceRegistry.getMicroserviceInstance()).thenReturn(myself);
+    when(serviceRegistry.getInstanceCacheManager()).thenReturn(instanceCacheManager);
+    when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
+        .thenReturn(parent);
+    when(transportManager.findTransport("rest")).thenReturn(transport);
+
+    LoadbalanceHandler handler = null;
+    LoadBalancer loadBalancer = null;
+    ServiceCombServer server = null;
+
+    handler = new LoadbalanceHandler();
+    loadBalancer = handler.getOrCreateLoadBalancer(invocation);
+    server = loadBalancer.chooseServer(invocation);
+    Assert.assertNull(server);
+
+    data.put("instance", instance);
+    parent.cacheVersion(parent.cacheVersion() + 1);
+    loadBalancer = handler.getOrCreateLoadBalancer(invocation);
+    server = loadBalancer.chooseServer(invocation);
+    Assert.assertEquals("rest://localhost:9090", server.getEndpoint().getEndpoint());
+
+    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
+    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
+    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
+    ServiceCombLoadBalancerStats.INSTANCE.markSuccess(server);
+    ServiceCombLoadBalancerStats.INSTANCE.markFailure(server);
+
+    //if errorThresholdPercentage greater than 0, it will activate.
+    ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.errorThresholdPercentage", "10");
+    ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.minIsolationTime", "10");
+
+    Holder<Integer> count = new Holder<>(0);
+    EventListener isolationEndpointListener = new EventListener() {
+      @Subscribe
+      public void listener(IsolationServerEvent event) {
+        count.value++;
+        Assert.assertSame("Isolation Endpoint", "rest://localhost:9090", event.getEndpoint().getEndpoint());
+      }
+    };
+    EventManager.getEventBus().register(isolationEndpointListener);
+    Assert.assertEquals(0, count.value.intValue());
+    loadBalancer = handler.getOrCreateLoadBalancer(invocation);
+    server = loadBalancer.chooseServer(invocation);
+    // no server is available
+    Assert.assertNull(server);
+    Assert.assertEquals(1, count.value.intValue());
+    EventManager.unregister(isolationEndpointListener);
   }
 
   @Test
