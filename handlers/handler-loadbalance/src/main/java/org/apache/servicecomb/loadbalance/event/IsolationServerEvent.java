@@ -52,10 +52,10 @@ public class IsolationServerEvent extends AlarmEvent {
 
   public IsolationServerEvent(Invocation invocation, MicroserviceInstance instance,
       ServiceCombServerStats serverStats,
-      IsolationDiscoveryFilter.Settings settings, Type type) {
+      IsolationDiscoveryFilter.Settings settings, Type type, Endpoint endpoint) {
     super(type);
     this.microserviceName = invocation.getMicroserviceName();
-    this.endpoint = invocation.getEndpoint();
+    this.endpoint = endpoint;
     this.currentTotalRequest = serverStats.getTotalRequests();
     this.currentCountinuousFailureCount = serverStats.getCountinuousFailureCount();
     this.currentErrorPercentage = serverStats.getFailedRate();

@@ -152,7 +152,7 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
         ServiceCombLoadBalancerStats.INSTANCE.markIsolated(server, true);
         eventBus.post(
             new IsolationServerEvent(invocation, instance, serverStats,
-                settings, Type.OPEN));
+                settings, Type.OPEN, server.getEndpoint()));
         LOGGER.warn("Isolate service {}'s instance {}.", invocation.getMicroserviceName(),
             instance.getInstanceId());
       }
@@ -166,7 +166,7 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
       }
       ServiceCombLoadBalancerStats.INSTANCE.markIsolated(server, false);
       eventBus.post(new IsolationServerEvent(invocation, instance, serverStats,
-          settings, Type.CLOSE));
+          settings, Type.CLOSE, server.getEndpoint()));
       LOGGER.warn("Recover service {}'s instance {} from isolation.", invocation.getMicroserviceName(),
           instance.getInstanceId());
     }
@@ -188,9 +188,6 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
     if (settings.errorThresholdPercentage == 0) {
       return true;
     }
-    if (serverStats.getFailedRate() >= settings.errorThresholdPercentage) {
-      return false;
-    }
-    return true;
+    return serverStats.getFailedRate() < settings.errorThresholdPercentage;
   }
 }
