@@ -18,10 +18,17 @@
 package org.apache.servicecomb.it.testcase;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+import java.util.Map;
+
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Media;
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
 import org.junit.Test;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 
 public class TestParamCodecEdge {
   static GateRestTemplate client = GateRestTemplate.createEdgeRestTemplate("paramCodec");
@@ -45,5 +52,16 @@ public class TestParamCodecEdge {
         client.postForObject("/enum/enumSpecialName", Media.MPEG_2, Media.class));
     assertEquals(Media.WMV,
         client.postForObject("/enum/enumSpecialName", Media.WMV, Media.class));
+  }
+
+  @Test
+  public void testInvocationContext() {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add(Const.CSE_CONTEXT, "{\"testKey\":\"testValue\"}");
+    HttpEntity<Object> requestEntity = new HttpEntity<>(headers);
+    Map<?, ?> resultContext = client.exchange("/invocationContext", HttpMethod.GET, requestEntity, Map.class).getBody();
+    assertEquals(resultContext.toString(), 2, resultContext.size());
+    assertEquals("it-edge", resultContext.get("x-cse-src-microservice"));
+    assertNotNull(resultContext.get("X-B3-TraceId"));
   }
 }

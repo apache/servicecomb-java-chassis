@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.it.schema;
 
+import java.util.Map;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -25,6 +27,7 @@ import javax.ws.rs.QueryParam;
 
 import org.apache.servicecomb.foundation.test.scaffolding.model.Media;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 
 @RestSchema(schemaId = "paramCodec")
 @Path("/v1/paramCodec")
@@ -46,5 +49,11 @@ public class ParamCodecSchema {
   @POST
   public Media enumSpecialName(Media media) {
     return media;
+  }
+
+  @Path("invocationContext")
+  @GET
+  public Map<String, String> getInvocationContext() {
+    return ContextUtils.getInvocationContext().getContext();
   }
 }
