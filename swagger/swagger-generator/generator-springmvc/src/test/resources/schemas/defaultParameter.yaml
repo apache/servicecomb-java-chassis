@@ -27,9 +27,9 @@ consumes:
 produces:
 - "application/json"
 paths:
-  /usingRequestMapping:
-    put:
-      operationId: "usingRequestMapping"
+  /usingDeleteMapping:
+    delete:
+      operationId: "usingDeleteMapping"
       parameters:
       - name: "query"
         in: "query"
@@ -51,9 +51,9 @@ paths:
       responses:
         200:
           description: "response of 200"
-  /usingPutMapping:
-    put:
-      operationId: "usingPutMapping"
+  /usingPatchMapping:
+    patch:
+      operationId: "usingPatchMapping"
       parameters:
       - name: "query"
         in: "query"
@@ -75,9 +75,9 @@ paths:
       responses:
         200:
           description: "response of 200"
-  /usingPatchMapping:
-    patch:
-      operationId: "usingPatchMapping"
+  /usingPutMapping:
+    put:
+      operationId: "usingPutMapping"
       parameters:
       - name: "query"
         in: "query"
@@ -87,9 +87,9 @@ paths:
       responses:
         200:
           description: "response of 200"
-  /usingDeleteMapping:
-    delete:
-      operationId: "usingDeleteMapping"
+  /usingRequestMapping:
+    put:
+      operationId: "usingRequestMapping"
       parameters:
       - name: "query"
         in: "query"

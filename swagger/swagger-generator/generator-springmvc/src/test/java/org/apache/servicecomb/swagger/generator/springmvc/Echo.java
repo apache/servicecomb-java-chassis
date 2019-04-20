@@ -18,6 +18,7 @@
 package org.apache.servicecomb.swagger.generator.springmvc;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
@@ -56,6 +57,16 @@ public class Echo {
 
   @RequestMapping
   public CompletableFuture<ResponseEntity<List<String>>> asyncResponseEntity() {
+    return null;
+  }
+
+  @RequestMapping
+  public ResponseEntity<Optional<String>> testResponseEntityOptional() {
+    return null;
+  }
+
+  @RequestMapping
+  public CompletableFuture<ResponseEntity<Optional<String>>> testCompletableFutureResponseEntityOptional() {
     return null;
   }
 }
