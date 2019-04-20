@@ -27,6 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
@@ -134,7 +135,7 @@ public final class ITJUnitUtils {
     runCount.addAndGet(result.getRunCount());
   }
 
-  private static void initClasses(Class<?>[] classes) throws Throwable {
+  public static void initClasses(Class<?>... classes) throws Throwable {
     for (Class<?> cls : classes) {
       for (Field field : FieldUtils.getAllFieldsList(cls)) {
         if (Consumers.class.isAssignableFrom(field.getType())
@@ -173,6 +174,41 @@ public final class ITJUnitUtils {
       ITJUnitUtils.run(classes);
 
       ITJUnitUtils.popTransport();
+    }
+  }
+
+  /**
+   * <pre>
+   * make easier to debug only one test case
+   * normal test case:
+   *   @Test
+   *   public void test() {
+   *     ...
+   *   }
+   *
+   * when need to test one this case:
+   * 1.start SC/it-edge and your test target manually
+   * 2. change the code to
+   *   @Test
+   *   public void test() {
+   *     ITJUnitUtils.initForDebug("it-producer", "rest");
+   *     ...
+   *   }
+   * 3.run the case
+   * 4.after finished the debug, remove code of ITJUnitUtils.initForDebug
+   * </pre>
+   * @param producerName
+   * @param transport
+   */
+  public static void initForDebug(String producerName, String transport) {
+    BeanUtils.init();
+    ITJUnitUtils.addProducer(producerName);
+    ITJUnitUtils.pushTransport(transport);
+    try {
+      Class<?> testClass = Class.forName(Thread.currentThread().getStackTrace()[2].getClassName());
+      ITJUnitUtils.initClasses(testClass);
+    } catch (Throwable e) {
+      throw new IllegalStateException(e);
     }
   }
 }
