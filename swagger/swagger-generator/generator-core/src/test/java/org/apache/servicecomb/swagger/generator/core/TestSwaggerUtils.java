@@ -188,6 +188,16 @@ public class TestSwaggerUtils {
   }
 
   @Test
+  public void testOptional() {
+    testSchemaMethod("testOptional", "testOptional");
+  }
+
+  @Test
+  public void testCompletableFutureOptional() {
+    testSchemaMethod("testCompletableFutureOptional", "testCompletableFutureOptional");
+  }
+
+  @Test
   public void testDate() {
     SwaggerGenerator generator = testSchemaMethod("date", "testDate");
     Class<?> intf = ClassUtilsForTest.getOrCreateInterface(generator);
