@@ -26,6 +26,7 @@ import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.MicroserviceVersionMeta;
@@ -34,6 +35,7 @@ import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
+import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
@@ -52,6 +54,8 @@ import io.vertx.core.impl.VertxImpl;
 import io.vertx.ext.web.RoutingContext;
 import mockit.Deencapsulation;
 import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestEdgeInvocation {
@@ -242,5 +246,24 @@ public class TestEdgeInvocation {
   @Test
   public void testSetRoutingContext() {
     Assert.assertSame(this.routingContext, edgeInvocation.routingContext);
+  }
+
+  @Test
+  public void setContext() throws Exception {
+    String invocationContextStr = "{\"testKey\":\"testValue\"}";
+
+    new MockUp<VertxServerRequestToHttpServletRequest>() {
+      @Mock
+      public String getHeader(String name) {
+        Assert.assertEquals(Const.CSE_CONTEXT, name);
+        return invocationContextStr;
+      }
+    };
+
+    Invocation invocation = new Invocation();
+    Deencapsulation.setField(edgeInvocation, "invocation", invocation);
+    edgeInvocation.setContext();
+
+    Assert.assertTrue("context is " + invocation.getContext(), invocation.getContext().isEmpty());
   }
 }

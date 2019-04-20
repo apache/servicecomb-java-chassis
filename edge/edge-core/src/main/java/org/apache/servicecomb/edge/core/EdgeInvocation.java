@@ -132,4 +132,9 @@ public class EdgeInvocation extends AbstractRestInvocation {
     this.invocation.setResponseExecutor(new ReactiveResponseExecutor());
     this.routingContext.put(RestConst.REST_INVOCATION_CONTEXT, invocation);
   }
+
+  @Override
+  protected void setContext() throws Exception {
+    // do not read InvocationContext from HTTP header, for security reason
+  }
 }
