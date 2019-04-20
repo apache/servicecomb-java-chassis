@@ -36,6 +36,7 @@ import org.apache.servicecomb.it.testcase.TestExceptionConvertEdge;
 import org.apache.servicecomb.it.testcase.TestGenericEdge;
 import org.apache.servicecomb.it.testcase.TestIgnoreMethod;
 import org.apache.servicecomb.it.testcase.TestIgnoreStaticMethod;
+import org.apache.servicecomb.it.testcase.TestOptional;
 import org.apache.servicecomb.it.testcase.TestParamCodec;
 import org.apache.servicecomb.it.testcase.TestParamCodecEdge;
 import org.apache.servicecomb.it.testcase.TestRequestBodySpringMvcSchema;
@@ -128,6 +129,8 @@ public class ConsumerMain {
     ITJUnitUtils.runWithRest(TestRestController.class);
 
     ITJUnitUtils.runWithHighwayAndRest(TestAsyncInvoke.class);
+
+    ITJUnitUtils.runWithHighwayAndRest(TestOptional.class);
   }
 
   interface ITTask {
