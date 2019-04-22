@@ -29,6 +29,13 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.springframework.util.StringUtils;
 
+/**
+ * By default, the EdgeService does not inherit invocation context from outer request.
+ * Users can implement a {@link HttpServerFilter} like this to inherit specific invocation context.
+ * <br/>
+ * <em>Caution: For security reason, it't better not to inherit all of the invocation context
+ * without checking or filtering.</em>
+ */
 public class InheritInvocationContextFilter implements HttpServerFilter {
   @Override
   public int getOrder() {
@@ -49,6 +56,12 @@ public class InheritInvocationContextFilter implements HttpServerFilter {
       @SuppressWarnings("unchecked")
       Map<String, String> invocationContext =
           JsonUtils.readValue(invocationContextHeader.getBytes(StandardCharsets.UTF_8), Map.class);
+      // Here only the specific invocation context "allowInherit" can be inherited,
+      // and other context key-value pairs are ignored.
+      // If you want to inherit invocation context from outer requests,
+      // it's better to implement such a white-list logic to filter the invocation context.
+      // CAUTION: to avoid potential security problem, please do not add all invocation context key-value pairs
+      // into InvocationContext without checking or filtering.
       if (!StringUtils.isEmpty(invocationContext.get("allowInherit"))) {
         invocation.addContext("allowInherit", invocationContext.get("allowInherit"));
       }
