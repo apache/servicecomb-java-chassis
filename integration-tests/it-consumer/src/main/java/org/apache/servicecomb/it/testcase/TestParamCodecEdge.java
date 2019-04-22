@@ -57,11 +57,12 @@ public class TestParamCodecEdge {
   @Test
   public void testInvocationContext() {
     HttpHeaders headers = new HttpHeaders();
-    headers.add(Const.CSE_CONTEXT, "{\"testKey\":\"testValue\"}");
+    headers.add(Const.CSE_CONTEXT, "{\"testKey\":\"testValue\",\"allowInherit\":\"allowPassValue\"}");
     HttpEntity<Object> requestEntity = new HttpEntity<>(headers);
     Map<?, ?> resultContext = client.exchange("/invocationContext", HttpMethod.GET, requestEntity, Map.class).getBody();
-    assertEquals(resultContext.toString(), 2, resultContext.size());
+    assertEquals(resultContext.toString(), 3, resultContext.size());
     assertEquals("it-edge", resultContext.get("x-cse-src-microservice"));
+    assertEquals("allowPassValue", resultContext.get("allowInherit"));
     assertNotNull(resultContext.get("X-B3-TraceId"));
   }
 }
