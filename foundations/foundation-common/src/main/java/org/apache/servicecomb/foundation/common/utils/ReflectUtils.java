@@ -91,4 +91,13 @@ public final class ReflectUtils {
   public static <T> T constructArrayType(Class<?> cls) {
     return (T) Array.newInstance(cls, 0).getClass();
   }
+
+  public static Class<?> getClassByName(ClassLoader classLoader, String clsName) {
+    classLoader = JvmUtils.correctClassLoader(classLoader);
+    try {
+      return classLoader.loadClass(clsName);
+    } catch (ClassNotFoundException e) {
+      return null;
+    }
+  }
 }

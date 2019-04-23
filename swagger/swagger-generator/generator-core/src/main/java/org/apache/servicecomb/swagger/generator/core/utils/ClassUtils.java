@@ -26,7 +26,7 @@ import javax.lang.model.SourceVersion;
 
 import org.apache.servicecomb.common.javassist.ClassConfig;
 import org.apache.servicecomb.common.javassist.JavassistUtils;
-import org.apache.servicecomb.foundation.common.utils.JvmUtils;
+import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.swagger.converter.ConverterMgr;
 import org.apache.servicecomb.swagger.converter.SwaggerToClassGenerator;
 import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
@@ -44,12 +44,7 @@ public final class ClassUtils {
   }
 
   public static Class<?> getClassByName(ClassLoader classLoader, String clsName) {
-    classLoader = JvmUtils.correctClassLoader(classLoader);
-    try {
-      return classLoader.loadClass(clsName);
-    } catch (ClassNotFoundException e) {
-      return null;
-    }
+    return ReflectUtils.getClassByName(classLoader, clsName);
   }
 
   // 将一系列body parameter包装成一个class
