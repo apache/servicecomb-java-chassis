@@ -85,5 +85,13 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>foundation-test-scaffolding</artifactId>
     </dependency>
+
+    <!-- some unit test case depend on log4j1, so set this dependency after test scope area -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
 </project>
