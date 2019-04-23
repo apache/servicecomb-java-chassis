@@ -16,13 +16,11 @@
  */
 package org.apache.servicecomb.core.tracing;
 
-import java.util.Collections;
-import java.util.Iterator;
-
 import org.apache.servicecomb.core.Invocation;
-import org.slf4j.Marker;
+import org.apache.servicecomb.foundation.common.log.AbstractMarker;
+import org.apache.servicecomb.foundation.common.log.NoCacheMarker;
 
-public class ScbMarker implements Marker {
+public class ScbMarker extends AbstractMarker implements NoCacheMarker {
   private static final long serialVersionUID = -1L;
 
   private final Invocation invocation;
@@ -43,47 +41,5 @@ public class ScbMarker implements Marker {
       name = invocation.getTraceId() + "-" + invocation.getInvocationId();
     }
     return name;
-  }
-
-  @Override
-  public void add(Marker reference) {
-
-  }
-
-  @Override
-  public boolean remove(Marker reference) {
-    return false;
-  }
-
-  @Deprecated
-  @Override
-  public boolean hasChildren() {
-    return false;
-  }
-
-  @Override
-  public boolean hasReferences() {
-    return false;
-  }
-
-  @SuppressWarnings("unchecked")
-  @Override
-  public Iterator<Marker> iterator() {
-    return Collections.EMPTY_LIST.iterator();
-  }
-
-  @Override
-  public boolean contains(Marker other) {
-    return false;
-  }
-
-  @Override
-  public boolean contains(String name) {
-    return false;
-  }
-
-  @Override
-  public String toString() {
-    return getName();
   }
 }
