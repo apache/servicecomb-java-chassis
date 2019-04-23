@@ -42,6 +42,7 @@ import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.foundation.common.log.LogMarkerLeakFixUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
@@ -228,6 +229,9 @@ public class SCBEngine {
 
   private void doInit() throws Exception {
     status = SCBStatus.STARTING;
+
+    // fix log4j2 leak marker problem
+    LogMarkerLeakFixUtils.fix();
 
     eventBus.register(this);
 
