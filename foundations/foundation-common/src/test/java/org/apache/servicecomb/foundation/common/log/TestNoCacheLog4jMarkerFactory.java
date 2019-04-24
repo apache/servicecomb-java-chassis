@@ -26,15 +26,6 @@ import org.junit.Test;
 import org.slf4j.Marker;
 
 public class TestNoCacheLog4jMarkerFactory {
-  static class TestNoCacheMarker extends AbstractMarker implements NoCacheMarker {
-    private static final long serialVersionUID = -1L;
-
-    @Override
-    public String getName() {
-      return null;
-    }
-  }
-
   static class TestMarker extends AbstractMarker {
     private static final long serialVersionUID = -1L;
 
@@ -46,6 +37,10 @@ public class TestNoCacheLog4jMarkerFactory {
     }
   }
 
+  static class TestNoCacheMarker extends TestMarker implements NoCacheMarker {
+    private static final long serialVersionUID = -1L;
+  }
+
   @SuppressWarnings("unchecked")
   @Test
   public void noCache() throws IllegalAccessException {
@@ -55,8 +50,10 @@ public class TestNoCacheLog4jMarkerFactory {
         .readField(field, markerFactory);
 
     TestNoCacheMarker marker = new TestNoCacheMarker();
+    marker.name = "name";
     Marker newMarker = markerFactory.getMarker(marker);
 
+    Assert.assertEquals(marker.name, newMarker.toString());
     Assert.assertSame(NoCacheLog4j2Marker.class, newMarker.getClass());
     Assert.assertEquals(0, markerMap.size());
   }

@@ -76,4 +76,9 @@ public class NoCacheLog4j2Marker extends Log4jMarker implements Marker {
   public Marker setParents(Marker... markers) {
     return this;
   }
+
+  @Override
+  public String toString() {
+    return slf4jMarker.getName();
+  }
 }
