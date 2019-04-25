@@ -99,7 +99,7 @@ public final class RegistryUtils {
   }
 
   public static String getAppId() {
-    return serviceRegistry.getMicroservice().getAppId();
+    return serviceRegistry.getAppId();
   }
 
   public static Microservice getMicroservice() {
