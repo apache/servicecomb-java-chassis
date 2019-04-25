@@ -43,6 +43,8 @@ public interface ServiceRegistry {
 
   Set<String> getCombinedMicroserviceNames();
 
+  String getAppId();
+
   Microservice getMicroservice();
 
   MicroserviceInstance getMicroserviceInstance();

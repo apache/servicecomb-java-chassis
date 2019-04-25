@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.servicecomb.serviceregistry.Features;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.registry.BasePath;
@@ -48,6 +47,7 @@ import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceManager;
 import org.apache.servicecomb.serviceregistry.consumer.StaticMicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
+import org.apache.servicecomb.serviceregistry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.serviceregistry.swagger.SwaggerLoader;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceServiceCenterTask;
 import org.apache.servicecomb.serviceregistry.task.ServiceCenterTask;
@@ -153,6 +153,11 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   @Override
   public InstanceCacheManager getInstanceCacheManager() {
     return instanceCacheManager;
+  }
+
+  @Override
+  public String getAppId() {
+    return microservice.getAppId();
   }
 
   protected abstract ServiceRegistryClient createServiceRegistryClient();
