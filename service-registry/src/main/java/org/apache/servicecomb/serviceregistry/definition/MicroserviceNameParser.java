@@ -16,9 +16,20 @@
  */
 package org.apache.servicecomb.serviceregistry.definition;
 
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.Const;
 
+/**
+ * <pre>
+ *   1. if microserviceName format is app:name, then will ignore defaultAppId
+ *     appId = app
+ *     shortName = name
+ *     microserviceName = app:name
+ *   2. if microserviceName format is name
+ *     appId = defaultAppId
+ *     shortName = name
+ *     microserviceName = name
+ * </pre>
+ */
 public class MicroserviceNameParser {
   private String appId;
 
@@ -29,16 +40,16 @@ public class MicroserviceNameParser {
   // cross app: appId:shortName
   private String microserviceName;
 
-  public MicroserviceNameParser(String microserviceName) {
-    parseMicroserviceName(microserviceName);
+  public MicroserviceNameParser(String defaultAppId, String microserviceName) {
+    parseMicroserviceName(defaultAppId, microserviceName);
   }
 
-  private void parseMicroserviceName(String microserviceName) {
+  private void parseMicroserviceName(String defaultAppId, String microserviceName) {
     this.microserviceName = microserviceName;
 
     int idxAt = microserviceName.indexOf(Const.APP_SERVICE_SEPARATOR);
     if (idxAt == -1) {
-      this.appId = RegistryUtils.getAppId();
+      this.appId = defaultAppId;
       this.shortName = microserviceName;
       return;
     }
