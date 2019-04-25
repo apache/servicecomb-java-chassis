@@ -45,7 +45,6 @@ public class TestAbstractClientPool {
 
   DeploymentOptions deployOptions;
 
-
   @Before
   public void setup() {
     new MockUp<VertxUtils>() {

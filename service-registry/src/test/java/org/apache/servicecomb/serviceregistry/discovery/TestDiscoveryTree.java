@@ -279,7 +279,6 @@ public class TestDiscoveryTree {
     Assert.assertSame(Deencapsulation.getField(discoveryTree, "root"), root);
   }
 
-
   @Test
   public void getOrCreateRoot_tempRoot() {
     Deencapsulation.setField(discoveryTree, "root", parent);
