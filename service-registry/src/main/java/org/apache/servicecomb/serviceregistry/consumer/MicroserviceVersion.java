@@ -23,6 +23,8 @@ import java.util.List;
 import org.apache.servicecomb.foundation.common.VendorExtensions;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.event.CreateMicroserviceVersionEvent;
+import org.apache.servicecomb.serviceregistry.event.DestroyMicroserviceVersionEvent;
 import org.apache.servicecomb.serviceregistry.version.Version;
 
 public class MicroserviceVersion {
@@ -55,12 +57,14 @@ public class MicroserviceVersion {
     }
 
     init(microserviceVersions, microservice, microserviceName, instances);
+    appManager.getEventBus().post(new CreateMicroserviceVersionEvent(this));
   }
 
   public MicroserviceVersion(MicroserviceVersions microserviceVersions,
       Microservice microservice, String microserviceName,
       Collection<MicroserviceInstance> instances) {
     init(microserviceVersions, microservice, microserviceName, instances);
+    appManager.getEventBus().post(new CreateMicroserviceVersionEvent(this));
   }
 
   protected void init(MicroserviceVersions microserviceVersions, Microservice microservice,
@@ -107,5 +111,6 @@ public class MicroserviceVersion {
   }
 
   public void destroy() {
+    appManager.getEventBus().post(new DestroyMicroserviceVersionEvent(this));
   }
 }
