@@ -18,15 +18,12 @@
 package org.apache.servicecomb.serviceregistry.cache;
 
 import org.apache.servicecomb.serviceregistry.MockMicroserviceVersions;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceManager;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import mockit.Expectations;
 
 public class TestInstanceCacheManagerNew {
   MockMicroserviceVersions mockMicroserviceVersions;
@@ -39,12 +36,6 @@ public class TestInstanceCacheManagerNew {
 
   @Before
   public void setup() {
-    new Expectations(RegistryUtils.class) {
-      {
-        RegistryUtils.getAppId();
-        result = "appId";
-      }
-    };
     mockMicroserviceVersions = new MockMicroserviceVersions();
     appManager = mockMicroserviceVersions.getAppManager();
     microserviceManager = appManager
