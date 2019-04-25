@@ -48,7 +48,7 @@ public class SwaggerLoader {
   }
 
   public void registerSwagger(String microserviceName, String schemaId, Swagger swagger) {
-    MicroserviceNameParser parser = new MicroserviceNameParser(microserviceName);
+    MicroserviceNameParser parser = new MicroserviceNameParser(serviceRegistry.getAppId(), microserviceName);
     registerSwagger(parser.getAppId(), parser.getShortName(), schemaId, swagger);
   }
 
@@ -69,8 +69,8 @@ public class SwaggerLoader {
         .remove(schemaId);
   }
 
-  public Swagger loadSwagger(Microservice microservice, String microserviceName, String schemaId) {
-    Swagger swagger = loadLocalSwagger(microservice.getAppId(), microserviceName, schemaId);
+  public Swagger loadSwagger(Microservice microservice, String schemaId) {
+    Swagger swagger = loadLocalSwagger(microservice.getAppId(), microservice.getServiceName(), schemaId);
     if (swagger != null) {
       return swagger;
     }
@@ -95,7 +95,7 @@ public class SwaggerLoader {
   }
 
   private Swagger loadFromResource(String appId, String shortName, String schemaId) {
-    if (appId.equals(serviceRegistry.getMicroservice().getAppId())) {
+    if (appId.equals(serviceRegistry.getAppId())) {
       Swagger swagger = loadFromResource(String.format("microservices/%s/%s.yaml", shortName, schemaId));
       if (swagger != null) {
         return swagger;
