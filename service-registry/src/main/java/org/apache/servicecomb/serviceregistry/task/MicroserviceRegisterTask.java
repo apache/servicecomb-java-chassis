@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.base.ServiceCombConstants;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
@@ -37,7 +38,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import org.apache.commons.lang3.StringUtils;
 
 public class MicroserviceRegisterTask extends AbstractRegisterTask {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceRegisterTask.class);
@@ -325,7 +325,7 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
 
       // Currently nothing to do but print a warning
       LOGGER.warn("There are schemas only existing in service center: {}, which means there are interfaces changed. "
-          + "It's recommended to increment microservice version before deploying.",
+              + "It's recommended to increment microservice version before deploying.",
           scSchemaMap.keySet());
       LOGGER.warn("ATTENTION: The schemas in new version are less than the old version, "
           + "which may cause compatibility problems.");

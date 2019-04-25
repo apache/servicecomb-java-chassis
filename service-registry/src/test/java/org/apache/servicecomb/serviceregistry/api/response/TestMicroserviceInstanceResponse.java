@@ -22,8 +22,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestMicroserviceInstanceResponse {
-
-
   @Test
   public void testMicroserviceInstanceResponse() {
     MicroserviceInstance microserviceInstance = new MicroserviceInstance();

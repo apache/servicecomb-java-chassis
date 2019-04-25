@@ -700,7 +700,6 @@ public class TestMicroserviceRegisterTask {
           "        format: \"int32\"\n" +
           "        maximum: 20\n" +
           "    x-java-class: \"org.apache.servicecomb.demo.validator.Student\"]", events.get(5).getMessage());
-
     }
 
     Assert.assertEquals(true, isIlleagalException);

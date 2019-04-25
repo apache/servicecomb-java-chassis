@@ -71,7 +71,6 @@ public class TestVersion {
     Assert.assertEquals(1, version.getBuild());
   }
 
-
   @Test
   public void constructFromStringInvalidNull() {
     expectedException.expect(NullPointerException.class);

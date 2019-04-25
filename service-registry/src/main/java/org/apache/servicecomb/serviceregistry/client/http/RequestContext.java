@@ -67,7 +67,6 @@ public class RequestContext {
     this.params = params;
   }
 
-
   public int getRetryTimes() {
     return retryTimes;
   }
