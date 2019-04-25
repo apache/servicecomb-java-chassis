@@ -26,7 +26,6 @@ import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceC
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersion;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
-import org.apache.servicecomb.serviceregistry.definition.MicroserviceMeta;
 import org.apache.servicecomb.serviceregistry.task.event.RecoveryEvent;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -46,14 +45,6 @@ public class TestConsumers extends TestRegistryBase {
     Assert.assertEquals(serviceName, microserviceVersion.getMicroserviceName());
     Assert.assertEquals(serviceId, microserviceVersion.getMicroserviceId());
     Assert.assertEquals(version, microserviceVersion.getVersion().getVersion());
-
-    MicroserviceMeta microserviceMeta = microserviceVersion.getMicroserviceMeta();
-    Assert.assertTrue(microserviceMeta.isConsumer());
-    Assert.assertEquals(appId, microserviceMeta.getAppId());
-    Assert.assertEquals(serviceName, microserviceMeta.getShortName());
-    Assert.assertEquals(serviceName, microserviceMeta.getMicroserviceName());
-    Assert.assertNotNull(microserviceMeta.findSchemaMeta(Hello.class));
-    Assert.assertSame(microserviceMeta.findSchemaMeta(Hello.class), microserviceMeta.findSchemaMeta(schemaId));
   }
 
   @Test
