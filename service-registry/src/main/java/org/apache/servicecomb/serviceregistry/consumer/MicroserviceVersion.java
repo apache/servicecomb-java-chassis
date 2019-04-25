@@ -20,16 +20,15 @@ package org.apache.servicecomb.serviceregistry.consumer;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.servicecomb.foundation.common.VendorExtensions;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.definition.MicroserviceMeta;
-import org.apache.servicecomb.serviceregistry.swagger.SwaggerLoader;
 import org.apache.servicecomb.serviceregistry.version.Version;
-
-import io.swagger.models.Swagger;
 
 public class MicroserviceVersion {
   protected AppManager appManager;
+
+  protected MicroserviceVersions microserviceVersions;
 
   // because of cross app invoke
   // microserviceName not always equals microservice.serviceName
@@ -39,40 +38,48 @@ public class MicroserviceVersion {
 
   protected Microservice microservice;
 
-  protected MicroserviceMeta microserviceMeta;
-
   protected Collection<MicroserviceInstance> instances;
 
-  public MicroserviceVersion(AppManager appManager, String microserviceId, String microserviceName,
+  private VendorExtensions vendorExtensions = new VendorExtensions();
+
+  public MicroserviceVersion(MicroserviceVersions microserviceVersions, String microserviceId,
+      String microserviceName,
       Collection<MicroserviceInstance> instances) {
-    Microservice microservice = appManager.getServiceRegistry().getAggregatedRemoteMicroservice(microserviceId);
+    Microservice microservice = microserviceVersions
+        .getAppManager()
+        .getServiceRegistry()
+        .getAggregatedRemoteMicroservice(microserviceId);
     if (microservice == null) {
       throw new IllegalStateException(
           String.format("failed to query by microserviceId '%s' from ServiceCenter.", microserviceId));
     }
 
-    init(appManager, microservice, microserviceName, instances);
+    init(microserviceVersions, microservice, microserviceName, instances);
   }
 
-  public MicroserviceVersion(AppManager appManager, Microservice microservice, String microserviceName,
+  public MicroserviceVersion(MicroserviceVersions microserviceVersions,
+      Microservice microservice, String microserviceName,
       Collection<MicroserviceInstance> instances) {
-    init(appManager, microservice, microserviceName, instances);
+    init(microserviceVersions, microservice, microserviceName, instances);
   }
 
-  protected void init(AppManager appManager, Microservice microservice, String microserviceName,
+  protected void init(MicroserviceVersions microserviceVersions, Microservice microservice,
+      String microserviceName,
       Collection<MicroserviceInstance> instances) {
-    this.appManager = appManager;
+    this.appManager = microserviceVersions.getAppManager();
+    this.microserviceVersions = microserviceVersions;
     this.microservice = microservice;
     this.microserviceName = microserviceName;
     this.instances = instances;
     this.version = new Version(microservice.getVersion());
-    this.microserviceMeta = new MicroserviceMeta(microserviceName);
-    // TODO: get schemas from instance
-    SwaggerLoader swaggerLoader = appManager.getServiceRegistry().getSwaggerLoader();
-    for (String schemaId : microservice.getSchemas()) {
-      Swagger swagger = swaggerLoader.loadSwagger(microservice, microserviceName, schemaId);
-      this.microserviceMeta.registerSchemaMeta(schemaId, swagger);
-    }
+  }
+
+  public MicroserviceVersions getMicroserviceVersions() {
+    return microserviceVersions;
+  }
+
+  public Collection<MicroserviceInstance> getInstances() {
+    return instances;
   }
 
   public void setInstances(List<MicroserviceInstance> instances) {
@@ -91,12 +98,12 @@ public class MicroserviceVersion {
     return microservice;
   }
 
-  public MicroserviceMeta getMicroserviceMeta() {
-    return microserviceMeta;
-  }
-
   public Version getVersion() {
     return version;
+  }
+
+  public VendorExtensions getVendorExtensions() {
+    return vendorExtensions;
   }
 
   public void destroy() {
