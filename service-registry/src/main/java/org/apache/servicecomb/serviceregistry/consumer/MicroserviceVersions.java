@@ -35,6 +35,8 @@ import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceNameParser;
+import org.apache.servicecomb.serviceregistry.event.CreateMicroserviceEvent;
+import org.apache.servicecomb.serviceregistry.event.DestroyMicroserviceEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,6 +85,8 @@ public class MicroserviceVersions {
     this.appId = appId;
     this.microserviceName = microserviceName;
     this.shortName = new MicroserviceNameParser(appId, microserviceName).getShortName();
+
+    appManager.getEventBus().post(new CreateMicroserviceEvent(this));
 
     LOGGER.info("create MicroserviceVersions, appId={}, microserviceName={}.",
         appId,
@@ -297,5 +301,7 @@ public class MicroserviceVersions {
     for (MicroserviceVersion microserviceVersion : versions.values()) {
       microserviceVersion.destroy();
     }
+
+    appManager.getEventBus().post(new DestroyMicroserviceEvent(this));
   }
 }
