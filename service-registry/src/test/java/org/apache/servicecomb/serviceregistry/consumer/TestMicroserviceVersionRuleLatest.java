@@ -20,13 +20,10 @@ package org.apache.servicecomb.serviceregistry.consumer;
 import java.util.Collections;
 
 import org.apache.servicecomb.serviceregistry.MockMicroserviceVersions;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import mockit.Expectations;
 
 public class TestMicroserviceVersionRuleLatest {
   MockMicroserviceVersions mockMicroserviceVersions;
@@ -35,12 +32,6 @@ public class TestMicroserviceVersionRuleLatest {
 
   @Before
   public void setup() {
-    new Expectations(RegistryUtils.class) {
-      {
-        RegistryUtils.getAppId();
-        result = "appId";
-      }
-    };
     mockMicroserviceVersions = new MockMicroserviceVersions();
     microserviceVersionRule = mockMicroserviceVersions
         .getOrCreateMicroserviceVersionRule(DefinitionConst.VERSION_RULE_LATEST);
