@@ -20,7 +20,6 @@ package org.apache.servicecomb.swagger.invocation.arguments.producer;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 
 public class ProducerInvocationContextMapper extends AbstractProducerContextArgMapper {
-
   public ProducerInvocationContextMapper(int producerIdx) {
     super(producerIdx);
   }

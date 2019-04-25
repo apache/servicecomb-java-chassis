@@ -15,19 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.swagger.invocation.arguments.producer;
+package org.apache.servicecomb.swagger.invocation.arguments;
 
-import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
-import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
+public interface ContextArgumentMapperFactory {
+  Class<?> getContextClass();
 
-public class ProducerInvocationContextMapperFactory implements ProducerContextArgumentMapperFactory {
-  @Override
-  public Class<?> getContextClass() {
-    return InvocationContext.class;
-  }
-
-  @Override
-  public ArgumentMapper create(int producerArgIdx) {
-    return new ProducerInvocationContextMapper(producerArgIdx);
-  }
+  ArgumentMapper create(int argumentIdx);
 }
