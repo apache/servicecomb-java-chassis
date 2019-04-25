@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.servicecomb.foundation.common.VendorExtensions;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.serviceregistry.api.Const;
@@ -50,7 +51,7 @@ public class MicroserviceVersions {
   protected String microserviceName;
 
   // revision and pulledInstances directly equals to SC's response
-  private String revision = null;
+  protected String revision = null;
 
   private List<MicroserviceInstance> pulledInstances;
 
@@ -79,11 +80,13 @@ public class MicroserviceVersions {
 
   private boolean waitingDelete = false;
 
+  private VendorExtensions vendorExtensions = new VendorExtensions();
+
   public MicroserviceVersions(AppManager appManager, String appId, String microserviceName) {
     this.appManager = appManager;
     this.appId = appId;
     this.microserviceName = microserviceName;
-    this.shortName = new MicroserviceNameParser(microserviceName).getShortName();
+    this.shortName = new MicroserviceNameParser(appId, microserviceName).getShortName();
 
     LOGGER.info("create MicroserviceVersions, appId={}, microserviceName={}.",
         appId,
@@ -104,6 +107,10 @@ public class MicroserviceVersions {
 
   public String getMicroserviceName() {
     return microserviceName;
+  }
+
+  public String getShortName() {
+    return shortName;
   }
 
   public Map<String, MicroserviceVersion> getVersions() {
@@ -135,12 +142,13 @@ public class MicroserviceVersions {
     return lastPulledResult;
   }
 
+  public VendorExtensions getVendorExtensions() {
+    return vendorExtensions;
+  }
+
   public void pullInstances() {
     lastPullTime = System.currentTimeMillis();
-    MicroserviceInstances microserviceInstances = appManager.getServiceRegistry().findServiceInstances(appId,
-        microserviceName,
-        DefinitionConst.VERSION_RULE_ALL,
-        revision);
+    MicroserviceInstances microserviceInstances = findServiceInstances();
     lastPulledResult = microserviceInstances;
     if (microserviceInstances == null) {
       // pulled failed, did not get anything
@@ -162,6 +170,13 @@ public class MicroserviceVersions {
     String rev = microserviceInstances.getRevision();
 
     safeSetInstances(pulledInstances, rev);
+  }
+
+  protected MicroserviceInstances findServiceInstances() {
+    return appManager.getServiceRegistry().findServiceInstances(appId,
+        microserviceName,
+        DefinitionConst.VERSION_RULE_ALL,
+        revision);
   }
 
   protected void safeSetInstances(List<MicroserviceInstance> pulledInstances, String rev) {
@@ -197,9 +212,8 @@ public class MicroserviceVersions {
       instances = mergedInstances.instanceIdMap.values();
       for (Entry<String, List<MicroserviceInstance>> entry : mergedInstances.microserviceIdMap.entrySet()) {
         // ensure microserviceVersion exists
-        versions
-            .computeIfAbsent(entry.getKey(), microserviceId ->
-                new MicroserviceVersion(appManager, microserviceId, microserviceName, entry.getValue()))
+        versions.computeIfAbsent(entry.getKey(),
+            microserviceId -> createMicroserviceVersion(microserviceId, entry.getValue()))
             .setInstances(entry.getValue());
       }
 
@@ -208,6 +222,10 @@ public class MicroserviceVersions {
       }
       revision = rev;
     }
+  }
+
+  protected MicroserviceVersion createMicroserviceVersion(String microserviceId, List<MicroserviceInstance> instances) {
+    return new MicroserviceVersion(this, microserviceId, microserviceName, instances);
   }
 
   private MergedInstances mergeInstances(List<MicroserviceInstance> pulledInstances,
