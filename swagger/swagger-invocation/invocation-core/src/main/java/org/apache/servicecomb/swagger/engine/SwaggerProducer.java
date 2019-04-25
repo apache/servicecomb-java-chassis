@@ -23,8 +23,7 @@ import java.util.Map;
 public class SwaggerProducer {
   private Class<?> producerCls;
 
-  private Class<?> swaggerIntf;
-
+  // key is operationId
   private Map<String, SwaggerProducerOperation> opMap = new HashMap<>();
 
   public Class<?> getProducerCls() {
@@ -35,20 +34,12 @@ public class SwaggerProducer {
     this.producerCls = producerCls;
   }
 
-  public Class<?> getSwaggerIntf() {
-    return swaggerIntf;
-  }
-
-  public void setSwaggerIntf(Class<?> swaggerIntf) {
-    this.swaggerIntf = swaggerIntf;
-  }
-
   public void addOperation(SwaggerProducerOperation op) {
-    opMap.put(op.getName(), op);
+    opMap.put(op.getOperationId(), op);
   }
 
-  public SwaggerProducerOperation findOperation(String name) {
-    return opMap.get(name);
+  public SwaggerProducerOperation findOperation(String operationId) {
+    return opMap.get(operationId);
   }
 
   public Collection<SwaggerProducerOperation> getAllOperations() {

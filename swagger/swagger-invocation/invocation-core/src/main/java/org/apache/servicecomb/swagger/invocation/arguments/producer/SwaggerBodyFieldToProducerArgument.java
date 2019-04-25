@@ -17,31 +17,27 @@
 
 package org.apache.servicecomb.swagger.invocation.arguments.producer;
 
-import java.util.List;
+import java.util.Map;
 
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
 
-/**
- * map swagger arguments to producer arguments
- */
-public class ProducerArgumentsMapper {
-  private List<ArgumentMapper> producerArgMapperList;
+public class SwaggerBodyFieldToProducerArgument implements ArgumentMapper {
+  private final int producerParamIdx;
 
-  private int producerParameterCount;
+  private final String parameterName;
 
-  public ProducerArgumentsMapper(List<ArgumentMapper> producerArgMapperList, int producerParameterCount) {
-    this.producerArgMapperList = producerArgMapperList;
-    this.producerParameterCount = producerParameterCount;
+  private final int swaggerBodyIdx;
+
+  public SwaggerBodyFieldToProducerArgument(int producerParamIdx, String parameterName, int swaggerBodyIdx) {
+    this.producerParamIdx = producerParamIdx;
+    this.parameterName = parameterName;
+    this.swaggerBodyIdx = swaggerBodyIdx;
   }
 
-  public Object[] toProducerArgs(SwaggerInvocation invocation) {
-    Object[] producerArgs = new Object[producerParameterCount];
-
-    for (ArgumentMapper argMapper : producerArgMapperList) {
-      argMapper.mapArgument(invocation, producerArgs);
-    }
-
-    return producerArgs;
+  @Override
+  public void mapArgument(SwaggerInvocation invocation, Object[] producerArguments) {
+    Map<String, Object> body = invocation.getSwaggerArgument(swaggerBodyIdx);
+    producerArguments[producerParamIdx] = body.get(parameterName);
   }
 }
