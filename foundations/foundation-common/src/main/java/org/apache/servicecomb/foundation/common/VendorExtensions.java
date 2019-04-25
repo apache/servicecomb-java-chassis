@@ -14,30 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.foundation.common;
 
-package org.apache.servicecomb.serviceregistry.definition;
+import java.util.Map;
+import java.util.function.Function;
 
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 
-public interface DefinitionConst {
+public class VendorExtensions {
+  private Map<Object, Object> store = new ConcurrentHashMapEx<>();
 
-  String CONFIG_QUALIFIED_INSTANCE_ENVIRONMENT_KEY = "instance_description.environment";
+  public Map<Object, Object> getStore() {
+    return store;
+  }
 
-  String CONFIG_QUALIFIED_INSTANCE_INITIAL_STATUS = "instance_description.initialStatus";
+  @SuppressWarnings("unchecked")
+  public <V> V get(Object key) {
+    return (V) store.get(key);
+  }
 
-  String CONFIG_ALLOW_CROSS_APP_KEY = "allowCrossApp";
+  public void put(Object key, Object value) {
+    store.put(key, value);
+  }
 
-  String DEFAULT_APPLICATION_ID = "default";
-
-  String DEFAULT_MICROSERVICE_VERSION = "1.0.0.0";
-
-  String DEFAULT_STAGE = "prod";
-
-  String DEFAULT_INSTANCE_ENVIRONMENT = "production";
-
-  String DEFAULT_INSTANCE_INITIAL_STATUS = MicroserviceInstanceStatus.UP.name();
-
-  String VERSION_RULE_LATEST = "latest";
-
-  String VERSION_RULE_ALL = "0.0.0.0+";
+  @SuppressWarnings("unchecked")
+  public <V> V computeIfAbsent(Object key, Function<Object, Object> mappingFunction) {
+    return (V) store.computeIfAbsent(key, mappingFunction);
+  }
 }
