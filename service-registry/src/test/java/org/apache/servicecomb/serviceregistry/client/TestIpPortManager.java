@@ -147,6 +147,7 @@ public class TestIpPortManager {
       Assert.assertEquals(9982, address6.getPort());
     }
   }
+
   @Test
   public void testCreateServiceRegistryCacheWithInstanceCache() {
 

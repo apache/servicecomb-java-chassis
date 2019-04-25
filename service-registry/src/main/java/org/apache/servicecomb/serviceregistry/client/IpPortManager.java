@@ -52,7 +52,6 @@ public class IpPortManager {
 
   private int maxRetryTimes;
 
-
   public void setAutoDiscoveryInited(boolean autoDiscoveryInited) {
     this.autoDiscoveryInited = autoDiscoveryInited;
   }
