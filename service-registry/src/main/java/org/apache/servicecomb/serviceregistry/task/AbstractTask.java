@@ -55,7 +55,6 @@ public abstract class AbstractTask implements Runnable {
     }
   }
 
-
   public TaskStatus getTaskStatus() {
     return this.taskStatus;
   }
