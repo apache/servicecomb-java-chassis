@@ -458,7 +458,8 @@ public class TestServiceRegistryClientImpl {
       @Mock
       void get(IpPort ipPort, String uri, RequestParam requestParam,
           Handler<RestResponse> responseHandler) {
-        Assert.assertEquals("appId=appId&global=true&serviceName=serviceName&version=1.0.0%2B", requestParam.getQueryParams());
+        Assert.assertEquals("appId=appId&global=true&serviceName=serviceName&version=1.0.0%2B",
+            requestParam.getQueryParams());
       }
     };
     Assert.assertNull(oClient.findServiceInstance(null, "appId", "serviceName", "1.0.0+"));

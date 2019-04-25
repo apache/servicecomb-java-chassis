@@ -73,7 +73,6 @@ public class TestAbstractDiscoveryFilter {
     Assert.assertSame(child, result);
   }
 
-
   @Test
   public void discoveryNotInitedOnce() {
     inited[0] = false;

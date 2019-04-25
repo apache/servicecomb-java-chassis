@@ -106,7 +106,7 @@ public class TestLocalServiceRegistry {
     ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
     serviceRegistry.init();
     serviceRegistry.run();
-    
+
     Microservice microservice = new Microservice();
     microservice.setAppId("appId");
     microservice.setServiceName("msName");
