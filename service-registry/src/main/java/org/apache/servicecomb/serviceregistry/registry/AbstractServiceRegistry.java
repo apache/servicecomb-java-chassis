@@ -314,16 +314,13 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   @Override
   public void registerMicroserviceMapping(String microserviceName, String version,
       List<MicroserviceInstance> instances, Class<?> schemaIntfCls) {
-    String app = RegistryUtils.getAppId();
-    MicroserviceManager microserviceManager = appManager.getOrCreateMicroserviceManager(app);
+    MicroserviceNameParser parser = new MicroserviceNameParser(microservice.getAppId(), microserviceName);
+    MicroserviceManager microserviceManager = appManager.getOrCreateMicroserviceManager(parser.getAppId());
     microserviceManager.getVersionsByName()
         .computeIfAbsent(microserviceName,
-            svcName -> {
-              StaticMicroserviceVersions microserviceVersions = new StaticMicroserviceVersions(this.appManager,
-                  app, microserviceName, schemaIntfCls);
-              microserviceVersions.addInstances(version, instances);
-              return microserviceVersions;
-            });
+            svcName -> new StaticMicroserviceVersions(this.appManager, parser.getAppId(), microserviceName)
+                .init(schemaIntfCls, version, instances)
+        );
   }
 
   @Override
