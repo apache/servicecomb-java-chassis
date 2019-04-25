@@ -24,6 +24,11 @@ public class SwaggerInvocation extends InvocationContext {
   // 本实例是在consumer端，还是在provider端
   protected InvocationType invocationType;
 
+  // highway consumer and all producer need arguments
+  // only springmvc consumer no arguments
+  //
+  // so only adapt springmvc consumer to arguments mode
+  // not adapt all to http mode
   protected Object[] swaggerArguments;
 
   protected InvocationContext parentContext;

@@ -14,34 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.swagger.invocation.arguments.producer;
 
-import java.util.List;
+import org.apache.servicecomb.swagger.invocation.arguments.ContextArgumentMapperFactory;
 
-import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
-import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
-
-/**
- * map swagger arguments to producer arguments
- */
-public class ProducerArgumentsMapper {
-  private List<ArgumentMapper> producerArgMapperList;
-
-  private int producerParameterCount;
-
-  public ProducerArgumentsMapper(List<ArgumentMapper> producerArgMapperList, int producerParameterCount) {
-    this.producerArgMapperList = producerArgMapperList;
-    this.producerParameterCount = producerParameterCount;
-  }
-
-  public Object[] toProducerArgs(SwaggerInvocation invocation) {
-    Object[] producerArgs = new Object[producerParameterCount];
-
-    for (ArgumentMapper argMapper : producerArgMapperList) {
-      argMapper.mapArgument(invocation, producerArgs);
-    }
-
-    return producerArgs;
-  }
+public interface ProducerContextArgumentMapperFactory extends ContextArgumentMapperFactory {
 }

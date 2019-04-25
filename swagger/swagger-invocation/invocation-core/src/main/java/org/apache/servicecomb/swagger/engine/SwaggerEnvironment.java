@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.apache.servicecomb.swagger.invocation.arguments.ContextArgumentMapperFactory;
@@ -32,7 +33,8 @@ import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgu
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapperCreator;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerContextArgumentMapperFactory;
 import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapper;
-import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapperFactory;
+import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapperCreator;
+import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerContextArgumentMapperFactory;
 import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactorys;
 import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
 import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapperFactory;
@@ -107,43 +109,50 @@ public class SwaggerEnvironment {
     return apiOperationAnnotation.nickname();
   }
 
-  public SwaggerProducer createProducer(Object producerInstance, Class<?> swaggerIntf,
-      Map<String, Operation> swaggerOperationMap) {
+  public SwaggerProducer createProducer(Object producerInstance, Swagger swagger) {
+    if (swagger == null) {
+      Class<?> producerCls = BeanUtils.getImplClassFromBean(producerInstance);
+      swagger = SwaggerGenerator.generate(producerCls);
+    }
+
+    Map<Class<?>, ContextArgumentMapperFactory> contextFactorys = SPIServiceUtils
+        .getOrLoadSortedService(ProducerContextArgumentMapperFactory.class)
+        .stream()
+        .collect(Collectors.toMap(ProducerContextArgumentMapperFactory::getContextClass, Function.identity()));
+    SwaggerOperations swaggerOperations = new SwaggerOperations(swagger);
+
     Class<?> producerCls = BeanUtils.getImplClassFromBean(producerInstance);
     Map<String, Method> visibleProducerMethods = retrieveVisibleMethods(producerCls);
 
     SwaggerProducer producer = new SwaggerProducer();
     producer.setProducerCls(producerCls);
-    producer.setSwaggerIntf(swaggerIntf);
-    for (Method swaggerMethod : swaggerIntf.getMethods()) {
-      String methodName = swaggerMethod.getName();
+    for (SwaggerOperation swaggerOperation : swaggerOperations.getOperations().values()) {
+      String operationId = swaggerOperation.getOperationId();
       // producer参数不一定等于swagger参数
-      Method producerMethod = visibleProducerMethods.getOrDefault(methodName, null);
+      Method producerMethod = visibleProducerMethods.getOrDefault(operationId, null);
       if (producerMethod == null) {
         // producer未实现契约，非法
-        String msg = String.format("swagger method %s not exist in producer %s.",
-            methodName,
+        String msg = String.format("operationId %s not exist in producer %s.",
+            operationId,
             producerInstance.getClass().getName());
-        throw new Error(msg);
+        throw new IllegalStateException(msg);
       }
 
-      ArgumentsMapperConfig config = new ArgumentsMapperConfig();
-      config.setSwaggerMethod(swaggerMethod);
-      config.setProviderMethod(producerMethod);
-      config.setSwaggerOperation(swaggerOperationMap.get(methodName));
-
-      ProducerArgumentsMapperFactory argumentsMapperFactory = selectProducerArgumentsMapperFactory(config);
-      ProducerArgumentsMapper argsMapper = argumentsMapperFactory.createArgumentsMapper(config);
+      ProducerArgumentsMapperCreator creator = new ProducerArgumentsMapperCreator(
+          Json.mapper().getSerializationConfig(),
+          contextFactorys,
+          producerMethod,
+          swaggerOperation);
+      ProducerArgumentsMapper argsMapper = creator.createArgumentsMapper();
       ProducerResponseMapper responseMapper = producerResponseMapperFactorys.createResponseMapper(
           swaggerMethod.getGenericReturnType(),
           producerMethod.getGenericReturnType());
 
       SwaggerProducerOperation op = new SwaggerProducerOperation();
-      op.setName(methodName);
       op.setProducerClass(producerCls);
       op.setProducerInstance(producerInstance);
       op.setProducerMethod(producerMethod);
-      op.setSwaggerMethod(swaggerMethod);
+      op.setSwaggerOperation(swaggerOperation);
       op.setArgumentsMapper(argsMapper);
       op.setResponseMapper(responseMapper);
 
@@ -153,24 +162,10 @@ public class SwaggerEnvironment {
     return producer;
   }
 
-  ProducerArgumentsMapperFactory selectProducerArgumentsMapperFactory(ArgumentsMapperConfig config) {
-    ProducerArgumentsMapperFactory argumentsMapperFactory = null;
-    for (ProducerArgumentsMapperFactory producerArgumentsMapperFactory : this.producerArgumentsMapperFactoryList) {
-      if (producerArgumentsMapperFactory.canProcess(config)) {
-        argumentsMapperFactory = producerArgumentsMapperFactory;
-        break;
-      }
-    }
-    if (null == argumentsMapperFactory) {
-      argumentsMapperFactory = this.producerArgumentsFactory;
-    }
-    return argumentsMapperFactory;
-  }
-
   private Map<String, Method> retrieveVisibleMethods(Class<?> clazz) {
     Map<String, Method> visibleMethods = new HashMap<>();
     for (Method method : clazz.getMethods()) {
-      String methodName = method.getName();
+      String operationId = method.getName();
       ApiOperation apiOperationAnnotation = method.getAnnotation(ApiOperation.class);
       if (apiOperationAnnotation != null) {
         if (apiOperationAnnotation.hidden()) {
@@ -178,11 +173,11 @@ public class SwaggerEnvironment {
         }
 
         if (StringUtils.isNotEmpty(apiOperationAnnotation.nickname())) {
-          methodName = apiOperationAnnotation.nickname();
+          operationId = apiOperationAnnotation.nickname();
         }
       }
 
-      visibleMethods.put(methodName, method);
+      visibleMethods.put(operationId, method);
     }
     return visibleMethods;
   }
