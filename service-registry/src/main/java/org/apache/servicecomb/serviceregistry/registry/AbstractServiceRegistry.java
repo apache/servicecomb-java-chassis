@@ -200,7 +200,8 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   private void createServiceCenterTask() {
     MicroserviceServiceCenterTask task =
         new MicroserviceServiceCenterTask(eventBus, serviceRegistryConfig, srClient, microservice);
-    serviceCenterTask = new ServiceCenterTask(eventBus, serviceRegistryConfig.getHeartbeatInterval(), task);
+    serviceCenterTask = new ServiceCenterTask(eventBus, serviceRegistryConfig.getHeartbeatInterval(),
+        serviceRegistryConfig.getResendHeartBeatTimes(), task);
   }
 
   public boolean unregisterInstance() {

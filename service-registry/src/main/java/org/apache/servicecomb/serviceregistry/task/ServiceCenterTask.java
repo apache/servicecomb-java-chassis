@@ -16,10 +16,14 @@
  */
 package org.apache.servicecomb.serviceregistry.task;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.apache.servicecomb.serviceregistry.task.event.ExceptionEvent;
+import org.apache.servicecomb.serviceregistry.task.event.SafeModeChangeEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -30,16 +34,25 @@ public class ServiceCenterTask implements Runnable {
 
   private int interval;
 
+  private int checkTimes;
+
+  private AtomicLong consecutiveFailedTimes = new AtomicLong();
+
+  private AtomicLong consecutiveSucceededTimes = new AtomicLong();
+
+  private boolean safeMode = false;
+
   private MicroserviceServiceCenterTask microserviceServiceCenterTask;
 
   private boolean registerInstanceSuccess = false;
 
   private ServiceCenterTaskMonitor serviceCenterTaskMonitor = new ServiceCenterTaskMonitor();
 
-  public ServiceCenterTask(EventBus eventBus, int interval,
+  public ServiceCenterTask(EventBus eventBus, int interval, int checkTimes,
       MicroserviceServiceCenterTask microserviceServiceCenterTask) {
     this.eventBus = eventBus;
     this.interval = interval;
+    this.checkTimes = checkTimes;
     this.microserviceServiceCenterTask = microserviceServiceCenterTask;
 
     this.eventBus.register(this);
@@ -62,7 +75,27 @@ public class ServiceCenterTask implements Runnable {
     if (task.getHeartbeatResult() != HeartbeatResult.SUCCESS) {
       LOGGER.info("read MicroserviceInstanceHeartbeatTask status is {}", task.taskStatus);
       onException();
+      if (!safeMode && consecutiveFailedTimes.incrementAndGet() > checkTimes) {
+        LOGGER.warn("service center is unavailable, enter safe mode");
+        eventBus.post(new SafeModeChangeEvent(true));
+      }
+      if (consecutiveSucceededTimes.get() != 0) {
+        consecutiveSucceededTimes.set(0);
+      }
+      return;
     }
+    if (safeMode && consecutiveSucceededTimes.incrementAndGet() > checkTimes) {
+      LOGGER.warn("service center is recovery, exit safe mode");
+      eventBus.post(new SafeModeChangeEvent(false));
+    }
+    if (consecutiveFailedTimes.get() != 0) {
+      consecutiveFailedTimes.set(0);
+    }
+  }
+
+  @Subscribe
+  public void onSafeModeChanged(SafeModeChangeEvent modeChangeEvent) {
+    safeMode = modeChangeEvent.getCurrentMode();
   }
 
   // messages given in watch error
@@ -91,5 +124,10 @@ public class ServiceCenterTask implements Runnable {
     } catch (Throwable e) {
       LOGGER.error("unexpected exception caught from service center task. ", e);
     }
+  }
+
+  @VisibleForTesting
+  public boolean getSafeMode() {
+    return safeMode;
   }
 }
