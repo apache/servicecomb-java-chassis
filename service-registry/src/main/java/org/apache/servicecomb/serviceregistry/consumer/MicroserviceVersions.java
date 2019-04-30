@@ -17,11 +17,11 @@
 
 package org.apache.servicecomb.serviceregistry.consumer;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
@@ -34,6 +34,7 @@ import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.task.event.MicroserviceNotExistEvent;
 import org.apache.servicecomb.serviceregistry.task.event.PullMicroserviceVersionsInstancesEvent;
+import org.apache.servicecomb.serviceregistry.task.event.SafeModeChangeEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,6 +53,9 @@ public class MicroserviceVersions {
   private String revision = null;
 
   private List<MicroserviceInstance> pulledInstances;
+
+  // in safe mode, instances will never be deleted
+  private boolean safeMode = false;
 
   // instances not always equals to pulledInstances
   // in the future:
@@ -193,20 +197,26 @@ public class MicroserviceVersions {
 
   private List<MicroserviceInstance> mergeInstances(List<MicroserviceInstance> pulledInstances,
       List<MicroserviceInstance> inUseInstances) {
-    List<MicroserviceInstance> upInstances = pulledInstances
-        .stream()
-        .collect(Collectors.toList());
+    List<MicroserviceInstance> upInstances = new ArrayList<>(pulledInstances);
+    if (safeMode) {
+      // in safe mode, instances will never be deleted
+      upInstances.forEach(instance -> {
+        if (!inUseInstances.contains(instance)) {
+          inUseInstances.add(instance);
+        }
+      });
+      return inUseInstances;
+    }
     if (upInstances.isEmpty() && inUseInstances != null && ServiceRegistryConfig.INSTANCE
         .isEmptyInstanceProtectionEnabled()) {
       MicroserviceInstancePing ping = SPIServiceUtils.getPriorityHighestService(MicroserviceInstancePing.class);
-      inUseInstances.stream()
-          .forEach(instance -> {
-            if (!upInstances.contains(instance)) {
-              if (ping.ping(instance)) {
-                upInstances.add(instance);
-              }
-            }
-          });
+      inUseInstances.forEach(instance -> {
+        if (!upInstances.contains(instance)) {
+          if (ping.ping(instance)) {
+            upInstances.add(instance);
+          }
+        }
+      });
     }
     return upInstances;
   }
@@ -252,6 +262,11 @@ public class MicroserviceVersions {
     // EXPIRE::
     //   black/white config in SC changed, we must refresh all data from sc.
     postPullInstanceEvent(0);
+  }
+
+  @Subscribe
+  public void onSafeModeChanged(SafeModeChangeEvent modeChangeEvent) {
+    this.safeMode = modeChangeEvent.getCurrentMode();
   }
 
   protected boolean isEventAccept(MicroserviceInstanceChangedEvent changedEvent) {
