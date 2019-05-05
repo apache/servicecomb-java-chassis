@@ -47,6 +47,18 @@ public class TestMgr {
     }
   }
 
+  public static void checkException(Throwable exception, String msg) {
+    String message = exception.getMessage();
+    if (!exception.getMessage().contains(msg)) {
+      errorList.add(new Error(
+          message + " | Expect " + message + " contains " + msg + " , but not"));
+    }
+  }
+
+  public static void fail(String msg) {
+    errorList.add(new Error(msg));
+  }
+
   public static void summary() {
     if (errorList.isEmpty()) {
       LOGGER.info("............. test finished ............");

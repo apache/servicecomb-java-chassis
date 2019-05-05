@@ -33,7 +33,6 @@
   <modules>
     <module>docker-build-config</module>
     <module>docker-run-config</module>
-    <module>demo-local</module>
     <module>demo-server-servlet</module>
     <module>demo-pojo</module>
     <module>demo-jaxrs</module>

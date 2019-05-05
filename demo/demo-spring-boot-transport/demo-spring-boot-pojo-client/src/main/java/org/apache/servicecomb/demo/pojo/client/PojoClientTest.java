@@ -110,8 +110,19 @@ public class PojoClientTest {
   }
 
   private static void testNull(Test test) {
-    TestMgr.check("code is 'null'", test.getTestString(null));
-    TestMgr.check(null, test.wrapParam(null));
+    try {
+      test.getTestString(null);
+      TestMgr.fail("Should throw exception");
+    } catch (Throwable e) {
+      TestMgr.checkException(e, "Parameter is not valid for operation");
+    }
+
+    try {
+      test.wrapParam(null);
+      TestMgr.fail("Should throw exception");
+    } catch (Throwable e) {
+      TestMgr.checkException(e, "Parameter is not valid for operation");
+    }
   }
 
   private static void testChinese(Test test) {
