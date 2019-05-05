@@ -14,18 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.apache.servicecomb.demo.local;
+package org.apache.servicecomb.samples.apollo;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 
-public class DemoLocal {
+import com.netflix.config.DynamicPropertyFactory;
+
+public class MainServer {
   public static void main(String[] args) throws Exception {
-    Log4jUtils.init();
     BeanUtils.init();
-
-    // TODO:当前未实现本地调用
-    //        DemoClient.runTest();
+    while (true) {
+      System.out.println(DynamicPropertyFactory.getInstance().getStringProperty("timeout", "default"));
+      Thread.sleep(3000);
+    }
   }
 }

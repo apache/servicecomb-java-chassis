@@ -167,7 +167,7 @@ paths:
 definitions:
   Error:
     type: object
-    x-java-class: org.apache.servicecomb.core.exception.CommonExceptionData
+    x-java-class: org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData
     properties:
       message:
         type: string
