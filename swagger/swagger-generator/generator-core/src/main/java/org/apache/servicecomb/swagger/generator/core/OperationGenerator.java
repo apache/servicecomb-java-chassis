@@ -366,7 +366,7 @@ public class OperationGenerator {
       ParameterizedType targetType = (ParameterizedType) type;
       Class<?> targetCls = (Class<?>) targetType.getRawType();
       if (List.class.isAssignableFrom(targetCls)) {
-        return Types.newParameterizedType(List.class, (Class<?>) targetType.getActualTypeArguments()[0]);
+        return Types.newParameterizedType(List.class, targetType.getActualTypeArguments()[0]);
       }
     }
     return null;

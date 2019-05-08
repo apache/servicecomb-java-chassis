@@ -24,19 +24,29 @@ import static org.junit.Assert.assertThat;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
-import io.swagger.annotations.*;
-import io.swagger.models.Response;
 import org.apache.servicecomb.foundation.test.scaffolding.spring.SpringUtils;
 import org.apache.servicecomb.swagger.extend.parameter.HttpRequestParameter;
 import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.util.StringValueResolver;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.Extension;
+import io.swagger.annotations.ExtensionProperty;
+import io.swagger.annotations.ResponseHeader;
+import io.swagger.models.ArrayModel;
+import io.swagger.models.ModelImpl;
+import io.swagger.models.Response;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.QueryParameter;
+import io.swagger.models.properties.ArrayProperty;
+import io.swagger.models.properties.StringProperty;
 
 public class TestOperationGenerator {
   @Test
@@ -145,24 +155,58 @@ public class TestOperationGenerator {
     Assert.assertNotNull(operationGenerator1.getOperation().getVendorExtensions().get("x-class-name"));
   }
 
+  @Test
+  public void testNestedListStringParam() throws NoSuchMethodException {
+    Method function = TestClass.class.getMethod("nestedListString", List.class);
+    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(new PojoSwaggerGeneratorContext(), TestClass.class);
+    OperationGenerator operationGenerator = new OperationGenerator(swaggerGenerator, function);
+    operationGenerator.generate();
+
+    // test response type
+    Map<String, Response> responses = operationGenerator.getOperation().getResponses();
+    Response response = responses.get("200");
+    Assert.assertEquals(ArrayModel.class, response.getResponseSchema().getClass());
+    ArrayModel arrayResponse = (ArrayModel) response.getResponseSchema();
+    Assert.assertEquals("array", arrayResponse.getType());
+    Assert.assertEquals(ArrayProperty.class, arrayResponse.getItems().getClass());
+    ArrayProperty innerArrayPropertyResp = (ArrayProperty) arrayResponse.getItems();
+    Assert.assertEquals("array", innerArrayPropertyResp.getType());
+    Assert.assertEquals(StringProperty.class, innerArrayPropertyResp.getItems().getClass());
+
+    // test param type
+    Assert.assertEquals(1, swaggerGenerator.getSwagger().getDefinitions().size());
+    ModelImpl model = (ModelImpl) swaggerGenerator.getSwagger().getDefinitions().get("nestedListStringBody");
+    Assert.assertNotNull(model);
+    Assert.assertEquals("object", model.getType());
+    Assert.assertEquals("param", model.getName());
+    Assert.assertThat(model.getProperties().keySet(), Matchers.containsInAnyOrder("param"));
+    Assert.assertEquals(ArrayProperty.class, model.getProperties().get("param").getClass());
+    ArrayProperty arrayPropertyParam = (ArrayProperty) model.getProperties().get("param");
+    Assert.assertEquals("array", arrayPropertyParam.getType());
+    Assert.assertEquals(ArrayProperty.class, arrayPropertyParam.getItems().getClass());
+    ArrayProperty innerArrayPropertyParam = (ArrayProperty) arrayPropertyParam.getItems();
+    Assert.assertEquals(StringProperty.class, innerArrayPropertyParam.getItems().getClass());
+  }
+
   private static class TestClass {
 
     @ApiResponse(code = 200, message = "200 is ok............", response = String.class,
-            responseHeaders = @ResponseHeader(name = "x-user-domain", response = String.class))
+        responseHeaders = @ResponseHeader(name = "x-user-domain", response = String.class))
     @ApiOperation(value = "value1", tags = {"tag1", "tag2"},
-            responseHeaders = {@ResponseHeader(name = "x-user-name", response = String.class),
-                    @ResponseHeader(name = "x-user-id", response = String.class)},
-            extensions= {@Extension(name="x-class-name", properties= {@ExtensionProperty(value="value", name = "key")})})
+        responseHeaders = {@ResponseHeader(name = "x-user-name", response = String.class),
+            @ResponseHeader(name = "x-user-id", response = String.class)},
+        extensions = {
+            @Extension(name = "x-class-name", properties = {@ExtensionProperty(value = "value", name = "key")})})
     public void function() {
     }
 
-
     @ApiOperation(value = "value1", tags = {"tag1", "tag2"},
-            responseHeaders = {@ResponseHeader(name = "x-user-name", response = String.class),
-                    @ResponseHeader(name = "x-user-id", response = String.class)},
-            extensions= {@Extension(name="x-class-name", properties= {@ExtensionProperty(value="value", name = "key")})})
+        responseHeaders = {@ResponseHeader(name = "x-user-name", response = String.class),
+            @ResponseHeader(name = "x-user-id", response = String.class)},
+        extensions = {
+            @Extension(name = "x-class-name", properties = {@ExtensionProperty(value = "value", name = "key")})})
     @ApiResponse(code = 200, message = "200 is ok............", response = String.class,
-            responseHeaders = @ResponseHeader(name = "x-user-domain", response = String.class))
+        responseHeaders = @ResponseHeader(name = "x-user-domain", response = String.class))
     public void function1() {
     }
 
@@ -172,6 +216,10 @@ public class TestOperationGenerator {
 
     @SuppressWarnings("unused")
     public void functionWithNoAnnotation() {
+    }
+
+    public List<List<String>> nestedListString(List<List<String>> param) {
+      return param;
     }
   }
 }
