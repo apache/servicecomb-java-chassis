@@ -98,4 +98,20 @@ public class GenericSchema {
     Assert.isInstanceOf(Map.class, mapListUserGeneric.value);
     return mapListUserGeneric;
   }
+
+  @PostMapping(path = "genericNestedListString")
+  public List<List<String>> genericNestedListString(@RequestBody List<List<String>> nestedListString) {
+    Assert.isInstanceOf(List.class, nestedListString);
+    Assert.isInstanceOf(List.class, nestedListString.get(0));
+    Assert.isInstanceOf(String.class, nestedListString.get(0).get(0));
+    return nestedListString;
+  }
+
+  @PostMapping(path = "genericNestedListUser")
+  public List<List<User>> genericNestedListUser(@RequestBody List<List<User>> nestedListUser) {
+    Assert.isInstanceOf(List.class, nestedListUser);
+    Assert.isInstanceOf(List.class, nestedListUser.get(0));
+    Assert.isInstanceOf(User.class, nestedListUser.get(0).get(0));
+    return nestedListUser;
+  }
 }

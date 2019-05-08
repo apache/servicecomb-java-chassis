@@ -16,6 +16,9 @@
  */
 package org.apache.servicecomb.it.schema;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -72,5 +75,27 @@ public class User {
     } catch (JsonProcessingException e) {
       throw new IllegalStateException(e);
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    User user = (User) o;
+    return age == user.age &&
+        index == user.index &&
+        name == null ? user.name == null : name.equals(user.name) &&
+        names == null ? user.names == null : Arrays.equals(names, user.names);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = Objects.hash(name, age, index);
+    result = 31 * result + Arrays.hashCode(names);
+    return result;
   }
 }
