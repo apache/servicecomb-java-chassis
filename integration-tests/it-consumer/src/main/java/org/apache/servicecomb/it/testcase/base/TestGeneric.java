@@ -17,9 +17,11 @@
 package org.apache.servicecomb.it.testcase.base;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +34,7 @@ import javax.xml.ws.Holder;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.schema.Generic;
 import org.apache.servicecomb.it.schema.User;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 
@@ -54,6 +57,10 @@ public class TestGeneric {
     Generic<Map<String, List<String>>> genericMapList(Generic<Map<String, List<String>>> mapListGeneric);
 
     Generic<Map<String, List<User>>> genericMapListUser(Generic<Map<String, List<User>>> mapListUserGeneric);
+
+    List<List<String>> genericNestedListString(List<List<String>> nestedListString);
+
+    List<List<User>> genericNestedListUser(List<List<User>> nestedListUser);
   }
 
   private static Consumers<GenericIntf> consumers = new Consumers<>("generic", GenericIntf.class);
@@ -254,5 +261,63 @@ public class TestGeneric {
         .postForObject("/genericMapListUser", mapListUserGeneric, Generic.class);
     String test = result.value.get("test").get(0).jsonString();
     assertEquals(test, expectUserStr);
+  }
+
+  @Test
+  public void testGenericNestedListString_intfAndRt() {
+    ArrayList<List<String>> nestedListString = new ArrayList<>();
+    nestedListString.add(Arrays.asList("abc", "def"));
+    nestedListString.add(Arrays.asList("ghi", "jkl"));
+
+    List<List<String>> response = consumers.getIntf().genericNestedListString(nestedListString);
+    assertEquals(2, response.size());
+    assertThat(response.get(0), Matchers.contains("abc", "def"));
+    assertThat(response.get(1), Matchers.contains("ghi", "jkl"));
+
+    @SuppressWarnings("unchecked")
+    List<List<String>> response2 = consumers.getSCBRestTemplate()
+        .postForObject("/genericNestedListString", nestedListString, List.class);
+    assertEquals(2, response2.size());
+    assertThat(response2.get(0), Matchers.contains("abc", "def"));
+    assertThat(response2.get(1), Matchers.contains("ghi", "jkl"));
+  }
+
+  @Test
+  public void testGenericNestedListUser_intfAndRt() {
+    User user1 = new User();
+    user1.setAge(1);
+    user1.setIndex(1);
+    user1.setName("abc");
+    user1.setNames(new String[] {"1", "2", "3"});
+    User user2 = new User();
+    user2.setAge(2);
+    user2.setIndex(2);
+    user2.setName("def");
+    user2.setNames(new String[] {"4", "5"});
+    User user3 = new User();
+    user3.setAge(3);
+    user3.setIndex(3);
+    user3.setName("ghi");
+    user3.setNames(new String[] {"6", "7"});
+    User user4 = new User();
+    user4.setAge(4);
+    user4.setIndex(4);
+    user4.setName("jkl");
+    user4.setNames(new String[] {"8", "9", "10"});
+    ArrayList<List<User>> nestedListUser = new ArrayList<>();
+    nestedListUser.add(Arrays.asList(user1, user2));
+    nestedListUser.add(Arrays.asList(user3, user4));
+
+    List<List<User>> response = consumers.getIntf().genericNestedListUser(nestedListUser);
+    assertEquals(2, response.size());
+    assertThat(response.get(0), Matchers.contains(user1, user2));
+    assertThat(response.get(1), Matchers.contains(user3, user4));
+
+    @SuppressWarnings("unchecked")
+    List<List<User>> response2 = consumers.getSCBRestTemplate()
+        .postForObject("/genericNestedListUser", nestedListUser, List.class);
+    assertEquals(2, response2.size());
+    assertThat(response2.get(0), Matchers.contains(user1, user2));
+    assertThat(response2.get(1), Matchers.contains(user3, user4));
   }
 }
