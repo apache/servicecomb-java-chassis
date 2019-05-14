@@ -137,6 +137,13 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     this.path = path;
   }
 
+  @Override
+  public void generateResponse() {
+    scanMethodAnnotation();
+    scanResponse();
+    correctOperation();
+  }
+
   public void generate() {
     scanMethodAnnotation();
     scanMethodParameters();
@@ -215,15 +222,15 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   protected void initMethodParameterGenerators(Map<String, List<Annotation>> methodAnnotationMap) {
     for (java.lang.reflect.Parameter methodParameter : method.getParameters()) {
       ParameterGenerator parameterGenerator = new ParameterGenerator(method, methodAnnotationMap, methodParameter);
+      validateParameter(parameterGenerator.getGenericType());
+      if (isContextParameter(parameterGenerator.getGenericType())) {
+        continue;
+      }
+
       // jaxrs: @BeanParam
       // springmvc: is query, and is bean type
       if (isAggregatedParameter(parameterGenerator, methodParameter)) {
         extractAggregatedParameterGenerators(methodAnnotationMap, methodParameter);
-        continue;
-      }
-
-      validateParameter(parameterGenerator.getGenericType());
-      if (isContextParameter(parameterGenerator.getGenericType())) {
         continue;
       }
 
@@ -241,11 +248,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     JavaType javaType = TypeFactory.defaultInstance().constructType(methodParameter.getParameterizedType());
     BeanDescription beanDescription = Json.mapper().getSerializationConfig().introspect(javaType);
     for (BeanPropertyDefinition propertyDefinition : beanDescription.findProperties()) {
-      if (propertyDefinition.getField() == null && !propertyDefinition.getField().isPublic()) {
-        continue;
-      }
-
-      if (propertyDefinition.getSetter() == null && !propertyDefinition.getField().isPublic()) {
+      if (!propertyDefinition.couldSerialize()) {
         continue;
       }
 
@@ -254,7 +257,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
           methodAnnotationMap,
           propertyDefinition.getName(),
           annotations,
-          propertyDefinition.getField().getAnnotated().getGenericType());
+          propertyDefinition.getPrimaryType().getRawClass());
       parameterGenerators.add(propertyParameterGenerator);
     }
   }

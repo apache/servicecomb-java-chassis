@@ -18,7 +18,7 @@ package org.apache.servicecomb.swagger.generator.pojo;
 
 import java.lang.reflect.Method;
 
-import org.apache.servicecomb.swagger.generator.core.AbstractOperationGenerator;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
 
 public class PojoSwaggerGenerator extends AbstractSwaggerGenerator {
@@ -26,8 +26,9 @@ public class PojoSwaggerGenerator extends AbstractSwaggerGenerator {
     super(cls);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  protected AbstractOperationGenerator createOperationGenerator(Method method) {
-    return new PojoOperationGenerator(this, method);
+  public <T extends OperationGenerator> T createOperationGenerator(Method method) {
+    return (T) new PojoOperationGenerator(this, method);
   }
 }

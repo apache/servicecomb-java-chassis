@@ -29,4 +29,6 @@ public interface OperationGenerator {
   void addOperationToSwagger();
 
   void setPath(String value);
+
+  void generateResponse();
 }
