@@ -111,6 +111,23 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
   }
 
   public Swagger generate() {
+    scanClassAnnotation();
+
+    ThreadLocal<SwaggerGeneratorFeature> featureThreadLocal = SwaggerGeneratorFeature.getFeatureThreadLocal();
+    featureThreadLocal.set(swaggerGeneratorFeature);
+    try {
+      scanMethods();
+      addOperationsToSwagger();
+
+      correctSwagger();
+
+      return swagger;
+    } finally {
+      featureThreadLocal.remove();
+    }
+  }
+
+  public void scanClassAnnotation() {
     ThreadLocal<SwaggerGeneratorFeature> featureThreadLocal = SwaggerGeneratorFeature.getFeatureThreadLocal();
     featureThreadLocal.set(swaggerGeneratorFeature);
     try {
@@ -121,13 +138,6 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
         }
         processor.process(this, annotation);
       }
-
-      scanMethods();
-      addOperationsToSwagger();
-
-      correctSwagger();
-
-      return swagger;
     } finally {
       featureThreadLocal.remove();
     }
@@ -301,8 +311,6 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
       }
     }
   }
-
-  protected abstract AbstractOperationGenerator createOperationGenerator(Method method);
 
   protected void addOperationsToSwagger() {
     for (OperationGenerator operationGenerator : operationGenerators.values()) {

@@ -22,7 +22,7 @@ import java.lang.reflect.Method;
 
 import javax.ws.rs.HttpMethod;
 
-import org.apache.servicecomb.swagger.generator.core.AbstractOperationGenerator;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.rest.RestSwaggerGenerator;
 
 public class JaxrsSwaggerGenerator extends RestSwaggerGenerator {
@@ -46,8 +46,9 @@ public class JaxrsSwaggerGenerator extends RestSwaggerGenerator {
     return true;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  protected AbstractOperationGenerator createOperationGenerator(Method method) {
-    return new JaxrsOperationGenerator(this, method);
+  public <T extends OperationGenerator> T createOperationGenerator(Method method) {
+    return (T) new JaxrsOperationGenerator(this, method);
   }
 }
