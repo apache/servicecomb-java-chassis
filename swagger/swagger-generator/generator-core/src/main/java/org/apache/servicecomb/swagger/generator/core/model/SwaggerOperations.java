@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
 import io.swagger.models.HttpMethod;
@@ -48,6 +49,12 @@ public class SwaggerOperations {
     for (Entry<String, Path> pathEntry : paths.entrySet()) {
       for (Entry<HttpMethod, Operation> operationEntry : pathEntry.getValue().getOperationMap().entrySet()) {
         Operation operation = operationEntry.getValue();
+        if (StringUtils.isEmpty(operation.getOperationId())) {
+          throw new IllegalStateException(String
+              .format("OperationId can not be empty, path=%s, httpMethod=%s.",
+                  pathEntry.getKey(), operationEntry.getKey()));
+        }
+
         SwaggerOperation swaggerOperation = new SwaggerOperation(swagger, pathEntry.getKey(), operationEntry.getKey(),
             operation);
         if (operations.putIfAbsent(operation.getOperationId(), swaggerOperation) != null) {
