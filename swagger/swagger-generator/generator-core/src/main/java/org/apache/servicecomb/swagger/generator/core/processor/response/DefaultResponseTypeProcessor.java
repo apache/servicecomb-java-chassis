@@ -33,6 +33,8 @@ import io.swagger.models.utils.PropertyModelConverter;
 import io.swagger.util.ReflectionUtils;
 
 public class DefaultResponseTypeProcessor implements ResponseTypeProcessor {
+  protected boolean extractActualType;
+
   @Override
   public Type getProcessType() {
     // not care for this.
@@ -40,33 +42,42 @@ public class DefaultResponseTypeProcessor implements ResponseTypeProcessor {
   }
 
   @Override
-  public Model process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+  public Type extractResponseType(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       Type genericResponseType) {
+    if (extractActualType) {
+      genericResponseType = ((ParameterizedType) genericResponseType).getActualTypeArguments()[0];
+    }
+
+    return doExtractResponseType(genericResponseType);
+  }
+
+  private Type doExtractResponseType(Type genericResponseType) {
     if (!(genericResponseType instanceof ParameterizedType)) {
-      return doProcess(swaggerGenerator, operationGenerator, genericResponseType);
+      return genericResponseType;
     }
 
     // eg:
     //   genericResponseType is CompletableFuture<ResponseEntity<String>>
     //   responseType is ResponseEntity<String>
     //   responseRawType is ResponseEntity
-    Type responseType = ((ParameterizedType) genericResponseType).getActualTypeArguments()[0];
-    Type responseRawType = responseType;
-    if (responseType instanceof ParameterizedType) {
-      responseRawType = ((ParameterizedType) responseType).getRawType();
+    Type responseRawType = genericResponseType;
+    if (genericResponseType instanceof ParameterizedType) {
+      responseRawType = ((ParameterizedType) genericResponseType).getRawType();
     }
 
     ResponseTypeProcessor processor = findResponseTypeProcessor(responseRawType);
     if (responseRawType.equals(processor.getProcessType())) {
-      return processor.process(swaggerGenerator, operationGenerator, responseType);
+      return processor.extractResponseType(genericResponseType);
     }
 
-    return doProcess(swaggerGenerator, operationGenerator, genericResponseType);
+    return genericResponseType;
   }
 
-  protected Model doProcess(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
-      Type responseType) {
-    if (ReflectionUtils.isVoid(responseType)) {
+  @Override
+  public Model process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      Type genericResponseType) {
+    Type responseType = extractResponseType(swaggerGenerator, operationGenerator, genericResponseType);
+    if (responseType == null || ReflectionUtils.isVoid(responseType)) {
       return null;
     }
     SwaggerUtils.addDefinitions(swaggerGenerator.getSwagger(), responseType);

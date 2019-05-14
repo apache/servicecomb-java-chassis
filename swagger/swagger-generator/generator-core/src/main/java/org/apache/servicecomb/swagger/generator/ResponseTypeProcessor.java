@@ -23,5 +23,19 @@ import io.swagger.models.Model;
 public interface ResponseTypeProcessor {
   Type getProcessType();
 
+  /**
+   *
+   * @param swaggerGenerator
+   * @param operationGenerator
+   * @param genericResponseType
+   * @return if genericResponseType is CompletableFuture&lt;String&gt;, then return String
+   */
+  Type extractResponseType(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+      Type genericResponseType);
+
+  default Type extractResponseType(Type genericResponseType) {
+    return extractResponseType(null, null, genericResponseType);
+  }
+
   Model process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator, Type genericResponseType);
 }

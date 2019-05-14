@@ -43,7 +43,7 @@ public class TestPageResponseTypeProcessor {
     Page<?> page = Json.mapper().readValue(json, Page.class);
 
     Assert.assertEquals(
-        "{\"content\":[\"c1\",\"c2\"],\"pageable\":{\"offset\":2,\"pageNumber\":1,\"pageSize\":2,\"paged\":true,\"sort\":{\"empty\":true,\"sorted\":false,\"unsorted\":true},\"unpaged\":false},\"empty\":false,\"first\":false,\"last\":true,\"number\":1,\"numberOfElements\":2,\"size\":2,\"sort\":{\"empty\":true,\"sorted\":false,\"unsorted\":true},\"totalElements\":4,\"totalPages\":2}",
+        "{\"content\":[\"c1\",\"c2\"],\"pageable\":{\"offset\":2,\"pageNumber\":1,\"pageSize\":2,\"paged\":true,\"sort\":{\"sorted\":false,\"unsorted\":true},\"unpaged\":false},\"first\":false,\"last\":true,\"number\":1,\"numberOfElements\":2,\"size\":2,\"sort\":{\"sorted\":false,\"unsorted\":true},\"totalElements\":4,\"totalPages\":2}",
         Json.mapper().writeValueAsString(page));
   }
 }
