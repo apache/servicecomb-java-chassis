@@ -40,12 +40,14 @@ import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
+import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.converter.ModelConverters;
+import io.swagger.models.Info;
 import io.swagger.models.Model;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.Operation;
@@ -63,6 +65,7 @@ import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.ObjectProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
+import io.swagger.models.utils.PropertyModelConverter;
 import io.swagger.util.Yaml;
 
 public final class SwaggerUtils {
@@ -82,8 +85,14 @@ public final class SwaggerUtils {
       String swaggerContent = IOUtils.toString(url, StandardCharsets.UTF_8);
       return internalParseSwagger(swaggerContent);
     } catch (Throwable e) {
-      throw new ServiceCombException("Parse swagger from url failed, ", e);
+      throw new ServiceCombException("Parse swagger from url failed, url=" + url, e);
     }
+  }
+
+  public static Swagger parseAndValidateSwagger(URL url) {
+    Swagger swagger = SwaggerUtils.parseSwagger(url);
+    SwaggerUtils.validateSwagger(swagger);
+    return swagger;
   }
 
   public static Swagger parseSwagger(String swaggerContent) {
@@ -92,6 +101,12 @@ public final class SwaggerUtils {
     } catch (Throwable e) {
       throw new ServiceCombException("Parse swagger from content failed, ", e);
     }
+  }
+
+  public static Swagger parseAndValidateSwagger(String swaggerContent) {
+    Swagger swagger = SwaggerUtils.parseSwagger(swaggerContent);
+    SwaggerUtils.validateSwagger(swagger);
+    return swagger;
   }
 
   /**
@@ -199,6 +214,14 @@ public final class SwaggerUtils {
       throw new IllegalStateException(msg);
     }
     parameter.setProperty(property);
+  }
+
+  public static boolean isBean(Model model) {
+    return isBean(new PropertyModelConverter().modelToProperty(model));
+  }
+
+  public static boolean isBean(Property property) {
+    return property instanceof RefProperty || property instanceof ObjectProperty;
   }
 
   public static boolean isComplexProperty(Property property) {
@@ -311,10 +334,24 @@ public final class SwaggerUtils {
 
   public static boolean isRawJsonType(Parameter param) {
     Object rawJson = param.getVendorExtensions().get(SwaggerConst.EXT_RAW_JSON_TYPE);
-    if (Boolean.class.isInstance(rawJson)) {
+    if (rawJson instanceof Boolean) {
       return (boolean) rawJson;
     }
     return false;
+  }
+
+  public static Class<?> getInterface(Swagger swagger) {
+    Info info = swagger.getInfo();
+    if (info == null) {
+      return null;
+    }
+
+    String name = getInterfaceName(info.getVendorExtensions());
+    if (StringUtils.isEmpty(name)) {
+      return null;
+    }
+
+    return ReflectUtils.getClassByName(name);
   }
 
   public static String getClassName(Map<String, Object> vendorExtensions) {
