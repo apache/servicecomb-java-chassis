@@ -24,6 +24,7 @@ import static org.junit.Assert.assertThat;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
+import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -56,6 +57,10 @@ public class SwaggerDefinitionProcessorTest {
   private class SwaggerTestTarget_EmptyMediaType {
   }
 
+  @SwaggerDefinition()
+  private class EmptySwaggerDefinition {
+  }
+
   @Test
   public void testProcess() {
     Swagger swagger = SwaggerGenerator.generate(SwaggerTestTarget.class);
@@ -83,5 +88,10 @@ public class SwaggerDefinitionProcessorTest {
     Swagger swagger = SwaggerGenerator.generate(SwaggerTestTarget_EmptyMediaType.class);
     assertThat(swagger.getConsumes(), Matchers.contains(MediaType.APPLICATION_XML));
     assertThat(swagger.getProduces(), Matchers.contains(MediaType.TEXT_PLAIN));
+  }
+
+  @Test
+  public void emptySwaggerDefinitionMediaType() {
+    UnitTestSwaggerUtils.testSwagger("schemas/emptySwaggerDefinition.yaml", EmptySwaggerDefinition.class);
   }
 }
