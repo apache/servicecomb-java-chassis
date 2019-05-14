@@ -258,14 +258,13 @@ public class TestSpringmvc {
   @Test
   public void testResponseEntityOptional() {
     UnitTestSwaggerUtils
-        .testSwagger(classLoader, "schemas/testResponseEntityOptional.yaml", context, Echo.class,
-            "testResponseEntityOptional");
+        .testSwagger("schemas/testResponseEntityOptional.yaml", Echo.class, "testResponseEntityOptional");
   }
 
   @Test
   public void testCompletableFutureResponseEntityOptional() {
     UnitTestSwaggerUtils
-        .testSwagger(classLoader, "schemas/testCompletableFutureResponseEntityOptional.yaml", context, Echo.class,
+        .testSwagger("schemas/testCompletableFutureResponseEntityOptional.yaml", Echo.class,
             "testCompletableFutureResponseEntityOptional");
   }
 }
