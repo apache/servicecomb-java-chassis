@@ -26,8 +26,6 @@ import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.processor.response.DefaultResponseTypeProcessor;
 
-import io.swagger.models.Model;
-
 public class JaxrsResponseProcessor extends DefaultResponseTypeProcessor {
   @Override
   public Class<?> getProcessType() {
@@ -35,7 +33,12 @@ public class JaxrsResponseProcessor extends DefaultResponseTypeProcessor {
   }
 
   @Override
-  public Model process(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
+  public Type extractResponseType(Type genericResponseType) {
+    return null;
+  }
+
+  @Override
+  public Type extractResponseType(SwaggerGenerator swaggerGenerator, OperationGenerator operationGenerator,
       Type genericResponseType) {
     // Response can not express respone type
     // if produces is text，then can assume to be string, otherwise can only throw exception
@@ -45,7 +48,7 @@ public class JaxrsResponseProcessor extends DefaultResponseTypeProcessor {
     }
     if (produces != null) {
       if (produces.contains(MediaType.TEXT_PLAIN)) {
-        return doProcess(swaggerGenerator, operationGenerator, String.class);
+        return String.class;
       }
     }
 

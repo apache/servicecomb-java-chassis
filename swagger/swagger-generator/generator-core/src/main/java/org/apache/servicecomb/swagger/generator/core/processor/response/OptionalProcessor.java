@@ -17,22 +17,16 @@
 
 package org.apache.servicecomb.swagger.generator.core.processor.response;
 
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Optional;
 
-import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
-
-import io.swagger.models.Model;
-
 public class OptionalProcessor extends DefaultResponseTypeProcessor {
-  @Override
-  public Class<?> getResponseType() {
-    return Optional.class;
+  public OptionalProcessor() {
+    extractActualType = true;
   }
 
   @Override
-  protected Model doProcess(OperationGenerator operationGenerator, Type genericResponseType) {
-    return super.doProcess(operationGenerator, ((ParameterizedType) genericResponseType).getActualTypeArguments()[0]);
+  public Type getProcessType() {
+    return Optional.class;
   }
 }
