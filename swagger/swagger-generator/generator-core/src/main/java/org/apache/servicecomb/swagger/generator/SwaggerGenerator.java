@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.swagger.generator;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
@@ -51,6 +52,8 @@ public interface SwaggerGenerator {
    */
   void setBasePath(String basePath);
 
+  void scanClassAnnotation();
+
   Swagger generate();
 
   Class<?> getClazz();
@@ -66,4 +69,6 @@ public interface SwaggerGenerator {
   void addDefaultTag(String tagName);
 
   void replaceMethodWhiteList(String... methodNames);
+
+  <T extends OperationGenerator> T createOperationGenerator(Method method);
 }

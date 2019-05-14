@@ -19,7 +19,7 @@ package org.apache.servicecomb.swagger.generator.springmvc;
 
 import java.lang.reflect.Method;
 
-import org.apache.servicecomb.swagger.generator.core.AbstractOperationGenerator;
+import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.rest.RestSwaggerGenerator;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,8 +47,9 @@ public class SpringmvcSwaggerGenerator extends RestSwaggerGenerator {
         method.getAnnotation(DeleteMapping.class) == null;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  protected AbstractOperationGenerator createOperationGenerator(Method method) {
-    return new SpringmvcOperationGenerator(this, method);
+  public <T extends OperationGenerator> T createOperationGenerator(Method method) {
+    return (T) new SpringmvcOperationGenerator(this, method);
   }
 }
