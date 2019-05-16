@@ -78,24 +78,17 @@ public class ServiceCenterTask implements Runnable {
       if (!safeMode && consecutiveFailedTimes.incrementAndGet() > checkTimes) {
         LOGGER.warn("service center is unavailable, enter safe mode");
         eventBus.post(new SafeModeChangeEvent(true));
+        this.safeMode = true;
       }
-      if (consecutiveSucceededTimes.get() != 0) {
-        consecutiveSucceededTimes.set(0);
-      }
+      consecutiveSucceededTimes.set(0);
       return;
     }
     if (safeMode && consecutiveSucceededTimes.incrementAndGet() > checkTimes) {
       LOGGER.warn("service center is recovery, exit safe mode");
       eventBus.post(new SafeModeChangeEvent(false));
+      this.safeMode = false;
     }
-    if (consecutiveFailedTimes.get() != 0) {
-      consecutiveFailedTimes.set(0);
-    }
-  }
-
-  @Subscribe
-  public void onSafeModeChanged(SafeModeChangeEvent modeChangeEvent) {
-    safeMode = modeChangeEvent.getCurrentMode();
+    consecutiveFailedTimes.set(0);
   }
 
   // messages given in watch error
