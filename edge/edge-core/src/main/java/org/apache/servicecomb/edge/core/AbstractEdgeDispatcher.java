@@ -34,6 +34,10 @@ import io.vertx.ext.web.RoutingContext;
 public abstract class AbstractEdgeDispatcher extends AbstractVertxHttpDispatcher {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractEdgeDispatcher.class);
 
+  protected EdgeInvocation createEdgeInvocation() {
+    return new EdgeInvocation();
+  }
+
   protected void onFailure(RoutingContext context) {
     LOGGER.error("edge server failed.", context.failure());
     HttpServerResponse response = context.response();

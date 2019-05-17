@@ -151,7 +151,7 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
 
     String path = Utils.findActualPath(context.request().path(), configurationItem.prefixSegmentCount);
 
-    EdgeInvocation edgeInvocation = new EdgeInvocation();
+    EdgeInvocation edgeInvocation = createEdgeInvocation();
     if (configurationItem.versionRule != null) {
       edgeInvocation.setVersionRule(configurationItem.versionRule);
     }
