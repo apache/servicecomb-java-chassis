@@ -76,7 +76,7 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
     String microserviceName = pathParams.get("param0");
     String path = Utils.findActualPath(context.request().path(), prefixSegmentCount);
 
-    EdgeInvocation edgeInvocation = new EdgeInvocation();
+    EdgeInvocation edgeInvocation =  createEdgeInvocation();
     if (withVersion) {
       String pathVersion = pathParams.get("param1");
       edgeInvocation.setVersionRule(versionMapper.getOrCreate(pathVersion).getVersionRule());

@@ -68,7 +68,7 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
     router.route().failureHandler(this::failureHandler).handler(this::onRequest);
   }
 
-  private void failureHandler(RoutingContext context) {
+  protected void failureHandler(RoutingContext context) {
     LOGGER.error("http server failed.", context.failure());
 
     AbstractRestInvocation restProducerInvocation = context.get(RestConst.REST_PRODUCER_INVOCATION);
@@ -182,7 +182,7 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
     context.response().close();
   }
 
-  private void onRequest(RoutingContext context) {
+  protected void onRequest(RoutingContext context) {
     if (transport == null) {
       transport = CseContext.getInstance().getTransportManager().findTransport(Const.RESTFUL);
     }
