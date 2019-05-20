@@ -267,4 +267,9 @@ public class TestSpringmvc {
         .testSwagger("schemas/testCompletableFutureResponseEntityOptional.yaml", Echo.class,
             "testCompletableFutureResponseEntityOptional");
   }
+
+  @Test
+  public void nestedListString() {
+    UnitTestSwaggerUtils.testSwagger("schemas/nestedListString.yaml", Echo.class, "nestedListString");
+  }
 }

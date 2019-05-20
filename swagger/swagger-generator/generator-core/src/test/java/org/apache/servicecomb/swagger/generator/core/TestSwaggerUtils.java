@@ -128,6 +128,11 @@ public class TestSwaggerUtils {
   }
 
   @Test
+  public void nestedListString() {
+    testSchemaMethod("nestedListString", "nestedListString");
+  }
+
+  @Test
   public void testMap() {
     testSchemaMethod("map", "testMap");
   }

@@ -147,6 +147,10 @@ public class Schema {
 
   }
 
+  public List<List<String>> nestedListString(List<List<String>> param) {
+    return param;
+  }
+
   public void testList(List<User> value) {
 
   }
