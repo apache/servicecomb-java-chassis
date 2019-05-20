@@ -27,6 +27,24 @@ consumes:
 produces:
 - "application/json"
 paths:
+  /nestedListString:
+    post:
+      operationId: "nestedListString"
+      parameters:
+      - in: "body"
+        name: "param"
+        required: false
+        schema:
+          $ref: "#/definitions/nestedListStringBody"
+      responses:
+        200:
+          description: "response of 200"
+          schema:
+            type: "array"
+            items:
+              type: "array"
+              items:
+                type: "string"
   /part:
     post:
       operationId: "part"
@@ -480,6 +498,15 @@ paths:
         "200":
           description: "response of 200"
 definitions:
+  nestedListStringBody:
+    type: "object"
+    properties:
+      param:
+        type: "array"
+        items:
+          type: "array"
+          items:
+            type: "string"
   AllType:
     type: "object"
     properties:

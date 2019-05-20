@@ -164,4 +164,10 @@ public class Echo {
   public void beanParamWithJsonIgnoredTagged(@BeanParam BeanParamWithJsonIgnoredTagged beanParamWithJsonIgnoredTagged) {
 
   }
+
+  @Path("nestedListString")
+  @POST
+  public List<List<String>> nestedListString(List<List<String>> param) {
+    return param;
+  }
 }

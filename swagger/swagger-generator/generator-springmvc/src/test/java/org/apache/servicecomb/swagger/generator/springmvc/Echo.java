@@ -25,6 +25,7 @@ import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -105,5 +106,10 @@ public class Echo {
   @RequestMapping
   public void partListAnnotation(@RequestPart List<MultipartFile> part) {
 
+  }
+
+  @PostMapping("nestedListString")
+  public List<List<String>> nestedListString(@RequestBody List<List<String>> param) {
+    return param;
   }
 }
