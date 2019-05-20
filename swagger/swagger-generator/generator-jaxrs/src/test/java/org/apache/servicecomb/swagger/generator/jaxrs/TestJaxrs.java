@@ -134,6 +134,11 @@ public class TestJaxrs {
   }
 
   @Test
+  public void nestedListString() {
+    UnitTestSwaggerUtils.testSwagger("schemas/nestedListString.yaml", Echo.class, "nestedListString");
+  }
+
+  @Test
   public void beanParamComplexField() {
     UnitTestSwaggerUtils.testException(
         "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.jaxrs.Echo:beanParamComplexField.",
