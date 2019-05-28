@@ -26,6 +26,7 @@ import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpClientFilter;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.definition.OperationConfig;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
@@ -57,6 +58,11 @@ import io.vertx.core.net.impl.ConnectionBase;
 
 public class RestClientInvocation {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestClientInvocation.class);
+
+  private static final String[] INTERNAL_HEADERS = new String[] {
+      org.apache.servicecomb.core.Const.CSE_CONTEXT,
+      org.apache.servicecomb.core.Const.TARGET_MICROSERVICE
+  };
 
   private HttpClientWithContext httpClientWithContext;
 
@@ -121,8 +127,8 @@ public class RestClientInvocation {
     // 从业务线程转移到网络线程中去发送
     invocation.getInvocationStageTrace().startSend();
     httpClientWithContext.runOnContext(httpClient -> {
-      this.setCseContext();
       clientRequest.setTimeout(operationMeta.getConfig().getMsRequestTimeout());
+      processServiceCombHeaders(invocation, operationMeta);
       try {
         restClientRequest.end();
       } catch (Throwable e) {
@@ -131,6 +137,24 @@ public class RestClientInvocation {
         fail((ConnectionBase) clientRequest.connection(), e);
       }
     });
+  }
+
+  /**
+   * If this is a 3rd party invocation, ServiceComb related headers should be removed by default to hide inner
+   * implementation. Otherwise, the InvocationContext will be set into the request headers.
+   *
+   * @see OperationConfig#isClientRequestHeaderFilterEnabled()
+   * @param invocation  invocation determines whether this is an invocation to 3rd party services
+   * @param operationMeta operationMeta determines whether to remove certain headers and which headers should be removed
+   */
+  private void processServiceCombHeaders(Invocation invocation, OperationMeta operationMeta) {
+    if (invocation.isThirdPartyInvocation() && operationMeta.getConfig().isClientRequestHeaderFilterEnabled()) {
+      for (String internalHeaderName : INTERNAL_HEADERS) {
+        clientRequest.headers().remove(internalHeaderName);
+      }
+      return;
+    }
+    this.setCseContext();
   }
 
   private String getLocalAddress() {

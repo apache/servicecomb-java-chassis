@@ -62,6 +62,13 @@ public class OperationConfig {
   private long msRequestTimeout;
 
   /**
+   * whether to remove certain headers from the 3rd party invocations
+   */
+  @InjectProperty(keys = {"request.${op-any-priority}.clientRequestHeaderFilterEnabled",
+      "request.clientRequestHeaderFilterEnabled"}, defaultValue = "true")
+  private boolean clientRequestHeaderFilterEnabled = true;
+
+  /**
    * producer wait in thread pool timeout
    */
   @InjectProperty(keys = {
@@ -131,5 +138,13 @@ public class OperationConfig {
 
   public long getNanoRestRequestWaitInPoolTimeout() {
     return nanoRestRequestWaitInPoolTimeout;
+  }
+
+  public boolean isClientRequestHeaderFilterEnabled() {
+    return clientRequestHeaderFilterEnabled;
+  }
+
+  public void setClientRequestHeaderFilterEnabled(boolean clientRequestHeaderFilterEnabled) {
+    this.clientRequestHeaderFilterEnabled = clientRequestHeaderFilterEnabled;
   }
 }

@@ -47,6 +47,8 @@ import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUti
 import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 
+import com.netflix.config.ConfigurationManager;
+
 import io.swagger.models.Swagger;
 import mockit.Mock;
 import mockit.MockUp;
@@ -87,6 +89,9 @@ public class UnitTestMeta {
     serviceRegistry.getAppManager().setMicroserviceVersionFactory(new PrivateMicroserviceVersionMetaFactory());
     RegistryUtils.setServiceRegistry(serviceRegistry);
     microserviceMeta = new MicroserviceMeta(RegistryUtils.getMicroservice().getServiceName());
+    // ensure the config objects can be updated when configuration changed
+    ConfigurationManager.getConfigInstance()
+        .addConfigurationListener(SCBEngine.getInstance().getPriorityPropertyManager()::configurationListener);
     SCBEngine.getInstance().setProducerMicroserviceMeta(microserviceMeta);
     consumerProviderManager = new ConsumerProviderManager();
 

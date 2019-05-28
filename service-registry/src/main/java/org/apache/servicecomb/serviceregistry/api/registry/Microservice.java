@@ -70,6 +70,8 @@ public class Microservice {
   @JsonIgnore
   private MicroserviceInstance instance;
 
+  private boolean thirdPartyService;
+
   public Microservice() {
   }
 
@@ -222,5 +224,13 @@ public class Microservice {
 
   public void setEnvironment(String environment) {
     this.environment = environment;
+  }
+
+  public boolean isThirdPartyService() {
+    return thirdPartyService;
+  }
+
+  public void setThirdPartyService(boolean thirdPartyService) {
+    this.thirdPartyService = thirdPartyService;
   }
 }

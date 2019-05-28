@@ -67,12 +67,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import io.vertx.core.Context;
 import io.vertx.core.Handler;
+import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.RequestOptions;
 import io.vertx.core.http.impl.Http1xConnectionBaseEx;
+import io.vertx.core.http.impl.headers.VertxHttpHeaders;
 import io.vertx.core.net.NetSocket;
 import io.vertx.core.net.SocketAddress;
 import mockit.Deencapsulation;
@@ -82,11 +84,14 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestRestClientInvocation {
+
+  private static final String TARGET_MICROSERVICE_NAME = "TargetMS";
+
   Handler<Throwable> exceptionHandler;
 
   Handler<Buffer> bodyHandler;
 
-  Map<String, String> headers = new HashMap<>();
+  MultiMap headers = new VertxHttpHeaders();
 
   HttpClientRequest request = mock(HttpClientRequest.class);
 
@@ -102,9 +107,7 @@ public class TestRestClientInvocation {
 
   Response response;
 
-  AsyncResponse asyncResp = resp -> {
-    response = resp;
-  };
+  AsyncResponse asyncResp = resp -> response = resp;
 
   OperationMeta operationMeta = mock(OperationMeta.class);
 
@@ -127,6 +130,8 @@ public class TestRestClientInvocation {
   @Mocked
   Http1xConnectionBaseEx connectionBase;
 
+  OperationConfig operationConfig = new OperationConfig();
+
   @BeforeClass
   public static void classSetup() {
     new MockUp<System>() {
@@ -144,11 +149,12 @@ public class TestRestClientInvocation {
     Deencapsulation.setField(restClientInvocation, "invocation", invocation);
     Deencapsulation.setField(restClientInvocation, "asyncResp", asyncResp);
 
+    when(invocation.getMicroserviceName()).thenReturn(TARGET_MICROSERVICE_NAME);
     when(invocation.getOperationMeta()).thenReturn(operationMeta);
     when(swaggerRestOperation.getPathBuilder()).thenReturn(urlPathBuilder);
     when(swaggerRestOperation.getHttpMethod()).thenReturn("GET");
     when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerRestOperation);
-    when(operationMeta.getConfig()).thenReturn(new OperationConfig());
+    when(operationMeta.getConfig()).thenReturn(operationConfig);
     when(invocation.getEndpoint()).thenReturn(endpoint);
     when(invocation.getMarker()).thenReturn(new ScbMarker(invocation));
     when(endpoint.getAddress()).thenReturn(address);
@@ -156,15 +162,16 @@ public class TestRestClientInvocation {
     when(invocation.getInvocationStageTrace()).thenReturn(invocationStageTrace);
     when(httpClient.request(Mockito.any(), (RequestOptions) Mockito.any(), Mockito.any()))
         .thenReturn(request);
+    when(request.headers()).thenReturn(headers);
 
     doAnswer(a -> {
       exceptionHandler = (Handler<Throwable>) a.getArguments()[0];
       return request;
     }).when(request).exceptionHandler(any());
     doAnswer(a -> {
-      headers.put(a.getArgumentAt(0, String.class), a.getArgumentAt(1, String.class));
+      headers.add(a.getArgumentAt(0, String.class), a.getArgumentAt(1, String.class));
       return request;
-    }).when(request).putHeader((String) any(), (String) any());
+    }).when(request).putHeader(any(), (String) any());
     doAnswer(a -> {
       ((Handler<Void>) a.getArguments()[0]).handle(null);
       return null;
@@ -180,8 +187,51 @@ public class TestRestClientInvocation {
     restClientInvocation.invoke(invocation, asyncResp);
 
     Assert.assertSame(resp, response);
+    Assert.assertThat(headers.names(),
+        Matchers.containsInAnyOrder(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE,
+            org.apache.servicecomb.core.Const.CSE_CONTEXT));
+    Assert.assertEquals(TARGET_MICROSERVICE_NAME, headers.get(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE));
+    Assert.assertEquals("{}", headers.get(org.apache.servicecomb.core.Const.CSE_CONTEXT));
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartSend());
+  }
+
+  @Test
+  public void invoke_3rdPartyService(@Mocked Response resp) throws Exception {
+    doAnswer(a -> {
+      asyncResp.complete(resp);
+      return null;
+    }).when(request).end();
+    when(invocation.isThirdPartyInvocation()).thenReturn(true);
+
+    restClientInvocation.invoke(invocation, asyncResp);
+
+    Assert.assertSame(resp, response);
+    Assert.assertThat(headers.names(), Matchers.empty());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartSend());
+  }
+
+  @Test
+  public void invoke_3rdPartyServiceExposeServiceCombHeaders(@Mocked Response resp) throws Exception {
+    doAnswer(a -> {
+      asyncResp.complete(resp);
+      return null;
+    }).when(request).end();
+    when(invocation.isThirdPartyInvocation()).thenReturn(true);
+    operationConfig.setClientRequestHeaderFilterEnabled(false);
+
+    restClientInvocation.invoke(invocation, asyncResp);
+
+    Assert.assertSame(resp, response);
+    Assert.assertThat(headers.names(),
+        Matchers.containsInAnyOrder(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE,
+            org.apache.servicecomb.core.Const.CSE_CONTEXT));
+    Assert.assertEquals(TARGET_MICROSERVICE_NAME, headers.get(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE));
+    Assert.assertEquals("{}", headers.get(org.apache.servicecomb.core.Const.CSE_CONTEXT));
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartClientFiltersRequest());
+    Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartSend());
+    operationConfig.setClientRequestHeaderFilterEnabled(true);
   }
 
   @Test
@@ -216,7 +266,7 @@ public class TestRestClientInvocation {
 
     restClientInvocation.setCseContext();
 
-    Assert.assertEquals("{x-cse-context={\"k\":\"v\"}}", headers.toString());
+    Assert.assertEquals("x-cse-context: {\"k\":\"v\"}\n", headers.toString());
   }
 
   @Test

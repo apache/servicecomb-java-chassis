@@ -311,4 +311,18 @@ public class TestInvocation {
     Assert.assertEquals("abc-1", invocation.getMarker().toString());
     Assert.assertEquals("abc-1", invocation.getMarker().getName());
   }
+
+  @Test
+  public void isThirdPartyInvocation(@Mocked ReferenceConfig referenceConfig) {
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, swaggerArguments);
+    Assert.assertFalse(invocation.isThirdPartyInvocation());
+
+    new Expectations() {
+      {
+        referenceConfig.is3rdPartyService();
+        result = true;
+      }
+    };
+    Assert.assertTrue(invocation.isThirdPartyInvocation());
+  }
 }

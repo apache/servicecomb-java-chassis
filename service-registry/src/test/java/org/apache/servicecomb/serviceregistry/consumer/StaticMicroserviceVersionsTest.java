@@ -131,7 +131,7 @@ public class StaticMicroserviceVersionsTest {
   private StaticMicroserviceVersions createStaticMicroserviceVersions() {
     EventBus eventBus = new EventBus();
     AppManager appManager = new AppManager(eventBus);
-    appManager.setStaticMicroserviceVersionFactory(microservice -> new MicroserviceVersion(microservice));
+    appManager.setStaticMicroserviceVersionFactory(MicroserviceVersion::new);
     return new StaticMicroserviceVersions(
         appManager, APP_ID, MICROSERVICE_NAME, TestServiceIntf.class);
   }
