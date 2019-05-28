@@ -18,6 +18,7 @@
 package org.apache.servicecomb.it.testcase.thirdparty;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -31,12 +32,16 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.xml.ws.Holder;
 
-import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
+import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.it.Consumers;
+import org.apache.servicecomb.it.extend.engine.ITSCBRestTemplate;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.provider.springmvc.reference.async.CseAsyncRestTemplate;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -53,7 +58,8 @@ public class Test3rdPartyInvocation {
   private static final String ASYNC_THIRD_PARTY_MICROSERVICE_NAME = THIRD_PARTY_MICROSERVICE_NAME + "Async";
 
   // to get endpoint from urlPrefix
-  static GateRestTemplate rt = GateRestTemplate.createEdgeRestTemplate("dataTypeJaxrs");
+  private static Consumers<DataTypeJaxrsSchemaIntf> consumersJaxrs =
+      new Consumers<>("dataTypePojo", DataTypeJaxrsSchemaIntf.class);
 
   private static DataTypeJaxrsSchemaIntf dataTypeJaxrsSchema;
 
@@ -61,10 +67,8 @@ public class Test3rdPartyInvocation {
 
   @BeforeClass
   public static void beforeClass() {
-    String urlPrefix = rt.getUrlPrefix();
-    int beginIndex = urlPrefix.indexOf("//");
-    int endIndex = urlPrefix.indexOf("/", beginIndex + 3);
-    String endpoint = "rest:" + urlPrefix.substring(beginIndex, endIndex);
+    String endpoint =
+        ((ITSCBRestTemplate) consumersJaxrs.getSCBRestTemplate()).getAddress(Const.RESTFUL);
     RegistryUtils.getServiceRegistry()
         .registerMicroserviceMappingByEndpoints(
             THIRD_PARTY_MICROSERVICE_NAME, "1.2.1",
@@ -105,6 +109,22 @@ public class Test3rdPartyInvocation {
   }
 
   @Test
+  public void testExposeServiceCombHeaders() {
+    String testParam = "test";
+    String testParam2 = "test2";
+    List<String> response = dataTypeJaxrsSchema.getRequestHeaders(testParam, testParam2);
+    // user defined header, even though start with x-cse, will not be removed
+    Assert.assertThat(response, Matchers.contains("host", "x-cse-test", "x-cse-test2"));
+
+    ArchaiusUtils.setProperty("servicecomb.request.3rdPartyDataTypeJaxrs.clientRequestHeaderFilterEnabled", "false");
+    response = dataTypeJaxrsSchema.getRequestHeaders(testParam, testParam2);
+    Assert.assertThat(response,
+        Matchers.contains("host", "x-cse-context", "x-cse-target-microservice", "x-cse-test", "x-cse-test2"));
+
+    ArchaiusUtils.setProperty("servicecomb.request.3rdPartyDataTypeJaxrs.clientRequestHeaderFilterEnabled", "true");
+  }
+
+  @Test
   public void testAsyncInvoke_RPC() throws ExecutionException, InterruptedException {
     Holder<Boolean> addChecked = new Holder<>(false);
     dataTypeJaxrsSchemaAsync.intAdd(5, 6).whenComplete((result, t) -> {
@@ -136,13 +156,13 @@ public class Test3rdPartyInvocation {
     RestTemplate restTemplate = RestTemplateBuilder.create();
     ResponseEntity<Integer> responseEntity = restTemplate
         .getForEntity(
-            "cse://" + THIRD_PARTY_MICROSERVICE_NAME + "/rest/it-producer/v1/dataTypeJaxrs/intAdd?num1=11&num2=22",
+            "cse://" + THIRD_PARTY_MICROSERVICE_NAME + "/v1/dataTypeJaxrs/intAdd?num1=11&num2=22",
             int.class);
     Assert.assertEquals(200, responseEntity.getStatusCodeValue());
     Assert.assertEquals(33, responseEntity.getBody().intValue());
 
     ResponseEntity<String> stringBodyResponse = restTemplate
-        .exchange("cse://" + THIRD_PARTY_MICROSERVICE_NAME + "/rest/it-producer/v1/dataTypeJaxrs/stringBody",
+        .exchange("cse://" + THIRD_PARTY_MICROSERVICE_NAME + "/v1/dataTypeJaxrs/stringBody",
             HttpMethod.POST,
             new HttpEntity<>("abc"), String.class);
     Assert.assertEquals(200, stringBodyResponse.getStatusCodeValue());
@@ -155,14 +175,14 @@ public class Test3rdPartyInvocation {
     ListenableFuture<ResponseEntity<Integer>> responseFuture = cseAsyncRestTemplate
         .getForEntity(
             "cse://" + ASYNC_THIRD_PARTY_MICROSERVICE_NAME
-                + "/rest/it-producer/v1/dataTypeJaxrs/intAdd?num1=11&num2=22",
+                + "/v1/dataTypeJaxrs/intAdd?num1=11&num2=22",
             Integer.class);
     ResponseEntity<Integer> responseEntity = responseFuture.get();
     Assert.assertEquals(200, responseEntity.getStatusCodeValue());
     Assert.assertEquals(33, responseEntity.getBody().intValue());
 
     ListenableFuture<ResponseEntity<String>> stringBodyFuture = cseAsyncRestTemplate
-        .exchange("cse://" + ASYNC_THIRD_PARTY_MICROSERVICE_NAME + "/rest/it-producer/v1/dataTypeJaxrs/stringBody",
+        .exchange("cse://" + ASYNC_THIRD_PARTY_MICROSERVICE_NAME + "/v1/dataTypeJaxrs/stringBody",
             HttpMethod.POST,
             new HttpEntity<>("abc"), String.class);
     ResponseEntity<String> stringBodyResponse = stringBodyFuture.get();
@@ -170,7 +190,7 @@ public class Test3rdPartyInvocation {
     Assert.assertEquals("abc", stringBodyResponse.getBody());
   }
 
-  @Path("/rest/it-producer/v1/dataTypeJaxrs")
+  @Path("/v1/dataTypeJaxrs")
   interface DataTypeJaxrsSchemaIntf {
     @Path("intPath/{input}")
     @GET
@@ -228,9 +248,14 @@ public class Test3rdPartyInvocation {
     @Path("stringConcat")
     @GET
     String stringConcat(@QueryParam("str1") String str1, @QueryParam("str2") String str2);
+
+    @Path("requestHeaders")
+    @GET
+    List<String> getRequestHeaders(@HeaderParam(value = "x-cse-test") String testServiceCombHeader,
+        @HeaderParam(value = "x-cse-test2") String testServiceCombHeader2);
   }
 
-  @Path("/rest/it-producer/v1/dataTypeJaxrs")
+  @Path("/v1/dataTypeJaxrs")
   interface DataTypeJaxrsSchemaAsyncIntf {
     @Path("intAdd")
     @GET
