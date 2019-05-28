@@ -16,11 +16,14 @@
  */
 package org.apache.servicecomb.it.extend.engine;
 
+import java.util.Optional;
+
 import org.apache.servicecomb.core.definition.MicroserviceVersionMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 
@@ -30,6 +33,8 @@ public class ITSCBRestTemplate extends CseRestTemplate {
   private String schemaId;
 
   private String basePath;
+
+  private MicroserviceInstance instance;
 
   public ITSCBRestTemplate(String schemaId) {
     this.schemaId = schemaId;
@@ -44,6 +49,9 @@ public class ITSCBRestTemplate extends CseRestTemplate {
     SchemaMeta schemaMeta = microserviceVersionMeta.getMicroserviceMeta().ensureFindSchemaMeta(schemaId);
     basePath = schemaMeta.getSwagger().getBasePath();
     urlPrefix = String.format("cse://%s%s", producerName, basePath);
+    instance = RegistryUtils.getServiceRegistry().getAppManager()
+        .getOrCreateMicroserviceManager(RegistryUtils.getAppId())
+        .getOrCreateMicroserviceVersions(producerName).getPulledInstances().get(0);
 
     setUriTemplateHandler(new ITUriTemplateHandler(urlPrefix));
     setRequestFactory(new ITClientHttpRequestFactory());
@@ -57,5 +65,12 @@ public class ITSCBRestTemplate extends CseRestTemplate {
 
   public String getUrlPrefix() {
     return urlPrefix;
+  }
+
+  public String getAddress(String transport) {
+    Optional<String> addressHolder = instance.getEndpoints().stream()
+        .filter(endpoint -> endpoint.startsWith(transport))
+        .findFirst();
+    return addressHolder.get();
   }
 }

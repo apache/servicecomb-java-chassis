@@ -16,8 +16,12 @@
  */
 package org.apache.servicecomb.it.schema;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -247,5 +251,18 @@ public class DataTypeJaxrsSchema {
   @GET
   public String queryArrMULTI(@ApiParam(collectionFormat = "multi") @QueryParam("queryArr") String[] queryArr) {
     return Arrays.toString(queryArr) + queryArr.length;
+  }
+
+  @Path("requestHeaders")
+  @GET
+  public List<String> getRequestHeaders(@HeaderParam(value = "x-cse-test") String testServiceCombHeader,
+      @HeaderParam(value = "x-cse-test2") String testServiceCombHeader2, HttpServletRequest request) {
+    ArrayList<String> response = new ArrayList<>();
+    Enumeration<String> requestHeaders = request.getHeaderNames();
+    while (requestHeaders.hasMoreElements()) {
+      response.add(requestHeaders.nextElement());
+    }
+    response.sort(String::compareTo);
+    return response;
   }
 }
