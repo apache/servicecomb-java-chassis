@@ -48,7 +48,7 @@ public class Invocation extends SwaggerInvocation {
   protected static final AtomicLong INVOCATION_ID = new AtomicLong();
 
   static Collection<TraceIdGenerator> loadTraceIdGenerators() {
-    return SPIServiceUtils.getPriorityHighestServices(generator -> generator.getName(), TraceIdGenerator.class);
+    return SPIServiceUtils.getPriorityHighestServices(TraceIdGenerator::getName, TraceIdGenerator.class);
   }
 
   private ReferenceConfig referenceConfig;
@@ -339,5 +339,9 @@ public class Invocation extends SwaggerInvocation {
 
   public void setEdge(boolean edge) {
     this.edge = edge;
+  }
+
+  public boolean isThirdPartyInvocation() {
+    return referenceConfig.is3rdPartyService();
   }
 }

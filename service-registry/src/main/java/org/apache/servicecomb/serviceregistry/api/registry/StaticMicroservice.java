@@ -20,6 +20,10 @@ package org.apache.servicecomb.serviceregistry.api.registry;
 public class StaticMicroservice extends Microservice {
   private Class<?> schemaIntfCls;
 
+  public StaticMicroservice() {
+    setThirdPartyService(true);
+  }
+
   public Class<?> getSchemaIntfCls() {
     return schemaIntfCls;
   }

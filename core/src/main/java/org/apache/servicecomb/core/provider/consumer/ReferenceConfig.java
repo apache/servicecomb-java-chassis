@@ -76,4 +76,8 @@ public class ReferenceConfig {
   public void setTransport(String transport) {
     this.transport = transport;
   }
+
+  public boolean is3rdPartyService() {
+    return microserviceVersionRule.getLatestMicroserviceVersion().getMicroservice().isThirdPartyService();
+  }
 }
