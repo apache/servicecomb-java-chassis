@@ -64,8 +64,7 @@ public class OperationConfig {
   /**
    * whether to remove certain headers from the 3rd party invocations
    */
-  @InjectProperty(keys = {"request.${op-any-priority}.clientRequestHeaderFilterEnabled",
-      "request.clientRequestHeaderFilterEnabled"}, defaultValue = "true")
+  @InjectProperty(keys = {"request.clientRequestHeaderFilterEnabled${consumer-op-priority}"}, defaultValue = "true")
   private boolean clientRequestHeaderFilterEnabled = true;
 
   /**

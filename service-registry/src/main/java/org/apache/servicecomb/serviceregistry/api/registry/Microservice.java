@@ -70,6 +70,12 @@ public class Microservice {
   @JsonIgnore
   private MicroserviceInstance instance;
 
+  /**
+   * Currently this field only exists in ServiceComb-Java-Chassis,
+   * and ServiceComb-Service-Center does not hold this field.
+   * Once the 3rd party services are supported to be registered into ServiceComb-Service-Center,
+   * the corresponding field should be added into Service-Center.
+   */
   private boolean thirdPartyService;
 
   public Microservice() {
