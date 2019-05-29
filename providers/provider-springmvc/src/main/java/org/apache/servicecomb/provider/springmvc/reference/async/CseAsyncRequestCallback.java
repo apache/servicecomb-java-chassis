@@ -19,6 +19,7 @@ package org.apache.servicecomb.provider.springmvc.reference.async;
 
 import org.apache.servicecomb.provider.springmvc.reference.CseHttpEntity;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.client.AsyncClientHttpRequest;
 import org.springframework.web.client.AsyncRequestCallback;
 
@@ -32,8 +33,9 @@ public class CseAsyncRequestCallback<T> implements AsyncRequestCallback {
   @Override
   public void doWithRequest(AsyncClientHttpRequest request) {
     CseAsyncClientHttpRequest cseAsyncClientHttpRequest = (CseAsyncClientHttpRequest) request;
-    if (requestBody != null) {
-      cseAsyncClientHttpRequest.setRequestBody(requestBody.getBody());
+      if (requestBody != null) {
+        cseAsyncClientHttpRequest.setRequestBody(requestBody.getBody());
+        cseAsyncClientHttpRequest.setHttpHeaders(requestBody.getHeaders());
     }
 
     if (!CseHttpEntity.class.isInstance(requestBody)) {
