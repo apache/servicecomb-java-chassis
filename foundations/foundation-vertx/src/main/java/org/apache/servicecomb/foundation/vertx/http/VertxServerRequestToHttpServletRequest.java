@@ -84,7 +84,6 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
   public void setBodyBuffer(Buffer bodyBuffer) {
     super.setBodyBuffer(bodyBuffer);
     context.setBody(bodyBuffer);
-    this.inputStream = null;
   }
 
   @Override
