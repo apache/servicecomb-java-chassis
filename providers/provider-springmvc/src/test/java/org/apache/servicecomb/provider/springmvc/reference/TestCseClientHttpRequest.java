@@ -32,6 +32,7 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -84,8 +85,10 @@ public class TestCseClientHttpRequest {
           }
         };
     byte[] body = "abc".getBytes();
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("token", "123");
     client.setRequestBody(body);
-
+    client.setHttpHeaders(headers);
     client.execute();
 
     Assert.assertArrayEquals(body, holder.value.getSwaggerArgument(0));
