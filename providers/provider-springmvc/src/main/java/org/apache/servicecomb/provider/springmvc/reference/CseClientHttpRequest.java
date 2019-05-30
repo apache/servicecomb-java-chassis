@@ -112,6 +112,12 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     this.requestBody = requestBody;
   }
 
+  public void setHttpHeaders(HttpHeaders headers) {
+    if (headers != null) {
+      this.httpHeaders = headers;
+    }
+  }
+
   @Override
   public HttpMethod getMethod() {
     return method;
