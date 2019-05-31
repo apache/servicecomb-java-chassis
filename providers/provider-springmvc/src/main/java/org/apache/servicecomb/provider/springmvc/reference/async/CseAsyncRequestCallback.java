@@ -34,6 +34,7 @@ public class CseAsyncRequestCallback<T> implements AsyncRequestCallback {
     CseAsyncClientHttpRequest cseAsyncClientHttpRequest = (CseAsyncClientHttpRequest) request;
     if (requestBody != null) {
       cseAsyncClientHttpRequest.setRequestBody(requestBody.getBody());
+      cseAsyncClientHttpRequest.setHttpHeaders(requestBody.getHeaders());
     }
 
     if (!CseHttpEntity.class.isInstance(requestBody)) {

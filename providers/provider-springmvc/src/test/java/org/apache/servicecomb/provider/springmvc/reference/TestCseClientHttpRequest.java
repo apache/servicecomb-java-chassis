@@ -32,8 +32,10 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -53,7 +55,7 @@ public class TestCseClientHttpRequest {
   @RequestMapping(path = "SpringmvcImpl")
   static class SpringmvcImpl {
     @RequestMapping(path = "/bytes", method = RequestMethod.POST)
-    public byte[] bytes(@RequestBody byte[] input) {
+    public byte[] bytes(@RequestBody byte[] input, @RequestHeader String token) {
       input[0] = (byte) (input[0] + 1);
       return input;
     }
@@ -84,10 +86,14 @@ public class TestCseClientHttpRequest {
           }
         };
     byte[] body = "abc".getBytes();
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("token", "123");
     client.setRequestBody(body);
+    client.setHttpHeaders(headers);
 
     client.execute();
 
     Assert.assertArrayEquals(body, holder.value.getSwaggerArgument(0));
+    Assert.assertEquals("123", holder.value.getSwaggerArgument(1));
   }
 }
