@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.annotations.VisibleForTesting;
 import com.netflix.loadbalancer.LoadBalancerStats;
 
-
 /**
  *  A load balancer with RuleExt and ServerListFilterExt
  */
@@ -65,7 +64,17 @@ public class LoadBalancer {
         break;
       }
     }
-    return rule.choose(servers, invocation);
+    ServiceCombServer server = rule.choose(servers, invocation);
+    if (null == server) {
+      return null;
+    }
+    ServiceCombServerStats serverStats = ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(server);
+    if (serverStats.isIsolated()) {
+      LOGGER.info("The Service {}'s instance {} has been isolated for a while, give a single test opportunity.",
+          invocation.getMicroserviceName(),
+          server.getInstance().getInstanceId());
+    }
+    return server;
   }
 
   public LoadBalancerStats getLoadBalancerStats() {

@@ -17,7 +17,11 @@
 
 package org.apache.servicecomb.loadbalance;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Special stats that com.netflix.loadbalancer.ServerStats not provided.
@@ -27,9 +31,19 @@ import java.util.concurrent.atomic.AtomicLong;
 public class ServiceCombServerStats {
   private static final long TIME_WINDOW_IN_MILLISECONDS = 60000;
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCombServerStats.class);
+
+  /**
+   * There is not more than 1 server allowed to stay in TRYING status concurrently.
+   * If the value of globalAllowIsolatedServerTryingFlag is false, there have been 1 server in
+   * TRYING status, so the other isolated servers cannot be transferred into
+   * TRYING status; otherwise the value of globalAllowIsolatedServerTryingFlag is true.
+   */
+  private static AtomicBoolean globalAllowIsolatedServerTryingFlag = new AtomicBoolean(true);
+
   private long lastWindow = System.currentTimeMillis();
 
-  private Object lock = new Object();
+  private final Object lock = new Object();
 
   private AtomicLong continuousFailureCount = new AtomicLong(0);
 
@@ -45,6 +59,23 @@ public class ServiceCombServerStats {
 
   private boolean isolated = false;
 
+  public static boolean isolatedServerCanTry() {
+    return globalAllowIsolatedServerTryingFlag.get();
+  }
+
+  /**
+   * Applying for a trying chance for the isolated server. There is only 1 trying chance globally concurrently.
+   *
+   * @return true if the chance is applied successfully, otherwise false
+   */
+  public static boolean applyForTryingChance() {
+    return isolatedServerCanTry() && globalAllowIsolatedServerTryingFlag.compareAndSet(true, false);
+  }
+
+  public static void releaseTryingChance() {
+    globalAllowIsolatedServerTryingFlag.set(true);
+  }
+
   public void markIsolated(boolean isolated) {
     this.isolated = isolated;
   }
@@ -57,6 +88,9 @@ public class ServiceCombServerStats {
     totalRequests.incrementAndGet();
     successRequests.incrementAndGet();
     continuousFailureCount.set(0);
+    if (isolated) {
+      LOGGER.info("trying server invocation success!");
+    }
   }
 
   public void markFailure() {

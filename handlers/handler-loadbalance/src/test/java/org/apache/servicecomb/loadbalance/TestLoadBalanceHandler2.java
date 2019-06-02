@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.NonSwaggerInvocation;
 import org.apache.servicecomb.core.SCBEngine;
@@ -53,6 +54,7 @@ import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTree;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTreeNode;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -79,12 +81,14 @@ public class TestLoadBalanceHandler2 {
   public void setUp() {
     // clear up load balance stats
     ServiceCombLoadBalancerStats.INSTANCE.init();
+    ServiceCombServerStats.releaseTryingChance();
   }
 
   @After
   public void teardown() {
     CseContext.getInstance().setTransportManager(null);
     ArchaiusUtils.resetConfig();
+    ServiceCombServerStats.releaseTryingChance();
   }
 
   @Test
@@ -820,5 +824,138 @@ public class TestLoadBalanceHandler2 {
     } catch (Exception e) {
       Assert.assertTrue(e.getMessage().contains("the endpoint's transport is not found."));
     }
+  }
+
+  @Test
+  public void trying_chance_should_be_released() {
+    List<ServiceCombServer> servers = new ArrayList<>();
+    ServiceCombServer serviceCombServer = createMockedServer("instanceId", "rest://127.0.0.1:8080");
+    servers.add(serviceCombServer);
+
+    DiscoveryTree discoveryTree = createMockedDiscoveryTree(servers);
+    LoadbalanceHandler handler = new LoadbalanceHandler(discoveryTree);
+
+    // mock the process of the isolated server selected and changed to TRYING status
+    ServiceCombServerStats serviceCombServerStats =
+        mockServiceCombServerStats(serviceCombServer, 5, true);
+
+    Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName", "0.0.0+",
+        (inv, aysnc) -> {
+          Assert.assertEquals("rest://127.0.0.1:8080", inv.getEndpoint().getEndpoint());
+          Assert.assertTrue(serviceCombServerStats.isIsolated());
+          Assert.assertEquals(5, serviceCombServerStats.getCountinuousFailureCount());
+          Assert.assertFalse(ServiceCombServerStats.isolatedServerCanTry());
+          aysnc.success("OK");
+        });
+
+    Assert.assertTrue(ServiceCombServerStats.applyForTryingChance());
+    invocation.addLocalContext(IsolationDiscoveryFilter.TRYING_INSTANCES_EXISTING, true);
+    try {
+      handler.handle(invocation, (response) -> Assert.assertEquals("OK", response.getResult()));
+    } catch (Exception e) {
+      Assert.fail("unexpected exception " + e.getMessage());
+    }
+    Assert.assertEquals("rest://127.0.0.1:8080", invocation.getEndpoint().getEndpoint());
+    Assert.assertTrue(serviceCombServerStats.isIsolated());
+    Assert.assertEquals(0, serviceCombServerStats.getCountinuousFailureCount());
+    Assert.assertTrue(ServiceCombServerStats.isolatedServerCanTry());
+  }
+
+  /**
+   * Two available instances, first time the normal instance is selected and failed. Then retry to the TRYING status
+   * instance. In the whole procedure, the TRYING status instance should keep the TRYING status.
+   */
+  @Test
+  public void first_normal_instance_then_trying_instance() {
+    ExtensionsManager.addExtentionsFactory(new DefaultRetryExtensionsFactory());
+    ArchaiusUtils.setProperty("servicecomb.loadbalance.retryEnabled", true);
+    ArchaiusUtils.setProperty("servicecomb.loadbalance.retryOnNext", 1);
+
+    ArrayList<ServiceCombServer> servers = new ArrayList<>();
+    ServiceCombServer server0 = createMockedServer("instanceId0", "rest://127.0.0.1:8080");
+    ServiceCombServer server1 = createMockedServer("instanceId1", "rest://127.0.0.1:8081");
+    servers.add(server0);
+    servers.add(server1);
+
+    ServiceCombServerStats stats0 = mockServiceCombServerStats(server0, 0, false);
+    ServiceCombServerStats stats1 = mockServiceCombServerStats(server1, 5, true);
+
+    DiscoveryTree discoveryTree = createMockedDiscoveryTree(servers);
+    LoadbalanceHandler handler = new LoadbalanceHandler(discoveryTree);
+
+    Holder<Integer> counter = new Holder<>(0);
+    Invocation invocation = new NonSwaggerInvocation("testApp", "testMicroserviceName", "0.0.0+",
+        (inv, aysnc) -> {
+          Assert.assertFalse(stats0.isIsolated());
+          Assert.assertTrue(stats1.isIsolated());
+          Assert.assertEquals(5, stats1.getCountinuousFailureCount());
+          Assert.assertFalse(ServiceCombServerStats.isolatedServerCanTry());
+          if (counter.value == 0) {
+            Assert.assertEquals("rest://127.0.0.1:8080", inv.getEndpoint().getEndpoint());
+            Assert.assertEquals(0, stats0.getCountinuousFailureCount());
+            counter.value++;
+            aysnc.producerFail(new InvocationException(503, "RETRY", "retry to next instance"));
+          } else if (counter.value == 1) {
+            Assert.assertEquals("rest://127.0.0.1:8081", inv.getEndpoint().getEndpoint());
+            Assert.assertEquals(1, stats0.getCountinuousFailureCount());
+            counter.value++;
+            aysnc.success("OK");
+          } else {
+            aysnc.producerFail(new InvocationException(400, "UNEXPECTED", "Unexpected Counter Value"));
+          }
+        });
+
+    Assert.assertTrue(ServiceCombServerStats.applyForTryingChance());
+    invocation.addLocalContext(IsolationDiscoveryFilter.TRYING_INSTANCES_EXISTING, true);
+    try {
+      handler.handle(invocation, (response) -> Assert.assertEquals("OK", response.getResult()));
+    } catch (Exception e) {
+      Assert.fail("unexpected exception " + e.getMessage());
+    }
+    Assert.assertEquals("rest://127.0.0.1:8081", invocation.getEndpoint().getEndpoint());
+    Assert.assertFalse(stats0.isIsolated());
+    Assert.assertEquals(1, stats0.getCountinuousFailureCount());
+    Assert.assertTrue(stats1.isIsolated());
+    Assert.assertEquals(0, stats1.getCountinuousFailureCount());
+    Assert.assertTrue(ServiceCombServerStats.isolatedServerCanTry());
+  }
+
+  /**
+   * Mock the statistics of the specified {@code serviceCombServer}, set the failureCount and status.
+   * @return the ServiceCombServerStats object corresponding to the param {@code serviceCombServer}
+   */
+  private ServiceCombServerStats mockServiceCombServerStats(ServiceCombServer serviceCombServer, int failureCount,
+      boolean isIsolatedStatus) {
+    ServiceCombServerStats serviceCombServerStats =
+        ServiceCombLoadBalancerStats.INSTANCE.getServiceCombServerStats(serviceCombServer);
+    for (int i = 0; i < failureCount; ++i) {
+      serviceCombServerStats.markFailure();
+    }
+    serviceCombServerStats.markIsolated(isIsolatedStatus);
+    return serviceCombServerStats;
+  }
+
+  /**
+   * Create a mocked ServiceCombServer with specified microserviceInstanceId and endpoint.
+   */
+  private ServiceCombServer createMockedServer(String microserviceInstanceId, String endpoint) {
+    MicroserviceInstance microserviceInstance = new MicroserviceInstance();
+    microserviceInstance.setInstanceId(microserviceInstanceId);
+    return new ServiceCombServer(
+        new Endpoint(Mockito.mock(Transport.class), endpoint),
+        microserviceInstance);
+  }
+
+  /**
+   * Create a mocked DiscoveryTree that always returns {@code servers} as the versionedCache result.
+   */
+  private DiscoveryTree createMockedDiscoveryTree(List<ServiceCombServer> servers) {
+    DiscoveryTree discoveryTree = Mockito.mock(DiscoveryTree.class);
+    DiscoveryTreeNode versionedCache = new DiscoveryTreeNode()
+        .name("testVersionedCacheName")
+        .data(servers);
+    Mockito.when(discoveryTree.discovery(Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+        .thenReturn(versionedCache);
+    return discoveryTree;
   }
 }

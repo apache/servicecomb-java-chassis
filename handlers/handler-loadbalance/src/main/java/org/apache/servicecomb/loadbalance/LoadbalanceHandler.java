@@ -40,6 +40,7 @@ import org.apache.servicecomb.core.provider.consumer.SyncResponseExecutor;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
+import org.apache.servicecomb.loadbalance.filter.IsolationDiscoveryFilter;
 import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryFilter;
@@ -94,6 +95,7 @@ public class LoadbalanceHandler implements Handler {
 
     @Override
     public Server chooseServer(Object key) {
+      boolean isRetry = null != lastServer;
       for (int i = 0; i < COUNT; i++) {
         Server s = delegate.chooseServer((Invocation) key);
         if (s != null && !s.equals(lastServer)) {
@@ -101,10 +103,12 @@ public class LoadbalanceHandler implements Handler {
           break;
         }
       }
+      if (isRetry) {
+        LOGGER.info("retry to instance [{}]", lastServer.getHostPort());
+      }
 
       return lastServer;
     }
-
 
     @Override
     public void markServerDown(Server server) {
@@ -184,6 +188,13 @@ public class LoadbalanceHandler implements Handler {
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    AsyncResponse response = asyncResp;
+    asyncResp = async -> {
+      if (Boolean.TRUE.equals(invocation.getLocalContext(IsolationDiscoveryFilter.TRYING_INSTANCES_EXISTING))) {
+        ServiceCombServerStats.releaseTryingChance();
+      }
+      response.handle(async);
+    };
     if (supportDefinedEndpoint) {
       if (defineEndpointAndHandle(invocation, asyncResp)) {
         return;

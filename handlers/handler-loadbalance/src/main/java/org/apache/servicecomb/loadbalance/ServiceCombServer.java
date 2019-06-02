@@ -17,6 +17,9 @@
 
 package org.apache.servicecomb.loadbalance;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
@@ -64,6 +67,12 @@ public class ServiceCombServer extends Server {
     // To make all rules work only on "how to choose a server from alive servers", we do not rely on Robbin defined status
     this.setAlive(true);
     this.setReadyToServe(true);
+    try {
+      URI endpointURI = new URI(endpoint.getEndpoint());
+      setHost(endpointURI.getHost());
+      setPort(endpointURI.getPort());
+    } catch (URISyntaxException ignored) {
+    }
   }
 
   public Endpoint getEndpoint() {
