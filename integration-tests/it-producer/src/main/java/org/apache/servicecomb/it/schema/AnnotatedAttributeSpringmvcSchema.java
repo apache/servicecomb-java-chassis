@@ -16,7 +16,11 @@
  */
 package org.apache.servicecomb.it.schema;
 
+import java.io.InputStream;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +30,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.google.common.base.Charsets;
 
 @RestSchema(schemaId = "annotatedAttributeSpringmvc")
 @RequestMapping(path = "/v1/annotatedAttributeSpringmvc")
@@ -67,10 +74,19 @@ public class AnnotatedAttributeSpringmvcSchema {
     return inputs + "," + inputs2 + "," + inputs3;
   }
 
-  @PostMapping("fromPart")
-  public String fromPart(@RequestPart("input") String inputs, @RequestPart(value = "input2") String inputs2,
-      @RequestPart(name = "input3") String inputs3) {
-    return inputs + "," + inputs2 + "," + inputs3;
+  @PostMapping(path = "fromPart", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_PLAIN_VALUE)
+  public String fromPart(@RequestPart("input") MultipartFile input,
+      @RequestPart(value = "input2") MultipartFile input2,
+      @RequestPart(name = "input3") MultipartFile input3) {
+    try (InputStream is1 = input.getInputStream(); InputStream is2 = input2
+        .getInputStream(); InputStream is3 = input3.getInputStream()) {
+      String content1 = IOUtils.toString(is1, Charsets.UTF_8);
+      String content2 = IOUtils.toString(is2, Charsets.UTF_8);
+      String content3 = IOUtils.toString(is3, Charsets.UTF_8);
+      return content1 + "," + content2 + "," + content3;
+    } catch (Exception e) {
+      throw new IllegalArgumentException(e);
+    }
   }
 
   @PostMapping("fromAttribute")

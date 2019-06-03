@@ -19,18 +19,25 @@ package org.apache.servicecomb.it.testcase;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Test;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+
+import com.google.common.base.Charsets;
 
 public class TestAnnotatedAttribute {
   interface AnnotatedAttributeIntf {
@@ -202,16 +209,36 @@ public class TestAnnotatedAttribute {
   }
 
   protected void fromPart_rt(Consumers<AnnotatedAttributeIntf> consumers) {
+    String file1Content = "default Hello World";
+    String file2Content = "fromValue Hello World";
+    String file3Content = "fromName Hello World";
+    File file1 = null;
+    File file2 = null;
+    File file3 = null;
+    try {
+      file1 = File.createTempFile("upload1", ".txt");
+      file2 = File.createTempFile("upload2", "txt");
+      file3 = File.createTempFile("upload3", "txt");
+      FileUtils.writeStringToFile(file1, file1Content, Charsets.UTF_8);
+      FileUtils.writeStringToFile(file2, file2Content, Charsets.UTF_8);
+      FileUtils.writeStringToFile(file3, file3Content, Charsets.UTF_8);
+    } catch (IOException e) {
+      assertEquals("there's no exception here", "here's the exception");
+    }
+
     MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-    map.add("input", "default");
-    map.add("input2", "fromValue");
-    map.add("input3", "fromName");
+    map.add("input", new FileSystemResource(file1));
+    map.add("input2", new FileSystemResource(file2));
+    map.add("input3", new FileSystemResource(file3));
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
     String result = consumers.getSCBRestTemplate()
         .postForObject("/fromPart",
-            new HttpEntity<>(map),
+            new HttpEntity<>(map, headers),
             String.class);
-    assertEquals("default,fromValue,fromName", result);
+    assertEquals("default Hello World,fromValue Hello World,fromName Hello World", result);
   }
 
   protected void fromAttribute_rt(Consumers<AnnotatedAttributeIntf> consumers) {

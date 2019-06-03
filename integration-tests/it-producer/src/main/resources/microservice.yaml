@@ -22,6 +22,8 @@ servicecomb:
   rest:
     server:
       maxInitialLineLength: 5000
+  uploads:
+    directory: .
 
 #########SSL options
 ssl.protocols: TLSv1.2
