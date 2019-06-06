@@ -100,3 +100,16 @@ mailing list: [subscribe](mailto:dev-subscribe@servicecomb.apache.org)  [dev](ht
 ## Contributing
 
 See [CONTRIBUTING](http://servicecomb.apache.org/developers/contributing) for details on submitting patches and the contribution workflow.
+
+## License
+Licensed under an [Apache 2.0 license](LICENSE).
+
+## Export Notice
+
+This distribution includes cryptographic software. The country in which you currently reside may have restrictions on the import, possession, use, and/or re-export to another country, of encryption software. BEFORE using any encryption software, please check your country's laws, regulations and policies concerning the import, possession, or use, and re-export of encryption software, to see if this is permitted. See <http://www.wassenaar.org/> for more information.
+
+The Apache Software Foundation has classified this software as Export Commodity Control Number (ECCN) 5D002, which includes information security software using or performing cryptographic functions with asymmetric algorithms. The form and manner of this Apache Software Foundation distribution makes it eligible for export under the "publicly available" Section 742.15(b) exemption (see the BIS Export Administration Regulations, Section 742.15(b)) for both object code and source code.
+
+The following provides more details on the included cryptographic software:
+
+  * Vertx transport can be configured for secure communications
