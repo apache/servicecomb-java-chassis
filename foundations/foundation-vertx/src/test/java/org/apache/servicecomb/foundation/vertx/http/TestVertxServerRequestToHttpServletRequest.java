@@ -425,11 +425,16 @@ public class TestVertxServerRequestToHttpServletRequest {
       }
     };
 
-    ServletInputStream is = request.getInputStream();
-    Assert.assertSame(is, request.getInputStream());
-    int value = is.read();
-    is.close();
+    ServletInputStream is1 = request.getInputStream();
+    Assert.assertSame(is1, request.getInputStream());
+    int value = is1.read();
+    is1.close();
     Assert.assertEquals(1, value);
+    Assert.assertSame(is1, request.getInputStream());
+
+    request.setBodyBuffer(Buffer.buffer().appendByte((byte)2));
+    ServletInputStream is2 = request.getInputStream();
+    Assert.assertNotSame(is1, is2);
   }
 
   @Test
