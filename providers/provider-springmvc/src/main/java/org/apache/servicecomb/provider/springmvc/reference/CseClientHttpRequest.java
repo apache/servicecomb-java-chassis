@@ -185,8 +185,9 @@ public class CseClientHttpRequest implements ClientHttpRequest {
         InvocationFactory.forConsumer(requestMeta.getReferenceConfig(),
             requestMeta.getOperationMeta(),
             args);
+
     invocation.getHandlerContext().put(RestConst.REST_CLIENT_REQUEST_PATH,
-        path + "?" + this.uri.getRawQuery());
+        path + (this.uri.getRawQuery() == null ? "" : "?" + this.uri.getRawQuery()));
 
     if (context != null) {
       invocation.addContext(context);
