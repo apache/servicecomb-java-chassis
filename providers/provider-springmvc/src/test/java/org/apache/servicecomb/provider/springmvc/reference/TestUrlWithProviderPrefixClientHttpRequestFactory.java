@@ -75,6 +75,6 @@ public class TestUrlWithProviderPrefixClientHttpRequestFactory {
 
     Deencapsulation.invoke(request, "invoke", new Object[] {new Object[] {}});
 
-    Assert.assertEquals("/v1/path?null", handlerContext.get(RestConst.REST_CLIENT_REQUEST_PATH));
+    Assert.assertEquals("/v1/path", handlerContext.get(RestConst.REST_CLIENT_REQUEST_PATH));
   }
 }
