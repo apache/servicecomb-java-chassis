@@ -40,7 +40,7 @@ public class CseAsyncClientHttpRequest extends CseClientHttpRequest implements A
   CseAsyncClientHttpRequest() {
   }
 
-  CseAsyncClientHttpRequest(URI uri, HttpMethod method) {
+  protected CseAsyncClientHttpRequest(URI uri, HttpMethod method) {
     this.setUri(uri);
     this.setMethod(method);
   }

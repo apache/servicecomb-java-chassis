@@ -18,8 +18,10 @@ package org.apache.servicecomb.it;
 
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
 import org.apache.servicecomb.it.extend.engine.ITInvoker;
+import org.apache.servicecomb.it.extend.engine.ITSCBAsyncRestTemplate;
 import org.apache.servicecomb.it.extend.engine.ITSCBRestTemplate;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
+import org.apache.servicecomb.provider.springmvc.reference.async.CseAsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
 
 public class Consumers<INTF> {
@@ -39,6 +41,8 @@ public class Consumers<INTF> {
 
   private String transport;
 
+  private CseAsyncRestTemplate cseAsyncRestTemplate;
+
   public Consumers(String schemaId, Class<INTF> intfCls) {
     this.schemaId = schemaId;
     this.intfCls = intfCls;
@@ -51,6 +55,7 @@ public class Consumers<INTF> {
     scbRestTemplate = new ITSCBRestTemplate(schemaId).init();
     edgeRestTemplate = GateRestTemplate.createEdgeRestTemplate(schemaId).init();
     zuulRestTemplate = null;// GateRestTemplate.createZuulRestTemplate(schemaId).init();
+    this.cseAsyncRestTemplate = new ITSCBAsyncRestTemplate(schemaId).init();
   }
 
   public String getSchemaId() {
@@ -75,5 +80,9 @@ public class Consumers<INTF> {
 
   public String getTransport() {
     return transport;
+  }
+
+  public CseAsyncRestTemplate getCseAsyncRestTemplate() {
+    return cseAsyncRestTemplate;
   }
 }

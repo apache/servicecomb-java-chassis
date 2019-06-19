@@ -17,10 +17,14 @@
 package org.apache.servicecomb.it.testcase;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Test;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 
 public class TestDefaultValue {
   interface DefaultValueIntf {
@@ -513,5 +517,15 @@ public class TestDefaultValue {
   public void floatForm_require_springmvc_rt() {
     assertEquals(defaultFloat,
         consumersSpringmvc.getSCBRestTemplate().postForObject("/floatFormRequire", null, float.class), 0.0f);
+  }
+
+  @Test
+  public void stringHeader_springmvc_cart() {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("input", "setHeader");
+    HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
+    assertNotEquals(defaultStr,
+        consumersSpringmvc.getCseAsyncRestTemplate()
+            .exchange("/stringHeader", HttpMethod.GET, requestEntity, String.class));
   }
 }
