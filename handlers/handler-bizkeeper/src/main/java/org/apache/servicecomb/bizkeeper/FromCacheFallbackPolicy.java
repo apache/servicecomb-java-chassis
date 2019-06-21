@@ -35,7 +35,7 @@ public class FromCacheFallbackPolicy implements FallbackPolicy {
   }
 
   @Override
-  public Response getFallbackResponse(Invocation invocation) {
+  public Response getFallbackResponse(Invocation invocation, Throwable error) {
     if (cachedResponse.get(invocation.getInvocationQualifiedName()) != null) {
       return cachedResponse.get(invocation.getInvocationQualifiedName());
     } else {

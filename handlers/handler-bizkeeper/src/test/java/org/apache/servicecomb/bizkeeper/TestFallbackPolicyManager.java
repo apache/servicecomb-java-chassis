@@ -20,6 +20,7 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.exception.CseException;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -33,6 +34,42 @@ public class TestFallbackPolicyManager {
     FallbackPolicyManager.addPolicy(new ReturnNullFallbackPolicy());
     FallbackPolicyManager.addPolicy(new ThrowExceptionFallbackPolicy());
     FallbackPolicyManager.addPolicy(new FromCacheFallbackPolicy());
+    FallbackPolicyManager.addPolicy(new FallbackPolicy() {
+      private static final String CUSTOM = "custom";
+
+      @Override
+      public String name() {
+        return CUSTOM;
+      }
+
+      @Override
+      public Response getFallbackResponse(Invocation invocation, Throwable error) {
+        if (error instanceof InvocationException) {
+          return Response.succResp("test");
+        }
+        if (error instanceof RuntimeException) {
+          return Response.succResp("runtime");
+        }
+        return null;
+      }
+    });
+
+    new Expectations() {
+      {
+        invocation.getMicroserviceName();
+        result = "testservice";
+        invocation.getOperationMeta();
+        result = operation;
+        operation.getMicroserviceQualifiedName();
+        result = "testservice.schema.custom";
+        config.getFallbackPolicyPolicy("Consumer", "testservice", "testservice.schema.custom");
+        result = "custom";
+      }
+    };
+
+    Assert.assertEquals("runtime",
+        FallbackPolicyManager.getFallbackResponse("Consumer", new RuntimeException(), invocation)
+            .getResult());
 
     new Expectations() {
       {

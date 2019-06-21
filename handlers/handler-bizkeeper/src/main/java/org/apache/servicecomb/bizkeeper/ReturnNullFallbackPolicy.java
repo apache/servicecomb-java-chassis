@@ -30,7 +30,7 @@ public class ReturnNullFallbackPolicy implements FallbackPolicy {
   }
 
   @Override
-  public Response getFallbackResponse(Invocation invocation) {
+  public Response getFallbackResponse(Invocation invocation, Throwable error) {
     return Response.succResp(null);
   }
 }

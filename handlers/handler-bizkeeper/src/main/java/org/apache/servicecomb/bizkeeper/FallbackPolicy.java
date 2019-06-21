@@ -22,7 +22,7 @@ import org.apache.servicecomb.swagger.invocation.Response;
 public interface FallbackPolicy {
   String name();
 
-  Response getFallbackResponse(Invocation invocation);
+  Response getFallbackResponse(Invocation invocation, Throwable error);
 
   default void record(Invocation invocation, Response response, boolean isSuccess) {
 

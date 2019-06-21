@@ -30,11 +30,11 @@ public class ThrowExceptionFallbackPolicy implements FallbackPolicy {
   }
 
   @Override
-  public Response getFallbackResponse(Invocation invocation) {
+  public Response getFallbackResponse(Invocation invocation, Throwable error) {
     return Response.failResp(invocation.getInvocationType(),
         BizkeeperExceptionUtils
             .createBizkeeperException(BizkeeperExceptionUtils.SERVICECOMB_BIZKEEPER_FALLBACK,
-                null,
+                error,
                 invocation.getOperationMeta().getMicroserviceQualifiedName()));
   }
 }
