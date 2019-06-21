@@ -197,11 +197,23 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
     if (propertySource instanceof EnumerablePropertySource) {
       EnumerablePropertySource<?> enumerablePropertySource = (EnumerablePropertySource<?>) propertySource;
       for (String propertyName : enumerablePropertySource.getPropertyNames()) {
-        configFromSpringBoot.put(propertyName, environment.getProperty(propertyName, Object.class));
+        try {
+          configFromSpringBoot.put(propertyName, environment.getProperty(propertyName, Object.class));
+        } catch (Exception e) {
+          if (!getIfIgnoreEnvironment()) {
+            throw new RuntimeException("set up spring property source failed.", e);
+          } else {
+            LOGGER.warn("set up spring property source failed.", e);
+          }
+        }
       }
       return;
     }
 
     LOGGER.debug("a none EnumerablePropertySource is ignored, propertySourceName = [{}]", propertySource.getName());
+  }
+
+  private boolean getIfIgnoreEnvironment() {
+    return (Boolean) ConfigUtil.createLocalConfig().getProperty("servicecomb.config.ignoreResolveFailure");
   }
 }
