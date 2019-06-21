@@ -159,7 +159,8 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
         .thenReturn("testHandleInError");
     FallbackPolicy policy = Mockito.mock(FallbackPolicy.class);
     Mockito.when(policy.name()).thenReturn("throwException");
-    Mockito.when(policy.getFallbackResponse(Mockito.any(Invocation.class))).thenThrow(new RuntimeException());
+    Mockito.when(policy.getFallbackResponse(Mockito.any(Invocation.class), Mockito.any(null)))
+        .thenThrow(new RuntimeException());
     FallbackPolicyManager.addPolicy(policy);
     System.setProperty("servicecomb.fallbackpolicy.groupname.testHandleInError.policy", "throwException");
     Mockito.doAnswer(new Answer<Void>() {
