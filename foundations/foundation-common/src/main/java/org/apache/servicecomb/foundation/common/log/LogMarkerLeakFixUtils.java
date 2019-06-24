@@ -44,7 +44,7 @@ public final class LogMarkerLeakFixUtils {
 
   @SuppressWarnings("unchecked")
   public static void fix() {
-    Class<?> staticMarkerBinderClass = ReflectUtils.getClassByName(null, "org.slf4j.impl.StaticMarkerBinder");
+    Class<?> staticMarkerBinderClass = ReflectUtils.getClassByName("org.slf4j.impl.StaticMarkerBinder");
     if (staticMarkerBinderClass == null) {
       return;
     }
