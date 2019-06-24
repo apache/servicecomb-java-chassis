@@ -27,6 +27,18 @@ consumes:
 produces:
 - "application/json"
 paths:
+  /ignoreRequest:
+    post:
+      operationId: "ignoreRequest"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/ignoreRequestBody"
+      responses:
+        200:
+          description: "response of 200"
   /nestedListString:
     post:
       operationId: "nestedListString"
@@ -498,6 +510,12 @@ paths:
         200:
           description: "response of 200"
 definitions:
+  ignoreRequestBody:
+    type: "object"
+    properties:
+      value:
+        type: "integer"
+        format: "int32"
   nestedListStringBody:
     type: "object"
     properties:

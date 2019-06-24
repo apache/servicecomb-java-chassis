@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
@@ -210,6 +211,10 @@ public class Schema {
   }
 
   public void partList(List<Part> part) {
+
+  }
+
+  public void ignoreRequest(HttpServletRequest request, int value) {
 
   }
 }
