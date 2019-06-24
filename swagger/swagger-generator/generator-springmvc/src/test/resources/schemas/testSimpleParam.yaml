@@ -21,7 +21,7 @@ info:
   version: "1.0.0"
   title: "swagger definition for org.apache.servicecomb.swagger.generator.springmvc.model.DefaultParameterSchema"
   x-java-interface: "gen.cse.ms.ut.DefaultParameterSchemaIntf"
-basePath: "/DefaultParameterSchema"
+basePath: "/"
 consumes:
 - "application/json"
 produces:
