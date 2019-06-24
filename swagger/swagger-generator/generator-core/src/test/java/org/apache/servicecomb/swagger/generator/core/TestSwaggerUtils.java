@@ -208,6 +208,11 @@ public class TestSwaggerUtils {
   }
 
   @Test
+  public void should_ignore_httpServletRequest() {
+    testSchemaMethod("ignoreRequest", "ignoreRequest");
+  }
+
+  @Test
   public void testRepeatOperation() {
     UnitTestSwaggerUtils.testException(
         "OperationId must be unique. method=org.apache.servicecomb.swagger.generator.core.schema.RepeatOperation:add.",

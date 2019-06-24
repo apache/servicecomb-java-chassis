@@ -38,7 +38,7 @@ public class TestLogMarkerLeakFixUtils {
   public void noBinder() {
     new Expectations(ReflectUtils.class) {
       {
-        ReflectUtils.getClassByName(null, "org.slf4j.impl.StaticMarkerBinder");
+        ReflectUtils.getClassByName("org.slf4j.impl.StaticMarkerBinder");
         result = null;
       }
     };

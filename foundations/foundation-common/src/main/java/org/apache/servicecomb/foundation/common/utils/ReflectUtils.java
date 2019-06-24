@@ -92,12 +92,16 @@ public final class ReflectUtils {
     return (T) Array.newInstance(cls, 0).getClass();
   }
 
-  public static Class<?> getClassByName(ClassLoader classLoader, String clsName) {
-    classLoader = JvmUtils.correctClassLoader(classLoader);
+  public static Class<?> getClassByName(String clsName) {
     try {
-      return classLoader.loadClass(clsName);
+      return Class.forName(clsName);
     } catch (ClassNotFoundException e) {
-      return null;
+      ClassLoader classLoader = JvmUtils.correctClassLoader(null);
+      try {
+        return classLoader.loadClass(clsName);
+      } catch (ClassNotFoundException e1) {
+        return null;
+      }
     }
   }
 }
