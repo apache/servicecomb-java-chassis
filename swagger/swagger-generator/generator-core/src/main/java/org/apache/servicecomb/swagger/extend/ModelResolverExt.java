@@ -23,13 +23,13 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.swagger.converter.property.StringPropertyConverter;
 import org.apache.servicecomb.swagger.extend.property.creator.ByteArrayPropertyCreator;
 import org.apache.servicecomb.swagger.extend.property.creator.BytePropertyCreator;
 import org.apache.servicecomb.swagger.extend.property.creator.InputStreamPropertyCreator;
@@ -165,15 +165,11 @@ public class ModelResolverExt extends ModelResolver {
     }
 
     Property property = super.resolveProperty(propType, context, annotations, next);
-    if (property instanceof StringProperty) {
-      if (isEnum(((StringProperty) property).getEnum())) {
+    if (StringProperty.class.isInstance(property)) {
+      if (StringPropertyConverter.isEnum((StringProperty) property)) {
         setType(propType, property.getVendorExtensions());
       }
     }
     return property;
-  }
-
-  private boolean isEnum(List<String> enums) {
-    return enums != null && !enums.isEmpty();
   }
 }
