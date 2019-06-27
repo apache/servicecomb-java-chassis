@@ -29,8 +29,8 @@ import javax.ws.rs.HttpMethod;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.SwaggerUtils;
-import org.apache.servicecomb.swagger.extend.ExtendConst;
 import org.apache.servicecomb.swagger.generator.ParameterGenerator;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.SwaggerGeneratorFeature;
 import org.apache.servicecomb.swagger.generator.core.AbstractOperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
@@ -95,7 +95,7 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
     if (feature.isExtJavaClassInVendor()
         && bodyFields.size() > 1
         && StringUtils.isNotEmpty(feature.getPackageName())) {
-      bodyModel.getVendorExtensions().put(ExtendConst.EXT_JAVA_CLASS, feature.getPackageName() + "." + simpleRef);
+      bodyModel.getVendorExtensions().put(SwaggerConst.EXT_JAVA_CLASS, feature.getPackageName() + "." + simpleRef);
     }
 
     RefModel refModel = new RefModel();
