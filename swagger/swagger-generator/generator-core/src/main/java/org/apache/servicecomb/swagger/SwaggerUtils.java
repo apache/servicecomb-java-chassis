@@ -115,18 +115,21 @@ public final class SwaggerUtils {
    */
   public static void validateSwagger(Swagger swagger) {
     Map<String, Path> paths = swagger.getPaths();
-    if (paths != null) {
-      for (Path path : paths.values()) {
-        Operation operation = path.getPost();
-        if (operation != null) {
-          List<Parameter> parameters = operation.getParameters();
-          for (Parameter parameter : parameters) {
-            if (BodyParameter.class.isInstance(parameter)) {
-              if (((BodyParameter) parameter).getSchema() == null) {
-                throw new ServiceCombException("swagger validator: body parameter schema is empty.");
-              }
-            }
-          }
+    if (paths == null) {
+      return;
+    }
+
+    for (Path path : paths.values()) {
+      Operation operation = path.getPost();
+      if (operation == null) {
+        continue;
+      }
+
+      for (Parameter parameter : operation.getParameters()) {
+        if (BodyParameter.class.isInstance(parameter) &&
+            !isRawJsonType(parameter) &&
+            ((BodyParameter) parameter).getSchema() == null) {
+          throw new ServiceCombException("swagger validator: body parameter schema is empty.");
         }
       }
     }

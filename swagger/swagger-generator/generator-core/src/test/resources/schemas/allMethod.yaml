@@ -509,6 +509,18 @@ paths:
       responses:
         200:
           description: "response of 200"
+  /wrapToBodyWithDesc:
+    post:
+      operationId: "wrapToBodyWithDesc"
+      parameters:
+      - in: "body"
+        name: "value"
+        required: false
+        schema:
+          $ref: "#/definitions/wrapToBodyWithDescBody"
+      responses:
+        200:
+          description: "response of 200"
 definitions:
   ignoreRequestBody:
     type: "object"
@@ -828,3 +840,10 @@ definitions:
       value:
         type: "integer"
         format: "int16"
+  wrapToBodyWithDescBody:
+    type: "object"
+    properties:
+      value:
+        type: "integer"
+        format: "int32"
+        description: "desc"
