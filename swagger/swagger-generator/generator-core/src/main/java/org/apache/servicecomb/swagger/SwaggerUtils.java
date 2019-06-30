@@ -380,7 +380,7 @@ public final class SwaggerUtils {
     }
 
     JavaType javaType = TypeFactory.defaultInstance().constructType(type);
-    if (javaType.isContainerType()) {
+    if (javaType.isContainerType() || javaType.isEnumType()) {
       return false;
     }
 
