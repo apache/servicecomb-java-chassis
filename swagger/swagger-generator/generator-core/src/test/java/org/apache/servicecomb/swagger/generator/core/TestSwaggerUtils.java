@@ -86,6 +86,11 @@ public class TestSwaggerUtils {
   }
 
   @Test
+  public void should_not_lost_ApiParam_description_when_wrap_parameter_to_body() {
+    testSchemaMethod("wrapToBodyWithDesc", "wrapToBodyWithDesc");
+  }
+
+  @Test
   public void testEnum() {
     testSchemaMethod("enum", "testEnum");
   }
