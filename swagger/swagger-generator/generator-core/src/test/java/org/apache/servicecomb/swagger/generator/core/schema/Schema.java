@@ -113,6 +113,10 @@ public class Schema {
 
   }
 
+  public void testOneEnum(Color color) {
+
+  }
+
   public void testEnum(Color color, Color color1) {
 
   }
