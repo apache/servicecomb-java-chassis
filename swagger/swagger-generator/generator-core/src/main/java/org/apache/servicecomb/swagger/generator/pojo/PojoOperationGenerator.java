@@ -83,9 +83,14 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
     bodyModel = new ModelImpl();
     bodyModel.setType(ModelImpl.OBJECT);
     for (ParameterGenerator parameterGenerator : bodyFields) {
-      SwaggerUtils.addDefinitions(swagger, parameterGenerator.getGenericType());
+      parameterGenerator.setHttpParameterType(HttpParameterType.BODY);
+      scanMethodParameter(parameterGenerator);
+
       Property property = ModelConverters.getInstance().readAsProperty(parameterGenerator.getGenericType());
+      property.setDescription(parameterGenerator.getGeneratedParameter().getDescription());
       bodyModel.addProperty(parameterGenerator.getParameterName(), property);
+
+      parameterGenerator.setHttpParameterType(null);
     }
     swagger.addDefinition(simpleRef, bodyModel);
 
