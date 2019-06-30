@@ -30,6 +30,8 @@ import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.rest.RestOperationGenerator;
 
+import com.google.common.base.Defaults;
+
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.AbstractSerializableParameter;
 
@@ -67,7 +69,7 @@ public class JaxrsOperationGenerator extends RestOperationGenerator {
 
     AbstractSerializableParameter<?> serializableParameter = (AbstractSerializableParameter<?>) parameter;
     if (serializableParameter.getDefault() == null && !parameter.getRequired()) {
-      serializableParameter.setDefaultValue(type.getTypeName().equals("boolean") ? "false" : "0");
+      serializableParameter.setDefaultValue(String.valueOf(Defaults.defaultValue((Class<?>) type)));
     }
   }
 }
