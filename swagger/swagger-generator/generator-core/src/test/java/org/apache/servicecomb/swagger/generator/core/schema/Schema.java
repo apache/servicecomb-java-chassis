@@ -32,6 +32,7 @@ import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ResponseHeader;
 
@@ -211,6 +212,10 @@ public class Schema {
   }
 
   public void partList(List<Part> part) {
+
+  }
+
+  public void wrapToBodyWithDesc(@ApiParam(value = "desc") int value) {
 
   }
 
