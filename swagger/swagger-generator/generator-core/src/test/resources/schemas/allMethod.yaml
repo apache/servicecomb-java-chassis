@@ -346,6 +346,18 @@ paths:
       responses:
         "200":
           description: "response of 200"
+  /testOneEnum:
+    post:
+      operationId: "testOneEnum"
+      parameters:
+      - in: "body"
+        name: "color"
+        required: false
+        schema:
+          $ref: "#/definitions/testOneEnumBody"
+      responses:
+        200:
+          description: "response of 200"
   /testOptional:
     post:
       operationId: "testOptional"
@@ -769,6 +781,16 @@ definitions:
         additionalProperties:
           $ref: "#/definitions/User"
     x-java-class: "gen.cse.ms.ut.testMultiParamBody"
+  testOneEnumBody:
+    type: "object"
+    properties:
+      color:
+        type: "string"
+        enum:
+        - "RED"
+        - "YELLOW"
+        - "BLUE"
+        x-java-class: "org.apache.servicecomb.foundation.test.scaffolding.model.Color"
   testSetBody:
     type: "object"
     properties:

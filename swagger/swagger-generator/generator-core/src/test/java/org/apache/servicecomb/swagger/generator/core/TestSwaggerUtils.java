@@ -91,6 +91,11 @@ public class TestSwaggerUtils {
   }
 
   @Test
+  public void testOneEnum() {
+    testSchemaMethod("oneEnum", "testOneEnum");
+  }
+
+  @Test
   public void testEnum() {
     testSchemaMethod("enum", "testEnum");
   }
