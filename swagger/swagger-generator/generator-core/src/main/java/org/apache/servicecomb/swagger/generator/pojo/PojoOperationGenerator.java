@@ -83,6 +83,10 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
     bodyModel = new ModelImpl();
     bodyModel.setType(ModelImpl.OBJECT);
     for (ParameterGenerator parameterGenerator : bodyFields) {
+      // to collect all information by swagger mechanism
+      // must have a parameter type
+      // but all these parameters will be wrap to be one body parameter, their parameter type must be null
+      // so we first set to be BODY, after collected, set back to be null
       parameterGenerator.setHttpParameterType(HttpParameterType.BODY);
       scanMethodParameter(parameterGenerator);
 
