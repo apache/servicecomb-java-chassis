@@ -87,7 +87,8 @@ paths:
           in: body
           required: true
           x-raw-json: true
-          type: string
+          schema:
+            type: string
       responses:
         "200":
           description: test RawJson String
