@@ -30,6 +30,10 @@ public final class ConsumerArgumentSame implements ArgumentMapper {
     this.swaggerIdx = swaggerIdx;
   }
 
+  public boolean isSameIndex() {
+    return swaggerIdx == consumerIdx;
+  }
+
   @Override
   public void mapArgument(SwaggerInvocation invocation, Object[] consumerArguments) {
     invocation.setSwaggerArgument(swaggerIdx, consumerArguments[consumerIdx]);
