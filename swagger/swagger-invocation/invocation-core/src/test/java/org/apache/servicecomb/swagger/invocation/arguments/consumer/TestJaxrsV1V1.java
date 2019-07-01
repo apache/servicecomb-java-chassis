@@ -35,7 +35,7 @@ import io.swagger.models.Swagger;
 
 public class TestJaxrsV1V1 {
   @Test
-  public void add_add() {
+  public void should_mapper_consumer_multi_args_to_swagger_multi_args() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
     Swagger swagger = SwaggerGenerator.generate(JaxrsAddV1.class);
 
@@ -52,8 +52,30 @@ public class TestJaxrsV1V1 {
     Assert.assertEquals(2, (int) invocation.getSwaggerArgument(1));
   }
 
+  interface ConsumerAddV1_diff_order {
+    int add(int y, int x);
+  }
+
   @Test
-  public void add_addBeanParam() {
+  public void should_mapper_consumer_multi_args_to_swagger_multi_args_with_diff_order() {
+    SwaggerEnvironment environment = new SwaggerEnvironment();
+    Swagger swagger = SwaggerGenerator.generate(JaxrsAddV1.class);
+
+    SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV1_diff_order.class, swagger);
+    ConsumerArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
+
+    Object[] arguments = new Object[] {2, 1};
+    SwaggerInvocation invocation = new SwaggerInvocation();
+
+    mapper.toInvocation(arguments, invocation);
+
+    Assert.assertEquals(2, invocation.getSwaggerArguments().length);
+    Assert.assertEquals(1, (int) invocation.getSwaggerArgument(0));
+    Assert.assertEquals(2, (int) invocation.getSwaggerArgument(1));
+  }
+
+  @Test
+  public void should_mapper_consumer_multi_args_to_swagger_multi_args_gen_by_BeanParam() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
     Swagger swagger = SwaggerGenerator.generate(JaxrsAddBeanParamV1.class);
 
@@ -71,7 +93,7 @@ public class TestJaxrsV1V1 {
   }
 
   @Test
-  public void add_addBody() {
+  public void should_mapper_consumer_multi_args_to_swagger_body() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
     Swagger swagger = SwaggerGenerator.generate(JaxrsAddBodyV1.class);
 
@@ -90,7 +112,7 @@ public class TestJaxrsV1V1 {
   }
 
   @Test
-  public void addBody_add() {
+  public void should_mapper_consumer_wrapped_body_to_swagger_multi_args() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
     Swagger swagger = SwaggerGenerator.generate(JaxrsAddV1.class);
 
@@ -108,7 +130,7 @@ public class TestJaxrsV1V1 {
   }
 
   @Test
-  public void addBody_addBeanParam() {
+  public void should_mapper_consumer_wrapped_body_to_swagger_multi_args_gen_by_BeanParam() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
     Swagger swagger = SwaggerGenerator.generate(JaxrsAddBeanParamV1.class);
 
@@ -126,7 +148,7 @@ public class TestJaxrsV1V1 {
   }
 
   @Test
-  public void addBody_addBody() {
+  public void should_mapper_consumer_body_to_swagger_body() {
     SwaggerEnvironment environment = new SwaggerEnvironment();
     Swagger swagger = SwaggerGenerator.generate(JaxrsAddBodyV1.class);
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV1.class, swagger);
