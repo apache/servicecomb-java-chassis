@@ -127,7 +127,6 @@ public final class SwaggerUtils {
 
       for (Parameter parameter : operation.getParameters()) {
         if (BodyParameter.class.isInstance(parameter) &&
-            !isRawJsonType(parameter) &&
             ((BodyParameter) parameter).getSchema() == null) {
           throw new ServiceCombException("swagger validator: body parameter schema is empty.");
         }
