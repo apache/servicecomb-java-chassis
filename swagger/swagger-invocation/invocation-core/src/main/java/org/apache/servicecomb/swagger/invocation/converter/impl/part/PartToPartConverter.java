@@ -14,33 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.invocation.converter.impl;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+package org.apache.servicecomb.swagger.invocation.converter.impl.part;
+
+import java.lang.reflect.Type;
+
+import javax.servlet.http.Part;
 
 import org.apache.servicecomb.swagger.invocation.converter.Converter;
 
-public final class SameElementArrayToSet implements Converter {
-  private static final Converter INSTANCE = new SameElementArrayToSet();
-
-  public static Converter getInstance() {
-    return INSTANCE;
+public class PartToPartConverter implements Converter {
+  @Override
+  public Type getSrcType() {
+    return Part.class;
   }
 
-  private SameElementArrayToSet() {
+  @Override
+  public Type getTargetType() {
+    return Part.class;
   }
 
   @Override
   public Object convert(Object value) {
-    if (value == null) {
-      return null;
-    }
-
-    Object[] array = (Object[]) value;
-    Set<Object> set = new HashSet<>();
-    set.addAll(Arrays.asList(array));
-    return set;
+    return value;
   }
 }

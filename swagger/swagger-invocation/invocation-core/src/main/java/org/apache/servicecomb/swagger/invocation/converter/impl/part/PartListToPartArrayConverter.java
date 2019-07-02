@@ -14,25 +14,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.invocation.converter.impl;
+package org.apache.servicecomb.swagger.invocation.converter.impl.part;
 
 import java.lang.reflect.Type;
+import java.util.List;
 
-import org.apache.servicecomb.foundation.common.utils.JsonUtils;
+import javax.servlet.http.Part;
+
 import org.apache.servicecomb.swagger.invocation.converter.Converter;
 
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.inject.util.Types;
 
-public class ConverterCommon implements Converter {
-  private JavaType targetJavaType;
+public class PartListToPartArrayConverter implements Converter {
+  @Override
+  public Type getSrcType() {
+    return Types.newParameterizedType(List.class, Part.class);
+  }
 
-  public ConverterCommon(Type targetType) {
-    targetJavaType = TypeFactory.defaultInstance().constructType(targetType);
+  @Override
+  public Type getTargetType() {
+    return Part[].class;
   }
 
   @Override
   public Object convert(Object value) {
-    return JsonUtils.OBJ_MAPPER.convertValue(value, targetJavaType);
+    if (value == null) {
+      return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    List<Part> partList = (List<Part>) value;
+    return partList.toArray(new Part[partList.size()]);
   }
 }

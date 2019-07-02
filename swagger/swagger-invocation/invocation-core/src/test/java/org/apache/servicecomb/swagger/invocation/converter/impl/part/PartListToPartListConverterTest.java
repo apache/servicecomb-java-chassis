@@ -14,29 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.invocation.converter.impl;
+package org.apache.servicecomb.swagger.invocation.converter.impl.part;
 
 import java.util.Arrays;
+import java.util.List;
 
-import org.apache.servicecomb.swagger.invocation.converter.Converter;
+import javax.servlet.http.Part;
 
-public final class SameElementArrayToList implements Converter {
-  private static final Converter INSTANCE = new SameElementArrayToList();
+import org.apache.servicecomb.foundation.common.part.FilePart;
+import org.junit.Assert;
+import org.junit.Test;
 
-  public static Converter getInstance() {
-    return INSTANCE;
+public class PartListToPartListConverterTest {
+  PartListToPartListConverter converter = new PartListToPartListConverter();
+
+  @Test
+  public void getSrcType() {
+    Assert.assertEquals("java.util.List<javax.servlet.http.Part>", converter.getSrcType().getTypeName());
   }
 
-  private SameElementArrayToList() {
+  @Test
+  public void getTargetType() {
+    Assert.assertEquals("java.util.List<javax.servlet.http.Part>", converter.getTargetType().getTypeName());
   }
 
-  @Override
-  public Object convert(Object value) {
-    if (value == null) {
-      return null;
-    }
-
-    Object[] array = (Object[]) value;
-    return Arrays.asList(array);
+  @Test
+  public void convert() {
+    List<Part> parts = Arrays.asList(new FilePart("name", "file"));
+    Assert.assertSame(parts, converter.convert(parts));
   }
 }

@@ -16,6 +16,12 @@
  */
 package org.apache.servicecomb.swagger.invocation.converter;
 
+import java.lang.reflect.Type;
+
 public interface Converter {
+  Type getSrcType();
+
+  Type getTargetType();
+
   Object convert(Object value);
 }
