@@ -18,6 +18,7 @@ package org.apache.servicecomb.swagger.engine;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -45,6 +46,11 @@ public class SwaggerProducerOperation {
   private Method producerMethod;
 
   private SwaggerOperation swaggerOperation;
+
+  // swagger parameter types relate to producer
+  // because features of @BeanParam/query wrapper/rpc mode parameter wrapper
+  // types is not direct equals to producerMethod parameter types
+  private Type[] swaggerParameterTypes;
 
   private ProducerArgumentsMapper argumentsMapper;
 
@@ -81,8 +87,20 @@ public class SwaggerProducerOperation {
     this.producerMethod = producerMethod;
   }
 
+  public SwaggerOperation getSwaggerOperation() {
+    return swaggerOperation;
+  }
+
   public void setSwaggerOperation(SwaggerOperation swaggerOperation) {
     this.swaggerOperation = swaggerOperation;
+  }
+
+  public Type[] getSwaggerParameterTypes() {
+    return swaggerParameterTypes;
+  }
+
+  public void setSwaggerParameterTypes(Type[] swaggerParameterTypes) {
+    this.swaggerParameterTypes = swaggerParameterTypes;
   }
 
   public ProducerArgumentsMapper getArgumentsMapper() {
