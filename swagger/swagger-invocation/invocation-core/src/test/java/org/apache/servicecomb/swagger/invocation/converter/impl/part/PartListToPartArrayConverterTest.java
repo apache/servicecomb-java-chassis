@@ -14,32 +14,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.swagger.invocation.converter.impl.part;
 
-import java.io.InputStream;
-import java.lang.reflect.Type;
+import java.util.Arrays;
 
 import javax.servlet.http.Part;
 
-import org.apache.servicecomb.foundation.common.part.InputStreamPart;
-import org.apache.servicecomb.swagger.invocation.converter.Converter;
+import org.apache.servicecomb.foundation.common.part.FilePart;
+import org.hamcrest.Matchers;
+import org.junit.Assert;
+import org.junit.Test;
 
-public class InputStreamToPartConverter implements Converter {
-  @Override
-  public Type getSrcType() {
-    return InputStream.class;
+public class PartListToPartArrayConverterTest {
+  PartListToPartArrayConverter converter = new PartListToPartArrayConverter();
+
+  @Test
+  public void getSrcType() {
+    Assert.assertEquals("java.util.List<javax.servlet.http.Part>", converter.getSrcType().getTypeName());
   }
 
-  @Override
-  public Type getTargetType() {
-    return Part.class;
+  @Test
+  public void getTargetType() {
+    Assert.assertEquals(Part[].class.getCanonicalName(), converter.getTargetType().getTypeName());
   }
 
-  @Override
-  public Object convert(Object value) {
-    // not set name, because not easy to get parameter name in this place
-    // org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl not depend on the name
-    return new InputStreamPart(null, (InputStream) value);
+  @Test
+  public void convert() {
+    Object parts = converter.convert(Arrays.asList(new FilePart("name", "file")));
+    Assert.assertThat(parts, Matchers.instanceOf(Part[].class));
+  }
+
+  @Test
+  public void should_got_null_when_convert_null() {
+    Assert.assertNull(converter.convert(null));
   }
 }

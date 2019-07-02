@@ -22,12 +22,10 @@ import java.lang.reflect.Type;
 import javax.servlet.http.Part;
 
 import org.apache.servicecomb.foundation.common.part.ResourcePart;
-import org.apache.servicecomb.swagger.invocation.converter.CustomizedConverter;
+import org.apache.servicecomb.swagger.invocation.converter.Converter;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Component;
 
-@Component
-public class ResourceToPartConverter implements CustomizedConverter {
+public class ResourceToPartConverter implements Converter {
   @Override
   public Type getSrcType() {
     return Resource.class;
