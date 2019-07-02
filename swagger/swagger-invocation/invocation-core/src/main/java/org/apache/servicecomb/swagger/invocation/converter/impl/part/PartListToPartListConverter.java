@@ -14,29 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.invocation.converter.impl;
+package org.apache.servicecomb.swagger.invocation.converter.impl.part;
 
-import java.lang.reflect.Array;
-import java.util.Collection;
+import java.lang.reflect.Type;
+import java.util.List;
+
+import javax.servlet.http.Part;
 
 import org.apache.servicecomb.swagger.invocation.converter.Converter;
 
-public class SameElementCollectionToArray implements Converter {
-  private Class<?> elementCls;
+import com.google.inject.util.Types;
 
-  public SameElementCollectionToArray(Class<?> elementCls) {
-    this.elementCls = elementCls;
+public class PartListToPartListConverter implements Converter {
+  @Override
+  public Type getSrcType() {
+    return Types.newParameterizedType(List.class, Part.class);
+  }
+
+  @Override
+  public Type getTargetType() {
+    return Types.newParameterizedType(List.class, Part.class);
   }
 
   @Override
   public Object convert(Object value) {
-    if (value == null) {
-      return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    Collection<Object> collection = (Collection<Object>) value;
-    Object array = Array.newInstance(elementCls, collection.size());
-    return collection.toArray((Object[]) array);
+    return value;
   }
 }
