@@ -14,12 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.invocation.converter;
+package org.apache.servicecomb.swagger.invocation.converter.impl.part;
 
-import java.lang.reflect.Type;
+import javax.servlet.http.Part;
 
-public interface CustomizedConverter extends Converter {
-  Type getSrcType();
+import org.apache.servicecomb.foundation.common.part.FilePart;
+import org.junit.Assert;
+import org.junit.Test;
 
-  Type getTargetType();
+public class PartToPartConverterTest {
+  PartToPartConverter converter = new PartToPartConverter();
+
+  @Test
+  public void getSrcType() {
+    Assert.assertEquals(Part.class.getName(), converter.getSrcType().getTypeName());
+  }
+
+  @Test
+  public void getTargetType() {
+    Assert.assertEquals(Part.class.getName(), converter.getTargetType().getTypeName());
+  }
+
+  @Test
+  public void convert() {
+    Part part = new FilePart("name", "file");
+    Assert.assertSame(part, converter.convert(part));
+  }
 }
