@@ -17,27 +17,39 @@
 
 package org.apache.servicecomb.swagger.invocation.arguments.producer;
 
+import java.lang.reflect.Type;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
 
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
 public class SwaggerBodyFieldToProducerArgument implements ArgumentMapper {
+  public static ObjectMapper mapper = JsonUtils.OBJ_MAPPER;
+
   private final int producerParamIdx;
 
   private final String parameterName;
 
+  private final JavaType producerParamType;
+
   private final int swaggerBodyIdx;
 
-  public SwaggerBodyFieldToProducerArgument(int producerParamIdx, String parameterName, int swaggerBodyIdx) {
+  public SwaggerBodyFieldToProducerArgument(int producerParamIdx, String parameterName, Type producerParamType,
+      int swaggerBodyIdx) {
     this.producerParamIdx = producerParamIdx;
     this.parameterName = parameterName;
+    this.producerParamType = TypeFactory.defaultInstance().constructType(producerParamType);
     this.swaggerBodyIdx = swaggerBodyIdx;
   }
 
   @Override
   public void mapArgument(SwaggerInvocation invocation, Object[] producerArguments) {
     Map<String, Object> body = invocation.getSwaggerArgument(swaggerBodyIdx);
-    producerArguments[producerParamIdx] = body.get(parameterName);
+    producerArguments[producerParamIdx] = mapper.convertValue(body.get(parameterName), producerParamType);
   }
 }

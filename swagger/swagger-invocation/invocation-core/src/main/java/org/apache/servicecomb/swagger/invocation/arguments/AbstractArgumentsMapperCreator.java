@@ -106,6 +106,8 @@ public abstract class AbstractArgumentsMapperCreator {
   // body index in swagger parameters
   protected int swaggerBodyIdx;
 
+  protected BodyParameter bodyParameter;
+
   protected Map<String, Property> swaggerBodyProperties;
 
   public AbstractArgumentsMapperCreator(SerializationConfig serializationConfig,
@@ -118,7 +120,7 @@ public abstract class AbstractArgumentsMapperCreator {
 
     this.swaggerParameters = new ArrayList<>(this.swaggerOperation.getOperation().getParameters());
 
-    BodyParameter bodyParameter = findSwaggerBodyParameter();
+    bodyParameter = findSwaggerBodyParameter();
     swaggerBodyProperties = SwaggerUtils.getBodyProperties(swaggerOperation.getSwagger(), bodyParameter);
   }
 
@@ -200,6 +202,17 @@ public abstract class AbstractArgumentsMapperCreator {
       String parameterName) {
     Integer swaggerIdx = findAndClearSwaggerParameterIndex(parameterName);
     if (swaggerIdx == null) {
+      return false;
+    }
+
+    // complex scenes
+    // swagger: int add(Body x)
+    // producer: int add(int x, int y)
+    if (bodyParameter != null &&
+        !SwaggerUtils.isBean(providerParameter.getType()) &&
+        swaggerIdx == swaggerBodyIdx &&
+        SwaggerUtils.isBean(bodyParameter.getSchema())) {
+      swaggerParameters.set(swaggerIdx, bodyParameter);
       return false;
     }
 
