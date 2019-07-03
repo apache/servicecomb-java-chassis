@@ -22,50 +22,22 @@ import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.servicecomb.common.javassist.JavassistUtils;
-import org.apache.servicecomb.engine.SwaggerEnvironmentForTest;
-import org.apache.servicecomb.swagger.generator.jaxrs.JaxrsSwaggerGeneratorContext;
-import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGeneratorContext;
-import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapperConfig;
-import org.apache.servicecomb.swagger.invocation.arguments.producer.JaxRSProducerArgumentsMapperFactory;
-import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapperFactory;
-import org.apache.servicecomb.swagger.invocation.arguments.producer.SpringMVCProducerArgumentsMapperFactory;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.invocation.models.ProducerImpl;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import mockit.Deencapsulation;
+import io.swagger.models.Swagger;
 
 public class TestSwaggerEnvironment {
-  private static SwaggerEnvironmentForTest env = new SwaggerEnvironmentForTest();
+  private static SwaggerEnvironment env = new SwaggerEnvironment();
 
   private static SwaggerProducer producer;
 
-  private static ProducerArgumentsMapperFactory defaultProducerArgumentsMapperFactory;
-
   @BeforeClass
   public static void init() {
-    producer = env.createProducer(new ProducerImpl());
-    defaultProducerArgumentsMapperFactory = new ProducerArgumentsMapperFactory();
-    List<ProducerArgumentsMapperFactory> producerArgumentsMapperFactoryList = new ArrayList<>();
-    producerArgumentsMapperFactoryList.add(new JaxRSProducerArgumentsMapperFactory());
-    producerArgumentsMapperFactoryList.add(new SpringMVCProducerArgumentsMapperFactory());
-    producerArgumentsMapperFactoryList.add(new ProducerArgumentsMapperFactory());
-
-    Deencapsulation.setField(
-        env.getSwaggerEnvironment(), "producerArgumentsFactory", defaultProducerArgumentsMapperFactory);
-    Deencapsulation.setField(
-        env.getSwaggerEnvironment(), "producerArgumentsMapperFactoryList", producerArgumentsMapperFactoryList);
-  }
-
-  @AfterClass
-  public static void tearDown() {
-    JavassistUtils.clearByClassLoader(env.getClassLoader());
+    producer = env.createProducer(new ProducerImpl(), null);
   }
 
   @Test
@@ -90,32 +62,10 @@ public class TestSwaggerEnvironment {
 
   @Test
   public void createConsumer_consumerMethodSetBigger() {
-    SwaggerConsumer swaggerConsumer = env.getSwaggerEnvironment()
-        .createConsumer(ConsumerIntf.class, ContractIntf.class);
+    Swagger swagger = SwaggerGenerator.generate(ContractIntf.class);
+    SwaggerConsumer swaggerConsumer = env.createConsumer(ConsumerIntf.class, swagger);
 
     Assert.assertNotNull(swaggerConsumer.findOperation("exist"));
     Assert.assertNull(swaggerConsumer.findOperation("notExist"));
-  }
-
-  @Test
-  public void selectProducerArgumentsMapperFactory() {
-    final ArgumentsMapperConfig config = new ArgumentsMapperConfig();
-    config.setSwaggerGeneratorContext(new JaxrsSwaggerGeneratorContext());
-
-    final ProducerArgumentsMapperFactory producerArgumentsMapperFactory = env.getSwaggerEnvironment()
-        .selectProducerArgumentsMapperFactory(config);
-
-    Assert.assertEquals(JaxRSProducerArgumentsMapperFactory.class, producerArgumentsMapperFactory.getClass());
-  }
-
-  @Test
-  public void selectProducerArgumentsMapperFactoryOnReturnDefault() {
-    final ArgumentsMapperConfig config = new ArgumentsMapperConfig();
-    config.setSwaggerGeneratorContext(new PojoSwaggerGeneratorContext());
-
-    final ProducerArgumentsMapperFactory producerArgumentsMapperFactory = env.getSwaggerEnvironment()
-        .selectProducerArgumentsMapperFactory(config);
-
-    Assert.assertSame(defaultProducerArgumentsMapperFactory, producerArgumentsMapperFactory);
   }
 }
