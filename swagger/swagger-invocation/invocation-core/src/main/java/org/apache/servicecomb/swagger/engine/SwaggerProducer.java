@@ -20,8 +20,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.swagger.models.Swagger;
+
 public class SwaggerProducer {
   private Class<?> producerCls;
+
+  private Object producerInstance;
+
+  private Swagger swagger;
 
   // key is operationId
   private Map<String, SwaggerProducerOperation> opMap = new HashMap<>();
@@ -32,6 +38,22 @@ public class SwaggerProducer {
 
   public void setProducerCls(Class<?> producerCls) {
     this.producerCls = producerCls;
+  }
+
+  public Object getProducerInstance() {
+    return producerInstance;
+  }
+
+  public void setProducerInstance(Object producerInstance) {
+    this.producerInstance = producerInstance;
+  }
+
+  public Swagger getSwagger() {
+    return swagger;
+  }
+
+  public void setSwagger(Swagger swagger) {
+    this.swagger = swagger;
   }
 
   public void addOperation(SwaggerProducerOperation op) {
