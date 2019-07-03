@@ -37,12 +37,20 @@ public class SpringmvcConsumerResponseMapper implements ConsumerResponseMapper {
   public Object mapResponse(Response response) {
     HttpStatus status = HttpStatus.valueOf(response.getStatusCode());
 
-    HttpHeaders httpHeaders = null;
     Map<String, List<Object>> headers = response.getHeaders().getHeaderMap();
-    if (headers != null) {
-      httpHeaders = new HttpHeaders();
-      for (Entry<String, List<Object>> entry : headers.entrySet()) {
-        for (Object value : entry.getValue()) {
+    if (headers == null) {
+      Object realResult = realMapper.mapResponse(response);
+      return new ResponseEntity<>(realResult, null, status);
+    }
+
+    HttpHeaders httpHeaders = new HttpHeaders();
+    for (Entry<String, List<Object>> entry : headers.entrySet()) {
+      if (entry.getValue() == null) {
+        continue;
+      }
+
+      for (Object value : entry.getValue()) {
+        if (value != null) {
           httpHeaders.add(entry.getKey(), String.valueOf(value));
         }
       }
