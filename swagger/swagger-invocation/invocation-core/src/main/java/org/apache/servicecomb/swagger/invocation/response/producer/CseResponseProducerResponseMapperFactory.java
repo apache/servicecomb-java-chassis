@@ -25,13 +25,13 @@ public class CseResponseProducerResponseMapperFactory implements ProducerRespons
   private static final ProducerResponseMapper SAME = (status, response) -> (Response) response;
 
   @Override
-  public boolean isMatch(Type swaggerType, Type producerType) {
+  public boolean isMatch(Type producerType) {
     return producerType.equals(Response.class);
   }
 
   @Override
   public ProducerResponseMapper createResponseMapper(ResponseMapperFactorys<ProducerResponseMapper> factorys,
-      Type swaggerType, Type producerType) {
+      Type producerType) {
     return SAME;
   }
 }
