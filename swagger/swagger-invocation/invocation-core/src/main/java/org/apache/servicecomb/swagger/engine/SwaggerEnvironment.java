@@ -50,17 +50,14 @@ import io.swagger.util.Json;
 public class SwaggerEnvironment {
   private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerEnvironment.class);
 
-  private ResponseMapperFactorys<ProducerResponseMapper> producerResponseMapperFactorys =
-      new ResponseMapperFactorys<>(ProducerResponseMapperFactory.class);
-
-  private ResponseMapperFactorys<ConsumerResponseMapper> consumerResponseMapperFactorys =
-      new ResponseMapperFactorys<>(ConsumerResponseMapperFactory.class);
-
   public SwaggerConsumer createConsumer(Class<?> consumerIntf, Swagger swagger) {
     Map<Class<?>, ContextArgumentMapperFactory> contextFactorys = SPIServiceUtils
         .getOrLoadSortedService(ConsumerContextArgumentMapperFactory.class)
         .stream()
         .collect(Collectors.toMap(ConsumerContextArgumentMapperFactory::getContextClass, Function.identity()));
+    ResponseMapperFactorys<ConsumerResponseMapper> consumerResponseMapperFactorys =
+        new ResponseMapperFactorys<>(ConsumerResponseMapperFactory.class);
+
     SwaggerOperations swaggerOperations = new SwaggerOperations(swagger);
 
     SwaggerConsumer consumer = new SwaggerConsumer();
@@ -83,10 +80,8 @@ public class SwaggerEnvironment {
           consumerMethod,
           swaggerOperation);
       ConsumerArgumentsMapper argsMapper = creator.createArgumentsMapper();
-      ConsumerResponseMapper responseMapper = null;
-//      consumerResponseMapperFactorys.createResponseMapper(
-//          swaggerOperation.getGenericReturnType(),
-//          consumerMethod.getGenericReturnType());
+      ConsumerResponseMapper responseMapper = consumerResponseMapperFactorys
+          .createResponseMapper(consumerMethod.getGenericReturnType());
 
       SwaggerConsumerOperation op = new SwaggerConsumerOperation();
       op.setConsumerMethod(consumerMethod);
@@ -119,13 +114,18 @@ public class SwaggerEnvironment {
         .getOrLoadSortedService(ProducerContextArgumentMapperFactory.class)
         .stream()
         .collect(Collectors.toMap(ProducerContextArgumentMapperFactory::getContextClass, Function.identity()));
+    ResponseMapperFactorys<ProducerResponseMapper> producerResponseMapperFactorys =
+        new ResponseMapperFactorys<>(ProducerResponseMapperFactory.class);
+
     SwaggerOperations swaggerOperations = new SwaggerOperations(swagger);
 
     Class<?> producerCls = BeanUtils.getImplClassFromBean(producerInstance);
     Map<String, Method> visibleProducerMethods = retrieveVisibleMethods(producerCls);
 
     SwaggerProducer producer = new SwaggerProducer();
+    producer.setSwagger(swagger);
     producer.setProducerCls(producerCls);
+    producer.setProducerInstance(producerInstance);
     for (SwaggerOperation swaggerOperation : swaggerOperations.getOperations().values()) {
       String operationId = swaggerOperation.getOperationId();
       // producer参数不一定等于swagger参数
@@ -145,7 +145,6 @@ public class SwaggerEnvironment {
           swaggerOperation);
       ProducerArgumentsMapper argsMapper = creator.createArgumentsMapper();
       ProducerResponseMapper responseMapper = producerResponseMapperFactorys.createResponseMapper(
-          swaggerMethod.getGenericReturnType(),
           producerMethod.getGenericReturnType());
 
       SwaggerProducerOperation op = new SwaggerProducerOperation();
@@ -153,6 +152,7 @@ public class SwaggerEnvironment {
       op.setProducerInstance(producerInstance);
       op.setProducerMethod(producerMethod);
       op.setSwaggerOperation(swaggerOperation);
+      op.setSwaggerParameterTypes(creator.getSwaggerParameterTypes());
       op.setArgumentsMapper(argsMapper);
       op.setResponseMapper(responseMapper);
 
