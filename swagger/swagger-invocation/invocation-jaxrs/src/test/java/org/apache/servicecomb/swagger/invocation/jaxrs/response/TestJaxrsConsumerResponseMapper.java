@@ -16,93 +16,65 @@
  */
 package org.apache.servicecomb.swagger.invocation.jaxrs.response;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
 
-import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.ext.RuntimeDelegate;
-
-import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
+import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
+import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.models.Swagger;
 
 public class TestJaxrsConsumerResponseMapper {
-  JaxrsConsumerResponseMapper mapper = new JaxrsConsumerResponseMapper();
+  @Path("/")
+  interface ConsumerResponseForTest {
+    @ApiResponse(code = 200, message = "", response = String.class)
+    @Path("/jaxrsResponse")
+    @GET
+    javax.ws.rs.core.Response jaxrsResponse();
+  }
 
-  int status;
+  SwaggerEnvironment environment = new SwaggerEnvironment();
 
-  String reason;
+  SwaggerConsumer swaggerConsumer;
 
-  Object entity;
+  String result = "abc";
 
-  Map<String, Object> headers = new LinkedHashMap<>();
-
-  ResponseBuilder responseBuilder;
-
-  @Mocked
-  RuntimeDelegate runtimeDelegate;
+  org.apache.servicecomb.swagger.invocation.Response response = org.apache.servicecomb.swagger.invocation.Response
+      .ok(result);
 
   @Before
   public void setup() {
-    responseBuilder = new MockUp<ResponseBuilder>() {
-      @Mock
-      ResponseBuilder status(int status, String reasonPhrase) {
-        TestJaxrsConsumerResponseMapper.this.status = status;
-        TestJaxrsConsumerResponseMapper.this.reason = reasonPhrase;
-        return responseBuilder;
-      }
-
-      @Mock
-      ResponseBuilder entity(Object entity) {
-        TestJaxrsConsumerResponseMapper.this.entity = entity;
-        return responseBuilder;
-      }
-
-      @Mock
-      ResponseBuilder header(String name, Object value) {
-        headers.put(name, value);
-        return responseBuilder;
-      }
-    }.getMockInstance();
-
-    new Expectations() {
-      {
-        runtimeDelegate.createResponseBuilder();
-        result = responseBuilder;
-      }
-    };
+    Swagger swagger = SwaggerGenerator.generate(ConsumerResponseForTest.class);
+    swaggerConsumer = environment.createConsumer(ConsumerResponseForTest.class, swagger);
   }
 
   @SuppressWarnings("unchecked")
   @Test
-  public void mapResponse_withHeaders() {
-    Response response = Response.create(Status.OK, "ret");
-    response.getHeaders().addHeader("h", "v");
-    mapper.mapResponse(response);
+  public void jaxrsResponse() {
+    SwaggerConsumerOperation operation = swaggerConsumer.findOperation("jaxrsResponse");
 
-    Assert.assertEquals(Status.OK.getStatusCode(), status);
-    Assert.assertEquals("ret", entity);
-    Assert.assertEquals(1, headers.size());
-    Assert.assertThat((List<Object>) headers.get("h"), Matchers.contains("v"));
+    Response jaxrsResponse = (Response) operation.getResponseMapper().mapResponse(response);
+    Assert.assertEquals(result, jaxrsResponse.getEntity());
+    Assert.assertTrue(jaxrsResponse.getHeaders().isEmpty());
   }
 
   @Test
-  public void mapResponse_withoutHeaders() {
-    Response response = Response.create(Status.OK, "ret");
-    mapper.mapResponse(response);
+  public void jaxrsResponseWithHeaders() {
+    SwaggerConsumerOperation operation = swaggerConsumer.findOperation("jaxrsResponse");
+    response.getHeaders().addHeader("h", "v1").addHeader("h", "v2").addHeader("h", (Object) null);
+    response.getHeaders().getHeaderMap().put("h1", null);
 
-    Assert.assertEquals(Status.OK.getStatusCode(), status);
-    Assert.assertEquals(Status.OK.getReasonPhrase(), reason);
-    Assert.assertEquals("ret", entity);
-    Assert.assertEquals(0, headers.size());
+    Response jaxrsResponse = (Response) operation.getResponseMapper().mapResponse(response);
+    Assert.assertEquals(result, jaxrsResponse.getEntity());
+    Assert.assertEquals(1, jaxrsResponse.getHeaders().size());
+    Assert.assertThat(jaxrsResponse.getHeaders().get("h"), Matchers.contains("v1", "v2"));
   }
 }

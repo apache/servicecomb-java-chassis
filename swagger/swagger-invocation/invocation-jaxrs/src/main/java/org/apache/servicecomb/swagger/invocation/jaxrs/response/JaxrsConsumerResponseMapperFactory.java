@@ -26,13 +26,13 @@ import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerRespo
 
 public class JaxrsConsumerResponseMapperFactory implements ConsumerResponseMapperFactory {
   @Override
-  public boolean isMatch(Type swaggerType, Type consumerType) {
+  public boolean isMatch(Type consumerType) {
     return Response.class.equals(consumerType);
   }
 
   @Override
   public ConsumerResponseMapper createResponseMapper(ResponseMapperFactorys<ConsumerResponseMapper> factorys,
-      Type swaggerType, Type consumerType) {
+      Type consumerType) {
     return new JaxrsConsumerResponseMapper();
   }
 }
