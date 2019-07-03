@@ -19,18 +19,10 @@ package org.apache.servicecomb.swagger.invocation.response.producer;
 import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.converter.Converter;
 
 public class DefaultProducerResponseMapper implements ProducerResponseMapper {
-  private Converter converter;
-
-  public DefaultProducerResponseMapper(Converter converter) {
-    this.converter = converter;
-  }
-
   @Override
   public Response mapResponse(StatusType status, Object response) {
-    Object swaggerResult = converter.convert(response);
-    return Response.create(status, swaggerResult);
+    return Response.create(status, response);
   }
 }
