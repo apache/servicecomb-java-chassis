@@ -24,7 +24,7 @@ import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactorys
 
 public class CompletableFutureProducerResponseMapperFactory implements ProducerResponseMapperFactory {
   @Override
-  public boolean isMatch(Type swaggerType, Type producerType) {
+  public boolean isMatch(Type producerType) {
     if (!ParameterizedType.class.isAssignableFrom(producerType.getClass())) {
       return false;
     }
@@ -34,8 +34,8 @@ public class CompletableFutureProducerResponseMapperFactory implements ProducerR
 
   @Override
   public ProducerResponseMapper createResponseMapper(ResponseMapperFactorys<ProducerResponseMapper> factorys,
-      Type swaggerType, Type producerType) {
+      Type producerType) {
     Type realProducerType = ((ParameterizedType) producerType).getActualTypeArguments()[0];
-    return factorys.createResponseMapper(swaggerType, realProducerType);
+    return factorys.createResponseMapper(realProducerType);
   }
 }
