@@ -26,13 +26,13 @@ import org.apache.servicecomb.swagger.invocation.response.producer.ProducerRespo
 
 public class JaxrsProducerResponseMapperFactory implements ProducerResponseMapperFactory {
   @Override
-  public boolean isMatch(Type swaggerType, Type producerType) {
+  public boolean isMatch(Type producerType) {
     return Response.class.equals(producerType);
   }
 
   @Override
   public ProducerResponseMapper createResponseMapper(ResponseMapperFactorys<ProducerResponseMapper> factorys,
-      Type swaggerType, Type producerType) {
+      Type producerType) {
     return new JaxrsProducerResponseMapper();
   }
 }
