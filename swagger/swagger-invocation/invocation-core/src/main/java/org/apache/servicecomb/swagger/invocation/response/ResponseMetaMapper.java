@@ -19,10 +19,12 @@ package org.apache.servicecomb.swagger.invocation.response;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.JavaType;
+
 public interface ResponseMetaMapper {
   default int getOrder() {
     return 0;
   }
 
-  Map<Integer, ResponseMeta> getMapper();
+  Map<Integer, JavaType> getMapper();
 }
