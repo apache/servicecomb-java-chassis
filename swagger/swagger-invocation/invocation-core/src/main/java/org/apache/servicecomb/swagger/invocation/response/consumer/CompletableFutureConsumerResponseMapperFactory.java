@@ -24,7 +24,7 @@ import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactorys
 
 public class CompletableFutureConsumerResponseMapperFactory implements ConsumerResponseMapperFactory {
   @Override
-  public boolean isMatch(Type swaggerType, Type consumerType) {
+  public boolean isMatch(Type consumerType) {
     if (!ParameterizedType.class.isAssignableFrom(consumerType.getClass())) {
       return false;
     }
@@ -34,8 +34,8 @@ public class CompletableFutureConsumerResponseMapperFactory implements ConsumerR
 
   @Override
   public ConsumerResponseMapper createResponseMapper(ResponseMapperFactorys<ConsumerResponseMapper> factorys,
-      Type swaggerType, Type consumerType) {
+      Type consumerType) {
     Type realConsumerType = ((ParameterizedType) consumerType).getActualTypeArguments()[0];
-    return factorys.createResponseMapper(swaggerType, realConsumerType);
+    return factorys.createResponseMapper(realConsumerType);
   }
 }

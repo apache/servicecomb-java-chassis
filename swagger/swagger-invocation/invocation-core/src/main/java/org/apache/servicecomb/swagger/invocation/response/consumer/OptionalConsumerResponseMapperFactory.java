@@ -24,7 +24,7 @@ import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactorys
 
 public class OptionalConsumerResponseMapperFactory implements ConsumerResponseMapperFactory {
   @Override
-  public boolean isMatch(Type swaggerType, Type consumerType) {
+  public boolean isMatch(Type consumerType) {
     if (!ParameterizedType.class.isAssignableFrom(consumerType.getClass())) {
       return false;
     }
@@ -34,9 +34,9 @@ public class OptionalConsumerResponseMapperFactory implements ConsumerResponseMa
 
   @Override
   public ConsumerResponseMapper createResponseMapper(ResponseMapperFactorys<ConsumerResponseMapper> factorys,
-      Type swaggerType, Type consumerType) {
+      Type consumerType) {
     Type realConsumerType = ((ParameterizedType) consumerType).getActualTypeArguments()[0];
-    ConsumerResponseMapper realMapper = factorys.createResponseMapper(swaggerType, realConsumerType);
+    ConsumerResponseMapper realMapper = factorys.createResponseMapper(realConsumerType);
     return new OptionalConsumerResponseMapper(realMapper);
   }
 }
