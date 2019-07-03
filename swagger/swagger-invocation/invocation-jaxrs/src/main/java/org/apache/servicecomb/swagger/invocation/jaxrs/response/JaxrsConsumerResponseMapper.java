@@ -32,9 +32,19 @@ public class JaxrsConsumerResponseMapper implements ConsumerResponseMapper {
         javax.ws.rs.core.Response.status(response.getStatus()).entity(response.getResult());
 
     Map<String, List<Object>> headers = response.getHeaders().getHeaderMap();
-    if (headers != null) {
-      for (Entry<String, List<Object>> entry : headers.entrySet()) {
-        responseBuilder.header(entry.getKey(), entry.getValue());
+    if (headers == null) {
+      return responseBuilder.build();
+    }
+
+    for (Entry<String, List<Object>> entry : headers.entrySet()) {
+      if (entry.getValue() == null) {
+        continue;
+      }
+
+      for (Object value : entry.getValue()) {
+        if (value != null) {
+          responseBuilder.header(entry.getKey(), value);
+        }
       }
     }
 
