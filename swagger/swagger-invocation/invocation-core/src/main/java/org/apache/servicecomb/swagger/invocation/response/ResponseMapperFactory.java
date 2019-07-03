@@ -18,18 +18,12 @@ package org.apache.servicecomb.swagger.invocation.response;
 
 import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.invocation.converter.ConverterMgr;
-
 public interface ResponseMapperFactory<MAPPER> {
   default int getOrder() {
     return 0;
   }
 
-  default void setConverterMgr(ConverterMgr converterMgr) {
-  }
+  boolean isMatch(Type providerType);
 
-  boolean isMatch(Type swaggerType, Type providerType);
-
-  MAPPER createResponseMapper(ResponseMapperFactorys<MAPPER> factorys, Type swaggerType,
-      Type providerType);
+  MAPPER createResponseMapper(ResponseMapperFactorys<MAPPER> factorys, Type providerType);
 }
