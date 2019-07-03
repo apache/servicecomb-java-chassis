@@ -18,32 +18,22 @@ package org.apache.servicecomb.swagger.invocation.response.consumer;
 
 import java.lang.reflect.Type;
 
-import org.apache.servicecomb.swagger.invocation.converter.Converter;
-import org.apache.servicecomb.swagger.invocation.converter.ConverterMgr;
 import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactorys;
 
 public class DefaultConsumerResponseMapperFactory implements ConsumerResponseMapperFactory {
-  private ConverterMgr converterMgr;
-
-  @Override
-  public void setConverterMgr(ConverterMgr converterMgr) {
-    this.converterMgr = converterMgr;
-  }
-
   @Override
   public int getOrder() {
     return Integer.MAX_VALUE;
   }
 
   @Override
-  public boolean isMatch(Type swaggerType, Type consumerType) {
+  public boolean isMatch(Type consumerType) {
     return true;
   }
 
   @Override
   public ConsumerResponseMapper createResponseMapper(ResponseMapperFactorys<ConsumerResponseMapper> factorys,
-      Type swaggerType, Type consumerType) {
-    Converter converter = converterMgr.findConverter(swaggerType, consumerType);
-    return new DefaultConsumerResponseMapper(converter);
+      Type consumerType) {
+    return new DefaultConsumerResponseMapper();
   }
 }

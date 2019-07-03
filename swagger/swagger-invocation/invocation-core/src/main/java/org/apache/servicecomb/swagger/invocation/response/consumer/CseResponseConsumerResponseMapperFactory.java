@@ -25,13 +25,13 @@ public class CseResponseConsumerResponseMapperFactory implements ConsumerRespons
   private static final ConsumerResponseMapper SAME = response -> response;
 
   @Override
-  public boolean isMatch(Type swaggerType, Type consumerType) {
+  public boolean isMatch(Type consumerType) {
     return Response.class.equals(consumerType);
   }
 
   @Override
   public ConsumerResponseMapper createResponseMapper(ResponseMapperFactorys<ConsumerResponseMapper> factorys,
-      Type swaggerType, Type consumerType) {
+      Type consumerType) {
     return SAME;
   }
 }
