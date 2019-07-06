@@ -16,11 +16,25 @@
  */
 package org.apache.servicecomb.serviceregistry.swagger;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.core.Is.is;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.xml.ws.Holder;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.apache.servicecomb.serviceregistry.TestRegistryBase;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
@@ -32,6 +46,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import io.swagger.models.Swagger;
+import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mock;
 import mockit.MockUp;
@@ -123,14 +138,41 @@ public class TestSwaggerLoader extends TestRegistryBase {
     Assert.assertEquals(swagger, loadedSwagger);
   }
 
-  private void mockLocalResource(Swagger swagger, String path) throws IOException {
-    URL url = new MockUp<URL>() {
+  private void mockLocalResource(Swagger swagger, String path) {
+    mockLocalResource(SwaggerUtils.swaggerToString(swagger), path);
+  }
 
+  private void mockLocalResource(String content, String path) {
+    Map<String, String> resourceMap = new HashMap<>();
+    resourceMap.put(path, content);
+
+    mockLocalResource(resourceMap);
+  }
+
+  private void mockLocalResource(Map<String, String> resourceMap) {
+    Holder<String> pathHolder = new Holder<>();
+    URL url = new MockUp<URL>() {
+      @Mock
+      String getPath() {
+        return pathHolder.value;
+      }
+
+      @Mock
+      String toExternalForm() {
+        return pathHolder.value;
+      }
     }.getMockInstance();
     ClassLoader classLoader = new MockUp<ClassLoader>() {
       @Mock
       URL getResource(String name) {
-        return path.equals(name) ? url : null;
+        pathHolder.value = name;
+        return resourceMap.containsKey(name) ? url : null;
+      }
+
+      @Mock
+      InputStream getResourceAsStream(String name) {
+        String content = resourceMap.get(name);
+        return content == null ? null : new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
       }
     }.getMockInstance();
     new Expectations(JvmUtils.class) {
@@ -142,8 +184,44 @@ public class TestSwaggerLoader extends TestRegistryBase {
     new MockUp<IOUtils>() {
       @Mock
       String toString(URL url, Charset encoding) {
-        return SwaggerUtils.swaggerToString(swagger);
+        return resourceMap.get(url.getPath());
       }
     };
+  }
+
+  @Test
+  public void should_ignore_not_exist_location_when_register_swagger_in_location() {
+    Map<String, Object> apps = Deencapsulation.getField(serviceRegistry.getSwaggerLoader(), "apps");
+    apps.clear();
+    serviceRegistry.getSwaggerLoader().registerSwaggersInLocation("notExistPath");
+    assertThat(apps).isEmpty();
+  }
+
+  @Test
+  public void should_ignore_non_yaml_file_when_register_swagger_in_location() {
+    serviceRegistry.getSwaggerLoader().registerSwaggersInLocation("swagger-del");
+    assertThat(serviceRegistry.getSwaggerLoader().loadFromMemory(appId, serviceName, "other")).isNull();
+  }
+
+  @Test
+  public void should_throw_exception_when_register_invalid_swagger_in_location() {
+    expectedException.expect(IllegalStateException.class);
+    expectedException.expectMessage("failed to register swaggers, microserviceName=default, location=location.");
+    expectedException.expectCause(instanceOf(ServiceCombException.class));
+    expectedException.expectCause(allOf(instanceOf(ServiceCombException.class),
+        hasProperty("message", is("Parse swagger from url failed, url=location/invalid.yaml"))));
+
+    Map<String, String> resourceMap = new HashMap<>();
+    resourceMap.put("location", "invalid.yaml");
+    resourceMap.put("location/invalid.yaml", "invalid yaml content");
+    mockLocalResource(resourceMap);
+
+    serviceRegistry.getSwaggerLoader().registerSwaggersInLocation("location");
+  }
+
+  @Test
+  public void should_correct_register_swagger_in_location() {
+    serviceRegistry.getSwaggerLoader().registerSwaggersInLocation("swagger-del");
+    assertThat(serviceRegistry.getSwaggerLoader().loadFromMemory(appId, serviceName, "hello")).isNotNull();
   }
 }

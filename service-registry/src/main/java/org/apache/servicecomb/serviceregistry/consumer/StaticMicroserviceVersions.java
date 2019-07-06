@@ -25,6 +25,9 @@ import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.version.Version;
+import org.apache.servicecomb.swagger.SwaggerUtils;
+
+import io.swagger.models.Swagger;
 
 public class StaticMicroserviceVersions extends MicroserviceVersions {
   private Class<?> schemaIntfCls;
@@ -40,7 +43,9 @@ public class StaticMicroserviceVersions extends MicroserviceVersions {
   public StaticMicroserviceVersions init(Class<?> schemaIntfCls, String version,
       List<MicroserviceInstance> addedInstances) {
     this.schemaIntfCls = schemaIntfCls;
-    this.appManager.getServiceRegistry().getSwaggerLoader().registerSwagger(appId, shortName, shortName, schemaIntfCls);
+    Swagger swagger = this.appManager.getServiceRegistry().getSwaggerLoader()
+        .registerSwagger(appId, shortName, shortName, schemaIntfCls);
+    microservice.addSchema(shortName, SwaggerUtils.swaggerToString(swagger));
 
     createMicroservice(version);
 
