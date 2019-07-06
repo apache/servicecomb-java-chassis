@@ -16,11 +16,16 @@
  */
 package org.apache.servicecomb.serviceregistry.swagger;
 
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
@@ -47,20 +52,83 @@ public class SwaggerLoader {
     this.serviceRegistry = serviceRegistry;
   }
 
+  /**
+   * <pre>
+   * register swaggers in the location to current microservice
+   * Scenes for contract first mode:
+   *  1.consumer
+   *    manager manage some product, can only know product microservice names after deploy
+   *    and can only register swagger after product registered
+   *    in fact, consumers can load swagger from ServiceCenter
+   *    so for consumer, this logic is not necessary, just keep it for compatible
+   *  2.producer
+   *    deploy to different microservice name in different product
+   *    can register swaggers in BootListener.onBeforeProducerProvider
+   * </pre>
+   * @param swaggersLocation eg. "test/schemas", will load all test/schemas/*.yaml
+   */
+  public void registerSwaggersInLocation(String swaggersLocation) {
+    String microserviceName = serviceRegistry.getMicroservice().getServiceName();
+    registerSwaggersInLocation(microserviceName, swaggersLocation);
+  }
+
+  public void registerSwaggersInLocation(String microserviceName, String swaggersLocation) {
+    try (InputStream inputStream = JvmUtils.findClassLoader().getResourceAsStream(swaggersLocation)) {
+      if (inputStream == null) {
+        LOGGER.error("register swagger in not exist location: \"{}\".", swaggersLocation);
+        return;
+      }
+
+      List<String> files = IOUtils.readLines(inputStream, StandardCharsets.UTF_8);
+
+      for (String file : files) {
+        if (!file.endsWith(".yaml")) {
+          continue;
+        }
+
+        URL url = JvmUtils.findClassLoader().getResource(swaggersLocation + "/" + file);
+        String schemaId = FilenameUtils.getBaseName(url.getPath());
+        Swagger swagger = SwaggerUtils.parseAndValidateSwagger(url);
+        registerSwagger(microserviceName, schemaId, swagger);
+      }
+    } catch (Throwable e) {
+      throw new IllegalStateException(String.format(
+          "failed to register swaggers, microserviceName=%s, location=%s.", microserviceName, swaggersLocation),
+          e);
+    }
+  }
+
+  public void registerSwagger(String schemaId, Swagger swagger) {
+    registerSwagger(serviceRegistry.getMicroservice().getServiceName(), schemaId, swagger);
+  }
+
+  public void registerSwagger(String microserviceName, String schemaId, String swaggerContent) {
+    try {
+      Swagger swagger = SwaggerUtils.parseAndValidateSwagger(swaggerContent);
+      registerSwagger(microserviceName, schemaId, swagger);
+    } catch (Throwable e) {
+      throw new IllegalStateException(
+          String.format("Parse the swagger for %s:%s failed", microserviceName, schemaId),
+          e);
+    }
+  }
+
   public void registerSwagger(String microserviceName, String schemaId, Swagger swagger) {
     MicroserviceNameParser parser = new MicroserviceNameParser(serviceRegistry.getAppId(), microserviceName);
     registerSwagger(parser.getAppId(), parser.getShortName(), schemaId, swagger);
   }
 
-  public void registerSwagger(String appId, String shortName, String schemaId, Class<?> cls) {
+  public Swagger registerSwagger(String appId, String shortName, String schemaId, Class<?> cls) {
     Swagger swagger = SwaggerGenerator.generate(cls);
     registerSwagger(appId, shortName, schemaId, swagger);
+    return swagger;
   }
 
   public void registerSwagger(String appId, String shortName, String schemaId, Swagger swagger) {
     apps.computeIfAbsent(appId, k -> new ConcurrentHashMapEx<>())
         .computeIfAbsent(shortName, k -> new ConcurrentHashMapEx<>())
         .put(schemaId, swagger);
+    LOGGER.info("register swagger appId={}, name={}, schemaId={}.", appId, shortName, schemaId);
   }
 
   public void unregisterSwagger(String appId, String shortName, String schemaId) {
@@ -78,7 +146,7 @@ public class SwaggerLoader {
     return loadFromRemote(microservice, schemaId);
   }
 
-  private Swagger loadLocalSwagger(String appId, String shortName, String schemaId) {
+  public Swagger loadLocalSwagger(String appId, String shortName, String schemaId) {
     Swagger swagger = loadFromMemory(appId, shortName, schemaId);
     if (swagger != null) {
       return swagger;
@@ -87,7 +155,7 @@ public class SwaggerLoader {
     return loadFromResource(appId, shortName, schemaId);
   }
 
-  private Swagger loadFromMemory(String appId, String shortName, String schemaId) {
+  Swagger loadFromMemory(String appId, String shortName, String schemaId) {
     return Optional.ofNullable(apps.get(appId))
         .map(microservices -> microservices.get(shortName))
         .map(schemas -> schemas.get(schemaId))
@@ -111,19 +179,7 @@ public class SwaggerLoader {
       return null;
     }
 
-    return parseAndValidateSwagger(url);
-  }
-
-  private Swagger parseAndValidateSwagger(URL url) {
-    Swagger swagger = SwaggerUtils.parseSwagger(url);
-    SwaggerUtils.validateSwagger(swagger);
-    return swagger;
-  }
-
-  private Swagger parseAndValidateSwagger(String swaggerContent) {
-    Swagger swagger = SwaggerUtils.parseSwagger(swaggerContent);
-    SwaggerUtils.validateSwagger(swagger);
-    return swagger;
+    return SwaggerUtils.parseAndValidateSwagger(url);
   }
 
   private Swagger loadFromRemote(Microservice microservice, String schemaId) {
@@ -138,7 +194,7 @@ public class SwaggerLoader {
           microservice.getServiceId(),
           schemaId);
       LOGGER.debug(schemaContent);
-      return parseAndValidateSwagger(schemaContent);
+      return SwaggerUtils.parseAndValidateSwagger(schemaContent);
     }
 
     throw new IllegalStateException(
