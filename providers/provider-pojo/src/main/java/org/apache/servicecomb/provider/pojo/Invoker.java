@@ -37,6 +37,8 @@ import org.apache.servicecomb.swagger.invocation.context.InvocationContextComple
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.springframework.util.StringUtils;
 
+import io.swagger.annotations.ApiOperation;
+
 public class Invoker implements InvocationHandler {
   static class InvokerMeta {
     final ReferenceConfig referenceConfig;
@@ -133,7 +135,8 @@ public class Invoker implements InvocationHandler {
       }
     }
 
-    SwaggerConsumerOperation consumerOperation = currentInvokerMeta.swaggerConsumer.findOperation(method.getName());
+    SwaggerConsumerOperation consumerOperation = currentInvokerMeta.swaggerConsumer
+        .findOperation(findSwaggerMethodName(method));
     if (consumerOperation == null) {
       throw new IllegalStateException(
           String.format(
@@ -156,6 +159,15 @@ public class Invoker implements InvocationHandler {
     }
 
     return syncInvoke(invocation, consumerOperation);
+  }
+
+  protected String findSwaggerMethodName(Method consumerMethod) {
+    ApiOperation apiOperationAnnotation = consumerMethod.getAnnotation(ApiOperation.class);
+    if (apiOperationAnnotation == null || StringUtils.isEmpty(apiOperationAnnotation.nickname())) {
+      return consumerMethod.getName();
+    }
+
+    return apiOperationAnnotation.nickname();
   }
 
   protected Object syncInvoke(Invocation invocation, SwaggerConsumerOperation consumerOperation) {

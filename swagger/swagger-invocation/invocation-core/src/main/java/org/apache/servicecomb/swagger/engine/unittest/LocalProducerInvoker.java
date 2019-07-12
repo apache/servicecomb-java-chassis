@@ -27,6 +27,9 @@ import org.apache.servicecomb.swagger.engine.SwaggerProducer;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
+import org.springframework.util.StringUtils;
+
+import io.swagger.annotations.ApiOperation;
 
 public class LocalProducerInvoker implements InvocationHandler {
   private Object proxy;
@@ -73,7 +76,7 @@ public class LocalProducerInvoker implements InvocationHandler {
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     invocation = new SwaggerInvocation();
 
-    SwaggerConsumerOperation consumerOp = consumer.findOperation(method.getName());
+    SwaggerConsumerOperation consumerOp = consumer.findOperation(findSwaggerMethodName(method));
     SwaggerProducerOperation producerOp = producer.findOperation(consumerOp.getSwaggerMethod().getName());
 
     consumerOp.getArgumentsMapper().toInvocation(args, invocation);
@@ -90,5 +93,14 @@ public class LocalProducerInvoker implements InvocationHandler {
     }
 
     return future.get();
+  }
+
+  protected String findSwaggerMethodName(Method consumerMethod) {
+    ApiOperation apiOperationAnnotation = consumerMethod.getAnnotation(ApiOperation.class);
+    if (apiOperationAnnotation == null || StringUtils.isEmpty(apiOperationAnnotation.nickname())) {
+      return consumerMethod.getName();
+    }
+
+    return apiOperationAnnotation.nickname();
   }
 }
