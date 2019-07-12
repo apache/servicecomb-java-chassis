@@ -136,7 +136,7 @@ public class SwaggerEnvironment {
           consumerMethod.getGenericReturnType());
 
       SwaggerConsumerOperation op = new SwaggerConsumerOperation();
-      op.setName(consumerMethod.getName());
+      op.setName(swaggerMethodName);
       op.setConsumerMethod(consumerMethod);
       op.setSwaggerMethod(swaggerMethod);
       op.setArgumentsMapper(argsMapper);

@@ -24,6 +24,7 @@ import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.it.schema.TestApiOperation;
 import org.apache.servicecomb.it.testcase.TestAcceptType;
 import org.apache.servicecomb.it.testcase.TestAnnotatedAttribute;
+import org.apache.servicecomb.it.testcase.TestApiOperationOverride;
 import org.apache.servicecomb.it.testcase.TestApiParam;
 import org.apache.servicecomb.it.testcase.TestAsyncInvoke;
 import org.apache.servicecomb.it.testcase.TestChangeTransport;
@@ -131,6 +132,7 @@ public class ConsumerMain {
     ITJUnitUtils.runWithHighwayAndRest(TestAsyncInvoke.class);
 
     ITJUnitUtils.runWithHighwayAndRest(TestOptional.class);
+    ITJUnitUtils.runWithHighwayAndRest(TestApiOperationOverride.class);
   }
 
   interface ITTask {
