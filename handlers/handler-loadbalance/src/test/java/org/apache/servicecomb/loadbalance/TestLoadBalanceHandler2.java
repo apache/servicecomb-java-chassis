@@ -19,6 +19,8 @@ package org.apache.servicecomb.loadbalance;
 
 import static org.mockito.Mockito.when;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.EventListener;
 import java.util.HashMap;
@@ -70,9 +72,21 @@ public class TestLoadBalanceHandler2 {
   @BeforeClass
   public static void beforeClass() {
     //prepare for defineEndpointAndHandle
-    ArchaiusUtils.setProperty("servicecomb.loadbalance.userDefinedEndpoint.enabled", "true");
+    try {
+    Field field = LoadbalanceHandler.class.getDeclaredField("supportDefinedEndpoint");
+    field.setAccessible(true);
+    Field modifiersField = Field.class.getDeclaredField("modifiers");
+    modifiersField.setAccessible(true);
+    int modifiers = modifiersField.getInt(field);
+    modifiers &= ~Modifier.FINAL;
+    modifiersField.setInt(field, modifiers);
+    field.set(null, true);
+    
+    } catch (Exception e) {
+    
+	  }
     // avoid mock
-
+    
   }
 
   @Before
