@@ -25,6 +25,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 
@@ -45,6 +47,8 @@ import io.swagger.models.properties.StringProperty;
 
 public final class ParamUtils {
   private static DefaultParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ParamUtils.class);
 
   private ParamUtils() {
 
@@ -115,9 +119,17 @@ public final class ParamUtils {
   public static void addDefinitions(Swagger swagger, Type paramType) {
     Map<String, Model> models = ModelConverters.getInstance().readAll(paramType);
     for (Map.Entry<String, Model> entry : models.entrySet()) {
+      if (null != swagger.getDefinitions()) {
+        Model tempModel = swagger.getDefinitions().get(entry.getKey());
+        if (null != tempModel && !tempModel.equals(entry.getValue())) {
+          LOGGER.warn("duplicate param model: " + entry.getKey());
+          throw new IllegalArgumentException("duplicate param model: " + entry.getKey());
+        }
+      }
       swagger.addDefinition(entry.getKey(), entry.getValue());
     }
   }
+
 
   public static void setParameterType(Swagger swagger, Method method, int paramIdx,
       AbstractSerializableParameter<?> parameter) {
