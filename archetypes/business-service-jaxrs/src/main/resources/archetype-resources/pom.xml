@@ -49,10 +49,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>transport-highway</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
       <artifactId>provider-jaxrs</artifactId>
     </dependency>
     <dependency>
