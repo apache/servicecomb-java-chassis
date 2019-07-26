@@ -38,10 +38,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>transport-highway</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
       <artifactId>transport-rest-vertx</artifactId>
     </dependency>
     <dependency>

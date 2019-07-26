@@ -1283,11 +1283,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>transport-highway</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
         <artifactId>transport-rest-client</artifactId>
         <version>${project.version}</version>
       </dependency>
