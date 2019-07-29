@@ -17,15 +17,15 @@
 
 package org.apache.servicecomb.foundation.common.utils;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.aop.TargetClassAware;
+import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 
 public final class BeanUtils {
@@ -109,11 +109,14 @@ public final class BeanUtils {
     return (T) context.getBean(name);
   }
 
+  /**
+   * Get the implemented class of the given instance
+   * @param bean the instance to get implemented class from
+   * @return the implemented class (if the checked class is proxied, return the ultimate target class)
+   * @see org.springframework.aop.framework.AopProxyUtils#ultimateTargetClass
+   */
   public static Class<?> getImplClassFromBean(Object bean) {
-    if (TargetClassAware.class.isInstance(bean)) {
-      return ((TargetClassAware) bean).getTargetClass();
-    }
-
-    return bean.getClass();
+    return AopProxyUtils.ultimateTargetClass(bean);
   }
+
 }
