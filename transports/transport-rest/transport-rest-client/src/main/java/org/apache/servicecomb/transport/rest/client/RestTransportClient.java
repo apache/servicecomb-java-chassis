@@ -76,11 +76,11 @@ public class RestTransportClient {
   private static HttpClientOptions createHttpClientOptions() {
     HttpClientOptions httpClientOptions = new HttpClientOptions();
     httpClientOptions.setMaxPoolSize(TransportClientConfig.getConnectionMaxPoolSize())
-            .setIdleTimeout(TransportClientConfig.getConnectionIdleTimeoutInSeconds())
-            .setKeepAlive(TransportClientConfig.getConnectionKeepAlive())
-            .setTryUseCompression(TransportClientConfig.getConnectionCompression())
-            .setMaxHeaderSize(TransportClientConfig.getMaxHeaderSize())
-            .setMaxWaitQueueSize(TransportClientConfig.getMaxWaitQueueSize());
+        .setIdleTimeout(TransportClientConfig.getConnectionIdleTimeoutInSeconds())
+        .setKeepAlive(TransportClientConfig.getConnectionKeepAlive())
+        .setTryUseCompression(TransportClientConfig.getConnectionCompression())
+        .setMaxHeaderSize(TransportClientConfig.getMaxHeaderSize())
+        .setMaxWaitQueueSize(TransportClientConfig.getMaxWaitQueueSize());
 
     VertxTLSBuilder.buildHttpClientOptions(SSL_KEY, httpClientOptions);
     return httpClientOptions;
