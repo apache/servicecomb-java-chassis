@@ -16,6 +16,9 @@
  */
 package org.apache.servicecomb.serviceregistry.diagnosis.instance;
 
+import java.util.List;
+
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.diagnosis.Status;
 
 public class InstanceCacheResult {
@@ -27,6 +30,17 @@ public class InstanceCacheResult {
   private Status status;
 
   private String detail;
+
+  private List<MicroserviceInstance> pulledInstances;
+
+  public List<MicroserviceInstance> getPulledInstances() {
+    return pulledInstances;
+  }
+
+  public void setPulledInstances(
+      List<MicroserviceInstance> pulledInstances) {
+    this.pulledInstances = pulledInstances;
+  }
 
   public String getAppId() {
     return appId;

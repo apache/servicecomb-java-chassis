@@ -68,6 +68,10 @@ public class MicroserviceInstanceRegisterTask extends AbstractRegisterTask {
     microserviceInstance.getHealthCheck().setTimes(serviceRegistryConfig.getResendHeartBeatTimes());
 
     String instanceId = srClient.registerMicroserviceInstance(microserviceInstance);
+    MicroserviceInstance temIns = srClient.findServiceInstance(microserviceInstance.getServiceId(), instanceId);
+    if (temIns != null) {
+      microserviceInstance.setTimestamp(temIns.getTimestamp());
+    }
     if (StringUtils.isEmpty(instanceId)) {
       LOGGER.error("Register microservice instance failed,will back to register microservice again. microserviceId={}",
           microserviceInstance.getServiceId());

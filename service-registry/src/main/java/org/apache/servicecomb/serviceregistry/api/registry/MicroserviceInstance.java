@@ -67,6 +67,16 @@ public class MicroserviceInstance {
 
   private DataCenterInfo dataCenterInfo;
 
+  private String timestamp;
+
+  public String getTimestamp() {
+    return timestamp;
+  }
+
+  public void setTimestamp(String timestamp) {
+    this.timestamp = timestamp;
+  }
+
   public String getInstanceId() {
     return instanceId;
   }
