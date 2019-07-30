@@ -87,4 +87,11 @@ public class TestTransportClientConfig {
     ArchaiusUtils.setProperty("servicecomb.rest.client.maxHeaderSize", 1024);
     Assert.assertEquals(1024, TransportClientConfig.getMaxHeaderSize());
   }
+
+  @Test
+  public void getMaxWaitQueueSize() {
+    Assert.assertEquals(-1, TransportClientConfig.getMaxWaitQueueSize());
+    ArchaiusUtils.setProperty("servicecomb.rest.client.maxWaitQueueSize", 1024);
+    Assert.assertEquals(1024, TransportClientConfig.getMaxWaitQueueSize());
+  }
 }
