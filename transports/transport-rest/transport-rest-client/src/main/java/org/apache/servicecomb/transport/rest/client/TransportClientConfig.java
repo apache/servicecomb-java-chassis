@@ -98,4 +98,11 @@ public final class TransportClientConfig {
         .getIntProperty("servicecomb.rest.client.maxHeaderSize", HttpClientOptions.DEFAULT_MAX_HEADER_SIZE)
         .get();
   }
+
+  public static int getMaxWaitQueueSize(){
+    return DynamicPropertyFactory.getInstance()
+        .getIntProperty("servicecomb.rest.client.maxWaitQueueSize",
+            HttpClientOptions.DEFAULT_MAX_WAIT_QUEUE_SIZE)
+        .get();
+  }
 }
