@@ -101,8 +101,8 @@ public final class TransportClientConfig {
 
   public static int getMaxWaitQueueSize(){
     return DynamicPropertyFactory.getInstance()
-            .getIntProperty("servicecomb.rest.client.maxWaitQueueSize",
-                    HttpClientOptions.DEFAULT_MAX_WAIT_QUEUE_SIZE)
-            .get();
+        .getIntProperty("servicecomb.rest.client.maxWaitQueueSize",
+            HttpClientOptions.DEFAULT_MAX_WAIT_QUEUE_SIZE)
+        .get();
   }
 }
