@@ -78,6 +78,7 @@ public class InstanceCacheChecker {
     InstanceCacheResult instanceCacheResult = new InstanceCacheResult();
     instanceCacheResult.setAppId(microserviceVersions.getAppId());
     instanceCacheResult.setMicroserviceName(microserviceVersions.getMicroserviceName());
+    instanceCacheResult.setPulledInstances(microserviceVersions.getPulledInstances());
 
     MicroserviceInstances microserviceInstances = RegistryUtils
         .findServiceInstances(microserviceVersions.getAppId(),

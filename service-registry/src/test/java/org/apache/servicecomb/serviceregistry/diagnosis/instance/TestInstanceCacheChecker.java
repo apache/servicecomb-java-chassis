@@ -136,6 +136,7 @@ public class TestInstanceCacheChecker {
     instanceCacheResult.setMicroserviceName(microserviceName);
     instanceCacheResult.setStatus(Status.UNKNOWN);
     instanceCacheResult.setDetail("failed to find instances from service center");
+    instanceCacheResult.setPulledInstances(new ArrayList<>());
     expectedSummary.getProducers().add(instanceCacheResult);
     expectedSummary.setStatus(Status.UNKNOWN);
 
@@ -167,6 +168,7 @@ public class TestInstanceCacheChecker {
     instanceCacheResult.setMicroserviceName(microserviceName);
     instanceCacheResult.setStatus(Status.UNKNOWN);
     instanceCacheResult.setDetail("microservice is not exist anymore, will be deleted from memory in next pull");
+    instanceCacheResult.setPulledInstances(new ArrayList<>());
     expectedSummary.getProducers().add(instanceCacheResult);
     expectedSummary.setStatus(Status.UNKNOWN);
 
@@ -197,6 +199,7 @@ public class TestInstanceCacheChecker {
     instanceCacheResult.setAppId(appId);
     instanceCacheResult.setMicroserviceName(microserviceName);
     instanceCacheResult.setStatus(Status.UNKNOWN);
+    instanceCacheResult.setPulledInstances(new ArrayList<>());
     instanceCacheResult.setDetail(
         "revision is different, will be synchronized in next pull. local revision=first, remote revision=second");
     expectedSummary.getProducers().add(instanceCacheResult);
@@ -235,6 +238,7 @@ public class TestInstanceCacheChecker {
     instanceCacheResult.setStatus(Status.ABNORMAL);
     instanceCacheResult.setDetail(
         "instance cache not match");
+    instanceCacheResult.setPulledInstances(new ArrayList<>());
     expectedSummary.getProducers().add(instanceCacheResult);
     expectedSummary.setStatus(Status.ABNORMAL);
 
