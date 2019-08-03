@@ -24,12 +24,16 @@ import java.util.Map;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.handler.config.Config;
 import org.apache.servicecomb.foundation.common.AbstractObjectManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.netflix.config.DynamicPropertyFactory;
 
 // key为microserviceName
 public abstract class AbstractHandlerManager extends AbstractObjectManager<String, String, List<Handler>> {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractHandlerManager.class);
 
   private String defaultChainDef;
 
@@ -105,10 +109,12 @@ public abstract class AbstractHandlerManager extends AbstractObjectManager<Strin
 
   @Override
   protected List<Handler> create(String microserviceName) {
+    String handlerChainKey = "servicecomb.handler.chain." + getName() + ".service." + microserviceName;
     String chainDef = DynamicPropertyFactory.getInstance()
-        .getStringProperty("servicecomb.handler.chain." + getName() + ".service." + microserviceName,
+        .getStringProperty(handlerChainKey,
             defaultChainDef)
         .get();
+    LOGGER.info("get handler chain for [{}]: [{}]", handlerChainKey, chainDef);
     return createHandlerChain(chainDef);
   }
 }

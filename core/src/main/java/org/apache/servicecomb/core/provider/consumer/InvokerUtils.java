@@ -87,6 +87,8 @@ public final class InvokerUtils {
       String msg =
           String.format("invoke failed, %s", invocation.getOperationMeta().getMicroserviceQualifiedName());
       LOGGER.error(msg, e);
+      LOGGER.error("invocation type: {}, handler chain: {}", invocation.getInvocationType(),
+          invocation.getHandlerChain());
 
       Response response = Response.createConsumerFail(e);
       invocation.onFinish(response);
