@@ -40,7 +40,7 @@ public class CseApplicationListener
     this.applicationContext = applicationContext;
     BeanUtils.setContext(applicationContext);
     RegistryUtils.init();
-    new SCBEngine();
+    SCBEngine.getInstance();
   }
 
   public void setInitEventClass(Class<?> initEventClass) {

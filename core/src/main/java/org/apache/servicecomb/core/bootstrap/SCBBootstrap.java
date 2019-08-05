@@ -48,7 +48,7 @@ public class SCBBootstrap {
   }
 
   public SCBEngine createSCBEngine() {
-    return new SCBEngine();
+    return SCBEngine.getInstance();
   }
 
   public SCBEngine createSCBEngineForTest() {
