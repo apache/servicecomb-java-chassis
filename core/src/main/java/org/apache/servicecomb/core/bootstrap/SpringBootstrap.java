@@ -22,6 +22,6 @@ import org.apache.servicecomb.serviceregistry.RegistryUtils;
 public class SpringBootstrap {
   public SpringBootstrap() {
     RegistryUtils.init();
-    new SCBEngine();
+    SCBEngine.getInstance();
   }
 }
