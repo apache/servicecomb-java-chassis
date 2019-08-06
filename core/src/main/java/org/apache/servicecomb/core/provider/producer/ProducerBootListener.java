@@ -60,6 +60,11 @@ public class ProducerBootListener implements BootListener {
       Swagger swagger = schemaMeta.getSwagger();
       swagger.addScheme(Scheme.forValue(swaggerSchema));
       String content = SwaggerUtils.swaggerToString(swagger);
+      LOGGER.info("generate swagger for {}/{}/{}, swagger: {}",
+          microserviceMeta.getAppId(),
+          microserviceMeta.getMicroserviceName(),
+          schemaMeta.getSchemaId(),
+          content);
       microservice.addSchema(schemaMeta.getSchemaId(), content);
     }
 
