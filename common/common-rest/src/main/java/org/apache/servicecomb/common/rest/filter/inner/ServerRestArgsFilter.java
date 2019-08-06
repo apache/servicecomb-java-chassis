@@ -75,7 +75,7 @@ public class ServerRestArgsFilter implements HttpServerFilter {
       body = ((InvocationException) body).getErrorData();
     }
 
-    if (RestMetaUtils.getRestOperationMeta(invocation.getOperationMeta()).isDownloadFile()) {
+    if (null != invocation && RestMetaUtils.getRestOperationMeta(invocation.getOperationMeta()).isDownloadFile()) {
       return responseEx.sendPart(PartUtils.getSinglePart(null, body));
     }
 
