@@ -74,7 +74,7 @@ import com.netflix.config.DynamicPropertyFactory;
 public class OperationInstancesDiscoveryFilter extends AbstractDiscoveryFilter {
   @Override
   public int getOrder() {
-    return -10000;
+    return -20000;
   }
 
   @Override

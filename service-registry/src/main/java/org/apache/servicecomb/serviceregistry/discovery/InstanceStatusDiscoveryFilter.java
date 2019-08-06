@@ -19,6 +19,7 @@ package org.apache.servicecomb.serviceregistry.discovery;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
@@ -30,7 +31,7 @@ public class InstanceStatusDiscoveryFilter extends AbstractDiscoveryFilter {
 
   @Override
   public int getOrder() {
-    return -20000;
+    return -10000;
   }
 
   @Override
@@ -53,13 +54,12 @@ public class InstanceStatusDiscoveryFilter extends AbstractDiscoveryFilter {
   public void init(DiscoveryContext context, DiscoveryTreeNode parent) {
     Map<String, MicroserviceInstance> instances = parent.data();
     Map<String, MicroserviceInstance> filteredServers = new HashMap<>();
-    instances.entrySet().forEach(stringMicroserviceInstanceEntry -> {
-      String key = stringMicroserviceInstanceEntry.getKey();
-      MicroserviceInstance instance = stringMicroserviceInstanceEntry.getValue();
+    for (Entry<String, MicroserviceInstance> instanceEntry : instances.entrySet()) {
+      MicroserviceInstance instance = instanceEntry.getValue();
       if (MicroserviceInstanceStatus.UP == instance.getStatus()) {
-        filteredServers.put(key, instance);
+        filteredServers.put(instanceEntry.getKey(), instance);
       }
-    });
+    }
 
     if (filteredServers.isEmpty()) {
       return;
