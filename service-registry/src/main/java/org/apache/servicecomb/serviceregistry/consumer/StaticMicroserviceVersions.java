@@ -26,10 +26,15 @@ import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.version.Version;
 import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.swagger.models.Swagger;
 
 public class StaticMicroserviceVersions extends MicroserviceVersions {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(StaticMicroserviceVersions.class);
+
   private Class<?> schemaIntfCls;
 
   private Microservice microservice = new Microservice();
@@ -45,7 +50,10 @@ public class StaticMicroserviceVersions extends MicroserviceVersions {
     this.schemaIntfCls = schemaIntfCls;
     Swagger swagger = this.appManager.getServiceRegistry().getSwaggerLoader()
         .registerSwagger(appId, shortName, shortName, schemaIntfCls);
-    microservice.addSchema(shortName, SwaggerUtils.swaggerToString(swagger));
+    String swaggerContent = SwaggerUtils.swaggerToString(swagger);
+    LOGGER.info("generate swagger for 3rd party service [{}]/[{}], swagger: {}",
+        getMicroserviceName(), version, swaggerContent);
+    microservice.addSchema(shortName, swaggerContent);
 
     createMicroservice(version);
 
@@ -70,7 +78,7 @@ public class StaticMicroserviceVersions extends MicroserviceVersions {
   protected MicroserviceInstances findServiceInstances() {
     // Only refreshed for the first time
     microserviceInstances.setNeedRefresh(revision == null);
-    revision = "1";
+    microserviceInstances.setRevision("1");
     return microserviceInstances;
   }
 
