@@ -16,13 +16,13 @@
  */
 package org.apache.servicecomb.authentication.provider;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
+import java.util.concurrent.TimeUnit;
 import org.apache.servicecomb.authentication.RSAAuthenticationToken;
 import org.apache.servicecomb.foundation.common.utils.RSAUtils;
 import org.apache.servicecomb.serviceregistry.api.Const;
@@ -35,7 +35,9 @@ public class RSAProviderTokenManager {
 
   private final static Logger LOGGER = LoggerFactory.getLogger(RSAProviderTokenManager.class);
 
-  private Set<RSAAuthenticationToken> validatedToken = ConcurrentHashMap.newKeySet(1000);
+  private static Cache<RSAAuthenticationToken, Boolean> validatedToken = CacheBuilder.newBuilder()
+      .expireAfterAccess(getExpiredTime(), TimeUnit.MILLISECONDS)
+      .build();
 
   private AccessController accessController = new AccessController();
 
@@ -46,30 +48,39 @@ public class RSAProviderTokenManager {
         LOGGER.error("token format is error, perhaps you need to set auth handler at consumer");
         return false;
       }
-      if (tokenExprired(rsaToken)) {
+      if (tokenExpired(rsaToken)) {
         LOGGER.error("token is expired");
         return false;
       }
-      if (validatedToken.contains(rsaToken)) {
+
+      if (getValidatedToken().asMap().containsKey(rsaToken)) {
         return accessController.isAllowed(MicroserviceInstanceCache.getOrCreate(rsaToken.getServiceId()));
       }
 
-      String sign = rsaToken.getSign();
-      String content = rsaToken.plainToken();
-      String publicKey = getPublicKey(rsaToken.getInstanceId(), rsaToken.getServiceId());
-      boolean verify = RSAUtils.verify(publicKey, sign, content);
-      if (verify && !tokenExprired(rsaToken)) {
-        validatedToken.add(rsaToken);
+      if (isValidToken(rsaToken) && !tokenExpired(rsaToken)) {
+        getValidatedToken().put(rsaToken, true);
         return accessController.isAllowed(MicroserviceInstanceCache.getOrCreate(rsaToken.getServiceId()));
       }
       return false;
     } catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | SignatureException e) {
-      LOGGER.error("verfiy error", e);
+      LOGGER.error("verify error", e);
       return false;
     }
   }
 
-  private boolean tokenExprired(RSAAuthenticationToken rsaToken) {
+  public boolean isValidToken(RSAAuthenticationToken rsaToken)
+      throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException {
+    String sign = rsaToken.getSign();
+    String content = rsaToken.plainToken();
+    String publicKey = getPublicKey(rsaToken.getInstanceId(), rsaToken.getServiceId());
+    return RSAUtils.verify(publicKey, sign, content);
+  }
+
+  public static int getExpiredTime() {
+    return 60 * 60 * 1000;
+  }
+
+  private boolean tokenExpired(RSAAuthenticationToken rsaToken) {
     long generateTime = rsaToken.getGenerateTime();
     long expired = generateTime + RSAAuthenticationToken.TOKEN_ACTIVE_TIME + 15 * 60 * 1000;
     long now = System.currentTimeMillis();
@@ -84,5 +95,9 @@ public class RSAProviderTokenManager {
       LOGGER.error("not instance found {}-{}, maybe attack", instanceId, serviceId);
       return "";
     }
+  }
+
+  public static Cache<RSAAuthenticationToken, Boolean> getValidatedToken() {
+    return validatedToken;
   }
 }
