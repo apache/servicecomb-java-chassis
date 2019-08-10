@@ -76,14 +76,15 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
    */
   @Override
   public void setEnvironment(Environment environment) {
+
+    ConfigUtil.installDynamicConfig();
+
     String environmentName = generateNameForEnvironment(environment);
     LOGGER.info("Environment received, will get configurations from [{}].", environmentName);
 
     Map<String, Object> extraConfig = getAllProperties(environment);
 
     ConfigUtil.addExtraConfig(EXTRA_CONFIG_SOURCE_PREFIX + environmentName, extraConfig);
-
-    ConfigUtil.installDynamicConfig();
 
     setUpSpringPropertySource(environment);
   }
@@ -200,10 +201,10 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
         try {
           configFromSpringBoot.put(propertyName, environment.getProperty(propertyName, Object.class));
         } catch (Exception e) {
-          if (!getIfIgnoreEnvironment()) {
-            throw new RuntimeException("set up spring property source failed.", e);
-          } else {
+          if (ignoreResolveFailure()) {
             LOGGER.warn("set up spring property source failed.", e);
+          } else {
+            throw new RuntimeException("set up spring property source failed.", e);
           }
         }
       }
@@ -213,7 +214,9 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
     LOGGER.debug("a none EnumerablePropertySource is ignored, propertySourceName = [{}]", propertySource.getName());
   }
 
-  private boolean getIfIgnoreEnvironment() {
-    return (Boolean) ConfigUtil.createLocalConfig().getProperty("servicecomb.config.ignoreResolveFailure");
+  private boolean ignoreResolveFailure() {
+    return DynamicPropertyFactory.getInstance()
+            .getBooleanProperty("servicecomb.config.ignoreResolveFailure", false)
+            .get();
   }
 }
