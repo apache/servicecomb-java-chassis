@@ -243,7 +243,7 @@ public class TestConfigurationSpringInitializer {
   private StandardEnvironment newStandardEnvironment() {
     Map<String, Object> envProperties = new HashMap<>();
     envProperties.put("IFS-X", "${IFS-X}");
-    PropertySource systemEnvironmentPropertySource = new SystemEnvironmentPropertySource("system-env", envProperties);
+    PropertySource<Map<String, Object>> systemEnvironmentPropertySource = new SystemEnvironmentPropertySource("system-env", envProperties);
 
     StandardEnvironment environment = new StandardEnvironment();
     environment.getPropertySources()
