@@ -31,12 +31,16 @@
   <packaging>pom</packaging>
 
   <properties>
-    <spring.boot.version>2.1.2.RELEASE</spring.boot.version>
+    <!-- Dependency versions -->
+    <spring-boot.version>2.1.2.RELEASE</spring-boot.version>
     <spring-cloud.version>Greenwich.RELEASE</spring-cloud.version>
+    <!-- Plugin versions -->
+    <m2e-plugin.version>1.0.0</m2e-plugin.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
+      <!-- Error occur when changing the sequence of dependencies -->
       <dependency>
         <groupId>org.springframework.cloud</groupId>
         <artifactId>spring-cloud-dependencies</artifactId>
@@ -67,7 +71,7 @@
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
-        <version>${spring.boot.version}</version>
+        <version>${spring-boot.version}</version>
         <exclusions>
           <exclusion>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -94,7 +98,7 @@
         <plugin>
           <groupId>org.eclipse.m2e</groupId>
           <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
+          <version>${m2e-plugin.version}</version>
           <configuration>
             <lifecycleMappingMetadata>
               <pluginExecutions>
