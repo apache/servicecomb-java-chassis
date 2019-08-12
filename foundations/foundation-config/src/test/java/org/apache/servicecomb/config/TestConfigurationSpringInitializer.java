@@ -43,6 +43,9 @@ import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.env.SystemEnvironmentPropertySource;
 import org.springframework.jndi.JndiPropertySource;
 
 import com.netflix.config.ConfigurationManager;
@@ -224,8 +227,27 @@ public class TestConfigurationSpringInitializer {
     assertEquals("value2", extraProperties.get("key2"));
   }
 
+  @Test(expected = RuntimeException.class)
+  public void shoud_throw_exception_when_given_ignoreResolveFailure_false() {
+    StandardEnvironment environment = newStandardEnvironment();
+
+    ConfigurationSpringInitializer configurationSpringInitializer = new ConfigurationSpringInitializer();
+    configurationSpringInitializer.setEnvironment(environment);
+  }
+
   private Map<String, Map<String, Object>> getExtraConfigMapFromConfigUtil() {
     return Deencapsulation
         .getField(ConfigUtil.class, "EXTRA_CONFIG_MAP");
+  }
+
+  private StandardEnvironment newStandardEnvironment() {
+    Map<String, Object> envProperties = new HashMap<>();
+    envProperties.put("IFS-X", "${IFS-X}");
+    PropertySource<Map<String, Object>> systemEnvironmentPropertySource = new SystemEnvironmentPropertySource("system-env", envProperties);
+
+    StandardEnvironment environment = new StandardEnvironment();
+    environment.getPropertySources()
+            .addAfter(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, systemEnvironmentPropertySource);
+    return environment;
   }
 }
