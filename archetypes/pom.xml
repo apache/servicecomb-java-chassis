@@ -33,5 +33,6 @@
     <module>business-service-pojo</module>
     <module>business-service-springmvc</module>
     <module>business-service-spring-boot-starter</module>
+    <module>business-service-spring-boot2-starter</module>
   </modules>
 </project>
