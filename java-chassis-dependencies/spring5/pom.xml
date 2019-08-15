@@ -31,7 +31,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <spring.version>5.0.7.RELEASE</spring.version>
+    <spring.version>5.1.5.RELEASE</spring.version>
   </properties>
 
   <dependencyManagement>

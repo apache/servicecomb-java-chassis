@@ -31,7 +31,7 @@
   <packaging>pom</packaging>
 
   <properties>
-    <spring-boot.version>1.5.14.RELEASE</spring-boot.version>
+    <spring-boot.version>1.5.19.RELEASE</spring-boot.version>
   </properties>
 
   <dependencyManagement>
