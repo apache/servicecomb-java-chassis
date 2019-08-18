@@ -214,6 +214,8 @@ public class MicroserviceVersions {
     synchronized (lock) {
       MergedInstances mergedInstances = mergeInstances(pulledInstances, instances);
       instances = mergedInstances.instanceIdMap.values();
+      // clear cache
+      versions.entrySet().forEach(versionEntry -> versionEntry.getValue().setInstances(new ArrayList<>()));
       for (Entry<String, List<MicroserviceInstance>> entry : mergedInstances.microserviceIdMap.entrySet()) {
         // ensure microserviceVersion exists
         versions.computeIfAbsent(entry.getKey(),
