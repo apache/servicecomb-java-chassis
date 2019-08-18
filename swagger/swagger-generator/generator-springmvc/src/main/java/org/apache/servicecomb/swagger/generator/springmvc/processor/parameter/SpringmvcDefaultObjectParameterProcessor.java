@@ -66,7 +66,8 @@ public class SpringmvcDefaultObjectParameterProcessor implements DefaultParamete
   }
 
   private Model getParamModel(OperationGenerator operationGenerator, int paramIndex) {
-    Type paramType = ParamUtils.getGenericParameterType(operationGenerator.getProviderMethod(), paramIndex);
+    Type paramType = ParamUtils
+        .getGenericParameterType(operationGenerator.getCls(), operationGenerator.getProviderMethod(), paramIndex);
     Property property = ModelConverters.getInstance().readAsProperty(paramType);
     // ensure type
     if (!RefProperty.class.isInstance(property)) {

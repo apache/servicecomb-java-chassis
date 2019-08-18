@@ -424,11 +424,16 @@ public class OperationGenerator {
     }
 
     ResponseTypeProcessor processor = context.findResponseTypeProcessor(responseType);
-    return processor.process(this, providerMethod.getGenericReturnType());
+    return processor.process(this, ParamUtils
+        .getGenericParameterType(getCls(), providerMethod.getDeclaringClass(), providerMethod.getGenericReturnType()));
   }
 
   public Method getProviderMethod() {
     return providerMethod;
+  }
+
+  public Class<?> getCls() {
+    return swaggerGenerator.getCls();
   }
 
   protected void addOperationToSwagger() {

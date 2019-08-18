@@ -35,6 +35,8 @@ public class ArgumentsMapperConfig {
 
   private SwaggerGeneratorContext swaggerGeneratorContext;
 
+  private Class<?> clz;
+
   // output
   private List<ArgumentMapper> argumentMapperList = new ArrayList<>();
 
@@ -81,6 +83,14 @@ public class ArgumentsMapperConfig {
 
   public void addArgumentMapper(ArgumentMapper argumentMapper) {
     argumentMapperList.add(argumentMapper);
+  }
+
+  public Class<?> getClz() {
+    return clz;
+  }
+
+  public void setClz(Class<?> clz) {
+    this.clz = clz;
   }
 
   @Override

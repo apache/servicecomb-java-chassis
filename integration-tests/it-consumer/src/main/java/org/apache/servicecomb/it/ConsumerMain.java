@@ -22,6 +22,7 @@ import org.apache.servicecomb.it.deploy.Deploys;
 import org.apache.servicecomb.it.deploy.MicroserviceDeploy;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.it.schema.TestApiOperation;
+import org.apache.servicecomb.it.schema.generic.TestMyService;
 import org.apache.servicecomb.it.testcase.TestAcceptType;
 import org.apache.servicecomb.it.testcase.TestAnnotatedAttribute;
 import org.apache.servicecomb.it.testcase.TestApiOperationOverride;
@@ -105,6 +106,7 @@ public class ConsumerMain {
     ITJUnitUtils.runWithHighwayAndRest(TestChangeTransport.class);
     ITJUnitUtils.runWithHighwayAndRest(TestDataTypePrimitive.class);
     ITJUnitUtils.runWithHighwayAndRest(TestAnnotatedAttribute.class);
+    ITJUnitUtils.runWithHighwayAndRest(TestMyService.class);
 
     // only rest support default value feature
     ITJUnitUtils.runWithRest(TestDefaultValue.class);
