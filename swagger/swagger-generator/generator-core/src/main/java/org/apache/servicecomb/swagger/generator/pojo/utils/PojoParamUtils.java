@@ -34,7 +34,7 @@ public final class PojoParamUtils {
       int paramIdx) {
     Method method = operationGenerator.getProviderMethod();
     String paramName = ParamUtils.getParameterName(method, paramIdx);
-    Type paramType = ParamUtils.getGenericParameterType(method, paramIdx);
+    Type paramType = ParamUtils.getGenericParameterType(operationGenerator.getCls(), method, paramIdx);
     return createPendingBodyParameter(operationGenerator, paramName, paramType);
   }
 

@@ -128,7 +128,10 @@ public abstract class ArgumentsMapperFactory<T> {
     final Annotation[][] parameterAnnotations = config.getProviderMethod().getParameterAnnotations();
     Type[] providerParameterTypes = config.getProviderMethod().getGenericParameterTypes();
     for (int providerIdx = 0; providerIdx < providerParameterTypes.length; providerIdx++) {
-      Type parameterType = providerParameterTypes[providerIdx];
+
+      Type parameterType = ParamUtils
+          .getGenericParameterType(config.getClz(), config.getProviderMethod().getDeclaringClass(),
+              providerParameterTypes[providerIdx]);
       ContextArgumentMapperFactory factory = findFactory(parameterType);
       if (factory != null) {
         ArgumentMapper mapper = factory.create(providerIdx);

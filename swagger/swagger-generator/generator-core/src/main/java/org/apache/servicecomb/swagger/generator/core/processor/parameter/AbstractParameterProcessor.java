@@ -44,7 +44,7 @@ public abstract class AbstractParameterProcessor<T extends AbstractSerializableP
 
   protected void setParameterType(OperationGenerator operationGenerator, int paramIdx,
       T parameter) {
-    ParamUtils.setParameterType(operationGenerator.getSwagger(),
+    ParamUtils.setParameterType(operationGenerator,
         operationGenerator.getProviderMethod(),
         paramIdx,
         parameter);

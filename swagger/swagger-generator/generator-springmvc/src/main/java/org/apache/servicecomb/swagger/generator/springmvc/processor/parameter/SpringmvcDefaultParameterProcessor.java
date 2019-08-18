@@ -34,7 +34,8 @@ public class SpringmvcDefaultParameterProcessor implements DefaultParameterProce
 
   @Override
   public void process(OperationGenerator operationGenerator, int paramIdx) {
-    Type paramType = ParamUtils.getGenericParameterType(operationGenerator.getProviderMethod(), paramIdx);
+    Type paramType = ParamUtils
+        .getGenericParameterType(operationGenerator.getCls(), operationGenerator.getProviderMethod(), paramIdx);
     Property property = ModelConverters.getInstance().readAsProperty(paramType);
 
     if (RefProperty.class.isInstance(property)) {

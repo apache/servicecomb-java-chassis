@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
+import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapperConfig;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapperFactory;
@@ -128,12 +129,13 @@ public class SwaggerEnvironment {
       ArgumentsMapperConfig config = new ArgumentsMapperConfig();
       config.setSwaggerMethod(swaggerMethod);
       config.setProviderMethod(consumerMethod);
+      config.setClz(consumerIntf);
 
       ConsumerArgumentsMapper argsMapper =
           consumerArgumentsFactory.createArgumentsMapper(config);
       ConsumerResponseMapper responseMapper = consumerResponseMapperFactorys.createResponseMapper(
           swaggerMethod.getGenericReturnType(),
-          consumerMethod.getGenericReturnType());
+          ParamUtils.getGenericParameterType(consumerIntf, consumerMethod.getDeclaringClass(), consumerMethod.getGenericReturnType()));
 
       SwaggerConsumerOperation op = new SwaggerConsumerOperation();
       op.setName(swaggerMethodName);
@@ -180,6 +182,7 @@ public class SwaggerEnvironment {
       ArgumentsMapperConfig config = new ArgumentsMapperConfig();
       config.setSwaggerMethod(swaggerMethod);
       config.setProviderMethod(producerMethod);
+      config.setClz(producerCls);
       config.setSwaggerOperation(swaggerOperationMap.get(methodName));
       config.setSwaggerGeneratorContext(compositeSwaggerGeneratorContext.selectContext(producerCls));
 

@@ -19,18 +19,19 @@ package org.apache.servicecomb.swagger.generator.core;
 
 import static junit.framework.TestCase.fail;
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.swagger.models.Swagger;
-
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.servicecomb.swagger.generator.core.pojo.TestType1;
 import org.apache.servicecomb.swagger.generator.core.pojo.TestType2;
 import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
@@ -39,6 +40,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.swagger.models.Swagger;
 import io.swagger.models.parameters.AbstractSerializableParameter;
 import io.swagger.models.parameters.HeaderParameter;
 import io.swagger.models.parameters.Parameter;
@@ -149,5 +151,40 @@ public class TestParamUtils {
     Swagger swagger = new Swagger();
     ParamUtils.addDefinitions(swagger, f1);
     ParamUtils.addDefinitions(swagger, f2);
+  }
+
+  @Test
+  public void testGenericTypeInheritance() throws Exception {
+    Method hello = IMyService.class.getMethod("hello", AbstractBean.class);
+    assertEquals(PersonBean.class,
+        ParamUtils.getGenericParameterType(IMyService.class, IBaseService.class, hello.getGenericReturnType()));
+
+    hello = MyEndpoint.class.getMethod("hello", AbstractBean.class);
+    assertEquals(PersonBean.class,
+        ParamUtils.getGenericParameterType(MyEndpoint.class, AbstractBaseService.class, hello.getGenericReturnType()));
+
+    Method helloBody = IMyService.class.getMethod("helloBody", AbstractBean[].class);
+    assertEquals(PersonBean[].class,
+        ParamUtils.getGenericParameterType(IMyService.class, IBaseService.class, helloBody.getGenericReturnType()));
+
+    helloBody = MyEndpoint.class.getMethod("helloBody", AbstractBean[].class);
+    assertEquals(PersonBean[].class, ParamUtils
+        .getGenericParameterType(MyEndpoint.class, AbstractBaseService.class, helloBody.getGenericReturnType()));
+
+    Method helloList = IMyService.class.getMethod("helloList", List.class);
+    assertEquals(TypeUtils.parameterize(List.class, PersonBean.class),
+        ParamUtils.getGenericParameterType(IMyService.class, IBaseService.class, helloList.getGenericReturnType()));
+
+    helloList = MyEndpoint.class.getMethod("helloList", List.class);
+    assertEquals(TypeUtils.parameterize(List.class, PersonBean.class), ParamUtils
+        .getGenericParameterType(MyEndpoint.class, AbstractBaseService.class, helloList.getGenericReturnType()));
+
+    Method actual = IMyService.class.getMethod("actual");
+    assertEquals(PersonBean.class,
+        ParamUtils.getGenericParameterType(IMyService.class, IBaseService.class, actual.getGenericReturnType()));
+
+    helloList = MyEndpoint.class.getMethod("actual");
+    assertEquals(PersonBean.class,
+        ParamUtils.getGenericParameterType(MyEndpoint.class, AbstractBaseService.class, actual.getGenericReturnType()));
   }
 }

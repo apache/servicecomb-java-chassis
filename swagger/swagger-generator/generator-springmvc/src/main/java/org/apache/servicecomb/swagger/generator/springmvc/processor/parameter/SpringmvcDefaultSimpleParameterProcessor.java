@@ -31,7 +31,7 @@ public class SpringmvcDefaultSimpleParameterProcessor implements DefaultParamete
 
     QueryParameter queryParameter = new QueryParameter();
     queryParameter.setName(paramName);
-    ParamUtils.setParameterType(operationGenerator.getSwagger(),
+    ParamUtils.setParameterType(operationGenerator,
         operationGenerator.getProviderMethod(),
         paramIdx,
         queryParameter);
