@@ -21,12 +21,14 @@ import java.util.concurrent.CompletableFuture;
 import javax.servlet.http.Part;
 
 import org.apache.servicecomb.common.rest.RestConst;
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.definition.RestMetaUtils;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -48,22 +50,29 @@ public class TestServerRestArgsFilter {
   @Mocked
   Part part;
 
+  @Mocked
+  OperationMeta operationMeta;
+
   boolean invokedSendPart;
 
   ServerRestArgsFilter filter = new ServerRestArgsFilter();
 
   @Test
   public void asyncBeforeSendResponse_part(@Mocked RestOperationMeta restOperationMeta) {
+    ResponsesMeta responsesMeta = new ResponsesMeta();
+    responsesMeta.getResponseMap().put(202, RestObjectMapperFactory.getRestObjectMapper().constructType(Part.class));
     new Expectations(RestMetaUtils.class) {
       {
-        RestMetaUtils.getRestOperationMeta((OperationMeta) any);
-        result = restOperationMeta;
-        restOperationMeta.isDownloadFile();
-        result = true;
         responseEx.getAttribute(RestConst.INVOCATION_HANDLER_RESPONSE);
         result = response;
         response.getResult();
         result = part;
+        response.getStatusCode();
+        result = 202;
+        invocation.getOperationMeta();
+        result = operationMeta;
+        operationMeta.getResponsesMeta();
+        result = responsesMeta;
       }
     };
     new MockUp<HttpServletResponseEx>(responseEx) {
