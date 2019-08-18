@@ -19,10 +19,11 @@ package org.apache.servicecomb.common.rest.filter.inner;
 
 import java.util.concurrent.CompletableFuture;
 
+import javax.servlet.http.Part;
+
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
-import org.apache.servicecomb.common.rest.definition.RestMetaUtils;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.core.Invocation;
@@ -75,7 +76,7 @@ public class ServerRestArgsFilter implements HttpServerFilter {
       body = ((InvocationException) body).getErrorData();
     }
 
-    if (null != invocation && RestMetaUtils.getRestOperationMeta(invocation.getOperationMeta()).isDownloadFile()) {
+    if (null != invocation && isDownloadFileResponseType(invocation, response)) {
       return responseEx.sendPart(PartUtils.getSinglePart(null, body));
     }
 
@@ -91,5 +92,16 @@ public class ServerRestArgsFilter implements HttpServerFilter {
       future.completeExceptionally(ExceptionFactory.convertProducerException(e));
     }
     return future;
+  }
+
+  /**
+   * Check whether this response is a downloaded file response,
+   * according to the schema recorded in {@link org.apache.servicecomb.swagger.invocation.response.ResponsesMeta}
+   * and response status code.
+   * @return true if this response is a downloaded file, otherwise false.
+   */
+  private boolean isDownloadFileResponseType(Invocation invocation, Response response) {
+    return Part.class.isAssignableFrom(
+        invocation.getOperationMeta().getResponsesMeta().findResponseType(response.getStatusCode()).getRawClass());
   }
 }
