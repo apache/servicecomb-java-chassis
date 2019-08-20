@@ -38,6 +38,11 @@ public final class WebsocketClientPool extends AbstractClientPool {
   }
 
   @Override
+  protected boolean isWorker() {
+    return true;
+  }
+
+  @Override
   public HttpClientOptions createHttpClientOptions() {
     HttpVersion ver = ServiceRegistryConfig.INSTANCE.getHttpVersion();
     HttpClientOptions httpClientOptions = new HttpClientOptions();
