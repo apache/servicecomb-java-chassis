@@ -109,21 +109,22 @@ public final class ServiceRegistryConfig {
     return HttpVersion.valueOf(property.get());
   }
 
-  public int getWorkerPoolSize() {
-    String workerPoolSizeKey = "servicecomb.service.registry.client.workerPoolSize";
+  public int getInstances() {
+    String instances = "servicecomb.service.registry.client.instances ";
     DynamicIntProperty property =
-        DynamicPropertyFactory.getInstance()
-            .getIntProperty(workerPoolSizeKey, 1);
-    int workerPoolSize = property.get();
-    if (workerPoolSize <= 0) {
+            DynamicPropertyFactory.getInstance()
+                    .getIntProperty(instances, 1);
+    int deployInstances = property.get();
+    if (deployInstances <= 0) {
       int nAvailableProcessors = Runtime.getRuntime().availableProcessors();
       LOGGER.warn("The property `{}` must be positive integer, fallback to use number of available processors: {}",
-          workerPoolSizeKey,
-          nAvailableProcessors);
+              instances,
+              nAvailableProcessors);
       return nAvailableProcessors;
     }
-    return workerPoolSize;
+    return deployInstances;
   }
+
 
   public boolean isSsl() {
     getIpPort();
