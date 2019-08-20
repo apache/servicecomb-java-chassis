@@ -40,6 +40,11 @@ public final class HttpClientPool extends AbstractClientPool {
   }
 
   @Override
+  protected boolean isWorker() {
+    return false;
+  }
+
+  @Override
   public HttpClientOptions createHttpClientOptions() {
     HttpVersion ver = ServiceRegistryConfig.INSTANCE.getHttpVersion();
     HttpClientOptions httpClientOptions = new HttpClientOptions();
