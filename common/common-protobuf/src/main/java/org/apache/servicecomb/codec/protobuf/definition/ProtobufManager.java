@@ -23,17 +23,12 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 
 public final class ProtobufManager {
-  private static ProtobufManager instance = new ProtobufManager();
-
   public static final String EXT_ID = "protobuf";
 
   private static final Object LOCK = new Object();
 
   private static ScopedProtobufSchemaManager defaultScopedProtobufSchemaManager = new ScopedProtobufSchemaManager(
       JvmUtils.findClassLoader());
-
-  private ProtobufManager() {
-  }
 
   /**
    * only for app classloader
@@ -63,9 +58,5 @@ public final class ProtobufManager {
     }
 
     return operationProtobuf;
-  }
-
-  public static ProtobufManager getInstance() {
-    return instance;
   }
 }
