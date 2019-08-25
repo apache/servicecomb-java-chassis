@@ -60,6 +60,10 @@ public class TestMyService {
     resultBean = myserviceWithInterface.getIntf().actual();
     Assert.assertEquals("p", resultBean.getName());
 
+    PersonBean[] beanArray = new PersonBean[] {bean};
+    PersonBean[] beanArrayResult = myserviceWithInterface.getIntf().helloBody(beanArray);
+    Assert.assertEquals("p", beanArrayResult[0].getName());
+
     List<PersonBean> beanList = new ArrayList<>();
     beanList.add(bean);
     List<PersonBean> beanListResult = myserviceWithInterface.getIntf().helloList(beanList);
