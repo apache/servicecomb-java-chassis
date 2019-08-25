@@ -19,11 +19,13 @@ package org.apache.servicecomb.it.schema;
 
 import java.util.Map;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.foundation.test.scaffolding.model.Media;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
@@ -62,5 +64,12 @@ public class ParamCodecSchema {
   @GET
   public Map<String, String> getInvocationContext() {
     return ContextUtils.getInvocationContext().getContext();
+  }
+
+  @Path("stringUrlencodedForm")
+  @Consumes(value = MediaType.APPLICATION_FORM_URLENCODED)
+  @POST
+  public Map<String, String> stringUrlencodedForm(Map<String, String> requestMap) {
+    return requestMap;
   }
 }

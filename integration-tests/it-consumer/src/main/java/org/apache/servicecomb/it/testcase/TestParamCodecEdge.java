@@ -18,12 +18,27 @@
 package org.apache.servicecomb.it.testcase;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Scanner;
+
+import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.foundation.test.scaffolding.model.Media;
 import org.apache.servicecomb.it.extend.engine.GateRestTemplate;
+import org.apache.servicecomb.it.junit.ITJUnitUtils;
+import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TestParamCodecEdge {
+  private static final Logger LOGGER = LoggerFactory.getLogger(TestParamCodecEdge.class);
+
   static GateRestTemplate client = GateRestTemplate.createEdgeRestTemplate("paramCodec");
 
   @Test
@@ -55,5 +70,36 @@ public class TestParamCodecEdge {
         client.postForObject("/enum/enumSpecialName", Media.MPEG_2, Media.class));
     assertEquals(Media.WMV,
         client.postForObject("/enum/enumSpecialName", Media.WMV, Media.class));
+  }
+
+  @Test
+  public void testStringUrlEncodedForm() throws IOException {
+    String requestUri = client.getUrlPrefix() + "/stringUrlencodedForm";
+    URL url = new URL(requestUri);
+    HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();
+    httpConnection.setDoOutput(true);
+    httpConnection.setRequestMethod("POST");
+    httpConnection.setRequestProperty("Content-Type", MediaType.APPLICATION_FORM_URLENCODED);
+    httpConnection.setUseCaches(false);
+    httpConnection.connect();
+    try (DataOutputStream dataOutputStream = new DataOutputStream(httpConnection.getOutputStream())) {
+      dataOutputStream.writeBytes("A=aaa&B=ddd");
+      dataOutputStream.flush();
+    } catch (IOException e) {
+      LOGGER.error("failed to write buffer!", e);
+      fail("failed to write buffer!");
+      return;
+    }
+
+    StringBuilder responseBody = new StringBuilder();
+    try (Scanner scanner = new Scanner(httpConnection.getInputStream())) {
+      while (scanner.hasNextLine()) {
+        responseBody.append(scanner.nextLine());
+      }
+    }
+    Assert.assertEquals("{\"A\":\"aaa\",\"B\":\"ddd\",\"param0\":\"" + ITJUnitUtils.getProducerName() + "\","
+            + "\"param1\":\"v1\",\"param2\":\"paramCodec/stringUrlencodedForm\"}",
+        responseBody.toString());
+    Assert.assertEquals(200, httpConnection.getResponseCode());
   }
 }
