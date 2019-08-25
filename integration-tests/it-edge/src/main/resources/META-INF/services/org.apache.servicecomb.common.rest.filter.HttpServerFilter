@@ -20,3 +20,4 @@ org.apache.servicecomb.it.edge.encrypt.filter.DecodeBodyFilter
 org.apache.servicecomb.it.edge.encrypt.filter.UserIdFilter
 org.apache.servicecomb.it.edge.encrypt.filter.EdgeSignatureResponseFilter
 org.apache.servicecomb.it.edge.context.InheritInvocationContextFilter
+org.apache.servicecomb.it.edge.filter.CheckRawFormParamFilter
