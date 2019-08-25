@@ -58,9 +58,6 @@ public class ServerRestArgsFilter implements HttpServerFilter {
   public Response afterReceiveRequest(Invocation invocation, HttpServletRequestEx requestEx) {
     OperationMeta operationMeta = invocation.getOperationMeta();
     RestOperationMeta restOperationMeta = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
-    if (operationMeta.getOperationId().equals("beanParameterTest")) {
-      System.out.println(":");
-    }
     Object[] args = RestCodec.restToArgs(requestEx, restOperationMeta);
     invocation.setSwaggerArguments(args);
     return null;
