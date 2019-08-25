@@ -158,6 +158,20 @@ public class TestParamUtils {
     Method hello = IMyService.class.getMethod("hello", AbstractBean.class);
     assertEquals(PersonBean.class,
         ParamUtils.getGenericParameterType(IMyService.class, IBaseService.class, hello.getGenericReturnType()));
+    hello = IMyServiceChild.class.getMethod("hello", AbstractBean.class);
+    assertEquals(PersonBean.class,
+        ParamUtils.getGenericParameterType(IMyServiceChild.class, IBaseService.class, hello.getGenericReturnType()));
+
+    try {
+      hello = IMyServiceChild.class.getMethod("hello", AbstractBean.class);
+      assertEquals(PersonBean.class,
+          ParamUtils.getGenericParameterType(IMyServiceChild2.class, IBaseService.class, hello.getGenericReturnType()));
+      Assert.fail("");
+    } catch (IllegalArgumentException e) {
+      Assert.assertEquals("not implement (org.apache.servicecomb.swagger.generator.core.IMyServiceChild2) "
+          + "(org.apache.servicecomb.swagger.generator.core.IBaseService) (T), "
+          + "e.g. extends multiple typed interface or too deep inheritance.", e.getMessage());
+    }
 
     hello = MyEndpoint.class.getMethod("hello", AbstractBean.class);
     assertEquals(PersonBean.class,
@@ -170,6 +184,12 @@ public class TestParamUtils {
     helloBody = MyEndpoint.class.getMethod("helloBody", AbstractBean[].class);
     assertEquals(PersonBean[].class, ParamUtils
         .getGenericParameterType(MyEndpoint.class, AbstractBaseService.class, helloBody.getGenericReturnType()));
+
+    helloBody = MyEndpoint2.class.getMethod("helloBody", PersonBean[].class);
+    assertEquals(PersonBean[].class, ParamUtils
+        .getGenericParameterType(MyEndpoint2.class, AbstractBaseService.class, helloBody.getGenericReturnType()));
+    assertEquals(PersonBean[].class, ParamUtils
+        .getGenericParameterType(MyEndpoint2.class, AbstractBaseService.class, helloBody.getGenericParameterTypes()[0]));
 
     Method helloList = IMyService.class.getMethod("helloList", List.class);
     assertEquals(TypeUtils.parameterize(List.class, PersonBean.class),

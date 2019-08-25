@@ -14,36 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.it.schema.generic;
+package org.apache.servicecomb.swagger.generator.core.utils;
 
-
-import java.util.List;
-
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Service;
-
-@Service
-@Primary
-public class MyService implements IMyService {
+public class Hello2Endpoint implements ServiceInterface {
   @Override
-  public PersonBean hello(PersonBean a) {
-    return a;
+  public HelloBean get(HelloBean param) {
+    return param;
   }
 
   @Override
-  public PersonBean[] helloBody(PersonBean[] a) {
-    return a;
+  public HelloBean[] getArray(HelloBean[] param) {
+    return new HelloBean[0];
   }
 
   @Override
-  public List<PersonBean> helloList(List<PersonBean> a) {
-    return a;
-  }
-
-  @Override
-  public PersonBean actual() {
-    PersonBean p = new PersonBean();
-    p.setName("p");
-    return p;
+  public HelloBean getBase(HelloBean param) {
+    return param;
   }
 }
