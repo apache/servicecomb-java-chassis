@@ -115,6 +115,12 @@ public final class ParamUtils {
           actualTypes = tempTypes;
         }
       }
+      if (typeVariables.length != actualTypes.length) {
+        throw new IllegalArgumentException(String
+            .format("not implement (%s) (%s) (%s), "
+                    + "e.g. extends multiple typed interface or too deep inheritance.",
+                mainClass.getName(), declaringClass.getName(), type.getTypeName()));
+      }
       for (int i = 0; i < typeVariables.length; i++) {
         if (typeVariables[i] == type) {
           return actualTypes[i];
@@ -134,16 +140,23 @@ public final class ParamUtils {
       return TypeUtils.parameterize((Class) parameterizedType.getRawType(), targetTypes);
     }
     throw new IllegalArgumentException(String
-        .format("not implement (%s) (%s) (%s)", mainClass.getName(), declaringClass.getName(), type.getTypeName()));
+        .format("not implement (%s) (%s) (%s)",
+            mainClass.getName(), declaringClass.getName(), type.getTypeName()));
   }
 
   private static Type[] getActualTypes(Type type) {
+    if (type instanceof Class<?>) {
+      if (((Class<?>) type).getSuperclass() != null) {
+        return getActualTypes(((Class<?>) type).getSuperclass());
+      } else {
+        return getActualTypes(((Class<?>) type).getGenericInterfaces()[0]);
+      }
+    }
     if (type instanceof ParameterizedType) {
       return ((ParameterizedType) type).getActualTypeArguments();
     }
     return new Type[0];
   }
-
 
   public static String generateBodyParameterName(Method method) {
     return method.getName() + "Body";

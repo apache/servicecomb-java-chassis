@@ -16,15 +16,12 @@
  */
 package org.apache.servicecomb.it.schema.generic;
 
-
 import java.util.List;
 
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Service;
+import org.apache.servicecomb.provider.pojo.RpcSchema;
 
-@Service
-@Primary
-public class MyService implements IMyService {
+@RpcSchema(schemaId = "MyEndpointWithInterface")
+public class MyEndpointWithInterface implements IMyService {
   @Override
   public PersonBean hello(PersonBean a) {
     return a;
