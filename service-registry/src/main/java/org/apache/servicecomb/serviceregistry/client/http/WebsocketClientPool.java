@@ -55,7 +55,7 @@ public final class WebsocketClientPool extends AbstractClientPool {
     }
     if (ServiceRegistryConfig.INSTANCE.isSsl()) {
       LOGGER.debug("service center ws client performs requests over TLS");
-      VertxTLSBuilder.buildHttpClientOptions(SSL_KEY, httpClientOptions);
+      VertxTLSBuilder.buildHttpClientOptions(ServiceRegistryConfig.SSL_KEY, httpClientOptions);
     }
     return httpClientOptions;
   }
