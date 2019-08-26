@@ -41,17 +41,7 @@ import io.vertx.core.http.HttpClientOptions;
 public abstract class AbstractClientPool implements ClientPool {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractClientPool.class);
 
-  protected static final String SSL_KEY = "sc.consumer";
-
-  public static final String PROXY_KEY = "sc.consumer";
-
-  private static final String EVENT_LOOP_POOL_SIZE = "servicecomb.service.registry.client.eventLoopPoolSize";
-
-  private static final String WORKER_POOL_SIZE = "servicecomb.service.registry.client.workerPoolSize";
-
-  private static final String WORKER_POOL_NAME = "registry-vert.x-worker-thread";
-
-  private ClientPoolManager<HttpClientWithContext> clientMgr;
+    private ClientPoolManager<HttpClientWithContext> clientMgr;
 
   public AbstractClientPool() {
     create();
@@ -64,12 +54,12 @@ public abstract class AbstractClientPool implements ClientPool {
   }
 
   public void create() {
-    DynamicIntProperty property = DynamicPropertyFactory.getInstance().getIntProperty(EVENT_LOOP_POOL_SIZE, 4);
-    DynamicIntProperty workerPoolSize = DynamicPropertyFactory.getInstance().getIntProperty(WORKER_POOL_SIZE, 4);
+    DynamicIntProperty property = DynamicPropertyFactory.getInstance().getIntProperty(ServiceRegistryConfig.EVENT_LOOP_POOL_SIZE, 4);
+    DynamicIntProperty workerPoolSize = DynamicPropertyFactory.getInstance().getIntProperty(ServiceRegistryConfig.WORKER_POOL_SIZE, 4);
 
     // 这里面是同步接口，且好像直接在事件线程中用，保险起见，先使用独立的vertx实例
     VertxOptions vertxOptions = new VertxOptions()
-            .setAddressResolverOptions(AddressResolverConfig.getAddressResover(SSL_KEY))
+            .setAddressResolverOptions(AddressResolverConfig.getAddressResover(ServiceRegistryConfig.SSL_KEY))
             .setEventLoopPoolSize(property.get());
     Vertx vertx = VertxUtils.getOrCreateVertxByName("registry", vertxOptions);
     HttpClientOptions httpClientOptions = createHttpClientOptions();
@@ -78,7 +68,7 @@ public abstract class AbstractClientPool implements ClientPool {
     DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(this.clientMgr,
             ServiceRegistryConfig.INSTANCE.getInstances())
             .setWorker(isWorker())
-            .setWorkerPoolName(WORKER_POOL_NAME)
+            .setWorkerPoolName(ServiceRegistryConfig.WORKER_POOL_NAME)
             .setWorkerPoolSize(workerPoolSize.get());
     try {
       VertxUtils.blockDeploy(vertx, ClientVerticle.class, deployOptions);

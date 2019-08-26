@@ -87,6 +87,18 @@ public final class ServiceRegistryConfig {
 
   public static final String PROXY_PASSWD = PROXY_PRE_NAME + "passwd";
 
+  public static final String SSL_KEY = "sc.consumer";
+
+  public static final String PROXY_KEY = "sc.consumer";
+
+  public static final String VERTICLE_INSTANCES = "servicecomb.service.registry.client.instances";
+
+  public static final String EVENT_LOOP_POOL_SIZE = "servicecomb.service.registry.client.eventLoopPoolSize";
+
+  public static final String WORKER_POOL_SIZE = "servicecomb.service.registry.client.workerPoolSize";
+
+  public static final String WORKER_POOL_NAME = "registry-vert.x-worker-thread";
+
   private ServiceRegistryConfig() {
 
   }
@@ -110,16 +122,15 @@ public final class ServiceRegistryConfig {
   }
 
   public int getInstances() {
-    String instances = "servicecomb.service.registry.client.instances ";
     DynamicIntProperty property =
-            DynamicPropertyFactory.getInstance()
-                    .getIntProperty(instances, 1);
+        DynamicPropertyFactory.getInstance()
+            .getIntProperty(VERTICLE_INSTANCES, 1);
     int deployInstances = property.get();
     if (deployInstances <= 0) {
       int nAvailableProcessors = Runtime.getRuntime().availableProcessors();
       LOGGER.warn("The property `{}` must be positive integer, fallback to use number of available processors: {}",
-              instances,
-              nAvailableProcessors);
+          VERTICLE_INSTANCES,
+          nAvailableProcessors);
       return nAvailableProcessors;
     }
     return deployInstances;
@@ -132,7 +143,8 @@ public final class ServiceRegistryConfig {
   }
 
   public ArrayList<IpPort> getIpPort() {
-    List<String> uriList = Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_SERVICE_CENTER).getAccessURL();
+    List<String> uriList = Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_SERVICE_CENTER)
+        .getAccessURL();
     ArrayList<IpPort> ipPortList = new ArrayList<>();
     uriList.forEach(anUriList -> {
       try {
