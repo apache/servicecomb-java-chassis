@@ -238,7 +238,6 @@ public class SwaggerGenerator {
   protected void scanMethods() {
     // 有时方法顺序不同，很不利于测试，所以先排序
     List<Method> methods = MethodUtils.findProducerMethods(cls);
-    methods.sort(Comparator.comparing(Method::getName));
     for (Method method : methods) {
       if (isSkipMethod(method)) {
         continue;
