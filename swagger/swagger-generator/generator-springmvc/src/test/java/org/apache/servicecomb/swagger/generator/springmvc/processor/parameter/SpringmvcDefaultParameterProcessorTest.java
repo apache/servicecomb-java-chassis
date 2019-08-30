@@ -92,11 +92,12 @@ public class SpringmvcDefaultParameterProcessorTest {
       new SpringmvcDefaultParameterProcessor().process(operationGenerator, 1);
       fail("an error is expected!");
     } catch (Error e) {
+      // toString is different between apache library ParameterizedTypeImpl and sun libray
       Assert.assertEquals(
           "cannot process parameter [integerList], method=org.apache.servicecomb.swagger.generator.springmvc"
               + ".processor.parameter.SpringmvcDefaultParameterProcessorTest$TestProvider:testUnsupportedParamType, "
               + "paramIdx=1, type=java.util.List<org.apache.servicecomb.swagger.generator.springmvc.processor.parameter"
-              + ".SpringmvcDefaultParameterProcessorTest$TestParam>",
+              + ".SpringmvcDefaultParameterProcessorTest.TestParam>",
           e.getMessage());
     }
     try {

@@ -33,6 +33,7 @@ import java.util.concurrent.CompletableFuture;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
+import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
 import org.springframework.util.StringUtils;
 
 import io.swagger.annotations.Api;
@@ -210,12 +211,6 @@ public class SwaggerGenerator {
       return;
     }
 
-    //        Class<?>[] interfaces = cls.getInterfaces();
-    //        if (interfaces.length == 1) {
-    //            info.setVendorExtension(SwaggerConst.EXT_JAVA_INTF, interfaces[0].getName());
-    //            return;
-    //        }
-
     String intfName = ensureGetPackageName() + "." + cls.getSimpleName() + "Intf";
     info.setVendorExtension(SwaggerConst.EXT_JAVA_INTF, intfName);
   }
@@ -225,7 +220,7 @@ public class SwaggerGenerator {
    * This is used for the situation that the {@code interfaceCls} may be used as swagger interface directly
    */
   private boolean isInterfaceReactive(Class<?> interfaceCls) {
-    for (Method method : interfaceCls.getDeclaredMethods()) {
+    for (Method method : MethodUtils.findProducerMethods(interfaceCls)) {
       if (isSkipMethod(method)) {
         continue;
       }
@@ -236,36 +231,13 @@ public class SwaggerGenerator {
     return false;
   }
 
-  /**
-   * Whether this method should be processed as a swagger operation
-   * @return true if this isn't a swagger operation; otherwise, false.
-   */
-  protected boolean isSkipMethod(Method method) {
-    if (method.getDeclaringClass().getName().equals(Object.class.getName())) {
-      return true;
-    }
-    // skip static method
-    int modifiers = method.getModifiers();
-    if (Modifier.isStatic(modifiers)) {
-      return true;
-    }
-    // skip bridge method
-    if (method.isBridge()) {
-      return true;
-    }
-
-    ApiOperation apiOperation = method.getAnnotation(ApiOperation.class);
-    if (apiOperation != null && apiOperation.hidden()) {
-      return apiOperation.hidden();
-    }
-
-    return !context.canProcess(method);
+  protected boolean isSkipMethod(Method m) {
+    return !context.canProcess(m);
   }
 
   protected void scanMethods() {
     // 有时方法顺序不同，很不利于测试，所以先排序
-    List<Method> methods = Arrays.asList(cls.getMethods());
-    methods.sort(Comparator.comparing(Method::getName));
+    List<Method> methods = MethodUtils.findProducerMethods(cls);
     for (Method method : methods) {
       if (isSkipMethod(method)) {
         continue;

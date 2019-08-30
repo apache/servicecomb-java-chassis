@@ -50,6 +50,6 @@ public class SwaggerEnvironmentForTest {
     SwaggerToClassGenerator swaggerToClassGenerator = new SwaggerToClassGenerator(classLoader, swagger,
         producerInstance.getClass().getPackage().getName());
     return swaggerEnvironment.createProducer(producerInstance, swaggerToClassGenerator.convert(),
-        new LinkedHashMap<>());
+        new LinkedHashMap<>(), producerGenerator.getContext());
   }
 }

@@ -32,6 +32,7 @@
 
   <dependencyManagement>
     <dependencies>
+      <!-- parent -->
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>java-chassis-dependencies</artifactId>

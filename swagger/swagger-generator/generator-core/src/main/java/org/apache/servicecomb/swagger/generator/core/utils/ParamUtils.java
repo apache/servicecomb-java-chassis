@@ -17,14 +17,21 @@
 
 package org.apache.servicecomb.swagger.generator.core.utils;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Executable;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.servicecomb.swagger.generator.core.OperationGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 
@@ -45,6 +52,8 @@ import io.swagger.models.properties.StringProperty;
 
 public final class ParamUtils {
   private static DefaultParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ParamUtils.class);
 
   private ParamUtils() {
 
@@ -80,8 +89,73 @@ public final class ParamUtils {
     return paramName;
   }
 
-  public static Type getGenericParameterType(Method method, int paramIdx) {
-    return method.getGenericParameterTypes()[paramIdx];
+  public static Type getGenericParameterType(Class<?> clazz, Method method, int paramIdx) {
+    Type type = method.getGenericParameterTypes()[paramIdx];
+    return getGenericParameterType(clazz, method.getDeclaringClass(), type);
+  }
+
+  public static Type getGenericParameterType(Class<?> mainClass, Class<?> declaringClass, Type type) {
+    if (type instanceof Class<?>) {
+      return type;
+    }
+
+    if (type instanceof TypeVariable) {
+      TypeVariable<?>[] typeVariables = declaringClass.getTypeParameters();
+      Type[] actualTypes;
+      if (mainClass.getGenericSuperclass() != null) {
+        actualTypes = getActualTypes(mainClass.getGenericSuperclass());
+      } else {
+        actualTypes = new Type[0];
+        Type[] interfaceTypes = mainClass.getGenericInterfaces();
+        for (Type t : interfaceTypes) {
+          Type[] ttTypes = getActualTypes(t);
+          Type[] tempTypes = new Type[actualTypes.length + ttTypes.length];
+          System.arraycopy(actualTypes, 0, tempTypes, 0, actualTypes.length);
+          System.arraycopy(ttTypes, 0, tempTypes, actualTypes.length, ttTypes.length);
+          actualTypes = tempTypes;
+        }
+      }
+      if (typeVariables.length != actualTypes.length) {
+        throw new IllegalArgumentException(String
+            .format("not implement (%s) (%s) (%s), "
+                    + "e.g. extends multiple typed interface or too deep inheritance.",
+                mainClass.getName(), declaringClass.getName(), type.getTypeName()));
+      }
+      for (int i = 0; i < typeVariables.length; i++) {
+        if (typeVariables[i] == type) {
+          return actualTypes[i];
+        }
+      }
+    } else if (type instanceof GenericArrayType) {
+      Class<?> t = (Class<?>) getGenericParameterType(mainClass, declaringClass,
+          ((GenericArrayType) type).getGenericComponentType());
+      return Array.newInstance(t, 0).getClass();
+    } else if (type instanceof ParameterizedType) {
+      ParameterizedType parameterizedType = (ParameterizedType) type;
+      Type[] targetTypes = new Type[parameterizedType.getActualTypeArguments().length];
+      for (int i = 0; i < parameterizedType.getActualTypeArguments().length; i++) {
+        targetTypes[i] = getGenericParameterType(mainClass, declaringClass,
+            parameterizedType.getActualTypeArguments()[i]);
+      }
+      return TypeUtils.parameterize((Class) parameterizedType.getRawType(), targetTypes);
+    }
+    throw new IllegalArgumentException(String
+        .format("not implement (%s) (%s) (%s)",
+            mainClass.getName(), declaringClass.getName(), type.getTypeName()));
+  }
+
+  private static Type[] getActualTypes(Type type) {
+    if (type instanceof Class<?>) {
+      if (((Class<?>) type).getSuperclass() != null) {
+        return getActualTypes(((Class<?>) type).getSuperclass());
+      } else {
+        return getActualTypes(((Class<?>) type).getGenericInterfaces()[0]);
+      }
+    }
+    if (type instanceof ParameterizedType) {
+      return ((ParameterizedType) type).getActualTypeArguments();
+    }
+    return new Type[0];
   }
 
   public static String generateBodyParameterName(Method method) {
@@ -92,7 +166,7 @@ public final class ParamUtils {
       int paramIdx) {
     Method method = operationGenerator.getProviderMethod();
     String paramName = getParameterName(method, paramIdx);
-    Type paramType = getGenericParameterType(method, paramIdx);
+    Type paramType = getGenericParameterType(operationGenerator.getCls(), method, paramIdx);
     return createBodyParameter(operationGenerator.getSwagger(), paramName, paramType);
   }
 
@@ -115,13 +189,23 @@ public final class ParamUtils {
   public static void addDefinitions(Swagger swagger, Type paramType) {
     Map<String, Model> models = ModelConverters.getInstance().readAll(paramType);
     for (Map.Entry<String, Model> entry : models.entrySet()) {
+      if (null != swagger.getDefinitions()) {
+        Model tempModel = swagger.getDefinitions().get(entry.getKey());
+        if (null != tempModel && !tempModel.equals(entry.getValue())) {
+          LOGGER.warn("duplicate param model: " + entry.getKey());
+          throw new IllegalArgumentException("duplicate param model: " + entry.getKey());
+        }
+      }
       swagger.addDefinition(entry.getKey(), entry.getValue());
     }
   }
 
-  public static void setParameterType(Swagger swagger, Method method, int paramIdx,
+
+  public static void setParameterType(OperationGenerator operationGenerator, Method method, int paramIdx,
       AbstractSerializableParameter<?> parameter) {
-    Type paramType = ParamUtils.getGenericParameterType(method, paramIdx);
+    Swagger swagger = operationGenerator.getSwagger();
+
+    Type paramType = ParamUtils.getGenericParameterType(operationGenerator.getCls(), method, paramIdx);
 
     ParamUtils.addDefinitions(swagger, paramType);
 

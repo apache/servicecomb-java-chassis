@@ -34,8 +34,12 @@ import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.extension.ProducerInvokeExtension;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SwaggerProducerOperation {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerProducerOperation.class);
+
   private String name;
 
   // 因为存在aop场景，所以，producerClass不一定等于producerInstance.getClass()
@@ -153,6 +157,9 @@ public class SwaggerProducerOperation {
       asyncResp.handle(processException(invocation,
           new InvocationException(Status.BAD_REQUEST.getStatusCode(), "",
               new CommonExceptionData("Parameters not valid or types not match."), ae)));
+      LOGGER.error("Parameters not valid or types not match {}, "
+              + "debug this line to find the actual decode errors.",
+          invocation.getInvocationQualifiedName());
     } catch (Throwable e) {
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();
@@ -189,6 +196,9 @@ public class SwaggerProducerOperation {
       response = processException(invocation,
           new InvocationException(Status.BAD_REQUEST.getStatusCode(), "",
               new CommonExceptionData("Parameters not valid or types not match."), ae));
+      LOGGER.error("Parameters not valid or types not match {}, "
+              + "debug this line to find the actual decode errors.",
+          invocation.getInvocationQualifiedName());
     } catch (Throwable e) {
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();

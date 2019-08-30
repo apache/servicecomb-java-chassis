@@ -52,7 +52,7 @@ public class TestServiceRegistryConfig {
     Assert.assertNotEquals(null, oConfig.getHeartbeatInterval());
     Assert.assertEquals("HTTP_1_1", oConfig.getHttpVersion().name());
     Assert.assertEquals("rest", oConfig.getTransport());
-    Assert.assertEquals(1, oConfig.getWorkerPoolSize());
+    Assert.assertEquals(1, oConfig.getInstances());
     Assert.assertTrue(oConfig.isSsl());
     Assert.assertEquals(30000, oConfig.getRequestTimeout());
     Assert.assertEquals(3000, oConfig.getHeartBeatRequestTimeout());

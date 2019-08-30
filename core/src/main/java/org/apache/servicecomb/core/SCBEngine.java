@@ -30,6 +30,7 @@ import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
+import org.apache.servicecomb.core.bootup.BootUpInformationCollector;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
 import org.apache.servicecomb.core.definition.schema.StaticSchemaFactory;
@@ -88,6 +89,9 @@ public class SCBEngine {
   private StaticSchemaFactory staticSchemaFactory;
 
   private PriorityPropertyManager priorityPropertyManager = new PriorityPropertyManager();
+
+  protected List<BootUpInformationCollector> bootUpInformationCollectors = SPIServiceUtils
+      .getSortedService(BootUpInformationCollector.class);
 
   private static final SCBEngine INSTANCE = new SCBEngine();
 
@@ -185,6 +189,7 @@ public class SCBEngine {
       @Subscribe
       public void afterRegistryInstance(MicroserviceInstanceRegisterTask microserviceInstanceRegisterTask) {
         LOGGER.info("receive MicroserviceInstanceRegisterTask event, check instance Id...");
+
         if (!StringUtils.isEmpty(RegistryUtils.getMicroserviceInstance().getInstanceId())) {
           LOGGER.info("instance registry succeeds for the first time, will send AFTER_REGISTRY event.");
           status = SCBStatus.UP;
@@ -223,9 +228,21 @@ public class SCBEngine {
         }
         status = SCBStatus.FAILED;
         throw new IllegalStateException("ServiceComb init failed.", e);
+      } finally {
+        printServiceInfo();
       }
     }
   }
+
+  private void printServiceInfo() {
+    StringBuilder serviceInfo = new StringBuilder();
+    serviceInfo.append("Service information is shown below:\n");
+    for (int i = 0; i < bootUpInformationCollectors.size(); i++) {
+      serviceInfo.append(bootUpInformationCollectors.get(i).collect()).append('\n');
+    }
+    LOGGER.info(serviceInfo.toString());
+  }
+
 
   private void doInit() throws Exception {
     status = SCBStatus.STARTING;

@@ -16,9 +16,12 @@
  */
 package org.apache.servicecomb.authentication;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.concurrent.TimeUnit;
+import mockit.Expectations;
 import org.apache.servicecomb.authentication.consumer.RSAConsumerTokenManager;
 import org.apache.servicecomb.authentication.provider.RSAProviderTokenManager;
 import org.apache.servicecomb.config.ConfigUtil;
@@ -36,8 +39,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import mockit.Expectations;
-
 public class TestRSAProviderTokenManager {
 
 
@@ -52,7 +53,7 @@ public class TestRSAProviderTokenManager {
   }
 
   @Test
-  public void testTokenExpried() {
+  public void testTokenExpired() {
     String tokenStr =
         "e8a04b54cf2711e7b701286ed488fc20@c8636e5acf1f11e7b701286ed488fc20@1511315597475@9t0tp8ce80SUM5ts6iRGjFJMvCdQ7uvhpyh0RM7smKm3p4wYOrojr4oT1Pnwx7xwgcgEFbQdwPJxIMfivpQ1rHGqiLp67cjACvJ3Ke39pmeAVhybsLADfid6oSjscFaJ@WBYouF6hXYrXzBA31HC3VX8Bw9PNgJUtVqOPAaeW9ye3q/D7WWb0M+XMouBIWxWY6v9Un1dGu5Rkjlx6gZbnlHkb2VO8qFR3Y6lppooWCirzpvEBRjlJQu8LPBur0BCfYGq8XYrEZA2NU6sg2zXieqCSiX6BnMnBHNn4cR9iZpk=";
     RSAProviderTokenManager tokenManager = new RSAProviderTokenManager();
@@ -65,14 +66,47 @@ public class TestRSAProviderTokenManager {
   }
 
   @Test
-  public void testTokenFromVaidatePool() {
+  @SuppressWarnings("unchecked")
+  public void testTokenExpiredRemoveInstance() throws Exception {
+
+    String tokenStr =
+        "e8a04b54cf2711e7b701286ed488fc20@c8636e5acf1f11e7b701286ed488fc20@1511315597475@9t0tp8ce80SUM5ts6iRGjFJMvCdQ7uvhpyh0RM7smKm3p4wYOrojr4oT1Pnwx7xwgcgEFbQdwPJxIMfivpQ1rHGqiLp67cjACvJ3Ke39pmeAVhybsLADfid6oSjscFaJ@WBYouF6hXYrXzBA31HC3VX8Bw9PNgJUtVqOPAaeW9ye3q/D7WWb0M+XMouBIWxWY6v9Un1dGu5Rkjlx6gZbnlHkb2VO8qFR3Y6lppooWCirzpvEBRjlJQu8LPBur0BCfYGq8XYrEZA2NU6sg2zXieqCSiX6BnMnBHNn4cR9iZpk=";
+    RSAAuthenticationToken token = RSAAuthenticationToken.fromStr(tokenStr);
+    RSAProviderTokenManager tokenManager = new RSAProviderTokenManager();
+    new Expectations(RSAProviderTokenManager.class, RSAAuthenticationToken.class) {
+      {
+        token.getGenerateTime();
+        result = System.currentTimeMillis();
+
+        tokenManager.isValidToken(token);
+        result = true;
+
+        RSAProviderTokenManager.getValidatedToken();
+        result = CacheBuilder.newBuilder()
+            .expireAfterAccess(1000, TimeUnit.MILLISECONDS)
+            .build();
+      }
+    };
+
+    Assert.assertTrue(tokenManager.valid(tokenStr));
+
+    Cache<RSAAuthenticationToken, Boolean> cache = RSAProviderTokenManager
+        .getValidatedToken();
+    Assert.assertTrue(cache.asMap().containsKey(token));
+
+    Thread.sleep(1000);
+    Assert.assertFalse(cache.asMap().containsKey(token));
+  }
+
+  @Test
+  public void testTokenFromValidatePool() {
     RSAKeyPairEntry rsaKeyPairEntry = RSAUtils.generateRSAKeyPair();
     RSAKeypair4Auth.INSTANCE.setPrivateKey(rsaKeyPairEntry.getPrivateKey());
     RSAKeypair4Auth.INSTANCE.setPublicKey(rsaKeyPairEntry.getPublicKey());
     RSAKeypair4Auth.INSTANCE.setPublicKeyEncoded(rsaKeyPairEntry.getPublicKeyEncoded());
     String serviceId = "c8636e5acf1f11e7b701286ed488fc20";
     String instanceId = "e8a04b54cf2711e7b701286ed488fc20";
-    RSAConsumerTokenManager rsaCoumserTokenManager = new RSAConsumerTokenManager();
+    RSAConsumerTokenManager rsaConsumerTokenManager = new RSAConsumerTokenManager();
     MicroserviceInstance microserviceInstance = new MicroserviceInstance();
     microserviceInstance.setInstanceId(instanceId);
     Map<String, String> properties = new HashMap<>();
@@ -90,10 +124,10 @@ public class TestRSAProviderTokenManager {
     };
 
     //Test Consumer first create token
-    String token = rsaCoumserTokenManager.getToken();
+    String token = rsaConsumerTokenManager.getToken();
     Assert.assertNotNull(token);
     // use cache token
-    Assert.assertEquals(token, rsaCoumserTokenManager.getToken());
+    Assert.assertEquals(token, rsaConsumerTokenManager.getToken());
     new Expectations(MicroserviceInstanceCache.class) {
       {
         MicroserviceInstanceCache.getOrCreate(serviceId, instanceId);

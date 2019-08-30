@@ -44,6 +44,8 @@ import com.netflix.config.DynamicPropertyFactory;
  */
 public class IsolationDiscoveryFilter implements DiscoveryFilter {
 
+  public static final String TRYING_INSTANCES_EXISTING = "scb-hasTryingInstances";
+
   private static final Logger LOGGER = LoggerFactory.getLogger(IsolationDiscoveryFilter.class);
 
   private static final String EMPTY_INSTANCE_PROTECTION = "servicecomb.loadbalance.filter.isolation.emptyInstanceProtectionEnabled";
@@ -142,14 +144,16 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
     if (!checkThresholdAllowed(settings, serverStats)) {
       if (serverStats.isIsolated()
           && (System.currentTimeMillis() - serverStats.getLastVisitTime()) > settings.singleTestTime) {
+        if (!ServiceCombServerStats.applyForTryingChance()) {
+          // this server hasn't been isolated for enough long time, or there is no trying chance
+          return false;
+        }
         // [1]we can implement better recovery based on several attempts, but here we do not know if this attempt is success
-        LOGGER.info("The Service {}'s instance {} has been isolated for a while, give a single test opportunity.",
-            invocation.getMicroserviceName(),
-            instance.getInstanceId());
+        invocation.addLocalContext(TRYING_INSTANCES_EXISTING, Boolean.TRUE);
         return true;
       }
       if (!serverStats.isIsolated()) {
-        ServiceCombLoadBalancerStats.INSTANCE.markIsolated(server, true);
+        serverStats.markIsolated(true);
         eventBus.post(
             new IsolationServerEvent(invocation, instance, serverStats,
                 settings, Type.OPEN, server.getEndpoint()));
@@ -164,7 +168,7 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
       if ((System.currentTimeMillis() - serverStats.getLastVisitTime()) <= settings.minIsolationTime) {
         return false;
       }
-      ServiceCombLoadBalancerStats.INSTANCE.markIsolated(server, false);
+      serverStats.markIsolated(false);
       eventBus.post(new IsolationServerEvent(invocation, instance, serverStats,
           settings, Type.CLOSE, server.getEndpoint()));
       LOGGER.warn("Recover service {}'s instance {} from isolation.", invocation.getMicroserviceName(),

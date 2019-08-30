@@ -23,6 +23,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.aop.SpringProxy;
 import org.springframework.aop.aspectj.annotation.AspectJProxyFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -35,6 +36,16 @@ public class TestBeanUtils {
   }
 
   static class Impl implements Intf {
+
+  }
+
+  // 被代理的类
+  static class TestBean{
+
+  }
+
+  // 模拟 CgLib 代理产生的子类
+  static class TestBean$$TestBeanByCGLIB$$e1a36bab extends TestBean implements SpringProxy {
 
   }
 
@@ -147,4 +158,14 @@ public class TestBeanUtils {
 
     Assert.assertEquals("org.apache.servicecomb", System.getProperty(BeanUtils.SCB_SCAN_PACKAGE));
   }
+
+  @Test
+  public void testGetImplClassFromBeanFromCglib(){
+    TestBean testBeanByCGLIB = new TestBean$$TestBeanByCGLIB$$e1a36bab();
+    Class<?> generatedClass = BeanUtils.getImplClassFromBean(testBeanByCGLIB);
+    Assert.assertNotNull(generatedClass);
+    Assert.assertEquals(TestBean.class, generatedClass);
+  }
+
+
 }

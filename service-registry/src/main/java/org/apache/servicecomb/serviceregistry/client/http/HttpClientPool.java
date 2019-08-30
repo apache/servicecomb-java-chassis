@@ -40,6 +40,11 @@ public final class HttpClientPool extends AbstractClientPool {
   }
 
   @Override
+  protected boolean isWorker() {
+    return false;
+  }
+
+  @Override
   public HttpClientOptions createHttpClientOptions() {
     HttpVersion ver = ServiceRegistryConfig.INSTANCE.getHttpVersion();
     HttpClientOptions httpClientOptions = new HttpClientOptions();
@@ -51,7 +56,7 @@ public final class HttpClientPool extends AbstractClientPool {
       proxy.setHost(ServiceRegistryConfig.INSTANCE.getProxyHost());
       proxy.setPort(ServiceRegistryConfig.INSTANCE.getProxyPort());
       proxy.setUsername(ServiceRegistryConfig.INSTANCE.getProxyUsername());
-      proxy.setPassword(Encryptions.decode(ServiceRegistryConfig.INSTANCE.getProxyPasswd(), PROXY_KEY));
+      proxy.setPassword(Encryptions.decode(ServiceRegistryConfig.INSTANCE.getProxyPasswd(), ServiceRegistryConfig.PROXY_KEY));
       httpClientOptions.setProxyOptions(proxy);
     }
     if (ver == HttpVersion.HTTP_2) {
@@ -60,7 +65,7 @@ public final class HttpClientPool extends AbstractClientPool {
     }
     if (ServiceRegistryConfig.INSTANCE.isSsl()) {
       LOGGER.debug("service center client performs requests over TLS");
-      VertxTLSBuilder.buildHttpClientOptions(SSL_KEY, httpClientOptions);
+      VertxTLSBuilder.buildHttpClientOptions(ServiceRegistryConfig.SSL_KEY, httpClientOptions);
     }
     return httpClientOptions;
   }

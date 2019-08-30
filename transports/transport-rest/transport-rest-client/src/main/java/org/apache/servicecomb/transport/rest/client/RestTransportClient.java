@@ -75,11 +75,12 @@ public class RestTransportClient {
 
   private static HttpClientOptions createHttpClientOptions() {
     HttpClientOptions httpClientOptions = new HttpClientOptions();
-    httpClientOptions.setMaxPoolSize(TransportClientConfig.getConnectionMaxPoolSize());
-    httpClientOptions.setIdleTimeout(TransportClientConfig.getConnectionIdleTimeoutInSeconds());
-    httpClientOptions.setKeepAlive(TransportClientConfig.getConnectionKeepAlive());
-    httpClientOptions.setTryUseCompression(TransportClientConfig.getConnectionCompression());
-    httpClientOptions.setMaxHeaderSize(TransportClientConfig.getMaxHeaderSize());
+    httpClientOptions.setMaxPoolSize(TransportClientConfig.getConnectionMaxPoolSize())
+        .setIdleTimeout(TransportClientConfig.getConnectionIdleTimeoutInSeconds())
+        .setKeepAlive(TransportClientConfig.getConnectionKeepAlive())
+        .setTryUseCompression(TransportClientConfig.getConnectionCompression())
+        .setMaxHeaderSize(TransportClientConfig.getMaxHeaderSize())
+        .setMaxWaitQueueSize(TransportClientConfig.getMaxWaitQueueSize());
 
     VertxTLSBuilder.buildHttpClientOptions(SSL_KEY, httpClientOptions);
     return httpClientOptions;
@@ -93,7 +94,8 @@ public class RestTransportClient {
         .setIdleTimeout(TransportClientConfig.getHttp2ConnectionIdleTimeoutInSeconds())
         .setHttp2MultiplexingLimit(TransportClientConfig.getHttp2MultiplexingLimit())
         .setHttp2MaxPoolSize(TransportClientConfig.getHttp2ConnectionMaxPoolSize())
-        .setTryUseCompression(TransportClientConfig.getConnectionCompression());
+        .setTryUseCompression(TransportClientConfig.getConnectionCompression())
+        .setMaxWaitQueueSize(TransportClientConfig.getMaxWaitQueueSize());
 
     VertxTLSBuilder.buildHttpClientOptions(SSL_KEY, httpClientOptions);
     return httpClientOptions;

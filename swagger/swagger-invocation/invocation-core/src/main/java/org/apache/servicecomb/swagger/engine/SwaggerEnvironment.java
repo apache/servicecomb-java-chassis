@@ -28,6 +28,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.swagger.generator.core.CompositeSwaggerGeneratorContext;
+import org.apache.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
+import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
+import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapperConfig;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapperFactory;
@@ -128,15 +131,16 @@ public class SwaggerEnvironment {
       ArgumentsMapperConfig config = new ArgumentsMapperConfig();
       config.setSwaggerMethod(swaggerMethod);
       config.setProviderMethod(consumerMethod);
+      config.setClz(consumerIntf);
 
       ConsumerArgumentsMapper argsMapper =
           consumerArgumentsFactory.createArgumentsMapper(config);
       ConsumerResponseMapper responseMapper = consumerResponseMapperFactorys.createResponseMapper(
           swaggerMethod.getGenericReturnType(),
-          consumerMethod.getGenericReturnType());
+          ParamUtils.getGenericParameterType(consumerIntf, consumerMethod.getDeclaringClass(), consumerMethod.getGenericReturnType()));
 
       SwaggerConsumerOperation op = new SwaggerConsumerOperation();
-      op.setName(consumerMethod.getName());
+      op.setName(swaggerMethodName);
       op.setConsumerMethod(consumerMethod);
       op.setSwaggerMethod(swaggerMethod);
       op.setArgumentsMapper(argsMapper);
@@ -158,9 +162,9 @@ public class SwaggerEnvironment {
   }
 
   public SwaggerProducer createProducer(Object producerInstance, Class<?> swaggerIntf,
-      Map<String, Operation> swaggerOperationMap) {
+      Map<String, Operation> swaggerOperationMap, SwaggerGeneratorContext context) {
     Class<?> producerCls = BeanUtils.getImplClassFromBean(producerInstance);
-    Map<String, Method> visibleProducerMethods = retrieveVisibleMethods(producerCls);
+    Map<String, Method> visibleProducerMethods = retrieveVisibleMethods(producerCls, context);
 
     SwaggerProducer producer = new SwaggerProducer();
     producer.setProducerCls(producerCls);
@@ -180,6 +184,7 @@ public class SwaggerEnvironment {
       ArgumentsMapperConfig config = new ArgumentsMapperConfig();
       config.setSwaggerMethod(swaggerMethod);
       config.setProviderMethod(producerMethod);
+      config.setClz(producerCls);
       config.setSwaggerOperation(swaggerOperationMap.get(methodName));
       config.setSwaggerGeneratorContext(compositeSwaggerGeneratorContext.selectContext(producerCls));
 
@@ -218,16 +223,15 @@ public class SwaggerEnvironment {
     return argumentsMapperFactory;
   }
 
-  private Map<String, Method> retrieveVisibleMethods(Class<?> clazz) {
+  private Map<String, Method> retrieveVisibleMethods(Class<?> clazz, SwaggerGeneratorContext context) {
     Map<String, Method> visibleMethods = new HashMap<>();
-    for (Method method : clazz.getMethods()) {
+    for (Method method : MethodUtils.findProducerMethods(clazz)) {
+      if(!context.canProcess(method)) {
+        continue;
+      }
       String methodName = method.getName();
       ApiOperation apiOperationAnnotation = method.getAnnotation(ApiOperation.class);
       if (apiOperationAnnotation != null) {
-        if (apiOperationAnnotation.hidden()) {
-          continue;
-        }
-
         if (StringUtils.isNotEmpty(apiOperationAnnotation.nickname())) {
           methodName = apiOperationAnnotation.nickname();
         }

@@ -87,6 +87,18 @@ public final class ServiceRegistryConfig {
 
   public static final String PROXY_PASSWD = PROXY_PRE_NAME + "passwd";
 
+  public static final String SSL_KEY = "sc.consumer";
+
+  public static final String PROXY_KEY = "sc.consumer";
+
+  public static final String VERTICLE_INSTANCES = "servicecomb.service.registry.client.instances";
+
+  public static final String EVENT_LOOP_POOL_SIZE = "servicecomb.service.registry.client.eventLoopPoolSize";
+
+  public static final String WORKER_POOL_SIZE = "servicecomb.service.registry.client.workerPoolSize";
+
+  public static final String WORKER_POOL_NAME = "registry-vert.x-worker-thread";
+
   private ServiceRegistryConfig() {
 
   }
@@ -109,21 +121,21 @@ public final class ServiceRegistryConfig {
     return HttpVersion.valueOf(property.get());
   }
 
-  public int getWorkerPoolSize() {
-    String workerPoolSizeKey = "servicecomb.service.registry.client.workerPoolSize";
+  public int getInstances() {
     DynamicIntProperty property =
         DynamicPropertyFactory.getInstance()
-            .getIntProperty(workerPoolSizeKey, 1);
-    int workerPoolSize = property.get();
-    if (workerPoolSize <= 0) {
+            .getIntProperty(VERTICLE_INSTANCES, 1);
+    int deployInstances = property.get();
+    if (deployInstances <= 0) {
       int nAvailableProcessors = Runtime.getRuntime().availableProcessors();
       LOGGER.warn("The property `{}` must be positive integer, fallback to use number of available processors: {}",
-          workerPoolSizeKey,
+          VERTICLE_INSTANCES,
           nAvailableProcessors);
       return nAvailableProcessors;
     }
-    return workerPoolSize;
+    return deployInstances;
   }
+
 
   public boolean isSsl() {
     getIpPort();
@@ -131,7 +143,8 @@ public final class ServiceRegistryConfig {
   }
 
   public ArrayList<IpPort> getIpPort() {
-    List<String> uriList = Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_SERVICE_CENTER).getAccessURL();
+    List<String> uriList = Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_SERVICE_CENTER)
+        .getAccessURL();
     ArrayList<IpPort> ipPortList = new ArrayList<>();
     uriList.forEach(anUriList -> {
       try {
