@@ -69,17 +69,12 @@ import com.google.common.eventbus.Subscribe;
  *
  */
 public class TestLoadBalanceHandler2 {
-  @BeforeClass
-  public static void beforeClass() {
-    //prepare for defineEndpointAndHandle
-    ArchaiusUtils.setProperty("servicecomb.loadbalance.userDefinedEndpoint.enabled", "true");
-    // avoid mock
-
-  }
-
   @Before
   public void setUp() {
     // clear up load balance stats
+    //prepare for defineEndpointAndHandle
+    ArchaiusUtils.setProperty("servicecomb.loadbalance.userDefinedEndpoint.enabled", "true");
+    // avoid mock
     ServiceCombLoadBalancerStats.INSTANCE.init();
     ServiceCombServerStats.releaseTryingChance();
   }
