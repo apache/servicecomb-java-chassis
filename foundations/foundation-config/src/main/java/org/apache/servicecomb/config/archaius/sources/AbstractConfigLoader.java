@@ -56,7 +56,7 @@ public abstract class AbstractConfigLoader {
   public ConfigModel load(URL url) throws IOException {
     Map<String, Object> config = loadData(url);
     // load a empty or all commented yaml, will get a null map
-    // this is not a error
+    // this is not an error
     if (config == null) {
       config = new LinkedHashMap<>();
     }
