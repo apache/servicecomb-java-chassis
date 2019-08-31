@@ -27,7 +27,7 @@ import io.vertx.core.net.SocketAddress;
 import io.vertx.core.spi.metrics.HttpClientMetrics;
 
 /**
- * important: not singleton, every HttpClient instance relate to a HttpClientMetrics instance
+ * important: not singleton, every HttpClient instance relate to an HttpClientMetrics instance
  */
 public class DefaultHttpClientMetrics implements
     HttpClientMetrics<DefaultHttpSocketMetric, Object, DefaultHttpSocketMetric, DefaultClientEndpointMetric, Object> {

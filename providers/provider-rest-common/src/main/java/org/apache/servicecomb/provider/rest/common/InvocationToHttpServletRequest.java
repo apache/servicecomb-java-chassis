@@ -31,7 +31,7 @@ import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 import io.vertx.core.net.SocketAddress;
 
 /**
- * when transport is not over http, mock a HttpServletRequest from Invocation
+ * when transport is not over http, mock an HttpServletRequest from Invocation
  */
 public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
   private RestOperationMeta swaggerOperation;

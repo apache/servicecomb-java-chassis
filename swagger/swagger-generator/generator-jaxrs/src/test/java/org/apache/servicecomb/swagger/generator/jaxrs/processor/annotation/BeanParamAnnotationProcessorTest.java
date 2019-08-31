@@ -114,7 +114,7 @@ public class BeanParamAnnotationProcessorTest {
 
     try {
       processor.process(null, operationGenerator, 0);
-      fail("A error is expected!");
+      fail("An error is expected!");
     } catch (Error e) {
       assertEquals("Processing param failed, method=org.apache.servicecomb.swagger.generator.jaxrs.processor"
               + ".annotation.BeanParamAnnotationProcessorTest$TestProvider:testBeanParamComplexField, beanParamIdx=0",
@@ -133,7 +133,7 @@ public class BeanParamAnnotationProcessorTest {
 
     try {
       processor.process(null, operationGenerator, 0);
-      fail("A error is expected!");
+      fail("An error is expected!");
     } catch (Error e) {
       assertEquals("Processing param failed, method=org.apache.servicecomb.swagger.generator.jaxrs.processor"
               + ".annotation.BeanParamAnnotationProcessorTest$TestProvider:testBeanParamComplexSetter, beanParamIdx=0",
@@ -152,7 +152,7 @@ public class BeanParamAnnotationProcessorTest {
 
     try {
       processor.process(null, operationGenerator, 0);
-      fail("A error is expected!");
+      fail("An error is expected!");
     } catch (Error e) {
       assertEquals("There is a field[name] cannot be mapped to swagger param. "
               + "Maybe you should tag @JsonIgnore on it.",
