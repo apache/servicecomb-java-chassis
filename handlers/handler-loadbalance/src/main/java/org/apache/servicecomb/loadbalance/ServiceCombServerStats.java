@@ -147,17 +147,19 @@ public class ServiceCombServerStats {
   }
 
   public int getSuccessRate() {
-    if (totalRequests.get() == 0L) {
-      return 0;
-    }
-    return (int) (successRequests.get() * 100 / totalRequests.get());
+    return calcRequestRate(successRequests);
   }
 
   public int getFailedRate() {
-    if (totalRequests.get() == 0L) {
+    return calcRequestRate(failedRequests);
+  }
+
+  private int calcRequestRate(AtomicLong requestCnt) {
+    long totalReqs = totalRequests.get();
+    if (totalReqs == 0L) {
       return 0;
     }
-    return (int) (failedRequests.get() * 100 / totalRequests.get());
+    return (int) (requestCnt.get() * 100 / totalReqs);
   }
 
   public boolean isIsolated() {
