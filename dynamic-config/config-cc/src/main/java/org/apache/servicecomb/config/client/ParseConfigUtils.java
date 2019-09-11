@@ -18,9 +18,12 @@
 package org.apache.servicecomb.config.client;
 
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -131,10 +134,22 @@ public class ParseConfigUtils {
 
   private Map<String, Object> mergeDimensionItems(Map<String, Map<String, Object>> items) {
     Map<String, Object> flatMap = new HashMap<>();
-    return items.values().stream().reduce(flatMap, (result, item) -> {
-      result.putAll(item);
-      return result;
-    });
+    Set<String> keySet = items.keySet();
+    if (keySet.contains("application")) {
+      flatMap.putAll(items.get("application"));
+      keySet.remove("application");
+    }
+    if (!keySet.isEmpty()) {
+      TreeSet<String> sortedKeys = new TreeSet<String>(new Comparator<String>() {
+        @Override
+        public int compare(String o1, String o2) {
+          return o1.length() - o2.length();
+        }
+      });
+      sortedKeys.addAll(keySet);
+      sortedKeys.forEach(key -> flatMap.putAll(items.get(key)));
+    }
+    return flatMap;
   }
 
   private void notifyItemsChangedNeedRefresh(Map<String, Object> before, Map<String, Object> after) {
