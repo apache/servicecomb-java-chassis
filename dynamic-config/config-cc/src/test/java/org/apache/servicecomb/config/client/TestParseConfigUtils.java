@@ -18,6 +18,7 @@
 package org.apache.servicecomb.config.client;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.config.archaius.sources.ConfigCenterConfigurationSourceImpl;
@@ -79,5 +80,43 @@ public class TestParseConfigUtils {
       status = false;
     }
     Assert.assertTrue(status);
+  }
+  
+  @Test
+  public void testMergeDimensionItems() {
+
+    boolean status = true;
+    Map<String, Object> application = new HashMap<>();
+    application.put("key1", "application1");
+    application.put("key2", "application2");
+    application.put("key3", "application3");
+    application.put("key4", "application4");
+    Map<String, Object> service = new HashMap<>();
+    service.put("key1", "service1");
+    service.put("key2", "service2");
+    service.put("key3", "service3");
+    Map<String, Object> version = new HashMap<>();
+    version.put("key1", "version1");
+    version.put("key2", "version1");
+    Map<String, Object> tag = new HashMap<>();
+    tag.put("key1", "tag1");
+
+    Map<String, Map<String, Object>> items = new LinkedHashMap<String, Map<String, Object>>();
+    items.put("application", application);
+    items.put("service@app", service);
+    items.put("service@app#version", version);
+    items.put("service@app#version!tag", tag);
+
+    Map<String, Object> result = null;
+    try {
+      result = Deencapsulation.invoke(pc, "mergeDimensionItems", items);
+    } catch (Exception e) {
+      status = false;
+    }
+    Assert.assertTrue(status);
+    Assert.assertEquals(application.get("key4"), result.get("key4"));
+    Assert.assertEquals(service.get("key3"), result.get("key3"));
+    Assert.assertEquals(version.get("key2"), result.get("key2"));
+    Assert.assertEquals(tag.get("key1"), result.get("key1"));
   }
 }
