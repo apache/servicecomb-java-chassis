@@ -373,7 +373,7 @@ This product bundles protobuf which is licensed under the
 For details, see https://github.com/protocolbuffers/protobuf
 You can find a copy of the License at licenses/LICENSE-protobuf
 
-* Protocol Buffers [Core] (com.google.protobuf:protobuf-java:3.6.1 - https://developers.google.com/protocol-buffers/protobuf-java/)
+* Protocol Buffers [Core] (com.google.protobuf:protobuf-java:3.7.1 - https://developers.google.com/protocol-buffers/)
 
 ================================================================
 This product bundles antlr which is licensed under the
