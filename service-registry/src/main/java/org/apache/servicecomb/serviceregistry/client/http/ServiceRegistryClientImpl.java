@@ -20,6 +20,7 @@ package org.apache.servicecomb.serviceregistry.client.http;
 import static java.util.Collections.emptyList;
 
 import java.nio.charset.Charset;
+import java.rmi.ConnectException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -120,6 +121,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
         if (requestContext.getRetryTimes() <= ipPortManager.getMaxRetryTimes()) {
           retry(requestContext, syncHandler(countDownLatch, cls, holder));
         } else {
+          holder.setThrowable(new ConnectException("Connection refused."));
           countDownLatch.countDown();
         }
         return;
@@ -850,11 +852,17 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
           new RequestParam().addHeader("X-ConsumerId", serviceId).addQueryParam("global", "true"),
           syncHandler(countDownLatch, MicroserviceInstanceResponse.class, holder));
       countDownLatch.await();
+      if (holder.hasException()) {
+        throw holder.getThrowable();
+      }
       if (null != holder.value) {
         return holder.value.getInstance();
       }
       return null;
-    } catch (Exception e) {
+    } catch (ConnectException e1) {
+      LOGGER.error("Find service instance from service center failed.", e1);
+      return new MicroserviceInstance();
+    } catch (Throwable e) {
       LOGGER.error("get instance from sc failed");
       return null;
     }

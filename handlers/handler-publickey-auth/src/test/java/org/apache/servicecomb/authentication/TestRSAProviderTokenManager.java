@@ -16,12 +16,12 @@
  */
 package org.apache.servicecomb.authentication;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import static java.util.Optional.of;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import mockit.Expectations;
+
 import org.apache.servicecomb.authentication.consumer.RSAConsumerTokenManager;
 import org.apache.servicecomb.authentication.provider.RSAProviderTokenManager;
 import org.apache.servicecomb.config.ConfigUtil;
@@ -38,6 +38,11 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
+import mockit.Expectations;
 
 public class TestRSAProviderTokenManager {
 
@@ -130,8 +135,8 @@ public class TestRSAProviderTokenManager {
     Assert.assertEquals(token, rsaConsumerTokenManager.getToken());
     new Expectations(MicroserviceInstanceCache.class) {
       {
-        MicroserviceInstanceCache.getOrCreate(serviceId, instanceId);
-        result = microserviceInstance;
+        MicroserviceInstanceCache.get(serviceId, instanceId);
+        result = of(microserviceInstance);
         MicroserviceInstanceCache.getOrCreate(serviceId);
         result = microservice;
       }

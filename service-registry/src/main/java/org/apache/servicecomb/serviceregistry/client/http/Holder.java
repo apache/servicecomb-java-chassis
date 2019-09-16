@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.serviceregistry.client.http;
 
+import static java.util.Objects.nonNull;
+
 /**
  * To carry the rest response information.
  * @param <T> Type of response body
@@ -53,6 +55,10 @@ public class Holder<T> {
   public Holder<T> setThrowable(Throwable throwable) {
     this.throwable = throwable;
     return this;
+  }
+
+  public boolean hasException() {
+    return nonNull(throwable);
   }
 
   @Override

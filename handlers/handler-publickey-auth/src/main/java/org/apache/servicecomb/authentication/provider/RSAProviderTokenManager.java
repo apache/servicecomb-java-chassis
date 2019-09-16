@@ -16,13 +16,14 @@
  */
 package org.apache.servicecomb.authentication.provider;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
+import static java.util.Objects.isNull;
+
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.concurrent.TimeUnit;
+
 import org.apache.servicecomb.authentication.RSAAuthenticationToken;
 import org.apache.servicecomb.foundation.common.utils.RSAUtils;
 import org.apache.servicecomb.serviceregistry.api.Const;
@@ -30,6 +31,9 @@ import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.MicroserviceInstanceCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 public class RSAProviderTokenManager {
 
@@ -72,7 +76,20 @@ public class RSAProviderTokenManager {
       throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException {
     String sign = rsaToken.getSign();
     String content = rsaToken.plainToken();
-    String publicKey = getPublicKey(rsaToken.getInstanceId(), rsaToken.getServiceId());
+    MicroserviceInstance instance = MicroserviceInstanceCache.get(rsaToken.getServiceId(), rsaToken.getInstanceId())
+        .orElseGet(
+            () -> MicroserviceInstanceCache.getFromServiceCenter(rsaToken.getServiceId(), rsaToken.getInstanceId()));
+
+    if (isNull(instance)) {
+      LOGGER.error("not instance found {}-{}, maybe attack", rsaToken.getServiceId(), rsaToken.getInstanceId());
+      return false;
+    }
+
+    if (instance.isNil()) {
+      return true;
+    }
+
+    String publicKey = getPublicKey(instance);
     return RSAUtils.verify(publicKey, sign, content);
   }
 
@@ -87,12 +104,11 @@ public class RSAProviderTokenManager {
     return now > expired;
   }
 
-  private String getPublicKey(String instanceId, String serviceId) {
-    MicroserviceInstance instances = MicroserviceInstanceCache.getOrCreate(serviceId, instanceId);
+  private String getPublicKey(MicroserviceInstance instances) {
     if (instances != null) {
       return instances.getProperties().get(Const.INSTANCE_PUBKEY_PRO);
     } else {
-      LOGGER.error("not instance found {}-{}, maybe attack", instanceId, serviceId);
+      LOGGER.error("not instance found, maybe attack");
       return "";
     }
   }

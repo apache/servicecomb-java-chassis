@@ -22,6 +22,7 @@ import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.
 import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_INSTANCE_ENVIRONMENT;
 import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_INSTANCE_INITIAL_STATUS;
 import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_STAGE;
+import static org.springframework.util.StringUtils.isEmpty;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -209,5 +210,9 @@ public class MicroserviceInstance {
           DynamicPropertyFactory.getInstance().getStringProperty("servicecomb.datacenter.availableZone", null).get());
       microserviceInstance.setDataCenterInfo(dataCenterInfo);
     }
+  }
+
+  public boolean isNil() {
+    return isEmpty(serviceId) && isEmpty(instanceId);
   }
 }

@@ -17,6 +17,11 @@
 
 package org.apache.servicecomb.serviceregistry.cache;
 
+import static java.lang.String.format;
+import static java.util.Objects.nonNull;
+import static java.util.Optional.ofNullable;
+
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -66,7 +71,7 @@ public class MicroserviceInstanceCache {
 
   public static MicroserviceInstance getOrCreate(String serviceId, String instanceId) {
     try {
-      String key = String.format("%s@%s", serviceId, instanceId);
+      String key = format("%s@%s", serviceId, instanceId);
       return instances.get(key, new Callable<MicroserviceInstance>() {
 
         @Override
@@ -80,9 +85,22 @@ public class MicroserviceInstanceCache {
         }
       });
     } catch (ExecutionException | UncheckedExecutionException e) {
-      logger.error("get microservice instance from cache failed, {}, {}", String.format("%s@%s", serviceId, instanceId),
+      logger.error("get microservice instance from cache failed, {}, {}", format("%s@%s", serviceId, instanceId),
           e.getMessage());
       return null;
     }
+  }
+
+  public static Optional<MicroserviceInstance> get(String serviceId, String instanceId) {
+    return ofNullable(instances.getIfPresent(format("%s@%s", serviceId, instanceId)));
+  }
+
+  public static MicroserviceInstance getFromServiceCenter(String serviceId, String instanceId) {
+    MicroserviceInstance instance = RegistryUtils.getServiceRegistryClient()
+        .findServiceInstance(serviceId, instanceId);
+    if (nonNull(instance) && !instance.isNil()) {
+      instances.put(format("%s@%s", serviceId, instanceId), instance);
+    }
+    return instance;
   }
 }
