@@ -26,7 +26,6 @@ import java.util.Map;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.converter.property.StringPropertyConverter;
-import org.apache.servicecomb.swagger.extend.module.EnumModuleExt;
 import org.apache.servicecomb.swagger.extend.property.creator.ByteArrayPropertyCreator;
 import org.apache.servicecomb.swagger.extend.property.creator.BytePropertyCreator;
 import org.apache.servicecomb.swagger.extend.property.creator.InputStreamPropertyCreator;
@@ -46,10 +45,11 @@ import io.swagger.models.Model;
 import io.swagger.models.ModelImpl;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.StringProperty;
-import io.swagger.util.Json;
 
 public class ModelResolverExt extends ModelResolver {
   private Map<Class<?>, PropertyCreator> propertyCreatorMap = new HashMap<>();
+
+  private static ObjectMapper objectMapper;
 
   public ModelResolverExt() {
     super(findMapper());
@@ -63,9 +63,18 @@ public class ModelResolverExt extends ModelResolver {
   }
 
   private static ObjectMapper findMapper() {
-    ObjectMapper mapper = Json.mapper();
-    mapper.registerModule(new EnumModuleExt());
-    return mapper;
+    if (null != objectMapper) {
+      return objectMapper;
+    }
+
+    ModelResolveObjectMapperProvider objectMapperProvider = SPIServiceUtils
+        .getPriorityHighestService(ModelResolveObjectMapperProvider.class);
+    if (null == objectMapperProvider) {
+      objectMapperProvider = new DefaultModelResolveObjectMapperProvider();
+    }
+    objectMapper = objectMapperProvider.getMapper();
+
+    return objectMapper;
   }
 
   private void addPropertyCreator(PropertyCreator creator) {
@@ -130,7 +139,7 @@ public class ModelResolverExt extends ModelResolver {
     checkType(type);
 
     // 只有声明model的地方才需要标注类型
-    if (ModelImpl.class.isInstance(model) && !StringUtils.isEmpty(((ModelImpl) model).getName())) {
+    if (model instanceof ModelImpl && !StringUtils.isEmpty(((ModelImpl) model).getName())) {
       setType(type, model.getVendorExtensions());
     }
     return model;
@@ -147,7 +156,7 @@ public class ModelResolverExt extends ModelResolver {
     }
 
     Property property = super.resolveProperty(propType, context, annotations, next);
-    if (StringProperty.class.isInstance(property)) {
+    if (property instanceof StringProperty) {
       if (StringPropertyConverter.isEnum((StringProperty) property)) {
         setType(propType, property.getVendorExtensions());
       }
