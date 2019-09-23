@@ -19,6 +19,7 @@ package org.apache.servicecomb.serviceregistry.client.http;
 
 import static java.util.Collections.emptyList;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,6 +75,10 @@ import io.vertx.core.http.HttpClientResponse;
 
 public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRegistryClientImpl.class);
+
+  private static final String ERROR_CODE = "errorCode";
+  private static final String ERR_SERVICE_NOT_EXISTS = "400012";
+  private static final String ERR_SCHEMA_NOT_EXISTS = "400016";
 
   private IpPortManager ipPortManager;
 
@@ -140,6 +145,22 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
               holder.setValue((T) bodyBuffer.toString());
               countDownLatch.countDown();
               return;
+            }
+
+            // no need to generate warn log when schema or service not exist
+            if (HttpStatusClass.CLIENT_ERROR.equals(HttpStatusClass.valueOf(response.statusCode()))) {
+              try {
+                Map<String, String> bufferMap = JsonUtils.readValue(bodyBuffer.getBytes(), Map.class);
+                if (bufferMap.containsKey(ERROR_CODE)) {
+                  String errorCode = bufferMap.get(ERROR_CODE);
+                  if (errorCode.equals(ERR_SERVICE_NOT_EXISTS) || errorCode.equals(ERR_SCHEMA_NOT_EXISTS)) {
+                    countDownLatch.countDown();
+                    return;
+                  }
+                }
+              } catch (IOException e) {
+                LOGGER.warn("read value failed from buffer {}", bodyBuffer.toString());
+              }
             }
 
             // no need to support 304 in this place
