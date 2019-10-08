@@ -20,10 +20,20 @@ import java.util.List;
 
 import org.apache.servicecomb.provider.pojo.RpcSchema;
 
+import io.swagger.annotations.ApiOperation;
+
 @RpcSchema(schemaId = "MyEndpointWithInterface")
 public class MyEndpointWithInterface implements IMyService {
   @Override
+  @ApiOperation(nickname = "hello", value = "hello")
   public PersonBean hello(PersonBean a) {
+    return a;
+  }
+
+  @Override
+  @ApiOperation(nickname = "helloWithValue", value = "helloWithValue")
+  public PersonBean hello(PersonBean a, String value) {
+    a.setName(a.getName() + ":" + value);
     return a;
   }
 

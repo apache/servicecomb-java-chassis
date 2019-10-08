@@ -19,6 +19,8 @@ package org.apache.servicecomb.it.schema.generic;
 
 import java.util.List;
 
+import io.swagger.annotations.ApiOperation;
+
 public class AbstractBaseService<T extends AbstractBean> implements IBaseService<T> {
   private IBaseService<T> target;
 
@@ -27,8 +29,15 @@ public class AbstractBaseService<T extends AbstractBean> implements IBaseService
   }
 
   @Override
+  @ApiOperation(nickname = "hello", value = "hello")
   public T hello(T a) {
     return target.hello(a);
+  }
+
+  @Override
+  @ApiOperation(nickname = "helloWithValue", value = "helloWithValue")
+  public T hello(T a, String value) {
+    return target.hello(a, value);
   }
 
   @Override

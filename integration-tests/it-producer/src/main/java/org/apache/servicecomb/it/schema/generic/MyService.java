@@ -31,6 +31,12 @@ public class MyService implements IMyService {
   }
 
   @Override
+  public PersonBean hello(PersonBean a, String value) {
+    a.setName(a.getName() + ":" + value);
+    return a;
+  }
+
+  @Override
   public PersonBean[] helloBody(PersonBean[] a) {
     return a;
   }

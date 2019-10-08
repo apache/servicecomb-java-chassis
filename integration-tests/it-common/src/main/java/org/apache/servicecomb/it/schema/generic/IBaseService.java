@@ -19,8 +19,14 @@ package org.apache.servicecomb.it.schema.generic;
 
 import java.util.List;
 
+import io.swagger.annotations.ApiOperation;
+
 public interface IBaseService<T extends AbstractBean> {
+  @ApiOperation(nickname = "hello", value = "hello")
   T hello(T a);
+
+  @ApiOperation(nickname = "helloWithValue", value = "helloWithValue")
+  T hello(T a, String value);
 
   T[] helloBody(T[] a);
 

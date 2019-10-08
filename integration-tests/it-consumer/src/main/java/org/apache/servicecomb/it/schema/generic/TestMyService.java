@@ -27,6 +27,7 @@ import org.junit.Test;
 public class TestMyService {
   private static Consumers<IMyService> myservice = new Consumers<>("MyEndpoint",
       IMyService.class);
+
   private static Consumers<IMyService> myserviceWithInterface = new Consumers<>("MyEndpointWithInterface",
       IMyService.class);
 
@@ -36,6 +37,9 @@ public class TestMyService {
     bean.setName("p");
     PersonBean resultBean = myservice.getIntf().hello(bean);
     Assert.assertEquals("p", resultBean.getName());
+
+    resultBean = myservice.getIntf().hello(bean, "p");
+    Assert.assertEquals("p:p", resultBean.getName());
 
     resultBean = myservice.getIntf().actual();
     Assert.assertEquals("p", resultBean.getName());
@@ -56,6 +60,9 @@ public class TestMyService {
     bean.setName("p");
     PersonBean resultBean = myserviceWithInterface.getIntf().hello(bean);
     Assert.assertEquals("p", resultBean.getName());
+
+    resultBean = myserviceWithInterface.getIntf().hello(bean, "p");
+    Assert.assertEquals("p:p", resultBean.getName());
 
     resultBean = myserviceWithInterface.getIntf().actual();
     Assert.assertEquals("p", resultBean.getName());
