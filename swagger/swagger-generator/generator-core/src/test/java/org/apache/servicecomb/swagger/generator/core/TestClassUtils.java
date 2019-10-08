@@ -75,7 +75,7 @@ public class TestClassUtils {
     SwaggerGenerator generator = UnitTestSwaggerUtils.generateSwagger(Impl.class);
     OperationGenerator operationGenerator = generator.getOperationGeneratorMap().get("getUser");
 
-    Class<?> cls = ClassUtils.getOrCreateBodyClass(operationGenerator, null);
+    Class<?> cls = ClassUtils.getOrCreateBodyClass(operationGenerator, null, "getUserBody");
     Assert.assertEquals("gen.swagger.getUserBody", cls.getName());
     Assert.assertEquals("java.util.List<java.lang.String>", cls.getField("p1").getGenericType().getTypeName());
     Assert.assertEquals("java.util.List<org.apache.servicecomb.foundation.test.scaffolding.model.User>",

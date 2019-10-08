@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.MethodParameter;
 
+import io.swagger.annotations.ApiOperation;
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.Model;
 import io.swagger.models.ModelImpl;
@@ -159,7 +160,16 @@ public final class ParamUtils {
   }
 
   public static String generateBodyParameterName(Method method) {
-    return method.getName() + "Body";
+    return findSwaggerMethodName(method)  + "Body";
+  }
+
+  protected static String findSwaggerMethodName(Method consumerMethod) {
+    ApiOperation apiOperationAnnotation = consumerMethod.getAnnotation(ApiOperation.class);
+    if (apiOperationAnnotation == null || StringUtils.isEmpty(apiOperationAnnotation.nickname())) {
+      return consumerMethod.getName();
+    }
+
+    return apiOperationAnnotation.nickname();
   }
 
   public static BodyParameter createBodyParameter(OperationGenerator operationGenerator,
