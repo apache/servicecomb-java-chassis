@@ -49,10 +49,10 @@ public final class ClassUtils {
 
   // 将一系列body parameter包装成一个class
   public static Class<?> getOrCreateBodyClass(OperationGenerator operationGenerator,
-      List<BodyParameter> bodyParameters, String bodyParamName) {
+      List<BodyParameter> bodyParameters) {
     SwaggerGenerator swaggerGenerator = operationGenerator.getSwaggerGenerator();
     Method method = operationGenerator.getProviderMethod();
-    String clsName = swaggerGenerator.ensureGetPackageName() + "." + bodyParamName;
+    String clsName = swaggerGenerator.ensureGetPackageName() + "." + ParamUtils.generateBodyParameterName(method);
     Class<?> cls = getClassByName(swaggerGenerator.getClassLoader(), clsName);
     if (cls != null) {
       return cls;
