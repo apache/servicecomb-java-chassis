@@ -31,13 +31,13 @@ if [ "$1" == "install" ]; then
     if [ "$TAGGEDCOMMIT" == "true" ]; then
         echo "Skipping the installation as it is tagged commit"
     else
-        mvn apache-rat:check -Pit,samples,distribution
+        mvn apache-rat:check -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -Pit,samples,distribution
         if [ $? != 0 ]; then
             echo "${red}Rat check failed.${reset}"
             exit 1
         fi
         
-        mvn clean install -Pdocker -Pjacoco -Pit -Pcoverage coveralls:report
+        mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -Pdocker -Pjacoco -Pit -Pcoverage coveralls:report
 	if [ $? == 0 ]; then
 	    echo "${green}Installation Success..${reset}"
 	else
@@ -52,7 +52,7 @@ else
 	openssl aes-256-cbc -K $encrypted_6d31958a1ad0_key -iv $encrypted_6d31958a1ad0_iv -in gpg-sec.tar.enc -out gpg-sec.tar -d
 	tar xvf gpg-sec.tar
 	echo "Deploying Staging Release"
-	mvn deploy -DskipTests -Prelease -Pdistribution -Ppassphrase --settings .travis.settings.xml
+	mvn deploy -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -DskipTests -Prelease -Pdistribution -Ppassphrase --settings .travis.settings.xml
 	if [ $? == 0 ]; then
 	    echo "${green}Staging Deployment is Success, please log on to Nexus Repo to see the staging release..${reset}"
 	else
@@ -61,7 +61,7 @@ else
 	fi
     else
 	echo "Deploy a Non-Signed Staging Release"
-	mvn deploy -DskipTests --settings .travis.settings.xml
+	mvn deploy -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -DskipTests --settings .travis.settings.xml
 	if [ $? == 0 ]; then
 	    echo "${green}Snapshot Deployment is Success, please log on to Nexus Repo to see the snapshot release..${reset}"
 	else
