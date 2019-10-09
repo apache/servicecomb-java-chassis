@@ -130,7 +130,7 @@ public class PojoSwaggerGeneratorContext extends AbstractSwaggerGeneratorContext
 
     // 将这些body包装为一个class，整体做为一个body参数
     String bodyParamName = ParamUtils.generateBodyParameterName(operationGenerator.getProviderMethod());
-    Class<?> cls = ClassUtils.getOrCreateBodyClass(operationGenerator, bodyParameters, bodyParamName);
+    Class<?> cls = ClassUtils.getOrCreateBodyClass(operationGenerator, bodyParameters);
     BodyParameter bodyParameter =
         ParamUtils.createBodyParameter(operationGenerator.getSwagger(), bodyParamName, cls);
     swaggerParameters.add(bodyParameter);
