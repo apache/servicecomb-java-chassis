@@ -71,7 +71,7 @@ public class LoadbalanceHandler implements Handler {
 
   public static final String SERVICECOMB_SERVER_ENDPOINT = "scb-endpoint";
 
-  public static final boolean supportDefinedEndpoint =
+  public final boolean supportDefinedEndpoint =
       DynamicPropertyFactory.getInstance()
           .getBooleanProperty("servicecomb.loadbalance.userDefinedEndpoint.enabled", false).get();
 
