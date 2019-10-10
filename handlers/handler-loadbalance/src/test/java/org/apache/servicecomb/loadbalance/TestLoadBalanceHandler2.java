@@ -24,7 +24,6 @@ import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.xml.ws.Holder;
 
@@ -58,17 +57,21 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.google.common.eventbus.Subscribe;
+
+import mockit.Mock;
+import mockit.MockUp;
 
 /**
  *
  *
  */
 public class TestLoadBalanceHandler2 {
+  private Holder<Long> mockTimeMillis;
+
   @Before
   public void setUp() {
     // clear up load balance stats
@@ -77,6 +80,14 @@ public class TestLoadBalanceHandler2 {
     // avoid mock
     ServiceCombLoadBalancerStats.INSTANCE.init();
     ServiceCombServerStats.releaseTryingChance();
+
+    mockTimeMillis = new Holder<>(1L);
+    new MockUp<System>() {
+      @Mock
+      long currentTimeMillis() {
+        return mockTimeMillis.value;
+      }
+    };
   }
 
   @After
@@ -210,7 +221,7 @@ public class TestLoadBalanceHandler2 {
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assert.assertEquals("rest://localhost:9091", server.getEndpoint().getEndpoint());
-    TimeUnit.MILLISECONDS.sleep(20);
+    mockDelayMillis(20);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assert.assertEquals("rest://localhost:9090", server.getEndpoint().getEndpoint());
@@ -440,7 +451,7 @@ public class TestLoadBalanceHandler2 {
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assert.assertEquals("rest://localhost:9091", server.getEndpoint().getEndpoint());
-    TimeUnit.MILLISECONDS.sleep(30);
+    mockDelayMillis(31);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assert.assertEquals("rest://localhost:9090", server.getEndpoint().getEndpoint());
@@ -578,7 +589,7 @@ public class TestLoadBalanceHandler2 {
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assert.assertEquals("rest://localhost:7091", server.getEndpoint().getEndpoint());
-    TimeUnit.MILLISECONDS.sleep(30);
+    mockDelayMillis(31);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assert.assertEquals("rest://localhost:7090", server.getEndpoint().getEndpoint());
@@ -722,7 +733,7 @@ public class TestLoadBalanceHandler2 {
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assert.assertEquals("rest://localhost:7091", server.getEndpoint().getEndpoint());
-    TimeUnit.MILLISECONDS.sleep(20);
+    mockDelayMillis(20);
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
     server = loadBalancer.chooseServer(invocation);
     Assert.assertEquals("rest://localhost:7090", server.getEndpoint().getEndpoint());
@@ -952,5 +963,9 @@ public class TestLoadBalanceHandler2 {
     Mockito.when(discoveryTree.discovery(Mockito.any(), Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
         .thenReturn(versionedCache);
     return discoveryTree;
+  }
+
+  private void mockDelayMillis(long delay) {
+    mockTimeMillis.value += delay;
   }
 }
