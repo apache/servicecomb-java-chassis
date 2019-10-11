@@ -44,6 +44,12 @@ public class TestMyService {
     resultBean = myservice.getIntf().actual();
     Assert.assertEquals("p", resultBean.getName());
 
+    resultBean = myservice.getIntf().objectParam("p");
+    Assert.assertEquals("p", resultBean.getName());
+
+    resultBean = myservice.getIntf().objectParamTwo("p", "p");
+    Assert.assertEquals("p:p", resultBean.getName());
+
     PersonBean[] beanArray = new PersonBean[] {bean};
     PersonBean[] beanArrayResult = myservice.getIntf().helloBody(beanArray);
     Assert.assertEquals("p", beanArrayResult[0].getName());
@@ -66,6 +72,12 @@ public class TestMyService {
 
     resultBean = myserviceWithInterface.getIntf().actual();
     Assert.assertEquals("p", resultBean.getName());
+
+    resultBean = myserviceWithInterface.getIntf().objectParam("p");
+    Assert.assertEquals("p", resultBean.getName());
+
+    resultBean = myserviceWithInterface.getIntf().objectParamTwo("p", "p");
+    Assert.assertEquals("p:p", resultBean.getName());
 
     PersonBean[] beanArray = new PersonBean[] {bean};
     PersonBean[] beanArrayResult = myserviceWithInterface.getIntf().helloBody(beanArray);

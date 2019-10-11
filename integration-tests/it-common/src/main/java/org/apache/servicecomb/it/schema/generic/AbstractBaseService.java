@@ -54,4 +54,14 @@ public class AbstractBaseService<T extends AbstractBean> implements IBaseService
   public PersonBean actual() {
     return target.actual();
   }
+
+  @Override
+  public PersonBean objectParam(Object obj) {
+    return target.objectParam(obj);
+  }
+
+  @Override
+  public PersonBean objectParamTwo(Object obj, String name) {
+    return target.objectParamTwo(obj, name);
+  }
 }

@@ -102,7 +102,7 @@ public abstract class ArgumentsMapperFactory<T> {
     }
 
     Type firstProviderParam = providerNormalParams.get(0).getType();
-    if (TypeUtils.isAssignable(firstProviderParam, swaggerType)) {
+    if (!firstProviderParam.equals(Object.class) && TypeUtils.isAssignable(firstProviderParam, swaggerType)) {
       return false;
     }
 
