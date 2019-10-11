@@ -53,4 +53,18 @@ public class MyEndpointWithInterface implements IMyService {
     p.setName("p");
     return p;
   }
+
+  @Override
+  public PersonBean objectParam(Object obj) {
+    PersonBean p = new PersonBean();
+    p.setName(obj.toString());
+    return p;
+  }
+
+  @Override
+  public PersonBean objectParamTwo(Object obj, String name) {
+    PersonBean p = new PersonBean();
+    p.setName(obj.toString() + ":" + name);
+    return p;
+  }
 }

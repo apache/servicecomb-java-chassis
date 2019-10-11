@@ -33,4 +33,8 @@ public interface IBaseService<T extends AbstractBean> {
   List<T> helloList(List<T> a);
 
   PersonBean actual();
+
+  PersonBean objectParam(Object obj);
+
+  PersonBean objectParamTwo(Object obj, String name);
 }
