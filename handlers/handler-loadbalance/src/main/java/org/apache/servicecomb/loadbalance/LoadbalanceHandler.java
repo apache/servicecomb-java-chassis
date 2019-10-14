@@ -98,7 +98,10 @@ public class LoadbalanceHandler implements Handler {
       boolean isRetry = null != lastServer;
       for (int i = 0; i < COUNT; i++) {
         Server s = delegate.chooseServer((Invocation) key);
-        if (s != null && !s.equals(lastServer)) {
+        if (s == null) {
+          break;
+        }
+        if (!s.equals(lastServer)) {
           lastServer = s;
           break;
         }
