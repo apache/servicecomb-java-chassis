@@ -221,6 +221,7 @@ public class SCBEngine {
       } catch (TimeoutException e) {
         LOGGER.warn("{}", e.getMessage());
       } catch (Throwable e) {
+        LOGGER.error("Failed to start ServiceComb due to errors and close: {}", e.getMessage());
         try {
           destroy();
         } catch (Exception exception) {
