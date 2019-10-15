@@ -31,6 +31,7 @@ import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.Holder;
+import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -247,10 +248,12 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
     String localSchemaSummary = RegistryUtils.calcSchemaSummary(localSchemaEntry.getValue());
     if (!localSchemaSummary.equals(scSchemaSummary)) {
       if (onlineSchemaIsModifiable()) {
-        LOGGER.info(
-            "schema[{}]'s content is changed and the current environment is [{}], so re-register it!",
+        LOGGER.warn(
+            "schema[{}]'s content is changed and the current environment is [{}], so re-register it. It's recommended "
+                + " to change servicecomb_description.version after schema change, or restart consumer to"
+                + " make changes get notified.",
             localSchemaEntry.getKey(),
-            ServiceCombConstants.DEVELOPMENT_SERVICECOMB_ENV);
+            microservice.getEnvironment());
         return registerSingleSchema(localSchemaEntry.getKey(), localSchemaEntry.getValue());
       }
 
@@ -330,7 +333,8 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
   }
 
   private boolean onlineSchemaIsModifiable() {
-    return ServiceCombConstants.DEVELOPMENT_SERVICECOMB_ENV.equalsIgnoreCase(microservice.getEnvironment());
+    return ServiceCombConstants.DEVELOPMENT_SERVICECOMB_ENV.equalsIgnoreCase(microservice.getEnvironment())
+        || ServiceRegistryConfig.INSTANCE.isAlwaysOverrideSchema();
   }
 
   /**
