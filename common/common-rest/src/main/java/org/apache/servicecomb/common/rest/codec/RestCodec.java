@@ -22,11 +22,14 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.definition.RestParam;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 public final class RestCodec {
   private static final Logger LOG = LoggerFactory.getLogger(RestCodec.class);
@@ -61,12 +64,19 @@ public final class RestCodec {
       try {
         paramValues[idx] = param.getParamProcessor().getValue(request);
       } catch (Exception e) {
-        // Avoid information leak of user input.
-        throw new InvocationException(Status.BAD_REQUEST,
-            String.format("Parameter is not valid for operation [%s]. Parameter is [%s]. Processor is [%s].",
-                restOperation.getOperationMeta().getMicroserviceQualifiedName(),
-                param.getParamName(),
-                param.getParamProcessor().getProcessorType()));
+        // Avoid information leak of user input, and add option for debug use.
+        String message = String.format("Parameter is not valid for operation [%s]. Parameter is [%s]. Processor is [%s].",
+            restOperation.getOperationMeta().getMicroserviceQualifiedName(),
+            param.getParamName(),
+            param.getParamProcessor().getProcessorType());
+        if (DynamicPropertyFactory.getInstance().getBooleanProperty(
+            RestConst.PRINT_CODEC_ERROR_MESSGAGE, false).get()) {
+          LOG.error("", e);
+          throw new InvocationException(Status.BAD_REQUEST.getStatusCode(), "", message, e);
+        } else {
+          LOG.error(message + " Add {}=true to print the details." + RestConst.PRINT_CODEC_ERROR_MESSGAGE);
+          throw new InvocationException(Status.BAD_REQUEST, message);
+        }
       }
     }
 

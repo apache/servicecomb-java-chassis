@@ -72,4 +72,6 @@ public final class RestConst {
   public static final String UPLOAD_FILE_SIZE_THRESHOLD = "servicecomb.uploads.fileSizeThreshold";
 
   public static final String PROVIDER_SCAN_REST_CONTROLLER = "servicecomb.provider.rest.scanRestController";
+
+  public static final String PRINT_CODEC_ERROR_MESSGAGE = "servicecomb.codec.printErrorMessage";
 }
