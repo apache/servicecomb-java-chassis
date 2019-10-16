@@ -148,13 +148,15 @@ public class ApolloClient {
         updateHandler.handle(DELETE, before);
         return;
       }
-      for (String itemKey : after.keySet()) {
+      after.entrySet().forEach(stringObjectEntry -> {
+        String itemKey = stringObjectEntry.getKey();
+        Object itemValue = stringObjectEntry.getValue();
         if (!before.containsKey(itemKey)) {
-          itemsCreated.put(itemKey, after.get(itemKey));
-        } else if (!after.get(itemKey).equals(before.get(itemKey))) {
-          itemsModified.put(itemKey, after.get(itemKey));
+          itemsCreated.put(itemKey, itemValue);
+        } else if (!itemValue.equals(before.get(itemKey))) {
+          itemsModified.put(itemKey, itemValue);
         }
-      }
+      });
       for (String itemKey : before.keySet()) {
         if (!after.containsKey(itemKey)) {
           itemsDeleted.put(itemKey, "");

@@ -163,16 +163,15 @@ public class ServiceCombLoadBalancerStats {
       public void run() {
         try {
           Map<ServiceCombServer, ServiceCombServerStats> allServers = pingView;
-          Iterator<ServiceCombServer> instances = allServers.keySet().iterator();
-          while (instances.hasNext()) {
-            ServiceCombServer server = instances.next();
-            ServiceCombServerStats stats = allServers.get(server);
+          allServers.entrySet().forEach(serviceCombServerServiceCombServerStatsEntry -> {
+            ServiceCombServer server = serviceCombServerServiceCombServerStatsEntry.getKey();
+            ServiceCombServerStats stats = serviceCombServerServiceCombServerStatsEntry.getValue();
             if ((System.currentTimeMillis() - stats.getLastVisitTime() > timerIntervalInMilis) && !ping
-                .ping(server.getInstance())) {
+                    .ping(server.getInstance())) {
               LOGGER.info("ping mark server {} failure.", server.getInstance().getInstanceId());
               stats.markFailure();
             }
-          }
+          });
           serverStatsCache.cleanUp();
         } catch (Throwable e) {
           LOGGER.warn("LoadBalancerStatsTimer error.", e);

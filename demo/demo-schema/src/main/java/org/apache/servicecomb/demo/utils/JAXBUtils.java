@@ -36,6 +36,9 @@ import com.fasterxml.jackson.databind.JavaType;
 public class JAXBUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(JAXBUtils.class);
 
+  private JAXBUtils() {
+  }
+
   public static String convertToXml(Object obj) {
     return convertToXml(obj, StandardCharsets.UTF_8.toString());
   }

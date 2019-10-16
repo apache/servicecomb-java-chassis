@@ -32,8 +32,6 @@ public class TestFaultInjectConfig {
 
   FaultInjectionConst faultConst;
 
-  FaultInjectionUtil faultUtil;
-
   FaultParam faultParam;
 
   AbortFault abortFault;
@@ -44,7 +42,6 @@ public class TestFaultInjectConfig {
   public void setUp() throws Exception {
     faultCfg = new FaultInjectionConfig();
     faultConst = new FaultInjectionConst();
-    faultUtil = new FaultInjectionUtil();
     faultParam = new FaultParam(10);
     abortFault = new AbortFault();
     delayFault = new DelayFault();
@@ -54,7 +51,6 @@ public class TestFaultInjectConfig {
   public void tearDown() throws Exception {
     faultCfg = null;
     faultConst = null;
-    faultUtil = null;
     faultParam = null;
   }
 

@@ -20,7 +20,7 @@ public enum SchemaFormat {
   SWAGGER(".yaml"),
   HTML(".html");
 
-  private String suffix;
+  private final String suffix;
 
   SchemaFormat(String suffix) {
     this.suffix = suffix;

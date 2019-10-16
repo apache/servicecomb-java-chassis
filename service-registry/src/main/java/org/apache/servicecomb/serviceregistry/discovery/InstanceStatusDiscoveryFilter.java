@@ -53,12 +53,13 @@ public class InstanceStatusDiscoveryFilter extends AbstractDiscoveryFilter {
   public void init(DiscoveryContext context, DiscoveryTreeNode parent) {
     Map<String, MicroserviceInstance> instances = parent.data();
     Map<String, MicroserviceInstance> filteredServers = new HashMap<>();
-    for (String key : instances.keySet()) {
-      MicroserviceInstance instance = instances.get(key);
+    instances.entrySet().forEach(stringMicroserviceInstanceEntry -> {
+      String key = stringMicroserviceInstanceEntry.getKey();
+      MicroserviceInstance instance = stringMicroserviceInstanceEntry.getValue();
       if (MicroserviceInstanceStatus.UP == instance.getStatus()) {
         filteredServers.put(key, instance);
       }
-    }
+    });
 
     if (filteredServers.isEmpty()) {
       return;

@@ -132,9 +132,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
         updateConfiguration(createIncremental(null, ImmutableMap.<String, Object>copyOf(configuration),
             null));
       } else if ("delete".equals(action)) {
-        for (String itemKey : configuration.keySet()) {
-          valueCache.remove(itemKey);
-        }
+        configuration.keySet().forEach(valueCache::remove);
         updateConfiguration(createIncremental(null,
             null,
             ImmutableMap.<String, Object>copyOf(configuration)));

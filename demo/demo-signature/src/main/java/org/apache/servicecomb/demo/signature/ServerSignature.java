@@ -28,6 +28,8 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
+
 public class ServerSignature implements HttpServerFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServerSignature.class);
 
@@ -49,7 +51,7 @@ public class ServerSignature implements HttpServerFilter {
     String signature = SignatureUtils.genSignature(requestEx);
     String clientSignature = requestEx.getHeader("signature");
     LOGGER.debug("check request signature, client: {}, server: {}.", clientSignature, signature);
-    if (!signature.equals(clientSignature)) {
+    if (!Objects.equals(signature, clientSignature)) {
       LOGGER.error("check request signature failed: {}", invocation.getInvocationQualifiedName());
       return Response
           .create(Status.UNAUTHORIZED, "check request signature failed: " + invocation.getInvocationQualifiedName());

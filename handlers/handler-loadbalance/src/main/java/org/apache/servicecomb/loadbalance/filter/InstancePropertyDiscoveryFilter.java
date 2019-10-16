@@ -59,12 +59,12 @@ public class InstancePropertyDiscoveryFilter extends AbstractDiscoveryFilter {
     Map<String, MicroserviceInstance> instances = parent.data();
     Map<String, String> filterOptions =
         Configuration.INSTANCE.getFlowsplitFilterOptions(invocation.getMicroserviceName());
-    for (String id : instances.keySet()) {
-      MicroserviceInstance target = instances.get(id);
+    instances.entrySet().forEach(stringMicroserviceInstanceEntry -> {
+      MicroserviceInstance target = stringMicroserviceInstanceEntry.getValue();
       if (allowVisit(target, filterOptions)) {
-        matchedInstance.put(id, target);
+        matchedInstance.put(stringMicroserviceInstanceEntry.getKey(), target);
       }
-    }
+    });
     parent.child(MATCHED, new DiscoveryTreeNode()
         .subName(parent, MATCHED)
         .data(matchedInstance));

@@ -135,11 +135,11 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
   }
 
   private void logConfigurations() {
-    for (String key : this.configurations.keySet()) {
-      ConfigurationItem item = this.configurations.get(key);
-      LOG.info("config item: key=" + key + ";pattern=" + item.stringPattern + ";service=" + item.microserviceName
-          + ";versionRule=" + item.versionRule);
-    }
+    configurations.entrySet().forEach(stringConfigurationItemEntry -> {
+      ConfigurationItem item = stringConfigurationItemEntry.getValue();
+      LOG.info("config item: key=" + stringConfigurationItemEntry.getKey() + ";pattern=" + item.stringPattern
+              + ";service=" + item.microserviceName + ";versionRule=" + item.versionRule);
+    });
   }
 
   protected void onRequest(RoutingContext context) {

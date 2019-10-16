@@ -27,7 +27,7 @@ public enum HealthCheckMode {
   HEARTBEAT("push"),
   PLATFORM("pull");
 
-  private String name;
+  private final String name;
 
   HealthCheckMode(String name) {
     this.name = name;

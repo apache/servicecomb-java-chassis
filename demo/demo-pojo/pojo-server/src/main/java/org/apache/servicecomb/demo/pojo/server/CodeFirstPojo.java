@@ -67,18 +67,6 @@ public class CodeFirstPojo implements CodeFirstPojoIntf {
     return user;
   }
 
-  //    @SuppressWarnings("unchecked")
-  //    public String testRawJsonString(String jsonInput) {
-  //        Map<String, String> person;
-  //        try {
-  //            person = RestObjectMapper.INSTANCE.readValue(jsonInput.getBytes(), Map.class);
-  //        } catch (Exception e) {
-  //            e.printStackTrace();
-  //            return null;
-  //        }
-  //        return "hello " + person.get("name");
-  //    }
-
   public String saySomething(String prefix, Person user) {
     return prefix + " " + user.getName();
   }

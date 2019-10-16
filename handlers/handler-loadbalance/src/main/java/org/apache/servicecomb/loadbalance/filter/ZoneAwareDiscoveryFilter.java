@@ -65,8 +65,9 @@ public class ZoneAwareDiscoveryFilter extends AbstractDiscoveryFilter {
     Map<String, MicroserviceInstance> instancesAZMatch = new HashMap<>();
     Map<String, MicroserviceInstance> instancesNoMatch = new HashMap<>();
     Map<String, MicroserviceInstance> instances = parent.data();
-    for (String id : instances.keySet()) {
-      MicroserviceInstance target = instances.get(id);
+    instances.entrySet().forEach(stringMicroserviceInstanceEntry -> {
+      String id = stringMicroserviceInstanceEntry.getKey();
+      MicroserviceInstance target = stringMicroserviceInstanceEntry.getValue();
       if (regionAndAZMatch(myself, target)) {
         instancesRegionAndAZMatch.put(id, target);
       } else if (regionMatch(myself, target)) {
@@ -74,7 +75,7 @@ public class ZoneAwareDiscoveryFilter extends AbstractDiscoveryFilter {
       } else {
         instancesNoMatch.put(id, target);
       }
-    }
+    });
     Map<String, DiscoveryTreeNode> children = new HashMap<>();
     children.put(GROUP_RegionAndAZMatch, new DiscoveryTreeNode()
         .subName(parent, GROUP_RegionAndAZMatch)

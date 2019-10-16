@@ -133,9 +133,7 @@ public final class ConverterMgr {
 
   private static void initConverters() {
     // inner converters
-    for (Class<? extends Property> propertyCls : PROPERTY_MAP.keySet()) {
-      addInnerConverter(propertyCls);
-    }
+    PROPERTY_MAP.keySet().forEach(ConverterMgr::addInnerConverter);
 
     converterMap.put(RefProperty.class, new RefPropertyConverter());
     converterMap.put(ArrayProperty.class, new ArrayPropertyConverter());

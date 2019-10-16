@@ -18,6 +18,7 @@
 package org.apache.servicecomb.common.rest.codec.param;
 
 import java.lang.reflect.Type;
+import java.util.Objects;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -52,7 +53,7 @@ public class CookieProcessorCreator implements ParamValueProcessorCreator {
       }
 
       for (Cookie cookie : cookies) {
-        if (paramPath.equals(cookie.getName())) {
+        if (Objects.equals(paramPath, cookie.getName())) {
           value = cookie.getValue();
           break;
         }

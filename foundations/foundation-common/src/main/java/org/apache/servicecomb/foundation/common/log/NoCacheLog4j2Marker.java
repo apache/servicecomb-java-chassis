@@ -49,7 +49,7 @@ public class NoCacheLog4j2Marker extends Log4jMarker implements Marker {
 
   @Override
   public Marker[] getParents() {
-    return null;
+    return new Marker[0];
   }
 
   @Override

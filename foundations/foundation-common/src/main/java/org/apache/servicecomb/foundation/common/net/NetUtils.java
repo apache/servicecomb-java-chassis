@@ -274,7 +274,7 @@ public final class NetUtils {
   public static String humanReadableBytes(long bytes) {
     int unit = 1024;
     if (bytes < unit) {
-      return bytes + "";
+      return String.valueOf(bytes);
     }
     int exp = (int) (Math.log(bytes) / Math.log(unit));
     char pre = "KMGTPE".charAt(exp - 1);
