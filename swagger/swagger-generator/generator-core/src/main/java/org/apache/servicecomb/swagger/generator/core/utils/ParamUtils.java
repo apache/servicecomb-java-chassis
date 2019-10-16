@@ -163,7 +163,7 @@ public final class ParamUtils {
     return findSwaggerMethodName(method)  + "Body";
   }
 
-  protected static String findSwaggerMethodName(Method consumerMethod) {
+  public static String findSwaggerMethodName(Method consumerMethod) {
     ApiOperation apiOperationAnnotation = consumerMethod.getAnnotation(ApiOperation.class);
     if (apiOperationAnnotation == null || StringUtils.isEmpty(apiOperationAnnotation.nickname())) {
       return consumerMethod.getName();
