@@ -30,7 +30,7 @@ public class RandomRuleExt implements RuleExt {
 
   @Override
   public ServiceCombServer choose(List<ServiceCombServer> servers, Invocation invocation) {
-    if (servers.size() == 0) {
+    if (servers.isEmpty()) {
       return null;
     }
     int index = Math.abs(random.nextInt()) % servers.size();

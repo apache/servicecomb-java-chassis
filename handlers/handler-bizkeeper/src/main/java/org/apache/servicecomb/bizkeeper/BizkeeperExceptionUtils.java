@@ -21,6 +21,9 @@ import org.apache.servicecomb.core.exception.CseException;
 import org.apache.servicecomb.core.exception.ExceptionUtils;
 
 public class BizkeeperExceptionUtils extends ExceptionUtils {
+  private BizkeeperExceptionUtils() {
+  }
+
   public static final String SERVICECOMB_BIZKEEPER_FALLBACK = "servicecomb.bizkeeper.fallback";
 
   static {

@@ -30,7 +30,7 @@ public enum WatchAction {
   EXPIRE("EXPIRE"),
   DELETE("DELETE");
 
-  private String name;
+  private final String name;
 
   WatchAction(String name) {
     this.name = name;

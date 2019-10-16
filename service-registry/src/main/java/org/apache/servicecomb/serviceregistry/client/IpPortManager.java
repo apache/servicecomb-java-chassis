@@ -67,7 +67,7 @@ public class IpPortManager {
 
     defaultTransport = serviceRegistryConfig.getTransport();
     defaultIpPort = serviceRegistryConfig.getIpPort();
-    if (defaultIpPort.size() == 0) {
+    if (defaultIpPort.isEmpty()) {
       throw new IllegalArgumentException("Service center address is required to start the application.");
     }
     int initialIndex = new Random().nextInt(defaultIpPort.size());

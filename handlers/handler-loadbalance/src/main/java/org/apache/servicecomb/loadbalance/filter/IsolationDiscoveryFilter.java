@@ -99,12 +99,12 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
     }
 
     Map<String, MicroserviceInstance> filteredServers = new HashMap<>();
-    for (String key : instances.keySet()) {
-      MicroserviceInstance instance = instances.get(key);
+    instances.entrySet().forEach(stringMicroserviceInstanceEntry -> {
+      MicroserviceInstance instance = stringMicroserviceInstanceEntry.getValue();
       if (allowVisit(invocation, instance)) {
-        filteredServers.put(key, instance);
+        filteredServers.put(stringMicroserviceInstanceEntry.getKey(), instance);
       }
-    }
+    });
 
     DiscoveryTreeNode child = new DiscoveryTreeNode();
     if (ZoneAwareDiscoveryFilter.GROUP_Instances_All

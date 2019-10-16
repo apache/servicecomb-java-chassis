@@ -171,19 +171,20 @@ public class AccessController {
 
     if (KEY_WHITE_LIST_PREFIX.equals(prefix)) {
       this.whiteList = configurations;
-      logConfigurations(prefix, configurations, true);
+      logConfigurations(configurations, true);
     } else {
       this.blackList = configurations;
-      logConfigurations(prefix, configurations, false);
+      logConfigurations(configurations, false);
     }
   }
 
-  private void logConfigurations(String prefix, Map<String, ConfigurationItem> configurations, boolean isWhite) {
-    for (String key : configurations.keySet()) {
-      ConfigurationItem item = configurations.get(key);
-      LOG.info((isWhite ? "White list " : "Black list ") + "config item: key=" + key + ";category=" + item.category
-          + ";propertyName=" + item.propertyName
-          + ";rule=" + item.rule);
-    }
+  private void logConfigurations(Map<String, ConfigurationItem> configurations, boolean isWhite) {
+    configurations.entrySet().forEach(stringConfigurationItemEntry -> {
+      ConfigurationItem item = stringConfigurationItemEntry.getValue();
+      LOG.info((isWhite ? "White list " : "Black list ") + "config item: key=" + stringConfigurationItemEntry.getKey()
+              + ";category=" + item.category
+              + ";propertyName=" + item.propertyName
+              + ";rule=" + item.rule);
+    });
   }
 }

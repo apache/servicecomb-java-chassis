@@ -33,6 +33,8 @@ import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
  * Handles the count for all request based key[transport + microservice qualified name].
  */
 public class FaultInjectionUtil {
+  private FaultInjectionUtil() {
+  }
 
   // key is transport+operQualifiedName
   private static Map<String, AtomicLong> requestCount = new ConcurrentHashMapEx<>();

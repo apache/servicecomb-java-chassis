@@ -87,7 +87,7 @@ public final class JavassistUtils {
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   public static Class<? extends Enum> createEnum(ClassLoader classLoader, String clsName, List<String> values) {
-    if (values == null || values.size() == 0) {
+    if (values == null || values.isEmpty()) {
       throw new Error("values is not allowed empty.");
     }
 

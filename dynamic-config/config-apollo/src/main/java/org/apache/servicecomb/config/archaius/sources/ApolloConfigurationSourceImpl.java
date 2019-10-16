@@ -124,9 +124,7 @@ public class ApolloConfigurationSourceImpl implements ConfigCenterConfigurationS
             ImmutableMap.copyOf(configuration),
             null));
       } else if (DELETE.equals(action)) {
-        for (String itemKey : configuration.keySet()) {
-          valueCache.remove(itemKey);
-        }
+        configuration.keySet().forEach(valueCache::remove);
         updateConfiguration(createIncremental(null,
             null,
             ImmutableMap.copyOf(configuration)));

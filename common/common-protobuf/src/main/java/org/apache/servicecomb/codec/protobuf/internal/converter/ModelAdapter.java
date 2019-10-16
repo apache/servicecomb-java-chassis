@@ -16,7 +16,9 @@
  */
 package org.apache.servicecomb.codec.protobuf.internal.converter;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import io.swagger.models.ArrayModel;
 import io.swagger.models.Model;
@@ -65,7 +67,7 @@ public class ModelAdapter implements SwaggerTypeAdapter {
       return ((ModelImpl) model).getEnum();
     }
 
-    return null;
+    return Collections.emptyList();
   }
 
   @Override
@@ -90,7 +92,7 @@ public class ModelAdapter implements SwaggerTypeAdapter {
   public boolean isJavaLangObject() {
     if (model instanceof ModelImpl) {
       ModelImpl modelImpl = (ModelImpl) model;
-      return ObjectProperty.TYPE.equals(modelImpl.getType())
+      return Objects.equals(ObjectProperty.TYPE, modelImpl.getType())
           && modelImpl.getProperties() == null
           && modelImpl.getName() == null;
     }

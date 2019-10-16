@@ -126,7 +126,7 @@ public class TestCommonToHttpServletRequest {
     queryParams.put("name", Arrays.asList());
 
     HttpServletRequest request = new CommonToHttpServletRequest(null, queryParams, null, null, false);
-    Assert.assertArrayEquals(null, request.getParameterValues("name"));
+    Assert.assertArrayEquals(new String[0], request.getParameterValues("name"));
   }
 
   @Test
@@ -134,7 +134,7 @@ public class TestCommonToHttpServletRequest {
     Map<String, List<String>> queryParams = new HashMap<>();
 
     HttpServletRequest request = new CommonToHttpServletRequest(null, queryParams, null, null, false);
-    Assert.assertArrayEquals(null, request.getParameterValues("name"));
+    Assert.assertArrayEquals(new String[0], request.getParameterValues("name"));
   }
 
   @Test

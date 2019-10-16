@@ -97,7 +97,7 @@ public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
   public String[] getParameterValues(String name) {
     List<String> queryValues = queryParams.get(name);
     if (queryValues == null || queryValues.isEmpty()) {
-      return null;
+      return new String[0];
     }
 
     return queryValues.toArray(new String[queryValues.size()]);
