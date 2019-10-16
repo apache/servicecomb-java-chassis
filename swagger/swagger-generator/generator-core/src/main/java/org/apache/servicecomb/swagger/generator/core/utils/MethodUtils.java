@@ -36,7 +36,7 @@ public class MethodUtils {
       }
     }
 
-    producerMethods.sort(Comparator.comparing(Method::getName));
+    producerMethods.sort(Comparator.comparing(ParamUtils::findSwaggerMethodName));
     return producerMethods;
   }
 
