@@ -103,9 +103,6 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
         return false;
       }
 
-      // In re-register microservice case, the old instanceId should not be cached
-      microservice.getInstance().setInstanceId(null);
-
       LOGGER.info(
           "Registry Microservice successfully. id=[{}] appId=[{}], name=[{}], version=[{}], schemaIds={}, env=[{}]",
           serviceId,
