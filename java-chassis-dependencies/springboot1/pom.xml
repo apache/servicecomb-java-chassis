@@ -38,7 +38,7 @@
     <dependencies>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>java-chassis-parent-spring4</artifactId>
+        <artifactId>java-chassis-dependencies-spring4</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
         <scope>import</scope>

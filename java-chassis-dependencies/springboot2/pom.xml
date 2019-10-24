@@ -83,7 +83,7 @@
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>java-chassis-parent-spring5</artifactId>
+        <artifactId>java-chassis-dependencies-spring5</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
         <scope>import</scope>
