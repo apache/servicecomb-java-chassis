@@ -71,10 +71,10 @@ public final class RestCodec {
             param.getParamProcessor().getProcessorType());
         if (DynamicPropertyFactory.getInstance().getBooleanProperty(
             RestConst.PRINT_CODEC_ERROR_MESSGAGE, false).get()) {
-          LOG.error("", e);
+          LOG.error(message, e);
           throw new InvocationException(Status.BAD_REQUEST.getStatusCode(), "", message, e);
         } else {
-          LOG.error(message + " Add {}=true to print the details." + RestConst.PRINT_CODEC_ERROR_MESSGAGE);
+          LOG.error("{} Add {}=true to print the details.", message, RestConst.PRINT_CODEC_ERROR_MESSGAGE);
           throw new InvocationException(Status.BAD_REQUEST, message);
         }
       }
