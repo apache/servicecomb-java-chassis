@@ -312,11 +312,15 @@ public class DefaultLogPublisher implements MetricsInitializer {
 
   private StringBuilder printSamplePerf(OperationPerfGroup perfGroup) {
     StringBuilder sb = new StringBuilder();
+    boolean firstLine = true;
     for (int i = 0; i < perfGroup.getOperationPerfs().size(); i++) {
       OperationPerf operationPerf = perfGroup.getOperationPerfs().get(i);
       PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
-      if (i == 0) {
-        // first line
+      if(Double.compare(0D, stageTotal.getTps()) == 0) {
+        continue;
+      }
+      if (firstLine) {
+        firstLine = false;
         String status = perfGroup.getTransport() + "." + perfGroup.getStatus();
         sb.append(String.format(FIRST_LINE_SIMPLE_FORMAT, status,
             stageTotal.getTps(),
@@ -354,7 +358,10 @@ public class DefaultLogPublisher implements MetricsInitializer {
         .append(":\n");
     PerfInfo prepare, queue, filtersReq, handlersReq, execute, handlersResp, filtersResp, sendResp;
     for (OperationPerf operationPerf : perfGroup.getOperationPerfs()) {
-
+      PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
+      if(Double.compare(0D, stageTotal.getTps()) == 0) {
+        continue;
+      }
       prepare = operationPerf.findStage(MeterInvocationConst.STAGE_PREPARE);
       queue = operationPerf.findStage(MeterInvocationConst.STAGE_EXECUTOR_QUEUE);
       filtersReq = operationPerf.findStage(MeterInvocationConst.STAGE_SERVER_FILTERS_REQUEST);
@@ -394,6 +401,10 @@ public class DefaultLogPublisher implements MetricsInitializer {
     PerfInfo prepare, handlersReq, clientFiltersReq, sendReq, getConnect, writeBuf,
         waitResp, wakeConsumer, clientFiltersResp, handlersResp;
     for (OperationPerf operationPerf : perfGroup.getOperationPerfs()) {
+      PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
+      if(Double.compare(0D, stageTotal.getTps()) == 0) {
+        continue;
+      }
       prepare = operationPerf.findStage(MeterInvocationConst.STAGE_PREPARE);
       handlersReq = operationPerf.findStage(MeterInvocationConst.STAGE_HANDLERS_REQUEST);
       clientFiltersReq = operationPerf.findStage(MeterInvocationConst.STAGE_CLIENT_FILTERS_REQUEST);
@@ -437,6 +448,10 @@ public class DefaultLogPublisher implements MetricsInitializer {
     PerfInfo prepare, queue, serverFiltersReq, handlersReq, clientFiltersReq, sendReq, getConnect, writeBuf,
         waitResp, wakeConsumer, clientFiltersResp, handlersResp, serverFiltersResp, sendResp;
     for (OperationPerf operationPerf : perfGroup.getOperationPerfs()) {
+      PerfInfo stageTotal = operationPerf.findStage(MeterInvocationConst.STAGE_TOTAL);
+      if(Double.compare(0D, stageTotal.getTps()) == 0) {
+        continue;
+      }
       prepare = operationPerf.findStage(MeterInvocationConst.STAGE_PREPARE);
       queue = operationPerf.findStage(MeterInvocationConst.STAGE_EXECUTOR_QUEUE);
       serverFiltersReq = operationPerf.findStage(MeterInvocationConst.STAGE_SERVER_FILTERS_REQUEST);
