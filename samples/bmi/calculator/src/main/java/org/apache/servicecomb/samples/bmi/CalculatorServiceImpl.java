@@ -39,6 +39,6 @@ public class CalculatorServiceImpl implements CalculatorService {
   }
 
   private double roundToOnePrecision(double value) {
-    return new BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue();
+    return BigDecimal.valueOf(value).setScale(1, RoundingMode.HALF_UP).doubleValue();
   }
 }
