@@ -152,15 +152,16 @@ public class SwaggerProducerOperation {
         asyncResp.handle(processException(invocation, ex));
       });
     } catch (IllegalArgumentException ae) {
+      LOGGER.error("Parameters not valid or types not match {},",
+          invocation.getInvocationQualifiedName(), ae);
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();
       asyncResp.handle(processException(invocation,
           new InvocationException(Status.BAD_REQUEST.getStatusCode(), "",
               new CommonExceptionData("Parameters not valid or types not match."), ae)));
-      LOGGER.error("Parameters not valid or types not match {}, "
-              + "debug this line to find the actual decode errors.",
-          invocation.getInvocationQualifiedName());
     } catch (Throwable e) {
+      LOGGER.error("unexpected error {},",
+          invocation.getInvocationQualifiedName(), e);
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();
       asyncResp.handle(processException(invocation, e));
@@ -190,16 +191,17 @@ public class SwaggerProducerOperation {
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();
     } catch (IllegalArgumentException ae) {
+      LOGGER.error("Parameters not valid or types not match {},",
+          invocation.getInvocationQualifiedName(), ae);
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();
       // ae.getMessage() is always null. Give a custom error message.
       response = processException(invocation,
           new InvocationException(Status.BAD_REQUEST.getStatusCode(), "",
               new CommonExceptionData("Parameters not valid or types not match."), ae));
-      LOGGER.error("Parameters not valid or types not match {}, "
-              + "debug this line to find the actual decode errors.",
-          invocation.getInvocationQualifiedName());
     } catch (Throwable e) {
+      LOGGER.error("unexpected error {},",
+          invocation.getInvocationQualifiedName(), e);
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();
       response = processException(invocation, e);
