@@ -21,8 +21,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.service.center.client.ServiceCenterClient;
-import org.apache.servicecomb.service.center.client.ServiceCenterRawClient;
 import org.apache.servicecomb.service.center.client.http.HttpResponse;
 import org.apache.servicecomb.service.center.client.model.HeartbeatsRequest;
 import org.apache.servicecomb.service.center.client.model.InstancesRequest;

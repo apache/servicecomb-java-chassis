@@ -37,7 +37,7 @@ public class ServiceCenterRawClientTest {
     private static final String DOMAIN_NAME = "default";
 
     @Test
-    public void TestDefaultUrl() throws IOException {
+    public void TestDefaultParameter() throws IOException {
 
         HttpTransport httpTransport = Mockito.mock(HttpTransport.class);
 

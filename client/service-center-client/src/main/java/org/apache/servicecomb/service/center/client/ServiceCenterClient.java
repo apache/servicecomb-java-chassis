@@ -18,12 +18,14 @@
 package org.apache.servicecomb.service.center.client;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Map;
 
 import javax.management.OperationsException;
 
 import org.apache.http.HttpStatus;
-import org.apache.servicecomb.service.center.client.http.HttpResponse;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.servicecomb.service.center.client.http.*;
 import org.apache.servicecomb.service.center.client.model.HeartbeatsRequest;
 import org.apache.servicecomb.service.center.client.model.Microservice;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
@@ -44,10 +46,64 @@ public class ServiceCenterClient {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCenterClient.class);
 
-    private ServiceCenterRawClient httpClient = new ServiceCenterRawClient();
+    private ServiceCenterRawClient httpClient;
 
+    /**
+     * Use default config parameter
+     */
     public ServiceCenterClient() {
+        this(new ServiceCenterRawClient());
+    }
 
+    /**
+     * Add TLS config of client
+     * @param tlsConfig
+     */
+    public ServiceCenterClient(TLSConfig tlsConfig){
+        this(tlsConfig,null);
+    }
+
+    /**
+     * Add extraGlobalHeaders to http request
+     * @param extraGlobalHeaders
+     */
+    public ServiceCenterClient(Map<String, String> extraGlobalHeaders) {
+        this(null,0,null,null,extraGlobalHeaders);
+    }
+
+    /**
+     * Add TLS config and extraGlobalHeaders
+     * @param tlsConfig
+     * @param extraGlobalHeaders
+     */
+    public ServiceCenterClient(TLSConfig tlsConfig,Map<String, String> extraGlobalHeaders){
+        this(null,0,null,tlsConfig,extraGlobalHeaders);
+    }
+
+    /**
+     * Customized host,port,
+     * @param host
+     * @param port
+     */
+    public ServiceCenterClient(String host, int port) {
+        this(host, port, null,null, null);
+    }
+
+    /**
+     * Customized host,port,domainName,TLSConf, headers and any one parameter can be null.
+     * @param host
+     * @param port
+     * @param domainName
+     * @param tlsConfig
+     * @param extraGlobalHeaders
+     */
+    public ServiceCenterClient(String host, int port, String domainName, TLSConfig tlsConfig,  Map<String, String> extraGlobalHeaders) {
+        HttpTransport httpTransport = HttpTransportFactory.getDefaultHttpTransport();
+        if(tlsConfig!=null){
+            httpTransport = new TLSHttpsTransport(tlsConfig);
+        }
+        httpTransport.addHeaders(extraGlobalHeaders);
+        this.httpClient = new ServiceCenterRawClient.Builder().setHost(host).setPort(port).setDomainName(domainName).setHttpTransport(httpTransport).build();
     }
 
     public ServiceCenterClient(ServiceCenterRawClient serviceCenterRawClient) {
@@ -114,6 +170,32 @@ public class ServiceCenterClient {
                 throw new OperationsException(response.getStatusCode() + response.getMessage() + response.getContent());
             }
         } catch (OperationsException | IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * query serviceId
+     * @param microservice
+     * @return
+     */
+    public String queryServiceId(Microservice microservice) {
+        try {
+            URIBuilder uriBuilder = new URIBuilder("/registry/existence");
+            uriBuilder.setParameter("type", "microservice");
+            uriBuilder.setParameter("appId", microservice.getAppId());
+            uriBuilder.setParameter("serviceName", microservice.getServiceName());
+            uriBuilder.setParameter("version", microservice.getVersion());
+
+            HttpResponse response = httpClient.getHttpRequest(uriBuilder.build().toString(), null, null);
+            if (response.getStatusCode() == HttpStatus.SC_OK) {
+                LOGGER.info("GetServiceId result = " + response.getContent());
+                return response.getContent();
+            } else {
+                throw new OperationsException(response.getStatusCode() + response.getMessage() + response.getContent());
+            }
+        } catch (IOException | OperationsException | URISyntaxException e) {
             e.printStackTrace();
         }
         return null;
