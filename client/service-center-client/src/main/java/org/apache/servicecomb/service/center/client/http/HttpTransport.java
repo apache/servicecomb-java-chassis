@@ -17,7 +17,10 @@
 
 package org.apache.servicecomb.service.center.client.http;
 
+import org.apache.http.client.methods.HttpUriRequest;
+
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Created by   on 2019/10/16.
@@ -31,4 +34,8 @@ public interface HttpTransport {
     HttpResponse put(HttpRequest request) throws IOException;
 
     HttpResponse delete(HttpRequest request) throws IOException;
+
+    HttpResponse doRequest(HttpUriRequest httpRequest) throws IOException;
+
+    void addHeaders(Map<String, String> headers);
 }

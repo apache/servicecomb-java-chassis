@@ -17,18 +17,14 @@
 
 package org.apache.servicecomb.service.center.client.http;
 
-import java.io.IOException;
-
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * Created by   on 2019/10/16.
@@ -41,8 +37,20 @@ public class HttpTransportImpl implements HttpTransport {
 
     private static final String HEADER_TENANT_NAME = "x-domain-name";
 
-    public HttpTransportImpl() {
+    private Map<String, String> globalHeaders;
 
+    protected HttpClient httpClient;
+
+    public HttpClient getHttpClient() {
+        return httpClient;
+    }
+
+    public void setHttpClient(HttpClient httpClient) {
+        this.httpClient = httpClient;
+    }
+
+    public HttpTransportImpl() {
+        httpClient = HttpClients.createDefault();
     }
 
     @Override
@@ -83,21 +91,27 @@ public class HttpTransportImpl implements HttpTransport {
         return doRequest(httpDelete);
     }
 
-
-    private HttpResponse doRequest(HttpUriRequest httpRequest) throws IOException {
+    public HttpResponse doRequest(HttpUriRequest httpRequest) throws IOException {
         //add header
         httpRequest.addHeader(HEADER_CONTENT_TYPE, "application/json");
         httpRequest.addHeader(HEADER_USER_AGENT, "cse-serviceregistry-client/1.0.0");
         httpRequest.addHeader(HEADER_TENANT_NAME, "default");
+        if (globalHeaders != null) {
+            globalHeaders.forEach((key, value) -> httpRequest.addHeader(key, value));
+        }
 
         //get Http response
-        CloseableHttpClient httpClient = HttpClients.createDefault();
-        CloseableHttpResponse response = httpClient.execute(httpRequest);
+        org.apache.http.HttpResponse response = httpClient.execute(httpRequest);
 
         int statusCode = response.getStatusLine().getStatusCode();
         String messgae = response.getStatusLine().getReasonPhrase();
         String context = EntityUtils.toString(response.getEntity(), "UTF-8");
 
         return new HttpResponse(statusCode, messgae, context);
+    }
+
+    @Override
+    public void addHeaders(Map<String, String> headers) {
+        this.globalHeaders = headers;
     }
 }

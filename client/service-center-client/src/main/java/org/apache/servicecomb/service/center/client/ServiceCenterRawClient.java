@@ -17,14 +17,11 @@
 
 package org.apache.servicecomb.service.center.client;
 
+import org.apache.servicecomb.service.center.client.http.*;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.apache.servicecomb.service.center.client.http.HttpRequest;
-import org.apache.servicecomb.service.center.client.http.HttpResponse;
-import org.apache.servicecomb.service.center.client.http.HttpTransport;
-import org.apache.servicecomb.service.center.client.http.HttpTransportFactory;
 
 /**
  * Created by   on 2019/10/16.
@@ -63,7 +60,11 @@ public class ServiceCenterRawClient {
         String hostLowercase = host.toLowerCase();
         if (!hostLowercase.startsWith("https://") && !hostLowercase.startsWith("http://")) {
             // no protocol in host, use default 'http'
-            host = "http://" + host;
+            if (httpTransport instanceof TLSHttpsTransport) {
+                host = "https://" + host;
+            } else {
+                host = "http://" + host;
+            }
         }
 
         this.basePath = host + ":" + port + "/" + V4_PREFIX + "/" + domainName;
@@ -113,27 +114,38 @@ public class ServiceCenterRawClient {
         return httpTransport.delete(httpRequest);
     }
 
+    public HttpTransport getHttpTransport() {
+        return httpTransport;
+    }
+
+    public void setHttpTransport(HttpTransport httpTransport) {
+        this.httpTransport = httpTransport;
+    }
+
     public static class Builder {
         private String host;
 
         private int port;
 
-        private String domain_name;
+        private String domainName;
 
-        private HttpTransport httpTransport;
+        private HttpTransport httpTransport = HttpTransportFactory.getDefaultHttpTransport();
 
         public Builder() {
             this.host = DEFAULT_HOST;
             this.port = DEFAULT_PORT;
-            this.domain_name = DOMAIN_NAME;
+            this.domainName = DOMAIN_NAME;
         }
 
         public String getDomainName() {
-            return domain_name;
+            return domainName;
         }
 
         public Builder setDomainName(String domain_name) {
-            this.domain_name = domain_name;
+            if (domain_name == null) {
+                domain_name = DOMAIN_NAME;
+            }
+            this.domainName = domain_name;
             return this;
         }
 
@@ -142,6 +154,9 @@ public class ServiceCenterRawClient {
         }
 
         public Builder setPort(int port) {
+            if (port <= 0) {
+                port = DEFAULT_PORT;
+            }
             this.port = port;
             return this;
         }
@@ -151,6 +166,9 @@ public class ServiceCenterRawClient {
         }
 
         public Builder setHost(String host) {
+            if (host == null) {
+                host = DEFAULT_HOST;
+            }
             this.host = host;
             return this;
         }
@@ -164,8 +182,14 @@ public class ServiceCenterRawClient {
             return this;
         }
 
+        public Builder setTLSConf(TLSConfig tlsConfig) {
+            this.httpTransport = new TLSHttpsTransport(tlsConfig);
+            return this;
+        }
+
+
         public ServiceCenterRawClient build() {
-            return new ServiceCenterRawClient(host, port, domain_name, httpTransport);
+            return new ServiceCenterRawClient(host, port, domainName, httpTransport);
         }
     }
 }
