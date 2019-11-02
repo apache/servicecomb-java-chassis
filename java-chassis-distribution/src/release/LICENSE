@@ -639,4 +639,3 @@ For details, see their respective project links.
 * Vert.x Bridge Common (io.vertx:vertx-bridge-common:3.6.3 - http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-bridge-common)
 * vertx-auth-common (io.vertx:vertx-auth-common:3.6.3 - http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-auth/vertx-auth-common)
 * vertx-web-common (io.vertx:vertx-web-common:3.6.3 - http://nexus.sonatype.org/oss-repository-hosting.html/vertx-parent/vertx-ext/vertx-ext-parent/vertx-web-parent/vertx-web-common)
-* fastjson (com.alibaba:fastjson:1.2.58 - https://github.com/alibaba/fastjson)

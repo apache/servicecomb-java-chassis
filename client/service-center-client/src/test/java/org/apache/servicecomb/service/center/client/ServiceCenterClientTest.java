@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.servicecomb.service.center.client.http.HttpResponse;
 import org.apache.servicecomb.service.center.client.model.HeartbeatsRequest;
 import org.apache.servicecomb.service.center.client.model.InstancesRequest;
@@ -33,9 +35,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
-
 /**
  * Created by   on 2019/10/17.
  */
@@ -43,7 +42,7 @@ public class ServiceCenterClientTest {
 
     @Test
     public void TestGetServiceCenterInstances() throws IOException {
-        //give
+
         ServiceCenterRawClient serviceCenterRawClient = Mockito.mock(ServiceCenterRawClient.class);
 
         HttpResponse httpResponse = new HttpResponse();
@@ -84,14 +83,11 @@ public class ServiceCenterClientTest {
 
         httpResponse.setContent(responseString);
 
-        // when
         Mockito.when(serviceCenterRawClient.getHttpRequest("/registry/health", null, null)).thenReturn(httpResponse);
 
-        //and
         ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
         MicroserviceInstancesResponse serviceCenterInstances = serviceCenterClient.getServiceCenterInstances();
 
-        //then
         Assert.assertNotNull(serviceCenterInstances);
         Assert.assertEquals(1, serviceCenterInstances.getInstances().size());
         Assert.assertEquals("111111", serviceCenterInstances.getInstances().get(0).getInstanceId());
@@ -99,8 +95,8 @@ public class ServiceCenterClientTest {
     }
 
     @Test
-    public void TestRegisterService() throws IOException {
-        //give
+    public void TestRegistryService() throws IOException {
+
         ServiceCenterRawClient serviceCenterRawClient = Mockito.mock(ServiceCenterRawClient.class);
 
         HttpResponse httpResponse = new HttpResponse();
@@ -111,26 +107,23 @@ public class ServiceCenterClientTest {
         Microservice microservice = new Microservice();
         microservice.setServiceName("Test");
         microservice.setServiceId("111111");
-        JSONObject body = new JSONObject();
-        body.put("service", microservice);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
 
-        // when
         Mockito.when(serviceCenterRawClient
-                .postHttpRequest("/registry/microservices", null, body.toString(SerializerFeature.WriteMapNullValue)))
+                .postHttpRequest("/registry/microservices", null, objectMapper.writeValueAsString(microservice)))
                 .thenReturn(httpResponse);
 
-        //and
         ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
         String actualResponse = serviceCenterClient.registerMicroservice(microservice);
 
-        //then
         Assert.assertNotNull(actualResponse);
         Assert.assertEquals("{\"serviceId\": \"111111\"}", actualResponse);
     }
 
     @Test
     public void TestGetServiceMessage() throws IOException {
-        //give
+
         ServiceCenterRawClient serviceCenterRawClient = Mockito.mock(ServiceCenterRawClient.class);
 
         HttpResponse httpResponse = new HttpResponse();
@@ -176,21 +169,19 @@ public class ServiceCenterClientTest {
 
         httpResponse.setContent(responseString);
 
-        // when
         Mockito.when(serviceCenterRawClient.getHttpRequest("/registry/microservices/111111", null, null))
                 .thenReturn(httpResponse);
 
-        //and
         ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
         Microservice microservices = serviceCenterClient.getMicroserviceByServiceId("111111");
 
-        //then
         Assert.assertNotNull(microservices);
         Assert.assertEquals("111111", microservices.getServiceId());
     }
 
     @Test
-    public void TestGetAllServices() throws IOException {
+    public void TestGetServiceList() throws IOException {
+
         ServiceCenterRawClient serviceCenterRawClient = Mockito.mock(ServiceCenterRawClient.class);
 
         HttpResponse httpResponse = new HttpResponse();
@@ -203,13 +194,14 @@ public class ServiceCenterClientTest {
         microserviceList.add(new Microservice("Test2"));
         microserviceList.add(new Microservice("Test3"));
         microservicesResponse.setServices(microserviceList);
-        httpResponse.setContent(JSONObject.toJSONString(microservicesResponse));
+        ObjectMapper mapper = new ObjectMapper();
+        httpResponse.setContent(mapper.writeValueAsString(microservicesResponse));
 
         Mockito.when(serviceCenterRawClient.getHttpRequest(Mockito.any(), Mockito.any(), Mockito.any()))
                 .thenReturn(httpResponse);
 
         ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
-        MicroservicesResponse actualMicroservicesResponse = serviceCenterClient.getMicroservices();
+        MicroservicesResponse actualMicroservicesResponse = serviceCenterClient.getMicroserviceList();
 
         Assert.assertNotNull(actualMicroservicesResponse);
         Assert.assertEquals(3, actualMicroservicesResponse.getServices().size());
@@ -217,8 +209,29 @@ public class ServiceCenterClientTest {
     }
 
     @Test
+    public void TestQueryServiceId() throws IOException {
+
+        ServiceCenterRawClient serviceCenterRawClient = Mockito.mock(ServiceCenterRawClient.class);
+
+        HttpResponse httpResponse = new HttpResponse();
+        httpResponse.setStatusCode(200);
+        httpResponse.setMessage("ok");
+        httpResponse.setContent("{\"serviceId\": \"111111\"}");
+
+        Mockito.when(serviceCenterRawClient.getHttpRequest(Mockito.any(), Mockito.any(), Mockito.any()))
+                .thenReturn(httpResponse);
+
+        ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
+        Microservice microservice = new Microservice("Test111");
+        String actualServiceId = serviceCenterClient.queryServiceId(microservice);
+
+        Assert.assertNotNull(actualServiceId);
+        Assert.assertEquals("{\"serviceId\": \"111111\"}", actualServiceId);
+    }
+
+    @Test
     public void TestRegisterServiceInstance() throws IOException {
-        //give
+
         ServiceCenterRawClient serviceCenterRawClient = Mockito.mock(ServiceCenterRawClient.class);
 
         HttpResponse httpResponse = new HttpResponse();
@@ -229,26 +242,23 @@ public class ServiceCenterClientTest {
         MicroserviceInstance instance = new MicroserviceInstance();
         instance.setInstanceId("111111");
         instance.setServiceId("222222");
-        JSONObject body = new JSONObject();
-        body.put("instance", instance);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(SerializationFeature.WRAP_ROOT_VALUE,true);
 
-        // when
         Mockito.when(serviceCenterRawClient.postHttpRequest("/registry/microservices/222222/instances", null,
-                body.toString(SerializerFeature.WriteMapNullValue)))
+                mapper.writeValueAsString(instance)))
                 .thenReturn(httpResponse);
 
-        //and
         ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
         String actualResponse = serviceCenterClient.registerMicroserviceInstance(instance, "222222");
 
-        //then
         Assert.assertNotNull(actualResponse);
         Assert.assertEquals("{\"instanceId\": \"111111\"}", actualResponse);
     }
 
     @Test
-    public void TestDeleteRegisterServiceInstance() throws IOException {
-        //give
+    public void TestDeleteServiceInstance() throws IOException {
+
         ServiceCenterRawClient serviceCenterRawClient = Mockito.mock(ServiceCenterRawClient.class);
 
         HttpResponse httpResponse = new HttpResponse();
@@ -267,8 +277,8 @@ public class ServiceCenterClientTest {
     }
 
     @Test
-    public void TestFindServiceInstance() throws IOException {
-        //give
+    public void TestGetServiceInstanceList() throws IOException {
+
         ServiceCenterRawClient serviceCenterRawClient = Mockito.mock(ServiceCenterRawClient.class);
 
         HttpResponse httpResponse = new HttpResponse();
@@ -293,16 +303,13 @@ public class ServiceCenterClientTest {
 
         httpResponse.setContent(responseString);
 
-        // when
         Mockito.when(serviceCenterRawClient.getHttpRequest("/registry/microservices/222222/instances", null, null))
                 .thenReturn(httpResponse);
 
-        //and
         ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
         MicroserviceInstancesResponse serviceCenterInstances = serviceCenterClient
-                .getMicroserviceInstancesByServiceId("222222");
+                .getMicroserviceInstanceList("222222");
 
-        //then
         Assert.assertNotNull(serviceCenterInstances);
         Assert.assertEquals(1, serviceCenterInstances.getInstances().size());
         Assert.assertEquals("111111", serviceCenterInstances.getInstances().get(0).getInstanceId());
@@ -311,7 +318,7 @@ public class ServiceCenterClientTest {
 
     @Test
     public void TestGetServiceInstanceMessage() throws IOException {
-        //give
+
         ServiceCenterRawClient serviceCenterRawClient = Mockito.mock(ServiceCenterRawClient.class);
 
         HttpResponse httpResponse = new HttpResponse();
@@ -355,7 +362,7 @@ public class ServiceCenterClientTest {
 
         ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
         MicroserviceInstance responseInstance = serviceCenterClient
-                .getMicroserviceInstanceByServiceIdAndInstanceId("111", "222");
+                .getMicroserviceInstance("111", "222");
 
         Assert.assertNotNull(responseInstance);
         Assert.assertEquals("111", responseInstance.getInstanceId());
@@ -364,6 +371,7 @@ public class ServiceCenterClientTest {
 
     @Test
     public void TestSendHeartBeats() throws IOException {
+
         ServiceCenterRawClient serviceCenterRawClient = Mockito.mock(ServiceCenterRawClient.class);
 
         HttpResponse httpResponse = new HttpResponse();
@@ -371,11 +379,15 @@ public class ServiceCenterClientTest {
         httpResponse.setMessage("ok");
         httpResponse.setContent("Send OK");
 
-        HeartbeatsRequest heartbeatsRequest = new HeartbeatsRequest("001", "100");
-        heartbeatsRequest.addInstances(new InstancesRequest("002", "200"));
+        HeartbeatsRequest heartbeatsRequest = new HeartbeatsRequest("001", "1001");
+        heartbeatsRequest.addInstances(new InstancesRequest("002", "1002"));
+        ObjectMapper mapper = new ObjectMapper();
 
+        Mockito
+                .when(serviceCenterRawClient.putHttpRequest("/registry/microservices/111/instances/222/heartbeat", null, null))
+                .thenReturn(httpResponse);
         Mockito.when(serviceCenterRawClient
-                .putHttpRequest("/registry/heartbeats", null, JSONObject.toJSONString(heartbeatsRequest)))
+                .putHttpRequest("/registry/heartbeats", null, mapper.writeValueAsString(heartbeatsRequest)))
                 .thenReturn(httpResponse);
 
         ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
@@ -387,6 +399,7 @@ public class ServiceCenterClientTest {
 
     @Test
     public void TestUpdateServicesInstanceStatus() throws IOException {
+
         ServiceCenterRawClient serviceCenterRawClient = Mockito.mock(ServiceCenterRawClient.class);
 
         HttpResponse httpResponse = new HttpResponse();

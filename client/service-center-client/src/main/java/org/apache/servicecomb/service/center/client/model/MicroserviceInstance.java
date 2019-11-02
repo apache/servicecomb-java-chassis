@@ -17,11 +17,14 @@
 
 package org.apache.servicecomb.service.center.client.model;
 
+import com.fasterxml.jackson.annotation.JsonRootName;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@JsonRootName("instance")
 public class MicroserviceInstance {
     // even disconnected from service center
     // instanceId will not be changed
