@@ -31,45 +31,45 @@ import java.io.IOException;
  */
 public class KieRawClientTest {
 
-  private static final String DEFAULT_HOST = "192.168.88.229";
+    private static final String DEFAULT_HOST = "192.168.88.229";
 
-  private static final int DEFAULT_PORT = 30110;
+    private static final int DEFAULT_PORT = 30110;
 
-  private static final String DEFAULT_DOMAIN = "testProject";
+    private static final String DEFAULT_DOMAIN = "testProject";
 
-  @Test
-  public void TestDefaultUrl() throws IOException {
+    @Test
+    public void TestDefaultUrl() throws IOException {
 
-    HttpTransport httpTransport = Mockito.mock(HttpTransport.class);
+        HttpTransport httpTransport = Mockito.mock(HttpTransport.class);
 
-    KieRawClient client = new KieRawClient.Builder()
-        .setHttpTransport(httpTransport)
-        .setHost(DEFAULT_HOST)
-        .setPort(DEFAULT_PORT)
-        .setDomainName(DEFAULT_DOMAIN)
-        .build();
+        KieRawClient client = new KieRawClient.Builder()
+                .setHttpTransport(httpTransport)
+                .setHost(DEFAULT_HOST)
+                .setPort(DEFAULT_PORT)
+                .setDomainName(DEFAULT_DOMAIN)
+                .build();
 
-    HttpResponse httpResponse = new HttpResponse();
-    httpResponse.setStatusCode(200);
-    httpResponse.setContent("ok");
+        HttpResponse httpResponse = new HttpResponse();
+        httpResponse.setStatusCode(200);
+        httpResponse.setContent("ok");
 
-    Mockito.when(httpTransport.get((HttpRequest) Mockito.any())).thenReturn(httpResponse);
-    Mockito.when(httpTransport.post((HttpRequest) Mockito.any())).thenReturn(httpResponse);
-    Mockito.when(httpTransport.put((HttpRequest) Mockito.any())).thenReturn(httpResponse);
-    Mockito.when(httpTransport.delete((HttpRequest) Mockito.any())).thenReturn(httpResponse);
+        Mockito.when(httpTransport.get((HttpRequest) Mockito.any())).thenReturn(httpResponse);
+        Mockito.when(httpTransport.post((HttpRequest) Mockito.any())).thenReturn(httpResponse);
+        Mockito.when(httpTransport.put((HttpRequest) Mockito.any())).thenReturn(httpResponse);
+        Mockito.when(httpTransport.delete((HttpRequest) Mockito.any())).thenReturn(httpResponse);
 
-    HttpResponse actualGetResponse = client.getHttpRequest(null, null, null);
-    HttpResponse actualPostResponse = client.postHttpRequest(null, null, null);
-    HttpResponse actualPutResponse = client.putHttpRequest(null, null, null);
-    HttpResponse actualDeleteResponse = client.putHttpRequest(null, null, null);
+        HttpResponse actualGetResponse = client.getHttpRequest(null, null, null);
+        HttpResponse actualPostResponse = client.postHttpRequest(null, null, null);
+        HttpResponse actualPutResponse = client.putHttpRequest(null, null, null);
+        HttpResponse actualDeleteResponse = client.putHttpRequest(null, null, null);
 
-    Assert.assertNotNull(actualGetResponse);
-    Assert.assertEquals("ok", actualGetResponse.getContent());
-    Assert.assertNotNull(actualPostResponse);
-    Assert.assertEquals("ok", actualPostResponse.getContent());
-    Assert.assertNotNull(actualPutResponse);
-    Assert.assertEquals("ok", actualPutResponse.getContent());
-    Assert.assertNotNull(actualDeleteResponse);
-    Assert.assertEquals("ok", actualDeleteResponse.getContent());
-  }
+        Assert.assertNotNull(actualGetResponse);
+        Assert.assertEquals("ok", actualGetResponse.getContent());
+        Assert.assertNotNull(actualPostResponse);
+        Assert.assertEquals("ok", actualPostResponse.getContent());
+        Assert.assertNotNull(actualPutResponse);
+        Assert.assertEquals("ok", actualPutResponse.getContent());
+        Assert.assertNotNull(actualDeleteResponse);
+        Assert.assertEquals("ok", actualDeleteResponse.getContent());
+    }
 }
