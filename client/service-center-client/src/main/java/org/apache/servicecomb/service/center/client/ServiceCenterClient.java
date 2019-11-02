@@ -23,6 +23,10 @@ import java.util.Map;
 
 import javax.management.OperationsException;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.servicecomb.service.center.client.http.*;
@@ -34,10 +38,6 @@ import org.apache.servicecomb.service.center.client.model.MicroserviceInstancesR
 import org.apache.servicecomb.service.center.client.model.MicroservicesResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.SerializerFeature;
 
 /**
  * Created by   on 2019/10/16.
@@ -120,7 +120,9 @@ public class ServiceCenterClient {
             HttpResponse response = httpClient.getHttpRequest("/registry/health", null, null);
             if (response.getStatusCode() == HttpStatus.SC_OK) {
                 LOGGER.info("getServiceCenterInstances result = " + response.getContent());
-                return JSON.parseObject(response.getContent(), MicroserviceInstancesResponse.class);
+//                return JSON.parseObject(response.getContent(), MicroserviceInstancesResponse.class);
+                ObjectMapper mapper = new ObjectMapper();
+                return mapper.readValue(response.getContent(),MicroserviceInstancesResponse.class);
             } else {
                 throw new OperationsException(response.getStatusCode() + response.getMessage() + response.getContent());
             }
@@ -139,10 +141,10 @@ public class ServiceCenterClient {
      */
     public String registerMicroservice(Microservice microservice) {
         try {
-            JSONObject body = new JSONObject();
-            body.put("service", microservice);
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
             HttpResponse response = httpClient
-                    .postHttpRequest("/registry/microservices", null, body.toString(SerializerFeature.WriteMapNullValue));
+                    .postHttpRequest("/registry/microservices", null, mapper.writeValueAsString(microservice));
             if (response.getStatusCode() == HttpStatus.SC_OK) {
                 LOGGER.info("registerService result = " + response.getContent());
                 return response.getContent();
@@ -160,12 +162,14 @@ public class ServiceCenterClient {
      *
      * @return
      */
-    public MicroservicesResponse getMicroservices() {
+    public MicroservicesResponse getMicroserviceList() {
         try {
             HttpResponse response = httpClient.getHttpRequest("/registry/microservices", null, null);
             if (response.getStatusCode() == HttpStatus.SC_OK) {
                 LOGGER.info("getService result = " + response.getContent());
-                return JSON.parseObject(response.getContent(), MicroservicesResponse.class);
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                return mapper.readValue(response.getContent(), MicroservicesResponse.class);
             } else {
                 throw new OperationsException(response.getStatusCode() + response.getMessage() + response.getContent());
             }
@@ -213,8 +217,10 @@ public class ServiceCenterClient {
             HttpResponse response = httpClient.getHttpRequest("/registry/microservices/" + serviceId, null, null);
             if (response.getStatusCode() == HttpStatus.SC_OK) {
                 LOGGER.info("GetServiceMessage result = " + response.getContent());
-                Map<String, String> maps = (Map<String, String>) JSON.parse(response.getContent());
-                return JSON.parseObject(JSONObject.toJSONString(maps.get("service")), Microservice.class);
+                ObjectMapper mapper = new ObjectMapper();
+                mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                JsonNode jsonNode = mapper.readTree(response.getContent());
+                return mapper.readValue(jsonNode.get("service").toString(),Microservice.class);
             } else {
                 throw new OperationsException(response.getStatusCode() + response.getMessage() + response.getContent());
             }
@@ -234,10 +240,10 @@ public class ServiceCenterClient {
      */
     public String registerMicroserviceInstance(MicroserviceInstance instance, String serviceId) {
         try {
-            JSONObject body = new JSONObject();
-            body.put("instance", instance);
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
             HttpResponse response = httpClient.postHttpRequest("/registry/microservices/" + serviceId + "/instances", null,
-                    body.toString(SerializerFeature.WriteMapNullValue));
+                    mapper.writeValueAsString(instance));
 
             if (response.getStatusCode() == HttpStatus.SC_OK) {
                 LOGGER.info("registerServieInstance result = " + response.getContent());
@@ -257,13 +263,14 @@ public class ServiceCenterClient {
      * @param serviceId
      * @return
      */
-    public MicroserviceInstancesResponse getMicroserviceInstancesByServiceId(String serviceId) {
+    public MicroserviceInstancesResponse getMicroserviceInstanceList(String serviceId) {
         try {
             HttpResponse response = httpClient
                     .getHttpRequest("/registry/microservices/" + serviceId + "/instances", null, null);
             if (response.getStatusCode() == HttpStatus.SC_OK) {
                 LOGGER.info("getServiceInstance result = " + response.getContent());
-                return JSON.parseObject(response.getContent(), MicroserviceInstancesResponse.class);
+                ObjectMapper mapper = new ObjectMapper();
+                return mapper.readValue(response.getContent(),MicroserviceInstancesResponse.class);
             } else {
                 throw new OperationsException(response.getStatusCode() + response.getMessage() + response.getContent());
             }
@@ -281,16 +288,15 @@ public class ServiceCenterClient {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public MicroserviceInstance getMicroserviceInstanceByServiceIdAndInstanceId(String serviceId, String instanceId) {
+    public MicroserviceInstance getMicroserviceInstance(String serviceId, String instanceId) {
         try {
             HttpResponse response = httpClient
                     .getHttpRequest("/registry/microservices/" + serviceId + "/instances/" + instanceId, null, null);
             if (response.getStatusCode() == HttpStatus.SC_OK) {
                 LOGGER.info("GetServieInstanceMessage result = " + response.getContent());
-                if (response.getContent() != null) {
-                    Map<String, String> maps = (Map<String, String>) JSON.parse(response.getContent());
-                    return JSON.parseObject(JSONObject.toJSONString(maps.get("instance")), MicroserviceInstance.class);
-                }
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode jsonNode = mapper.readTree(response.getContent());
+                return mapper.readValue(jsonNode.get("instance").toString(),MicroserviceInstance.class);
             } else {
                 throw new OperationsException(response.getStatusCode() + response.getMessage() + response.getContent());
             }
@@ -356,8 +362,9 @@ public class ServiceCenterClient {
      */
     public String sendHeartBeats(HeartbeatsRequest heartbeatsRequest) {
         try {
+            ObjectMapper mapper = new ObjectMapper();
             HttpResponse response = httpClient
-                    .putHttpRequest("/registry/heartbeats", null, JSONObject.toJSONString(heartbeatsRequest));
+                    .putHttpRequest("/registry/heartbeats", null, mapper.writeValueAsString(heartbeatsRequest));
 
             if (response.getStatusCode() == HttpStatus.SC_OK) {
                 LOGGER.info("SEND HEARTBEATS OK");
