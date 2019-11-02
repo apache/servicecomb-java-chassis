@@ -20,23 +20,23 @@ package org.apache.servicecomb.kie.client.model;
 import java.util.List;
 
 public class KVResponse {
-  private List<KVDoc> data;
+    private List<KVDoc> data;
 
-  private LabelDocResponse label;
+    private LabelDocResponse label;
 
-  public List<KVDoc> getData() {
-    return data;
-  }
+    public List<KVDoc> getData() {
+        return data;
+    }
 
-  public LabelDocResponse getLabel() {
-    return label;
-  }
+    public LabelDocResponse getLabel() {
+        return label;
+    }
 
-  public void setData(List<KVDoc> data) {
-    this.data = data;
-  }
+    public void setData(List<KVDoc> data) {
+        this.data = data;
+    }
 
-  public void setLabel(LabelDocResponse label) {
-    this.label = label;
-  }
+    public void setLabel(LabelDocResponse label) {
+        this.label = label;
+    }
 }

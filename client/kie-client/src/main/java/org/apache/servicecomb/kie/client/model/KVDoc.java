@@ -22,93 +22,93 @@ import java.util.Map;
 
 public class KVDoc {
 
-  private String _id;
+    private String _id;
 
-  private String check;
+    private String check;
 
-  private String domain;
+    private String domain;
 
-  private String key;
+    private String key;
 
-  private String label_id;
+    private String label_id;
 
-  private Map<String, String> labels = new HashMap<String, String>();
+    private Map<String, String> labels = new HashMap<String, String>();
 
-  private Integer revision;
+    private Integer revision;
 
-  private String value;
+    private String value;
 
-  private String value_type;
+    private String value_type;
 
-  public String get_id() {
-    return _id;
-  }
+    public String get_id() {
+        return _id;
+    }
 
-  public void set_id(String _id) {
-    this._id = _id;
-  }
+    public void set_id(String _id) {
+        this._id = _id;
+    }
 
-  public String getKey() {
-    return key;
-  }
+    public String getKey() {
+        return key;
+    }
 
-  public void setKey(String key) {
-    this.key = key;
-  }
+    public void setKey(String key) {
+        this.key = key;
+    }
 
-  public String getCheck() {
-    return check;
-  }
+    public String getCheck() {
+        return check;
+    }
 
-  public String getDomain() {
-    return domain;
-  }
+    public String getDomain() {
+        return domain;
+    }
 
-  public String getLabel_id() {
-    return label_id;
-  }
+    public String getLabel_id() {
+        return label_id;
+    }
 
-  public Map<String, String> getLabels() {
-    return labels;
-  }
+    public Map<String, String> getLabels() {
+        return labels;
+    }
 
-  public Integer getRevision() {
-    return revision;
-  }
+    public Integer getRevision() {
+        return revision;
+    }
 
-  public String getValue() {
-    return value;
-  }
+    public String getValue() {
+        return value;
+    }
 
-  public void setCheck(String check) {
-    this.check = check;
-  }
+    public void setCheck(String check) {
+        this.check = check;
+    }
 
-  public void setDomain(String domain) {
-    this.domain = domain;
-  }
+    public void setDomain(String domain) {
+        this.domain = domain;
+    }
 
-  public void setLabel_id(String label_id) {
-    this.label_id = label_id;
-  }
+    public void setLabel_id(String label_id) {
+        this.label_id = label_id;
+    }
 
-  public void setLabels(Map<String, String> labels) {
-    this.labels = labels;
-  }
+    public void setLabels(Map<String, String> labels) {
+        this.labels = labels;
+    }
 
-  public void setRevision(Integer revision) {
-    this.revision = revision;
-  }
+    public void setRevision(Integer revision) {
+        this.revision = revision;
+    }
 
-  public void setValue_type(String value_type) {
-    this.value_type = value_type;
-  }
+    public void setValue_type(String value_type) {
+        this.value_type = value_type;
+    }
 
-  public void setValue(String value) {
-    this.value = value;
-  }
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-  public String getValue_type() {
-    return value_type;
-  }
+    public String getValue_type() {
+        return value_type;
+    }
 }

@@ -22,23 +22,23 @@ import java.util.Map;
 
 public class LabelDocResponse {
 
-  private String label_id;
+    private String label_id;
 
-  private Map<String, String> labels = new HashMap<String, String>();
+    private Map<String, String> labels = new HashMap<String, String>();
 
-  public String getLabel_id() {
-    return label_id;
-  }
+    public String getLabel_id() {
+        return label_id;
+    }
 
-  public Map<String, String> getLabels() {
-    return labels;
-  }
+    public Map<String, String> getLabels() {
+        return labels;
+    }
 
-  public void setLabel_id(String label_id) {
-    this.label_id = label_id;
-  }
+    public void setLabel_id(String label_id) {
+        this.label_id = label_id;
+    }
 
-  public void setLabels(Map<String, String> labels) {
-    this.labels = labels;
-  }
+    public void setLabels(Map<String, String> labels) {
+        this.labels = labels;
+    }
 }

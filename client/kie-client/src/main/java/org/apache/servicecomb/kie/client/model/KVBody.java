@@ -21,33 +21,33 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class KVBody {
-  private Map<String, String> labels = new HashMap<String, String>();
+    private Map<String, String> labels = new HashMap<String, String>();
 
-  private String value;
+    private String value;
 
-  private String value_type;
+    private String value_type;
 
-  public Map<String, String> getLabels() {
-    return labels;
-  }
+    public Map<String, String> getLabels() {
+        return labels;
+    }
 
-  public void setLabels(Map<String, String> labels) {
-    this.labels = labels;
-  }
+    public void setLabels(Map<String, String> labels) {
+        this.labels = labels;
+    }
 
-  public String getValue() {
-    return value;
-  }
+    public String getValue() {
+        return value;
+    }
 
-  public void setValue(String value) {
-    this.value = value;
-  }
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-  public String getValue_type() {
-    return value_type;
-  }
+    public String getValue_type() {
+        return value_type;
+    }
 
-  public void setValue_type(String value_type) {
-    this.value_type = value_type;
-  }
+    public void setValue_type(String value_type) {
+        this.value_type = value_type;
+    }
 }
