@@ -19,13 +19,13 @@ package org.apache.servicecomb.kie.client.http;
 
 public class HttpTransportFactory {
 
-    private static final HttpTransport httpTransport = new HttpTransportImpl();
+  private static final HttpTransport httpTransport = new HttpTransportImpl();
 
-    private HttpTransportFactory() {
+  private HttpTransportFactory() {
 
-    }
+  }
 
-    public static HttpTransport getDefaultHttpTransport() {
-        return httpTransport;
-    }
+  public static HttpTransport getDefaultHttpTransport() {
+    return httpTransport;
+  }
 }
