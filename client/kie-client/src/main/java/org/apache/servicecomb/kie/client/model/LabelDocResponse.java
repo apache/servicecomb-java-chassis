@@ -17,31 +17,31 @@
 
 package org.apache.servicecomb.kie.client.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+
 public class LabelDocResponse {
 
-    @JsonAlias("label_id")
-    private String labelId;
+  @JsonAlias("label_id")
+  private String labelId;
 
-    private Map<String, String> labels = new HashMap<String, String>();
+  private Map<String, String> labels = new HashMap<String, String>();
 
-    public String getLabelId() {
-        return labelId;
-    }
+  public String getLabelId() {
+    return labelId;
+  }
 
-    public Map<String, String> getLabels() {
-        return labels;
-    }
+  public Map<String, String> getLabels() {
+    return labels;
+  }
 
-    public void setLabelId(String labelId) {
-        this.labelId = labelId;
-    }
+  public void setLabelId(String labelId) {
+    this.labelId = labelId;
+  }
 
-    public void setLabels(Map<String, String> labels) {
-        this.labels = labels;
-    }
+  public void setLabels(Map<String, String> labels) {
+    this.labels = labels;
+  }
 }

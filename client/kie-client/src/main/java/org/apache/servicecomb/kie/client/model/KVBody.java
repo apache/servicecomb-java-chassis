@@ -17,41 +17,41 @@
 
 package org.apache.servicecomb.kie.client.model;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+
 public class KVBody {
 
-    private Map<String, String> labels = new HashMap<String, String>();
+  private Map<String, String> labels = new HashMap<String, String>();
 
-    private String value;
+  private String value;
 
-    @JsonAlias("value_type")
-    private String valueType;
+  @JsonAlias("value_type")
+  private String valueType;
 
-    public Map<String, String> getLabels() {
-        return labels;
-    }
+  public Map<String, String> getLabels() {
+    return labels;
+  }
 
-    public void setLabels(Map<String, String> labels) {
-        this.labels = labels;
-    }
+  public void setLabels(Map<String, String> labels) {
+    this.labels = labels;
+  }
 
-    public String getValue() {
-        return value;
-    }
+  public String getValue() {
+    return value;
+  }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
+  public void setValue(String value) {
+    this.value = value;
+  }
 
-    public String getValueType() {
-        return valueType;
-    }
+  public String getValueType() {
+    return valueType;
+  }
 
-    public void setValueType(String valueType) {
-        this.valueType = valueType;
-    }
+  public void setValueType(String valueType) {
+    this.valueType = valueType;
+  }
 }

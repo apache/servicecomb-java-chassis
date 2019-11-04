@@ -24,11 +24,11 @@ import java.io.IOException;
  */
 public interface HttpTransport {
 
-    HttpResponse get(HttpRequest request) throws IOException;
+  HttpResponse get(HttpRequest request) throws IOException;
 
-    HttpResponse post(HttpRequest request) throws IOException;
+  HttpResponse post(HttpRequest request) throws IOException;
 
-    HttpResponse put(HttpRequest request) throws IOException;
+  HttpResponse put(HttpRequest request) throws IOException;
 
-    HttpResponse delete(HttpRequest request) throws IOException;
+  HttpResponse delete(HttpRequest request) throws IOException;
 }
