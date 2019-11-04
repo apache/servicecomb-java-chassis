@@ -27,7 +27,6 @@ import org.apache.servicecomb.kie.client.model.KVResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.management.OperationsException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -62,47 +61,45 @@ public class KieClient {
     }
 
     /**
-     * Put create value of a key
+     * Create value of a key
      *
      * @param key
      * @param kvBody
-     * @return
+     * @return key-value json string; when some error happens, return null
      */
     public String putKeyValue(String key, KVBody kvBody) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             HttpResponse response = httpClient.putHttpRequest("/kie/kv/" + key, null, mapper.writeValueAsString(kvBody));
             if (response.getStatusCode() == HttpStatus.SC_OK) {
-                LOGGER.info("putKeyValue result:" + response.getContent());
                 return response.getContent();
             } else {
-                throw new OperationsException(response.getStatusCode() + response.getMessage() + response.getContent());
+                LOGGER.error("create keyValue fails, responseStatusCode={}, responseMessage={}, responseContent{}",response.getStatusCode(), response.getMessage(), response.getContent());
             }
-        } catch (IOException | OperationsException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            LOGGER.error("create keyValue fails",e);
         }
         return null;
     }
 
     /**
-     * Get get value of a key
+     * Get value of a key
      *
      * @param key
-     * @return
+     * @return List<KVResponse>; when some error happens, return null
      */
     public List<KVResponse> getValueOfKey(String key) {
         try {
             HttpResponse response = httpClient.getHttpRequest("/kie/kv/" + key, null, null);
             if (response.getStatusCode() == HttpStatus.SC_OK) {
-                LOGGER.info("getKeyValue result:" + response.getContent());
                 ObjectMapper mapper = new ObjectMapper();
                 return mapper.readValue(response.getContent(), new TypeReference<List<KVResponse>>() {
                 });
             } else {
-                throw new OperationsException(response.getStatusCode() + response.getMessage() + response.getContent());
+                LOGGER.error("get value of key fails, responseStatusCode={}, responseMessage={}, responseContent{}",response.getStatusCode(), response.getMessage(), response.getContent());
             }
-        } catch (IOException | OperationsException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            LOGGER.error("get value of key fails",e);
         }
         return null;
     }
@@ -111,7 +108,7 @@ public class KieClient {
      * SearchByLabels get value by lables
      *
      * @param labels
-     * @return
+     * @return List<KVResponse>; when some error happens, return null
      */
     public List<KVResponse> searchKeyValueByLabels(Map<String, String> labels) {
         try {
@@ -125,15 +122,14 @@ public class KieClient {
             stringBuilder.deleteCharAt(stringBuilder.length() - 1);
             HttpResponse response = httpClient.getHttpRequest("/kie/kv?q=" + stringBuilder.toString(), null, null);
             if (response.getStatusCode() == HttpStatus.SC_OK) {
-                LOGGER.info("searchKeyValue result:" + response.getContent());
                 ObjectMapper mapper = new ObjectMapper();
                 return mapper.readValue(response.getContent(), new TypeReference<List<KVResponse>>() {
                 });
             } else {
-                throw new OperationsException(response.getStatusCode() + response.getMessage() + response.getContent());
+                LOGGER.error("search keyValue by labels fails, responseStatusCode={}, responseMessage={}, responseContent{}",response.getStatusCode(), response.getMessage(), response.getContent());
             }
-        } catch (IOException | OperationsException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            LOGGER.error("search keyValue by labels fails",e);
         }
         return null;
     }
@@ -142,20 +138,18 @@ public class KieClient {
      * Delete remove kv
      *
      * @param kvDoc
-     * @return
+     * @return void
      */
-    public String deleteKeyValue(KVDoc kvDoc) {
+    public void deleteKeyValue(KVDoc kvDoc) {
         try {
-            HttpResponse response = httpClient.deleteHttpRequest("/kie/kv/?kvID=" + kvDoc.get_id(), null, null);
+            HttpResponse response = httpClient.deleteHttpRequest("/kie/kv/?kvID=" + kvDoc.getId(), null, null);
             if (response.getStatusCode() == HttpStatus.SC_NO_CONTENT) {
-                LOGGER.info("DeleteKeyValue OK");
-                return String.format("DeleteKeyValue OK");
+                LOGGER.info("Delete keyValue success");
             } else {
-                throw new OperationsException(response.getStatusCode() + response.getMessage() + response.getContent());
+                LOGGER.error("delete keyValue fails, responseStatusCode={}, responseMessage={}, responseContent{}",response.getStatusCode(), response.getMessage(), response.getContent());
             }
-        } catch (IOException | OperationsException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            LOGGER.error("delete keyValue fails",e);
         }
-        return null;
     }
 }

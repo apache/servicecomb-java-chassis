@@ -42,7 +42,7 @@ public class KieClientTest {
 
         KVBody kvBody = new KVBody();
         kvBody.setValue("test");
-        kvBody.setValue_type("string");
+        kvBody.setValueType("string");
         Map<String, String> labels = new HashMap<>();
         labels.put("app1", "111");
         kvBody.setLabels(labels);
@@ -128,22 +128,18 @@ public class KieClientTest {
         KieRawClient kieRawClient = Mockito.mock(KieRawClient.class);
 
         KVDoc kvDoc = new KVDoc();
-        kvDoc.set_id("111");
+        kvDoc.setId("111");
         kvDoc.setKey("test");
         kvDoc.setValue("testValue");
 
         HttpResponse httpResponse = new HttpResponse();
         httpResponse.setStatusCode(204);
         httpResponse.setMessage("OK");
-        httpResponse.setContent("DeleteKeyValue OK");
 
-        Mockito.when(kieRawClient.deleteHttpRequest("/kie/kv/?kvID=" + kvDoc.get_id(), null, null))
+        Mockito.when(kieRawClient.deleteHttpRequest("/kie/kv/?kvID=" + kvDoc.getId(), null, null))
                 .thenReturn(httpResponse);
 
         KieClient kieClient = new KieClient(kieRawClient);
-        String response = kieClient.deleteKeyValue(kvDoc);
-
-        Assert.assertNotNull(response);
-        Assert.assertEquals("DeleteKeyValue OK", response);
+        kieClient.deleteKeyValue(kvDoc);
     }
 }

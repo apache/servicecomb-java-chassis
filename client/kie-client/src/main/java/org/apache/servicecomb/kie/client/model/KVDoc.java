@@ -17,12 +17,15 @@
 
 package org.apache.servicecomb.kie.client.model;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class KVDoc {
 
-    private String _id;
+    @JsonAlias("_id")
+    private String id;
 
     private String check;
 
@@ -30,7 +33,8 @@ public class KVDoc {
 
     private String key;
 
-    private String label_id;
+    @JsonAlias("label_id")
+    private String labelId;
 
     private Map<String, String> labels = new HashMap<String, String>();
 
@@ -38,14 +42,15 @@ public class KVDoc {
 
     private String value;
 
-    private String value_type;
+    @JsonAlias("value_type")
+    private String valueType;
 
-    public String get_id() {
-        return _id;
+    public String getId() {
+        return id;
     }
 
-    public void set_id(String _id) {
-        this._id = _id;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getKey() {
@@ -64,8 +69,8 @@ public class KVDoc {
         return domain;
     }
 
-    public String getLabel_id() {
-        return label_id;
+    public String getLabelId() {
+        return labelId;
     }
 
     public Map<String, String> getLabels() {
@@ -88,8 +93,8 @@ public class KVDoc {
         this.domain = domain;
     }
 
-    public void setLabel_id(String label_id) {
-        this.label_id = label_id;
+    public void setLabelId(String labelId) {
+        this.labelId = labelId;
     }
 
     public void setLabels(Map<String, String> labels) {
@@ -100,15 +105,15 @@ public class KVDoc {
         this.revision = revision;
     }
 
-    public void setValue_type(String value_type) {
-        this.value_type = value_type;
+    public void setValueType(String valueType) {
+        this.valueType = valueType;
     }
 
     public void setValue(String value) {
         this.value = value;
     }
 
-    public String getValue_type() {
-        return value_type;
+    public String getValueType() {
+        return valueType;
     }
 }

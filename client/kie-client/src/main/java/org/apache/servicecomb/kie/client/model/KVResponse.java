@@ -20,6 +20,7 @@ package org.apache.servicecomb.kie.client.model;
 import java.util.List;
 
 public class KVResponse {
+
     private List<KVDoc> data;
 
     private LabelDocResponse label;
