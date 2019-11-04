@@ -47,14 +47,14 @@ public class KieClient {
   }
 
   /**
-   * Customized host,port,domainName and if any one parameter is null, it will be defaults
+   * Customized host,port,projectName and if any one parameter is null, it will be defaults
    *
    * @param host
    * @param port
-   * @param domainName
+   * @param projectName
    */
-  public KieClient(String host, int port, String domainName) {
-    this.httpClient = new KieRawClient.Builder().setHost(host).setPort(port).setDomainName(domainName).build();
+  public KieClient(String host, int port, String projectName) {
+    this.httpClient = new KieRawClient.Builder().setHost(host).setPort(port).setProjectName(projectName).build();
   }
 
   public KieClient(KieRawClient serviceCenterRawClient) {
