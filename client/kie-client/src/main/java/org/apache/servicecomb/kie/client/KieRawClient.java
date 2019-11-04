@@ -35,7 +35,7 @@ public class KieRawClient {
 
   private static final int DEFAULT_PORT = 30110;
 
-  private static final String DOMAIN_NAME = "default";
+  private static final String PROJECT_NAME = "default";
 
   private static final String V4_PREFIX = "v1";
 
@@ -45,18 +45,18 @@ public class KieRawClient {
 
   private int port;
 
-  private String domainName;
+  private String projectName;
 
   private HttpTransport httpTransport;
 
   public KieRawClient() {
-    this(DEFAULT_HOST, DEFAULT_PORT, DOMAIN_NAME, HttpTransportFactory.getDefaultHttpTransport());
+    this(DEFAULT_HOST, DEFAULT_PORT, PROJECT_NAME, HttpTransportFactory.getDefaultHttpTransport());
   }
 
-  private KieRawClient(String host, int port, String domainName, HttpTransport httpTransport) {
+  private KieRawClient(String host, int port, String projectName, HttpTransport httpTransport) {
     this.host = host;
     this.port = port;
-    this.domainName = domainName;
+    this.projectName = projectName;
     this.httpTransport = httpTransport;
 
     // check that host has scheme or not
@@ -66,7 +66,7 @@ public class KieRawClient {
       host = "http://" + host;
     }
 
-    this.basePath = host + ":" + port + "/" + V4_PREFIX + "/" + domainName;
+    this.basePath = host + ":" + port + "/" + V4_PREFIX + "/" + projectName;
   }
 
   public HttpResponse getHttpRequest(String url, Map<String, String> headers, String content) throws IOException {
@@ -126,25 +126,25 @@ public class KieRawClient {
 
     private int port;
 
-    private String domainName;
+    private String projectName;
 
     private HttpTransport httpTransport;
 
     public Builder() {
       this.host = DEFAULT_HOST;
       this.port = DEFAULT_PORT;
-      this.domainName = DOMAIN_NAME;
+      this.projectName = PROJECT_NAME;
     }
 
-    public String getDomainName() {
-      return domainName;
+    public String getProjectName() {
+      return projectName;
     }
 
-    public Builder setDomainName(String domainName) {
-      if (domainName == null) {
-        domainName = DOMAIN_NAME;
+    public Builder setProjectName(String projectName) {
+      if (projectName == null) {
+        projectName = PROJECT_NAME;
       }
-      this.domainName = domainName;
+      this.projectName = projectName;
       return this;
     }
 
@@ -182,7 +182,7 @@ public class KieRawClient {
     }
 
     public KieRawClient build() {
-      return new KieRawClient(host, port, domainName, httpTransport);
+      return new KieRawClient(host, port, projectName, httpTransport);
     }
   }
 }

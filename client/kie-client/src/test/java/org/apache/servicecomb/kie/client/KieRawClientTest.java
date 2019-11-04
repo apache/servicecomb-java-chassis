@@ -46,7 +46,7 @@ public class KieRawClientTest {
         .setHttpTransport(httpTransport)
         .setHost(DEFAULT_HOST)
         .setPort(DEFAULT_PORT)
-        .setDomainName(DEFAULT_DOMAIN)
+        .setProjectName(DEFAULT_DOMAIN)
         .build();
 
     HttpResponse httpResponse = new HttpResponse();
