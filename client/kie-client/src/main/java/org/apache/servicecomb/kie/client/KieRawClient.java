@@ -17,10 +17,7 @@
 
 package org.apache.servicecomb.kie.client;
 
-import org.apache.servicecomb.kie.client.http.HttpRequest;
-import org.apache.servicecomb.kie.client.http.HttpResponse;
-import org.apache.servicecomb.kie.client.http.HttpTransport;
-import org.apache.servicecomb.kie.client.http.HttpTransportFactory;
+import org.apache.servicecomb.kie.client.http.*;
 
 import java.io.IOException;
 import java.util.HashMap;
