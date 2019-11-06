@@ -526,12 +526,6 @@
       </modules>
     </profile>
     <profile>
-      <id>samples</id>
-      <modules>
-        <module>samples</module>
-      </modules>
-    </profile>
-    <profile>
       <id>docker-machine</id>
       <build>
         <pluginManagement>
