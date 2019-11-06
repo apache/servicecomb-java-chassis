@@ -19,74 +19,79 @@ package org.apache.servicecomb.service.center.client.http;
 
 public class TLSConfig {
 
-    //keyStore type
-    public enum KeyStoreInstanceType {
-        JKS, JCEKS, PKCS12, PKCS11, DKS
-    }
+  private KeyStoreInstanceType keyStoreType;
 
-    private KeyStoreInstanceType keyStoreType;
+  //trust certificate
+  private String trustStore;
 
-    //trust certificate
-    private String trustStore;
+  //trust certificate password
+  private String trustStoreValue;
 
-    //trust certificate password
-    private String trustStoreValue;
+  //identity certificate
+  private String keyStore;
 
-    //identity certificate
-    private String keyStore;
+  //identity certificate password
+  private String keyStoreValue;
 
-    //identity certificate password
-    private String keyStoreValue;
+  public TLSConfig() {
 
-    public TLSConfig(){
+  }
 
-    }
+  public TLSConfig(KeyStoreInstanceType keyStoreType, String trustStore, String trustStoreValue, String keyStore,
+      String keyStoreValue) {
+    this.keyStoreType = keyStoreType;
+    this.trustStore = trustStore;
+    this.trustStoreValue = trustStoreValue;
+    this.keyStore = keyStore;
+    this.keyStoreValue = keyStoreValue;
+  }
 
-    public TLSConfig(KeyStoreInstanceType keyStoreType, String trustStore, String trustStoreValue, String keyStore, String keyStoreValue) {
-        this.keyStoreType = keyStoreType;
-        this.trustStore = trustStore;
-        this.trustStoreValue = trustStoreValue;
-        this.keyStore = keyStore;
-        this.keyStoreValue = keyStoreValue;
-    }
+  public KeyStoreInstanceType getKeyStoreType() {
+    return keyStoreType;
+  }
 
-    public KeyStoreInstanceType getKeyStoreType() {
-        return keyStoreType;
-    }
+  public void setKeyStoreType(KeyStoreInstanceType keyStoreType) {
+    this.keyStoreType = keyStoreType;
+  }
 
-    public void setKeyStoreType(KeyStoreInstanceType keyStoreType) {
-        this.keyStoreType = keyStoreType;
-    }
+  public String getTrustStore() {
+    return trustStore;
+  }
 
-    public String getTrustStore() {
-        return trustStore;
-    }
+  public void setTrustStore(String trustStore) {
+    this.trustStore = trustStore;
+  }
 
-    public void setTrustStore(String trustStore) {
-        this.trustStore = trustStore;
-    }
+  public String getTrustStoreValue() {
+    return trustStoreValue;
+  }
 
-    public String getTrustStoreValue() {
-        return trustStoreValue;
-    }
+  public void setTrustStoreValue(String trustStoreValue) {
+    this.trustStoreValue = trustStoreValue;
+  }
 
-    public void setTrustStoreValue(String trustStoreValue) {
-        this.trustStoreValue = trustStoreValue;
-    }
+  public String getKeyStore() {
+    return keyStore;
+  }
 
-    public String getKeyStore() {
-        return keyStore;
-    }
+  public void setKeyStore(String keyStore) {
+    this.keyStore = keyStore;
+  }
 
-    public void setKeyStore(String keyStore) {
-        this.keyStore = keyStore;
-    }
+  public String getKeyStoreValue() {
+    return keyStoreValue;
+  }
 
-    public String getKeyStoreValue() {
-        return keyStoreValue;
-    }
+  public void setKeyStoreValue(String keyStoreValue) {
+    this.keyStoreValue = keyStoreValue;
+  }
 
-    public void setKeyStoreValue(String keyStoreValue) {
-        this.keyStoreValue = keyStoreValue;
-    }
+  //keyStore type
+  public enum KeyStoreInstanceType {
+    JKS,
+    JCEKS,
+    PKCS12,
+    PKCS11,
+    DKS
+  }
 }

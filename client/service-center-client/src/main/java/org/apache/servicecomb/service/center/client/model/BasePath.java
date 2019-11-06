@@ -20,23 +20,23 @@ package org.apache.servicecomb.service.center.client.model;
 import java.util.Map;
 
 public class BasePath {
-    private String path;
+  private String path;
 
-    private Map<String, String> property;
+  private Map<String, String> property;
 
-    public Map<String, String> getProperty() {
-        return property;
-    }
+  public Map<String, String> getProperty() {
+    return property;
+  }
 
-    public void setProperty(Map<String, String> property) {
-        this.property = property;
-    }
+  public void setProperty(Map<String, String> property) {
+    this.property = property;
+  }
 
-    public String getPath() {
-        return path;
-    }
+  public String getPath() {
+    return path;
+  }
 
-    public void setPath(String path) {
-        this.path = path;
-    }
+  public void setPath(String path) {
+    this.path = path;
+  }
 }

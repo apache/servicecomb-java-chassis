@@ -21,13 +21,13 @@ import java.util.List;
 
 public class MicroserviceInstancesResponse {
 
-    private List<MicroserviceInstance> instances;
+  private List<MicroserviceInstance> instances;
 
-    public List<MicroserviceInstance> getInstances() {
-        return instances;
-    }
+  public List<MicroserviceInstance> getInstances() {
+    return instances;
+  }
 
-    public void setInstances(List<MicroserviceInstance> instances) {
-        this.instances = instances;
-    }
+  public void setInstances(List<MicroserviceInstance> instances) {
+    this.instances = instances;
+  }
 }
