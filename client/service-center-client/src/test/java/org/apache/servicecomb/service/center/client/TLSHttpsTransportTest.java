@@ -28,23 +28,23 @@ import org.junit.Test;
  */
 public class TLSHttpsTransportTest {
 
-    /**
-     * test TLS HttpTransport
-     */
-    @Test
-    public void TestTLSConfig() {
+  /**
+   * test TLS HttpTransport
+   */
+  @Test
+  public void TestTLSConfig() {
 
-        TLSConfig tlsConfig = new TLSConfig();
+    TLSConfig tlsConfig = new TLSConfig();
 
-        tlsConfig.setKeyStoreType(TLSConfig.KeyStoreInstanceType.PKCS12);
-        tlsConfig.setKeyStore(this.getClass().getResource("/tls/client.p12").getFile().toString());
-        tlsConfig.setKeyStoreValue("123456");
+    tlsConfig.setKeyStoreType(TLSConfig.KeyStoreInstanceType.PKCS12);
+    tlsConfig.setKeyStore(this.getClass().getResource("/tls/client.p12").getFile().toString());
+    tlsConfig.setKeyStoreValue("123456");
 
-        tlsConfig.setTrustStore(this.getClass().getResource("/tls/server.jks").getFile().toString());
-        tlsConfig.setTrustStoreValue("123456");
+    tlsConfig.setTrustStore(this.getClass().getResource("/tls/server.jks").getFile().toString());
+    tlsConfig.setTrustStoreValue("123456");
 
-        HttpTransport tlsHttpTransport = new TLSHttpsTransport(tlsConfig);
+    HttpTransport tlsHttpTransport = new TLSHttpsTransport(tlsConfig);
 
-        Assert.assertNotNull(tlsHttpTransport);
-    }
+    Assert.assertNotNull(tlsHttpTransport);
+  }
 }

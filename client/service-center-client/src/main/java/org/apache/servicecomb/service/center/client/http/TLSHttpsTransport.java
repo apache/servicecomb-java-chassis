@@ -17,6 +17,23 @@
 
 package org.apache.servicecomb.service.center.client.http;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyManagementException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
+
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -28,97 +45,96 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContexts;
 
-import javax.net.ssl.*;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.security.*;
-import java.security.cert.CertificateException;
-
 /**
  * Created by   on 2019/10/31.
  */
 public class TLSHttpsTransport extends HttpTransportImpl {
 
-    private static final int DEFAULT_MAX_CONNECTIONS = 1000;
-    private static final int DEFAULT_MAX_PER_ROUTE = 500;
-    private static final int DEFAULT_REQUEST_TIMEOUT = 5000;
-    private static final int DEFAULT_CONNECTION_TIMEOUT = 5000;
+  private static final int DEFAULT_MAX_CONNECTIONS = 1000;
 
-    public TLSHttpsTransport(){
+  private static final int DEFAULT_MAX_PER_ROUTE = 500;
 
+  private static final int DEFAULT_REQUEST_TIMEOUT = 5000;
+
+  private static final int DEFAULT_CONNECTION_TIMEOUT = 5000;
+
+  public TLSHttpsTransport() {
+
+  }
+
+  /**
+   * configure the certificate to httpClient
+   * @param tlsConfig
+   */
+  public TLSHttpsTransport(TLSConfig tlsConfig) {
+
+    // create keyStore and trustStore
+    KeyStore keyStore = getKeyStore(tlsConfig.getKeyStore(), tlsConfig.getKeyStoreType().name(),
+        tlsConfig.getKeyStoreValue());
+    KeyStore trustStore = getKeyStore(tlsConfig.getTrustStore(), TLSConfig.KeyStoreInstanceType.JKS.name(),
+        tlsConfig.getTrustStoreValue());
+
+    // initialize SSLContext
+    SSLContext sslContext = getSSLContext(keyStore, tlsConfig.getKeyStoreValue(), trustStore);
+
+    assert sslContext != null;
+    //register http/https socket factory
+    Registry<ConnectionSocketFactory> connectionSocketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
+        .register("http", PlainConnectionSocketFactory.INSTANCE)
+        .register("https", new SSLConnectionSocketFactory(sslContext))
+        .build();
+
+    //connection pool management
+    PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(
+        connectionSocketFactoryRegistry);
+    connectionManager.setMaxTotal(DEFAULT_MAX_CONNECTIONS);
+    connectionManager.setDefaultMaxPerRoute(DEFAULT_MAX_PER_ROUTE);
+
+    //request parameter configuration
+    RequestConfig config = RequestConfig.custom().
+        setConnectTimeout(DEFAULT_CONNECTION_TIMEOUT).
+        setConnectionRequestTimeout(DEFAULT_CONNECTION_TIMEOUT).
+        setSocketTimeout(DEFAULT_REQUEST_TIMEOUT).
+        build();
+
+    // construct httpClient
+    HttpClientBuilder httpClientBuilder = HttpClientBuilder.create().
+        setSSLSocketFactory(new SSLConnectionSocketFactory(sslContext)).
+        setConnectionManager(connectionManager).
+        setDefaultRequestConfig(config);
+
+    this.httpClient = httpClientBuilder.build();
+  }
+
+  private KeyStore getKeyStore(String keyStorePath, String keyStoreType, String keyStoreValue) {
+    try {
+      KeyStore keyStore = KeyStore.getInstance(keyStoreType);
+      InputStream inputStream = new FileInputStream(keyStorePath);
+      keyStore.load(inputStream, keyStoreValue.toCharArray());
+      return keyStore;
+    } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException e) {
+      e.printStackTrace();
     }
+    return null;
+  }
 
-    /**
-     * configure the certificate to httpClient
-     * @param tlsConfig
-     */
-    public TLSHttpsTransport(TLSConfig tlsConfig){
+  private SSLContext getSSLContext(KeyStore keyStore, String keyStoreValue, KeyStore trustStore) {
+    try {
+      KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+      keyManagerFactory.init(keyStore, keyStoreValue.toCharArray());
+      KeyManager[] keyManagers = keyManagerFactory.getKeyManagers();
 
-        // create keyStore and trustStore
-        KeyStore keyStore = getKeyStore(tlsConfig.getKeyStore(),tlsConfig.getKeyStoreType().name(),tlsConfig.getKeyStoreValue());
-        KeyStore trustStore = getKeyStore(tlsConfig.getTrustStore(),TLSConfig.KeyStoreInstanceType.JKS.name(),tlsConfig.getTrustStoreValue());
+      TrustManagerFactory trustManagerFactory = TrustManagerFactory
+          .getInstance(TrustManagerFactory.getDefaultAlgorithm());
+      trustManagerFactory.init(trustStore);
+      TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
 
-        // initialize SSLContext
-        SSLContext sslContext = getSSLContext(keyStore,tlsConfig.getKeyStoreValue(),trustStore);
-
-        assert sslContext != null;
-        //register http/https socket factory
-        Registry<ConnectionSocketFactory> connectionSocketFactoryRegistry = RegistryBuilder.<ConnectionSocketFactory>create()
-                .register("http", PlainConnectionSocketFactory.INSTANCE)
-                .register("https", new SSLConnectionSocketFactory(sslContext))
-                .build();
-
-        //connection pool management
-        PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(connectionSocketFactoryRegistry);
-        connectionManager.setMaxTotal(DEFAULT_MAX_CONNECTIONS);
-        connectionManager.setDefaultMaxPerRoute(DEFAULT_MAX_PER_ROUTE);
-
-        //request parameter configuration
-        RequestConfig config = RequestConfig.custom().
-                setConnectTimeout(DEFAULT_CONNECTION_TIMEOUT).
-                setConnectionRequestTimeout(DEFAULT_CONNECTION_TIMEOUT).
-                setSocketTimeout(DEFAULT_REQUEST_TIMEOUT).
-                build();
-
-        // construct httpClient
-        HttpClientBuilder httpClientBuilder = HttpClientBuilder.create().
-                setSSLSocketFactory(new SSLConnectionSocketFactory(sslContext)).
-                setConnectionManager(connectionManager).
-                setDefaultRequestConfig(config);
-
-        this.httpClient = httpClientBuilder.build();
+      SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(new TrustSelfSignedStrategy()).build();
+      sslContext.init(keyManagers, trustManagers, new SecureRandom());
+      return sslContext;
+    } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
+      e.printStackTrace();
     }
-
-    private KeyStore getKeyStore(String keyStorePath, String keyStoreType, String keyStoreValue){
-        try {
-            KeyStore keyStore = KeyStore.getInstance(keyStoreType);
-            InputStream inputStream = new FileInputStream(keyStorePath);
-            keyStore.load(inputStream,keyStoreValue.toCharArray());
-            return keyStore;
-        } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private SSLContext getSSLContext(KeyStore keyStore, String keyStoreValue, KeyStore trustStore){
-        try{
-            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            keyManagerFactory.init(keyStore, keyStoreValue.toCharArray());
-            KeyManager[] keyManagers = keyManagerFactory.getKeyManagers();
-
-            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            trustManagerFactory.init(trustStore);
-            TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
-
-            SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(new TrustSelfSignedStrategy()).build();
-            sslContext.init(keyManagers, trustManagers, new SecureRandom());
-            return sslContext;
-        } catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException | KeyManagementException e) {
-            e.printStackTrace();
-        }
-        return  null;
-    }
-
+    return null;
+  }
 }

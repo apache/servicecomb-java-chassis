@@ -17,6 +17,13 @@
 
 package org.apache.servicecomb.service.center.client;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.http.HttpVersion;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
@@ -29,41 +36,35 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.mockito.Mockito.*;
-
 public class HttpTransportImplTest {
 
-    @Test
-    public void TestHttpTransport() throws IOException {
-        HttpClient httpClient = mock(HttpClient.class);
+  @Test
+  public void TestHttpTransport() throws IOException {
+    HttpClient httpClient = mock(HttpClient.class);
 
-        org.apache.http.HttpResponse httpResponse = mock(org.apache.http.HttpResponse.class);
-        StatusLine statusLine = mock(StatusLine.class);
-        when(statusLine.getStatusCode()).thenReturn(200);
-        when(statusLine.getProtocolVersion()).thenReturn(HttpVersion.HTTP_1_1);
-        when(statusLine.getReasonPhrase()).thenReturn("OK");
+    org.apache.http.HttpResponse httpResponse = mock(org.apache.http.HttpResponse.class);
+    StatusLine statusLine = mock(StatusLine.class);
+    when(statusLine.getStatusCode()).thenReturn(200);
+    when(statusLine.getProtocolVersion()).thenReturn(HttpVersion.HTTP_1_1);
+    when(statusLine.getReasonPhrase()).thenReturn("OK");
 
-        when(httpResponse.getStatusLine()).thenReturn(statusLine);
-        when(httpResponse.getEntity()).thenReturn(new StringEntity("Test", ContentType.APPLICATION_JSON));
+    when(httpResponse.getStatusLine()).thenReturn(statusLine);
+    when(httpResponse.getEntity()).thenReturn(new StringEntity("Test", ContentType.APPLICATION_JSON));
 
-        when(httpClient.execute(Mockito.any())).thenReturn(httpResponse);
+    when(httpClient.execute(Mockito.any())).thenReturn(httpResponse);
 
-        HttpTransportImpl httpTransport = new HttpTransportImpl();
-        httpTransport.setHttpClient(httpClient);
-        Map<String,String> extraHeaders = new HashMap<>();
-        extraHeaders.put("test","testContext");
-        httpTransport.addHeaders(extraHeaders);
+    HttpTransportImpl httpTransport = new HttpTransportImpl();
+    httpTransport.setHttpClient(httpClient);
+    Map<String, String> extraHeaders = new HashMap<>();
+    extraHeaders.put("test", "testContext");
+    httpTransport.addHeaders(extraHeaders);
 
-        HttpRequest httpRequest = new HttpRequest("111", null, null);
-        HttpResponse actualResponse = httpTransport.get(httpRequest);
+    HttpRequest httpRequest = new HttpRequest("111", null, null);
+    HttpResponse actualResponse = httpTransport.get(httpRequest);
 
-        Assert.assertNotNull(actualResponse);
-        Assert.assertEquals(200, actualResponse.getStatusCode());
-        Assert.assertEquals("OK", actualResponse.getMessage());
-        Assert.assertEquals("Test", actualResponse.getContent());
-    }
+    Assert.assertNotNull(actualResponse);
+    Assert.assertEquals(200, actualResponse.getStatusCode());
+    Assert.assertEquals("OK", actualResponse.getMessage());
+    Assert.assertEquals("Test", actualResponse.getContent());
+  }
 }
