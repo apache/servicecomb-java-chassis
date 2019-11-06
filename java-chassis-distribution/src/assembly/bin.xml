@@ -26,22 +26,6 @@
   </formats>
   <fileSets>
     <fileSet>
-      <directory>../samples</directory>
-      <outputDirectory>samples</outputDirectory>
-      <excludes>
-        <exclude>**/*.iml</exclude>
-        <exclude>**/eclipse-classes/**</exclude>
-        <exclude>**/build/**</exclude>
-        <exclude>**/eclipse-classes/**</exclude>
-        <exclude>**/.*</exclude>
-        <exclude>**/.*/**</exclude>
-        <exclude>**/target</exclude>
-        <exclude>**/target/**/*</exclude>
-        <exclude>**/target</exclude>
-        <exclude>**/target/**/*</exclude>
-      </excludes>
-    </fileSet>
-    <fileSet>
       <directory>../</directory>
       <outputDirectory>/</outputDirectory>
       <includes>
