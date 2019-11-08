@@ -59,7 +59,7 @@ public class HttpTransportImplTest {
     extraHeaders.put("test", "testContext");
     httpTransport.addHeaders(extraHeaders);
 
-    HttpRequest httpRequest = new HttpRequest("111", null, null);
+    HttpRequest httpRequest = new HttpRequest("111", null, null, HttpRequest.GET);
     HttpResponse actualResponse = httpTransport.get(httpRequest);
 
     Assert.assertNotNull(actualResponse);

@@ -21,12 +21,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
@@ -38,8 +32,6 @@ public class HttpTransportImpl implements HttpTransport {
   private static final String HEADER_CONTENT_TYPE = "Content-Type";
 
   private static final String HEADER_USER_AGENT = "User-Agent";
-
-  private static final String HEADER_TENANT_NAME = "x-domain-name";
 
   protected HttpClient httpClient;
 
@@ -59,53 +51,39 @@ public class HttpTransportImpl implements HttpTransport {
 
   @Override
   public HttpResponse get(HttpRequest request) throws IOException {
-
-    HttpGet httpGet = new HttpGet(request.getUrl());
-
-    return doRequest(httpGet);
+    request.setMethod(HttpRequest.GET);
+    return doRequest(request);
   }
 
   @Override
   public HttpResponse post(HttpRequest request) throws IOException {
-
-    HttpPost httpPost = new HttpPost(request.getUrl());
-
-    if (request.getContent() != null) {
-      httpPost.setEntity(new StringEntity(request.getContent(), "UTF-8"));
-    }
-    return doRequest(httpPost);
+    request.setMethod(HttpRequest.POST);
+    return doRequest(request);
   }
 
   @Override
   public HttpResponse put(HttpRequest request) throws IOException {
-
-    HttpPut httpPut = new HttpPut(request.getUrl());
-
-    if (request.getContent() != null) {
-      httpPut.setEntity(new StringEntity(request.getContent(), "UTF-8"));
-    }
-    return doRequest(httpPut);
+    request.setMethod(HttpRequest.PUT);
+    return doRequest(request);
   }
 
   @Override
   public HttpResponse delete(HttpRequest request) throws IOException {
-
-    HttpDelete httpDelete = new HttpDelete(request.getUrl());
-
-    return doRequest(httpDelete);
+    request.setMethod(HttpRequest.DELETE);
+    return doRequest(request);
   }
 
-  public HttpResponse doRequest(HttpUriRequest httpRequest) throws IOException {
+  public HttpResponse doRequest(HttpRequest httpRequest) throws IOException {
     //add header
     httpRequest.addHeader(HEADER_CONTENT_TYPE, "application/json");
     httpRequest.addHeader(HEADER_USER_AGENT, "cse-serviceregistry-client/1.0.0");
-    httpRequest.addHeader(HEADER_TENANT_NAME, "default");
+
     if (globalHeaders != null) {
-      globalHeaders.forEach((key, value) -> httpRequest.addHeader(key, value));
+      globalHeaders.forEach(httpRequest::addHeader);
     }
 
     //get Http response
-    org.apache.http.HttpResponse response = httpClient.execute(httpRequest);
+    org.apache.http.HttpResponse response = httpClient.execute(httpRequest.getRealRequest());
 
     int statusCode = response.getStatusLine().getStatusCode();
     String messgae = response.getStatusLine().getReasonPhrase();

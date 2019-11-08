@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.servicecomb.service.center.client.exception.OperationException;
 import org.apache.servicecomb.service.center.client.http.HttpResponse;
 import org.apache.servicecomb.service.center.client.http.HttpTransport;
 import org.apache.servicecomb.service.center.client.http.HttpTransportFactory;
@@ -71,7 +72,7 @@ public class ServiceCenterClient {
    * @param extraGlobalHeaders
    */
   public ServiceCenterClient(Map<String, String> extraGlobalHeaders) {
-    this(null, 0, null, null, extraGlobalHeaders);
+    this(null, 0, null, null, null, extraGlobalHeaders);
   }
 
   /**
@@ -80,7 +81,7 @@ public class ServiceCenterClient {
    * @param extraGlobalHeaders
    */
   public ServiceCenterClient(TLSConfig tlsConfig, Map<String, String> extraGlobalHeaders) {
-    this(null, 0, null, tlsConfig, extraGlobalHeaders);
+    this(null, 0, null, null, tlsConfig, extraGlobalHeaders);
   }
 
   /**
@@ -89,25 +90,31 @@ public class ServiceCenterClient {
    * @param port
    */
   public ServiceCenterClient(String host, int port) {
-    this(host, port, null, null, null);
+    this(host, port, null, null, null, null);
   }
 
   /**
-   * Customized host,port,domainName,TLSConf, headers and any one parameter can be null.
+   * Customized host, port, projectName, tenantName, TLSConf, headers and any one parameter can be null.
    * @param host
    * @param port
-   * @param domainName
+   * @param projectName
+   * @param tenantName
    * @param tlsConfig
    * @param extraGlobalHeaders
    */
-  public ServiceCenterClient(String host, int port, String domainName, TLSConfig tlsConfig,
+  public ServiceCenterClient(String host, int port, String projectName, String tenantName, TLSConfig tlsConfig,
       Map<String, String> extraGlobalHeaders) {
     HttpTransport httpTransport = HttpTransportFactory.getDefaultHttpTransport();
     if (tlsConfig != null) {
       httpTransport = new TLSHttpsTransport(tlsConfig);
     }
     httpTransport.addHeaders(extraGlobalHeaders);
-    this.httpClient = new ServiceCenterRawClient.Builder().setHost(host).setPort(port).setDomainName(domainName)
+
+    this.httpClient = new ServiceCenterRawClient.Builder()
+        .setHost(host)
+        .setPort(port)
+        .setProjectName(projectName)
+        .setTenantName(tenantName)
         .setHttpTransport(httpTransport).build();
   }
 
@@ -118,7 +125,8 @@ public class ServiceCenterClient {
   /**
    * Get service-center instances message
    *
-   * @return MicroserviceInstancesResponse; when error happens,return null
+   * @return MicroserviceInstancesResponse
+   * @throws OperationException
    */
   public MicroserviceInstancesResponse getServiceCenterInstances() {
     try {
@@ -127,20 +135,23 @@ public class ServiceCenterClient {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(response.getContent(), MicroserviceInstancesResponse.class);
       } else {
-        LOGGER.error("get service-center instances fails, responseStatusCode={}, responseMessage={}, responseContent{}",
-            response.getStatusCode(), response.getMessage(), response.getContent());
+        throw new OperationException(
+            "get service-center instances fails, statusCode = " + response.getStatusCode() + "; message = " + response
+                .getMessage()
+                + "; content = " + response.getContent());
       }
     } catch (IOException e) {
-      LOGGER.error("get service-center instances fails", e);
+      throw new OperationException(
+          "get service-center instances fails", e);
     }
-    return null;
   }
 
   /**
    * Register microservice to service-center
    *
    * @param microservice
-   * @return serviceId ; when error happens,return null
+   * @return serviceId
+   * @throws OperationException
    */
   public String registerMicroservice(Microservice microservice) {
     try {
@@ -151,19 +162,22 @@ public class ServiceCenterClient {
       if (response.getStatusCode() == HttpStatus.SC_OK) {
         return response.getContent();
       } else {
-        LOGGER.error("register service fails, responseStatusCode={}, responseMessage={}, responseContent{}",
-            response.getStatusCode(), response.getMessage(), response.getContent());
+        throw new OperationException(
+            "register service fails, statusCode = " + response.getStatusCode() + "; message = " + response
+                .getMessage()
+                + "; content = " + response.getContent());
       }
     } catch (IOException e) {
-      LOGGER.error("register service fails", e);
+      throw new OperationException(
+          "register service fails", e);
     }
-    return null;
   }
 
   /**
    * find all registerd microservice of service-center
    *
-   * @return MicroserviceResponse ; when error happens,return null
+   * @return MicroserviceResponse
+   * @throws OperationException
    */
   public MicroservicesResponse getMicroserviceList() {
     try {
@@ -173,19 +187,23 @@ public class ServiceCenterClient {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.readValue(response.getContent(), MicroservicesResponse.class);
       } else {
-        LOGGER.error("get service List fails, responseStatusCode={}, responseMessage={}, responseContent{}",
-            response.getStatusCode(), response.getMessage(), response.getContent());
+        throw new OperationException(
+            "get service List fails, statusCode = " + response.getStatusCode() + "; message = " + response
+                .getMessage()
+                + "; content = " + response.getContent());
       }
     } catch (IOException e) {
-      LOGGER.error("get service List fails", e);
+      throw new OperationException(
+          "get service List fails", e);
     }
-    return null;
   }
 
   /**
-   * query serviceId
+   * query serviceId, temporary only supports Microservice type
+   *
    * @param microservice
-   * @return serviceId ; when error happens,return null
+   * @return serviceId
+   * @throws OperationException
    */
   public String queryServiceId(Microservice microservice) {
     try {
@@ -199,20 +217,26 @@ public class ServiceCenterClient {
       if (response.getStatusCode() == HttpStatus.SC_OK) {
         return response.getContent();
       } else {
-        LOGGER.error("query serviceId fails, responseStatusCode={}, responseMessage={}, responseContent{}",
-            response.getStatusCode(), response.getMessage(), response.getContent());
+        throw new OperationException(
+            "query serviceId fails, statusCode = " + response.getStatusCode() + "; message = " + response
+                .getMessage()
+                + "; content = " + response.getContent());
       }
-    } catch (IOException | URISyntaxException e) {
-      LOGGER.error("query serviceId fails", e);
+    } catch (IOException e) {
+      throw new OperationException(
+          "query serviceId fails", e);
+    } catch (URISyntaxException e) {
+      throw new OperationException(
+          "build url failed.", e);
     }
-    return null;
   }
 
   /**
    * Get one microservice message of service-center
    *
    * @param serviceId
-   * @return Microservice ; when error happens,return null
+   * @return Microservice
+   * @throws OperationException
    */
   @SuppressWarnings("unchecked")
   public Microservice getMicroserviceByServiceId(String serviceId) {
@@ -224,13 +248,15 @@ public class ServiceCenterClient {
         JsonNode jsonNode = mapper.readTree(response.getContent());
         return mapper.readValue(jsonNode.get("service").toString(), Microservice.class);
       } else {
-        LOGGER.error("get service message fails, responseStatusCode={}, responseMessage={}, responseContent{}",
-            response.getStatusCode(), response.getMessage(), response.getContent());
+        throw new OperationException(
+            "get service message fails, statusCode = " + response.getStatusCode() + "; message = " + response
+                .getMessage()
+                + "; content = " + response.getContent());
       }
     } catch (IOException e) {
-      LOGGER.error("get service message fails", e);
+      throw new OperationException(
+          "get service message fails", e);
     }
-    return null;
   }
 
   /**
@@ -238,7 +264,8 @@ public class ServiceCenterClient {
    *
    * @param instance
    * @param serviceId
-   * @return service instanceId ; when error happens,return null
+   * @return instanceId
+   * @throws OperationException
    */
   public String registerMicroserviceInstance(MicroserviceInstance instance, String serviceId) {
     try {
@@ -249,20 +276,23 @@ public class ServiceCenterClient {
       if (response.getStatusCode() == HttpStatus.SC_OK) {
         return response.getContent();
       } else {
-        LOGGER.error("register service instance fails, responseStatusCode={}, responseMessage={}, responseContent{}",
-            response.getStatusCode(), response.getMessage(), response.getContent());
+        throw new OperationException(
+            "register service instance fails, statusCode = " + response.getStatusCode() + "; message = " + response
+                .getMessage()
+                + "; content = " + response.getContent());
       }
     } catch (IOException e) {
-      LOGGER.error("register service instance fails", e);
+      throw new OperationException(
+          "register service instance fails", e);
     }
-    return null;
   }
 
   /**
    * Find microservice instances of service-center
    *
    * @param serviceId
-   * @return MicroserviceInstancesResponse ; when error happens,return null
+   * @return MicroserviceInstancesResponse
+   * @throws OperationException
    */
   public MicroserviceInstancesResponse getMicroserviceInstanceList(String serviceId) {
     try {
@@ -272,13 +302,15 @@ public class ServiceCenterClient {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(response.getContent(), MicroserviceInstancesResponse.class);
       } else {
-        LOGGER.error("get service instances list fails, responseStatusCode={}, responseMessage={}, responseContent{}",
-            response.getStatusCode(), response.getMessage(), response.getContent());
+        throw new OperationException(
+            "get service instances list fails, statusCode = " + response.getStatusCode() + "; message = " + response
+                .getMessage()
+                + "; content = " + response.getContent());
       }
     } catch (IOException e) {
-      LOGGER.error("get service instance list fails", e);
+      throw new OperationException(
+          "get service instances list fails", e);
     }
-    return null;
   }
 
   /**
@@ -286,7 +318,8 @@ public class ServiceCenterClient {
    *
    * @param serviceId
    * @param instanceId
-   * @return MicroserviceInstance; when error happens,return null
+   * @return MicroserviceInstance
+   * @throws OperationException
    */
   @SuppressWarnings("unchecked")
   public MicroserviceInstance getMicroserviceInstance(String serviceId, String instanceId) {
@@ -298,13 +331,15 @@ public class ServiceCenterClient {
         JsonNode jsonNode = mapper.readTree(response.getContent());
         return mapper.readValue(jsonNode.get("instance").toString(), MicroserviceInstance.class);
       } else {
-        LOGGER.error("get service instance message fails, responseStatusCode={}, responseMessage={}, responseContent{}",
-            response.getStatusCode(), response.getMessage(), response.getContent());
+        throw new OperationException(
+            "get service instance message fails, statusCode = " + response.getStatusCode() + "; message = " + response
+                .getMessage()
+                + "; content = " + response.getContent());
       }
     } catch (IOException e) {
-      LOGGER.error("get service instance message fails", e);
+      throw new OperationException(
+          "get service instance message fails", e);
     }
-    return null;
   }
 
   /**
@@ -313,6 +348,7 @@ public class ServiceCenterClient {
    * @param serviceId
    * @param instanceId
    * @return
+   * @throws OperationException
    */
   public void deleteMicroserviceInstance(String serviceId, String instanceId) {
     try {
@@ -321,11 +357,14 @@ public class ServiceCenterClient {
       if (response.getStatusCode() == HttpStatus.SC_OK) {
         LOGGER.info("DELETE SERVICE INSTANCE OK");
       } else {
-        LOGGER.error("delete service instance fails, responseStatusCode={}, responseMessage={}, responseContent{}",
-            response.getStatusCode(), response.getMessage(), response.getContent());
+        throw new OperationException(
+            "delete service instance fails, statusCode = " + response.getStatusCode() + "; message = " + response
+                .getMessage()
+                + "; content = " + response.getContent());
       }
     } catch (IOException e) {
-      LOGGER.error("delete service instance fails", e);
+      throw new OperationException(
+          "delete service instance fails", e);
     }
   }
 
@@ -335,7 +374,8 @@ public class ServiceCenterClient {
    * @param serviceId
    * @param instanceId
    * @param status
-   * @return
+   * @return true
+   * @throws OperationException
    */
   public boolean updateMicroserviceInstanceStatus(String serviceId, String instanceId,
       MicroserviceInstanceStatus status) {
@@ -346,14 +386,15 @@ public class ServiceCenterClient {
         LOGGER.info("UPDATE STATUS OK");
         return true;
       } else {
-        LOGGER
-            .error("update service instance status fails, responseStatusCode={}, responseMessage={}, responseContent{}",
-                response.getStatusCode(), response.getMessage(), response.getContent());
+        throw new OperationException(
+            "update service instance status fails, statusCode = " + response.getStatusCode() + "; message = " + response
+                .getMessage()
+                + "; content = " + response.getContent());
       }
     } catch (IOException e) {
-      LOGGER.error("update service instance status fails", e);
+      throw new OperationException(
+          "update service instance status fails", e);
     }
-    return false;
   }
 
   /**
@@ -361,6 +402,7 @@ public class ServiceCenterClient {
    *
    * @param heartbeatsRequest
    * @return
+   * @throws OperationException
    */
   public void sendHeartBeats(HeartbeatsRequest heartbeatsRequest) {
     try {
@@ -369,13 +411,15 @@ public class ServiceCenterClient {
           .putHttpRequest("/registry/heartbeats", null, mapper.writeValueAsString(heartbeatsRequest));
 
       if (response.getStatusCode() == HttpStatus.SC_OK) {
-        LOGGER.info("SEND HEARTBEATS OK");
+        LOGGER.info("HEARTBEATS SUCCESS");
       } else {
-        LOGGER.error("send heartbeats fails, responseStatusCode={}, responseMessage={}, responseContent{}",
-            response.getStatusCode(), response.getMessage(), response.getContent());
+        throw new OperationException(
+            "heartbeats fails, statusCode = " + response.getStatusCode() + "; message = " + response.getMessage()
+                + "; content = " + response.getContent());
       }
     } catch (IOException e) {
-      LOGGER.error("send heartbeats fails", e);
+      throw new OperationException(
+          "heartbeats fails ", e);
     }
   }
 }

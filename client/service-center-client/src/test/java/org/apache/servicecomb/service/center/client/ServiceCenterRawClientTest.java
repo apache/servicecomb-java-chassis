@@ -34,7 +34,9 @@ public class ServiceCenterRawClientTest {
 
   private static final int DEFAULT_PORT = 30100;
 
-  private static final String DOMAIN_NAME = "default";
+  private static final String PROJECT_NAME = "default";
+
+  private static final String TENANT_NAME = "default";
 
   @Test
   public void TestDefaultParameter() throws IOException {
@@ -45,17 +47,15 @@ public class ServiceCenterRawClientTest {
         .setHttpTransport(httpTransport)
         .setHost(DEFAULT_HOST)
         .setPort(DEFAULT_PORT)
-        .setDomainName(DOMAIN_NAME)
+        .setProjectName(PROJECT_NAME)
+        .setTenantName(TENANT_NAME)
         .build();
 
     HttpResponse httpResponse = new HttpResponse();
     httpResponse.setStatusCode(200);
     httpResponse.setContent("ok");
 
-    Mockito.when(httpTransport.get(Mockito.any())).thenReturn(httpResponse);
-    Mockito.when(httpTransport.post(Mockito.any())).thenReturn(httpResponse);
-    Mockito.when(httpTransport.put(Mockito.any())).thenReturn(httpResponse);
-    Mockito.when(httpTransport.delete(Mockito.any())).thenReturn(httpResponse);
+    Mockito.when(httpTransport.doRequest(Mockito.any())).thenReturn(httpResponse);
 
     HttpResponse actualGetResponse = client.getHttpRequest(null, null, null);
     HttpResponse actualPostResponse = client.postHttpRequest(null, null, null);
