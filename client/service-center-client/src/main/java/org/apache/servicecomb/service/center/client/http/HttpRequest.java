@@ -17,9 +17,29 @@
 
 package org.apache.servicecomb.service.center.client.http;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.client.methods.RequestBuilder;
+import org.apache.http.entity.StringEntity;
 
 public class HttpRequest {
+
+  public static final String GET = "GET";
+
+  public static final String POST = "POST";
+
+  public static final String DELETE = "DELETE";
+
+  public static final String PUT = "PUT";
+
+  private String method;
 
   private String url;
 
@@ -27,10 +47,11 @@ public class HttpRequest {
 
   private String content;
 
-  public HttpRequest(String url, Map<String, String> headers, String content) {
+  public HttpRequest(String url, Map<String, String> headers, String content, String method) {
     this.url = url;
     this.headers = headers;
     this.content = content;
+    this.method = method;
   }
 
   public String getUrl() {
@@ -41,7 +62,59 @@ public class HttpRequest {
     return headers;
   }
 
+  public void addHeader(String name, String value) {
+    if (headers == null) {
+      headers = new HashMap<>();
+    }
+    headers.put(name, value);
+  }
+
   public String getContent() {
     return content;
+  }
+
+  public String getMethod() {
+    return method;
+  }
+
+  public void setMethod(String method) {
+    this.method = method;
+  }
+
+  public HttpUriRequest getRealRequest() {
+
+    HttpUriRequest httpUriRequest = null;
+
+    switch (method) {
+      case GET: {
+        httpUriRequest = new HttpGet(url);
+        break;
+      }
+      case POST: {
+        httpUriRequest = new HttpPost(url);
+        if (content != null) {
+          ((HttpPost) httpUriRequest).setEntity(new StringEntity(content, "UTF-8"));
+        }
+        break;
+      }
+      case DELETE: {
+        httpUriRequest = new HttpDelete(url);
+        break;
+      }
+      case PUT: {
+        httpUriRequest = new HttpPut(url);
+        if (content != null) {
+          ((HttpPut) httpUriRequest).setEntity(new StringEntity(content, "UTF-8"));
+        }
+        break;
+      }
+      default: {
+        httpUriRequest = RequestBuilder.create(method).build();
+      }
+    }
+
+    Optional.ofNullable(httpUriRequest).ifPresent(request -> headers.forEach(request::addHeader));
+
+    return httpUriRequest;
   }
 }

@@ -37,9 +37,13 @@ public class ServiceCenterRawClient {
 
   private static final int DEFAULT_PORT = 30100;
 
-  private static final String DOMAIN_NAME = "default";
+  private static final String PROJECT_NAME = "default";
 
   private static final String V4_PREFIX = "v4";
+
+  private static final String HEADER_TENANT_NAME = "x-domain-name";
+
+  private static final String DEFAULT_HEADER_TENANT_NAME = "default";
 
   private String basePath;
 
@@ -47,19 +51,24 @@ public class ServiceCenterRawClient {
 
   private int port;
 
-  private String domainName;
+  private String projectName;
+
+  private String tenantName;
 
   private HttpTransport httpTransport;
 
   public ServiceCenterRawClient() {
-    this(DEFAULT_HOST, DEFAULT_PORT, DOMAIN_NAME, HttpTransportFactory.getDefaultHttpTransport());
+    this(DEFAULT_HOST, DEFAULT_PORT, PROJECT_NAME, HttpTransportFactory.getDefaultHttpTransport(),
+        DEFAULT_HEADER_TENANT_NAME);
   }
 
-  private ServiceCenterRawClient(String host, int port, String domainName, HttpTransport httpTransport) {
+  private ServiceCenterRawClient(String host, int port, String projectName, HttpTransport httpTransport,
+      String tenantName) {
     this.host = host;
     this.port = port;
-    this.domainName = domainName;
+    this.projectName = projectName;
     this.httpTransport = httpTransport;
+    this.tenantName = tenantName;
 
     // check that host has scheme or not
     String hostLowercase = host.toLowerCase();
@@ -72,59 +81,34 @@ public class ServiceCenterRawClient {
       }
     }
 
-    this.basePath = host + ":" + port + "/" + V4_PREFIX + "/" + domainName;
+    this.basePath = host + ":" + port + "/" + V4_PREFIX + "/" + projectName;
   }
 
   public HttpResponse getHttpRequest(String url, Map<String, String> headers, String content) throws IOException {
-
-    if (headers == null) {
-      headers = new HashMap<String, String>();
-    }
-
-    HttpRequest httpRequest = new HttpRequest(basePath + url, headers, content);
-
-    return httpTransport.get(httpRequest);
+    return doHttpRequest(url, headers, content, HttpRequest.GET);
   }
 
   public HttpResponse postHttpRequest(String url, Map<String, String> headers, String content) throws IOException {
-
-    if (headers == null) {
-      headers = new HashMap<String, String>();
-    }
-
-    HttpRequest httpRequest = new HttpRequest(basePath + url, headers, content);
-
-    return httpTransport.post(httpRequest);
+    return doHttpRequest(url, headers, content, HttpRequest.POST);
   }
 
   public HttpResponse putHttpRequest(String url, Map<String, String> headers, String content) throws IOException {
-
-    if (headers == null) {
-      headers = new HashMap<String, String>();
-    }
-
-    HttpRequest httpRequest = new HttpRequest(basePath + url, headers, content);
-
-    return httpTransport.put(httpRequest);
+    return doHttpRequest(url, headers, content, HttpRequest.PUT);
   }
 
   public HttpResponse deleteHttpRequest(String url, Map<String, String> headers, String content) throws IOException {
+    return doHttpRequest(url, headers, content, HttpRequest.DELETE);
+  }
 
+  private HttpResponse doHttpRequest(String url, Map<String, String> headers, String content, String method)
+      throws IOException {
     if (headers == null) {
-      headers = new HashMap<String, String>();
+      headers = new HashMap<>();
     }
+    headers.put(HEADER_TENANT_NAME, tenantName);
+    HttpRequest httpRequest = new HttpRequest(basePath + url, headers, content, method);
 
-    HttpRequest httpRequest = new HttpRequest(basePath + url, headers, content);
-
-    return httpTransport.delete(httpRequest);
-  }
-
-  public HttpTransport getHttpTransport() {
-    return httpTransport;
-  }
-
-  public void setHttpTransport(HttpTransport httpTransport) {
-    this.httpTransport = httpTransport;
+    return httpTransport.doRequest(httpRequest);
   }
 
   public static class Builder {
@@ -132,25 +116,28 @@ public class ServiceCenterRawClient {
 
     private int port;
 
-    private String domainName;
+    private String projectName;
+
+    private String tenantName;
 
     private HttpTransport httpTransport = HttpTransportFactory.getDefaultHttpTransport();
 
     public Builder() {
       this.host = DEFAULT_HOST;
       this.port = DEFAULT_PORT;
-      this.domainName = DOMAIN_NAME;
+      this.projectName = PROJECT_NAME;
+      this.tenantName = DEFAULT_HEADER_TENANT_NAME;
     }
 
-    public String getDomainName() {
-      return domainName;
+    public String getProjectName() {
+      return projectName;
     }
 
-    public Builder setDomainName(String domain_name) {
-      if (domain_name == null) {
-        domain_name = DOMAIN_NAME;
+    public Builder setProjectName(String projectName) {
+      if (projectName == null) {
+        projectName = PROJECT_NAME;
       }
-      this.domainName = domain_name;
+      this.projectName = projectName;
       return this;
     }
 
@@ -192,9 +179,16 @@ public class ServiceCenterRawClient {
       return this;
     }
 
+    public Builder setTenantName(String tenantName) {
+      if (tenantName == null) {
+        tenantName = DEFAULT_HEADER_TENANT_NAME;
+      }
+      this.tenantName = tenantName;
+      return this;
+    }
 
     public ServiceCenterRawClient build() {
-      return new ServiceCenterRawClient(host, port, domainName, httpTransport);
+      return new ServiceCenterRawClient(host, port, projectName, httpTransport, tenantName);
     }
   }
 }
