@@ -58,6 +58,9 @@ public class LoadBalancer {
     List<ServiceCombServer> servers = invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST);
     int serversCount = servers.size();
     for (ServerListFilterExt filterExt : filters) {
+      if(!filterExt.enabled()) {
+        continue;
+      }
       servers = filterExt.getFilteredListOfServers(servers, invocation);
       if (servers.isEmpty() && serversCount > 0) {
         LOGGER.warn("There are not servers exist after filtered by {}.", filterExt.getClass());
