@@ -125,6 +125,8 @@
     <module>java-chassis-spring-boot</module>
     <module>inspector</module>
     <module>solutions</module>
+    <module>client/kie-client</module>
+    <module>client/service-center-client</module>
   </modules>
 
   <reporting>
