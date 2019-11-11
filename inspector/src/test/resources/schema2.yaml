@@ -33,7 +33,7 @@ paths:
       operationId: "checkHealth"
       parameters: []
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "boolean"
@@ -42,7 +42,7 @@ paths:
       operationId: "checkHealthDetails"
       parameters: []
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "object"

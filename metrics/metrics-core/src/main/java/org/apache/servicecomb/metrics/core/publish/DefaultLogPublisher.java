@@ -350,7 +350,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
 
   private StringBuilder printProducerDetailsPerf(OperationPerfGroup perfGroup) {
     StringBuilder sb = new StringBuilder();
-    //append rest.200:
+    //append rest."200":
     sb.append("    ")
         .append(perfGroup.getTransport())
         .append(".")
@@ -391,7 +391,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
 
   private StringBuilder printConsumerDetailsPerf(OperationPerfGroup perfGroup) {
     StringBuilder sb = new StringBuilder();
-    //append rest.200:
+    //append rest."200":
     sb.append("    ")
         .append(perfGroup.getTransport())
         .append(".")
@@ -438,7 +438,7 @@ public class DefaultLogPublisher implements MetricsInitializer {
 
   private StringBuilder printEdgeDetailsPerf(OperationPerfGroup perfGroup) {
     StringBuilder sb = new StringBuilder();
-    //append rest.200:
+    //append rest."200":
     sb.append("    ")
         .append(perfGroup.getTransport())
         .append(".")

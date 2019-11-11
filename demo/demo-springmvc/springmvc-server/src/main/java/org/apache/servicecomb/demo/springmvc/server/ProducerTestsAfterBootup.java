@@ -53,9 +53,9 @@ public class ProducerTestsAfterBootup implements BootListener {
             CodeFirstSpringmvcForSchema.class,
             new CodeFirstSpringmvcForSchema());
     String codeFirst = getSwaggerContent(meta.getSwagger());
-    TestMgr.check("2986daa46b229ec125443122dd7b51ee9a64879f1750d0996f948ce0718685c7",
+    TestMgr.check("608f6cbb3554839de311d90d16a44ffc41ef66575101e172eb54ccc255e8675d",
         RegistryUtils.calcSchemaSummary(codeFirst));
-    TestMgr.check(codeFirst.length(), 889);
+    TestMgr.check(codeFirst.length(), 891);
   }
 
   public void testRegisteredBasePath() {

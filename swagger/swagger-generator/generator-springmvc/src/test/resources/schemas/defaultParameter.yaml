@@ -37,7 +37,7 @@ paths:
         type: "integer"
         format: "int32"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /usingGetMapping:
     get:
@@ -49,7 +49,7 @@ paths:
         type: "integer"
         format: "int32"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /usingPatchMapping:
     patch:
@@ -61,7 +61,7 @@ paths:
         type: "integer"
         format: "int32"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /usingPostMapping:
     post:
@@ -73,7 +73,7 @@ paths:
         type: "integer"
         format: "int32"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /usingPutMapping:
     put:
@@ -85,7 +85,7 @@ paths:
         type: "integer"
         format: "int32"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /usingRequestMapping:
     put:
@@ -97,5 +97,5 @@ paths:
         type: "integer"
         format: "int32"
       responses:
-        200:
+        "200":
           description: "response of 200"

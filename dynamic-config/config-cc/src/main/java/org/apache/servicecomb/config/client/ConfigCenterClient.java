@@ -384,7 +384,7 @@ public class ConfigCenterClient {
               try {
                 parseConfigUtils
                     .refreshConfigItems(JsonUtils.OBJ_MAPPER.readValue(buf.toString(),
-                        new TypeReference<LinkedHashMap<String, Map<String, String>>>() {
+                        new TypeReference<LinkedHashMap<String, Map<String, Object>>>() {
                         }));
                 EventManager.post(new ConnSuccEvent());
               } catch (IOException e) {

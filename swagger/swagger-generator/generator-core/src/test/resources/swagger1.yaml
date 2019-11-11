@@ -33,7 +33,7 @@ paths:
           required: true
           type: string
       responses:
-        200:
+        "200":
           description: say hello
           schema:
             type: string
