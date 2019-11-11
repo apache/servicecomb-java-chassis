@@ -49,7 +49,7 @@ paths:
           schema:
             $ref: '#/definitions/User'
       responses: 
-        200:
+        "200":
           description: asdf
           schema: 
             $ref: '#/definitions/User'
@@ -67,7 +67,7 @@ paths:
           schema: 
             $ref: '#/definitions/TestRequest'
       responses: 
-        200:
+        "200":
           description: asdf
           schema: 
             $ref: '#/definitions/User'

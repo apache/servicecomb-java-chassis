@@ -51,7 +51,7 @@ paths:
           type: integer
           format: int32
       responses: 
-        200:
+        "200":
           description: add numer
           schema: 
             type: integer
@@ -71,7 +71,7 @@ paths:
           type: integer
           format: int32
       responses:
-        200:
+        "200":
           description: reduce
           schema:
             type: integer
@@ -86,7 +86,7 @@ paths:
           schema:
             $ref: '#/definitions/Person'
       responses:
-        200:
+        "200":
           description: say hello
           schema:
             $ref: '#/definitions/Person'
@@ -100,7 +100,7 @@ paths:
           x-raw-json: true
           type: string
       responses:
-        200:
+        "200":
           description: test RawJson String
           schema:
             type: string
@@ -118,7 +118,7 @@ paths:
           schema:
             $ref: '#/definitions/Person'
       responses:
-        200:
+        "200":
           description: say something
           schema:
             type: string
@@ -131,7 +131,7 @@ paths:
           required: true
           type: string
       responses:
-        200:
+        "200":
           description: say hi
           schema:
             type: string
@@ -148,7 +148,7 @@ paths:
           required: true
           type: string
       responses:
-        200:
+        "200":
           description: say hi
           schema:
             type: string
@@ -161,7 +161,7 @@ paths:
           required: true
           type: string
       responses:
-        200:
+        "200":
           description: say hi
           schema:
             type: string
@@ -169,7 +169,7 @@ paths:
     get:
       operationId: isTrue
       responses:
-        200:
+        "200":
           description: is true
           schema:
             type: boolean
@@ -186,7 +186,7 @@ paths:
           items:
             type: string
       responses:
-        200:
+        "200":
           description: add string
           schema:
             type: string

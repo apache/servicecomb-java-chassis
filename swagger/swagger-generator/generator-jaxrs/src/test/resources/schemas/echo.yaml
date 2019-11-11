@@ -55,7 +55,7 @@ paths:
         required: false
         type: "string"
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "string"

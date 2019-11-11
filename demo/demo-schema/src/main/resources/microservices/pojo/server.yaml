@@ -47,7 +47,7 @@ paths:
           items:
             type: string
       responses:
-        200:
+        "200":
           description: asdf
           schema: 
             type: string
@@ -60,7 +60,7 @@ paths:
           required: false
           type: string
       responses:
-        200:
+        "200":
           description: asdf
           schema: 
             type: string
@@ -73,7 +73,7 @@ paths:
           type: integer
           format: int32
       responses:
-        200:
+        "200":
           description: asdf
           schema: 
             type: string
@@ -86,7 +86,7 @@ paths:
           type: integer
           format: int32
       responses:
-        200:
+        "200":
           description: asdf
           schema: 
             type: string
@@ -100,7 +100,7 @@ paths:
           type: integer
           format: int32
       responses:
-        200:
+        "200":
           description: asdf
           schema: 
             type: string
@@ -136,7 +136,7 @@ paths:
           schema:
             $ref: '#/definitions/User'
       responses: 
-        200:
+        "200":
           description: asdf
           schema: 
             $ref: '#/definitions/User'
@@ -154,7 +154,7 @@ paths:
           schema: 
             $ref: '#/definitions/TestRequest'
       responses: 
-        200:
+        "200":
           description: asdf
           schema: 
             $ref: '#/definitions/User'
@@ -173,7 +173,7 @@ paths:
           items:
             type: string
       responses:
-        200:
+        "200":
           description: add string
           schema:
             type: string
@@ -181,7 +181,7 @@ paths:
     get:
       operationId: testTraceId
       responses:
-        200:
+        "200":
           description: get trace id
           schema:
             type: string

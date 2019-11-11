@@ -37,7 +37,7 @@ paths:
         schema:
           $ref: "#/definitions/testShortBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
 definitions:
   testShortBody:

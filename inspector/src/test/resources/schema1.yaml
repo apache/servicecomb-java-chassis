@@ -37,7 +37,7 @@ paths:
           description: "illegal request content"
           schema:
             type: "string"
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "object"
