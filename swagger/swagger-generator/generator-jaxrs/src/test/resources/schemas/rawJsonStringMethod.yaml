@@ -38,5 +38,5 @@ paths:
           type: "string"
         x-raw-json: true
       responses:
-        200:
+        "200":
           description: "response of 200"

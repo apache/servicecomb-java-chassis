@@ -34,5 +34,5 @@ paths:
       operationId: "emptyPath"
       parameters: []
       responses:
-        200:
+        "200":
           description: "response of 200"
