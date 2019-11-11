@@ -37,14 +37,14 @@ paths:
         schema:
           $ref: "#/definitions/AllType"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testApiOperation:
     post:
       operationId: "testApiOperation"
       parameters: []
       responses:
-        200:
+        "200":
           description: "response of 200"
           headers:
             h:
@@ -54,7 +54,7 @@ paths:
       operationId: "testApiResponse"
       parameters: []
       responses:
-        200:
+        "200":
           description: "response of 200"
           headers:
             h:
@@ -69,7 +69,7 @@ paths:
         schema:
           $ref: "#/definitions/testArrayBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testBoolean:
     post:
@@ -81,7 +81,7 @@ paths:
         schema:
           $ref: "#/definitions/testBooleanBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testByte:
     post:
@@ -93,7 +93,7 @@ paths:
         schema:
           $ref: "#/definitions/testByteBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testBytes:
     post:
@@ -105,7 +105,7 @@ paths:
         schema:
           $ref: "#/definitions/testBytesBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testChar:
     post:
@@ -117,14 +117,14 @@ paths:
         schema:
           $ref: "#/definitions/testCharBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testCompletableFuture:
     post:
       operationId: "testCompletableFuture"
       parameters: []
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "string"
@@ -133,7 +133,7 @@ paths:
       operationId: "testCompletableFutureOptional"
       parameters: []
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "string"
@@ -142,7 +142,7 @@ paths:
       operationId: "testDate"
       parameters: []
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "string"
@@ -157,7 +157,7 @@ paths:
         schema:
           $ref: "#/definitions/testDoubleBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testEnum:
     post:
@@ -169,7 +169,7 @@ paths:
         schema:
           $ref: "#/definitions/testEnumBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testFloat:
     post:
@@ -181,7 +181,7 @@ paths:
         schema:
           $ref: "#/definitions/testFloatBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testInteger:
     post:
@@ -193,7 +193,7 @@ paths:
         schema:
           $ref: "#/definitions/testIntegerBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testList:
     post:
@@ -205,7 +205,7 @@ paths:
         schema:
           $ref: "#/definitions/testListBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testLong:
     post:
@@ -217,7 +217,7 @@ paths:
         schema:
           $ref: "#/definitions/testLongBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testMap:
     post:
@@ -229,7 +229,7 @@ paths:
         schema:
           $ref: "#/definitions/testMapBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testMapList:
     post:
@@ -241,7 +241,7 @@ paths:
         schema:
           $ref: "#/definitions/testMapListBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testMultiParam:
     post:
@@ -253,7 +253,7 @@ paths:
         schema:
           $ref: "#/definitions/testMultiParamBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "array"
@@ -269,14 +269,14 @@ paths:
         schema:
           $ref: "#/definitions/User"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testOptional:
     post:
       operationId: "testOptional"
       parameters: []
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "string"
@@ -285,7 +285,7 @@ paths:
       operationId: "testResponseHeader"
       parameters: []
       responses:
-        200:
+        "200":
           description: "response of 200"
           headers:
             h:
@@ -300,7 +300,7 @@ paths:
         schema:
           $ref: "#/definitions/testSetBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testShort:
     post:
@@ -312,7 +312,7 @@ paths:
         schema:
           $ref: "#/definitions/testShortBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testString:
     post:
@@ -324,7 +324,7 @@ paths:
         schema:
           $ref: "#/definitions/testStringBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testboolean:
     post:
@@ -336,7 +336,7 @@ paths:
         schema:
           $ref: "#/definitions/testbooleanBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testbyte:
     post:
@@ -348,7 +348,7 @@ paths:
         schema:
           $ref: "#/definitions/testbyteBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testbytes:
     post:
@@ -360,7 +360,7 @@ paths:
         schema:
           $ref: "#/definitions/testbytesBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testchar:
     post:
@@ -372,7 +372,7 @@ paths:
         schema:
           $ref: "#/definitions/testcharBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testdouble:
     post:
@@ -384,7 +384,7 @@ paths:
         schema:
           $ref: "#/definitions/testdoubleBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testfloat:
     post:
@@ -396,7 +396,7 @@ paths:
         schema:
           $ref: "#/definitions/testfloatBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testint:
     post:
@@ -408,7 +408,7 @@ paths:
         schema:
           $ref: "#/definitions/testintBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testlong:
     post:
@@ -420,7 +420,7 @@ paths:
         schema:
           $ref: "#/definitions/testlongBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testshort:
     post:
@@ -432,7 +432,7 @@ paths:
         schema:
           $ref: "#/definitions/testshortBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
 definitions:
   AllType:

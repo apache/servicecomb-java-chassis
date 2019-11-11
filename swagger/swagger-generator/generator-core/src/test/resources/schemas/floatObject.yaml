@@ -37,7 +37,7 @@ paths:
         schema:
           $ref: "#/definitions/testFloatBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
 definitions:
   testFloatBody:

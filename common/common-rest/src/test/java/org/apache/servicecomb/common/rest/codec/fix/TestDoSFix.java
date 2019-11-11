@@ -26,7 +26,7 @@ import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.exc.InputCoercionException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -108,7 +108,7 @@ public class TestDoSFix {
   }
 
   void batFastFail(Class<?> cls) {
-    batFastFail(cls, JsonParseException.class, InvalidFormatException.class);
+    batFastFail(cls, InputCoercionException.class, InvalidFormatException.class);
   }
 
   void batFastFail(String fieldName, Class<?> e1, Class<?> e2) {
@@ -130,8 +130,8 @@ public class TestDoSFix {
 
   @Test
   public void testChar() {
-    batFastFail(char.class, JsonParseException.class, MismatchedInputException.class);
-    batFastFail(Character.class, JsonParseException.class, MismatchedInputException.class);
+    batFastFail(char.class, InputCoercionException.class, MismatchedInputException.class);
+    batFastFail(Character.class, InputCoercionException.class, MismatchedInputException.class);
 
     batFastFail("cValue", JsonMappingException.class, MismatchedInputException.class);
     batFastFail("cObjValue", JsonMappingException.class, MismatchedInputException.class);
