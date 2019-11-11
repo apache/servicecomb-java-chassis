@@ -21,8 +21,17 @@
 
 ### Basic Usage
 
-#### Case 1: Create value of a key
+#### Case 1: Setting host and port for connecting server 
+```java
+//setting host= 192.168.88.229, port = 30111 and unset projectName
+KieClient kieClient = new KieClient("192.168.88.299",30111,null);
+
+//unsetting host,port,projectName and use default
+KieClient kieClient = new KieClient();
 ```
+
+#### Case 2: Create value of a key
+```java
 KieClient kieClient = new KieClient();
 
 //state a KVBody Object
@@ -36,16 +45,16 @@ kvBody.setLabels(labels);
 kieClient1.putKeyValue("test",kvBody)  
 ```
 
-#### Case 2: Get value of a key
-```
+#### Case 3: Get value of a key
+```java
 KieClient kieClient = new KieClient();
 
 //get key-value by key
 List<KVResponse> kvResponses = kieClient.getValueOfKey("test");
 ```
 
-#### Case 3: Search key-value by lables
-```
+#### Case 4: Search key-value by lables
+```java
 KieClient kieClient = new KieClient();
 
 //state a Map<String,String> as labels
@@ -56,8 +65,8 @@ labels.put("app", "111");
 List<KVResponse> searchKVResponses = kieClient.searchKeyValueByLabels(labels);
 ```
 
-#### Case 4: Delete key-value
-```
+#### Case 5: Delete key-value
+```java
 KieClient kieClient = new KieClient(kieRawClient);
 
 //get key-value by key
