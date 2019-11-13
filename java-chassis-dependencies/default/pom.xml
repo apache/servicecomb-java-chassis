@@ -187,6 +187,12 @@
         <groupId>com.fasterxml.jackson.dataformat</groupId>
         <artifactId>jackson-dataformat-xml</artifactId>
         <version>${jackson.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.fasterxml.woodstox</groupId>
+            <artifactId>woodstox-core</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -228,7 +234,17 @@
       <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>26.0-jre</version>
+        <version>${guava.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.google.errorprone</groupId>
+            <artifactId>error_prone_annotations</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>animal-sniffer-annotations</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
@@ -397,6 +413,12 @@
         <groupId>io.github.swagger2markup</groupId>
         <artifactId>swagger2markup</artifactId>
         <version>${swagger2markup.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-compat-spec-parser</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
