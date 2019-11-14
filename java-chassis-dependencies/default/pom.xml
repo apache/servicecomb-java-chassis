@@ -106,7 +106,6 @@
     <tec-zkclient.version>0.10</tec-zkclient.version>
     <tomakehurst.version>2.6.0</tomakehurst.version>
     <vertx.version>3.6.3</vertx.version>
-    <woodstox.version>4.4.1</woodstox.version>
     <xstream.version>1.4.11.1</xstream.version>
     <zipkin.version>2.9.3</zipkin.version>
     <zipkin-reporter.version>2.7.13</zipkin-reporter.version>
@@ -191,6 +190,10 @@
           <exclusion>
             <groupId>com.fasterxml.woodstox</groupId>
             <artifactId>woodstox-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>woodstox-core-asl</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -418,6 +421,10 @@
             <groupId>io.swagger</groupId>
             <artifactId>swagger-compat-spec-parser</artifactId>
           </exclusion>
+          <exclusion>
+            <groupId>commons-collections</groupId>
+            <artifactId>commons-collections</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
 
@@ -533,6 +540,12 @@
         <groupId>io.protostuff</groupId>
         <artifactId>protostuff-parser</artifactId>
         <version>${protostuff-parser.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.abego.treelayout</groupId>
+            <artifactId>org.abego.treelayout.core</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>io.protostuff</groupId>
@@ -750,6 +763,12 @@
         <groupId>org.asciidoctor</groupId>
         <artifactId>asciidoctorj</artifactId>
         <version>${asciidoctorj.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jzlib</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
@@ -770,13 +789,6 @@
         <artifactId>jettison</artifactId>
         <version>${jettison.version}</version>
         <scope>runtime</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>org.codehaus.woodstox</groupId>
-        <artifactId>woodstox-core-asl</artifactId>
-        <version>${woodstox.version}</version>
-        <scope>provided</scope>
       </dependency>
 
       <dependency>
