@@ -23,9 +23,9 @@ import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 public class AddressInformationCollector implements BootUpInformationCollector {
   @Override
   public String collect() {
-    return "service center: "
+    return "Service Center: "
         + getCenterInfo(Deployment.getSystemBootStrapInfo("ServiceCenter"))
-        + "\n" + "config center: "
+        + "\n" + "Config Center: "
         + getCenterInfo(Deployment.getSystemBootStrapInfo("ConfigCenter"));
   }
 
