@@ -24,12 +24,12 @@ public class ServiceInformationCollector implements BootUpInformationCollector {
 
   @Override
   public String collect() {
-    return "AppID: " + RegistryUtils.getMicroservice().getAppId()
-        + "\n" + "ServiceName: " + RegistryUtils.getMicroservice().getServiceName()
+    return "App ID: " + RegistryUtils.getMicroservice().getAppId()
+        + "\n" + "Service Name: " + RegistryUtils.getMicroservice().getServiceName()
         + "\n" + "Version: " + RegistryUtils.getMicroservice().getVersion()
-        + "\n" + "Environment: " + RegistryUtils.getMicroserviceInstance().getEnvironment()
-        + "\n" + "ServiceID: " + RegistryUtils.getMicroserviceInstance().getServiceId()
-        + "\n" + "InstanceID; " + RegistryUtils.getMicroserviceInstance().getInstanceId();
+        + "\n" + "Environment: " + RegistryUtils.getMicroservice().getEnvironment()
+        + "\n" + "Service ID: " + RegistryUtils.getMicroserviceInstance().getServiceId()
+        + "\n" + "Instance ID: " + RegistryUtils.getMicroserviceInstance().getInstanceId();
   }
 
   @Override
