@@ -19,17 +19,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <parent>
+        <artifactId>clients</artifactId>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>java-chassis-parent</artifactId>
         <version>2.0.0-SNAPSHOT</version>
-        <relativePath>../../parents/default</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>service-center-client</artifactId>
-    <name>ServiceComb::ServiceCenter::Client</name>
-    
+    <artifactId>kie-client</artifactId>
+    <name>ServiceComb::Kie::Client</name>
     <build>
         <plugins>
             <plugin>
@@ -75,4 +74,5 @@
             <artifactId>mockito-core</artifactId>
         </dependency>
     </dependencies>
+
 </project>
