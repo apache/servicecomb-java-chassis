@@ -172,6 +172,7 @@ public class TestTcpClientConnection {
       {
         tcpClientPackage.getMsgId();
         result = msgId;
+        tcpClientConnection.write((ByteBuf) any);
       }
     };
     new MockUp<Context>(context) {

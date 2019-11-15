@@ -87,13 +87,6 @@ public class TestEdgeInvocation {
 
   @Before
   public void setup() {
-    new Expectations(VertxImpl.class) {
-      {
-        VertxImpl.context();
-        result = context;
-      }
-    };
-
     referenceConfig.setMicroserviceVersionRule(microserviceVersionRule);
     referenceConfig.setTransport("rest");
 

@@ -20,9 +20,8 @@ package org.apache.servicecomb.foundation.vertx.http;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletInputStream;
@@ -118,12 +117,12 @@ public class TestVertxServerRequestToHttpServletRequest {
 
   @Test
   public void testGetCookies() {
-    Set<io.vertx.ext.web.Cookie> vertxCookies = new LinkedHashSet<>();
-    vertxCookies.add(io.vertx.ext.web.Cookie.cookie("c1", "c1v"));
-    vertxCookies.add(io.vertx.ext.web.Cookie.cookie("c2", "c2v"));
+    Map<String, io.vertx.core.http.Cookie>  vertxCookies = new LinkedHashMap<>();
+    vertxCookies.put("c1", io.vertx.core.http.Cookie.cookie("c1", "c1v"));
+    vertxCookies.put("c2", io.vertx.core.http.Cookie.cookie("c2", "c2v"));
     new Expectations() {
       {
-        context.cookies();
+        context.cookieMap();
         result = vertxCookies;
       }
     };
