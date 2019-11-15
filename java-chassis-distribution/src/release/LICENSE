@@ -222,7 +222,7 @@ This product bundles files from stax2 which is licensed under the
 For details, see http://wiki.fasterxml.com/WoodstoxStax2
 You can find a copy of the License at licenses/LICENSE-woodstox-stax2-api
 
-* Stax2 API (org.codehaus.woodstox:stax2-api:3.1.4 - http://wiki.fasterxml.com/WoodstoxStax2)
+* Stax2 API (org.codehaus.woodstox:stax2-api:4.2 - http://wiki.fasterxml.com/WoodstoxStax2)
 
 ================================================================
 This product bundles libraries which are licensed under the
@@ -277,7 +277,7 @@ You can find a copy of the License at licenses/LICENSE-cddl
 * JavaMail API jar (javax.mail:mailapi:1.4.3 - http://java.sun.com/projects/javamail/mailapi)
 * Expression Language 3.0 (org.glassfish:javax.el:3.0.0 - http://el-spec.java.net)
 * Java Servlet API (javax.servlet:javax.servlet-api:4.0.1 - http://servlet-spec.java.net)
-* javax.ws.rs-api (javax.ws.rs:javax.ws.rs-api:2.0.1 - http://jax-rs-spec.java.net)
+* javax.ws.rs-api (javax.ws.rs:javax.ws.rs-api:2.1 - http://jax-rs-spec.java.net)
 * Jersey Apache HTTP Client 4.x (com.sun.jersey.contribs:jersey-apache-client4:2.27 - https://jersey.java.net/jersey-contribs/jersey-apache-client4/)
 * jersey-client (com.sun.jersey:jersey-client:2.27 - https://jersey.java.net/jersey-client/)
 * jersey-core (com.sun.jersey:jersey-core:2.27 - https://jersey.java.net/jersey-core/)
@@ -289,7 +289,7 @@ Public domain.
 For details, see https://github.com/HdrHistogram/HdrHistogram
 You can find a copy of the License at licenses/LICENSE-hdrhistogram
 
-* HdrHistogram (org.hdrhistogram:HdrHistogram:2.1.9 - http://hdrhistogram.github.io/HdrHistogram/)
+* HdrHistogram (org.hdrhistogram:HdrHistogram:2.1.10 - http://hdrhistogram.github.io/HdrHistogram/)
 
 ================================================================
 This product bundles animal-sniffer-annotations which is licensed under the
@@ -473,7 +473,7 @@ For details, see their respective project links.
 * Brave Instrumentation: Http Adapters (io.zipkin.brave:brave-instrumentation-http:5.6.0 - https://github.com/openzipkin/brave/brave-instrumentation-parent/brave-instrumentation-http)
 * Brave Instrumentation: Servlet (io.zipkin.brave:brave-instrumentation-servlet:5.6.0 - https://github.com/openzipkin/brave/brave-instrumentation-parent/brave-instrumentation-servlet)
 * Brave Spring Factory Beans (io.zipkin.brave:brave-spring-beans:5.6.0 - https://github.com/openzipkin/brave/brave-spring-beans)
-* ClassMate (com.fasterxml:classmate:1.3.4 - http://github.com/FasterXML/java-classmate)
+* ClassMate (com.fasterxml:classmate:1.5.0 - http://github.com/FasterXML/java-classmate)
 * Commons Lang (commons-lang:commons-lang:2.6 - http://commons.apache.org/lang/)
 * Core Reactor components (io.projectreactor:reactor-core:2.0.8.RELEASE - https://github.com/reactor/reactor)
 * error-prone annotations (com.google.errorprone:error_prone_annotations:2.1.3 - http://nexus.sonatype.org/oss-repository-hosting.html/error_prone_parent/error_prone_annotations)
@@ -621,10 +621,10 @@ For details, see their respective project links.
 * Vavr (io.vavr:vavr:0.9.1 - http://vavr.io)
 * Vavr Match (io.vavr:vavr-match:0.9.1 - http://vavr.io)
 * Woodstox (com.fasterxml.woodstox:woodstox-core:5.0.3 - https://github.com/FasterXML/woodstox)
-* Zipkin Reporter: Core (io.zipkin.reporter2:zipkin-reporter:2.5.0 - https://github.com/openzipkin/zipkin-reporter-java/zipkin-reporter)
+* Zipkin Reporter: Core (io.zipkin.reporter2:zipkin-reporter:2.7.13 - https://github.com/openzipkin/zipkin-reporter-java/zipkin-reporter)
 * Zipkin Reporter Spring Factory Beans (io.zipkin.reporter2:zipkin-reporter-spring-beans:2.7.13 - https://github.com/openzipkin/zipkin-reporter-java/zipkin-reporter-spring-beans)
 * Zipkin Sender: OkHttp 3 (io.zipkin.reporter2:zipkin-sender-okhttp3:2.7.13 - https://github.com/openzipkin/zipkin-reporter-java/zipkin-sender-okhttp3)
-* Zipkin v2 (io.zipkin.zipkin2:zipkin:2.9.3 - https://github.com/openzipkin/zipkin/zipkin)
+* Zipkin v2 (io.zipkin.zipkin2:zipkin:2.19.1 - https://github.com/openzipkin/zipkin/zipkin)
 * zuul-core (com.netflix.zuul:zuul-core:1.3.0 - https://github.com/Netflix/zuul)
 * json-schema-core (com.github.java-json-tools:json-schema-core:1.2.8 - https://github.com/java-json-tools/json-schema-core)
 * json-schema-validator (com.github.java-json-tools:json-schema-validator:2.2.8 - https://github.com/box-metadata/json-schema-validator)
