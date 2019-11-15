@@ -38,12 +38,13 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.file.FileSystemException;
 import io.vertx.core.file.OpenOptions;
 import io.vertx.core.http.HttpClientResponse;
-import io.vertx.core.impl.ContextInternal;
-import io.vertx.core.impl.SyncVertx;
+import io.vertx.core.impl.SyncContext;
+import io.vertx.core.impl.VertxInternal;
 import io.vertx.core.streams.WriteStream;
 import mockit.Expectations;
 import mockit.Mock;
@@ -51,9 +52,9 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestReadStreamPart {
-  static SyncVertx vertx = new SyncVertx();
+  static Vertx vertx = Vertx.vertx();
 
-  static ContextInternal context = vertx.getContext();
+  static SyncContext context = new SyncContext();
 
   static String src = "src";
 
@@ -68,6 +69,7 @@ public class TestReadStreamPart {
 
   @Before
   public void setup() throws IOException {
+    context.setOwner((VertxInternal)vertx);
     inputStream.reset();
   }
 
