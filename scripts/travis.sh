@@ -31,7 +31,7 @@ if [ "$1" == "install" ]; then
     if [ "$TAGGEDCOMMIT" == "true" ]; then
         echo "Skipping the installation as it is tagged commit"
     else
-        mvn apache-rat:check -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -Pit,samples,distribution
+        mvn apache-rat:check -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -Pit,distribution
         if [ $? != 0 ]; then
             echo "${red}Rat check failed.${reset}"
             exit 1
