@@ -95,10 +95,10 @@ public class VertxServerRequestToHttpServletRequest extends AbstractHttpServletR
   @Override
   public Cookie[] getCookies() {
     if (cookies == null) {
-      Set<io.vertx.ext.web.Cookie> vertxCookies = context.cookies();
+      Map<String, io.vertx.core.http.Cookie> vertxCookies = context.cookieMap();
       Cookie tmpCookies[] = new Cookie[vertxCookies.size()];
       int idx = 0;
-      for (io.vertx.ext.web.Cookie oneVertxCookie : vertxCookies) {
+      for (io.vertx.core.http.Cookie oneVertxCookie : vertxCookies.values()) {
         Cookie cookie = new Cookie(oneVertxCookie.getName(), oneVertxCookie.getValue());
         tmpCookies[idx] = cookie;
         idx++;

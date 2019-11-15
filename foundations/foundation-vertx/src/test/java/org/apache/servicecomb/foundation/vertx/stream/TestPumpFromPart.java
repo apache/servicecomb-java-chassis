@@ -33,7 +33,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import io.vertx.core.Context;
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.impl.SyncContext;
 import mockit.Expectations;
 import mockit.Mock;
@@ -121,7 +121,7 @@ public class TestPumpFromPart {
   public void pump_read_error() throws IOException {
     new MockUp<InputStreamToReadStream>() {
       @Mock
-      void readInWorker(Future<ReadResult> future) {
+      void readInWorker(Promise<ReadResult> future) {
         future.fail(error);
       }
     };

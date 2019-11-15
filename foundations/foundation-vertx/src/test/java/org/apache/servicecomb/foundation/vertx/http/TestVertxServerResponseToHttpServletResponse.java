@@ -42,14 +42,13 @@ import org.junit.rules.ExpectedException;
 
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.impl.SyncContext;
-import io.vertx.core.impl.VertxImpl;
 import io.vertx.core.streams.WriteStream;
 import mockit.Deencapsulation;
 import mockit.Expectations;
@@ -139,9 +138,9 @@ public class TestVertxServerResponseToHttpServletResponse {
       }
     }.getMockInstance();
 
-    new Expectations(VertxImpl.class) {
+    new Expectations() {
       {
-        VertxImpl.context();
+        Vertx.currentContext();
         result = context;
       }
     };
@@ -154,7 +153,7 @@ public class TestVertxServerResponseToHttpServletResponse {
       }
 
       @Mock
-      <T> void executeBlocking(Handler<Future<T>> blockingCodeHandler, boolean ordered,
+      <T> void executeBlocking(Handler<Promise<T>> blockingCodeHandler, boolean ordered,
           Handler<AsyncResult<T>> resultHandler) {
         SyncContext.syncExecuteBlocking(blockingCodeHandler, resultHandler);
       }
@@ -170,9 +169,9 @@ public class TestVertxServerResponseToHttpServletResponse {
 
   @Test
   public void construct_invalid() throws IOException {
-    new Expectations(VertxImpl.class) {
+    new Expectations() {
       {
-        VertxImpl.context();
+        Vertx.currentContext();
         result = null;
       }
     };
@@ -270,9 +269,9 @@ public class TestVertxServerResponseToHttpServletResponse {
 
   @Test
   public void flushBuffer_diffContext() throws IOException {
-    new Expectations(VertxImpl.class) {
+    new Expectations() {
       {
-        VertxImpl.context();
+        Vertx.currentContext();
         result = null;
       }
     };

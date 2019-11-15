@@ -28,14 +28,6 @@ import mockit.Mocked;
 
 public class TestHttpServerRequestUtils {
   @Test
-  public void setPath(@Mocked HttpServerRequest request) {
-    HttpServerRequestWrapper wrapper = new HttpServerRequestWrapper(request);
-    HttpServerRequestUtils.setPath(wrapper, "abc");
-
-    Assert.assertEquals("abc", wrapper.path());
-  }
-
-  @Test
   public void VertxServerRequestToHttpServletRequest(@Mocked RoutingContext context,
       @Mocked HttpServerRequest request) {
     HttpServerRequestWrapper wrapper = new HttpServerRequestWrapper(request);
