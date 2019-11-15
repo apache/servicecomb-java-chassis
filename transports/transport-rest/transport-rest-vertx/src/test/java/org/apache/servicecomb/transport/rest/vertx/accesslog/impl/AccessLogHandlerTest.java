@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.transport.rest.vertx.accesslog.impl;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.xml.ws.Holder;
@@ -31,10 +31,10 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.vertx.core.Handler;
+import io.vertx.core.http.Cookie;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.net.SocketAddress;
-import io.vertx.ext.web.Cookie;
 import io.vertx.ext.web.RoutingContext;
 import mockit.Mock;
 import mockit.MockUp;
@@ -59,7 +59,7 @@ public class AccessLogHandlerTest {
   @Test
   public void testHandle() {
     RoutingContext routingContext = Mockito.mock(RoutingContext.class);
-    HashSet<Cookie> cookies = new HashSet<>();
+    HashMap<String, Cookie> cookies = new HashMap<>();
     Cookie cookie = Mockito.mock(Cookie.class);
     HttpServerResponse httpServerResponse = new MockUp<HttpServerResponse>() {
       @Mock
@@ -93,10 +93,10 @@ public class AccessLogHandlerTest {
         return 123L;
       }
     };
-    cookies.add(cookie);
+    cookies.put(cookie.getName(), cookie);
     Mockito.when(cookie.getName()).thenReturn("cookie-name");
     Mockito.when(cookie.getValue()).thenReturn("cookie-value");
-    Mockito.when(routingContext.cookies()).thenReturn(cookies);
+    Mockito.when(routingContext.cookieMap()).thenReturn(cookies);
     Mockito.when(routingContext.response()).thenReturn(httpServerResponse);
     Mockito.when(routingContext.request()).thenReturn(httpServerRequest);
     Mockito.when(httpServerRequest.remoteAddress()).thenReturn(remoteSocketAddress);

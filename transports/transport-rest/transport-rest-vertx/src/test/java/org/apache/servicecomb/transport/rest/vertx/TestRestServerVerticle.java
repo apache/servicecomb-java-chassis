@@ -61,6 +61,8 @@ public class TestRestServerVerticle {
   Future<Void> startFuture = null;
 
   @Before
+  @SuppressWarnings("deprecation")
+  // TODO: vert.x 3.8.3 does not update startListen to promise, so we keep use deprecated API now. update in newer version.
   public void setUp() {
     instance = new RestServerVerticle();
     startFuture = Future.future();

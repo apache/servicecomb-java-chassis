@@ -31,7 +31,6 @@ import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.CookieHandler;
 
 /**
  * Provide a URL mapping based dispatcher. Users configure witch URL patterns dispatch to a target service.
@@ -68,7 +67,7 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
   private Map<String, ConfigurationItem> configurations = new HashMap<>();
 
   public URLMappedEdgeDispatcher() {
-    if(this.enabled()) {
+    if (this.enabled()) {
       loadConfigurations();
     }
   }
@@ -85,7 +84,7 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
 
   @Override
   public void init(Router router) {
-    router.routeWithRegex(PATTERN_ANY).handler(CookieHandler.create());
+    // cookies handler are enabled by default start from 3.8.3
     router.routeWithRegex(PATTERN_ANY).handler(createBodyHandler());
     router.routeWithRegex(PATTERN_ANY).failureHandler(this::onFailure).handler(this::onRequest);
   }
@@ -138,7 +137,7 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
     configurations.entrySet().forEach(stringConfigurationItemEntry -> {
       ConfigurationItem item = stringConfigurationItemEntry.getValue();
       LOG.info("config item: key=" + stringConfigurationItemEntry.getKey() + ";pattern=" + item.stringPattern
-              + ";service=" + item.microserviceName + ";versionRule=" + item.versionRule);
+          + ";service=" + item.microserviceName + ";versionRule=" + item.versionRule);
     });
   }
 
