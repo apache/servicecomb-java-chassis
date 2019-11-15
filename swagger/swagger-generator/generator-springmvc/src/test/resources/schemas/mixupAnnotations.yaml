@@ -59,7 +59,7 @@ paths:
         required: true
         type: "string"
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "string"
@@ -95,7 +95,7 @@ paths:
         required: true
         type: "string"
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "string"
@@ -131,7 +131,7 @@ paths:
         required: true
         type: "string"
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "string"
@@ -167,7 +167,7 @@ paths:
         required: true
         type: "string"
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "string"
@@ -203,7 +203,7 @@ paths:
         required: true
         type: "string"
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "string"
@@ -239,7 +239,7 @@ paths:
         required: true
         type: "string"
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "string"

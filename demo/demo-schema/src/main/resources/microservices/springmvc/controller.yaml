@@ -51,7 +51,7 @@ paths:
           type: integer
           format: int32
       responses: 
-        200:
+        "200":
           description: add numer
           schema: 
             type: integer
@@ -66,7 +66,7 @@ paths:
           required: true
           type: string
       responses:
-        200:
+        "200":
           description: say hello
           schema:
             type: string
@@ -84,7 +84,7 @@ paths:
           schema:
             $ref: '#/definitions/Person'
       responses:
-        200:
+        "200":
           description: say something
           schema:
             type: string
@@ -97,7 +97,7 @@ paths:
           required: true
           type: string
       responses:
-        200:
+        "200":
           description: say hi
           schema:
             type: string
@@ -110,7 +110,7 @@ paths:
           required: true
           type: string
       responses:
-        200:
+        "200":
           description: say hei
           schema:
             type: string

@@ -32,7 +32,7 @@ paths:
       operationId: "usingDeleteMapping"
       parameters: []
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "array"
@@ -43,7 +43,7 @@ paths:
       operationId: "usingGetMapping"
       parameters: []
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "array"
@@ -54,7 +54,7 @@ paths:
       operationId: "usingPatchMapping"
       parameters: []
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "array"
@@ -65,7 +65,7 @@ paths:
       operationId: "usingPostMapping"
       parameters: []
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "array"
@@ -76,7 +76,7 @@ paths:
       operationId: "usingPutMapping"
       parameters: []
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "array"
@@ -87,7 +87,7 @@ paths:
       operationId: "usingRequestMapping"
       parameters: []
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "array"

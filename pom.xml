@@ -125,8 +125,7 @@
     <module>java-chassis-spring-boot</module>
     <module>inspector</module>
     <module>solutions</module>
-    <module>client/kie-client</module>
-    <module>client/service-center-client</module>
+    <module>clients</module>
   </modules>
 
   <reporting>
@@ -419,7 +418,7 @@
             <dependency>
               <groupId>com.puppycrawl.tools</groupId>
               <artifactId>checkstyle</artifactId>
-              <version>7.6</version>
+              <version>8.18</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -523,12 +522,6 @@
       <id>coverage</id>
       <modules>
         <module>coverage-reports</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>samples</id>
-      <modules>
-        <module>samples</module>
       </modules>
     </profile>
     <profile>

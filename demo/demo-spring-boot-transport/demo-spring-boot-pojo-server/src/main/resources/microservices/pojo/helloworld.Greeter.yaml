@@ -46,7 +46,7 @@ paths:
           schema:
             type: string
       responses: 
-        200:
+        "200":
           description: asdf
           schema:
             type: string
@@ -64,7 +64,7 @@ paths:
           schema:
             type: string
       responses: 
-        200:
+        "200":
           description: asdf
           schema:
             type: string
