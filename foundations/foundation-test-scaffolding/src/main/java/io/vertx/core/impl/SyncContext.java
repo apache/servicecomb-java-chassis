@@ -19,20 +19,28 @@ package io.vertx.core.impl;
 import java.util.concurrent.Executor;
 
 import io.vertx.core.AsyncResult;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
+import io.vertx.core.Vertx;
 import io.vertx.core.spi.metrics.PoolMetrics;
 
 public class SyncContext extends EventLoopContext {
+  protected VertxInternal owner;
+
   public SyncContext() {
     this(null);
   }
 
   public SyncContext(VertxInternal vertx) {
     super(vertx, null, null, null, null, null, null);
-    if (SyncVertx.class.isInstance(vertx)) {
-      ((SyncVertx) vertx).setContext(this);
-    }
+  }
+
+  public VertxInternal owner() {
+    return owner;
+  }
+
+  public void setOwner(VertxInternal owner) {
+    this.owner = owner;
   }
 
   @Override
@@ -40,9 +48,9 @@ public class SyncContext extends EventLoopContext {
     task.handle(null);
   }
 
-  public static <T> void syncExecuteBlocking(Handler<Future<T>> blockingCodeHandler,
+  public static <T> void syncExecuteBlocking(Handler<Promise<T>> blockingCodeHandler,
       Handler<AsyncResult<T>> asyncResultHandler) {
-    Future<T> res = Future.future();
+    Promise<T> res = Promise.promise();
 
     try {
       blockingCodeHandler.handle(res);
@@ -51,11 +59,11 @@ public class SyncContext extends EventLoopContext {
       return;
     }
 
-    res.setHandler(asyncResultHandler);
+    res.future().setHandler(asyncResultHandler);
   }
 
   @Override
-  public <T> void executeBlockingInternal(Handler<Future<T>> action, Handler<AsyncResult<T>> resultHandler) {
+  public <T> void executeBlockingInternal(Handler<Promise<T>> action, Handler<AsyncResult<T>> resultHandler) {
     syncExecuteBlocking((future) -> {
       try {
         action.handle(future);
@@ -66,13 +74,13 @@ public class SyncContext extends EventLoopContext {
   }
 
   @Override
-  public <T> void executeBlocking(Handler<Future<T>> blockingCodeHandler, boolean ordered,
+  public <T> void executeBlocking(Handler<Promise<T>> blockingCodeHandler, boolean ordered,
       Handler<AsyncResult<T>> asyncResultHandler) {
     syncExecuteBlocking(blockingCodeHandler, asyncResultHandler);
   }
 
   @Override
-  <T> void executeBlocking(Handler<Future<T>> blockingCodeHandler,
+  <T> void executeBlocking(Handler<Promise<T>> blockingCodeHandler,
       Handler<AsyncResult<T>> resultHandler,
       Executor exec, TaskQueue queue, @SuppressWarnings("rawtypes") PoolMetrics metrics) {
     syncExecuteBlocking(blockingCodeHandler, resultHandler);

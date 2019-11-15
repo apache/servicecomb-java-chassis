@@ -28,7 +28,6 @@ import javax.xml.ws.Holder;
 import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -60,7 +59,8 @@ public class TestVertxUtils {
   public void testCreateVertxWithFileCPResolving() {
     // Prepare
     ArchaiusUtils.resetConfig();
-    String cacheDirBase = System.getProperty(FileResolver.CACHE_DIR_BASE_PROP_NAME, ".vertx");
+    String cacheDirBase = System.getProperty(FileResolver.CACHE_DIR_BASE_PROP_NAME,
+        System.getProperty("java.io.tmpdir", ".") + File.separator + "vertx-cache");
     File file = new File(cacheDirBase);
 
     // create .vertx folder
@@ -92,7 +92,7 @@ public class TestVertxUtils {
   @Test
   public void testVertxUtilsInitWithOptions() {
     VertxOptions oOptions = new VertxOptions();
-    oOptions.setClustered(false);
+    oOptions.getEventBusOptions().setClustered(false);
 
     Vertx vertx = VertxUtils.init(oOptions);
     Assert.assertNotEquals(null, vertx);

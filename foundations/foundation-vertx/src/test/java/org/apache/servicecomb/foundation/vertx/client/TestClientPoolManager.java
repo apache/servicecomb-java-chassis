@@ -145,11 +145,11 @@ public class TestClientPoolManager {
     HttpClientWithContext notMatchPool = new HttpClientWithContext(null, null);
     pools.add(notMatchPool);
 
-    new Expectations(VertxImpl.class) {
+    new Expectations() {
       {
         factory.createClientPool(context);
         result = new HttpClientWithContext(null, null);
-        VertxImpl.context();
+        Vertx.currentContext();
         result = context;
       }
     };
@@ -167,9 +167,9 @@ public class TestClientPoolManager {
     pools.add(pool1);
     pools.add(pool2);
 
-    new Expectations(VertxImpl.class) {
+    new Expectations() {
       {
-        VertxImpl.context();
+        Vertx.currentContext();
         result = null;
       }
     };
@@ -188,9 +188,9 @@ public class TestClientPoolManager {
     HttpClientWithContext pool = new HttpClientWithContext(null, null);
     pools.add(pool);
 
-    new Expectations(VertxImpl.class) {
+    new Expectations() {
       {
-        VertxImpl.context();
+        Vertx.currentContext();
         result = null;
       }
     };
@@ -203,9 +203,9 @@ public class TestClientPoolManager {
     HttpClientWithContext pool = new HttpClientWithContext(null, null);
     pools.add(pool);
 
-    new Expectations(VertxImpl.class) {
+    new Expectations() {
       {
-        VertxImpl.context();
+        Vertx.currentContext();
         result = otherContext;
         otherContext.owner();
         result = otherVertx;
@@ -220,9 +220,9 @@ public class TestClientPoolManager {
     HttpClientWithContext pool = new HttpClientWithContext(null, null);
     pools.add(pool);
 
-    new Expectations(VertxImpl.class) {
+    new Expectations() {
       {
-        VertxImpl.context();
+        Vertx.currentContext();
         result = workerContext;
         workerContext.owner();
         result = vertx;

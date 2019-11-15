@@ -42,11 +42,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDecoderException;
+import io.vertx.codegen.annotations.Nullable;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
+import io.vertx.core.http.Cookie;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.http.HttpServerResponse;
@@ -292,12 +294,6 @@ public class TestVertxRestDispatcher {
       }
     }.getMockInstance();
 
-    new Expectations(VertxImpl.class) {
-      {
-        VertxImpl.context();
-        result = context;
-      }
-    };
     Deencapsulation.invoke(dispatcher, "onRequest", routingContext);
 
     Assert.assertEquals(VertxRestInvocation.class, map.get(RestConst.REST_PRODUCER_INVOCATION).getClass());
@@ -381,9 +377,19 @@ class MockHttpServerResponse implements HttpServerResponse {
   }
 
   @Override
+  public void end(Handler<AsyncResult<Void>> handler) {
+
+  }
+
+  @Override
   public void end(String chunk) {
     responseEnded = true;
     responseChunk = chunk;
+  }
+
+  @Override
+  public void end(String s, Handler<AsyncResult<Void>> handler) {
+
   }
 
   @Override
@@ -393,6 +399,11 @@ class MockHttpServerResponse implements HttpServerResponse {
 
   @Override
   public HttpServerResponse write(Buffer data) {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse write(Buffer buffer, Handler<AsyncResult<Void>> handler) {
     return null;
   }
 
@@ -492,7 +503,17 @@ class MockHttpServerResponse implements HttpServerResponse {
   }
 
   @Override
+  public HttpServerResponse write(String s, String s1, Handler<AsyncResult<Void>> handler) {
+    return null;
+  }
+
+  @Override
   public HttpServerResponse write(String chunk) {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse write(String s, Handler<AsyncResult<Void>> handler) {
     return null;
   }
 
@@ -507,7 +528,17 @@ class MockHttpServerResponse implements HttpServerResponse {
   }
 
   @Override
+  public void end(String s, String s1, Handler<AsyncResult<Void>> handler) {
+
+  }
+
+  @Override
   public void end(Buffer chunk) {
+
+  }
+
+  @Override
+  public void end(Buffer buffer, Handler<AsyncResult<Void>> handler) {
 
   }
 
@@ -587,6 +618,16 @@ class MockHttpServerResponse implements HttpServerResponse {
 
   @Override
   public HttpServerResponse writeCustomFrame(int type, int flags, Buffer payload) {
+    return null;
+  }
+
+  @Override
+  public HttpServerResponse addCookie(Cookie cookie) {
+    return null;
+  }
+
+  @Override
+  public @Nullable Cookie removeCookie(String s, boolean b) {
     return null;
   }
 }
