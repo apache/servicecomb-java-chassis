@@ -76,6 +76,8 @@ public class RestServerVerticle extends AbstractVerticle {
     this.endpointObject = (URIEndpointObject) endpoint.getAddress();
   }
 
+  @SuppressWarnings("deprecation")
+  // TODO: vert.x 3.8.3 does not update startListen to promise, so we keep use deprecated API now. update in newer version.
   @Override
   public void start(Future<Void> startFuture) throws Exception {
     try {
@@ -212,6 +214,8 @@ public class RestServerVerticle extends AbstractVerticle {
     }
   }
 
+  @SuppressWarnings("deprecation")
+  // TODO: vert.x 3.8.3 does not update startListen to promise, so we keep use deprecated API now. update in newer version.
   private void startListen(HttpServer server, Future<Void> startFuture) {
     server.listen(endpointObject.getPort(), endpointObject.getHostOrIp(), ar -> {
       if (ar.succeeded()) {

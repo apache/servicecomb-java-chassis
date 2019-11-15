@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.CookieHandler;
 
 public class EncryptEdgeDispatcher extends AbstractEdgeDispatcher {
   private static final Logger LOGGER = LoggerFactory.getLogger(EncryptEdgeDispatcher.class);
@@ -50,7 +49,7 @@ public class EncryptEdgeDispatcher extends AbstractEdgeDispatcher {
   public void init(Router router) {
     {
       String regex = "/" + prefix + "/([^\\\\/]+)/([^\\\\/]+)/(.*)";
-      router.routeWithRegex(regex).handler(CookieHandler.create());
+      // cookies handler are enabled by default start from 3.8.3
       router.routeWithRegex(regex).handler(createBodyHandler());
       router.routeWithRegex(regex).failureHandler(this::onFailure).handler(this::onRequest);
     }

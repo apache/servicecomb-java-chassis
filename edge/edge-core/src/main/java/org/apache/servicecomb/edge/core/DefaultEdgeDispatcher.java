@@ -23,7 +23,6 @@ import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.CookieHandler;
 
 /**
  * Provide an easy mapping dispatcher that starts with a common prefix pattern.
@@ -66,7 +65,7 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
     } else {
       regex = "/" + prefix + "/([^\\\\/]+)/(.*)";
     }
-    router.routeWithRegex(regex).handler(CookieHandler.create());
+    // cookies handler are enabled by default start from 3.8.3
     router.routeWithRegex(regex).handler(createBodyHandler());
     router.routeWithRegex(regex).failureHandler(this::onFailure).handler(this::onRequest);
   }

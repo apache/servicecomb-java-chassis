@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.core.http.WebSocketConnectOptions;
 
 /**
  * Created by on 2017/4/28.
@@ -42,28 +43,29 @@ public final class WebsocketUtils {
       Handler<Throwable> onConnectFailed) {
     HttpClientWithContext vertxHttpClient = WebsocketClientPool.INSTANCE.getClient();
     vertxHttpClient.runOnContext(client -> {
-      client.websocket(ipPort.getPort(),
-          ipPort.getHostOrIp(),
-          url,
-          RestUtils.getDefaultHeaders().addAll(RestUtils.getSignAuthHeaders(
-              RestUtils.createSignRequest(HttpMethod.GET.name(), ipPort, new RequestParam(), url, new HashMap<>()))),
-          ws -> {
-            onOpen.handle(null);
-
-            ws.exceptionHandler(v -> {
-              onException.handle(v);
-              try {
-                ws.close();
-              } catch (Exception err) {
-                LOGGER.error("ws close error.", err);
-              }
-            });
-            ws.closeHandler(v -> {
-              onClose.handle(v);
-            });
-            ws.handler(onMessage);
-          },
-          onConnectFailed);
+      WebSocketConnectOptions options = new WebSocketConnectOptions();
+      options.setHost(ipPort.getHostOrIp()).setPort(ipPort.getPort()).setURI(url)
+          .setHeaders(RestUtils.getDefaultHeaders().addAll(RestUtils.getSignAuthHeaders(
+              RestUtils.createSignRequest(HttpMethod.GET.name(), ipPort, new RequestParam(), url, new HashMap<>()))));
+      client.webSocket(options, asyncResult -> {
+        if (asyncResult.failed()) {
+          onConnectFailed.handle(asyncResult.cause());
+        } else {
+          onOpen.handle(null);
+          asyncResult.result().exceptionHandler(v -> {
+            onException.handle(v);
+            try {
+              asyncResult.result().close();
+            } catch (Exception err) {
+              LOGGER.error("ws close error.", err);
+            }
+          });
+          asyncResult.result().closeHandler(v -> {
+            onClose.handle(v);
+          });
+          asyncResult.result().handler(onMessage);
+        }
+      });
     });
   }
 }

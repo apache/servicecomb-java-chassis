@@ -67,6 +67,8 @@ public class TestVertxMetersInitializer {
 
   public static class TestServerVerticle extends AbstractVerticle {
     @Override
+    @SuppressWarnings("deprecation")
+    // TODO: vert.x 3.8.3 does not update startListen to promise, so we keep use deprecated API now. update in newer version.
     public void start(Future<Void> startFuture) {
       Router mainRouter = Router.router(vertx);
       mainRouter.route("/").handler(context -> {

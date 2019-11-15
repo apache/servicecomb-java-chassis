@@ -42,7 +42,6 @@ import io.netty.handler.codec.http.multipart.HttpPostRequestDecoder.ErrorDataDec
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.CookieHandler;
 
 public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
   private static final Logger LOGGER = LoggerFactory.getLogger(VertxRestDispatcher.class);
@@ -63,7 +62,7 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
 
   @Override
   public void init(Router router) {
-    router.route().handler(CookieHandler.create());
+    // cookies handler are enabled by default start from 3.8.3
     router.route().handler(createBodyHandler());
     router.route().failureHandler(this::failureHandler).handler(this::onRequest);
   }

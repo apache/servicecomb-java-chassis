@@ -17,12 +17,12 @@
 
 package org.apache.servicecomb.transport.rest.vertx.accesslog.element.impl;
 
-import java.util.Set;
+import java.util.Map;
 
 import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogParam;
 import org.apache.servicecomb.transport.rest.vertx.accesslog.element.AccessLogItem;
 
-import io.vertx.ext.web.Cookie;
+import io.vertx.core.http.Cookie;
 import io.vertx.ext.web.RoutingContext;
 
 public class CookieItem implements AccessLogItem<RoutingContext> {
@@ -37,13 +37,13 @@ public class CookieItem implements AccessLogItem<RoutingContext> {
 
   @Override
   public String getFormattedItem(AccessLogParam<RoutingContext> accessLogParam) {
-    Set<Cookie> cookieSet = accessLogParam.getContextData().cookies();
-    if (null == cookieSet) {
+    Map<String, Cookie> cookieMap = accessLogParam.getContextData().cookieMap();
+    if (null == cookieMap) {
       return RESULT_NOT_FOUND;
     }
 
     String result = null;
-    for (Cookie cookie : cookieSet) {
+    for (Cookie cookie : cookieMap.values()) {
       if (varName.equals(cookie.getName())) {
         result = cookie.getValue();
       }
