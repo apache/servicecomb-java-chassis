@@ -74,6 +74,7 @@ import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.RequestOptions;
 import io.vertx.core.http.impl.Http1xConnectionBaseEx;
+import io.vertx.core.http.impl.WebSocketImpl;
 import io.vertx.core.http.impl.headers.VertxHttpHeaders;
 import io.vertx.core.net.NetSocket;
 import io.vertx.core.net.SocketAddress;
@@ -128,7 +129,7 @@ public class TestRestClientInvocation {
   static long nanoTime = 123;
 
   @Mocked
-  Http1xConnectionBaseEx connectionBase;
+  Http1xConnectionBaseEx<WebSocketImpl> connectionBase;
 
   OperationConfig operationConfig = new OperationConfig();
 
