@@ -25,7 +25,6 @@ import org.apache.servicecomb.edge.core.EdgeInvocation;
 
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
-import io.vertx.ext.web.handler.CookieHandler;
 
 public class EdgeDispatcher extends AbstractEdgeDispatcher {
   private CompatiblePathVersionMapper versionMapper = new CompatiblePathVersionMapper();
@@ -38,7 +37,7 @@ public class EdgeDispatcher extends AbstractEdgeDispatcher {
   @Override
   public void init(Router router) {
     String regex = "/api/([^\\\\/]+)/([^\\\\/]+)/(.*)";
-    router.routeWithRegex(regex).handler(CookieHandler.create());
+    // cookies handler are enabled by default start from 3.8.3
     router.routeWithRegex(regex).handler(createBodyHandler());
     router.routeWithRegex(regex).failureHandler(this::onFailure).handler(this::onRequest);
   }

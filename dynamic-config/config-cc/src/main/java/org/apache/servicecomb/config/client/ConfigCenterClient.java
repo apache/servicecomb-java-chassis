@@ -70,6 +70,7 @@ import io.vertx.core.http.CaseInsensitiveHeaders;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.WebSocket;
+import io.vertx.core.http.WebSocketConnectOptions;
 import io.vertx.core.http.impl.FrameType;
 import io.vertx.core.http.impl.ws.WebSocketFrameImpl;
 import io.vertx.core.net.ProxyOptions;
@@ -285,28 +286,35 @@ public class ConfigCenterClient {
         Map<String, String> authHeaders = new HashMap<>();
         authHeaderProviders.forEach(provider -> authHeaders.putAll(provider.getSignAuthHeaders(
             createSignRequest(null, configCenter + url, headers, null))));
-
-        client.websocket(refreshPort,
-            ipPort.getHostOrIp(),
-            url,
-            new CaseInsensitiveHeaders().addAll(headers)
-                .addAll(authHeaders),
-            ws -> {
-              ws.exceptionHandler(e -> {
+        WebSocketConnectOptions options = new WebSocketConnectOptions();
+        options.setHost(ipPort.getHostOrIp()).setPort(refreshPort).setURI(url)
+            .setHeaders(new CaseInsensitiveHeaders().addAll(headers)
+                .addAll(authHeaders));
+        client.webSocket(options, asyncResult -> {
+          if (asyncResult.failed()) {
+            LOGGER.error(
+                "watcher connect to config center {} refresh port {} failed. Error message is [{}]",
+                configCenter,
+                refreshPort,
+                asyncResult.cause().getMessage());
+            waiter.countDown();
+          } else {
+            {
+              asyncResult.result().exceptionHandler(e -> {
                 LOGGER.error("watch config read fail", e);
                 stopHeartBeatThread();
                 isWatching = false;
               });
-              ws.closeHandler(v -> {
+              asyncResult.result().closeHandler(v -> {
                 LOGGER.warn("watching config connection is closed accidentally");
                 stopHeartBeatThread();
                 isWatching = false;
               });
 
-              ws.pongHandler(pong -> {
+              asyncResult.result().pongHandler(pong -> {
                 // ignore, just prevent NPE.
               });
-              ws.frameHandler(frame -> {
+              asyncResult.result().frameHandler(frame -> {
                 Buffer action = frame.binaryData();
                 LOGGER.info("watching config recieved {}", action);
                 Map<String, Object> mAction = action.toJsonObject().getMap();
@@ -319,18 +327,12 @@ public class ConfigCenterClient {
                   parseConfigUtils.refreshConfigItemsIncremental(mAction);
                 }
               });
-              startHeartBeatThread(ws);
+              startHeartBeatThread(asyncResult.result());
               isWatching = true;
               waiter.countDown();
-            },
-            e -> {
-              LOGGER.error(
-                  "watcher connect to config center {} refresh port {} failed. Error message is [{}]",
-                  configCenter,
-                  refreshPort,
-                  e.getMessage());
-              waiter.countDown();
-            });
+            }
+          }
+        });
       });
       waiter.await();
     }
