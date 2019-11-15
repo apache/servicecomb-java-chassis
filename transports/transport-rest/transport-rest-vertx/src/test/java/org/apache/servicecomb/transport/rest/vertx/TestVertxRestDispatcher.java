@@ -47,6 +47,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
+import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.Cookie;
 import io.vertx.core.http.HttpMethod;
@@ -278,7 +279,7 @@ public class TestVertxRestDispatcher {
   }
 
   @Test
-  public void onRequest(@Mocked Context context, @Mocked HttpServerRequest request,
+  public void onRequest(@Mocked Vertx vertx, @Mocked Context context, @Mocked HttpServerRequest request,
       @Mocked SocketAddress socketAdrress) {
     Map<String, Object> map = new HashMap<>();
     RoutingContext routingContext = new MockUp<RoutingContext>() {
@@ -293,6 +294,13 @@ public class TestVertxRestDispatcher {
         return request;
       }
     }.getMockInstance();
+
+    new Expectations() {
+      {
+        Vertx.currentContext();
+        result = context;
+      }
+    };
 
     Deencapsulation.invoke(dispatcher, "onRequest", routingContext);
 

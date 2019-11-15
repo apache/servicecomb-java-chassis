@@ -50,6 +50,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import io.vertx.core.Context;
+import io.vertx.core.Vertx;
 import io.vertx.core.impl.VertxImpl;
 import io.vertx.ext.web.RoutingContext;
 import mockit.Deencapsulation;
@@ -60,6 +61,8 @@ import mockit.Mocked;
 
 public class TestEdgeInvocation {
   String microserviceName = "ms";
+
+  @Mocked Vertx vertx;
 
   @Mocked
   RoutingContext routingContext;
@@ -87,6 +90,13 @@ public class TestEdgeInvocation {
 
   @Before
   public void setup() {
+    new Expectations() {
+      {
+        Vertx.currentContext();
+        result = context;
+      }
+    };
+
     referenceConfig.setMicroserviceVersionRule(microserviceVersionRule);
     referenceConfig.setTransport("rest");
 
