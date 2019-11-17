@@ -59,8 +59,10 @@ public class HighwayServerVerticle extends AbstractVerticle {
     }
   }
 
+  @SuppressWarnings("deprecation")
+  // TODO: vert.x 3.8.3 does not update startListen to promise, so we keep use deprecated API now. update in newer version.
   protected void startListen(Future<Void> startFuture) {
-    // 如果本地未配置地址，则表示不必监听，只需要作为客户端使用即可
+    // if listen address is not provided, do not fail and maybe a consumer service.
     if (endpointObject == null) {
       LOGGER.warn("highway listen address is not configured, will not listen.");
       startFuture.complete();

@@ -28,6 +28,7 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.streams.ReadStream;
 
@@ -120,7 +121,7 @@ public class InputStreamToReadStream implements ReadStream<Buffer> {
     }
   }
 
-  private synchronized void readInWorker(Future<ReadResult> future) {
+  private synchronized void readInWorker(Promise<ReadResult> future) {
     try {
       ReadResult readResult = new ReadResult();
       readResult.doRead();
