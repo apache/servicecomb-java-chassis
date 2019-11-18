@@ -32,7 +32,6 @@
 
   <properties>
     <!-- Dependency versions -->
-    <apache-commons.version>3.7</apache-commons.version>
     <archaius.version>0.7.6</archaius.version>
     <asciidoctorj.version>1.6.2</asciidoctorj.version>
     <aspectj.version>1.9.3</aspectj.version>
@@ -43,6 +42,7 @@
     <commons-configuration.version>1.10</commons-configuration.version>
     <commons-io.version>2.6</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
+    <commons-lang3.version>3.9</commons-lang3.version>
     <commons-logging.version>1.2</commons-logging.version>
     <cxf.version>3.3.1</cxf.version>
     <dyuproject-protostuff.version>1.0.7.fixed.3500</dyuproject-protostuff.version>
@@ -70,7 +70,7 @@
     <javax-servlet.version>4.0.1</javax-servlet.version>
     <javax-transaction.version>1.2</javax-transaction.version>
     <javax-validation.version>2.0.1.Final</javax-validation.version>
-    <javax-ws-rs.version>2.0.1</javax-ws-rs.version>
+    <javax-ws-rs.version>2.1</javax-ws-rs.version>
     <jedis.version>2.9.0</jedis.version>
     <jersey.version>2.27</jersey.version>
     <jettison.version>1.4.0</jettison.version>
@@ -260,12 +260,8 @@
         <version>${guava.version}</version>
         <exclusions>
           <exclusion>
-            <groupId>com.google.errorprone</groupId>
-            <artifactId>error_prone_annotations</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>animal-sniffer-annotations</artifactId>
+            <groupId>*</groupId>
+            <artifactId>*</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
@@ -274,6 +270,12 @@
         <groupId>com.google.inject</groupId>
         <artifactId>guice</artifactId>
         <version>${guice.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>aopalliance</groupId>
+            <artifactId>aopalliance</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
 
       <dependency>
@@ -719,7 +721,7 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-lang3</artifactId>
-        <version>${apache-commons.version}</version>
+        <version>${commons-lang3.version}</version>
       </dependency>
 
       <dependency>
