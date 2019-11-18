@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.router.constom;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.netflix.config.DynamicStringProperty;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -75,7 +77,12 @@ public class CanaryInvokeFilter implements HttpServerFilter {
     loadHeaders();
     if (invocation.getContext("canary_context") != null && !CollectionUtils.isEmpty(allHeader)) {
       Map<String, String> headerMap = getHeaderMap(httpServletRequestEx);
-      invocation.addContext("canary_context", Json.encode(headerMap));
+      try {
+        invocation.addContext("canary_context", JsonUtils.OBJ_MAPPER.writeValueAsString(headerMap));
+      } catch (JsonProcessingException e) {
+        LOGGER.error("canary context serialization failed");
+        e.printStackTrace();
+      }
     }
     return null;
   }

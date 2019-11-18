@@ -16,11 +16,14 @@
  */
 package org.apache.servicecomb.router.constom;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.loadbalance.ServerListFilterExt;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import com.netflix.config.DynamicPropertyFactory;
@@ -28,12 +31,13 @@ import com.netflix.config.DynamicPropertyFactory;
 import io.vertx.core.json.Json;
 import org.apache.servicecomb.router.RouterFilter;
 import org.apache.servicecomb.router.distribute.RouterDistributor;
+import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 
 public class CanaryServerListFilter implements ServerListFilterExt {
 
   private static final String ENABLE = "servicecomb.release_way";
 
-  RouterDistributor distributer = new ServiceCombCanaryDistributer();
+  RouterDistributor<ServiceCombServer, Microservice> distributer = new ServiceCombCanaryDistributer();
 
   @Override
   public boolean enabled() {
@@ -54,9 +58,18 @@ public class CanaryServerListFilter implements ServerListFilterExt {
   private Map<String, String> addHeaders(Invocation invocation) {
     Map<String, String> headers = new HashMap<>();
     if (invocation.getContext("canary_context") != null) {
-      Map<String, String> canaryContext = Json
-          .decodeValue(invocation.getContext("canary_context"), Map.class);
-      headers.putAll(canaryContext);
+      Map<String, String> canaryContext = null;
+      try {
+        canaryContext = JsonUtils.OBJ_MAPPER
+            .readValue(invocation.getContext("canary_context"),
+                new TypeReference<Map<String, String>>() {
+                });
+      } catch (JsonProcessingException e) {
+        e.printStackTrace();
+      }
+      if (canaryContext != null) {
+        headers.putAll(canaryContext);
+      }
     }
     for (int i = 0; i < invocation.getArgs().length; i++) {
       if (invocation.getOperationMeta().getParamName(i) != null &&
