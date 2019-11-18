@@ -29,6 +29,13 @@ public class CanaryServerListFilter implements ServerListFilterExt {
   public List<ServiceCombServer> getFilteredListOfServers(List<ServiceCombServer> list,
       Invocation invocation) {
     String targetServiceName = invocation.getMicroserviceName();
+    Map<String, String> headers = addHeaders(invocation);
+    return RouterFilter
+        .getFilteredListOfServers(list, targetServiceName, headers,
+            distributer);
+  }
+
+  private Map<String, String> addHeaders(Invocation invocation) {
     Map<String, String> headers = new HashMap<>();
     if (invocation.getContext("canary_context") != null) {
       Map<String, String> canaryContext = Json
@@ -43,8 +50,6 @@ public class CanaryServerListFilter implements ServerListFilterExt {
       }
     }
     headers.putAll(invocation.getContext());
-    return RouterFilter
-        .getFilteredListOfServers(list, targetServiceName, headers,
-            distributer);
+    return headers;
   }
 }
