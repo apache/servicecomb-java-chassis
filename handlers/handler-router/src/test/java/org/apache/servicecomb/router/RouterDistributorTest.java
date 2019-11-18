@@ -27,6 +27,7 @@ import java.util.Map;
 import mockit.Expectations;
 import org.apache.servicecomb.router.cache.RouterRuleCache;
 import org.apache.servicecomb.router.distribute.AbstractRouterDistributor;
+import org.apache.servicecomb.router.distribute.RouterDistributor;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -64,25 +65,25 @@ public class RouterDistributorTest {
       + "            tags:\n"
       + "              version: 1\n"
       + "              app: a";
-  String targetServiceName = "test_server";
+
+  private static String targetServiceName = "test_server";
 
   @Test
   public void testVersionNotMatch() {
-    Map headermap = new HashMap();
+    Map<String, String> headermap = new HashMap<>();
     headermap.put("xxx", "xx");
     headermap.put("xx", "xx");
     headermap.put("formate", "json");
     List<ServiceIns> list = getMockList();
     list.remove(1);
     List<ServiceIns> serverList = mainFilter(list, headermap);
-    serverList.get(0).getHost().equals("01");
     Assert.assertEquals(1, serverList.size());
     Assert.assertEquals("01", serverList.get(0).getHost());
   }
 
   @Test
   public void testVersionMatch() {
-    Map headermap = new HashMap();
+    Map<String, String> headermap = new HashMap<>();
     headermap.put("xxx", "xx");
     headermap.put("xx", "xx");
     headermap.put("formate", "json");
@@ -103,7 +104,7 @@ public class RouterDistributorTest {
   }
 
   private List<ServiceIns> mainFilter(List<ServiceIns> serverlist, Map<String, String> headermap) {
-    TestDistributer TestDistributer = new TestDistributer();
+    RouterDistributor<ServiceIns, ServiceIns> testDistributer = new TestDistributer();
     DynamicPropertyFactory dpf = DynamicPropertyFactory.getInstance();
     DynamicStringProperty strp = new DynamicStringProperty("", ruleStr);
     new Expectations(dpf) {
@@ -115,14 +116,14 @@ public class RouterDistributorTest {
     RouterRuleCache.refresh();
     return RouterFilter
         .getFilteredListOfServers(serverlist, targetServiceName, headermap,
-            TestDistributer);
+            testDistributer);
   }
 
   class ServiceIns extends Server {
 
     String version = "1.1";
     String serverName = targetServiceName;
-    Map<String, String> tags = new HashMap();
+    Map<String, String> tags = new HashMap<>();
 
     public ServiceIns(String id) {
       super(id);

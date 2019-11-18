@@ -22,6 +22,8 @@ package org.apache.servicecomb.router.exception;
  **/
 public class RouterIllegalParamException extends RuntimeException {
 
+  private static final long serialVersionUID = 4359709211352400087L;
+
   public RouterIllegalParamException(String message) {
     super(message);
   }
