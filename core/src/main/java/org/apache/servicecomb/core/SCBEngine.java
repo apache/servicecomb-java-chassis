@@ -337,6 +337,7 @@ public class SCBEngine {
 
       if (System.currentTimeMillis() - start > TimeUnit.SECONDS.toMillis(30)) {
         LOGGER.error("wait for all requests timeout, abandon waiting, remaining requests: {}.", remaining);
+        return;
       }
       TimeUnit.SECONDS.sleep(1);
     }
