@@ -37,7 +37,7 @@ public class PojoProducerMeta extends ProducerMeta implements InitializingBean {
   }
 
   @Override
-  public void afterPropertiesSet() throws Exception {
+  public void afterPropertiesSet() {
     pojoProducers.registerPojoProducer(this);
   }
 }

@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.provider.pojo.reference;
 
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.test.scaffolding.spring.SpringUtils;
 import org.apache.servicecomb.provider.pojo.Person;
 import org.apache.servicecomb.provider.pojo.PersonReference;
@@ -36,7 +38,9 @@ public class TestRpcReferenceProcessor {
   }
 
   @Test
-  public void testReference(@Injectable ApplicationContext applicationContext) throws Exception {
+  public void testReference(@Injectable ApplicationContext applicationContext) {
+    SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();
+
     PersonReference bean = new PersonReference();
 
     Assert.assertNull(bean.person);
@@ -45,10 +49,12 @@ public class TestRpcReferenceProcessor {
     Assert.assertSame(bean, consumers.postProcessBeforeInitialization(bean, "id"));
 
     Assert.assertNotNull(bean.person);
+
+    scbEngine.destroy();
   }
 
   @Test
-  public void testNoReference(@Injectable ApplicationContext applicationContext) throws Exception {
+  public void testNoReference(@Injectable ApplicationContext applicationContext) {
     Person bean = new Person();
 
     Assert.assertNull(bean.name);

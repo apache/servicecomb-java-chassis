@@ -17,12 +17,12 @@
 
 package org.apache.servicecomb.provider.pojo.reference;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.provider.pojo.PojoConst;
-import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
-import org.springframework.util.StringUtils;
 import org.w3c.dom.Element;
 
 public class ReferenceDefParser extends AbstractSingleBeanDefinitionParser {
@@ -39,9 +39,9 @@ public class ReferenceDefParser extends AbstractSingleBeanDefinitionParser {
     String schemaId = element.getAttribute(PojoConst.SCHEMA_ID);
     String intf = element.getAttribute(PojoConst.INTERFACE);
 
-    if (StringUtils.isEmpty(intf) && !StringUtils.isEmpty(schemaId)) {
+    if (StringUtils.isEmpty(intf) && StringUtils.isNotEmpty(schemaId)) {
       //  尝试将schemaId当作接口名使用
-      Class<?> consumerIntf = ClassUtils.getClassByName(null, schemaId);
+      Class<?> consumerIntf = ReflectUtils.getClassByName(schemaId);
       if (consumerIntf != null) {
         intf = schemaId;
       }

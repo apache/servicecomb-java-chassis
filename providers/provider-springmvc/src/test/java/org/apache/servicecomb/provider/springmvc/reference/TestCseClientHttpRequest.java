@@ -17,20 +17,16 @@
 package org.apache.servicecomb.provider.springmvc.reference;
 
 import java.net.URI;
-import java.util.Collections;
 
 import javax.xml.ws.Holder;
 
-import org.apache.servicecomb.common.rest.RestEngineSchemaListener;
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.core.SCBStatus;
-import org.apache.servicecomb.core.unittest.UnitTestMeta;
-import org.apache.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGeneratorContext;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -40,16 +36,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 public class TestCseClientHttpRequest {
-  static UnitTestMeta meta = new UnitTestMeta();
+  static SCBEngine scbEngine;
 
-  @Before
-  public void setup() {
-    SCBEngine.getInstance().setStatus(SCBStatus.UP);
-    CseContext.getInstance()
-        .getSchemaListenerManager()
-        .setSchemaListenerList(Collections.singletonList(new RestEngineSchemaListener()));
-    meta.registerSchema(new SpringmvcSwaggerGeneratorContext(), SpringmvcImpl.class);
-    SCBEngine.getInstance().setConsumerProviderManager(meta.getConsumerProviderManager());
+  @BeforeClass
+  public static void classSetup() {
+    scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest()
+        .addProducerMeta("sid1", new SpringmvcImpl()).run();
+  }
+
+  @AfterClass
+  public static void classTeardown() {
+    scbEngine.destroy();
   }
 
   @RequestMapping(path = "SpringmvcImpl")
@@ -63,17 +60,10 @@ public class TestCseClientHttpRequest {
 
   @Test
   public void testNormal() {
-    UnitTestMeta meta = new UnitTestMeta();
-
-    CseContext.getInstance()
-        .getSchemaListenerManager()
-        .setSchemaListenerList(Collections.singletonList(new RestEngineSchemaListener()));
-
-    meta.registerSchema(new SpringmvcSwaggerGeneratorContext(), SpringmvcImpl.class);
-
     Holder<Invocation> holder = new Holder<>();
     CseClientHttpRequest client =
-        new CseClientHttpRequest(URI.create("cse://app:test/" + SpringmvcImpl.class.getSimpleName() + "/bytes"),
+        new CseClientHttpRequest(
+            URI.create("cse://defaultMicroservice/" + SpringmvcImpl.class.getSimpleName() + "/bytes"),
             HttpMethod.POST) {
 
           /**

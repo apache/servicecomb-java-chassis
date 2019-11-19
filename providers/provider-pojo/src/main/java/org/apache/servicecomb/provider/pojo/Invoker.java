@@ -22,58 +22,49 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.concurrent.CompletableFuture;
 
-import org.apache.servicecomb.core.CseContext;
+import javax.ws.rs.core.Response.Status;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
+import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
+import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
+import org.apache.servicecomb.provider.pojo.definition.PojoConsumerMeta;
+import org.apache.servicecomb.provider.pojo.definition.PojoConsumerOperationMeta;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContextCompletableFuture;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
-import org.springframework.util.StringUtils;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.swagger.annotations.ApiOperation;
 
 public class Invoker implements InvocationHandler {
-  static class InvokerMeta {
-    final ReferenceConfig referenceConfig;
+  private static final Logger LOGGER = LoggerFactory.getLogger(Invoker.class);
 
-    final MicroserviceMeta microserviceMeta;
+  protected SCBEngine scbEngine;
 
-    final SchemaMeta schemaMeta;
+  protected String appId;
 
-    final SwaggerConsumer swaggerConsumer;
-
-    public InvokerMeta(ReferenceConfig referenceConfig,
-        MicroserviceMeta microserviceMeta, SchemaMeta schemaMeta,
-        SwaggerConsumer swaggerConsumer) {
-      this.referenceConfig = referenceConfig;
-      this.microserviceMeta = microserviceMeta;
-      this.schemaMeta = schemaMeta;
-      this.swaggerConsumer = swaggerConsumer;
-    }
-
-    // initialized and meta not changed
-    public boolean isValid() {
-      SCBEngine.getInstance().ensureStatusUp();
-      return swaggerConsumer != null && microserviceMeta == referenceConfig.getMicroserviceMeta();
-    }
-  }
-
-  // 原始数据
   protected String microserviceName;
 
+  // can be null, should find SchemaMeta by consumerIntf in this time
   protected String schemaId;
 
   protected Class<?> consumerIntf;
 
-  // 生成的数据
-  protected InvokerMeta invokerMeta = new InvokerMeta(null, null, null, null);
+  // not always equals codec meta
+  // for highway, codec meta is relate to target instance
+  //  to avoid limit producer to only allow append parameter
+  protected PojoConsumerMeta consumerMeta;
 
   @SuppressWarnings("unchecked")
   public static <T> T createProxy(String microserviceName, String schemaId, Class<?> consumerIntf) {
@@ -87,57 +78,76 @@ public class Invoker implements InvocationHandler {
     this.consumerIntf = consumerIntf;
   }
 
-  protected InvokerMeta createInvokerMeta() {
-    ReferenceConfig referenceConfig = findReferenceConfig();
-    MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
-
-    SchemaMeta schemaMeta;
-    if (StringUtils.isEmpty(schemaId)) {
-      // 未指定schemaId，看看consumer接口是否等于契约接口
-      schemaMeta = microserviceMeta.findSchemaMeta(consumerIntf);
-      if (schemaMeta == null) {
-        // 尝试用consumer接口名作为schemaId
-        schemaMeta = microserviceMeta.findSchemaMeta(consumerIntf.getName());
+  private void ensureStatusUp() {
+    if (scbEngine == null) {
+      if (SCBEngine.getInstance() == null) {
+        String message =
+            "The request is rejected. Cannot process the request due to SCBEngine not ready.";
+        LOGGER.warn(message);
+        throw new InvocationException(Status.SERVICE_UNAVAILABLE, message);
       }
-    } else {
-      schemaMeta = microserviceMeta.findSchemaMeta(schemaId);
+
+      this.scbEngine = SCBEngine.getInstance();
+      this.appId = scbEngine.parseAppId(microserviceName);
     }
 
+    scbEngine.ensureStatusUp();
+  }
+
+  private boolean isNeedRefresh() {
+    return consumerMeta == null || consumerMeta.isExpired();
+  }
+
+  protected SchemaMeta findSchemaMeta(MicroserviceMeta microserviceMeta) {
+    // if present schemaId, just use it
+    if (StringUtils.isNotEmpty(schemaId)) {
+      return microserviceMeta.findSchemaMeta(schemaId);
+    }
+
+    // not present schemaId, try interface first
+    SchemaMeta schemaMeta = microserviceMeta.findSchemaMeta(consumerIntf);
+    if (schemaMeta != null) {
+      return schemaMeta;
+    }
+
+    // try interface name second
+    return microserviceMeta.findSchemaMeta(consumerIntf.getName());
+  }
+
+  private PojoConsumerMeta refreshMeta() {
+    MicroserviceReferenceConfig microserviceReferenceConfig = scbEngine
+        .createMicroserviceReferenceConfig(microserviceName);
+    MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getLatestMicroserviceMeta();
+
+    SchemaMeta schemaMeta = findSchemaMeta(microserviceMeta);
     if (schemaMeta == null) {
       throw new IllegalStateException(
           String.format(
               "Schema not exist, microserviceName=%s, schemaId=%s, consumer interface=%s; "
                   + "new producer not running or not deployed.",
               microserviceName,
-              StringUtils.isEmpty(schemaId) ? "" : schemaId,
+              schemaId,
               consumerIntf.getName()));
     }
 
-    SwaggerConsumer swaggerConsumer = CseContext.getInstance().getSwaggerEnvironment().createConsumer(consumerIntf,
-        schemaMeta.getSwaggerIntf());
-    return new InvokerMeta(referenceConfig, microserviceMeta, schemaMeta, swaggerConsumer);
-  }
-
-  protected ReferenceConfig findReferenceConfig() {
-    return SCBEngine.getInstance().getReferenceConfigForInvoke(microserviceName);
+    SwaggerConsumer swaggerConsumer = scbEngine.getSwaggerEnvironment()
+        .createConsumer(consumerIntf, schemaMeta.getSwagger());
+    return new PojoConsumerMeta(microserviceReferenceConfig, swaggerConsumer, schemaMeta);
   }
 
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) {
-    InvokerMeta currentInvokerMeta = invokerMeta;
-    if (!currentInvokerMeta.isValid()) {
+    ensureStatusUp();
+    if (isNeedRefresh()) {
       synchronized (this) {
-        currentInvokerMeta = invokerMeta;
-        if (!currentInvokerMeta.isValid()) {
-          invokerMeta = createInvokerMeta();
-          currentInvokerMeta = invokerMeta;
+        if (isNeedRefresh()) {
+          this.consumerMeta = refreshMeta();
         }
       }
     }
 
-    SwaggerConsumerOperation consumerOperation = currentInvokerMeta.swaggerConsumer
-        .findOperation(findSwaggerMethodName(method));
-    if (consumerOperation == null) {
+    PojoConsumerOperationMeta pojoConsumerOperationMeta = consumerMeta.findOperationMeta(findSwaggerMethodName(method));
+    if (pojoConsumerOperationMeta == null) {
       throw new IllegalStateException(
           String.format(
               "Consumer method %s:%s not exist in contract, microserviceName=%s, schemaId=%s; "
@@ -148,10 +158,13 @@ public class Invoker implements InvocationHandler {
               schemaId));
     }
 
-    Invocation invocation = InvocationFactory
-        .forConsumer(currentInvokerMeta.referenceConfig, currentInvokerMeta.schemaMeta,
-            consumerOperation.getSwaggerMethod().getName(), null);
-
+    SwaggerConsumerOperation consumerOperation = pojoConsumerOperationMeta.getSwaggerConsumerOperation();
+    OperationMeta operationMeta = pojoConsumerOperationMeta.getOperationMeta();
+    Invocation invocation = InvocationFactory.forConsumer(
+        findReferenceConfig(operationMeta),
+        operationMeta,
+        null);
+    invocation.setResponsesMeta(pojoConsumerOperationMeta.getResponsesMeta());
     consumerOperation.getArgumentsMapper().toInvocation(args, invocation);
 
     if (CompletableFuture.class.equals(method.getReturnType())) {
@@ -168,6 +181,10 @@ public class Invoker implements InvocationHandler {
     }
 
     return apiOperationAnnotation.nickname();
+  }
+
+  protected ReferenceConfig findReferenceConfig(OperationMeta operationMeta) {
+    return consumerMeta.getMicroserviceReferenceConfig().createReferenceConfig(operationMeta);
   }
 
   protected Object syncInvoke(Invocation invocation, SwaggerConsumerOperation consumerOperation) {

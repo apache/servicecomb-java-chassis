@@ -17,57 +17,29 @@
 
 package org.apache.servicecomb.provider.rest.common;
 
-import java.util.HashMap;
-
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.core.definition.schema.ProducerSchemaFactory;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.springframework.context.ApplicationContext;
 
-import mockit.Mock;
-import mockit.MockUp;
+import mockit.Expectations;
+import mockit.Mocked;
 
 public class TestRestServiceProvider {
-
   @Test
-  public void testInit() throws Exception {
-    ApplicationContext context = Mockito.mock(ApplicationContext.class);
-    Mockito.when(context.getBeansWithAnnotation(RestSchema.class)).thenReturn(new HashMap<>());
-
-    new MockUp<BeanUtils>() {
-      @Mock
-      ApplicationContext getContext() {
-        return context;
+  public void testInit(@Mocked ApplicationContext context) {
+    new Expectations(BeanUtils.class) {
+      {
+        BeanUtils.getContext();
+        result = context;
+        context.getBean(RestProducers.class);
+        result = new RestProducers();
       }
     };
 
     RestProducerProvider restProducerProvider = new RestProducerProvider();
-    ReflectUtils.setField(restProducerProvider, "producerSchemaFactory", new ProducerSchemaFactory());
-    ReflectUtils.setField(restProducerProvider, "restProducers", new RestProducers());
-
     restProducerProvider.init();
     Assert.assertEquals(RestConst.REST, restProducerProvider.getName());
-  }
-
-  @Test
-  public void testInvoke() throws Exception {
-    //        Invocation invocation = Mockito.mock(Invocation.class);
-    //        AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-    //        OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
-    //        Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
-    //        RestProviderOperation restProviderOperationMeta = Mockito.mock(RestProviderOperation.class);
-    //        Mockito.when(operationMeta.getExtData("rest.operation")).thenReturn(restProviderOperationMeta);
-    //        ArgsMapper argsMapper = Mockito.mock(ArgsMapper.class);
-    //        Mockito.when(restProviderOperationMeta.getArgsMapper()).thenReturn(argsMapper);
-    //        try {
-    //            RestProducerProvider.getInstance().invoke(invocation, asyncResp);
-    //        } catch (Exception e) {
-    //            Assert.assertEquals(null, e.getMessage());
-    //        }
-    //        Assert.assertEquals(invocation.getContext(), ContextUtils.getInvocationContext().getContext());
   }
 }

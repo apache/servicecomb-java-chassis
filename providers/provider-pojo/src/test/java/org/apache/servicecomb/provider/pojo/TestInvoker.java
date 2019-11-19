@@ -17,264 +17,269 @@
 
 package org.apache.servicecomb.provider.pojo;
 
-import java.util.concurrent.CompletableFuture;
+import java.io.File;
 
-import org.apache.servicecomb.core.CseContext;
-import org.apache.servicecomb.core.Invocation;
+import javax.servlet.http.Part;
+
 import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.core.SCBStatus;
-import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
-import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
-import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
-import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
-import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
-import org.apache.servicecomb.provider.pojo.Invoker.InvokerMeta;
-import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
-import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
-import org.apache.servicecomb.swagger.engine.bootstrap.BootstrapNormal;
-import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.context.InvocationContextCompletableFuture;
-import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
-import org.hamcrest.Matchers;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
+import org.apache.servicecomb.provider.pojo.definition.PojoConsumerMeta;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
+
+import com.fasterxml.jackson.databind.JavaType;
 
 import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Injectable;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
 
 public class TestInvoker {
-  @Rule
-  public ExpectedException expectedException = ExpectedException.none();
+//  @Rule
+//  public ExpectedException expectedException = ExpectedException.none();
+//
+//  SCBEngine scbEngine = new SCBEngine();
+//
+//  @Before
+//  public void setup() {
+//    new MockUp<SCBEngine>() {
+//      @Mock
+//      SCBEngine getInstance() {
+//        return scbEngine;
+//      }
+//    };
+//    scbEngine.setStatus(SCBStatus.UP);
+//  }
+//
+//  @Test
+//  public void testNormalSchemaId(@Injectable ConsumerProviderManager manager,
+//      @Injectable ReferenceConfig config,
+//      @Injectable MicroserviceMeta microserviceMeta) {
+//    new Expectations() {
+//      {
+//        manager.getReferenceConfig("test");
+//        result = config;
+//        config.getMicroserviceMeta();
+//        result = microserviceMeta;
+//      }
+//    };
+//    scbEngine.setConsumerProviderManager(manager);
+//    CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
+//
+//    Invoker invoker = new Invoker("test", "schemaId", IPerson.class);
+//    InvokerMeta invokerMeta = invoker.createInvokerMeta();
+//
+//    Assert.assertEquals(IPerson.class, invokerMeta.swaggerConsumer.getConsumerIntf());
+//  }
+//
+//  @Test
+//  public void testFindSchemaByConsumerInterface(@Injectable ConsumerProviderManager manager,
+//      @Injectable ReferenceConfig config,
+//      @Injectable MicroserviceMeta microserviceMeta) {
+//    new Expectations() {
+//      {
+//        manager.getReferenceConfig("test");
+//        result = config;
+//        config.getMicroserviceMeta();
+//        result = microserviceMeta;
+//        microserviceMeta.findSchemaMeta(IPerson.class);
+//      }
+//    };
+//    scbEngine.setConsumerProviderManager(manager);
+//    CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
+//
+//    Invoker invoker = new Invoker("test", null, IPerson.class);
+//    InvokerMeta invokerMeta = invoker.createInvokerMeta();
+//
+//    Assert.assertEquals(IPerson.class, invokerMeta.swaggerConsumer.getConsumerIntf());
+//  }
+//
+//  @Test
+//  public void testConsumerInterfaceAsSchemaId(@Injectable ConsumerProviderManager manager,
+//      @Injectable ReferenceConfig config,
+//      @Injectable MicroserviceMeta microserviceMeta) {
+//    new Expectations() {
+//      {
+//        manager.getReferenceConfig("test");
+//        result = config;
+//        config.getMicroserviceMeta();
+//        result = microserviceMeta;
+//        microserviceMeta.findSchemaMeta(IPerson.class);
+//        result = null;
+//      }
+//    };
+//    scbEngine.setConsumerProviderManager(manager);
+//    CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
+//
+//    Invoker invoker = new Invoker("test", null, IPerson.class);
+//    InvokerMeta invokerMeta = invoker.createInvokerMeta();
+//    Assert.assertEquals(IPerson.class, invokerMeta.swaggerConsumer.getConsumerIntf());
+//  }
+//
+//  @Test
+//  public void syncInvoke_normal(@Mocked Invocation invocation,
+//      @Mocked SwaggerConsumerOperation consumerOperation,
+//      @Mocked ConsumerResponseMapper mapper) {
+//    Response response = Response.ok("1");
+//    new MockUp<InvokerUtils>() {
+//      @Mock
+//      Response innerSyncInvoke(Invocation invocation) {
+//        return response;
+//      }
+//    };
+//    new Expectations() {
+//      {
+//        consumerOperation.getResponseMapper();
+//        result = mapper;
+//        mapper.mapResponse(response);
+//        result = 1;
+//      }
+//    };
+//
+//    Invoker invoker = new Invoker("test", null, IPerson.class);
+//    Object result = invoker.syncInvoke(invocation, consumerOperation);
+//    Assert.assertEquals(1, result);
+//  }
+//
+//  @Test
+//  public void syncInvoke_failed(@Mocked Invocation invocation,
+//      @Mocked SwaggerConsumerOperation consumerOperation,
+//      @Mocked ConsumerResponseMapper mapper) {
+//    Throwable error = new RuntimeExceptionWithoutStackTrace("failed");
+//    Response response = Response.createConsumerFail(error);
+//    new MockUp<InvokerUtils>() {
+//      @Mock
+//      Response innerSyncInvoke(Invocation invocation) {
+//        return response;
+//      }
+//    };
+//
+//    expectedException.expect(InvocationException.class);
+//    expectedException.expectCause(Matchers.sameInstance(error));
+//
+//    Invoker invoker = new Invoker("test", null, IPerson.class);
+//    invoker.syncInvoke(invocation, consumerOperation);
+//  }
+//
+//  @Test
+//  public void completableFutureInvoke_normal(@Mocked Invocation invocation,
+//      @Mocked SwaggerConsumerOperation consumerOperation,
+//      @Mocked ConsumerResponseMapper mapper) {
+//    Response response = Response.ok("1");
+//    new MockUp<InvokerUtils>() {
+//      @Mock
+//      void reactiveInvoke(Invocation invocation, AsyncResponse asyncResp) {
+//        asyncResp.handle(response);
+//      }
+//    };
+//    new Expectations() {
+//      {
+//        consumerOperation.getResponseMapper();
+//        result = mapper;
+//        mapper.mapResponse(response);
+//        result = 1;
+//      }
+//    };
+//
+//    Invoker invoker = new Invoker("test", null, IPerson.class);
+//    CompletableFuture<Object> future = invoker.completableFutureInvoke(invocation, consumerOperation);
+//    future.whenComplete((result, ex) -> {
+//      Assert.assertEquals(1, result);
+//      Assert.assertEquals(null, ex);
+//    });
+//
+//    Assert.assertThat(future, Matchers.instanceOf(InvocationContextCompletableFuture.class));
+//  }
+//
+//  @Test
+//  public void completableFutureInvoke_failed(@Mocked Invocation invocation,
+//      @Mocked SwaggerConsumerOperation consumerOperation,
+//      @Mocked ConsumerResponseMapper mapper) {
+//    Throwable error = new RuntimeExceptionWithoutStackTrace("failed");
+//    Response response = Response.createConsumerFail(error);
+//    new MockUp<InvokerUtils>() {
+//      @Mock
+//      void reactiveInvoke(Invocation invocation, AsyncResponse asyncResp) {
+//        asyncResp.handle(response);
+//      }
+//    };
+//
+//    Invoker invoker = new Invoker("test", null, IPerson.class);
+//    CompletableFuture<Object> future = invoker.completableFutureInvoke(invocation, consumerOperation);
+//    future.whenComplete((result, ex) -> {
+//      Assert.assertEquals(null, result);
+//      Assert.assertSame(error, ex);
+//    });
+//  }
+//
+//  @Test
+//  public void createInvokerMeta_schemaNotInContract(@Injectable ConsumerProviderManager manager,
+//      @Injectable ReferenceConfig config,
+//      @Injectable MicroserviceMeta microserviceMeta) {
+//    new Expectations() {
+//      {
+//        manager.getReferenceConfig("test");
+//        result = config;
+//        config.getMicroserviceMeta();
+//        result = microserviceMeta;
+//        microserviceMeta.findSchemaMeta("schemaId");
+//        result = null;
+//      }
+//    };
+//    scbEngine.setConsumerProviderManager(manager);
+//    CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
+//
+//    Invoker invoker = new Invoker("test", "schemaId", IPerson.class);
+//
+//    expectedException.expect(IllegalStateException.class);
+//    expectedException.expectMessage(Matchers
+//        .is("Schema not exist, microserviceName=test, schemaId=schemaId, consumer interface=org.apache.servicecomb.provider.pojo.IPerson; "
+//            + "new producer not running or not deployed."));
+//    invoker.createInvokerMeta();
+//  }
+//
+//  @Test
+//  public void invoke_methodNotInContract(@Mocked SwaggerConsumer swaggerConsumer,
+//      @Mocked ReferenceConfig referenceConfig, @Mocked MicroserviceMeta microserviceMeta) {
+//    Invoker invoker = new Invoker("test", null, IPerson.class);
+//    InvokerMeta invokerMeta = new InvokerMeta(referenceConfig, microserviceMeta, null, swaggerConsumer);
+//    Deencapsulation.setField(invoker, "invokerMeta", invokerMeta);
+//    new Expectations() {
+//      {
+//        swaggerConsumer.findOperation(anyString);
+//        result = null;
+//        referenceConfig.getMicroserviceMeta();
+//        result = microserviceMeta;
+//      }
+//    };
+//
+//    expectedException.expect(IllegalStateException.class);
+//    expectedException.expectMessage(Matchers
+//        .is("Consumer method org.apache.servicecomb.provider.pojo.IPerson:trim not exist in contract, "
+//            + "microserviceName=test, schemaId=null; new producer not running or not deployed."));
+//    invoker.invoke(null, ReflectUtils.findMethod(String.class, "trim"), null);
+//  }
 
-  SCBEngine scbEngine = new SCBEngine();
+  public interface DownloadIntf {
+    ReadStreamPart download();
+  }
 
-  @Before
-  public void setup() {
-    new MockUp<SCBEngine>() {
-      @Mock
-      SCBEngine getInstance() {
-        return scbEngine;
-      }
-    };
-    scbEngine.setStatus(SCBStatus.UP);
+  public class DownloadSchema {
+    public File download() {
+      return null;
+    }
   }
 
   @Test
-  public void testNormalSchemaId(@Injectable ConsumerProviderManager manager,
-      @Injectable ReferenceConfig config,
-      @Injectable MicroserviceMeta microserviceMeta) {
-    new Expectations() {
-      {
-        manager.getReferenceConfig("test");
-        result = config;
-        config.getMicroserviceMeta();
-        result = microserviceMeta;
-      }
-    };
-    scbEngine.setConsumerProviderManager(manager);
-    CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
+  public void should_generate_response_meta_for_download() {
+    SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest()
+        .addProducerMeta("download", new DownloadSchema()).run();
+    Invoker invoker = new Invoker(scbEngine.getProducerMicroserviceMeta().getMicroserviceName(), "download",
+        DownloadIntf.class);
+    Deencapsulation.invoke(invoker, "ensureStatusUp");
+    PojoConsumerMeta meta = Deencapsulation.invoke(invoker, "refreshMeta");
 
-    Invoker invoker = new Invoker("test", "schemaId", IPerson.class);
-    InvokerMeta invokerMeta = invoker.createInvokerMeta();
+    JavaType javaType = meta.findOperationMeta("download").getResponsesMeta().findResponseType(200);
+    Assert.assertSame(Part.class, javaType.getRawClass());
 
-    Assert.assertEquals(IPerson.class, invokerMeta.swaggerConsumer.getConsumerIntf());
-  }
-
-  @Test
-  public void testFindSchemaByConsumerInterface(@Injectable ConsumerProviderManager manager,
-      @Injectable ReferenceConfig config,
-      @Injectable MicroserviceMeta microserviceMeta) {
-    new Expectations() {
-      {
-        manager.getReferenceConfig("test");
-        result = config;
-        config.getMicroserviceMeta();
-        result = microserviceMeta;
-        microserviceMeta.findSchemaMeta(IPerson.class);
-      }
-    };
-    scbEngine.setConsumerProviderManager(manager);
-    CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
-
-    Invoker invoker = new Invoker("test", null, IPerson.class);
-    InvokerMeta invokerMeta = invoker.createInvokerMeta();
-
-    Assert.assertEquals(IPerson.class, invokerMeta.swaggerConsumer.getConsumerIntf());
-  }
-
-  @Test
-  public void testConsumerInterfaceAsSchemaId(@Injectable ConsumerProviderManager manager,
-      @Injectable ReferenceConfig config,
-      @Injectable MicroserviceMeta microserviceMeta) {
-    new Expectations() {
-      {
-        manager.getReferenceConfig("test");
-        result = config;
-        config.getMicroserviceMeta();
-        result = microserviceMeta;
-        microserviceMeta.findSchemaMeta(IPerson.class);
-        result = null;
-      }
-    };
-    scbEngine.setConsumerProviderManager(manager);
-    CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
-
-    Invoker invoker = new Invoker("test", null, IPerson.class);
-    InvokerMeta invokerMeta = invoker.createInvokerMeta();
-    Assert.assertEquals(IPerson.class, invokerMeta.swaggerConsumer.getConsumerIntf());
-  }
-
-  @Test
-  public void syncInvoke_normal(@Mocked Invocation invocation,
-      @Mocked SwaggerConsumerOperation consumerOperation,
-      @Mocked ConsumerResponseMapper mapper) {
-    Response response = Response.ok("1");
-    new MockUp<InvokerUtils>() {
-      @Mock
-      Response innerSyncInvoke(Invocation invocation) {
-        return response;
-      }
-    };
-    new Expectations() {
-      {
-        consumerOperation.getResponseMapper();
-        result = mapper;
-        mapper.mapResponse(response);
-        result = 1;
-      }
-    };
-
-    Invoker invoker = new Invoker("test", null, IPerson.class);
-    Object result = invoker.syncInvoke(invocation, consumerOperation);
-    Assert.assertEquals(1, result);
-  }
-
-  @Test
-  public void syncInvoke_failed(@Mocked Invocation invocation,
-      @Mocked SwaggerConsumerOperation consumerOperation,
-      @Mocked ConsumerResponseMapper mapper) {
-    Throwable error = new RuntimeExceptionWithoutStackTrace("failed");
-    Response response = Response.createConsumerFail(error);
-    new MockUp<InvokerUtils>() {
-      @Mock
-      Response innerSyncInvoke(Invocation invocation) {
-        return response;
-      }
-    };
-
-    expectedException.expect(InvocationException.class);
-    expectedException.expectCause(Matchers.sameInstance(error));
-
-    Invoker invoker = new Invoker("test", null, IPerson.class);
-    invoker.syncInvoke(invocation, consumerOperation);
-  }
-
-  @Test
-  public void completableFutureInvoke_normal(@Mocked Invocation invocation,
-      @Mocked SwaggerConsumerOperation consumerOperation,
-      @Mocked ConsumerResponseMapper mapper) {
-    Response response = Response.ok("1");
-    new MockUp<InvokerUtils>() {
-      @Mock
-      void reactiveInvoke(Invocation invocation, AsyncResponse asyncResp) {
-        asyncResp.handle(response);
-      }
-    };
-    new Expectations() {
-      {
-        consumerOperation.getResponseMapper();
-        result = mapper;
-        mapper.mapResponse(response);
-        result = 1;
-      }
-    };
-
-    Invoker invoker = new Invoker("test", null, IPerson.class);
-    CompletableFuture<Object> future = invoker.completableFutureInvoke(invocation, consumerOperation);
-    future.whenComplete((result, ex) -> {
-      Assert.assertEquals(1, result);
-      Assert.assertEquals(null, ex);
-    });
-
-    Assert.assertThat(future, Matchers.instanceOf(InvocationContextCompletableFuture.class));
-  }
-
-  @Test
-  public void completableFutureInvoke_failed(@Mocked Invocation invocation,
-      @Mocked SwaggerConsumerOperation consumerOperation,
-      @Mocked ConsumerResponseMapper mapper) {
-    Throwable error = new RuntimeExceptionWithoutStackTrace("failed");
-    Response response = Response.createConsumerFail(error);
-    new MockUp<InvokerUtils>() {
-      @Mock
-      void reactiveInvoke(Invocation invocation, AsyncResponse asyncResp) {
-        asyncResp.handle(response);
-      }
-    };
-
-    Invoker invoker = new Invoker("test", null, IPerson.class);
-    CompletableFuture<Object> future = invoker.completableFutureInvoke(invocation, consumerOperation);
-    future.whenComplete((result, ex) -> {
-      Assert.assertEquals(null, result);
-      Assert.assertSame(error, ex);
-    });
-  }
-
-  @Test
-  public void createInvokerMeta_schemaNotInContract(@Injectable ConsumerProviderManager manager,
-      @Injectable ReferenceConfig config,
-      @Injectable MicroserviceMeta microserviceMeta) {
-    new Expectations() {
-      {
-        manager.getReferenceConfig("test");
-        result = config;
-        config.getMicroserviceMeta();
-        result = microserviceMeta;
-        microserviceMeta.findSchemaMeta("schemaId");
-        result = null;
-      }
-    };
-    scbEngine.setConsumerProviderManager(manager);
-    CseContext.getInstance().setSwaggerEnvironment(new BootstrapNormal().boot());
-
-    Invoker invoker = new Invoker("test", "schemaId", IPerson.class);
-
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers
-        .is("Schema not exist, microserviceName=test, schemaId=schemaId, consumer interface=org.apache.servicecomb.provider.pojo.IPerson; "
-            + "new producer not running or not deployed."));
-    invoker.createInvokerMeta();
-  }
-
-  @Test
-  public void invoke_methodNotInContract(@Mocked SwaggerConsumer swaggerConsumer,
-      @Mocked ReferenceConfig referenceConfig, @Mocked MicroserviceMeta microserviceMeta) {
-    Invoker invoker = new Invoker("test", null, IPerson.class);
-    InvokerMeta invokerMeta = new InvokerMeta(referenceConfig, microserviceMeta, null, swaggerConsumer);
-    Deencapsulation.setField(invoker, "invokerMeta", invokerMeta);
-    new Expectations() {
-      {
-        swaggerConsumer.findOperation(anyString);
-        result = null;
-        referenceConfig.getMicroserviceMeta();
-        result = microserviceMeta;
-      }
-    };
-
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(Matchers
-        .is("Consumer method org.apache.servicecomb.provider.pojo.IPerson:trim not exist in contract, "
-            + "microserviceName=test, schemaId=null; new producer not running or not deployed."));
-    invoker.invoke(null, ReflectUtils.findMethod(String.class, "trim"), null);
+    scbEngine.destroy();
   }
 }
