@@ -96,7 +96,7 @@ public class ThreadPoolMetersInitializer implements MetricsInitializer {
     ThreadPoolMonitor.attach(registry, (ThreadPoolExecutor) executor, threadPoolName);
 
     if (executor instanceof ThreadPoolExecutorEx) {
-      final Tag idTag = new BasicTag("id", threadPoolName);
+      Tag idTag = new BasicTag("id", threadPoolName);
 
       PolledMeter.using(registry)
           .withName(REJECTED_COUNT)

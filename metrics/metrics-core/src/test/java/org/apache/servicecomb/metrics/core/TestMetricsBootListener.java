@@ -16,62 +16,24 @@
  */
 package org.apache.servicecomb.metrics.core;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.servicecomb.core.BootListener.BootEvent;
-import org.apache.servicecomb.core.BootListener.EventType;
-import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.core.definition.schema.ProducerSchemaFactory;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
-import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
-import org.apache.servicecomb.metrics.core.publish.MetricsRestPublisher;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.junit.Assert;
 import org.junit.Test;
 
-import mockit.Deencapsulation;
-import mockit.Mock;
-import mockit.MockUp;
-
 public class TestMetricsBootListener {
-  MetricsBootListener listener = new MetricsBootListener();
-
   @Test
   public void registerSchemas() {
-    List<Object[]> argsList = new ArrayList<>();
+    new SCBBootstrap().useLocalRegistry().createSCBEngineForTest().run();
 
-    ProducerSchemaFactory producerSchemaFactory = new MockUp<ProducerSchemaFactory>() {
-      @Mock
-      SchemaMeta getOrCreateProducerSchema(String schemaId,
-          Class<?> producerClass,
-          Object producerInstance) {
-        argsList.add(new Object[] {schemaId, producerClass, producerInstance});
-        return null;
-      }
-    }.getMockInstance();
-    Deencapsulation.setField(listener, "producerSchemaFactory", producerSchemaFactory);
+    Microservice microservice = RegistryUtils.getMicroservice();
+    microservice.getSchemas().contains("healthEndpoint");
+    microservice.getSchemaMap().containsKey("healthEndpoint");
 
-    Microservice microservice = new Microservice();
-    microservice.setServiceName("name");
+    microservice.getSchemas().contains("metricsEndpoint");
+    microservice.getSchemaMap().containsKey("metricsEndpoint");
 
-    BootEvent event = new BootEvent();
-    event.setEventType(EventType.BEFORE_PRODUCER_PROVIDER);
-    listener.onBootEvent(event);
-
-    Object[] args = argsList.get(0);
-    //we have remove parameter microserviceName
-    Assert.assertEquals("healthEndpoint", args[0]);
-    Assert.assertEquals(HealthCheckerRestPublisher.class, args[1]);
-    Assert.assertEquals(HealthCheckerRestPublisher.class, args[2].getClass());
-
-    MetricsRestPublisher metricsRestPublisher =
-        SPIServiceUtils.getTargetService(MetricsInitializer.class, MetricsRestPublisher.class);
-    args = argsList.get(1);
-    //we have remove parameter microserviceName
-    Assert.assertEquals("metricsEndpoint", args[0]);
-    Assert.assertEquals(MetricsRestPublisher.class, args[1]);
-    Assert.assertSame(metricsRestPublisher, args[2]);
+    SCBEngine.getInstance().destroy();
   }
 }
