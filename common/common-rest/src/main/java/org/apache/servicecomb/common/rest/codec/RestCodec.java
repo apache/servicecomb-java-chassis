@@ -72,7 +72,7 @@ public final class RestCodec {
         if (DynamicPropertyFactory.getInstance().getBooleanProperty(
             RestConst.PRINT_CODEC_ERROR_MESSGAGE, false).get()) {
           LOG.error(message, e);
-          throw new InvocationException(Status.BAD_REQUEST.getStatusCode(), "", message, e);
+          throw new InvocationException(Status.BAD_REQUEST.getStatusCode(), Status.BAD_REQUEST.getReasonPhrase(), message, e);
         } else {
           LOG.error("{} Add {}=true to print the details.", message, RestConst.PRINT_CODEC_ERROR_MESSGAGE);
           throw new InvocationException(Status.BAD_REQUEST, message);

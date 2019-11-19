@@ -18,12 +18,10 @@ package org.apache.servicecomb.codec.protobuf.internal.converter;
 
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchema;
-import org.apache.servicecomb.swagger.generator.core.SwaggerGenerator;
-import org.apache.servicecomb.swagger.generator.core.SwaggerGeneratorContext;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGeneratorContext;
 import org.junit.Assert;
 import org.junit.Test;
@@ -35,7 +33,7 @@ public class TestSwaggerToProtoGenerator {
   @Test
   public void convert() throws IOException {
     URL url = TestSwaggerToProtoGenerator.class.getClassLoader().getResource("ProtoSchema.proto");
-    String protoContent = IOUtils.toString(url, StandardCharsets.UTF_8);
+    String protoContent = IOUtils.toString(url);
     int idx = protoContent.indexOf("syntax = ");
     protoContent = protoContent.substring(idx);
 

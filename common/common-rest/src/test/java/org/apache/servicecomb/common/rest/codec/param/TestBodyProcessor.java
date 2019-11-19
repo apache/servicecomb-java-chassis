@@ -67,11 +67,11 @@ public class TestBodyProcessor {
   Buffer outputBodyBuffer;
 
   private void createProcessor(Class<?> type) {
-    processor = new BodyProcessor(TypeFactory.defaultInstance().constructType(type), true);
+    processor = new BodyProcessor(TypeFactory.defaultInstance().constructType(type), type.equals(String.class), true);
   }
 
   private void createRawJsonProcessor() {
-    processor = new RawJsonBodyProcessor(TypeFactory.defaultInstance().constructType(String.class), true);
+    processor = new RawJsonBodyProcessor(TypeFactory.defaultInstance().constructType(String.class), true, true);
   }
 
   private void createClientRequest() {

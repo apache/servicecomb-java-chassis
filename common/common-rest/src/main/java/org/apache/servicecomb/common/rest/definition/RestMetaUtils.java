@@ -14,31 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.common.rest.definition;
 
-package org.apache.servicecomb.common.rest.codec.param;
+import org.apache.servicecomb.common.rest.RestConst;
+import org.apache.servicecomb.core.definition.OperationMeta;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.servicecomb.common.rest.codec.RestClientRequest;
-import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
-
-import com.fasterxml.jackson.databind.JavaType;
-
-public interface ParamValueProcessor {
-  Object getValue(HttpServletRequest request) throws Exception;
-
-  void setValue(RestClientRequest clientRequest, Object arg) throws Exception;
-
-  default Object convertValue(Object value, JavaType targetType) {
-    if (value == null || targetType == null) {
-      return value;
-    }
-
-    return RestObjectMapperFactory.getRestObjectMapper()
-        .convertValue(value, targetType);
+public final class RestMetaUtils {
+  private RestMetaUtils() {
   }
 
-  String getParameterPath();
-
-  String getProcessorType();
+  public static RestOperationMeta getRestOperationMeta(OperationMeta operationMeta) {
+    return operationMeta.getVendorExtensions().get(RestConst.SWAGGER_REST_OPERATION);
+  }
 }

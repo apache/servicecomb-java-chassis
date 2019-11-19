@@ -21,7 +21,10 @@ import java.util.concurrent.CompletableFuture;
 import javax.servlet.http.Part;
 
 import org.apache.servicecomb.common.rest.RestConst;
+import org.apache.servicecomb.common.rest.definition.RestMetaUtils;
+import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.Assert;
@@ -50,9 +53,13 @@ public class TestServerRestArgsFilter {
   ServerRestArgsFilter filter = new ServerRestArgsFilter();
 
   @Test
-  public void asyncBeforeSendResponse_part() {
-    new Expectations() {
+  public void asyncBeforeSendResponse_part(@Mocked RestOperationMeta restOperationMeta) {
+    new Expectations(RestMetaUtils.class) {
       {
+        RestMetaUtils.getRestOperationMeta((OperationMeta) any);
+        result = restOperationMeta;
+        restOperationMeta.isDownloadFile();
+        result = true;
         responseEx.getAttribute(RestConst.INVOCATION_HANDLER_RESPONSE);
         result = response;
         response.getResult();

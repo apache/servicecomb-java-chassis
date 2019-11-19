@@ -14,26 +14,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.common.rest.locator;
 
-package org.apache.servicecomb.common.rest.definition;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 
-import java.util.Arrays;
+@Path("/")
+public class TestPathSchema {
+  @Path("/static")
+  @GET
+  public void getStatic() {
 
-import javax.ws.rs.core.MediaType;
+  }
 
-import org.apache.servicecomb.core.definition.OperationMeta;
+  @Path("/static")
+  @POST
+  public void postStatic() {
 
-import mockit.Deencapsulation;
+  }
 
-public class UnitTestRestUtils {
-  public static RestOperationMeta createRestOperationMeta(String httpMethod, String path) {
-    OperationMeta om = new OperationMeta();
-    om.setHttpMethod(httpMethod);
+  @Path("/staticEx")
+  @GET
+  public void getStaticEx() {
 
-    RestOperationMeta rom = new RestOperationMeta();
-    rom.setOperationMeta(om);
-    rom.setAbsolutePath(path);
-    Deencapsulation.setField(rom, "produces", Arrays.asList(MediaType.APPLICATION_JSON));
-    return rom;
+  }
+
+  @Path("/dynamic/{id}")
+  @GET
+  public void dynamicId(@PathParam("id") String id) {
+
+  }
+
+  @Path("/dynamicEx/{id}")
+  @GET
+  public void dynamicExId(@PathParam("id") String id) {
+
   }
 }

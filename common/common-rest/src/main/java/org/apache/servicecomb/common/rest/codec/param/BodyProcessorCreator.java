@@ -31,7 +31,8 @@ import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
-import org.apache.servicecomb.swagger.generator.core.utils.ClassUtils;
+import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.converter.ConverterMgr;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -42,6 +43,9 @@ import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.netflix.config.DynamicPropertyFactory;
 
+import io.swagger.models.Model;
+import io.swagger.models.ModelImpl;
+import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.Parameter;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.buffer.impl.BufferImpl;
@@ -60,10 +64,13 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
   public static class BodyProcessor implements ParamValueProcessor {
     protected JavaType targetType;
 
+    private boolean isString;
+
     protected boolean isRequired;
 
-    public BodyProcessor(JavaType targetType, boolean isRequired) {
+    public BodyProcessor(JavaType targetType, boolean isString, boolean isRequired) {
       this.targetType = targetType;
+      this.isString = isString;
       this.isRequired = isRequired;
     }
 
@@ -101,7 +108,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
               .readValue(inputStream, OBJECT_TYPE);
         }
         return RestObjectMapperFactory.getRestObjectMapper()
-            .readValue(inputStream, targetType);
+            .readValue(inputStream, targetType == null ? OBJECT_TYPE : targetType);
       } catch (MismatchedInputException e) {
         // there is no way to detect InputStream is empty, so have to catch the exception
         if (!isRequired && e.getMessage().contains("No content to map due to end-of-input")) {
@@ -116,9 +123,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
     public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
       ensureContentType(clientRequest);
       if (arg != null) {
-        Buffer buffer = createBodyBuffer(
-            clientRequest.getHeaders().get(HttpHeaders.CONTENT_TYPE),
-            arg);
+        Buffer buffer = createBodyBuffer(clientRequest.getHeaders().get(HttpHeaders.CONTENT_TYPE), arg);
         clientRequest.write(buffer);
       }
     }
@@ -137,6 +142,12 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
           throw new IllegalArgumentException("Content-Type is text/plain while arg type is not String");
         }
         return new BufferImpl().appendBytes(((String) arg).getBytes());
+      }
+
+      if (arg instanceof String && !isString) {
+        // consumer already encode body, not recommend, can not support other transport
+        // if used in this way, it's not transport transparent
+        return Buffer.buffer((String) arg);
       }
 
       try (BufferOutputStream output = new BufferOutputStream()) {
@@ -167,9 +178,8 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
   }
 
   public static class RawJsonBodyProcessor extends BodyProcessor {
-
-    public RawJsonBodyProcessor(JavaType targetType, boolean isRequired) {
-      super(targetType, isRequired);
+    public RawJsonBodyProcessor(JavaType targetType, boolean isString, boolean isRequired) {
+      super(targetType, isString, isRequired);
     }
 
     @Override
@@ -190,8 +200,13 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
 
     @Override
     public void setValue(RestClientRequest clientRequest, Object arg) throws Exception {
-      clientRequest.putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
-      clientRequest.write(Buffer.buffer((String) arg));
+      if (arg instanceof String) {
+        clientRequest.putHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+        clientRequest.write(Buffer.buffer((String) arg));
+        return;
+      }
+
+      super.setValue(clientRequest, arg);
     }
   }
 
@@ -201,12 +216,20 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
 
   @Override
   public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
-    JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
-    boolean rawJson = ClassUtils.isRawJsonType(parameter);
-    if (genericParamType.getTypeName().equals(String.class.getTypeName()) && rawJson) {
-      return new RawJsonBodyProcessor(targetType, parameter.getRequired());
+    Model model = ((BodyParameter) parameter).getSchema();
+    JavaType swaggerType = null;
+    if (model instanceof ModelImpl) {
+      swaggerType = ConverterMgr.findJavaType(((ModelImpl) model).getType(), ((ModelImpl) model).getFormat());
+    }
+    boolean isString = swaggerType != null && swaggerType.getRawClass().equals(String.class);
+
+    JavaType targetType =
+        genericParamType == null ? null : TypeFactory.defaultInstance().constructType(genericParamType);
+    boolean rawJson = SwaggerUtils.isRawJsonType(parameter);
+    if (rawJson) {
+      return new RawJsonBodyProcessor(targetType, isString, parameter.getRequired());
     }
 
-    return new BodyProcessor(targetType, parameter.getRequired());
+    return new BodyProcessor(targetType, isString, parameter.getRequired());
   }
 }

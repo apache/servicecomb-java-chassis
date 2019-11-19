@@ -19,7 +19,7 @@ package org.apache.servicecomb.common.rest.codec.param;
 
 import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.BodyProcessor;
 import org.apache.servicecomb.common.rest.codec.param.BodyProcessorCreator.RawJsonBodyProcessor;
-import org.apache.servicecomb.swagger.generator.core.SwaggerConst;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -47,18 +47,5 @@ public class TestBodyProcessorCreator {
     ParamValueProcessor processor = creator.create(param, String.class);
 
     Assert.assertEquals(RawJsonBodyProcessor.class, processor.getClass());
-  }
-
-  // now, we ignore rawJson flag
-  @Test
-  public void testCreateInvalidRawJson() {
-    ParamValueProcessorCreator creator =
-        ParamValueProcessorCreatorManager.INSTANCE.findValue(BodyProcessorCreator.PARAMTYPE);
-    BodyParameter param = new BodyParameter();
-    param.setVendorExtension(SwaggerConst.EXT_RAW_JSON_TYPE, true);
-
-    ParamValueProcessor processor = creator.create(param, Integer.class);
-
-    Assert.assertEquals(BodyProcessor.class, processor.getClass());
   }
 }

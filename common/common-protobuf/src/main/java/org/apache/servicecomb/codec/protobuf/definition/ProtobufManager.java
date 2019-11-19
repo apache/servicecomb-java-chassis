@@ -18,7 +18,6 @@
 package org.apache.servicecomb.codec.protobuf.definition;
 
 import org.apache.servicecomb.codec.protobuf.utils.ScopedProtobufSchemaManager;
-import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 

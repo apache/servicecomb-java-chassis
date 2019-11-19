@@ -18,10 +18,12 @@
 package org.apache.servicecomb.common.rest.codec.param;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.google.common.base.Defaults;
 
 public abstract class AbstractParamProcessor implements ParamValueProcessor {
   protected String paramPath;
 
+  // for consumer, targetType should be null
   protected JavaType targetType;
 
   protected Object defaultValue;
@@ -37,6 +39,10 @@ public abstract class AbstractParamProcessor implements ParamValueProcessor {
     this.targetType = targetType;
     this.defaultValue = defaultValue;
     this.required = required;
+    if (defaultValue == null &&
+        targetType != null && targetType.getRawClass().isPrimitive()) {
+      this.defaultValue = Defaults.defaultValue(targetType.getRawClass());
+    }
   }
 
   public String getParameterPath() {

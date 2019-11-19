@@ -26,21 +26,27 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 
+import javax.servlet.AsyncContext;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
+import org.apache.servicecomb.common.rest.definition.RestMetaUtils;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilterBaseForTest;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
+import org.apache.servicecomb.common.rest.locator.TestPathSchema;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.core.SCBStatus;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
@@ -56,6 +62,7 @@ import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletResponse;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
+import org.apache.servicecomb.foundation.vertx.http.StandardHttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
@@ -70,7 +77,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 import io.vertx.core.buffer.Buffer;
@@ -85,19 +91,12 @@ public class TestAbstractRestInvocation {
   HttpServletRequestEx requestEx;
 
   @Mocked
+  HttpServletResponse servletResponse;
+
   HttpServletResponseEx responseEx;
 
   @Mocked
   ReferenceConfig endpoint;
-
-  @Mocked
-  SchemaMeta schemaMeta;
-
-  @Mocked
-  OperationMeta operationMeta;
-
-  @Mocked
-  RestOperationMeta restOperation;
 
   @Mocked
   Object[] swaggerArguments;
@@ -106,6 +105,12 @@ public class TestAbstractRestInvocation {
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
+
+  static SCBEngine scbEngine;
+
+  static OperationMeta operationMeta;
+
+  static RestOperationMeta restOperation;
 
   class AbstractHttpServletRequestForTest extends AbstractHttpServletRequest {
     @Override
@@ -132,8 +137,11 @@ public class TestAbstractRestInvocation {
 
   @BeforeClass
   public static void classSetup() {
-    EventManager.eventBus = new EventBus();
-    SCBEngine.getInstance().setStatus(SCBStatus.UP);
+    scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest()
+        .addProducerMeta("sid1", new TestPathSchema())
+        .run();
+    operationMeta = scbEngine.getProducerMicroserviceMeta().operationMetas().get("test.sid1.dynamicId");
+    restOperation = RestMetaUtils.getRestOperationMeta(operationMeta);
 
     new MockUp<System>() {
       @Mock
@@ -145,12 +153,15 @@ public class TestAbstractRestInvocation {
 
   @AfterClass
   public static void classTeardown() {
-    EventManager.eventBus = new EventBus();
-    SCBEngine.getInstance().setStatus(SCBStatus.DOWN);
+    scbEngine.destroy();
   }
 
   @Before
   public void setup() {
+    if (responseEx == null) {
+      responseEx = new StandardHttpServletResponseEx(servletResponse);
+    }
+
     invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
 
     initRestInvocation();
@@ -177,11 +188,10 @@ public class TestAbstractRestInvocation {
   public void initProduceProcessorNull() {
     new Expectations() {
       {
-        restOperation.ensureFindProduceProcessor(requestEx);
-        result = null;
+        requestEx.getHeader(HttpHeaders.ACCEPT);
+        result = "notExistType";
       }
     };
-
     restInvocation = new AbstractRestInvocationForTest() {
       @Override
       public void sendFailResponse(Throwable throwable) {
@@ -189,24 +199,22 @@ public class TestAbstractRestInvocation {
     };
     initRestInvocation();
 
-    try {
-      restInvocation.initProduceProcessor();
-      Assert.fail("must throw exception");
-    } catch (InvocationException e) {
-      assertEquals(Status.NOT_ACCEPTABLE, e.getStatus());
-      assertEquals("Accept null is not supported", ((CommonExceptionData) e.getErrorData()).getMessage());
-    }
+    expectedException.expect(InvocationException.class);
+    expectedException
+        .expectMessage(
+            "InvocationException: code=406;msg=CommonExceptionData [message=Accept notExistType is not supported]");
+
+    restInvocation.initProduceProcessor();
   }
 
   @Test
   public void initProduceProcessorNormal() {
     new Expectations() {
       {
-        restOperation.ensureFindProduceProcessor(requestEx);
-        result = ProduceProcessorManager.JSON_PROCESSOR;
+        requestEx.getHeader(HttpHeaders.ACCEPT);
+        result = MediaType.APPLICATION_JSON;
       }
     };
-
     // not throw exception
     restInvocation.initProduceProcessor();
   }
@@ -439,6 +447,8 @@ public class TestAbstractRestInvocation {
 
   @Test
   public void sendFailResponseNoProduceProcessor() {
+    invocation.onStart(0);
+
     restInvocation.produceProcessor = null;
     restInvocation.sendFailResponse(new RuntimeExceptionWithoutStackTrace());
 
@@ -490,6 +500,7 @@ public class TestAbstractRestInvocation {
         super.sendResponse(response);
       }
     };
+    invocation.onStart(0);
     initRestInvocation();
 
     restInvocation.sendResponseQuietly(response);
@@ -601,6 +612,7 @@ public class TestAbstractRestInvocation {
     expected.put("reasonPhrase", "reason");
     expected.put("contentType", "application/json; charset=utf-8");
 
+    invocation.onStart(0);
     initRestInvocation();
 
     restInvocation.sendResponse(response);
@@ -640,6 +652,7 @@ public class TestAbstractRestInvocation {
       }
     }.getMockInstance();
 
+    invocation.onStart(0);
     initRestInvocation();
 
     try {
@@ -685,6 +698,8 @@ public class TestAbstractRestInvocation {
         resultHeaders.addHeader(name, value);
       }
     }.getMockInstance();
+
+    invocation.onStart(0);
     initRestInvocation();
 
     try {
@@ -723,6 +738,8 @@ public class TestAbstractRestInvocation {
         buffer.appendBuffer(bodyBuffer);
       }
     }.getMockInstance();
+
+    invocation.onStart(0);
     initRestInvocation();
 
     restInvocation.sendResponse(response);
@@ -774,6 +791,7 @@ public class TestAbstractRestInvocation {
       }
     };
 
+    invocation.onStart(0);
     initRestInvocation();
     List<HttpServerFilter> httpServerFilters = SPIServiceUtils.loadSortedService(HttpServerFilter.class);
     httpServerFilters.add(filter);
@@ -854,6 +872,8 @@ public class TestAbstractRestInvocation {
       @Override
       public void sendFailResponse(Throwable throwable) {
         result.value = throwable;
+
+        invocation.onFinish(Response.ok(null));
       }
     };
     restInvocation.requestEx = requestEx;
@@ -892,6 +912,8 @@ public class TestAbstractRestInvocation {
 
     // will not throw exception
     restInvocation.scheduleInvocation();
+
+    invocation.onFinish(Response.ok(null));
   }
 
   @Test
@@ -916,6 +938,8 @@ public class TestAbstractRestInvocation {
       @Override
       public void sendFailResponse(Throwable throwable) {
         holder.value = throwable;
+
+        invocation.onFinish(Response.ok(null));
       }
     };
     restInvocation.requestEx = requestEx;
@@ -956,6 +980,8 @@ public class TestAbstractRestInvocation {
       @Override
       protected void runOnExecutor() {
         result.value = true;
+
+        invocation.onFinish(Response.ok(null));
       }
     };
     restInvocation.requestEx = requestEx;
@@ -1024,11 +1050,16 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void scheduleInvocation_invocationContextDeserializeError() {
+  public void scheduleInvocation_invocationContextDeserializeError(@Mocked AsyncContext asyncContext) {
     requestEx = new AbstractHttpServletRequest() {
       @Override
       public String getHeader(String name) {
         return "{\"x-cse-src-microservice\":'source\"}";
+      }
+
+      @Override
+      public AsyncContext getAsyncContext() {
+        return asyncContext;
       }
     };
     Holder<Integer> status = new Holder<>();
@@ -1065,7 +1096,7 @@ public class TestAbstractRestInvocation {
   @SuppressWarnings("deprecation")
   @Test
   public void scheduleInvocation_flowControlReject() {
-    new Expectations() {
+    new Expectations(operationMeta) {
       {
         operationMeta.getProviderQpsFlowControlHandler();
         result = (Handler) (invocation, asyncResp) -> asyncResp.producerFail(new InvocationException(

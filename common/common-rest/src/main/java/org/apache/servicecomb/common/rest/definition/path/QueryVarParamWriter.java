@@ -29,7 +29,6 @@ import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPath
 import org.apache.servicecomb.swagger.converter.property.SwaggerParamCollectionFormat;
 
 public class QueryVarParamWriter extends AbstractUrlParamWriter {
-
   private SwaggerParamCollectionFormat collectionFormat;
 
   public QueryVarParamWriter(RestParam param) {

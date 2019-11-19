@@ -34,6 +34,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.foundation.common.utils.PartUtils;
 import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import org.apache.servicecomb.foundation.vertx.stream.PumpFromPart;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
@@ -90,13 +91,21 @@ public class RestClientRequestImpl implements RestClientRequest {
       LOGGER.debug("null file is ignored, file name = [{}]", name);
       return;
     }
+
+    if (partOrList.getClass().isArray()) {
+      for (Object part : (Object[]) partOrList) {
+        uploads.put(name, PartUtils.getSinglePart(name, part));
+      }
+    }
+
     if (List.class.isAssignableFrom(partOrList.getClass())) {
-      List<Part> parts = (List<Part>) partOrList;
-      uploads.putAll(name, parts);
+      for (Object part : (List<Object>) partOrList) {
+        uploads.put(name, PartUtils.getSinglePart(name, part));
+      }
       return;
     }
-    // must be part
-    uploads.put(name, (Part) partOrList);
+
+    uploads.put(name, PartUtils.getSinglePart(name, partOrList));
   }
 
   @Override
