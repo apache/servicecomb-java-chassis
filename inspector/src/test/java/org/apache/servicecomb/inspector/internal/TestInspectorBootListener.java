@@ -16,31 +16,19 @@
  */
 package org.apache.servicecomb.inspector.internal;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.core.definition.schema.ProducerSchemaFactory;
-import org.apache.servicecomb.core.transport.TransportManager;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mocked;
-
 public class TestInspectorBootListener {
-  static Map<String, String> schemas = new HashMap<>();
-
   static PriorityPropertyManager priorityPropertyManager;
 
   static InspectorConfig inspectorConfig;
@@ -83,38 +71,22 @@ public class TestInspectorBootListener {
   @Test
   public void diabled() {
     ArchaiusUtils.setProperty("servicecomb.inspector.enabled", false);
-    BootEvent event = new BootEvent();
-    event.setScbEngine(new SCBEngine());
-    event.setEventType(EventType.AFTER_TRANSPORT);
 
-    try (LogCollector logCollector = new LogCollector()) {
-      new InspectorBootListener().onBootEvent(event);
-
-      Assert.assertEquals("inspector is not enabled.", logCollector.getLastEvents().getMessage());
-    }
+    SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();
+    scbEngine.getTransportManager().clearTransportBeforeInit();
+    scbEngine.run();
+    Assert.assertNull(scbEngine.getProducerMicroserviceMeta().findSchemaMeta("inspector"));
+    scbEngine.destroy();
   }
 
   @Test
-  public void enabled(@Mocked ProducerSchemaFactory producerSchemaFactory, @Mocked ServiceRegistry serviceRegistry) {
-    new Expectations(RegistryUtils.class) {
-      {
-        RegistryUtils.getServiceRegistry();
-        result = serviceRegistry;
-      }
-    };
-
+  public void enabled() {
     ArchaiusUtils.setProperty("servicecomb.inspector.enabled", true);
-    BootEvent event = new BootEvent();
-    event.setScbEngine(new SCBEngine());
-    event.getScbEngine().setTransportManager(new TransportManager());
-    event.setEventType(EventType.AFTER_TRANSPORT);
 
-    try (LogCollector logCollector = new LogCollector()) {
-      InspectorBootListener listener = new InspectorBootListener();
-      Deencapsulation.setField(listener, "producerSchemaFactory", producerSchemaFactory);
-      listener.onBootEvent(event);
-
-      Assert.assertEquals("inspector is enabled.", logCollector.getLastEvents().getMessage());
-    }
+    SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();
+    scbEngine.getTransportManager().clearTransportBeforeInit();
+    scbEngine.run();
+    Assert.assertNotNull(scbEngine.getProducerMicroserviceMeta().findSchemaMeta("inspector"));
+    scbEngine.destroy();
   }
 }
