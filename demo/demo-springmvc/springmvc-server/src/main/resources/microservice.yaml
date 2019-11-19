@@ -20,16 +20,15 @@ service_description:
   name: springmvc
   version: 0.0.3
   paths:
-  - path: /test1/testpath
-    property:
-      checksession: false
-  - path: /test2/testpath
-    property:
-      checksession: true
+    - path: /test1/testpath
+      property:
+        checksession: false
+    - path: /test2/testpath
+      property:
+        checksession: true
 instance_description:
-  initialStatus : TESTING
+  initialStatus: TESTING
 servicecomb:
-  microserviceVersionFactory: org.apache.servicecomb.core.definition.PrivateMicroserviceVersionMetaFactory
   service:
     registry:
       registerPath: true
@@ -55,7 +54,7 @@ servicecomb:
   uploads:
     directory: target
   rest:
-    address: 0.0.0.0:8082?sslEnabled=true
+    address: 0.0.0.0:8082?sslEnabled=false
     server:
       compression: true
   highway:

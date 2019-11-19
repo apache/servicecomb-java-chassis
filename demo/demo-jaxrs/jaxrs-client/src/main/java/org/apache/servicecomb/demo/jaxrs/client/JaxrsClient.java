@@ -26,7 +26,6 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.http.HttpStatus;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.demo.CodeFirstRestTemplate;
 import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.RestObjectMapperWithStringMapper;
@@ -40,6 +39,7 @@ import org.apache.servicecomb.demo.jaxrs.client.validation.ValidationServiceClie
 import org.apache.servicecomb.demo.validator.Student;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.http.HttpEntity;
@@ -89,7 +89,7 @@ public class JaxrsClient {
   private static void testCompute(RestTemplate template) throws Exception {
     String microserviceName = "jaxrs";
     for (String transport : DemoConst.transports) {
-      CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
+      ArchaiusUtils.setProperty("servicecomb.reference.transport." + microserviceName, transport);
       TestMgr.setMsg(microserviceName, transport);
 
       String cseUrlPrefix = "cse://" + microserviceName;
@@ -106,7 +106,7 @@ public class JaxrsClient {
   private static void testValidator(RestTemplate template) {
     String microserviceName = "jaxrs";
     for (String transport : DemoConst.transports) {
-      CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
+      ArchaiusUtils.setProperty("servicecomb.reference.transport." + microserviceName, transport);
       TestMgr.setMsg(microserviceName, transport);
 
       String cseUrlPrefix = "cse://" + microserviceName + "/validator/";
@@ -120,11 +120,10 @@ public class JaxrsClient {
     }
   }
 
-
   private static void testJaxRSDefaultValues(RestTemplate template) {
     String microserviceName = "jaxrs";
     for (String transport : DemoConst.transports) {
-      CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
+      ArchaiusUtils.setProperty("servicecomb.reference.transport." + microserviceName, transport);
       TestMgr.setMsg(microserviceName, transport);
 
       String cseUrlPrefix = "cse://" + microserviceName + "/JaxRSDefaultValues/";
@@ -213,7 +212,6 @@ public class JaxrsClient {
       TestMgr.check("Hello 345302", result);
     }
   }
-
 
   private static void testGet(RestTemplate template, String cseUrlPrefix) {
     Map<String, String> params = new HashMap<>();
@@ -382,7 +380,7 @@ public class JaxrsClient {
       if (transport.equals(Const.ANY_TRANSPORT)) {
         continue;
       }
-      CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
+      ArchaiusUtils.setProperty("servicecomb.reference.transport." + microserviceName, transport);
       TestMgr.setMsg(microserviceName, transport);
 
       String cseUrlPrefix = "cse://" + microserviceName + "/clientreqtimeout/";
@@ -441,6 +439,6 @@ public class JaxrsClient {
     TestMgr.check("Hello nullnull", result);
 
     result = template.postForObject(cseUrlPrefix + "/allprimitivetypes", null, String.class);
-    TestMgr.check("Hello false,0,0,0,0,0,0.0,0.0,null", result);
+    TestMgr.check("Hello false,\0,0,0,0,0,0.0,0.0,null", result);
   }
 }

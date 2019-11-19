@@ -27,12 +27,12 @@ import java.util.concurrent.CountDownLatch;
 
 import javax.inject.Inject;
 
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.demo.CodeFirstPojoIntf;
 import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.server.User;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
@@ -52,7 +52,7 @@ public class CodeFirstPojoClient {
 
   public void testCodeFirst(String microserviceName) {
     for (String transport : DemoConst.transports) {
-      CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
+      ArchaiusUtils.setProperty("servicecomb.reference.transport." + microserviceName, transport);
       TestMgr.setMsg(microserviceName, transport);
 
       testAll(codeFirstAnnotation, transport);

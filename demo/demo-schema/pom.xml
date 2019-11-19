@@ -61,6 +61,16 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>swagger-generator-springmvc</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-test-scaffolding</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>inspector</artifactId>
+    </dependency>
+
   </dependencies>
   <build>
     <plugins>

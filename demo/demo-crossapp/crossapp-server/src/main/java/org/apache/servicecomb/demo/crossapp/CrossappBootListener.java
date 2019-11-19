@@ -22,13 +22,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CrossappBootListener implements BootListener {
-  @SuppressWarnings("deprecation")
   @Override
-  public void onBootEvent(BootEvent event) {
-    if (EventType.BEFORE_PRODUCER_PROVIDER.equals(event.getEventType())) {
-      // 动态注册schemas目录下面的契约到当前服务
-      org.apache.servicecomb.core.definition.loader.DynamicSchemaLoader.INSTANCE
-          .registerSchemas("classpath*:schemas/*.yaml");
-    }
+  public void onBeforeProducerProvider(BootEvent event) {
+    event.getScbEngine().getSwaggerLoader().registerSwaggersInLocation("schemas");
   }
 }

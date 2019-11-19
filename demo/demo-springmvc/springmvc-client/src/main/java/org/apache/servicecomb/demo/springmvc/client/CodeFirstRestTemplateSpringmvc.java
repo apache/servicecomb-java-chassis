@@ -51,11 +51,11 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
   interface UploadPartAndFile {
-    String fileUpload(Part file1, File file2);
+    String fileUpload(Part file1, File someFile);
   }
 
   interface UploadStreamAndResource {
-    String fileUpload(InputStream file1, Resource file2);
+    String fileUpload(InputStream file1, Resource someFile);
   }
 
   private UploadPartAndFile uploadPartAndFile = Invoker.createProxy("springmvc", "codeFirst", UploadPartAndFile.class);

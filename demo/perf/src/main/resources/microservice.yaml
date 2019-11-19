@@ -43,6 +43,7 @@ servicecomb:
       maxThreads-per-group: 4
   references:
     transport: highway
+    transport: rest
   metrics:
     window_time: 1000
     invocation.latencyDistribution: 0,1,3,10,100
@@ -51,7 +52,7 @@ servicecomb:
       msTime: 40
     Provider.invocation.slow:
       enabled: true
-      msTime: 40
+      msTime: 1
     publisher.defaultLog:
       enabled: true
       endpoints.client.detail.enabled: true
@@ -59,7 +60,7 @@ servicecomb:
         minScopeLength: 9
 
 sync-count: 10
-async-count: 20
+async-count: 10
 sync: false
 producer: perf1
 id: 1

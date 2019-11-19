@@ -92,8 +92,8 @@ public class TestResponse {
   }
 
   private void checkQueryGenericObject() {
-    final GenericParam<Person> requestBody = new GenericParam<>();
-    requestBody.setNum(1).setStr("str1").setData(new Person("bodyPerson"));
+    GenericParam<Person> requestBody = new GenericParam<>();
+    requestBody.num(1).str("str1").setData(new Person("bodyPerson"));
     String result = intf.checkQueryGenericObject(requestBody, "str2", 2);
     TestMgr.check(
         "str=str2,generic=GenericParamWithJsonIgnore{str='str2', num=2, data=null},requestBody=GenericParam{str='str1', num=1, data=bodyPerson}",
@@ -101,8 +101,8 @@ public class TestResponse {
   }
 
   private void checkQueryGenericString() {
-    final GenericParam<Person> requestBody = new GenericParam<>();
-    requestBody.setNum(1).setStr("str1").setData(new Person("bodyPerson"));
+    GenericParam<Person> requestBody = new GenericParam<>();
+    requestBody.num(1).str("str1").setData(new Person("bodyPerson"));
     String result = intf.checkQueryGenericString("str2", requestBody, 2, "dataTest", "strInSubclass", 33);
     TestMgr.check(
         "str=str2,generic=GenericParamExtended{strExtended='strInSubclass', intExtended=33, super="
