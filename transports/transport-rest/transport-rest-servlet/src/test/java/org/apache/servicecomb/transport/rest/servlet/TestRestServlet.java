@@ -17,20 +17,17 @@
 
 package org.apache.servicecomb.transport.rest.servlet;
 
-import java.io.IOException;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.ws.Holder;
 
-import org.apache.servicecomb.core.CseContext;
-import org.apache.servicecomb.core.transport.TransportManager;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import mockit.Deencapsulation;
 import mockit.Mock;
@@ -40,15 +37,16 @@ public class TestRestServlet {
   private RestServlet restservlet = null;
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     restservlet = new RestServlet();
 
-    CseContext.getInstance().setTransportManager(Mockito.mock(TransportManager.class));
+    new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     restservlet = null;
+    SCBEngine.getInstance().destroy();
   }
 
   @Test
@@ -59,7 +57,7 @@ public class TestRestServlet {
 
   // useless, but for coverage
   @Test
-  public void testService() throws ServletException, IOException {
+  public void testService() {
     Holder<Boolean> holder = new Holder<>();
     ServletRestDispatcher servletRestServer = new MockUp<ServletRestDispatcher>() {
       @Mock

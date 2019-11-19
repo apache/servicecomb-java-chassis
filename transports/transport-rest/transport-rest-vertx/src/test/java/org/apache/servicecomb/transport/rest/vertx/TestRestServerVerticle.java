@@ -23,11 +23,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.xml.ws.Holder;
 
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Endpoint;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.transport.AbstractTransport;
-import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.hamcrest.Matchers;
@@ -67,13 +67,14 @@ public class TestRestServerVerticle {
     instance = new RestServerVerticle();
     startFuture = Future.future();
 
-    CseContext.getInstance().setTransportManager(new TransportManager());
+    new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();
   }
 
   @After
   public void tearDown() {
     instance = null;
     startFuture = null;
+    SCBEngine.getInstance().destroy();
   }
 
   @Test

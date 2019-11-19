@@ -29,11 +29,9 @@ import org.apache.servicecomb.transport.rest.client.RestTransportClient;
 import org.apache.servicecomb.transport.rest.client.RestTransportClientManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 
 import io.vertx.core.DeploymentOptions;
 
-@Component
 public class VertxRestTransport extends AbstractTransport {
   private static final Logger LOGGER = LoggerFactory.getLogger(VertxRestTransport.class);
 

@@ -28,7 +28,7 @@
   <name>Java Chassis::Transports</name>
   <packaging>pom</packaging>
   <modules>
-    <module>transport-highway</module>
+    <!--    <module>transport-highway</module>-->
     <module>transport-rest</module>
     <module>transport-common</module>
   </modules>

@@ -29,8 +29,9 @@ import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.RestProducerInvocation;
 import org.apache.servicecomb.common.rest.VertxRestInvocation;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
-import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -95,12 +96,12 @@ public class TestVertxRestDispatcher {
       }
     };
 
-    CseContext.getInstance().setTransportManager(transportManager);
+    new SCBBootstrap().useLocalRegistry().createSCBEngineForTest().setTransportManager(transportManager);
   }
 
   @After
   public void teardown() {
-    CseContext.getInstance().setTransportManager(null);
+    SCBEngine.getInstance().destroy();
   }
 
   @Test
