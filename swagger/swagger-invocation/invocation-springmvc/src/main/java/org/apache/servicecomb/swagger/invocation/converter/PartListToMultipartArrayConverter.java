@@ -21,15 +21,11 @@ import java.util.List;
 
 import javax.servlet.http.Part;
 
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.inject.util.Types;
 
-
-@Component
-public class SpringMultipartArrayConverter implements CustomizedConverter {
-
+public class PartListToMultipartArrayConverter implements Converter {
   @Override
   public Type getSrcType() {
     return Types.newParameterizedType(List.class, Part.class);

@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.swagger;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -392,6 +393,8 @@ public final class SwaggerUtils {
         && cls != Date.class
         && cls != LocalDate.class
         && cls != byte[].class
+        && cls != File.class
+        && !cls.getName().equals("org.springframework.web.multipart.MultipartFile")
         && !Part.class.isAssignableFrom(cls));
   }
 

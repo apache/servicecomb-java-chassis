@@ -16,6 +16,9 @@
  */
 package org.apache.servicecomb.swagger.generator.core.model;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import io.swagger.models.HttpMethod;
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
@@ -29,11 +32,17 @@ public class SwaggerOperation {
 
   private Operation operation;
 
+  private Map<String, Integer> parameterIndexes = new HashMap<>();
+
   public SwaggerOperation(Swagger swagger, String path, HttpMethod httpMethod, Operation operation) {
     this.swagger = swagger;
     this.path = path;
     this.httpMethod = httpMethod;
     this.operation = operation;
+
+    for (int idx = 0; idx < operation.getParameters().size(); idx++) {
+      parameterIndexes.put(operation.getParameters().get(idx).getName(), idx);
+    }
   }
 
   public Swagger getSwagger() {
@@ -54,5 +63,9 @@ public class SwaggerOperation {
 
   public String getOperationId() {
     return operation.getOperationId();
+  }
+
+  public Integer findPrameterIndex(String name) {
+    return parameterIndexes.get(name);
   }
 }

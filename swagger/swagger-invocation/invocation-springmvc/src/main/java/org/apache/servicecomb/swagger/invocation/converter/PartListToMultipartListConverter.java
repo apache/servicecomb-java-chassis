@@ -14,26 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.swagger.invocation.converter;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.Part;
 
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-@Component
-class SpringMultipartConverter implements CustomizedConverter {
+import com.google.inject.util.Types;
+
+public class PartListToMultipartListConverter implements Converter {
   @Override
   public Type getSrcType() {
-    return Part.class;
+    return Types.newParameterizedType(List.class, Part.class);
   }
 
   @Override
   public Type getTargetType() {
-    return MultipartFile.class;
+    return Types.newParameterizedType(List.class, MultipartFile.class);
   }
 
   @Override
@@ -41,7 +42,12 @@ class SpringMultipartConverter implements CustomizedConverter {
     if (value == null) {
       return null;
     }
-
-    return new PartToMultipartFile((Part) value);
+    @SuppressWarnings("unchecked")
+    List<Part> partList = (List<Part>) value;
+    List<PartToMultipartFile> fileList = new ArrayList<>();
+    partList.forEach(part -> {
+      fileList.add(new PartToMultipartFile(part));
+    });
+    return fileList;
   }
 }
