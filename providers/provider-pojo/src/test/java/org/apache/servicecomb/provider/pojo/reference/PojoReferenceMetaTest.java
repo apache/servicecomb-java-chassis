@@ -20,6 +20,8 @@ package org.apache.servicecomb.provider.pojo.reference;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
 
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.provider.pojo.IPerson;
 import org.junit.Assert;
@@ -28,6 +30,8 @@ import org.junit.Test;
 public class PojoReferenceMetaTest {
   @Test
   public void testHasConsumerInterface() {
+    SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();
+
     PojoReferenceMeta pojoReferenceMeta = new PojoReferenceMeta();
     pojoReferenceMeta.setMicroserviceName("test");
     pojoReferenceMeta.setSchemaId("schemaId");
@@ -37,6 +41,8 @@ public class PojoReferenceMetaTest {
     Assert.assertEquals(IPerson.class, pojoReferenceMeta.getObjectType());
     assertThat(pojoReferenceMeta.getProxy(), instanceOf(IPerson.class));
     Assert.assertEquals(true, pojoReferenceMeta.isSingleton());
+
+    scbEngine.destroy();
   }
 
   @Test

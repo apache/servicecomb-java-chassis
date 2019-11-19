@@ -17,9 +17,9 @@
 
 package org.apache.servicecomb.provider.springmvc.reference;
 
-import java.io.File;
+import static org.apache.servicecomb.foundation.common.utils.PartUtils.getSinglePart;
+
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,11 +35,7 @@ import javax.servlet.http.Part;
 import javax.ws.rs.core.HttpHeaders;
 
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.foundation.common.part.FilePart;
-import org.apache.servicecomb.foundation.common.part.InputStreamPart;
-import org.apache.servicecomb.foundation.common.part.ResourcePart;
 import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
-import org.springframework.core.io.Resource;
 
 import com.google.common.annotations.VisibleForTesting;
 
@@ -177,37 +173,6 @@ public class CommonToHttpServletRequest extends AbstractHttpServletRequest {
   public Part getPart(String name) {
     Object value = findPartInputValue(name);
     return getSinglePart(name, value);
-  }
-
-  private Part getSinglePart(String name, Object value) {
-    if (value == null) {
-      return null;
-    }
-
-    if (Part.class.isInstance(value)) {
-      return (Part) value;
-    }
-
-    if (InputStream.class.isInstance(value)) {
-      return new InputStreamPart(name, (InputStream) value);
-    }
-
-    if (Resource.class.isInstance(value)) {
-      return new ResourcePart(name, (Resource) value);
-    }
-
-    if (File.class.isInstance(value)) {
-      return new FilePart(name, (File) value);
-    }
-
-    throw new IllegalStateException(
-        String.format("File input parameter of %s could be %s / %s / %s or %s, but got %s.",
-            name,
-            Part.class.getName(),
-            InputStream.class.getName(),
-            Resource.class.getName(),
-            File.class.getName(),
-            value.getClass().getName()));
   }
 
   @Override

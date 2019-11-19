@@ -32,12 +32,16 @@ import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
+import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
+import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
@@ -46,6 +50,8 @@ import org.springframework.http.client.ClientHttpResponse;
 import io.netty.handler.codec.http.QueryStringDecoder;
 
 public class CseClientHttpRequest implements ClientHttpRequest {
+  private static final Logger LOGGER = LoggerFactory.getLogger(CseClientHttpRequest.class);
+
   // URL format：cse://microserviceName/business url
   private URI uri;
 
@@ -160,25 +166,25 @@ public class CseClientHttpRequest implements ClientHttpRequest {
   protected RequestMeta createRequestMeta(String httpMethod, URI uri) {
     String microserviceName = uri.getAuthority();
 
-    ReferenceConfig referenceConfig = findReferenceConfig(microserviceName);
+    MicroserviceReferenceConfig microserviceReferenceConfig = SCBEngine.getInstance()
+        .createMicroserviceReferenceConfig(microserviceName);
+    MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getLatestMicroserviceMeta();
 
-    MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
     ServicePathManager servicePathManager = ServicePathManager.getServicePathManager(microserviceMeta);
     if (servicePathManager == null) {
       throw new Error(String.format("no schema defined for %s:%s",
           microserviceMeta.getAppId(),
-          microserviceMeta.getName()));
+          microserviceMeta.getMicroserviceName()));
     }
 
     OperationLocator locator = servicePathManager.consumerLocateOperation(path, httpMethod);
     RestOperationMeta swaggerRestOperation = locator.getOperation();
 
+    OperationMeta operationMeta = locator.getOperation().getOperationMeta();
+    ReferenceConfig referenceConfig = microserviceReferenceConfig.createReferenceConfig(operationMeta);
+
     Map<String, String> pathParams = locator.getPathVarMap();
     return new RequestMeta(referenceConfig, swaggerRestOperation, pathParams);
-  }
-
-  protected ReferenceConfig findReferenceConfig(String microserviceName) {
-    return SCBEngine.getInstance().getReferenceConfigForInvoke(microserviceName);
   }
 
   protected String findUriPath(URI uri) {

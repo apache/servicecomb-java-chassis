@@ -17,35 +17,27 @@
 
 package org.apache.servicecomb.provider.rest.common;
 
-import javax.inject.Inject;
+import java.util.List;
 
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.core.definition.schema.ProducerSchemaFactory;
 import org.apache.servicecomb.core.provider.producer.AbstractProducerProvider;
 import org.apache.servicecomb.core.provider.producer.ProducerMeta;
-import org.springframework.stereotype.Component;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 
-@Component
 public class RestProducerProvider extends AbstractProducerProvider {
-
-  @Inject
-  protected ProducerSchemaFactory producerSchemaFactory;
-
-  @Inject
-  protected RestProducers restProducers;
-
   @Override
   public String getName() {
     return RestConst.REST;
   }
 
   @Override
-  public void init() throws Exception {
-    for (ProducerMeta producerMeta : restProducers.getProducerMetaList()) {
-      producerSchemaFactory.getOrCreateProducerSchema(
-          producerMeta.getSchemaId(),
-          producerMeta.getInstanceClass(),
-          producerMeta.getInstance());
+  public List<ProducerMeta> init() {
+    // for some UT case, there is no spring context
+    if (BeanUtils.getContext() == null) {
+      return null;
     }
+
+    RestProducers restProducers = BeanUtils.getContext().getBean(RestProducers.class);
+    return restProducers.getProducerMetaList();
   }
 }

@@ -25,7 +25,7 @@ import org.junit.Test;
 
 public class TestPojoConsumerProvider {
   @Test
-  public void providerNameIsPojo() throws Exception {
+  public void providerNameIsPojo() {
     PojoConsumerProvider pojoConsumerProvider = new PojoConsumerProvider();
     assertThat(pojoConsumerProvider.getName(), is(POJO));
   }
