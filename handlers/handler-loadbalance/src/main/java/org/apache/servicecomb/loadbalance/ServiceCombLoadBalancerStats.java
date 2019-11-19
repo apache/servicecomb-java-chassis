@@ -55,7 +55,7 @@ public class ServiceCombLoadBalancerStats {
 
   private LoadingCache<ServiceCombServer, ServiceCombServerStats> serverStatsCache;
 
-  public static final ServiceCombLoadBalancerStats INSTANCE;
+  public static ServiceCombLoadBalancerStats INSTANCE;
 
   private Timer timer;
 
@@ -135,6 +135,8 @@ public class ServiceCombLoadBalancerStats {
     if (serverStatsCache != null) {
       serverStatsCache.cleanUp();
     }
+
+    pingView.clear();
 
     serverStatsCache =
         CacheBuilder.newBuilder()
