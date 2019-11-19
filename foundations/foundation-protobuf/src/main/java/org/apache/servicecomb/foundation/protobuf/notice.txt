@@ -1,0 +1,18 @@
+1.List<List>或List<Map>这种结构是PB不支持的
+  类似的场景，只要PB文件解析出错，说明本schema不支持PB相关的传输：highway/grpc等等
+2.反序列化，支持java类型为数组，不一定要求是Collection
+3.原子类型的序列化/反序列化,(主要是原子数组？)
+
+
+3.应该只有文件相关的场景，才是真正的不支持
+
+-------------
+优化：
+  1.支持用户泛型
+  2.
+
+不兼容：
+  1.数组编码规则从protoStuff变成标准的protobuf
+
+不确定：
+  1.List<List>/List<Map>/Map<String, List<>>/Map<String, Map>规则应该也有变化，是否有变化，从protoStuff变成标准protobuf

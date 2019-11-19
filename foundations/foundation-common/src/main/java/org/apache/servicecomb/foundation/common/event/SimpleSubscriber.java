@@ -34,6 +34,8 @@ public class SimpleSubscriber {
 
   private int order;
 
+  private boolean enableExceptionPropagation;
+
   // generated from method
   private Consumer<Object> lambda;
 
@@ -43,6 +45,7 @@ public class SimpleSubscriber {
     this.instance = instance;
     this.method = method;
 
+    enableExceptionPropagation = method.getAnnotation(EnableExceptionPropagation.class) != null;
     SubscriberOrder subscriberOrder = method.getAnnotation(SubscriberOrder.class);
     if (subscriberOrder != null) {
       order = subscriberOrder.value();
@@ -88,6 +91,9 @@ public class SimpleSubscriber {
       dispatcher.accept(event);
     } catch (Throwable e) {
       LOGGER.error("event process should not throw error. ", e);
+      if (enableExceptionPropagation) {
+        throw e;
+      }
     }
   }
 
