@@ -52,7 +52,6 @@ public class UploadJaxrsSchema {
     return stringBuilder.append(getStrFromPart(file2)).toString();
   }
 
-
   @Path("/uploadList1")
   @POST
   @Produces(MediaType.TEXT_PLAIN)
@@ -77,7 +76,6 @@ public class UploadJaxrsSchema {
     return stringBuilder.append(getStrFromPart(file2)).toString();
   }
 
-
   @Path("/upload2")
   @POST
   @Produces(MediaType.TEXT_PLAIN)
@@ -97,28 +95,25 @@ public class UploadJaxrsSchema {
     return stringBuilder.append(message).toString();
   }
 
-
   @Path("/uploadList2")
   @POST
   @Produces(MediaType.TEXT_PLAIN)
   public String uploadList2(@FormParam("file1") List<Part> file1, @FormParam("message") String message) {
     StringBuilder stringBuilder = new StringBuilder();
-    file1.forEach(part -> {
-      stringBuilder.append(getStrFromPart(part));
-    });
+    file1.forEach(part -> stringBuilder.append(getStrFromPart(part)));
     return stringBuilder.append(message).toString();
   }
 
-  @Path("/uploadArrayList2")
-  @POST
-  @Produces(MediaType.TEXT_PLAIN)
-  public String uploadArrayList2(@FormParam("file1") ArrayList<Part> file1, @FormParam("message") String message) {
-    StringBuilder stringBuilder = new StringBuilder();
-    file1.forEach(part -> {
-      stringBuilder.append(getStrFromPart(part));
-    });
-    return stringBuilder.append(message).toString();
-  }
+//  @Path("/uploadArrayList2")
+//  @POST
+//  @Produces(MediaType.TEXT_PLAIN)
+//  public String uploadArrayList2(@FormParam("file1") ArrayList<Part> file1, @FormParam("message") String message) {
+//    StringBuilder stringBuilder = new StringBuilder();
+//    file1.forEach(part -> {
+//      stringBuilder.append(getStrFromPart(part));
+//    });
+//    return stringBuilder.append(message).toString();
+//  }
 
   @Path("/uploadMix")
   @POST

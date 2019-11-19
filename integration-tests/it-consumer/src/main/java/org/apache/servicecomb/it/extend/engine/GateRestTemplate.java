@@ -18,8 +18,10 @@ package org.apache.servicecomb.it.extend.engine;
 
 import java.util.Arrays;
 
-import org.apache.servicecomb.core.definition.MicroserviceVersionMeta;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
@@ -80,11 +82,10 @@ public class GateRestTemplate extends RestTemplate {
       urlSchema = "https";
     }
 
-    microserviceVersionRule = RegistryUtils.getServiceRegistry().getAppManager()
-        .getOrCreateMicroserviceVersionRule(RegistryUtils.getAppId(), producerName,
-            DefinitionConst.VERSION_RULE_ALL);
-    MicroserviceVersionMeta microserviceVersionMeta = microserviceVersionRule.getLatestMicroserviceVersion();
-    SchemaMeta schemaMeta = microserviceVersionMeta.getMicroserviceMeta().ensureFindSchemaMeta(schemaId);
+    MicroserviceReferenceConfig microserviceReferenceConfig = SCBEngine.getInstance()
+        .createMicroserviceReferenceConfig(producerName);
+    MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getLatestMicroserviceMeta();
+    SchemaMeta schemaMeta = microserviceMeta.ensureFindSchemaMeta(schemaId);
     return String
         .format("%s://%s:%d/rest/%s%s", urlSchema, edgeAddress.getHostOrIp(), edgeAddress.getPort(), producerName,
             schemaMeta.getSwagger().getBasePath());

@@ -114,6 +114,12 @@ public class TestDownload {
     return response.getBody();
   }
 
+//  @Test
+//  public void wjm() {
+//    ITJUnitUtils.initForDebug("it-producer", "rest");
+//    checkFuture(templateGet("bytes").saveAsString());
+//  }
+
   @Test
   @SuppressWarnings("unchecked")
   public void runRest() {

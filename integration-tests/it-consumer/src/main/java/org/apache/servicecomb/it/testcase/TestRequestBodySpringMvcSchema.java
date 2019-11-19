@@ -38,13 +38,13 @@ public class TestRequestBodySpringMvcSchema {
   }
 
   @Test
-  public void testDefaultForPremitive() {
-    testDefaultForPremitiveImpl();
-    testDefaultForPremitiveImpl();
-    testDefaultForPremitiveImpl();
+  public void testDefaultForPrimitive() {
+    testDefaultForPrimitiveImpl();
+    testDefaultForPrimitiveImpl();
+    testDefaultForPrimitiveImpl();
   }
 
-  private void testDefaultForPremitiveImpl() {
+  private void testDefaultForPrimitiveImpl() {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     Map<String, Object> request = new HashMap<>();
@@ -55,8 +55,7 @@ public class TestRequestBodySpringMvcSchema {
 
     HttpEntity<Map<String, Object>> entity = new HttpEntity<>(request, headers);
     @SuppressWarnings("unchecked")
-    Map<String, Object> result =
-        edgeClient.postForObject("/base", entity, Map.class);
+    Map<String, Object> result = edgeClient.postForObject("/base", entity, Map.class);
     Assert.assertEquals(result.size(), 6);
     Assert.assertEquals(result.get("type"), 0);
     Assert.assertEquals(result.get("integerType"), request.get("integerType"));

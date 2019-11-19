@@ -34,13 +34,13 @@ public class TestDefaultJsonValueJaxrsSchema {
   @Test
   public void invokeFromEdgeWithQuery() {
     String result = client.getForObject("/queryInput?size=3", String.class);
-    Assert.assertEquals(result, "expected:3:3");
+    Assert.assertEquals("expected:3:3", result);
 
     result = client.getForObject("/queryInput", String.class);
-    Assert.assertEquals(result, "expected:0:0");
+    Assert.assertEquals("expected:0:0", result);
 
     result = client.getForObject("/queryInput?size=", String.class);
-    Assert.assertEquals(result, "expected:0:null");
+    Assert.assertEquals("expected:0:", result);
   }
 
   @SuppressWarnings("unchecked")
@@ -51,47 +51,42 @@ public class TestDefaultJsonValueJaxrsSchema {
     Map<String, Object> body = new HashMap<>();
     body.put("type", 100);
     HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);
-    Map<String, Object> result =
-        client.postForObject("/jsonInput", entity, Map.class);
-    Assert.assertEquals(result.get("type"), 100);
-    Assert.assertEquals(result.get("message"), "expected:null:null");
+    Map<String, Object> result = client.postForObject("/jsonInput", entity, Map.class);
+    Assert.assertEquals(100, result.get("type"));
+    Assert.assertEquals("expected:null:null", result.get("message"));
 
     body = new HashMap<>();
     body.put("type", 100);
     body.put("defaultValue", null);
     entity = new HttpEntity<>(body, headers);
-    result =
-        client.postForObject("/jsonInput", entity, Map.class);
-    Assert.assertEquals(result.get("type"), 100);
-    Assert.assertEquals(result.get("message"), "expected:null:null");
+    result = client.postForObject("/jsonInput", entity, Map.class);
+    Assert.assertEquals(100, result.get("type"));
+    Assert.assertEquals("expected:null:null", result.get("message"));
 
     body = new HashMap<>();
     body.put("type", 200);
     body.put("defaultValue", -1);
     entity = new HttpEntity<>(body, headers);
-    result =
-        client.postForObject("/jsonInput", entity, Map.class);
-    Assert.assertEquals(result.get("type"), 200);
-    Assert.assertEquals(result.get("message"), "expected:-1:null");
+    result = client.postForObject("/jsonInput", entity, Map.class);
+    Assert.assertEquals(200, result.get("type"));
+    Assert.assertEquals("expected:-1:null", result.get("message"));
 
     body = new HashMap<>();
     body.put("type", 200);
     body.put("defaultValue", -1);
     body.put("items", null);
     entity = new HttpEntity<>(body, headers);
-    result =
-        client.postForObject("/jsonInput", entity, Map.class);
-    Assert.assertEquals(result.get("type"), 200);
-    Assert.assertEquals(result.get("message"), "expected:-1:null");
+    result = client.postForObject("/jsonInput", entity, Map.class);
+    Assert.assertEquals(200, result.get("type"));
+    Assert.assertEquals("expected:-1:null", result.get("message"));
 
     body = new HashMap<>();
     body.put("type", 200);
     body.put("defaultValue", -1);
     body.put("items", new ArrayList<String>());
     entity = new HttpEntity<>(body, headers);
-    result =
-        client.postForObject("/jsonInput", entity, Map.class);
-    Assert.assertEquals(result.get("type"), 200);
-    Assert.assertEquals(result.get("message"), "expected:-1:0");
+    result = client.postForObject("/jsonInput", entity, Map.class);
+    Assert.assertEquals(200, result.get("type"));
+    Assert.assertEquals("expected:-1:0", result.get("message"));
   }
 }

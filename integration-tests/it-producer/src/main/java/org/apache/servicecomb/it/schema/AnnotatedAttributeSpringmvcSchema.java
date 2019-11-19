@@ -25,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 
 @RestSchema(schemaId = "annotatedAttributeSpringmvc")
 @RequestMapping(path = "/v1/annotatedAttributeSpringmvc")
@@ -67,11 +66,11 @@ public class AnnotatedAttributeSpringmvcSchema {
     return inputs + "," + inputs2 + "," + inputs3;
   }
 
-  @PostMapping("fromPart")
-  public String fromPart(@RequestPart("input") String inputs, @RequestPart(value = "input2") String inputs2,
-      @RequestPart(name = "input3") String inputs3) {
-    return inputs + "," + inputs2 + "," + inputs3;
-  }
+//  @PostMapping("fromPart")
+//  public String fromPart(@RequestPart("input") String inputs, @RequestPart(value = "input2") String inputs2,
+//      @RequestPart(name = "input3") String inputs3) {
+//    return inputs + "," + inputs2 + "," + inputs3;
+//  }
 
   @PostMapping("fromAttribute")
   public String fromAttribute(@RequestAttribute("input") String inputs,

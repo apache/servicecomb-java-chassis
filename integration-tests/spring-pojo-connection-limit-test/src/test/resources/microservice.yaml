@@ -23,7 +23,7 @@ servicecomb:
   service:
     registry:
       address: http://127.0.0.1:30100
-  highway:
+  rest:
     address: 0.0.0.0:7070
     server:
       connection-limit: 0

@@ -37,7 +37,6 @@ public class TestIgnoreStaticMethod {
     Assert.assertNull(sub);
   }
 
-
   @Test
   public void ignoreStaticMethod_Jaxrs() {
     SchemaMeta schemaMeta = microserviceMeta.findSchemaMeta("ignoreStaticMethodJaxrsSchema");

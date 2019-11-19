@@ -29,8 +29,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 public class TestAnnotatedAttribute {
   interface AnnotatedAttributeIntf {
@@ -57,7 +55,7 @@ public class TestAnnotatedAttribute {
 
   @Test
   public void fromCookieRequired_springmvc_rt() {
-    fromCookieRequired_rt(consumersSpringmvc);
+    should_throw_exception_when_required_cookie_parameter_not_set_value_call_by_restTemplate(consumersSpringmvc);
   }
 
   @Test
@@ -70,10 +68,10 @@ public class TestAnnotatedAttribute {
     fromPath_rt(consumersSpringmvc);
   }
 
-  @Test
-  public void fromPart_springmvc_rt() {
-    fromPart_rt(consumersSpringmvc);
-  }
+//  @Test
+//  public void fromPart_springmvc_rt() {
+//    fromPart_rt(consumersSpringmvc);
+//  }
 
   @Test
   public void fromAttribute_springmvc_rt() {
@@ -121,7 +119,8 @@ public class TestAnnotatedAttribute {
     assertEquals("default,fromValue,fromName", result.getBody());
   }
 
-  protected void fromCookieRequired_rt(Consumers<AnnotatedAttributeIntf> consumers) {
+  protected void should_throw_exception_when_required_cookie_parameter_not_set_value_call_by_restTemplate(
+      Consumers<AnnotatedAttributeIntf> consumers) {
     HttpHeaders headers = new HttpHeaders();
     HttpEntity<?> requestEntity = new HttpEntity<>(headers);
     try {
@@ -201,18 +200,18 @@ public class TestAnnotatedAttribute {
     assertEquals("default,fromValue,fromName", result);
   }
 
-  protected void fromPart_rt(Consumers<AnnotatedAttributeIntf> consumers) {
-    MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
-    map.add("input", "default");
-    map.add("input2", "fromValue");
-    map.add("input3", "fromName");
-
-    String result = consumers.getSCBRestTemplate()
-        .postForObject("/fromPart",
-            new HttpEntity<>(map),
-            String.class);
-    assertEquals("default,fromValue,fromName", result);
-  }
+//  protected void fromPart_rt(Consumers<AnnotatedAttributeIntf> consumers) {
+//    MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+//    map.add("input", "default");
+//    map.add("input2", "fromValue");
+//    map.add("input3", "fromName");
+//
+//    String result = consumers.getSCBRestTemplate()
+//        .postForObject("/fromPart",
+//            new HttpEntity<>(map),
+//            String.class);
+//    assertEquals("default,fromValue,fromName", result);
+//  }
 
   protected void fromAttribute_rt(Consumers<AnnotatedAttributeIntf> consumers) {
     Map<String, Object> body = new HashMap<>();
