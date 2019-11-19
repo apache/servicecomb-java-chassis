@@ -18,14 +18,14 @@ package org.apache.servicecomb.it.extend.engine;
 
 import java.util.Optional;
 
-import org.apache.servicecomb.core.definition.MicroserviceVersionMeta;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
-import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 
 public class ITSCBRestTemplate extends CseRestTemplate {
   private String urlPrefix;
@@ -42,11 +42,10 @@ public class ITSCBRestTemplate extends CseRestTemplate {
 
   public ITSCBRestTemplate init() {
     String producerName = ITJUnitUtils.getProducerName();
-    MicroserviceVersionRule microserviceVersionRule = RegistryUtils.getServiceRegistry().getAppManager()
-        .getOrCreateMicroserviceVersionRule(RegistryUtils.getAppId(), producerName,
-            DefinitionConst.VERSION_RULE_ALL);
-    MicroserviceVersionMeta microserviceVersionMeta = microserviceVersionRule.getLatestMicroserviceVersion();
-    SchemaMeta schemaMeta = microserviceVersionMeta.getMicroserviceMeta().ensureFindSchemaMeta(schemaId);
+    MicroserviceReferenceConfig microserviceReferenceConfig = SCBEngine.getInstance()
+        .createMicroserviceReferenceConfig(producerName);
+    MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getLatestMicroserviceMeta();
+    SchemaMeta schemaMeta = microserviceMeta.ensureFindSchemaMeta(schemaId);
     basePath = schemaMeta.getSwagger().getBasePath();
     urlPrefix = String.format("cse://%s%s", producerName, basePath);
     instance = RegistryUtils.getServiceRegistry().getAppManager()

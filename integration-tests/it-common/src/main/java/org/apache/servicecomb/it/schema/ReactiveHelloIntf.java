@@ -16,36 +16,8 @@
  */
 package org.apache.servicecomb.it.schema;
 
-import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-public class DefaultJsonValueRequest {
-  private int type;
-
-  private Integer defaultValue;
-
-  private List<String> items;
-
-  public int getType() {
-    return type;
-  }
-
-  public void setType(int type) {
-    this.type = type;
-  }
-
-  public Integer getDefaultValue() {
-    return defaultValue;
-  }
-
-  public void setDefaultValue(Integer defaultValue) {
-    this.defaultValue = defaultValue;
-  }
-
-  public List<String> getItems() {
-    return items;
-  }
-
-  public void setItems(List<String> items) {
-    this.items = items;
-  }
+public interface ReactiveHelloIntf {
+  CompletableFuture<String> hello(String name);
 }

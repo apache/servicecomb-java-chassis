@@ -25,8 +25,6 @@ import java.util.Map;
 
 import org.apache.servicecomb.foundation.test.scaffolding.model.Media;
 import org.apache.servicecomb.it.Consumers;
-import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
-import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.junit.Test;
 
 public class TestParamCodec {
@@ -34,8 +32,6 @@ public class TestParamCodec {
     String spaceCharCodec(String pathVal, String q);
 
     Media enumSpecialName(Media media);
-
-    Map<String, String> getInvocationContext();
   }
 
   static Consumers<ParamCodecSchemaIntf> consumers = new Consumers<>("paramCodec", ParamCodecSchemaIntf.class);
@@ -88,25 +84,5 @@ public class TestParamCodec {
         consumers.getSCBRestTemplate().postForObject("/enum/enumSpecialName", Media.MPEG_2, Media.class));
     assertEquals(Media.WMV,
         consumers.getSCBRestTemplate().postForObject("/enum/enumSpecialName", Media.WMV, Media.class));
-  }
-
-  @Test
-  public void testInvocationContext() {
-    ContextUtils.setInvocationContext(new InvocationContext());
-    ContextUtils.getInvocationContext().addContext("testKey", "testValue");
-    Map<String, String> resultContext = consumers.getIntf().getInvocationContext();
-    assertEquals(resultContext.toString(), 3, resultContext.size());
-    assertEquals("testValue", resultContext.get("testKey"));
-    assertEquals("it-consumer", resultContext.get("x-cse-src-microservice"));
-    assertNotNull(resultContext.get("X-B3-TraceId"));
-
-    ContextUtils.getInvocationContext().addContext("testKey2", "testValue2");
-    ContextUtils.getInvocationContext().addContext("X-B3-TraceId", "5cba93e1d0a9cdee");
-    resultContext = consumers.getIntf().getInvocationContext();
-    assertEquals(4, resultContext.size());
-    assertEquals("testValue", resultContext.get("testKey"));
-    assertEquals("testValue2", resultContext.get("testKey2"));
-    assertEquals("it-consumer", resultContext.get("x-cse-src-microservice"));
-    assertEquals("5cba93e1d0a9cdee", resultContext.get("X-B3-TraceId"));
   }
 }

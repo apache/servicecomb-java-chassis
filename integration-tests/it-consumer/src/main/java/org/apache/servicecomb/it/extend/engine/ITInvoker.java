@@ -18,7 +18,7 @@ package org.apache.servicecomb.it.extend.engine;
 
 import java.lang.reflect.Proxy;
 
-import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.provider.pojo.Invoker;
 
@@ -35,7 +35,8 @@ public class ITInvoker extends Invoker {
 
   private Object proxy;
 
-  public ITInvoker(String microserviceName, String schemaId, String transport, Class<?> consumerIntf) {
+  public ITInvoker(String microserviceName, String schemaId, String transport,
+      Class<?> consumerIntf) {
     super(microserviceName, schemaId, consumerIntf);
     this.transport = transport;
     this.proxy = Proxy.newProxyInstance(consumerIntf.getClassLoader(), new Class<?>[] {consumerIntf}, this);
@@ -59,11 +60,7 @@ public class ITInvoker extends Invoker {
   }
 
   @Override
-  protected ReferenceConfig findReferenceConfig() {
-    ReferenceConfig referenceConfig = CseContext.getInstance()
-        .getConsumerProviderManager()
-        .createReferenceConfig(microserviceName);
-    referenceConfig.setTransport(transport);
-    return referenceConfig;
+  protected ReferenceConfig findReferenceConfig(OperationMeta operationMeta) {
+    return consumerMeta.getMicroserviceReferenceConfig().createReferenceConfig(transport, operationMeta);
   }
 }

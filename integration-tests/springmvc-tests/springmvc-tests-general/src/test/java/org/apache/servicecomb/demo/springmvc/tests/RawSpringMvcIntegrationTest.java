@@ -24,7 +24,7 @@ import org.junit.BeforeClass;
 public class RawSpringMvcIntegrationTest extends SpringMvcIntegrationTestBase {
   @BeforeClass
   public static void init() throws Exception {
-    System.setProperty("servicecomb.uploads.directory", "/tmp");
+    System.setProperty("servicecomb.uploads.directory", "target");
     setUpLocalRegistry();
     SpringMvcTestMain.main(new String[0]);
   }

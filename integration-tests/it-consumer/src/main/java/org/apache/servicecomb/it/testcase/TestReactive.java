@@ -14,38 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.it.schema;
+package org.apache.servicecomb.it.testcase;
 
-import java.util.List;
+import java.util.concurrent.ExecutionException;
 
-public class DefaultJsonValueRequest {
-  private int type;
+import org.apache.servicecomb.it.Consumers;
+import org.apache.servicecomb.it.schema.ReactiveHelloIntf;
+import org.junit.Assert;
+import org.junit.Test;
 
-  private Integer defaultValue;
+public class TestReactive {
+  static Consumers<ReactiveHelloIntf> consumers = new Consumers<>("reactiveWithIntf", ReactiveHelloIntf.class);
 
-  private List<String> items;
-
-  public int getType() {
-    return type;
+  @Test
+  public void reactiveWithIntf() throws ExecutionException, InterruptedException {
+    Assert.assertEquals("hello name", consumers.getIntf().hello("name").get());
   }
 
-  public void setType(int type) {
-    this.type = type;
-  }
-
-  public Integer getDefaultValue() {
-    return defaultValue;
-  }
-
-  public void setDefaultValue(Integer defaultValue) {
-    this.defaultValue = defaultValue;
-  }
-
-  public List<String> getItems() {
-    return items;
-  }
-
-  public void setItems(List<String> items) {
-    this.items = items;
+  @Test
+  public void reactiveWithIntf_rt() {
+    Assert.assertEquals("hello name",
+        consumers.getSCBRestTemplate().postForObject("/hello", "name", String.class));
   }
 }

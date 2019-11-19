@@ -20,9 +20,11 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+import io.swagger.models.ModelImpl;
 import io.swagger.models.parameters.BodyParameter;
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.QueryParameter;
@@ -51,7 +53,11 @@ public class TestApiParam {
 
   @Test
   public void pojoSimple() {
-    check("apiParamPojo", "simple", "body");
+    SchemaMeta schemaMeta = microserviceMeta.findSchemaMeta("apiParamPojo");
+    OperationMeta operationMeta = schemaMeta.findOperation("simple");
+    parameter = operationMeta.getSwaggerOperation().getParameters().get(0);
+    ModelImpl model = SwaggerUtils.getModelImpl(schemaMeta.getSwagger(), (BodyParameter) parameter);
+    Assert.assertEquals("desc of simple param", model.getProperties().get("input").getDescription());
   }
 
   @Test
