@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.common.rest.definition;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -25,7 +24,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.http.Part;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
@@ -35,17 +33,20 @@ import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.path.PathRegExp;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder;
+import org.apache.servicecomb.core.definition.CoreMetaUtils;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
-import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
+import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JavaType;
-
+import io.swagger.models.Model;
+import io.swagger.models.ModelImpl;
 import io.swagger.models.Operation;
+import io.swagger.models.Response;
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.Parameter;
+import io.swagger.models.properties.FileProperty;
 import io.vertx.ext.web.impl.MimeTypesUtils;
 
 public class RestOperationMeta {
@@ -93,35 +94,36 @@ public class RestOperationMeta {
     this.downloadFile = checkDownloadFileFlag();
     this.createProduceProcessors();
 
-    Method method = operationMeta.getMethod();
-    Type[] genericParamTypes = method.getGenericParameterTypes();
-    if (genericParamTypes.length != operation.getParameters().size()) {
-      throw new Error("Param count is not equal between swagger and method, path=" + absolutePath
-          + ";operation=" + operationMeta.getMicroserviceQualifiedName());
-    }
-
+    SwaggerProducerOperation producerOperation = CoreMetaUtils.getSwaggerProducerOperation(operationMeta);
     // 初始化所有rest param
-    for (int idx = 0; idx < genericParamTypes.length; idx++) {
-      Parameter parameter = operation.getParameters().get(idx);
-      Type genericParamType = genericParamTypes[idx];
+    for (int swaggerParameterIdx = 0; swaggerParameterIdx < operation.getParameters().size(); swaggerParameterIdx++) {
+      Parameter parameter = operation.getParameters().get(swaggerParameterIdx);
 
       if ("formData".equals(parameter.getIn())) {
         formData = true;
       }
 
-      RestParam param = new RestParam(idx, parameter, genericParamType);
+      Type type = producerOperation != null ? producerOperation.getSwaggerParameterTypes()[swaggerParameterIdx] : null;
+      RestParam param = new RestParam(swaggerParameterIdx, parameter, type);
       addParam(param);
     }
 
     setAbsolutePath(concatPath(swagger.getBasePath(), operationMeta.getOperationPath()));
   }
 
+  public boolean isDownloadFile() {
+    return downloadFile;
+  }
+
   private boolean checkDownloadFileFlag() {
-    ResponseMeta responseMeta = operationMeta.findResponseMeta(200);
-    if (responseMeta != null) {
-      JavaType javaType = responseMeta.getJavaType();
-      return javaType.getRawClass().equals(Part.class);
+    // todo: logic of find
+    Response response = operationMeta.getSwaggerOperation().getResponses().get("200");
+    if (response != null) {
+      Model model = response.getResponseSchema();
+      return model instanceof ModelImpl &&
+          FileProperty.isType(((ModelImpl) model).getType(), ((ModelImpl) model).getFormat());
     }
+
     return false;
   }
 

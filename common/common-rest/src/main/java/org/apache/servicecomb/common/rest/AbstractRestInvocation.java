@@ -79,7 +79,7 @@ public abstract class AbstractRestInvocation {
   protected void findRestOperation(MicroserviceMeta microserviceMeta) {
     ServicePathManager servicePathManager = ServicePathManager.getServicePathManager(microserviceMeta);
     if (servicePathManager == null) {
-      LOGGER.error("No schema defined for {}:{}.", microserviceMeta.getAppId(), microserviceMeta.getName());
+      LOGGER.error("No schema defined for {}:{}.", microserviceMeta.getAppId(), microserviceMeta.getMicroserviceName());
       throw new InvocationException(Status.NOT_FOUND, Status.NOT_FOUND.getReasonPhrase());
     }
 
@@ -91,6 +91,8 @@ public abstract class AbstractRestInvocation {
   protected void initProduceProcessor() {
     produceProcessor = restOperationMeta.ensureFindProduceProcessor(requestEx);
     if (produceProcessor == null) {
+      LOGGER.error("Accept {} is not supported, operation={}.", requestEx.getHeader(HttpHeaders.ACCEPT),
+          restOperationMeta.getOperationMeta().getMicroserviceQualifiedName());
       String msg = String.format("Accept %s is not supported", requestEx.getHeader(HttpHeaders.ACCEPT));
       throw new InvocationException(Status.NOT_ACCEPTABLE, msg);
     }

@@ -33,6 +33,7 @@ import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.models.parameters.Parameter;
 import io.swagger.models.parameters.QueryParameter;
+import io.swagger.models.properties.ArrayProperty;
 
 public class QueryProcessorCreator implements ParamValueProcessorCreator {
   public static final String PARAMTYPE = "query";
@@ -50,37 +51,39 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
     private boolean ignoreRequiredCheck = DynamicPropertyFactory.getInstance()
         .getBooleanProperty("servicecomb.rest.parameter.query.ignoreRequiredCheck", false).get();
 
+    private boolean repeatedType;
+
     private SwaggerParamCollectionFormat collectionFormat;
 
-    public QueryProcessor(String paramPath, JavaType targetType, Object defaultValue, boolean required,
-        String collectionFormat) {
-      super(paramPath, targetType, defaultValue, required);
-      if (StringUtils.isNoneEmpty(collectionFormat)) {
-        this.collectionFormat = SwaggerParamCollectionFormat.valueOf(collectionFormat.toUpperCase());
+    public QueryProcessor(QueryParameter queryParameter, JavaType targetType) {
+      super(queryParameter.getName(), targetType, queryParameter.getDefaultValue(), queryParameter.getRequired());
+
+      this.repeatedType = ArrayProperty.isType(queryParameter.getType());
+      if (StringUtils.isNotEmpty(queryParameter.getCollectionFormat())) {
+        this.collectionFormat = SwaggerParamCollectionFormat
+            .valueOf(queryParameter.getCollectionFormat().toUpperCase());
       }
     }
 
     @Override
     public Object getValue(HttpServletRequest request) {
-      Object value = null;
-      if (targetType.isContainerType()
+      if (repeatedType
           && SwaggerParamCollectionFormat.MULTI.equals(collectionFormat)) {
-        value = request.getParameterValues(paramPath);
         //Even if the paramPath does not exist, value won't be null at now
-      } else {
-        value = request.getParameter(paramPath);
-        // make some old systems happy
-        if (emptyAsNull) {
-          if (StringUtils.isEmpty((String) value)) {
-            value = null;
-          }
-        }
-        if (value == null) {
-          value = checkRequiredAndDefaultValue();
-        }
-        if (null != collectionFormat) {
-          value = collectionFormat.splitParam((String) value);
-        }
+        String[] value = request.getParameterValues(paramPath);
+        return convertValue(value, targetType);
+      }
+
+      Object value = request.getParameter(paramPath);
+      // make some old systems happy
+      if (emptyAsNull && StringUtils.isEmpty((String) value)) {
+        value = null;
+      }
+      if (value == null) {
+        value = checkRequiredAndDefaultValue();
+      }
+      if (null != collectionFormat) {
+        value = collectionFormat.splitParam((String) value);
       }
 
       return convertValue(value, targetType);
@@ -94,6 +97,7 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
       if (!ignoreDefaultValue && defaultValue != null) {
         return defaultValue;
       }
+
       return null;
     }
 
@@ -118,10 +122,8 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
 
   @Override
   public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
-    QueryParameter queryParameter = (QueryParameter) parameter;
-    JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
-    return new QueryProcessor(parameter.getName(), targetType, queryParameter.getDefaultValue(),
-        parameter.getRequired(),
-        queryParameter.getCollectionFormat());
+    JavaType targetType =
+        genericParamType == null ? null : TypeFactory.defaultInstance().constructType(genericParamType);
+    return new QueryProcessor((QueryParameter) parameter, targetType);
   }
 }

@@ -41,7 +41,7 @@ public class PathProcessorCreator implements ParamValueProcessorCreator {
     }
 
     @Override
-    public Object getValue(HttpServletRequest request) throws Exception {
+    public Object getValue(HttpServletRequest request) {
       @SuppressWarnings("unchecked")
       Map<String, String> pathVarMap = (Map<String, String>) request.getAttribute(RestConst.PATH_PARAMETERS);
       if (pathVarMap == null) {
@@ -72,7 +72,8 @@ public class PathProcessorCreator implements ParamValueProcessorCreator {
 
   @Override
   public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
-    JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
+    JavaType targetType =
+        genericParamType == null ? null : TypeFactory.defaultInstance().constructType(genericParamType);
     return new PathProcessor(parameter.getName(), targetType, ((PathParameter) parameter).getDefaultValue(), true);
   }
 }

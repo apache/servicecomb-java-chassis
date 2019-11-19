@@ -22,10 +22,6 @@ import org.apache.servicecomb.common.rest.definition.RestParam;
 public abstract class AbstractUrlParamWriter implements UrlParamWriter {
   protected RestParam param;
 
-  public void setParam(RestParam param) {
-    this.param = param;
-  }
-
   protected Object getParamValue(Object[] args) {
     return param.getValue(args);
   }

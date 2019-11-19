@@ -20,6 +20,7 @@ package org.apache.servicecomb.common.rest.codec.param;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,23 +29,30 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.swagger.invocation.converter.Converter;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.inject.util.Types;
 
 import io.swagger.models.parameters.FormParameter;
 import io.swagger.models.parameters.Parameter;
+import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.FileProperty;
 import io.swagger.models.properties.Property;
 
 public class FormProcessorCreator implements ParamValueProcessorCreator {
-
   public static final String PARAMTYPE = "formData";
 
   public static class FormProcessor extends AbstractParamProcessor {
-    public FormProcessor(String paramPath, JavaType targetType, Object defaultValue, boolean required) {
-      super(paramPath, targetType, defaultValue, required);
+    private boolean repeatedType;
+
+    public FormProcessor(FormParameter formParameter, JavaType targetType) {
+      super(formParameter.getName(), targetType, formParameter.getDefaultValue(), formParameter.getRequired());
+
+      this.repeatedType = ArrayProperty.isType(formParameter.getType());
     }
 
     @Override
@@ -55,7 +63,7 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
         return convertValue(forms.get(paramPath), targetType);
       }
 
-      if (targetType.isContainerType()) {
+      if (repeatedType) {
         //Even if the paramPath does not exist, it won't be null at now
         return convertValue(request.getParameterValues(paramPath), targetType);
       }
@@ -64,7 +72,6 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
       if (value == null) {
         value = checkRequiredAndDefaultValue();
       }
-
       return convertValue(value, targetType);
     }
 
@@ -92,18 +99,17 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
 
   @Override
   public ParamValueProcessor create(Parameter parameter, Type genericParamType) {
-    JavaType targetType = TypeFactory.defaultInstance().constructType(genericParamType);
+    JavaType targetType =
+        genericParamType == null ? null : TypeFactory.defaultInstance().constructType(genericParamType);
 
     if (isPart(parameter)) {
-      return new PartProcessor(parameter.getName(), targetType, ((FormParameter) parameter).getDefaultValue(),
-          parameter.getRequired());
+      return new PartProcessor((FormParameter) parameter, genericParamType);
     }
-    return new FormProcessor(parameter.getName(), targetType, ((FormParameter) parameter).getDefaultValue(),
-        parameter.getRequired());
+    return new FormProcessor((FormParameter) parameter, targetType);
   }
 
   private boolean isPart(Parameter parameter) {
-    //only check
+    // no need to check Part[][] and so on
     FormParameter formParameter = (FormParameter) parameter;
     if ("array".equals(formParameter.getType())) {
       Property items = formParameter.getItems();
@@ -113,23 +119,78 @@ public class FormProcessorCreator implements ParamValueProcessorCreator {
   }
 
   public static class PartProcessor extends AbstractParamProcessor {
-    PartProcessor(String paramPath, JavaType targetType, Object defaultValue, boolean required) {
-      super(paramPath, targetType, defaultValue, required);
+    private static Type partListType = Types.newParameterizedType(List.class, Part.class);
+
+    // key is target type
+    private static Map<Type, Converter> partsToTargetConverters = SPIServiceUtils.getSortedService(Converter.class)
+        .stream()
+        .filter(c -> partListType.equals(c.getSrcType()))
+        .collect(Collectors.toMap(Converter::getTargetType, Function.identity()));
+
+    // key is target type
+    private static Map<Type, Converter> partToTargetConverters = SPIServiceUtils.getSortedService(Converter.class)
+        .stream()
+        .filter(c -> c.getSrcType() instanceof Class && Part.class.isAssignableFrom((Class<?>) c.getSrcType()))
+        .collect(Collectors.toMap(Converter::getTargetType, Function.identity()));
+
+    private boolean repeatedType;
+
+    private Type genericParamType;
+
+    private Converter converter;
+
+    PartProcessor(FormParameter formParameter, Type genericParamType) {
+      super(formParameter.getName(), null, formParameter.getDefaultValue(), formParameter.getRequired());
+
+      this.genericParamType = genericParamType;
+      this.repeatedType = ArrayProperty.isType(formParameter.getType());
+      initConverter(genericParamType);
+    }
+
+    private void initConverter(Type genericParamType) {
+      if (repeatedType) {
+        initRepeatedConverter(genericParamType);
+        return;
+      }
+
+      initNormalConverter(genericParamType);
+    }
+
+    private void initNormalConverter(Type genericParamType) {
+      if (genericParamType instanceof JavaType) {
+        genericParamType = ((JavaType) genericParamType).getRawClass();
+      }
+      converter = partToTargetConverters.get(genericParamType);
+    }
+
+    private void initRepeatedConverter(Type genericParamType) {
+      if (genericParamType instanceof JavaType) {
+        genericParamType = Types.newParameterizedType(((JavaType) genericParamType).getRawClass(),
+            ((JavaType) genericParamType).getContentType());
+      }
+      converter = partsToTargetConverters.get(genericParamType);
     }
 
     @Override
     public Object getValue(HttpServletRequest request) throws Exception {
-      if (List.class.isAssignableFrom(targetType.getRawClass())) {
-        JavaType contentType = targetType.getContentType();
-        if (contentType != null && contentType.getRawClass().equals(Part.class)) {
-          //get all parts
-          return request.getParts()
-              .stream()
-              .filter(part -> part.getName().equals(paramPath))
-              .collect(Collectors.toList());
-        }
+      if (repeatedType) {
+        // get all parts
+        List<Part> parts = request.getParts()
+            .stream()
+            .filter(part -> part.getName().equals(paramPath))
+            .collect(Collectors.toList());
+        return convertValue(converter, parts);
       }
-      return request.getPart(paramPath);
+
+      return convertValue(converter, request.getPart(paramPath));
+    }
+
+    public Object convertValue(Converter converter, Object value) {
+      if (value == null || converter == null) {
+        return value;
+      }
+
+      return converter.convert(value);
     }
 
     @Override

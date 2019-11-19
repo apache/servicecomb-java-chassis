@@ -17,28 +17,32 @@
 
 package org.apache.servicecomb.common.rest;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.common.rest.definition.RestMetaUtils;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
+import org.apache.servicecomb.common.rest.locator.TestPathSchema;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
+import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -58,26 +62,39 @@ public class TestRestProducerInvocation {
   @Mocked
   HttpServletResponseEx responseEx;
 
-  @Mocked
-  RestOperationMeta restOperationMeta;
-
-  @Mocked
-  MicroserviceMeta microserviceMeta;
-
-  List<HttpServerFilter> httpServerFilters = Collections.emptyList();
-
   RestProducerInvocation restProducerInvocation;
 
   Throwable throwableOfSendFailResponse;
 
   boolean scheduleInvocation;
 
-  boolean runOnExecutor;
+  static List<HttpServerFilter> httpServerFilters = SPIServiceUtils.getSortedService(HttpServerFilter.class);
 
-  boolean invokeNoParam;
+  static SCBEngine scbEngine;
+
+  static OperationMeta operationMeta;
+
+  static RestOperationMeta restOperationMeta;
+
+  static MicroserviceMeta microserviceMeta;
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
+
+  @BeforeClass
+  public static void classSetup() {
+    scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest()
+        .addProducerMeta("sid1", new TestPathSchema())
+        .run();
+    operationMeta = scbEngine.getProducerMicroserviceMeta().operationMetas().get("test.sid1.dynamicId");
+    restOperationMeta = RestMetaUtils.getRestOperationMeta(operationMeta);
+    microserviceMeta = operationMeta.getMicroserviceMeta();
+  }
+
+  @AfterClass
+  public static void classTeardown() {
+    scbEngine.destroy();
+  }
 
   private void initRestProducerInvocation() {
     restProducerInvocation.transport = transport;
@@ -85,16 +102,6 @@ public class TestRestProducerInvocation {
     restProducerInvocation.responseEx = responseEx;
     restProducerInvocation.restOperationMeta = restOperationMeta;
     restProducerInvocation.httpServerFilters = httpServerFilters;
-  }
-
-  @Before
-  public void setup() {
-    SCBEngine.getInstance().setProducerMicroserviceMeta(microserviceMeta);
-  }
-
-  @After
-  public void teardown() {
-    SCBEngine.getInstance().setProducerMicroserviceMeta(null);
   }
 
   @Test

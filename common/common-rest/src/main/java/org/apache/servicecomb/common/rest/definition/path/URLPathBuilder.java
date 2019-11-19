@@ -42,7 +42,6 @@ public class URLPathBuilder {
 
   private void initQueryWriterList(Map<String, RestParam> paramMap) {
     for (RestParam param : paramMap.values()) {
-
       if (!QueryProcessorCreator.PARAMTYPE.equals(param.getParamProcessor().getProcessorType())) {
         continue;
       }
