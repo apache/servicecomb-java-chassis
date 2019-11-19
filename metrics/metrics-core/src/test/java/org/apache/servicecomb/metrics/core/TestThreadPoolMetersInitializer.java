@@ -28,7 +28,6 @@ import java.util.concurrent.RunnableScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -105,7 +104,7 @@ public class TestThreadPoolMetersInitializer {
     };
 
     Mockito.when(threadPoolExecutor.getQueue()).thenReturn(queue);
-    new Expectations(CseContext.getInstance()) {
+    new Expectations() {
       {
         microserviceMeta.getOperations();
         result = Arrays.asList(operationMetaExecutor, operationMetaSameExecutor, operationMetaFixedThreadExecutor);
