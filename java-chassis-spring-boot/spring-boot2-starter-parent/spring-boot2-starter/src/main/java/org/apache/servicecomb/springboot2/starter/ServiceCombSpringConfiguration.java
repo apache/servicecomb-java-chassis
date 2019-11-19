@@ -25,7 +25,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
 
 @Configuration
-@ImportResource(BeanUtils.DEFAULT_BEAN_RESOURCE)
+@ImportResource({BeanUtils.DEFAULT_BEAN_CORE_RESOURCE, BeanUtils.DEFAULT_BEAN_NORMAL_RESOURCE})
 class ServiceCombSpringConfiguration {
   @Inject
   public void setCseApplicationListener(CseApplicationListener cseApplicationListener) {
