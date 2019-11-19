@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.endpoint.EndpointsCache;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
@@ -30,7 +31,9 @@ import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCache;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import mockit.Expectations;
@@ -38,10 +41,19 @@ import mockit.Injectable;
 import mockit.Mocked;
 
 public class TestTransport {
+  @BeforeClass
+  public static void classSetup() {
+    new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();
+  }
+
+  @AfterClass
+  public static void classTeardown() {
+    SCBEngine.getInstance().destroy();
+  }
+
   @Test
   public void testEndpoint() throws Exception {
     Endpoint oEndpoint = new Endpoint(new Transport() {
-
       @Override
       public void send(Invocation invocation, AsyncResponse asyncResp) {
       }

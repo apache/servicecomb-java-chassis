@@ -31,23 +31,33 @@ import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.bootup.BootUpInformationCollector;
+import org.apache.servicecomb.core.definition.ConsumerMicroserviceVersionsMeta;
+import org.apache.servicecomb.core.definition.CoreMetaUtils;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.loader.SchemaListenerManager;
-import org.apache.servicecomb.core.definition.schema.StaticSchemaFactory;
+import org.apache.servicecomb.core.definition.MicroserviceVersionsMeta;
+import org.apache.servicecomb.core.definition.ServiceRegistryListener;
 import org.apache.servicecomb.core.endpoint.AbstractEndpointsCache;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
+import org.apache.servicecomb.core.executor.ExecutorManager;
+import org.apache.servicecomb.core.handler.ConsumerHandlerManager;
 import org.apache.servicecomb.core.handler.HandlerConfigUtils;
+import org.apache.servicecomb.core.handler.ProducerHandlerManager;
 import org.apache.servicecomb.core.provider.consumer.ConsumerProviderManager;
-import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
+import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.core.transport.TransportManager;
+import org.apache.servicecomb.foundation.common.VendorExtensions;
 import org.apache.servicecomb.foundation.common.event.EventManager;
-import org.apache.servicecomb.foundation.common.log.LogMarkerLeakFixUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.ServiceRegistry;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
+import org.apache.servicecomb.serviceregistry.definition.MicroserviceNameParser;
+import org.apache.servicecomb.serviceregistry.swagger.SwaggerLoader;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceRegisterTask;
+import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,17 +76,22 @@ public class SCBEngine {
 
   static final long DEFAULT_WAIT_UP_TIMEOUT = 10_000;
 
+  private static SCBEngine INSTANCE;
+
+  private ConsumerHandlerManager consumerHandlerManager = new ConsumerHandlerManager();
+
+  private ProducerHandlerManager producerHandlerManager = new ProducerHandlerManager();
+
   private ProducerProviderManager producerProviderManager;
 
-  private ConsumerProviderManager consumerProviderManager;
+  private ConsumerProviderManager consumerProviderManager = new ConsumerProviderManager();
 
   private MicroserviceMeta producerMicroserviceMeta;
 
-  private TransportManager transportManager;
+  private TransportManager transportManager = new TransportManager();
 
-  private SchemaListenerManager schemaListenerManager;
-
-  private Collection<BootListener> bootListenerList;
+  private List<BootListener> bootListeners = new ArrayList<>(
+      SPIServiceUtils.getOrLoadSortedService(BootListener.class));
 
   private final AtomicLong invocationStartedCounter = new AtomicLong();
 
@@ -84,16 +99,43 @@ public class SCBEngine {
 
   private volatile SCBStatus status = SCBStatus.DOWN;
 
-  private EventBus eventBus = EventManager.getEventBus();
+  private ServiceRegistry serviceRegistry;
 
-  private StaticSchemaFactory staticSchemaFactory;
+  private EventBus eventBus;
+
+  private ExecutorManager executorManager = new ExecutorManager();
 
   private PriorityPropertyManager priorityPropertyManager = new PriorityPropertyManager();
 
   protected List<BootUpInformationCollector> bootUpInformationCollectors = SPIServiceUtils
       .getSortedService(BootUpInformationCollector.class);
 
-  private static final SCBEngine INSTANCE = new SCBEngine();
+  private ServiceRegistryListener serviceRegistryListener;
+
+  private SwaggerEnvironment swaggerEnvironment = new SwaggerEnvironment();
+
+  private VendorExtensions vendorExtensions = new VendorExtensions();
+
+  private Thread shutdownHook;
+
+  public SCBEngine() {
+    serviceRegistry = RegistryUtils.getServiceRegistry();
+    eventBus = serviceRegistry.getEventBus();
+    eventBus.register(this);
+
+    INSTANCE = this;
+
+    producerProviderManager = new ProducerProviderManager(this);
+    serviceRegistryListener = new ServiceRegistryListener(this);
+  }
+
+  public VendorExtensions getVendorExtensions() {
+    return vendorExtensions;
+  }
+
+  public String getAppId() {
+    return serviceRegistry.getAppId();
+  }
 
   public void setStatus(SCBStatus status) {
     this.status = status;
@@ -107,6 +149,22 @@ public class SCBEngine {
     return INSTANCE;
   }
 
+  public ServiceRegistry getServiceRegistry() {
+    return serviceRegistry;
+  }
+
+  public SwaggerLoader getSwaggerLoader() {
+    return serviceRegistry.getSwaggerLoader();
+  }
+
+  public ConsumerHandlerManager getConsumerHandlerManager() {
+    return consumerHandlerManager;
+  }
+
+  public ProducerHandlerManager getProducerHandlerManager() {
+    return producerHandlerManager;
+  }
+
   public PriorityPropertyManager getPriorityPropertyManager() {
     return priorityPropertyManager;
   }
@@ -115,37 +173,55 @@ public class SCBEngine {
     return eventBus;
   }
 
+  public ExecutorManager getExecutorManager() {
+    return executorManager;
+  }
+
+  public void setExecutorManager(ExecutorManager executorManager) {
+    this.executorManager = executorManager;
+  }
+
+  public ProducerProviderManager getProducerProviderManager() {
+    return producerProviderManager;
+  }
+
   public void setProducerProviderManager(ProducerProviderManager producerProviderManager) {
     this.producerProviderManager = producerProviderManager;
   }
 
-  public void setConsumerProviderManager(ConsumerProviderManager consumerProviderManager) {
+  public ConsumerProviderManager getConsumerProviderManager() {
+    return consumerProviderManager;
+  }
+
+  public SCBEngine setConsumerProviderManager(ConsumerProviderManager consumerProviderManager) {
     this.consumerProviderManager = consumerProviderManager;
+    return this;
   }
 
   public TransportManager getTransportManager() {
     return transportManager;
   }
 
-  public void setTransportManager(TransportManager transportManager) {
+  public SCBEngine setTransportManager(TransportManager transportManager) {
     this.transportManager = transportManager;
+    return this;
   }
 
-  public void setSchemaListenerManager(SchemaListenerManager schemaListenerManager) {
-    this.schemaListenerManager = schemaListenerManager;
+  public SwaggerEnvironment getSwaggerEnvironment() {
+    return swaggerEnvironment;
   }
 
-  public Collection<BootListener> getBootListenerList() {
-    return bootListenerList;
+  public Collection<BootListener> getBootListeners() {
+    return bootListeners;
   }
 
-  public void setBootListenerList(Collection<BootListener> bootListenerList) {
-    List<BootListener> tmp = new ArrayList<>();
-    tmp.addAll(bootListenerList);
-    tmp.addAll(SPIServiceUtils.getOrLoadSortedService(BootListener.class));
-    tmp.sort(Comparator.comparingInt(BootListener::getOrder));
+  public void addBootListeners(Collection<BootListener> bootListeners) {
+    this.bootListeners.addAll(bootListeners);
+  }
 
-    this.bootListenerList = tmp;
+  public SCBEngine addProducerMeta(String schemaId, Object instance) {
+    getProducerProviderManager().addProducerMeta(schemaId, instance);
+    return this;
   }
 
   protected void triggerEvent(EventType eventType) {
@@ -153,7 +229,7 @@ public class SCBEngine {
     event.setScbEngine(this);
     event.setEventType(eventType);
 
-    for (BootListener listener : bootListenerList) {
+    for (BootListener listener : bootListeners) {
       listener.onBootEvent(event);
     }
   }
@@ -163,7 +239,7 @@ public class SCBEngine {
     event.setScbEngine(this);
     event.setEventType(eventType);
 
-    for (BootListener listener : bootListenerList) {
+    for (BootListener listener : bootListeners) {
       try {
         listener.onBootEvent(event);
         LOGGER.info("BootListener {} succeed to process {}.", listener.getClass().getName(), eventType);
@@ -185,7 +261,7 @@ public class SCBEngine {
    * <p>Check if {@code InstanceId} is null to judge whether the instance registry has succeeded.</p>
    */
   private void triggerAfterRegistryEvent() {
-    EventManager.register(new Object() {
+    eventBus.register(new Object() {
       @Subscribe
       public void afterRegistryInstance(MicroserviceInstanceRegisterTask microserviceInstanceRegisterTask) {
         LOGGER.info("receive MicroserviceInstanceRegisterTask event, check instance Id...");
@@ -213,10 +289,10 @@ public class SCBEngine {
     invocationFinishedCounter.incrementAndGet();
   }
 
-  public synchronized void init() {
+  public synchronized SCBEngine run() {
     if (SCBStatus.DOWN.equals(status)) {
       try {
-        doInit();
+        doRun();
         waitStatusUp();
       } catch (TimeoutException e) {
         LOGGER.warn("{}", e.getMessage());
@@ -233,6 +309,8 @@ public class SCBEngine {
         printServiceInfo();
       }
     }
+
+    return this;
   }
 
   private void printServiceInfo() {
@@ -245,20 +323,18 @@ public class SCBEngine {
   }
 
 
-  private void doInit() throws Exception {
+  private void doRun() throws Exception {
     status = SCBStatus.STARTING;
 
-    // fix log4j2 leak marker problem
-    LogMarkerLeakFixUtils.fix();
+    bootListeners.sort(Comparator.comparingInt(BootListener::getOrder));
 
-    eventBus.register(this);
-
-    consumerProviderManager.setAppManager(RegistryUtils.getServiceRegistry().getAppManager());
-    AbstractEndpointsCache.init(RegistryUtils.getInstanceCacheManager(), transportManager);
+    AbstractEndpointsCache.init(serviceRegistry.getInstanceCacheManager(), transportManager);
 
     triggerEvent(EventType.BEFORE_HANDLER);
-    HandlerConfigUtils.init();
+    HandlerConfigUtils.init(consumerHandlerManager, producerHandlerManager);
     triggerEvent(EventType.AFTER_HANDLER);
+
+    createProducerMicroserviceMeta();
 
     triggerEvent(EventType.BEFORE_PRODUCER_PROVIDER);
     producerProviderManager.init();
@@ -269,18 +345,31 @@ public class SCBEngine {
     triggerEvent(EventType.AFTER_CONSUMER_PROVIDER);
 
     triggerEvent(EventType.BEFORE_TRANSPORT);
-    transportManager.init();
+    transportManager.init(this);
     triggerEvent(EventType.AFTER_TRANSPORT);
-
-    schemaListenerManager.notifySchemaListener();
 
     triggerEvent(EventType.BEFORE_REGISTRY);
 
     triggerAfterRegistryEvent();
 
-    RegistryUtils.run();
+    serviceRegistry.run();
 
-    Runtime.getRuntime().addShutdownHook(new Thread(this::destroy));
+    shutdownHook = new Thread(this::destroyForShutdownHook);
+    Runtime.getRuntime().addShutdownHook(shutdownHook);
+  }
+
+  private void createProducerMicroserviceMeta() {
+    String microserviceName = serviceRegistry.getMicroservice().getServiceName();
+    List<Handler> consumerHandlerChain = consumerHandlerManager.getOrCreate(microserviceName);
+    List<Handler> producerHandlerChain = producerHandlerManager.getOrCreate(microserviceName);
+
+    producerMicroserviceMeta = new MicroserviceMeta(this, microserviceName, consumerHandlerChain, producerHandlerChain);
+    producerMicroserviceMeta.setMicroserviceVersionsMeta(new MicroserviceVersionsMeta(this, microserviceName));
+  }
+
+  public void destroyForShutdownHook() {
+    shutdownHook = null;
+    destroy();
   }
 
   /**
@@ -297,6 +386,9 @@ public class SCBEngine {
   }
 
   private void doDestroy() {
+    if (shutdownHook != null) {
+      Runtime.getRuntime().removeShutdownHook(shutdownHook);
+    }
     //Step 1: notify all component stop invoke via BEFORE_CLOSE Event
     safeTriggerEvent(EventType.BEFORE_CLOSE);
 
@@ -305,8 +397,9 @@ public class SCBEngine {
 
     //Step 3: Unregister microservice instance from Service Center and close vertx
     // Forbidden other consumers find me
-    RegistryUtils.destroy();
+    serviceRegistry.destroy();
     VertxUtils.blockCloseVertxByName("registry");
+    serviceRegistryListener.destroy();
 
     //Step 4: wait all invocation finished
     try {
@@ -353,16 +446,28 @@ public class SCBEngine {
     }
   }
 
-  public ReferenceConfig createReferenceConfigForInvoke(String microserviceName, String versionRule, String transport) {
-    ensureStatusUp();
-
-    return consumerProviderManager.createReferenceConfig(microserviceName, versionRule, transport);
+  /**
+   * for normal consumers
+   * @param microserviceName shortName, or appId:shortName when invoke cross app
+   * @return
+   */
+  public MicroserviceReferenceConfig createMicroserviceReferenceConfig(String microserviceName) {
+    return createMicroserviceReferenceConfig(microserviceName, null);
   }
 
-  public ReferenceConfig getReferenceConfigForInvoke(String microserviceName) {
-    ensureStatusUp();
+  /**
+   * for edge, versionRule maybe controlled by url rule
+   * @param microserviceName hortName, or appId:shortName when invoke cross app
+   * @param versionRule if is empty, then use configuration value
+   * @return
+   */
+  public MicroserviceReferenceConfig createMicroserviceReferenceConfig(String microserviceName, String versionRule) {
+    MicroserviceVersions microserviceVersions = serviceRegistry.getAppManager()
+        .getOrCreateMicroserviceVersions(parseAppId(microserviceName), microserviceName);
+    ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = CoreMetaUtils
+        .getMicroserviceVersionsMeta(microserviceVersions);
 
-    return consumerProviderManager.getReferenceConfig(microserviceName);
+    return new MicroserviceReferenceConfig(microserviceVersionsMeta, versionRule);
   }
 
   public MicroserviceMeta getProducerMicroserviceMeta() {
@@ -416,11 +521,11 @@ public class SCBEngine {
     }
   }
 
-  public StaticSchemaFactory getStaticSchemaFactory() {
-    return staticSchemaFactory;
+  public String parseAppId(String microserviceName) {
+    return parseMicroserviceName(microserviceName).getAppId();
   }
 
-  public void setStaticSchemaFactory(StaticSchemaFactory staticSchemaFactory) {
-    this.staticSchemaFactory = staticSchemaFactory;
+  public MicroserviceNameParser parseMicroserviceName(String microserviceName) {
+    return new MicroserviceNameParser(getAppId(), microserviceName);
   }
 }

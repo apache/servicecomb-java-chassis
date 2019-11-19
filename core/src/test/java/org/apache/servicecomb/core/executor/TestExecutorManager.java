@@ -53,7 +53,7 @@ public class TestExecutorManager {
       }
     };
 
-    Assert.assertSame(executor, ExecutorManager.findExecutor(operationMeta));
+    Assert.assertSame(executor, new ExecutorManager().findExecutor(operationMeta));
   }
 
   @Test
@@ -71,7 +71,7 @@ public class TestExecutorManager {
       }
     };
 
-    Assert.assertSame(executor, ExecutorManager.findExecutor(operationMeta, null));
+    Assert.assertSame(executor, new ExecutorManager().findExecutor(operationMeta, null));
   }
 
   @Test
@@ -90,32 +90,31 @@ public class TestExecutorManager {
       }
     };
 
-    Assert.assertSame(executor, ExecutorManager.findExecutor(operationMeta, defExecutor));
+    Assert.assertSame(executor, new ExecutorManager().findExecutor(operationMeta, defExecutor));
   }
 
   @Test
   public void findExecutor_twoParam_schemaCfg_withOpDef(@Mocked OperationMeta operationMeta,
       @Mocked Executor defExecutor) {
-    Assert.assertSame(defExecutor, ExecutorManager.findExecutor(operationMeta, defExecutor));
+    Assert.assertSame(defExecutor, new ExecutorManager().findExecutor(operationMeta, defExecutor));
   }
 
   @Test
   public void findExecutor_twoParam_schemaCfg_withoutOpDef(@Mocked Executor executor,
-      @Mocked SchemaMeta schemaMeta,
       @Mocked OperationMeta operationMeta) {
     String schemaName = "schemaId";
     String opBeanId = "opBeanId";
     ArchaiusUtils.setProperty(ExecutorManager.KEY_EXECUTORS_PREFIX + schemaName, opBeanId);
     new Expectations(BeanUtils.class) {
       {
-        schemaMeta.getName();
+        operationMeta.getSchemaId();
         result = schemaName;
         BeanUtils.getBean(opBeanId);
         result = executor;
       }
     };
 
-    Assert.assertSame(executor, ExecutorManager.findExecutor(operationMeta, null));
+    Assert.assertSame(executor, new ExecutorManager().findExecutor(operationMeta, null));
   }
 
   @Test
@@ -131,6 +130,6 @@ public class TestExecutorManager {
       }
     };
 
-    Assert.assertSame(executor, ExecutorManager.findExecutor(operationMeta, null));
+    Assert.assertSame(executor, new ExecutorManager().findExecutor(operationMeta, null));
   }
 }

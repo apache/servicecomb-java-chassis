@@ -14,18 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.core.bootstrap;
 
-package org.apache.servicecomb.core.definition.classloader;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 
-public class PrivateMicroserviceClassLoaderFactory implements MicroserviceClassLoaderFactory {
-
-  public static final MicroserviceClassLoaderFactory INSTANCE = new PrivateMicroserviceClassLoaderFactory();
-
-  private PrivateMicroserviceClassLoaderFactory() {
-  }
-
-  @Override
-  public ClassLoader create(String appId, String microserviceName, String version) {
-    return new MicroserviceClassLoader(appId, microserviceName, version);
+public class SpringBootstrap {
+  public SpringBootstrap() {
+    RegistryUtils.init();
+    new SCBEngine();
   }
 }

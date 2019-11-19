@@ -17,9 +17,9 @@
 
 package org.apache.servicecomb.core.filter;
 
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.discovery.AbstractEndpointDiscoveryFilter;
@@ -44,7 +44,7 @@ public class EndpointDiscoveryFilter extends AbstractEndpointDiscoveryFilter {
 
   @Override
   protected Object createEndpoint(String transportName, String endpoint, MicroserviceInstance instance) {
-    Transport transport = CseContext.getInstance().getTransportManager().findTransport(transportName);
+    Transport transport = SCBEngine.getInstance().getTransportManager().findTransport(transportName);
     if (transport == null) {
       LOGGER.info("not deployed transport {}, ignore {}.", transportName, endpoint);
       return null;

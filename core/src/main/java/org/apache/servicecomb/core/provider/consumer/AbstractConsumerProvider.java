@@ -20,8 +20,7 @@ package org.apache.servicecomb.core.provider.consumer;
 import org.apache.servicecomb.core.ConsumerProvider;
 
 public abstract class AbstractConsumerProvider implements ConsumerProvider {
-
   @Override
-  public void init() throws Exception {
+  public void init() {
   }
 }

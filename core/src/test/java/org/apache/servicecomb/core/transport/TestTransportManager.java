@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.core.Endpoint;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
@@ -35,7 +36,8 @@ import mockit.Mocked;
 
 public class TestTransportManager {
   @Test
-  public void testTransportManagerInitFail(@Injectable Transport transport) throws Exception {
+  public void testTransportManagerInitFail(@Mocked SCBEngine scbEngine, @Injectable Transport transport)
+      throws Exception {
     new Expectations() {
       {
         transport.getName();
@@ -49,14 +51,15 @@ public class TestTransportManager {
     List<Transport> transports = Arrays.asList(transport);
 
     TransportManager manager = new TransportManager();
-    manager.setTransports(transports);
+    manager.addTransportsBeforeInit(transports);
 
-    manager.init();
+    manager.init(scbEngine);
     Assert.assertEquals(manager.findTransport("test"), transport);
   }
 
   @Test
-  public void testTransportManagerInitSucc(@Injectable Transport transport, @Injectable Endpoint endpoint,
+  public void testTransportManagerInitSucc(@Mocked SCBEngine scbEngine, @Injectable Transport transport,
+      @Injectable Endpoint endpoint,
       @Mocked RegistryUtils util, @Injectable MicroserviceInstance instance) throws Exception {
     new Expectations() {
       {
@@ -73,9 +76,9 @@ public class TestTransportManager {
     List<Transport> transports = Arrays.asList(transport);
 
     TransportManager manager = new TransportManager();
-    manager.setTransports(transports);
+    manager.addTransportsBeforeInit(transports);
 
-    manager.init();
+    manager.init(scbEngine);
     Assert.assertEquals(manager.findTransport("test"), transport);
   }
 
@@ -94,7 +97,7 @@ public class TestTransportManager {
     };
 
     TransportManager manager = new TransportManager();
-    manager.setTransports(Arrays.asList(t1, t2_1, t2_2));
+    manager.addTransportsBeforeInit(Arrays.asList(t1, t2_1, t2_2));
 
     Map<String, List<Transport>> groups = manager.groupByName();
     Assert.assertEquals(2, groups.size());

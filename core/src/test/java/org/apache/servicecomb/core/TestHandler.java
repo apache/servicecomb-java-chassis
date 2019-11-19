@@ -17,16 +17,11 @@
 
 package org.apache.servicecomb.core;
 
-import org.apache.servicecomb.core.handler.ConsumerHandlerManager;
-import org.apache.servicecomb.core.handler.HandlerConfigUtils;
-import org.junit.Assert;
-import org.junit.Test;
-
 public class TestHandler {
-
-  @Test
-  public void testAbstractHandlerManager() throws Exception {
-    HandlerConfigUtils.init();
-    Assert.assertNotEquals(null, ConsumerHandlerManager.INSTANCE.getOrCreate("test"));
-  }
+//
+//  @Test
+//  public void testAbstractHandlerManager() throws Exception {
+//    HandlerConfigUtils.init();
+//    Assert.assertNotEquals(null, ConsumerHandlerManager.INSTANCE.getOrCreate("test"));
+//  }
 }

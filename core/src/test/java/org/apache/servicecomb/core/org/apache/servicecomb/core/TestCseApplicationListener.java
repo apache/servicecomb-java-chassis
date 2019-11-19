@@ -16,41 +16,27 @@
  */
 package org.apache.servicecomb.core.org.apache.servicecomb.core;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.servicecomb.core.CseApplicationListener;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.SCBStatus;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.context.event.ContextClosedEvent;
 
-import mockit.Mock;
-import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestCseApplicationListener {
   @Test
   public void onApplicationEvent_close(@Mocked ContextClosedEvent contextClosedEvent) {
-    AtomicInteger count = new AtomicInteger();
-    SCBEngine scbEngine = new SCBEngine() {
-      @Override
-      public synchronized void destroy() {
-        count.incrementAndGet();
-      }
-    };
-    new MockUp<SCBEngine>() {
-      @Mock
-      SCBEngine getInstance() {
-        return scbEngine;
-      }
-    };
+    SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();
     scbEngine.setStatus(SCBStatus.UP);
 
     CseApplicationListener listener = new CseApplicationListener();
-
     listener.onApplicationEvent(contextClosedEvent);
 
-    Assert.assertEquals(1, count.get());
+    Assert.assertEquals(SCBStatus.DOWN, scbEngine.getStatus());
+
+    scbEngine.destroy();
   }
 }

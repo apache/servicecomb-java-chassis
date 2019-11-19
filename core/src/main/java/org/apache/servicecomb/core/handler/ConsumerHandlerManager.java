@@ -21,8 +21,6 @@ import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.handler.impl.TransportClientHandler;
 
 public class ConsumerHandlerManager extends AbstractHandlerManager {
-  public static final ConsumerHandlerManager INSTANCE = new ConsumerHandlerManager();
-
   @Override
   protected String getName() {
     return "Consumer";

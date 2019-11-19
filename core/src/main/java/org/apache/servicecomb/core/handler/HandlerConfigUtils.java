@@ -41,9 +41,10 @@ public final class HandlerConfigUtils {
     return config;
   }
 
-  public static void init() throws Exception {
+  public static void init(ConsumerHandlerManager consumerHandlerManager, ProducerHandlerManager producerHandlerManager)
+      throws Exception {
     Config config = loadConfig();
-    ConsumerHandlerManager.INSTANCE.init(config);
-    ProducerHandlerManager.INSTANCE.init(config);
+    consumerHandlerManager.init(config);
+    producerHandlerManager.init(config);
   }
 }

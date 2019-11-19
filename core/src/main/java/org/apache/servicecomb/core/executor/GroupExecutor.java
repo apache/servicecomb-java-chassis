@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
@@ -48,6 +49,10 @@ public class GroupExecutor implements Executor, Closeable {
 
   public static final String KEY_MAX_QUEUE_SIZE = "servicecomb.executor.default.maxQueueSize-per-group";
 
+  private static final AtomicBoolean LOG_PRINTED = new AtomicBoolean();
+
+  protected String groupName;
+
   protected int groupCount;
 
   protected int coreThreads;
@@ -67,25 +72,37 @@ public class GroupExecutor implements Executor, Closeable {
 
   private Map<Long, Executor> threadExecutorMap = new ConcurrentHashMapEx<>();
 
-  public void init() {
+  public GroupExecutor init() {
+    return init("group");
+  }
+
+  public GroupExecutor init(String groupName) {
+    this.groupName = groupName;
     initConfig();
 
     for (int groupIdx = 0; groupIdx < groupCount; groupIdx++) {
+      GroupThreadFactory factory = new GroupThreadFactory(groupName + groupIdx);
+
       ThreadPoolExecutorEx executor = new ThreadPoolExecutorEx(coreThreads,
           maxThreads,
           maxIdleInSecond,
           TimeUnit.SECONDS,
-          new LinkedBlockingQueueEx<>(maxQueueSize));
+          new LinkedBlockingQueueEx<>(maxQueueSize),
+          factory);
       executorList.add(executor);
     }
+
+    return this;
   }
 
   public void initConfig() {
-    LOGGER.info("thread pool rules:\n"
-        + "1.use core threads.\n"
-        + "2.if all core threads are busy, then create new thread.\n"
-        + "3.if thread count reach the max limitation, then queue the request.\n"
-        + "4.if queue is full, and threads count is max, then reject the request.");
+    if (LOG_PRINTED.compareAndSet(false, true)) {
+      LOGGER.info("thread pool rules:\n"
+          + "1.use core threads.\n"
+          + "2.if all core threads are busy, then create new thread.\n"
+          + "3.if thread count reach the max limitation, then queue the request.\n"
+          + "4.if queue is full, and threads count is max, then reject the request.");
+    }
 
     groupCount = DynamicPropertyFactory.getInstance().getIntProperty(KEY_GROUP, 2).get();
     coreThreads = DynamicPropertyFactory.getInstance().getIntProperty(KEY_CORE_THREADS, 25).get();
@@ -108,8 +125,8 @@ public class GroupExecutor implements Executor, Closeable {
     maxQueueSize = DynamicPropertyFactory.getInstance().getIntProperty(KEY_MAX_QUEUE_SIZE, Integer.MAX_VALUE).get();
 
     LOGGER.info(
-        "executor group={}. per group settings, coreThreads={}, maxThreads={}, maxIdleInSecond={}, maxQueueSize={}.",
-        groupCount, coreThreads, maxThreads, maxIdleInSecond, maxQueueSize);
+        "executor name={}, group={}. per group settings, coreThreads={}, maxThreads={}, maxIdleInSecond={}, maxQueueSize={}.",
+        groupName, groupCount, coreThreads, maxThreads, maxIdleInSecond, maxQueueSize);
   }
 
   public List<ExecutorService> getExecutorList() {

@@ -45,7 +45,7 @@ public class TestServiceProviderHandler {
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     serviceProviderHandler = null;
     invocation = null;
     asyncResp = null;
@@ -60,6 +60,7 @@ public class TestServiceProviderHandler {
       Mockito.when(invocation.getOperationMeta()).thenReturn(OperationMeta);
       serviceProviderHandler.handle(invocation, asyncResp);
     } catch (Exception e) {
+      e.printStackTrace();
       status = true;
     }
     Assert.assertFalse(status);

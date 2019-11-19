@@ -59,5 +59,94 @@ public interface BootListener {
     return 0;
   }
 
-  void onBootEvent(BootEvent event);
+  default void onBootEvent(BootEvent event) {
+    switch (event.eventType) {
+      case BEFORE_HANDLER:
+        onBeforeHandler(event);
+        return;
+      case AFTER_HANDLER:
+        onAfterHandler(event);
+        return;
+      case BEFORE_PRODUCER_PROVIDER:
+        onBeforeProducerProvider(event);
+        return;
+      case AFTER_PRODUCER_PROVIDER:
+        onAfterProducerProvider(event);
+        return;
+      case BEFORE_CONSUMER_PROVIDER:
+        onBeforeConsumerProvider(event);
+        return;
+      case AFTER_CONSUMER_PROVIDER:
+        onAfterConsumerProvider(event);
+        return;
+      case BEFORE_TRANSPORT:
+        onBeforeTransport(event);
+        return;
+      case AFTER_TRANSPORT:
+        onAfterTransport(event);
+        return;
+      case BEFORE_REGISTRY:
+        onBeforeRegistry(event);
+        return;
+      case AFTER_REGISTRY:
+        onAfterRegistry(event);
+        return;
+      case BEFORE_CLOSE:
+        onBeforeClose(event);
+        return;
+      case AFTER_CLOSE:
+        onAfterClose(event);
+        return;
+      default:
+        throw new IllegalStateException("unknown boot event type: " + event.eventType);
+    }
+  }
+
+  default void onBeforeHandler(BootEvent event) {
+
+  }
+
+  default void onAfterHandler(BootEvent event) {
+
+  }
+
+  default void onBeforeProducerProvider(BootEvent event) {
+
+  }
+
+  default void onAfterProducerProvider(BootEvent event) {
+
+  }
+
+  default void onBeforeConsumerProvider(BootEvent event) {
+
+  }
+
+  default void onAfterConsumerProvider(BootEvent event) {
+
+  }
+
+  default void onBeforeTransport(BootEvent event) {
+
+  }
+
+  default void onAfterTransport(BootEvent event) {
+
+  }
+
+  default void onBeforeRegistry(BootEvent event) {
+
+  }
+
+  default void onAfterRegistry(BootEvent event) {
+
+  }
+
+  default void onBeforeClose(BootEvent event) {
+
+  }
+
+  default void onAfterClose(BootEvent event) {
+
+  }
 }

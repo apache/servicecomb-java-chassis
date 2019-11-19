@@ -17,8 +17,12 @@
 
 package org.apache.servicecomb.core;
 
+import java.util.List;
+
+import org.apache.servicecomb.core.provider.producer.ProducerMeta;
+
 public interface ProducerProvider {
-  void init() throws Exception;
+  List<ProducerMeta> init();
 
   String getName();
 }

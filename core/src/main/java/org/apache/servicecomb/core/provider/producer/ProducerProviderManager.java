@@ -17,97 +17,95 @@
 
 package org.apache.servicecomb.core.provider.producer;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
-import org.apache.servicecomb.core.BootListener;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.ProducerProvider;
 import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.definition.CoreMetaUtils;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.core.definition.SchemaUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.core.executor.ExecutorManager;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.swagger.engine.SwaggerProducer;
+import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
-import io.swagger.models.Scheme;
 import io.swagger.models.Swagger;
 
-@Component
-public class ProducerProviderManager implements BootListener {
+public class ProducerProviderManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProducerProviderManager.class);
 
-  @Autowired(required = false)
-  private List<ProducerProvider> producerProviderList = Collections.emptyList();
+  private List<ProducerProvider> producerProviderList = new ArrayList<>(
+      SPIServiceUtils.getOrLoadSortedService(ProducerProvider.class));
 
-  private MicroserviceMeta microserviceMeta;
+  private SCBEngine scbEngine;
 
-  public void init() throws Exception {
+  private List<ProducerMeta> producerMetas = new ArrayList<>();
+
+  public ProducerProviderManager(SCBEngine scbEngine) {
+    this.scbEngine = scbEngine;
+  }
+
+  public List<ProducerProvider> getProducerProviderList() {
+    return producerProviderList;
+  }
+
+  public void init() {
+    regsiterProducerMetas(producerMetas);
+
     for (ProducerProvider provider : producerProviderList) {
-      provider.init();
-    }
-  }
-
-  @Override
-  public void onBootEvent(BootEvent event) {
-    switch (event.getEventType()) {
-      case AFTER_TRANSPORT:
-        registerSchemaToMicroservice();
-        break;
-      case AFTER_CLOSE:
-        onClose();
-        break;
-    }
-  }
-
-  private void registerSchemaToMicroservice() {
-    Microservice microservice = RegistryUtils.getMicroservice();
-
-    String swaggerSchema = "http";
-    for (String endpoint : microservice.getInstance().getEndpoints()) {
-      if (endpoint.startsWith("rest://") && endpoint.indexOf("sslEnabled=true") > 0) {
-        swaggerSchema = "https";
-      }
-    }
-
-    microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
-    for (SchemaMeta schemaMeta : microserviceMeta.getSchemaMetas()) {
-      Swagger swagger = schemaMeta.getSwagger();
-      swagger.addScheme(Scheme.forValue(swaggerSchema));
-      String content = SchemaUtils.swaggerToString(swagger);
-      microservice.addSchema(schemaMeta.getSchemaId(), content);
-    }
-  }
-
-  private void onClose() {
-    if (microserviceMeta == null) {
-      return;
-    }
-    for (OperationMeta operationMeta : microserviceMeta.getOperations()) {
-      if (ExecutorService.class.isInstance(operationMeta.getExecutor())) {
-        ((ExecutorService) operationMeta.getExecutor()).shutdown();
+      List<ProducerMeta> producerMetas = provider.init();
+      if (producerMetas == null) {
+        LOGGER.warn("ProducerProvider {} not provide any producer.", provider.getClass().getName());
         continue;
       }
 
-      if (Closeable.class.isInstance(operationMeta.getExecutor())) {
-        Closeable executor = (Closeable) operationMeta.getExecutor();
-        try {
-          executor.close();
-        } catch (final IOException ioe) {
-          // ignore
-        }
-        continue;
-      }
-
-      LOGGER.warn("Executor {} do not support close or shutdown, it may block service shutdown.",
-          operationMeta.getExecutor().getClass().getName());
+      regsiterProducerMetas(producerMetas);
     }
+  }
+
+  public void addProducerMeta(String schemaId, Object instance) {
+    addProducerMeta(new ProducerMeta(schemaId, instance));
+  }
+
+  public void addProducerMeta(ProducerMeta producerMeta) {
+    producerMetas.add(producerMeta);
+  }
+
+  private void regsiterProducerMetas(List<ProducerMeta> producerMetas) {
+    for (ProducerMeta producerMeta : producerMetas) {
+      registerSchema(producerMeta.getSchemaId(), producerMeta.getInstance());
+    }
+  }
+
+  public SchemaMeta registerSchema(String schemaId, Object instance) {
+    MicroserviceMeta producerMicroserviceMeta = scbEngine.getProducerMicroserviceMeta();
+    Swagger swagger = scbEngine.getSwaggerLoader().loadLocalSwagger(
+        producerMicroserviceMeta.getAppId(),
+        producerMicroserviceMeta.getShortName(),
+        schemaId);
+    SwaggerProducer swaggerProducer = scbEngine.getSwaggerEnvironment()
+        .createProducer(instance, swagger);
+    swagger = swaggerProducer.getSwagger();
+
+    SchemaMeta schemaMeta = producerMicroserviceMeta.registerSchemaMeta(schemaId, swagger);
+    schemaMeta.getVendorExtensions().put(CoreMetaUtils.SWAGGER_PRODUCER, swaggerProducer);
+    Executor reactiveExecutor = scbEngine.getExecutorManager().findExecutorById(ExecutorManager.EXECUTOR_REACTIVE);
+    for (SwaggerProducerOperation producerOperation : swaggerProducer.getAllOperations()) {
+      OperationMeta operationMeta = schemaMeta.ensureFindOperation(producerOperation.getOperationId());
+      operationMeta.getVendorExtensions().put(Const.PRODUCER_OPERATION, producerOperation);
+
+      if (CompletableFuture.class.equals(producerOperation.getProducerMethod().getReturnType())) {
+        operationMeta.setExecutor(scbEngine.getExecutorManager().findExecutor(operationMeta, reactiveExecutor));
+      }
+    }
+
+    return schemaMeta;
   }
 }
