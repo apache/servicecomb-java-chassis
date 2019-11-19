@@ -15,18 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.core.definition.schema;
+package org.apache.servicecomb.core;
 
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import java.lang.reflect.Method;
 
-public class ConsumerSchemaContext extends SchemaContext {
-  protected Microservice microservice;
+import org.springframework.util.ReflectionUtils;
 
-  public Microservice getMicroservice() {
-    return microservice;
+import com.netflix.config.DynamicProperty;
+
+public class Utils {
+  private static Method updatePropertyMethod =
+      ReflectionUtils.findMethod(DynamicProperty.class, "updateProperty", String.class, Object.class);
+
+  static {
+    updatePropertyMethod.setAccessible(true);
   }
 
-  public void setMicroservice(Microservice microservice) {
-    this.microservice = microservice;
+  public static void updateProperty(String key, Object value) {
+    ReflectionUtils.invokeMethod(updatePropertyMethod, null, key, value);
   }
 }

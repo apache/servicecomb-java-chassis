@@ -21,17 +21,13 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.core.filter.OperationInstancesDiscoveryFilter;
-import org.apache.servicecomb.core.transport.TransportManager;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryFilter;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -50,43 +46,32 @@ public class TestSimpleLoadBalanceHandler {
   Map<String, AtomicInteger> indexMap;
 
   @Mocked
-  OperationInstancesDiscoveryFilter operationInstancesDiscoveryFilter;
-
-  @Mocked
   Invocation invocation;
-
-  @Mocked
-  ServiceRegistry serviceRegistry;
-
-  @Mocked
-  InstanceCacheManager instanceCacheManager;
-
-  @Mocked
-  TransportManager transportManager;
 
   VersionedCache instanceVersionedCache = new VersionedCache().data(Collections.emptyMap()).name("parent");
 
   Response response;
 
-  AsyncResponse ar = resp -> {
-    response = resp;
-  };
+  AsyncResponse ar = resp -> response = resp;
+
+  SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();
 
   @Before
   public void setUp() throws Exception {
-    CseContext.getInstance().setTransportManager(transportManager);
-
-    RegistryUtils.setServiceRegistry(serviceRegistry);
     new Expectations(SPIServiceUtils.class) {
       {
         SPIServiceUtils.getSortedService(DiscoveryFilter.class);
         result = Collections.emptyList();
-        serviceRegistry.getInstanceCacheManager();
-        result = instanceCacheManager;
-        instanceCacheManager.getOrCreateVersionedCache(anyString, anyString, anyString);
-        result = instanceVersionedCache;
         invocation.getConfigTransportName();
         result = "";
+      }
+    };
+
+    new Expectations(scbEngine.getServiceRegistry().getInstanceCacheManager()) {
+      {
+        scbEngine.getServiceRegistry().getInstanceCacheManager()
+            .getOrCreateVersionedCache(anyString, anyString, anyString);
+        result = instanceVersionedCache;
       }
     };
 
@@ -95,9 +80,8 @@ public class TestSimpleLoadBalanceHandler {
   }
 
   @After
-  public void tearDown() throws Exception {
-    CseContext.getInstance().setTransportManager(null);
-    RegistryUtils.setServiceRegistry(null);
+  public void teardown() {
+    scbEngine.destroy();
   }
 
   @Test
@@ -119,9 +103,9 @@ public class TestSimpleLoadBalanceHandler {
     instance.getEndpoints().add("highway://localhost:8081");
     instanceVersionedCache.data(Collections.singletonMap("id", instance)).autoCacheVersion().name("vr");
 
-    new Expectations() {
+    new Expectations(scbEngine.getTransportManager()) {
       {
-        transportManager.findTransport(anyString);
+        SCBEngine.getInstance().getTransportManager().findTransport(anyString);
         result = transport;
         invocation.getConfigTransportName();
         result = "";

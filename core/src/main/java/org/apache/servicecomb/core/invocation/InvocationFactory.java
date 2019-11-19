@@ -21,7 +21,6 @@ import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
@@ -47,19 +46,9 @@ public final class InvocationFactory {
   /*
    * consumer端使用，schemaMeta级别的缓存，每次调用根据operationName来执行
    */
-  public static Invocation forConsumer(ReferenceConfig referenceConfig, SchemaMeta schemaMeta, String operationName,
+  public static Invocation forConsumer(ReferenceConfig referenceConfig, SchemaMeta schemaMeta, String operationId,
       Object[] swaggerArguments) {
-    OperationMeta operationMeta = schemaMeta.ensureFindOperation(operationName);
-    return forConsumer(referenceConfig, operationMeta, swaggerArguments);
-  }
-
-  /*
-   * 为tcc场景提供的快捷方式,consumer端使用
-   */
-  public static Invocation forConsumer(ReferenceConfig referenceConfig, String operationQualifiedName,
-      Object[] swaggerArguments) {
-    MicroserviceMeta microserviceMeta = referenceConfig.getMicroserviceMeta();
-    OperationMeta operationMeta = microserviceMeta.ensureFindOperation(operationQualifiedName);
+    OperationMeta operationMeta = schemaMeta.ensureFindOperation(operationId);
     return forConsumer(referenceConfig, operationMeta, swaggerArguments);
   }
 

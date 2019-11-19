@@ -24,6 +24,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.event.InvocationBusinessMethodFinishEvent;
@@ -41,6 +42,9 @@ import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
+import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
+
+import com.fasterxml.jackson.databind.JavaType;
 
 public class Invocation extends SwaggerInvocation {
   private static final Collection<TraceIdGenerator> TRACE_ID_GENERATORS = loadTraceIdGenerators();
@@ -52,6 +56,8 @@ public class Invocation extends SwaggerInvocation {
   }
 
   private ReferenceConfig referenceConfig;
+
+  private ResponsesMeta responsesMeta;
 
   // 本次调用对应的schemaMeta
   private SchemaMeta schemaMeta;
@@ -126,6 +132,7 @@ public class Invocation extends SwaggerInvocation {
   public Invocation(ReferenceConfig referenceConfig, OperationMeta operationMeta, Object[] swaggerArguments) {
     this.invocationType = InvocationType.CONSUMER;
     this.referenceConfig = referenceConfig;
+    this.responsesMeta = operationMeta.getResponsesMeta();
     init(operationMeta, swaggerArguments);
   }
 
@@ -153,8 +160,8 @@ public class Invocation extends SwaggerInvocation {
   }
 
   public List<Handler> getHandlerChain() {
-    return (InvocationType.CONSUMER.equals(invocationType)) ? schemaMeta.getConsumerHandlerChain()
-        : schemaMeta.getProviderHandlerChain();
+    return (InvocationType.CONSUMER.equals(invocationType)) ? schemaMeta.getMicroserviceMeta().getConsumerHandlerChain()
+        : schemaMeta.getMicroserviceMeta().getProviderHandlerChain();
   }
 
   public Executor getResponseExecutor() {
@@ -213,9 +220,6 @@ public class Invocation extends SwaggerInvocation {
   }
 
   public String getConfigTransportName() {
-    if (operationMeta.getTransport() != null) {
-      return operationMeta.getTransport();
-    }
     return referenceConfig.getTransport();
   }
 
@@ -231,8 +235,20 @@ public class Invocation extends SwaggerInvocation {
     return schemaMeta.getMicroserviceMeta().getAppId();
   }
 
+  public MicroserviceMeta getMicroserviceMeta() {
+    return schemaMeta.getMicroserviceMeta();
+  }
+
   public String getMicroserviceVersionRule() {
     return referenceConfig.getVersionRule();
+  }
+
+  public void setResponsesMeta(ResponsesMeta responsesMeta) {
+    this.responsesMeta = responsesMeta;
+  }
+
+  public JavaType findResponseType(int statusCode) {
+    return responsesMeta.findResponseType(statusCode);
   }
 
   public String getInvocationQualifiedName() {

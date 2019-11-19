@@ -18,6 +18,7 @@ package org.apache.servicecomb.core.executor;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -52,7 +53,7 @@ public class TestThreadPoolExecutorEx {
   }
 
   ThreadPoolExecutorEx executorEx = new ThreadPoolExecutorEx(2, 4, 60, TimeUnit.SECONDS,
-      new LinkedBlockingQueueEx<>(2));
+      new LinkedBlockingQueueEx<>(2), Executors.defaultThreadFactory());
 
   public TestTask submitTask() {
     TestTask task = new TestTask();

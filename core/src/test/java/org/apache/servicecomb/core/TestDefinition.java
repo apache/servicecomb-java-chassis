@@ -17,50 +17,19 @@
 
 package org.apache.servicecomb.core;
 
-import org.apache.servicecomb.core.definition.CommonService;
-import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.junit.Assert;
-import org.junit.Test;
-
 public class TestDefinition {
-  @Test
-  public void testCommonService() {
-    CommonService<String> oCommonService = new CommonService<>();
-
-    boolean validCreateOperation = true;
-    try {
-      oCommonService.createOperationMgr("test1");
-    } catch (Exception e) {
-      validCreateOperation = false;
-    }
-    Assert.assertTrue(validCreateOperation);
-    oCommonService.setName("test1");
-    boolean validRegOperation = true;
-    try {
-      oCommonService.regOperation("oName1", "op1");
-    } catch (Exception e) {
-      validRegOperation = false;
-    }
-    Assert.assertTrue(validRegOperation);
-
-    Assert.assertEquals(1, oCommonService.getOperations().size());
-    Assert.assertEquals("test1", oCommonService.getName());
-    Assert.assertEquals("op1", oCommonService.findOperation("oName1"));
-    Assert.assertEquals("op1", oCommonService.ensureFindOperation("oName1"));
-  }
-
-  @Test
-  public void testMicroServiceMeta() {
-    MicroserviceMeta oMicroMeta = new MicroserviceMeta("app:micro1");
-    Assert.assertEquals(0, oMicroMeta.getSchemaMetas().size());
-    Assert.assertEquals(0, oMicroMeta.getOperations().size());
-    Assert.assertEquals("micro1", oMicroMeta.getShortName());
-    Assert.assertEquals("app:micro1", oMicroMeta.getName());
-    try {
-      oMicroMeta.putExtData("key1", new String("value1"));
-      Assert.assertNotEquals(null, oMicroMeta.getExtData("key1"));
-    } catch (Exception e) {
-      Assert.assertNotNull(e);
-    }
-  }
+//  @Test
+//  public void testMicroServiceMeta() {
+//    MicroserviceMeta oMicroMeta = new MicroserviceMeta("app:micro1");
+//    Assert.assertEquals(0, oMicroMeta.getSchemaMetas().size());
+//    Assert.assertEquals(0, oMicroMeta.getOperations().size());
+//    Assert.assertEquals("micro1", oMicroMeta.getShortName());
+//    Assert.assertEquals("app:micro1", oMicroMeta.getName());
+//    try {
+//      oMicroMeta.putExtData("key1", new String("value1"));
+//      Assert.assertNotEquals(null, oMicroMeta.getExtData("key1"));
+//    } catch (Exception e) {
+//      Assert.assertNotNull(e);
+//    }
+//  }
 }

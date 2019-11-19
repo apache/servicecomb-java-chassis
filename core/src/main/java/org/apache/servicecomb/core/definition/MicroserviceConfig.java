@@ -14,16 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.core.definition;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.apache.servicecomb.config.inject.InjectProperties;
+import org.apache.servicecomb.config.inject.InjectProperty;
+import org.apache.servicecomb.serviceregistry.version.VersionRuleUtils;
 
-public class TestSchemaUtils {
-  @Test
-  public void generatePackageName() {
-    MicroserviceMeta microserviceMeta = new MicroserviceMeta("app:ms");
-    Assert.assertEquals("cse.gen.app.ms.schemaId", SchemaUtils.generatePackageName(microserviceMeta, "schemaId"));
+@InjectProperties(prefix = "servicecomb")
+public class MicroserviceConfig {
+  @InjectProperty(keys = {
+      "servicecomb.references.version-rule.${service}",
+      "servicecomb.references.${service}.version-rule", // Deprecated
+      "servicecomb.references.version-rule"
+  }, defaultValue = "0.0.0.0+")
+  private String versionRule;
+
+  public String getVersionRule() {
+    return versionRule;
+  }
+
+  public void setVersionRule(String versionRule) {
+    this.versionRule = VersionRuleUtils.getOrCreate(versionRule).getVersionRule();
   }
 }

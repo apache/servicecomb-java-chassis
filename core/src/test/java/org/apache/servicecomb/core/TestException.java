@@ -36,7 +36,8 @@ public class TestException {
 
   @Test
   public void testExceptionUtils() {
-    CseException oExeception = ExceptionUtils.createCseException("servicecomb.handler.ref.not.exist", new String("test"));
+    CseException oExeception = ExceptionUtils
+        .createCseException("servicecomb.handler.ref.not.exist", new String("test"));
     Assert.assertEquals("servicecomb.handler.ref.not.exist", oExeception.getCode());
 
     oExeception =
@@ -45,9 +46,6 @@ public class TestException {
 
     oExeception = ExceptionUtils.producerOperationNotExist("servicecomb.error", "unit-testing");
     Assert.assertEquals("servicecomb.producer.operation.not.exist", oExeception.getCode());
-
-    oExeception = ExceptionUtils.operationIdInvalid("servicecomb.double.error", "what path are you talking about");
-    Assert.assertEquals("servicecomb.schema.operation.id.invalid", oExeception.getCode());
 
     oExeception = ExceptionUtils.handlerRefNotExist("servicecomb.double.error");
     Assert.assertEquals("servicecomb.handler.ref.not.exist", oExeception.getCode());

@@ -16,5 +16,4 @@
 ## ---------------------------------------------------------------------------
 
 servicecomb-config-order: -500
-servicecomb:
-  microserviceVersionFactory: org.apache.servicecomb.core.definition.PrivateMicroserviceVersionMetaFactory
+

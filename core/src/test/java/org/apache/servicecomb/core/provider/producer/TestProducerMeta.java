@@ -23,10 +23,9 @@ public class TestProducerMeta {
   @Test
   public void test1() {
     Object instance = new Object();
-    ProducerMeta meta = new ProducerMeta("id", instance, instance.getClass());
+    ProducerMeta meta = new ProducerMeta("id", instance);
     Assert.assertEquals("id", meta.getSchemaId());
     Assert.assertEquals(instance, meta.getInstance());
-    Assert.assertEquals(Object.class, meta.getInstanceClass());
   }
 
   @Test
@@ -37,8 +36,5 @@ public class TestProducerMeta {
 
     meta.setInstance(1);
     Assert.assertEquals(1, meta.getInstance());
-
-    meta.setInstanceClass(Integer.class);
-    Assert.assertEquals(Integer.class, meta.getInstanceClass());
   }
 }

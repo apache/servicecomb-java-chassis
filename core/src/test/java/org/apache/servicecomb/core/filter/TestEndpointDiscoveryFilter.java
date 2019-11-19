@@ -18,11 +18,11 @@
 package org.apache.servicecomb.core.filter;
 
 import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.core.transport.TransportManager;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
 import org.junit.After;
@@ -41,18 +41,16 @@ public class TestEndpointDiscoveryFilter {
   @Mocked
   Invocation invocation;
 
-  @Mocked
-  TransportManager transportManager;
+  SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();
 
   @Before
   public void setup() {
-    CseContext.getInstance().setTransportManager(transportManager);
     context.setInputParameters(invocation);
   }
 
   @After
   public void teardown() {
-    CseContext.getInstance().setTransportManager(null);
+    scbEngine.destroy();
   }
 
   @Test
@@ -74,13 +72,6 @@ public class TestEndpointDiscoveryFilter {
 
   @Test
   public void createEndpointNullTransport() {
-    new Expectations() {
-      {
-        transportManager.findTransport(Const.RESTFUL);
-        result = null;
-      }
-    };
-
     Assert.assertNull(filter.createEndpoint(Const.RESTFUL, "", null));
   }
 
@@ -89,9 +80,9 @@ public class TestEndpointDiscoveryFilter {
     String endpoint = "rest://ip:port";
     Object address = new Object();
 
-    new Expectations() {
+    new Expectations(scbEngine.getTransportManager()) {
       {
-        transportManager.findTransport(Const.RESTFUL);
+        scbEngine.getTransportManager().findTransport(Const.RESTFUL);
         result = transport;
         transport.parseAddress(endpoint);
         result = address;
