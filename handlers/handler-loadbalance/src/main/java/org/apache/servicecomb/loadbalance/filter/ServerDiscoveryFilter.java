@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.loadbalance.filter;
 
-import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.filter.EndpointDiscoveryFilter;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
@@ -31,7 +31,7 @@ public class ServerDiscoveryFilter extends EndpointDiscoveryFilter {
 
   @Override
   protected Object createEndpoint(String transportName, String endpoint, MicroserviceInstance instance) {
-    Transport transport = CseContext.getInstance().getTransportManager().findTransport(transportName);
+    Transport transport = SCBEngine.getInstance().getTransportManager().findTransport(transportName);
     if (transport == null) {
       LOGGER.info("not deployed transport {}, ignore {}.", transportName, endpoint);
       return null;
