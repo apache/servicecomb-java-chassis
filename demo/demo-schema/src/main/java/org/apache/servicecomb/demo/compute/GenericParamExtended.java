@@ -26,7 +26,11 @@ public class GenericParamExtended<T> extends GenericParam<T> {
     return strExtended;
   }
 
-  public GenericParamExtended<T> setStrExtended(String strExtended) {
+  public void setStrExtended(String strExtended) {
+    this.strExtended = strExtended;
+  }
+
+  public GenericParamExtended<T> strExtended(String strExtended) {
     this.strExtended = strExtended;
     return this;
   }
@@ -35,14 +39,18 @@ public class GenericParamExtended<T> extends GenericParam<T> {
     return intExtended;
   }
 
-  public GenericParamExtended<T> setIntExtended(int intExtended) {
+  public void setIntExtended(int intExtended) {
+    this.intExtended = intExtended;
+  }
+
+  public GenericParamExtended<T> intExtended(int intExtended) {
     this.intExtended = intExtended;
     return this;
   }
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder("GenericParamExtended{");
+    StringBuilder sb = new StringBuilder("GenericParamExtended{");
     sb.append("strExtended='").append(strExtended).append('\'');
     sb.append(", intExtended=").append(intExtended);
     sb.append(", super=").append(super.toString());

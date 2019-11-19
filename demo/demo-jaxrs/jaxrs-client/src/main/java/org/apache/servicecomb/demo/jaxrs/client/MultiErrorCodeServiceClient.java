@@ -22,7 +22,6 @@ import java.util.Map;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.multiErrorCode.MultiRequest;
@@ -30,6 +29,7 @@ import org.apache.servicecomb.demo.multiErrorCode.MultiResponse200;
 import org.apache.servicecomb.demo.multiErrorCode.MultiResponse400;
 import org.apache.servicecomb.demo.multiErrorCode.MultiResponse500;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
@@ -57,7 +57,7 @@ public class MultiErrorCodeServiceClient {
 
   public static void runTest() {
     for (String transport : DemoConst.transports) {
-      CseContext.getInstance().getConsumerProviderManager().setTransport("jaxrs", transport);
+      ArchaiusUtils.setProperty("servicecomb.reference.transport.jaxrs", transport);
 
       testErrorCode();
       testErrorCodeWithHeader();
@@ -108,6 +108,7 @@ public class MultiErrorCodeServiceClient {
       TestMgr.check(e.getRawStatusCode(), 590);
     }
 
+    // not recommend
     body = "{\"message\":\"hello\",\"code\":\"200\"}";
     entity = new HttpEntity<>(body, headers);
     result = template

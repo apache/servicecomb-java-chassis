@@ -22,7 +22,7 @@ info:
   title: cse test
   version: 1.0.0
   x-java-interface: org.apache.servicecomb.demo.server.Test
-  
+
 # the domain of the service
 #host: api.uber.com
 
@@ -34,7 +34,7 @@ info:
 basePath: /pojo/rest
 produces:
   - application/json
-  
+
 paths:
   /testStringArray:
     get:
@@ -49,7 +49,7 @@ paths:
       responses:
         "200":
           description: asdf
-          schema: 
+          schema:
             type: string
   /testStatic:
     get:
@@ -62,7 +62,7 @@ paths:
       responses:
         "200":
           description: asdf
-          schema: 
+          schema:
             type: string
     post:
       operationId: postTestStatic
@@ -75,7 +75,7 @@ paths:
       responses:
         "200":
           description: asdf
-          schema: 
+          schema:
             type: string
     patch:
       operationId: patchTestStatic
@@ -88,7 +88,7 @@ paths:
       responses:
         "200":
           description: asdf
-          schema: 
+          schema:
             type: string
   /testException/{code}:
     get:
@@ -102,21 +102,21 @@ paths:
       responses:
         "200":
           description: asdf
-          schema: 
+          schema:
             type: string
         456:
           description: asdf
-          schema: 
+          schema:
             type: string
         556:
           description: asdf
-          schema: 
+          schema:
             type: array
             items:
               type: string
         557:
           description: asdf
-          schema: 
+          schema:
             type: array
             items:
               type: array
@@ -135,10 +135,10 @@ paths:
           in: body
           schema:
             $ref: '#/definitions/User'
-      responses: 
+      responses:
         "200":
           description: asdf
-          schema: 
+          schema:
             $ref: '#/definitions/User'
         default:
           description: asf
@@ -148,15 +148,15 @@ paths:
     post:
       operationId: wrapParam
       parameters:
-        - name: TestRequest
+        - name: request
           in: body
           required: false
-          schema: 
+          schema:
             $ref: '#/definitions/TestRequest'
-      responses: 
+      responses:
         "200":
           description: asdf
-          schema: 
+          schema:
             $ref: '#/definitions/User'
         default:
           description: asf

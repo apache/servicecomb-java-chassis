@@ -26,8 +26,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import io.swagger.annotations.Api;
 
 @RestSchema(schemaId = "contentTypeSpringmvcOverwrite")
-@RequestMapping(value = "/contentTypeSpringmvcOverwrite", produces = MediaType.TEXT_PLAIN)
 @Api(produces = MediaType.APPLICATION_JSON)
+@RequestMapping(value = "/contentTypeSpringmvcOverwrite", produces = MediaType.TEXT_PLAIN)
 public class ContentTypeSpringmvcOverwrite {
   @RequestMapping(value = "/testResponseTypeOverwrite", method = RequestMethod.GET)
   public String testResponseTypeOverwrite() {

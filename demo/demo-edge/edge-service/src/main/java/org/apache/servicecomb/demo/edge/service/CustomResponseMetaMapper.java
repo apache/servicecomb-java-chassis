@@ -20,18 +20,16 @@ package org.apache.servicecomb.demo.edge.service;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
 import org.apache.servicecomb.swagger.invocation.response.ResponseMetaMapper;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 
 public class CustomResponseMetaMapper implements ResponseMetaMapper {
-  private final static Map<Integer, ResponseMeta> CODES = new HashMap<>(1);
+  private final static Map<Integer, JavaType> CODES = new HashMap<>(1);
 
   static {
-    ResponseMeta meta = new ResponseMeta();
-    meta.setJavaType(SimpleType.constructUnsafe(IllegalStateErrorData.class));
-    CODES.put(500, meta);
+    CODES.put(500, SimpleType.constructUnsafe(IllegalStateErrorData.class));
   }
 
   @Override
@@ -40,7 +38,7 @@ public class CustomResponseMetaMapper implements ResponseMetaMapper {
   }
 
   @Override
-  public Map<Integer, ResponseMeta> getMapper() {
+  public Map<Integer, JavaType> getMapper() {
     return CODES;
   }
 }

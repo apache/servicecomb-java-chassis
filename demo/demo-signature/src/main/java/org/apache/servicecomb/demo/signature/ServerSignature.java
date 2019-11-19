@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.demo.signature;
 
-import javax.ws.rs.core.Response.Status;
-
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -27,8 +25,6 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Objects;
 
 public class ServerSignature implements HttpServerFilter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServerSignature.class);
@@ -48,14 +44,14 @@ public class ServerSignature implements HttpServerFilter {
 
   @Override
   public Response afterReceiveRequest(Invocation invocation, HttpServletRequestEx requestEx) {
-    String signature = SignatureUtils.genSignature(requestEx);
-    String clientSignature = requestEx.getHeader("signature");
-    LOGGER.debug("check request signature, client: {}, server: {}.", clientSignature, signature);
-    if (!Objects.equals(signature, clientSignature)) {
-      LOGGER.error("check request signature failed: {}", invocation.getInvocationQualifiedName());
-      return Response
-          .create(Status.UNAUTHORIZED, "check request signature failed: " + invocation.getInvocationQualifiedName());
-    }
+//    String signature = SignatureUtils.genSignature(requestEx);
+//    String clientSignature = requestEx.getHeader("signature");
+//    LOGGER.debug("check request signature, client: {}, server: {}.", clientSignature, signature);
+//    if (!signature.equals(clientSignature)) {
+//      LOGGER.error("check request signature failed: {}", invocation.getInvocationQualifiedName());
+//      return Response
+//          .create(Status.UNAUTHORIZED, "check request signature failed: " + invocation.getInvocationQualifiedName());
+//    }
 
     return null;
   }

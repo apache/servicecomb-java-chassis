@@ -21,9 +21,9 @@ import java.util.ArrayList;
 
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.jaxrs.server.validation.ValidationModel;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.web.client.RestTemplate;
@@ -35,7 +35,7 @@ public class ValidationServiceClient {
 
   public static void run() {
     // highway do not support this feature
-    CseContext.getInstance().getConsumerProviderManager().setTransport("jaxrs", "rest");
+    ArchaiusUtils.setProperty("servicecomb.reference.transport.jaxrs", "rest");
     testValidation();
   }
 
@@ -70,8 +70,8 @@ public class ValidationServiceClient {
       TestMgr.check(e.getErrorData().toString().contains("propertyPath=errorCode.request.members"), true);
     }
 
-    String strResult = template.getForObject(urlPrefix + "/validateQuery?name=", String.class);
-    TestMgr.check(strResult, "");
+    String strResult = template.getForObject(urlPrefix + "/validateQuery?name=a", String.class);
+    TestMgr.check(strResult, "a");
 
     try {
       template.getForObject(urlPrefix + "/validateQuery", String.class);

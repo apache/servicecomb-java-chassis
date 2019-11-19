@@ -14,9 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.demo.perf;
 
-package org.apache.servicecomb.demo.crossapp;
+import java.util.Date;
 
-public interface HelloWorld {
-  String sayHello();
+public class Wjm {
+  public Wjm() {
+    System.out.println("wjm:" + new Date());
+  }
 }

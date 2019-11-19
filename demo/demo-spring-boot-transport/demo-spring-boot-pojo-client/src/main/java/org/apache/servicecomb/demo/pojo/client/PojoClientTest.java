@@ -19,13 +19,13 @@ package org.apache.servicecomb.demo.pojo.client;
 
 import java.util.Arrays;
 
-import org.apache.servicecomb.core.CseContext;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.server.Test;
 import org.apache.servicecomb.demo.server.TestRequest;
 import org.apache.servicecomb.demo.server.User;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +56,7 @@ public class PojoClientTest {
     String microserviceName = "pojo";
 
     for (String transport : DemoConst.transports) {
-      CseContext.getInstance().getConsumerProviderManager().setTransport(microserviceName, transport);
+      ArchaiusUtils.setProperty("servicecomb.reference.transport." + microserviceName, transport);
       TestMgr.setMsg(microserviceName, transport);
       LOGGER.info("test {}, transport {}", microserviceName, transport);
 
@@ -110,19 +110,8 @@ public class PojoClientTest {
   }
 
   private static void testNull(Test test) {
-    try {
-      test.getTestString(null);
-      TestMgr.fail("Should throw exception");
-    } catch (Throwable e) {
-      TestMgr.checkException(e, "Parameter is not valid for operation");
-    }
-
-    try {
-      test.wrapParam(null);
-      TestMgr.fail("Should throw exception");
-    } catch (Throwable e) {
-      TestMgr.checkException(e, "Parameter is not valid for operation");
-    }
+    TestMgr.check("code is 'null'", test.getTestString(null));
+    TestMgr.check(null, test.wrapParam(null));
   }
 
   private static void testChinese(Test test) {

@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
 import javax.ws.rs.QueryParam;
@@ -34,6 +33,7 @@ import javax.xml.ws.Holder;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.demo.EmptyObject;
 import org.apache.servicecomb.demo.Generic;
@@ -46,6 +46,7 @@ import org.apache.servicecomb.demo.ignore.OutputModelForTestIgnore;
 import org.apache.servicecomb.demo.jaxbbean.JAXBPerson;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.demo.springmvc.decoderesponse.DecodeTestResponse;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.metrics.core.MetricsBootListener;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
@@ -364,8 +365,8 @@ public class CodeFirstSpringmvc {
     return form1 + form2;
   }
 
-  @Inject
-  MetricsBootListener metricsBootListener;
+  MetricsBootListener metricsBootListener = SPIServiceUtils
+      .getTargetService(BootListener.class, MetricsBootListener.class);
 
   //Only for Prometheus integration test
   @RequestMapping(path = "/prometheusForTest", method = RequestMethod.GET)
@@ -497,10 +498,10 @@ public class CodeFirstSpringmvc {
    */
   @PostMapping(path = "/checkQueryObject")
   public String checkQueryObject(Person person, @RequestParam(name = "otherName") String otherName,
-      InvocationContext invocationContext, @RequestParam(name = "name") String name, @RequestBody Person requestBody) {
+      InvocationContext invocationContext, @RequestBody Person requestBody) {
     LOGGER.info("checkQueryObject() is called!");
     return "invocationContext_is_null=" + (null == invocationContext) + ",person="
-        + person + ",otherName=" + otherName + ",name=" + name + ",requestBody=" + requestBody;
+        + person + ",otherName=" + otherName + ",name=" + person.getName() + ",requestBody=" + requestBody;
   }
 
   /**
@@ -509,9 +510,9 @@ public class CodeFirstSpringmvc {
    */
   @PutMapping(path = "/checkQueryGenericObject")
   public String checkQueryGenericObject(@RequestBody GenericParam<Person> requestBody,
-      GenericParamWithJsonIgnore<Person> generic, String str) {
+      GenericParamWithJsonIgnore<Person> generic) {
     LOGGER.info("checkQueryGenericObject() is called!");
-    return "str=" + str + ",generic=" + generic + ",requestBody=" + requestBody;
+    return "str=" + generic.getStr() + ",generic=" + generic + ",requestBody=" + requestBody;
   }
 
   /**
@@ -519,10 +520,10 @@ public class CodeFirstSpringmvc {
    * The same for those simple type field inherited from the parent class.
    */
   @PutMapping(path = "/checkQueryGenericString")
-  public String checkQueryGenericString(String str, @RequestBody GenericParam<Person> requestBody,
+  public String checkQueryGenericString(@RequestBody GenericParam<Person> requestBody,
       GenericParamExtended<String> generic) {
     LOGGER.info("checkQueryGenericObject() is called!");
-    return "str=" + str + ",generic=" + generic + ",requestBody=" + requestBody;
+    return "str=" + generic.getStr() + ",generic=" + generic + ",requestBody=" + requestBody;
   }
 
   @GetMapping(path = "/testDelay")

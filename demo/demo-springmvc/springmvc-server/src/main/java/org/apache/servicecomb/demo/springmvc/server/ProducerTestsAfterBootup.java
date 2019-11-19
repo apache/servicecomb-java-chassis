@@ -18,13 +18,12 @@
 package org.apache.servicecomb.demo.springmvc.server;
 
 import org.apache.servicecomb.core.BootListener;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.core.definition.schema.ProducerSchemaFactory;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -42,16 +41,10 @@ public class ProducerTestsAfterBootup implements BootListener {
 
   private ObjectWriter writer = Yaml.pretty();
 
-  @Autowired
-  private ProducerSchemaFactory factory;
-
-  public void testSchemaNotChange() {
+  public void testSchemaNotChange(SCBEngine scbEngine) {
     LOGGER.info("ProducerTestsAfterBootup testing start");
     //we can not set microserviceName any more
-    SchemaMeta meta =
-        factory.getOrCreateProducerSchema("test1",
-            CodeFirstSpringmvcForSchema.class,
-            new CodeFirstSpringmvcForSchema());
+    SchemaMeta meta = scbEngine.getProducerProviderManager().registerSchema("test1", new CodeFirstSpringmvcForSchema());
     String codeFirst = getSwaggerContent(meta.getSwagger());
     TestMgr.check("608f6cbb3554839de311d90d16a44ffc41ef66575101e172eb54ccc255e8675d",
         RegistryUtils.calcSchemaSummary(codeFirst));
@@ -73,7 +66,7 @@ public class ProducerTestsAfterBootup implements BootListener {
   @Override
   public void onBootEvent(BootEvent event) {
     if (event.getEventType() == BootListener.EventType.AFTER_REGISTRY) {
-      testSchemaNotChange();
+      testSchemaNotChange(event.getScbEngine());
       testRegisteredBasePath();
       if (!TestMgr.isSuccess()) {
         TestMgr.summary();
