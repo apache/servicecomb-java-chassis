@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -41,7 +42,8 @@ import org.apache.servicecomb.config.priority.PriorityProperty;
 import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.core.transport.TransportManager;
+import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.core.definition.CoreMetaUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
@@ -50,6 +52,7 @@ import org.apache.servicecomb.inspector.internal.model.PriorityPropertyView;
 import org.apache.servicecomb.inspector.internal.swagger.SchemaFormat;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.swagger.engine.SwaggerProducer;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -83,8 +86,8 @@ public class TestInspectorImpl {
   }
 
   private static InspectorImpl initInspector(String urlPrefix) {
-    SCBEngine scbEngine = new SCBEngine();
-    scbEngine.setTransportManager(new TransportManager());
+    SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();
+    scbEngine.getTransportManager().clearTransportBeforeInit();
 
     if (StringUtils.isNotEmpty(urlPrefix)) {
       Map<String, Transport> transportMap = Deencapsulation.getField(scbEngine.getTransportManager(), "transportMap");
@@ -92,14 +95,17 @@ public class TestInspectorImpl {
       System.setProperty(URL_PREFIX, urlPrefix);
     }
 
-    InspectorConfig inspectorConfig = scbEngine.getPriorityPropertyManager().createConfigObject(InspectorConfig.class);
-    return new InspectorImpl(scbEngine, inspectorConfig, new LinkedHashMap<>(schemas));
+    scbEngine.run();
+    SwaggerProducer producer = CoreMetaUtils
+        .getSwaggerProducer(scbEngine.getProducerMicroserviceMeta().findSchemaMeta("inspector"));
+    InspectorImpl inspector = (InspectorImpl) producer.getProducerInstance();
+    return new InspectorImpl(scbEngine, inspector.getInspectorConfig(), new LinkedHashMap<>(schemas));
   }
 
   @AfterClass
   public static void teardown() {
-    inspector.getScbEngine().getPriorityPropertyManager().unregisterConfigObject(inspector.getInspectorConfig());
     ArchaiusUtils.resetConfig();
+    SCBEngine.getInstance().destroy();
   }
 
   private Map<String, String> unzip(InputStream is) throws IOException {
@@ -328,15 +334,17 @@ public class TestInspectorImpl {
     });
 
     List<DynamicPropertyView> views = inspector.dynamicProperties();
-    Assert.assertThat(views.stream().map(DynamicPropertyView::getCallbackCount).collect(Collectors.toList()),
-        Matchers.contains(1, 0, 0, 0));
-    Assert.assertThat(views.stream().map(DynamicPropertyView::getKey).collect(Collectors.toList()),
-        Matchers.contains("yyy", "zzz", "servicecomb.inspector.enabled",
-            "servicecomb.inspector.swagger.html.asciidoctorCss"));
+    Map<String, DynamicPropertyView> viewMap = views.stream()
+        .collect(Collectors.toMap(DynamicPropertyView::getKey, Function.identity()));
+    Assert.assertEquals(1, viewMap.get("yyy").getCallbackCount());
+    Assert.assertEquals(0, viewMap.get("zzz").getCallbackCount());
+    Assert.assertEquals(0, viewMap.get("servicecomb.inspector.enabled").getCallbackCount());
+    Assert.assertEquals(0, viewMap.get("servicecomb.inspector.swagger.html.asciidoctorCss").getCallbackCount());
 
+    int count = ConfigUtil.getAllDynamicProperties().size();
     ConfigUtil.getAllDynamicProperties().remove("yyy");
     ConfigUtil.getAllDynamicProperties().remove("zzz");
-    Assert.assertEquals(2, ConfigUtil.getAllDynamicProperties().size());
+    Assert.assertEquals(count - 2, ConfigUtil.getAllDynamicProperties().size());
   }
 
   @Test
