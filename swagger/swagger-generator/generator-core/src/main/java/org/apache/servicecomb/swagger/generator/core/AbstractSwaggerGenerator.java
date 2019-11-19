@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 
 import javax.ws.rs.core.MediaType;
 
@@ -207,10 +206,15 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
       return;
     }
 
-    if (cls.isInterface() && !isInterfaceReactive(cls)) {
+    if (cls.isInterface()) {// && !isInterfaceReactive(cls)) {
       info.setVendorExtension(SwaggerConst.EXT_JAVA_INTF, cls.getName());
       return;
     }
+
+//    if (cls.getInterfaces().length > 0) {
+//      info.setVendorExtension(SwaggerConst.EXT_JAVA_INTF, cls.getInterfaces()[0].getName());
+//      return;
+//    }
 
     if (StringUtils.isEmpty(swaggerGeneratorFeature.getPackageName())) {
       return;
@@ -220,22 +224,22 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
     info.setVendorExtension(SwaggerConst.EXT_JAVA_INTF, intfName);
   }
 
-  /**
-   * to avoid old invocation bug.
-   * @param interfaceCls
-   * @return
-   */
-  private boolean isInterfaceReactive(Class<?> interfaceCls) {
-    for (Method method : interfaceCls.getDeclaredMethods()) {
-      if (isSkipMethod(method)) {
-        continue;
-      }
-      if (CompletableFuture.class.isAssignableFrom(method.getReturnType())) {
-        return true;
-      }
-    }
-    return false;
-  }
+//  /**
+//   * to avoid old invocation bug.
+//   * @param interfaceCls
+//   * @return
+//   */
+//  private boolean isInterfaceReactive(Class<?> interfaceCls) {
+//    for (Method method : interfaceCls.getDeclaredMethods()) {
+//      if (isSkipMethod(method)) {
+//        continue;
+//      }
+//      if (CompletableFuture.class.isAssignableFrom(method.getReturnType())) {
+//        return true;
+//      }
+//    }
+//    return false;
+//  }
 
   @Override
   public void replaceMethodWhiteList(String... methodNames) {

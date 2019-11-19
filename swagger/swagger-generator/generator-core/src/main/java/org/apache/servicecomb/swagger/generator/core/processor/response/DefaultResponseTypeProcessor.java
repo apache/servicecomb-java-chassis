@@ -21,6 +21,8 @@ import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.fin
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import javax.servlet.http.Part;
+
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.ResponseTypeProcessor;
@@ -79,6 +81,10 @@ public class DefaultResponseTypeProcessor implements ResponseTypeProcessor {
     Type responseType = extractResponseType(swaggerGenerator, operationGenerator, genericResponseType);
     if (responseType == null || ReflectionUtils.isVoid(responseType)) {
       return null;
+    }
+
+    if (responseType instanceof Class && Part.class.isAssignableFrom((Class<?>) responseType)) {
+      responseType = Part.class;
     }
     SwaggerUtils.addDefinitions(swaggerGenerator.getSwagger(), responseType);
     Property property = ModelConverters.getInstance().readAsProperty(responseType);
