@@ -25,7 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.CseContext;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
@@ -42,11 +42,11 @@ public class ServletRestDispatcher {
 
   public void service(HttpServletRequest request, HttpServletResponse response) {
     if (transport == null) {
-      transport = CseContext.getInstance().getTransportManager().findTransport(Const.RESTFUL);
+      transport = SCBEngine.getInstance().getTransportManager().findTransport(Const.RESTFUL);
     }
 
     // 异步场景
-    final AsyncContext asyncCtx = request.startAsync();
+    AsyncContext asyncCtx = request.startAsync();
     asyncCtx.addListener(restAsyncListener);
     asyncCtx.setTimeout(ServletConfig.getAsyncServletTimeout());
 

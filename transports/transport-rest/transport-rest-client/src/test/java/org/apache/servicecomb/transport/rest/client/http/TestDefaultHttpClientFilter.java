@@ -37,10 +37,10 @@ import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.SimpleType;
 
 import io.vertx.core.MultiMap;
@@ -48,7 +48,6 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.core.buffer.impl.BufferImpl;
 import io.vertx.core.http.CaseInsensitiveHeaders;
 import mockit.Expectations;
-import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
@@ -125,7 +124,7 @@ public class TestDefaultHttpClientFilter {
 
   @Test
   public void extractResult_decodeError(@Mocked Invocation invocation, @Mocked ReadStreamPart part,
-      @Mocked OperationMeta operationMeta, @Mocked ResponseMeta responseMeta,
+      @Mocked OperationMeta operationMeta,
       @Mocked RestOperationMeta swaggerRestOperation,
       @Mocked HttpServletResponseEx responseEx) {
     Map<String, Object> handlerContext = new HashMap<>();
@@ -135,12 +134,10 @@ public class TestDefaultHttpClientFilter {
         result = handlerContext;
         invocation.getOperationMeta();
         result = operationMeta;
-        operationMeta.findResponseMeta(400);
-        result = responseMeta;
+        invocation.findResponseType(400);
+        result = SimpleType.constructUnsafe(Date.class);
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
         result = swaggerRestOperation;
-        responseMeta.getJavaType();
-        result = SimpleType.constructUnsafe(Date.class);
         responseEx.getStatus();
         result = 400;
         responseEx.getBodyBuffer();
@@ -173,7 +170,7 @@ public class TestDefaultHttpClientFilter {
 
   @Test
   public void extractResult_decodeError200(@Mocked Invocation invocation, @Mocked ReadStreamPart part,
-      @Mocked OperationMeta operationMeta, @Mocked ResponseMeta responseMeta,
+      @Mocked OperationMeta operationMeta,
       @Mocked RestOperationMeta swaggerRestOperation,
       @Mocked HttpServletResponseEx responseEx) {
     Map<String, Object> handlerContext = new HashMap<>();
@@ -183,12 +180,10 @@ public class TestDefaultHttpClientFilter {
         result = handlerContext;
         invocation.getOperationMeta();
         result = operationMeta;
-        operationMeta.findResponseMeta(200);
-        result = responseMeta;
+        invocation.findResponseType(200);
+        result = SimpleType.constructUnsafe(Date.class);
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
         result = swaggerRestOperation;
-        responseMeta.getJavaType();
-        result = SimpleType.constructUnsafe(Date.class);
         responseEx.getStatus();
         result = 200;
         responseEx.getBodyBuffer();
@@ -223,8 +218,7 @@ public class TestDefaultHttpClientFilter {
   public void testAfterReceiveResponseNullProduceProcessor(@Mocked Invocation invocation,
       @Mocked HttpServletResponseEx responseEx,
       @Mocked OperationMeta operationMeta,
-      @Mocked RestOperationMeta swaggerRestOperation,
-      @Injectable ResponseMeta responseMeta) throws Exception {
+      @Mocked RestOperationMeta swaggerRestOperation) throws Exception {
     CommonExceptionData data = new CommonExceptionData("abcd");
     new Expectations() {
       {
@@ -232,9 +226,7 @@ public class TestDefaultHttpClientFilter {
         result = operationMeta;
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
         result = swaggerRestOperation;
-        operationMeta.findResponseMeta(403);
-        result = responseMeta;
-        responseMeta.getJavaType();
+        invocation.findResponseType(403);
         result = SimpleType.constructUnsafe(CommonExceptionData.class);
         responseEx.getStatus();
         result = 403;
@@ -263,7 +255,6 @@ public class TestDefaultHttpClientFilter {
       @Mocked HttpServletResponseEx responseEx,
       @Mocked Buffer bodyBuffer,
       @Mocked OperationMeta operationMeta,
-      @Mocked ResponseMeta responseMeta,
       @Mocked RestOperationMeta swaggerRestOperation,
       @Mocked ProduceProcessor produceProcessor) throws Exception {
     MultiMap responseHeader = new CaseInsensitiveHeaders();
@@ -280,7 +271,7 @@ public class TestDefaultHttpClientFilter {
         result = responseHeader.getAll("b");
         swaggerRestOperation.findProduceProcessor("json");
         result = produceProcessor;
-        produceProcessor.decodeResponse(bodyBuffer, responseMeta.getJavaType());
+        produceProcessor.decodeResponse(bodyBuffer, (JavaType) any);
         result = decodedResult;
 
         invocation.getOperationMeta();

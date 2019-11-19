@@ -19,8 +19,6 @@ package org.apache.servicecomb.transport.rest.client.http;
 
 import java.util.List;
 
-import javax.servlet.http.Part;
-
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
@@ -68,6 +66,8 @@ public class RestClientInvocation {
 
   private Invocation invocation;
 
+  private RestOperationMeta restOperationMeta;
+
   private AsyncResponse asyncResp;
 
   private List<HttpClientFilter> httpClientFilters;
@@ -86,9 +86,9 @@ public class RestClientInvocation {
     this.asyncResp = asyncResp;
 
     OperationMeta operationMeta = invocation.getOperationMeta();
-    RestOperationMeta swaggerRestOperation = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
+    restOperationMeta = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
 
-    String path = this.createRequestPath(swaggerRestOperation);
+    String path = this.createRequestPath(restOperationMeta);
     IpPort ipPort = (IpPort) invocation.getEndpoint().getAddress();
 
     createRequest(ipPort, path);
@@ -194,8 +194,7 @@ public class RestClientInvocation {
   protected void handleResponse(HttpClientResponse httpClientResponse) {
     this.clientResponse = httpClientResponse;
 
-    if (HttpStatus.isSuccess(clientResponse.statusCode())
-        && Part.class.equals(invocation.getOperationMeta().getMethod().getReturnType())) {
+    if (HttpStatus.isSuccess(clientResponse.statusCode()) && restOperationMeta.isDownloadFile()) {
       ReadStreamPart part = new ReadStreamPart(httpClientWithContext.context(), httpClientResponse);
       invocation.getHandlerContext().put(RestConst.READ_STREAM_PART, part);
       processResponseBody(null);

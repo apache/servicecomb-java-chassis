@@ -21,6 +21,7 @@ import java.nio.channels.ClosedChannelException;
 import java.util.List;
 import java.util.Set;
 
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
@@ -41,7 +42,6 @@ import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogConfigurat
 import org.apache.servicecomb.transport.rest.vertx.accesslog.impl.AccessLogHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpHeaders;
 
 import com.netflix.config.DynamicPropertyFactory;
 

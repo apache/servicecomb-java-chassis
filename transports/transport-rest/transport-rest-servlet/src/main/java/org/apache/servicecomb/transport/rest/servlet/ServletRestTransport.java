@@ -28,10 +28,8 @@ import org.apache.servicecomb.transport.rest.client.RestTransportClient;
 import org.apache.servicecomb.transport.rest.client.RestTransportClientManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-@Component
 public class ServletRestTransport extends AbstractTransport {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServletRestTransport.class);
 
