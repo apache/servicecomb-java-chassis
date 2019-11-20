@@ -40,6 +40,8 @@ public class TestJaxrsConsumerResponseMapper {
 
   int status;
 
+  String reason;
+
   Object entity;
 
   Map<String, Object> headers = new LinkedHashMap<>();
@@ -53,8 +55,9 @@ public class TestJaxrsConsumerResponseMapper {
   public void setup() {
     responseBuilder = new MockUp<ResponseBuilder>() {
       @Mock
-      ResponseBuilder status(int status) {
+      ResponseBuilder status(int status, String reasonPhrase) {
         TestJaxrsConsumerResponseMapper.this.status = status;
+        TestJaxrsConsumerResponseMapper.this.reason = reasonPhrase;
         return responseBuilder;
       }
 
@@ -98,6 +101,7 @@ public class TestJaxrsConsumerResponseMapper {
     mapper.mapResponse(response);
 
     Assert.assertEquals(Status.OK.getStatusCode(), status);
+    Assert.assertEquals(Status.OK.getReasonPhrase(), reason);
     Assert.assertEquals("ret", entity);
     Assert.assertEquals(0, headers.size());
   }
