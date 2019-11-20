@@ -67,11 +67,6 @@ public class TagItem {
     this.param = param;
   }
 
-  /**
-   * map在匹配key调用
-   *
-   * @return
-   */
   @Override
   public int hashCode() {
     int result = Objects.hash(version);
@@ -81,12 +76,6 @@ public class TagItem {
     return result;
   }
 
-  /**
-   * all match map在匹配key调用
-   *
-   * @param obj
-   * @return
-   */
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -110,7 +99,7 @@ public class TagItem {
 
 
   /**
-   * 返回匹配的个数
+   * return match num
    *
    * @param item
    * @return

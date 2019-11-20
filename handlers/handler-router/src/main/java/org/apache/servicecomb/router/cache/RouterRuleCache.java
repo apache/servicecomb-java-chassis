@@ -45,65 +45,58 @@ public class RouterRuleCache {
   private static Interner<String> servicePool = Interners.newWeakInterner();
 
   /**
-   * 每次序列化额外缓存，配置更新时触发回调函数 返回false即初始化规则失败： 1. 规则解析错误 2. 规则为空
+   * cache and register callback return false when: 1. parsing error 2. rule is null
    *
    * @param targetServiceName
    * @return
    */
   public static boolean doInit(String targetServiceName) {
-    if (serviceInfoCacheMap.containsKey(targetServiceName)) {
-      return true;
-    }
-    //这里使用guava包装String.intern():因为String.intern()分配在Old Generation，容易引发fullgc
-    synchronized (servicePool.intern(targetServiceName)) {
-      //Yaml not thread-safe
-      Yaml yaml = new Yaml();
-      DynamicStringProperty ruleStr = DynamicPropertyFactory.getInstance().getStringProperty(
-          String.format(ROUTE_RULE, targetServiceName), null, () -> {
-            refresh(targetServiceName);
-            DynamicStringProperty tepRuleStr = DynamicPropertyFactory.getInstance()
-                .getStringProperty(String.format(ROUTE_RULE, targetServiceName), null);
-            if (tepRuleStr.get() == null) {
-              return;
-            }
-            try {
-              List<PolicyRuleItem> temList = Arrays
-                  .asList(yaml.loadAs(tepRuleStr.get(), PolicyRuleItem[].class));
-              RouterRuleCache.addAllRule(targetServiceName, temList);
-            } catch (Exception e) {
-              LOGGER.error("route management Serialization failed {}", e.getMessage());
-              return;
-            }
-          });
-      if (ruleStr.get() == null) {
-        return false;
+    if (!serviceInfoCacheMap.containsKey(targetServiceName)) {
+      synchronized (servicePool.intern(targetServiceName)) {
+        if (!serviceInfoCacheMap.containsKey(targetServiceName)) {
+          return true;
+        }
+        //Yaml not thread-safe
+        Yaml yaml = new Yaml();
+        DynamicStringProperty ruleStr = DynamicPropertyFactory.getInstance().getStringProperty(
+            String.format(ROUTE_RULE, targetServiceName), null, () -> {
+              refresh(targetServiceName);
+              DynamicStringProperty tepRuleStr = DynamicPropertyFactory.getInstance()
+                  .getStringProperty(String.format(ROUTE_RULE, targetServiceName), null);
+              addAllRule(targetServiceName, yaml, tepRuleStr);
+            });
+        return addAllRule(targetServiceName, yaml, ruleStr);
       }
-      try {
-        addAllRule(targetServiceName,
-            Arrays.asList(yaml.loadAs(ruleStr.get(), PolicyRuleItem[].class)));
-      } catch (Exception e) {
-        LOGGER.error("route management Serialization failed: {}", e.getMessage());
-        return false;
-      }
-      return true;
     }
+    return true;
   }
 
-  private static void addAllRule(String targetServiceName,
-      List<PolicyRuleItem> policyRuleItemList) {
+  private static boolean addAllRule(String targetServiceName, Yaml yaml,
+      DynamicStringProperty ruleStr) {
+    if (ruleStr.get() == null) {
+      return false;
+    }
+    List<PolicyRuleItem> policyRuleItemList = Arrays
+        .asList(yaml.loadAs(ruleStr.get(), PolicyRuleItem[].class));
     if (CollectionUtils.isEmpty(policyRuleItemList)) {
-      return;
+      return false;
     }
-    if (serviceInfoCacheMap.get(targetServiceName) == null) {
-      serviceInfoCacheMap.put(targetServiceName, new ServiceInfoCache());
+    try {
+      if (serviceInfoCacheMap.get(targetServiceName) == null) {
+        serviceInfoCacheMap.put(targetServiceName, new ServiceInfoCache());
+      }
+      serviceInfoCacheMap.get(targetServiceName).setAllrule(policyRuleItemList);
+      // init tagitem
+      serviceInfoCacheMap.get(targetServiceName).getAllrule().forEach(a ->
+          a.getRoute().forEach(b -> b.initTagItem())
+      );
+      // sort by precedence
+      serviceInfoCacheMap.get(targetServiceName).sortRule();
+    } catch (Exception e) {
+      LOGGER.error("route management Serialization failed: {}", e.getMessage());
+      return false;
     }
-    serviceInfoCacheMap.get(targetServiceName).setAllrule(policyRuleItemList);
-    // 这里初始化tagitem
-    serviceInfoCacheMap.get(targetServiceName).getAllrule().forEach(a ->
-        a.getRoute().forEach(b -> b.initTagItem())
-    );
-    // 按照优先级排序
-    serviceInfoCacheMap.get(targetServiceName).sortRule();
+    return true;
   }
 
   public static ConcurrentHashMap<String, ServiceInfoCache> getServiceInfoCacheMap() {

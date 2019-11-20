@@ -28,11 +28,14 @@ public class HeaderRule {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(HeaderRule.class);
 
-  //正则
   private String regex;
-  //是否区分大小写 false区分 true不区分
+
+  /**
+   * false distinct
+   * true Ignore
+   */
   private Boolean caseInsensitive = false;
-  //精准匹配
+
   private String exact;
 
   public HeaderRule() {

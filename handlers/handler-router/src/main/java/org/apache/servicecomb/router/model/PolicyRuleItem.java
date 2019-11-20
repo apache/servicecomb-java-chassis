@@ -34,7 +34,7 @@ public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
 
   private Matcher match;
 
-  // any match 只要version符合就算符合匹配规则
+  // any match
   private List<RouteItem> route;
 
   private Integer total;
@@ -45,7 +45,7 @@ public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
   }
 
   /**
-   * 如果weight和小于100，用latestVersion补充
+   * if weight is less than 100, fill with minimum version
    *
    * @param latestVersionTag
    */

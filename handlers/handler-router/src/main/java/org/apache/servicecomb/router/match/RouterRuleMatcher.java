@@ -36,7 +36,7 @@ public class RouterRuleMatcher {
   }
 
   /**
-   * 匹配到合适的rule 匹配规则即： source (目标服务名字) sourceTags （一期先不考虑） headers （匹配header字段）
+   * only match header
    *
    * @param serviceName
    * @return

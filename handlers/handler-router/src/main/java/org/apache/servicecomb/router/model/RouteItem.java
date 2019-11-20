@@ -26,12 +26,10 @@ public class RouteItem implements Comparable<RouteItem> {
 
   private Integer weight;
   /**
-   * 负载均衡参数
+   * for load balance
    */
   private Integer currentWeight = 0;
-  /**
-   * 为了提高序列化速度设置为Map 固定字段 version
-   */
+
   private Map<String, String> tags;
 
   private TagItem tagitem;

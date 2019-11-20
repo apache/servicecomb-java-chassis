@@ -26,7 +26,10 @@ import java.util.stream.Collectors;
 public class ServiceInfoCache {
 
   private List<PolicyRuleItem> allrule;
-  //用于default的情况
+
+  /**
+   * for default version
+   */
   private TagItem latestVersionTag;
 
   public ServiceInfoCache() {
