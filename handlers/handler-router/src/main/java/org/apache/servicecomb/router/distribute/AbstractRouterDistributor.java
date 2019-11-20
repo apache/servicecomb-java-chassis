@@ -51,22 +51,20 @@ public abstract class AbstractRouterDistributor<T extends Server, E> implements
 
   @Override
   public List<T> distribute(String targetServiceName, List<T> list, PolicyRuleItem invokeRule) {
-    //初始化LatestVersion
+    //init LatestVersion
     initLatestVersion(targetServiceName, list);
 
     invokeRule.check(
         RouterRuleCache.getServiceInfoCacheMap().get(targetServiceName).getLatestVersionTag());
 
-    // 建立tag list
+    // get tag list
     Map<TagItem, List<T>> versionServerMap = getDistributList(targetServiceName, list, invokeRule);
 
-    //如果没有匹配到合适的规则，直接返回最新版本的服务列表
     if (CollectionUtils.isEmpty(versionServerMap)) {
       LOGGER.debug("route management can not match any rule and route the latest version");
       return getLatestVersionList(list, targetServiceName);
     }
 
-    // 分配流量，返回结果
     TagItem targetTag = getFiltedServerTagItem(invokeRule, targetServiceName);
     if (versionServerMap.containsKey(targetTag)) {
       return versionServerMap.get(targetTag);
@@ -91,8 +89,11 @@ public abstract class AbstractRouterDistributor<T extends Server, E> implements
   }
 
   /**
-   * 1.过滤targetService 2.返回按照version和tags分配list 这里之所以需要建立Map，而不是直接遍历List来分配是因为需要考虑 “多重匹配”
-   * 因为getProperties中除了tag还有其他的无关字段
+   * 1.filter targetService
+   * 2.return map distributed by version and tags
+   * establish map is a more complicate way than direct traversal，
+   * because we need to consider multiple matches，
+   * getProperties contains other irrelevant field except tags.
    *
    * @param serviceName
    * @param list
@@ -159,7 +160,12 @@ public abstract class AbstractRouterDistributor<T extends Server, E> implements
     RouterRuleCache.getServiceInfoCacheMap().get(serviceName).setLatestVersionTag(tagitem);
   }
 
-
+  /**
+   *
+   * @param list
+   * @param targetServiceName
+   * @return
+   */
   public List<T> getLatestVersionList(List<T> list, String targetServiceName) {
     String latestV = RouterRuleCache.getServiceInfoCacheMap().get(targetServiceName)
         .getLatestVersionTag().getVersion();

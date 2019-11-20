@@ -39,13 +39,13 @@ import org.yaml.snakeyaml.Yaml;
 
 import com.netflix.config.DynamicPropertyFactory;
 
-import io.vertx.core.json.Json;
-
 public class CanaryInvokeFilter implements HttpServerFilter {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CanaryInvokeFilter.class);
 
-  private static final String PASS_HEADER = "servicecomb.router.header";
+  private static final String SERVICECOMB_ROUTER_HEADER = "servicecomb.router.header";
+
+  private static final String ROUTER_HEADER = "X-RouterContext";
 
   private static List<String> allHeader = new ArrayList<>();
 
@@ -65,7 +65,7 @@ public class CanaryInvokeFilter implements HttpServerFilter {
   }
 
   /**
-   * 透传Header需要在这里实现， 因为无法预知调用链上的服务匹配所需要header, 提供两种模式 1.取到全量的header并放到context中， 2.从配置中解析并读取
+   * pass through headers
    *
    * @param invocation
    * @param httpServletRequestEx
@@ -75,32 +75,31 @@ public class CanaryInvokeFilter implements HttpServerFilter {
   public Response afterReceiveRequest(Invocation invocation,
       HttpServletRequestEx httpServletRequestEx) {
     loadHeaders();
-    if (invocation.getContext("canary_context") != null && !CollectionUtils.isEmpty(allHeader)) {
+    if (invocation.getContext(ROUTER_HEADER) != null && !CollectionUtils.isEmpty(allHeader)) {
       Map<String, String> headerMap = getHeaderMap(httpServletRequestEx);
       try {
-        invocation.addContext("canary_context", JsonUtils.OBJ_MAPPER.writeValueAsString(headerMap));
+        invocation.addContext(ROUTER_HEADER, JsonUtils.OBJ_MAPPER.writeValueAsString(headerMap));
       } catch (JsonProcessingException e) {
         LOGGER.error("canary context serialization failed");
-        e.printStackTrace();
       }
     }
     return null;
   }
 
   /**
-   * 读配置文件Header
+   * read config and get Header
    */
   private void loadHeaders() {
     DynamicStringProperty headerStr = DynamicPropertyFactory.getInstance()
-        .getStringProperty(PASS_HEADER, null, () -> {
+        .getStringProperty(SERVICECOMB_ROUTER_HEADER, null, () -> {
           allHeader = null;
           DynamicStringProperty temHeader = DynamicPropertyFactory.getInstance()
-              .getStringProperty(PASS_HEADER, null);
+              .getStringProperty(SERVICECOMB_ROUTER_HEADER, null);
           Yaml yaml = new Yaml();
           allHeader = yaml.load(temHeader.get());
         });
     try {
-      if (allHeader != null) {
+      if (!CollectionUtils.isEmpty(allHeader)) {
         Yaml yaml = new Yaml();
         allHeader = yaml.load(headerStr.get());
       }
@@ -110,7 +109,7 @@ public class CanaryInvokeFilter implements HttpServerFilter {
   }
 
   /**
-   * 取出所用的header
+   * get header from request
    *
    * @param httpServletRequestEx
    * @return

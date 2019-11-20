@@ -22,7 +22,7 @@ package org.apache.servicecomb.router.util;
  **/
 public class VersionCompareUtil {
     /**
-     * 前者大则返回一个正数
+     * if first num is bigger then return a positive number
      *
      * @param version1
      * @param version2

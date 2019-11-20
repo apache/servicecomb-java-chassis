@@ -28,21 +28,28 @@ import org.apache.servicecomb.loadbalance.ServerListFilterExt;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import com.netflix.config.DynamicPropertyFactory;
 
-import io.vertx.core.json.Json;
 import org.apache.servicecomb.router.RouterFilter;
 import org.apache.servicecomb.router.distribute.RouterDistributor;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CanaryServerListFilter implements ServerListFilterExt {
 
-  private static final String ENABLE = "servicecomb.release_way";
+  private static final Logger LOGGER = LoggerFactory.getLogger(CanaryServerListFilter.class);
+
+  private static final String ENABLE = "servicecomb.router.type";
+
+  private static final String TYPE_ROUTER = "router";
+
+  private static final String ROUTER_HEADER = "X-RouterContext";
 
   RouterDistributor<ServiceCombServer, Microservice> distributer = new ServiceCombCanaryDistributer();
 
   @Override
   public boolean enabled() {
     return DynamicPropertyFactory.getInstance().getStringProperty(ENABLE, "").get()
-        .equals("canary");
+        .equals("TYPE_ROUTER");
   }
 
   @Override
@@ -57,15 +64,15 @@ public class CanaryServerListFilter implements ServerListFilterExt {
 
   private Map<String, String> addHeaders(Invocation invocation) {
     Map<String, String> headers = new HashMap<>();
-    if (invocation.getContext("canary_context") != null) {
+    if (invocation.getContext(ROUTER_HEADER) != null) {
       Map<String, String> canaryContext = null;
       try {
         canaryContext = JsonUtils.OBJ_MAPPER
-            .readValue(invocation.getContext("canary_context"),
+            .readValue(invocation.getContext(ROUTER_HEADER),
                 new TypeReference<Map<String, String>>() {
                 });
       } catch (JsonProcessingException e) {
-        e.printStackTrace();
+        LOGGER.error("canary context serialization failed");
       }
       if (canaryContext != null) {
         headers.putAll(canaryContext);

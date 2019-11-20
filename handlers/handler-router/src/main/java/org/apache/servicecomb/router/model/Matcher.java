@@ -24,23 +24,15 @@ import java.util.Map;
  **/
 public class Matcher {
 
-  //服务级别
   private String source;
-  //服务级别 -- 这个暂时不考虑
+
   private Map<String, String> sourceTags;
-  //invoke级别
+
   private Map<String, HeaderRule> headers;
-  //这个暂时不考虑
+
   private String refer;
 
   public Matcher() {
-  }
-
-  public boolean filte(String sourcName, Map<String, String> sourceTags) {
-    if (sourcName != null && !sourcName.equals(source)) {
-      return false;
-    }
-    return true;
   }
 
   public boolean match(Map<String, String> realHeaders) {

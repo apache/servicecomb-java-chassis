@@ -49,16 +49,15 @@ public class RouterFilter {
     if (headers == null) {
       headers = new HashMap<>();
     }
-    LOGGER.debug("route management headers:{}", headers);
     /**
-     * 1.初始化--进行cache缓存
+     * 1.init and cache
      */
     if (!RouterRuleCache.doInit(targetServiceName)) {
       LOGGER.debug("route management init failed");
       return list;
     }
     /**
-     * 2.match--拿到invoke相关信息 (header),匹配到唯一的rule
+     * 2.match rule
      */
     PolicyRuleItem invokeRule = RouterRuleMatcher.getInstance().match(targetServiceName, headers);
 
@@ -70,7 +69,7 @@ public class RouterFilter {
     LOGGER.debug("route management match rule success: {}", invokeRule);
 
     /**
-     * 3.distribute--拿到server list选择endpoint进行流量分配
+     * 3.distribute select endpoint
      */
     List<T> resultList = distributer.distribute(targetServiceName, list, invokeRule);
 
