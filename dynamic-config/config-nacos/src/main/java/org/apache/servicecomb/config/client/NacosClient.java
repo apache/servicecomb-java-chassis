@@ -54,6 +54,8 @@ public class NacosClient {
 
   private final UpdateHandler updateHandler;
 
+  private static RestTemplate rest = new RestTemplate();
+
   public NacosClient(UpdateHandler updateHandler) {
     this.updateHandler = updateHandler;
   }
