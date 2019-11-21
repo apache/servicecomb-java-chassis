@@ -106,10 +106,10 @@ public abstract class AbstractRouterDistributor<T extends Server, E> implements
         .getVersion();
     Map<TagItem, List<T>> versionServerMap = new HashMap<>();
     for (T server : list) {
-      //获得目标服务
+      //get server
       E ms = getIns.apply(server);
       if (getServerName.apply(ms).equals(serviceName)) {
-        //最多匹配原则
+        //most matching
         TagItem tagItem = new TagItem(getVersion.apply(ms), getProperties.apply(ms));
         TagItem targetTag = null;
         int maxMatch = 0;

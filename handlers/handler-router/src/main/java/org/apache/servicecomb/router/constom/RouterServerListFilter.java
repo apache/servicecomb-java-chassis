@@ -34,9 +34,9 @@ import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CanaryServerListFilter implements ServerListFilterExt {
+public class RouterServerListFilter implements ServerListFilterExt {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(CanaryServerListFilter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RouterServerListFilter.class);
 
   private static final String ENABLE = "servicecomb.router.type";
 
@@ -49,7 +49,7 @@ public class CanaryServerListFilter implements ServerListFilterExt {
   @Override
   public boolean enabled() {
     return DynamicPropertyFactory.getInstance().getStringProperty(ENABLE, "").get()
-        .equals("TYPE_ROUTER");
+        .equals(TYPE_ROUTER);
   }
 
   @Override

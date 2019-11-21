@@ -14,23 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.router.match;
+package org.apache.servicecomb.router;
 
-import java.util.Map;
+import org.apache.servicecomb.router.util.VersionCompareUtil;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * @Author GuoYl123
- * @Date 2019/10/17
+ * @Date 2019/11/21
  **/
-public interface RouterHeaderFilterExt {
+public class VersionCompareUtilTest {
 
-  default int getOrder() {
-    return 0;
+  @Test
+  public void testVersion() {
+    Assert.assertTrue(VersionCompareUtil.compareVersion("0.0.1", "0.0.0") > 0);
+    Assert.assertEquals(0, VersionCompareUtil.compareVersion("0.0.0", "0.0.0"));
+    Assert.assertTrue(VersionCompareUtil.compareVersion("0.0.0", "0.0.1") < 0);
+    Assert.assertTrue(VersionCompareUtil.compareVersion("0.0.0", "0.0.0.0") < 0);
+    Assert.assertTrue(VersionCompareUtil.compareVersion("0.0.1", "0.0.0.0") > 0);
+    Assert.assertTrue(VersionCompareUtil.compareVersion("0.0.1", "0.0.0.0") > 0);
   }
-
-  default boolean enabled() {
-    return true;
-  }
-
-  Map<String, String> doFilter(Map<String, String> invokeHeader);
 }

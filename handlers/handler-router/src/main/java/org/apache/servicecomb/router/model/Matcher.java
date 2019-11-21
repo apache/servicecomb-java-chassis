@@ -17,6 +17,7 @@
 package org.apache.servicecomb.router.model;
 
 import java.util.Map;
+import org.springframework.util.CollectionUtils;
 
 /**
  * @Author GuoYl123
@@ -36,7 +37,7 @@ public class Matcher {
   }
 
   public boolean match(Map<String, String> realHeaders) {
-    if (headers == null) {
+    if (CollectionUtils.isEmpty(headers)) {
       return true;
     }
     for (Map.Entry<String, HeaderRule> entry : headers.entrySet()) {
