@@ -39,15 +39,20 @@ import org.yaml.snakeyaml.Yaml;
 
 import com.netflix.config.DynamicPropertyFactory;
 
-public class CanaryInvokeFilter implements HttpServerFilter {
+public class RouterInvokeFilter implements HttpServerFilter {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(CanaryInvokeFilter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(RouterInvokeFilter.class);
 
   private static final String SERVICECOMB_ROUTER_HEADER = "servicecomb.router.header";
 
   private static final String ROUTER_HEADER = "X-RouterContext";
 
   private static List<String> allHeader = new ArrayList<>();
+
+  /**
+   * if don't have rule , avoid registered too many callback
+   */
+  private static boolean isFirstTime = true;
 
   @Override
   public int getOrder() {
@@ -56,7 +61,7 @@ public class CanaryInvokeFilter implements HttpServerFilter {
 
   @Override
   public boolean enabled() {
-    return false;
+    return true;
   }
 
   @Override
@@ -74,8 +79,7 @@ public class CanaryInvokeFilter implements HttpServerFilter {
   @Override
   public Response afterReceiveRequest(Invocation invocation,
       HttpServletRequestEx httpServletRequestEx) {
-    loadHeaders();
-    if (invocation.getContext(ROUTER_HEADER) != null && !CollectionUtils.isEmpty(allHeader)) {
+    if (loadHeaders()) {
       Map<String, String> headerMap = getHeaderMap(httpServletRequestEx);
       try {
         invocation.addContext(ROUTER_HEADER, JsonUtils.OBJ_MAPPER.writeValueAsString(headerMap));
@@ -89,23 +93,36 @@ public class CanaryInvokeFilter implements HttpServerFilter {
   /**
    * read config and get Header
    */
-  private void loadHeaders() {
+  private boolean loadHeaders() {
+    if (!CollectionUtils.isEmpty(allHeader) && !isFirstTime) {
+      return true;
+    }
+    isFirstTime = false;
     DynamicStringProperty headerStr = DynamicPropertyFactory.getInstance()
         .getStringProperty(SERVICECOMB_ROUTER_HEADER, null, () -> {
-          allHeader = null;
           DynamicStringProperty temHeader = DynamicPropertyFactory.getInstance()
               .getStringProperty(SERVICECOMB_ROUTER_HEADER, null);
-          Yaml yaml = new Yaml();
-          allHeader = yaml.load(temHeader.get());
+          if (!addAllHeaders(temHeader.get())) {
+            allHeader = new ArrayList<>();
+          }
         });
+    return addAllHeaders(headerStr.get());
+  }
+
+  private boolean addAllHeaders(String str) {
+    if (StringUtils.isEmpty(str)) {
+      return false;
+    }
     try {
-      if (!CollectionUtils.isEmpty(allHeader)) {
+      if (CollectionUtils.isEmpty(allHeader)) {
         Yaml yaml = new Yaml();
-        allHeader = yaml.load(headerStr.get());
+        allHeader = yaml.load(str);
       }
     } catch (Exception e) {
       LOGGER.error("route management Serialization failed: {}", e.getMessage());
+      return false;
     }
+    return true;
   }
 
   /**

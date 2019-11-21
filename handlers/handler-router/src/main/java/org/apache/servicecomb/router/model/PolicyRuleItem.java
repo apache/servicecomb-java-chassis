@@ -73,7 +73,6 @@ public class PolicyRuleItem implements Comparable<PolicyRuleItem> {
       weightLess = true;
       route.add(new RouteItem(100 - sum, latestVersionTag));
     }
-    //Collections.sort(route);
   }
 
   @Override

@@ -42,11 +42,11 @@ public class RouterDistributorTest {
       + "        match:        #匹配策略\n"
       + "          source: xx #匹配某个服务名\n"
       + "          headers:          #header匹配\n"
-      + "            xx:\n"
-      + "              regex: xx\n"
+      + "            appId:\n"
+      + "              regex: 01\n"
       + "              caseInsensitive: false # 是否区分大小写，默认为false，区分大小写\n"
-      + "            xxx:\n"
-      + "              exact: xx\n"
+      + "            userId:\n"
+      + "              exact: 01\n"
       + "        route: #路由规则\n"
       + "          - weight: 50\n"
       + "            tags:\n"
@@ -55,11 +55,11 @@ public class RouterDistributorTest {
       + "        match:\n"
       + "          source: 1 #匹配某个服务名\n"
       + "          headers:          #header匹配\n"
-      + "            xx:\n"
-      + "              regex: xx\n"
+      + "            appId:\n"
+      + "              regex: 01\n"
       + "              caseInsensitive: false # 是否区分大小写，默认为false，区分大小写\n"
-      + "            xxx:\n"
-      + "              exact: xxx\n"
+      + "            userId:\n"
+      + "              exact: 02\n"
       + "        route:\n"
       + "          - weight: 1\n"
       + "            tags:\n"
@@ -69,10 +69,17 @@ public class RouterDistributorTest {
   private static String targetServiceName = "test_server";
 
   @Test
+  public void testHeaderIsNull() {
+    List<ServiceIns> list = getMockList();
+    List<ServiceIns> serverList = mainFilter(list, null);
+    Assert.assertEquals(2, serverList.size());
+  }
+
+  @Test
   public void testVersionNotMatch() {
     Map<String, String> headermap = new HashMap<>();
-    headermap.put("xxx", "xx");
-    headermap.put("xx", "xx");
+    headermap.put("userId", "01");
+    headermap.put("appId", "01");
     headermap.put("formate", "json");
     List<ServiceIns> list = getMockList();
     list.remove(1);
@@ -84,8 +91,8 @@ public class RouterDistributorTest {
   @Test
   public void testVersionMatch() {
     Map<String, String> headermap = new HashMap<>();
-    headermap.put("xxx", "xx");
-    headermap.put("xx", "xx");
+    headermap.put("userId", "01");
+    headermap.put("appId", "01");
     headermap.put("formate", "json");
     List<ServiceIns> serverList = mainFilter(getMockList(), headermap);
     Assert.assertEquals(1, serverList.size());

@@ -26,7 +26,10 @@ import java.util.Objects;
  **/
 public class TagItem {
 
+  private static final String VERSION = "version";
+
   private String version;
+
   private Map<String, String> param;
 
   public TagItem() {
@@ -40,13 +43,13 @@ public class TagItem {
   public TagItem(String version) {
     this.version = version;
     Map<String, String> param = new HashMap<>();
-    param.put("version", version);
+    param.put(VERSION, version);
     this.param = param;
   }
 
   public TagItem(Map<String, String> param) {
-    if (param.containsKey("version")) {
-      this.version = param.get("version");
+    if (param.containsKey(VERSION)) {
+      this.version = param.get(VERSION);
     }
     this.param = param;
   }
@@ -69,34 +72,21 @@ public class TagItem {
 
   @Override
   public int hashCode() {
-    int result = Objects.hash(version);
-    if (param != null) {
-      result = 31 * result + param.hashCode();
-    }
-    return result;
+    return Objects.hash(getVersion(), getParam());
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
+  public boolean equals(Object o) {
+    if (this == o) {
       return true;
     }
-    if (obj != null && !(obj instanceof TagItem)) {
+    if (!(o instanceof TagItem)) {
       return false;
     }
-    TagItem item = (TagItem) obj;
-    if (this.param == null && item.getParam() == null) {
-      return this.version.equals(item.getVersion());
-    }
-    if (this.param == null || item.getParam() == null) {
-      return false;
-    }
-    if (this.version != null && item.getVersion() != null) {
-      return this.version.equals(item.getVersion()) && this.param.equals(item.getParam());
-    }
-    return this.param.equals(item.getParam());
+    TagItem tagItem = (TagItem) o;
+    return Objects.equals(getVersion(), tagItem.getVersion()) &&
+        Objects.equals(getParam(), tagItem.getParam());
   }
-
 
   /**
    * return match num

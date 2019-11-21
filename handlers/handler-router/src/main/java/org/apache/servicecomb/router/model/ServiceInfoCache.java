@@ -35,6 +35,16 @@ public class ServiceInfoCache {
   public ServiceInfoCache() {
   }
 
+  public ServiceInfoCache(List<PolicyRuleItem> policyRuleItemList) {
+    this.setAllrule(policyRuleItemList);
+    // init tagitem
+    this.getAllrule().forEach(rule ->
+        rule.getRoute().forEach(RouteItem::initTagItem)
+    );
+    // sort by precedence
+    this.sortRule();
+  }
+
   public void sortRule() {
     allrule = allrule.stream().sorted().collect(Collectors.toList());
   }
