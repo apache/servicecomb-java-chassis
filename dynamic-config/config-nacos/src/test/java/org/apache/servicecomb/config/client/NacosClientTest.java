@@ -19,6 +19,7 @@ package org.apache.servicecomb.config.client;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.archaius.sources.NacosConfigurationSourceImpl;
@@ -36,12 +37,11 @@ public class NacosClientTest {
 
   @Test
   public void refreshNacosConfig() {
-    NacosConfig nacosConfig = NacosConfig.INSTANCE;
+
     NacosConfigurationSourceImpl impl = new NacosConfigurationSourceImpl();
     UpdateHandler updateHandler = impl.new UpdateHandler();
     NacosClient nacosClient = new NacosClient(updateHandler);
-    nacosClient.refreshNacosConfig();
-
+    //nacosClient.refreshNacosConfig();
     Map<String, Object> originMap = Deencapsulation.getField(nacosClient, "originalConfigMap");
     Assert.assertEquals(1, originMap.size());
   }
