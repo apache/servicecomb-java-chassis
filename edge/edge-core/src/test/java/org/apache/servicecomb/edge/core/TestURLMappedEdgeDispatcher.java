@@ -19,7 +19,6 @@ package org.apache.servicecomb.edge.core;
 
 import java.util.Map;
 
-import org.apache.servicecomb.edge.core.URLMappedEdgeDispatcher.ConfigurationItem;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
@@ -51,7 +50,7 @@ public class TestURLMappedEdgeDispatcher {
     ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.enabled", true);
 
     URLMappedEdgeDispatcher dispatcher = new URLMappedEdgeDispatcher();
-    Map<String, ConfigurationItem> items = Deencapsulation
+    Map<String, URLMappedConfigurationItem> items = Deencapsulation
         .getField(dispatcher, "configurations");
     Assert.assertEquals(items.size(), 0);
 
@@ -68,21 +67,21 @@ public class TestURLMappedEdgeDispatcher {
     ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.mappings.service1.versionRule", "2.0.0+");
     items = Deencapsulation.getField(dispatcher, "configurations");
     Assert.assertEquals(items.size(), 1);
-    ConfigurationItem item = items.get("service1");
-    Assert.assertEquals(item.microserviceName, "serviceName");
-    Assert.assertEquals(item.prefixSegmentCount, 2);
-    Assert.assertEquals(item.stringPattern, "/a/b/c/.*");
-    Assert.assertEquals(item.versionRule, "2.0.0+");
+    URLMappedConfigurationItem item = items.get("service1");
+    Assert.assertEquals(item.getMicroserviceName(), "serviceName");
+    Assert.assertEquals(item.getPrefixSegmentCount(), 2);
+    Assert.assertEquals(item.getStringPattern(), "/a/b/c/.*");
+    Assert.assertEquals(item.getVersionRule(), "2.0.0+");
 
     ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.mappings.service2.versionRule", "2.0.0+");
     ArchaiusUtils.setProperty("servicecomb.http.dispatcher.edge.url.mappings.service3.path", "/b/c/d/.*");
     items = Deencapsulation.getField(dispatcher, "configurations");
     Assert.assertEquals(items.size(), 1);
     item = items.get("service1");
-    Assert.assertEquals(item.microserviceName, "serviceName");
-    Assert.assertEquals(item.prefixSegmentCount, 2);
-    Assert.assertEquals(item.stringPattern, "/a/b/c/.*");
-    Assert.assertEquals(item.versionRule, "2.0.0+");
+    Assert.assertEquals(item.getMicroserviceName(), "serviceName");
+    Assert.assertEquals(item.getPrefixSegmentCount(), 2);
+    Assert.assertEquals(item.getStringPattern(), "/a/b/c/.*");
+    Assert.assertEquals(item.getVersionRule(), "2.0.0+");
 
     new Expectations() {
       {
