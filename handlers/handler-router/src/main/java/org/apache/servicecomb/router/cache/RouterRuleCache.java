@@ -21,13 +21,16 @@ import com.google.common.collect.Interners;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.servicecomb.router.model.PolicyRuleItem;
 import org.apache.servicecomb.router.model.ServiceInfoCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 
 /**
@@ -51,6 +54,9 @@ public class RouterRuleCache {
    * @return
    */
   public static boolean doInit(String targetServiceName) {
+    if (!isServerContainRule(targetServiceName)) {
+      return false;
+    }
     if (!serviceInfoCacheMap.containsKey(targetServiceName)) {
       synchronized (servicePool.intern(targetServiceName)) {
         if (serviceInfoCacheMap.containsKey(targetServiceName)) {
@@ -62,23 +68,23 @@ public class RouterRuleCache {
               refresh(targetServiceName);
               DynamicStringProperty tepRuleStr = DynamicPropertyFactory.getInstance()
                   .getStringProperty(String.format(ROUTE_RULE, targetServiceName), null);
-              addAllRule(targetServiceName, tepRuleStr);
+              addAllRule(targetServiceName, tepRuleStr.get());
             });
-        return addAllRule(targetServiceName, ruleStr);
+        return addAllRule(targetServiceName, ruleStr.get());
       }
     }
     return true;
   }
 
-  private static boolean addAllRule(String targetServiceName, DynamicStringProperty ruleStr) {
-    if (ruleStr.get() == null) {
+  private static boolean addAllRule(String targetServiceName, String ruleStr) {
+    if (StringUtils.isEmpty(ruleStr)) {
       return false;
     }
     Yaml yaml = new Yaml();
     List<PolicyRuleItem> policyRuleItemList;
     try {
       policyRuleItemList = Arrays
-          .asList(yaml.loadAs(ruleStr.get(), PolicyRuleItem[].class));
+          .asList(yaml.loadAs(ruleStr, PolicyRuleItem[].class));
     } catch (Exception e) {
       LOGGER.error("route management Serialization failed: {}", e.getMessage());
       return false;
@@ -87,8 +93,21 @@ public class RouterRuleCache {
       return false;
     }
     ServiceInfoCache serviceInfoCache = new ServiceInfoCache(policyRuleItemList);
-    if (!serviceInfoCacheMap.containsKey(targetServiceName)) {
-      serviceInfoCacheMap.put(targetServiceName, serviceInfoCache);
+    serviceInfoCacheMap.put(targetServiceName, serviceInfoCache);
+    return true;
+  }
+
+  /**
+   * if a server don't have rule , avoid registered too many callback , it may cause memory leak
+   *
+   * @param targetServiceName
+   * @return
+   */
+  public static boolean isServerContainRule(String targetServiceName) {
+    DynamicStringProperty lookFor = DynamicPropertyFactory.getInstance()
+        .getStringProperty(String.format(ROUTE_RULE, targetServiceName), null);
+    if (StringUtils.isEmpty(lookFor.get())) {
+      return false;
     }
     return true;
   }
@@ -99,7 +118,6 @@ public class RouterRuleCache {
 
   public static void refresh() {
     serviceInfoCacheMap = new ConcurrentHashMap<>();
-    servicePool = Interners.newWeakInterner();
   }
 
   public static void refresh(String targetServiceName) {

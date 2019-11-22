@@ -35,9 +35,8 @@ public final class MicroserviceCache {
   }
 
   public Microservice getService(String serviceId) {
-    Microservice micorservice = services.computeIfAbsent(serviceId, (k) ->
+    return services.computeIfAbsent(serviceId, (k) ->
         RegistryUtils.getMicroservice(serviceId)
     );
-    return micorservice;
   }
 }
