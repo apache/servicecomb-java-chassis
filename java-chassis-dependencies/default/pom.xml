@@ -114,7 +114,6 @@
     <zipkin-reporter.version>2.7.13</zipkin-reporter.version>
     <zookeeper.version>3.4.14</zookeeper.version>
     <nacos-client.version>1.1.4</nacos-client.version>
-    <slf4j-jdk.version>1.7.25</slf4j-jdk.version>
 
     <!-- Base dir of main -->
     <main.basedir>${basedir}/../..</main.basedir>
@@ -1344,17 +1343,10 @@
         <artifactId>business-service-springmvc-archetype</artifactId>
         <version>${project.version}</version>
       </dependency>
-
       <dependency>
         <groupId>com.alibaba.nacos</groupId>
         <artifactId>nacos-client</artifactId>
         <version>${nacos-client.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-jdk14</artifactId>
-        <version>${slf4j-jdk.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
