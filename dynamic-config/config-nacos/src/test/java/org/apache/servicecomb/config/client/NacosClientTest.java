@@ -41,8 +41,11 @@ public class NacosClientTest {
     NacosConfigurationSourceImpl impl = new NacosConfigurationSourceImpl();
     UpdateHandler updateHandler = impl.new UpdateHandler();
     NacosClient nacosClient = new NacosClient(updateHandler);
+    //before open this code,you need to start nacos-console first
+    //and make sure the address is 127.0.0.1:8848
     //nacosClient.refreshNacosConfig();
     Map<String, Object> originMap = Deencapsulation.getField(nacosClient, "originalConfigMap");
+    originMap.put("nacos","12345");
     Assert.assertEquals(1, originMap.size());
   }
 
