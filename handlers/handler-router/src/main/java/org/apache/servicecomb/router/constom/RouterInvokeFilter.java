@@ -30,6 +30,7 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
+import org.apache.servicecomb.router.cache.RouterRuleCache;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,10 +50,6 @@ public class RouterInvokeFilter implements HttpServerFilter {
 
   private static List<String> allHeader = new ArrayList<>();
 
-  /**
-   * if don't have rule , avoid registered too many callback
-   */
-  private static boolean isFirstTime = true;
 
   @Override
   public int getOrder() {
@@ -79,6 +76,12 @@ public class RouterInvokeFilter implements HttpServerFilter {
   @Override
   public Response afterReceiveRequest(Invocation invocation,
       HttpServletRequestEx httpServletRequestEx) {
+    if (!isHaveHeadersRule()) {
+      return null;
+    }
+    if (!RouterRuleCache.isServerContainRule(invocation.getMicroserviceName())) {
+      return null;
+    }
     if (loadHeaders()) {
       Map<String, String> headerMap = getHeaderMap(httpServletRequestEx);
       try {
@@ -94,10 +97,9 @@ public class RouterInvokeFilter implements HttpServerFilter {
    * read config and get Header
    */
   private boolean loadHeaders() {
-    if (!CollectionUtils.isEmpty(allHeader) && !isFirstTime) {
+    if (!CollectionUtils.isEmpty(allHeader)) {
       return true;
     }
-    isFirstTime = false;
     DynamicStringProperty headerStr = DynamicPropertyFactory.getInstance()
         .getStringProperty(SERVICECOMB_ROUTER_HEADER, null, () -> {
           DynamicStringProperty temHeader = DynamicPropertyFactory.getInstance()
@@ -107,6 +109,18 @@ public class RouterInvokeFilter implements HttpServerFilter {
           }
         });
     return addAllHeaders(headerStr.get());
+  }
+
+  /**
+   * if don't have headers rule , avoid registered too many callback
+   */
+  private boolean isHaveHeadersRule() {
+    DynamicStringProperty headerStr = DynamicPropertyFactory.getInstance()
+        .getStringProperty(SERVICECOMB_ROUTER_HEADER, null);
+    if (StringUtils.isEmpty(headerStr)) {
+      return false;
+    }
+    return true;
   }
 
   private boolean addAllHeaders(String str) {
