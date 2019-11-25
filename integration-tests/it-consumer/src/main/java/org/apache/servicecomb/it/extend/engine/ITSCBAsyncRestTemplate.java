@@ -17,16 +17,20 @@
 
 package org.apache.servicecomb.it.extend.engine;
 
+import static org.apache.servicecomb.core.definition.CoreMetaUtils.CORE_MICROSERVICE_META;
+
+import java.util.Comparator;
 import java.util.Optional;
 
-import org.apache.servicecomb.core.definition.MicroserviceVersionMeta;
+import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.provider.springmvc.reference.async.CseAsyncRestTemplate;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
-import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceManager;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersion;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
 
 public class ITSCBAsyncRestTemplate extends CseAsyncRestTemplate {
   private String urlPrefix;
@@ -43,12 +47,9 @@ public class ITSCBAsyncRestTemplate extends CseAsyncRestTemplate {
 
   public ITSCBAsyncRestTemplate init() {
     String producerName = ITJUnitUtils.getProducerName();
-    MicroserviceVersionRule microserviceVersionRule = RegistryUtils.getServiceRegistry().getAppManager()
-        .getOrCreateMicroserviceVersionRule(RegistryUtils.getAppId(), producerName,
-            DefinitionConst.VERSION_RULE_ALL);
-    MicroserviceVersionMeta microserviceVersionMeta = microserviceVersionRule.getLatestMicroserviceVersion();
-    SchemaMeta schemaMeta = microserviceVersionMeta.getMicroserviceMeta().ensureFindSchemaMeta(schemaId);
-    basePath = schemaMeta.getSwagger().getBasePath();
+
+    ensureProviderBasePath(producerName);
+
     urlPrefix = String.format("cse://%s%s", producerName, basePath);
     instance = RegistryUtils.getServiceRegistry().getAppManager()
         .getOrCreateMicroserviceManager(RegistryUtils.getAppId())
@@ -73,5 +74,21 @@ public class ITSCBAsyncRestTemplate extends CseAsyncRestTemplate {
         .filter(endpoint -> endpoint.startsWith(transport))
         .findFirst();
     return addressHolder.get();
+  }
+
+  private void ensureProviderBasePath(String producerName) {
+    MicroserviceManager microserviceManager =
+        RegistryUtils.getServiceRegistry().getAppManager().getOrCreateMicroserviceManager(RegistryUtils.getAppId());
+    MicroserviceVersions producerMicroserviceVersions =
+        microserviceManager.getOrCreateMicroserviceVersions(producerName);
+    Optional<MicroserviceVersion> latestMicroserviceVersion =
+        producerMicroserviceVersions.getVersions().values().stream()
+            .max(Comparator.comparing(MicroserviceVersion::getVersion));
+    latestMicroserviceVersion.ifPresent(microserviceVersion -> {
+      MicroserviceMeta microserviceMeta = microserviceVersion.getVendorExtensions().get(CORE_MICROSERVICE_META);
+      SchemaMeta schemaMeta = microserviceMeta.ensureFindSchemaMeta(schemaId);
+      basePath = schemaMeta.getSwagger().getBasePath();
+    });
+    latestMicroserviceVersion.orElseThrow(() -> new IllegalStateException("cannot find producer: " + producerName));
   }
 }
