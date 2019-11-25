@@ -37,7 +37,7 @@ paths:
         schema:
           $ref: "#/definitions/ignoreRequestBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /nestedListString:
     post:
@@ -49,7 +49,7 @@ paths:
         schema:
           $ref: "#/definitions/nestedListStringBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "array"
@@ -68,7 +68,7 @@ paths:
         required: false
         type: "file"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /partArray:
     post:
@@ -84,7 +84,7 @@ paths:
           type: "file"
         collectionFormat: "multi"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /partList:
     post:
@@ -100,7 +100,7 @@ paths:
           type: "file"
         collectionFormat: "multi"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testAllType:
     post:
@@ -356,7 +356,7 @@ paths:
         schema:
           $ref: "#/definitions/testOneEnumBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
   /testOptional:
     post:
@@ -531,7 +531,7 @@ paths:
         schema:
           $ref: "#/definitions/wrapToBodyWithDescBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
 definitions:
   ignoreRequestBody:

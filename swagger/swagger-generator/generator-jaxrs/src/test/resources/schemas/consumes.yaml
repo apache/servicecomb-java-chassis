@@ -37,7 +37,7 @@ paths:
         schema:
           $ref: "#/definitions/testBlankMediaTypeBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "string"
@@ -57,7 +57,7 @@ paths:
         schema:
           $ref: "#/definitions/testMultipleMediaTypeBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "string"
@@ -75,7 +75,7 @@ paths:
         schema:
           $ref: "#/definitions/testSingleMediaTypeBody"
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "string"

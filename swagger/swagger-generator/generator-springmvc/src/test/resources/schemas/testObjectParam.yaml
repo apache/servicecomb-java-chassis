@@ -41,7 +41,7 @@ paths:
         type: "integer"
         format: "int32"
       responses:
-        200:
+        "200":
           description: "response of 200"
           schema:
             type: "string"
