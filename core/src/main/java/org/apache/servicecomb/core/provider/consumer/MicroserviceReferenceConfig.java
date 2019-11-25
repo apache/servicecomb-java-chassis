@@ -16,14 +16,18 @@
  */
 package org.apache.servicecomb.core.provider.consumer;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.apache.servicecomb.core.definition.ConsumerMicroserviceVersionsMeta;
 import org.apache.servicecomb.core.definition.CoreMetaUtils;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersion;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
+import org.apache.servicecomb.serviceregistry.consumer.StaticMicroserviceVersions;
 
 /**
  * <pre>
@@ -66,7 +70,7 @@ public class MicroserviceReferenceConfig {
   }
 
   private Boolean checkByConfig() {
-    return versionRule != microserviceVersionsMeta.getMicroserviceConfig().getVersionRule();
+    return !Objects.equals(versionRule, microserviceVersionsMeta.getMicroserviceConfig().getVersionRule());
   }
 
   public MicroserviceMeta getLatestMicroserviceMeta() {
@@ -90,7 +94,17 @@ public class MicroserviceReferenceConfig {
     if (transport == null) {
       transport = operationMeta.getConfig().getTransport();
     }
-    return new ReferenceConfig(transport, versionRule);
+    final ReferenceConfig referenceConfig = new ReferenceConfig(transport, versionRule);
+    mark3rdPartyService(operationMeta, referenceConfig);
+    return referenceConfig;
+  }
+
+  private void mark3rdPartyService(OperationMeta operationMeta, ReferenceConfig referenceConfig) {
+    final MicroserviceVersions microserviceVersions = RegistryUtils.getServiceRegistry().getAppManager()
+        .getOrCreateMicroserviceVersions(
+            operationMeta.getMicroserviceMeta().getAppId(),
+            operationMeta.getMicroserviceName());
+    referenceConfig.setThirdPartyService(microserviceVersions instanceof StaticMicroserviceVersions);
   }
 
   public boolean isExpired() {
