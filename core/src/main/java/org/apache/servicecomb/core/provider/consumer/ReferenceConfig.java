@@ -25,6 +25,8 @@ public class ReferenceConfig {
 
   protected String versionRule;
 
+  private boolean thirdPartyService;
+
   public ReferenceConfig(String transport, String versionRule) {
     this.transport = transport;
     this.versionRule = versionRule;
@@ -39,10 +41,19 @@ public class ReferenceConfig {
   }
 
   public boolean is3rdPartyService() {
-    return microserviceVersionRule.getLatestMicroserviceVersion().getMicroservice().isThirdPartyService();
+    return isThirdPartyService();
   }
 
   public String getVersionRule() {
     return versionRule;
+  }
+
+  public boolean isThirdPartyService() {
+    return thirdPartyService;
+  }
+
+  public ReferenceConfig setThirdPartyService(boolean thirdPartyService) {
+    this.thirdPartyService = thirdPartyService;
+    return this;
   }
 }
