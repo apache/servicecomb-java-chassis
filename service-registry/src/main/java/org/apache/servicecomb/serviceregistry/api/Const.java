@@ -31,7 +31,7 @@ public final class Const {
 
     public static final String CURRENT_VERSION = ServiceRegistryConfig.INSTANCE.getRegistryApiVersion();
 
-    // 2017-10-21 add new implementations for v4. We can remove v3 support after a period. 
+    // 2017-10-21 add new implementations for v4. We can remove v3 support after a period.
     public static final String VERSION_V3 = "v3";
 
     public static final String LATEST_API_VERSION = "v4";
@@ -167,6 +167,17 @@ public final class Const {
         SERVICECENTER_VERSION = V4_PREFIX + "/version";
       }
     }
+
+    public static final String MICROSERVICE_INSTANCE_STATUS;
+
+    static {
+      if (VERSION_V3.equals(CURRENT_VERSION)) {
+        MICROSERVICE_INSTANCE_STATUS = "/registry/v3/microservices/%s/instances/%s/status";
+      } else {
+        MICROSERVICE_INSTANCE_STATUS = V4_PREFIX + "/microservices/%s/instances/%s/status";
+      }
+    }
+
   }
 
   public static final String REGISTRY_APP_ID = "default";
