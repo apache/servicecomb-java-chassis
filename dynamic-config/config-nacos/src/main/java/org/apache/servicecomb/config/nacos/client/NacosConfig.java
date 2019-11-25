@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.client;
+package org.apache.servicecomb.config.nacos.client;
 
 import org.apache.commons.configuration.Configuration;
 

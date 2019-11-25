@@ -15,15 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.client;
+package org.apache.servicecomb.config.nacos.client;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.config.archaius.sources.NacosConfigurationSourceImpl;
-import org.apache.servicecomb.config.archaius.sources.NacosConfigurationSourceImpl.UpdateHandler;
+import org.apache.servicecomb.config.nacos.archaius.sources.NacosConfigurationSourceImpl;
+import org.apache.servicecomb.config.nacos.archaius.sources.NacosConfigurationSourceImpl.UpdateHandler;
+import org.apache.servicecomb.config.nacos.client.NacosClient;
+import org.apache.servicecomb.config.nacos.client.NacosConfig;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;

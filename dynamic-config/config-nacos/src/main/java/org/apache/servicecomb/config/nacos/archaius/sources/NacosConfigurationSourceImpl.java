@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.archaius.sources;
+package org.apache.servicecomb.config.nacos.archaius.sources;
 
 import static com.netflix.config.WatchedUpdateResult.createIncremental;
-import static org.apache.servicecomb.config.client.ConfigurationAction.CREATE;
-import static org.apache.servicecomb.config.client.ConfigurationAction.DELETE;
-import static org.apache.servicecomb.config.client.ConfigurationAction.SET;
+import static org.apache.servicecomb.config.nacos.client.ConfigurationAction.CREATE;
+import static org.apache.servicecomb.config.nacos.client.ConfigurationAction.DELETE;
+import static org.apache.servicecomb.config.nacos.client.ConfigurationAction.SET;
 
 import java.util.List;
 import java.util.Map;
@@ -30,13 +30,11 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.validation.constraints.NotNull;
 
-import com.alibaba.nacos.api.NacosFactory;
-import com.alibaba.nacos.api.config.ConfigService;
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.ConfigMapping;
-import org.apache.servicecomb.config.client.NacosClient;
-import org.apache.servicecomb.config.client.NacosConfig;
-import org.apache.servicecomb.config.client.ConfigurationAction;
+import org.apache.servicecomb.config.nacos.client.NacosClient;
+import org.apache.servicecomb.config.nacos.client.NacosConfig;
+import org.apache.servicecomb.config.nacos.client.ConfigurationAction;
 import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +50,7 @@ public class NacosConfigurationSourceImpl implements ConfigCenterConfigurationSo
 
   private List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<>();
 
-  private static final String NACOS_CONFIG_SERVER_ADDR_KEY = "nacos.config.serverAddr";
+  private static final String SERVER_ADDR = "nacos.config.serverAddr";
 
   public NacosConfigurationSourceImpl() {
   }
@@ -61,7 +59,7 @@ public class NacosConfigurationSourceImpl implements ConfigCenterConfigurationSo
 
   @Override
   public boolean isValidSource(Configuration localConfiguration) {
-    if (localConfiguration.getProperty(NACOS_CONFIG_SERVER_ADDR_KEY) == null) {
+    if (localConfiguration.getProperty(SERVER_ADDR) == null) {
       LOGGER.warn("Nacos configuration source is not configured!");
       return false;
     }

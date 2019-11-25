@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.archaius.sources;
+package org.apache.servicecomb.config.nacos.archaius.sources;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.config.archaius.sources.NacosConfigurationSourceImpl.UpdateHandler;
+import org.apache.servicecomb.config.nacos.archaius.sources.NacosConfigurationSourceImpl.UpdateHandler;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -29,7 +29,8 @@ import com.netflix.config.WatchedUpdateListener;
 
 import mockit.Deencapsulation;
 
-import static org.apache.servicecomb.config.client.ConfigurationAction.*;
+import static org.apache.servicecomb.config.nacos.client.ConfigurationAction.*;
+import static org.apache.servicecomb.config.nacos.client.ConfigurationAction.CREATE;
 
 public class NacosConfigurationSourceImplTest {
   @Test

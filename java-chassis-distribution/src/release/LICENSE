@@ -638,3 +638,4 @@ For details, see their respective project links.
 * vertx-auth-common (io.vertx:vertx-auth-common:3.8.3 - https://github.com/vert-x3/vertx-auth)
 * vertx-web-common (io.vertx:vertx-web-common:3.8.3 - https://github.com/vert-x3/vertx-web)
 * vertx-web (io.vertx:vertx-web:3.8.3 - https://github.com/vert-x3/vertx-web)
+* nacos-client (com.alibaba.nacos:1.1.4 - https://github.com/alibaba/nacos)

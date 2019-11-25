@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.client;
+package org.apache.servicecomb.config.nacos.client;
 
-import static org.apache.servicecomb.config.client.ConfigurationAction.CREATE;
-import static org.apache.servicecomb.config.client.ConfigurationAction.DELETE;
-import static org.apache.servicecomb.config.client.ConfigurationAction.SET;
+import static org.apache.servicecomb.config.nacos.client.ConfigurationAction.CREATE;
+import static org.apache.servicecomb.config.nacos.client.ConfigurationAction.DELETE;
+import static org.apache.servicecomb.config.nacos.client.ConfigurationAction.SET;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -30,11 +30,10 @@ import java.util.concurrent.*;
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
-import org.apache.servicecomb.config.archaius.sources.NacosConfigurationSourceImpl.UpdateHandler;
+import org.apache.servicecomb.config.nacos.archaius.sources.NacosConfigurationSourceImpl.UpdateHandler;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 

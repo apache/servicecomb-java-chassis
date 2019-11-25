@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.client;
+package org.apache.servicecomb.config.nacos.client;
 
 public enum ConfigurationAction {
   CREATE,
