@@ -43,6 +43,8 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -70,6 +72,9 @@ import io.swagger.models.utils.PropertyModelConverter;
 import io.swagger.util.Yaml;
 
 public final class SwaggerUtils {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerUtils.class);
+
   private SwaggerUtils() {
   }
 
@@ -202,6 +207,13 @@ public final class SwaggerUtils {
   public static void addDefinitions(Swagger swagger, Type paramType) {
     Map<String, Model> models = ModelConverters.getInstance().readAll(paramType);
     for (Entry<String, Model> entry : models.entrySet()) {
+      if (null != swagger.getDefinitions()) {
+        Model tempModel = swagger.getDefinitions().get(entry.getKey());
+        if (null != tempModel && !tempModel.equals(entry.getValue())) {
+          LOGGER.warn("duplicate param model: " + entry.getKey());
+          throw new IllegalArgumentException("duplicate param model: " + entry.getKey());
+        }
+      }
       swagger.addDefinition(entry.getKey(), entry.getValue());
     }
   }
