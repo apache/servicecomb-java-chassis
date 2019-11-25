@@ -38,14 +38,13 @@ import org.apache.servicecomb.provider.pojo.definition.PojoConsumerMeta;
 import org.apache.servicecomb.provider.pojo.definition.PojoConsumerOperationMeta;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
+import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContextCompletableFuture;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import io.swagger.annotations.ApiOperation;
 
 public class Invoker implements InvocationHandler {
   private static final Logger LOGGER = LoggerFactory.getLogger(Invoker.class);
@@ -146,7 +145,8 @@ public class Invoker implements InvocationHandler {
       }
     }
 
-    PojoConsumerOperationMeta pojoConsumerOperationMeta = consumerMeta.findOperationMeta(findSwaggerMethodName(method));
+    PojoConsumerOperationMeta pojoConsumerOperationMeta = consumerMeta
+        .findOperationMeta(MethodUtils.findSwaggerMethodName(method));
     if (pojoConsumerOperationMeta == null) {
       throw new IllegalStateException(
           String.format(
@@ -172,15 +172,6 @@ public class Invoker implements InvocationHandler {
     }
 
     return syncInvoke(invocation, consumerOperation);
-  }
-
-  protected String findSwaggerMethodName(Method consumerMethod) {
-    ApiOperation apiOperationAnnotation = consumerMethod.getAnnotation(ApiOperation.class);
-    if (apiOperationAnnotation == null || StringUtils.isEmpty(apiOperationAnnotation.nickname())) {
-      return consumerMethod.getName();
-    }
-
-    return apiOperationAnnotation.nickname();
   }
 
   protected ReferenceConfig findReferenceConfig(OperationMeta operationMeta) {

@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import io.swagger.annotations.ApiOperation;
 
 public class MethodUtils {
@@ -36,7 +38,7 @@ public class MethodUtils {
       }
     }
 
-    producerMethods.sort(Comparator.comparing(ParamUtils::findSwaggerMethodName));
+    producerMethods.sort(Comparator.comparing(MethodUtils::findSwaggerMethodName));
     return producerMethods;
   }
 
@@ -65,5 +67,14 @@ public class MethodUtils {
     }
 
     return false;
+  }
+
+  public static String findSwaggerMethodName(Method consumerMethod) {
+    ApiOperation apiOperationAnnotation = consumerMethod.getAnnotation(ApiOperation.class);
+    if (apiOperationAnnotation == null || StringUtils.isEmpty(apiOperationAnnotation.nickname())) {
+      return consumerMethod.getName();
+    }
+
+    return apiOperationAnnotation.nickname();
   }
 }
