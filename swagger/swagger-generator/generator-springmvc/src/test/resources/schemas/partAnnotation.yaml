@@ -40,5 +40,5 @@ paths:
         required: true
         type: "file"
       responses:
-        200:
+        "200":
           description: "response of 200"
