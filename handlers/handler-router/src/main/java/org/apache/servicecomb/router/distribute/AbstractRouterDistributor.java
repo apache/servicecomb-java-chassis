@@ -90,10 +90,9 @@ public abstract class AbstractRouterDistributor<T extends Server, E> implements
 
   /**
    * 1.filter targetService
-   * 2.return map distributed by version and tags
-   * establish map is a more complicate way than direct traversal，
-   * because we need to consider multiple matches，
-   * getProperties contains other irrelevant field except tags.
+   * 2.establish map is a more complicate way than direct traversal， because of multiple matches.
+   *
+   * the method getProperties() contains other field that we don't need.
    *
    * @param serviceName
    * @param list
@@ -120,21 +119,19 @@ public abstract class AbstractRouterDistributor<T extends Server, E> implements
             targetTag = entry.getTagitem();
           }
         }
-        synchronized (invokeRule) {
-          if (invokeRule.isWeightLess() && getVersion.apply(ms).equals(latestV)) {
-            TagItem latestVTag = invokeRule.getRoute().get(invokeRule.getRoute().size() - 1)
-                .getTagitem();
-            if (!versionServerMap.containsKey(latestVTag)) {
-              versionServerMap.put(latestVTag, new ArrayList<>());
-            }
-            versionServerMap.get(latestVTag).add(server);
+        if (invokeRule.isWeightLess() && getVersion.apply(ms).equals(latestV)) {
+          TagItem latestVTag = invokeRule.getRoute().get(invokeRule.getRoute().size() - 1)
+              .getTagitem();
+          if (!versionServerMap.containsKey(latestVTag)) {
+            versionServerMap.put(latestVTag, new ArrayList<>());
           }
-          if (targetTag != null) {
-            if (!versionServerMap.containsKey(targetTag)) {
-              versionServerMap.put(targetTag, new ArrayList<>());
-            }
-            versionServerMap.get(targetTag).add(server);
+          versionServerMap.get(latestVTag).add(server);
+        }
+        if (targetTag != null) {
+          if (!versionServerMap.containsKey(targetTag)) {
+            versionServerMap.put(targetTag, new ArrayList<>());
           }
+          versionServerMap.get(targetTag).add(server);
         }
       }
     }
@@ -161,7 +158,6 @@ public abstract class AbstractRouterDistributor<T extends Server, E> implements
   }
 
   /**
-   *
    * @param list
    * @param targetServiceName
    * @return
