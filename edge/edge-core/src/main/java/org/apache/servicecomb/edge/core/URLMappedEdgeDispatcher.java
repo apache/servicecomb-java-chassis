@@ -18,11 +18,8 @@
 package org.apache.servicecomb.edge.core;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,35 +33,19 @@ import io.vertx.ext.web.RoutingContext;
  * Provide a URL mapping based dispatcher. Users configure witch URL patterns dispatch to a target service.
  */
 public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
-  class ConfigurationItem {
-    String microserviceName;
-
-    String versionRule;
-
-    int prefixSegmentCount;
-
-    Pattern pattern;
-
-    String stringPattern;
-  }
-
   private static final Logger LOG = LoggerFactory.getLogger(URLMappedEdgeDispatcher.class);
 
   private static final String PATTERN_ANY = "/(.*)";
 
+  private static final String KEY_ORDER = "servicecomb.http.dispatcher.edge.url.order";
+
   private static final String KEY_ENABLED = "servicecomb.http.dispatcher.edge.url.enabled";
+
+  private static final String KEY_PATTERN = "servicecomb.http.dispatcher.edge.url.pattern";
 
   private static final String KEY_MAPPING_PREIX = "servicecomb.http.dispatcher.edge.url.mappings";
 
-  private static final String KEY_MAPPING_PATH = ".path";
-
-  private static final String KEY_MAPPING_SERVICE_NAME = "servicecomb.http.dispatcher.edge.url.mappings.%s.microserviceName";
-
-  private static final String KEY_MAPPING_VERSION_RULE = "servicecomb.http.dispatcher.edge.url.mappings.%s.versionRule";
-
-  private static final String KEY_MAPPING_PREFIX_SEGMENT_COUNT = "servicecomb.http.dispatcher.edge.url.mappings.%s.prefixSegmentCount";
-
-  private Map<String, ConfigurationItem> configurations = new HashMap<>();
+  private Map<String, URLMappedConfigurationItem> configurations = new HashMap<>();
 
   public URLMappedEdgeDispatcher() {
     if (this.enabled()) {
@@ -74,7 +55,7 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
 
   @Override
   public int getOrder() {
-    return 30000;
+    return DynamicPropertyFactory.getInstance().getIntProperty(KEY_ORDER, 30_000).get();
   }
 
   @Override
@@ -85,82 +66,44 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
   @Override
   public void init(Router router) {
     // cookies handler are enabled by default start from 3.8.3
-    router.routeWithRegex(PATTERN_ANY).handler(createBodyHandler());
-    router.routeWithRegex(PATTERN_ANY).failureHandler(this::onFailure).handler(this::onRequest);
+    String pattern = DynamicPropertyFactory.getInstance().getStringProperty(KEY_PATTERN, PATTERN_ANY).get();
+    router.routeWithRegex(pattern).handler(createBodyHandler());
+    router.routeWithRegex(pattern).failureHandler(this::onFailure).handler(this::onRequest);
   }
 
   private void loadConfigurations() {
     ConcurrentCompositeConfiguration config = (ConcurrentCompositeConfiguration) DynamicPropertyFactory
         .getBackingConfigurationSource();
-    loadConfigurations(config);
+    configurations = URLMappedConfigurationLoader.loadConfigurations(config, KEY_MAPPING_PREIX);
     config.addConfigurationListener(event -> {
       if (event.getPropertyName().startsWith(KEY_MAPPING_PREIX)) {
         LOG.info("Map rule have been changed. Reload configurations. Event=" + event.getType());
-        loadConfigurations(config);
+        configurations = URLMappedConfigurationLoader.loadConfigurations(config, KEY_MAPPING_PREIX);
       }
     });
   }
 
-  private void loadConfigurations(ConcurrentCompositeConfiguration config) {
-    Map<String, ConfigurationItem> configurations = new HashMap<>();
-    Iterator<String> configsItems = config.getKeys(KEY_MAPPING_PREIX);
-    while (configsItems.hasNext()) {
-      String pathKey = configsItems.next();
-      if (pathKey.endsWith(KEY_MAPPING_PATH)) {
-        ConfigurationItem configurationItem = new ConfigurationItem();
-        String pattern = DynamicPropertyFactory.getInstance()
-            .getStringProperty(pathKey, null).get();
-        if (StringUtils.isEmpty(pattern)) {
-          continue;
-        }
-        configurationItem.pattern = Pattern.compile(pattern);
-        configurationItem.stringPattern = pattern;
-        String pathKeyItem = pathKey
-            .substring(KEY_MAPPING_PREIX.length() + 1, pathKey.length() - KEY_MAPPING_PATH.length());
-        configurationItem.microserviceName = DynamicPropertyFactory.getInstance()
-            .getStringProperty(String.format(KEY_MAPPING_SERVICE_NAME, pathKeyItem), null).get();
-        if (StringUtils.isEmpty(configurationItem.microserviceName)) {
-          continue;
-        }
-        configurationItem.prefixSegmentCount = DynamicPropertyFactory.getInstance()
-            .getIntProperty(String.format(KEY_MAPPING_PREFIX_SEGMENT_COUNT, pathKeyItem), 0).get();
-        configurationItem.versionRule = DynamicPropertyFactory.getInstance()
-            .getStringProperty(String.format(KEY_MAPPING_VERSION_RULE, pathKeyItem), "0.0.0+").get();
-        configurations.put(pathKeyItem, configurationItem);
-      }
-    }
-    this.configurations = configurations;
-    logConfigurations();
-  }
-
-  private void logConfigurations() {
-    configurations.entrySet().forEach(stringConfigurationItemEntry -> {
-      ConfigurationItem item = stringConfigurationItemEntry.getValue();
-      LOG.info("config item: key=" + stringConfigurationItemEntry.getKey() + ";pattern=" + item.stringPattern
-          + ";service=" + item.microserviceName + ";versionRule=" + item.versionRule);
-    });
-  }
 
   protected void onRequest(RoutingContext context) {
-    ConfigurationItem configurationItem = findConfigurationItem(context.request().path());
+    URLMappedConfigurationItem configurationItem = findConfigurationItem(context.request().path());
     if (configurationItem == null) {
       context.next();
       return;
     }
 
-    String path = Utils.findActualPath(context.request().path(), configurationItem.prefixSegmentCount);
+    String path = Utils.findActualPath(context.request().path(), configurationItem.getPrefixSegmentCount());
 
     EdgeInvocation edgeInvocation = createEdgeInvocation();
-    if (configurationItem.versionRule != null) {
-      edgeInvocation.setVersionRule(configurationItem.versionRule);
+    if (configurationItem.getVersionRule() != null) {
+      edgeInvocation.setVersionRule(configurationItem.getVersionRule());
     }
-    edgeInvocation.init(configurationItem.microserviceName, context, path, httpServerFilters);
+    edgeInvocation.init(configurationItem.getMicroserviceName(), context, path, httpServerFilters);
     edgeInvocation.edgeInvoke();
   }
 
-  private ConfigurationItem findConfigurationItem(String path) {
-    for (ConfigurationItem item : configurations.values()) {
-      if (item.pattern.matcher(path).matches()) {
+  private URLMappedConfigurationItem findConfigurationItem(String path) {
+    for (URLMappedConfigurationItem item : configurations.values()) {
+      if (item.getPattern().matcher(path).matches()) {
         return item;
       }
     }

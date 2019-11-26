@@ -30,6 +30,8 @@ import io.vertx.ext.web.RoutingContext;
 public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
   private static final String KEY_ENABLED = "servicecomb.http.dispatcher.edge.default.enabled";
 
+  private static final String KEY_ORDER = "servicecomb.http.dispatcher.edge.default.order";
+
   private static final String KEY_PREFIX = "servicecomb.http.dispatcher.edge.default.prefix";
 
   private static final String KEY_WITH_VERSION = "servicecomb.http.dispatcher.edge.default.withVersion";
@@ -46,7 +48,7 @@ public class DefaultEdgeDispatcher extends AbstractEdgeDispatcher {
 
   @Override
   public int getOrder() {
-    return 20000;
+    return DynamicPropertyFactory.getInstance().getIntProperty(KEY_ORDER, 20_000).get();
   }
 
   @Override
