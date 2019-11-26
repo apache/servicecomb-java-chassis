@@ -23,16 +23,16 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class NacosConfigTest {
-  @BeforeClass
-  public static void setUpClass() {
-    NacosConfig.setConcurrentCompositeConfiguration(ConfigUtil.createLocalConfig());
-  }
+    @BeforeClass
+    public static void setUpClass() {
+        NacosConfig.setConcurrentCompositeConfiguration(ConfigUtil.createLocalConfig());
+    }
 
-  @Test
-  public void getServiceName() {
-    NacosConfig instance = NacosConfig.INSTANCE;
-    Assert.assertEquals("DEFAULT_GROUP", instance.getGroup());
-    Assert.assertEquals("127.0.0.1:8848", instance.getServerAddr());
-    Assert.assertEquals("example", instance.getDataId());
-  }
+    @Test
+    public void getServiceName() {
+        NacosConfig instance = NacosConfig.INSTANCE;
+        Assert.assertEquals("DEFAULT_GROUP", instance.getGroup());
+        Assert.assertEquals("127.0.0.1:8848", instance.getServerAddr());
+        Assert.assertEquals("example", instance.getDataId());
+    }
 }

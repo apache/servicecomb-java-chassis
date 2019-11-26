@@ -32,68 +32,68 @@ import org.junit.Test;
 import mockit.Deencapsulation;
 
 public class NacosClientTest {
-  @BeforeClass
-  public static void setUpClass() {
-    NacosConfig.setConcurrentCompositeConfiguration(ConfigUtil.createLocalConfig());
-  }
-
-  @Test
-  public void refreshNacosConfig() {
-
-    NacosConfigurationSourceImpl impl = new NacosConfigurationSourceImpl();
-    UpdateHandler updateHandler = impl.new UpdateHandler();
-    NacosClient nacosClient = new NacosClient(updateHandler);
-    //before open this code,you need to start nacos-console first
-    //and make sure the address is 127.0.0.1:8848
-    //nacosClient.refreshNacosConfig();
-    Map<String, Object> originMap = Deencapsulation.getField(nacosClient, "originalConfigMap");
-    originMap.put("nacos","12345");
-    Assert.assertEquals(1, originMap.size());
-  }
-
-  @Test
-  public void testCompareChangedConfig() {
-    boolean status = true;
-    Map<String, Object> before = new HashMap<>();
-    Map<String, Object> after = new HashMap<>();
-
-    NacosConfigurationSourceImpl impl = new NacosConfigurationSourceImpl();
-    UpdateHandler updateHandler = impl.new UpdateHandler();
-    NacosClient nacosClient = new NacosClient(updateHandler);
-
-    NacosClient.ConfigRefresh cr = nacosClient.new ConfigRefresh("","","");
-
-    try {
-      Deencapsulation.invoke(cr, "compareChangedConfig", before, after);
-    } catch (Exception e) {
-      status = false;
+    @BeforeClass
+    public static void setUpClass() {
+        NacosConfig.setConcurrentCompositeConfiguration(ConfigUtil.createLocalConfig());
     }
-    Assert.assertTrue(status);
 
-    status = true;
-    before.put("test", "testValue");
-    try {
-      Deencapsulation.invoke(cr, "compareChangedConfig", before, after);
-    } catch (Exception e) {
-      status = false;
-    }
-    Assert.assertTrue(status);
+    @Test
+    public void refreshNacosConfig() {
 
-    status = true;
-    after.put("test", "testValue2");
-    try {
-      Deencapsulation.invoke(cr, "compareChangedConfig", before, after);
-    } catch (Exception e) {
-      status = false;
+        NacosConfigurationSourceImpl impl = new NacosConfigurationSourceImpl();
+        UpdateHandler updateHandler = impl.new UpdateHandler();
+        NacosClient nacosClient = new NacosClient(updateHandler);
+        //before open this code,you need to start nacos-console first
+        //and make sure the address is 127.0.0.1:8848
+        //nacosClient.refreshNacosConfig();
+        Map<String, Object> originMap = Deencapsulation.getField(nacosClient, "originalConfigMap");
+        originMap.put("nacos","12345");
+        Assert.assertEquals(1, originMap.size());
     }
-    Assert.assertTrue(status);
 
-    status = true;
-    try {
-      Deencapsulation.invoke(cr, "compareChangedConfig", before, after);
-    } catch (Exception e) {
-      status = false;
+    @Test
+    public void testCompareChangedConfig() {
+        boolean status = true;
+        Map<String, Object> before = new HashMap<>();
+        Map<String, Object> after = new HashMap<>();
+
+        NacosConfigurationSourceImpl impl = new NacosConfigurationSourceImpl();
+        UpdateHandler updateHandler = impl.new UpdateHandler();
+        NacosClient nacosClient = new NacosClient(updateHandler);
+
+        NacosClient.ConfigRefresh cr = nacosClient.new ConfigRefresh("","","");
+
+        try {
+            Deencapsulation.invoke(cr, "compareChangedConfig", before, after);
+        } catch (Exception e) {
+            status = false;
+        }
+        Assert.assertTrue(status);
+
+        status = true;
+        before.put("test", "testValue");
+        try {
+            Deencapsulation.invoke(cr, "compareChangedConfig", before, after);
+        } catch (Exception e) {
+            status = false;
+        }
+        Assert.assertTrue(status);
+
+        status = true;
+        after.put("test", "testValue2");
+        try {
+            Deencapsulation.invoke(cr, "compareChangedConfig", before, after);
+        } catch (Exception e) {
+            status = false;
+        }
+        Assert.assertTrue(status);
+
+        status = true;
+        try {
+            Deencapsulation.invoke(cr, "compareChangedConfig", before, after);
+        } catch (Exception e) {
+            status = false;
+        }
+        Assert.assertTrue(status);
     }
-    Assert.assertTrue(status);
-  }
 }
