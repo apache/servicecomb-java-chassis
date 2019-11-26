@@ -113,6 +113,8 @@
     <zipkin.version>2.19.1</zipkin.version>
     <zipkin-reporter.version>2.7.13</zipkin-reporter.version>
     <zookeeper.version>3.4.14</zookeeper.version>
+    <nacos-client.version>1.1.4</nacos-client.version>
+
     <!-- Base dir of main -->
     <main.basedir>${basedir}/../..</main.basedir>
   </properties>
@@ -1340,6 +1342,11 @@
         <groupId>org.apache.servicecomb.archetypes</groupId>
         <artifactId>business-service-springmvc-archetype</artifactId>
         <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.alibaba.nacos</groupId>
+        <artifactId>nacos-client</artifactId>
+        <version>${nacos-client.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
