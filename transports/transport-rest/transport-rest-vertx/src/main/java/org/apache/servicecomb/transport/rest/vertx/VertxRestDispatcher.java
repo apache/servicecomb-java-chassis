@@ -46,13 +46,17 @@ import io.vertx.ext.web.RoutingContext;
 public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
   private static final Logger LOGGER = LoggerFactory.getLogger(VertxRestDispatcher.class);
 
+  private static final String KEY_ORDER = "servicecomb.http.dispatcher.rest.order";
+
   private static final String KEY_ENABLED = "servicecomb.http.dispatcher.rest.enabled";
+
+  private static final String KEY_PATTERN = "servicecomb.http.dispatcher.rest.pattern";
 
   private Transport transport;
 
   @Override
   public int getOrder() {
-    return Integer.MAX_VALUE;
+    return DynamicPropertyFactory.getInstance().getIntProperty(KEY_ORDER, Integer.MAX_VALUE).get();
   }
 
   @Override
@@ -63,8 +67,14 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
   @Override
   public void init(Router router) {
     // cookies handler are enabled by default start from 3.8.3
-    router.route().handler(createBodyHandler());
-    router.route().failureHandler(this::failureHandler).handler(this::onRequest);
+    String pattern = DynamicPropertyFactory.getInstance().getStringProperty(KEY_PATTERN, null).get();
+    if(pattern == null) {
+      router.route().handler(createBodyHandler());
+      router.route().failureHandler(this::failureHandler).handler(this::onRequest);
+    } else {
+      router.routeWithRegex(pattern).handler(createBodyHandler());
+      router.routeWithRegex(pattern).failureHandler(this::failureHandler).handler(this::onRequest);
+    }
   }
 
   protected void failureHandler(RoutingContext context) {
