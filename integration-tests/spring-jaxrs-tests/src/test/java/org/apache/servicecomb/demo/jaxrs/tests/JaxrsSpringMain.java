@@ -19,7 +19,7 @@ package org.apache.servicecomb.demo.jaxrs.tests;
 
 import static org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY;
 
-import org.apache.servicecomb.springboot.starter.provider.EnableServiceComb;
+import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

@@ -22,7 +22,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClientException;
 
 public class TestExceptionConvertEdge {
   private static GateRestTemplate client = GateRestTemplate.createEdgeRestTemplate("edgeExceptionConvertSchema");
@@ -34,9 +33,10 @@ public class TestExceptionConvertEdge {
 
     try {
       client.getForObject("/add?x=88&y=21", Object.class);
-    } catch (RestClientException e) {
-      HttpClientErrorException exception = (HttpClientErrorException) e;
-      Assert.assertEquals(HttpStatus.EXPECTATION_FAILED, exception.getStatusCode());
+      // This test case have some problem: for some test case, e.g. spring boot, will get result, others may timeout
+      // Because of timeout settings.
+    } catch (HttpClientErrorException exception) {
+      Assert.assertEquals(HttpStatus.EXPECTATION_FAILED.value(), exception.getRawStatusCode());
       Assert.assertTrue(exception.getResponseBodyAsString().contains("change the response"));
     }
   }

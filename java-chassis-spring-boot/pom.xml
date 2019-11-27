@@ -31,7 +31,6 @@
 
   <modules>
     <module>spring-boot-common</module>
-    <module>spring-boot-starter</module>
     <module>spring-boot2-starter-parent</module>
   </modules>
 

@@ -22,11 +22,11 @@ import java.util.Arrays;
 
 import org.apache.servicecomb.provider.springmvc.reference.CseUriTemplateHandler;
 import org.springframework.http.HttpEntity;
-import org.springframework.web.client.AsyncRequestCallback;
-import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.CseHttpMessageConverter;
 
-public class CseAsyncRestTemplate extends AsyncRestTemplate {
+@SuppressWarnings("deprecation")
+// TODO : upgrade to spring 5 will having warning's , we'll fix it later
+public class CseAsyncRestTemplate extends org.springframework.web.client.AsyncRestTemplate {
   public CseAsyncRestTemplate() {
     setMessageConverters(Arrays.asList(new CseHttpMessageConverter()));
     setAsyncRequestFactory(new CseAsyncClientHttpRequestFactory());
@@ -34,12 +34,12 @@ public class CseAsyncRestTemplate extends AsyncRestTemplate {
   }
 
   @Override
-  protected <T> AsyncRequestCallback httpEntityCallback(HttpEntity<T> requestBody) {
+  protected <T> org.springframework.web.client.AsyncRequestCallback httpEntityCallback(HttpEntity<T> requestBody) {
     return new CseAsyncRequestCallback<T>(requestBody);
   }
 
   @Override
-  protected <T> AsyncRequestCallback httpEntityCallback(HttpEntity<T> requestBody, Type responseType) {
+  protected <T> org.springframework.web.client.AsyncRequestCallback httpEntityCallback(HttpEntity<T> requestBody, Type responseType) {
     return new CseAsyncRequestCallback<T>(requestBody);
   }
 }

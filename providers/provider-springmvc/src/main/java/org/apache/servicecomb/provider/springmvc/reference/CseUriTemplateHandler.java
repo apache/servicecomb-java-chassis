@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.web.util.DefaultUriTemplateHandler;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -32,7 +31,9 @@ import org.springframework.web.util.UriComponentsBuilder;
  * cse://app:ms/path to cse://app/ms/path
  * cse://ms/path to cse://ms/path
  */
-public class CseUriTemplateHandler extends DefaultUriTemplateHandler {
+@SuppressWarnings("deprecation")
+// TODO : upgrade to spring 5 will having warning's , we'll fix it later
+public class CseUriTemplateHandler extends org.springframework.web.util.DefaultUriTemplateHandler {
   private Field hostField = ReflectionUtils.findField(UriComponentsBuilder.class, "host");
 
   public CseUriTemplateHandler() {

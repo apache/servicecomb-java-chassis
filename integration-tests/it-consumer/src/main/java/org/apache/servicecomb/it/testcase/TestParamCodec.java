@@ -19,6 +19,7 @@ package org.apache.servicecomb.it.testcase;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
 
@@ -42,16 +43,28 @@ public class TestParamCodec {
   @Test
   public void spaceCharEncode_intf() {
     String paramString = "a%2B+%20b%% %20c";
+    String paramQueryStringResult = "a%2B %20b%% %20c";
     String result = consumers.getIntf().spaceCharCodec(paramString, paramString);
-    assertEquals(paramString + " +%20%% " + paramString + " true", result);
+    assertEquals(matchOr(result, paramString + " +%20%% " + paramQueryStringResult + " true",
+        paramString + " +%20%% " + paramString + " true"), result);
+  }
+
+  private String matchOr(String result, String expected1, String expected2) {
+    // spring mvc & rpc handles "+' differently, both '+' or ' ' is correct according to HTTP SPEC. spring mvc changed from '+' to ' ' since spring 5.
+    if (result.equals(expected1)) {
+      return expected1;
+    }
+    return expected2;
   }
 
   @Test
   public void spaceCharEncode_rt() {
     String paramString = "a%2B+%20b%% %20c";
+    String paramQueryStringResult = "a%2B %20b%% %20c";
     String result = consumers.getSCBRestTemplate()
         .getForObject("/spaceCharCodec/" + paramString + "?q=" + paramString, String.class);
-    assertEquals(paramString + " +%20%% " + paramString + " true", result);
+    assertEquals(matchOr(result, paramString + " +%20%% " + paramQueryStringResult + " true",
+        paramString + " +%20%% " + paramString + " true"), result);
   }
 
   @Test

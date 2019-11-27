@@ -15,13 +15,5 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-APPLICATION_ID: discoverytest
-service_description:
-  name: discoveryGateway
-  version: 0.0.2
-servicecomb:
-  service:
-    registry:
-      address: http://127.0.0.1:30100
-  rest:
-      address: 0.0.0.0:8082
+server:
+  port: 8082

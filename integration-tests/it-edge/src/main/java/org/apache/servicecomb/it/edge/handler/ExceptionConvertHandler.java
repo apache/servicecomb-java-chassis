@@ -33,10 +33,11 @@ public class ExceptionConvertHandler implements Handler {
     invocation.next(response -> {
       if (response.isFailed()) {
         Throwable e = response.getResult();
-        if (response.getResult() instanceof TimeoutException) {
+        if (e instanceof TimeoutException || e.getCause() instanceof TimeoutException) {
           CustomException customException = new CustomException("change the response", 777);
           InvocationException stt = new InvocationException(Status.EXPECTATION_FAILED, customException);
           response.setResult(stt);
+          response.setStatus(stt.getStatus());
         }
       }
       asyncResp.complete(response);

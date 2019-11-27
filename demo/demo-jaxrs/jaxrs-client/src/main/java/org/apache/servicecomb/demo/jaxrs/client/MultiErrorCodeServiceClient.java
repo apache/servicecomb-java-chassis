@@ -41,7 +41,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.UnknownHttpStatusCodeException;
 
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
@@ -93,20 +95,24 @@ public class MultiErrorCodeServiceClient {
       template
           .postForEntity(serverDirectURL + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
     } catch (HttpClientErrorException e) {
-      TestMgr.check(e.getStatusCode(), 400);
+      TestMgr.check(e.getRawStatusCode(), 400);
       TestMgr.check(e.getMessage(), "400 Bad Request");
     }
 
     entity = new HttpEntity<>(null, headers);
-    result = template
-        .postForEntity(serverDirectURL + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
-    TestMgr.check(result.getStatusCodeValue(), 590);
+    try {
+      result = template
+          .postForEntity(serverDirectURL + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
+      TestMgr.check(590, 200);
+    } catch (UnknownHttpStatusCodeException e) {
+      TestMgr.check(e.getRawStatusCode(), 590);
+    }
 
     body = "{\"message\":\"hello\",\"code\":\"200\"}";
     entity = new HttpEntity<>(body, headers);
     result = template
         .postForEntity(serverDirectURL + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
-    TestMgr.check(result.getStatusCode(), 200);
+    TestMgr.check(result.getStatusCodeValue(), 200);
     TestMgr.check(result.getBody().getMessage(), "success result");
   }
 
@@ -116,7 +122,7 @@ public class MultiErrorCodeServiceClient {
     request.setCode(200);
     ResponseEntity<MultiResponse200> result = template
         .postForEntity(SERVER + "/MultiErrorCodeService/errorCode", request, MultiResponse200.class);
-    TestMgr.check(result.getStatusCode(), 200);
+    TestMgr.check(result.getStatusCodeValue(), 200);
     TestMgr.check(result.getBody().getMessage(), "success result");
 
     request.setCode(400);
@@ -146,7 +152,7 @@ public class MultiErrorCodeServiceClient {
     request.setCode(200);
     ResponseEntity<MultiResponse200> result = template
         .postForEntity(SERVER + "/MultiErrorCodeService/errorCodeWithHeader", request, MultiResponse200.class);
-    TestMgr.check(result.getStatusCode(), 200);
+    TestMgr.check(result.getStatusCodeValue(), 200);
     TestMgr.check(result.getBody().getMessage(), "success result");
     TestMgr.check(result.getBody().getCode(), 200);
     TestMgr.check(result.getHeaders().getFirst("x-code"), 200);
@@ -181,7 +187,7 @@ public class MultiErrorCodeServiceClient {
     request.setMessage("success result");
     ResponseEntity<MultiResponse200> result = template
         .postForEntity(SERVER + "/MultiErrorCodeService/errorCodeWithHeaderJAXRS", request, MultiResponse200.class);
-    TestMgr.check(result.getStatusCode(), 200);
+    TestMgr.check(result.getStatusCodeValue(), 200);
     TestMgr.check(result.getBody().getMessage(), "success result");
     TestMgr.check(result.getBody().getCode(), 200);
     TestMgr.check(result.getHeaders().getFirst("x-code"), 200);
@@ -220,7 +226,7 @@ public class MultiErrorCodeServiceClient {
 
     ResponseEntity<MultiResponse200> result = template
         .postForEntity(SERVER + "/MultiErrorCodeService/errorCodeWithHeaderJAXRS", requestJson, MultiResponse200.class);
-    TestMgr.check(result.getStatusCode(), 200);
+    TestMgr.check(result.getStatusCodeValue(), 200);
     TestMgr.check(result.getBody().getMessage(), "test message");
     TestMgr.check(result.getBody().getCode(), 200);
     TestMgr.check(result.getHeaders().getFirst("x-code"), 200);
@@ -233,7 +239,7 @@ public class MultiErrorCodeServiceClient {
     result = template
         .postForEntity(SERVER + "/MultiErrorCodeService/errorCodeWithHeaderJAXRS", new JsonObject(stringRequest),
             MultiResponse200.class);
-    TestMgr.check(result.getStatusCode(), 200);
+    TestMgr.check(result.getStatusCodeValue(), 200);
     TestMgr.check(result.getBody().getMessage(), "test message");
     TestMgr.check(result.getBody().getCode(), 200);
     TestMgr.check(result.getHeaders().getFirst("x-code"), 200);
@@ -242,7 +248,7 @@ public class MultiErrorCodeServiceClient {
     result = template
         .postForEntity(SERVER + "/MultiErrorCodeService/errorCodeWithHeaderJAXRS", stringRequest,
             MultiResponse200.class);
-    TestMgr.check(result.getStatusCode(), 200);
+    TestMgr.check(result.getStatusCodeValue(), 200);
     TestMgr.check(result.getBody().getMessage(), "test message");
     TestMgr.check(result.getBody().getCode(), 200);
     TestMgr.check(result.getHeaders().getFirst("x-code"), 200);
@@ -256,7 +262,7 @@ public class MultiErrorCodeServiceClient {
     @SuppressWarnings("rawtypes")
     ResponseEntity<List> listResult = template
         .postForEntity(SERVER + "/MultiErrorCodeService/noClientErrorCode", requestJson, List.class);
-    TestMgr.check(listResult.getStatusCode(), 200);
+    TestMgr.check(listResult.getStatusCodeValue(), 200);
     Map<?, ?> mapResult =
         RestObjectMapperFactory.getRestObjectMapper().convertValue(listResult.getBody().get(0), Map.class);
     TestMgr.check(mapResult.get("message"), "test message");

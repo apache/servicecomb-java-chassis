@@ -50,7 +50,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>spring-boot-starter-transport</artifactId>
+      <artifactId>spring-boot2-starter-servlet</artifactId>
     </dependency>
   </dependencies>
   <build>

@@ -70,7 +70,7 @@ public final class ParamUtils {
   }
 
   public static String getParameterName(Executable methodOrConstructor, int parameterIndex) {
-    MethodParameter methodParameter = MethodParameter.forMethodOrConstructor(methodOrConstructor, parameterIndex);
+    MethodParameter methodParameter = MethodParameter.forExecutable(methodOrConstructor, parameterIndex);
     return getParameterName(methodParameter, parameterIndex);
   }
 

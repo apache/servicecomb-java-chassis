@@ -38,8 +38,15 @@ public class ParamCodecSchema {
   @Path("spaceCharCodec/{pathVal}")
   @GET
   public String spaceCharCodec(@PathParam("pathVal") String pathVal, @QueryParam("q") String q) {
-    String expectedParamString = "a%2B+%20b%% %20c";
-    return pathVal + " +%20%% " + q + " " + (expectedParamString.equals(pathVal) && expectedParamString.equals(q));
+    String expectedPathParamString = "a%2B+%20b%% %20c";
+    String expectedParamStringQuery = "a%2B %20b%% %20c";
+    return pathVal + " +%20%% " + q + " " + (expectedPathParamString.equals(pathVal)
+        && matchOr(q, expectedPathParamString, expectedParamStringQuery));
+  }
+
+  private boolean matchOr(String result, String expected1, String expected2) {
+    // spring mvc & rpc handles "+' differently, both '+' or ' ' is correct according to HTTP SPEC. spring mvc changed from '+' to ' ' since spring 5.
+    return result.equals(expected1) || result.equals(expected2);
   }
 
   /**

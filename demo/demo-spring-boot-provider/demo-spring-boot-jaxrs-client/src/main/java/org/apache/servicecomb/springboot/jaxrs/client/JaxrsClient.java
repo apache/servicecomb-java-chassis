@@ -22,7 +22,7 @@ import org.apache.servicecomb.demo.RestObjectMapperWithStringMapper;
 import org.apache.servicecomb.demo.RestObjectMapperWithStringMapperNotWriteNull;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
-import org.apache.servicecomb.springboot.starter.provider.EnableServiceComb;
+import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
