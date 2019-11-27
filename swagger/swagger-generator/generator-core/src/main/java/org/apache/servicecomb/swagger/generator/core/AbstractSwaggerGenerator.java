@@ -23,7 +23,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -41,6 +40,7 @@ import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGeneratorFeature;
+import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -283,10 +283,7 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
   }
 
   protected void scanMethods() {
-    // order of cls.getMethods() is undefined and not stable
-    // so we must sort them first to make generation is stable
-    List<Method> methods = Arrays.asList(cls.getMethods());
-    methods.sort(Comparator.comparing(Method::getName));
+    List<Method> methods = MethodUtils.findProducerMethods(cls);
 
     for (Method method : methods) {
       if (isSkipMethod(method)) {
