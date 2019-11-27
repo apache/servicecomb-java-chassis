@@ -20,36 +20,36 @@ package org.apache.servicecomb.config.nacos.client;
 import org.apache.commons.configuration.Configuration;
 
 public class NacosConfig {
-    public static final NacosConfig INSTANCE = new NacosConfig();
+  public static final NacosConfig INSTANCE = new NacosConfig();
 
-    private static Configuration finalConfig;
+  private static Configuration finalConfig;
 
-    private static final String DATA_ID = "nacos.config.dataId";
+  private static final String DATA_ID = "nacos.config.dataId";
 
-    private static final String SERVER_ADDR = "nacos.config.serverAddr";
+  private static final String SERVER_ADDR = "nacos.config.serverAddr";
 
-    private static final String GROUP = "nacos.config.group";
+  private static final String GROUP = "nacos.config.group";
 
-    private NacosConfig() {
-    }
+  private NacosConfig() {
+  }
 
-    public static void setConcurrentCompositeConfiguration(Configuration config) {
-        finalConfig = config;
-    }
+  public static void setConcurrentCompositeConfiguration(Configuration config) {
+    finalConfig = config;
+  }
 
-    public Configuration getConcurrentCompositeConfiguration() {
-        return finalConfig;
-    }
+  public Configuration getConcurrentCompositeConfiguration() {
+    return finalConfig;
+  }
 
-    public String getServerAddr() {
-        return finalConfig.getString(SERVER_ADDR);
-    }
+  public String getServerAddr() {
+    return finalConfig.getString(SERVER_ADDR);
+  }
 
-    public String getDataId(){
-        return finalConfig.getString(DATA_ID);
-    }
+  public String getDataId(){
+    return finalConfig.getString(DATA_ID);
+  }
 
-    public String getGroup(){
-        return finalConfig.getString(GROUP);
-    }
+  public String getGroup(){
+    return finalConfig.getString(GROUP);
+  }
 }

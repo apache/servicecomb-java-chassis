@@ -18,7 +18,7 @@
 package org.apache.servicecomb.config.nacos.client;
 
 public enum ConfigurationAction {
-    CREATE,
-    SET,
-    DELETE
+  CREATE,
+  SET,
+  DELETE
 }
