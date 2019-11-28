@@ -18,11 +18,10 @@ package org.apache.servicecomb.it.schema.generic;
 
 import java.util.List;
 
-import org.apache.servicecomb.provider.pojo.RpcSchema;
-
 import io.swagger.annotations.ApiOperation;
 
-@RpcSchema(schemaId = "MyEndpointWithInterface")
+// TODO fix SCB-1448 later
+//@RpcSchema(schemaId = "MyEndpointWithInterface")
 public class MyEndpointWithInterface implements IMyService {
   @Override
   @ApiOperation(nickname = "hello", value = "hello")
