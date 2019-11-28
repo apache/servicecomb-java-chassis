@@ -67,7 +67,6 @@ public class SubProcessLogger implements Closeable {
   private void doRun() throws IOException {
     String line;
     while ((line = reader.readLine()) != null) {
-      System.out.println(String.format("[%s] %s", displayName, line));
       logs.add(String.format("[%s] %s", displayName, line));
 
       checkStartComplete(line);
