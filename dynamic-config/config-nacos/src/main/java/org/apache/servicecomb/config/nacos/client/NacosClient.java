@@ -30,6 +30,7 @@ import java.util.concurrent.*;
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
+
 import org.apache.servicecomb.config.nacos.archaius.sources.NacosConfigurationSourceImpl.UpdateHandler;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.slf4j.Logger;
@@ -58,54 +59,57 @@ public class NacosClient {
   }
 
   public void refreshNacosConfig() {
-        new ConfigRefresh(serverAddr, dataId, group).refreshConfig();
+    new ConfigRefresh(serverAddr, dataId, group).refreshConfig();
   }
 
   class ConfigRefresh {
-      private final String serverAddr;
-      private final String dataId;
-      private final String group;
-      ConfigRefresh(String serverAddr,String dataId,String group) {
-          this.serverAddr = serverAddr;
-          this.dataId = dataId;
-          this.group = group;
-      }
+    private final String serverAddr;
+
+    private final String dataId;
+
+    private final String group;
+
+    ConfigRefresh(String serverAddr, String dataId, String group) {
+      this.serverAddr = serverAddr;
+      this.dataId = dataId;
+      this.group = group;
+    }
 
     @SuppressWarnings("unchecked")
     void refreshConfig() {
-          Properties properties = new Properties();
-          properties.put("serverAddr",serverAddr);
-          properties.put("dataId",dataId);
-          properties.put("group",group);
-      try{
+      Properties properties = new Properties();
+      properties.put("serverAddr", serverAddr);
+      properties.put("dataId", dataId);
+      properties.put("group", group);
+      try {
         ConfigService configService = NacosFactory.createConfigService(properties);
         String content = configService.getConfig(dataId, group, 5000);
         Map<String, Object> body = JsonUtils.OBJ_MAPPER.readValue(content,
-              new TypeReference<Map<String, Object>>() {
-              });
+            new TypeReference<Map<String, Object>>() {
+            });
         refreshConfigItems(body);
         configService.addListener(dataId, group, new Listener() {
           @Override
           public void receiveConfigInfo(String configInfo) {
-              LOGGER.info("receive from nacos:"+configInfo);
-              try {
-                  Map<String, Object> body = JsonUtils.OBJ_MAPPER.readValue(configInfo,
-                          new TypeReference<Map<String, Object>>() {
-                          });
-                  refreshConfigItems(body);
-              } catch (IOException e) {
-                  LOGGER.error("JsonObject parse config center response error: ", e);
-              }
+            LOGGER.info("receive from nacos:" + configInfo);
+            try {
+              Map<String, Object> body = JsonUtils.OBJ_MAPPER.readValue(configInfo,
+                  new TypeReference<Map<String, Object>>() {
+                  });
+              refreshConfigItems(body);
+            } catch (IOException e) {
+              LOGGER.error("JsonObject parse config center response error: ", e);
+            }
           }
+
           @Override
           public Executor getExecutor() {
             return null;
           }
         });
-      }catch (Exception e){
-          LOGGER.error("Receive nacos config error: ", e);
+      } catch (Exception e) {
+        LOGGER.error("Receive nacos config error: ", e);
       }
-
     }
 
     private void refreshConfigItems(Map<String, Object> map) {
