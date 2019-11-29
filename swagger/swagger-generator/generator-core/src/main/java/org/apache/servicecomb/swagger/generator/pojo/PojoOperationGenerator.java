@@ -35,6 +35,7 @@ import org.apache.servicecomb.swagger.generator.SwaggerGeneratorFeature;
 import org.apache.servicecomb.swagger.generator.core.AbstractOperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
+import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
 
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.ModelImpl;
@@ -78,7 +79,7 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
   }
 
   private void wrapParametersToBody(List<ParameterGenerator> bodyFields) {
-    String simpleRef = method.getName() + "Body";
+    String simpleRef = MethodUtils.findSwaggerMethodName(method) + "Body";
 
     bodyModel = new ModelImpl();
     bodyModel.setType(ModelImpl.OBJECT);

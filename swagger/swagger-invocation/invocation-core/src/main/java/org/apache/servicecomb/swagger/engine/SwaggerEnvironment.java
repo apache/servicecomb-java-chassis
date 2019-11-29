@@ -22,12 +22,12 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
+import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
 import org.apache.servicecomb.swagger.invocation.arguments.ContextArgumentMapperFactory;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapperCreator;
@@ -43,7 +43,6 @@ import org.apache.servicecomb.swagger.invocation.response.producer.ProducerRespo
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.swagger.annotations.ApiOperation;
 import io.swagger.models.Swagger;
 import io.swagger.util.Json;
 
@@ -96,12 +95,7 @@ public class SwaggerEnvironment {
   }
 
   protected String findOperationId(Method consumerMethod) {
-    ApiOperation apiOperationAnnotation = consumerMethod.getAnnotation(ApiOperation.class);
-    if (apiOperationAnnotation == null || StringUtils.isEmpty(apiOperationAnnotation.nickname())) {
-      return consumerMethod.getName();
-    }
-
-    return apiOperationAnnotation.nickname();
+    return MethodUtils.findSwaggerMethodName(consumerMethod);
   }
 
   public SwaggerProducer createProducer(Object producerInstance, Swagger swagger) {
@@ -165,17 +159,10 @@ public class SwaggerEnvironment {
   private Map<String, Method> retrieveVisibleMethods(Class<?> clazz) {
     Map<String, Method> visibleMethods = new HashMap<>();
     for (Method method : clazz.getMethods()) {
-      String operationId = method.getName();
-      ApiOperation apiOperationAnnotation = method.getAnnotation(ApiOperation.class);
-      if (apiOperationAnnotation != null) {
-        if (apiOperationAnnotation.hidden()) {
-          continue;
-        }
-
-        if (StringUtils.isNotEmpty(apiOperationAnnotation.nickname())) {
-          operationId = apiOperationAnnotation.nickname();
-        }
+      if (MethodUtils.isHiddenInSwagger(method)) {
+        continue;
       }
+      String operationId = MethodUtils.findSwaggerMethodName(method);
 
       visibleMethods.put(operationId, method);
     }

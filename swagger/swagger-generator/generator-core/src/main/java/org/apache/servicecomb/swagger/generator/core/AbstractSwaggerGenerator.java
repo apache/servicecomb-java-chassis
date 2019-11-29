@@ -276,7 +276,7 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
     }
 
     if (!methodWhiteList.isEmpty()) {
-      return !methodWhiteList.contains(method.getName());
+      return !methodWhiteList.contains(MethodUtils.findSwaggerMethodName(method));
     }
 
     return false;
