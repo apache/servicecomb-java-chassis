@@ -34,7 +34,7 @@ public class SwaggerConsumer {
   }
 
   public void addOperation(SwaggerConsumerOperation op) {
-    operations.put(op.getConsumerMethodName(), op);
+    operations.put(op.getSchemaOperationId(), op);
   }
 
   public SwaggerConsumerOperation findOperation(String consumerMethodName) {

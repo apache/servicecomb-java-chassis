@@ -47,6 +47,7 @@ import org.apache.servicecomb.swagger.generator.ParameterProcessor;
 import org.apache.servicecomb.swagger.generator.ResponseTypeProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
+import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
 
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JavaType;
@@ -162,7 +163,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     }
 
     if (StringUtils.isEmpty(swaggerOperation.getOperationId())) {
-      swaggerOperation.setOperationId(method.getName());
+      swaggerOperation.setOperationId(MethodUtils.findSwaggerMethodName(method));
     }
 
     setDefaultTag();

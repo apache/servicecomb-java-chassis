@@ -19,6 +19,7 @@ package org.apache.servicecomb.swagger.engine;
 import java.lang.reflect.Method;
 
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
+import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
 
@@ -31,8 +32,8 @@ public class SwaggerConsumerOperation {
 
   private ConsumerResponseMapper responseMapper;
 
-  public String getConsumerMethodName() {
-    return consumerMethod.getName();
+  public String getSchemaOperationId() {
+    return MethodUtils.findSwaggerMethodName(consumerMethod);
   }
 
   public Method getConsumerMethod() {
