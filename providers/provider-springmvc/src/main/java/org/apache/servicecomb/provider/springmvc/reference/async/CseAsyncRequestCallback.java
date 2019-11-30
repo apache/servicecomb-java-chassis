@@ -19,10 +19,10 @@ package org.apache.servicecomb.provider.springmvc.reference.async;
 
 import org.apache.servicecomb.provider.springmvc.reference.CseHttpEntity;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.client.AsyncClientHttpRequest;
-import org.springframework.web.client.AsyncRequestCallback;
 
-public class CseAsyncRequestCallback<T> implements AsyncRequestCallback {
+@SuppressWarnings("deprecation")
+// TODO : upgrade to spring 5 will having warning's , we'll fix it later
+public class CseAsyncRequestCallback<T> implements org.springframework.web.client.AsyncRequestCallback {
   private HttpEntity<T> requestBody;
 
   CseAsyncRequestCallback(HttpEntity<T> requestBody) {
@@ -30,7 +30,9 @@ public class CseAsyncRequestCallback<T> implements AsyncRequestCallback {
   }
 
   @Override
-  public void doWithRequest(AsyncClientHttpRequest request) {
+  @SuppressWarnings("deprecation")
+// TODO : upgrade to spring 5 will having warning's , we'll fix it later
+  public void doWithRequest(org.springframework.http.client.AsyncClientHttpRequest request) {
     CseAsyncClientHttpRequest cseAsyncClientHttpRequest = (CseAsyncClientHttpRequest) request;
     if (requestBody != null) {
       cseAsyncClientHttpRequest.setRequestBody(requestBody.getBody());

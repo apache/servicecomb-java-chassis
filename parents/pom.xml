@@ -33,10 +33,6 @@
 
   <modules>
     <module>default</module>
-    <module>spring4</module>
-    <module>spring5</module>
-    <module>springboot1</module>
-    <module>springboot2</module>
   </modules>
 
 </project>

@@ -22,8 +22,9 @@ import java.net.URI;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.provider.springmvc.reference.async.CseAsyncClientHttpRequestFactory;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.client.AsyncClientHttpRequest;
 
+@SuppressWarnings("deprecation")
+// TODO : upgrade to spring 5 will having warning's , we'll fix it later
 public class ITAsyncClientHttpRequestFactory extends CseAsyncClientHttpRequestFactory {
   private String transport;
 
@@ -32,7 +33,7 @@ public class ITAsyncClientHttpRequestFactory extends CseAsyncClientHttpRequestFa
   }
 
   @Override
-  public AsyncClientHttpRequest createAsyncRequest(URI uri, HttpMethod httpMethod) {
+  public org.springframework.http.client.AsyncClientHttpRequest createAsyncRequest(URI uri, HttpMethod httpMethod) {
     return new ITAsyncClientHttpRequest(uri, httpMethod, transport);
   }
 }

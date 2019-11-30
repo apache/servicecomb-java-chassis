@@ -206,7 +206,7 @@ public class CodeFirstRestTemplate {
   protected void testCodeFirstSayHi(RestTemplate template, String cseUrlPrefix) {
     ResponseEntity<String> responseEntity =
         template.exchange(cseUrlPrefix + "sayhi/{name}", HttpMethod.PUT, null, String.class, "world");
-    TestMgr.check(202, responseEntity.getStatusCode());
+    TestMgr.check(202, responseEntity.getStatusCodeValue());
     TestMgr.check("world sayhi", responseEntity.getBody());
   }
 

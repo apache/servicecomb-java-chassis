@@ -60,7 +60,7 @@ import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.DefaultUriTemplateHandler;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriTemplateHandler;
 
 public class TestRestTemplateWrapper {
@@ -440,7 +440,9 @@ public class TestRestTemplateWrapper {
     assertThat(wrapper.getRestTemplate(url), is(wrapper.defaultRestTemplate));
   }
 
+  @SuppressWarnings("deprecation")
+// TODO : upgrade to spring 5 will having warning's , we'll fix it later
   private Map<String, ?> defaultUriVariablesOf(RestTemplate wrapper1) {
-    return ((DefaultUriTemplateHandler) wrapper1.getUriTemplateHandler()).getDefaultUriVariables();
+    return ((DefaultUriBuilderFactory) wrapper1.getUriTemplateHandler()).getDefaultUriVariables();
   }
 }

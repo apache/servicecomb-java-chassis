@@ -29,7 +29,7 @@
     <dependencies>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>java-chassis-dependencies-springboot2</artifactId>
+        <artifactId>java-chassis-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
         <scope>import</scope>

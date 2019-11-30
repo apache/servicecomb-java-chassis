@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.demo.springmvc.tests;
 
-import org.apache.servicecomb.springboot.starter.provider.EnableServiceComb;
+import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication

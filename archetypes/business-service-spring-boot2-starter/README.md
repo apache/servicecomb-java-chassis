@@ -1,5 +1,5 @@
 ## Welcome to use ServiceComb Java Chassis
-This project(module) is generate by *org.apache.servicecomb.archetypes:business-service-spring-boot-starter-archetype*, it use **spring-boot-starter-provider** to develop service producer.  
+This project(module) is generate by *org.apache.servicecomb.archetypes:business-service-spring-boot2-starter-archetype*, it use **spring-boot2-starter-standalone** to develop service producer.  
 
 ### More works can be done further:
 1. Modify "HelloImpl", add your business service logic, or create some new producers to provide your services. More details can be found : http://servicecomb.apache.org/users/develop-with-spring-boot-starter/

@@ -99,9 +99,9 @@
     <slf4j.version>1.7.26</slf4j.version>
     <snakeyaml.version>1.24</snakeyaml.version>
     <spectator.version>0.83.0</spectator.version>
-    <spring.version>4.3.20.RELEASE</spring.version>
-    <spring-boot.version>1.5.19.RELEASE</spring-boot.version>
-    <spring-cloud.version>Edgware.SR3</spring-cloud.version>     <!-- Spring Zuul handling of gzip response has bug in version Dalston.SR1 -->
+    <spring.version>5.1.5.RELEASE</spring.version>
+    <spring-boot.version>2.1.6.RELEASE</spring-boot.version>
+    <spring-cloud.version>Greenwich.RELEASE</spring-cloud.version>
     <stax2-api.version>4.2</stax2-api.version>
     <swagger.version>1.5.22</swagger.version>
     <swagger2markup.version>1.3.3</swagger2markup.version>
@@ -1214,46 +1214,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-boot-starter-configuration</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-boot-starter-discovery</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-boot-starter-provider</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-boot-starter-registry</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-boot-starter-servicecomb</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-boot-starter-transport</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-cloud-zuul</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-cloud-zuul-zipkin</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
         <artifactId>swagger-generator-core</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -1331,11 +1291,6 @@
       <dependency>
         <groupId>org.apache.servicecomb.archetypes</groupId>
         <artifactId>business-service-pojo-archetype</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb.archetypes</groupId>
-        <artifactId>business-service-spring-boot-starter-archetype</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

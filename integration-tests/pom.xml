@@ -38,16 +38,13 @@
     <module>test-common</module>
     <module>spring-jaxrs-tests</module>
     <module>pojo-test</module>
-    <module>spring-zuul-tracing-tests</module>
     <module>spring-pojo-tests</module>
     <module>dynamic-config-tests</module>
     <module>spring-pojo-connection-limit-test</module>
-
     <module>it-common</module>
     <module>it-producer</module>
     <module>it-edge</module>
     <module>it-common-service</module>
-
     <module>it-producer-deploy-springboot2-standalone</module>
     <module>it-producer-deploy-springboot2-servlet</module>
 

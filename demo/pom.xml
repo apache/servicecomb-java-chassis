@@ -40,12 +40,11 @@
     <module>demo-springmvc</module>
     <module>demo-schema</module>
     <module>demo-crossapp</module>
-    <module>demo-spring-boot-provider</module>
-    <module>demo-spring-boot-transport</module>
-    <module>demo-spring-boot-discovery</module>
     <module>demo-multiple</module>
     <module>demo-signature</module>
     <module>demo-edge</module>
+    <module>demo-spring-boot-provider</module>
+    <module>demo-spring-boot-transport</module>
     <module>perf</module>
   </modules>
 

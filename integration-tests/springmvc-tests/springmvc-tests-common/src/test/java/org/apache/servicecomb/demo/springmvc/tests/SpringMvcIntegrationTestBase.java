@@ -22,6 +22,7 @@ import static org.apache.servicecomb.serviceregistry.client.LocalServiceRegistry
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpMethod.GET;
@@ -66,11 +67,14 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
-import org.springframework.web.client.AsyncRestTemplate;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.UnknownHttpStatusCodeException;
 
 @Ignore
+@SuppressWarnings("deprecation")
+// TODO : upgrade to spring 5 will having warning's , we'll fix it later
 public class SpringMvcIntegrationTestBase {
   @ClassRule
   public static final TemporaryFolder folder = new TemporaryFolder();
@@ -79,7 +83,7 @@ public class SpringMvcIntegrationTestBase {
 
   private final RestTemplate restTemplate = new RestTemplate();
 
-  private final AsyncRestTemplate asyncRestTemplate = new AsyncRestTemplate();
+  private final org.springframework.web.client.AsyncRestTemplate asyncRestTemplate = new org.springframework.web.client.AsyncRestTemplate();
 
   private final String codeFirstUrl = baseUrl + "codeFirstSpringmvc/";
 
@@ -274,7 +278,7 @@ public class SpringMvcIntegrationTestBase {
         String.class);
 
     assertThat(result, is(file1Content + file2Content + username));
-    AsyncRestTemplate cseAsyncRestTemplate = new CseAsyncRestTemplate();
+    org.springframework.web.client.AsyncRestTemplate cseAsyncRestTemplate = new CseAsyncRestTemplate();
     ListenableFuture<ResponseEntity<String>> listenableFuture = cseAsyncRestTemplate
         .postForEntity("cse://springmvc-tests/codeFirstSpringmvc/upload",
             new HttpEntity<>(map, headers),
@@ -328,8 +332,9 @@ public class SpringMvcIntegrationTestBase {
       response = restTemplate
           .postForEntity(codeFirstUrl + "uploadWithoutAnnotation", new HttpEntity<>(map, headers), String.class);
       assertEquals("required is true, throw exception", "but not throw exception");
-    } catch (RestClientException e) {
-      assertEquals("400 Bad Request", e.getMessage());
+    } catch (HttpClientErrorException e) {
+      assertEquals(400, e.getRawStatusCode());
+      assertEquals("Bad Request", e.getStatusCode().getReasonPhrase());
     }
   }
 
@@ -630,10 +635,14 @@ public class SpringMvcIntegrationTestBase {
 
   @Test
   public void ensureServerBlowsUp() {
-    ResponseEntity<String> response = restTemplate
-        .getForEntity(controllerUrl + "sayhi?name=throwexception", String.class);
-    assertThat(response.getStatusCodeValue(), is(590));
-    assertThat(response.getBody(), is("{\"message\":\"Cse Internal Server Error\"}"));
+    try {
+      restTemplate
+          .getForEntity(controllerUrl + "sayhi?name=throwexception", String.class);
+      assertFalse(true);
+    } catch (UnknownHttpStatusCodeException e) {
+      assertThat(e.getRawStatusCode(), is(590));
+      assertThat(e.getResponseBodyAsString(), is("{\"message\":\"Cse Internal Server Error\"}"));
+    }
   }
 
   @Test
