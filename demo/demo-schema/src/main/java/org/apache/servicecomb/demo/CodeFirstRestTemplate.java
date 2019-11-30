@@ -51,8 +51,9 @@ public class CodeFirstRestTemplate {
 
   public void testCodeFirst(RestTemplate template, String microserviceName, String basePath) {
     String cseUrlPrefix = "cse://" + microserviceName + basePath;
-    changeTransport(microserviceName, "highway");
-    testOnlyHighway(template, cseUrlPrefix);
+    // TODO recover highway test in SCB-1635
+//    changeTransport(microserviceName, "highway");
+//    testOnlyHighway(template, cseUrlPrefix);
 
     changeTransport(microserviceName, Const.RESTFUL);
     testOnlyRest(template, cseUrlPrefix);
