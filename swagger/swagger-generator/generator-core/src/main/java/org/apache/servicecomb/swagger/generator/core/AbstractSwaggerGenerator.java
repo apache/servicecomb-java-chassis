@@ -110,6 +110,7 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
   }
 
   public Swagger generate() {
+    LOGGER.info("generate schema from [{}]", cls);
     scanClassAnnotation();
 
     ThreadLocal<SwaggerGeneratorFeature> featureThreadLocal = SwaggerGeneratorFeature.getFeatureThreadLocal();
