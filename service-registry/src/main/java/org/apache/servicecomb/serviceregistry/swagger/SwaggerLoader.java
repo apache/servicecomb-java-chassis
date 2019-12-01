@@ -73,6 +73,7 @@ public class SwaggerLoader {
   }
 
   public void registerSwaggersInLocation(String microserviceName, String swaggersLocation) {
+    LOGGER.info("register schemas in location [{}], microserviceName=[{}]", swaggersLocation, microserviceName);
     try (InputStream inputStream = JvmUtils.findClassLoader().getResourceAsStream(swaggersLocation)) {
       if (inputStream == null) {
         LOGGER.error("register swagger in not exist location: \"{}\".", swaggersLocation);
@@ -147,8 +148,11 @@ public class SwaggerLoader {
   }
 
   public Swagger loadLocalSwagger(String appId, String shortName, String schemaId) {
+    LOGGER.info("try to load schema locally, appId=[{}], serviceName=[{}], schemaId=[{}]",
+        appId, shortName, schemaId);
     Swagger swagger = loadFromMemory(appId, shortName, schemaId);
     if (swagger != null) {
+      LOGGER.info("load schema from memory");
       return swagger;
     }
 
@@ -179,6 +183,7 @@ public class SwaggerLoader {
       return null;
     }
 
+    LOGGER.info("load schema from path [{}]", path);
     return SwaggerUtils.parseAndValidateSwagger(url);
   }
 
