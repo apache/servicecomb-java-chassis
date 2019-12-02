@@ -44,6 +44,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.ResourcePatternResolver;
 
 import io.swagger.models.Swagger;
 import mockit.Deencapsulation;
@@ -211,12 +213,41 @@ public class TestSwaggerLoader extends TestRegistryBase {
     expectedException.expectCause(allOf(instanceOf(ServiceCombException.class),
         hasProperty("message", is("Parse swagger from url failed, url=location/invalid.yaml"))));
 
-    Map<String, String> resourceMap = new HashMap<>();
-    resourceMap.put("location", "invalid.yaml");
-    resourceMap.put("location/invalid.yaml", "invalid yaml content");
-    mockLocalResource(resourceMap);
+    String yamlLocation = "location/invalid.yaml";
+    String content = "invalid yaml content";
+    URL url = new MockUp<URL>() {
+      @Mock
+      String getPath() {
+        return yamlLocation;
+      }
+
+      @Mock
+      String toExternalForm() {
+        return yamlLocation;
+      }
+
+      @Mock
+      InputStream openStream() {
+        return new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
+      }
+    }.getMockInstance();
+    Resource resource = new MockUp<Resource>() {
+      @Mock
+      URL getURL() {
+        return url;
+      }
+    }.getMockInstance();
+    ResourcePatternResolver resourcePatternResolver = new MockUp<ResourcePatternResolver>() {
+      @Mock
+      Resource[] getResources(String locationPattern) {
+        return new Resource[] {resource};
+      }
+    }.getMockInstance();
+    ResourcePatternResolver preservedResolver = serviceRegistry.getSwaggerLoader().resourcePatternResolver;
+    serviceRegistry.getSwaggerLoader().resourcePatternResolver = resourcePatternResolver;
 
     serviceRegistry.getSwaggerLoader().registerSwaggersInLocation("location");
+    serviceRegistry.getSwaggerLoader().resourcePatternResolver = preservedResolver;
   }
 
   @Test
