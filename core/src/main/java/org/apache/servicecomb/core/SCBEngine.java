@@ -48,6 +48,7 @@ import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.VendorExtensions;
+import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.log.LogMarkerLeakFixUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
@@ -277,6 +278,7 @@ public class SCBEngine {
   private void triggerAfterRegistryEvent() {
     eventBus.register(new Object() {
       @Subscribe
+      @EnableExceptionPropagation
       public void afterRegistryInstance(MicroserviceInstanceRegisterTask microserviceInstanceRegisterTask) {
         LOGGER.info("receive MicroserviceInstanceRegisterTask event, check instance Id...");
 
