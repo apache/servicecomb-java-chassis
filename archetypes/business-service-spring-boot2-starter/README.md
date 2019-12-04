@@ -1,5 +1,5 @@
 ## Welcome to use ServiceComb Java Chassis
-This project(module) is generate by *org.apache.servicecomb.archetypes:business-service-spring-boot2-starter-archetype*, it use **spring-boot2-starter-standalone** to develop service producer.  
+This project(module) is generate by *org.apache.servicecomb.archetypes:business-service-spring-boot2-starter-archetype*, it use **java-chassis-spring-boot-starter-standalone** to develop service producer.  
 
 ### More works can be done further:
 1. Modify "HelloImpl", add your business service logic, or create some new producers to provide your services. More details can be found : http://servicecomb.apache.org/users/develop-with-spring-boot-starter/
@@ -28,8 +28,8 @@ Using Spring Boot in microservice development, can greatly simplifying configure
 
 ### How ServiceComb make integration with Spring Boot2
 Developers often use Spring Boot2 in the following way:
-* Java application : import `spring-boot2-starter-standalone` and set `web-application-type: none` in application.yaml then develop general application, does not contain WEB
-* Web application : import `spring-boot2-starter-servlet` then develop web application, also include an embedded Tomcat or Jetty server, and use Spring Web MVC framework to develop REST endpoints
+* Java application : import `java-chassis-spring-boot-starter-standalone` and set `web-application-type: none` in application.yaml then develop general application, does not contain WEB
+* Web application : import `java-chassis-spring-boot-starter-servlet` then develop web application, also include an embedded Tomcat or Jetty server, and use Spring Web MVC framework to develop REST endpoints
 
 The first way, do not need any refactoring, directly startup ServiceComb via Spring Boot.
 

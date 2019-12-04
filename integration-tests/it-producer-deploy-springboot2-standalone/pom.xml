@@ -45,7 +45,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>spring-boot2-starter-standalone</artifactId>
+      <artifactId>java-chassis-spring-boot-starter-standalone</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>

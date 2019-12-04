@@ -20,31 +20,33 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <artifactId>spring-boot2-starter-parent</artifactId>
+    <artifactId>java-chassis-spring-boot-starters</artifactId>
     <groupId>org.apache.servicecomb</groupId>
     <version>2.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>spring-boot2-starter-standalone</artifactId>
-  <name>Java Chassis::Spring Boot2 Starter::Standalone</name>
+  <artifactId>java-chassis-spring-boot-starter-servlet</artifactId>
+  <name>Java Chassis::Spring Boot Starter::Servlet</name>
 
   <dependencies>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>spring-boot2-starter</artifactId>
+      <artifactId>java-chassis-spring-boot-starter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>transport-rest-vertx</artifactId>
+      <artifactId>transport-rest-servlet</artifactId>
     </dependency>
-
-    <!--ConditionEvaluationReportLoggingListener need in autoconfigure-->
     <dependency>
-      <groupId>org.hibernate.validator</groupId>
-      <artifactId>hibernate-validator</artifactId>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <scope>compile</scope>
     </dependency>
-
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>foundation-test-scaffolding</artifactId>
