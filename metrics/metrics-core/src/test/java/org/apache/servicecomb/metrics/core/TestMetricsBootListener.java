@@ -18,11 +18,19 @@ package org.apache.servicecomb.metrics.core;
 
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestMetricsBootListener {
+  @Before
+  public void setUp() {
+    // Metrics boot depends on executor bean. Old test will fail but event handling not throw the error.
+    BeanUtils.init();
+  }
+
   @Test
   public void registerSchemas() {
     new SCBBootstrap().useLocalRegistry().createSCBEngineForTest().run();

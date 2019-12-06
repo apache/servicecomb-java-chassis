@@ -41,14 +41,51 @@ public class ProducerTestsAfterBootup implements BootListener {
 
   private ObjectWriter writer = Yaml.pretty();
 
+  private static final String EXPECTED_DATA = "---\n"
+      + "swagger: \"2.0\"\n"
+      + "info:\n"
+      + "  version: \"1.0.0\"\n"
+      + "  title: \"swagger definition for org.apache.servicecomb.demo.springmvc.server.CodeFirstSpringmvcForSchema\"\n"
+      + "  x-java-interface: \"gen.swagger.CodeFirstSpringmvcForSchemaIntf\"\n"
+      + "basePath: \"/forScheam\"\n"
+      + "consumes:\n"
+      + "- \"application/json\"\n"
+      + "produces:\n"
+      + "- \"application/json\"\n"
+      + "paths:\n"
+      + "  /uploadFile:\n"
+      + "    post:\n"
+      + "      operationId: \"uploadAwardFile\"\n"
+      + "      consumes:\n"
+      + "      - \"multipart/form-data\"\n"
+      + "      produces:\n"
+      + "      - \"application/json\"\n"
+      + "      parameters:\n"
+      + "      - name: \"fileType\"\n"
+      + "        in: \"query\"\n"
+      + "        required: true\n"
+      + "        type: \"string\"\n"
+      + "      - name: \"zoneId\"\n"
+      + "        in: \"query\"\n"
+      + "        required: true\n"
+      + "        type: \"string\"\n"
+      + "      - name: \"file\"\n"
+      + "        in: \"formData\"\n"
+      + "        required: true\n"
+      + "        type: \"file\"\n"
+      + "      responses:\n"
+      + "        \"200\":\n"
+      + "          description: \"response of 200\"\n"
+      + "          schema:\n"
+      + "            type: \"boolean\"\n";
+
   public void testSchemaNotChange(SCBEngine scbEngine) {
     LOGGER.info("ProducerTestsAfterBootup testing start");
     //we can not set microserviceName any more
     SchemaMeta meta = scbEngine.getProducerProviderManager().registerSchema("test1", new CodeFirstSpringmvcForSchema());
     String codeFirst = getSwaggerContent(meta.getSwagger());
-    TestMgr.check("608f6cbb3554839de311d90d16a44ffc41ef66575101e172eb54ccc255e8675d",
-        RegistryUtils.calcSchemaSummary(codeFirst));
-    TestMgr.check(codeFirst.length(), 891);
+    TestMgr.check(EXPECTED_DATA,
+        codeFirst);
   }
 
   public void testRegisteredBasePath() {
