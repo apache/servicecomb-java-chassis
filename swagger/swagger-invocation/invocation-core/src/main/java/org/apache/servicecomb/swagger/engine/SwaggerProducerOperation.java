@@ -185,7 +185,7 @@ public class SwaggerProducerOperation {
   }
 
   public Response doInvoke(SwaggerInvocation invocation) {
-    Response response = null;
+    Response response;
     try {
       invocation.onBusinessMethodStart();
 
@@ -209,8 +209,10 @@ public class SwaggerProducerOperation {
           new InvocationException(Status.BAD_REQUEST.getStatusCode(), "",
               new CommonExceptionData("Parameters not valid or types not match."), ae));
     } catch (Throwable e) {
-      LOGGER.error("unexpected error {},",
-          invocation.getInvocationQualifiedName(), e);
+      if (shouldPrintErrorLog(e)) {
+        LOGGER.error("unexpected error {},",
+            invocation.getInvocationQualifiedName(), e);
+      }
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();
       response = processException(invocation, e);
@@ -218,8 +220,16 @@ public class SwaggerProducerOperation {
     return response;
   }
 
+  protected boolean shouldPrintErrorLog(Throwable throwable) {
+    if (!(throwable instanceof InvocationTargetException)) {
+      return true;
+    }
+    Throwable targetException = ((InvocationTargetException) throwable).getTargetException();
+    return !(targetException instanceof InvocationException);
+  }
+
   protected Response processException(SwaggerInvocation invocation, Throwable e) {
-    if (InvocationTargetException.class.isInstance(e)) {
+    if (e instanceof InvocationTargetException) {
       e = ((InvocationTargetException) e).getTargetException();
     }
 
