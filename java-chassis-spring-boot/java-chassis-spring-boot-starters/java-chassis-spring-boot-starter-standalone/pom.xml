@@ -19,44 +19,37 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-
   <parent>
+    <artifactId>java-chassis-spring-boot-starters</artifactId>
     <groupId>org.apache.servicecomb</groupId>
-    <artifactId>spring-boot2-starter-parent</artifactId>
     <version>2.0.0-SNAPSHOT</version>
   </parent>
+  <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>spring-boot2-starter-gateway</artifactId>
-  <name>Java Chassis::Spring Boot2 Starter::Gateway</name>
+  <artifactId>java-chassis-spring-boot-starter-standalone</artifactId>
+  <name>Java Chassis::Spring Boot Starter::Standalone</name>
 
   <dependencies>
     <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-gateway</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-gateway-webflux</artifactId>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>java-chassis-spring-boot-starter</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>transport-rest-vertx</artifactId>
     </dependency>
+
+    <!--ConditionEvaluationReportLoggingListener need in autoconfigure-->
     <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-core</artifactId>
+      <groupId>org.hibernate.validator</groupId>
+      <artifactId>hibernate-validator</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>spring-boot2-starter-discovery</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.apache.servicecomb</groupId>
-          <artifactId>provider-springmvc</artifactId>
-        </exclusion>
-      </exclusions>
+      <artifactId>foundation-test-scaffolding</artifactId>
     </dependency>
   </dependencies>
+
 </project>

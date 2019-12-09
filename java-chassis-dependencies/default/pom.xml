@@ -1198,32 +1198,32 @@
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-boot2-starter</artifactId>
+        <artifactId>java-chassis-spring-boot-starter</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-boot2-starter-discovery</artifactId>
+        <artifactId>java-chassis-spring-boot-starter-discovery</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-boot2-starter-gateway</artifactId>
+        <artifactId>java-chassis-spring-boot-starter-gateway</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-boot2-starter-servlet</artifactId>
+        <artifactId>java-chassis-spring-boot-starter-servlet</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-boot2-starter-standalone</artifactId>
+        <artifactId>java-chassis-spring-boot-starter-standalone</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>spring-boot-common</artifactId>
+        <artifactId>java-chassis-spring-boot-common</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
