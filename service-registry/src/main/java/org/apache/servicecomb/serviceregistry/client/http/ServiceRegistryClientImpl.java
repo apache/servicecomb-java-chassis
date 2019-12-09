@@ -695,9 +695,9 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
               response = JsonUtils.readValue(bodyBuffer.getBytes(),
                   MicroserviceInstanceChangedEvent.class);
             } catch (Exception e) {
-              LOGGER.error("watcher handle microservice {} response failed, {}",
+              LOGGER.error("watcher handle microservice {} response failed.",
                   selfMicroserviceId,
-                  bodyBuffer.toString());
+                  e);
               return;
             }
             try {
