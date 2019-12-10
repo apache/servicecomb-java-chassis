@@ -63,7 +63,10 @@ public final class WebsocketUtils {
           asyncResult.result().closeHandler(v -> {
             onClose.handle(v);
           });
-          asyncResult.result().handler(onMessage);
+          asyncResult.result().pongHandler(pong -> {
+            // ignore, just prevent NPE.
+          });
+          asyncResult.result().frameHandler((frame) -> onMessage.handle(frame.binaryData()));
         }
       });
     });
