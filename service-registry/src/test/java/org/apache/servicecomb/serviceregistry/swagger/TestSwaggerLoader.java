@@ -23,19 +23,24 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.core.Is.is;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import javax.xml.ws.Holder;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
+import org.apache.servicecomb.foundation.common.utils.ResourceUtil;
 import org.apache.servicecomb.serviceregistry.TestRegistryBase;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.swagger.SwaggerUtils;
@@ -44,8 +49,6 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.ResourcePatternResolver;
 
 import io.swagger.models.Swagger;
 import mockit.Deencapsulation;
@@ -87,7 +90,7 @@ public class TestSwaggerLoader extends TestRegistryBase {
   }
 
   @Test
-  public void loadFromResource_sameApp_dirWithoutApp() throws IOException {
+  public void loadFromResource_sameApp_dirWithoutApp() {
     Swagger swagger = SwaggerGenerator.generate(Hello.class);
     mockLocalResource(swagger, String.format("microservices/%s/%s.yaml", serviceName, schemaId));
 
@@ -101,7 +104,7 @@ public class TestSwaggerLoader extends TestRegistryBase {
   }
 
   @Test
-  public void loadFromResource_sameApp_dirWithApp() throws IOException {
+  public void loadFromResource_sameApp_dirWithApp() {
     Swagger swagger = SwaggerGenerator.generate(Hello.class);
     mockLocalResource(swagger, String.format("applications/%s/%s/%s.yaml", appId, serviceName, schemaId));
 
@@ -115,7 +118,7 @@ public class TestSwaggerLoader extends TestRegistryBase {
   }
 
   @Test
-  public void loadFromResource_diffApp_dirWithoutApp() throws IOException {
+  public void loadFromResource_diffApp_dirWithoutApp() {
     Swagger swagger = SwaggerGenerator.generate(Hello.class);
     mockLocalResource(swagger, String.format("microservices/%s/%s.yaml", "ms3", schemaId));
 
@@ -129,7 +132,7 @@ public class TestSwaggerLoader extends TestRegistryBase {
   }
 
   @Test
-  public void loadFromResource_diffApp_dirWithApp() throws IOException {
+  public void loadFromResource_diffApp_dirWithApp() {
     Swagger swagger = SwaggerGenerator.generate(Hello.class);
     mockLocalResource(swagger, String.format("applications/%s/%s/%s.yaml", "other", "ms3", schemaId));
 
@@ -213,41 +216,40 @@ public class TestSwaggerLoader extends TestRegistryBase {
     expectedException.expectCause(allOf(instanceOf(ServiceCombException.class),
         hasProperty("message", is("Parse swagger from url failed, url=location/invalid.yaml"))));
 
-    String yamlLocation = "location/invalid.yaml";
-    String content = "invalid yaml content";
     URL url = new MockUp<URL>() {
+
+      private String path = "location/invalid.yaml";
+
       @Mock
       String getPath() {
-        return yamlLocation;
+        return path;
       }
 
       @Mock
       String toExternalForm() {
-        return yamlLocation;
-      }
-
-      @Mock
-      InputStream openStream() {
-        return new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8));
+        return path;
       }
     }.getMockInstance();
-    Resource resource = new MockUp<Resource>() {
+    URI uri = new MockUp<URI>() {
       @Mock
-      URL getURL() {
+      URL toURL() {
         return url;
       }
     }.getMockInstance();
-    ResourcePatternResolver resourcePatternResolver = new MockUp<ResourcePatternResolver>() {
+    new MockUp<ResourceUtil>() {
       @Mock
-      Resource[] getResources(String locationPattern) {
-        return new Resource[] {resource};
+      List<URI> loadResources(String directory, Function<Path, Boolean> filter) {
+        return Collections.singletonList(uri);
       }
-    }.getMockInstance();
-    ResourcePatternResolver preservedResolver = serviceRegistry.getSwaggerLoader().resourcePatternResolver;
-    serviceRegistry.getSwaggerLoader().resourcePatternResolver = resourcePatternResolver;
+    };
+    new MockUp<IOUtils>() {
+      @Mock
+      String toString(final URL url, final Charset encoding) {
+        return "invalid yaml content";
+      }
+    };
 
     serviceRegistry.getSwaggerLoader().registerSwaggersInLocation("location");
-    serviceRegistry.getSwaggerLoader().resourcePatternResolver = preservedResolver;
   }
 
   @Test

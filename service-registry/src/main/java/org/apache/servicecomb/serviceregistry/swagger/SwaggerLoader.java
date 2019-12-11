@@ -16,15 +16,17 @@
  */
 package org.apache.servicecomb.serviceregistry.swagger;
 
-import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
+import org.apache.servicecomb.foundation.common.utils.ResourceUtil;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceNameParser;
@@ -32,9 +34,6 @@ import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.core.io.support.ResourcePatternResolver;
 
 import io.swagger.models.Swagger;
 
@@ -47,8 +46,6 @@ public class SwaggerLoader {
   // second key: microservice short name
   // third key : schemaId
   private Map<String, Map<String, Map<String, Swagger>>> apps = new ConcurrentHashMapEx<>();
-
-  ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 
   public SwaggerLoader(ServiceRegistry serviceRegistry) {
     this.serviceRegistry = serviceRegistry;
@@ -77,34 +74,22 @@ public class SwaggerLoader {
   public void registerSwaggersInLocation(String microserviceName, String swaggersLocation) {
     LOGGER.info("register schemas in location [{}], microserviceName=[{}]", swaggersLocation, microserviceName);
     try {
-      Resource[] resources = readSwaggerResources(microserviceName, swaggersLocation);
-      for (Resource resource : resources) {
-        registerSwagger(microserviceName, swaggersLocation, resource);
+      List<URI> resourceUris = ResourceUtil.loadResources(swaggersLocation, ResourceUtil.matchSuffix(".yaml"));
+      if (resourceUris.isEmpty()) {
+        LOGGER.error("register swagger in not exist location: \"{}\".", swaggersLocation);
+        return;
+      }
+      for (URI uri : resourceUris) {
+        URL url = uri.toURL();
+        Swagger swagger = SwaggerUtils.parseAndValidateSwagger(url);
+        String schemaId = FilenameUtils.getBaseName(url.getPath());
+        registerSwagger(microserviceName, schemaId, swagger);
       }
     } catch (Throwable e) {
       throw new IllegalStateException(String.format(
           "failed to register swaggers, microserviceName=%s, location=%s.", microserviceName, swaggersLocation),
           e);
     }
-  }
-
-  private void registerSwagger(String microserviceName, String swaggersLocation, Resource resource) throws IOException {
-    URL url = resource.getURL();
-    String schemaId = FilenameUtils.getBaseName(url.getPath());
-    Swagger swagger = SwaggerUtils.parseAndValidateSwagger(url);
-    registerSwagger(microserviceName, schemaId, swagger);
-  }
-
-  private Resource[] readSwaggerResources(String microserviceName, String swaggersLocation) throws IOException {
-    Resource[] resources = resourcePatternResolver.getResources(getLocationPattern(swaggersLocation));
-    if (0 == resources.length) {
-      LOGGER.warn("no schema file found");
-    }
-    return resources;
-  }
-
-  private String getLocationPattern(String swaggersLocation) {
-    return "classpath*:" + swaggersLocation + "/*.yaml";
   }
 
   public void registerSwagger(String schemaId, Swagger swagger) {
