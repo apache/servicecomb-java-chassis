@@ -29,7 +29,7 @@ public class TestCseRequestCallback {
   @Test
   public void testNormal(@Mocked RequestCallback callback) throws IOException {
     CseClientHttpRequest request = new CseClientHttpRequest();
-    CseRequestCallback cb = new CseRequestCallback(null, callback);
+    CseRequestCallback cb = new CseRequestCallback(null, callback, null);
     cb.doWithRequest(request);
 
     Assert.assertEquals(null, request.getContext());
@@ -41,7 +41,7 @@ public class TestCseRequestCallback {
     CseClientHttpRequest request = new CseClientHttpRequest();
 
     entity.addContext("c1", "c2");
-    CseRequestCallback cb = new CseRequestCallback(entity, callback);
+    CseRequestCallback cb = new CseRequestCallback(entity, callback, null);
     cb.doWithRequest(request);
 
     Assert.assertEquals(entity.getContext(), request.getContext());

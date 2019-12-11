@@ -35,14 +35,14 @@ public class CseRestTemplate extends AcceptableRestTemplate {
   @Override
   public <T> RequestCallback httpEntityCallback(Object requestBody) {
     RequestCallback callback = super.httpEntityCallback(requestBody);
-    CseRequestCallback cseCallback = new CseRequestCallback(requestBody, callback);
+    CseRequestCallback cseCallback = new CseRequestCallback(requestBody, callback, null);
     return cseCallback;
   }
 
   @Override
   public <T> RequestCallback httpEntityCallback(Object requestBody, Type responseType) {
     RequestCallback callback = super.httpEntityCallback(requestBody, responseType);
-    CseRequestCallback cseCallback = new CseRequestCallback(requestBody, callback);
+    CseRequestCallback cseCallback = new CseRequestCallback(requestBody, callback, responseType);
     return cseCallback;
   }
 
