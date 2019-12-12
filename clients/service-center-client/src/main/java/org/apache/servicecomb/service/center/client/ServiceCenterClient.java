@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
 
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.servicecomb.service.center.client.exception.OperationException;
@@ -132,7 +133,7 @@ public class ServiceCenterClient {
     try {
       HttpResponse response = httpClient.getHttpRequest("/registry/health", null, null);
       if (response.getStatusCode() == HttpStatus.SC_OK) {
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = buildAfterBurnerObjectMapper();
         return mapper.readValue(response.getContent(), MicroserviceInstancesResponse.class);
       } else {
         throw new OperationException(
@@ -155,7 +156,7 @@ public class ServiceCenterClient {
    */
   public String registerMicroservice(Microservice microservice) {
     try {
-      ObjectMapper mapper = new ObjectMapper();
+      ObjectMapper mapper = buildAfterBurnerObjectMapper();
       mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
       HttpResponse response = httpClient
           .postHttpRequest("/registry/microservices", null, mapper.writeValueAsString(microservice));
@@ -183,7 +184,7 @@ public class ServiceCenterClient {
     try {
       HttpResponse response = httpClient.getHttpRequest("/registry/microservices", null, null);
       if (response.getStatusCode() == HttpStatus.SC_OK) {
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = buildAfterBurnerObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         return mapper.readValue(response.getContent(), MicroservicesResponse.class);
       } else {
@@ -243,7 +244,7 @@ public class ServiceCenterClient {
     try {
       HttpResponse response = httpClient.getHttpRequest("/registry/microservices/" + serviceId, null, null);
       if (response.getStatusCode() == HttpStatus.SC_OK) {
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = buildAfterBurnerObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         JsonNode jsonNode = mapper.readTree(response.getContent());
         return mapper.readValue(jsonNode.get("service").toString(), Microservice.class);
@@ -269,7 +270,7 @@ public class ServiceCenterClient {
    */
   public String registerMicroserviceInstance(MicroserviceInstance instance, String serviceId) {
     try {
-      ObjectMapper mapper = new ObjectMapper();
+      ObjectMapper mapper = buildAfterBurnerObjectMapper();
       mapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
       HttpResponse response = httpClient.postHttpRequest("/registry/microservices/" + serviceId + "/instances", null,
           mapper.writeValueAsString(instance));
@@ -299,7 +300,7 @@ public class ServiceCenterClient {
       HttpResponse response = httpClient
           .getHttpRequest("/registry/microservices/" + serviceId + "/instances", null, null);
       if (response.getStatusCode() == HttpStatus.SC_OK) {
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = buildAfterBurnerObjectMapper();
         return mapper.readValue(response.getContent(), MicroserviceInstancesResponse.class);
       } else {
         throw new OperationException(
@@ -327,7 +328,7 @@ public class ServiceCenterClient {
       HttpResponse response = httpClient
           .getHttpRequest("/registry/microservices/" + serviceId + "/instances/" + instanceId, null, null);
       if (response.getStatusCode() == HttpStatus.SC_OK) {
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = buildAfterBurnerObjectMapper();
         JsonNode jsonNode = mapper.readTree(response.getContent());
         return mapper.readValue(jsonNode.get("instance").toString(), MicroserviceInstance.class);
       } else {
@@ -406,7 +407,7 @@ public class ServiceCenterClient {
    */
   public void sendHeartBeats(HeartbeatsRequest heartbeatsRequest) {
     try {
-      ObjectMapper mapper = new ObjectMapper();
+      ObjectMapper mapper = buildAfterBurnerObjectMapper();
       HttpResponse response = httpClient
           .putHttpRequest("/registry/heartbeats", null, mapper.writeValueAsString(heartbeatsRequest));
 
@@ -421,5 +422,11 @@ public class ServiceCenterClient {
       throw new OperationException(
           "heartbeats fails ", e);
     }
+  }
+
+  private ObjectMapper buildAfterBurnerObjectMapper(){
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.registerModule(new AfterburnerModule());
+    return mapper;
   }
 }

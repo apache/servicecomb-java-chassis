@@ -29,6 +29,12 @@
   <name>Java Chassis::Foundations::Protobuf</name>
 
   <dependencies>
+    <!-- Jackson Accessor -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-afterburner</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>foundation-common</artifactId>

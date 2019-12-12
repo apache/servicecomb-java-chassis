@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import org.apache.http.HttpStatus;
 import org.apache.servicecomb.kie.client.http.HttpResponse;
 import org.apache.servicecomb.kie.client.model.KVBody;
@@ -70,7 +71,7 @@ public class KieClient {
    */
   public String putKeyValue(String key, KVBody kvBody) {
     try {
-      ObjectMapper mapper = new ObjectMapper();
+      ObjectMapper mapper = buildAfterBurnerObjectMapper();
       HttpResponse response = httpClient.putHttpRequest("/kie/kv/" + key, null, mapper.writeValueAsString(kvBody));
       if (response.getStatusCode() == HttpStatus.SC_OK) {
         return response.getContent();
@@ -94,7 +95,7 @@ public class KieClient {
     try {
       HttpResponse response = httpClient.getHttpRequest("/kie/kv/" + key, null, null);
       if (response.getStatusCode() == HttpStatus.SC_OK) {
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = buildAfterBurnerObjectMapper();
         return mapper.readValue(response.getContent(), new TypeReference<List<KVResponse>>() {
         });
       } else {
@@ -125,7 +126,7 @@ public class KieClient {
       stringBuilder.deleteCharAt(stringBuilder.length() - 1);
       HttpResponse response = httpClient.getHttpRequest("/kie/kv?q=" + stringBuilder.toString(), null, null);
       if (response.getStatusCode() == HttpStatus.SC_OK) {
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = buildAfterBurnerObjectMapper();
         return mapper.readValue(response.getContent(), new TypeReference<List<KVResponse>>() {
         });
       } else {
@@ -156,5 +157,11 @@ public class KieClient {
     } catch (IOException e) {
       LOGGER.error("delete keyValue fails", e);
     }
+  }
+
+  private ObjectMapper buildAfterBurnerObjectMapper(){
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.registerModule(new AfterburnerModule());
+    return mapper;
   }
 }

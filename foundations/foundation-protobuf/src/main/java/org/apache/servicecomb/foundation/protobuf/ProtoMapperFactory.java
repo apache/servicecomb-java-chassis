@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.foundation.protobuf;
 
+import com.fasterxml.jackson.module.afterburner.AfterburnerModule;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.BeanDescriptorManager;
 import org.apache.servicecomb.foundation.protobuf.internal.parser.ProtoParser;
 
@@ -35,9 +36,9 @@ public class ProtoMapperFactory {
   private ProtoParser protoParser = new ProtoParser();
 
   public ProtoMapperFactory() {
+    jsonMapper.registerModule(new AfterburnerModule());
     jsonMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     jsonMapper.setSerializationInclusion(Include.NON_NULL);
-//    jsonMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE, JsonTypeInfo.As.PROPERTY);
 
     beanDescriptorManager = new BeanDescriptorManager(jsonMapper.getSerializationConfig());
   }
