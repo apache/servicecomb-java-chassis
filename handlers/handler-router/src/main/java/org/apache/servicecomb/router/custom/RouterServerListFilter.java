@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.router.constom;
+package org.apache.servicecomb.router.custom;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.loadbalance.ServerListFilterExt;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import com.netflix.config.DynamicPropertyFactory;
@@ -57,9 +58,21 @@ public class RouterServerListFilter implements ServerListFilterExt {
       Invocation invocation) {
     String targetServiceName = invocation.getMicroserviceName();
     Map<String, String> headers = addHeaders(invocation);
+    headers = filterHeaders(headers);
     return RouterFilter
         .getFilteredListOfServers(list, targetServiceName, headers,
             distributer);
+  }
+
+  private Map<String, String> filterHeaders(Map<String, String> headers) {
+    List<RouterHeaderFilterExt> filters = SPIServiceUtils
+        .loadSortedService(RouterHeaderFilterExt.class);
+    for (RouterHeaderFilterExt filterExt : filters) {
+      if (filterExt.enabled()) {
+        headers = filterExt.doFilter(headers);
+      }
+    }
+    return headers;
   }
 
   private Map<String, String> addHeaders(Invocation invocation) {

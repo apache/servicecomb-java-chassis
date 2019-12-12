@@ -14,29 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.router.constom;
+package org.apache.servicecomb.router.custom;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+/**
+ * @Author GuoYl123
+ * @Date 2019/10/17
+ **/
+public interface RouterHeaderFilterExt {
 
-public final class MicroserviceCache {
-
-  private static MicroserviceCache instance = new MicroserviceCache();
-  private Map<String, Microservice> services = new HashMap<>();
-
-  private MicroserviceCache() {
+  default int getOrder() {
+    return 0;
   }
 
-  public static MicroserviceCache getInstance() {
-    return instance;
+  default boolean enabled() {
+    return true;
   }
 
-  public Microservice getService(String serviceId) {
-    return services.computeIfAbsent(serviceId, (k) ->
-        RegistryUtils.getMicroservice(serviceId)
-    );
-  }
+  Map<String, String> doFilter(Map<String, String> invokeHeader);
 }
