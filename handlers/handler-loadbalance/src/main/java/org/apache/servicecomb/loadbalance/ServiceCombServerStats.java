@@ -17,9 +17,11 @@
 
 package org.apache.servicecomb.loadbalance;
 
+import java.time.Clock;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.servicecomb.foundation.common.utils.TimeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,23 +43,45 @@ public class ServiceCombServerStats {
    */
   private static AtomicBoolean globalAllowIsolatedServerTryingFlag = new AtomicBoolean(true);
 
-  private long lastWindow = System.currentTimeMillis();
-
   private final Object lock = new Object();
 
-  private AtomicLong continuousFailureCount = new AtomicLong(0);
+  Clock clock;
 
-  private long lastVisitTime = System.currentTimeMillis();
+  private long lastWindow;
 
-  private long lastActiveTime = System.currentTimeMillis();
+  private AtomicLong continuousFailureCount;
 
-  private AtomicLong totalRequests = new AtomicLong(0L);
+  private long lastVisitTime;
 
-  private AtomicLong successRequests = new AtomicLong(0L);
+  private long lastActiveTime;
 
-  private AtomicLong failedRequests = new AtomicLong(0L);
+  private AtomicLong totalRequests;
+
+  private AtomicLong successRequests;
+
+  private AtomicLong failedRequests;
 
   private boolean isolated = false;
+
+  public ServiceCombServerStats() {
+    this.clock = TimeUtils.getSystemDefaultZoneClock();
+    init();
+  }
+
+  public ServiceCombServerStats(Clock clock) {
+    this.clock = clock;
+    init();
+  }
+
+  private void init(){
+    lastWindow = clock.millis();
+    continuousFailureCount = new AtomicLong(0);
+    lastVisitTime = clock.millis();
+    lastActiveTime = clock.millis();
+    totalRequests = new AtomicLong(0L);
+    successRequests = new AtomicLong(0L);
+    failedRequests = new AtomicLong(0L);
+  }
 
   public static boolean isolatedServerCanTry() {
     return globalAllowIsolatedServerTryingFlag.get();
@@ -81,7 +105,7 @@ public class ServiceCombServerStats {
   }
 
   public void markSuccess() {
-    long time = System.currentTimeMillis();
+    long time = clock.millis();
     ensureWindow(time);
     lastVisitTime = time;
     lastActiveTime = time;
@@ -94,7 +118,7 @@ public class ServiceCombServerStats {
   }
 
   public void markFailure() {
-    long time = System.currentTimeMillis();
+    long time = clock.millis();
     ensureWindow(time);
     lastVisitTime = time;
 

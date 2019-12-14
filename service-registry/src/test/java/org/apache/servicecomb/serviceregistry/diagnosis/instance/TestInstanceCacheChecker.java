@@ -21,6 +21,7 @@ import java.util.Arrays;
 
 import javax.xml.ws.Holder;
 
+import org.apache.servicecomb.foundation.test.scaffolding.model.MockClock;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
@@ -58,15 +59,9 @@ public class TestInstanceCacheChecker {
     RegistryUtils.setServiceRegistry(serviceRegistry);
 
     checker = new InstanceCacheChecker(serviceRegistry.getAppManager());
+    checker.clock = new MockClock(new Holder<>(1L));
     expectedSummary.setStatus(Status.NORMAL);
     expectedSummary.setTimestamp(1);
-
-    new MockUp<System>() {
-      @Mock
-      long currentTimeMillis() {
-        return 1L;
-      }
-    };
   }
 
   @After
