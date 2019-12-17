@@ -28,15 +28,17 @@
 
   <fileSets>
     <fileSet>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory>.</outputDirectory>
+      <directory>${demo.run.dir}/${project.artifactId}</directory>
       <includes>
-        <include>${demo.run.dir}/${project.artifactId}</include>
+        <include>*.jar</include>
       </includes>
     </fileSet>
     <fileSet>
-      <outputDirectory>/lib</outputDirectory>
+      <outputDirectory>./lib</outputDirectory>
+      <directory>${demo.run.dir}/${project.artifactId}</directory>
       <includes>
-        <include>${demo.run.dir}/lib</include>
+        <include>*.jar</include>
       </includes>
     </fileSet>
   </fileSets>
