@@ -218,7 +218,7 @@
                 <archive>
                   <manifest>
                     <addClasspath>true</addClasspath>
-                    <classpathPrefix>../lib/</classpathPrefix>
+                    <classpathPrefix>./lib/</classpathPrefix>
                     <mainClass>${demo.main}</mainClass>
                   </manifest>
                   <manifestEntries>
@@ -238,7 +238,8 @@
                     <goal>copy-dependencies</goal>
                   </goals>
                   <configuration>
-                    <outputDirectory>${demo.run.dir}/lib</outputDirectory>
+                    <outputDirectory>${demo.run.dir}/${project.artifactId}/lib</outputDirectory>
+                    <silent>true</silent>
                   </configuration>
                 </execution>
               </executions>

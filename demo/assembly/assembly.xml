@@ -31,14 +31,7 @@
       <outputDirectory>.</outputDirectory>
       <directory>${demo.run.dir}/${project.artifactId}</directory>
       <includes>
-        <include>*.jar</include>
-      </includes>
-    </fileSet>
-    <fileSet>
-      <outputDirectory>./lib</outputDirectory>
-      <directory>${demo.run.dir}/${project.artifactId}</directory>
-      <includes>
-        <include>*.jar</include>
+        <include>**/*.jar</include>
       </includes>
     </fileSet>
   </fileSets>
