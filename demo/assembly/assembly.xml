@@ -28,7 +28,7 @@
 
   <fileSets>
     <fileSet>
-      <outputDirectory>.</outputDirectory>
+      <outputDirectory>/maven</outputDirectory>
       <directory>${demo.run.dir}/${project.artifactId}</directory>
       <includes>
         <include>**/*.jar</include>
