@@ -37,7 +37,7 @@ if [ "$1" == "install" ]; then
             exit 1
         fi
         
-        mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -Pdocker -Pjacoco -Pit -Pcoverage coveralls:report
+        mvn clean install -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -Pdocker -Pdemo-run-release -Pjacoco -Pit -Pcoverage coveralls:report
 	if [ $? == 0 ]; then
 	    echo "${green}Installation Success..${reset}"
 	else

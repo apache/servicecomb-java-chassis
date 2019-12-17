@@ -25,20 +25,20 @@
     <format>dir</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
-  <dependencySets>
-    <dependencySet>
+
+  <fileSets>
+    <fileSet>
       <outputDirectory>/</outputDirectory>
-      <unpack>false</unpack>
       <includes>
-        <include>${artifact}</include>
+        <include>${demo.run.dir}/${project.artifactId}</include>
       </includes>
-    </dependencySet>
-    <dependencySet>
+    </fileSet>
+    <fileSet>
       <outputDirectory>/lib</outputDirectory>
-      <unpack>false</unpack>
-      <excludes>
-        <exclude>${artifact}</exclude>
-      </excludes>
-    </dependencySet>
-  </dependencySets>
+      <includes>
+        <include>${demo.run.dir}/lib</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+
 </assembly>
