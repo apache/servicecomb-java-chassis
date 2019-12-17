@@ -19,6 +19,7 @@ package org.apache.servicecomb.springboot.jaxrs;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.springboot.jaxrs.client.JaxrsClient;
@@ -34,8 +35,13 @@ public class SpringBootJaxrsIT {
 
   @Test
   public void clientGetsNoError() throws Exception {
-    JaxrsClient.main(new String[0]);
+    try {
+      JaxrsClient.main(new String[0]);
 
-    assertThat(TestMgr.errors().isEmpty(), is(true));
+      assertThat(TestMgr.errors().isEmpty(), is(true));
+    } catch (Throwable e) {
+      e.printStackTrace();
+      fail("test case failed, message=" + e.getMessage());
+    }
   }
 }
