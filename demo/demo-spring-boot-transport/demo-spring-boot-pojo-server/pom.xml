@@ -61,8 +61,11 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <outputDirectory>${demo.run.dir}/${project.artifactId}</outputDirectory>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>com.github.odavid.maven.plugins</groupId>
