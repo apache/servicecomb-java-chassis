@@ -17,3 +17,25 @@
 
 server:
   port: 8082
+
+# java-chassis configurations
+
+APPLICATION_ID: spring-boot-pojotest
+service_description:
+  name: pojoClient
+  version: 0.0.1
+servicecomb:
+  service:
+    registry:
+      address: http://127.0.0.1:30100
+  handler:
+    chain:
+      Consumer:
+        #default: loadbalance
+        default: bizkeeper-consumer,loadbalance
+  isolation:
+    Consumer:
+      enabled: false
+  references:
+    pojo:
+      version-rule: 0.0.1

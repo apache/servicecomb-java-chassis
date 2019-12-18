@@ -24,7 +24,9 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @SpringBootApplication
 @EnableServiceComb
@@ -33,8 +35,8 @@ public class JaxrsClient {
   public static void main(String[] args) throws Exception {
     RestObjectMapperFactory.setDefaultRestObjectMapper(new RestObjectMapperWithStringMapper());
     RestObjectMapperFactory.setConsumerWriterMapper(new RestObjectMapperWithStringMapperNotWriteNull());
-    Log4jUtils.init();
-    SpringApplication.run(JaxrsClient.class, args);
+
+    new SpringApplicationBuilder().sources(JaxrsClient.class).web(WebApplicationType.NONE).build().run(args);
     org.apache.servicecomb.demo.jaxrs.client.JaxrsClient.run();
     TestMgr.summary();
   }
