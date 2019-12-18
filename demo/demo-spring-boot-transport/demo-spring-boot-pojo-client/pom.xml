@@ -52,13 +52,6 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <configuration>
-          <outputDirectory>${demo.run.dir}/${project.artifactId}</outputDirectory>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>com.github.odavid.maven.plugins</groupId>
         <artifactId>mixin-maven-plugin</artifactId>
         <configuration>
