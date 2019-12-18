@@ -64,7 +64,7 @@
                     <JAVA_OPTS>
                       ${demo.vm.options} -Dservicecomb.service.registry.address=http://sc.servicecomb.io:30100 -Dservicecomb.service.publishAddress=${docker.hostname}
                     </JAVA_OPTS>
-                    <JAR_PATH>/maven/${demo.service.name}-${project.version}.jar</JAR_PATH>
+                    <JAR_PATH>/maven/maven/${demo.service.name}-${project.version}.jar</JAR_PATH>
                   </env>
                   <links>
                     <link>service-center:sc.servicecomb.io</link>
