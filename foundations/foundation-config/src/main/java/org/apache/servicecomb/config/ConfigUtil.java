@@ -21,6 +21,7 @@ import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_KEY_SPLITER;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICECOMB_PREFIX;
 
+import com.netflix.config.DynamicBooleanProperty;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -33,6 +34,7 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.EnvironmentConfiguration;
 import org.apache.commons.configuration.SystemConfiguration;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.apache.servicecomb.config.archaius.scheduler.NeverStartPollingScheduler;
 import org.apache.servicecomb.config.archaius.sources.ConfigModel;
@@ -57,6 +59,8 @@ public final class ConfigUtil {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigUtil.class);
 
   private static final String MICROSERVICE_CONFIG_LOADER_KEY = "cse-microservice-config-loader";
+
+  private static final String IS_PRINT_URL = "servicecomb.config.log.verbose";
 
   private static Map<String, Object> localConfig = new HashMap<>();
 
@@ -116,8 +120,10 @@ public final class ConfigUtil {
     }
 
     LOGGER.info("create local config:");
-    for (ConfigModel configModel : loader.getConfigModels()) {
-      LOGGER.info(" {}.", configModel.getUrl());
+    boolean isPrintUrl = DynamicPropertyFactory.getInstance()
+        .getBooleanProperty(IS_PRINT_URL, true).get();
+    if (isPrintUrl) {
+      LOGGER.info(" {}.", StringUtils.join(loader.getConfigModels(), ","));
     }
 
     ConcurrentCompositeConfiguration config = ConfigUtil.createLocalConfig(loader.getConfigModels());
