@@ -29,7 +29,7 @@
   <fileSets>
     <fileSet>
       <outputDirectory>/maven</outputDirectory>
-      <directory>${demo.run.dir}/${project.artifactId}</directory>
+      <directory>${project.build.directory}</directory>
       <includes>
         <include>**/*.jar</include>
       </includes>
