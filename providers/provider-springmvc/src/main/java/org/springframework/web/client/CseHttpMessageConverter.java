@@ -19,6 +19,7 @@ package org.springframework.web.client;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,16 +28,17 @@ import org.apache.servicecomb.provider.springmvc.reference.CseClientHttpResponse
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
 
 /**
  * 需要访问MessageBodyClientHttpResponseWrapper
  * 这是一个package级别的类，只好放在特殊的包内了
  */
-public class CseHttpMessageConverter implements HttpMessageConverter<Object> {
+public class CseHttpMessageConverter implements GenericHttpMessageConverter<Object> {
 
   private static final List<MediaType> ALL_MEDIA_TYPE = Arrays.asList(MediaType.ALL);
 
@@ -65,6 +67,10 @@ public class CseHttpMessageConverter implements HttpMessageConverter<Object> {
   @Override
   public Object read(Class<? extends Object> clazz,
       HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
+    return read(inputMessage);
+  }
+
+  private Object read(HttpInputMessage inputMessage) {
     MessageBodyClientHttpResponseWrapper respWrapper = (MessageBodyClientHttpResponseWrapper) inputMessage;
     CseClientHttpResponse resp =
         (CseClientHttpResponse) ReflectionUtils.getField(RESPONSE_FIELD, respWrapper);
@@ -72,9 +78,35 @@ public class CseHttpMessageConverter implements HttpMessageConverter<Object> {
   }
 
   @Override
-  public void write(Object t, MediaType contentType,
+  public void write(Object o, MediaType contentType,
       HttpOutputMessage outputMessage) throws IOException, HttpMessageNotWritableException {
+    write(o, outputMessage);
+  }
+
+  private void write(Object o, HttpOutputMessage outputMessage) {
     CseClientHttpRequest request = (CseClientHttpRequest) outputMessage;
-    request.setRequestBody(t);
+    request.setRequestBody(o);
+  }
+
+  @Override
+  public boolean canRead(Type type, @Nullable Class<?> contextClass, @Nullable MediaType mediaType) {
+    return true;
+  }
+
+  @Override
+  public Object read(Type type, @Nullable Class<?> contextClass, HttpInputMessage inputMessage)
+      throws IOException, HttpMessageNotReadableException {
+    return read(inputMessage);
+  }
+
+  @Override
+  public boolean canWrite(@Nullable Type type, Class<?> clazz, @Nullable MediaType mediaType) {
+    return true;
+  }
+
+  @Override
+  public void write(Object o, @Nullable Type type, @Nullable MediaType contentType, HttpOutputMessage outputMessage)
+      throws IOException, HttpMessageNotWritableException {
+    write(o, outputMessage);
   }
 }

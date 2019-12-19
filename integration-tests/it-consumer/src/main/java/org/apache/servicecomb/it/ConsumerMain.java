@@ -22,6 +22,7 @@ import org.apache.servicecomb.it.deploy.Deploys;
 import org.apache.servicecomb.it.deploy.MicroserviceDeploy;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.it.schema.TestApiOperation;
+import org.apache.servicecomb.it.testcase.weak.consumer.TestSpringmvcBasic;
 import org.apache.servicecomb.it.testcase.TestAcceptType;
 import org.apache.servicecomb.it.testcase.TestAnnotatedAttribute;
 import org.apache.servicecomb.it.testcase.TestApiOperationOverride;
@@ -142,6 +143,8 @@ public class ConsumerMain {
     ITJUnitUtils.runWithHighwayAndRest(TestSpringMVCObjectParamType.class);
     ITJUnitUtils.runWithHighwayAndRest(TestJAXRSObjectParamType.class);
     ITJUnitUtils.runWithHighwayAndRest(TestRPCObjectParamType.class);
+
+    ITJUnitUtils.runWithHighwayAndRest(TestSpringmvcBasic.class);
   }
 
   interface ITTask {

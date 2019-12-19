@@ -15,33 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.springboot.jaxrs;
+package org.apache.servicecomb.it.testcase.weak.consumer;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+/**
+ * Consumer model can be different than provider model(package, class name, fields, etc). This feature is quite useful in microservices and devops where
+ * every developers can work independently at his own work.
+ */
+public class SpringmvcBasicRequestModel {
+  private String name;
 
-import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.springboot.jaxrs.client.JaxrsClient;
-import org.junit.Before;
-import org.junit.Test;
-
-public class SpringBootJaxrsIT {
-
-  @Before
-  public void setUp() throws Exception {
-    TestMgr.errors().clear();
+  public String getName() {
+    return name;
   }
 
-  @Test
-  public void clientGetsNoError() throws Exception {
-    try {
-      JaxrsClient.main(new String[0]);
-
-      assertThat(TestMgr.errors().isEmpty(), is(true));
-    } catch (Throwable e) {
-      e.printStackTrace();
-      fail("test case failed, message=" + e.getMessage());
-    }
+  public void setName(String name) {
+    this.name = name;
   }
 }

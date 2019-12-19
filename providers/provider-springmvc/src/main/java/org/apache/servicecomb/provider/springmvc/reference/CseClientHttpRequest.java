@@ -18,11 +18,14 @@
 package org.apache.servicecomb.provider.springmvc.reference;
 
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Part;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestCodec;
@@ -40,12 +43,15 @@ import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
+import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
+
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.netty.handler.codec.http.QueryStringDecoder;
 
@@ -69,6 +75,8 @@ public class CseClientHttpRequest implements ClientHttpRequest {
   private Map<String, List<String>> queryParams;
 
   private RequestMeta requestMeta;
+
+  private Type responseType;
 
   public CseClientHttpRequest() {
   }
@@ -112,6 +120,14 @@ public class CseClientHttpRequest implements ClientHttpRequest {
 
   public void setContext(InvocationContext context) {
     this.context = context;
+  }
+
+  public Type getResponseType() {
+    return responseType;
+  }
+
+  public void setResponseType(Type responseType) {
+    this.responseType = responseType;
   }
 
   public void setRequestBody(Object requestBody) {
@@ -203,6 +219,16 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     if (context != null) {
       invocation.addContext(context);
     }
+
+    if (responseType != null &&
+        !(responseType instanceof Class && Part.class.isAssignableFrom((Class<?>) responseType))) {
+      ResponsesMeta responsesMeta = new ResponsesMeta();
+      invocation.getOperationMeta().getResponsesMeta().cloneTo(responsesMeta);
+      responsesMeta.getResponseMap().put(Status.OK.getStatusCode(),
+          TypeFactory.defaultInstance().constructType(responseType));
+      invocation.setResponsesMeta(responsesMeta);
+    }
+
     invocation.getHandlerContext().put(RestConst.CONSUMER_HEADER, httpHeaders);
     return invocation;
   }

@@ -19,15 +19,15 @@ package org.apache.servicecomb.springboot.springmvc.server;
 
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
-import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @SpringBootApplication
 @EnableServiceComb
 public class SpringmvcServer {
 
   public static void main(final String[] args) throws Exception {
-    Log4jUtils.init();
-    SpringApplication.run(SpringmvcServer.class, args);
+    new SpringApplicationBuilder().sources(SpringmvcServer.class).web(WebApplicationType.NONE).build().run(args);
   }
 }

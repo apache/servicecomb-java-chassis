@@ -15,33 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.springboot.jaxrs;
+package org.apache.servicecomb.it.testcase.weak.consumer;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import java.util.List;
 
-import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.springboot.jaxrs.client.JaxrsClient;
-import org.junit.Before;
-import org.junit.Test;
+/**
+ * Consumer interface can be different than provider interface. This feature is quite useful in microservices and devops where
+ * every developers can work independently at his own work.
+ */
+public interface SpringmvcBasicService {
+  SpringmvcBasicResponseModel postObject(SpringmvcBasicRequestModel requestModel);
 
-public class SpringBootJaxrsIT {
-
-  @Before
-  public void setUp() throws Exception {
-    TestMgr.errors().clear();
-  }
-
-  @Test
-  public void clientGetsNoError() throws Exception {
-    try {
-      JaxrsClient.main(new String[0]);
-
-      assertThat(TestMgr.errors().isEmpty(), is(true));
-    } catch (Throwable e) {
-      e.printStackTrace();
-      fail("test case failed, message=" + e.getMessage());
-    }
-  }
+  List<SpringmvcBasicResponseModel> postListObject(SpringmvcBasicRequestModel requestModel);
 }

@@ -17,7 +17,9 @@
 package org.apache.servicecomb.provider.springmvc.reference;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 
+import org.apache.servicecomb.foundation.common.utils.GenericsUtils;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.web.client.RequestCallback;
 
@@ -26,9 +28,12 @@ public class CseRequestCallback implements RequestCallback {
 
   private RequestCallback orgCallback;
 
-  public CseRequestCallback(Object requestBody, RequestCallback orgCallback) {
+  private Type responseType;
+
+  public CseRequestCallback(Object requestBody, RequestCallback orgCallback, Type responseType) {
     this.requestBody = requestBody;
     this.orgCallback = orgCallback;
+    this.responseType = responseType;
   }
 
   /**
@@ -37,13 +42,25 @@ public class CseRequestCallback implements RequestCallback {
   @Override
   public void doWithRequest(ClientHttpRequest request) throws IOException {
     orgCallback.doWithRequest(request);
+    CseClientHttpRequest req = (CseClientHttpRequest) request;
+    req.setResponseType(overrideResponseType());
 
     if (!CseHttpEntity.class.isInstance(requestBody)) {
       return;
     }
 
-    CseClientHttpRequest req = (CseClientHttpRequest) request;
     CseHttpEntity<?> entity = (CseHttpEntity<?>) requestBody;
     req.setContext(entity.getContext());
+  }
+
+  private Type overrideResponseType() {
+    if (GenericsUtils.isGenericResponseType(responseType)) {
+      // code: List<GenericObjectParam> response = restTemplate
+      //    .postForObject("/testListObjectParam", request, List.class);
+      // will using server schema type to deserialize
+      return null;
+    }
+    // code: MyObject response = .postForObject("/testListObjectParam", request, MyObject.class);
+    return responseType;
   }
 }

@@ -15,33 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.springboot.jaxrs;
+package org.apache.servicecomb.it.schema.weak.provider;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+public class SpringmvcBasicRequestModel {
+  private int requestId;
+  private String name;
 
-import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.springboot.jaxrs.client.JaxrsClient;
-import org.junit.Before;
-import org.junit.Test;
-
-public class SpringBootJaxrsIT {
-
-  @Before
-  public void setUp() throws Exception {
-    TestMgr.errors().clear();
+  public int getRequestId() {
+    return requestId;
   }
 
-  @Test
-  public void clientGetsNoError() throws Exception {
-    try {
-      JaxrsClient.main(new String[0]);
+  public void setRequestId(int requestId) {
+    this.requestId = requestId;
+  }
 
-      assertThat(TestMgr.errors().isEmpty(), is(true));
-    } catch (Throwable e) {
-      e.printStackTrace();
-      fail("test case failed, message=" + e.getMessage());
-    }
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 }

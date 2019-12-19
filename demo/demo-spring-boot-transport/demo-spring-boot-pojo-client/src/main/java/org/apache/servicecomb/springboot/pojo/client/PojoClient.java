@@ -20,7 +20,9 @@ package org.apache.servicecomb.springboot.pojo.client;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
 /**
  * SpringmvcClient
@@ -32,8 +34,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class PojoClient {
 
   public static void main(final String[] args) throws Exception {
-    Log4jUtils.init();
-    SpringApplication.run(PojoClient.class, args);
+    new SpringApplicationBuilder().sources(PojoClient.class).web(WebApplicationType.SERVLET).build().run(args);
 
     org.apache.servicecomb.demo.pojo.client.PojoClientTest.runTest();
   }

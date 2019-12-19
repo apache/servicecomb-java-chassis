@@ -148,8 +148,7 @@ public class TestObject {
     TestMgr.check(LinkedHashMap.class, result.getClass());
 
     result = restTemplate.postForObject(prefix + "/object", new EmptyObject(), EmptyObject.class);
-    TestMgr.check("{}", result);
-    TestMgr.check(LinkedHashMap.class, result.getClass());
+    TestMgr.check(EmptyObject.class, result.getClass());
 
     // map
     Map<String, String> map = Collections.singletonMap("k", "v");
