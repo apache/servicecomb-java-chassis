@@ -50,13 +50,5 @@
   <properties>
     <demo.main>org.apache.servicecomb.demo.jaxrs.client.JaxrsClient</demo.main>
   </properties>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
 
 </project>
