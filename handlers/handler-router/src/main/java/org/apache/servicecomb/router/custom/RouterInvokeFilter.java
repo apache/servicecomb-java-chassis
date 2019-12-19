@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.router.constom;
+package org.apache.servicecomb.router.custom;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.netflix.config.DynamicStringProperty;

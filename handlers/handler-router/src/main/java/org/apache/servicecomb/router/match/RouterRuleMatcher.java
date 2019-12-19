@@ -16,9 +16,7 @@
  */
 package org.apache.servicecomb.router.match;
 
-import java.util.List;
 import java.util.Map;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.router.cache.RouterRuleCache;
 import org.apache.servicecomb.router.model.PolicyRuleItem;
 
@@ -28,12 +26,9 @@ import org.apache.servicecomb.router.model.PolicyRuleItem;
  **/
 public class RouterRuleMatcher {
 
-  private List<RouterHeaderFilterExt> filters;
-
   private static RouterRuleMatcher instance = new RouterRuleMatcher();
 
   private RouterRuleMatcher() {
-    this.filters = SPIServiceUtils.loadSortedService(RouterHeaderFilterExt.class);
   }
 
   /**
@@ -43,11 +38,6 @@ public class RouterRuleMatcher {
    * @return
    */
   public PolicyRuleItem match(String serviceName, Map<String, String> invokeHeader) {
-    for (RouterHeaderFilterExt filterExt : filters) {
-      if (filterExt.enabled()) {
-        invokeHeader = filterExt.doFilter(invokeHeader);
-      }
-    }
     for (PolicyRuleItem rule : RouterRuleCache.getServiceInfoCacheMap().get(serviceName)
         .getAllrule()) {
       if (rule.getMatch() == null || rule.getMatch().match(invokeHeader)) {
