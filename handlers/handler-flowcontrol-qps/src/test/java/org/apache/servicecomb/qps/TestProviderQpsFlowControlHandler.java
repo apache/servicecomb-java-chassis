@@ -49,8 +49,6 @@ public class TestProviderQpsFlowControlHandler {
 
   AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
 
-  OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
-
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
@@ -84,7 +82,6 @@ public class TestProviderQpsFlowControlHandler {
         result = new RuntimeException("test error");
       }
     };
-    mockUpSystemTime();
 
     ProviderQpsFlowControlHandler gHandler = new ProviderQpsFlowControlHandler();
     gHandler.handle(invocation, asyncResp);
@@ -100,7 +97,6 @@ public class TestProviderQpsFlowControlHandler {
 
   @Test
   public void testQpsController() {
-    mockUpSystemTime();
     QpsController qpsController = new QpsController("abc", 100);
     assertFalse(qpsController.isLimitNewRequest());
 
@@ -180,15 +176,5 @@ public class TestProviderQpsFlowControlHandler {
 
     Mockito.verify(invocation, times(0)).next(asyncResp);
     Mockito.verify(asyncResp, times(0)).producerFail(Mockito.any(Exception.class));
-  }
-
-  private void mockUpSystemTime() {
-    // to avoid time influence on QpsController
-    new MockUp<System>() {
-      @Mock
-      long currentTimeMillis() {
-        return 1L;
-      }
-    };
   }
 }

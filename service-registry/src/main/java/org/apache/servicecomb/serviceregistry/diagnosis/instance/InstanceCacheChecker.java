@@ -16,12 +16,14 @@
  */
 package org.apache.servicecomb.serviceregistry.diagnosis.instance;
 
+import java.time.Clock;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import org.apache.servicecomb.foundation.common.utils.TimeUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
@@ -38,6 +40,8 @@ import io.vertx.core.json.Json;
 
 public class InstanceCacheChecker {
   private static final Logger LOGGER = LoggerFactory.getLogger(InstanceCacheChecker.class);
+  
+  Clock clock = TimeUtils.getSystemDefaultZoneClock();
 
   private AppManager appManager;
 
@@ -52,7 +56,7 @@ public class InstanceCacheChecker {
   public InstanceCacheSummary check() {
     instanceCacheSummary.setAppId(RegistryUtils.getMicroservice().getAppId());
     instanceCacheSummary.setMicroserviceName(RegistryUtils.getMicroservice().getServiceName());
-    instanceCacheSummary.setTimestamp(System.currentTimeMillis());
+    instanceCacheSummary.setTimestamp(clock.millis());
 
     for (MicroserviceManager microserviceManager : appManager.getApps().values()) {
       for (MicroserviceVersions microserviceVersions : microserviceManager.getVersionsByName().values()) {

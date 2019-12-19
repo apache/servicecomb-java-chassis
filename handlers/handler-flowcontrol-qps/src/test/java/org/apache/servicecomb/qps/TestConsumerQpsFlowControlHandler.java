@@ -68,13 +68,6 @@ public class TestConsumerQpsFlowControlHandler {
 
   @Test
   public void testQpsController() {
-    // to avoid time influence on QpsController
-    new MockUp<System>() {
-      @Mock
-      long currentTimeMillis() {
-        return 1L;
-      }
-    };
     QpsController qpsController = new QpsController("abc", 100);
     Assert.assertEquals(false, qpsController.isLimitNewRequest());
 
