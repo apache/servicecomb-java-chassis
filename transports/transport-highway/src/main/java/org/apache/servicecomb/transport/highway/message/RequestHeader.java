@@ -20,6 +20,7 @@ package org.apache.servicecomb.transport.highway.message;
 import java.util.Map;
 
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
+import org.apache.servicecomb.codec.protobuf.utils.ScopedProtobufSchemaManager;
 import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
 
 import io.protostuff.ProtobufOutput;
@@ -31,7 +32,7 @@ import io.vertx.core.buffer.Buffer;
  * 1.tag(4)，是历史版本中的压缩算法名，转移到login消息中传递
  */
 public class RequestHeader {
-  private static WrapSchema requestHeaderSchema = ProtobufManager.getDefaultScopedProtobufSchemaManager()
+  private static WrapSchema requestHeaderSchema = ScopedProtobufSchemaManager.INSTANCE
       .getOrCreateSchema(RequestHeader.class);
 
   public static WrapSchema getRequestHeaderSchema() {

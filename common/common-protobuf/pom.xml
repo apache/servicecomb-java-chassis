@@ -33,6 +33,11 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
+      <artifactId>swagger-invocation-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>common-javassist</artifactId>
     </dependency>
 
