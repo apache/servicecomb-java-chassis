@@ -48,7 +48,7 @@ public class HighwayClientConnection extends TcpClientConnection {
       login.setProtocol(Const.HIGHWAY);
 
       HighwayOutputStream os = new HighwayOutputStream(AbstractTcpClientPackage.getAndIncRequestId());
-      os.write(header, LoginRequest.getLoginRequestSchema(), login);
+      os.write(header, LoginRequest.getRootSerializer(), login);
       return os;
     } catch (Throwable e) {
       throw new Error("impossible.", e);

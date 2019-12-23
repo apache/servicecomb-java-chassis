@@ -19,44 +19,51 @@ package org.apache.servicecomb.transport.highway.message;
 
 import java.util.Map;
 
-import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
-import org.apache.servicecomb.codec.protobuf.utils.ScopedProtobufSchemaManager;
-import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
+import org.apache.servicecomb.foundation.protobuf.ProtoMapperFactory;
+import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
+import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import org.apache.servicecomb.swagger.invocation.response.Headers;
 
-import io.protostuff.ProtobufOutput;
-import io.protostuff.Tag;
 import io.vertx.core.buffer.Buffer;
 
 public class ResponseHeader {
-  private static WrapSchema responseHeaderSchema = ScopedProtobufSchemaManager.INSTANCE
-      .getOrCreateSchema(ResponseHeader.class);
+  // TODO : refactor reuse
+  private static ProtoMapperFactory protoMapperFactory = new ProtoMapperFactory();
 
-  public static WrapSchema getResponseHeaderSchema() {
-    return responseHeaderSchema;
+  private static RootDeserializer<ResponseHeader> rootDeserializer = protoMapperFactory.createFromName("ResponseHeader.proto")
+      .createRootDeserializer("ResponseHeader", ResponseHeader.class);
+
+  private static RootSerializer rootSerializer = protoMapperFactory.createFromName("ResponseHeader.proto")
+      .createRootSerializer("ResponseHeader", ResponseHeader.class);
+
+  public static RootSerializer getRootSerializer() {
+    return rootSerializer;
   }
 
   public static ResponseHeader readObject(Buffer bodyBuffer) throws Exception {
-    return responseHeaderSchema.readObject(bodyBuffer);
+    return rootDeserializer.deserialize(bodyBuffer.getBytes());
   }
 
   // 运行时必须的数据，比如body是否压缩
   // 预留特性选项
-  //CHECKSTYLE:OFF: magicnumber
-  @Tag(5)
   private int flags;
 
-  @Tag(1)
   private int statusCode;
 
-  @Tag(2)
-  private String reason;
+  private String reasonPhrase;
 
-  @Tag(3)
   private Map<String, String> context;
 
-  @Tag(4)
+  // TODO : WEAK map headers
   private Headers headers = new Headers();
+
+  public int getFlags() {
+    return flags;
+  }
+
+  public void setFlags(int flags) {
+    this.flags = flags;
+  }
 
   //CHECKSTYLE:ON: magicnumber
   public int getStatusCode() {
@@ -68,11 +75,11 @@ public class ResponseHeader {
   }
 
   public String getReasonPhrase() {
-    return reason;
+    return reasonPhrase;
   }
 
   public void setReasonPhrase(String reason) {
-    this.reason = reason;
+    this.reasonPhrase = reason;
   }
 
   public Map<String, String> getContext() {
@@ -89,9 +96,5 @@ public class ResponseHeader {
 
   public void setHeaders(Headers headers) {
     this.headers = headers;
-  }
-
-  public void writeObject(ProtobufOutput output) throws Exception {
-    responseHeaderSchema.writeObject(output, this);
   }
 }

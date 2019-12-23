@@ -106,9 +106,9 @@ public class HighwayServerConnection extends TcpServerConnection implements TcpB
 
       LoginResponse response = new LoginResponse();
 
-      os.write(ResponseHeader.getResponseHeaderSchema(),
+      os.write(ResponseHeader.getRootSerializer(),
           responseHeader,
-          LoginResponse.getLoginResponseSchema(),
+          LoginResponse.getRootSerializer(),
           response);
       netSocket.write(os.getBuffer());
     } catch (Exception e) {

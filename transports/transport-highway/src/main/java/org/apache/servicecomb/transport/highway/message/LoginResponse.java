@@ -16,39 +16,34 @@
  */
 package org.apache.servicecomb.transport.highway.message;
 
-import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
-import org.apache.servicecomb.codec.protobuf.utils.ScopedProtobufSchemaManager;
-import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
+import org.apache.servicecomb.foundation.protobuf.ProtoMapperFactory;
+import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
+import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 
-import io.protostuff.ProtobufOutput;
-import io.protostuff.Tag;
 import io.vertx.core.buffer.Buffer;
 
 public class LoginResponse {
-  private static WrapSchema loginResponseSchema = ScopedProtobufSchemaManager.INSTANCE
-      .getOrCreateSchema(LoginResponse.class);
+  // TODO : WEAK refactor reuse
+  private static ProtoMapperFactory protoMapperFactory = new ProtoMapperFactory();
 
-  public static WrapSchema getLoginResponseSchema() {
-    return loginResponseSchema;
+  private static RootDeserializer<LoginResponse> rootDeserializer = protoMapperFactory.createFromName("LoginResponse.proto")
+      .createRootDeserializer("LoginResponse", LoginResponse.class);
+
+  private static RootSerializer rootSerializer = protoMapperFactory.createFromName("LoginResponse.proto")
+      .createRootSerializer("LoginResponse", LoginResponse.class);
+
+  public static RootSerializer getRootSerializer() {
+    return rootSerializer;
   }
 
   public static LoginResponse readObject(Buffer bodyBuffer) throws Exception {
-    return loginResponseSchema.readObject(bodyBuffer);
+    return rootDeserializer.deserialize(bodyBuffer.getBytes());
   }
 
-  @Tag(1)
   private String protocol;
 
   // 压缩算法名字
-  @Tag(2)
   private String zipName;
-
-  // no need this flag any more, but tag(3) should be reserved
-  // 历史版本中的protoStuff实现的protobuf的map编码与标准的protobuf不兼容
-  // 为保持highway的兼容，旧的不兼容编码也要保留
-  // 只有LoginRequest/LoginResponse同时为true时，才使用标准protobuf编码
-  //@Tag(3)
-  //private boolean useProtobufMapCodec;
 
   public String getProtocol() {
     return protocol;
@@ -64,9 +59,5 @@ public class LoginResponse {
 
   public void setZipName(String zipName) {
     this.zipName = zipName;
-  }
-
-  public void writeObject(ProtobufOutput output) throws Exception {
-    loginResponseSchema.writeObject(output, this);
   }
 }
