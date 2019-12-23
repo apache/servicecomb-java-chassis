@@ -19,38 +19,19 @@ package org.apache.servicecomb.codec.protobuf.definition;
 
 import org.apache.servicecomb.codec.protobuf.utils.ScopedProtobufSchemaManager;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 
 public final class ProtobufManager {
   public static final String EXT_ID = "protobuf";
 
   private static final Object LOCK = new Object();
 
-  private static ScopedProtobufSchemaManager defaultScopedProtobufSchemaManager = new ScopedProtobufSchemaManager(
-      JvmUtils.findClassLoader());
-
-  /**
-   * only for app classloader
-   * @return
-   */
-  public static ScopedProtobufSchemaManager getDefaultScopedProtobufSchemaManager() {
-    return defaultScopedProtobufSchemaManager;
-  }
-
   public static OperationProtobuf getOrCreateOperation(OperationMeta operationMeta) throws Exception {
     OperationProtobuf operationProtobuf = operationMeta.getExtData(EXT_ID);
     if (operationProtobuf == null) {
       synchronized (LOCK) {
-        MicroserviceMeta microserviceMeta = operationMeta.getMicroserviceMeta();
-        ScopedProtobufSchemaManager scopedProtobufSchemaManager = microserviceMeta.getExtData(EXT_ID);
-        if (scopedProtobufSchemaManager == null) {
-          scopedProtobufSchemaManager = new ScopedProtobufSchemaManager(microserviceMeta.getClassLoader());
-          microserviceMeta.putExtData(EXT_ID, scopedProtobufSchemaManager);
-        }
-
         operationProtobuf = operationMeta.getExtData(EXT_ID);
         if (operationProtobuf == null) {
-          operationProtobuf = new OperationProtobuf(scopedProtobufSchemaManager, operationMeta);
+          operationProtobuf = new OperationProtobuf(ScopedProtobufSchemaManager.INSTANCE, operationMeta);
           operationMeta.putExtData(EXT_ID, operationProtobuf);
         }
       }

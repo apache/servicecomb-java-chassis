@@ -21,8 +21,7 @@ import java.net.URL;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchema;
-import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
-import org.apache.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGeneratorContext;
+import org.apache.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGenerator;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -33,12 +32,11 @@ public class TestSwaggerToProtoGenerator {
   @Test
   public void convert() throws IOException {
     URL url = TestSwaggerToProtoGenerator.class.getClassLoader().getResource("ProtoSchema.proto");
-    String protoContent = IOUtils.toString(url);
+    String protoContent = IOUtils.toString(url, "UTF-8");
     int idx = protoContent.indexOf("syntax = ");
     protoContent = protoContent.substring(idx);
 
-    SwaggerGeneratorContext context = new SpringmvcSwaggerGeneratorContext();
-    SwaggerGenerator swaggerGenerator = new SwaggerGenerator(context, ProtoSchema.class);
+    SpringmvcSwaggerGenerator swaggerGenerator = new SpringmvcSwaggerGenerator(ProtoSchema.class);
     Swagger swagger = swaggerGenerator.generate();
 
     SwaggerToProtoGenerator generator = new SwaggerToProtoGenerator("a.b", swagger);

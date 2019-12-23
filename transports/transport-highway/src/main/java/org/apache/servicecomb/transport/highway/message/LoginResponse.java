@@ -17,6 +17,7 @@
 package org.apache.servicecomb.transport.highway.message;
 
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
+import org.apache.servicecomb.codec.protobuf.utils.ScopedProtobufSchemaManager;
 import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
 
 import io.protostuff.ProtobufOutput;
@@ -24,7 +25,7 @@ import io.protostuff.Tag;
 import io.vertx.core.buffer.Buffer;
 
 public class LoginResponse {
-  private static WrapSchema loginResponseSchema = ProtobufManager.getDefaultScopedProtobufSchemaManager()
+  private static WrapSchema loginResponseSchema = ScopedProtobufSchemaManager.INSTANCE
       .getOrCreateSchema(LoginResponse.class);
 
   public static WrapSchema getLoginResponseSchema() {

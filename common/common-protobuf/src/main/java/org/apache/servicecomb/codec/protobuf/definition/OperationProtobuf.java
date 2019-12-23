@@ -17,14 +17,12 @@
 
 package org.apache.servicecomb.codec.protobuf.definition;
 
-import java.lang.reflect.Method;
-
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.Status.Family;
 
 import org.apache.servicecomb.codec.protobuf.utils.ScopedProtobufSchemaManager;
 import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.swagger.invocation.response.ResponseMeta;
 
 public class OperationProtobuf {
   private ScopedProtobufSchemaManager scopedProtobufSchemaManager;
@@ -41,8 +39,8 @@ public class OperationProtobuf {
 
     requestSchema = scopedProtobufSchemaManager.getOrCreateArgsSchema(operationMeta);
 
-    Method method = operationMeta.getMethod();
-    responseSchema = scopedProtobufSchemaManager.getOrCreateSchema(method.getGenericReturnType());
+    responseSchema = scopedProtobufSchemaManager.getOrCreateSchema(operationMeta.getResponsesMeta().findResponseType(
+        Status.OK.getStatusCode()));
   }
 
   public OperationMeta getOperationMeta() {
@@ -62,7 +60,6 @@ public class OperationProtobuf {
       return responseSchema;
     }
 
-    ResponseMeta responseMeta = operationMeta.findResponseMeta(statusCode);
-    return scopedProtobufSchemaManager.getOrCreateSchema(responseMeta.getJavaType());
+    return scopedProtobufSchemaManager.getOrCreateSchema(operationMeta.getResponsesMeta().findResponseType(statusCode));
   }
 }
