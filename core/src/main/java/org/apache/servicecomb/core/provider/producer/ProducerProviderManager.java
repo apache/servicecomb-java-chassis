@@ -95,11 +95,11 @@ public class ProducerProviderManager {
     swagger = swaggerProducer.getSwagger();
 
     SchemaMeta schemaMeta = producerMicroserviceMeta.registerSchemaMeta(schemaId, swagger);
-    schemaMeta.getVendorExtensions().put(CoreMetaUtils.SWAGGER_PRODUCER, swaggerProducer);
+    schemaMeta.putExtData(CoreMetaUtils.SWAGGER_PRODUCER, swaggerProducer);
     Executor reactiveExecutor = scbEngine.getExecutorManager().findExecutorById(ExecutorManager.EXECUTOR_REACTIVE);
     for (SwaggerProducerOperation producerOperation : swaggerProducer.getAllOperations()) {
       OperationMeta operationMeta = schemaMeta.ensureFindOperation(producerOperation.getOperationId());
-      operationMeta.getVendorExtensions().put(Const.PRODUCER_OPERATION, producerOperation);
+      operationMeta.putExtData(Const.PRODUCER_OPERATION, producerOperation);
 
       if (CompletableFuture.class.equals(producerOperation.getProducerMethod().getReturnType())) {
         operationMeta.setExecutor(scbEngine.getExecutorManager().findExecutor(operationMeta, reactiveExecutor));

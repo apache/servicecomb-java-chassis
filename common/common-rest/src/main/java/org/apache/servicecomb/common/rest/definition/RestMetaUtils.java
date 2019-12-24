@@ -24,6 +24,6 @@ public final class RestMetaUtils {
   }
 
   public static RestOperationMeta getRestOperationMeta(OperationMeta operationMeta) {
-    return operationMeta.getVendorExtensions().get(RestConst.SWAGGER_REST_OPERATION);
+    return operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
   }
 }

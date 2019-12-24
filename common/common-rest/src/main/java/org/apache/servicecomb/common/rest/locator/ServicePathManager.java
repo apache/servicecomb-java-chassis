@@ -48,7 +48,7 @@ public class ServicePathManager {
   protected MicroservicePaths producerPaths;
 
   public static ServicePathManager getServicePathManager(MicroserviceMeta microserviceMeta) {
-    return microserviceMeta.getVendorExtensions().get(REST_PATH_MANAGER);
+    return microserviceMeta.getExtData(REST_PATH_MANAGER);
   }
 
   public ServicePathManager(MicroserviceMeta microserviceMeta) {
@@ -59,14 +59,14 @@ public class ServicePathManager {
     }
     sortPath();
 
-    microserviceMeta.getVendorExtensions().put(REST_PATH_MANAGER, this);
+    microserviceMeta.putExtData(REST_PATH_MANAGER, this);
   }
 
   private void addSchema(SchemaMeta schemaMeta) {
     for (OperationMeta operationMeta : schemaMeta.getOperations().values()) {
       RestOperationMeta restOperationMeta = new RestOperationMeta();
       restOperationMeta.init(operationMeta);
-      operationMeta.getVendorExtensions().put(RestConst.SWAGGER_REST_OPERATION, restOperationMeta);
+      operationMeta.putExtData(RestConst.SWAGGER_REST_OPERATION, restOperationMeta);
       addResource(restOperationMeta);
     }
 

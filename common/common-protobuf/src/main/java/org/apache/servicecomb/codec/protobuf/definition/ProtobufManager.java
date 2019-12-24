@@ -18,6 +18,7 @@
 package org.apache.servicecomb.codec.protobuf.definition;
 
 import org.apache.servicecomb.codec.protobuf.utils.ScopedProtobufSchemaManager;
+import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 
 public final class ProtobufManager {
@@ -29,9 +30,16 @@ public final class ProtobufManager {
     OperationProtobuf operationProtobuf = operationMeta.getExtData(EXT_ID);
     if (operationProtobuf == null) {
       synchronized (LOCK) {
+        MicroserviceMeta microserviceMeta = operationMeta.getMicroserviceMeta();
+        ScopedProtobufSchemaManager scopedProtobufSchemaManager = microserviceMeta.getExtData(EXT_ID);
+        if (scopedProtobufSchemaManager == null) {
+          scopedProtobufSchemaManager = new ScopedProtobufSchemaManager();
+          microserviceMeta.putExtData(EXT_ID, scopedProtobufSchemaManager);
+        }
+
         operationProtobuf = operationMeta.getExtData(EXT_ID);
         if (operationProtobuf == null) {
-          operationProtobuf = new OperationProtobuf(ScopedProtobufSchemaManager.INSTANCE, operationMeta);
+          operationProtobuf = new OperationProtobuf(scopedProtobufSchemaManager, operationMeta);
           operationMeta.putExtData(EXT_ID, operationProtobuf);
         }
       }
