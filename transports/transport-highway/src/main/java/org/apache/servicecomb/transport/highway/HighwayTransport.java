@@ -26,11 +26,9 @@ import org.apache.servicecomb.foundation.vertx.SimpleJsonObject;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpConst;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.springframework.stereotype.Component;
 
 import io.vertx.core.DeploymentOptions;
 
-@Component
 public class HighwayTransport extends AbstractTransport {
   private HighwayClient highwayClient = new HighwayClient();
 

@@ -1296,7 +1296,11 @@
         <artifactId>transport-rest-vertx</artifactId>
         <version>${project.version}</version>
       </dependency>
-
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>transport-highway</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.apache.servicecomb.archetypes</groupId>
         <artifactId>business-service-jaxrs-archetype</artifactId>

@@ -17,6 +17,7 @@
 package org.apache.servicecomb.transport.highway;
 
 import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
+import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 import org.apache.servicecomb.transport.highway.message.RequestHeader;
 import org.apache.servicecomb.transport.highway.message.ResponseHeader;
@@ -29,32 +30,59 @@ public class HighwayOutputStream extends TcpOutputStream {
     super(msgId);
   }
 
+  public void write(RequestHeader header, RootSerializer bodySchema, Object body) throws Exception {
+    write(RequestHeader.getRootSerializer(), header, bodySchema, body);
+  }
+
   public void write(RequestHeader header, WrapSchema bodySchema, Object body) throws Exception {
-    write(RequestHeader.getRequestHeaderSchema(), header, bodySchema, body);
+    // TODO : WEAK can be reomved
+    write(RequestHeader.getRootSerializer(), header, bodySchema, body);
   }
 
   public void write(ResponseHeader header, WrapSchema bodySchema, Object body) throws Exception {
-    write(ResponseHeader.getResponseHeaderSchema(), header, bodySchema, body);
+    // TODO : WEAK can be reomved
+    write(ResponseHeader.getRootSerializer(), header, bodySchema, body);
   }
 
-  public void write(WrapSchema headerSchema, Object header, WrapSchema bodySchema, Object body) throws Exception {
+  public void write(RootSerializer headerSchema, Object header, RootSerializer bodySchema, Object body)
+      throws Exception {
     // 写protobuf数据
     LinkedBuffer linkedBuffer = LinkedBuffer.allocate();
     ProtobufOutput output = new ProtobufOutput(linkedBuffer);
 
     // 写header
     if (headerSchema != null) {
-      headerSchema.writeObject(output, header);
+      headerSchema.serialize(this, header);
     }
-    int headerSize = output.getSize();
 
     // 写body
     // void时bodySchema为null
     if (bodySchema != null) {
-      bodySchema.writeObject(output, body);
+      bodySchema.serialize(this, body);
+    }
+  }
+
+  public void write(RootSerializer headerSchema, Object header, WrapSchema bodySchema, Object body) throws Exception {
+    // TODO : WEAK can be reomved
+    // 写protobuf数据
+    LinkedBuffer linkedBuffer = LinkedBuffer.allocate();
+    ProtobufOutput output = new ProtobufOutput(linkedBuffer);
+
+    // 写header
+    if (headerSchema != null) {
+      headerSchema.serialize(this, header);
     }
 
-    writeLength(output.getSize(), headerSize);
-    LinkedBuffer.writeTo(this, linkedBuffer);
+    // TODO : WEAK serialize message body
+//    int headerSize = output.getSize();
+//
+//    // 写body
+//    // void时bodySchema为null
+//    if (bodySchema != null) {
+//      bodySchema.writeObject(output, body);
+//    }
+//
+//    writeLength(output.getSize(), headerSize);
+//    LinkedBuffer.writeTo(this, linkedBuffer);
   }
 }
