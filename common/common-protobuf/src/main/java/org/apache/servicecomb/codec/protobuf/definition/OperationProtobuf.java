@@ -17,51 +17,76 @@
 
 package org.apache.servicecomb.codec.protobuf.definition;
 
+import java.util.Map;
+
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.Status.Family;
 
 import org.apache.servicecomb.codec.protobuf.utils.ScopedProtobufSchemaManager;
-import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
+import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
+import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 
+import io.protostuff.compiler.model.Message;
+
+@SuppressWarnings("rawtypes")
 public class OperationProtobuf {
   private ScopedProtobufSchemaManager scopedProtobufSchemaManager;
 
   private OperationMeta operationMeta;
 
-  private WrapSchema requestSchema;
+  private RootSerializer requestSerializer;
 
-  private WrapSchema responseSchema;
+  private RootDeserializer<Map> requestDeserializer;
+
+  private RootSerializer responseSerializer;
+
+  private RootDeserializer<Object> responseDeserializer;
 
   public OperationProtobuf(ScopedProtobufSchemaManager scopedProtobufSchemaManager, OperationMeta operationMeta) {
     this.scopedProtobufSchemaManager = scopedProtobufSchemaManager;
     this.operationMeta = operationMeta;
 
-    requestSchema = scopedProtobufSchemaManager.getOrCreateArgsSchema(operationMeta);
+    ProtoMapper mapper = scopedProtobufSchemaManager.getOrCreateProtoMapper(operationMeta.getSchemaMeta());
+    Message requestMessage = mapper.getRequestMessage(operationMeta.getOperationId());
+    requestSerializer = mapper.createRootSerializer(requestMessage, Map.class);
+    requestDeserializer = mapper.createRootDeserializer(requestMessage, Map.class);
 
-    responseSchema = scopedProtobufSchemaManager.getOrCreateSchema(operationMeta.getResponsesMeta().findResponseType(
-        Status.OK.getStatusCode()));
+    Message responseMessage = mapper.getResponseMessage(operationMeta.getOperationId());
+    responseSerializer = mapper
+        .createRootSerializer(responseMessage,
+            operationMeta.getResponsesMeta().findResponseType(Status.OK.getStatusCode()));
+    responseDeserializer = mapper
+        .createRootDeserializer(responseMessage,
+            operationMeta.getResponsesMeta().findResponseType(Status.OK.getStatusCode()));
   }
 
   public OperationMeta getOperationMeta() {
     return operationMeta;
   }
 
-  public WrapSchema getRequestSchema() {
-    // TODO : work with request
-    return requestSchema;
+  public RootSerializer findRequestSerializer() {
+    return requestSerializer;
   }
 
-  public WrapSchema getResponseSchema() {
-    // TODO : work with response
-    return responseSchema;
+  public RootDeserializer<Map> findRequestDesirializer() {
+    return requestDeserializer;
   }
 
-  public WrapSchema findResponseSchema(int statusCode) {
+  public RootSerializer findResponseSerializer(int statusCode) {
     if (Family.SUCCESSFUL.equals(Family.familyOf(statusCode))) {
-      return responseSchema;
+      return responseSerializer;
     }
+    // TODO : handles only one response type.
+    return null;
+  }
 
-    return scopedProtobufSchemaManager.getOrCreateSchema(operationMeta.getResponsesMeta().findResponseType(statusCode));
+  public RootDeserializer<Object> findResponseDesirialize(int statusCode) {
+    if (Family.SUCCESSFUL.equals(Family.familyOf(statusCode))) {
+      return responseDeserializer;
+    }
+    // TODO : handles only one response type.
+    return null;
   }
 }

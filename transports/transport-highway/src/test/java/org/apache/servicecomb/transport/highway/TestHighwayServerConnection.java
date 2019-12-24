@@ -16,36 +16,6 @@
  */
 package org.apache.servicecomb.transport.highway;
 
-import java.net.InetSocketAddress;
-
-import javax.xml.ws.Holder;
-
-import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
-import org.apache.servicecomb.codec.protobuf.utils.ScopedProtobufSchemaManager;
-import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
-import org.apache.servicecomb.core.Endpoint;
-import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.core.definition.MicroserviceMeta;
-import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
-import org.apache.servicecomb.transport.highway.message.LoginRequest;
-import org.apache.servicecomb.transport.highway.message.RequestHeader;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-import io.protostuff.LinkedBuffer;
-import io.protostuff.ProtobufOutput;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.net.NetSocket;
-import io.vertx.core.net.impl.NetSocketImpl;
-import io.vertx.core.net.impl.SocketAddressImpl;
-import mockit.Expectations;
-import mockit.Mock;
-import mockit.MockUp;
-import mockit.Mocked;
-
 public class TestHighwayServerConnection {
   // TODO : WK unit test
 //  private static WrapSchema requestHeaderSchema =

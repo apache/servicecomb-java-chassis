@@ -17,28 +17,20 @@
 
 package org.apache.servicecomb.transport.highway;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
-import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
-import org.apache.servicecomb.codec.protobuf.utils.schema.NotWrapSchema;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.foundation.vertx.client.tcp.TcpData;
+import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import org.apache.servicecomb.foundation.vertx.server.TcpParser;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
-import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.transport.highway.message.RequestHeader;
-import org.apache.servicecomb.transport.highway.message.ResponseHeader;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,11 +39,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.netty.buffer.ByteBuf;
-import io.protostuff.Input;
 import io.protostuff.runtime.ProtobufCompatibleUtils;
 import io.vertx.core.buffer.Buffer;
-import mockit.Mock;
-import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestHighwayCodec {
@@ -62,7 +51,7 @@ public class TestHighwayCodec {
 
   private Buffer bodyBuffer = null;
 
-  private WrapSchema schema = null;
+  private RootSerializer requestSerializer = null;
 
   private SchemaMeta schemaMeta = null;
 
@@ -91,7 +80,7 @@ public class TestHighwayCodec {
 
     bodyBuffer = Mockito.mock(Buffer.class);
 
-    schema = Mockito.mock(WrapSchema.class);
+    requestSerializer = Mockito.mock(RootSerializer.class);
 
     schemaMeta = Mockito.mock(SchemaMeta.class);
 
@@ -113,7 +102,7 @@ public class TestHighwayCodec {
 
     bodyBuffer = null;
 
-    schema = null;
+    requestSerializer = null;
 
     schemaMeta = null;
 
@@ -191,7 +180,7 @@ public class TestHighwayCodec {
   @Test
   public void testEncodeResponse() {
     boolean status = true;
-    WrapSchema bodySchema = Mockito.mock(WrapSchema.class);
+    RootSerializer bodySchema = Mockito.mock(RootSerializer.class);
     try {
       commonMock();
       HighwayCodec.encodeResponse(23432142, null, bodySchema, new Object());
@@ -237,7 +226,7 @@ public class TestHighwayCodec {
   }
 
   private void commonMock() {
-    Mockito.when(operationProtobuf.getRequestSchema()).thenReturn(schema);
+    Mockito.when(operationProtobuf.findRequestSerializer()).thenReturn(requestSerializer);
     Mockito.when(bodyBuffer.getByteBuf()).thenReturn(lByteBuf);
     Mockito.when(lByteBuf.nioBuffer()).thenReturn(nioBuffer);
     Mockito.when(operationProtobuf.getOperationMeta()).thenReturn(operationMeta);
