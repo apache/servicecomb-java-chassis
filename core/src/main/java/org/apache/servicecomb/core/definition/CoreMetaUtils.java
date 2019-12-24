@@ -52,7 +52,7 @@ public final class CoreMetaUtils {
 
   // only for consumer flow
   public static MicroserviceVersion getMicroserviceVersion(MicroserviceMeta microserviceMeta) {
-    return microserviceMeta.getVendorExtensions().get(CORE_MICROSERVICE_VERSION);
+    return microserviceMeta.getExtData(CORE_MICROSERVICE_VERSION);
   }
 
   public static MicroserviceMeta getMicroserviceMeta(MicroserviceVersion microserviceVersion) {
@@ -60,10 +60,10 @@ public final class CoreMetaUtils {
   }
 
   public static SwaggerProducerOperation getSwaggerProducerOperation(OperationMeta operationMeta) {
-    return operationMeta.getVendorExtensions().get(Const.PRODUCER_OPERATION);
+    return operationMeta.getExtData(Const.PRODUCER_OPERATION);
   }
 
   public static SwaggerProducer getSwaggerProducer(SchemaMeta schemaMeta) {
-    return schemaMeta.getVendorExtensions().get(SWAGGER_PRODUCER);
+    return schemaMeta.getExtData(SWAGGER_PRODUCER);
   }
 }

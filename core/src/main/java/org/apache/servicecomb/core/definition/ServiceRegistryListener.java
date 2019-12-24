@@ -100,7 +100,7 @@ public class ServiceRegistryListener {
       }
     }
 
-    microserviceMeta.getVendorExtensions().put(CORE_MICROSERVICE_VERSION, microserviceVersion);
+    microserviceMeta.putExtData(CORE_MICROSERVICE_VERSION, microserviceVersion);
     microserviceVersion.getVendorExtensions().put(CORE_MICROSERVICE_META, microserviceMeta);
   }
 

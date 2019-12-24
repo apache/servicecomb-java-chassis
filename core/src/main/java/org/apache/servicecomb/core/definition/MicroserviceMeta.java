@@ -195,8 +195,12 @@ public class MicroserviceMeta {
     return schemaMetas;
   }
 
-  public VendorExtensions getVendorExtensions() {
-    return vendorExtensions;
+  public void putExtData(String key, Object data) {
+    vendorExtensions.put(key, data);
+  }
+
+  public <T> T getExtData(String key) {
+    return vendorExtensions.get(key);
   }
 
   public List<Handler> getConsumerHandlerChain() {

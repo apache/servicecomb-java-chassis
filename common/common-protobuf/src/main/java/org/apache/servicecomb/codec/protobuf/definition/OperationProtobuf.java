@@ -48,10 +48,12 @@ public class OperationProtobuf {
   }
 
   public WrapSchema getRequestSchema() {
+    // TODO : work with request
     return requestSchema;
   }
 
   public WrapSchema getResponseSchema() {
+    // TODO : work with response
     return responseSchema;
   }
 

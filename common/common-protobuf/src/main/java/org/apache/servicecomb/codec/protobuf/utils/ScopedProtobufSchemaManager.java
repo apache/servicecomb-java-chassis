@@ -20,12 +20,27 @@ package org.apache.servicecomb.codec.protobuf.utils;
 import java.lang.reflect.Type;
 import java.util.Map;
 
+import org.apache.servicecomb.codec.protobuf.internal.converter.SwaggerToProtoGenerator;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
+import org.apache.servicecomb.foundation.protobuf.ProtoMapperFactory;
 
+import io.protostuff.compiler.model.Proto;
+import io.swagger.models.Swagger;
+
+/**
+ * Manage swagger -> protoBuffer mappings.
+ *
+ * This class have the same lifecycle as MicroserviceMeta, so we need to create an instance
+ * for each MicroserviceMeta.
+ */
 public class ScopedProtobufSchemaManager {
-  public  static final ScopedProtobufSchemaManager INSTANCE = new ScopedProtobufSchemaManager();
-  private ScopedProtobufSchemaManager() {
+  // Because this class belongs to each SchemaMeta, the key is the schema id.
+  private Map<String, ProtoMapper> mapperCache = new ConcurrentHashMapEx<>();
+
+  public ScopedProtobufSchemaManager() {
 
   }
 
@@ -39,5 +54,19 @@ public class ScopedProtobufSchemaManager {
   public WrapSchema getOrCreateArgsSchema(OperationMeta operationMeta) {
     // TODO: add implementation using new API
     return null;
+  }
+
+  /**
+   * get the ProtoMapper from Swagger
+   */
+  public ProtoMapper getOrCreateProtoMapper(SchemaMeta schemaMeta) {
+    return mapperCache.computeIfAbsent(schemaMeta.getSchemaId(), key -> {
+      Swagger swagger = schemaMeta.getSwagger();
+      SwaggerToProtoGenerator generator = new SwaggerToProtoGenerator(schemaMeta.getMicroserviceQualifiedName(),
+          swagger);
+      Proto proto = generator.convert();
+      ProtoMapperFactory protoMapperFactory = new ProtoMapperFactory();
+      return protoMapperFactory.create(proto);
+    });
   }
 }

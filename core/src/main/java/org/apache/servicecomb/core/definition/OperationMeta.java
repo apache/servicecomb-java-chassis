@@ -141,10 +141,6 @@ public class OperationMeta {
     return vendorExtensions.get(key);
   }
 
-  public VendorExtensions getVendorExtensions() {
-    return vendorExtensions;
-  }
-
   public Executor getExecutor() {
     return executor;
   }

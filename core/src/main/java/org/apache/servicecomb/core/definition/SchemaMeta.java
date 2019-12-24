@@ -93,8 +93,12 @@ public class SchemaMeta {
     return operations;
   }
 
-  public VendorExtensions getVendorExtensions() {
-    return vendorExtensions;
+  public void putExtData(String key, Object data) {
+    vendorExtensions.put(key, data);
+  }
+
+  public <T> T getExtData(String key) {
+    return vendorExtensions.get(key);
   }
 
   public OperationMeta findOperation(String operationId) {
