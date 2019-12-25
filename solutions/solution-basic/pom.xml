@@ -89,6 +89,10 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>handler-publickey-auth</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>handler-router</artifactId>
+    </dependency>
 
     <!--  validation -->
     <dependency>
