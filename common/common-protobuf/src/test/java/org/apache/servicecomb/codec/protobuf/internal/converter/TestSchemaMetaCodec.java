@@ -122,7 +122,7 @@ public class TestSchemaMetaCodec {
 
     // request message
     RootSerializer requestSerializer = operationProtobuf.findRequestSerializer();
-    boolean boolValue = false;
+    boolean boolValue = true;
     int iValue = 20;
     long lValue = 30L;
     float fValue = 40f;
@@ -151,7 +151,7 @@ public class TestSchemaMetaCodec {
     RootDeserializer<Object> requestDeserializer = operationProtobuf.findRequestDesirializer();
     Object obj = requestDeserializer.deserialize(values);
     Map<String, Object> decodedArgs = (Map<String, Object>) obj;
-    Assert.assertEquals(null, decodedArgs.get("boolValue")); // default value not serialized
+    Assert.assertEquals(boolValue, decodedArgs.get("boolValue")); // default value not serialized
     Assert.assertEquals(iValue, decodedArgs.get("iValue"));
     Assert.assertEquals(lValue, decodedArgs.get("lValue"));
     Assert.assertEquals(fValue, decodedArgs.get("fValue"));
@@ -162,5 +162,31 @@ public class TestSchemaMetaCodec {
     Assert.assertEquals(localDate.getLong(ChronoField.EPOCH_DAY), decodedArgs.get("localDate")); // handling LocalDate
     Assert.assertEquals(date.getTime(), decodedArgs.get("date")); // handling Date
     Assert.assertTrue(decodedArgs.get("empty") instanceof Map); // handling object, should by Empty.class
+
+    // default value testing
+    args.put("boolValue", false);
+    args.put("iValue", 0);
+    args.put("lValue", 0L);
+    args.put("fValue", 0F);
+    args.put("dValue", 0D);
+    args.put("sValue", null);
+    args.put("iArray", new ArrayList<>(0));
+    args.put("color", null);
+    args.put("localDate", null);
+    args.put("date", null);
+    args.put("empty", null);
+    values = requestSerializer.serialize(args);
+    obj = requestDeserializer.deserialize(values);
+    decodedArgs = (Map<String, Object>) obj;
+    Assert.assertEquals(null, decodedArgs.get("boolValue"));
+    Assert.assertEquals(null, decodedArgs.get("iValue"));
+    Assert.assertEquals(null, decodedArgs.get("lValue"));
+    Assert.assertEquals(null, decodedArgs.get("fValue"));
+    Assert.assertEquals(null, decodedArgs.get("dValue"));
+    Assert.assertEquals(null, decodedArgs.get("iArray"));
+    Assert.assertEquals(null, decodedArgs.get("color"));
+    Assert.assertEquals(null, decodedArgs.get("localDate"));
+    Assert.assertEquals(null, decodedArgs.get("date"));
+    Assert.assertEquals(null, decodedArgs.get("empty"));
   }
 }
