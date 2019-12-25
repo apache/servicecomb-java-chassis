@@ -839,7 +839,7 @@ public final class ProtobufOutputEx extends WriteSession implements OutputEx {
   @Override
   public final void writeScalarBool(int tag, int tagSize, boolean value) {
     if (value) {
-      writeBool(tag, tagSize, true);
+      writeBool(tag, tagSize, value);
     }
   }
 

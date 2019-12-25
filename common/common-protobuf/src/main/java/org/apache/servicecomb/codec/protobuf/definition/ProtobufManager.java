@@ -26,7 +26,7 @@ public final class ProtobufManager {
 
   private static final Object LOCK = new Object();
 
-  public static OperationProtobuf getOrCreateOperation(OperationMeta operationMeta) throws Exception {
+  public static OperationProtobuf getOrCreateOperation(OperationMeta operationMeta) {
     OperationProtobuf operationProtobuf = operationMeta.getExtData(EXT_ID);
     if (operationProtobuf == null) {
       synchronized (LOCK) {
