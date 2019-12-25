@@ -17,11 +17,9 @@
 
 package org.apache.servicecomb.codec.protobuf.utils;
 
-import java.lang.reflect.Type;
 import java.util.Map;
 
 import org.apache.servicecomb.codec.protobuf.internal.converter.SwaggerToProtoGenerator;
-import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
@@ -42,18 +40,6 @@ public class ScopedProtobufSchemaManager {
 
   public ScopedProtobufSchemaManager() {
 
-  }
-
-  // 适用于将单个类型包装的场景
-  // 比如return
-  public WrapSchema getOrCreateSchema(Type type) {
-    // TODO: add implementation using new API
-    return null;
-  }
-
-  public WrapSchema getOrCreateArgsSchema(OperationMeta operationMeta) {
-    // TODO: add implementation using new API
-    return null;
   }
 
   /**

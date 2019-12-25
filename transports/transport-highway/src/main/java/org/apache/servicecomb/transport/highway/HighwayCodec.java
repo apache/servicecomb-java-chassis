@@ -17,9 +17,12 @@
 
 package org.apache.servicecomb.transport.highway;
 
+import java.util.Map;
+
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
-import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
+import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpData;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -44,14 +47,17 @@ public final class HighwayCodec {
     header.setContext(invocation.getContext());
 
     HighwayOutputStream os = new HighwayOutputStream(msgId);
-    os.write(header, operationProtobuf.getRequestSchema(), invocation.getArgs());
+    // TODO: WEAK write array or map
+    os.write(header, operationProtobuf.findRequestSerializer(), invocation.getArgs());
     return os;
   }
 
+  @SuppressWarnings("rawtypes")
   public static void decodeRequest(Invocation invocation, RequestHeader header, OperationProtobuf operationProtobuf,
       Buffer bodyBuffer) throws Exception {
-    WrapSchema schema = operationProtobuf.getRequestSchema();
-    Object[] args = schema.readObject(bodyBuffer);
+    RootDeserializer<Map> schema = operationProtobuf.findRequestDesirializer();
+    // TODO: WEAK read array or map
+    Object[] args = schema.deserialize(bodyBuffer.getBytes()).values().toArray();
 
     invocation.setSwaggerArguments(args);
     invocation.mergeContext(header.getContext());
@@ -61,7 +67,7 @@ public final class HighwayCodec {
     return RequestHeader.readObject(headerBuffer);
   }
 
-  public static Buffer encodeResponse(long msgId, ResponseHeader header, WrapSchema bodySchema,
+  public static Buffer encodeResponse(long msgId, ResponseHeader header, RootSerializer bodySchema,
       Object body) throws Exception {
     try (HighwayOutputStream os = new HighwayOutputStream(msgId)) {
       os.write(header, bodySchema, body);
@@ -76,8 +82,8 @@ public final class HighwayCodec {
       invocation.getContext().putAll(header.getContext());
     }
 
-    WrapSchema bodySchema = operationProtobuf.findResponseSchema(header.getStatusCode());
-    Object body = bodySchema.readObject(tcpData.getBodyBuffer());
+    RootDeserializer<Object> bodySchema = operationProtobuf.findResponseDesirialize(header.getStatusCode());
+    Object body = bodySchema.deserialize(tcpData.getBodyBuffer().getBytes());
 
     Response response = Response.create(header.getStatusCode(), header.getReasonPhrase(), body);
     response.setHeaders(header.getHeaders());

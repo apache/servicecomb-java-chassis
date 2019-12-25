@@ -33,6 +33,8 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.protostuff.compiler.model.Message;
 import io.protostuff.compiler.model.Proto;
+import io.protostuff.compiler.model.Service;
+import io.protostuff.compiler.model.ServiceMethod;
 
 public class ProtoMapper {
   private final ObjectMapper jsonMapper;
@@ -95,6 +97,18 @@ public class ProtoMapper {
     }
 
     return null;
+  }
+
+  public Message getRequestMessage(String operationId) {
+    Service service = proto.getServices().get(0);
+    ServiceMethod serviceMethod = service.getMethod(operationId);
+    return serviceMethod.getArgType();
+  }
+
+  public Message getResponseMessage(String operationId) {
+    Service service = proto.getServices().get(0);
+    ServiceMethod serviceMethod = service.getMethod(operationId);
+    return serviceMethod.getReturnType();
   }
 
   public synchronized RootSerializer createRootSerializer(String shortMessageName, Type type) {

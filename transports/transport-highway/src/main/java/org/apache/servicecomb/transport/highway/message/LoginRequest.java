@@ -16,15 +16,10 @@
  */
 package org.apache.servicecomb.transport.highway.message;
 
-import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
-import org.apache.servicecomb.codec.protobuf.utils.ScopedProtobufSchemaManager;
-import org.apache.servicecomb.codec.protobuf.utils.WrapSchema;
 import org.apache.servicecomb.foundation.protobuf.ProtoMapperFactory;
 import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
 import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 
-import io.protostuff.ProtobufOutput;
-import io.protostuff.Tag;
 import io.vertx.core.buffer.Buffer;
 
 public class LoginRequest {
