@@ -145,8 +145,6 @@ public class TestSchemaMetaCodec {
     args.put("localDate", localDate);
     args.put("date", date);
     args.put("empty", empty);
-//    Object[] argsArray = new Object[] {boolValue, iValue, lValue, fValue, dValue, sValue, iArray, color, localDate,
-//        date, empty};
     values = requestSerializer.serialize(args);
     RootDeserializer<Object> requestDeserializer = operationProtobuf.findRequestDesirializer();
     Object obj = requestDeserializer.deserialize(values);
@@ -158,6 +156,8 @@ public class TestSchemaMetaCodec {
     Assert.assertEquals(dValue, decodedArgs.get("dValue"));
     // TODO: WEAK following need take care of
     Assert.assertEquals(iArray[0], (int) ((List<Integer>) decodedArgs.get("iArray")).get(0)); // handling list
+    Assert.assertEquals(iArray[1], (int) ((List<Integer>) decodedArgs.get("iArray")).get(1));
+    Assert.assertEquals(2, ((List<Integer>) decodedArgs.get("iArray")).size());
     Assert.assertEquals(color.ordinal(), decodedArgs.get("color")); // handling enum
     Assert.assertEquals(localDate.getLong(ChronoField.EPOCH_DAY), decodedArgs.get("localDate")); // handling LocalDate
     Assert.assertEquals(date.getTime(), decodedArgs.get("date")); // handling Date
@@ -170,7 +170,7 @@ public class TestSchemaMetaCodec {
     args.put("fValue", 0F);
     args.put("dValue", 0D);
     args.put("sValue", null);
-    args.put("iArray", new ArrayList<>(0));
+    args.put("iArray", new int[0]);
     args.put("color", null);
     args.put("localDate", null);
     args.put("date", null);
