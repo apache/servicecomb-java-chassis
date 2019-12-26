@@ -1123,6 +1123,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
+        <artifactId>handler-router</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
         <artifactId>handler-fault-injection</artifactId>
         <version>${project.version}</version>
       </dependency>
