@@ -55,9 +55,9 @@ public final class HighwayCodec {
   @SuppressWarnings("rawtypes")
   public static void decodeRequest(Invocation invocation, RequestHeader header, OperationProtobuf operationProtobuf,
       Buffer bodyBuffer) throws Exception {
-    RootDeserializer<Map> schema = operationProtobuf.findRequestDesirializer();
+    RootDeserializer<Object> schema = operationProtobuf.findRequestDesirializer();
     // TODO: WEAK read array or map
-    Object[] args = schema.deserialize(bodyBuffer.getBytes()).values().toArray();
+    Object[] args = (Object[])schema.deserialize(bodyBuffer.getBytes());
 
     invocation.setSwaggerArguments(args);
     invocation.mergeContext(header.getContext());

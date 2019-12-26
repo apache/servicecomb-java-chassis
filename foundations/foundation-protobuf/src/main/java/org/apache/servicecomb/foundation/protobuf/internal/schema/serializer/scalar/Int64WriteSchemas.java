@@ -17,6 +17,9 @@
 package org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.scalar;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.temporal.ChronoField;
+import java.util.Date;
 
 import org.apache.servicecomb.foundation.common.utils.bean.Getter;
 import org.apache.servicecomb.foundation.common.utils.bean.LongGetter;
@@ -63,6 +66,18 @@ public class Int64WriteSchemas {
 
       if (value instanceof String) {
         long parsedValue = Long.parseLong((String) value, 10);
+        output.writeScalarInt64(tag, tagSize, parsedValue);
+        return;
+      }
+
+      if (value instanceof Date) {
+        long parsedValue = ((Date) value).getTime();
+        output.writeScalarInt64(tag, tagSize, parsedValue);
+        return;
+      }
+
+      if (value instanceof LocalDate) {
+        long parsedValue = ((LocalDate) value).getLong(ChronoField.EPOCH_DAY);
         output.writeScalarInt64(tag, tagSize, parsedValue);
         return;
       }

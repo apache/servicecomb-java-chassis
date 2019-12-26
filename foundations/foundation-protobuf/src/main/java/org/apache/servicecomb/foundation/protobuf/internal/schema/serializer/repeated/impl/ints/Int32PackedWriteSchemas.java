@@ -29,49 +29,65 @@ public class Int32PackedWriteSchemas {
     public Int32PackedWriters(Field protoField) {
       super(protoField);
 
-      primitiveArrayWriter = (o, value) ->
-          o.writeObject(tag, tagSize, value, (output, array) -> {
-            for (int element : array) {
+      primitiveArrayWriter = (o, value) -> {
+        if (value.length == 0) {
+          return;
+        }
+        o.writeObject(tag, tagSize, value, (output, array) -> {
+          for (int element : array) {
+            output.writePackedInt32(element);
+          }
+        });
+      };
+
+      arrayWriter = (o, value) -> {
+        if (value.length == 0) {
+          return;
+        }
+        o.writeObject(tag, tagSize, value, (output, array) -> {
+          for (Integer element : array) {
+            if (element != null) {
               output.writePackedInt32(element);
+              continue;
             }
-          });
 
-      arrayWriter = (o, value) ->
-          o.writeObject(tag, tagSize, value, (output, array) -> {
-            for (Integer element : array) {
-              if (element != null) {
-                output.writePackedInt32(element);
-                continue;
-              }
+            ProtoUtils.throwNotSupportNullElement(protoField);
+          }
+        });
+      };
 
-              ProtoUtils.throwNotSupportNullElement(protoField);
+      collectionWriter = (o, value) -> {
+        if (value.isEmpty()) {
+          return;
+        }
+        o.writeObject(tag, tagSize, value, (output, collection) -> {
+          for (Integer element : collection) {
+            if (element != null) {
+              output.writePackedInt32(element);
+              continue;
             }
-          });
 
-      collectionWriter = (o, value) ->
-          o.writeObject(tag, tagSize, value, (output, collection) -> {
-            for (Integer element : collection) {
-              if (element != null) {
-                output.writePackedInt32(element);
-                continue;
-              }
+            ProtoUtils.throwNotSupportNullElement(protoField);
+          }
+        });
+      };
 
-              ProtoUtils.throwNotSupportNullElement(protoField);
+      stringArrayWriter = (o, value) -> {
+        if (value.length == 0) {
+          return;
+        }
+        o.writeObject(tag, tagSize, value, (output, array) -> {
+          for (String element : array) {
+            if (element != null) {
+              int parsedValue = Integer.parseInt(element, 10);
+              output.writePackedInt32(parsedValue);
+              continue;
             }
-          });
 
-      stringArrayWriter = (o, value) ->
-          o.writeObject(tag, tagSize, value, (output, array) -> {
-            for (String element : array) {
-              if (element != null) {
-                int parsedValue = Integer.parseInt(element, 10);
-                output.writePackedInt32(parsedValue);
-                continue;
-              }
-
-              ProtoUtils.throwNotSupportNullElement(protoField);
-            }
-          });
+            ProtoUtils.throwNotSupportNullElement(protoField);
+          }
+        });
+      };
     }
   }
 

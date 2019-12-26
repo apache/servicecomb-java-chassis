@@ -38,7 +38,7 @@ public class OperationProtobuf {
 
   private RootSerializer requestSerializer;
 
-  private RootDeserializer<Map> requestDeserializer;
+  private RootDeserializer<Object> requestDeserializer;
 
   private RootSerializer responseSerializer;
 
@@ -50,8 +50,8 @@ public class OperationProtobuf {
 
     ProtoMapper mapper = scopedProtobufSchemaManager.getOrCreateProtoMapper(operationMeta.getSchemaMeta());
     Message requestMessage = mapper.getRequestMessage(operationMeta.getOperationId());
-    requestSerializer = mapper.createRootSerializer(requestMessage, Map.class);
-    requestDeserializer = mapper.createRootDeserializer(requestMessage, Map.class);
+    requestSerializer = mapper.createRootSerializer(requestMessage, Object.class);
+    requestDeserializer = mapper.createRootDeserializer(requestMessage, Object.class);
 
     Message responseMessage = mapper.getResponseMessage(operationMeta.getOperationId());
     responseSerializer = mapper
@@ -70,7 +70,7 @@ public class OperationProtobuf {
     return requestSerializer;
   }
 
-  public RootDeserializer<Map> findRequestDesirializer() {
+  public RootDeserializer<Object> findRequestDesirializer() {
     return requestDeserializer;
   }
 
