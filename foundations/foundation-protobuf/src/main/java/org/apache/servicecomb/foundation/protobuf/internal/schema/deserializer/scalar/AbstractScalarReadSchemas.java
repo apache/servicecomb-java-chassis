@@ -44,7 +44,7 @@ public class AbstractScalarReadSchemas {
   }
 
   static abstract class AbstractLongSchema<T> extends FieldSchema<T> {
-    protected final Setter<T, Long> setter;
+    protected final Setter<T, Object> setter;
 
     public AbstractLongSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor.getJavaType());

@@ -18,6 +18,7 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer;
 
 import static org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils.isWrapProperty;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
@@ -92,10 +93,35 @@ public class DeserializerSchemaManager extends SchemaManager {
     super(protoMapper);
   }
 
+  public <T> RootDeserializer<T> createRootDeserializer(Message message, Type type, Method method) {
+    JavaType javaType = TypeFactory.defaultInstance().constructType(type);
+    SchemaEx<T> messageSchema = getOrCreateMessageSchema(message, javaType, method);
+    return new RootDeserializer<>(messageSchema);
+  }
+
   public <T> RootDeserializer<T> createRootDeserializer(Message message, Type type) {
     JavaType javaType = TypeFactory.defaultInstance().constructType(type);
     SchemaEx<T> messageSchema = getOrCreateMessageSchema(message, javaType);
     return new RootDeserializer<>(messageSchema);
+  }
+
+  @Override
+  protected <T> SchemaEx<T> newMessageSchema(Message message, JavaType javaType, Method method) {
+    if (ProtoUtils.isWrapProperty(message) && javaType.getRawClass() != PropertyWrapper.class) {
+      Field protoField = message.getField(1);
+      if (javaType.isJavaLangObject()) {
+        javaType =
+            protoField.isRepeated() && protoField.getType().isMessage() && !protoField.isMap() ? ProtoConst.LIST_TYPE
+                : ProtoConst.MAP_TYPE;
+      }
+      javaType = TypeFactory.defaultInstance().constructParametricType(PropertyWrapper.class, javaType);
+    }
+
+    if (javaType.isJavaLangObject()) {
+      javaType = ProtoConst.MAP_TYPE;
+    }
+
+    return new MessageReadSchema<>(protoMapper, message, javaType, method);
   }
 
   @Override

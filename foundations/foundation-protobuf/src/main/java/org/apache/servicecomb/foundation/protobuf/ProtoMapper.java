@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.foundation.protobuf;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Map;
 
@@ -131,6 +132,10 @@ public class ProtoMapper {
     }
 
     return createRootDeserializer(message, type);
+  }
+
+  public synchronized <T> RootDeserializer<T> createRootDeserializer(Message message, Type type, Method method) {
+    return deserializerSchemaManager.createRootDeserializer(message, type, method);
   }
 
   public synchronized <T> RootDeserializer<T> createRootDeserializer(Message message, Type type) {

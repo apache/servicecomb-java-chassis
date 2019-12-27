@@ -47,19 +47,20 @@ public final class HighwayCodec {
     header.setContext(invocation.getContext());
 
     HighwayOutputStream os = new HighwayOutputStream(msgId);
-    // TODO: WEAK write array or map
-    os.write(header, operationProtobuf.findRequestSerializer(), invocation.getArgs());
+    os.write(header, operationProtobuf.findRequestSerializer(), invocation.getArguments());
     return os;
   }
 
-  @SuppressWarnings("rawtypes")
+  @SuppressWarnings({"rawtypes", "unchecked"})
   public static void decodeRequest(Invocation invocation, RequestHeader header, OperationProtobuf operationProtobuf,
       Buffer bodyBuffer) throws Exception {
     RootDeserializer<Object> schema = operationProtobuf.findRequestDesirializer();
-    // TODO: WEAK read array or map
-    Object[] args = (Object[])schema.deserialize(bodyBuffer.getBytes());
-
-    invocation.setSwaggerArguments(args);
+    Object args = schema.deserialize(bodyBuffer.getBytes());
+    if (args instanceof Map) {
+      invocation.setArguments((Map<String, Object>) args);
+    } else {
+      invocation.setSwaggerArgument(0, args);
+    }
     invocation.mergeContext(header.getContext());
   }
 

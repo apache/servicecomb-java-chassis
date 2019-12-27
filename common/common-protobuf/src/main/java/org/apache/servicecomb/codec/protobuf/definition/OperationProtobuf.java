@@ -23,10 +23,12 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.Status.Family;
 
 import org.apache.servicecomb.codec.protobuf.utils.ScopedProtobufSchemaManager;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
 import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
 import org.apache.servicecomb.foundation.protobuf.RootSerializer;
+import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 
 import io.protostuff.compiler.model.Message;
 
@@ -51,7 +53,14 @@ public class OperationProtobuf {
     ProtoMapper mapper = scopedProtobufSchemaManager.getOrCreateProtoMapper(operationMeta.getSchemaMeta());
     Message requestMessage = mapper.getRequestMessage(operationMeta.getOperationId());
     requestSerializer = mapper.createRootSerializer(requestMessage, Object.class);
-    requestDeserializer = mapper.createRootDeserializer(requestMessage, Object.class);
+    SwaggerProducerOperation producerOperation = operationMeta.getExtData(Const.PRODUCER_OPERATION);
+    if (producerOperation == null) {
+      requestDeserializer = mapper
+          .createRootDeserializer(requestMessage, Object.class);
+    } else {
+      requestDeserializer = mapper
+          .createRootDeserializer(requestMessage, Map.class, producerOperation.getProducerMethod());
+    }
 
     Message responseMessage = mapper.getResponseMessage(operationMeta.getOperationId());
     responseSerializer = mapper
