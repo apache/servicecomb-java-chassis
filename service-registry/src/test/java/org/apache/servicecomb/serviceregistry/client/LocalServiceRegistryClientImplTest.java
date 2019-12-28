@@ -17,11 +17,14 @@
 
 package org.apache.servicecomb.serviceregistry.client;
 
+import static org.junit.Assert.fail;
+
 import java.io.InputStream;
 import java.util.List;
 
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
 import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.client.http.Holder;
@@ -195,6 +198,69 @@ public class LocalServiceRegistryClientImplTest {
     Microservice microservice = registryClient.getMicroservice("002");
     Assert.assertThat(microservice.getSchemas().size(), Is.is(1));
     Assert.assertTrue(microservice.getSchemas().contains("hello"));
+  }
+
+  @SuppressWarnings("deprecation")
+  @Test
+  public void undateMicroserviceInstanceStatus() {
+    List<MicroserviceInstance> m = registryClient
+        .findServiceInstance("", "default", "ms2", DefinitionConst.VERSION_RULE_ALL);
+    MicroserviceInstance instance = m.get(0);
+    Assert.assertEquals(MicroserviceInstanceStatus.UP, instance.getStatus());
+
+    boolean updateOperationResult = registryClient
+        .undateMicroserviceInstanceStatus(instance.getServiceId(), instance.getInstanceId(), "TESTING");
+    Assert.assertTrue(updateOperationResult);
+
+    m = registryClient
+        .findServiceInstance("", "default", "ms2", DefinitionConst.VERSION_RULE_ALL);
+    instance = m.get(0);
+    Assert.assertEquals(MicroserviceInstanceStatus.TESTING, instance.getStatus());
+  }
+
+  @SuppressWarnings("deprecation")
+  @Test
+  public void undateMicroserviceInstanceStatus_instance_not_found() {
+    try {
+      registryClient.undateMicroserviceInstanceStatus("msIdNotExist", "", "UP");
+      shouldThrowException();
+    } catch (IllegalArgumentException e) {
+      Assert.assertEquals("Invalid serviceId, serviceId=msIdNotExist", e.getMessage());
+    }
+
+    try {
+      registryClient.undateMicroserviceInstanceStatus("002", "instanceIdNotExist", "UP");
+      shouldThrowException();
+    } catch (IllegalArgumentException e) {
+      Assert.assertEquals("Invalid argument. microserviceId=002, instanceId=instanceIdNotExist.",
+          e.getMessage());
+    }
+  }
+
+  @SuppressWarnings("deprecation")
+  @Test
+  public void undateMicroserviceInstanceStatus_illegal_status() {
+    List<MicroserviceInstance> m = registryClient
+        .findServiceInstance("", "default", "ms2", DefinitionConst.VERSION_RULE_ALL);
+    MicroserviceInstance instance = m.get(0);
+
+    try {
+      registryClient.undateMicroserviceInstanceStatus(instance.getServiceId(), instance.getInstanceId(), null);
+      shouldThrowException();
+    } catch (NullPointerException e) {
+      Assert.assertEquals("Name is null", e.getMessage());
+    }
+    try {
+      registryClient
+          .undateMicroserviceInstanceStatus(instance.getServiceId(), instance.getInstanceId(), "IllegalStatus");
+      shouldThrowException();
+    } catch (IllegalArgumentException e) {
+      Assert.assertEquals("Invalid status: IllegalStatus", e.getMessage());
+    }
+  }
+
+  private void shouldThrowException() {
+    fail("an exception is expected");
   }
 }
 

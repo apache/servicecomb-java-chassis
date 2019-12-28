@@ -39,6 +39,7 @@ import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
 import org.apache.servicecomb.serviceregistry.api.request.CreateSchemaRequest;
 import org.apache.servicecomb.serviceregistry.api.request.CreateServiceRequest;
@@ -62,7 +63,6 @@ import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.cache.CacheBuilder;
@@ -78,7 +78,9 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRegistryClientImpl.class);
 
   private static final String ERROR_CODE = "errorCode";
+
   private static final String ERR_SERVICE_NOT_EXISTS = "400012";
+
   private static final String ERR_SCHEMA_NOT_EXISTS = "400016";
 
   private IpPortManager ipPortManager;
@@ -691,7 +693,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
                 callback);
             onClose.success(null);
           }, bodyBuffer -> {
-            MicroserviceInstanceChangedEvent response = null;
+            MicroserviceInstanceChangedEvent response;
             try {
               response = JsonUtils.readValue(bodyBuffer.getBytes(),
                   MicroserviceInstanceChangedEvent.class);
@@ -904,22 +906,22 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   @Override
-  public boolean undateMicroserviceInstanceStatus(String microserviceId, String microserviceInstanceId, String status) {
+  public boolean updateMicroserviceInstanceStatus(String microserviceId, String instanceId,
+      MicroserviceInstanceStatus status) {
+    if (null == status) {
+      throw new IllegalArgumentException("null status is now allowed");
+    }
+
     Holder<HttpClientResponse> holder = new Holder<>();
     IpPort ipPort = ipPortManager.getAvailableAddress();
     try {
-      if (LOGGER.isDebugEnabled()) {
-        LOGGER.debug("update status of microservice instance: {}", status);
-      }
-      String url = String.format(Const.REGISTRY_API.MICROSERVICE_INSTANCE_STATUS, microserviceId, microserviceInstanceId);
-      if (StringUtils.isEmpty(status)) {
-        LOGGER.debug("empty status");
-        return false;
-      }
+      LOGGER.debug("update status of microservice instance: {}", status);
+      String url = String.format(Const.REGISTRY_API.MICROSERVICE_INSTANCE_STATUS, microserviceId, instanceId);
       Map<String, String[]> queryParams = new HashMap<>();
-      queryParams.put("value", new String[] {status});
+      queryParams.put("value", new String[] {status.toString()});
       CountDownLatch countDownLatch = new CountDownLatch(1);
-      RestUtils.put(ipPort, url, new RequestParam().setQueryParams(queryParams), syncHandler(countDownLatch, HttpClientResponse.class, holder));
+      RestUtils.put(ipPort, url, new RequestParam().setQueryParams(queryParams),
+          syncHandler(countDownLatch, HttpClientResponse.class, holder));
       countDownLatch.await();
       if (holder.value != null) {
         if (holder.value.statusCode() == Status.OK.getStatusCode()) {
@@ -929,9 +931,9 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
       }
     } catch (Exception e) {
       LOGGER.error("update status of microservice instance {}/{} failed",
-              microserviceId,
-              microserviceInstanceId,
-              e);
+          microserviceId,
+          instanceId,
+          e);
     }
     return false;
   }
