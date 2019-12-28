@@ -18,8 +18,10 @@
 package org.apache.servicecomb.core;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -182,6 +184,22 @@ public class Invocation extends SwaggerInvocation {
 
   public Object[] getArgs() {
     return swaggerArguments;
+  }
+
+  public Map<String, Object> getArguments() {
+    Map<String, Object> result = new HashMap<>(swaggerArguments.length);
+    for (int i = 0; i < swaggerArguments.length; i++) {
+      result.put(this.operationMeta.getParamName(i), swaggerArguments[i]);
+    }
+    return result;
+  }
+
+  public void setArguments(Map<String, Object> swaggerArguments) {
+    Object[] args = new Object[swaggerArguments.size()];
+    for (Entry<String, Object> item : swaggerArguments.entrySet()) {
+      args[this.operationMeta.getParameterIndex(item.getKey())] = item.getValue();
+    }
+    setSwaggerArguments(args);
   }
 
   public Endpoint getEndpoint() {

@@ -18,6 +18,7 @@
 package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,20 @@ public class MessageReadSchema<T> implements SchemaEx<T> {
 
   private JavaType javaType;
 
+  private Method method;
+
+  @SuppressWarnings("unchecked")
+  public MessageReadSchema(ProtoMapper protoMapper, Message message, JavaType javaType, Method method) {
+    this.protoMapper = protoMapper;
+    this.message = message;
+    this.javaType = javaType;
+    this.method = method;
+    if (javaType.isJavaLangObject() || Map.class.isAssignableFrom(javaType.getRawClass())) {
+      javaType = ProtoConst.MAP_TYPE;
+    }
+    this.instantiator = RuntimeEnv.newInstantiator((Class<T>) javaType.getRawClass());
+  }
+
   @SuppressWarnings("unchecked")
   public MessageReadSchema(ProtoMapper protoMapper, Message message, JavaType javaType) {
     this.protoMapper = protoMapper;
@@ -94,8 +109,13 @@ public class MessageReadSchema<T> implements SchemaEx<T> {
   @Override
   public void init() {
     if (Map.class.isAssignableFrom(javaType.getRawClass())) {
-      this.fieldMap = (FieldMapEx<T>) protoMapper.getDeserializerSchemaManager()
-          .createMapFields(message);
+      if (this.method == null) {
+        this.fieldMap = (FieldMapEx<T>) protoMapper.getDeserializerSchemaManager()
+            .createMapFields(message);
+      } else {
+        this.fieldMap = (FieldMapEx<T>) protoMapper.getDeserializerSchemaManager()
+            .createMapFields(message, method);
+      }
       return;
     }
 

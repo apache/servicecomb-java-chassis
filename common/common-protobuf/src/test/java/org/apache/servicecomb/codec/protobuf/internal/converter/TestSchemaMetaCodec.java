@@ -18,7 +18,6 @@
 package org.apache.servicecomb.codec.protobuf.internal.converter;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,7 +27,11 @@ import java.util.Map;
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchema;
+import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.definition.CoreMetaUtils;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
+import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
 import org.apache.servicecomb.foundation.protobuf.RootSerializer;
@@ -36,6 +39,9 @@ import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyWrapper;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Empty;
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
+import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
+import org.apache.servicecomb.swagger.engine.SwaggerProducer;
+import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGenerator;
 import org.junit.Assert;
 import org.junit.Test;
@@ -98,7 +104,8 @@ public class TestSchemaMetaCodec {
 
   @Test
   @SuppressWarnings({"rawtypes", "unchecked"})
-  public void testProtoSchemaOperationBase(@Injectable MicroserviceMeta microserviceMeta) throws Exception {
+  public void testProtoSchemaOperationBase(@Injectable MicroserviceMeta microserviceMeta,
+      @Injectable SCBEngine scbEngine) throws Exception {
     new Expectations() {
       {
         microserviceMeta.getMicroserviceName();
@@ -110,6 +117,14 @@ public class TestSchemaMetaCodec {
     SpringmvcSwaggerGenerator swaggerGenerator = new SpringmvcSwaggerGenerator(ProtoSchema.class);
     Swagger swagger = swaggerGenerator.generate();
     SchemaMeta schemaMeta = new SchemaMeta(microserviceMeta, "ProtoSchema", swagger);
+
+    SwaggerEnvironment swaggerEnvironment = new SwaggerEnvironment();
+    SwaggerProducer swaggerProducer = swaggerEnvironment.createProducer(new ProtoSchema(), swagger);
+    schemaMeta.putExtData(CoreMetaUtils.SWAGGER_PRODUCER, swaggerProducer);
+    for (SwaggerProducerOperation producerOperation : swaggerProducer.getAllOperations()) {
+      OperationMeta operationMeta = schemaMeta.ensureFindOperation(producerOperation.getOperationId());
+      operationMeta.putExtData(Const.PRODUCER_OPERATION, producerOperation);
+    }
 
     // response message
     // TODO : WEAK fix this line "java.lang.NoClassDefFoundError: org/apache/servicecomb/foundation/common/utils/bean/Getter"
@@ -149,19 +164,17 @@ public class TestSchemaMetaCodec {
     RootDeserializer<Object> requestDeserializer = operationProtobuf.findRequestDesirializer();
     Object obj = requestDeserializer.deserialize(values);
     Map<String, Object> decodedArgs = (Map<String, Object>) obj;
-    Assert.assertEquals(boolValue, decodedArgs.get("boolValue")); // default value not serialized
+    Assert.assertEquals(boolValue, decodedArgs.get("boolValue"));
     Assert.assertEquals(iValue, decodedArgs.get("iValue"));
     Assert.assertEquals(lValue, decodedArgs.get("lValue"));
     Assert.assertEquals(fValue, decodedArgs.get("fValue"));
     Assert.assertEquals(dValue, decodedArgs.get("dValue"));
-    // TODO: WEAK following need take care of
-    Assert.assertEquals(iArray[0], (int) ((List<Integer>) decodedArgs.get("iArray")).get(0)); // handling list
-    Assert.assertEquals(iArray[1], (int) ((List<Integer>) decodedArgs.get("iArray")).get(1));
-    Assert.assertEquals(2, ((List<Integer>) decodedArgs.get("iArray")).size());
-    Assert.assertEquals(color.ordinal(), decodedArgs.get("color")); // handling enum
-    Assert.assertEquals(localDate.getLong(ChronoField.EPOCH_DAY), decodedArgs.get("localDate")); // handling LocalDate
-    Assert.assertEquals(date.getTime(), decodedArgs.get("date")); // handling Date
-    Assert.assertTrue(decodedArgs.get("empty") instanceof Map); // handling object, should by Empty.class
+    Assert.assertArrayEquals(iArray, (int[]) decodedArgs.get("iArray"));
+    Assert.assertEquals(color, decodedArgs.get("color"));
+    Assert.assertEquals(date, decodedArgs.get("date"));
+    Assert.assertTrue(decodedArgs.get("localDate") instanceof LocalDate);
+    Assert.assertEquals(localDate, decodedArgs.get("localDate"));
+    Assert.assertTrue(decodedArgs.get("empty") instanceof Empty);
 
     // default value testing
     args.put("boolValue", false);

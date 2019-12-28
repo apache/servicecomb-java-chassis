@@ -18,6 +18,7 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.serializer;
 
 import static org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils.isWrapProperty;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
@@ -105,6 +106,11 @@ public class SerializerSchemaManager extends SchemaManager {
   @Override
   protected <T> SchemaEx<T> newMessageSchema(Message message, JavaType javaType) {
     return new MessageWriteSchema<>(protoMapper, message, javaType);
+  }
+
+  @Override
+  protected <T> SchemaEx<T> newMessageSchema(Message message, JavaType javaType, Method method) {
+    return newMessageSchema(message, javaType);
   }
 
   protected <T> FieldSchema<T> createScalarField(Field protoField, PropertyDescriptor propertyDescriptor) {

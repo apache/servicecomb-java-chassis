@@ -17,6 +17,8 @@
 package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.util.Date;
 
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
@@ -36,7 +38,9 @@ public class Int64ReadSchemas {
       return new Int64PrimitiveSchema<>(protoField, propertyDescriptor);
     }
 
-    if (Long.class.equals(javaType.getRawClass()) || javaType.isJavaLangObject()) {
+    if (Long.class.equals(javaType.getRawClass()) || javaType.isJavaLangObject()
+        || Date.class.equals(javaType.getRawClass())
+        || LocalDate.class.equals(javaType.getRawClass())) {
       return new Int64Schema<>(protoField, propertyDescriptor);
     }
 
@@ -52,7 +56,13 @@ public class Int64ReadSchemas {
     @Override
     public int mergeFrom(InputEx input, T message) throws IOException {
       long value = input.readInt64();
-      setter.set(message, value);
+      if (Date.class.equals(javaType.getRawClass())) {
+        setter.set(message, new Date(value));
+      } else if (LocalDate.class.equals(javaType.getRawClass())) {
+        setter.set(message, LocalDate.ofEpochDay(value));
+      } else {
+        setter.set(message, value);
+      }
       return input.readFieldNumber();
     }
   }
