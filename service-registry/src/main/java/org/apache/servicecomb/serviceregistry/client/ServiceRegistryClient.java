@@ -179,6 +179,27 @@ public interface ServiceRegistryClient {
    * @param microserviceId
    * @param microserviceInstanceId
    * @return
+   * @deprecated use {@link #updateMicroserviceInstanceStatus(String, String, MicroserviceInstanceStatus)} instead
    */
-  boolean undateMicroserviceInstanceStatus(String microserviceId, String microserviceInstanceId, String status);
+  @Deprecated
+  default boolean undateMicroserviceInstanceStatus(String microserviceId, String microserviceInstanceId,
+      String status) {
+    MicroserviceInstanceStatus instanceStatus;
+    try {
+      instanceStatus = MicroserviceInstanceStatus.valueOf(status);
+    } catch (IllegalArgumentException e) {
+      throw new IllegalArgumentException("Invalid status: " + status);
+    }
+
+    return updateMicroserviceInstanceStatus(microserviceId, microserviceInstanceId, instanceStatus);
+  }
+
+  /**
+   * Update the instance status registered in service center.
+   * @param microserviceId the microserviceId of the instance
+   * @param instanceId the instanceId of the instance
+   * @param status update to this status
+   * @return whether this operation success
+   */
+  boolean updateMicroserviceInstanceStatus(String microserviceId, String instanceId, MicroserviceInstanceStatus status);
 }

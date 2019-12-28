@@ -18,6 +18,7 @@
 package org.apache.servicecomb.serviceregistry.client.http;
 
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -124,25 +125,21 @@ public class TestServiceRegistryClientImpl {
   public void testException() {
     MicroserviceFactory microserviceFactory = new MicroserviceFactory();
     Microservice microservice = microserviceFactory.create("app", "ms");
-    Assert.assertEquals(null, oClient.registerMicroservice(microservice));
-    Assert.assertEquals(null, oClient.registerMicroserviceInstance(microservice.getInstance()));
+    Assert.assertNull(oClient.registerMicroservice(microservice));
+    Assert.assertNull(oClient.registerMicroserviceInstance(microservice.getInstance()));
     oClient.init();
-    Assert.assertEquals(null,
-        oClient.getMicroserviceId(microservice.getAppId(),
-            microservice.getServiceName(),
-            microservice.getVersion(),
-            microservice.getEnvironment()));
+    Assert.assertNull(oClient.getMicroserviceId(microservice.getAppId(),
+        microservice.getServiceName(),
+        microservice.getVersion(),
+        microservice.getEnvironment()));
     Assert.assertThat(oClient.getAllMicroservices().isEmpty(), is(true));
-    Assert.assertEquals(null, oClient.registerMicroservice(microservice));
-    Assert.assertEquals(null, oClient.getMicroservice("microserviceId"));
-    Assert.assertEquals(null, oClient.getMicroserviceInstance("consumerId", "providerId"));
-    Assert.assertEquals(false,
-        oClient.unregisterMicroserviceInstance("microserviceId", "microserviceInstanceId"));
-    Assert.assertEquals(null, oClient.heartbeat("microserviceId", "microserviceInstanceId"));
-    Assert.assertEquals(null,
-        oClient.findServiceInstance("selfMicroserviceId", "appId", "serviceName", "versionRule"));
-    Assert.assertEquals(null,
-        oClient.findServiceInstances("selfMicroserviceId", "appId", "serviceName", "versionRule", "0"));
+    Assert.assertNull(oClient.registerMicroservice(microservice));
+    Assert.assertNull(oClient.getMicroservice("microserviceId"));
+    Assert.assertNull(oClient.getMicroserviceInstance("consumerId", "providerId"));
+    Assert.assertFalse(oClient.unregisterMicroserviceInstance("microserviceId", "microserviceInstanceId"));
+    Assert.assertNull(oClient.heartbeat("microserviceId", "microserviceInstanceId"));
+    Assert.assertNull(oClient.findServiceInstance("selfMicroserviceId", "appId", "serviceName", "versionRule"));
+    Assert.assertNull(oClient.findServiceInstances("selfMicroserviceId", "appId", "serviceName", "versionRule", "0"));
 
     Assert.assertEquals("a", new ClientException("a").getMessage());
   }
@@ -324,14 +321,13 @@ public class TestServiceRegistryClientImpl {
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
         Holder<GetServiceResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
-        GetServiceResponse serviceResp = Json
+        holder.value = Json
             .decodeValue(
                 "{\"service\":{\"serviceId\":\"serviceId\",\"framework\":null"
                     + ",\"registerBy\":null,\"environment\":null,\"appId\":\"appId\",\"serviceName\":null,"
                     + "\"alias\":null,\"version\":null,\"description\":null,\"level\":null,\"schemas\":[],"
                     + "\"paths\":[],\"status\":\"UP\",\"properties\":{},\"intance\":null}}",
                 GetServiceResponse.class);
-        holder.value = serviceResp;
         RequestParam requestParam = requestContext.getParams();
         Assert.assertEquals("global=true", requestParam.getQueryParams());
       }
@@ -351,11 +347,10 @@ public class TestServiceRegistryClientImpl {
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
         Holder<GetSchemaResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
-        GetSchemaResponse schemasResp = Json
+        holder.value = Json
             .decodeValue(
                 "{ \"schema\": \"schema\", \"schemaId\":\"metricsEndpoint\",\"summary\":\"c1188d709631a9038874f9efc6eb894f\"}",
                 GetSchemaResponse.class);
-        holder.value = schemasResp;
         RequestParam requestParam = requestContext.getParams();
         Assert.assertEquals("global=true", requestParam.getQueryParams());
       }
@@ -544,5 +539,69 @@ public class TestServiceRegistryClientImpl {
         Assert.assertEquals(e, events.get(0).getThrowableInformation().getThrowable());
       }
     }.run();
+  }
+
+  @SuppressWarnings("deprecation")
+  @Test
+  public void undateMicroserviceInstanceStatus() {
+    HttpClientResponse httpClientResponse = new MockUp<HttpClientResponse>() {
+      @Mock
+      int statusCode() {
+        return 200;
+      }
+    }.getMockInstance();
+    new MockUp<RestUtils>() {
+      @Mock
+      void put(IpPort ipPort, String uri, RequestParam requestParam, Handler<RestResponse> responseHandler) {
+        Holder<HttpClientResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
+        holder.value = httpClientResponse;
+      }
+    };
+
+    boolean result = oClient.undateMicroserviceInstanceStatus("svcId", "instanceId", "UP");
+    Assert.assertTrue(result);
+  }
+
+  @SuppressWarnings("deprecation")
+  @Test
+  public void undateMicroserviceInstanceStatus_response_failure() {
+    HttpClientResponse httpClientResponse = new MockUp<HttpClientResponse>() {
+      @Mock
+      int statusCode() {
+        return 400;
+      }
+    }.getMockInstance();
+    new MockUp<RestUtils>() {
+      @Mock
+      void put(IpPort ipPort, String uri, RequestParam requestParam, Handler<RestResponse> responseHandler) {
+        Holder<HttpClientResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
+        holder.value = httpClientResponse;
+      }
+    };
+
+    boolean result = oClient.undateMicroserviceInstanceStatus("svcId", "instanceId", "UP");
+    Assert.assertFalse(result);
+  }
+
+  @SuppressWarnings("deprecation")
+  @Test
+  public void undateMicroserviceInstanceStatus_illegal_status() {
+    try {
+      oClient.undateMicroserviceInstanceStatus("svcId", "instanceId", null);
+      shouldThrowException();
+    } catch (NullPointerException e) {
+      Assert.assertEquals("Name is null", e.getMessage());
+    }
+    try {
+      oClient
+          .undateMicroserviceInstanceStatus("svcId", "instanceId", "IllegalStatus");
+      shouldThrowException();
+    } catch (IllegalArgumentException e) {
+      Assert.assertEquals("Invalid status: IllegalStatus", e.getMessage());
+    }
+  }
+
+  private void shouldThrowException() {
+    fail("an exception is expected");
   }
 }

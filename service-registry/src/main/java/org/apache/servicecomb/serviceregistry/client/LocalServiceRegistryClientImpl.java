@@ -434,30 +434,26 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   @Override
-  public boolean undateMicroserviceInstanceStatus(String microserviceId, String microserviceInstanceId, String status) {
+  public boolean updateMicroserviceInstanceStatus(String microserviceId, String instanceId,
+      MicroserviceInstanceStatus status) {
+    if (null == status) {
+      throw new IllegalArgumentException("null status is now allowed");
+    }
+
     Map<String, MicroserviceInstance> instanceMap = microserviceInstanceMap.get(microserviceId);
     if (instanceMap == null) {
       throw new IllegalArgumentException("Invalid serviceId, serviceId=" + microserviceId);
     }
 
-    MicroserviceInstance microserviceInstance = instanceMap.get(microserviceInstanceId);
+    MicroserviceInstance microserviceInstance = instanceMap.get(instanceId);
     if (microserviceInstance == null) {
       throw new IllegalArgumentException(
-              String.format("Invalid argument. microserviceId=%s, microserviceInstanceId=%s.",
-                      microserviceId,
-                      microserviceInstanceId));
+          String.format("Invalid argument. microserviceId=%s, instanceId=%s.",
+              microserviceId,
+              instanceId));
     }
-    MicroserviceInstanceStatus instanceStatus;
-    try {
-      instanceStatus = MicroserviceInstanceStatus.valueOf(status);
-    }
-    catch (IllegalArgumentException e){
-      throw new IllegalArgumentException("Invalid status.");
-    }
-    if (null != instanceStatus) {
-      microserviceInstance.setStatus(instanceStatus);
-      return true;
-    }
-    return false;
+
+    microserviceInstance.setStatus(status);
+    return true;
   }
 }
