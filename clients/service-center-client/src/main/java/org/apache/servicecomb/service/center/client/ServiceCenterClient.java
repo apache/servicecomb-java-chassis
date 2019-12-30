@@ -19,6 +19,7 @@ package org.apache.servicecomb.service.center.client;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpStatus;
@@ -29,6 +30,7 @@ import org.apache.servicecomb.service.center.client.http.HttpTransport;
 import org.apache.servicecomb.service.center.client.http.HttpTransportFactory;
 import org.apache.servicecomb.service.center.client.http.TLSConfig;
 import org.apache.servicecomb.service.center.client.http.TLSHttpsTransport;
+import org.apache.servicecomb.service.center.client.model.GetSchemaResponse;
 import org.apache.servicecomb.service.center.client.model.HeartbeatsRequest;
 import org.apache.servicecomb.service.center.client.model.Microservice;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
@@ -38,6 +40,7 @@ import org.apache.servicecomb.service.center.client.model.MicroservicesResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -420,6 +423,92 @@ public class ServiceCenterClient {
     } catch (IOException e) {
       throw new OperationException(
           "heartbeats fails ", e);
+    }
+  }
+
+  /**
+   * Get schemas list of service
+   *
+   * @param serviceId
+   * @return
+   * @throws OperationException
+   */
+  public List<GetSchemaResponse> getServiceSchemasList(String serviceId) {
+    try {
+      HttpResponse response = httpClient
+          .getHttpRequest("/registry/microservices/" + serviceId + "/schemas", null, null);
+      if (response.getStatusCode() == HttpStatus.SC_OK) {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonNode = mapper.readTree(response.getContent());
+        return mapper.readValue(jsonNode.get("schemas").toString(), new TypeReference<List<GetSchemaResponse>>() {
+        });
+      } else {
+        throw new OperationException(
+            "get service schemas list fails, statusCode = " + response.getStatusCode() + "; message = " + response
+                .getMessage()
+                + "; content = " + response.getContent());
+      }
+    } catch (IOException e) {
+      throw new OperationException(
+          "get service schemas list fails", e);
+    }
+  }
+
+  /**
+   * Get one schema context of service
+   *
+   * @param serviceId
+   * @param schemaId
+   * @return
+   * @throws OperationException
+   */
+  public String getServiceSchemaContext(String serviceId, String schemaId) {
+    try {
+      HttpResponse response = httpClient
+          .getHttpRequest("/registry/microservices/" + serviceId + "/schemas/" + schemaId, null, null);
+      if (response.getStatusCode() == HttpStatus.SC_OK) {
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonNode = mapper.readTree(response.getContent());
+        return jsonNode.get("schema").textValue();
+      } else {
+        throw new OperationException(
+            "get service schema context fails, statusCode = " + response.getStatusCode() + "; message = " + response
+                .getMessage()
+                + "; content = " + response.getContent());
+      }
+    } catch (IOException e) {
+      throw new OperationException(
+          "get service schemas context fails", e);
+    }
+  }
+
+  /**
+   * update schema context of service
+   *
+   * @param serviceId
+   * @param schemaId
+   * @param schemaResponse
+   * @return
+   * @throws OperationException
+   */
+  public Boolean updateServiceSchemaContext(String serviceId, String schemaId, GetSchemaResponse schemaResponse) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      HttpResponse response = httpClient
+          .putHttpRequest("/registry/microservices/" + serviceId + "/schemas/" + schemaId, null,
+              mapper.writeValueAsString(schemaResponse));
+      if (response.getStatusCode() == HttpStatus.SC_OK) {
+        LOGGER.info("UPDATE SCHEMA OK");
+        return true;
+      } else {
+        throw new OperationException(
+            "update service schema fails, statusCode = " + response.getStatusCode() + "; message = " + response
+                .getMessage()
+                + "; content = " + response.getContent());
+      }
+    } catch (IOException e) {
+      throw new OperationException(
+          "update service schema fails", e);
     }
   }
 }
