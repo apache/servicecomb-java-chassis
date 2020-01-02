@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.service.center.client.http.HttpResponse;
-import org.apache.servicecomb.service.center.client.model.GetSchemaResponse;
 import org.apache.servicecomb.service.center.client.model.HeartbeatsRequest;
 import org.apache.servicecomb.service.center.client.model.InstancesRequest;
 import org.apache.servicecomb.service.center.client.model.Microservice;
@@ -30,6 +29,7 @@ import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstanceStatus;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstancesResponse;
 import org.apache.servicecomb.service.center.client.model.MicroservicesResponse;
+import org.apache.servicecomb.service.center.client.model.SchemaInfo;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -435,7 +435,7 @@ public class ServiceCenterClientTest {
         .thenReturn(httpResponse);
 
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
-    List<GetSchemaResponse> schemaResponse = serviceCenterClient
+    List<SchemaInfo> schemaResponse = serviceCenterClient
         .getServiceSchemasList("111");
 
     ObjectMapper mapper = new ObjectMapper();
@@ -483,8 +483,8 @@ public class ServiceCenterClientTest {
         .thenReturn(httpResponse);
 
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
-    Boolean result = serviceCenterClient
-        .updateServiceSchemaContext("111", "222", new GetSchemaResponse());
+    boolean result = serviceCenterClient
+        .updateServiceSchemaContext("111", "222", new SchemaInfo());
 
     Assert.assertNotNull(result);
     Assert.assertEquals(true, result);

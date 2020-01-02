@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.service.center.client.model;
 
-public class GetSchemaResponse {
+public class SchemaInfo {
   private String schema;
 
   private String schemaId;
