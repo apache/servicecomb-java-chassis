@@ -18,10 +18,11 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.serializer;
 
 import static org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils.isWrapProperty;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.Map;
 
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
+import org.apache.servicecomb.foundation.protobuf.RequestRootSerializer;
 import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
@@ -92,6 +93,21 @@ public class SerializerSchemaManager extends SchemaManager {
     super(protoMapper);
   }
 
+  public RequestRootSerializer createRequestRootSerializer(Message message, Map<String, Type> types,
+      boolean noTypesInfo) {
+    SchemaEx<Object> messageSchema = getOrCreateMessageSchema(message, types);
+
+    RootSerializer rootSerializer = new RootSerializer(messageSchema);
+    return new RequestRootSerializer(rootSerializer,
+        ProtoUtils.isWrapArguments(message) || ProtoUtils.isEmptyMessage(message), noTypesInfo);
+  }
+
+  public RootSerializer createRootSerializer(Message message, Map<String, Type> types) {
+    SchemaEx<Object> messageSchema = getOrCreateMessageSchema(message, types);
+
+    return new RootSerializer(messageSchema);
+  }
+
   public RootSerializer createRootSerializer(Message message, Type type) {
     JavaType javaType = TypeFactory.defaultInstance().constructType(type);
     SchemaEx<Object> messageSchema = getOrCreateMessageSchema(message, javaType);
@@ -109,8 +125,8 @@ public class SerializerSchemaManager extends SchemaManager {
   }
 
   @Override
-  protected <T> SchemaEx<T> newMessageSchema(Message message, JavaType javaType, Method method) {
-    return newMessageSchema(message, javaType);
+  protected <T> SchemaEx<T> newMessageSchema(Message message, Map<String, Type> types) {
+    return new MessageWriteSchema<>(protoMapper, message, types);
   }
 
   protected <T> FieldSchema<T> createScalarField(Field protoField, PropertyDescriptor propertyDescriptor) {

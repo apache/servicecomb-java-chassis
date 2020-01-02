@@ -37,6 +37,8 @@ public final class Const {
 
   public static final String PRODUCER_OPERATION = "producer-operation";
 
+  public static final String CONSUMER_OPERATION = "consumer-operation";
+
   public static final String SRC_MICROSERVICE = "x-cse-src-microservice";
 
   public static final String TARGET_MICROSERVICE = "x-cse-target-microservice";

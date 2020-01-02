@@ -63,6 +63,10 @@ public class SwaggerInvocation extends InvocationContext {
   }
 
   public void setSwaggerArgument(int idx, Object swaggerArgument) {
+    if(swaggerArguments == null) {
+      // not request parameters. e.g. void test()
+      return;
+    }
     this.swaggerArguments[idx] = swaggerArgument;
   }
 

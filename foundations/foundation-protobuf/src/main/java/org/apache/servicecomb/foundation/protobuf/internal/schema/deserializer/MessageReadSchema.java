@@ -18,19 +18,21 @@
 package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
+import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.BeanDescriptor;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.protostuff.InputEx;
 import io.protostuff.OutputEx;
@@ -60,27 +62,32 @@ public class MessageReadSchema<T> implements SchemaEx<T> {
 
   private Instantiator<T> instantiator;
 
-  private JavaType javaType;
+  private final JavaType javaType;
 
-  private Method method;
+  private final Map<String, Type> types;
 
   @SuppressWarnings("unchecked")
-  public MessageReadSchema(ProtoMapper protoMapper, Message message, JavaType javaType, Method method) {
+  // construct for request parameters
+  public MessageReadSchema(ProtoMapper protoMapper, Message message, Map<String, Type> types) {
     this.protoMapper = protoMapper;
     this.message = message;
-    this.javaType = javaType;
-    this.method = method;
-    if (javaType.isJavaLangObject() || Map.class.isAssignableFrom(javaType.getRawClass())) {
-      javaType = ProtoConst.MAP_TYPE;
+    this.types = types;
+    if (!ProtoUtils.isWrapArguments(message) && types.size() > 0) {
+      this.javaType = TypeFactory.defaultInstance().constructType(types.values().iterator().next());
+      this.instantiator = RuntimeEnv.newInstantiator((Class<T>) javaType.getRawClass());
+    } else {
+      this.javaType = ProtoConst.MAP_TYPE;
+      this.instantiator = RuntimeEnv.newInstantiator((Class<T>) ProtoConst.MAP_TYPE.getRawClass());
     }
-    this.instantiator = RuntimeEnv.newInstantiator((Class<T>) javaType.getRawClass());
   }
 
   @SuppressWarnings("unchecked")
+  // construct for response type
   public MessageReadSchema(ProtoMapper protoMapper, Message message, JavaType javaType) {
     this.protoMapper = protoMapper;
     this.message = message;
     this.javaType = javaType;
+    this.types = null;
     if (javaType.isJavaLangObject() || Map.class.isAssignableFrom(javaType.getRawClass())) {
       javaType = ProtoConst.MAP_TYPE;
     }
@@ -108,14 +115,13 @@ public class MessageReadSchema<T> implements SchemaEx<T> {
   @SuppressWarnings("unchecked")
   @Override
   public void init() {
-    if (Map.class.isAssignableFrom(javaType.getRawClass())) {
-      if (this.method == null) {
+    if (types != null) {
+      if (ProtoUtils.isWrapArguments(message)) {
         this.fieldMap = (FieldMapEx<T>) protoMapper.getDeserializerSchemaManager()
-            .createMapFields(message);
-      } else {
-        this.fieldMap = (FieldMapEx<T>) protoMapper.getDeserializerSchemaManager()
-            .createMapFields(message, method);
+            .createMapFields(message, types);
+        return;
       }
+      this.createFieldMap();
       return;
     }
 

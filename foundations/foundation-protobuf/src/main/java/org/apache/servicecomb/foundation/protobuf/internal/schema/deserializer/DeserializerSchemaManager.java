@@ -18,10 +18,12 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer;
 
 import static org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils.isWrapProperty;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.Map;
 
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
+import org.apache.servicecomb.foundation.protobuf.RequestRootDeserializer;
+import org.apache.servicecomb.foundation.protobuf.ResponseRootDeserializer;
 import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
@@ -93,10 +95,23 @@ public class DeserializerSchemaManager extends SchemaManager {
     super(protoMapper);
   }
 
-  public <T> RootDeserializer<T> createRootDeserializer(Message message, Type type, Method method) {
+  public <T> RequestRootDeserializer<T> createRequestRootDeserializer(Message message, Type type) {
     JavaType javaType = TypeFactory.defaultInstance().constructType(type);
-    SchemaEx<T> messageSchema = getOrCreateMessageSchema(message, javaType, method);
-    return new RootDeserializer<>(messageSchema);
+    SchemaEx<T> messageSchema = getOrCreateMessageSchema(message, javaType);
+    RootDeserializer<T> rootDeserializer = new RootDeserializer<>(messageSchema);
+    return new RequestRootDeserializer<>(rootDeserializer);
+  }
+
+  public <T> RequestRootDeserializer<T> createRequestRootDeserializer(Message message, Map<String, Type> types) {
+    SchemaEx<T> messageSchema = getOrCreateMessageSchema(message, types);
+    RootDeserializer<T> rootDeserializer = new RootDeserializer<>(messageSchema);
+    if (!ProtoUtils.isWrapArguments(message)) {
+      if (types == null || types.size() == 0) {
+        return new RequestRootDeserializer<>(rootDeserializer, false, null);
+      }
+      return new RequestRootDeserializer<>(rootDeserializer, false, types.keySet().iterator().next());
+    }
+    return new RequestRootDeserializer<>(rootDeserializer);
   }
 
   public <T> RootDeserializer<T> createRootDeserializer(Message message, Type type) {
@@ -105,23 +120,17 @@ public class DeserializerSchemaManager extends SchemaManager {
     return new RootDeserializer<>(messageSchema);
   }
 
+  public <T> ResponseRootDeserializer<T> createResponseRootDeserializer(Message message, Type type) {
+    JavaType javaType = TypeFactory.defaultInstance().constructType(type);
+    SchemaEx<T> messageSchema = getOrCreateMessageSchema(message, javaType);
+    RootDeserializer<T> rootDeserializer = new RootDeserializer<>(messageSchema);
+    return new ResponseRootDeserializer<>(rootDeserializer, ProtoUtils.isWrapProperty(message),
+        ProtoUtils.isEmptyMessage(message));
+  }
+
   @Override
-  protected <T> SchemaEx<T> newMessageSchema(Message message, JavaType javaType, Method method) {
-    if (ProtoUtils.isWrapProperty(message) && javaType.getRawClass() != PropertyWrapper.class) {
-      Field protoField = message.getField(1);
-      if (javaType.isJavaLangObject()) {
-        javaType =
-            protoField.isRepeated() && protoField.getType().isMessage() && !protoField.isMap() ? ProtoConst.LIST_TYPE
-                : ProtoConst.MAP_TYPE;
-      }
-      javaType = TypeFactory.defaultInstance().constructParametricType(PropertyWrapper.class, javaType);
-    }
-
-    if (javaType.isJavaLangObject()) {
-      javaType = ProtoConst.MAP_TYPE;
-    }
-
-    return new MessageReadSchema<>(protoMapper, message, javaType, method);
+  protected <T> SchemaEx<T> newMessageSchema(Message message, Map<String, Type> types) {
+    return new MessageReadSchema<>(protoMapper, message, types);
   }
 
   @Override

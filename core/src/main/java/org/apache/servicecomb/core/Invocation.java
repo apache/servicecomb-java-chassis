@@ -44,6 +44,7 @@ import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
+import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -187,15 +188,26 @@ public class Invocation extends SwaggerInvocation {
   }
 
   public Map<String, Object> getArguments() {
+    if (swaggerArguments == null) {
+      return new HashMap<>(0);
+    }
     Map<String, Object> result = new HashMap<>(swaggerArguments.length);
     for (int i = 0; i < swaggerArguments.length; i++) {
+      if (swaggerArguments[i] instanceof InvocationContext) {
+        continue;
+      }
       result.put(this.operationMeta.getParamName(i), swaggerArguments[i]);
     }
     return result;
   }
 
   public void setArguments(Map<String, Object> swaggerArguments) {
-    Object[] args = new Object[swaggerArguments.size()];
+    if (swaggerArguments == null) {
+      // Empty arguments
+      setSwaggerArguments(null);
+      return;
+    }
+    Object[] args = new Object[this.operationMeta.getParamSize()];
     for (Entry<String, Object> item : swaggerArguments.entrySet()) {
       args[this.operationMeta.getParameterIndex(item.getKey())] = item.getValue();
     }

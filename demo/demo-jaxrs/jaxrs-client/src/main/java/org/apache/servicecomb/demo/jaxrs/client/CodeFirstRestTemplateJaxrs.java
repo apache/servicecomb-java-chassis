@@ -51,13 +51,13 @@ public class CodeFirstRestTemplateJaxrs extends CodeFirstRestTemplate {
   }
 
   @Override
-  protected void testOnlyRest(RestTemplate template, String cseUrlPrefix) {
+  protected void testOnlyRest(String microserviceName, RestTemplate template, String cseUrlPrefix) {
     try {
       testUpload(template, cseUrlPrefix);
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }
-    super.testOnlyRest(template, cseUrlPrefix);
+    super.testOnlyRest(microserviceName, template, cseUrlPrefix);
   }
 
   private void testUpload(RestTemplate template, String cseUrlPrefix) throws IOException {

@@ -27,6 +27,7 @@ import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.demo.EmptyObject;
 import org.apache.servicecomb.demo.TestMgr;
+import org.apache.servicecomb.foundation.test.scaffolding.model.Empty;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import org.springframework.web.client.RestTemplate;
@@ -45,6 +46,9 @@ public class TestObject {
   public void runRest() {
     testEmptyObject_rest();
     testMapObject_rest();
+    testObject();
+    testListObject();
+    testHolderObject();
   }
 
   public void runHighway() {
@@ -53,9 +57,10 @@ public class TestObject {
   }
 
   public void runAllTransport() {
-    testObject();
-    testListObject();
-    testHolderObject();
+    // TODO : WEAK not supported now in HIGHWAY
+//    testObject();
+//    testListObject();
+//    testHolderObject();
   }
 
   @SuppressWarnings("unchecked")
@@ -97,21 +102,21 @@ public class TestObject {
     Map<String, Object> map = Collections.singletonMap("k", "v");
     Map<String, Object> result = intf.testMapObject(map);
     TestMgr.check("{k=v}", result);
-    TestMgr.check(HashMap.class, result.getClass());
+    // This is a behavior change in 2.0.0, before 2.0.0 runtime type of RAW is HashMap
+    TestMgr.check(LinkedHashMap.class, result.getClass());
 
     result = restTemplate.postForObject(prefix + "/mapObject", map, Map.class);
     TestMgr.check("{k=v}", result);
-    TestMgr.check(HashMap.class, result.getClass());
+    TestMgr.check(LinkedHashMap.class, result.getClass());
   }
 
   private void testEmptyObject_highway() {
-    // protobuf can not express empty/null
-    // everything empty will be null
+    // This is a behavior change in 2.0.0, before 2.0.0 this return null
     EmptyObject result = intf.testEmpty(new EmptyObject());
-    TestMgr.check(null, result);
+    TestMgr.check(result instanceof EmptyObject, true);
 
     result = restTemplate.postForObject(prefix + "/emptyObject", new EmptyObject(), EmptyObject.class);
-    TestMgr.check(null, result);
+    TestMgr.check(result instanceof EmptyObject, true);
   }
 
   private void testEmptyObject_rest() {

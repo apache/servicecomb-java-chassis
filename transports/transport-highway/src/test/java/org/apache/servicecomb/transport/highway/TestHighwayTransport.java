@@ -24,6 +24,7 @@ import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.foundation.protobuf.RequestRootSerializer;
 import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
@@ -103,7 +104,7 @@ public class TestHighwayTransport {
     Mockito.when(operationMeta.getExtData("protobuf")).thenReturn(operationProtobuf);
     Endpoint lEndpoint = Mockito.mock(Endpoint.class);
     Mockito.when(invocation.getEndpoint()).thenReturn(lEndpoint);
-    RootSerializer lWrapSchema = Mockito.mock(RootSerializer.class);
+    RequestRootSerializer lWrapSchema = Mockito.mock(RequestRootSerializer.class);
     Mockito.when(operationProtobuf.findRequestSerializer()).thenReturn(lWrapSchema);
     URIEndpointObject ep = Mockito.mock(URIEndpointObject.class);
     Mockito.when(lEndpoint.getAddress()).thenReturn(ep);

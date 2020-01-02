@@ -21,6 +21,8 @@ import java.util.Map;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.protobuf.RequestRootDeserializer;
+import org.apache.servicecomb.foundation.protobuf.ResponseRootDeserializer;
 import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
 import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpData;
@@ -54,13 +56,9 @@ public final class HighwayCodec {
   @SuppressWarnings({"rawtypes", "unchecked"})
   public static void decodeRequest(Invocation invocation, RequestHeader header, OperationProtobuf operationProtobuf,
       Buffer bodyBuffer) throws Exception {
-    RootDeserializer<Object> schema = operationProtobuf.findRequestDesirializer();
-    Object args = schema.deserialize(bodyBuffer.getBytes());
-    if (args instanceof Map) {
-      invocation.setArguments((Map<String, Object>) args);
-    } else {
-      invocation.setSwaggerArgument(0, args);
-    }
+    RequestRootDeserializer<Object> requestDesirializer = operationProtobuf.findRequestDesirializer();
+    Map<String, Object> args = requestDesirializer.deserialize(bodyBuffer.getBytes());
+    invocation.setArguments(args);
     invocation.mergeContext(header.getContext());
   }
 
@@ -83,7 +81,7 @@ public final class HighwayCodec {
       invocation.getContext().putAll(header.getContext());
     }
 
-    RootDeserializer<Object> bodySchema = operationProtobuf.findResponseDesirialize(header.getStatusCode());
+    ResponseRootDeserializer<Object> bodySchema = operationProtobuf.findResponseDesirialize(header.getStatusCode());
     Object body = bodySchema.deserialize(tcpData.getBodyBuffer().getBytes());
 
     Response response = Response.create(header.getStatusCode(), header.getReasonPhrase(), body);

@@ -27,11 +27,13 @@ import java.util.Map.Entry;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
+import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.BeanDescriptor;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.protostuff.InputEx;
 import io.protostuff.OutputEx;
@@ -53,7 +55,9 @@ public class MessageWriteSchema<T> implements SchemaEx<T> {
 
   protected Message message;
 
-  private JavaType javaType;
+  private final JavaType javaType;
+
+  private final Map<String, Type> types;
 
   // mostly, one message only relate to one pojo
   private final Class<T> mainPojoCls;
@@ -66,10 +70,24 @@ public class MessageWriteSchema<T> implements SchemaEx<T> {
   private final Map<Class<?>, FieldMapEx<?>> pojoFieldMaps = new ConcurrentHashMapEx<>();
 
   @SuppressWarnings("unchecked")
+  public MessageWriteSchema(ProtoMapper protoMapper, Message message, Map<String, Type> types) {
+    this.protoMapper = protoMapper;
+    this.message = message;
+    this.types = types;
+    if (this.types == null || this.types.isEmpty()) {
+      this.javaType = ProtoConst.MAP_TYPE;
+    } else {
+      this.javaType = TypeFactory.defaultInstance().constructType(types.values().iterator().next());
+    }
+    this.mainPojoCls = (Class<T>) javaType.getRawClass();
+  }
+
+  @SuppressWarnings("unchecked")
   public MessageWriteSchema(ProtoMapper protoMapper, Message message, JavaType javaType) {
     this.protoMapper = protoMapper;
     this.message = message;
     this.javaType = javaType;
+    this.types = null;
     this.mainPojoCls = (Class<T>) javaType.getRawClass();
   }
 
@@ -101,12 +119,24 @@ public class MessageWriteSchema<T> implements SchemaEx<T> {
 
   @Override
   public void init() {
+    if (types != null && !types.isEmpty()) {
+      if (ProtoUtils.isWrapProperty(message)) {
+        this.mapFieldMaps = protoMapper.getDeserializerSchemaManager()
+            .createMapFields(message, types);
+        return;
+      }
+      this.mainPojoFieldMaps = createPojoFields(javaType);
+      this.mapFieldMaps = protoMapper.getSerializerSchemaManager().createMapFields(message);
+      return;
+    }
+
     if (ProtoUtils.isWrapProperty(message)) {
       this.mainPojoFieldMaps = createPropertyWrapperFields(javaType);
       return;
     }
 
     this.mainPojoFieldMaps = createPojoFields(javaType);
+    this.mapFieldMaps = protoMapper.getSerializerSchemaManager().createMapFields(message);
   }
 
   private FieldMapEx<T> createPropertyWrapperFields(JavaType javaType) {
@@ -147,6 +177,16 @@ public class MessageWriteSchema<T> implements SchemaEx<T> {
   @SuppressWarnings("unchecked")
   @Override
   public void writeTo(OutputEx output, Object value) throws IOException {
+    if (types != null && !types.isEmpty()) {
+      if (ProtoUtils.isWrapArguments(message)) {
+        writeFromMap(output, (Map<String, Object>) value);
+        return;
+      } else {
+        value = ((Map<String, Object>) value).values().iterator().next();
+      }
+    }
+
+    // write a POJO from map
     if (value instanceof Map) {
       writeFromMap(output, (Map<String, Object>) value);
       return;
@@ -178,10 +218,6 @@ public class MessageWriteSchema<T> implements SchemaEx<T> {
   }
 
   protected final void writeFromMap(OutputEx output, Map<String, Object> map) throws IOException {
-    if (mapFieldMaps == null) {
-      mapFieldMaps = protoMapper.getSerializerSchemaManager().createMapFields(message);
-    }
-
     for (Entry<String, Object> entry : map.entrySet()) {
       if (entry.getValue() == null) {
         continue;

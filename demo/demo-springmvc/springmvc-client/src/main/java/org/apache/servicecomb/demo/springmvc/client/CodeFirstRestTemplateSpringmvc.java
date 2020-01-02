@@ -76,12 +76,15 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
   private TestBizkeeper testBizkeeper = new TestBizkeeper();
 
   @Override
-  protected void testOnlyRest(RestTemplate template, String cseUrlPrefix) {
+  protected void testOnlyRest(String microservcieName, RestTemplate template, String cseUrlPrefix) {
     try {
       testUpload(template, cseUrlPrefix);
     } catch (IOException e) {
       throw new IllegalStateException(e);
     }
+    testResponseEntity("springmvc", template, cseUrlPrefix);
+    testCodeFirstTestForm(template, cseUrlPrefix);
+    testFallback(template, cseUrlPrefix);
 
     testResponse.runRest();
     testObject.runRest();
@@ -89,7 +92,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     testRestTemplate.runRest();
     testContentType.runAllTest();
 
-    super.testOnlyRest(template, cseUrlPrefix);
+    super.testOnlyRest(microservcieName, template, cseUrlPrefix);
   }
 
   @Override
@@ -108,10 +111,10 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     testGeneric.runAllTransport();
     testRestTemplate.runAllTest();
     testBizkeeper.runAllTest();
-
-    testResponseEntity("springmvc", template, cseUrlPrefix);
-    testCodeFirstTestForm(template, cseUrlPrefix);
-    testFallback(template, cseUrlPrefix);
+    // TODO : WEAK not supported now in HIGHWAY
+//    testResponseEntity("springmvc", template, cseUrlPrefix);
+//    testCodeFirstTestForm(template, cseUrlPrefix);
+//    testFallback(template, cseUrlPrefix);
 
     super.testAllTransport(microserviceName, template, cseUrlPrefix);
   }
@@ -236,7 +239,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     TestMgr.check(retryResult, 5);
   }
 
-  protected void testCodeFirstTestForm(RestTemplate template, String cseUrlPrefix) {
+  private void testCodeFirstTestForm(RestTemplate template, String cseUrlPrefix) {
     HttpHeaders formHeaders = new HttpHeaders();
     formHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
     Map<String, String> map = new HashMap<>();

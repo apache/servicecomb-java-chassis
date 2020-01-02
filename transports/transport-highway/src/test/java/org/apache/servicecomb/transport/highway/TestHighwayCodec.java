@@ -18,12 +18,15 @@
 package org.apache.servicecomb.transport.highway;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.foundation.protobuf.RequestRootSerializer;
 import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import org.apache.servicecomb.foundation.vertx.server.TcpParser;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
@@ -51,7 +54,7 @@ public class TestHighwayCodec {
 
   private Buffer bodyBuffer = null;
 
-  private RootSerializer requestSerializer = null;
+  private RequestRootSerializer requestSerializer = null;
 
   private SchemaMeta schemaMeta = null;
 
@@ -80,7 +83,7 @@ public class TestHighwayCodec {
 
     bodyBuffer = Mockito.mock(Buffer.class);
 
-    requestSerializer = Mockito.mock(RootSerializer.class);
+    requestSerializer = Mockito.mock(RequestRootSerializer.class);
 
     schemaMeta = Mockito.mock(SchemaMeta.class);
 
@@ -183,8 +186,11 @@ public class TestHighwayCodec {
     RootSerializer bodySchema = Mockito.mock(RootSerializer.class);
     try {
       commonMock();
-      HighwayCodec.encodeResponse(23432142, null, bodySchema, new Object());
+      Object data = new Object();
+      Mockito.when(bodySchema.serialize(data)).thenReturn(new byte[0]);
+      HighwayCodec.encodeResponse(23432142, null, bodySchema, data);
     } catch (Exception e) {
+      e.printStackTrace();
       status = false;
     }
     Assert.assertTrue(status);
@@ -195,10 +201,14 @@ public class TestHighwayCodec {
     boolean status = true;
     try {
       commonMock();
+      Map<String, Object> args = new HashMap<>(0);
+      Mockito.when(invocation.getArguments()).thenReturn(args);
+      Mockito.when(requestSerializer.serialize(args)).thenReturn(new byte[0]);
       TcpOutputStream os = HighwayCodec.encodeRequest(0, invocation, operationProtobuf);
       Assert.assertNotNull(os);
       Assert.assertArrayEquals(TcpParser.TCP_MAGIC, os.getBuffer().getBytes(0, 7));
     } catch (Exception e) {
+      e.printStackTrace();
       status = false;
     }
     Assert.assertTrue(status);
