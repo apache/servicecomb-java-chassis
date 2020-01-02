@@ -122,7 +122,7 @@ public class OperationProtobuf {
     if (Family.SUCCESSFUL.equals(Family.familyOf(statusCode))) {
       return responseSerializer;
     }
-    // TODO : handles only one response type.
+    // TODO : WEAK handles only one response type.
     return null;
   }
 
@@ -130,7 +130,7 @@ public class OperationProtobuf {
     if (Family.SUCCESSFUL.equals(Family.familyOf(statusCode))) {
       return responseDeserializer;
     }
-    // TODO : handles only one response type.
+    // TODO : WEAK handles only one response type.
     throw new IllegalStateException("not implemented now, statusCode = " + statusCode);
   }
 }
