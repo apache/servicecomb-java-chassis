@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import io.protostuff.compiler.model.DynamicMessage;
 import io.protostuff.compiler.model.Field;
 import io.protostuff.compiler.model.FieldContainer;
+import io.protostuff.compiler.model.Message;
 import io.protostuff.compiler.model.ScalarFieldType;
 import io.protostuff.compiler.model.Type;
 
@@ -28,8 +29,16 @@ public final class ProtoUtils {
   private ProtoUtils() {
   }
 
+  public static boolean isEmptyMessage(Message protoField) {
+    return protoField.getCanonicalName().equals(ProtoConst.EMPTY.getCanonicalName());
+  }
+
   public static boolean isAnyField(Field protoField) {
     return protoField.getType().getCanonicalName().equals(ProtoConst.ANY.getCanonicalName());
+  }
+
+  public static boolean isWrapArguments(FieldContainer fieldContainer) {
+    return fieldContainer.getCommentLines().contains(ProtoConst.ANNOTATION_WRAP_ARGUMENTS);
   }
 
   public static boolean isWrapProperty(FieldContainer fieldContainer) {

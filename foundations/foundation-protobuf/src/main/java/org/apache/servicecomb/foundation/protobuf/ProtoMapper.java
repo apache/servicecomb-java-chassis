@@ -16,16 +16,12 @@
  */
 package org.apache.servicecomb.foundation.protobuf;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.BeanDescriptorManager;
-import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyWrapper;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.DeserializerSchemaManager;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.RootPropertyWrapperDeserializer;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.SerializerSchemaManager;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -121,6 +117,14 @@ public class ProtoMapper {
     return createRootSerializer(message, type);
   }
 
+  public synchronized RequestRootSerializer createRequestRootSerializer(Message message, Map<String, Type> types, boolean noTypesInfo) {
+    return serializerSchemaManager.createRequestRootSerializer(message, types, noTypesInfo);
+  }
+
+  public synchronized RootSerializer createRootSerializer(Message message, Map<String, Type> types) {
+    return serializerSchemaManager.createRootSerializer(message, types);
+  }
+
   public synchronized RootSerializer createRootSerializer(Message message, Type type) {
     return serializerSchemaManager.createRootSerializer(message, type);
   }
@@ -134,26 +138,20 @@ public class ProtoMapper {
     return createRootDeserializer(message, type);
   }
 
-  public synchronized <T> RootDeserializer<T> createRootDeserializer(Message message, Type type, Method method) {
-    return deserializerSchemaManager.createRootDeserializer(message, type, method);
+  public synchronized <T> RequestRootDeserializer<T> createRequestRootDeserializer(Message message,
+      Map<String, Type> types) {
+    return deserializerSchemaManager.createRequestRootDeserializer(message, types);
+  }
+
+  public synchronized <T> RequestRootDeserializer<T> createRequestRootDeserializer(Message message, Type type) {
+    return deserializerSchemaManager.createRequestRootDeserializer(message, type);
+  }
+
+  public synchronized <T> ResponseRootDeserializer<T> createResponseRootDeserializer(Message message, Type type) {
+    return deserializerSchemaManager.createResponseRootDeserializer(message, type);
   }
 
   public synchronized <T> RootDeserializer<T> createRootDeserializer(Message message, Type type) {
     return deserializerSchemaManager.createRootDeserializer(message, type);
-  }
-
-  public synchronized <T> RootDeserializer<T> createPropertyRootDeserializer(String shortMessageName,
-      Type propertyType) {
-    Message message = proto.getMessage(shortMessageName);
-    if (!ProtoUtils.isWrapProperty(message)) {
-      return createRootDeserializer(shortMessageName, propertyType);
-    }
-
-    JavaType propertyWrapJavaType = TypeFactory.defaultInstance().constructParametricType(
-        PropertyWrapper.class,
-        TypeFactory.defaultInstance().constructType(propertyType));
-    RootDeserializer<PropertyWrapper<T>> deserializer = deserializerSchemaManager
-        .createRootDeserializer(message, propertyWrapJavaType);
-    return new RootPropertyWrapperDeserializer<>(deserializer);
   }
 }

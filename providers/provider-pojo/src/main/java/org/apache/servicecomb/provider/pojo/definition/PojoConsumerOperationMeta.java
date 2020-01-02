@@ -23,6 +23,7 @@ import java.lang.reflect.Type;
 import javax.servlet.http.Part;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
@@ -49,6 +50,7 @@ public class PojoConsumerOperationMeta {
     this.swaggerConsumerOperation = swaggerConsumerOperation;
 
     operationMeta.getResponsesMeta().cloneTo(responsesMeta);
+    operationMeta.putExtData(Const.CONSUMER_OPERATION, swaggerConsumerOperation);
     responsesMeta.init(intfSwagger, intfOperation);
     Type intfResponseType = swaggerConsumerOperation.getConsumerMethod().getGenericReturnType();
     if (intfResponseType instanceof Class && Part.class.isAssignableFrom((Class<?>) intfResponseType)) {

@@ -40,7 +40,12 @@ public class BeanParamRestTemplateClient {
   }
 
 
-  public void testAll() {
+  public void testAllTransport() {
+//    testBeanParam();
+//    testUpload();
+  }
+
+  public void testRestOnly() {
     testBeanParam();
     testUpload();
   }

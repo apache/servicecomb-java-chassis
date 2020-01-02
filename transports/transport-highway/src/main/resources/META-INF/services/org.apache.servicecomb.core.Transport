@@ -16,4 +16,4 @@
 #
 
 # TODO: turn on highway transport
-# org.apache.servicecomb.transport.highway.HighwayTransport
+org.apache.servicecomb.transport.highway.HighwayTransport

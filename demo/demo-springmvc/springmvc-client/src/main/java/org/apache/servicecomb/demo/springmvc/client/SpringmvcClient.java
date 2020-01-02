@@ -59,14 +59,18 @@ public class SpringmvcClient {
       BeanUtils.init();
 
       run();
-
-      TestMgr.summary();
     } catch (Throwable e) {
       TestMgr.check("success", "failed");
       System.err.println("-------------- test failed -------------");
       e.printStackTrace();
       System.err.println("-------------- test failed -------------");
     }
+    TestMgr.summary();
+  }
+
+  private static void changeTransport(String microserviceName, String transport) {
+    ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, transport);
+    TestMgr.setMsg(microserviceName, transport);
   }
 
   public static void run() {
@@ -78,6 +82,7 @@ public class SpringmvcClient {
     controller = BeanUtils.getBean("controller");
 
     String prefix = "cse://springmvc";
+    String microserviceName = "springmvc";
 
     try {
       // this test class is intended for retry hanging issue JAV-127
@@ -92,19 +97,17 @@ public class SpringmvcClient {
     codeFirstClient.testCodeFirst(restTemplate, "springmvc", "/codeFirstSpringmvc/");
     codeFirstClient.testCodeFirst(templateUrlWithProviderPrefix, "springmvc", "/pojo/rest/codeFirstSpringmvc/");
 
-    String microserviceName = "springmvc";
-    for (String transport : DemoConst.transports) {
-      ArchaiusUtils.setProperty("servicecomb.reference.transport." + microserviceName, transport);
+    testAllTransport(microserviceName);
+    testRestTransport(microserviceName, prefix);
+  }
 
-      TestMgr.setMsg(microserviceName, transport);
+  private static void testRestTransport(String microserviceName, String prefix) {
+    changeTransport(microserviceName, "rest");
 
-      testController(templateUrlWithServiceName, microserviceName);
+    testControllerRest(templateUrlWithServiceName, microserviceName);
+    testSpringMvcDefaultValuesRest(templateUrlWithServiceName, microserviceName);
+    testSpringMvcDefaultValuesJavaPrimitiveRest(templateUrlWithServiceName, microserviceName);
 
-      testController();
-      testRequiredBody(templateUrlWithServiceName, microserviceName);
-      testSpringMvcDefaultValues(templateUrlWithServiceName, microserviceName);
-      testSpringMvcDefaultValuesJavaPrimitive(templateUrlWithServiceName, microserviceName);
-    }
     HttpHeaders headers = new HttpHeaders();
     headers.set("Accept-Encoding", "gzip");
     HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -168,20 +171,23 @@ public class SpringmvcClient {
     }
   }
 
-  private static void testController(RestTemplate template, String microserviceName) {
-    String prefix = "cse://" + microserviceName;
+  private static void testAllTransport(String microserviceName) {
+    for (String transport : DemoConst.transports) {
+      changeTransport(microserviceName, transport);
 
-    TestMgr.check(7,
-        template.getForObject(prefix + "/controller/add?a=3&b=4",
-            Integer.class));
+      TestMgr.setMsg(microserviceName, transport);
 
-    try {
-      template.getForObject(prefix + "/controller/add",
-          Integer.class);
-      TestMgr.check("failed", "success");
-    } catch (InvocationException e) {
-      TestMgr.check(e.getStatusCode(), 400);
+      testControllerAllTransport(templateUrlWithServiceName, microserviceName);
+
+      testController();
+      testRequiredBody(templateUrlWithServiceName, microserviceName);
+      testSpringMvcDefaultValuesAllTransport(templateUrlWithServiceName, microserviceName);
+      testSpringMvcDefaultValuesJavaPrimitiveAllTransport(templateUrlWithServiceName, microserviceName);
     }
+  }
+
+  private static void testControllerRest(RestTemplate template, String microserviceName) {
+    String prefix = "cse://" + microserviceName;
 
     TestMgr.check("hi world [world]",
         template.getForObject(prefix + "/controller/sayhi?name=world",
@@ -203,6 +209,55 @@ public class SpringmvcClient {
             String.class,
             params));
 
+    try {
+      template.postForObject(prefix + "/controller/sayhello/{name}",
+          null,
+          String.class,
+          "exception");
+      TestMgr.check(true, false);
+    } catch (InvocationException e) {
+      TestMgr.check(e.getStatusCode(), 503);
+    }
+
+    TestMgr.check("hi world [world]", controller.sayHi("world"));
+  }
+
+  private static void testControllerAllTransport(RestTemplate template, String microserviceName) {
+    String prefix = "cse://" + microserviceName;
+
+    TestMgr.check(7,
+        template.getForObject(prefix + "/controller/add?a=3&b=4",
+            Integer.class));
+
+    try {
+      template.getForObject(prefix + "/controller/add",
+          Integer.class);
+      TestMgr.check("failed", "success");
+    } catch (InvocationException e) {
+      TestMgr.check(e.getStatusCode(), 400);
+    }
+
+    // TODO: WEAK HttpServletRequest not supported in highway
+//    TestMgr.check("hi world [world]",
+//        template.getForObject(prefix + "/controller/sayhi?name=world",
+//            String.class));
+//
+//    TestMgr.check("hi world1 [world1]",
+//        template.getForObject(prefix + "/controller/sayhi?name={name}",
+//            String.class,
+//            "world1"));
+//    TestMgr.check("hi hi 中国 [hi 中国]",
+//        template.getForObject(prefix + "/controller/sayhi?name={name}",
+//            String.class,
+//            "hi 中国"));
+//
+//    Map<String, String> params = new HashMap<>();
+//    params.put("name", "world2");
+//    TestMgr.check("hi world2 [world2]",
+//        template.getForObject(prefix + "/controller/sayhi?name={name}",
+//            String.class,
+//            params));
+
     TestMgr.check("hello world",
         template.postForObject(prefix + "/controller/sayhello/{name}",
             null,
@@ -214,15 +269,16 @@ public class SpringmvcClient {
             String.class,
             "hello 中国"));
 
-    try {
-      template.postForObject(prefix + "/controller/sayhello/{name}",
-          null,
-          String.class,
-          "exception");
-      TestMgr.check(true, false);
-    } catch (InvocationException e) {
-      TestMgr.check(e.getStatusCode(), 503);
-    }
+    // TODO: WEAK throw InvocationiException not supported in highway
+//    try {
+//      template.postForObject(prefix + "/controller/sayhello/{name}",
+//          null,
+//          String.class,
+//          "exception");
+//      TestMgr.check(true, false);
+//    } catch (InvocationException e) {
+//      TestMgr.check(e.getStatusCode(), 503);
+//    }
 
     HttpHeaders headers = new HttpHeaders();
     headers.add("name", "world");
@@ -244,7 +300,8 @@ public class SpringmvcClient {
   }
 
   private static void testController() {
-    TestMgr.check("hi world [world]", controller.sayHi("world"));
+    // TODO: WEAK HttpServletRequest not supported in highway
+//    TestMgr.check("hi world [world]", controller.sayHi("world"));
     Person user = new Person();
     user.setName("world");
     TestMgr.check("ha world", controller.saySomething("ha", user));
@@ -300,22 +357,9 @@ public class SpringmvcClient {
             "ha"));
   }
 
-  private static void testSpringMvcDefaultValues(RestTemplate template, String microserviceName) {
+  private static void testSpringMvcDefaultValuesRest(RestTemplate template, String microserviceName) {
     String cseUrlPrefix = "cse://" + microserviceName + "/SpringMvcDefaultValues/";
-    //default values
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-    MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
-    String result = template.postForObject(cseUrlPrefix + "/form", request, String.class);
-    TestMgr.check("Hello 20bobo", result);
-
-    headers = new HttpHeaders();
-    HttpEntity<String> entity = new HttpEntity<>(null, headers);
-    result = template.postForObject(cseUrlPrefix + "/header", entity, String.class);
-    TestMgr.check("Hello 20bobo30", result);
-
-    result = template.getForObject(cseUrlPrefix + "/query?d=10", String.class);
+    String result = template.getForObject(cseUrlPrefix + "/query?d=10", String.class);
     TestMgr.check("Hello 20bobo4010", result);
     boolean failed = false;
     try {
@@ -354,6 +398,63 @@ public class SpringmvcClient {
       TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
     }
     TestMgr.check(failed, true);
+  }
+
+  private static void testSpringMvcDefaultValuesAllTransport(RestTemplate template, String microserviceName) {
+    String cseUrlPrefix = "cse://" + microserviceName + "/SpringMvcDefaultValues/";
+    //default values
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+    String result = template.postForObject(cseUrlPrefix + "/form", request, String.class);
+    TestMgr.check("Hello 20bobo", result);
+
+    headers = new HttpHeaders();
+    HttpEntity<String> entity = new HttpEntity<>(null, headers);
+    result = template.postForObject(cseUrlPrefix + "/header", entity, String.class);
+    TestMgr.check("Hello 20bobo30", result);
+
+    // TODO: WEAK InvocationException not supported in highway
+//    result = template.getForObject(cseUrlPrefix + "/query?d=10", String.class);
+//    TestMgr.check("Hello 20bobo4010", result);
+//    boolean failed = false;
+//    try {
+//      result = template.getForObject(cseUrlPrefix + "/query2", String.class);
+//    } catch (InvocationException e) {
+//      failed = true;
+//      TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+//    }
+//
+//    failed = false;
+//    try {
+//      result = template.getForObject(cseUrlPrefix + "/query2?d=2&e=2", String.class);
+//    } catch (InvocationException e) {
+//      failed = true;
+//      TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+//    }
+//    TestMgr.check(failed, true);
+//
+//    failed = false;
+//    try {
+//      result = template.getForObject(cseUrlPrefix + "/query2?a=&d=2&e=2", String.class);
+//    } catch (InvocationException e) {
+//      failed = true;
+//      TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+//    }
+//    TestMgr.check(failed, true);
+//
+//    result = template.getForObject(cseUrlPrefix + "/query2?d=30&e=2", String.class);
+//    TestMgr.check("Hello 20bobo40302", result);
+//
+//    failed = false;
+//    try {
+//      result = template.getForObject(cseUrlPrefix + "/query3?a=2&b=2", String.class);
+//    } catch (InvocationException e) {
+//      failed = true;
+//      TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+//    }
+//    TestMgr.check(failed, true);
 
     result = template.getForObject(cseUrlPrefix + "/query3?a=30&b=2", String.class);
     TestMgr.check("Hello 302", result);
@@ -383,7 +484,27 @@ public class SpringmvcClient {
     TestMgr.check("Hello 345302", result);
   }
 
-  private static void testSpringMvcDefaultValuesJavaPrimitive(RestTemplate template, String microserviceName) {
+  private static void testSpringMvcDefaultValuesJavaPrimitiveAllTransport(RestTemplate template, String microserviceName) {
+    // TODO: WEAK primitive default value not supported in highway
+//    String cseUrlPrefix = "cse://" + microserviceName + "/SpringMvcDefaultValues/";
+//    //default values with primitive
+//    String result = template.postForObject(cseUrlPrefix + "/javaprimitiveint", null, String.class);
+//    TestMgr.check("Hello 0bobo", result);
+//
+//    result = template.postForObject(cseUrlPrefix + "/javaprimitivenumber", null, String.class);
+//    TestMgr.check("Hello 0.0false", result);
+//
+//    result = template.postForObject(cseUrlPrefix + "/javaprimitivestr", null, String.class);
+//    TestMgr.check("Hello", result);
+//
+//    result = template.postForObject(cseUrlPrefix + "/javaprimitivecomb", null, String.class);
+//    TestMgr.check("Hello nullnull", result);
+//
+//    result = template.postForObject(cseUrlPrefix + "/allprimitivetypes", null, String.class);
+//    TestMgr.check("Hello false,\0,0,0,0,0,0.0,0.0,null", result);
+  }
+
+  private static void testSpringMvcDefaultValuesJavaPrimitiveRest(RestTemplate template, String microserviceName) {
     String cseUrlPrefix = "cse://" + microserviceName + "/SpringMvcDefaultValues/";
     //default values with primitive
     String result = template.postForObject(cseUrlPrefix + "/javaprimitiveint", null, String.class);

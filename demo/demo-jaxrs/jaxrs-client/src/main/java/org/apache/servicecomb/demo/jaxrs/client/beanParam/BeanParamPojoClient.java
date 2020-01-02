@@ -30,7 +30,13 @@ public class BeanParamPojoClient {
     beanParamTestServiceIntf = Invoker.createProxy("jaxrs", "beanParamTest", BeanParamTestServiceIntf.class);
   }
 
-  public void testAll() {
+  public void testAllTransport() {
+    // TODO : WEAK highway not implement InvocationContext and BeanParam and Upload
+//    testBeanParam();
+//    testUpload();
+  }
+
+  public void testRestOnly() {
     testBeanParam();
     testUpload();
   }

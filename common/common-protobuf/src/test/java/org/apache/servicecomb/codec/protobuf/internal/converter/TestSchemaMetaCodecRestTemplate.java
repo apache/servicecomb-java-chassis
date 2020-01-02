@@ -38,8 +38,6 @@ import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Empty;
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
-import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
-import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
@@ -53,9 +51,9 @@ import mockit.Expectations;
 import mockit.Injectable;
 
 /**
- * SchemaMetaCodec test cases. This test cases covers POJO invoker and producer.
+ * SchemaMetaCodec test cases. This test cases covers RestTemplate invoker and producer.
  */
-public class TestSchemaMetaCodec {
+public class TestSchemaMetaCodecRestTemplate {
   @Injectable
   private MicroserviceMeta providerMicroserviceMeta;
 
@@ -92,11 +90,6 @@ public class TestSchemaMetaCodec {
     }
 
     consumerSchemaMeta = new SchemaMeta(consumerMicroserviceMeta, "ProtoSchema", swagger);
-    SwaggerConsumer swaggerConsumer = swaggerEnvironment.createConsumer(ProtoSchema.class, swagger);
-    for (SwaggerConsumerOperation consumerOperation : swaggerConsumer.getOperations().values()) {
-      OperationMeta operationMeta = consumerSchemaMeta.ensureFindOperation(consumerOperation.getSchemaOperationId());
-      operationMeta.putExtData(Const.CONSUMER_OPERATION, consumerOperation);
-    }
   }
 
   @Test

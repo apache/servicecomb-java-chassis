@@ -43,17 +43,21 @@ public class TestResponse {
     testDelay();
     testAbort();
     testDecodeResponseError();
+    checkQueryObject();
+    testCseResponse();
+    testResponseEntity();
   }
 
   public void runHighway() {
   }
 
   public void runAllTransport() {
-    testResponseEntity();
-    testCseResponse();
     testvoidResponse();
     testVoidResponse();
-    checkQueryObject();
+    // TODO : WEAK not supported now in HIGHWAY
+    // checkQueryObject();
+    //  testCseResponse();
+    // testResponseEntity();
   }
 
   private void testCseResponse() {
