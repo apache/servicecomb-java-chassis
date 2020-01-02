@@ -125,6 +125,11 @@ public class MessageReadSchema<T> implements SchemaEx<T> {
       return;
     }
 
+    if (Map.class.isAssignableFrom(javaType.getRawClass())) {
+      this.fieldMap = (FieldMapEx<T>) protoMapper.getDeserializerSchemaManager()
+          .createMapFields(message);
+      return;
+    }
     this.createFieldMap();
   }
 
