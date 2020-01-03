@@ -143,6 +143,51 @@ public class TestSchemaMetaCodec {
   }
 
   @Test
+  public void testProtoSchemaOperationmapUser() throws Exception {
+    OperationProtobuf providerOperationProtobuf = ProtobufManager
+        .getOrCreateOperation(providerSchemaMeta.getOperations().get("mapUser"));
+    OperationProtobuf consumerOperationProtobuf = ProtobufManager
+        .getOrCreateOperation(consumerSchemaMeta.getOperations().get("mapUser"));
+    User user = new User();
+    user.name = "user";
+    User friend = new User();
+    friend.name = "friend";
+    List<User> friends = new ArrayList<>();
+    friends.add(friend);
+    user.friends = friends;
+    byte[] values;
+    Map<String, User> userMap = new HashMap<>();
+    userMap.put("test", user);
+
+    // request message
+    Map<String, Object> args = new HashMap<>();
+    RequestRootSerializer requestSerializer = consumerOperationProtobuf.findRequestSerializer();
+    user.friends = friends;
+    args.put("users", userMap);
+    values = requestSerializer.serialize(args);
+
+    RequestRootDeserializer<Object> requestDeserializer = providerOperationProtobuf.findRequestDesirializer();
+    Map<String, Object> decodedUserArgs = requestDeserializer.deserialize(values);
+    Assert.assertEquals(user.name, ((Map<String, User>) decodedUserArgs.get("users")).get("test").name);
+    Assert.assertEquals(user.friends.get(0).name, ((Map<String, User>) decodedUserArgs.get("users")).get("test").friends.get(0).name);
+
+    // response message
+    RootSerializer responseSerializer = providerOperationProtobuf.findResponseSerializer(200);
+    values = responseSerializer.serialize(userMap);
+    ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseDesirialize(200);
+    Map<String, User> decodedUser = (Map<String, User>) responseDeserializer.deserialize(values);
+    Assert.assertEquals(user.name, decodedUser.get("test").name);
+    Assert.assertEquals(user.friends.get(0).name, decodedUser.get("test").friends.get(0).name);
+
+    user.friends = new ArrayList<>();
+    values = responseSerializer.serialize(userMap);
+    decodedUser = (Map<String, User>) responseDeserializer.deserialize(values);
+    Assert.assertEquals(user.name, decodedUser.get("test").name);
+    // proto buffer encode and decode empty list to be null
+    Assert.assertEquals(null, decodedUser.get("test").friends);
+  }
+
+  @Test
   @SuppressWarnings({"rawtypes", "unchecked"})
   public void testProtoSchemaOperationBase() throws Exception {
     // TODO : WEAK fix this line "java.lang.NoClassDefFoundError: org/apache/servicecomb/foundation/common/utils/bean/Getter"
