@@ -100,8 +100,7 @@ public class OperationProtobuf {
   private Map<String, Type> getMethodParameterTypesMap(Method method) {
     Map<String, Type> parameters = new HashMap<>();
     for (Parameter parameter : method.getParameters()) {
-      // TODO : WEAK parameter generics
-      parameters.put(parameter.getName(), parameter.getType());
+      parameters.put(parameter.getName(), parameter.getParameterizedType());
     }
     return parameters;
   }

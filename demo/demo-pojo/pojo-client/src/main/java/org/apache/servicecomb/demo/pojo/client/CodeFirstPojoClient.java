@@ -52,7 +52,7 @@ public class CodeFirstPojoClient {
 
   public void testCodeFirst(String microserviceName) {
     for (String transport : DemoConst.transports) {
-      ArchaiusUtils.setProperty("servicecomb.reference.transport." + microserviceName, transport);
+      ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, transport);
       TestMgr.setMsg(microserviceName, transport);
 
       testAll(codeFirstAnnotation, transport);
