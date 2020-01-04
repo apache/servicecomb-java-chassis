@@ -22,6 +22,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Matcher;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.servicecomb.config.ConfigUtil;
@@ -258,5 +260,20 @@ public final class RegistryUtils {
 
   public static Microservice getAggregatedRemoteMicroservice(String microserviceId) {
     return serviceRegistry.getAggregatedRemoteMicroservice(microserviceId);
+  }
+
+  /**
+   * To validate whether the name is legal value.
+   * @param name name of the {@link ServiceRegistry}
+   * @throws IllegalArgumentException the input value is illegal
+   */
+  public static void validateRegistryName(String name) {
+    Objects.requireNonNull(name, "null value is not allowed for the name of ServiceRegistry");
+    Matcher checkMatcher = ServiceRegistry.REGISTRY_NAME_PATTERN.matcher(name);
+    boolean isNameValid = checkMatcher.matches();
+    if (!isNameValid) {
+      throw new IllegalArgumentException(
+          "Illegal registry name, the format should be " + ServiceRegistry.REGISTRY_NAME_FORMAT);
+    }
   }
 }

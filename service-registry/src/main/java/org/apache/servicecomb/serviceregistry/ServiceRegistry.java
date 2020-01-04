@@ -19,6 +19,7 @@ package org.apache.servicecomb.serviceregistry;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
@@ -28,6 +29,16 @@ import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import com.google.common.eventbus.EventBus;
 
 public interface ServiceRegistry {
+  String DEFAULT_REGISTRY_NAME = "Default";
+  String REGISTRY_NAME_FORMAT = "[a-zA-Z]([-_]?[a-zA-Z0-9])+";
+  Pattern REGISTRY_NAME_PATTERN = Pattern.compile(REGISTRY_NAME_FORMAT);
+
+  /**
+   * Get a name representing this ServiceRegistry instance.
+   * The name should be unique.
+   */
+  String getName();
+
   void init();
 
   void run();
