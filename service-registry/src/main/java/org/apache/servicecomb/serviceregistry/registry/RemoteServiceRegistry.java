@@ -58,7 +58,8 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
 
           @Override
           public Thread newThread(Runnable r) {
-            Thread thread = new Thread(r, "Service Center Task [" + (taskId++) + "]");
+            Thread thread = new Thread(r,
+                RemoteServiceRegistry.super.getName() + " Service Center Task [" + (taskId++) + "]");
             thread.setUncaughtExceptionHandler(
                 (t, e) -> LOGGER.error("Service Center Task Thread is terminated! thread: [{}]", t, e));
             return thread;

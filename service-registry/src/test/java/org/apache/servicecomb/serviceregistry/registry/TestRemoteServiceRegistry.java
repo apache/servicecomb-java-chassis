@@ -90,6 +90,8 @@ public class TestRemoteServiceRegistry {
         result = 30;
         config.isWatch();
         result = false;
+        config.getRegistryName();
+        result = "TestRegistry";
         SPIServiceUtils.getOrLoadSortedService(ServiceRegistryTaskInitializer.class);
         result = Arrays.asList(initializer);
       }
