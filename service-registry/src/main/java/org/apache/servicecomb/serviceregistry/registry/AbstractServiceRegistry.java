@@ -81,8 +81,11 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   protected ExecutorService executorService = MoreExecutors.newDirectExecutorService();
 
+  private String name;
+
   public AbstractServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
       MicroserviceDefinition microserviceDefinition) {
+    setName(serviceRegistryConfig.getRegistryName());
     this.eventBus = eventBus;
     this.serviceRegistryConfig = serviceRegistryConfig;
     this.microserviceDefinition = microserviceDefinition;
@@ -310,6 +313,16 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     }
 
     registerMicroserviceMapping(microserviceName, version, microserviceInstances, schemaIntfCls);
+  }
+
+  @Override
+  public String getName() {
+    return name;
+  }
+
+  void setName(String name) {
+    RegistryUtils.validateRegistryName(name);
+    this.name = name;
   }
 
   @Subscribe

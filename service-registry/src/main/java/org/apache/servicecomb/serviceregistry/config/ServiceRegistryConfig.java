@@ -26,6 +26,7 @@ import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
+import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,6 +99,8 @@ public final class ServiceRegistryConfig {
 
   public static final String WORKER_POOL_NAME = "registry-vert.x-worker-thread";
 
+  private String registryName = ServiceRegistry.DEFAULT_REGISTRY_NAME;
+
   private ServiceRegistryConfig() {
 
   }
@@ -123,7 +126,6 @@ public final class ServiceRegistryConfig {
     }
     return deployInstances;
   }
-
 
   public boolean isSsl() {
     getIpPort();
@@ -315,6 +317,15 @@ public final class ServiceRegistryConfig {
   public String getProxyPasswd() {
     String passwd = getProperty(null, PROXY_PASSWD);
     return passwd;
+  }
+
+  public String getRegistryName() {
+    return registryName;
+  }
+
+  public ServiceRegistryConfig setRegistryName(String registryName) {
+    this.registryName = registryName;
+    return this;
   }
 
   private String getProperty(String defaultValue, String... keys) {
