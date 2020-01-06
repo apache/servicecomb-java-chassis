@@ -110,7 +110,12 @@ public class SwaggerToProtoGenerator {
       properties = Collections.emptyMap();
     }
 
-    createMessage(modelName, (Map<String, Object>) (Object) properties);
+    // TODO: WEAK add a better way to check if it is POJO
+    if(modelName.endsWith("Body")) {
+      createMessage(modelName, (Map<String, Object>) (Object) properties, ProtoConst.ANNOTATION_WRAP_ARGUMENTS);
+    } else {
+      createMessage(modelName, (Map<String, Object>) (Object) properties);
+    }
   }
 
   private void createMessage(String protoName, Map<String, Object> properties, String... annotations) {

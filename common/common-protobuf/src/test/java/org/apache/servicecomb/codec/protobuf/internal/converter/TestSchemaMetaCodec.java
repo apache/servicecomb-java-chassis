@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.codec.protobuf.internal.converter;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,6 +28,7 @@ import java.util.Map;
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchema;
+import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchemaPojo;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -43,6 +45,8 @@ import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
+import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
+import org.apache.servicecomb.swagger.generator.pojo.PojoSwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGenerator;
 import org.junit.Assert;
 import org.junit.Before;
@@ -55,6 +59,7 @@ import mockit.Injectable;
 /**
  * SchemaMetaCodec test cases. This test cases covers POJO invoker and producer.
  */
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class TestSchemaMetaCodec {
   @Injectable
   private MicroserviceMeta providerMicroserviceMeta;
@@ -68,6 +73,10 @@ public class TestSchemaMetaCodec {
 
   @Before
   public void setUp() {
+
+  }
+
+  private void mockSchemaMeta(AbstractSwaggerGenerator swaggerGenerator, Class<?> schemaClass) throws Exception {
     new Expectations() {
       {
         providerMicroserviceMeta.getMicroserviceName();
@@ -80,19 +89,18 @@ public class TestSchemaMetaCodec {
         result = null;
       }
     };
-    SpringmvcSwaggerGenerator swaggerGenerator = new SpringmvcSwaggerGenerator(ProtoSchema.class);
     Swagger swagger = swaggerGenerator.generate();
     SwaggerEnvironment swaggerEnvironment = new SwaggerEnvironment();
 
     providerSchemaMeta = new SchemaMeta(providerMicroserviceMeta, "ProtoSchema", swagger);
-    SwaggerProducer swaggerProducer = swaggerEnvironment.createProducer(new ProtoSchema(), swagger);
+    SwaggerProducer swaggerProducer = swaggerEnvironment.createProducer(schemaClass.newInstance(), swagger);
     for (SwaggerProducerOperation producerOperation : swaggerProducer.getAllOperations()) {
       OperationMeta operationMeta = providerSchemaMeta.ensureFindOperation(producerOperation.getOperationId());
       operationMeta.putExtData(Const.PRODUCER_OPERATION, producerOperation);
     }
 
     consumerSchemaMeta = new SchemaMeta(consumerMicroserviceMeta, "ProtoSchema", swagger);
-    SwaggerConsumer swaggerConsumer = swaggerEnvironment.createConsumer(ProtoSchema.class, swagger);
+    SwaggerConsumer swaggerConsumer = swaggerEnvironment.createConsumer(schemaClass, swagger);
     for (SwaggerConsumerOperation consumerOperation : swaggerConsumer.getOperations().values()) {
       OperationMeta operationMeta = consumerSchemaMeta.ensureFindOperation(consumerOperation.getSchemaOperationId());
       operationMeta.putExtData(Const.CONSUMER_OPERATION, consumerOperation);
@@ -100,7 +108,18 @@ public class TestSchemaMetaCodec {
   }
 
   @Test
-  public void testProtoSchemaOperationUser() throws Exception {
+  public void testProtoSchemaOperationUserSpringMVC() throws Exception {
+    mockSchemaMeta(new SpringmvcSwaggerGenerator(ProtoSchema.class), ProtoSchema.class);
+    testProtoSchemaOperationUserImpl();
+  }
+
+  @Test
+  public void testProtoSchemaOperationUserPOJO() throws Exception {
+    mockSchemaMeta(new PojoSwaggerGenerator(ProtoSchemaPojo.class), ProtoSchemaPojo.class);
+    testProtoSchemaOperationUserImpl();
+  }
+
+  private void testProtoSchemaOperationUserImpl() throws IOException {
     OperationProtobuf providerOperationProtobuf = ProtobufManager
         .getOrCreateOperation(providerSchemaMeta.getOperations().get("user"));
     OperationProtobuf consumerOperationProtobuf = ProtobufManager
@@ -126,6 +145,22 @@ public class TestSchemaMetaCodec {
     Assert.assertEquals(user.name, ((User) decodedUserArgs.get("user")).name);
     Assert.assertEquals(user.friends.get(0).name, ((User) decodedUserArgs.get("user")).friends.get(0).name);
 
+    // write request map (pojo)
+    args = new HashMap<>();
+    Map<String, Object> userMap = new HashMap<>();
+    userMap.put("name", "user");
+    Map<String, Object> friendMap = new HashMap<>();
+    friendMap.put("name", "friend");
+    List<Map<String, Object>> friendsList = new ArrayList<>();
+    friendsList.add(friendMap);
+    userMap.put("friends", friendsList);
+    args.put("user", userMap);
+    values = requestSerializer.serialize(args);
+
+    decodedUserArgs = requestDeserializer.deserialize(values);
+    Assert.assertEquals(user.name, ((User) decodedUserArgs.get("user")).name);
+    Assert.assertEquals(user.friends.get(0).name, ((User) decodedUserArgs.get("user")).friends.get(0).name);
+
     // response message
     RootSerializer responseSerializer = providerOperationProtobuf.findResponseSerializer(200);
     values = responseSerializer.serialize(user);
@@ -143,7 +178,18 @@ public class TestSchemaMetaCodec {
   }
 
   @Test
-  public void testProtoSchemaOperationmapUser() throws Exception {
+  public void testProtoSchemaOperationmapUserSpringMVC() throws Exception {
+    mockSchemaMeta(new SpringmvcSwaggerGenerator(ProtoSchema.class), ProtoSchema.class);
+    testProtoSchemaOperationmapUserImpl();
+  }
+
+  @Test
+  public void testProtoSchemaOperationmapUserPOJO() throws Exception {
+    mockSchemaMeta(new PojoSwaggerGenerator(ProtoSchemaPojo.class), ProtoSchemaPojo.class);
+    testProtoSchemaOperationmapUserImpl();
+  }
+
+  private void testProtoSchemaOperationmapUserImpl() throws IOException {
     OperationProtobuf providerOperationProtobuf = ProtobufManager
         .getOrCreateOperation(providerSchemaMeta.getOperations().get("mapUser"));
     OperationProtobuf consumerOperationProtobuf = ProtobufManager
@@ -169,7 +215,8 @@ public class TestSchemaMetaCodec {
     RequestRootDeserializer<Object> requestDeserializer = providerOperationProtobuf.findRequestDesirializer();
     Map<String, Object> decodedUserArgs = requestDeserializer.deserialize(values);
     Assert.assertEquals(user.name, ((Map<String, User>) decodedUserArgs.get("users")).get("test").name);
-    Assert.assertEquals(user.friends.get(0).name, ((Map<String, User>) decodedUserArgs.get("users")).get("test").friends.get(0).name);
+    Assert.assertEquals(user.friends.get(0).name,
+        ((Map<String, User>) decodedUserArgs.get("users")).get("test").friends.get(0).name);
 
     // response message
     RootSerializer responseSerializer = providerOperationProtobuf.findResponseSerializer(200);
@@ -188,8 +235,18 @@ public class TestSchemaMetaCodec {
   }
 
   @Test
-  @SuppressWarnings({"rawtypes", "unchecked"})
-  public void testProtoSchemaOperationBase() throws Exception {
+  public void testProtoSchemaOperationBaseSpringMVC() throws Exception {
+    mockSchemaMeta(new SpringmvcSwaggerGenerator(ProtoSchema.class), ProtoSchema.class);
+    testProtoSchemaOperationBaseImpl();
+  }
+
+  @Test
+  public void testProtoSchemaOperationBasePOJO() throws Exception {
+    mockSchemaMeta(new PojoSwaggerGenerator(ProtoSchemaPojo.class), ProtoSchemaPojo.class);
+    testProtoSchemaOperationBaseImpl();
+  }
+
+  private void testProtoSchemaOperationBaseImpl() throws IOException {
     // TODO : WEAK fix this line "java.lang.NoClassDefFoundError: org/apache/servicecomb/foundation/common/utils/bean/Getter"
     OperationProtobuf providerOperationProtobuf = ProtobufManager
         .getOrCreateOperation(providerSchemaMeta.getOperations().get("base"));

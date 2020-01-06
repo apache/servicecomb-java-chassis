@@ -132,12 +132,6 @@ public class SwaggerEnvironment {
         throw new IllegalStateException(msg);
       }
 
-      ProducerArgumentsMapperCreator creator = new ProducerArgumentsMapperCreator(
-          Json.mapper().getSerializationConfig(),
-          contextFactorys,
-          producerMethod,
-          swaggerOperation);
-      ProducerArgumentsMapper argsMapper = creator.createArgumentsMapper();
       ProducerResponseMapper responseMapper = producerResponseMapperFactorys.createResponseMapper(
           producerMethod.getGenericReturnType());
 
@@ -146,10 +140,7 @@ public class SwaggerEnvironment {
       op.setProducerInstance(producerInstance);
       op.setProducerMethod(producerMethod);
       op.setSwaggerOperation(swaggerOperation);
-      op.setSwaggerParameterTypes(creator.getSwaggerParameterTypes());
-      op.setArgumentsMapper(argsMapper);
       op.setResponseMapper(responseMapper);
-
       producer.addOperation(op);
     }
 

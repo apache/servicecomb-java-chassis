@@ -29,6 +29,7 @@ import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
  * all parameters of consumer method wrapped to a bean in contract
  * </pre>
  */
+// TODO : WEAK this class can be deleted
 public final class ConsumerArgumentToBodyField implements ArgumentMapper {
   private int consumerIdx;
 
