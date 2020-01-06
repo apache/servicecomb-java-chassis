@@ -86,12 +86,6 @@ public class ConsumerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
     return new ConsumerArgumentSame(consumerParamIdx, swaggerIdx);
   }
 
-  @Override
-  protected ArgumentMapper createSwaggerBodyFieldMapper(int consumerParamIdx, String parameterName,
-      int swaggerBodyIdx) {
-    return new ConsumerArgumentToBodyField(consumerParamIdx, parameterName, swaggerBodyIdx);
-  }
-
   protected void processBeanParameter(int consumerParamIdx, java.lang.reflect.Parameter consumerParameter) {
     ConsumerBeanParamMapper mapper = new ConsumerBeanParamMapper(consumerParamIdx);
     JavaType consumerType = TypeFactory.defaultInstance().constructType(consumerParameter.getParameterizedType());

@@ -165,7 +165,7 @@ public class Invoker implements InvocationHandler {
         operationMeta,
         null);
     invocation.setResponsesMeta(pojoConsumerOperationMeta.getResponsesMeta());
-    consumerOperation.getArgumentsMapper().toInvocation(args, invocation);
+    invocation.setSwaggerArguments(args);
 
     if (CompletableFuture.class.equals(method.getReturnType())) {
       return completableFutureInvoke(invocation, consumerOperation);

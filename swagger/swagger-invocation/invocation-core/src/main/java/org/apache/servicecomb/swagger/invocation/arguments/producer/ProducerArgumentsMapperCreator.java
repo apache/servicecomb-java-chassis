@@ -72,13 +72,6 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
     return new ProducerArgumentSame(swaggerIdx, producerParamIdx);
   }
 
-  @Override
-  protected ArgumentMapper createSwaggerBodyFieldMapper(int producerParamIdx, String parameterName,
-      int swaggerBodyIdx) {
-    swaggerParameterTypes[swaggerBodyIdx] = Object.class;
-    return new SwaggerBodyFieldToProducerArgument(producerParamIdx, parameterName,
-        providerMethod.getGenericParameterTypes()[producerParamIdx], swaggerBodyIdx);
-  }
 
   @Override
   protected void processBeanParameter(int producerParamIdx, Parameter producerParameter) {

@@ -45,6 +45,7 @@ import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
  * </pre>
  *
  */
+// TODO: WEAK this class can be deleted
 public interface ConsumerArgumentsMapper {
   void toInvocation(Object[] consumerArguments, SwaggerInvocation invocation);
 }

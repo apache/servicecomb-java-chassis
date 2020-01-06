@@ -189,7 +189,7 @@ public class SwaggerProducerOperation {
     try {
       invocation.onBusinessMethodStart();
 
-      Object[] args = argumentsMapper.toProducerArgs(invocation);
+      Object[] args = invocation.getSwaggerArguments();
       for (ProducerInvokeExtension producerInvokeExtension : producerInvokeExtenstionList) {
         producerInvokeExtension.beforeMethodInvoke(invocation, this, args);
       }

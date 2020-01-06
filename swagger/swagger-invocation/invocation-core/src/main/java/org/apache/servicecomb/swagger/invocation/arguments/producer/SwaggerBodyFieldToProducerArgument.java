@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
+// TODO : WEAK this class can be deleted
 public class SwaggerBodyFieldToProducerArgument implements ArgumentMapper {
   public static ObjectMapper mapper = JsonUtils.OBJ_MAPPER;
 
