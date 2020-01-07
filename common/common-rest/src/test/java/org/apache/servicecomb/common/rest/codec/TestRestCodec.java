@@ -60,14 +60,18 @@ public class TestRestCodec {
 
   @BeforeClass
   public static void beforeClass() {
+    Parameter hp = new HeaderParameter();
+    hp.setName("header");
+    RestParam restParam = new RestParam(0, hp, int.class);
+
     restOperation = Mockito.mock(RestOperationMeta.class);
     //        clientRequest = Mockito.mock(RestClientRequest.class);
     paramList = new ArrayList<>();
 
-    Parameter hp = new HeaderParameter();
-    hp.setName("header");
-    paramList.add(new RestParam(0, hp, int.class));
+
+    paramList.add(restParam);
     when(restOperation.getParamList()).thenReturn(paramList);
+    when(restOperation.getParamByName("test")).thenReturn(restParam);
   }
 
   @AfterClass
@@ -80,7 +84,9 @@ public class TestRestCodec {
   @Test
   public void testArgsToRest() {
     try {
-      RestCodec.argsToRest(new String[] {"abc"}, restOperation, clientRequest);
+      Map<String, Object> args = new HashMap<>();
+      args.put("test", "abc");
+      RestCodec.argsToRest(args, restOperation, clientRequest);
       Assert.assertEquals("abc", header.get("header"));
     } catch (Exception e) {
       Assert.assertTrue(false);
@@ -103,11 +109,13 @@ public class TestRestCodec {
         result = processer;
         processer.getValue(request);
         result = s;
+        restParam.getParamName();
+        result = "test";
       }
     };
 
-    Object[] xx = RestCodec.restToArgs(request, restOperation);
-    Assert.assertEquals(xx[0], s);
+    Map<String, Object> xx = RestCodec.restToArgs(request, restOperation);
+    Assert.assertEquals(xx.get("test"), s);
   }
 
   @Test

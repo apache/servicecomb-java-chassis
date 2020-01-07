@@ -32,6 +32,7 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,8 +51,7 @@ public class TestInvocationToHttpServletRequest {
   @Mocked
   RestOperationMeta swaggerOperation;
 
-  @Mocked
-  Object[] args;
+  Map<String, Object> args;
 
   @Mocked
   SocketAddress socketAddress;
@@ -63,20 +63,27 @@ public class TestInvocationToHttpServletRequest {
   @Before
   public void setup() {
     handlerContext.put(Const.REMOTE_ADDRESS, socketAddress);
+    args = new HashMap<>();
+
     new Expectations() {
       {
         invocation.getOperationMeta();
         result = operationMeta;
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
         result = swaggerOperation;
-        invocation.getArgs();
-        result = args;
         invocation.getHandlerContext();
         result = handlerContext;
+        invocation.getArguments();
+        result = args;
       }
     };
 
     request = new InvocationToHttpServletRequest(invocation);
+  }
+
+  @After
+  public void tearDown() {
+
   }
 
   @Test
@@ -302,7 +309,7 @@ public class TestInvocationToHttpServletRequest {
         result = operationMeta;
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
         result = swaggerOperation;
-        invocation.getArgs();
+        invocation.getArguments();
         result = args;
         invocation.getHandlerContext();
         result = handlerContext;

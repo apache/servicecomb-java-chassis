@@ -17,6 +17,9 @@
 
 package org.apache.servicecomb.common.rest.definition.path;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.servicecomb.common.rest.definition.RestParam;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
 import org.junit.Assert;
@@ -32,7 +35,9 @@ public class PathVarParamWriterTest {
     PathVarParamWriter pathVarParamWriter = createPathVarParamWriter();
 
     URLPathStringBuilder pathBuilder = new URLPathStringBuilder();
-    pathVarParamWriter.write(pathBuilder, new Object[] {"abc"});
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("test", "abc");
+    pathVarParamWriter.write(pathBuilder, parameters);
     Assert.assertEquals("abc", pathBuilder.build());
   }
 
@@ -41,7 +46,9 @@ public class PathVarParamWriterTest {
     PathVarParamWriter pathVarParamWriter = createPathVarParamWriter();
 
     URLPathStringBuilder pathBuilder = new URLPathStringBuilder();
-    pathVarParamWriter.write(pathBuilder, new String[] {"a 20bc"});
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("test", "a 20bc");
+    pathVarParamWriter.write(pathBuilder, parameters);
     Assert.assertEquals("a%2020bc", pathBuilder.build());
   }
 
@@ -50,7 +57,9 @@ public class PathVarParamWriterTest {
     PathVarParamWriter pathVarParamWriter = createPathVarParamWriter();
     URLPathStringBuilder pathBuilder = new URLPathStringBuilder();
     pathBuilder.appendPath("/api/");
-    pathVarParamWriter.write(pathBuilder, new String[] {"a%%bc"});
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("test", "a%%bc");
+    pathVarParamWriter.write(pathBuilder, parameters);
     Assert.assertEquals("/api/a%25%25bc", pathBuilder.build());
   }
 
@@ -59,7 +68,9 @@ public class PathVarParamWriterTest {
     PathVarParamWriter pathVarParamWriter = createPathVarParamWriter();
     URLPathStringBuilder pathBuilder = new URLPathStringBuilder();
     pathBuilder.appendPath("/api/");
-    pathVarParamWriter.write(pathBuilder, new String[] {"a/bc"});
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("test", "a/bc");
+    pathVarParamWriter.write(pathBuilder, parameters);
     Assert.assertEquals("/api/a%2Fbc", pathBuilder.build());
   }
 
@@ -67,15 +78,17 @@ public class PathVarParamWriterTest {
   public void writeIntegerParam() throws Exception {
     PathVarParamWriter pathVarParamWriter = createPathVarParamWriter();
     URLPathStringBuilder pathBuilder = new URLPathStringBuilder();
-    pathVarParamWriter.write(pathBuilder, new Integer[] {12});
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("test", 12);
+    pathVarParamWriter.write(pathBuilder, parameters);
     Assert.assertEquals("12", pathBuilder.build());
   }
 
   private PathVarParamWriter createPathVarParamWriter() {
     RestParam restParam = new MockUp<RestParam>() {
       @Mock
-      Object getValue(Object[] args) {
-        return args[0];
+      public String getParamName(){
+        return "test";
       }
     }.getMockInstance();
     return new PathVarParamWriter(restParam);

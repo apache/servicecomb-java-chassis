@@ -17,11 +17,11 @@
 
 package org.apache.servicecomb.core;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -40,11 +40,11 @@ import org.apache.servicecomb.core.tracing.TraceIdGenerator;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
-import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -98,6 +98,8 @@ public class Invocation extends SwaggerInvocation {
 
   private long invocationId;
 
+  private Map<String, Object> arguments;
+
   public long getInvocationId() {
     return invocationId;
   }
@@ -132,24 +134,24 @@ public class Invocation extends SwaggerInvocation {
     // An empty invocation, used to mock or some other scenario do not need operation information.
   }
 
-  public Invocation(ReferenceConfig referenceConfig, OperationMeta operationMeta, Object[] swaggerArguments) {
+  public Invocation(ReferenceConfig referenceConfig, OperationMeta operationMeta, Map<String, Object> arguments) {
     this.invocationType = InvocationType.CONSUMER;
     this.referenceConfig = referenceConfig;
     this.responsesMeta = operationMeta.getResponsesMeta();
-    init(operationMeta, swaggerArguments);
+    init(operationMeta, arguments);
   }
 
-  public Invocation(Endpoint endpoint, OperationMeta operationMeta, Object[] swaggerArguments) {
+  public Invocation(Endpoint endpoint, OperationMeta operationMeta, Map<String, Object> arguments) {
     this.invocationType = InvocationType.PRODUCER;
     this.endpoint = endpoint;
-    init(operationMeta, swaggerArguments);
+    init(operationMeta, arguments);
   }
 
-  private void init(OperationMeta operationMeta, Object[] swaggerArguments) {
+  private void init(OperationMeta operationMeta, Map<String, Object> arguments) {
     this.invocationId = INVOCATION_ID.getAndIncrement();
     this.schemaMeta = operationMeta.getSchemaMeta();
     this.operationMeta = operationMeta;
-    this.swaggerArguments = swaggerArguments;
+    this.arguments = arguments;
     this.handlerList = getHandlerChain();
     handlerIndex = 0;
   }
@@ -183,35 +185,28 @@ public class Invocation extends SwaggerInvocation {
     return operationMeta;
   }
 
-  public Object[] getArgs() {
-    return swaggerArguments;
-  }
-
   public Map<String, Object> getArguments() {
-    if (swaggerArguments == null) {
-      return new HashMap<>(0);
-    }
-    Map<String, Object> result = new HashMap<>(swaggerArguments.length);
-    for (int i = 0; i < swaggerArguments.length; i++) {
-      if (swaggerArguments[i] instanceof InvocationContext) {
-        continue;
-      }
-      result.put(this.operationMeta.getParamName(i), swaggerArguments[i]);
-    }
-    return result;
+    return arguments;
   }
 
-  public void setArguments(Map<String, Object> swaggerArguments) {
-    if (swaggerArguments == null) {
+  public void setArguments(Map<String, Object> arguments) {
+    if (arguments == null) {
       // Empty arguments
-      setSwaggerArguments(null);
+      this.arguments = new HashMap<>(0);
       return;
     }
-    Object[] args = new Object[this.operationMeta.getParamSize()];
-    for (Entry<String, Object> item : swaggerArguments.entrySet()) {
-      args[this.operationMeta.getParameterIndex(item.getKey())] = item.getValue();
+    this.arguments = arguments;
+  }
+
+  // TODO: WEAK add release notes to tell this change in 2.0.0
+  public Object[] toProducerArguments() {
+    Method method = ((SwaggerProducerOperation) operationMeta.getExtData(Const.PRODUCER_OPERATION)).getProducerMethod();
+    Object[] args = new Object[method.getParameterCount()];
+    // TODO: WEAK parameter name maybe override by annotations.
+    for (int i = 0; i < method.getParameterCount(); i++) {
+      args[i] = this.arguments.get(method.getParameters()[i].getName());
     }
-    setSwaggerArguments(args);
+    return args;
   }
 
   public Endpoint getEndpoint() {

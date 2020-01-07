@@ -65,7 +65,7 @@ public class TestUrlWithProviderPrefixClientHttpRequestFactory {
       {
         invocation.getHandlerContext();
         result = handlerContext;
-        InvocationFactory.forConsumer((ReferenceConfig) any, (OperationMeta) any, (Object[]) any);
+        InvocationFactory.forConsumer((ReferenceConfig) any, (OperationMeta) any, (Map<String, Object>) any);
         result = invocation;
       }
     };
@@ -73,7 +73,7 @@ public class TestUrlWithProviderPrefixClientHttpRequestFactory {
     Deencapsulation.setField(request, "requestMeta", requestMeta);
     Deencapsulation.setField(request, "path", request.findUriPath(uri));
 
-    Deencapsulation.invoke(request, "invoke", new Object[] {new Object[] {}});
+    Deencapsulation.invoke(request, "invoke", new HashMap<>());
 
     Assert.assertEquals("/v1/path", handlerContext.get(RestConst.REST_CLIENT_REQUEST_PATH));
   }

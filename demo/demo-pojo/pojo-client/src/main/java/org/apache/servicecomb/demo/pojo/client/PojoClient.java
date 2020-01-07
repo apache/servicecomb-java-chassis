@@ -19,9 +19,10 @@ package org.apache.servicecomb.demo.pojo.client;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.stream.IntStream;
 
 import javax.inject.Inject;
 
@@ -224,16 +225,22 @@ public class PojoClient {
   }
 
   private static void testCommonInvoke(String transport) {
-    Object result = InvokerUtils.syncInvoke("pojo", "server", "splitParam", new Object[] {2, new User()});
+    Map<String, Object> arguments = new HashMap<>();
+    arguments.put("index", 2);
+    arguments.put("user", new User());
+    Object result = InvokerUtils.syncInvoke("pojo", "server", "splitParam", arguments);
     TestMgr.check("User [name=nameA,  users count:0, age=100, index=2]", result);
 
+    arguments = new HashMap<>();
+    arguments.put("index", 3);
+    arguments.put("user", new User());
     result =
         InvokerUtils.syncInvoke("pojo",
             "0.0.4",
             transport,
             "server",
             "splitParam",
-            new Object[] {3, new User()});
+            arguments);
     TestMgr.check("User [name=nameA,  users count:0, age=100, index=3]", result);
   }
 

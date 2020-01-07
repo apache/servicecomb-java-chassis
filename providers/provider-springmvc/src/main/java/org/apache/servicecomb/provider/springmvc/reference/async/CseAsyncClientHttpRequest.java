@@ -19,6 +19,7 @@ package org.apache.servicecomb.provider.springmvc.reference.async;
 
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.common.rest.RestConst;
@@ -52,7 +53,7 @@ public class CseAsyncClientHttpRequest extends CseClientHttpRequest implements
     return null;
   }
 
-  private ListenableFuture<ClientHttpResponse> invoke(Object[] args) {
+  private ListenableFuture<ClientHttpResponse> invoke(Map<String, Object> args) {
     Invocation invocation = prepareInvocation(args);
     invocation.getHandlerContext().put(RestConst.CONSUMER_HEADER, this.getHeaders());
     CompletableFuture<ClientHttpResponse> clientHttpResponseCompletableFuture = doAsyncInvoke(invocation);
@@ -78,7 +79,7 @@ public class CseAsyncClientHttpRequest extends CseClientHttpRequest implements
     this.setRequestMeta(createRequestMeta(this.getMethod().name(), this.getURI()));
     QueryStringDecoder queryStringDecoder = new QueryStringDecoder(this.getURI().getRawSchemeSpecificPart());
     this.setQueryParams(queryStringDecoder.parameters());
-    Object[] args = this.collectArguments();
+    Map<String, Object> args = this.collectArguments();
     return this.invoke(args);
   }
 }

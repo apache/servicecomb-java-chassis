@@ -24,13 +24,6 @@ public class SwaggerInvocation extends InvocationContext {
   // 本实例是在consumer端，还是在provider端
   protected InvocationType invocationType;
 
-  // highway consumer and all producer need arguments
-  // only springmvc consumer no arguments
-  //
-  // so only adapt springmvc consumer to arguments mode
-  // not adapt all to http mode
-  protected Object[] swaggerArguments;
-
   protected InvocationContext parentContext;
 
   public SwaggerInvocation() {
@@ -47,27 +40,6 @@ public class SwaggerInvocation extends InvocationContext {
 
   public InvocationType getInvocationType() {
     return invocationType;
-  }
-
-  public Object[] getSwaggerArguments() {
-    return swaggerArguments;
-  }
-
-  @SuppressWarnings("unchecked")
-  public <T> T getSwaggerArgument(int idx) {
-    return (T) swaggerArguments[idx];
-  }
-
-  public void setSwaggerArguments(Object[] swaggerArguments) {
-    this.swaggerArguments = swaggerArguments;
-  }
-
-  public void setSwaggerArgument(int idx, Object swaggerArgument) {
-    if(swaggerArguments == null) {
-      // not request parameters. e.g. void test()
-      return;
-    }
-    this.swaggerArguments[idx] = swaggerArgument;
   }
 
   public String getInvocationQualifiedName() {

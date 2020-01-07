@@ -14,7 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.engine;
+
+package org.apache.servicecomb.core.handler.impl;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -27,14 +28,15 @@ import org.junit.Test;
 
 import mockit.Mocked;
 
-public class TestSwaggerProducerOperation {
-  SwaggerProducerOperation swaggerProducerOperation = new SwaggerProducerOperation();
+// test cases copied from delete class, this test case tests ExceptionToProducerResponseConverter
+public class TestProducerOperationHandler {
+  ProducerOperationHandler handler = new ProducerOperationHandler();
 
   @Test
   public void processException_normal(@Mocked SwaggerInvocation invocation) {
     Error error = new Error("abc");
 
-    Response response = swaggerProducerOperation.processException(invocation, error);
+    Response response = handler.processException(invocation, error);
     Assert.assertSame(Status.OK, response.getStatus());
     Assert.assertEquals("response from error: abc", response.getResult());
   }
@@ -44,7 +46,7 @@ public class TestSwaggerProducerOperation {
     Error error = new Error("abc");
     InvocationTargetException targetException = new InvocationTargetException(error);
 
-    Response response = swaggerProducerOperation.processException(invocation, targetException);
+    Response response = handler.processException(invocation, error);
     Assert.assertSame(Status.OK, response.getStatus());
     Assert.assertEquals("response from error: abc", response.getResult());
   }

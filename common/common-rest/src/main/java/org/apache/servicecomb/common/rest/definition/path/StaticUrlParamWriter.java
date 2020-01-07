@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.common.rest.definition.path;
 
+import java.util.Map;
+
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
 
 public class StaticUrlParamWriter implements UrlParamWriter {
@@ -28,7 +30,7 @@ public class StaticUrlParamWriter implements UrlParamWriter {
   }
 
   @Override
-  public void write(URLPathStringBuilder builder, Object[] args) {
+  public void write(URLPathStringBuilder builder, Map<String, Object> args) {
     builder.appendPath(staticPath);
   }
 }

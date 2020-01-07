@@ -14,25 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.core.handler.impl;
 
-package org.apache.servicecomb.swagger.invocation.arguments.producer;
+import javax.ws.rs.core.Response.Status;
 
+import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
-import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
+import org.apache.servicecomb.swagger.invocation.exception.ExceptionToProducerResponseConverter;
 
-public class ProducerArgumentSame implements ArgumentMapper {
-  private int swaggerIdx;
-
-  private int producerIdx;
-
-  public ProducerArgumentSame(int swaggerIdx, int producerIdx) {
-    this.swaggerIdx = swaggerIdx;
-    this.producerIdx = producerIdx;
+public class ErrorToProducerResponseConverter implements ExceptionToProducerResponseConverter<Error> {
+  @Override
+  public Class<Error> getExceptionClass() {
+    return Error.class;
   }
 
   @Override
-  public void mapArgument(SwaggerInvocation invocation, Object[] producerArguments) {
-    Object swaggerParam = invocation.getSwaggerArgument(swaggerIdx);
-    producerArguments[producerIdx] = swaggerParam;
+  public Response convert(SwaggerInvocation swaggerInvocation, Error e) {
+    return Response.create(Status.OK, "response from error: " + e.getMessage());
   }
 }

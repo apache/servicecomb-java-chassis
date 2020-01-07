@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.core.provider.consumer;
 
+import java.util.Map;
+
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
@@ -34,12 +36,13 @@ import org.slf4j.LoggerFactory;
 public final class InvokerUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(InvokerUtils.class);
 
-  public static Object syncInvoke(String microserviceName, String schemaId, String operationId, Object[] args) {
+  public static Object syncInvoke(String microserviceName, String schemaId, String operationId,
+      Map<String, Object> args) {
     return syncInvoke(microserviceName, null, null, schemaId, operationId, args);
   }
 
   public static Object syncInvoke(String microserviceName, String microserviceVersion, String transport,
-      String schemaId, String operationId, Object[] args) {
+      String schemaId, String operationId, Map<String, Object> args) {
     MicroserviceReferenceConfig microserviceReferenceConfig = SCBEngine.getInstance()
         .createMicroserviceReferenceConfig(microserviceName, microserviceVersion);
     MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getLatestMicroserviceMeta();

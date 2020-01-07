@@ -17,12 +17,14 @@
 
 package org.apache.servicecomb.common.rest.definition.path;
 
+import java.util.Map;
+
 import org.apache.servicecomb.common.rest.definition.RestParam;
 
 public abstract class AbstractUrlParamWriter implements UrlParamWriter {
   protected RestParam param;
 
-  protected Object getParamValue(Object[] args) {
-    return param.getValue(args);
+  protected Object getParamValue(Map<String, Object> args) {
+    return args.get(param.getParamName());
   }
 }

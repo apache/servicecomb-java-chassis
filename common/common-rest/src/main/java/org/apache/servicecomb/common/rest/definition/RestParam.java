@@ -19,6 +19,7 @@ package org.apache.servicecomb.common.rest.definition;
 
 import java.lang.reflect.Type;
 import java.util.Collection;
+import java.util.Map;
 
 import org.apache.servicecomb.common.rest.codec.param.ParamValueProcessor;
 import org.apache.servicecomb.common.rest.codec.param.ParamValueProcessorCreator;
@@ -67,12 +68,12 @@ public class RestParam {
   }
 
   @SuppressWarnings("unchecked")
-  public <T> T getValue(Object[] args) {
-    return (T) args[paramIndex];
+  public <T> T getValue(Map<String, Object> args) {
+    return (T) args.get(paramName);
   }
 
-  public String[] getValueAsStrings(Object[] args) {
-    Object value = args[paramIndex];
+  public String[] getValueAsStrings(Map<String, Object> args) {
+    Object value = args.get(paramName);
     if (value == null) {
       return null;
     }
