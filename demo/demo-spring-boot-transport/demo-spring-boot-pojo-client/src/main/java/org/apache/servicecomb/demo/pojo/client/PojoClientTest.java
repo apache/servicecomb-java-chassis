@@ -58,7 +58,7 @@ public class PojoClientTest {
     String microserviceName = "pojo";
 
     for (String transport : DemoConst.transports) {
-      ArchaiusUtils.setProperty("servicecomb.reference.transport." + microserviceName, transport);
+      ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, transport);
       TestMgr.setMsg(microserviceName, transport);
       LOGGER.info("test {}, transport {}", microserviceName, transport);
 

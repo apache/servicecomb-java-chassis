@@ -59,10 +59,6 @@ public final class CoreMetaUtils {
     return microserviceVersion.getVendorExtensions().get(CORE_MICROSERVICE_META);
   }
 
-  public static SwaggerProducerOperation getSwaggerProducerOperation(OperationMeta operationMeta) {
-    return operationMeta.getExtData(Const.PRODUCER_OPERATION);
-  }
-
   public static SwaggerProducer getSwaggerProducer(SchemaMeta schemaMeta) {
     return schemaMeta.getExtData(SWAGGER_PRODUCER);
   }

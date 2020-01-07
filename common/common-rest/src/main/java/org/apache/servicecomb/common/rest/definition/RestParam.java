@@ -37,11 +37,7 @@ public class RestParam {
 
   protected String paramName;
 
-  // 在args数组中的下标
-  protected int paramIndex;
-
-  public RestParam(int paramIndex, Parameter parameter, Type genericParamType) {
-    this.paramIndex = paramIndex;
+  public RestParam(Parameter parameter, Type genericParamType) {
     this.paramName = parameter.getName();
 
     init(parameter, genericParamType);

@@ -43,7 +43,7 @@ public class CheckRawFormParamFilter implements HttpServerFilter {
     if (!"paramCodec.stringUrlencodedForm".equals(invocation.getOperationMeta().getSchemaQualifiedName())) {
       return null;
     }
-    final Object swaggerArgument = invocation.getSwaggerArgument(0);
+    final Object swaggerArgument = invocation.getArgument("requestMap");
 
     if (!(swaggerArgument instanceof Map)) {
       return Response.failResp(new InvocationException(Status.BAD_REQUEST, "param is not map"));

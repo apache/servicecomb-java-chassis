@@ -45,7 +45,7 @@ public class ProducerOperationHandler implements Handler {
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) {
-    SwaggerProducerOperation producerOperation = invocation.getOperationMeta().getExtData(Const.PRODUCER_OPERATION);
+    SwaggerProducerOperation producerOperation = invocation.getOperationMeta().getSwaggerProducerOperation();
     if (producerOperation == null) {
       asyncResp.producerFail(
           ExceptionUtils.producerOperationNotExist(invocation.getSchemaId(),

@@ -62,7 +62,7 @@ public class TestRestCodec {
   public static void beforeClass() {
     Parameter hp = new HeaderParameter();
     hp.setName("header");
-    RestParam restParam = new RestParam(0, hp, int.class);
+    RestParam restParam = new RestParam(hp, int.class);
 
     restOperation = Mockito.mock(RestOperationMeta.class);
     //        clientRequest = Mockito.mock(RestClientRequest.class);
@@ -85,10 +85,11 @@ public class TestRestCodec {
   public void testArgsToRest() {
     try {
       Map<String, Object> args = new HashMap<>();
-      args.put("test", "abc");
+      args.put("header", "abc");
       RestCodec.argsToRest(args, restOperation, clientRequest);
       Assert.assertEquals("abc", header.get("header"));
     } catch (Exception e) {
+      e.printStackTrace();
       Assert.assertTrue(false);
     }
   }

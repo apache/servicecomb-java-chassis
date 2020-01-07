@@ -46,18 +46,18 @@ public class QueryVarParamWriterTest {
     parameter.setName("q");
     parameter.setCollectionFormat("csv");
     queryVarParamWriterCsv = new QueryVarParamWriter(
-        new RestParam(0, parameter, String[].class));
+        new RestParam(parameter, String[].class));
 
     parameter = new QueryParameter();
     parameter.setName("q");
     parameter.setCollectionFormat("multi");
     queryVarParamWriterMulti = new QueryVarParamWriter(
-        new RestParam(0, parameter, String[].class));
+        new RestParam(parameter, String[].class));
 
     parameter = new QueryParameter();
     parameter.setName("q");
     queryVarParamWriterDefault = new QueryVarParamWriter(
-        new RestParam(0, parameter, String[].class));
+        new RestParam(parameter, String[].class));
   }
 
   @Test

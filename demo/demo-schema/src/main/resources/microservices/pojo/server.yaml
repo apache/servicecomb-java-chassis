@@ -196,7 +196,10 @@ definitions:
     type: object
     properties:
       index:
-        type: number
+        # TODO WEAK highway do not support map number(which IDL type is double) to integer
+        # type: number
+        type: integer
+        format: int32
       user:
         $ref: '#/definitions/User'
       users:
@@ -213,6 +216,10 @@ definitions:
         type: string
       age:
         type: integer
+        format: int32
       index:
-        type: number
+        # TODO WEAK highway do not support map number(which IDL type is double) to integer
+        # type: number
+        type: integer
+        format: int32
     x-java-class: "org.apache.servicecomb.demo.server.User"

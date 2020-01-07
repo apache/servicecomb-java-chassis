@@ -30,7 +30,7 @@ public class DefaultModelServiceClient {
 
   public static void run() {
     // highway do not support this feature
-    ArchaiusUtils.setProperty("servicecomb.reference.transport.jaxrs", "rest");
+    ArchaiusUtils.setProperty("servicecomb.references.transport.jaxrs", "rest");
     testDefaultModelService();
   }
 

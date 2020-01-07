@@ -102,12 +102,12 @@ public class TestPath {
 
     Parameter pathParameter = new PathParameter();
     pathParameter.setName("id");
-    RestParam oRestParam = new RestParam(0, pathParameter, int.class);
+    RestParam oRestParam = new RestParam(pathParameter, int.class);
     paramMap.put(oRestParam.getParamName(), oRestParam);
 
     Parameter queryParameter = new QueryParameter();
     queryParameter.setName("q");
-    oRestParam = new RestParam(1, queryParameter, String.class);
+    oRestParam = new RestParam(queryParameter, String.class);
     paramMap.put(oRestParam.getParamName(), oRestParam);
 
     URLPathBuilder oURLPathBuilder = new URLPathBuilder("/root/{id}", paramMap);
@@ -135,7 +135,7 @@ public class TestPath {
     };
 
     Parameter parameter = new QueryParameter();
-    QueryVarParamWriter writer = new QueryVarParamWriter(new RestParam(0, parameter, String.class));
+    QueryVarParamWriter writer = new QueryVarParamWriter(new RestParam(parameter, String.class));
     try {
       Map<String, Object> parameters = new HashMap<>();
       parameters.put("queryVar", "T");

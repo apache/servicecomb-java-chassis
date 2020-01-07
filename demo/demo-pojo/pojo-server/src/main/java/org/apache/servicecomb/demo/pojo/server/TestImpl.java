@@ -88,7 +88,8 @@ public class TestImpl implements Test {
 
   @Override
   public User wrapParam(TestRequest request) {
-    if (request == null) {
+    // TODO: WEAK highway will never have request with null, so here check request.getUser() == null
+    if (request == null || request.getUser() == null) {
       return null;
     }
     return doTest(request.getIndex(), request.getUser(), request.getUsers(), request.getData());
