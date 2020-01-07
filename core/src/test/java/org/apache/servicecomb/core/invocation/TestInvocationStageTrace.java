@@ -16,6 +16,9 @@
  */
 package org.apache.servicecomb.core.invocation;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -42,7 +45,7 @@ public class TestInvocationStageTrace {
   @Mocked
   OperationMeta operationMeta;
 
-  Object[] args = new Object[] {};
+  Map<String, Object> args = new HashMap<>();
 
   static long nanoTime = 0;
 

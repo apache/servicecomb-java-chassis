@@ -118,7 +118,7 @@ public class TestLoadBalanceHandler2 {
     when(microserviceMeta.getAppId()).thenReturn("testApp");
     when(referenceConfig.getVersionRule()).thenReturn("0.0.0+");
     when(referenceConfig.getTransport()).thenReturn("rest");
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, new Object[0]);
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, new HashMap<>());
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
     ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
@@ -253,7 +253,7 @@ public class TestLoadBalanceHandler2 {
     when(microserviceMeta.getAppId()).thenReturn("testApp");
     when(referenceConfig.getVersionRule()).thenReturn("0.0.0+");
     when(referenceConfig.getTransport()).thenReturn("rest");
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, new Object[0]);
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, new HashMap<>());
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
     ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
@@ -348,7 +348,7 @@ public class TestLoadBalanceHandler2 {
     when(microserviceMeta.getAppId()).thenReturn("testApp");
     when(referenceConfig.getVersionRule()).thenReturn("0.0.0+");
     when(referenceConfig.getTransport()).thenReturn("rest");
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, new Object[0]);
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, new HashMap<>());
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
     ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
@@ -768,7 +768,7 @@ public class TestLoadBalanceHandler2 {
     when(microserviceMeta.getAppId()).thenReturn("testApp");
     when(referenceConfig.getVersionRule()).thenReturn("0.0.0+");
     when(referenceConfig.getTransport()).thenReturn("rest");
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, new Object[0]);
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, new HashMap<>());
     AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);

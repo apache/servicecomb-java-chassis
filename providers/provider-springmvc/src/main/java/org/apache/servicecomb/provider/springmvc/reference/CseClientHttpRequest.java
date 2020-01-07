@@ -173,10 +173,10 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     QueryStringDecoder queryStringDecoder = new QueryStringDecoder(uri.getRawSchemeSpecificPart());
     queryParams = queryStringDecoder.parameters();
 
-    Object[] args = this.collectArguments();
+    Map<String, Object> arguments = this.collectArguments();
 
     // 异常流程，直接抛异常出去
-    return this.invoke(args);
+    return this.invoke(arguments);
   }
 
   protected RequestMeta createRequestMeta(String httpMethod, URI uri) {
@@ -207,11 +207,11 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     return uri.getRawPath();
   }
 
-  protected Invocation prepareInvocation(Object[] args) {
+  protected Invocation prepareInvocation(Map<String, Object> arguments) {
     Invocation invocation =
         InvocationFactory.forConsumer(requestMeta.getReferenceConfig(),
             requestMeta.getOperationMeta(),
-            args);
+            arguments);
 
     invocation.getHandlerContext().put(RestConst.REST_CLIENT_REQUEST_PATH,
         path + (this.uri.getRawQuery() == null ? "" : "?" + this.uri.getRawQuery()));
@@ -233,8 +233,8 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     return invocation;
   }
 
-  private CseClientHttpResponse invoke(Object[] args) {
-    Invocation invocation = prepareInvocation(args);
+  private CseClientHttpResponse invoke(Map<String, Object> arguments) {
+    Invocation invocation = prepareInvocation(arguments);
     Response response = doInvoke(invocation);
 
     if (response.isSuccessed()) {
@@ -248,7 +248,7 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     return InvokerUtils.innerSyncInvoke(invocation);
   }
 
-  protected Object[] collectArguments() {
+  protected Map<String, Object> collectArguments() {
     HttpServletRequest mockRequest = new CommonToHttpServletRequest(requestMeta.getPathParams(), queryParams,
         httpHeaders, requestBody, requestMeta.getSwaggerRestOperation().isFormData(),
         requestMeta.getSwaggerRestOperation().getFileKeys());

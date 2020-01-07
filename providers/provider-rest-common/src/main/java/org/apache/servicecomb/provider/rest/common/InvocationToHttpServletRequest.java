@@ -36,13 +36,13 @@ import io.vertx.core.net.SocketAddress;
 public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
   private RestOperationMeta swaggerOperation;
 
-  private Object[] args;
+  private Map<String, Object> args;
 
   private SocketAddress sockerAddress;
 
   public InvocationToHttpServletRequest(Invocation invocation) {
     this.swaggerOperation = invocation.getOperationMeta().getExtData(RestConst.SWAGGER_REST_OPERATION);
-    this.args = invocation.getArgs();
+    this.args = invocation.getArguments();
     this.sockerAddress = (SocketAddress) invocation.getHandlerContext().get(Const.REMOTE_ADDRESS);
   }
 

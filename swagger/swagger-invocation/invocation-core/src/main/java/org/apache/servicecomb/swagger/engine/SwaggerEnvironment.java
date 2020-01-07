@@ -29,11 +29,7 @@ import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
 import org.apache.servicecomb.swagger.invocation.arguments.ContextArgumentMapperFactory;
-import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapper;
-import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapperCreator;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerContextArgumentMapperFactory;
-import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapper;
-import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapperCreator;
 import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerContextArgumentMapperFactory;
 import org.apache.servicecomb.swagger.invocation.response.ResponseMapperFactorys;
 import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
@@ -44,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.swagger.models.Swagger;
-import io.swagger.util.Json;
 
 public class SwaggerEnvironment {
   private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerEnvironment.class);
@@ -73,19 +68,12 @@ public class SwaggerEnvironment {
         continue;
       }
 
-      ConsumerArgumentsMapperCreator creator = new ConsumerArgumentsMapperCreator(
-          Json.mapper().getSerializationConfig(),
-          contextFactorys,
-          consumerMethod,
-          swaggerOperation);
-      ConsumerArgumentsMapper argsMapper = creator.createArgumentsMapper();
       ConsumerResponseMapper responseMapper = consumerResponseMapperFactorys
           .createResponseMapper(consumerMethod.getGenericReturnType());
 
       SwaggerConsumerOperation op = new SwaggerConsumerOperation();
       op.setConsumerMethod(consumerMethod);
       op.setSwaggerOperation(swaggerOperation);
-      op.setArgumentsMapper(argsMapper);
       op.setResponseMapper(responseMapper);
 
       consumer.addOperation(op);

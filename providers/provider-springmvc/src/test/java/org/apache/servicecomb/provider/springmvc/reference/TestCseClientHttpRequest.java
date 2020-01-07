@@ -83,7 +83,7 @@ public class TestCseClientHttpRequest {
 
     client.execute();
 
-    Assert.assertArrayEquals(body, holder.value.getSwaggerArgument(0));
-    Assert.assertEquals("123", holder.value.getSwaggerArgument(1));
+    Assert.assertArrayEquals(body, (byte[] )holder.value.getArguments().get("input"));
+    Assert.assertEquals("123", holder.value.getArguments().get("token"));
   }
 }

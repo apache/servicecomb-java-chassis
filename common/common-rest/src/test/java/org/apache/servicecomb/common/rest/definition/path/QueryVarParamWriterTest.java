@@ -20,7 +20,9 @@ package org.apache.servicecomb.common.rest.definition.path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.servicecomb.common.rest.definition.RestParam;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
@@ -61,171 +63,177 @@ public class QueryVarParamWriterTest {
   @Test
   public void write() throws Exception {
     URLPathStringBuilder stringBuilder = new URLPathStringBuilder();
-    Object[] args = {"a"};
-    queryVarParamWriterCsv.write(stringBuilder, args);
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("q", "a");
+    queryVarParamWriterCsv.write(stringBuilder, parameters);
     Assert.assertEquals("?q=a", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterMulti.write(stringBuilder, args);
+    queryVarParamWriterMulti.write(stringBuilder, parameters);
     Assert.assertEquals("?q=a", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterDefault.write(stringBuilder, args);
+    queryVarParamWriterDefault.write(stringBuilder, parameters);
     Assert.assertEquals("?q=a", stringBuilder.build());
   }
 
   @Test
   public void writeNull() throws Exception {
     URLPathStringBuilder stringBuilder = new URLPathStringBuilder();
-    Object[] args = {null};
-    queryVarParamWriterCsv.write(stringBuilder, args);
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("test", null);
+    queryVarParamWriterCsv.write(stringBuilder, parameters);
     Assert.assertEquals("", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterMulti.write(stringBuilder, args);
+    queryVarParamWriterMulti.write(stringBuilder, parameters);
     Assert.assertEquals("", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterDefault.write(stringBuilder, args);
+    queryVarParamWriterDefault.write(stringBuilder, parameters);
     Assert.assertEquals("", stringBuilder.build());
   }
 
   @Test
   public void writeArray() throws Exception {
     URLPathStringBuilder stringBuilder = new URLPathStringBuilder();
-    Object[] args = new Object[] {new String[] {"ab", "cd", "ef"}};
-    queryVarParamWriterCsv.write(stringBuilder, args);
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("q", new String[] {"ab", "cd", "ef"});
+    queryVarParamWriterCsv.write(stringBuilder, parameters);
     Assert.assertEquals("?q=ab%2Ccd%2Cef", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterMulti.write(stringBuilder, args);
+    queryVarParamWriterMulti.write(stringBuilder, parameters);
     Assert.assertEquals("?q=ab&q=cd&q=ef", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterDefault.write(stringBuilder, args);
+    queryVarParamWriterDefault.write(stringBuilder, parameters);
     Assert.assertEquals("?q=ab&q=cd&q=ef", stringBuilder.build());
 
     // encode space char
     stringBuilder = new URLPathStringBuilder();
-    args[0] = new String[] {"a b", " ", "", "ef"};
-    queryVarParamWriterCsv.write(stringBuilder, args);
+    parameters.put("q", new String[] {"a b", " ", "", "ef"});
+    queryVarParamWriterCsv.write(stringBuilder, parameters);
     Assert.assertEquals("?q=a+b%2C+%2C%2Cef", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterMulti.write(stringBuilder, args);
+    queryVarParamWriterMulti.write(stringBuilder, parameters);
     Assert.assertEquals("?q=a+b&q=+&q=&q=ef", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterDefault.write(stringBuilder, args);
+    queryVarParamWriterDefault.write(stringBuilder, parameters);
     Assert.assertEquals("?q=a+b&q=+&q=&q=ef", stringBuilder.build());
 
     // pass blank string
     stringBuilder = new URLPathStringBuilder();
-    args[0] = new String[] {""};
-    queryVarParamWriterCsv.write(stringBuilder, args);
+    parameters.put("q",  new String[] {""});
+    queryVarParamWriterCsv.write(stringBuilder, parameters);
     Assert.assertEquals("?q=", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterMulti.write(stringBuilder, args);
+    queryVarParamWriterMulti.write(stringBuilder, parameters);
     Assert.assertEquals("?q=", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterDefault.write(stringBuilder, args);
+    queryVarParamWriterDefault.write(stringBuilder, parameters);
     Assert.assertEquals("?q=", stringBuilder.build());
 
     // pass empty
     stringBuilder = new URLPathStringBuilder();
-    args[0] = new String[] {};
-    queryVarParamWriterCsv.write(stringBuilder, args);
+    parameters.put("q",  new String[] {});
+    queryVarParamWriterCsv.write(stringBuilder, parameters);
     Assert.assertEquals("", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterMulti.write(stringBuilder, args);
+    queryVarParamWriterMulti.write(stringBuilder, parameters);
     Assert.assertEquals("", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterDefault.write(stringBuilder, args);
+    queryVarParamWriterDefault.write(stringBuilder, parameters);
     Assert.assertEquals("", stringBuilder.build());
     // pass null
-    args[0] = new String[] {null};
+    parameters.put("q", new String[] {null});
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterCsv.write(stringBuilder, args);
+    queryVarParamWriterCsv.write(stringBuilder, parameters);
     Assert.assertEquals("", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterMulti.write(stringBuilder, args);
+    queryVarParamWriterMulti.write(stringBuilder, parameters);
     Assert.assertEquals("", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterDefault.write(stringBuilder, args);
+    queryVarParamWriterDefault.write(stringBuilder, parameters);
     Assert.assertEquals("", stringBuilder.build());
-    args[0] = new String[] {null, "ab", null, "cd", null, null, "", null, "ef", null};
+
+    parameters.put("q", new String[] {null, "ab", null, "cd", null, null, "", null, "ef", null});
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterCsv.write(stringBuilder, args);
+    queryVarParamWriterCsv.write(stringBuilder, parameters);
     Assert.assertEquals("?q=ab%2Ccd%2C%2Cef", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterMulti.write(stringBuilder, args);
+    queryVarParamWriterMulti.write(stringBuilder, parameters);
     Assert.assertEquals("?q=ab&q=cd&q=&q=ef", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterDefault.write(stringBuilder, args);
+    queryVarParamWriterDefault.write(stringBuilder, parameters);
     Assert.assertEquals("?q=ab&q=cd&q=&q=ef", stringBuilder.build());
   }
 
   @Test
   public void writeList() throws Exception {
     List<String> queryList = Arrays.asList("ab", "cd", "ef");
-    Object[] args = {queryList};
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("q", queryList);
     URLPathStringBuilder stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterCsv.write(stringBuilder, args);
+    queryVarParamWriterCsv.write(stringBuilder, parameters);
     Assert.assertEquals("?q=ab%2Ccd%2Cef", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterMulti.write(stringBuilder, args);
+    queryVarParamWriterMulti.write(stringBuilder, parameters);
     Assert.assertEquals("?q=ab&q=cd&q=ef", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterDefault.write(stringBuilder, args);
+    queryVarParamWriterDefault.write(stringBuilder, parameters);
     Assert.assertEquals("?q=ab&q=cd&q=ef", stringBuilder.build());
 
     // encode space char
-    args[0] = Arrays.asList("a b", " ", "", "ef");
+    parameters.put("q", Arrays.asList("a b", " ", "", "ef"));
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterCsv.write(stringBuilder, args);
+    queryVarParamWriterCsv.write(stringBuilder, parameters);
     Assert.assertEquals("?q=a+b%2C+%2C%2Cef", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterMulti.write(stringBuilder, args);
+    queryVarParamWriterMulti.write(stringBuilder, parameters);
     Assert.assertEquals("?q=a+b&q=+&q=&q=ef", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterDefault.write(stringBuilder, args);
+    queryVarParamWriterDefault.write(stringBuilder, parameters);
     Assert.assertEquals("?q=a+b&q=+&q=&q=ef", stringBuilder.build());
 
     // pass blank string
     stringBuilder = new URLPathStringBuilder();
-    args[0] = Collections.singletonList("");
-    queryVarParamWriterCsv.write(stringBuilder, args);
+    parameters.put("q",  Collections.singletonList(""));
+    queryVarParamWriterCsv.write(stringBuilder, parameters);
     Assert.assertEquals("?q=", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterMulti.write(stringBuilder, args);
+    queryVarParamWriterMulti.write(stringBuilder, parameters);
     Assert.assertEquals("?q=", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterDefault.write(stringBuilder, args);
+    queryVarParamWriterDefault.write(stringBuilder, parameters);
     Assert.assertEquals("?q=", stringBuilder.build());
 
     // pass empty
     stringBuilder = new URLPathStringBuilder();
-    args[0] = new ArrayList<>();
-    queryVarParamWriterCsv.write(stringBuilder, args);
+    parameters.put("q", new ArrayList<>());
+    queryVarParamWriterCsv.write(stringBuilder, parameters);
     Assert.assertEquals("", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterMulti.write(stringBuilder, args);
+    queryVarParamWriterMulti.write(stringBuilder, parameters);
     Assert.assertEquals("", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterDefault.write(stringBuilder, args);
+    queryVarParamWriterDefault.write(stringBuilder, parameters);
     Assert.assertEquals("", stringBuilder.build());
     // pass null
-    args[0] = Collections.singletonList(null);
+    parameters.put("q", Collections.singletonList(null));
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterCsv.write(stringBuilder, args);
+    queryVarParamWriterCsv.write(stringBuilder, parameters);
     Assert.assertEquals("", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterMulti.write(stringBuilder, args);
+    queryVarParamWriterMulti.write(stringBuilder, parameters);
     Assert.assertEquals("", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterDefault.write(stringBuilder, args);
+    queryVarParamWriterDefault.write(stringBuilder, parameters);
     Assert.assertEquals("", stringBuilder.build());
-    args[0] = Arrays.asList(null, "ab", null, "cd", null, null, "", null, "ef", null);
+
+    parameters.put("q", Arrays.asList(null, "ab", null, "cd", null, null, "", null, "ef", null));
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterCsv.write(stringBuilder, args);
+    queryVarParamWriterCsv.write(stringBuilder, parameters);
     Assert.assertEquals("?q=ab%2Ccd%2C%2Cef", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterMulti.write(stringBuilder, args);
+    queryVarParamWriterMulti.write(stringBuilder, parameters);
     Assert.assertEquals("?q=ab&q=cd&q=&q=ef", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
-    queryVarParamWriterDefault.write(stringBuilder, args);
+    queryVarParamWriterDefault.write(stringBuilder, parameters);
     Assert.assertEquals("?q=ab&q=cd&q=&q=ef", stringBuilder.build());
   }
 }

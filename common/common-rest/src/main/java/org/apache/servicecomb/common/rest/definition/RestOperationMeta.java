@@ -34,6 +34,7 @@ import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.path.PathRegExp;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.definition.CoreMetaUtils;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
@@ -106,9 +107,13 @@ public class RestOperationMeta {
       if ("formData".equals(parameter.getIn())) {
         formData = true;
       }
-
-      Type type = producerOperation != null ? producerOperation.getSwaggerParameterTypes()[swaggerParameterIdx] : null;
-      type = correctFormBodyType(parameter, type);
+      // TODO : WEAK handle BEAN query param and POJO wrapped arguments.
+      Type paramType = Object.class;
+      if (((SwaggerProducerOperation) operationMeta.getExtData(Const.PRODUCER_OPERATION)) != null) {
+        paramType = ((SwaggerProducerOperation) operationMeta.getExtData(Const.PRODUCER_OPERATION)).getProducerMethod()
+            .getGenericParameterTypes()[swaggerParameterIdx];
+      }
+      Type type = correctFormBodyType(parameter, paramType);
       RestParam param = new RestParam(swaggerParameterIdx, parameter, type);
       addParam(param);
     }

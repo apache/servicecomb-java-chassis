@@ -90,7 +90,7 @@ public class URLPathBuilder {
     }
   }
 
-  public String createRequestPath(Object[] args) throws Exception {
+  public String createRequestPath(Map<String, Object> args) throws Exception {
     URLPathStringBuilder builder = new URLPathStringBuilder();
 
     genPathString(builder, args);
@@ -99,19 +99,19 @@ public class URLPathBuilder {
     return builder.build();
   }
 
-  public String createPathString(Object[] args) throws Exception {
+  public String createPathString(Map<String, Object> args) throws Exception {
     URLPathStringBuilder builder = new URLPathStringBuilder();
     genPathString(builder, args);
     return builder.build();
   }
 
-  private void genPathString(URLPathStringBuilder builder, Object[] args) throws Exception {
+  private void genPathString(URLPathStringBuilder builder, Map<String, Object> args) throws Exception {
     for (UrlParamWriter writer : this.pathParamWriterList) {
       writer.write(builder, args);
     }
   }
 
-  private void genQueryString(URLPathStringBuilder builder, Object[] args) throws Exception {
+  private void genQueryString(URLPathStringBuilder builder, Map<String, Object> args) throws Exception {
     for (UrlParamWriter writer : queryParamWriterList) {
       writer.write(builder, args);
     }

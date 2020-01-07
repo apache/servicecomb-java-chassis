@@ -99,7 +99,7 @@ public class TestAbstractRestInvocation {
   ReferenceConfig endpoint;
 
   @Mocked
-  Object[] swaggerArguments;
+  Map<String, Object> arguments;
 
   Invocation invocation;
 
@@ -162,7 +162,7 @@ public class TestAbstractRestInvocation {
       responseEx = new StandardHttpServletResponseEx(servletResponse);
     }
 
-    invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
+    invocation = new Invocation(endpoint, operationMeta, arguments);
 
     initRestInvocation();
     List<HttpServerFilter> httpServerFilters = SPIServiceUtils.getSortedService(HttpServerFilter.class);

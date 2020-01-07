@@ -21,6 +21,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator.QueryProcessor;
@@ -37,7 +38,7 @@ public class QueryVarParamWriter extends AbstractUrlParamWriter {
   }
 
   @Override
-  public void write(URLPathStringBuilder builder, Object[] args) throws Exception {
+  public void write(URLPathStringBuilder builder, Map<String, Object> args) throws Exception {
     Object value = getParamValue(args);
     if (value == null) {
       // do not write query key to express "null"

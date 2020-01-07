@@ -17,8 +17,10 @@
 
 package org.apache.servicecomb.common.rest.definition.path;
 
+import java.util.Map;
+
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
 
 public interface UrlParamWriter {
-  void write(URLPathStringBuilder builder, Object[] args) throws Exception;
+  void write(URLPathStringBuilder builder, Map<String, Object> args) throws Exception;
 }

@@ -111,9 +111,11 @@ public class TestPath {
     paramMap.put(oRestParam.getParamName(), oRestParam);
 
     URLPathBuilder oURLPathBuilder = new URLPathBuilder("/root/{id}", paramMap);
-    Object[] args = new Object[] {100, "query"};
-    Assert.assertEquals("/root/100?q=query", oURLPathBuilder.createRequestPath(args));
-    Assert.assertEquals("/root/100", oURLPathBuilder.createPathString(args));
+    Map<String, Object> parameters = new HashMap<>();
+    parameters.put("id", 100);
+    parameters.put("q", "query");
+    Assert.assertEquals("/root/100?q=query", oURLPathBuilder.createRequestPath(parameters));
+    Assert.assertEquals("/root/100", oURLPathBuilder.createPathString(parameters));
   }
 
   @Test
@@ -135,24 +137,32 @@ public class TestPath {
     Parameter parameter = new QueryParameter();
     QueryVarParamWriter writer = new QueryVarParamWriter(new RestParam(0, parameter, String.class));
     try {
-      verify(writer, "T", "&queryVar=T");
-      verify(writer, null, "&");
-      verify(writer, new String[] {"a", "b"}, "&queryVar=a&queryVar=b");
-      verify(writer, new String[] {"a", null, "b"}, "&queryVar=a&queryVar=&queryVar=b");
-      verify(writer, Arrays.asList("Lars", "Simon"), "&queryVar=Lars&queryVar=Simon");
-      verify(writer, "测试", "&queryVar=%E6%B5%8B%E8%AF%95");
-      verify(writer, "a b", "&queryVar=a+b");
-      verify(writer, "a+b", "&queryVar=a%2Bb");
+      Map<String, Object> parameters = new HashMap<>();
+      parameters.put("queryVar", "T");
+      verify(writer, parameters, "?queryVar=T");
+      parameters.put("queryVar", null);
+      verify(writer, parameters, "");
+      parameters.put("queryVar", new String[] {"a", "b"});
+      verify(writer, parameters, "?queryVar=a&queryVar=b");
+      parameters.put("queryVar", new String[] {"a", null, "b"});
+      verify(writer, parameters, "?queryVar=a&queryVar=b");
+      parameters.put("queryVar", Arrays.asList("Lars", "Simon"));
+      verify(writer, parameters, "?queryVar=Lars&queryVar=Simon");
+      parameters.put("queryVar", "测试");
+      verify(writer, parameters, "?queryVar=%E6%B5%8B%E8%AF%95");
+      parameters.put("queryVar", "a b");
+      verify(writer, parameters, "?queryVar=a+b");
+      parameters.put("queryVar", "a+b");
+      verify(writer, parameters, "?queryVar=a%2Bb");
     } catch (Exception e) {
       status = false;
     }
     Assert.assertTrue(status);
   }
 
-  // TODO expect not used?
-  private void verify(QueryVarParamWriter writer, Object arg, String expect) throws Exception {
+  private void verify(QueryVarParamWriter writer, Map<String, Object> args, String expect) throws Exception {
     URLPathStringBuilder sb = new URLPathStringBuilder();
-    Object[] args = new Object[] {arg};
     writer.write(sb, args);
+    Assert.assertEquals(expect, sb.build());
   }
 }

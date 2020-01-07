@@ -20,6 +20,8 @@ package org.apache.servicecomb.provider.pojo;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import javax.ws.rs.core.Response.Status;
@@ -165,13 +167,23 @@ public class Invoker implements InvocationHandler {
         operationMeta,
         null);
     invocation.setResponsesMeta(pojoConsumerOperationMeta.getResponsesMeta());
-    invocation.setSwaggerArguments(args);
+    invocation.setArguments(toArguments(method, args));
 
     if (CompletableFuture.class.equals(method.getReturnType())) {
       return completableFutureInvoke(invocation, consumerOperation);
     }
 
     return syncInvoke(invocation, consumerOperation);
+  }
+
+
+  public Map<String, Object> toArguments(Method method, Object[] args) {
+    Map<String, Object> arguments = new HashMap<>();
+    // TODO: WEAK parameter name maybe override by annotations.
+    for (int i = 0; i < method.getParameterCount(); i++) {
+      arguments.put(method.getParameters()[i].getName(), args[i]);
+    }
+    return arguments;
   }
 
   protected ReferenceConfig findReferenceConfig(OperationMeta operationMeta) {

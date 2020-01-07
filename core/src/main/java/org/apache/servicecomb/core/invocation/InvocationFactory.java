@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.core.invocation;
 
+import java.util.Map;
+
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
@@ -35,10 +37,10 @@ public final class InvocationFactory {
   }
 
   public static Invocation forConsumer(ReferenceConfig referenceConfig, OperationMeta operationMeta,
-      Object[] swaggerArguments) {
+      Map<String, Object> arguments) {
     Invocation invocation = new Invocation(referenceConfig,
         operationMeta,
-        swaggerArguments);
+        arguments);
     invocation.addContext(Const.SRC_MICROSERVICE, getMicroserviceName());
     return invocation;
   }
@@ -47,9 +49,9 @@ public final class InvocationFactory {
    * consumer端使用，schemaMeta级别的缓存，每次调用根据operationName来执行
    */
   public static Invocation forConsumer(ReferenceConfig referenceConfig, SchemaMeta schemaMeta, String operationId,
-      Object[] swaggerArguments) {
+      Map<String, Object> arguments) {
     OperationMeta operationMeta = schemaMeta.ensureFindOperation(operationId);
-    return forConsumer(referenceConfig, operationMeta, swaggerArguments);
+    return forConsumer(referenceConfig, operationMeta, arguments);
   }
 
   /*
@@ -57,10 +59,10 @@ public final class InvocationFactory {
    */
   public static Invocation forProvider(Endpoint endpoint,
       OperationMeta operationMeta,
-      Object[] swaggerArguments) {
+      Map<String, Object> arguments) {
     SCBEngine.getInstance().ensureStatusUp();
     return new Invocation(endpoint,
         operationMeta,
-        swaggerArguments);
+        arguments);
   }
 }

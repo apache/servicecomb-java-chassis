@@ -17,6 +17,7 @@
 package org.apache.servicecomb.core;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import javax.xml.ws.Holder;
 
@@ -57,7 +58,7 @@ public class TestInvocation {
   OperationMeta operationMeta;
 
   @Mocked
-  Object[] swaggerArguments;
+  Map<String, Object> arguments;
 
   static long nanoTime = 123;
 
@@ -93,7 +94,7 @@ public class TestInvocation {
     };
     EventManager.register(subscriber);
 
-    Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
     invocation.onStart(nanoTime);
 
     Assert.assertSame(invocation, result.value);
@@ -106,7 +107,7 @@ public class TestInvocation {
   public void onStartExecute() {
     mockNonaTime();
 
-    Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
     invocation.onExecuteStart();
 
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartExecution());
@@ -125,7 +126,7 @@ public class TestInvocation {
     };
     EventManager.register(subscriber);
 
-    Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
     Assert.assertFalse(invocation.isFinished());
     Response response = Response.succResp(null);
     invocation.onFinish(response);
@@ -145,19 +146,19 @@ public class TestInvocation {
 
   @Test
   public void isConsumer_yes() {
-    Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
     Assert.assertFalse(invocation.isConsumer());
   }
 
   @Test
   public void isConsumer_no(@Mocked ReferenceConfig referenceConfig) {
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, arguments);
     Assert.assertTrue(invocation.isConsumer());
   }
 
   @Test
   public void localContext(@Mocked ReferenceConfig referenceConfig) {
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, arguments);
 
     invocation.addLocalContext("k", 1);
     Assert.assertSame(invocation.getHandlerContext(), invocation.getLocalContext());
@@ -166,7 +167,7 @@ public class TestInvocation {
 
   @Test
   public void traceId_fromContext(@Mocked ReferenceConfig referenceConfig) {
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, arguments);
     invocation.addContext(Const.TRACE_ID_NAME, "abc");
 
     invocation.onStart(0);
@@ -184,7 +185,7 @@ public class TestInvocation {
         result = "abc";
       }
     };
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, arguments);
 
     invocation.onStart(0);
 
@@ -200,7 +201,7 @@ public class TestInvocation {
         result = "abc";
       }
     };
-    Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
 
     invocation.onStart(requestEx, 0);
 
@@ -217,7 +218,7 @@ public class TestInvocation {
         result = "abc";
       }
     };
-    Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
 
     invocation.onStart(requestEx, 0);
 
@@ -261,7 +262,7 @@ public class TestInvocation {
       }
     };
     EventManager.getEventBus().register(listener);
-    Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
     mockNonaTime();
     invocation.onBusinessMethodStart();
     EventManager.getEventBus().unregister(listener);
@@ -279,7 +280,7 @@ public class TestInvocation {
       }
     };
     EventManager.getEventBus().register(listener);
-    Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
     invocation.onBusinessMethodFinish();
     EventManager.getEventBus().unregister(listener);
 
@@ -288,7 +289,7 @@ public class TestInvocation {
 
   @Test
   public void onBusinessFinish() {
-    Invocation invocation = new Invocation(endpoint, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(endpoint, operationMeta, arguments);
     mockNonaTime();
     invocation.onBusinessFinish();
 
@@ -299,13 +300,13 @@ public class TestInvocation {
   public void marker(@Mocked ReferenceConfig referenceConfig) {
     Invocation.INVOCATION_ID.set(0);
 
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, arguments);
     invocation.addContext(Const.TRACE_ID_NAME, "abc");
     invocation.onStart(0);
     Assert.assertEquals("abc-0", invocation.getMarker().toString());
     Assert.assertEquals("abc-0", invocation.getMarker().getName());
 
-    invocation = new Invocation(referenceConfig, operationMeta, swaggerArguments);
+    invocation = new Invocation(referenceConfig, operationMeta, arguments);
     invocation.addContext(Const.TRACE_ID_NAME, "abc");
     invocation.onStart(0);
     Assert.assertEquals("abc-1", invocation.getMarker().toString());
@@ -314,7 +315,7 @@ public class TestInvocation {
 
   @Test
   public void isThirdPartyInvocation(@Mocked ReferenceConfig referenceConfig) {
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, swaggerArguments);
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, arguments);
     Assert.assertFalse(invocation.isThirdPartyInvocation());
 
     new Expectations() {

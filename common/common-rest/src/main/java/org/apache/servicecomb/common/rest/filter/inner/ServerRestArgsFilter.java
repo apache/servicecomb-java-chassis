@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.common.rest.filter.inner;
 
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import javax.servlet.http.Part;
@@ -58,8 +59,8 @@ public class ServerRestArgsFilter implements HttpServerFilter {
   public Response afterReceiveRequest(Invocation invocation, HttpServletRequestEx requestEx) {
     OperationMeta operationMeta = invocation.getOperationMeta();
     RestOperationMeta restOperationMeta = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
-    Object[] args = RestCodec.restToArgs(requestEx, restOperationMeta);
-    invocation.setSwaggerArguments(args);
+    Map<String, Object> args = RestCodec.restToArgs(requestEx, restOperationMeta);
+    invocation.setArguments(args);
     return null;
   }
 
