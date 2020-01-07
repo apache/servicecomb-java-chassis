@@ -27,7 +27,6 @@ import java.util.Map;
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchema;
-import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
@@ -86,7 +85,7 @@ public class TestSchemaMetaCodecRestTemplate {
     SwaggerProducer swaggerProducer = swaggerEnvironment.createProducer(new ProtoSchema(), swagger);
     for (SwaggerProducerOperation producerOperation : swaggerProducer.getAllOperations()) {
       OperationMeta operationMeta = providerSchemaMeta.ensureFindOperation(producerOperation.getOperationId());
-      operationMeta.putExtData(Const.PRODUCER_OPERATION, producerOperation);
+      operationMeta.setSwaggerProducerOperation(producerOperation);
     }
 
     consumerSchemaMeta = new SchemaMeta(consumerMicroserviceMeta, "ProtoSchema", swagger);

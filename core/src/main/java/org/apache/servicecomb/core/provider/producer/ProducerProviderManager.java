@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
-import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.ProducerProvider;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.CoreMetaUtils;
@@ -99,7 +98,7 @@ public class ProducerProviderManager {
     Executor reactiveExecutor = scbEngine.getExecutorManager().findExecutorById(ExecutorManager.EXECUTOR_REACTIVE);
     for (SwaggerProducerOperation producerOperation : swaggerProducer.getAllOperations()) {
       OperationMeta operationMeta = schemaMeta.ensureFindOperation(producerOperation.getOperationId());
-      operationMeta.putExtData(Const.PRODUCER_OPERATION, producerOperation);
+      operationMeta.setSwaggerProducerOperation(producerOperation);
 
       if (CompletableFuture.class.equals(producerOperation.getProducerMethod().getReturnType())) {
         operationMeta.setExecutor(scbEngine.getExecutorManager().findExecutor(operationMeta, reactiveExecutor));

@@ -27,15 +27,12 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.Status.Family;
 
 import org.apache.servicecomb.codec.protobuf.utils.ScopedProtobufSchemaManager;
-import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
 import org.apache.servicecomb.foundation.protobuf.RequestRootDeserializer;
 import org.apache.servicecomb.foundation.protobuf.RequestRootSerializer;
 import org.apache.servicecomb.foundation.protobuf.ResponseRootDeserializer;
 import org.apache.servicecomb.foundation.protobuf.RootSerializer;
-import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
-import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 
 import io.protostuff.compiler.model.Message;
 
@@ -61,15 +58,12 @@ public class OperationProtobuf {
     ProtoMapper mapper = scopedProtobufSchemaManager.getOrCreateProtoMapper(operationMeta.getSchemaMeta());
     Message requestMessage = mapper.getRequestMessage(operationMeta.getOperationId());
 
-    if (operationMeta.getExtData(Const.PRODUCER_OPERATION) != null &&
-        ((SwaggerProducerOperation) operationMeta.getExtData(Const.PRODUCER_OPERATION)).getProducerMethod() != null) {
+    if (operationMeta.getSwaggerProducerOperation() != null) {
       // producer invocation
       requestDeserializer = mapper
           .createRequestRootDeserializer(requestMessage, getMethodParameterTypesMap(
-              ((SwaggerProducerOperation) operationMeta.getExtData(Const.PRODUCER_OPERATION)).getProducerMethod()));
-    } else if (operationMeta.getExtData(Const.CONSUMER_OPERATION) != null
-        && ((SwaggerConsumerOperation) operationMeta.getExtData(Const.CONSUMER_OPERATION)).getConsumerMethod()
-        != null) {
+              operationMeta.getSwaggerProducerOperation().getProducerMethod()));
+    } else if (operationMeta.getSwaggerConsumerOperation() != null) {
       // consumer pojo invocation
       requestSerializer = mapper.createRequestRootSerializer(requestMessage, (Map<String, Type>) null, true);
     } else {

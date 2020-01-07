@@ -27,7 +27,6 @@ import java.util.Map.Entry;
 
 import org.apache.servicecomb.common.rest.definition.RestOperationComparator;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
-import org.apache.servicecomb.core.definition.CoreMetaUtils;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.slf4j.Logger;
@@ -97,8 +96,7 @@ public class MicroservicePaths {
 
   protected void printPath(Collection<RestOperationMeta> operations) {
     for (RestOperationMeta operation : operations) {
-      SwaggerProducerOperation producerOperation = CoreMetaUtils
-          .getSwaggerProducerOperation(operation.getOperationMeta());
+      SwaggerProducerOperation producerOperation = operation.getOperationMeta().getSwaggerProducerOperation();
 
       LOGGER.info("Swagger mapped \"{[{}], method=[{}], produces={}}\" onto {}",
           operation.getAbsolutePath(),

@@ -56,7 +56,7 @@ public class MultiErrorCodeServiceClient {
 
   public static void runTest() {
     for (String transport : DemoConst.transports) {
-      ArchaiusUtils.setProperty("servicecomb.reference.transport.jaxrs", transport);
+      ArchaiusUtils.setProperty("servicecomb.references.transport.jaxrs", transport);
 
       // TODO fix this in SCB-1634
 //      testErrorCode();

@@ -51,6 +51,7 @@ public class TestUrlWithServiceNameClientHttpRequestFactory {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void invoke_checkPath(@Mocked Invocation invocation, @Mocked RequestMeta requestMeta) {
     Map<String, String> handlerContext = new HashMap<>();
     UrlWithServiceNameClientHttpRequest request = new UrlWithServiceNameClientHttpRequest(uri, HttpMethod.GET) {

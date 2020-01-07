@@ -34,11 +34,8 @@ import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.path.PathRegExp;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder;
-import org.apache.servicecomb.core.Const;
-import org.apache.servicecomb.core.definition.CoreMetaUtils;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
-import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,7 +96,6 @@ public class RestOperationMeta {
     this.downloadFile = checkDownloadFileFlag();
     this.createProduceProcessors();
 
-    SwaggerProducerOperation producerOperation = CoreMetaUtils.getSwaggerProducerOperation(operationMeta);
     // 初始化所有rest param
     for (int swaggerParameterIdx = 0; swaggerParameterIdx < operation.getParameters().size(); swaggerParameterIdx++) {
       Parameter parameter = operation.getParameters().get(swaggerParameterIdx);
@@ -107,14 +103,10 @@ public class RestOperationMeta {
       if ("formData".equals(parameter.getIn())) {
         formData = true;
       }
-      // TODO : WEAK handle BEAN query param and POJO wrapped arguments.
-      Type paramType = Object.class;
-      if (((SwaggerProducerOperation) operationMeta.getExtData(Const.PRODUCER_OPERATION)) != null) {
-        paramType = ((SwaggerProducerOperation) operationMeta.getExtData(Const.PRODUCER_OPERATION)).getProducerMethod()
-            .getGenericParameterTypes()[swaggerParameterIdx];
-      }
+
+      Type paramType = operationMeta.getSwaggerArgumentType(parameter.getName());
       Type type = correctFormBodyType(parameter, paramType);
-      RestParam param = new RestParam(swaggerParameterIdx, parameter, type);
+      RestParam param = new RestParam(parameter, type);
       addParam(param);
     }
 

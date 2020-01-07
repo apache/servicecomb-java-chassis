@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.router.custom;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,13 +25,15 @@ import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.loadbalance.ServerListFilterExt;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
-import com.netflix.config.DynamicPropertyFactory;
-
 import org.apache.servicecomb.router.RouterFilter;
 import org.apache.servicecomb.router.distribute.RouterDistributor;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.netflix.config.DynamicPropertyFactory;
 
 public class RouterServerListFilter implements ServerListFilterExt {
 
@@ -91,13 +91,7 @@ public class RouterServerListFilter implements ServerListFilterExt {
         headers.putAll(canaryContext);
       }
     }
-    for (int i = 0; i < invocation.getArgs().length; i++) {
-      if (invocation.getOperationMeta().getParamName(i) != null &&
-          invocation.getArgs()[i] != null) {
-        headers
-            .put(invocation.getOperationMeta().getParamName(i), invocation.getArgs()[i].toString());
-      }
-    }
+    invocation.getArguments().forEach((k, v) -> headers.put(k, v == null ? null : v.toString()));
     headers.putAll(invocation.getContext());
     return headers;
   }

@@ -40,7 +40,6 @@ import org.apache.servicecomb.core.tracing.TraceIdGenerator;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
-import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -186,7 +185,11 @@ public class Invocation extends SwaggerInvocation {
   }
 
   public Map<String, Object> getArguments() {
-    return arguments;
+    return this.arguments;
+  }
+
+  public Object getArgument(String name) {
+    return this.arguments.get(name);
   }
 
   public void setArguments(Map<String, Object> arguments) {
@@ -200,7 +203,7 @@ public class Invocation extends SwaggerInvocation {
 
   // TODO: WEAK add release notes to tell this change in 2.0.0
   public Object[] toProducerArguments() {
-    Method method = ((SwaggerProducerOperation) operationMeta.getExtData(Const.PRODUCER_OPERATION)).getProducerMethod();
+    Method method = operationMeta.getSwaggerProducerOperation().getProducerMethod();
     Object[] args = new Object[method.getParameterCount()];
     // TODO: WEAK parameter name maybe override by annotations.
     for (int i = 0; i < method.getParameterCount(); i++) {

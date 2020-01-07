@@ -29,7 +29,6 @@ import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchema;
 import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchemaPojo;
-import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
@@ -96,14 +95,14 @@ public class TestSchemaMetaCodec {
     SwaggerProducer swaggerProducer = swaggerEnvironment.createProducer(schemaClass.newInstance(), swagger);
     for (SwaggerProducerOperation producerOperation : swaggerProducer.getAllOperations()) {
       OperationMeta operationMeta = providerSchemaMeta.ensureFindOperation(producerOperation.getOperationId());
-      operationMeta.putExtData(Const.PRODUCER_OPERATION, producerOperation);
+      operationMeta.setSwaggerProducerOperation(producerOperation);
     }
 
     consumerSchemaMeta = new SchemaMeta(consumerMicroserviceMeta, "ProtoSchema", swagger);
     SwaggerConsumer swaggerConsumer = swaggerEnvironment.createConsumer(schemaClass, swagger);
     for (SwaggerConsumerOperation consumerOperation : swaggerConsumer.getOperations().values()) {
       OperationMeta operationMeta = consumerSchemaMeta.ensureFindOperation(consumerOperation.getSchemaOperationId());
-      operationMeta.putExtData(Const.CONSUMER_OPERATION, consumerOperation);
+      operationMeta.setSwaggerConsumerOperation(consumerOperation);
     }
   }
 
