@@ -276,7 +276,7 @@ You can find a copy of the License at licenses/LICENSE-cddl
 
 * JavaMail API jar (javax.mail:mailapi:1.4.3 - http://java.sun.com/projects/javamail/mailapi)
 * Expression Language 3.0 (org.glassfish:javax.el:3.0.0 - http://el-spec.java.net)
-* Java Servlet API (javax.servlet:javax.servlet-api:4.0.1 - http://servlet-spec.java.net)
+* Jakarta Servlet API (jakarta.servlet:jakarta.servlet-api:4.0.3 - https://projects.eclipse.org/projects/ee4j.servlet)
 * javax.ws.rs-api (javax.ws.rs:javax.ws.rs-api:2.1 - http://jax-rs-spec.java.net)
 * Jersey Apache HTTP Client 4.x (com.sun.jersey.contribs:jersey-apache-client4:2.27 - https://jersey.java.net/jersey-contribs/jersey-apache-client4/)
 * jersey-client (com.sun.jersey:jersey-client:2.27 - https://jersey.java.net/jersey-client/)
