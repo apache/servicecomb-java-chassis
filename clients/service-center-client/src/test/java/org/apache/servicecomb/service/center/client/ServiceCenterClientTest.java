@@ -29,10 +29,12 @@ import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstanceStatus;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstancesResponse;
 import org.apache.servicecomb.service.center.client.model.MicroservicesResponse;
+import org.apache.servicecomb.service.center.client.model.SchemaInfo;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -405,6 +407,84 @@ public class ServiceCenterClientTest {
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
     Boolean result = serviceCenterClient
         .updateMicroserviceInstanceStatus("111", "222", MicroserviceInstanceStatus.UP);
+
+    Assert.assertNotNull(result);
+    Assert.assertEquals(true, result);
+  }
+
+  @Test
+  public void TestGetServiceSchemas() throws IOException {
+
+    ServiceCenterRawClient serviceCenterRawClient = Mockito.mock(ServiceCenterRawClient.class);
+
+    HttpResponse httpResponse = new HttpResponse();
+    httpResponse.setStatusCode(200);
+    httpResponse.setMessage("ok");
+    String responseString = "{\n"
+        + "  \"schemas\": [\n"
+        + "    {\n"
+        + "      \"schemaId\": \"111111\",\n"
+        + "      \"schema\": \"test\",\n"
+        + "      \"summary\": \"test\"\n"
+        + "    }\n"
+        + "  ]\n"
+        + "}";
+    httpResponse.setContent(responseString);
+
+    Mockito.when(serviceCenterRawClient.getHttpRequest(Mockito.any(), Mockito.any(), Mockito.any()))
+        .thenReturn(httpResponse);
+
+    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
+    List<SchemaInfo> schemaResponse = serviceCenterClient
+        .getServiceSchemasList("111");
+
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode jsonNode = mapper.readTree(mapper.writeValueAsString(schemaResponse));
+
+    Assert.assertNotNull(jsonNode);
+    Assert.assertEquals("111111", jsonNode.get(0).get("schemaId").textValue());
+    Assert.assertEquals("test", jsonNode.get(0).get("schema").textValue());
+  }
+
+  @Test
+  public void TestGetServiceSchemasContext() throws IOException {
+
+    ServiceCenterRawClient serviceCenterRawClient = Mockito.mock(ServiceCenterRawClient.class);
+
+    HttpResponse httpResponse = new HttpResponse();
+    httpResponse.setStatusCode(200);
+    httpResponse.setMessage("ok");
+    String responseString = "{\n"
+        + "  \"schema\": \"test context\"\n"
+        + "}";
+    httpResponse.setContent(responseString);
+
+    Mockito.when(serviceCenterRawClient.getHttpRequest(Mockito.any(), Mockito.any(), Mockito.any()))
+        .thenReturn(httpResponse);
+
+    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
+    String schemaContext = serviceCenterClient
+        .getServiceSchemaContext("111", "222");
+
+    Assert.assertNotNull(schemaContext);
+    Assert.assertEquals("test context", schemaContext);
+  }
+
+  @Test
+  public void TestUpdateServiceSchema() throws IOException {
+
+    ServiceCenterRawClient serviceCenterRawClient = Mockito.mock(ServiceCenterRawClient.class);
+
+    HttpResponse httpResponse = new HttpResponse();
+    httpResponse.setStatusCode(200);
+    httpResponse.setMessage("ok");
+
+    Mockito.when(serviceCenterRawClient.putHttpRequest(Mockito.any(), Mockito.any(), Mockito.any()))
+        .thenReturn(httpResponse);
+
+    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
+    boolean result = serviceCenterClient
+        .updateServiceSchemaContext("111", "222", new SchemaInfo());
 
     Assert.assertNotNull(result);
     Assert.assertEquals(true, result);
