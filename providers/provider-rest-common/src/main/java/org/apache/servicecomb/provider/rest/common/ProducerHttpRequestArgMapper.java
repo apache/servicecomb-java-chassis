@@ -25,8 +25,8 @@ import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.arguments.producer.AbstractProducerContextArgMapper;
 
 public class ProducerHttpRequestArgMapper extends AbstractProducerContextArgMapper {
-  public ProducerHttpRequestArgMapper(int producerArgIdx) {
-    super(producerArgIdx);
+  public ProducerHttpRequestArgMapper(String invocationArgumentName, String swaggerArgumentName) {
+    super(invocationArgumentName, swaggerArgumentName);
   }
 
   @Override

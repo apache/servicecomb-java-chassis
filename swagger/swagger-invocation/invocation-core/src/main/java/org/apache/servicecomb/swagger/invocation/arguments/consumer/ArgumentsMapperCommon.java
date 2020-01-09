@@ -14,20 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.swagger.invocation.arguments.consumer;
 
-import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
-import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class ConsumerInvocationContextMapperFactory implements ConsumerContextArgumentMapperFactory {
-  @Override
-  public Class<?> getContextClass() {
-    return InvocationContext.class;
+import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
+import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
+
+/**
+ * map consumer arguments to swagger arguments
+ */
+public class ArgumentsMapperCommon implements ConsumerArgumentsMapper {
+  private List<ArgumentMapper> mappers;
+
+  public ArgumentsMapperCommon(List<ArgumentMapper> mappers) {
+    this.mappers = mappers;
   }
 
   @Override
-  public ArgumentMapper create(String invocationArgumentName, String swaggerArgumentName) {
-    return new ConsumerInvocationContextMapper(invocationArgumentName);
+  public Map<String, Object> invocationArgumentToSwaggerArguments(SwaggerInvocation swaggerInvocation,
+      Map<String, Object> invocationArguments) {
+    Map<String, Object> swaggerParameters = new HashMap<>(invocationArguments.size());
+    for (ArgumentMapper argMapper : mappers) {
+      argMapper.invocationArgumentToSwaggerArguments(swaggerInvocation, swaggerParameters, invocationArguments);
+    }
+    return swaggerParameters;
   }
 }

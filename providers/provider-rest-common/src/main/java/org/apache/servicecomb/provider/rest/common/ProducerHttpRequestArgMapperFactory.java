@@ -30,7 +30,7 @@ public class ProducerHttpRequestArgMapperFactory implements ProducerContextArgum
   }
 
   @Override
-  public ArgumentMapper create(int providerArgIdx) {
-    return new ProducerHttpRequestArgMapper(providerArgIdx);
+  public ArgumentMapper create(String invocationArgumentName, String swaggerArgumentName) {
+    return new ProducerHttpRequestArgMapper(invocationArgumentName, swaggerArgumentName);
   }
 }

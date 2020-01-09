@@ -43,7 +43,9 @@ public class ClientRestArgsFilter implements HttpClientFilter {
     OperationMeta operationMeta = invocation.getOperationMeta();
     RestOperationMeta swaggerRestOperation = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
     try {
-      RestCodec.argsToRest(invocation.getArguments(), swaggerRestOperation, restClientRequest);
+      RestCodec.argsToRest(swaggerRestOperation.getOperationMeta().getSwaggerConsumerOperation().getArgumentsMapper()
+              .invocationArgumentToSwaggerArguments(invocation, invocation.getArguments()), swaggerRestOperation,
+          restClientRequest);
       requestEx.setBodyBuffer(restClientRequest.getBodyBuffer());
     } catch (Throwable e) {
       throw ExceptionFactory.convertConsumerException(e);

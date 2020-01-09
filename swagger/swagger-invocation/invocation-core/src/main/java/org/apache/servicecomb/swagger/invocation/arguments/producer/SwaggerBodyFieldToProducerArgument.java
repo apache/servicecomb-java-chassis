@@ -17,26 +17,39 @@
 
 package org.apache.servicecomb.swagger.invocation.arguments.producer;
 
+import java.lang.reflect.Type;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 
-public abstract class AbstractProducerContextArgMapper extends ProducerArgumentMapper {
-  protected String invocationArgumentName;
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
-  protected String swaggerArgumentName;
+public class SwaggerBodyFieldToProducerArgument extends ProducerArgumentMapper {
+  public static ObjectMapper mapper = JsonUtils.OBJ_MAPPER;
 
-  public AbstractProducerContextArgMapper(String invocationArgumentName, String swaggerArgumentName) {
+  private final String invocationArgumentName;
+
+  private final String parameterName;
+
+  private final JavaType producerParamType;
+
+  private final String swaggerArgumentName;
+
+  public SwaggerBodyFieldToProducerArgument(String invocationArgumentName,
+      String swaggerArgumentName, String parameterName, Type producerParamType) {
     this.invocationArgumentName = invocationArgumentName;
+    this.parameterName = parameterName;
+    this.producerParamType = TypeFactory.defaultInstance().constructType(producerParamType);
     this.swaggerArgumentName = swaggerArgumentName;
   }
 
   @Override
   public void swaggerArgumentToInvocationArguments(SwaggerInvocation invocation,
       Map<String, Object> swaggerArguments, Map<String, Object> invocationArguments) {
-    Object producerArg = createContextArg(invocation);
-    invocationArguments.put(this.invocationArgumentName, producerArg);
+    Map<String, Object> body = (Map<String, Object>) swaggerArguments.get(swaggerArgumentName);
+    invocationArguments.put(invocationArgumentName, mapper.convertValue(body.get(parameterName), producerParamType));
   }
-
-  public abstract Object createContextArg(SwaggerInvocation invocation);
 }

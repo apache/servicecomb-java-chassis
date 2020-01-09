@@ -19,10 +19,14 @@ package org.apache.servicecomb.swagger.engine;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
+import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.extension.ProducerInvokeExtension;
 import org.apache.servicecomb.swagger.invocation.response.producer.ProducerResponseMapper;
 import org.slf4j.Logger;
@@ -42,10 +46,19 @@ public class SwaggerProducerOperation {
 
   private SwaggerOperation swaggerOperation;
 
+  // swagger parameter types relate to producer
+  // because features of @BeanParam/query wrapper/rpc mode parameter wrapper
+  // types is not direct equals to producerMethod parameter types
+  private Map<String, Type> swaggerParameterTypes;
+
+  private ProducerArgumentsMapper argumentsMapper;
+
   private ProducerResponseMapper responseMapper;
 
   private List<ProducerInvokeExtension> producerInvokeExtenstionList =
       SPIServiceUtils.getSortedService(ProducerInvokeExtension.class);
+
+  private Map<String, Type> methodParameterTypesBySwaggerName = new HashMap<>();
 
   public String getOperationId() {
     return swaggerOperation.getOperationId();
@@ -73,6 +86,7 @@ public class SwaggerProducerOperation {
 
   public void setProducerMethod(Method producerMethod) {
     this.producerMethod = producerMethod;
+    this.buildMethodSwaggerParameterName();
   }
 
   public SwaggerOperation getSwaggerOperation() {
@@ -81,6 +95,23 @@ public class SwaggerProducerOperation {
 
   public void setSwaggerOperation(SwaggerOperation swaggerOperation) {
     this.swaggerOperation = swaggerOperation;
+  }
+
+
+  public Map<String, Type> getSwaggerParameterTypes() {
+    return swaggerParameterTypes;
+  }
+
+  public void setSwaggerParameterTypes(Map<String, Type> swaggerParameterTypes) {
+    this.swaggerParameterTypes = swaggerParameterTypes;
+  }
+
+  public ProducerArgumentsMapper getArgumentsMapper() {
+    return argumentsMapper;
+  }
+
+  public void setArgumentsMapper(ProducerArgumentsMapper argumentsMapper) {
+    this.argumentsMapper = argumentsMapper;
   }
 
   public ProducerResponseMapper getResponseMapper() {
@@ -98,11 +129,10 @@ public class SwaggerProducerOperation {
   public boolean isPojoWrappedArguments(String name) {
     List<io.swagger.models.parameters.Parameter> swaggerParameters = this.swaggerOperation.getOperation()
         .getParameters();
-    Parameter[] methodParameters = this.producerMethod.getParameters();
     io.swagger.models.parameters.Parameter swaggerParameter = findParameterByName(swaggerParameters, name);
 
     if (swaggerParameter instanceof BodyParameter) {
-      Parameter methodParameter = findParameterByName(methodParameters, name);
+      Type methodParameter = findMethodParameterTypesBySwaggerName(name);
       if (methodParameter == null) {
         return true;
       }
@@ -110,28 +140,18 @@ public class SwaggerProducerOperation {
     return false;
   }
 
-  public Type getMethodParameterType(String name) {
-    Parameter[] methodParameters = this.producerMethod.getParameters();
-    Parameter methodParameter = findParameterByName(methodParameters, name);
-    if (methodParameter != null) {
-      return methodParameter.getParameterizedType();
-    }
-    throw new IllegalStateException("not implemented now, name=" + name);
-  }
-
   public Type getSwaggerParameterType(String name) {
     List<io.swagger.models.parameters.Parameter> swaggerParameters = this.swaggerOperation.getOperation()
         .getParameters();
-    Parameter[] methodParameters = this.producerMethod.getParameters();
     io.swagger.models.parameters.Parameter swaggerParameter = findParameterByName(swaggerParameters, name);
 
-    Parameter methodParameter = findParameterByName(methodParameters, name);
-    if (methodParameter == null) {
+    Type methodParameterType = findMethodParameterTypesBySwaggerName(name);
+    if (methodParameterType == null) {
       if (swaggerParameter instanceof BodyParameter) {
         return Object.class;
       }
     } else {
-      return methodParameter.getParameterizedType();
+      return methodParameterType;
     }
 
     throw new IllegalStateException("not implemented now, name=" + name);
@@ -147,13 +167,19 @@ public class SwaggerProducerOperation {
     throw new IllegalStateException("not found parameter name in swagger, name=" + name);
   }
 
-  private static Parameter findParameterByName(
-      Parameter[] methodParameters, String name) {
-    for (Parameter p : methodParameters) {
-      if (p.getName().equals(name)) {
-        return p;
-      }
+  private Type findMethodParameterTypesBySwaggerName(String name) {
+    return this.methodParameterTypesBySwaggerName.get(name);
+  }
+
+  public Map<String, Type> getMethodParameterTypesBySwaggerName() {
+    return this.methodParameterTypesBySwaggerName;
+  }
+
+  private void buildMethodSwaggerParameterName() {
+    Parameter[] methodParameters = this.producerMethod.getParameters();
+    for (Parameter parameter : methodParameters) {
+      String name = SwaggerGeneratorUtils.collectParameterName(parameter);
+      this.methodParameterTypesBySwaggerName.put(name, parameter.getParameterizedType());
     }
-    return null;
   }
 }

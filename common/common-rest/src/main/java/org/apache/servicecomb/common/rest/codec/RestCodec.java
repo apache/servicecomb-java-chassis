@@ -27,7 +27,6 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.definition.RestParam;
-import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,31 +48,8 @@ public final class RestCodec {
 
     for (int idx = 0; idx < paramSize; idx++) {
       RestParam param = restOperation.getParamList().get(idx);
-      param.getParamProcessor().setValue(clientRequest, getRestParamValue(param, args));
+      param.getParamProcessor().setValue(clientRequest, args.get(param.getParamName()));
     }
-  }
-
-  private static Object getRestParamValue(RestParam param, Map<String, Object> args) {
-    // TODO : WEAK handle BEAN query param and POJO wrapped arguments.
-    if (args.containsKey(param.getParamName())) {
-      return args.get(param.getParamName());
-    } else {
-      return args;
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  private static Map<String, Object> getActualArgs(RestOperationMeta restOperation, Map<String, Object> args) {
-    if (restOperation.getParamList().size() == 1) {
-      if (restOperation.getOperationMeta().isPojoWrappedArguments(restOperation.getParamList().get(0).getParamName())) {
-        Map<String, Object> argumentsMap = (Map<String, Object>) args.entrySet().iterator().next().getValue();
-        Map<String, Object> result = new HashMap<>(argumentsMap.size());
-        argumentsMap.forEach((k, v) -> result
-            .put(k, JsonUtils.OBJ_MAPPER.convertValue(v, restOperation.getOperationMeta().getArgumentType(k))));
-        return result;
-      }
-    }
-    return args;
   }
 
   public static Map<String, Object> restToArgs(HttpServletRequest request,
@@ -104,6 +80,6 @@ public final class RestCodec {
       }
     }
 
-    return getActualArgs(restOperation, paramValues);
+    return paramValues;
   }
 }

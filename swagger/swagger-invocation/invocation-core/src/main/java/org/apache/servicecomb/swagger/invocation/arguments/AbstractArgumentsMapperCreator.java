@@ -136,11 +136,10 @@ public abstract class AbstractArgumentsMapperCreator {
     return null;
   }
 
-  protected Integer findAndClearSwaggerParameterIndex(String name) {
+  protected Integer findSwaggerParameterIndex(String name) {
     for (int idx = 0; idx < swaggerParameters.size(); idx++) {
       Parameter parameter = swaggerParameters.get(idx);
       if (parameter != null && name.equals(parameter.getName())) {
-        swaggerParameters.set(idx, null);
         return idx;
       }
     }
@@ -156,25 +155,22 @@ public abstract class AbstractArgumentsMapperCreator {
         continue;
       }
 
-      ArgumentMapper mapper = createKnownParameterMapper(providerParamIdx, providerParamIdx);
-      mappers.add(mapper);
-      // TODO: WEAK delete this code
-//      if (processSwaggerBodyField(providerParamIdx, providerParameter, parameterName)) {
-//        continue;
-//      }
+      String parameterName = collectParameterName(providerParameter);
+      if (processKnownParameter(providerParamIdx, providerParameter, parameterName)) {
+        continue;
+      }
 
-//      String parameterName = collectParameterName(providerParameter);
-//      if (processKnownParameter(providerParamIdx, providerParameter, parameterName)) {
-//        continue;
-//      }
-//
-//      JavaType providerType = TypeFactory.defaultInstance().constructType(providerParameter.getParameterizedType());
-//      if (SwaggerUtils.isBean(providerType)) {
-//        processBeanParameter(providerParamIdx, providerParameter);
-//        continue;
-//      }
-//
-//      processUnknownParameter(parameterName);
+      if (processSwaggerBodyField(providerParamIdx, providerParameter, parameterName)) {
+        continue;
+      }
+
+      JavaType providerType = TypeFactory.defaultInstance().constructType(providerParameter.getParameterizedType());
+      if (SwaggerUtils.isBean(providerType)) {
+        processBeanParameter(providerParamIdx, providerParameter);
+        continue;
+      }
+
+      processUnknownParameter(parameterName);
     }
   }
 
@@ -190,7 +186,8 @@ public abstract class AbstractArgumentsMapperCreator {
       return false;
     }
 
-    mappers.add(contextFactory.create(providerParamIdx));
+    mappers.add(contextFactory
+        .create(this.providerMethod.getParameters()[providerParamIdx].getName(), providerParameter.getName()));
     return true;
   }
 
@@ -203,19 +200,18 @@ public abstract class AbstractArgumentsMapperCreator {
    */
   protected boolean processKnownParameter(int providerParamIdx, java.lang.reflect.Parameter providerParameter,
       String parameterName) {
-    Integer swaggerIdx = findAndClearSwaggerParameterIndex(parameterName);
+    Integer swaggerIdx = findSwaggerParameterIndex(parameterName);
+    if (swaggerIdx == null) {
+      return false;
+    }
 
     // complex scenes
     // swagger: int add(Body x)
     // producer: int add(int x, int y)
     if (bodyParameter != null &&
-        !SwaggerUtils.isBean(providerParameter.getType())  &&
+        !SwaggerUtils.isBean(providerParameter.getType()) &&
+        swaggerIdx == swaggerBodyIdx &&
         SwaggerUtils.isBean(bodyParameter.getSchema())) {
-      swaggerIdx = providerParamIdx;
-      swaggerParameters.set(swaggerIdx, bodyParameter);
-    }
-
-    if (swaggerIdx == null) {
       return false;
     }
 
@@ -237,13 +233,13 @@ public abstract class AbstractArgumentsMapperCreator {
       return false;
     }
 
-//    ArgumentMapper mapper = createSwaggerBodyFieldMapper(providerParamIdx, parameterName, swaggerBodyIdx);
-//    mappers.add(mapper);
+    ArgumentMapper mapper = createSwaggerBodyFieldMapper(providerParamIdx, parameterName, swaggerBodyIdx);
+    mappers.add(mapper);
     return true;
   }
 
-//  protected abstract ArgumentMapper createSwaggerBodyFieldMapper(int providerParamIdx, String parameterName,
-//      int swaggerBodyIdx);
+  protected abstract ArgumentMapper createSwaggerBodyFieldMapper(int providerParamIdx, String parameterName,
+      int swaggerBodyIdx);
 
   /**
    *

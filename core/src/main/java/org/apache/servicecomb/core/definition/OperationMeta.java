@@ -82,9 +82,9 @@ public class OperationMeta {
     this.argumentsTypes.clear();
     if (getSwaggerProducerOperation() != null) {
       SwaggerProducerOperation swaggerProducerOperation = getSwaggerProducerOperation();
-      for (java.lang.reflect.Parameter parameter : swaggerProducerOperation.getProducerMethod().getParameters()) {
-        this.argumentsTypes.put(parameter.getName(), TypeFactory.defaultInstance().constructType(parameter.getType()));
-      }
+      swaggerProducerOperation.getMethodParameterTypesBySwaggerName().forEach((k, v) -> {
+        this.argumentsTypes.put(k, TypeFactory.defaultInstance().constructType(v));
+      });
     }
   }
 
