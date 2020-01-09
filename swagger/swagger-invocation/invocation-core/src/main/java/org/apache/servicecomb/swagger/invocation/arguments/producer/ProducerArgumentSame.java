@@ -15,16 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.swagger.invocation.arguments;
+package org.apache.servicecomb.swagger.invocation.arguments.producer;
 
 import java.util.Map;
 
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 
-public interface ArgumentMapper {
-  void swaggerArgumentToInvocationArguments(SwaggerInvocation swaggerInvocation, Map<String, Object> swaggerArguments,
-      Map<String, Object> invocationArguments);
+public class ProducerArgumentSame extends ProducerArgumentMapper {
+  protected String invocationArgumentName;
 
-  void invocationArgumentToSwaggerArguments(SwaggerInvocation swaggerInvocation, Map<String, Object> swaggerArguments,
-      Map<String, Object> invocationArguments);
+  protected String swaggerArgumentName;
+
+  public ProducerArgumentSame(String invocationArgumentName, String swaggerArgumentName) {
+    this.invocationArgumentName = invocationArgumentName;
+    this.swaggerArgumentName = swaggerArgumentName;
+  }
+
+  @Override
+  public void swaggerArgumentToInvocationArguments(SwaggerInvocation invocation,
+      Map<String, Object> swaggerArguments, Map<String, Object> invocationArguments) {
+    invocationArguments.put(invocationArgumentName, swaggerArguments.get(swaggerArgumentName));
+  }
 }

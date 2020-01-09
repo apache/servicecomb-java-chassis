@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.swagger.invocation.arguments;
+package org.apache.servicecomb.swagger.invocation.arguments.consumer;
 
 import java.util.Map;
 
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
+import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
 
-public interface ArgumentMapper {
-  void swaggerArgumentToInvocationArguments(SwaggerInvocation swaggerInvocation, Map<String, Object> swaggerArguments,
-      Map<String, Object> invocationArguments);
-
-  void invocationArgumentToSwaggerArguments(SwaggerInvocation swaggerInvocation, Map<String, Object> swaggerArguments,
-      Map<String, Object> invocationArguments);
+public abstract class ConsumerArgumentMapper implements ArgumentMapper {
+  public void swaggerArgumentToInvocationArguments(SwaggerInvocation swaggerInvocation,
+      Map<String, Object> swaggerArguments,
+      Map<String, Object> invocationArguments) {
+    throw new IllegalStateException("not expected");
+  }
 }

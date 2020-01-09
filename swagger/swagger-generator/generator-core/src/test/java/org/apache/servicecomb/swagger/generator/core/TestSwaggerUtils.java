@@ -17,12 +17,11 @@
 
 package org.apache.servicecomb.swagger.generator.core;
 
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.collectParameterName;
-
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
+import org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils;
 import org.apache.servicecomb.swagger.generator.core.schema.InvalidResponseHeader;
 import org.apache.servicecomb.swagger.generator.core.schema.RepeatOperation;
 import org.apache.servicecomb.swagger.generator.core.schema.Schema;
@@ -261,6 +260,6 @@ public class TestSwaggerUtils {
             + "        <compilerArgument>-parameters</compilerArgument>\n"
             + "      </configuration>\n"
             + "    </plugin>");
-    collectParameterName(parameter);
+    SwaggerGeneratorUtils.collectParameterName(parameter);
   }
 }

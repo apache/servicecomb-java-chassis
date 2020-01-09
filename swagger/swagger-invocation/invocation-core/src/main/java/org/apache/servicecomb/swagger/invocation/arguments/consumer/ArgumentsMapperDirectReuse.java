@@ -14,17 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.apache.servicecomb.swagger.invocation.arguments;
+package org.apache.servicecomb.swagger.invocation.arguments.consumer;
 
 import java.util.Map;
 
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 
-public interface ArgumentMapper {
-  void swaggerArgumentToInvocationArguments(SwaggerInvocation swaggerInvocation, Map<String, Object> swaggerArguments,
-      Map<String, Object> invocationArguments);
-
-  void invocationArgumentToSwaggerArguments(SwaggerInvocation swaggerInvocation, Map<String, Object> swaggerArguments,
-      Map<String, Object> invocationArguments);
+public class ArgumentsMapperDirectReuse implements ConsumerArgumentsMapper {
+  @Override
+  public Map<String, Object> invocationArgumentToSwaggerArguments(SwaggerInvocation swaggerInvocation,
+      Map<String, Object> invocationArguments) {
+    return invocationArguments;
+  }
 }

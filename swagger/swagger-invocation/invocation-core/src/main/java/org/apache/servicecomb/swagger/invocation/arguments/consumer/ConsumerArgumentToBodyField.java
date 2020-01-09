@@ -17,24 +17,42 @@
 
 package org.apache.servicecomb.swagger.invocation.arguments.consumer;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
-import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 
-public class ConsumerInvocationContextMapper extends ConsumerArgumentMapper {
-  protected String invocationArgumentName;
+/**
+ * <pre>
+ * Typical scene of transparent RPC
+ * all parameters of consumer method wrapped to a bean in contract
+ * </pre>
+ */
+public final class ConsumerArgumentToBodyField extends ConsumerArgumentMapper {
+  private final String invocationArgumentName;
 
-  public ConsumerInvocationContextMapper(String invocationArgumentName) {
+  private final String parameterName;
+
+  private final String swaggerArgumentName;
+
+  public ConsumerArgumentToBodyField(String invocationArgumentName,
+      String swaggerArgumentName, String parameterName) {
     this.invocationArgumentName = invocationArgumentName;
+    this.parameterName = parameterName;
+    this.swaggerArgumentName = swaggerArgumentName;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public void invocationArgumentToSwaggerArguments(SwaggerInvocation invocation,
+  public void invocationArgumentToSwaggerArguments(SwaggerInvocation swaggerInvocation,
       Map<String, Object> swaggerArguments,
       Map<String, Object> invocationArguments) {
-    InvocationContext context = (InvocationContext) invocationArguments.get(invocationArgumentName);
-    invocation.addContext(context.getContext());
-    invocation.addLocalContext(context.getLocalContext());
+    Object consumerArgument = invocationArguments.get(invocationArgumentName);
+    if (swaggerArguments.get(swaggerArgumentName) == null) {
+      swaggerArguments.put(swaggerArgumentName, new LinkedHashMap<String, Object>());
+    }
+    if (consumerArgument != null) {
+      ((Map<String, Object>) swaggerArguments.get(swaggerArgumentName)).put(parameterName, consumerArgument);
+    }
   }
 }

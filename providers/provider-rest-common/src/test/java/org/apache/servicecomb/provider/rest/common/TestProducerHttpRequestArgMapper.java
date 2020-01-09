@@ -36,7 +36,7 @@ public class TestProducerHttpRequestArgMapper {
   @Mocked
   Invocation invocation;
 
-  ProducerHttpRequestArgMapper mapper = new ProducerHttpRequestArgMapper(0);
+  ProducerHttpRequestArgMapper mapper = new ProducerHttpRequestArgMapper("test", "test");
 
   @Test
   public void testGetFromContext(@Mocked HttpServletRequest request) {

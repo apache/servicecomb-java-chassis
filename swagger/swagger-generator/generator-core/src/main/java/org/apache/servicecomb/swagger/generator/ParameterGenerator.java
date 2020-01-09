@@ -16,11 +16,6 @@
  */
 package org.apache.servicecomb.swagger.generator;
 
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.collectGenericType;
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.collectHttpParameterType;
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.collectParameterAnnotations;
-import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.collectParameterName;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Type;
@@ -57,13 +52,13 @@ public class ParameterGenerator {
   public ParameterGenerator(Executable executable, Map<String, List<Annotation>> methodAnnotationMap,
       String defaultName,
       Annotation[] parameterAnnotations, Type genericType) {
-    this.parameterName = collectParameterName(executable, parameterAnnotations,
+    this.parameterName = SwaggerGeneratorUtils.collectParameterName(executable, parameterAnnotations,
         defaultName);
-    this.annotations = collectParameterAnnotations(parameterAnnotations,
+    this.annotations = SwaggerGeneratorUtils.collectParameterAnnotations(parameterAnnotations,
         methodAnnotationMap,
         parameterName);
-    this.genericType = collectGenericType(annotations, genericType);
-    this.httpParameterType = collectHttpParameterType(annotations, genericType);
+    this.genericType = SwaggerGeneratorUtils.collectGenericType(annotations, genericType);
+    this.httpParameterType = SwaggerGeneratorUtils.collectHttpParameterType(annotations, genericType);
   }
 
   public ParameterGenerator(Executable executable, Map<String, List<Annotation>> methodAnnotationMap,
@@ -78,8 +73,8 @@ public class ParameterGenerator {
   public ParameterGenerator(String parameterName, List<Annotation> annotations) {
     this.parameterName = parameterName;
     this.annotations = annotations;
-    this.genericType = collectGenericType(annotations, null);
-    this.httpParameterType = collectHttpParameterType(annotations, genericType);
+    this.genericType = SwaggerGeneratorUtils.collectGenericType(annotations, null);
+    this.httpParameterType = SwaggerGeneratorUtils.collectHttpParameterType(annotations, genericType);
   }
 
   public String getParameterName() {

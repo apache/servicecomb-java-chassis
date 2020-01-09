@@ -17,7 +17,9 @@
 
 package org.apache.servicecomb.swagger.invocation.arguments.producer;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
@@ -28,20 +30,17 @@ import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
 public class ProducerArgumentsMapper {
   private List<ArgumentMapper> producerArgMapperList;
 
-  private int producerParameterCount;
-
-  public ProducerArgumentsMapper(List<ArgumentMapper> producerArgMapperList, int producerParameterCount) {
+  public ProducerArgumentsMapper(List<ArgumentMapper> producerArgMapperList) {
     this.producerArgMapperList = producerArgMapperList;
-    this.producerParameterCount = producerParameterCount;
   }
 
-  public Object[] toProducerArgs(SwaggerInvocation invocation) {
-    Object[] producerArgs = new Object[producerParameterCount];
-
+  public Map<String, Object> swaggerArgumentToInvocationArguments(SwaggerInvocation invocation,
+      Map<String, Object> swaggerArguments) {
+    Map<String, Object> invocationArguments = new HashMap<>(swaggerArguments.size());
     for (ArgumentMapper argMapper : producerArgMapperList) {
-      argMapper.mapArgument(invocation, producerArgs);
+      argMapper.swaggerArgumentToInvocationArguments(invocation, swaggerArguments, invocationArguments);
     }
 
-    return producerArgs;
+    return invocationArguments;
   }
 }

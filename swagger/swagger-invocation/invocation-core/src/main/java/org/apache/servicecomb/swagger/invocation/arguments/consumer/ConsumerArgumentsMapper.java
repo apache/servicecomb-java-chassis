@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.swagger.invocation.arguments.consumer;
 
+import java.util.Map;
+
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 
 /**
@@ -45,7 +47,7 @@ import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
  * </pre>
  *
  */
-// TODO: WEAK this class can be deleted
 public interface ConsumerArgumentsMapper {
-  void toInvocation(Object[] consumerArguments, SwaggerInvocation invocation);
+  Map<String, Object> invocationArgumentToSwaggerArguments(SwaggerInvocation swaggerInvocation,
+      Map<String, Object> invocationArguments);
 }

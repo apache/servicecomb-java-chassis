@@ -27,7 +27,7 @@ public class ProducerInvocationContextMapperFactory implements ProducerContextAr
   }
 
   @Override
-  public ArgumentMapper create(int producerArgIdx) {
-    return new ProducerInvocationContextMapper(producerArgIdx);
+  public ArgumentMapper create(String invocationArgumentName, String swaggerArgumentName) {
+    return new ProducerInvocationContextMapper(invocationArgumentName, swaggerArgumentName);
   }
 }

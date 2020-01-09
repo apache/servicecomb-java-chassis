@@ -20,5 +20,5 @@ package org.apache.servicecomb.swagger.invocation.arguments;
 public interface ContextArgumentMapperFactory {
   Class<?> getContextClass();
 
-  ArgumentMapper create(int argumentIdx);
+  ArgumentMapper create(String invocationArgumentName, String swaggerArgumentName);
 }
