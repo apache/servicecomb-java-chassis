@@ -47,6 +47,7 @@ public class SwaggerBodyFieldToProducerArgument extends ProducerArgumentMapper {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public void swaggerArgumentToInvocationArguments(SwaggerInvocation invocation,
       Map<String, Object> swaggerArguments, Map<String, Object> invocationArguments) {
     Map<String, Object> body = (Map<String, Object>) swaggerArguments.get(swaggerArgumentName);

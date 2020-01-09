@@ -35,6 +35,7 @@ import org.junit.Test;
 
 import io.swagger.models.Swagger;
 
+@SuppressWarnings("unchecked")
 public class TestSpringmvcV2V2 {
   @Test
   public void add_add() {
@@ -47,7 +48,7 @@ public class TestSpringmvcV2V2 {
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("x", 1);
     arguments.put("y", 2);
-    arguments.put("x-z", 3);
+    arguments.put("z", 3);
     SwaggerInvocation invocation = new SwaggerInvocation();
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);
@@ -69,7 +70,7 @@ public class TestSpringmvcV2V2 {
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("x", 1);
     arguments.put("y", 2);
-    arguments.put("x-z", 3);
+    arguments.put("z", 3);
     SwaggerInvocation invocation = new SwaggerInvocation();
 
     Map<String, Object> result = mapper.invocationArgumentToSwaggerArguments(invocation, arguments);

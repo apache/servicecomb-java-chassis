@@ -31,6 +31,10 @@ public final class ConsumerArgumentSame extends ConsumerArgumentMapper {
     this.swaggerArgumentName = swaggerArgumentName;
   }
 
+  public boolean isSameMapping() {
+    return this.invocationArgumentName.equals(this.swaggerArgumentName);
+  }
+
   @Override
   public void invocationArgumentToSwaggerArguments(SwaggerInvocation swaggerInvocation,
       Map<String, Object> swaggerArguments,

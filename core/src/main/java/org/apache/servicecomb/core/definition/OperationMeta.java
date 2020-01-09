@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.core.definition;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -33,7 +32,6 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.Operation;
-import io.swagger.models.parameters.Parameter;
 
 public class OperationMeta {
   private SchemaMeta schemaMeta;
@@ -49,8 +47,6 @@ public class OperationMeta {
   private String operationPath;
 
   private Operation swaggerOperation;
-
-  private Map<String, Type> swaggerArgumentsTypes = new HashMap<>();
 
   private Map<String, JavaType> argumentsTypes = new HashMap<>();
 
@@ -88,27 +84,6 @@ public class OperationMeta {
     }
   }
 
-  private void buildSwaggerArgumentsTypes() {
-    this.swaggerArgumentsTypes.clear();
-
-    // TODO : WEAK handle BEAN query param and POJO wrapped arguments.
-    if (getSwaggerProducerOperation() != null) {
-      SwaggerProducerOperation swaggerProducerOperation = getSwaggerProducerOperation();
-      for (Parameter parameter : swaggerOperation.getParameters()) {
-        swaggerArgumentsTypes
-            .put(parameter.getName(), swaggerProducerOperation.getSwaggerParameterType(parameter.getName()));
-      }
-    } else {
-      for (Parameter parameter : swaggerOperation.getParameters()) {
-        swaggerArgumentsTypes.put(parameter.getName(), Object.class);
-      }
-    }
-  }
-
-  public Type getSwaggerArgumentType(String name) {
-    return this.swaggerArgumentsTypes.get(name);
-  }
-
   public JavaType getArgumentType(String name) {
     return this.argumentsTypes.get(name) == null ? TypeFactory.defaultInstance().constructType(Object.class)
         : this.argumentsTypes.get(name);
@@ -124,7 +99,6 @@ public class OperationMeta {
   public void setSwaggerProducerOperation(SwaggerProducerOperation swaggerProducerOperation) {
     this.putExtData(Const.PRODUCER_OPERATION, swaggerProducerOperation);
     buildArgumentsTypes();
-    buildSwaggerArgumentsTypes();
   }
 
   public SwaggerProducerOperation getSwaggerProducerOperation() {
@@ -133,7 +107,6 @@ public class OperationMeta {
 
   public void setSwaggerConsumerOperation(SwaggerConsumerOperation swaggerConsumerOperation) {
     this.putExtData(Const.CONSUMER_OPERATION, swaggerConsumerOperation);
-    buildSwaggerArgumentsTypes();
   }
 
   public SwaggerConsumerOperation getSwaggerConsumerOperation() {

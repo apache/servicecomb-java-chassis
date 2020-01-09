@@ -49,7 +49,7 @@ public class ConsumerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
 
   private boolean isAllSameMapper() {
     for (ArgumentMapper mapper : mappers) {
-      if (mapper instanceof ConsumerArgumentSame) {
+      if (mapper instanceof ConsumerArgumentSame && ((ConsumerArgumentSame) mapper).isSameMapping()) {
         continue;
       }
 

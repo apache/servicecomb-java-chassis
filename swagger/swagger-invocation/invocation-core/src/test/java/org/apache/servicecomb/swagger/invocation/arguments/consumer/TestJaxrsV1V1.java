@@ -35,6 +35,7 @@ import org.junit.Test;
 
 import io.swagger.models.Swagger;
 
+@SuppressWarnings("unchecked")
 public class TestJaxrsV1V1 {
   @Test
   public void should_mapper_consumer_multi_args_to_swagger_multi_args() {
