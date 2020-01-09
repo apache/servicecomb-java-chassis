@@ -32,6 +32,7 @@ import org.junit.Test;
 
 import io.swagger.models.Swagger;
 
+@SuppressWarnings("unchecked")
 public class TestPojoOneArg {
   @Test
   public void should_mapper_consumer_simple_to_swagger_body() {

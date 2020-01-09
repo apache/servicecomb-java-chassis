@@ -34,6 +34,7 @@ import org.junit.Test;
 
 import io.swagger.models.Swagger;
 
+@SuppressWarnings("unchecked")
 public class TestJaxrsV2V1 {
   @Test
   public void add_add() {

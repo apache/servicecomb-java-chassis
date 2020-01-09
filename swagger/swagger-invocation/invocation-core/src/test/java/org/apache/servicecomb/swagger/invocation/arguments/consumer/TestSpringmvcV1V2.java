@@ -34,6 +34,7 @@ import org.junit.Test;
 
 import io.swagger.models.Swagger;
 
+@SuppressWarnings("unchecked")
 public class TestSpringmvcV1V2 {
   @Test
   public void add_add() {

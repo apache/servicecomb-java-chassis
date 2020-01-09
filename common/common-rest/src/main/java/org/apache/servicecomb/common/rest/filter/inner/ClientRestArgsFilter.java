@@ -37,18 +37,37 @@ public class ClientRestArgsFilter implements HttpClientFilter {
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public void beforeSendRequest(Invocation invocation, HttpServletRequestEx requestEx) {
     RestClientRequestImpl restClientRequest = (RestClientRequestImpl) invocation.getHandlerContext()
         .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);
     OperationMeta operationMeta = invocation.getOperationMeta();
     RestOperationMeta swaggerRestOperation = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
     try {
-      RestCodec.argsToRest(swaggerRestOperation.getOperationMeta().getSwaggerConsumerOperation().getArgumentsMapper()
-              .invocationArgumentToSwaggerArguments(invocation, invocation.getArguments()), swaggerRestOperation,
-          restClientRequest);
+      // POJO invoker for client
+      if (swaggerRestOperation.getOperationMeta().getSwaggerConsumerOperation() != null && !invocation.isEdge()
+          && !isRestTemplateInvoke(invocation)) {
+        RestCodec
+            .argsToRest(swaggerRestOperation.getOperationMeta().getSwaggerConsumerOperation().getArgumentsMapper()
+                    .invocationArgumentToSwaggerArguments(invocation,
+                        invocation.getArguments()), swaggerRestOperation,
+                restClientRequest);
+      } else {
+        // RestTemplate invoker for client
+        RestCodec.argsToRest(invocation.getArguments(), swaggerRestOperation,
+            restClientRequest);
+      }
       requestEx.setBodyBuffer(restClientRequest.getBodyBuffer());
     } catch (Throwable e) {
       throw ExceptionFactory.convertConsumerException(e);
+    }
+  }
+
+  private boolean isRestTemplateInvoke(Invocation invocation) {
+    if (invocation.getLocalContext(RestConst.IS_RESTTEMPLATE_INVOKE) != null) {
+      return invocation.getLocalContext(RestConst.IS_RESTTEMPLATE_INVOKE);
+    } else {
+      return false;
     }
   }
 

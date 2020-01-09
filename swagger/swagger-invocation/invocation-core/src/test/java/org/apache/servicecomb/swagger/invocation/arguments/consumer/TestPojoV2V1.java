@@ -33,6 +33,7 @@ import org.junit.Test;
 
 import io.swagger.models.Swagger;
 
+@SuppressWarnings("unchecked")
 public class TestPojoV2V1 {
   @Test
   public void add_add() {

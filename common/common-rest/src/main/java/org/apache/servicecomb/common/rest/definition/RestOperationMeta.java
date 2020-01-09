@@ -104,8 +104,9 @@ public class RestOperationMeta {
         formData = true;
       }
 
-      Type paramType = operationMeta.getSwaggerArgumentType(parameter.getName());
-      Type type = correctFormBodyType(parameter, paramType);
+      Type type = operationMeta.getSwaggerProducerOperation() != null ? operationMeta.getSwaggerProducerOperation()
+          .getSwaggerParameterTypes().get(parameter.getName()) : null;
+      type = correctFormBodyType(parameter, type);
       RestParam param = new RestParam(parameter, type);
       addParam(param);
     }
