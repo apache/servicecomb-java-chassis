@@ -31,27 +31,36 @@ public class RunnableWrapperTest {
    * should not interrupt the scheduled tasks.
    */
   @Test
-  public void run() throws InterruptedException {
+  public void run() {
     ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(1);
     CountDownLatch countDownLatch = new CountDownLatch(3);
-    scheduledThreadPoolExecutor.scheduleAtFixedRate(
-        new SuppressedRunnableWrapper(
-            () -> {
-              countDownLatch.countDown();
-              switch ((int) countDownLatch.getCount()) {
-                case 2:
-                  throw new Error("Normal case, this is a mocked error");
-                case 1:
-                  throw new IllegalStateException("Normal case, this is a mocked exception");
-                default:
-              }
-            }
-        ),
-        1,
-        1,
-        TimeUnit.MILLISECONDS);
 
-    countDownLatch.await(1000, TimeUnit.MILLISECONDS);
+    try {
+      scheduledThreadPoolExecutor.scheduleAtFixedRate(
+          new SuppressedRunnableWrapper(
+              () -> {
+                countDownLatch.countDown();
+                switch ((int) countDownLatch.getCount()) {
+                  case 2:
+                    throw new Error("Normal case, this is a mocked error");
+                  case 1:
+                    throw new IllegalStateException("Normal case, this is a mocked exception");
+                  default:
+                }
+              }
+          ),
+          1,
+          1,
+          TimeUnit.MILLISECONDS);
+
+      countDownLatch.await(1, TimeUnit.SECONDS);
+    } catch (InterruptedException e) {
+      System.out.println("get an InterruptedException! " + e.getMessage());
+      e.printStackTrace();
+    } finally {
+      scheduledThreadPoolExecutor.shutdownNow();
+    }
+
     assertEquals(0, countDownLatch.getCount());
   }
 }

@@ -53,7 +53,7 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
     super.init();
     taskPool = new ScheduledThreadPoolExecutor(3,
         new ThreadFactory() {
-          private int taskId;
+          private int taskId = 0;
 
           @Override
           public Thread newThread(Runnable r) {
