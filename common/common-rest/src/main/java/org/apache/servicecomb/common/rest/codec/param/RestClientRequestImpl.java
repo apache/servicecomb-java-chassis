@@ -45,6 +45,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 import io.vertx.core.Context;
+import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
@@ -67,10 +68,18 @@ public class RestClientRequestImpl implements RestClientRequest {
 
   protected Buffer bodyBuffer;
 
+  private Handler<Throwable> throwableHandler;
+
   public RestClientRequestImpl(HttpClientRequest request, Context context, AsyncResponse asyncResp) {
+    this(request, context, asyncResp, null);
+  }
+
+  public RestClientRequestImpl(HttpClientRequest request, Context context, AsyncResponse asyncResp,
+                               Handler<Throwable> throwableHandler) {
     this.context = context;
     this.asyncResp = asyncResp;
     this.request = request;
+    this.throwableHandler = throwableHandler;
   }
 
   @Override
@@ -195,7 +204,7 @@ public class RestClientRequestImpl implements RestClientRequest {
     Buffer fileHeader = fileBoundaryInfo(boundary, name, part);
     request.write(fileHeader);
 
-    new PumpFromPart(context, part).toWriteStream(request).whenComplete((v, e) -> {
+    new PumpFromPart(context, part).toWriteStream(request, throwableHandler).whenComplete((v, e) -> {
       if (e != null) {
         LOGGER.debug("Failed to sending file [{}:{}].", name, filename, e);
         asyncResp.consumerFail(e);

@@ -45,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
+import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpClientResponse;
@@ -76,6 +77,8 @@ public class RestClientInvocation {
 
   private HttpClientResponse clientResponse;
 
+  private Handler<Throwable> throwableHandler = e -> fail((ConnectionBase) clientRequest.connection(), e);
+
   public RestClientInvocation(HttpClientWithContext httpClientWithContext, List<HttpClientFilter> httpClientFilters) {
     this.httpClientWithContext = httpClientWithContext;
     this.httpClientFilters = httpClientFilters;
@@ -94,7 +97,7 @@ public class RestClientInvocation {
     createRequest(ipPort, path);
     clientRequest.putHeader(org.apache.servicecomb.core.Const.TARGET_MICROSERVICE, invocation.getMicroserviceName());
     RestClientRequestImpl restClientRequest =
-        new RestClientRequestImpl(clientRequest, httpClientWithContext.context(), asyncResp);
+        new RestClientRequestImpl(clientRequest, httpClientWithContext.context(), asyncResp, throwableHandler);
     invocation.getHandlerContext().put(RestConst.INVOCATION_HANDLER_REQUESTCLIENT, restClientRequest);
 
     Buffer requestBodyBuffer = restClientRequest.getBodyBuffer();
@@ -109,7 +112,7 @@ public class RestClientInvocation {
     clientRequest.exceptionHandler(e -> {
       LOGGER.error(invocation.getMarker(), "Failed to send request, local:{}, remote:{}.",
           getLocalAddress(), ipPort.getSocketAddress(), e);
-      fail((ConnectionBase) clientRequest.connection(), e);
+      throwableHandler.handle(e);
     });
     clientRequest.connectionHandler(connection -> {
       LOGGER.debug("http connection connected, local:{}, remote:{}.",
