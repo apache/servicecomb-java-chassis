@@ -122,10 +122,14 @@ public final class Configuration {
   }
 
   public int getRetryOnNext(String microservice) {
+    return getRetry(microservice, PROP_RETRY_ONNEXT);
+  }
+
+  private int getRetry(String microservice, String propRetry) {
     final int defaultValue = 0;
     String p = getStringProperty("0",
-        PROP_ROOT + microservice + "." + PROP_RETRY_ONNEXT,
-        PROP_ROOT + PROP_RETRY_ONNEXT);
+        PROP_ROOT + microservice + "." + propRetry,
+        PROP_ROOT + propRetry);
     try {
       int result = Integer.parseInt(p);
       if (result > 0) {
@@ -138,19 +142,7 @@ public final class Configuration {
   }
 
   public int getRetryOnSame(String microservice) {
-    final int defaultValue = 0;
-    String p = getStringProperty("0",
-        PROP_ROOT + microservice + "." + PROP_RETRY_ONSAME,
-        PROP_ROOT + PROP_RETRY_ONSAME);
-    try {
-      int result = Integer.parseInt(p);
-      if (result > 0) {
-        return result;
-      }
-      return defaultValue;
-    } catch (NumberFormatException e) {
-      return defaultValue;
-    }
+    return getRetry(microservice, PROP_RETRY_ONSAME);
   }
 
   public boolean isIsolationFilterOpen(String microservice) {
@@ -177,19 +169,7 @@ public final class Configuration {
   }
 
   public int getEnableRequestThreshold(String microservice) {
-    final int defaultValue = 5;
-    String p = getStringProperty("5",
-        PROP_ROOT + microservice + "." + FILTER_ISOLATION + FILTER_ENABLE_REQUEST,
-        PROP_ROOT + FILTER_ISOLATION + FILTER_ENABLE_REQUEST);
-    try {
-      int result = Integer.parseInt(p);
-      if (result > 0) {
-        return result;
-      }
-      return defaultValue;
-    } catch (NumberFormatException e) {
-      return defaultValue;
-    }
+    return getThreshold(microservice, FILTER_ENABLE_REQUEST);
   }
 
   public int getSingleTestTime(String microservice) {
@@ -231,22 +211,25 @@ public final class Configuration {
   }
 
   public static String getStringProperty(String defaultValue, String... keys) {
-    String property = null;
+    String property;
     for (String key : keys) {
       property = DynamicPropertyFactory.getInstance().getStringProperty(key, null).get();
       if (property != null) {
         return property;
       }
     }
-
     return defaultValue;
   }
 
   public int getContinuousFailureThreshold(String microservice) {
+    return getThreshold(microservice, FILTER_CONTINUOUS_FAILURE_THRESHOLD);
+  }
+
+  private int getThreshold(String microservice, String threshold) {
     final int defaultValue = 5;
     String p = getStringProperty("5",
-        PROP_ROOT + microservice + "." + FILTER_ISOLATION + FILTER_CONTINUOUS_FAILURE_THRESHOLD,
-        PROP_ROOT + FILTER_ISOLATION + FILTER_CONTINUOUS_FAILURE_THRESHOLD);
+        PROP_ROOT + microservice + "." + FILTER_ISOLATION + threshold,
+        PROP_ROOT + FILTER_ISOLATION + threshold);
     try {
       int result = Integer.parseInt(p);
       if (result > 0) {

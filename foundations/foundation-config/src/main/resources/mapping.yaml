@@ -16,3 +16,6 @@
 ## ---------------------------------------------------------------------------
 
 SERVICECOMB_ENV: service_description.environment
+
+servicecomb.loadbalance.stats.timerIntervalInMilis:
+  - servicecomb.loadbalance.stats.timerIntervalInMillis
