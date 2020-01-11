@@ -74,7 +74,7 @@ public class TestServiceCombLoadBalancerStats {
 
     ServiceCombLoadBalancerStats serviceCombLoadBalancerStats = new ServiceCombLoadBalancerStats();
     serviceCombLoadBalancerStats.setServerExpireInSeconds(2);
-    serviceCombLoadBalancerStats.setTimerIntervalInMilis(500);
+    serviceCombLoadBalancerStats.setTimerIntervalInMillis(500);
     serviceCombLoadBalancerStats.init();
 
     ServiceCombServer serviceCombServer = new ServiceCombServer(transport,
