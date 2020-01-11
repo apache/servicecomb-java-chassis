@@ -151,7 +151,7 @@ public class TestRestTransportClient {
 
   @Test
   public void testCreateHttpClientOptions() {
-    HttpClientOptions obj = (HttpClientOptions) Deencapsulation.invoke(instance, "createHttpClientOptions");
+    HttpClientOptions obj = Deencapsulation.invoke(instance, "createHttpClientOptions", false);
     Assert.assertNotNull(obj);
   }
 }
