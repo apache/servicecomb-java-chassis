@@ -48,10 +48,10 @@ public class ServiceCombLoadBalancerStats {
   private final Map<ServiceCombServer, ServiceCombServerStats> pingView = new ConcurrentHashMap<>();
 
   private int serverExpireInSeconds = DynamicPropertyFactory.getInstance()
-      .getIntProperty(Configuration.RPOP_SERVER_EXPIRED_IN_SECONDS, 300).get();
+      .getIntProperty(Configuration.PROP_SERVER_EXPIRED_IN_SECONDS, 300).get();
 
-  private long timerIntervalInMilis = DynamicPropertyFactory.getInstance()
-      .getLongProperty(Configuration.RPOP_TIMER_INTERVAL_IN_MINIS, 10000).get();
+  private long timerIntervalInMillis = DynamicPropertyFactory.getInstance()
+      .getLongProperty(Configuration.PROP_TIMER_INTERVAL_IN_MILLIS, 10000).get();
 
   private LoadingCache<ServiceCombServer, ServiceCombServerStats> serverStatsCache;
 
@@ -124,8 +124,8 @@ public class ServiceCombLoadBalancerStats {
   }
 
   @VisibleForTesting
-  void setTimerIntervalInMilis(int milis) {
-    this.timerIntervalInMilis = milis;
+  void setTimerIntervalInMillis(int millis) {
+    this.timerIntervalInMillis = millis;
   }
 
   @VisibleForTesting
@@ -176,7 +176,7 @@ public class ServiceCombLoadBalancerStats {
           allServers.entrySet().forEach(serviceCombServerServiceCombServerStatsEntry -> {
             ServiceCombServer server = serviceCombServerServiceCombServerStatsEntry.getKey();
             ServiceCombServerStats stats = serviceCombServerServiceCombServerStatsEntry.getValue();
-            if ((System.currentTimeMillis() - stats.getLastVisitTime() > timerIntervalInMilis) && !ping
+            if ((System.currentTimeMillis() - stats.getLastVisitTime() > timerIntervalInMillis) && !ping
                     .ping(server.getInstance())) {
               LOGGER.info("ping mark server {} failure.", server.getInstance().getInstanceId());
               stats.markFailure();
@@ -187,7 +187,7 @@ public class ServiceCombLoadBalancerStats {
           LOGGER.warn("LoadBalancerStatsTimer error.", e);
         }
       }
-    }, timerIntervalInMilis, timerIntervalInMilis);
+    }, timerIntervalInMillis, timerIntervalInMillis);
   }
 }
 
