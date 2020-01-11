@@ -55,6 +55,8 @@ public class ServiceCombLoadBalancerStats {
 
   private LoadingCache<ServiceCombServer, ServiceCombServerStats> serverStatsCache;
 
+  private Map<String, ServiceCombServer> serviceCombServers = new ConcurrentHashMap<>();
+
   public static ServiceCombLoadBalancerStats INSTANCE;
 
   private Timer timer;
@@ -104,6 +106,10 @@ public class ServiceCombLoadBalancerStats {
   }
 
   public ServiceCombServer getServiceCombServer(MicroserviceInstance instance) {
+    return serviceCombServers.get(instance.getInstanceId());
+  }
+
+  public ServiceCombServer getServiceCombServerOld(MicroserviceInstance instance) {
     for (ServiceCombServer server : serverStatsCache.asMap().keySet()) {
       if (server.getInstance().equals(instance)) {
         return server;
@@ -141,18 +147,20 @@ public class ServiceCombLoadBalancerStats {
     serverStatsCache =
         CacheBuilder.newBuilder()
             .expireAfterAccess(serverExpireInSeconds, TimeUnit.SECONDS)
-            .removalListener(new RemovalListener<ServiceCombServer, ServiceCombServerStats>() {
-              @Override
-              public void onRemoval(RemovalNotification<ServiceCombServer, ServiceCombServerStats> notification) {
-                LOGGER.info("stats of instance {} removed.", notification.getKey().getInstance().getInstanceId());
-                pingView.remove(notification.getKey());
-              }
-            })
+            .removalListener(
+                (RemovalListener<ServiceCombServer, ServiceCombServerStats>) notification -> {
+                  ServiceCombServer server = notification.getKey();
+                  LOGGER.info("stats of instance {} removed, host is {}",
+                      server.getInstance().getInstanceId(), server.getHost());
+                  pingView.remove(notification.getKey());
+                  serviceCombServers.remove(notification.getKey());
+                })
             .build(
                 new CacheLoader<ServiceCombServer, ServiceCombServerStats>() {
                   public ServiceCombServerStats load(ServiceCombServer server) {
                     ServiceCombServerStats stats = new ServiceCombServerStats();
                     pingView.put(server, stats);
+                    serviceCombServers.put(server.getInstance().getInstanceId(), server);
                     return stats;
                   }
                 });
