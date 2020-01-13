@@ -36,14 +36,14 @@ import org.slf4j.LoggerFactory;
  * Created by   on 2017/1/5.
  */
 public final class ConfigMapping {
-  private static Map<String, Object> configMap = null;
+  private static Map<String, Object> configMap;
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigMapping.class);
 
   static {
     ClassLoader loader = JvmUtils.findClassLoader();
     List<URL> urlList = new ArrayList<>();
-    configMap = new HashMap<String, Object>();
+    configMap = new HashMap<>();
     Enumeration<URL> urls;
     try {
       urls = loader.getResources("mapping.yaml");
@@ -77,22 +77,7 @@ public final class ConfigMapping {
     }
     Map<String, Object> retMap = new LinkedHashMap<>();
     retMap.putAll(oldMap);
-    for (Map.Entry<String, Object> entry : configMap.entrySet()) {
-      String key = entry.getKey();
-      Object configValue = oldMap.get(key);
-      if (configValue != null) {
-        if (entry.getValue() instanceof List) {
-          @SuppressWarnings("unchecked")
-          List<String> newKeys = (List<String>) entry.getValue();
-          for (String newKey : newKeys) {
-            retMap.put(newKey, configValue);
-          }
-        } else {
-          String newKey = (String) entry.getValue();
-          retMap.put(newKey, configValue);
-        }
-      }
-    }
+    configMap.entrySet().forEach(entry -> putConfigsToRetMap(retMap, entry, oldMap.get(entry.getKey())));
     return retMap;
   }
 
@@ -101,22 +86,20 @@ public final class ConfigMapping {
       return new LinkedHashMap<>();
     }
     Map<String, Object> retMap = new LinkedHashMap<>();
-    for (Map.Entry<String, Object> entry : configMap.entrySet()) {
-      String key = entry.getKey();
-      Object configValue = config.getProperty(key);
-      if (configValue != null) {
-        if (entry.getValue() instanceof List) {
-          @SuppressWarnings("unchecked")
-          List<String> newKeys = (List<String>) entry.getValue();
-          for (String newKey : newKeys) {
-            retMap.put(newKey, configValue);
-          }
-        } else {
-          String newKey = (String) entry.getValue();
-          retMap.put(newKey, configValue);
-        }
-      }
-    }
+    configMap.entrySet().forEach(entry -> putConfigsToRetMap(retMap, entry, config.getProperty(entry.getKey())));
     return retMap;
+  }
+
+  private static void putConfigsToRetMap(Map<String, Object> retMap, Map.Entry<String, Object> entry, Object configValue) {
+    if (configValue != null) {
+      if (entry.getValue() instanceof List) {
+        @SuppressWarnings("unchecked")
+        List<String> newKeys = (List<String>) entry.getValue();
+        newKeys.forEach(newKey -> retMap.put(newKey, configValue));
+        return;
+      }
+      String newKey = (String) entry.getValue();
+      retMap.put(newKey, configValue);
+    }
   }
 }
