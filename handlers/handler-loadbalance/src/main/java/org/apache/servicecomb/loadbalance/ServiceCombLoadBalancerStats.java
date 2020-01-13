@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -36,7 +35,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
 import com.netflix.config.DynamicPropertyFactory;
 
 /**
@@ -48,10 +46,10 @@ public class ServiceCombLoadBalancerStats {
   private final Map<ServiceCombServer, ServiceCombServerStats> pingView = new ConcurrentHashMap<>();
 
   private int serverExpireInSeconds = DynamicPropertyFactory.getInstance()
-      .getIntProperty(Configuration.PROP_SERVER_EXPIRED_IN_SECONDS, 300).get();
+      .getIntProperty(Configuration.SERVER_EXPIRED_IN_SECONDS, 300).get();
 
   private long timerIntervalInMillis = DynamicPropertyFactory.getInstance()
-      .getLongProperty(Configuration.PROP_TIMER_INTERVAL_IN_MILLIS, 10000).get();
+      .getLongProperty(Configuration.TIMER_INTERVAL_IN_MILLIS, 10000).get();
 
   private LoadingCache<ServiceCombServer, ServiceCombServerStats> serverStatsCache;
 
@@ -107,15 +105,6 @@ public class ServiceCombLoadBalancerStats {
 
   public ServiceCombServer getServiceCombServer(MicroserviceInstance instance) {
     return serviceCombServers.get(instance.getInstanceId());
-  }
-
-  public ServiceCombServer getServiceCombServerOld(MicroserviceInstance instance) {
-    for (ServiceCombServer server : serverStatsCache.asMap().keySet()) {
-      if (server.getInstance().equals(instance)) {
-        return server;
-      }
-    }
-    return null;
   }
 
   @VisibleForTesting

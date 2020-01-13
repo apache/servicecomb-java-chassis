@@ -37,7 +37,7 @@ public class ExtensionsManager {
     RuleExt rule = null;
 
     for (ExtensionsFactory factory : extentionFactories) {
-      if (factory.isSupport(Configuration.PROP_RULE_STRATEGY_NAME,
+      if (factory.isSupport(Configuration.RULE_STRATEGY_NAME,
           Configuration.INSTANCE.getRuleStrategyName(microservice))) {
         rule = factory.createLoadBalancerRule(
             Configuration.INSTANCE.getRuleStrategyName(microservice));
@@ -56,7 +56,7 @@ public class ExtensionsManager {
   public static RetryHandler createRetryHandler(String microservice) {
     RetryHandler handler = null;
     for (ExtensionsFactory factory : extentionFactories) {
-      if (factory.isSupport(Configuration.PROP_RETRY_HANDLER, Configuration.INSTANCE.getRetryHandler(microservice))) {
+      if (factory.isSupport(Configuration.RETRY_HANDLER, Configuration.INSTANCE.getRetryHandler(microservice))) {
         handler = factory.createRetryHandler(Configuration.INSTANCE.getRetryHandler(microservice), microservice);
         break;
       }

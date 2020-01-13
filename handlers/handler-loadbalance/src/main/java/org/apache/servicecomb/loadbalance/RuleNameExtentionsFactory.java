@@ -25,7 +25,7 @@ import com.google.common.collect.Lists;
 @Component
 public class RuleNameExtentionsFactory implements ExtensionsFactory {
   private static final Collection<String> ACCEPT_KEYS = Lists.newArrayList(
-      Configuration.PROP_RULE_STRATEGY_NAME);
+      Configuration.RULE_STRATEGY_NAME);
 
   private static final String RULE_RoundRobin = "RoundRobin";
 

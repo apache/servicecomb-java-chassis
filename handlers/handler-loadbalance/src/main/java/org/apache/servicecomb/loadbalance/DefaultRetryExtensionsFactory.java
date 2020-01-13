@@ -39,7 +39,7 @@ import io.vertx.core.VertxException;
 @Component
 public class DefaultRetryExtensionsFactory implements ExtensionsFactory {
   private static final Collection<String> ACCEPT_KEYS = Lists.newArrayList(
-      Configuration.PROP_RETRY_HANDLER);
+      Configuration.RETRY_HANDLER);
 
   private static final String RETRY_DEFAULT = "default";
 
@@ -65,20 +65,20 @@ public class DefaultRetryExtensionsFactory implements ExtensionsFactory {
 
   public RetryHandler createRetryHandler(String retryName, String microservice) {
     return new DefaultLoadBalancerRetryHandler(
-        Configuration.INSTANCE.getRetryOnSame(microservice),
-        Configuration.INSTANCE.getRetryOnNext(microservice), true) {
+        Configuration.INSTANCE.getRetrySameServer(microservice),
+        Configuration.INSTANCE.getRetryNextServer(microservice), true) {
 
       @Override
       public boolean isRetriableException(Throwable e, boolean sameServer) {
-        boolean retriable = isPresentAsCause(e);
-        if (!retriable) {
+        boolean retryable = isPresentAsCause(e);
+        if (!retryable) {
           if (e instanceof InvocationException) {
             if (((InvocationException) e).getStatusCode() == 503) {
               return true;
             }
           }
         }
-        return retriable;
+        return retryable;
       }
 
       public boolean isPresentAsCause(Throwable throwableToSearchIn) {

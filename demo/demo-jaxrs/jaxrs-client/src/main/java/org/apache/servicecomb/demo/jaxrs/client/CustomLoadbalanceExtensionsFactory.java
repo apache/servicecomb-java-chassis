@@ -49,9 +49,9 @@ public class CustomLoadbalanceExtensionsFactory implements ExtensionsFactory {
 
   @Override
   public boolean isSupport(String key, String value) {
-    return (Configuration.PROP_RULE_STRATEGY_NAME.equals(key) &&
+    return (Configuration.RULE_STRATEGY_NAME.equals(key) &&
         "mycustomrule".equals(value))
-        || (Configuration.PROP_RETRY_HANDLER.equals(key) &&
+        || (Configuration.RETRY_HANDLER.equals(key) &&
         "mycustomhandler".equals(value));
   }
 
