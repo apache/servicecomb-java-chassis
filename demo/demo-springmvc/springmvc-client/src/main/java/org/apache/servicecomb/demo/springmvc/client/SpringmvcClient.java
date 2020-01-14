@@ -78,7 +78,7 @@ public class SpringmvcClient {
     TestMgr.setMsg(microserviceName, transport);
   }
 
-  public static void run() {
+  public static void run() throws Exception {
     testConfigurationDuplicate();
 
     templateUrlWithServiceName.setRequestFactory(new UrlWithServiceNameClientHttpRequestFactory());

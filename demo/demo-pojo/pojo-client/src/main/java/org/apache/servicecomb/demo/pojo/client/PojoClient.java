@@ -28,6 +28,7 @@ import javax.inject.Inject;
 
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
+import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.server.Test;
@@ -49,6 +50,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PojoClient {
+  private static final Logger LOGGER = LoggerFactory.getLogger(PojoClient.class);
+
   public static final byte buffer[] = new byte[1024];
 
   public static CodeFirstPojoClient codeFirstPojoClient;
@@ -62,8 +65,6 @@ public class PojoClient {
   public static Test test;
 
   public static Test testFromXml;
-
-  private static Logger LOGGER = LoggerFactory.getLogger(PojoClient.class);
 
   private static SmartCare smartcare;
 
@@ -79,7 +80,14 @@ public class PojoClient {
     Log4jUtils.init();
     BeanUtils.init();
 
-    run();
+    try {
+      run();
+    } catch (Exception e) {
+      TestMgr.check("success", "failed");
+      LOGGER.error("-------------- test failed -------------");
+      LOGGER.error("", e);
+      System.err.println("-------------- test failed -------------");
+    }
 
     TestMgr.summary();
   }
@@ -98,6 +106,8 @@ public class PojoClient {
   }
 
   public static void run() throws Exception {
+    CategorizedTestCaseRunner.runCategorizedTestCase("pojo");
+
     testContextClassLoaderIsNull();
 
     smartcare = BeanUtils.getBean("smartcare");
