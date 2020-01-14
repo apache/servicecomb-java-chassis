@@ -30,13 +30,21 @@ import io.vertx.core.net.ProxyOptions;
 /**
  * Created by on 2017/4/28.
  */
-public final class HttpClientPool extends AbstractClientPool {
+final class HttpClientPool extends AbstractClientPool {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(HttpClientPool.class);
 
+  /**
+   * The default instance, for default sc cluster.
+   */
   public static final HttpClientPool INSTANCE = new HttpClientPool();
 
   private HttpClientPool() {
+    super(getHttpClientOptionsFromConfigurations(ServiceRegistryConfig.INSTANCE));
+  }
+
+  HttpClientPool(ServiceRegistryConfig serviceRegistryConfig) {
+    super(getHttpClientOptionsFromConfigurations(serviceRegistryConfig));
   }
 
   @Override
@@ -44,26 +52,26 @@ public final class HttpClientPool extends AbstractClientPool {
     return false;
   }
 
-  @Override
-  public HttpClientOptions createHttpClientOptions() {
-    HttpVersion ver = ServiceRegistryConfig.INSTANCE.getHttpVersion();
+  static HttpClientOptions getHttpClientOptionsFromConfigurations(ServiceRegistryConfig serviceRegistryConfig) {
+    HttpVersion ver = serviceRegistryConfig.getHttpVersion();
     HttpClientOptions httpClientOptions = new HttpClientOptions();
     httpClientOptions.setProtocolVersion(ver);
-    httpClientOptions.setConnectTimeout(ServiceRegistryConfig.INSTANCE.getConnectionTimeout());
-    httpClientOptions.setIdleTimeout(ServiceRegistryConfig.INSTANCE.getIdleConnectionTimeout());
-    if (ServiceRegistryConfig.INSTANCE.isProxyEnable()) {
+    httpClientOptions.setConnectTimeout(serviceRegistryConfig.getConnectionTimeout());
+    httpClientOptions.setIdleTimeout(serviceRegistryConfig.getIdleConnectionTimeout());
+    if (serviceRegistryConfig.isProxyEnable()) {
       ProxyOptions proxy = new ProxyOptions();
-      proxy.setHost(ServiceRegistryConfig.INSTANCE.getProxyHost());
-      proxy.setPort(ServiceRegistryConfig.INSTANCE.getProxyPort());
-      proxy.setUsername(ServiceRegistryConfig.INSTANCE.getProxyUsername());
-      proxy.setPassword(Encryptions.decode(ServiceRegistryConfig.INSTANCE.getProxyPasswd(), ServiceRegistryConfig.PROXY_KEY));
+      proxy.setHost(serviceRegistryConfig.getProxyHost());
+      proxy.setPort(serviceRegistryConfig.getProxyPort());
+      proxy.setUsername(serviceRegistryConfig.getProxyUsername());
+      proxy.setPassword(
+          Encryptions.decode(serviceRegistryConfig.getProxyPasswd(), ServiceRegistryConfig.PROXY_KEY));
       httpClientOptions.setProxyOptions(proxy);
     }
     if (ver == HttpVersion.HTTP_2) {
       LOGGER.debug("service center client protocol version is HTTP/2");
       httpClientOptions.setHttp2ClearTextUpgrade(false);
     }
-    if (ServiceRegistryConfig.INSTANCE.isSsl()) {
+    if (serviceRegistryConfig.isSsl()) {
       LOGGER.debug("service center client performs requests over TLS");
       VertxTLSBuilder.buildHttpClientOptions(ServiceRegistryConfig.SSL_KEY, httpClientOptions);
     }

@@ -19,15 +19,11 @@ package org.apache.servicecomb.serviceregistry.client.http;
 
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 
-import io.vertx.core.http.HttpClientOptions;
-
 /**
  * Created by on 2017/4/28.
  */
-public interface ClientPool {
+interface ClientPool {
   void create();
-
-  HttpClientOptions createHttpClientOptions();
 
   HttpClientWithContext getClient();
 }

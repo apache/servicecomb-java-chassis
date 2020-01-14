@@ -35,6 +35,11 @@ public final class WebsocketClientPool extends AbstractClientPool {
   public static final WebsocketClientPool INSTANCE = new WebsocketClientPool();
 
   private WebsocketClientPool() {
+    super(getHttpClientOptionsFromConfigurations(ServiceRegistryConfig.INSTANCE));
+  }
+
+  WebsocketClientPool(ServiceRegistryConfig serviceRegistryConfig) {
+    super(getHttpClientOptionsFromConfigurations(serviceRegistryConfig));
   }
 
   @Override
@@ -42,18 +47,17 @@ public final class WebsocketClientPool extends AbstractClientPool {
     return true;
   }
 
-  @Override
-  public HttpClientOptions createHttpClientOptions() {
-    HttpVersion ver = ServiceRegistryConfig.INSTANCE.getHttpVersion();
+  static HttpClientOptions getHttpClientOptionsFromConfigurations(ServiceRegistryConfig serviceRegistryConfig) {
+    HttpVersion ver = serviceRegistryConfig.getHttpVersion();
     HttpClientOptions httpClientOptions = new HttpClientOptions();
     httpClientOptions.setProtocolVersion(ver);
-    httpClientOptions.setConnectTimeout(ServiceRegistryConfig.INSTANCE.getConnectionTimeout());
-    httpClientOptions.setIdleTimeout(ServiceRegistryConfig.INSTANCE.getIdleWatchTimeout());
+    httpClientOptions.setConnectTimeout(serviceRegistryConfig.getConnectionTimeout());
+    httpClientOptions.setIdleTimeout(serviceRegistryConfig.getIdleWatchTimeout());
     if (ver == HttpVersion.HTTP_2) {
       LOGGER.debug("service center ws client protocol version is HTTP/2");
       httpClientOptions.setHttp2ClearTextUpgrade(false);
     }
-    if (ServiceRegistryConfig.INSTANCE.isSsl()) {
+    if (serviceRegistryConfig.isSsl()) {
       LOGGER.debug("service center ws client performs requests over TLS");
       VertxTLSBuilder.buildHttpClientOptions(ServiceRegistryConfig.SSL_KEY, httpClientOptions);
     }
