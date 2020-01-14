@@ -17,9 +17,6 @@
 
 package org.apache.servicecomb.serviceregistry.client.http;
 
-import com.netflix.config.DynamicIntProperty;
-import com.netflix.config.DynamicPropertyFactory;
-
 import org.apache.servicecomb.foundation.vertx.AddressResolverConfig;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
@@ -30,6 +27,9 @@ import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.netflix.config.DynamicIntProperty;
+import com.netflix.config.DynamicPropertyFactory;
+
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -38,12 +38,15 @@ import io.vertx.core.http.HttpClientOptions;
 /**
  * Created by  on 2017/4/28.
  */
-public abstract class AbstractClientPool implements ClientPool {
+abstract class AbstractClientPool implements ClientPool {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractClientPool.class);
 
-    private ClientPoolManager<HttpClientWithContext> clientMgr;
+  private HttpClientOptions httpClientOptions;
 
-  public AbstractClientPool() {
+  private ClientPoolManager<HttpClientWithContext> clientMgr;
+
+  AbstractClientPool(HttpClientOptions httpClientOptions) {
+    this.httpClientOptions = httpClientOptions;
     create();
   }
 
@@ -54,22 +57,23 @@ public abstract class AbstractClientPool implements ClientPool {
   }
 
   public void create() {
-    DynamicIntProperty property = DynamicPropertyFactory.getInstance().getIntProperty(ServiceRegistryConfig.EVENT_LOOP_POOL_SIZE, 4);
-    DynamicIntProperty workerPoolSize = DynamicPropertyFactory.getInstance().getIntProperty(ServiceRegistryConfig.WORKER_POOL_SIZE, 4);
+    DynamicIntProperty property = DynamicPropertyFactory.getInstance()
+        .getIntProperty(ServiceRegistryConfig.EVENT_LOOP_POOL_SIZE, 4);
+    DynamicIntProperty workerPoolSize = DynamicPropertyFactory.getInstance()
+        .getIntProperty(ServiceRegistryConfig.WORKER_POOL_SIZE, 4);
 
     // 这里面是同步接口，且好像直接在事件线程中用，保险起见，先使用独立的vertx实例
     VertxOptions vertxOptions = new VertxOptions()
-            .setAddressResolverOptions(AddressResolverConfig.getAddressResover(ServiceRegistryConfig.SSL_KEY))
-            .setEventLoopPoolSize(property.get());
+        .setAddressResolverOptions(AddressResolverConfig.getAddressResover(ServiceRegistryConfig.SSL_KEY))
+        .setEventLoopPoolSize(property.get());
     Vertx vertx = VertxUtils.getOrCreateVertxByName("registry", vertxOptions);
-    HttpClientOptions httpClientOptions = createHttpClientOptions();
     clientMgr = new ClientPoolManager<>(vertx, new HttpClientPoolFactory(httpClientOptions));
 
     DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(this.clientMgr,
-            ServiceRegistryConfig.INSTANCE.getInstances())
-            .setWorker(isWorker())
-            .setWorkerPoolName(ServiceRegistryConfig.WORKER_POOL_NAME)
-            .setWorkerPoolSize(workerPoolSize.get());
+        ServiceRegistryConfig.INSTANCE.getInstances())
+        .setWorker(isWorker())
+        .setWorkerPoolName(ServiceRegistryConfig.WORKER_POOL_NAME)
+        .setWorkerPoolSize(workerPoolSize.get());
     try {
       VertxUtils.blockDeploy(vertx, ClientVerticle.class, deployOptions);
     } catch (InterruptedException e) {

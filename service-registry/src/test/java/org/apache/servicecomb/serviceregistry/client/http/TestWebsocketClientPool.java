@@ -17,6 +17,7 @@
 package org.apache.servicecomb.serviceregistry.client.http;
 
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -40,7 +41,8 @@ public class TestWebsocketClientPool {
   public void createHttpClientOptions_http2() {
     ArchaiusUtils.setProperty("servicecomb.service.registry.client.httpVersion", HttpVersion.HTTP_2.name());
 
-    HttpClientOptions httpClientOptions = WebsocketClientPool.INSTANCE.createHttpClientOptions();
+    HttpClientOptions httpClientOptions = WebsocketClientPool.getHttpClientOptionsFromConfigurations(
+        ServiceRegistryConfig.buildFromConfiguration());
 
     Assert.assertEquals(HttpVersion.HTTP_2, httpClientOptions.getProtocolVersion());
     Assert.assertFalse(httpClientOptions.isHttp2ClearTextUpgrade());
@@ -48,7 +50,8 @@ public class TestWebsocketClientPool {
 
   @Test
   public void createHttpClientOptions_notHttp2() {
-    HttpClientOptions httpClientOptions = WebsocketClientPool.INSTANCE.createHttpClientOptions();
+    HttpClientOptions httpClientOptions = WebsocketClientPool.getHttpClientOptionsFromConfigurations(
+        ServiceRegistryConfig.buildFromConfiguration());
 
     Assert.assertEquals(HttpVersion.HTTP_1_1, httpClientOptions.getProtocolVersion());
     Assert.assertTrue(httpClientOptions.isHttp2ClearTextUpgrade());
