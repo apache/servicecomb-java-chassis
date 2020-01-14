@@ -46,7 +46,7 @@ public class ClientRestArgsFilter implements HttpClientFilter {
     try {
       // POJO invoker for client
       if (swaggerRestOperation.getOperationMeta().getSwaggerConsumerOperation() != null && !invocation.isEdge()
-          && !isRestTemplateInvoke(invocation)) {
+          && !invocation.isWeakInvoke()) {
         RestCodec
             .argsToRest(swaggerRestOperation.getOperationMeta().getSwaggerConsumerOperation().getArgumentsMapper()
                     .invocationArgumentToSwaggerArguments(invocation,
@@ -60,14 +60,6 @@ public class ClientRestArgsFilter implements HttpClientFilter {
       requestEx.setBodyBuffer(restClientRequest.getBodyBuffer());
     } catch (Throwable e) {
       throw ExceptionFactory.convertConsumerException(e);
-    }
-  }
-
-  private boolean isRestTemplateInvoke(Invocation invocation) {
-    if (invocation.getLocalContext(RestConst.IS_RESTTEMPLATE_INVOKE) != null) {
-      return invocation.getLocalContext(RestConst.IS_RESTTEMPLATE_INVOKE);
-    } else {
-      return false;
     }
   }
 

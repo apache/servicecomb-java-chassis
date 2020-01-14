@@ -22,7 +22,6 @@ import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
-import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationConfig;
@@ -37,20 +36,14 @@ import org.apache.servicecomb.foundation.vertx.client.tcp.NetClientWrapper;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpData;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpResponseCallback;
-import org.apache.servicecomb.foundation.vertx.server.TcpParser;
-import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.apache.servicecomb.transport.highway.message.LoginRequest;
-import org.apache.servicecomb.transport.highway.message.RequestHeader;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import io.netty.buffer.ByteBuf;
-import io.protostuff.runtime.ProtobufCompatibleUtils;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;

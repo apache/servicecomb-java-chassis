@@ -20,12 +20,11 @@ package org.apache.servicecomb.transport.highway;
 import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
+import org.apache.servicecomb.codec.protobuf.definition.RequestRootSerializer;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
-import org.apache.servicecomb.foundation.protobuf.RequestRootSerializer;
-import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.junit.AfterClass;
@@ -105,7 +104,7 @@ public class TestHighwayTransport {
     Endpoint lEndpoint = Mockito.mock(Endpoint.class);
     Mockito.when(invocation.getEndpoint()).thenReturn(lEndpoint);
     RequestRootSerializer lWrapSchema = Mockito.mock(RequestRootSerializer.class);
-    Mockito.when(operationProtobuf.findRequestSerializer()).thenReturn(lWrapSchema);
+    Mockito.when(operationProtobuf.getRequestRootSerializer()).thenReturn(lWrapSchema);
     URIEndpointObject ep = Mockito.mock(URIEndpointObject.class);
     Mockito.when(lEndpoint.getAddress()).thenReturn(ep);
     Mockito.when(ep.getHostOrIp()).thenReturn("127.0.0.1");

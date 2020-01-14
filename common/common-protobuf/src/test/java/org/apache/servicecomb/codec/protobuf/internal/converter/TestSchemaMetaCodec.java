@@ -19,6 +19,7 @@ package org.apache.servicecomb.codec.protobuf.internal.converter;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,15 +28,16 @@ import java.util.Map;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
+import org.apache.servicecomb.codec.protobuf.definition.RequestRootDeserializer;
+import org.apache.servicecomb.codec.protobuf.definition.RequestRootSerializer;
+import org.apache.servicecomb.codec.protobuf.definition.ResponseRootDeserializer;
+import org.apache.servicecomb.codec.protobuf.definition.ResponseRootSerializer;
 import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchema;
+import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchemaIntf;
 import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchemaPojo;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.foundation.protobuf.RequestRootDeserializer;
-import org.apache.servicecomb.foundation.protobuf.RequestRootSerializer;
-import org.apache.servicecomb.foundation.protobuf.ResponseRootDeserializer;
-import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Empty;
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
@@ -75,7 +77,7 @@ public class TestSchemaMetaCodec {
 
   }
 
-  private void mockSchemaMeta(AbstractSwaggerGenerator swaggerGenerator, Class<?> schemaClass) throws Exception {
+  private void mockSchemaMeta(AbstractSwaggerGenerator swaggerGenerator, Object producerInstance) throws Exception {
     new Expectations() {
       {
         providerMicroserviceMeta.getMicroserviceName();
@@ -92,14 +94,14 @@ public class TestSchemaMetaCodec {
     SwaggerEnvironment swaggerEnvironment = new SwaggerEnvironment();
 
     providerSchemaMeta = new SchemaMeta(providerMicroserviceMeta, "ProtoSchema", swagger);
-    SwaggerProducer swaggerProducer = swaggerEnvironment.createProducer(schemaClass.newInstance(), swagger);
+    SwaggerProducer swaggerProducer = swaggerEnvironment.createProducer(producerInstance, swagger);
     for (SwaggerProducerOperation producerOperation : swaggerProducer.getAllOperations()) {
       OperationMeta operationMeta = providerSchemaMeta.ensureFindOperation(producerOperation.getOperationId());
       operationMeta.setSwaggerProducerOperation(producerOperation);
     }
 
     consumerSchemaMeta = new SchemaMeta(consumerMicroserviceMeta, "ProtoSchema", swagger);
-    SwaggerConsumer swaggerConsumer = swaggerEnvironment.createConsumer(schemaClass, swagger);
+    SwaggerConsumer swaggerConsumer = swaggerEnvironment.createConsumer(ProtoSchemaIntf.class, swagger);
     for (SwaggerConsumerOperation consumerOperation : swaggerConsumer.getOperations().values()) {
       OperationMeta operationMeta = consumerSchemaMeta.ensureFindOperation(consumerOperation.getSchemaOperationId());
       operationMeta.setSwaggerConsumerOperation(consumerOperation);
@@ -108,13 +110,13 @@ public class TestSchemaMetaCodec {
 
   @Test
   public void testProtoSchemaOperationUserSpringMVC() throws Exception {
-    mockSchemaMeta(new SpringmvcSwaggerGenerator(ProtoSchema.class), ProtoSchema.class);
+    mockSchemaMeta(new SpringmvcSwaggerGenerator(ProtoSchema.class), new ProtoSchema());
     testProtoSchemaOperationUserImpl();
   }
 
   @Test
   public void testProtoSchemaOperationUserPOJO() throws Exception {
-    mockSchemaMeta(new PojoSwaggerGenerator(ProtoSchemaPojo.class), ProtoSchemaPojo.class);
+    mockSchemaMeta(new PojoSwaggerGenerator(ProtoSchemaPojo.class), new ProtoSchemaPojo());
     testProtoSchemaOperationUserImpl();
   }
 
@@ -134,12 +136,12 @@ public class TestSchemaMetaCodec {
 
     // request message
     Map<String, Object> args = new HashMap<>();
-    RequestRootSerializer requestSerializer = consumerOperationProtobuf.findRequestSerializer();
+    RequestRootSerializer requestSerializer = consumerOperationProtobuf.getRequestRootSerializer();
     user.friends = friends;
     args.put("user", user);
     values = requestSerializer.serialize(args);
 
-    RequestRootDeserializer<Object> requestDeserializer = providerOperationProtobuf.findRequestDesirializer();
+    RequestRootDeserializer<Object> requestDeserializer = providerOperationProtobuf.getRequestRootDeserializer();
     Map<String, Object> decodedUserArgs = requestDeserializer.deserialize(values);
     Assert.assertEquals(user.name, ((User) decodedUserArgs.get("user")).name);
     Assert.assertEquals(user.friends.get(0).name, ((User) decodedUserArgs.get("user")).friends.get(0).name);
@@ -161,9 +163,9 @@ public class TestSchemaMetaCodec {
     Assert.assertEquals(user.friends.get(0).name, ((User) decodedUserArgs.get("user")).friends.get(0).name);
 
     // response message
-    RootSerializer responseSerializer = providerOperationProtobuf.findResponseSerializer(200);
+    ResponseRootSerializer responseSerializer = providerOperationProtobuf.findResponseRootSerializer(200);
     values = responseSerializer.serialize(user);
-    ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseDesirialize(200);
+    ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseRootDeserializer(200);
     User decodedUser = (User) responseDeserializer.deserialize(values);
     Assert.assertEquals(user.name, decodedUser.name);
     Assert.assertEquals(user.friends.get(0).name, decodedUser.friends.get(0).name);
@@ -178,17 +180,17 @@ public class TestSchemaMetaCodec {
 
   @Test
   public void testProtoSchemaOperationmapUserSpringMVC() throws Exception {
-    mockSchemaMeta(new SpringmvcSwaggerGenerator(ProtoSchema.class), ProtoSchema.class);
-    testProtoSchemaOperationmapUserImpl();
+    mockSchemaMeta(new SpringmvcSwaggerGenerator(ProtoSchema.class), new ProtoSchema());
+    testProtoSchemaOperationmapUserImpl(false);
   }
 
   @Test
   public void testProtoSchemaOperationmapUserPOJO() throws Exception {
-    mockSchemaMeta(new PojoSwaggerGenerator(ProtoSchemaPojo.class), ProtoSchemaPojo.class);
-    testProtoSchemaOperationmapUserImpl();
+    mockSchemaMeta(new PojoSwaggerGenerator(ProtoSchemaPojo.class), new ProtoSchemaPojo());
+    testProtoSchemaOperationmapUserImpl(true);
   }
 
-  private void testProtoSchemaOperationmapUserImpl() throws IOException {
+  private void testProtoSchemaOperationmapUserImpl(boolean isPojo) throws IOException {
     OperationProtobuf providerOperationProtobuf = ProtobufManager
         .getOrCreateOperation(providerSchemaMeta.getOperations().get("mapUser"));
     OperationProtobuf consumerOperationProtobuf = ProtobufManager
@@ -206,21 +208,34 @@ public class TestSchemaMetaCodec {
 
     // request message
     Map<String, Object> args = new HashMap<>();
-    RequestRootSerializer requestSerializer = consumerOperationProtobuf.findRequestSerializer();
+    RequestRootSerializer requestSerializer = consumerOperationProtobuf.getRequestRootSerializer();
     user.friends = friends;
     args.put("users", userMap);
-    values = requestSerializer.serialize(args);
-
-    RequestRootDeserializer<Object> requestDeserializer = providerOperationProtobuf.findRequestDesirializer();
+    if (isPojo) {
+      Map<String, Object> swaggerArgs = new HashMap<>(1);
+      swaggerArgs.put("users", args);
+      values = requestSerializer.serialize(swaggerArgs);
+    } else {
+      values = requestSerializer.serialize(args);
+    }
+    RequestRootDeserializer<Object> requestDeserializer = providerOperationProtobuf.getRequestRootDeserializer();
     Map<String, Object> decodedUserArgs = requestDeserializer.deserialize(values);
-    Assert.assertEquals(user.name, ((Map<String, User>) decodedUserArgs.get("users")).get("test").name);
-    Assert.assertEquals(user.friends.get(0).name,
-        ((Map<String, User>) decodedUserArgs.get("users")).get("test").friends.get(0).name);
-
+    if (isPojo) {
+      decodedUserArgs = (Map<String, Object>) decodedUserArgs.get("users");
+      Assert.assertEquals(user.name,
+          ((Map<String, Map<String, Object>>) decodedUserArgs.get("users")).get("test").get("name"));
+      Assert.assertEquals(user.friends.get(0).name,
+          ((List<Map<String, Object>>) ((Map<String, Map<String, Object>>) decodedUserArgs.get("users")).get("test")
+              .get("friends")).get(0).get("name"));
+    } else {
+      Assert.assertEquals(user.name, ((Map<String, User>) decodedUserArgs.get("users")).get("test").name);
+      Assert.assertEquals(user.friends.get(0).name,
+          ((Map<String, User>) decodedUserArgs.get("users")).get("test").friends.get(0).name);
+    }
     // response message
-    RootSerializer responseSerializer = providerOperationProtobuf.findResponseSerializer(200);
+    ResponseRootSerializer responseSerializer = providerOperationProtobuf.findResponseRootSerializer(200);
     values = responseSerializer.serialize(userMap);
-    ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseDesirialize(200);
+    ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseRootDeserializer(200);
     Map<String, User> decodedUser = (Map<String, User>) responseDeserializer.deserialize(values);
     Assert.assertEquals(user.name, decodedUser.get("test").name);
     Assert.assertEquals(user.friends.get(0).name, decodedUser.get("test").friends.get(0).name);
@@ -235,18 +250,17 @@ public class TestSchemaMetaCodec {
 
   @Test
   public void testProtoSchemaOperationBaseSpringMVC() throws Exception {
-    mockSchemaMeta(new SpringmvcSwaggerGenerator(ProtoSchema.class), ProtoSchema.class);
-    testProtoSchemaOperationBaseImpl();
+    mockSchemaMeta(new SpringmvcSwaggerGenerator(ProtoSchema.class), new ProtoSchema());
+    testProtoSchemaOperationBaseImpl(false);
   }
 
   @Test
   public void testProtoSchemaOperationBasePOJO() throws Exception {
-    mockSchemaMeta(new PojoSwaggerGenerator(ProtoSchemaPojo.class), ProtoSchemaPojo.class);
-    testProtoSchemaOperationBaseImpl();
+    mockSchemaMeta(new PojoSwaggerGenerator(ProtoSchemaPojo.class), new ProtoSchemaPojo());
+    testProtoSchemaOperationBaseImpl(true);
   }
 
-  private void testProtoSchemaOperationBaseImpl() throws IOException {
-    // TODO : WEAK fix this line "java.lang.NoClassDefFoundError: org/apache/servicecomb/foundation/common/utils/bean/Getter"
+  private void testProtoSchemaOperationBaseImpl(boolean isPojo) throws IOException {
     OperationProtobuf providerOperationProtobuf = ProtobufManager
         .getOrCreateOperation(providerSchemaMeta.getOperations().get("base"));
     OperationProtobuf consumerOperationProtobuf = ProtobufManager
@@ -254,7 +268,7 @@ public class TestSchemaMetaCodec {
     byte[] values;
 
     // request message
-    RequestRootSerializer requestSerializer = consumerOperationProtobuf.findRequestSerializer();
+    RequestRootSerializer requestSerializer = consumerOperationProtobuf.getRequestRootSerializer();
     boolean boolValue = true;
     int iValue = 20;
     long lValue = 30L;
@@ -278,20 +292,43 @@ public class TestSchemaMetaCodec {
     args.put("localDate", localDate);
     args.put("date", date);
     args.put("empty", empty);
-    values = requestSerializer.serialize(args);
-    RequestRootDeserializer<Object> requestDeserializer = providerOperationProtobuf.findRequestDesirializer();
-    Map<String, Object> decodedArgs = requestDeserializer.deserialize(values);
+    if (isPojo) {
+      Map<String, Object> swaggerArgs = new HashMap<>();
+      swaggerArgs.put("baseBody", args);
+      values = requestSerializer.serialize(swaggerArgs);
+    } else {
+      values = requestSerializer.serialize(args);
+    }
+    RequestRootDeserializer<Object> requestDeserializer = providerOperationProtobuf.getRequestRootDeserializer();
+    Map<String, Object> decodedSwaggerArgs = requestDeserializer.deserialize(values);
+    Map<String, Object> decodedArgs;
+    if (isPojo) {
+      Assert.assertEquals(1, decodedSwaggerArgs.size());
+      decodedArgs = (Map<String, Object>) decodedSwaggerArgs.get("baseBody");
+    } else {
+      decodedArgs = decodedSwaggerArgs;
+    }
     Assert.assertEquals(boolValue, decodedArgs.get("boolValue"));
     Assert.assertEquals(iValue, decodedArgs.get("iValue"));
     Assert.assertEquals(lValue, decodedArgs.get("lValue"));
     Assert.assertEquals(fValue, decodedArgs.get("fValue"));
     Assert.assertEquals(dValue, decodedArgs.get("dValue"));
-    Assert.assertArrayEquals(iArray, (int[]) decodedArgs.get("iArray"));
-    Assert.assertEquals(color, decodedArgs.get("color"));
-    Assert.assertEquals(date, decodedArgs.get("date"));
-    Assert.assertTrue(decodedArgs.get("localDate") instanceof LocalDate);
-    Assert.assertEquals(localDate, decodedArgs.get("localDate"));
-    Assert.assertTrue(decodedArgs.get("empty") instanceof Empty);
+    if (isPojo) {
+      Assert.assertEquals(2, ((List<Integer>) decodedArgs.get("iArray")).size());
+      Assert.assertEquals(60, (((List<Integer>) decodedArgs.get("iArray")).get(0).intValue()));
+      Assert.assertEquals(70, (((List<Integer>) decodedArgs.get("iArray")).get(1).intValue()));
+      Assert.assertEquals(color.ordinal(), decodedArgs.get("color"));
+      Assert.assertEquals(date.getTime(), decodedArgs.get("date"));
+      Assert.assertEquals(localDate.getLong(ChronoField.EPOCH_DAY), decodedArgs.get("localDate"));
+      Assert.assertEquals(true, ((Map) decodedArgs.get("empty")).isEmpty());
+    } else {
+      Assert.assertArrayEquals(iArray, (int[]) decodedArgs.get("iArray"));
+      Assert.assertEquals(color, decodedArgs.get("color"));
+      Assert.assertEquals(date, decodedArgs.get("date"));
+      Assert.assertTrue(decodedArgs.get("localDate") instanceof LocalDate);
+      Assert.assertEquals(localDate, decodedArgs.get("localDate"));
+      Assert.assertTrue(decodedArgs.get("empty") instanceof Empty);
+    }
 
     // default value testing
     args.put("boolValue", false);
@@ -319,10 +356,80 @@ public class TestSchemaMetaCodec {
     Assert.assertEquals(null, decodedArgs.get("empty"));
 
     // response message
-    RootSerializer responseSerializer = providerOperationProtobuf.findResponseSerializer(200);
+    ResponseRootSerializer responseSerializer = providerOperationProtobuf.findResponseRootSerializer(200);
     values = responseSerializer.serialize(30);
-    ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseDesirialize(200);
+    ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseRootDeserializer(200);
     Object decodedValue = responseDeserializer.deserialize(values);
     Assert.assertEquals(30, (int) decodedValue);
+  }
+
+  @Test
+  public void testProtoSchemaOperationlistListUserSpringMVC() throws Exception {
+    mockSchemaMeta(new SpringmvcSwaggerGenerator(ProtoSchema.class), new ProtoSchema());
+    testProtoSchemaOperationlistListUserImpl(false);
+  }
+
+  @Test
+  public void testProtoSchemaOperationlistListUserPOJO() throws Exception {
+    mockSchemaMeta(new PojoSwaggerGenerator(ProtoSchemaPojo.class), new ProtoSchemaPojo());
+    testProtoSchemaOperationlistListUserImpl(true);
+  }
+
+  private void testProtoSchemaOperationlistListUserImpl(boolean isPojo) throws IOException {
+    OperationProtobuf providerOperationProtobuf = ProtobufManager
+        .getOrCreateOperation(providerSchemaMeta.getOperations().get("listListUser"));
+    OperationProtobuf consumerOperationProtobuf = ProtobufManager
+        .getOrCreateOperation(consumerSchemaMeta.getOperations().get("listListUser"));
+    byte[] values;
+
+    // request message
+    RequestRootSerializer requestSerializer = consumerOperationProtobuf.getRequestRootSerializer();
+    User user = new User();
+    user.name = "user";
+    User friend = new User();
+    friend.name = "friend";
+    List<User> friends = new ArrayList<>();
+    friends.add(friend);
+    user.friends = friends;
+    List<User> users = new ArrayList<>();
+    users.add(user);
+    List<List<User>> listOfUsers = new ArrayList<>();
+    listOfUsers.add(users);
+    Map<String, Object> args = new HashMap<>();
+    args.put("value", listOfUsers);
+
+    if (isPojo) {
+      Map<String, Object> swaggerArgs = new HashMap<>();
+      swaggerArgs.put("value", args);
+      values = requestSerializer.serialize(swaggerArgs);
+    } else {
+      values = requestSerializer.serialize(args);
+    }
+    RequestRootDeserializer<Object> requestDeserializer = providerOperationProtobuf.getRequestRootDeserializer();
+    Map<String, Object> decodedSwaggerArgs = requestDeserializer.deserialize(values);
+    Map<String, Object> decodedArgs;
+    if (isPojo) {
+      Assert.assertEquals(1, decodedSwaggerArgs.size());
+      decodedArgs = (Map<String, Object>) decodedSwaggerArgs.get("value");
+    } else {
+      decodedArgs = decodedSwaggerArgs;
+    }
+    List<List<?>> listOfUsersRaw = (List<List<?>>) decodedArgs.get("value");
+    Assert.assertEquals(1, listOfUsersRaw.size());
+    List<?> mapUsersRaw = (List<?>) listOfUsersRaw.get(0);
+    Assert.assertEquals(1, mapUsersRaw.size());
+    if (isPojo) {
+      Map<String, Object> userMap = (Map<String, Object>) mapUsersRaw.get(0);
+      Assert.assertEquals("user", userMap.get("name"));
+      // proto buffer encode and decode empty list to be null
+      friends = (List<User>) userMap.get("friends");
+      Map<String, Object> friendMap = (Map<String, Object>) friends.get(0);
+      Assert.assertEquals("friend", friendMap.get("name"));
+    } else {
+      user = (User) mapUsersRaw.get(0);
+      Assert.assertEquals("user", user.name);
+      // proto buffer encode and decode empty list to be null
+      Assert.assertEquals("friend", user.friends.get(0).name);
+    }
   }
 }

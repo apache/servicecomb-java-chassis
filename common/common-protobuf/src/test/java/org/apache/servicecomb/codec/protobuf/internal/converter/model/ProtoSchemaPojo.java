@@ -29,7 +29,7 @@ import org.apache.servicecomb.foundation.test.scaffolding.model.User;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
-public class ProtoSchemaPojo {
+public class ProtoSchemaPojo implements ProtoSchemaIntf {
   @ApiResponses(value = {@ApiResponse(code = 444, response = Color.class, message = "xxx")})
   public int base(boolean boolValue, int iValue, long lValue, float fValue, double dValue, String sValue, int[] iArray,
       Color color,

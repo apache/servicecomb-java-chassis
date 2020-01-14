@@ -14,24 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer;
+package org.apache.servicecomb.codec.protobuf.definition;
 
 import java.io.IOException;
+import java.util.Map;
 
-import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
-import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyWrapper;
+import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 
-public class RootPropertyWrapperDeserializer<T> extends RootDeserializer<T> {
-  private final RootDeserializer<PropertyWrapper<T>> deserializer;
+public class RequestRootSerializer {
+  private RootSerializer rootSerializer;
 
-  public RootPropertyWrapperDeserializer(RootDeserializer<PropertyWrapper<T>> deserializer) {
-    super(null);
-    this.deserializer = deserializer;
+  private boolean noTypesInfo;
+
+  private boolean isWrap;
+
+  public RequestRootSerializer(RootSerializer serializer, boolean isWrapp, boolean noTypesInfo) {
+    this.rootSerializer = serializer;
+    this.noTypesInfo = noTypesInfo;
+    this.isWrap = isWrapp;
   }
 
-  @Override
-  public T deserialize(byte[] bytes) throws IOException {
-    PropertyWrapper<T> propertyWrapper = deserializer.deserialize(bytes);
-    return propertyWrapper.getValue();
+  @SuppressWarnings("unchecked")
+  public byte[] serialize(Object value) throws IOException {
+    if (noTypesInfo && !isWrap) {
+      return this.rootSerializer.serialize(((Map<String, Object>) value).values().iterator().next());
+    } else {
+      return this.rootSerializer.serialize(value);
+    }
   }
 }

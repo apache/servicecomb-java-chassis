@@ -14,11 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.foundation.protobuf;
+package org.apache.servicecomb.codec.protobuf.definition;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
 
 public class RequestRootDeserializer<T> {
   private boolean wrapArgument;
@@ -26,10 +28,6 @@ public class RequestRootDeserializer<T> {
   private String parameterName;
 
   private RootDeserializer<T> rootDeserializer;
-
-  public RequestRootDeserializer(RootDeserializer<T> rootDeserializer) {
-    this(rootDeserializer, true, null);
-  }
 
   public RequestRootDeserializer(RootDeserializer<T> rootDeserializer, boolean wrapArgument, String parameterName) {
     this.rootDeserializer = rootDeserializer;

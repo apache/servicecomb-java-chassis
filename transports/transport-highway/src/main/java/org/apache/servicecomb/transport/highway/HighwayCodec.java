@@ -20,10 +20,11 @@ package org.apache.servicecomb.transport.highway;
 import java.util.Map;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
+import org.apache.servicecomb.codec.protobuf.definition.ResponseRootSerializer;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.foundation.protobuf.RequestRootDeserializer;
-import org.apache.servicecomb.foundation.protobuf.ResponseRootDeserializer;
-import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
+import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.codec.protobuf.definition.RequestRootDeserializer;
+import org.apache.servicecomb.codec.protobuf.definition.ResponseRootDeserializer;
 import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpData;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
@@ -49,16 +50,48 @@ public final class HighwayCodec {
     header.setContext(invocation.getContext());
 
     HighwayOutputStream os = new HighwayOutputStream(msgId);
-    os.write(header, operationProtobuf.findRequestSerializer(), invocation.getArguments());
+    os.write(header, operationProtobuf.getRequestRootSerializer(),
+        invocationArgumentsToSwaggerArguments(invocation, operationProtobuf.getOperationMeta(),
+            invocation.getArguments()));
     return os;
+  }
+
+  private static Map<String, Object> invocationArgumentsToSwaggerArguments(Invocation invocation,
+      OperationMeta operationMeta,
+      Map<String, Object> invocationArguments) {
+    if (operationMeta.getSwaggerConsumerOperation() != null && !invocation.isEdge()
+        && !invocation.isWeakInvoke()) {
+      return operationMeta.getSwaggerConsumerOperation().getArgumentsMapper()
+          .invocationArgumentToSwaggerArguments(invocation,
+              invocation.getArguments());
+    } else {
+      return invocationArguments;
+    }
+  }
+
+  private static Map<String, Object> swaggerArgumentsToInvocationArguments(Invocation invocation,
+      OperationMeta operationMeta,
+      Map<String, Object> swaggerArguments) {
+    if (swaggerArguments == null || swaggerArguments.isEmpty()) {
+      // void types represented by null
+      return swaggerArguments;
+    }
+    if (operationMeta.getSwaggerProducerOperation() != null && !invocation.isEdge()) {
+      return operationMeta.getSwaggerProducerOperation().getArgumentsMapper()
+          .swaggerArgumentToInvocationArguments(invocation, swaggerArguments);
+    } else {
+      // edge
+      return swaggerArguments;
+    }
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
   public static void decodeRequest(Invocation invocation, RequestHeader header, OperationProtobuf operationProtobuf,
       Buffer bodyBuffer) throws Exception {
-    RequestRootDeserializer<Object> requestDesirializer = operationProtobuf.findRequestDesirializer();
+    RequestRootDeserializer<Object> requestDesirializer = operationProtobuf.getRequestRootDeserializer();
     Map<String, Object> args = requestDesirializer.deserialize(bodyBuffer.getBytes());
-    invocation.setArguments(args);
+    invocation
+        .setArguments(swaggerArgumentsToInvocationArguments(invocation, operationProtobuf.getOperationMeta(), args));
     invocation.mergeContext(header.getContext());
   }
 
@@ -66,7 +99,7 @@ public final class HighwayCodec {
     return RequestHeader.readObject(headerBuffer);
   }
 
-  public static Buffer encodeResponse(long msgId, ResponseHeader header, RootSerializer bodySchema,
+  public static Buffer encodeResponse(long msgId, ResponseHeader header, ResponseRootSerializer bodySchema,
       Object body) throws Exception {
     try (HighwayOutputStream os = new HighwayOutputStream(msgId)) {
       os.write(header, bodySchema, body);
@@ -81,7 +114,7 @@ public final class HighwayCodec {
       invocation.getContext().putAll(header.getContext());
     }
 
-    ResponseRootDeserializer<Object> bodySchema = operationProtobuf.findResponseDesirialize(header.getStatusCode());
+    ResponseRootDeserializer<Object> bodySchema = operationProtobuf.findResponseRootDeserializer(header.getStatusCode());
     Object body = bodySchema.deserialize(tcpData.getBodyBuffer().getBytes());
 
     Response response = Response.create(header.getStatusCode(), header.getReasonPhrase(), body);

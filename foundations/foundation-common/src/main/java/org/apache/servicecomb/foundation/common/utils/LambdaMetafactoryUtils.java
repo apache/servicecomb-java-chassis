@@ -135,6 +135,10 @@ public final class LambdaMetafactoryUtils {
 
   @SuppressWarnings("unchecked")
   public static <T> T createLambda(Method instanceMethod, Class<?> functionalIntfCls) {
+    if (Modifier.isNative(instanceMethod.getModifiers())) {
+      // fix "Failed to create lambda from public final native java.lang.Class java.lang.Object.getClass()"
+      return null;
+    }
     try {
       Lookup lookup = LOOKUP.in(instanceMethod.getDeclaringClass());
       allowedModesField.set(lookup, ALL_MODES);

@@ -16,7 +16,8 @@
  */
 package org.apache.servicecomb.transport.highway;
 
-import org.apache.servicecomb.foundation.protobuf.RequestRootSerializer;
+import org.apache.servicecomb.codec.protobuf.definition.RequestRootSerializer;
+import org.apache.servicecomb.codec.protobuf.definition.ResponseRootSerializer;
 import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 import org.apache.servicecomb.transport.highway.message.RequestHeader;
@@ -29,6 +30,10 @@ public class HighwayOutputStream extends TcpOutputStream {
 
   public void write(RequestHeader header, RequestRootSerializer requestRootSerializer, Object body) throws Exception {
     write(RequestHeader.getRootSerializer().serialize(header), requestRootSerializer.serialize(body));
+  }
+
+  public void write(ResponseHeader header, ResponseRootSerializer responseRootSerializer, Object body) throws Exception {
+    write(ResponseHeader.getRootSerializer().serialize(header), responseRootSerializer.serialize(body));
   }
 
   public void write(RequestHeader header, RootSerializer bodySchema, Object body) throws Exception {
