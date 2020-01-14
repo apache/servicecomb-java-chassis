@@ -25,7 +25,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ResourceUtilsTest {
+public class ResourceUtilTest {
 
   /**
    * This case is coupled with the Spring dependency, but in order to check the ability to read resources inside the
@@ -33,7 +33,7 @@ public class ResourceUtilsTest {
    */
   @Test
   public void loadResources_in_jar() throws IOException, URISyntaxException {
-    List<URI> uris = ResourceUtil.loadResources("META-INF", p -> p.toString().endsWith("spring.factories"));
+    List<URI> uris = ResourceUtil.findResources("META-INF", p -> p.toString().endsWith("spring.factories"));
     Assert.assertEquals(1, uris.size());
     Assert.assertTrue(uris.get(0).toString().startsWith("jar:file:"));
     Assert.assertTrue(uris.get(0).toString().endsWith("!/META-INF/spring.factories"));
@@ -41,7 +41,16 @@ public class ResourceUtilsTest {
 
   @Test
   public void loadResources_in_disk() throws IOException, URISyntaxException {
-    List<URI> uris = ResourceUtil.loadResources("META-INF/spring", ResourceUtil.matchSuffix(".xml"));
+    List<URI> uris = ResourceUtil.findResourcesBySuffix("META-INF/spring", ".xml");
+    Assert.assertEquals(1, uris.size());
+    URI uri = uris.get(0);
+    Assert.assertTrue("unexpected uri: " + uri, uri.toString().startsWith("file:"));
+    Assert.assertTrue("unexpected uri: " + uri, uri.toString().endsWith("META-INF/spring/config.bean.xml"));
+  }
+
+  @Test
+  public void loadResources_exact_file_in_disk() throws IOException, URISyntaxException {
+    List<URI> uris = ResourceUtil.findResources("META-INF/spring/config.bean.xml");
     Assert.assertEquals(1, uris.size());
     URI uri = uris.get(0);
     Assert.assertTrue("unexpected uri: " + uri, uri.toString().startsWith("file:"));

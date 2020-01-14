@@ -31,52 +31,66 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-public class ResourceUtil {
+public final class ResourceUtil {
+
+  private ResourceUtil() {
+  }
+
   /**
-   * Search the specified directories in classpath, and returns a list of URIs pointing to the matched resources.
+   * Search the specified location in classpath, and returns the resources with the specified suffix.
+   */
+  public static List<URI> findResourcesBySuffix(String resourceLocation, String fileNameSuffix)
+      throws IOException, URISyntaxException {
+    return findResources(resourceLocation, path -> path.toString().endsWith(fileNameSuffix));
+  }
+
+  /**
+   * Search the specified location in classpath, all the resources found are collected and returned.
+   */
+  public static List<URI> findResources(String resourceLocation) throws IOException, URISyntaxException {
+    return findResources(resourceLocation, p -> true);
+  }
+
+  /**
+   * Search the specified location in classpath, which can be a directory or the exact file location,
+   * and returns a list of URIs pointing to the matched resources.
    *
-   * @param directory in which directory the resources are collected
+   * @param resourceLocation in which location the resources are searched
    * @param filter to pick out those matched resources
    */
-  public static List<URI> loadResources(String directory, Function<Path, Boolean> filter)
+  public static List<URI> findResources(String resourceLocation, Predicate<Path> filter)
       throws IOException, URISyntaxException {
     ArrayList<URI> result = new ArrayList<>();
 
-    Enumeration<URL> dirURLs = JvmUtils.findClassLoader().getResources(directory);
+    Enumeration<URL> dirURLs = JvmUtils.findClassLoader().getResources(resourceLocation);
     while (dirURLs.hasMoreElements()) {
       URL dirURL = dirURLs.nextElement();
+
       if (dirURL.getProtocol().equals("file")) {
         Path dirPath = Paths.get(dirURL.toURI());
-        collectYamlFromPath(dirPath, filter, result);
+        collectResourcesFromPath(dirPath, filter, result);
         continue;
       }
 
       try (FileSystem fileSystem = FileSystems.newFileSystem(dirURL.toURI(), Collections.emptyMap())) {
-        Path dirPath = fileSystem.getPath(directory);
-        collectYamlFromPath(dirPath, filter, result);
+        Path dirPath = fileSystem.getPath(resourceLocation);
+        collectResourcesFromPath(dirPath, filter, result);
       }
     }
 
     return result;
   }
 
-  /**
-   * A convenient method to get a filter to match the resource files by file path suffix.
-   */
-  public static Function<Path, Boolean> matchSuffix(String suffix) {
-    return path -> path.toString().endsWith(suffix);
-  }
-
-  private static void collectYamlFromPath(Path dirPath, Function<Path, Boolean> filter, Collection<URI> container)
+  private static void collectResourcesFromPath(Path path, Predicate<Path> filter, Collection<URI> resources)
       throws IOException {
-    try (Stream<Path> dirContentTraversalStream = Files.walk(dirPath)) {
+    try (Stream<Path> dirContentTraversalStream = Files.walk(path)) {
       dirContentTraversalStream
-          .filter(filter::apply)
+          .filter(filter)
           .map(Path::toUri)
-          .forEach(container::add);
+          .forEach(resources::add);
     }
   }
 }
