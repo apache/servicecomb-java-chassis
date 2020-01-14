@@ -95,6 +95,10 @@ public class Invocation extends SwaggerInvocation {
   // because isEdge() only affect to apm/metrics output, no need to change so many logic
   private boolean edge;
 
+  // Check if consumer invocation without types info. e.g. using RestTemplate to invoke provider
+  // or using InvokerUtils to invoke provider and only provide operation id and arguments
+  private boolean weakInvoke;
+
   private long invocationId;
 
   private Map<String, Object> arguments;
@@ -375,6 +379,14 @@ public class Invocation extends SwaggerInvocation {
 
   public boolean isConsumer() {
     return InvocationType.CONSUMER.equals(invocationType);
+  }
+
+  public boolean isWeakInvoke() {
+    return weakInvoke;
+  }
+
+  public void setWeakInvoke(boolean weakInvoke) {
+    this.weakInvoke = weakInvoke;
   }
 
   public boolean isEdge() {

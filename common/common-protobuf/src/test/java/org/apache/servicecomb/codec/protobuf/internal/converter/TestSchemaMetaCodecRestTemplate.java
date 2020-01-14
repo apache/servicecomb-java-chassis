@@ -18,6 +18,7 @@
 package org.apache.servicecomb.codec.protobuf.internal.converter;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,14 +27,14 @@ import java.util.Map;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
+import org.apache.servicecomb.codec.protobuf.definition.RequestRootDeserializer;
+import org.apache.servicecomb.codec.protobuf.definition.RequestRootSerializer;
+import org.apache.servicecomb.codec.protobuf.definition.ResponseRootDeserializer;
+import org.apache.servicecomb.codec.protobuf.definition.ResponseRootSerializer;
 import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchema;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.foundation.protobuf.RequestRootDeserializer;
-import org.apache.servicecomb.foundation.protobuf.RequestRootSerializer;
-import org.apache.servicecomb.foundation.protobuf.ResponseRootDeserializer;
-import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Empty;
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
@@ -108,20 +109,20 @@ public class TestSchemaMetaCodecRestTemplate {
 
     // request message
     Map<String, Object> args = new HashMap<>();
-    RequestRootSerializer requestSerializer = consumerOperationProtobuf.findRequestSerializer();
+    RequestRootSerializer requestSerializer = consumerOperationProtobuf.getRequestRootSerializer();
     user.friends = friends;
     args.put("user", user);
     values = requestSerializer.serialize(args);
 
-    RequestRootDeserializer<Object> requestDeserializer = providerOperationProtobuf.findRequestDesirializer();
+    RequestRootDeserializer<Object> requestDeserializer = providerOperationProtobuf.getRequestRootDeserializer();
     Map<String, Object> decodedUserArgs = requestDeserializer.deserialize(values);
     Assert.assertEquals(user.name, ((User) decodedUserArgs.get("user")).name);
     Assert.assertEquals(user.friends.get(0).name, ((User) decodedUserArgs.get("user")).friends.get(0).name);
 
     // response message
-    RootSerializer responseSerializer = providerOperationProtobuf.findResponseSerializer(200);
+    ResponseRootSerializer responseSerializer = providerOperationProtobuf.findResponseRootSerializer(200);
     values = responseSerializer.serialize(user);
-    ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseDesirialize(200);
+    ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseRootDeserializer(200);
     User decodedUser = (User) responseDeserializer.deserialize(values);
     Assert.assertEquals(user.name, decodedUser.name);
     Assert.assertEquals(user.friends.get(0).name, decodedUser.friends.get(0).name);
@@ -137,7 +138,6 @@ public class TestSchemaMetaCodecRestTemplate {
   @Test
   @SuppressWarnings({"rawtypes", "unchecked"})
   public void testProtoSchemaOperationBase() throws Exception {
-    // TODO : WEAK fix this line "java.lang.NoClassDefFoundError: org/apache/servicecomb/foundation/common/utils/bean/Getter"
     OperationProtobuf providerOperationProtobuf = ProtobufManager
         .getOrCreateOperation(providerSchemaMeta.getOperations().get("base"));
     OperationProtobuf consumerOperationProtobuf = ProtobufManager
@@ -145,7 +145,7 @@ public class TestSchemaMetaCodecRestTemplate {
     byte[] values;
 
     // request message
-    RequestRootSerializer requestSerializer = consumerOperationProtobuf.findRequestSerializer();
+    RequestRootSerializer requestSerializer = consumerOperationProtobuf.getRequestRootSerializer();
     boolean boolValue = true;
     int iValue = 20;
     long lValue = 30L;
@@ -170,7 +170,7 @@ public class TestSchemaMetaCodecRestTemplate {
     args.put("date", date);
     args.put("empty", empty);
     values = requestSerializer.serialize(args);
-    RequestRootDeserializer<Object> requestDeserializer = providerOperationProtobuf.findRequestDesirializer();
+    RequestRootDeserializer<Object> requestDeserializer = providerOperationProtobuf.getRequestRootDeserializer();
     Map<String, Object> decodedArgs = requestDeserializer.deserialize(values);
     Assert.assertEquals(boolValue, decodedArgs.get("boolValue"));
     Assert.assertEquals(iValue, decodedArgs.get("iValue"));
@@ -210,9 +210,9 @@ public class TestSchemaMetaCodecRestTemplate {
     Assert.assertEquals(null, decodedArgs.get("empty"));
 
     // response message
-    RootSerializer responseSerializer = providerOperationProtobuf.findResponseSerializer(200);
+    ResponseRootSerializer responseSerializer = providerOperationProtobuf.findResponseRootSerializer(200);
     values = responseSerializer.serialize(30);
-    ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseDesirialize(200);
+    ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseRootDeserializer(200);
     Object decodedValue = responseDeserializer.deserialize(values);
     Assert.assertEquals(30, (int) decodedValue);
   }

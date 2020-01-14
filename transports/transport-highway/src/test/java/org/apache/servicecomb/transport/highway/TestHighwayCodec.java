@@ -22,12 +22,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
+import org.apache.servicecomb.codec.protobuf.definition.RequestRootSerializer;
+import org.apache.servicecomb.codec.protobuf.definition.ResponseRootSerializer;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.foundation.protobuf.RequestRootSerializer;
-import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import org.apache.servicecomb.foundation.vertx.server.TcpParser;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
@@ -42,7 +42,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.netty.buffer.ByteBuf;
-import io.protostuff.runtime.ProtobufCompatibleUtils;
 import io.vertx.core.buffer.Buffer;
 import mockit.Mocked;
 
@@ -68,7 +67,6 @@ public class TestHighwayCodec {
 
   @BeforeClass
   public static void setupClass() {
-    ProtobufCompatibleUtils.init();
   }
 
   @Before
@@ -183,7 +181,7 @@ public class TestHighwayCodec {
   @Test
   public void testEncodeResponse() {
     boolean status = true;
-    RootSerializer bodySchema = Mockito.mock(RootSerializer.class);
+    ResponseRootSerializer bodySchema = Mockito.mock(ResponseRootSerializer.class);
     try {
       commonMock();
       Object data = new Object();
@@ -236,7 +234,7 @@ public class TestHighwayCodec {
   }
 
   private void commonMock() {
-    Mockito.when(operationProtobuf.findRequestSerializer()).thenReturn(requestSerializer);
+    Mockito.when(operationProtobuf.getRequestRootSerializer()).thenReturn(requestSerializer);
     Mockito.when(bodyBuffer.getByteBuf()).thenReturn(lByteBuf);
     Mockito.when(lByteBuf.nioBuffer()).thenReturn(nioBuffer);
     Mockito.when(operationProtobuf.getOperationMeta()).thenReturn(operationMeta);

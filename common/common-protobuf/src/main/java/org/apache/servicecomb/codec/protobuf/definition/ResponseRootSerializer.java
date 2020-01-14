@@ -14,40 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.foundation.protobuf;
+package org.apache.servicecomb.codec.protobuf.definition;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Map;
 
-public class RequestRootSerializer {
+import org.apache.servicecomb.foundation.protobuf.RootSerializer;
+
+public class ResponseRootSerializer {
   private RootSerializer rootSerializer;
 
   private boolean noTypesInfo;
 
   private boolean isWrap;
 
-  public RequestRootSerializer(RootSerializer serializer, boolean isWrapp, boolean noTypesInfo) {
+  public ResponseRootSerializer(RootSerializer serializer, boolean isWrapp, boolean noTypesInfo) {
     this.rootSerializer = serializer;
     this.noTypesInfo = noTypesInfo;
     this.isWrap = isWrapp;
   }
 
-  @SuppressWarnings("unchecked")
   public byte[] serialize(Object value) throws IOException {
     if (noTypesInfo && !isWrap) {
-      return this.rootSerializer.serialize(((Map<String, Object>) value).values().iterator().next());
-    } else {
       return this.rootSerializer.serialize(value);
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  public void serialize(OutputStream outputStream, Object value) throws IOException {
-    if (noTypesInfo && !isWrap) {
-      this.rootSerializer.serialize(outputStream, ((Map<String, Object>) value).values().iterator().next());
     } else {
-      this.rootSerializer.serialize(outputStream, value);
+      Map<String, Object> responseValue = new HashMap<>(1);
+      // key is fixed to "value" in IDL
+      responseValue.put("value", value);
+      return this.rootSerializer.serialize(responseValue);
     }
   }
 }

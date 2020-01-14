@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.HttpStatus;
+import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.controller.Controller;
@@ -33,6 +34,8 @@ import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.provider.springmvc.reference.UrlWithProviderPrefixClientHttpRequestFactory;
 import org.apache.servicecomb.provider.springmvc.reference.UrlWithServiceNameClientHttpRequestFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -45,6 +48,8 @@ import org.springframework.web.client.RestTemplate;
 import com.netflix.config.DynamicPropertyFactory;
 
 public class SpringmvcClient {
+  private static final Logger LOGGER = LoggerFactory.getLogger(SpringmvcClient.class);
+
   private static RestTemplate templateUrlWithServiceName = new CseRestTemplate();
 
   private static RestTemplate templateUrlWithProviderPrefix = new CseRestTemplate();
@@ -61,8 +66,8 @@ public class SpringmvcClient {
       run();
     } catch (Throwable e) {
       TestMgr.check("success", "failed");
-      System.err.println("-------------- test failed -------------");
-      e.printStackTrace();
+      LOGGER.error("-------------- test failed -------------");
+      LOGGER.error("", e);
       System.err.println("-------------- test failed -------------");
     }
     TestMgr.summary();
@@ -99,6 +104,7 @@ public class SpringmvcClient {
 
     testAllTransport(microserviceName);
     testRestTransport(microserviceName, prefix);
+    CategorizedTestCaseRunner.runCategorizedTestCase(microserviceName);
   }
 
   private static void testRestTransport(String microserviceName, String prefix) {
@@ -484,7 +490,8 @@ public class SpringmvcClient {
     TestMgr.check("Hello 345302", result);
   }
 
-  private static void testSpringMvcDefaultValuesJavaPrimitiveAllTransport(RestTemplate template, String microserviceName) {
+  private static void testSpringMvcDefaultValuesJavaPrimitiveAllTransport(RestTemplate template,
+      String microserviceName) {
     // TODO: WEAK primitive default value not supported in highway
 //    String cseUrlPrefix = "cse://" + microserviceName + "/SpringMvcDefaultValues/";
 //    //default values with primitive

@@ -14,10 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.foundation.protobuf;
+package org.apache.servicecomb.codec.protobuf.definition;
 
 import java.io.IOException;
 
+import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyWrapper;
 
 public class ResponseRootDeserializer<T> {

@@ -34,7 +34,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RequestMapping(path = "/")
-public class ProtoSchema {
+public class ProtoSchema implements ProtoSchemaIntf {
   @ApiResponses(value = {@ApiResponse(code = 444, response = Color.class, message = "xxx")})
   @GetMapping(path = "/base")
   public int base(boolean boolValue, int iValue, long lValue, float fValue, double dValue, String sValue, int[] iArray,

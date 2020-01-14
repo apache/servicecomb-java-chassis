@@ -213,7 +213,7 @@ public class CseClientHttpRequest implements ClientHttpRequest {
             requestMeta.getOperationMeta(),
             arguments);
 
-    invocation.addLocalContext(RestConst.IS_RESTTEMPLATE_INVOKE, true);
+    invocation.setWeakInvoke(true);
     invocation.getHandlerContext().put(RestConst.REST_CLIENT_REQUEST_PATH,
         path + (this.uri.getRawQuery() == null ? "" : "?" + this.uri.getRawQuery()));
 

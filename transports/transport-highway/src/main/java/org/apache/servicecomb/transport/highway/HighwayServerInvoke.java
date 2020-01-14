@@ -25,6 +25,7 @@ import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
+import org.apache.servicecomb.codec.protobuf.definition.ResponseRootSerializer;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Handler;
@@ -34,7 +35,6 @@ import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
-import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpConnection;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -143,7 +143,7 @@ public class HighwayServerInvoke {
     header.setContext(context);
     header.setHeaders(response.getHeaders());
 
-    RootSerializer bodySchema = operationProtobuf.findResponseSerializer(response.getStatusCode());
+    ResponseRootSerializer bodySchema = operationProtobuf.findResponseRootSerializer(response.getStatusCode());
     Object body = response.getResult();
     if (response.isFailed()) {
       body = ((InvocationException) body).getErrorData();

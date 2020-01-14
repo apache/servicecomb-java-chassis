@@ -14,17 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.protostuff;
 
-import java.util.Map;
+package org.apache.servicecomb.demo.springmvc.server;
 
-import io.protostuff.MapSchema.MapWrapper;
+import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-public final class MapSchemaUtils {
-  private MapSchemaUtils() {
-  }
+import io.swagger.annotations.ApiOperation;
 
-  public static MapWrapper<Object, Object> createMapWrapper(Map<Object, Object> map) {
-    return new MapWrapper<>(map);
+@RestSchema(schemaId = "weakSpringmvc")
+@RequestMapping(path = "/weakSpringmvc", produces = MediaType.APPLICATION_JSON_VALUE)
+public class WeakSpringmvc {
+  @GetMapping(path = "/diffNames")
+  @ApiOperation(value = "differentName", nickname = "differentName")
+  public int diffNames(@RequestParam("x") int a, @RequestParam("y") int b) {
+    return a * 2 + b;
   }
 }

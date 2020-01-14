@@ -245,9 +245,9 @@ public class PojoClient {
   }
 
   private static void testSplitParam(Test test) {
-//    User result = test.splitParam(1, new User());
-//    LOGGER.info("split param result:{}", result);
-//    TestMgr.check("User [name=nameA,  users count:0, age=100, index=1]", result);
+    User result = test.splitParam(1, new User());
+    LOGGER.info("split param result:{}", result);
+    TestMgr.check("User [name=nameA,  users count:0, age=100, index=1]", result);
   }
 
   private static void testCommonInvoke(String transport) {

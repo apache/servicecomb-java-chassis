@@ -53,8 +53,6 @@ public final class RestConst {
 
   public static final String REST_INVOCATION_CONTEXT = "servicecomb-rest-invocation-context";
 
-  public static final String IS_RESTTEMPLATE_INVOKE = "servicecomb-is-resttemplated-invoke";
-
   public static final String REST_REQUEST = "servicecomb-rest-request";
 
   public static final String CONSUMER_HEADER = "servicecomb-rest-consumer-header";

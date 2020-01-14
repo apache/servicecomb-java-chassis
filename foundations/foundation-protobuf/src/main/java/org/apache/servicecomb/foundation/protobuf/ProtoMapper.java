@@ -117,14 +117,6 @@ public class ProtoMapper {
     return createRootSerializer(message, type);
   }
 
-  public synchronized RequestRootSerializer createRequestRootSerializer(Message message, Map<String, Type> types, boolean noTypesInfo) {
-    return serializerSchemaManager.createRequestRootSerializer(message, types, noTypesInfo);
-  }
-
-  public synchronized RootSerializer createRootSerializer(Message message, Map<String, Type> types) {
-    return serializerSchemaManager.createRootSerializer(message, types);
-  }
-
   public synchronized RootSerializer createRootSerializer(Message message, Type type) {
     return serializerSchemaManager.createRootSerializer(message, type);
   }
@@ -138,20 +130,11 @@ public class ProtoMapper {
     return createRootDeserializer(message, type);
   }
 
-  public synchronized <T> RequestRootDeserializer<T> createRequestRootDeserializer(Message message,
-      Map<String, Type> types) {
-    return deserializerSchemaManager.createRequestRootDeserializer(message, types);
-  }
-
-  public synchronized <T> RequestRootDeserializer<T> createRequestRootDeserializer(Message message, Type type) {
-    return deserializerSchemaManager.createRequestRootDeserializer(message, type);
-  }
-
-  public synchronized <T> ResponseRootDeserializer<T> createResponseRootDeserializer(Message message, Type type) {
-    return deserializerSchemaManager.createResponseRootDeserializer(message, type);
-  }
-
   public synchronized <T> RootDeserializer<T> createRootDeserializer(Message message, Type type) {
     return deserializerSchemaManager.createRootDeserializer(message, type);
+  }
+
+  public synchronized <T> RootDeserializer<T> createRootDeserializer(Message message, Map<String, Type> types) {
+    return deserializerSchemaManager.createRootDeserializer(message, types);
   }
 }
