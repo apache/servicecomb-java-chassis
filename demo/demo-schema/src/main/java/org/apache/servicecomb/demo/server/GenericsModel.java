@@ -15,24 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo;
+package org.apache.servicecomb.demo.server;
 
-public interface CategorizedTestCase {
-  /**
-   * test case which only successful in REST transport
-   */
-  default void testRestTransport() throws Exception {
+import java.util.List;
+
+public class GenericsModel {
+  private String name;
+
+  private List<List<String>> nameList;
+
+  private List<List<List<Object>>> objectLists;
+
+  public String getName() {
+    return name;
   }
 
-  /**
-   * test case which only successful in HIGHWAY transport
-   */
-  default void testHighwayTransport() throws Exception {
+  public void setName(String name) {
+    this.name = name;
   }
 
-  /**
-   * test case which successful in both REST and HIGHWAY transport
-   */
-  default void testAllTransport() throws Exception {
+  public List<List<String>> getNameList() {
+    return nameList;
+  }
+
+  public void setNameList(List<List<String>> nameList) {
+    this.nameList = nameList;
+  }
+
+  public List<List<List<Object>>> getObjectLists() {
+    return objectLists;
+  }
+
+  public void setObjectLists(List<List<List<Object>>> objectLists) {
+    this.objectLists = objectLists;
   }
 }

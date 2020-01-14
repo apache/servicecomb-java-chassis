@@ -23,7 +23,7 @@ import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 
 public class CategorizedTestCaseRunner {
-  public static void runCategorizedTestCase(String microserviceName) {
+  public static void runCategorizedTestCase(String microserviceName) throws Exception {
     Map<String, CategorizedTestCase> tests = BeanUtils.getContext().getBeansOfType(CategorizedTestCase.class);
     for (String transport : DemoConst.transports) {
       changeTransport(microserviceName, transport);

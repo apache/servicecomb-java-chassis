@@ -15,24 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo;
+package org.apache.servicecomb.demo.pojo.server;
 
-public interface CategorizedTestCase {
-  /**
-   * test case which only successful in REST transport
-   */
-  default void testRestTransport() throws Exception {
+import java.util.List;
+
+import org.apache.servicecomb.demo.server.GenericsModel;
+import org.apache.servicecomb.provider.pojo.RpcSchema;
+
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+
+@RpcSchema(schemaId = "WeakPojo")
+public class WeakPojo {
+  @ApiOperation(value = "differentName", nickname = "differentName")
+  public int diffNames(@ApiParam(name = "x") int a, @ApiParam(name = "y") int b) {
+    return a * 2 + b;
   }
 
-  /**
-   * test case which only successful in HIGHWAY transport
-   */
-  default void testHighwayTransport() throws Exception {
+  public List<List<String>> genericParams(int code, List<List<String>> names) {
+    return names;
   }
 
-  /**
-   * test case which successful in both REST and HIGHWAY transport
-   */
-  default void testAllTransport() throws Exception {
+  public GenericsModel genericParamsModel(int code, GenericsModel model) {
+    return model;
   }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.springmvc.client;
+package org.apache.servicecomb.demo.pojo.client;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,9 +28,7 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.server.GenericsModel;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.provider.pojo.RpcReference;
-import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -90,20 +88,18 @@ interface GenericsModelInf {
 }
 
 @Component
-public class TestWeakSpringmvc implements CategorizedTestCase {
-  @RpcReference(microserviceName = "springmvc", schemaId = "weakSpringmvc")
+public class TestWeakPojo implements CategorizedTestCase {
+  @RpcReference(microserviceName = "pojo", schemaId = "WeakPojo")
   private DiffNames diffNames;
 
-  @RpcReference(microserviceName = "springmvc", schemaId = "weakSpringmvc")
+  @RpcReference(microserviceName = "pojo", schemaId = "WeakPojo")
   private DiffNames2 diffNames2;
 
-  @RpcReference(microserviceName = "springmvc", schemaId = "weakSpringmvc")
+  @RpcReference(microserviceName = "pojo", schemaId = "WeakPojo")
   private Generics generics;
 
-  @RpcReference(microserviceName = "springmvc", schemaId = "weakSpringmvc")
+  @RpcReference(microserviceName = "pojo", schemaId = "WeakPojo")
   private GenericsModelInf genericsModelInf;
-
-  private RestTemplate restTemplate = RestTemplateBuilder.create();
 
   @Override
   public void testAllTransport() throws Exception {
@@ -147,10 +143,9 @@ public class TestWeakSpringmvc implements CategorizedTestCase {
   private void getDiffName() {
     TestMgr.check(7, diffNames.differentName(2, 3));
     TestMgr.check(8, diffNames2.differentName(2, 3));
-    TestMgr.check(7, restTemplate.getForObject("cse://springmvc/weakSpringmvc/diffNames?x=2&y=3", Integer.class));
     Map<String, Object> args = new HashMap<>();
     args.put("x", 2);
     args.put("y", 3);
-    TestMgr.check(7, InvokerUtils.syncInvoke("springmvc", "weakSpringmvc", "differentName", args));
+    TestMgr.check(7, InvokerUtils.syncInvoke("pojo", "WeakPojo", "differentName", args));
   }
 }

@@ -216,7 +216,8 @@ public class SwaggerToProtoGenerator {
       return generateWrapPropertyName(prefix + Map.class.getSimpleName(), adapter.getMapItem());
     }
 
-    return prefix + StringUtils.capitalize(convertSwaggerType(adapter));
+    // message name cannot have . (package separator)
+    return prefix + StringUtils.capitalize(convertSwaggerType(adapter).replaceAll("\\.", "_"));
   }
 
   private void wrapPropertyToMessage(String protoName, Object property) {

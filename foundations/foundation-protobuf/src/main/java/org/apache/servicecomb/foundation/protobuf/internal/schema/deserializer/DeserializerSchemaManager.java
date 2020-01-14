@@ -115,7 +115,7 @@ public class DeserializerSchemaManager extends SchemaManager {
       Field protoField = message.getField(1);
       if (javaType.isJavaLangObject()) {
         javaType =
-            protoField.isRepeated() && protoField.getType().isMessage() && !protoField.isMap() ? ProtoConst.LIST_TYPE
+            protoField.isRepeated() && !protoField.isMap() ? ProtoConst.LIST_TYPE
                 : ProtoConst.MAP_TYPE;
       }
       javaType = TypeFactory.defaultInstance().constructParametricType(PropertyWrapper.class, javaType);

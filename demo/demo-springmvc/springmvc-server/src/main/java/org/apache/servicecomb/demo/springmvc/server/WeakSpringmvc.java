@@ -17,9 +17,13 @@
 
 package org.apache.servicecomb.demo.springmvc.server;
 
+import java.util.List;
+
+import org.apache.servicecomb.demo.server.GenericsModel;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -32,5 +36,17 @@ public class WeakSpringmvc {
   @ApiOperation(value = "differentName", nickname = "differentName")
   public int diffNames(@RequestParam("x") int a, @RequestParam("y") int b) {
     return a * 2 + b;
+  }
+
+  @GetMapping(path = "/genericParams")
+  @ApiOperation(value = "genericParams", nickname = "genericParams")
+  public List<List<String>> genericParams(@RequestParam("code") int code, @RequestBody List<List<String>> names) {
+    return names;
+  }
+
+  @GetMapping(path = "/genericParamsModel")
+  @ApiOperation(value = "genericParamsModel", nickname = "genericParamsModel")
+  public GenericsModel genericParamsModel(@RequestParam("code") int code, @RequestBody GenericsModel model) {
+    return model;
   }
 }
