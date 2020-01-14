@@ -46,7 +46,8 @@ public class TestHttpClientPool {
     ArchaiusUtils.setProperty(ServiceRegistryConfig.PROXY_USERNAME, "user");
     ArchaiusUtils.setProperty(ServiceRegistryConfig.PROXY_PASSWD, "pass");
 
-    HttpClientOptions httpClientOptions = HttpClientPool.INSTANCE.createHttpClientOptions();
+    HttpClientOptions httpClientOptions = HttpClientPool.getHttpClientOptionsFromConfigurations(
+        ServiceRegistryConfig.buildFromConfiguration());
 
     Assert.assertEquals(
         "{"
@@ -63,7 +64,8 @@ public class TestHttpClientPool {
   public void createHttpClientOptions_noProxy() {
     ArchaiusUtils.setProperty(ServiceRegistryConfig.PROXY_ENABLE, "false");
 
-    HttpClientOptions httpClientOptions = HttpClientPool.INSTANCE.createHttpClientOptions();
+    HttpClientOptions httpClientOptions = HttpClientPool.getHttpClientOptionsFromConfigurations(
+        ServiceRegistryConfig.buildFromConfiguration());
 
     Assert.assertNull(httpClientOptions.getProxyOptions());
   }
@@ -72,7 +74,8 @@ public class TestHttpClientPool {
   public void createHttpClientOptions_http2() {
     ArchaiusUtils.setProperty("servicecomb.service.registry.client.httpVersion", HttpVersion.HTTP_2.name());
 
-    HttpClientOptions httpClientOptions = HttpClientPool.INSTANCE.createHttpClientOptions();
+    HttpClientOptions httpClientOptions = HttpClientPool.getHttpClientOptionsFromConfigurations(
+        ServiceRegistryConfig.buildFromConfiguration());
 
     Assert.assertEquals(HttpVersion.HTTP_2, httpClientOptions.getProtocolVersion());
     Assert.assertFalse(httpClientOptions.isHttp2ClearTextUpgrade());
@@ -80,7 +83,8 @@ public class TestHttpClientPool {
 
   @Test
   public void createHttpClientOptions_notHttp2() {
-    HttpClientOptions httpClientOptions = HttpClientPool.INSTANCE.createHttpClientOptions();
+    HttpClientOptions httpClientOptions = HttpClientPool.getHttpClientOptionsFromConfigurations(
+        ServiceRegistryConfig.buildFromConfiguration());
 
     Assert.assertEquals(HttpVersion.HTTP_1_1, httpClientOptions.getProtocolVersion());
     Assert.assertTrue(httpClientOptions.isHttp2ClearTextUpgrade());
