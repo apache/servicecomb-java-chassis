@@ -74,7 +74,7 @@ public class SwaggerLoader {
   public void registerSwaggersInLocation(String microserviceName, String swaggersLocation) {
     LOGGER.info("register schemas in location [{}], microserviceName=[{}]", swaggersLocation, microserviceName);
     try {
-      List<URI> resourceUris = ResourceUtil.loadResources(swaggersLocation, ResourceUtil.matchSuffix(".yaml"));
+      List<URI> resourceUris = ResourceUtil.findResourcesBySuffix(swaggersLocation, ".yaml");
       if (resourceUris.isEmpty()) {
         LOGGER.error("register swagger in not exist location: \"{}\".", swaggersLocation);
         return;
