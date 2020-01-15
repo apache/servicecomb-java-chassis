@@ -27,9 +27,6 @@ import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpVersion;
 import io.vertx.core.net.ProxyOptions;
 
-/**
- * Created by on 2017/4/28.
- */
 final class HttpClientPool extends AbstractClientPool {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(HttpClientPool.class);

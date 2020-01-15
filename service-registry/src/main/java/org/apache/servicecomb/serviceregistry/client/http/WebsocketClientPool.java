@@ -25,13 +25,13 @@ import org.slf4j.LoggerFactory;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpVersion;
 
-/**
- * Created by on 2017/4/28.
- */
 public final class WebsocketClientPool extends AbstractClientPool {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WebsocketClientPool.class);
 
+  /**
+   * The default instance, for default sc cluster.
+   */
   public static final WebsocketClientPool INSTANCE = new WebsocketClientPool();
 
   private WebsocketClientPool() {
