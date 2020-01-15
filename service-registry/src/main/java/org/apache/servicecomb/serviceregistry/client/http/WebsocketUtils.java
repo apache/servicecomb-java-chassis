@@ -30,8 +30,10 @@ import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.WebSocketConnectOptions;
 
 /**
- * Created by on 2017/4/28.
+ * This class is designed following singleton pattern, but it's not suitable for multi sc cluster occasion.
+ * @deprecated consider to use {@link WebsocketClientUtil} instead.
  */
+@Deprecated
 public final class WebsocketUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(WebsocketUtils.class);
 

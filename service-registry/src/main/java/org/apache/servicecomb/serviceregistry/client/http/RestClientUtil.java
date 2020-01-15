@@ -43,11 +43,11 @@ import io.vertx.core.http.HttpMethod;
 final class RestClientUtil {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestClientUtil.class);
 
-  private static final String HEADER_CONTENT_TYPE = "Content-Type";
+  static final String HEADER_CONTENT_TYPE = "Content-Type";
 
-  private static final String HEADER_USER_AGENT = "User-Agent";
+  static final String HEADER_USER_AGENT = "User-Agent";
 
-  private static final String HEADER_TENANT_NAME = "x-domain-name";
+  static final String HEADER_TENANT_NAME = "x-domain-name";
 
   private List<AuthHeaderProvider> authHeaderProviders;
 
