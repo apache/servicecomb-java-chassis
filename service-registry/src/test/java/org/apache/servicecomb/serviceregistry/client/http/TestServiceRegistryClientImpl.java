@@ -45,6 +45,7 @@ import org.apache.servicecomb.serviceregistry.api.response.GetServiceResponse;
 import org.apache.servicecomb.serviceregistry.client.ClientException;
 import org.apache.servicecomb.serviceregistry.client.IpPortManager;
 import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl.ResponseWrapper;
+import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.junit.After;
 import org.junit.Assert;
@@ -60,7 +61,6 @@ import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientResponse;
-import io.vertx.core.http.HttpMethod;
 import io.vertx.core.json.Json;
 import mockit.Deencapsulation;
 import mockit.Expectations;
@@ -78,13 +78,7 @@ public class TestServiceRegistryClientImpl {
 
   @Before
   public void setUp() throws Exception {
-    oClient = new ServiceRegistryClientImpl(ipPortManager);
-
-    new MockUp<RestUtils>() {
-      @Mock
-      void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
-      }
-    };
+    oClient = new ServiceRegistryClientImpl(ipPortManager, ServiceRegistryConfig.buildFromConfiguration());
 
     new MockUp<RegistryUtils>() {
       @Mock
@@ -216,7 +210,7 @@ public class TestServiceRegistryClientImpl {
         };
       }
     };
-    new MockUp<RestUtils>() {
+    new MockUp<RestClientUtil>() {
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
         responseHandler.handle(null);
@@ -248,7 +242,7 @@ public class TestServiceRegistryClientImpl {
         };
       }
     };
-    new MockUp<RestUtils>() {
+    new MockUp<RestClientUtil>() {
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
         responseHandler.handle(null);
@@ -304,7 +298,7 @@ public class TestServiceRegistryClientImpl {
     String microserviceId = "msId";
     String schemaId = "schemaId";
 
-    new MockUp<RestUtils>() {
+    new MockUp<RestClientUtil>() {
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
         Holder<GetExistenceResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
@@ -317,7 +311,7 @@ public class TestServiceRegistryClientImpl {
   @Test
   public void getAggregatedMicroservice() {
     String microserviceId = "msId";
-    new MockUp<RestUtils>() {
+    new MockUp<RestClientUtil>() {
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
         Holder<GetServiceResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
@@ -342,7 +336,7 @@ public class TestServiceRegistryClientImpl {
     String microserviceId = "msId";
     String schemaId = "schemaId";
 
-    new MockUp<RestUtils>() {
+    new MockUp<RestClientUtil>() {
 
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
@@ -376,7 +370,7 @@ public class TestServiceRegistryClientImpl {
   public void getSchemas() {
     String microserviceId = "msId";
 
-    new MockUp<RestUtils>() {
+    new MockUp<RestClientUtil>() {
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
         Holder<GetSchemasResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
@@ -399,7 +393,7 @@ public class TestServiceRegistryClientImpl {
   public void getSchemasForNew() {
     String microserviceId = "msId";
 
-    new MockUp<RestUtils>() {
+    new MockUp<RestClientUtil>() {
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
         Holder<GetSchemasResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
@@ -422,7 +416,7 @@ public class TestServiceRegistryClientImpl {
   public void getSchemasFailed() {
     String microserviceId = "msId";
 
-    new MockUp<RestUtils>() {
+    new MockUp<RestClientUtil>() {
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
         Holder<GetSchemasResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
@@ -437,7 +431,7 @@ public class TestServiceRegistryClientImpl {
 
   @Test
   public void testFindServiceInstance() {
-    new MockUp<RestUtils>() {
+    new MockUp<RestClientUtil>() {
       @Mock
       void get(IpPort ipPort, String uri, RequestParam requestParam,
           Handler<RestResponse> responseHandler) {
@@ -449,7 +443,7 @@ public class TestServiceRegistryClientImpl {
 
   @Test
   public void findServiceInstance_consumerId_null() {
-    new MockUp<RestUtils>() {
+    new MockUp<RestClientUtil>() {
       @Mock
       void get(IpPort ipPort, String uri, RequestParam requestParam,
           Handler<RestResponse> responseHandler) {
@@ -461,7 +455,7 @@ public class TestServiceRegistryClientImpl {
   }
 
   @Test
-  public void findServiceInstances_microserviceNotExist(@Mocked RequestContext requestContext) {
+  public void findServiceInstances_microserviceNotExist() {
     HttpClientResponse response = new MockUp<HttpClientResponse>() {
       @Mock
       int statusCode() {
@@ -475,18 +469,13 @@ public class TestServiceRegistryClientImpl {
         return null;
       }
     }.getMockInstance();
-    RestResponse restResponse = new RestResponse(requestContext, response);
-    new MockUp<RestUtils>() {
-      @Mock
-      void get(IpPort ipPort, String uri, RequestParam requestParam,
-          Handler<RestResponse> responseHandler) {
-        Assert.assertEquals("appId=appId&global=true&serviceName=serviceName&version=0.0.0.0%2B",
-            requestParam.getQueryParams());
-        httpDo(RestUtils.createRequestContext(HttpMethod.GET, ipPort, uri, requestParam), responseHandler);
-      }
-
+    RestResponse restResponse = new RestResponse(null, response);
+    new MockUp<RestClientUtil>() {
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
+        Assert.assertEquals("appId=appId&global=true&serviceName=serviceName&version=0.0.0.0%2B",
+            requestContext.getParams().getQueryParams());
+        restResponse.setRequestContext(requestContext);
         responseHandler.handle(restResponse);
       }
     };
@@ -506,7 +495,7 @@ public class TestServiceRegistryClientImpl {
     serviceCenterInfo.setApiVersion("x.x.x");
     serviceCenterInfo.setConfig(new ServiceCenterConfig());
 
-    new MockUp<RestUtils>() {
+    new MockUp<RestClientUtil>() {
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
         Holder<ServiceCenterInfo> holder = Deencapsulation.getField(responseHandler, "arg$4");
@@ -550,7 +539,7 @@ public class TestServiceRegistryClientImpl {
         return 200;
       }
     }.getMockInstance();
-    new MockUp<RestUtils>() {
+    new MockUp<RestClientUtil>() {
       @Mock
       void put(IpPort ipPort, String uri, RequestParam requestParam, Handler<RestResponse> responseHandler) {
         Holder<HttpClientResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
@@ -571,7 +560,7 @@ public class TestServiceRegistryClientImpl {
         return 400;
       }
     }.getMockInstance();
-    new MockUp<RestUtils>() {
+    new MockUp<RestClientUtil>() {
       @Mock
       void put(IpPort ipPort, String uri, RequestParam requestParam, Handler<RestResponse> responseHandler) {
         Holder<HttpClientResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
