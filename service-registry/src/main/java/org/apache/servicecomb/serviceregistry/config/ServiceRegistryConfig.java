@@ -18,7 +18,9 @@
 package org.apache.servicecomb.serviceregistry.config;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 
@@ -138,6 +140,8 @@ public final class ServiceRegistryConfig {
   private String proxyUsername;
 
   private String proxyPasswd;
+
+  private List<AuthHeaderProvider> authHeaderProviders;
 
   /**
    * Read the service registry related configurations and build the {@link ServiceRegistryConfig}
@@ -410,6 +414,16 @@ public final class ServiceRegistryConfig {
 
   public ServiceRegistryConfig setProxyPasswd(String proxyPasswd) {
     this.proxyPasswd = proxyPasswd;
+    return this;
+  }
+
+  public List<AuthHeaderProvider> getAuthHeaderProviders() {
+    return authHeaderProviders;
+  }
+
+  public ServiceRegistryConfig setAuthHeaderProviders(
+      List<AuthHeaderProvider> authHeaderProviders) {
+    this.authHeaderProviders = authHeaderProviders;
     return this;
   }
 }

@@ -25,8 +25,10 @@ import java.util.Objects;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.deployment.DeploymentProvider;
+import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +78,8 @@ class ServiceRegistryConfigBuilder {
         .setProxyHost(getProxyHost())
         .setProxyPort(getProxyPort())
         .setProxyUsername(getProxyUsername())
-        .setProxyPasswd(getProxyPasswd());
+        .setProxyPasswd(getProxyPasswd())
+        .setAuthHeaderProviders(getAuthHeaderProviders());
   }
 
   public HttpVersion getHttpVersion() {
@@ -290,6 +293,10 @@ class ServiceRegistryConfigBuilder {
 
   public String getProxyPasswd() {
     return getProperty(null, ServiceRegistryConfig.PROXY_PASSWD);
+  }
+
+  public List<AuthHeaderProvider> getAuthHeaderProviders() {
+    return SPIServiceUtils.getAllService(AuthHeaderProvider.class);
   }
 
   private String getProperty(String defaultValue, String... keys) {
