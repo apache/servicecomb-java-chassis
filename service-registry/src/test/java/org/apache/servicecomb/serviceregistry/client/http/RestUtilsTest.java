@@ -28,6 +28,7 @@ import org.junit.Test;
 import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpMethod;
 
+@SuppressWarnings("deprecation")
 public class RestUtilsTest {
   @Test
   public void defaultHeadersContainServiceRegistryAndAuthentication() throws Exception {

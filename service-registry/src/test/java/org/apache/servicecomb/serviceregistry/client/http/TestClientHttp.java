@@ -63,24 +63,34 @@ public class TestClientHttp {
       public void await() throws InterruptedException {
       }
     };
-    new MockUp<RestUtils>() {
+    new MockUp<RestClientUtil>() {
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
       }
     };
-
-    new MockUp<WebsocketUtils>() {
+    new MockUp<WebsocketClientUtil>() {
       @Mock
       void open(IpPort ipPort, String url, Handler<Void> onOpen, Handler<Void> onClose,
           Handler<Buffer> onMessage, Handler<Throwable> onException,
           Handler<Throwable> onConnectFailed) {
       }
     };
+    // mock up this two client pool, since this UT case doesn't require the client pool actually boot up.
+    new MockUp<HttpClientPool>() {
+      @Mock
+      void create() {
+      }
+    };
+    new MockUp<WebsocketClientPool>() {
+      @Mock
+      void create() {
+      }
+    };
 
     MicroserviceFactory microserviceFactory = new MicroserviceFactory();
     Microservice microservice = microserviceFactory.create("app", "ms");
 
-    ServiceRegistryClientImpl oClient = new ServiceRegistryClientImpl(manager);
+    ServiceRegistryClientImpl oClient = new ServiceRegistryClientImpl(manager, ServiceRegistryConfig.INSTANCE);
     oClient.init();
     oClient.registerMicroservice(microservice);
     oClient.registerMicroserviceInstance(microservice.getInstance());

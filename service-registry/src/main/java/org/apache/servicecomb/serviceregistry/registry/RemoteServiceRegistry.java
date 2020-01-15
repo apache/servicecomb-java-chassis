@@ -72,7 +72,7 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
 
   @Override
   protected ServiceRegistryClient createServiceRegistryClient() {
-    return new ServiceRegistryClientImpl(ipPortManager);
+    return new ServiceRegistryClientImpl(ipPortManager, serviceRegistryConfig);
   }
 
   @Override
