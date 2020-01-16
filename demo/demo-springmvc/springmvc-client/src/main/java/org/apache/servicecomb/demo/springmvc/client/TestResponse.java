@@ -54,10 +54,9 @@ public class TestResponse {
   public void runAllTransport() {
     testvoidResponse();
     testVoidResponse();
-    // TODO : WEAK not supported now in HIGHWAY
-    // checkQueryObject();
-    //  testCseResponse();
-    // testResponseEntity();
+    checkQueryObject();
+    testCseResponse();
+    testResponseEntity();
   }
 
   private void testCseResponse() {

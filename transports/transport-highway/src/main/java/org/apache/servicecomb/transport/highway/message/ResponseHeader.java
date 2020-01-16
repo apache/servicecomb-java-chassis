@@ -54,7 +54,6 @@ public class ResponseHeader {
 
   private Map<String, String> context;
 
-  // TODO : WEAK map headers
   private Headers headers = new Headers();
 
   public int getFlags() {

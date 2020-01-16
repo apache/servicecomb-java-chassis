@@ -68,6 +68,7 @@ public class AnyEntrySchema implements SchemaEx<Object> {
   }
 
   @Override
+  @SuppressWarnings({"rawtypes", "unchecked"})
   public void mergeFrom(InputEx input, Object message) throws IOException {
     input.readFieldNumber();
     String typeUrl = input.readString();

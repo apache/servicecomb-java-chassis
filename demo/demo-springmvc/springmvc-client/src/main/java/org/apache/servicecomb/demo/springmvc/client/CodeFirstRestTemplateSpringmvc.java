@@ -112,7 +112,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     testRestTemplate.runAllTest();
     testBizkeeper.runAllTest();
     // TODO : WEAK not supported now in HIGHWAY
-//    testResponseEntity("springmvc", template, cseUrlPrefix);
+    testResponseEntity("springmvc", template, cseUrlPrefix);
 //    testCodeFirstTestForm(template, cseUrlPrefix);
 //    testFallback(template, cseUrlPrefix);
 

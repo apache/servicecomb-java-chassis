@@ -72,10 +72,6 @@ public final class HighwayCodec {
   private static Map<String, Object> swaggerArgumentsToInvocationArguments(Invocation invocation,
       OperationMeta operationMeta,
       Map<String, Object> swaggerArguments) {
-    if (swaggerArguments == null || swaggerArguments.isEmpty()) {
-      // void types represented by null
-      return swaggerArguments;
-    }
     if (operationMeta.getSwaggerProducerOperation() != null && !invocation.isEdge()) {
       return operationMeta.getSwaggerProducerOperation().getArgumentsMapper()
           .swaggerArgumentToInvocationArguments(invocation, swaggerArguments);
