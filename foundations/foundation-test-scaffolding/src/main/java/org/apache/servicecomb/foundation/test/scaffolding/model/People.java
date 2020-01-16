@@ -15,32 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.pojo.server;
+package org.apache.servicecomb.foundation.test.scaffolding.model;
 
 import java.util.List;
 
-import org.apache.servicecomb.demo.server.GenericsModel;
-import org.apache.servicecomb.provider.pojo.RpcSchema;
+public class People {
+  public String name;
 
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-
-@RpcSchema(schemaId = "WeakPojo")
-public class WeakPojo {
-  @ApiOperation(value = "differentName", nickname = "differentName")
-  public int diffNames(@ApiParam(name = "x") int a, @ApiParam(name = "y") int b) {
-    return a * 2 + b;
-  }
-
-  public List<List<String>> genericParams(int code, List<List<String>> names) {
-    return names;
-  }
-
-  public GenericsModel genericParamsModel(int code, GenericsModel model) {
-    return model;
-  }
-
-  public Object obj(Object obj) {
-    return obj;
-  }
+  public List<People> friends;
 }

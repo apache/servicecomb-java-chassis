@@ -38,8 +38,10 @@ import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchem
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Empty;
+import org.apache.servicecomb.foundation.test.scaffolding.model.People;
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
@@ -52,6 +54,8 @@ import org.apache.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGenera
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.Swagger;
 import mockit.Expectations;
@@ -166,13 +170,15 @@ public class TestSchemaMetaCodec {
     ResponseRootSerializer responseSerializer = providerOperationProtobuf.findResponseRootSerializer(200);
     values = responseSerializer.serialize(user);
     ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseRootDeserializer(200);
-    User decodedUser = (User) responseDeserializer.deserialize(values);
+    User decodedUser = (User) responseDeserializer
+        .deserialize(values, TypeFactory.defaultInstance().constructType(User.class));
     Assert.assertEquals(user.name, decodedUser.name);
     Assert.assertEquals(user.friends.get(0).name, decodedUser.friends.get(0).name);
 
     user.friends = new ArrayList<>();
     values = responseSerializer.serialize(user);
-    decodedUser = (User) responseDeserializer.deserialize(values);
+    decodedUser = (User) responseDeserializer
+        .deserialize(values, TypeFactory.defaultInstance().constructType(User.class));
     Assert.assertEquals(user.name, decodedUser.name);
     // proto buffer encode and decode empty list to be null
     Assert.assertEquals(null, decodedUser.friends);
@@ -236,13 +242,13 @@ public class TestSchemaMetaCodec {
     ResponseRootSerializer responseSerializer = providerOperationProtobuf.findResponseRootSerializer(200);
     values = responseSerializer.serialize(userMap);
     ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseRootDeserializer(200);
-    Map<String, User> decodedUser = (Map<String, User>) responseDeserializer.deserialize(values);
+    Map<String, User> decodedUser = (Map<String, User>) responseDeserializer.deserialize(values, ProtoConst.MAP_TYPE);
     Assert.assertEquals(user.name, decodedUser.get("test").name);
     Assert.assertEquals(user.friends.get(0).name, decodedUser.get("test").friends.get(0).name);
 
     user.friends = new ArrayList<>();
     values = responseSerializer.serialize(userMap);
-    decodedUser = (Map<String, User>) responseDeserializer.deserialize(values);
+    decodedUser = (Map<String, User>) responseDeserializer.deserialize(values, ProtoConst.MAP_TYPE);
     Assert.assertEquals(user.name, decodedUser.get("test").name);
     // proto buffer encode and decode empty list to be null
     Assert.assertEquals(null, decodedUser.get("test").friends);
@@ -359,7 +365,8 @@ public class TestSchemaMetaCodec {
     ResponseRootSerializer responseSerializer = providerOperationProtobuf.findResponseRootSerializer(200);
     values = responseSerializer.serialize(30);
     ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseRootDeserializer(200);
-    Object decodedValue = responseDeserializer.deserialize(values);
+    Object decodedValue = responseDeserializer
+        .deserialize(values, TypeFactory.defaultInstance().constructType(int.class));
     Assert.assertEquals(30, (int) decodedValue);
   }
 
@@ -431,5 +438,69 @@ public class TestSchemaMetaCodec {
       // proto buffer encode and decode empty list to be null
       Assert.assertEquals("friend", user.friends.get(0).name);
     }
+  }
+
+  @Test
+  public void testProtoSchemaOperationObjSpringMVC() throws Exception {
+    mockSchemaMeta(new SpringmvcSwaggerGenerator(ProtoSchema.class), new ProtoSchema());
+    testProtoSchemaOperationObjImpl(false);
+  }
+
+  @Test
+  public void testProtoSchemaOperationObjPOJO() throws Exception {
+    mockSchemaMeta(new PojoSwaggerGenerator(ProtoSchemaPojo.class), new ProtoSchemaPojo());
+    testProtoSchemaOperationObjImpl(true);
+  }
+
+  private void testProtoSchemaOperationObjImpl(boolean isPojo) throws IOException {
+    OperationProtobuf providerOperationProtobuf = ProtobufManager
+        .getOrCreateOperation(providerSchemaMeta.getOperations().get("obj"));
+    OperationProtobuf consumerOperationProtobuf = ProtobufManager
+        .getOrCreateOperation(consumerSchemaMeta.getOperations().get("obj"));
+    byte[] values;
+
+    // request message
+    RequestRootSerializer requestSerializer = consumerOperationProtobuf.getRequestRootSerializer();
+    Map<String, Object> args = new HashMap<>();
+    args.put("value", 2);
+
+    values = requestSerializer.serialize(args);
+    RequestRootDeserializer<Object> requestDeserializer = providerOperationProtobuf.getRequestRootDeserializer();
+    Map<String, Object> decodedArgs = requestDeserializer.deserialize(values);
+    int result = (int) decodedArgs.get("value");
+    Assert.assertEquals(2, result);
+
+    User user = new User();
+    user.name = "user";
+    User friend = new User();
+    friend.name = "friend";
+    List<User> friends = new ArrayList<>();
+    friends.add(friend);
+    user.friends = friends;
+    args.put("value", user);
+    values = requestSerializer.serialize(args);
+    decodedArgs = requestDeserializer.deserialize(values);
+    Map<String, Object> userMap = (Map<String, Object>) decodedArgs.get("value");
+    Assert.assertEquals("user", userMap.get("name"));
+    // proto buffer encode and decode empty list to be null
+    friends = (List<User>) userMap.get("friends");
+    Map<String, Object> friendMap = (Map<String, Object>) friends.get(0);
+    Assert.assertEquals("friend", friendMap.get("name"));
+
+    args.clear();
+    People people = new People();
+    people.name = "user";
+    People pFriend = new People();
+    pFriend.name = "friend";
+    List<People> pFriends = new ArrayList<>();
+    pFriends.add(pFriend);
+    people.friends = pFriends;
+    args.put("value", people);
+    values = requestSerializer.serialize(args);
+    decodedArgs = requestDeserializer.deserialize(values);
+    people = (People) decodedArgs.get("value");
+    Assert.assertEquals("user", people.name);
+    // proto buffer encode and decode empty list to be null
+    Assert.assertEquals("friend", people.friends.get(0).name);
   }
 }

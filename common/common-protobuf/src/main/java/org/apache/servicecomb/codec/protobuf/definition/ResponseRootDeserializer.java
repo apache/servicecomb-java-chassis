@@ -18,33 +18,37 @@ package org.apache.servicecomb.codec.protobuf.definition;
 
 import java.io.IOException;
 
+import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyWrapper;
 
-public class ResponseRootDeserializer<T> {
-  private boolean wrapProperty;
+import com.fasterxml.jackson.databind.JavaType;
 
+public class ResponseRootDeserializer<T> {
   private RootDeserializer<T> rootDeserializer;
 
   private boolean empty;
 
-  public ResponseRootDeserializer(RootDeserializer<T> rootDeserializer, boolean wrapProperty, boolean empty) {
+  public ResponseRootDeserializer(RootDeserializer<T> rootDeserializer, boolean empty) {
     this.rootDeserializer = rootDeserializer;
-    this.wrapProperty = wrapProperty;
     this.empty = empty;
   }
 
   @SuppressWarnings("unchecked")
-  public T deserialize(byte[] bytes) throws IOException {
+  public T deserialize(byte[] bytes, JavaType invocationTimeType) throws IOException {
     if (empty) {
-      T a = rootDeserializer.deserialize(bytes); // read buffers if possible.
+      rootDeserializer.deserialize(bytes); // read buffers if possible.
       return null;
     }
 
-    if (wrapProperty) {
-      return ((PropertyWrapper<T>) rootDeserializer.deserialize(bytes)).getValue();
-    } else {
-      return rootDeserializer.deserialize(bytes);
+    Object obj = rootDeserializer.deserialize(bytes);
+    if (obj instanceof PropertyWrapper) {
+      obj = ((PropertyWrapper) obj).getValue();
     }
+    if (obj != null && !invocationTimeType.isPrimitive() && !invocationTimeType.getRawClass()
+        .isAssignableFrom(obj.getClass())) {
+      obj = JsonUtils.convertValue(obj, invocationTimeType.getRawClass());
+    }
+    return (T) obj;
   }
 }

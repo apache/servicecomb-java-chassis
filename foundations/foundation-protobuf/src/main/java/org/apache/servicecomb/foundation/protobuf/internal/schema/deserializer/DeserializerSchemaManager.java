@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
 import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
+import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
@@ -99,6 +100,10 @@ public class DeserializerSchemaManager extends SchemaManager {
   }
 
   public <T> RootDeserializer<T> createRootDeserializer(Message message, Type type) {
+    if (ProtoUtils.isAnyMessage(message)) {
+      SchemaEx<Object> messageSchema = new AnyEntrySchema(protoMapper, type);
+      return new RootDeserializer(messageSchema);
+    }
     JavaType javaType = TypeFactory.defaultInstance().constructType(type);
     SchemaEx<T> messageSchema = getOrCreateMessageSchema(message, javaType);
     return new RootDeserializer<>(messageSchema);
@@ -226,7 +231,7 @@ public class DeserializerSchemaManager extends SchemaManager {
     }
 
     if (ProtoUtils.isAnyField(protoField)) {
-      AnyEntrySchema anyEntrySchema = new AnyEntrySchema(protoMapper);
+      AnyEntrySchema anyEntrySchema = new AnyEntrySchema(protoMapper, null);
       return AnyRepeatedReadSchemas.create(protoField, propertyDescriptor, anyEntrySchema);
     }
 

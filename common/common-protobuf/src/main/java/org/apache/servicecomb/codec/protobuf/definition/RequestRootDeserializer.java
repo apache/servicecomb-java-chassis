@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
+import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyWrapper;
 
 public class RequestRootDeserializer<T> {
   private boolean wrapArgument;
@@ -42,7 +43,11 @@ public class RequestRootDeserializer<T> {
         return null;
       }
       Map<String, Object> result = new HashMap<>(1);
-      result.put(parameterName, rootDeserializer.deserialize(bytes));
+      Object obj = rootDeserializer.deserialize(bytes);
+      if (obj instanceof PropertyWrapper) {
+        obj = ((PropertyWrapper) obj).getValue();
+      }
+      result.put(parameterName, obj);
       return result;
     } else {
       return (Map<String, Object>) rootDeserializer.deserialize(bytes);

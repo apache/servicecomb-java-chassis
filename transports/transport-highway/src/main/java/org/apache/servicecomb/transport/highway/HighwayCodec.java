@@ -115,7 +115,7 @@ public final class HighwayCodec {
     }
 
     ResponseRootDeserializer<Object> bodySchema = operationProtobuf.findResponseRootDeserializer(header.getStatusCode());
-    Object body = bodySchema.deserialize(tcpData.getBodyBuffer().getBytes());
+    Object body = bodySchema.deserialize(tcpData.getBodyBuffer().getBytes(), invocation.findResponseType(header.getStatusCode()));
 
     Response response = Response.create(header.getStatusCode(), header.getReasonPhrase(), body);
     response.setHeaders(header.getHeaders());

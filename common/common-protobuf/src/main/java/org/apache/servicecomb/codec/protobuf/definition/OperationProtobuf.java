@@ -29,6 +29,8 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 
+import com.fasterxml.jackson.databind.JavaType;
+
 import io.protostuff.compiler.model.Message;
 
 @SuppressWarnings("rawtypes")
@@ -123,7 +125,7 @@ public class OperationProtobuf {
     ProtoMapper mapper = scopedProtobufSchemaManager.getOrCreateProtoMapper(operationMeta.getSchemaMeta());
     Message responseMessage = mapper.getResponseMessage(operationMeta.getOperationId());
 
-    Type responseType = operationMeta.getResponsesMeta().findResponseType(Status.OK.getStatusCode());
+    JavaType responseType = operationMeta.getResponsesMeta().findResponseType(Status.OK.getStatusCode());
     if (operationMeta.getSwaggerProducerOperation() != null) {
       if (ProtoUtils.isWrapProperty(responseMessage)) {
         responseRootSerializer = new ResponseRootSerializer(
@@ -142,18 +144,18 @@ public class OperationProtobuf {
         responseRootSerializer = new ResponseRootSerializer(
             mapper.createRootSerializer(responseMessage, responseType), true, false);
         responseRootDeserializer = new ResponseRootDeserializer<>(
-            mapper.createRootDeserializer(responseMessage, responseType), true, false);
+            mapper.createRootDeserializer(responseMessage, responseType), false);
       } else {
         if (ProtoUtils.isEmptyMessage(responseMessage)) {
           responseRootSerializer = new ResponseRootSerializer(mapper.createRootSerializer(responseMessage,
               Object.class), false, false);
           responseRootDeserializer = new ResponseRootDeserializer<>(
-              mapper.createRootDeserializer(responseMessage, Object.class), false, true);
+              mapper.createRootDeserializer(responseMessage, Object.class), true);
         } else {
           responseRootSerializer = new ResponseRootSerializer(mapper.createRootSerializer(responseMessage,
               responseType), false, false);
           responseRootDeserializer = new ResponseRootDeserializer<>(
-              mapper.createRootDeserializer(responseMessage, responseType), false, false);
+              mapper.createRootDeserializer(responseMessage, responseType), false);
         }
       }
     }
