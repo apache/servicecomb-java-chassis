@@ -34,8 +34,7 @@ public class TestRestTemplate {
     testvoidResponse();
     testVoidResponse();
     checkAllVoidTestResult();
-    // TODO : WEAK not supported now in HIGHWAY
-    //checkQueryObject();
+    checkQueryObject();
   }
 
   public void runRest() {

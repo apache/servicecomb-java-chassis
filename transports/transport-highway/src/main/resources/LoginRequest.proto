@@ -15,10 +15,10 @@
   limitations under the License.
  */
 
-syntax = "proto2";
+syntax = "proto3";
 package org.apache.servicecomb.transport.highway.message;
 
 message LoginRequest {
-  required string protocol = 1;
-  required string zipName = 2;
+  string protocol = 1;
+  string zipName = 2;
 }

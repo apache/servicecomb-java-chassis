@@ -55,10 +55,9 @@ public class TestObject {
   }
 
   public void runAllTransport() {
-    // TODO : WEAK not supported now in HIGHWAY
     testObject();
-//    testListObject();
-//    testHolderObject();
+    testListObject();
+    testHolderObject();
   }
 
   @SuppressWarnings("unchecked")

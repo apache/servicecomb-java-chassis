@@ -39,13 +39,13 @@ public class RequestRootDeserializer<T> {
   @SuppressWarnings("unchecked")
   public Map<String, Object> deserialize(byte[] bytes) throws IOException {
     if (!wrapArgument) {
-      if (parameterName == null) {
-        return null;
-      }
       Map<String, Object> result = new HashMap<>(1);
       Object obj = rootDeserializer.deserialize(bytes);
       if (obj instanceof PropertyWrapper) {
         obj = ((PropertyWrapper) obj).getValue();
+      }
+      if (parameterName == null) {
+        return result;
       }
       result.put(parameterName, obj);
       return result;

@@ -99,6 +99,7 @@ public class DeserializerSchemaManager extends SchemaManager {
     return new RootDeserializer<>(messageSchema);
   }
 
+  @SuppressWarnings({"rawtypes", "unchecked"})
   public <T> RootDeserializer<T> createRootDeserializer(Message message, Type type) {
     if (ProtoUtils.isAnyMessage(message)) {
       SchemaEx<Object> messageSchema = new AnyEntrySchema(protoMapper, type);

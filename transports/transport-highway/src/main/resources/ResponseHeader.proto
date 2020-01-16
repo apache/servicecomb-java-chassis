@@ -15,17 +15,23 @@
   limitations under the License.
  */
 
-syntax = "proto2";
+syntax = "proto3";
+import "google/protobuf/any.proto";
 package org.apache.servicecomb.transport.highway.message;
 
 message ResponseHeader {
-  required int32 statusCode = 1;
-  required string reason = 2;
-  map<string,string> context = 3;
-  // TODO : map retsponse headers
-  // required Headers headers = 4;
+  int32 flags = 1;
+  int32 statusCode = 2;
+  string reasonPhrase = 3;
+  map<string,string> context = 4;
+  Headers headers = 5;
 }
 
 message Headers {
+  map<string,ListGoogle_protobuf_Any> headerMap = 1;
+}
 
+//@WrapProperty
+message ListGoogle_protobuf_Any {
+  repeated google.protobuf.Any value = 1;
 }
