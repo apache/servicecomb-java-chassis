@@ -46,6 +46,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
 import io.swagger.models.Swagger;
 import mockit.Expectations;
 import mockit.Injectable;
@@ -123,13 +125,13 @@ public class TestSchemaMetaCodecRestTemplate {
     ResponseRootSerializer responseSerializer = providerOperationProtobuf.findResponseRootSerializer(200);
     values = responseSerializer.serialize(user);
     ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseRootDeserializer(200);
-    User decodedUser = (User) responseDeserializer.deserialize(values);
+    User decodedUser = (User) responseDeserializer.deserialize(values, TypeFactory.defaultInstance().constructType(User.class));
     Assert.assertEquals(user.name, decodedUser.name);
     Assert.assertEquals(user.friends.get(0).name, decodedUser.friends.get(0).name);
 
     user.friends = new ArrayList<>();
     values = responseSerializer.serialize(user);
-    decodedUser = (User) responseDeserializer.deserialize(values);
+    decodedUser = (User) responseDeserializer.deserialize(values, TypeFactory.defaultInstance().constructType(User.class));
     Assert.assertEquals(user.name, decodedUser.name);
     // proto buffer encode and decode empty list to be null
     Assert.assertEquals(null, decodedUser.friends);
@@ -213,7 +215,7 @@ public class TestSchemaMetaCodecRestTemplate {
     ResponseRootSerializer responseSerializer = providerOperationProtobuf.findResponseRootSerializer(200);
     values = responseSerializer.serialize(30);
     ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseRootDeserializer(200);
-    Object decodedValue = responseDeserializer.deserialize(values);
+    Object decodedValue = responseDeserializer.deserialize(values, TypeFactory.defaultInstance().constructType(int.class));
     Assert.assertEquals(30, (int) decodedValue);
   }
 }

@@ -87,6 +87,10 @@ interface GenericsModelInf {
   GenericsModel genericParamsModel(int code, GenericsModel model);
 }
 
+interface ObjectInf {
+  GenericsModel obj(GenericsModel obj);
+}
+
 @Component
 public class TestWeakPojo implements CategorizedTestCase {
   @RpcReference(microserviceName = "pojo", schemaId = "WeakPojo")
@@ -101,16 +105,40 @@ public class TestWeakPojo implements CategorizedTestCase {
   @RpcReference(microserviceName = "pojo", schemaId = "WeakPojo")
   private GenericsModelInf genericsModelInf;
 
+  @RpcReference(microserviceName = "pojo", schemaId = "WeakPojo")
+  private ObjectInf objectInf;
+
   @Override
   public void testAllTransport() throws Exception {
-    getDiffName();
+    testDiffName();
 
     testGenerics();
 
-    getGenericsModel();
+    testGenericsModel();
+
+    testObject();
   }
 
-  private void getGenericsModel() throws JsonProcessingException {
+  private void testObject() throws JsonProcessingException {
+    GenericsModel model = new GenericsModel();
+    model.setName("model");
+    List<List<String>> namesList = new ArrayList<>();
+    List<String> names = new ArrayList<>();
+    names.add("hello");
+    namesList.add(names);
+    model.setNameList(namesList);
+    List<List<List<Object>>> objectLists = new ArrayList<>();
+    List<List<Object>> objectList = new ArrayList<>();
+    List<Object> objects = new ArrayList<>();
+    objects.add("object");
+    objectList.add(objects);
+    objectLists.add(objectList);
+    model.setObjectLists(objectLists);
+    GenericsModel result = objectInf.obj(model);
+    TestMgr.check(JsonUtils.writeValueAsString(model), JsonUtils.writeValueAsString(result));
+  }
+
+  private void testGenericsModel() throws JsonProcessingException {
     GenericsModel model = new GenericsModel();
     model.setName("model");
     List<List<String>> namesList = new ArrayList<>();
@@ -140,7 +168,7 @@ public class TestWeakPojo implements CategorizedTestCase {
     TestMgr.check("hello", nameListResult.get(0).get(0));
   }
 
-  private void getDiffName() {
+  private void testDiffName() {
     TestMgr.check(7, diffNames.differentName(2, 3));
     TestMgr.check(8, diffNames2.differentName(2, 3));
     Map<String, Object> args = new HashMap<>();

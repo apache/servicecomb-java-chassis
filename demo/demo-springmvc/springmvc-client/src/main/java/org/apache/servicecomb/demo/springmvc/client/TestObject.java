@@ -18,7 +18,6 @@ package org.apache.servicecomb.demo.springmvc.client;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +26,6 @@ import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.demo.EmptyObject;
 import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.foundation.test.scaffolding.model.Empty;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import org.springframework.web.client.RestTemplate;
@@ -58,7 +56,7 @@ public class TestObject {
 
   public void runAllTransport() {
     // TODO : WEAK not supported now in HIGHWAY
-//    testObject();
+    testObject();
 //    testListObject();
 //    testHolderObject();
   }
@@ -149,9 +147,12 @@ public class TestObject {
 
     // emptyObject
     result = intf.testObject(new EmptyObject());
-    TestMgr.check("{}", result);
-    TestMgr.check(LinkedHashMap.class, result.getClass());
+    // result may not be an empty map in highway
+    //    TestMgr.check("{}", result);
+    TestMgr.check(true, Map.class.isAssignableFrom(result.getClass()));
 
+    result = restTemplate.postForObject(prefix + "/object", new EmptyObject(), EmptyObject.class);
+    TestMgr.check(EmptyObject.class, result.getClass());
     result = restTemplate.postForObject(prefix + "/object", new EmptyObject(), EmptyObject.class);
     TestMgr.check(EmptyObject.class, result.getClass());
 
@@ -159,21 +160,21 @@ public class TestObject {
     Map<String, String> map = Collections.singletonMap("k", "v");
     result = intf.testObject(map);
     TestMgr.check("{k=v}", result);
-    TestMgr.check(LinkedHashMap.class, result.getClass());
+    TestMgr.check(true, Map.class.isAssignableFrom(result.getClass()));
 
     result = restTemplate.postForObject(prefix + "/object", map, Map.class);
     TestMgr.check("{k=v}", result);
-    TestMgr.check(LinkedHashMap.class, result.getClass());
+    TestMgr.check(true, Map.class.isAssignableFrom(result.getClass()));
 
     // list
     List<String> list = Collections.singletonList("v");
     result = intf.testObject(list);
     TestMgr.check("[v]", result);
-    TestMgr.check(ArrayList.class, result.getClass());
+    TestMgr.check(true, List.class.isAssignableFrom(result.getClass()));
 
     result = restTemplate.postForObject(prefix + "/object", list, List.class);
     TestMgr.check("[v]", result);
-    TestMgr.check(ArrayList.class, result.getClass());
+    TestMgr.check(true, List.class.isAssignableFrom(result.getClass()));
 
     // generic
     Holder<String> holder = new Holder<>("v");

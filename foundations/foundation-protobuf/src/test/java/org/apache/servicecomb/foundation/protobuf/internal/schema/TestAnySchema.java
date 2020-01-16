@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
+import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.protobuf.internal.TestSchemaBase;
 import org.apache.servicecomb.foundation.protobuf.internal.model.ProtobufRoot;
 import org.apache.servicecomb.foundation.protobuf.internal.model.Root;
@@ -63,7 +64,7 @@ public class TestAnySchema extends TestSchemaBase {
     check();
 
     Map<String, Object> map = new HashMap<>();
-    map.put("@type", "User");
+    map.put(ProtoConst.JSON_ID_NAME, "User");
     map.put("name", "n1");
     Root root = new Root();
     root.setAny(map);

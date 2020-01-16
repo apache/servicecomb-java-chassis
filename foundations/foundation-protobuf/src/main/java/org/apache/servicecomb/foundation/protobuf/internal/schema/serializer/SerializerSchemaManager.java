@@ -27,6 +27,7 @@ import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.SchemaManager;
+import org.apache.servicecomb.foundation.protobuf.internal.schema.any.AnyEntrySchema;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.any.AnySchema;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.repeated.impl.AnyRepeatedWriteSchemas;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.repeated.impl.BytesRepeatedWriteSchemas;
@@ -93,6 +94,10 @@ public class SerializerSchemaManager extends SchemaManager {
   }
 
   public RootSerializer createRootSerializer(Message message, Type type) {
+    if (ProtoUtils.isAnyMessage(message)) {
+      SchemaEx<Object> messageSchema = new AnyEntrySchema(protoMapper, type);
+      return new RootSerializer(messageSchema);
+    }
     JavaType javaType = TypeFactory.defaultInstance().constructType(type);
     SchemaEx<Object> messageSchema = getOrCreateMessageSchema(message, javaType);
     return new RootSerializer(messageSchema);

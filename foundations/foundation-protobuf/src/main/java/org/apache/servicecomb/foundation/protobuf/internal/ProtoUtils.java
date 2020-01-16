@@ -33,6 +33,10 @@ public final class ProtoUtils {
     return protoField.getCanonicalName().equals(ProtoConst.EMPTY.getCanonicalName());
   }
 
+  public static boolean isAnyMessage(Message protoField) {
+    return protoField.getCanonicalName().equals(ProtoConst.ANY.getCanonicalName());
+  }
+
   public static boolean isAnyField(Field protoField) {
     return protoField.getType().getCanonicalName().equals(ProtoConst.ANY.getCanonicalName());
   }

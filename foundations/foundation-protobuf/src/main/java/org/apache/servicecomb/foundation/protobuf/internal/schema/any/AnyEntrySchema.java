@@ -17,6 +17,7 @@
 package org.apache.servicecomb.foundation.protobuf.internal.schema.any;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
@@ -24,8 +25,10 @@ import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
 import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
 import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
+import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyWrapper;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.protostuff.InputEx;
 import io.protostuff.OutputEx;
@@ -47,13 +50,21 @@ public class AnyEntrySchema implements SchemaEx<Object> {
 
   private final int valueTag = WireFormat.makeTag(2, WireFormat.WIRETYPE_LENGTH_DELIMITED);
 
-  public AnyEntrySchema(ProtoMapper protoMapper) {
+  private Type anyTargetType;
+
+  public AnyEntrySchema(ProtoMapper protoMapper, Type type) {
     this.protoMapper = protoMapper;
+    this.anyTargetType = type;
   }
 
   @Override
   public void init() {
 
+  }
+
+  @Override
+  public Object newMessage() {
+    return new PropertyWrapper<>();
   }
 
   @Override
@@ -66,12 +77,19 @@ public class AnyEntrySchema implements SchemaEx<Object> {
 
     input.readFieldNumber();
 
-    AnyEntry anyEntry = (AnyEntry) message;
-    anyEntry.setTypeUrl(typeUrl);
-    anyEntry.setValue(bytes);
+    if (message instanceof PropertyWrapper) {
+      if (typeUrl.startsWith(ProtoConst.PACK_SCHEMA)) {
+        ((PropertyWrapper) message).setValue(standardUnpack(typeUrl, bytes));
+      } else {
+        ((PropertyWrapper) message).setValue(jsonExtendMergeFrom(typeUrl, bytes));
+      }
+    } else if (message instanceof AnyEntry) {
+      ((AnyEntry) message).setTypeUrl(typeUrl);
+      ((AnyEntry) message).setValue(bytes);
+    }
   }
 
-  public Object deseriaze(InputEx input) throws IOException {
+  public Object deserialize(InputEx input) throws IOException {
     AnyEntry anyEntry = new AnyEntry();
     input.mergeObject(anyEntry, this);
 
@@ -101,12 +119,27 @@ public class AnyEntrySchema implements SchemaEx<Object> {
           "can not find proto message to create deserializer, name=" + msgCanonicalName);
     }
 
-    JavaType javaType = protoMapper.getAnyTypes().getOrDefault(msgCanonicalName, ProtoConst.MAP_TYPE);
+    JavaType javaType = protoMapper.getAnyTypes()
+        .getOrDefault(msgCanonicalName, constructRuntimeType(ProtoConst.MAP_TYPE));
     return protoMapper.createRootDeserializer(message, javaType);
   }
 
   protected Object jsonExtendMergeFrom(String typeUrl, byte[] bytes) throws IOException {
-    return protoMapper.getJsonMapper().readValue(bytes, Object.class);
+    try {
+      return protoMapper.getJsonMapper()
+          .readValue(bytes, Class.forName(typeUrl.substring(ProtoConst.JSON_SCHEMA.length())));
+    } catch (ClassNotFoundException e) {
+      return protoMapper.getJsonMapper()
+          .readValue(bytes, constructRuntimeType(ProtoConst.OBJECT_TYPE));
+    }
+  }
+
+  private JavaType constructRuntimeType(JavaType defaultType) {
+    if (this.anyTargetType == null) {
+      return defaultType;
+    } else {
+      return TypeFactory.defaultInstance().constructType(anyTargetType);
+    }
   }
 
   protected String getInputActualTypeName(Object input) {
