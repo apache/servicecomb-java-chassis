@@ -68,7 +68,7 @@ public class SpringmvcClient {
       TestMgr.check("success", "failed");
       LOGGER.error("-------------- test failed -------------");
       LOGGER.error("", e);
-      System.err.println("-------------- test failed -------------");
+      LOGGER.error("-------------- test failed -------------");
     }
     TestMgr.summary();
   }

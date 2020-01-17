@@ -73,8 +73,6 @@ public class TestInvocationToHttpServletRequest {
         result = swaggerOperation;
         invocation.getHandlerContext();
         result = handlerContext;
-        invocation.getArguments();
-        result = args;
       }
     };
 
@@ -309,8 +307,6 @@ public class TestInvocationToHttpServletRequest {
         result = operationMeta;
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
         result = swaggerOperation;
-        invocation.getArguments();
-        result = args;
         invocation.getHandlerContext();
         result = handlerContext;
       }

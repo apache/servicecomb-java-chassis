@@ -82,7 +82,7 @@ public class CseAsyncClientHttpRequestTest {
     byte[] body = "abc".getBytes();
     client.setRequestBody(body);
     client.executeAsync();
-    Assert.assertArrayEquals(body, ( byte[])holder.value.getArguments().get("input"));
+    Assert.assertArrayEquals(body, ( byte[])holder.value.getInvocationArguments().get("input"));
   }
 
   @Test

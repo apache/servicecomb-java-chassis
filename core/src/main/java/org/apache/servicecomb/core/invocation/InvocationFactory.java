@@ -37,10 +37,10 @@ public final class InvocationFactory {
   }
 
   public static Invocation forConsumer(ReferenceConfig referenceConfig, OperationMeta operationMeta,
-      Map<String, Object> arguments) {
+      Map<String, Object> swaggerArguments) {
     Invocation invocation = new Invocation(referenceConfig,
         operationMeta,
-        arguments);
+        swaggerArguments);
     invocation.addContext(Const.SRC_MICROSERVICE, getMicroserviceName());
     return invocation;
   }
@@ -49,9 +49,9 @@ public final class InvocationFactory {
    * consumer端使用，schemaMeta级别的缓存，每次调用根据operationName来执行
    */
   public static Invocation forConsumer(ReferenceConfig referenceConfig, SchemaMeta schemaMeta, String operationId,
-      Map<String, Object> arguments) {
+      Map<String, Object> swaggerArguments) {
     OperationMeta operationMeta = schemaMeta.ensureFindOperation(operationId);
-    return forConsumer(referenceConfig, operationMeta, arguments);
+    return forConsumer(referenceConfig, operationMeta, swaggerArguments);
   }
 
   /*
@@ -59,10 +59,10 @@ public final class InvocationFactory {
    */
   public static Invocation forProvider(Endpoint endpoint,
       OperationMeta operationMeta,
-      Map<String, Object> arguments) {
+      Map<String, Object> swaggerArguments) {
     SCBEngine.getInstance().ensureStatusUp();
     return new Invocation(endpoint,
         operationMeta,
-        arguments);
+        swaggerArguments);
   }
 }

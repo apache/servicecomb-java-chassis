@@ -37,12 +37,12 @@ public final class InvokerUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(InvokerUtils.class);
 
   public static Object syncInvoke(String microserviceName, String schemaId, String operationId,
-      Map<String, Object> args) {
-    return syncInvoke(microserviceName, null, null, schemaId, operationId, args);
+      Map<String, Object> swaggerArguments) {
+    return syncInvoke(microserviceName, null, null, schemaId, operationId, swaggerArguments);
   }
 
   public static Object syncInvoke(String microserviceName, String microserviceVersion, String transport,
-      String schemaId, String operationId, Map<String, Object> args) {
+      String schemaId, String operationId, Map<String, Object> swaggerArguments) {
     MicroserviceReferenceConfig microserviceReferenceConfig = SCBEngine.getInstance()
         .createMicroserviceReferenceConfig(microserviceName, microserviceVersion);
     MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getLatestMicroserviceMeta();
@@ -50,7 +50,7 @@ public final class InvokerUtils {
     OperationMeta operationMeta = schemaMeta.ensureFindOperation(operationId);
 
     ReferenceConfig referenceConfig = microserviceReferenceConfig.createReferenceConfig(transport, operationMeta);
-    Invocation invocation = InvocationFactory.forConsumer(referenceConfig, operationMeta, args);
+    Invocation invocation = InvocationFactory.forConsumer(referenceConfig, operationMeta, swaggerArguments);
     return syncInvoke(invocation);
   }
 

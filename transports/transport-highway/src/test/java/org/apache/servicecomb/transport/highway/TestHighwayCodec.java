@@ -200,7 +200,7 @@ public class TestHighwayCodec {
     try {
       commonMock();
       Map<String, Object> args = new HashMap<>(0);
-      Mockito.when(invocation.getArguments()).thenReturn(args);
+      Mockito.when(invocation.getInvocationArguments()).thenReturn(args);
       Mockito.when(requestSerializer.serialize(args)).thenReturn(new byte[0]);
       TcpOutputStream os = HighwayCodec.encodeRequest(0, invocation, operationProtobuf);
       Assert.assertNotNull(os);

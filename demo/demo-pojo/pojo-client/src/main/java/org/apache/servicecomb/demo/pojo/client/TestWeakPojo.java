@@ -174,6 +174,8 @@ public class TestWeakPojo implements CategorizedTestCase {
     Map<String, Object> args = new HashMap<>();
     args.put("x", 2);
     args.put("y", 3);
-    TestMgr.check(7, InvokerUtils.syncInvoke("pojo", "WeakPojo", "differentName", args));
+    Map<String, Object> swaggerArgs = new HashMap<>();
+    swaggerArgs.put("differentNameBody", args);
+    TestMgr.check(7, InvokerUtils.syncInvoke("pojo", "WeakPojo", "differentName", swaggerArgs));
   }
 }

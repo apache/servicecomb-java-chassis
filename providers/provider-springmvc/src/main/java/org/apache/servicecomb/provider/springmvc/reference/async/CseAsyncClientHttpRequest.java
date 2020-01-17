@@ -53,8 +53,8 @@ public class CseAsyncClientHttpRequest extends CseClientHttpRequest implements
     return null;
   }
 
-  private ListenableFuture<ClientHttpResponse> invoke(Map<String, Object> args) {
-    Invocation invocation = prepareInvocation(args);
+  private ListenableFuture<ClientHttpResponse> invoke(Map<String, Object> swaggerArguments) {
+    Invocation invocation = prepareInvocation(swaggerArguments);
     invocation.getHandlerContext().put(RestConst.CONSUMER_HEADER, this.getHeaders());
     CompletableFuture<ClientHttpResponse> clientHttpResponseCompletableFuture = doAsyncInvoke(invocation);
     return new CompletableToListenableFutureAdapter<ClientHttpResponse>(clientHttpResponseCompletableFuture);
@@ -79,7 +79,7 @@ public class CseAsyncClientHttpRequest extends CseClientHttpRequest implements
     this.setRequestMeta(createRequestMeta(this.getMethod().name(), this.getURI()));
     QueryStringDecoder queryStringDecoder = new QueryStringDecoder(this.getURI().getRawSchemeSpecificPart());
     this.setQueryParams(queryStringDecoder.parameters());
-    Map<String, Object> args = this.collectArguments();
-    return this.invoke(args);
+    Map<String, Object> swaggerArguments = this.collectArguments();
+    return this.invoke(swaggerArguments);
   }
 }

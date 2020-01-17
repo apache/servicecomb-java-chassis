@@ -36,6 +36,8 @@ import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import io.swagger.models.parameters.Parameter;
+
 public class ConsumerArgumentsMapperCreator extends AbstractArgumentsMapperCreator {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConsumerArgumentsMapperCreator.class);
 
@@ -81,6 +83,11 @@ public class ConsumerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
   }
 
   @Override
+  protected void processPendingSwaggerParameter(Parameter parameter) {
+
+  }
+
+  @Override
   protected ArgumentMapper createKnownParameterMapper(int consumerParamIdx, Integer swaggerIdx) {
     return new ConsumerArgumentSame(this.providerMethod.getParameters()[consumerParamIdx].getName(),
         this.swaggerParameters.get(swaggerIdx).getName());
@@ -116,6 +123,7 @@ public class ConsumerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
       }
 
       mapper.addField(parameterName, getter);
+      processedSwaggerParamters.add(parameterName);
     }
     mappers.add(mapper);
   }

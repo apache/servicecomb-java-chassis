@@ -33,7 +33,7 @@ public class TestSwaggerProducerOperation {
 
     SwaggerProducerOperation swaggerProducerOperation = producer.findOperation("testBytes");
     Assert.assertEquals(1, swaggerProducerOperation.getSwaggerOperation().getOperation().getParameters().size());
-    Assert.assertEquals(byte[].class, swaggerProducerOperation.getSwaggerParameterType("bytes"));
+    Assert.assertEquals(Object.class, swaggerProducerOperation.getSwaggerParameterType("bytes"));
 
     swaggerProducerOperation = producer.findOperation("testSimple");
     Assert.assertEquals(1, swaggerProducerOperation.getSwaggerOperation().getOperation().getParameters().size());

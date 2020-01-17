@@ -173,10 +173,10 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     QueryStringDecoder queryStringDecoder = new QueryStringDecoder(uri.getRawSchemeSpecificPart());
     queryParams = queryStringDecoder.parameters();
 
-    Map<String, Object> arguments = this.collectArguments();
+    Map<String, Object> swaggerArguments = this.collectArguments();
 
     // 异常流程，直接抛异常出去
-    return this.invoke(arguments);
+    return this.invoke(swaggerArguments);
   }
 
   protected RequestMeta createRequestMeta(String httpMethod, URI uri) {
@@ -207,11 +207,11 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     return uri.getRawPath();
   }
 
-  protected Invocation prepareInvocation(Map<String, Object> arguments) {
+  protected Invocation prepareInvocation(Map<String, Object> swaggerArguments) {
     Invocation invocation =
         InvocationFactory.forConsumer(requestMeta.getReferenceConfig(),
             requestMeta.getOperationMeta(),
-            arguments);
+            swaggerArguments);
 
     invocation.setWeakInvoke(true);
     invocation.getHandlerContext().put(RestConst.REST_CLIENT_REQUEST_PATH,
@@ -234,8 +234,8 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     return invocation;
   }
 
-  private CseClientHttpResponse invoke(Map<String, Object> arguments) {
-    Invocation invocation = prepareInvocation(arguments);
+  private CseClientHttpResponse invoke(Map<String, Object> swaggerArguments) {
+    Invocation invocation = prepareInvocation(swaggerArguments);
     Response response = doInvoke(invocation);
 
     if (response.isSuccessed()) {

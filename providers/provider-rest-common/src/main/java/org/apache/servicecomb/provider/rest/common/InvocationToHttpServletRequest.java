@@ -36,14 +36,14 @@ import io.vertx.core.net.SocketAddress;
 public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
   private RestOperationMeta swaggerOperation;
 
-  private Map<String, Object> args;
-
   private SocketAddress sockerAddress;
+
+  private Invocation invocation;
 
   public InvocationToHttpServletRequest(Invocation invocation) {
     this.swaggerOperation = invocation.getOperationMeta().getExtData(RestConst.SWAGGER_REST_OPERATION);
-    this.args = invocation.getArguments();
     this.sockerAddress = (SocketAddress) invocation.getHandlerContext().get(Const.REMOTE_ADDRESS);
+    this.invocation = invocation;
   }
 
   @Override
@@ -53,7 +53,7 @@ public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
       return null;
     }
 
-    Object value = param.getValue(args);
+    Object value = param.getValue(invocation.getSwaggerArguments());
     if (value == null) {
       return null;
     }
@@ -68,14 +68,14 @@ public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
       return null;
     }
 
-    return param.getValueAsStrings(args);
+    return param.getValueAsStrings(invocation.getSwaggerArguments());
   }
 
   @Override
   public Map<String, String[]> getParameterMap() {
     Map<String, String[]> paramMap = new HashMap<>();
     for (RestParam param : swaggerOperation.getParamList()) {
-      String[] value = param.getValueAsStrings(args);
+      String[] value = param.getValueAsStrings(invocation.getSwaggerArguments());
       paramMap.put(param.getParamName(), value);
     }
     return paramMap;
@@ -104,7 +104,7 @@ public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
   @Override
   public String getPathInfo() {
     try {
-      return this.swaggerOperation.getPathBuilder().createPathString(args);
+      return this.swaggerOperation.getPathBuilder().createPathString(invocation.getSwaggerArguments());
     } catch (Exception e) {
       throw new ServiceCombException("Failed to get path info.", e);
     }
