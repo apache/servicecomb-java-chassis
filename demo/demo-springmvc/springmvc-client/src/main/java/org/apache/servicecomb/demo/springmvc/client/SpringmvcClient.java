@@ -492,23 +492,27 @@ public class SpringmvcClient {
 
   private static void testSpringMvcDefaultValuesJavaPrimitiveAllTransport(RestTemplate template,
       String microserviceName) {
-    // TODO: WEAK primitive default value not supported in highway
-//    String cseUrlPrefix = "cse://" + microserviceName + "/SpringMvcDefaultValues/";
-//    //default values with primitive
-//    String result = template.postForObject(cseUrlPrefix + "/javaprimitiveint", null, String.class);
-//    TestMgr.check("Hello 0bobo", result);
-//
-//    result = template.postForObject(cseUrlPrefix + "/javaprimitivenumber", null, String.class);
-//    TestMgr.check("Hello 0.0false", result);
-//
-//    result = template.postForObject(cseUrlPrefix + "/javaprimitivestr", null, String.class);
-//    TestMgr.check("Hello", result);
-//
-//    result = template.postForObject(cseUrlPrefix + "/javaprimitivecomb", null, String.class);
-//    TestMgr.check("Hello nullnull", result);
-//
-//    result = template.postForObject(cseUrlPrefix + "/allprimitivetypes", null, String.class);
-//    TestMgr.check("Hello false,\0,0,0,0,0,0.0,0.0,null", result);
+    String cseUrlPrefix = "cse://" + microserviceName + "/SpringMvcDefaultValues/";
+    //default values with primitive
+    String result = template.postForObject(cseUrlPrefix + "/javaprimitiveint", null, String.class);
+    TestMgr.check("Hello 0bobo", result);
+
+    result = template.postForObject(cseUrlPrefix + "/javaprimitivenumber", null, String.class);
+    TestMgr.check("Hello 0.0false", result);
+
+    result = template.postForObject(cseUrlPrefix + "/javaprimitivestr", null, String.class);
+    TestMgr.check("Hello", result);
+
+    result = template.postForObject(cseUrlPrefix + "/javaprimitivecomb", null, String.class);
+    TestMgr.check("Hello nullnull", result);
+
+    result = template.postForObject(cseUrlPrefix + "/allprimitivetypes", null, String.class);
+    TestMgr.check("Hello false,\0,0,0,0,0,0.0,0.0,null", result);
+
+    result = template.postForObject(cseUrlPrefix
+            + "/allprimitivetypes?pBoolean=true&pChar=c&pByte=20&pShort=30&pInt=40&pLong=50&pFloat=60&pDouble=70&pDoubleWrap=80",
+        null, String.class);
+    TestMgr.check("Hello true,c,20,30,40,50,60.0,70.0,80.0", result);
   }
 
   private static void testSpringMvcDefaultValuesJavaPrimitiveRest(RestTemplate template, String microserviceName) {

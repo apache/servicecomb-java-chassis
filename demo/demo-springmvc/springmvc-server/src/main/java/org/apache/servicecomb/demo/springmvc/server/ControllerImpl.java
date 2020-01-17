@@ -36,6 +36,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+// This class tests "contract first", the controller.yaml will override annotations defined in class.
+
 @RestSchema(schemaId = "controller")
 @RequestMapping(path = "/springmvc/controller", produces = MediaType.APPLICATION_JSON)
 public class ControllerImpl {
@@ -57,6 +59,7 @@ public class ControllerImpl {
     return prefix + " " + user.getName();
   }
 
+  // Parameters defined in controller.yaml. The code definition do not have any parameters.
   @RequestMapping(path = "/sayhi", method = RequestMethod.GET)
   public String sayHi(HttpServletRequest request) throws Exception {
     String addr = request.getRemoteAddr();

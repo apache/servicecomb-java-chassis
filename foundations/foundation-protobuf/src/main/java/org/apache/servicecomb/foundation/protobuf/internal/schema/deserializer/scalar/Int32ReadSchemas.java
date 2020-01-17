@@ -32,11 +32,14 @@ import io.protostuff.runtime.FieldSchema;
 public class Int32ReadSchemas {
   public static <T> FieldSchema<T> create(Field protoField, PropertyDescriptor propertyDescriptor) {
     JavaType javaType = propertyDescriptor.getJavaType();
-    if (int.class.equals(javaType.getRawClass())) {
+    if (int.class.equals(javaType.getRawClass()) || byte.class.equals(javaType.getRawClass()) || short.class
+        .equals(javaType.getRawClass())) {
       return new Int32PrimitiveSchema<>(protoField, propertyDescriptor);
     }
 
-    if (Integer.class.equals(javaType.getRawClass()) || javaType.isJavaLangObject()) {
+    if (Integer.class.equals(javaType.getRawClass()) || Byte.class.equals(javaType.getRawClass()) || Short.class
+        .equals(javaType.getRawClass()) || javaType
+        .isJavaLangObject()) {
       return new Int32Schema<>(protoField, propertyDescriptor);
     }
 
@@ -52,7 +55,13 @@ public class Int32ReadSchemas {
     @Override
     public int mergeFrom(InputEx input, T message) throws IOException {
       int value = input.readInt32();
-      setter.set(message, value);
+      if (Byte.class.equals(javaType.getRawClass()) || byte.class.equals(javaType.getRawClass())) {
+        setter.set(message, (byte) value);
+      } else if (Short.class.equals(javaType.getRawClass()) || short.class.equals(javaType.getRawClass())) {
+        setter.set(message, (short) value);
+      } else {
+        setter.set(message, value);
+      }
       return input.readFieldNumber();
     }
   }

@@ -31,7 +31,8 @@ import io.protostuff.runtime.FieldSchema;
 public class StringReadSchemas {
   public static <T> FieldSchema<T> create(Field protoField, PropertyDescriptor propertyDescriptor) {
     JavaType javaType = propertyDescriptor.getJavaType();
-    if (String.class.equals(javaType.getRawClass()) || javaType.isJavaLangObject()) {
+    if (String.class.equals(javaType.getRawClass()) || javaType.isJavaLangObject() || char.class
+        .equals(javaType.getRawClass()) || Character.class.equals(javaType.getRawClass())) {
       return new StringSchema<>(protoField, propertyDescriptor);
     }
 
@@ -40,7 +41,7 @@ public class StringReadSchemas {
   }
 
   private static class StringSchema<T> extends FieldSchema<T> {
-    private final Setter<T, String> setter;
+    private final Setter<T, Object> setter;
 
     public StringSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor.getJavaType());
@@ -50,7 +51,12 @@ public class StringReadSchemas {
     @Override
     public int mergeFrom(InputEx input, T message) throws IOException {
       String value = input.readString();
-      setter.set(message, value);
+      if (char.class
+          .equals(javaType.getRawClass()) || Character.class.equals(javaType.getRawClass())) {
+        setter.set(message, value.toCharArray()[0]);
+      } else {
+        setter.set(message, value);
+      }
       return input.readFieldNumber();
     }
   }
