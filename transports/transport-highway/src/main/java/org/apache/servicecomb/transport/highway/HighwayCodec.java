@@ -55,35 +55,8 @@ public final class HighwayCodec {
     header.setContext(invocation.getContext());
 
     HighwayOutputStream os = new HighwayOutputStream(msgId);
-    os.write(header, operationProtobuf.getRequestRootSerializer(),
-        invocationArgumentsToSwaggerArguments(invocation, operationProtobuf.getOperationMeta(),
-            invocation.getArguments()));
+    os.write(header, operationProtobuf.getRequestRootSerializer(), invocation.getSwaggerArguments());
     return os;
-  }
-
-  private static Map<String, Object> invocationArgumentsToSwaggerArguments(Invocation invocation,
-      OperationMeta operationMeta,
-      Map<String, Object> invocationArguments) {
-    if (operationMeta.getSwaggerConsumerOperation() != null && !invocation.isEdge()
-        && !invocation.isWeakInvoke()) {
-      return operationMeta.getSwaggerConsumerOperation().getArgumentsMapper()
-          .invocationArgumentToSwaggerArguments(invocation,
-              invocation.getArguments());
-    } else {
-      return invocationArguments;
-    }
-  }
-
-  private static Map<String, Object> swaggerArgumentsToInvocationArguments(Invocation invocation,
-      OperationMeta operationMeta,
-      Map<String, Object> swaggerArguments) {
-    if (operationMeta.getSwaggerProducerOperation() != null && !invocation.isEdge()) {
-      return operationMeta.getSwaggerProducerOperation().getArgumentsMapper()
-          .swaggerArgumentToInvocationArguments(invocation,
-              addPrimitiveTypeDefaultValues(invocation, operationMeta, swaggerArguments));
-    } else {
-      return swaggerArguments;
-    }
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
@@ -112,9 +85,9 @@ public final class HighwayCodec {
   public static void decodeRequest(Invocation invocation, RequestHeader header, OperationProtobuf operationProtobuf,
       Buffer bodyBuffer) throws Exception {
     RequestRootDeserializer<Object> requestDesirializer = operationProtobuf.getRequestRootDeserializer();
-    Map<String, Object> args = requestDesirializer.deserialize(bodyBuffer.getBytes());
-    invocation
-        .setArguments(swaggerArgumentsToInvocationArguments(invocation, operationProtobuf.getOperationMeta(), args));
+    Map<String, Object> swaggerArguments = requestDesirializer.deserialize(bodyBuffer.getBytes());
+    addPrimitiveTypeDefaultValues(invocation, operationProtobuf.getOperationMeta(), swaggerArguments);
+    invocation.setSwaggerArguments(swaggerArguments);
     invocation.mergeContext(header.getContext());
   }
 

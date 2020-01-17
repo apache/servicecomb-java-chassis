@@ -68,6 +68,11 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
   }
 
   @Override
+  protected void processPendingSwaggerParameter(io.swagger.models.parameters.Parameter parameter) {
+    swaggerParameterTypes.put(parameter.getName(), Object.class);
+  }
+
+  @Override
   protected ArgumentMapper createKnownParameterMapper(int providerParamIdx, Integer swaggerIdx) {
     String swaggerArgumentName = swaggerParameters.get(swaggerIdx).getName();
     swaggerParameterTypes
@@ -111,6 +116,7 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
 
       swaggerParameterTypes.put(parameterName, propertyDefinition.getPrimaryType());
       mapper.addField(parameterName, setter);
+      processedSwaggerParamters.add(parameterName);
     }
     mappers.add(mapper);
   }

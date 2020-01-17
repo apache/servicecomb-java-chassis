@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.core.definition;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Executor;
 
 import org.apache.servicecomb.core.Const;
@@ -27,9 +25,6 @@ import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
-
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.Operation;
 
@@ -47,8 +42,6 @@ public class OperationMeta {
   private String operationPath;
 
   private Operation swaggerOperation;
-
-  private Map<String, JavaType> argumentsTypes = new HashMap<>();
 
   // run in this executor
   private Executor executor;
@@ -74,31 +67,9 @@ public class OperationMeta {
     return this;
   }
 
-  private void buildArgumentsTypes() {
-    this.argumentsTypes.clear();
-    if (getSwaggerProducerOperation() != null) {
-      SwaggerProducerOperation swaggerProducerOperation = getSwaggerProducerOperation();
-      swaggerProducerOperation.getMethodParameterTypesBySwaggerName().forEach((k, v) -> {
-        this.argumentsTypes.put(k, TypeFactory.defaultInstance().constructType(v));
-      });
-    }
-  }
-
-  public JavaType getArgumentType(String name) {
-    return this.argumentsTypes.get(name) == null ? TypeFactory.defaultInstance().constructType(Object.class)
-        : this.argumentsTypes.get(name);
-  }
-
-  public boolean isPojoWrappedArguments(String name) {
-    if (this.getSwaggerProducerOperation() != null) {
-      return this.getSwaggerProducerOperation().isPojoWrappedArguments(name);
-    }
-    return false;
-  }
 
   public void setSwaggerProducerOperation(SwaggerProducerOperation swaggerProducerOperation) {
     this.putExtData(Const.PRODUCER_OPERATION, swaggerProducerOperation);
-    buildArgumentsTypes();
   }
 
   public SwaggerProducerOperation getSwaggerProducerOperation() {

@@ -20,8 +20,10 @@ import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.col
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
@@ -110,6 +112,8 @@ public abstract class AbstractArgumentsMapperCreator {
 
   protected Map<String, Property> swaggerBodyProperties;
 
+  protected Set<String> processedSwaggerParamters;
+
   public AbstractArgumentsMapperCreator(SerializationConfig serializationConfig,
       Map<Class<?>, ContextArgumentMapperFactory> contextFactorys,
       Method providerMethod, SwaggerOperation swaggerOperation) {
@@ -122,6 +126,7 @@ public abstract class AbstractArgumentsMapperCreator {
 
     bodyParameter = findSwaggerBodyParameter();
     swaggerBodyProperties = SwaggerUtils.getBodyProperties(swaggerOperation.getSwagger(), bodyParameter);
+    processedSwaggerParamters = new HashSet<>();
   }
 
   private BodyParameter findSwaggerBodyParameter() {
@@ -157,10 +162,12 @@ public abstract class AbstractArgumentsMapperCreator {
 
       String parameterName = collectParameterName(providerParameter);
       if (processKnownParameter(providerParamIdx, providerParameter, parameterName)) {
+        processedSwaggerParamters.add(parameterName);
         continue;
       }
 
       if (processSwaggerBodyField(providerParamIdx, providerParameter, parameterName)) {
+        processedSwaggerParamters.add(parameterName);
         continue;
       }
 
@@ -171,6 +178,12 @@ public abstract class AbstractArgumentsMapperCreator {
       }
 
       processUnknownParameter(parameterName);
+    }
+
+    for (Parameter parameter : swaggerParameters) {
+      if (!processedSwaggerParamters.contains(parameter.getName())) {
+        processPendingSwaggerParameter(parameter);
+      }
     }
   }
 
@@ -249,4 +262,6 @@ public abstract class AbstractArgumentsMapperCreator {
   protected abstract void processBeanParameter(int providerParamIdx, java.lang.reflect.Parameter providerParameter);
 
   protected abstract void processUnknownParameter(String parameterName);
+
+  protected abstract void processPendingSwaggerParameter(Parameter parameter);
 }

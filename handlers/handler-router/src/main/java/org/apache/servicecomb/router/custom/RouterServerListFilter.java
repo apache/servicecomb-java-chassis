@@ -91,7 +91,7 @@ public class RouterServerListFilter implements ServerListFilterExt {
         headers.putAll(canaryContext);
       }
     }
-    invocation.getArguments().forEach((k, v) -> headers.put(k, v == null ? null : v.toString()));
+    invocation.getInvocationArguments().forEach((k, v) -> headers.put(k, v == null ? null : v.toString()));
     headers.putAll(invocation.getContext());
     return headers;
   }

@@ -19,6 +19,7 @@ package org.apache.servicecomb.core;
 
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,7 +102,9 @@ public class Invocation extends SwaggerInvocation {
 
   private long invocationId;
 
-  private Map<String, Object> arguments;
+  private Map<String, Object> invocationArguments = Collections.emptyMap();
+
+  private Map<String, Object> swaggerArguments = Collections.emptyMap();
 
   public long getInvocationId() {
     return invocationId;
@@ -137,24 +140,25 @@ public class Invocation extends SwaggerInvocation {
     // An empty invocation, used to mock or some other scenario do not need operation information.
   }
 
-  public Invocation(ReferenceConfig referenceConfig, OperationMeta operationMeta, Map<String, Object> arguments) {
+  public Invocation(ReferenceConfig referenceConfig, OperationMeta operationMeta,
+      Map<String, Object> swaggerArguments) {
     this.invocationType = InvocationType.CONSUMER;
     this.referenceConfig = referenceConfig;
     this.responsesMeta = operationMeta.getResponsesMeta();
-    init(operationMeta, arguments);
+    init(operationMeta, swaggerArguments);
   }
 
-  public Invocation(Endpoint endpoint, OperationMeta operationMeta, Map<String, Object> arguments) {
+  public Invocation(Endpoint endpoint, OperationMeta operationMeta, Map<String, Object> swaggerArguments) {
     this.invocationType = InvocationType.PRODUCER;
     this.endpoint = endpoint;
-    init(operationMeta, arguments);
+    init(operationMeta, swaggerArguments);
   }
 
-  private void init(OperationMeta operationMeta, Map<String, Object> arguments) {
+  private void init(OperationMeta operationMeta, Map<String, Object> swaggerArguments) {
     this.invocationId = INVOCATION_ID.getAndIncrement();
     this.schemaMeta = operationMeta.getSchemaMeta();
     this.operationMeta = operationMeta;
-    this.arguments = arguments;
+    this.setSwaggerArguments(swaggerArguments);
     this.handlerList = getHandlerChain();
     handlerIndex = 0;
   }
@@ -188,21 +192,63 @@ public class Invocation extends SwaggerInvocation {
     return operationMeta;
   }
 
-  public Map<String, Object> getArguments() {
-    return this.arguments;
+  public Map<String, Object> getInvocationArguments() {
+    return this.invocationArguments;
   }
 
-  public Object getArgument(String name) {
-    return this.arguments.get(name);
+  public Map<String, Object> getSwaggerArguments() {
+    return this.swaggerArguments;
   }
 
-  public void setArguments(Map<String, Object> arguments) {
-    if (arguments == null) {
+  public Object getInvocationArgument(String name) {
+    return this.invocationArguments.get(name);
+  }
+
+  public Object getSwaggerArgument(String name) {
+    return this.swaggerArguments.get(name);
+  }
+
+  public void setInvocationArguments(Map<String, Object> invocationArguments) {
+    if (invocationArguments == null) {
       // Empty arguments
-      this.arguments = new HashMap<>(0);
+      this.invocationArguments = new HashMap<>(0);
       return;
     }
-    this.arguments = arguments;
+    this.invocationArguments = invocationArguments;
+
+    buildSwaggerArguments();
+  }
+
+  private void buildSwaggerArguments() {
+    if (operationMeta.getSwaggerConsumerOperation() != null && !isEdge()
+        && !isWeakInvoke()) {
+      this.swaggerArguments = operationMeta.getSwaggerConsumerOperation().getArgumentsMapper()
+          .invocationArgumentToSwaggerArguments(this,
+              this.invocationArguments);
+    } else {
+      this.swaggerArguments = invocationArguments;
+    }
+  }
+
+  public void setSwaggerArguments(Map<String, Object> swaggerArguments) {
+    if (swaggerArguments == null) {
+      // Empty arguments
+      this.swaggerArguments = new HashMap<>(0);
+      return;
+    }
+    this.swaggerArguments = swaggerArguments;
+
+    buildInvocationArguments();
+  }
+
+  private void buildInvocationArguments() {
+    if (operationMeta.getSwaggerProducerOperation() != null && !isEdge()) {
+      this.invocationArguments = operationMeta.getSwaggerProducerOperation().getArgumentsMapper()
+          .swaggerArgumentToInvocationArguments(this,
+              swaggerArguments);
+    } else {
+      this.invocationArguments = swaggerArguments;
+    }
   }
 
   // TODO: WEAK add release notes to tell this change in 2.0.0
@@ -210,7 +256,7 @@ public class Invocation extends SwaggerInvocation {
     Method method = operationMeta.getSwaggerProducerOperation().getProducerMethod();
     Object[] args = new Object[method.getParameterCount()];
     for (int i = 0; i < method.getParameterCount(); i++) {
-      args[i] = this.arguments.get(method.getParameters()[i].getName());
+      args[i] = this.invocationArguments.get(method.getParameters()[i].getName());
     }
     return args;
   }

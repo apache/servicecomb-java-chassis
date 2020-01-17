@@ -298,7 +298,7 @@ public class RestClientInvocation {
 
     String path = (String) invocation.getHandlerContext().get(RestConst.REST_CLIENT_REQUEST_PATH);
     if (path == null) {
-      path = swaggerRestOperation.getPathBuilder().createRequestPath(invocation.getArguments());
+      path = swaggerRestOperation.getPathBuilder().createRequestPath(invocation.getSwaggerArguments());
     }
 
     if (StringUtils.isEmpty(urlPrefix) || path.startsWith(urlPrefix)) {

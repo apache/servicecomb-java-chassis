@@ -59,14 +59,8 @@ public class ServerRestArgsFilter implements HttpServerFilter {
   public Response afterReceiveRequest(Invocation invocation, HttpServletRequestEx requestEx) {
     OperationMeta operationMeta = invocation.getOperationMeta();
     RestOperationMeta restOperationMeta = operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
-    Map<String, Object> args = RestCodec.restToArgs(requestEx, restOperationMeta);
-    if (restOperationMeta.getOperationMeta().getSwaggerProducerOperation() != null && !invocation.isEdge()) {
-      invocation.setArguments(restOperationMeta.getOperationMeta().getSwaggerProducerOperation().getArgumentsMapper()
-          .swaggerArgumentToInvocationArguments(invocation, args));
-    } else {
-      // edge
-      invocation.setArguments(args);
-    }
+    Map<String, Object> swaggerArguments = RestCodec.restToArgs(requestEx, restOperationMeta);
+    invocation.setSwaggerArguments(swaggerArguments);
     return null;
   }
 

@@ -83,7 +83,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
       throw new IllegalStateException(e);
     }
     testResponseEntity("springmvc", template, cseUrlPrefix);
-    testCodeFirstTestForm(template, cseUrlPrefix);
+    testCodeFirstTestFormRest(template, cseUrlPrefix);
     testFallback(template, cseUrlPrefix);
 
     testResponse.runRest();
@@ -100,7 +100,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     testResponse.runHighway();
     testObject.runHighway();
     testGeneric.runHighway();
-
+    testCodeFirstTestFormHighway(template, cseUrlPrefix);
     super.testOnlyHighway(template, cseUrlPrefix);
   }
 
@@ -111,9 +111,9 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     testGeneric.runAllTransport();
     testRestTemplate.runAllTest();
     testBizkeeper.runAllTest();
-    // TODO : WEAK not supported now in HIGHWAY
     testResponseEntity("springmvc", template, cseUrlPrefix);
-//    testCodeFirstTestForm(template, cseUrlPrefix);
+    testCodeFirstTestForm(template, cseUrlPrefix);
+    // TODO : WEAK not supported now in HIGHWAY
 //    testFallback(template, cseUrlPrefix);
 
     super.testAllTransport(microserviceName, template, cseUrlPrefix);
@@ -248,7 +248,32 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     HttpEntity<Map<String, String>> formEntiry = new HttpEntity<>(map, formHeaders);
     TestMgr.check(code + "null",
         template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
+    map.put("form2", "hello");
+    TestMgr.check(code + "hello", template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
+  }
+
+  private void testCodeFirstTestFormHighway(RestTemplate template, String cseUrlPrefix) {
+    HttpHeaders formHeaders = new HttpHeaders();
+    formHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    Map<String, String> map = new HashMap<>();
+    String code = "servicecomb%2bwelcome%40%23%24%25%5e%26*()%3d%3d";
+    map.put("form1", code);
     map.put("form2", "");
+    HttpEntity<Map<String, String>> formEntiry = new HttpEntity<>(map, formHeaders);
+    // Highway will not distinguish empty string or null
+    TestMgr
+        .check(code + "null", template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
+  }
+
+  private void testCodeFirstTestFormRest(RestTemplate template, String cseUrlPrefix) {
+    HttpHeaders formHeaders = new HttpHeaders();
+    formHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+    Map<String, String> map = new HashMap<>();
+    String code = "servicecomb%2bwelcome%40%23%24%25%5e%26*()%3d%3d";
+    map.put("form1", code);
+    map.put("form2", "");
+    HttpEntity<Map<String, String>> formEntiry = new HttpEntity<>(map, formHeaders);
+    // Rest will have empty string, but users will try to avoid depend on this, This is different from highway
     TestMgr.check(code + "", template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
   }
 }

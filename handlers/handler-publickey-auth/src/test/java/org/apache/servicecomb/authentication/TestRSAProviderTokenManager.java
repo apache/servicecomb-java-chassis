@@ -83,7 +83,7 @@ public class TestRSAProviderTokenManager {
 
         RSAProviderTokenManager.getValidatedToken();
         result = CacheBuilder.newBuilder()
-            .expireAfterAccess(1000, TimeUnit.MILLISECONDS)
+            .expireAfterAccess(500, TimeUnit.MILLISECONDS)
             .build();
       }
     };
