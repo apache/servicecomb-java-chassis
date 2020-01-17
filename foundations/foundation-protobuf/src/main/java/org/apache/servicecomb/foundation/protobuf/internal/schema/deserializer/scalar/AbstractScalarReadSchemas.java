@@ -26,7 +26,7 @@ import io.protostuff.runtime.FieldSchema;
 
 public class AbstractScalarReadSchemas {
   static abstract class AbstractIntSchema<T> extends FieldSchema<T> {
-    protected final Setter<T, Integer> setter;
+    protected final Setter<T, Object> setter;
 
     public AbstractIntSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor.getJavaType());

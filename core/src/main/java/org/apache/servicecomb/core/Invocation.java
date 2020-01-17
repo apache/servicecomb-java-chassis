@@ -209,7 +209,6 @@ public class Invocation extends SwaggerInvocation {
   public Object[] toProducerArguments() {
     Method method = operationMeta.getSwaggerProducerOperation().getProducerMethod();
     Object[] args = new Object[method.getParameterCount()];
-    // TODO: WEAK parameter name maybe override by annotations.
     for (int i = 0; i < method.getParameterCount(); i++) {
       args[i] = this.arguments.get(method.getParameters()[i].getName());
     }

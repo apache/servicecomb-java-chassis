@@ -55,6 +55,11 @@ public class StringWriteSchemas {
         return;
       }
 
+      if (value instanceof Character) {
+        output.writeScalarString(tag, tagSize, String.valueOf((char)value));
+        return;
+      }
+
       ProtoUtils.throwNotSupportWrite(protoField, value);
     }
   }
