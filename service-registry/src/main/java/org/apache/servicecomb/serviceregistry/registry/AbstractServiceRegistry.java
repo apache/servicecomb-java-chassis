@@ -46,6 +46,8 @@ import org.apache.servicecomb.serviceregistry.consumer.MicroserviceManager;
 import org.apache.servicecomb.serviceregistry.consumer.StaticMicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceNameParser;
+import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache;
+import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCacheKey;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceServiceCenterTask;
 import org.apache.servicecomb.serviceregistry.task.ServiceCenterTask;
 import org.apache.servicecomb.serviceregistry.task.event.RecoveryEvent;
@@ -243,6 +245,12 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
           instance.getEndpoints());
     }
     return microserviceInstances;
+  }
+
+  @Override
+  public MicroserviceCache findMicroserviceCache(MicroserviceCacheKey microserviceCacheKey) {
+    // TODO find MicroserviceCache from ServiceRegistryCache
+    return null;
   }
 
   @Override
