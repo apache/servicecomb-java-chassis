@@ -25,6 +25,8 @@ import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
+import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache;
+import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCacheKey;
 
 import com.google.common.eventbus.EventBus;
 
@@ -71,6 +73,8 @@ public interface ServiceRegistry {
 
   MicroserviceInstances findServiceInstances(String appId, String microserviceName,
       String microserviceVersionRule, String revision);
+
+  MicroserviceCache findMicroserviceCache(MicroserviceCacheKey microserviceCacheKey);
 
   boolean updateMicroserviceProperties(Map<String, String> properties);
 
