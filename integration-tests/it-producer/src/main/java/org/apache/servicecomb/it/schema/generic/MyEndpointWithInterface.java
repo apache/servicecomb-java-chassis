@@ -18,9 +18,11 @@ package org.apache.servicecomb.it.schema.generic;
 
 import java.util.List;
 
+import org.apache.servicecomb.provider.pojo.RpcSchema;
+
 import io.swagger.annotations.ApiOperation;
 
-// TODO fix SCB-1448 later
+// TODO : WEAK RPC & highway both not support this now , need fix it
 //@RpcSchema(schemaId = "MyEndpointWithInterface")
 public class MyEndpointWithInterface implements IMyService {
   @Override

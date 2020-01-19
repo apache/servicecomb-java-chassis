@@ -19,7 +19,7 @@ package org.apache.servicecomb.it.schema.generic;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-// TODO fix SCB-1448 later
+// TODO : WEAK RPC & highway both not support this now , need fix it
 //@RpcSchema(schemaId = "MyEndpoint")
 public class MyEndpoint extends AbstractBaseService<PersonBean> implements IMyService {
   public MyEndpoint(@Autowired IMyService other) {

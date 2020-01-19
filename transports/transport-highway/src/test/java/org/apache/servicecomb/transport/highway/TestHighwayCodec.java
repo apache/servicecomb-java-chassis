@@ -47,6 +47,7 @@ import io.netty.buffer.ByteBuf;
 import io.vertx.core.buffer.Buffer;
 import mockit.Mocked;
 
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class TestHighwayCodec {
   private OperationProtobuf operationProtobuf = null;
 

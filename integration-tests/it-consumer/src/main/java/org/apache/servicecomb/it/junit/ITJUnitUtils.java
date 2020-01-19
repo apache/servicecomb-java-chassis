@@ -160,7 +160,8 @@ public final class ITJUnitUtils {
   }
 
   public static void runWithHighwayAndRest(Class<?>... classes) throws Throwable {
-    //runWithTransports(Arrays.asList(Const.HIGHWAY, Const.RESTFUL), classes);
+    // TODO: WEAK recover highway integration tests
+//    runWithTransports(Arrays.asList(Const.HIGHWAY, Const.RESTFUL), classes);
     runWithTransports(Arrays.asList(Const.RESTFUL), classes);
   }
 
