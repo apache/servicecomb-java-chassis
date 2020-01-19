@@ -26,14 +26,13 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.http.HttpStatus;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.demo.CodeFirstRestTemplate;
 import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.RestObjectMapperWithStringMapper;
 import org.apache.servicecomb.demo.RestObjectMapperWithStringMapperNotWriteNull;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.compute.Person;
-import org.apache.servicecomb.demo.jaxrs.client.beanParam.BeanParamPojoClient;
-import org.apache.servicecomb.demo.jaxrs.client.beanParam.BeanParamRestTemplateClient;
 import org.apache.servicecomb.demo.jaxrs.client.pojoDefault.DefaultModelServiceClient;
 import org.apache.servicecomb.demo.jaxrs.client.validation.ValidationServiceClient;
 import org.apache.servicecomb.demo.validator.Student;
@@ -41,7 +40,10 @@ import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -51,12 +53,21 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 public class JaxrsClient {
+  private static final Logger LOGGER = LoggerFactory.getLogger(JaxrsClient.class);
+
   private static RestTemplate templateNew = RestTemplateBuilder.create();
 
   public static void main(String[] args) throws Exception {
     init();
 
-    run();
+    try {
+      run();
+    } catch (Exception e) {
+      TestMgr.check("success", "failed");
+      LOGGER.error("-------------- test failed -------------");
+      LOGGER.error("", e);
+      LOGGER.error("-------------- test failed -------------");
+    }
 
     TestMgr.summary();
   }
@@ -69,6 +80,8 @@ public class JaxrsClient {
   }
 
   public static void run() throws Exception {
+    CategorizedTestCaseRunner.runCategorizedTestCase("jaxrs");
+
     CodeFirstRestTemplate codeFirstClient = new CodeFirstRestTemplateJaxrs();
     codeFirstClient.testCodeFirst(templateNew, "jaxrs", "/codeFirstJaxrs/");
     testCompute(templateNew);
@@ -76,18 +89,11 @@ public class JaxrsClient {
     testClientTimeOut(templateNew);
     testJaxRSDefaultValuesAllTransport(templateNew);
     testSpringMvcDefaultValuesJavaPrimitiveAllTransport(templateNew);
-    MultiErrorCodeServiceClient.runTest();
 
-    BeanParamPojoClient beanParamPojoClient = new BeanParamPojoClient();
-    beanParamPojoClient.testAllTransport();
-    BeanParamRestTemplateClient beanParamRestTemplateClient = new BeanParamRestTemplateClient();
-    beanParamRestTemplateClient.testAllTransport();
     DefaultModelServiceClient.run();
     ValidationServiceClient.run();
 
     testOnlyRest(templateNew);
-    beanParamPojoClient.testRestOnly();
-    beanParamRestTemplateClient.testRestOnly();
   }
 
   private static void testOnlyRest(RestTemplate template) {
@@ -129,11 +135,11 @@ public class JaxrsClient {
         testValidatorAddFail(template, cseUrlPrefix);
         testValidatorSayHiFail(template, cseUrlPrefix);
         testValidatorExchangeFail(template, cseUrlPrefix);
+        testJaxRSDefaultValuesRest(template);
       } else if ("highway".equals(transport)) {
-        // TODO : WEAK highway support InvocationException
-//        testValidatorAddFail(template, cseUrlPrefix);
-//        testValidatorSayHiFail(template, cseUrlPrefix);
-//        testValidatorExchangeFail(template, cseUrlPrefix);
+        testValidatorAddFail(template, cseUrlPrefix);
+        testValidatorSayHiFail(template, cseUrlPrefix);
+        testValidatorExchangeFail(template, cseUrlPrefix);
       }
       testValidatorSayHiSuccess(template, cseUrlPrefix);
       testValidatorExchangeSuccess(template, cseUrlPrefix);
@@ -207,43 +213,42 @@ public class JaxrsClient {
       result = template.getForObject(cseUrlPrefix + "/query?d=10", String.class);
       TestMgr.check("Hello 20bobo4010", result);
       boolean failed = false;
-      // TODO: WEAK invocationexception not support in HIGHWAY
-//      try {
-//        result = template.getForObject(cseUrlPrefix + "/query2", String.class);
-//      } catch (InvocationException e) {
-//        failed = true;
-//        TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
-//      }
-//
-//      failed = false;
-//      try {
-//        result = template.getForObject(cseUrlPrefix + "/query2?d=2&e=2", String.class);
-//      } catch (InvocationException e) {
-//        failed = true;
-//        TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
-//      }
-//      TestMgr.check(failed, true);
-//
-//      failed = false;
-//      try {
-//        result = template.getForObject(cseUrlPrefix + "/query2?a=&d=2&e=2", String.class);
-//      } catch (InvocationException e) {
-//        failed = true;
-//        TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
-//      }
-//      TestMgr.check(failed, true);
-//
-//      result = template.getForObject(cseUrlPrefix + "/query2?d=30&e=2", String.class);
-//      TestMgr.check("Hello 20bobo40302", result);
-//
-//      failed = false;
-//      try {
-//        result = template.getForObject(cseUrlPrefix + "/query3?a=2&b=2", String.class);
-//      } catch (InvocationException e) {
-//        failed = true;
-//        TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
-//      }
-//      TestMgr.check(failed, true);
+      try {
+        result = template.getForObject(cseUrlPrefix + "/query2", String.class);
+      } catch (InvocationException e) {
+        failed = true;
+        TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+      }
+
+      failed = false;
+      try {
+        result = template.getForObject(cseUrlPrefix + "/query2?d=2&e=2", String.class);
+      } catch (InvocationException e) {
+        failed = true;
+        TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+      }
+      TestMgr.check(failed, true);
+
+      failed = false;
+      try {
+        result = template.getForObject(cseUrlPrefix + "/query2?a=&d=2&e=2", String.class);
+      } catch (InvocationException e) {
+        failed = true;
+        TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+      }
+      TestMgr.check(failed, true);
+
+      result = template.getForObject(cseUrlPrefix + "/query2?d=30&e=2", String.class);
+      TestMgr.check("Hello 20bobo40302", result);
+
+      failed = false;
+      try {
+        result = template.getForObject(cseUrlPrefix + "/query3?a=2&b=2", String.class);
+      } catch (InvocationException e) {
+        failed = true;
+        TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+      }
+      TestMgr.check(failed, true);
 
       result = template.getForObject(cseUrlPrefix + "/query3?a=30&b=2", String.class);
       TestMgr.check("Hello 302", result);
@@ -294,20 +299,19 @@ public class JaxrsClient {
   }
 
   private static void testGetAllTransport(RestTemplate template, String cseUrlPrefix) {
-    // TODO: WEAK highway not support HttpServletRequest
-//    Map<String, String> params = new HashMap<>();
-//    params.put("a", "5");
-//    params.put("b", "3");
-//    int result =
-//        template.getForObject(cseUrlPrefix + "/compute/reduce?a={a}&b={b}", Integer.class, params);
-//    TestMgr.check(2, result);
-//
-//    result = template.getForObject(cseUrlPrefix + "/compute/reduce?a={a}&b={b}", Integer.class, 5, 4);
-//    TestMgr.check(1, result);
-//
-//    result = template.getForObject(cseUrlPrefix + "/compute/reduce?a=5&b=6",
-//        Integer.class);
-//    TestMgr.check(-1, result);
+    Map<String, String> params = new HashMap<>();
+    params.put("a", "5");
+    params.put("b", "3");
+    int result =
+        template.getForObject(cseUrlPrefix + "/compute/reduce?a={a}&b={b}", Integer.class, params);
+    TestMgr.check(2, result);
+
+    result = template.getForObject(cseUrlPrefix + "/compute/reduce?a={a}&b={b}", Integer.class, 5, 4);
+    TestMgr.check(1, result);
+
+    result = template.getForObject(cseUrlPrefix + "/compute/reduce?a=5&b=6",
+        Integer.class);
+    TestMgr.check(-1, result);
   }
 
   private static void testPost(RestTemplate template, String cseUrlPrefix) {
@@ -381,9 +385,17 @@ public class JaxrsClient {
       // Message dependends on locale, so just check the short part.
       // 'must be greater than or equal to 20', propertyPath=add.arg1, rootBeanClass=class org.apache.servicecomb.demo.jaxrs.server.Validator, messageTemplate='{javax.validation.constraints.Min.message}'}]]
       // ignored
-      Map data = (Map) e.getErrorData();
-      TestMgr.check(
-          true, data.get("message").toString().contains("propertyPath=add.b"));
+      if (e.getErrorData() instanceof CommonExceptionData) {
+        // highway decode/encode 'Object' with special type information, got runtime type
+        CommonExceptionData data = (CommonExceptionData) e.getErrorData();
+        TestMgr.check(
+            true, data.getMessage().contains("propertyPath=add.b"));
+      } else {
+        // rest decode/encode 'Object' using json without type information, got map. Users can got runtime type by adding @JsonTypeInfo to the model.
+        Map data = (Map) e.getErrorData();
+        TestMgr.check(
+            true, data.get("message").toString().contains("propertyPath=add.b"));
+      }
     }
 
     TestMgr.check(true, isExcep);
@@ -407,9 +419,16 @@ public class JaxrsClient {
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
       // Message dependends on locale, so just check the short part.
-      Map data = (Map) e.getErrorData();
-      TestMgr.check(
-          true, data.get("message").toString().contains("propertyPath=sayHi.name"));
+      if (e.getErrorData() instanceof CommonExceptionData) {
+        // highway decode/encode 'Object' with special type information, got runtime type
+        CommonExceptionData data = (CommonExceptionData) e.getErrorData();
+        TestMgr.check(
+            true, data.getMessage().contains("propertyPath=sayHi.name"));
+      } else {
+        Map data = (Map) e.getErrorData();
+        TestMgr.check(
+            true, data.get("message").toString().contains("propertyPath=sayHi.name"));
+      }
     }
     TestMgr.check(true, isExcep);
   }
@@ -440,9 +459,16 @@ public class JaxrsClient {
       TestMgr.check(400, e.getStatus().getStatusCode());
       TestMgr.check(Status.BAD_REQUEST, e.getReasonPhrase());
       // Message dependends on locale, so just check the short part.
-      Map data = (Map) e.getErrorData();
-      TestMgr.check(
-          true, data.get("message").toString().contains("propertyPath=sayHello.student.age"));
+      if (e.getErrorData() instanceof CommonExceptionData) {
+        // highway decode/encode 'Object' with special type information, got runtime type
+        CommonExceptionData data = (CommonExceptionData) e.getErrorData();
+        TestMgr.check(
+            true, data.getMessage().contains("propertyPath=sayHello.student.age"));
+      } else {
+        Map data = (Map) e.getErrorData();
+        TestMgr.check(
+            true, data.get("message").toString().contains("propertyPath=sayHello.student.age"));
+      }
     }
     TestMgr.check(true, isExcep);
   }
@@ -524,29 +550,32 @@ public class JaxrsClient {
   }
 
   private static void testSpringMvcDefaultValuesJavaPrimitiveAllTransport(RestTemplate template) {
-    // TODO : WEAK highway not support primitive default values
-//    String microserviceName = "jaxrs";
-//    String cseUrlPrefix = "cse://" + microserviceName + "/JaxRSDefaultValues/";
-//
-//    HttpHeaders headers = new HttpHeaders();
-//    headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
-//    MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-//    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
-//
-//    //default values with primitive
-//    String result = template.postForObject(cseUrlPrefix + "/javaprimitiveint", request, String.class);
-//    TestMgr.check("Hello 0bobo", result);
-//
-//    result = template.postForObject(cseUrlPrefix + "/javaprimitivenumber", request, String.class);
-//    TestMgr.check("Hello 0.0false", result);
-//
-//    result = template.postForObject(cseUrlPrefix + "/javaprimitivestr", request, String.class);
-//    TestMgr.check("Hello", result);
-//
-//    result = template.postForObject(cseUrlPrefix + "/javaprimitivecomb", request, String.class);
-//    TestMgr.check("Hello nullnull", result);
-//
-//    result = template.postForObject(cseUrlPrefix + "/allprimitivetypes", null, String.class);
-//    TestMgr.check("Hello false,\0,0,0,0,0,0.0,0.0,null", result);
+    String microserviceName = "jaxrs";
+    for (String transport : DemoConst.transports) {
+      CategorizedTestCaseRunner.changeTransport(microserviceName, transport);
+
+      String cseUrlPrefix = "cse://" + microserviceName + "/JaxRSDefaultValues/";
+
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
+      MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+      HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+      //default values with primitive
+      String result = template.postForObject(cseUrlPrefix + "/javaprimitiveint", request, String.class);
+      TestMgr.check("Hello 0bobo", result);
+
+      result = template.postForObject(cseUrlPrefix + "/javaprimitivenumber", request, String.class);
+      TestMgr.check("Hello 0.0false", result);
+
+      result = template.postForObject(cseUrlPrefix + "/javaprimitivestr", request, String.class);
+      TestMgr.check("Hello", result);
+
+      result = template.postForObject(cseUrlPrefix + "/javaprimitivecomb", request, String.class);
+      TestMgr.check("Hello nullnull", result);
+
+      result = template.postForObject(cseUrlPrefix + "/allprimitivetypes", null, String.class);
+      TestMgr.check("Hello false,\0,0,0,0,0,0.0,0.0,null", result);
+    }
   }
 }

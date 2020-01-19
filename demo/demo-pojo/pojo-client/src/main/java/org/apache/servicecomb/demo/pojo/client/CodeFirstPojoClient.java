@@ -71,8 +71,7 @@ public class CodeFirstPojoClient {
   private void testAll(CodeFirstPojoIntf codeFirst) {
     testCodeFirstUserMap(codeFirst);
     testCodeFirstUserArray(codeFirst);
-    // TODO: WEAK highway returns array
-//    testCodeFirstStrings(codeFirst);
+    testCodeFirstStrings(codeFirst);
     testCodeFirstBytes(codeFirst);
     testCodeFirstAddDate(codeFirst);
     testCodeFirstAddString(codeFirst);

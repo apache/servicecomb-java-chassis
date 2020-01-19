@@ -27,6 +27,7 @@ import javax.ws.rs.core.Response.Status.Family;
 import org.apache.servicecomb.codec.protobuf.utils.ScopedProtobufSchemaManager;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
+import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -44,6 +45,10 @@ public class OperationProtobuf {
   private ResponseRootSerializer responseRootSerializer;
 
   private ResponseRootDeserializer<Object> responseRootDeserializer;
+
+  private ResponseRootSerializer anyResponseRootSerializer;
+
+  private ResponseRootDeserializer<Object> anyResponseRootDeserializer;
 
   public OperationProtobuf(ScopedProtobufSchemaManager scopedProtobufSchemaManager, OperationMeta operationMeta) {
     this.operationMeta = operationMeta;
@@ -63,16 +68,14 @@ public class OperationProtobuf {
     if (Family.SUCCESSFUL.equals(Family.familyOf(statusCode))) {
       return this.responseRootSerializer;
     }
-    // TODO : WEAK handles only one response type.
-    throw new IllegalStateException("not implemented now, statusCode = " + statusCode);
+    return anyResponseRootSerializer;
   }
 
   public ResponseRootDeserializer<Object> findResponseRootDeserializer(int statusCode) {
     if (Family.SUCCESSFUL.equals(Family.familyOf(statusCode))) {
       return this.responseRootDeserializer;
     }
-    // TODO : WEAK handles only one response type.
-    throw new IllegalStateException("not implemented now, statusCode = " + statusCode);
+    return anyResponseRootDeserializer;
   }
 
   public OperationMeta getOperationMeta() {
@@ -159,5 +162,9 @@ public class OperationProtobuf {
         }
       }
     }
+    anyResponseRootSerializer = new ResponseRootSerializer(mapper.createRootSerializer(ProtoConst.ANY,
+        Object.class), false, true);
+    anyResponseRootDeserializer = new ResponseRootDeserializer<>(
+        mapper.createRootDeserializer(ProtoConst.ANY, Object.class), false);
   }
 }

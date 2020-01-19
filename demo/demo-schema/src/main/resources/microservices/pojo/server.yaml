@@ -196,8 +196,6 @@ definitions:
     type: object
     properties:
       index:
-        # TODO WEAK highway do not support map number(which IDL type is double) to integer
-        # type: number
         type: integer
         format: int32
       user:
@@ -218,8 +216,6 @@ definitions:
         type: integer
         format: int32
       index:
-        # TODO WEAK highway do not support map number(which IDL type is double) to integer
-        # type: number
         type: integer
         format: int32
     x-java-class: "org.apache.servicecomb.demo.server.User"

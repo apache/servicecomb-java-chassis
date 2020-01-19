@@ -243,26 +243,25 @@ public class SpringmvcClient {
       TestMgr.check(e.getStatusCode(), 400);
     }
 
-    // TODO: WEAK HttpServletRequest not supported in highway
-//    TestMgr.check("hi world [world]",
-//        template.getForObject(prefix + "/controller/sayhi?name=world",
-//            String.class));
-//
-//    TestMgr.check("hi world1 [world1]",
-//        template.getForObject(prefix + "/controller/sayhi?name={name}",
-//            String.class,
-//            "world1"));
-//    TestMgr.check("hi hi 中国 [hi 中国]",
-//        template.getForObject(prefix + "/controller/sayhi?name={name}",
-//            String.class,
-//            "hi 中国"));
-//
-//    Map<String, String> params = new HashMap<>();
-//    params.put("name", "world2");
-//    TestMgr.check("hi world2 [world2]",
-//        template.getForObject(prefix + "/controller/sayhi?name={name}",
-//            String.class,
-//            params));
+    TestMgr.check("hi world [world]",
+        template.getForObject(prefix + "/controller/sayhi?name=world",
+            String.class));
+
+    TestMgr.check("hi world1 [world1]",
+        template.getForObject(prefix + "/controller/sayhi?name={name}",
+            String.class,
+            "world1"));
+    TestMgr.check("hi hi 中国 [hi 中国]",
+        template.getForObject(prefix + "/controller/sayhi?name={name}",
+            String.class,
+            "hi 中国"));
+
+    Map<String, String> params = new HashMap<>();
+    params.put("name", "world2");
+    TestMgr.check("hi world2 [world2]",
+        template.getForObject(prefix + "/controller/sayhi?name={name}",
+            String.class,
+            params));
 
     TestMgr.check("hello world",
         template.postForObject(prefix + "/controller/sayhello/{name}",
@@ -275,16 +274,15 @@ public class SpringmvcClient {
             String.class,
             "hello 中国"));
 
-    // TODO: WEAK throw InvocationiException not supported in highway
-//    try {
-//      template.postForObject(prefix + "/controller/sayhello/{name}",
-//          null,
-//          String.class,
-//          "exception");
-//      TestMgr.check(true, false);
-//    } catch (InvocationException e) {
-//      TestMgr.check(e.getStatusCode(), 503);
-//    }
+    try {
+      template.postForObject(prefix + "/controller/sayhello/{name}",
+          null,
+          String.class,
+          "exception");
+      TestMgr.check(true, false);
+    } catch (InvocationException e) {
+      TestMgr.check(e.getStatusCode(), 503);
+    }
 
     HttpHeaders headers = new HttpHeaders();
     headers.add("name", "world");
@@ -306,8 +304,7 @@ public class SpringmvcClient {
   }
 
   private static void testController() {
-    // TODO: WEAK HttpServletRequest not supported in highway
-//    TestMgr.check("hi world [world]", controller.sayHi("world"));
+    TestMgr.check("hi world [world]", controller.sayHi("world"));
     Person user = new Person();
     user.setName("world");
     TestMgr.check("ha world", controller.saySomething("ha", user));
@@ -368,42 +365,51 @@ public class SpringmvcClient {
     String result = template.getForObject(cseUrlPrefix + "/query?d=10", String.class);
     TestMgr.check("Hello 20bobo4010", result);
     boolean failed = false;
+    result = null;
     try {
       result = template.getForObject(cseUrlPrefix + "/query2", String.class);
     } catch (InvocationException e) {
       failed = true;
       TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
     }
+    TestMgr.check(true, failed);
+    TestMgr.check(null, result);
 
     failed = false;
+    result = null;
     try {
       result = template.getForObject(cseUrlPrefix + "/query2?d=2&e=2", String.class);
     } catch (InvocationException e) {
       failed = true;
       TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
     }
-    TestMgr.check(failed, true);
+    TestMgr.check(true, failed);
+    TestMgr.check(null, result);
 
     failed = false;
+    result = null;
     try {
       result = template.getForObject(cseUrlPrefix + "/query2?a=&d=2&e=2", String.class);
     } catch (InvocationException e) {
       failed = true;
       TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
     }
-    TestMgr.check(failed, true);
+    TestMgr.check(true, failed);
+    TestMgr.check(null, result);
 
     result = template.getForObject(cseUrlPrefix + "/query2?d=30&e=2", String.class);
     TestMgr.check("Hello 20bobo40302", result);
 
     failed = false;
+    result = null;
     try {
       result = template.getForObject(cseUrlPrefix + "/query3?a=2&b=2", String.class);
     } catch (InvocationException e) {
       failed = true;
       TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
     }
-    TestMgr.check(failed, true);
+    TestMgr.check(true, failed);
+    TestMgr.check(null, result);
   }
 
   private static void testSpringMvcDefaultValuesAllTransport(RestTemplate template, String microserviceName) {
@@ -421,46 +427,54 @@ public class SpringmvcClient {
     result = template.postForObject(cseUrlPrefix + "/header", entity, String.class);
     TestMgr.check("Hello 20bobo30", result);
 
-    // TODO: WEAK InvocationException not supported in highway
-//    result = template.getForObject(cseUrlPrefix + "/query?d=10", String.class);
-//    TestMgr.check("Hello 20bobo4010", result);
-//    boolean failed = false;
-//    try {
-//      result = template.getForObject(cseUrlPrefix + "/query2", String.class);
-//    } catch (InvocationException e) {
-//      failed = true;
-//      TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
-//    }
-//
-//    failed = false;
-//    try {
-//      result = template.getForObject(cseUrlPrefix + "/query2?d=2&e=2", String.class);
-//    } catch (InvocationException e) {
-//      failed = true;
-//      TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
-//    }
-//    TestMgr.check(failed, true);
-//
-//    failed = false;
-//    try {
-//      result = template.getForObject(cseUrlPrefix + "/query2?a=&d=2&e=2", String.class);
-//    } catch (InvocationException e) {
-//      failed = true;
-//      TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
-//    }
-//    TestMgr.check(failed, true);
-//
-//    result = template.getForObject(cseUrlPrefix + "/query2?d=30&e=2", String.class);
-//    TestMgr.check("Hello 20bobo40302", result);
-//
-//    failed = false;
-//    try {
-//      result = template.getForObject(cseUrlPrefix + "/query3?a=2&b=2", String.class);
-//    } catch (InvocationException e) {
-//      failed = true;
-//      TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
-//    }
-//    TestMgr.check(failed, true);
+    result = template.getForObject(cseUrlPrefix + "/query?d=10", String.class);
+    TestMgr.check("Hello 20bobo4010", result);
+    boolean failed = false;
+    result = null;
+    try {
+      result = template.getForObject(cseUrlPrefix + "/query2", String.class);
+    } catch (InvocationException e) {
+      failed = true;
+      TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+    }
+    TestMgr.check(true, failed);
+    TestMgr.check(null, result);
+
+    failed = false;
+    result = null;
+    try {
+      result = template.getForObject(cseUrlPrefix + "/query2?d=2&e=2", String.class);
+    } catch (InvocationException e) {
+      failed = true;
+      TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+    }
+    TestMgr.check(true, failed);
+    TestMgr.check(null, result);
+
+    failed = false;
+    result = null;
+    try {
+      result = template.getForObject(cseUrlPrefix + "/query2?a=&d=2&e=2", String.class);
+    } catch (InvocationException e) {
+      failed = true;
+      TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+    }
+    TestMgr.check(true, failed);
+    TestMgr.check(null, result);
+
+    result = template.getForObject(cseUrlPrefix + "/query2?d=30&e=2", String.class);
+    TestMgr.check("Hello 20bobo40302", result);
+
+    failed = false;
+    result = null;
+    try {
+      result = template.getForObject(cseUrlPrefix + "/query3?a=2&b=2", String.class);
+    } catch (InvocationException e) {
+      failed = true;
+      TestMgr.check(e.getStatusCode(), HttpStatus.SC_BAD_REQUEST);
+    }
+    TestMgr.check(true, failed);
+    TestMgr.check(null, result);
 
     result = template.getForObject(cseUrlPrefix + "/query3?a=30&b=2", String.class);
     TestMgr.check("Hello 302", result);

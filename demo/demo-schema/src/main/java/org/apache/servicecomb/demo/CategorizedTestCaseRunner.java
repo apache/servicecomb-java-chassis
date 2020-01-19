@@ -38,7 +38,7 @@ public class CategorizedTestCaseRunner {
     }
   }
 
-  private static void changeTransport(String microserviceName, String transport) {
+  public static void changeTransport(String microserviceName, String transport) {
     ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, transport);
     TestMgr.setMsg(microserviceName, transport);
   }

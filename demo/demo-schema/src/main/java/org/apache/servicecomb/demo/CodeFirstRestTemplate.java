@@ -57,30 +57,28 @@ public class CodeFirstRestTemplate {
     changeTransport(microserviceName, Const.RESTFUL);
     testOnlyRest(microserviceName, template, cseUrlPrefix);
 
-    for (String transport :  DemoConst.transports) {
+    for (String transport : DemoConst.transports) {
       changeTransport(microserviceName, transport);
       testAllTransport(microserviceName, template, cseUrlPrefix);
     }
   }
 
   protected void testAllTransport(String microserviceName, RestTemplate template, String cseUrlPrefix) {
-    // TODO : WEAK not supported now in HIGHWAY
-//    testCodeFirstUserMap(template, cseUrlPrefix);
-//    testCodeFirstTextPlain(template, cseUrlPrefix);
-//    testCodeFirstAppXml(template, cseUrlPrefix);
-//    testCodeFirstBytes(template, cseUrlPrefix);
-//    testCseResponse(microserviceName, template, cseUrlPrefix);
-//    testCodeFirstAddDate(template, cseUrlPrefix);
+    testCodeFirstUserMap(template, cseUrlPrefix);
+    testCodeFirstTextPlain(template, cseUrlPrefix);
+    testCodeFirstAppXml(template, cseUrlPrefix);
+    testCodeFirstBytes(template, cseUrlPrefix);
+    testCseResponse(microserviceName, template, cseUrlPrefix);
+    testCodeFirstAddDate(template, cseUrlPrefix);
 
-//    testCodeFirstAdd(template, cseUrlPrefix);
-//    testCodeFirstAddString(template, cseUrlPrefix);
+    testCodeFirstAdd(template, cseUrlPrefix);
+    testCodeFirstAddString(template, cseUrlPrefix);
     testCodeFirstIsTrue(template, cseUrlPrefix);
     testCodeFirstSayHi2(template, cseUrlPrefix);
     testCodeFirstSayHi(template, cseUrlPrefix);
     testCodeFirstSaySomething(template, cseUrlPrefix);
-    //            testCodeFirstRawJsonString(template, cseUrlPrefix);
     testCodeFirstSayHello(template, cseUrlPrefix);
-//    testCodeFirstReduce(template, cseUrlPrefix);
+    testCodeFirstReduce(template, cseUrlPrefix);
 
     testTraceIdOnContextContainsTraceId(template, cseUrlPrefix);
 

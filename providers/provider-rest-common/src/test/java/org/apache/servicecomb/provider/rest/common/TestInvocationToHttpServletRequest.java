@@ -71,8 +71,6 @@ public class TestInvocationToHttpServletRequest {
         result = operationMeta;
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
         result = swaggerOperation;
-        invocation.getHandlerContext();
-        result = handlerContext;
       }
     };
 
@@ -288,6 +286,8 @@ public class TestInvocationToHttpServletRequest {
         result = "127.0.0.2";
         socketAddress.port();
         result = 8088;
+        invocation.getHandlerContext();
+        result = handlerContext;
       }
     };
     String addr = request.getRemoteAddr();

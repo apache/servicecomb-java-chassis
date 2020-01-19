@@ -48,10 +48,15 @@
   </properties>
   <build>
     <plugins>
+      <!-- Because other demos depend on this module, if add classpath, the depended module will fail dual to spring configuration files duplication.
+         So, we remove maven-dependency-plugin to make all integration tests run. In your applications, still need to add this to make packaged jar files run.
+       -->
+      <!--
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
       </plugin>
+      -->
       <plugin>
         <groupId>com.github.odavid.maven.plugins</groupId>
         <artifactId>mixin-maven-plugin</artifactId>

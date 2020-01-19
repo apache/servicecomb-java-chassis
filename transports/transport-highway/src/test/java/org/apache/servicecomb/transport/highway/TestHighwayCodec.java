@@ -22,10 +22,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
+import org.apache.servicecomb.codec.protobuf.definition.RequestRootDeserializer;
 import org.apache.servicecomb.codec.protobuf.definition.RequestRootSerializer;
 import org.apache.servicecomb.codec.protobuf.definition.ResponseRootSerializer;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.foundation.vertx.server.TcpParser;
@@ -46,18 +48,19 @@ import io.vertx.core.buffer.Buffer;
 import mockit.Mocked;
 
 public class TestHighwayCodec {
-
-  private RequestHeader header = null;
-
   private OperationProtobuf operationProtobuf = null;
 
   private Buffer bodyBuffer = null;
 
   private RequestRootSerializer requestSerializer = null;
 
+  private RequestRootDeserializer<Object> requestRootDeserializer = null;
+
   private SchemaMeta schemaMeta = null;
 
   private OperationMeta operationMeta = null;
+
+  private MicroserviceMeta microserviceMeta = null;
 
   private ByteBuf lByteBuf = null;
 
@@ -75,17 +78,19 @@ public class TestHighwayCodec {
     serviceRegistry.init();
     RegistryUtils.setServiceRegistry(serviceRegistry);
 
-    header = Mockito.mock(RequestHeader.class);
-
     operationProtobuf = Mockito.mock(OperationProtobuf.class);
 
     bodyBuffer = Mockito.mock(Buffer.class);
 
     requestSerializer = Mockito.mock(RequestRootSerializer.class);
 
+    requestRootDeserializer = Mockito.mock(RequestRootDeserializer.class);
+
     schemaMeta = Mockito.mock(SchemaMeta.class);
 
     operationMeta = Mockito.mock(OperationMeta.class);
+
+    microserviceMeta = Mockito.mock(MicroserviceMeta.class);
 
     lByteBuf = Mockito.mock(ByteBuf.class);
 
@@ -96,8 +101,6 @@ public class TestHighwayCodec {
 
   @After
   public void tearDown() {
-
-    header = null;
 
     operationProtobuf = null;
 
@@ -116,66 +119,25 @@ public class TestHighwayCodec {
     invocation = null;
   }
 
-  @Test
-  public void testDecodeRequest(@Mocked Endpoint endpoint) throws Exception {
-    // TODO : WK unit test
-//    commonMock();
-//    Mockito.when(schemaMeta.getMicroserviceMeta().getProviderHandlerChain()).thenReturn(Collections.emptyList());
-//    Object[] args = new Object[] {};
-//    Mockito.when(schema.readObject(bodyBuffer)).thenReturn(args);
-//
-//    Invocation invocation = new Invocation(endpoint, operationMeta, null);
-//
-//    HighwayCodec.decodeRequest(invocation, header, operationProtobuf, bodyBuffer);
-//
-//    Assert.assertSame(args, invocation.getSwaggerArguments());
-  }
-
-  @Test
-  public void testDecodeResponse() throws Exception {
-    // TODO : WK unit test
-    //    Invocation invocation = Mockito.mock(Invocation.class);
-//    Mockito.when(operationProtobuf.findResponseSchema(200)).thenReturn(Mockito.mock(WrapSchema.class));
-//
-//    Map<String, String> context = new HashMap<>();
-//    Mockito.when(invocation.getContext()).thenReturn(context);
-//
-//    TcpData tcpData = Mockito.mock(TcpData.class);
-//
-//    Mockito.when(tcpData.getHeaderBuffer()).thenReturn(bodyBuffer);
-//    commonMock();
-//
-//    ResponseHeader header = new ResponseHeader();
-//    header.setStatusCode(200);
-//    header.setContext(new HashMap<>());
-//    header.getContext().put("a", "10");
-//    Buffer responseBuf = HighwayCodec.encodeResponse(0, header, null, null);
-//
-//    TcpData tcp = new TcpData(responseBuf.slice(23, responseBuf.length()), null);
-//    Response response = HighwayCodec.decodeResponse(invocation, operationProtobuf, tcp);
-//    Assert.assertEquals("10", invocation.getContext().get("a"));
-//    Assert.assertEquals(200, response.getStatusCode());
-  }
 
   @Test
   public void testDecodeRequestTraceId(@Mocked Endpoint endpoint) throws Exception {
-    // TODO : WK unit test
-    //    commonMock();
-//
-//    Invocation invocation = new Invocation(endpoint, operationMeta, null);
-//
-//    invocation.addContext("X-B3-traceId", "test1");
-//    Assert.assertEquals("test1", invocation.getContext("X-B3-traceId"));
-//
-//    RequestHeader headers = new RequestHeader();
-//    Map<String, String> context = new HashMap<>();
-//    headers.setContext(context);
-//    HighwayCodec.decodeRequest(invocation, headers, operationProtobuf, bodyBuffer);
-//    Assert.assertEquals("test1", invocation.getContext("X-B3-traceId"));
-//
-//    context.put("X-B3-traceId", "test2");
-//    HighwayCodec.decodeRequest(invocation, headers, operationProtobuf, bodyBuffer);
-//    Assert.assertEquals("test2", invocation.getContext("X-B3-traceId"));
+    commonMock();
+
+    Invocation invocation = new Invocation(endpoint, operationMeta, null);
+
+    invocation.addContext("X-B3-traceId", "test1");
+    Assert.assertEquals("test1", invocation.getContext("X-B3-traceId"));
+
+    RequestHeader headers = new RequestHeader();
+    Map<String, String> context = new HashMap<>();
+    headers.setContext(context);
+    HighwayCodec.decodeRequest(invocation, headers, operationProtobuf, bodyBuffer);
+    Assert.assertEquals("test1", invocation.getContext("X-B3-traceId"));
+
+    context.put("X-B3-traceId", "test2");
+    HighwayCodec.decodeRequest(invocation, headers, operationProtobuf, bodyBuffer);
+    Assert.assertEquals("test2", invocation.getContext("X-B3-traceId"));
   }
 
   @Test
@@ -212,32 +174,14 @@ public class TestHighwayCodec {
     Assert.assertTrue(status);
   }
 
-  @Test
-  public void testReadRequestHeader() {
-    // TODO : WK unit test
-    //    boolean status = true;
-//    try {
-//      new MockUp<NotWrapSchema>() {
-//        @Mock
-//        public Object readObject(Input input) throws IOException {
-//          return new RequestHeader();
-//        }
-//      };
-//      bodyBuffer = Buffer.buffer("\"abc\"");
-//      RequestHeader requestHeader = HighwayCodec.readRequestHeader(bodyBuffer);
-//      Assert.assertNotNull(requestHeader);
-//      Assert.assertEquals(0, requestHeader.getFlags());
-//    } catch (Exception e) {
-//      status = false;
-//    }
-//    Assert.assertTrue(status);
-  }
-
   private void commonMock() {
     Mockito.when(operationProtobuf.getRequestRootSerializer()).thenReturn(requestSerializer);
+    Mockito.when(operationProtobuf.getRequestRootDeserializer()).thenReturn(requestRootDeserializer);
     Mockito.when(bodyBuffer.getByteBuf()).thenReturn(lByteBuf);
+    Mockito.when(bodyBuffer.getBytes()).thenReturn(new byte[0]);
     Mockito.when(lByteBuf.nioBuffer()).thenReturn(nioBuffer);
     Mockito.when(operationProtobuf.getOperationMeta()).thenReturn(operationMeta);
     Mockito.when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
+    Mockito.when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
   }
 }

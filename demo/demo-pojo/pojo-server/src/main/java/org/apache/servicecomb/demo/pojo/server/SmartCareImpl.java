@@ -28,7 +28,6 @@ public class SmartCareImpl implements SmartCare {
 
   @Override
   public Response addApplication(Application application) {
-    // TODO: add application
     LOG.info(application.toString());
 
     Response resp = new Response();
@@ -40,7 +39,6 @@ public class SmartCareImpl implements SmartCare {
   @SuppressWarnings("divzero")
   @Override
   public Response delApplication(String appName) {
-    // TODO: delete application
     LOG.info(appName);
 
     try {

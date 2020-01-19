@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ForkJoinPool;
+import java.util.stream.IntStream;
 
 import javax.inject.Inject;
 
@@ -86,32 +88,29 @@ public class PojoClient {
       TestMgr.check("success", "failed");
       LOGGER.error("-------------- test failed -------------");
       LOGGER.error("", e);
-      System.err.println("-------------- test failed -------------");
+      LOGGER.error("-------------- test failed -------------");
     }
 
     TestMgr.summary();
   }
 
-  private static void testContextClassLoaderIsNull() {
-    // TODO: WEAK protostuff many classes use ContextClassLoader to load classes, if it is null,
-    // Will cause many components not work.
-//    IntStream.range(0, 100).parallel().forEach(item -> {
-//      if (Thread.currentThread().getName().equals("main")) {
-//        return;
-//      }
-//      // in web environment, this could be null, here we just mock a null class loader.
-//      Thread.currentThread().setContextClassLoader(null);
-//      TestMgr.check(null, test.postTestStatic(2));
-//    });
+  private static void testContextClassLoaderIsNull() throws Exception {
+    ForkJoinPool pool = new ForkJoinPool(4);
+    pool.submit(() ->
+        IntStream.range(0, 20).parallel().forEach(item -> {
+          if (Thread.currentThread().getName().equals("main")) {
+            return;
+          }
+          // in web environment, this could be null, here we just mock a null class loader.
+          Thread.currentThread().setContextClassLoader(null);
+          TestMgr.check(null, test.postTestStatic(2));
+        })).get();
   }
 
   public static void run() throws Exception {
     CategorizedTestCaseRunner.runCategorizedTestCase("pojo");
 
-    testContextClassLoaderIsNull();
-
     smartcare = BeanUtils.getBean("smartcare");
-
     String microserviceName = "pojo";
     codeFirstPojoClient.testCodeFirst(microserviceName);
 
@@ -120,6 +119,7 @@ public class PojoClient {
       TestMgr.setMsg(microserviceName, transport);
       LOGGER.info("test {}, transport {}", microserviceName, transport);
 
+      testContextClassLoaderIsNull();
       testNull(testFromXml);
       testNull(test);
 
@@ -228,24 +228,23 @@ public class PojoClient {
   }
 
   private static void testException(Test test) {
-    // TODO : WEAK highway support error code
-//    try {
-//      test.testException(456);
-//    } catch (InvocationException e) {
-//      TestMgr.check("456 error", e.getErrorData());
-//    }
-//
-//    try {
-//      test.testException(556);
-//    } catch (InvocationException e) {
-//      TestMgr.check("[556 error]", e.getErrorData());
-//    }
+    try {
+      test.testException(456);
+    } catch (InvocationException e) {
+      TestMgr.check("456 error", e.getErrorData());
+    }
 
-//    try {
-//      test.testException(557);
-//    } catch (InvocationException e) {
-//      TestMgr.check("[[557 error]]", e.getErrorData());
-//    }
+    try {
+      test.testException(556);
+    } catch (InvocationException e) {
+      TestMgr.check("[556 error]", e.getErrorData());
+    }
+
+    try {
+      test.testException(557);
+    } catch (InvocationException e) {
+      TestMgr.check("[[557 error]]", e.getErrorData());
+    }
   }
 
   private static void testInputArray(Test test) {
@@ -281,7 +280,6 @@ public class PojoClient {
   }
 
   private static void testEmptyHighway(Test test) {
-    // TODO : WEAK highway will never encoding empty string
     TestMgr.check("code is 'null'", test.getTestString(""));
   }
 
@@ -294,7 +292,6 @@ public class PojoClient {
   }
 
   private static void testNullHighway(Test test) {
-    // TODO: WEAK highway will never have request with null. When new User, the default name is nameA
     TestMgr.check("nameA", test.wrapParam(null).getName());
   }
 

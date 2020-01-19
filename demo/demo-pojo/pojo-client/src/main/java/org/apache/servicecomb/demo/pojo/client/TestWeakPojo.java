@@ -109,6 +109,16 @@ public class TestWeakPojo implements CategorizedTestCase {
   private ObjectInf objectInf;
 
   @Override
+  public void testRestTransport() throws Exception {
+
+  }
+
+  @Override
+  public void testHighwayTransport() throws Exception {
+
+  }
+
+  @Override
   public void testAllTransport() throws Exception {
     testDiffName();
 

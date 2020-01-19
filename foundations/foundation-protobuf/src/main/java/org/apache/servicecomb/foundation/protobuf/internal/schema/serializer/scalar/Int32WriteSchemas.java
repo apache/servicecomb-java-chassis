@@ -62,6 +62,9 @@ public final class Int32WriteSchemas {
       }
 
       if (value instanceof String) {
+        if (((String) value).isEmpty()) {
+          return;
+        }
         int parsedValue = Integer.parseInt((String) value, 10);
         output.writeScalarInt32(tag, tagSize, parsedValue);
         return;

@@ -36,14 +36,15 @@ import io.vertx.core.net.SocketAddress;
 public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
   private RestOperationMeta swaggerOperation;
 
-  private SocketAddress sockerAddress;
-
   private Invocation invocation;
 
   public InvocationToHttpServletRequest(Invocation invocation) {
     this.swaggerOperation = invocation.getOperationMeta().getExtData(RestConst.SWAGGER_REST_OPERATION);
-    this.sockerAddress = (SocketAddress) invocation.getHandlerContext().get(Const.REMOTE_ADDRESS);
     this.invocation = invocation;
+  }
+
+  private SocketAddress getSockerAddress() {
+    return (SocketAddress) invocation.getHandlerContext().get(Const.REMOTE_ADDRESS);
   }
 
   @Override
@@ -112,17 +113,17 @@ public class InvocationToHttpServletRequest extends AbstractHttpServletRequest {
 
   @Override
   public String getRemoteAddr() {
-    return this.sockerAddress == null ? "" : this.sockerAddress.host();
+    return this.getSockerAddress() == null ? "" : this.getSockerAddress().host();
   }
 
   @Override
   public String getRemoteHost() {
-    return this.sockerAddress == null ? "" : this.sockerAddress.host();
+    return this.getSockerAddress() == null ? "" : this.getSockerAddress().host();
   }
 
   @Override
   public int getRemotePort() {
-    return this.sockerAddress == null ? 0 : this.sockerAddress.port();
+    return this.getSockerAddress() == null ? 0 : this.getSockerAddress().port();
   }
 
   @Override
