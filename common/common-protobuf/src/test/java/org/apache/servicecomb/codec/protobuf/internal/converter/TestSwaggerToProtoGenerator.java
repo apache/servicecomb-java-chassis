@@ -45,4 +45,12 @@ public class TestSwaggerToProtoGenerator {
     Assert.assertEquals(protoContent.replaceAll("\r\n", "\n"),
         new ProtoToStringGenerator(proto).protoToString().replaceAll("\r\n", "\n"));
   }
+
+  @Test
+  public void testEscape() {
+    Assert.assertEquals("hello_my_service", SwaggerToProtoGenerator.escapeMessageName("hello.my.service"));
+    Assert.assertEquals("hello_my_service", SwaggerToProtoGenerator.escapeMessageName("hello_my_service"));
+    Assert.assertEquals("hello.my_service", SwaggerToProtoGenerator.escapePackageName("hello.my-service"));
+    Assert.assertEquals("hello.test.test", SwaggerToProtoGenerator.escapePackageName("hello.test.test"));
+  }
 }

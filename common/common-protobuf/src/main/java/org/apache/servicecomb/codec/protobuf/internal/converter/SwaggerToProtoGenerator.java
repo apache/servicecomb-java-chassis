@@ -71,7 +71,7 @@ public class SwaggerToProtoGenerator {
   // not java package
   // better to be: app_${app}.mid_{microservice}.sid_{schemaId}
   public SwaggerToProtoGenerator(String protoPackage, Swagger swagger) {
-    this.protoPackage = protoPackage;
+    this.protoPackage = escapePackageName(protoPackage);
     this.swagger = swagger;
   }
 
@@ -90,6 +90,14 @@ public class SwaggerToProtoGenerator {
     }
 
     return createProto();
+  }
+
+  public static String escapePackageName(String name) {
+    return name.replaceAll("\\-", "_");
+  }
+
+  public static String escapeMessageName(String name) {
+    return name.replaceAll("\\.", "_");
   }
 
   private void convertDefinitions() {
@@ -217,7 +225,7 @@ public class SwaggerToProtoGenerator {
     }
 
     // message name cannot have . (package separator)
-    return prefix + StringUtils.capitalize(convertSwaggerType(adapter).replaceAll("\\.", "_"));
+    return prefix + StringUtils.capitalize(escapeMessageName(convertSwaggerType(adapter)));
   }
 
   private void wrapPropertyToMessage(String protoName, Object property) {

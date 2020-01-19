@@ -32,7 +32,6 @@ import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
 import org.apache.servicecomb.foundation.vertx.client.tcp.AbstractTcpClientPackage;
-import org.apache.servicecomb.foundation.vertx.client.tcp.NetClientWrapper;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpData;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpResponseCallback;
@@ -243,38 +242,5 @@ public class TestHighwayClient {
     Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersRequest());
     Assert.assertEquals(nanoTime, invocationStageTrace.getStartClientFiltersResponse());
     Assert.assertEquals(nanoTime, invocationStageTrace.getFinishClientFiltersResponse());
-  }
-
-  @Test
-  public void testCreateLogin(@Mocked NetClientWrapper netClientWrapper) throws Exception {
-    // TODO : WK unit test
-
-//    ProtobufCompatibleUtils.init();
-//
-//    HighwayClientConnection connection =
-//        new HighwayClientConnection(null, netClientWrapper, "highway://127.0.0.1:7890");
-//    TcpOutputStream os = connection.createLogin();
-//    ByteBuf buf = os.getBuffer().getByteBuf();
-//
-//    byte[] magic = new byte[TcpParser.TCP_MAGIC.length];
-//    buf.readBytes(magic);
-//    Assert.assertArrayEquals(TcpParser.TCP_MAGIC, magic);
-//    Assert.assertEquals(os.getMsgId(), buf.readLong());
-//
-//    int start = TcpParser.TCP_HEADER_LENGTH;
-//    int totalLen = buf.readInt();
-//    int headerLen = buf.readInt();
-//    Buffer headerBuffer =
-//        os.getBuffer().slice(start, start + headerLen);
-//    int end = start + totalLen;
-//    start += headerLen;
-//    Buffer bodyBuffer = os.getBuffer().slice(start, end);
-
-
-//    RequestHeader header = RequestHeader.readObject(headerBuffer);
-//    Assert.assertEquals(MsgType.LOGIN, header.getMsgType());
-//
-//    LoginRequest login = LoginRequest.readObject(bodyBuffer);
-//    Assert.assertEquals(Const.HIGHWAY, login.getProtocol());
   }
 }

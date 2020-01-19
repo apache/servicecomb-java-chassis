@@ -15,5 +15,4 @@
 # limitations under the License.
 #
 
-# TODO: turn on highway transport
 org.apache.servicecomb.transport.highway.HighwayTransport

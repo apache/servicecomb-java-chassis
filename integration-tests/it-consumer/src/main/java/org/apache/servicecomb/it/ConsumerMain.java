@@ -109,7 +109,7 @@ public class ConsumerMain {
     ITJUnitUtils.runWithHighwayAndRest(TestChangeTransport.class);
     ITJUnitUtils.runWithHighwayAndRest(TestDataTypePrimitive.class);
     ITJUnitUtils.runWithHighwayAndRest(TestAnnotatedAttribute.class);
-    // TODO fix SCB-1448 later
+    // TODO : WEAK RPC & highway both not support this now , need fix it
     //    ITJUnitUtils.runWithHighwayAndRest(TestMyService.class);
 
     // only rest support default value feature
