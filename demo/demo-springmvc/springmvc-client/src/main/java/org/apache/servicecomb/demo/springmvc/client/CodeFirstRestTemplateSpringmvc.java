@@ -113,8 +113,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     testBizkeeper.runAllTest();
     testResponseEntity("springmvc", template, cseUrlPrefix);
     testCodeFirstTestForm(template, cseUrlPrefix);
-    // TODO : WEAK not supported now in HIGHWAY
-//    testFallback(template, cseUrlPrefix);
+    testFallback(template, cseUrlPrefix);
 
     super.testAllTransport(microserviceName, template, cseUrlPrefix);
   }
@@ -249,7 +248,8 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     TestMgr.check(code + "null",
         template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
     map.put("form2", "hello");
-    TestMgr.check(code + "hello", template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
+    TestMgr
+        .check(code + "hello", template.postForEntity(cseUrlPrefix + "/testform", formEntiry, String.class).getBody());
   }
 
   private void testCodeFirstTestFormHighway(RestTemplate template, String cseUrlPrefix) {

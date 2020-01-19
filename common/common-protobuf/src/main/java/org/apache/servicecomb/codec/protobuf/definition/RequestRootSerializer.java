@@ -21,6 +21,8 @@ import java.util.Map;
 
 import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 
+import io.vertx.core.json.JsonObject;
+
 public class RequestRootSerializer {
   private RootSerializer rootSerializer;
 
@@ -37,7 +39,11 @@ public class RequestRootSerializer {
   @SuppressWarnings("unchecked")
   public byte[] serialize(Object value) throws IOException {
     if (noTypesInfo && !isWrap) {
-      return this.rootSerializer.serialize(((Map<String, Object>) value).values().iterator().next());
+      Object param = ((Map<String, Object>) value).values().iterator().next();
+      if (param instanceof JsonObject) {
+        param = ((JsonObject) param).getMap();
+      }
+      return this.rootSerializer.serialize(param);
     } else {
       return this.rootSerializer.serialize(value);
     }

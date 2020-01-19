@@ -99,6 +99,9 @@ public class ProtoMapper {
   public Message getRequestMessage(String operationId) {
     Service service = proto.getServices().get(0);
     ServiceMethod serviceMethod = service.getMethod(operationId);
+    if (serviceMethod == null) {
+      throw new IllegalArgumentException("operation not found, operation id=" + operationId);
+    }
     return serviceMethod.getArgType();
   }
 

@@ -84,8 +84,8 @@ public final class HighwayCodec {
   @SuppressWarnings({"rawtypes", "unchecked"})
   public static void decodeRequest(Invocation invocation, RequestHeader header, OperationProtobuf operationProtobuf,
       Buffer bodyBuffer) throws Exception {
-    RequestRootDeserializer<Object> requestDesirializer = operationProtobuf.getRequestRootDeserializer();
-    Map<String, Object> swaggerArguments = requestDesirializer.deserialize(bodyBuffer.getBytes());
+    RequestRootDeserializer<Object> requestDeserializer = operationProtobuf.getRequestRootDeserializer();
+    Map<String, Object> swaggerArguments = requestDeserializer.deserialize(bodyBuffer.getBytes());
     addPrimitiveTypeDefaultValues(invocation, operationProtobuf.getOperationMeta(), swaggerArguments);
     invocation.setSwaggerArguments(swaggerArguments);
     invocation.mergeContext(header.getContext());

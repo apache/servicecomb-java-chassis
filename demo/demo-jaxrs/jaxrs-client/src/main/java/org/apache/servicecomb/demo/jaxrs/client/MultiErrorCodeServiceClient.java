@@ -22,14 +22,13 @@ import java.util.Map;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
-import org.apache.servicecomb.demo.DemoConst;
+import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.multiErrorCode.MultiRequest;
 import org.apache.servicecomb.demo.multiErrorCode.MultiResponse200;
 import org.apache.servicecomb.demo.multiErrorCode.MultiResponse400;
 import org.apache.servicecomb.demo.multiErrorCode.MultiResponse500;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
@@ -40,6 +39,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.UnknownHttpStatusCodeException;
@@ -47,27 +47,33 @@ import org.springframework.web.client.UnknownHttpStatusCodeException;
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
 
-public class MultiErrorCodeServiceClient {
+@Component
+public class MultiErrorCodeServiceClient implements CategorizedTestCase {
   private static final String SERVER = "cse://jaxrs";
 
   private static String serverDirectURL;
 
   private static RestTemplate template = RestTemplateBuilder.create();
 
-  public static void runTest() {
-    for (String transport : DemoConst.transports) {
-      ArchaiusUtils.setProperty("servicecomb.references.transport.jaxrs", transport);
+  @Override
+  public void testAllTransport() throws Exception {
+    testErrorCode();
+    testErrorCodeWithHeader();
+    testErrorCodeWithHeaderJAXRS();
+    testErrorCodeWithHeaderJAXRSUsingRowType();
+    testNoClientErrorCode();
+  }
 
-      // TODO fix this in SCB-1634
-//      testErrorCode();
-//      testErrorCodeWithHeader();
-//      testErrorCodeWithHeaderJAXRS();
-//      testErrorCodeWithHeaderJAXRSUsingRowType();
-//      testNoClientErrorCode();
-    }
-
+  @Override
+  public void testRestTransport() throws Exception {
     prepareServerDirectURL();
     testErrorCodeWrongType();
+    testErrorCodeWithHeaderJAXRSUsingRowTypeRest();
+  }
+
+  @Override
+  public void testHighwayTransport() throws Exception {
+
   }
 
   private static void prepareServerDirectURL() {
@@ -220,6 +226,23 @@ public class MultiErrorCodeServiceClient {
     TestMgr.check(t500.getMessage(), "internal error");
   }
 
+  private static void testErrorCodeWithHeaderJAXRSUsingRowTypeRest() {
+    // TODO recover this in SCB-1652
+    // using string
+//    MultiRequest request = new MultiRequest();
+//    request.setCode(200);
+//    request.setMessage("test message");
+//    String stringRequest = Json.encode(request);
+//
+//    ResponseEntity<MultiResponse200> result = template
+//        .postForEntity(SERVER + "/MultiErrorCodeService/errorCodeWithHeaderJAXRS", stringRequest,
+//            MultiResponse200.class);
+//    TestMgr.check(result.getStatusCodeValue(), 200);
+//    TestMgr.check(result.getBody().getMessage(), "test message");
+//    TestMgr.check(result.getBody().getCode(), 200);
+//    TestMgr.check(result.getHeaders().getFirst("x-code"), 200);
+  }
+
   private static void testErrorCodeWithHeaderJAXRSUsingRowType() {
     JsonObject requestJson = new JsonObject();
     requestJson.put("code", 200);
@@ -244,16 +267,6 @@ public class MultiErrorCodeServiceClient {
     TestMgr.check(result.getBody().getMessage(), "test message");
     TestMgr.check(result.getBody().getCode(), 200);
     TestMgr.check(result.getHeaders().getFirst("x-code"), 200);
-
-    // TODO recover this in SCB-1652
-    // using string
-//    result = template
-//        .postForEntity(SERVER + "/MultiErrorCodeService/errorCodeWithHeaderJAXRS", stringRequest,
-//            MultiResponse200.class);
-//    TestMgr.check(result.getStatusCodeValue(), 200);
-//    TestMgr.check(result.getBody().getMessage(), "test message");
-//    TestMgr.check(result.getBody().getCode(), 200);
-//    TestMgr.check(result.getHeaders().getFirst("x-code"), 200);
   }
 
   private static void testNoClientErrorCode() {

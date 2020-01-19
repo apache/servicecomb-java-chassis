@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo;
+package org.apache.servicecomb.demo.jaxrs;
 
-public interface CategorizedTestCase {
-  /**
-   * test case which only successful in REST transport
-   */
-  void testRestTransport() throws Exception;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
-  /**
-   * test case which only successful in HIGHWAY transport
-   */
-  void testHighwayTransport() throws Exception;
+import org.apache.servicecomb.demo.TestMgr;
+import org.apache.servicecomb.demo.jaxrs.client.JaxrsClient;
+import org.junit.Before;
+import org.junit.Test;
 
-  /**
-   * test case which successful in both REST and HIGHWAY transport
-   */
-  void testAllTransport() throws Exception;
+public class JaxrsIT {
+
+  @Before
+  public void setUp() {
+    TestMgr.errors().clear();
+  }
+
+  @Test
+  public void clientGetsNoError() throws Exception {
+    JaxrsClient.main(new String[0]);
+
+    assertThat(TestMgr.errors().isEmpty(), is(true));
+  }
 }
