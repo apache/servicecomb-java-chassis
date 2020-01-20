@@ -25,7 +25,7 @@
   </appender>
   <logger name="org.apache.servicecomb.common.javassist.JavassistUtils" level="WARN"/>
   <logger name="org.apache.servicecomb.core.definition.schema.ProducerSchemaFactory" level="WARN"/>
-  <root level="INFO">
+  <root level="WARN">
     <appender-ref ref="STDOUT"/>
   </root>
 </configuration>
