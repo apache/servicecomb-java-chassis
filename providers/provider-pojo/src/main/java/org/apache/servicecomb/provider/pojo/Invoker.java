@@ -181,7 +181,6 @@ public class Invoker implements InvocationHandler {
 
   public Map<String, Object> toArguments(Method method, Object[] args) {
     Map<String, Object> arguments = new HashMap<>();
-    // TODO: WEAK parameter name maybe override by annotations.
     for (int i = 0; i < method.getParameterCount(); i++) {
       arguments.put(method.getParameters()[i].getName(), args[i]);
     }
