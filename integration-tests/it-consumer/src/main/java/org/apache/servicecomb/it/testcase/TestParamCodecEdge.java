@@ -40,6 +40,7 @@ public class TestParamCodecEdge {
   private static final Logger LOGGER = LoggerFactory.getLogger(TestParamCodecEdge.class);
 
   static GateRestTemplate client = GateRestTemplate.createEdgeRestTemplate("paramCodec");
+  static GateRestTemplate restOnlyClient = GateRestTemplate.createEdgeRestTemplate("paramCodecRestOnly");
 
   @Test
   public void spaceCharEncode() {
@@ -61,15 +62,15 @@ public class TestParamCodecEdge {
   @Test
   public void enumSpecialName() {
     assertEquals(Media.AAC,
-        client.postForObject("/enum/enumSpecialName", Media.AAC, Media.class));
+        restOnlyClient.postForObject("/enum/enumSpecialName", Media.AAC, Media.class));
     assertEquals(Media.FLAC,
-        client.postForObject("/enum/enumSpecialName", Media.FLAC, Media.class));
+        restOnlyClient.postForObject("/enum/enumSpecialName", Media.FLAC, Media.class));
     assertEquals(Media.H_264,
-        client.postForObject("/enum/enumSpecialName", Media.H_264, Media.class));
+        restOnlyClient.postForObject("/enum/enumSpecialName", Media.H_264, Media.class));
     assertEquals(Media.MPEG_2,
-        client.postForObject("/enum/enumSpecialName", Media.MPEG_2, Media.class));
+        restOnlyClient.postForObject("/enum/enumSpecialName", Media.MPEG_2, Media.class));
     assertEquals(Media.WMV,
-        client.postForObject("/enum/enumSpecialName", Media.WMV, Media.class));
+        restOnlyClient.postForObject("/enum/enumSpecialName", Media.WMV, Media.class));
   }
 
   @Test

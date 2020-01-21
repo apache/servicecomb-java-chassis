@@ -100,6 +100,13 @@ public class SwaggerToProtoGenerator {
     return name.replaceAll("\\.", "_");
   }
 
+  public static boolean isValidEnum(String name) {
+    if (name.contains(".") || name.contains("-")) {
+      return false;
+    }
+    return true;
+  }
+
   private void convertDefinitions() {
     if (swagger.getDefinitions() == null) {
       return;
@@ -250,7 +257,12 @@ public class SwaggerToProtoGenerator {
 
     appendLine(msgStringBuilder, "enum %s {", enumName);
     for (int idx = 0; idx < enums.size(); idx++) {
-      appendLine(msgStringBuilder, "  %s =%d;", enums.get(idx), idx);
+      if (isValidEnum(enums.get(idx))) {
+        appendLine(msgStringBuilder, "  %s =%d;", enums.get(idx), idx);
+      } else {
+        throw new IllegalStateException(
+            String.format("enum class [%s] name [%s] not supported by protobuffer.", enumName, enums.get(idx)));
+      }
     }
     appendLine(msgStringBuilder, "}");
   }

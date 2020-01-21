@@ -27,7 +27,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.apache.servicecomb.foundation.test.scaffolding.model.Media;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 
@@ -49,15 +48,6 @@ public class ParamCodecSchema {
   private boolean matchOr(String result, String expected1, String expected2) {
     // spring mvc & rpc handles "+' differently, both '+' or ' ' is correct according to HTTP SPEC. spring mvc changed from '+' to ' ' since spring 5.
     return result.equals(expected1) || result.equals(expected2);
-  }
-
-  /**
-   * Test special enum name tagged by {@link com.fasterxml.jackson.annotation.JsonProperty}
-   */
-  @Path("enum/enumSpecialName")
-  @POST
-  public Media enumSpecialName(Media media) {
-    return media;
   }
 
   @Path("invocationContext")

@@ -19,7 +19,6 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.sc
 import java.io.IOException;
 
 import org.apache.servicecomb.foundation.common.utils.bean.Getter;
-import org.apache.servicecomb.foundation.common.utils.bean.LongGetter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
 
@@ -37,7 +36,7 @@ public class SFixed64WriteSchemas {
       return new SFixed64Schema<>(protoField, propertyDescriptor);
     }
 
-    return new SFixed64DynamicSchema<>(protoField, propertyDescriptor);
+    return new SFixed64Schema<>(protoField, propertyDescriptor);
   }
 
   private static class SFixed64DynamicSchema<T> extends FieldSchema<T> {
@@ -72,7 +71,7 @@ public class SFixed64WriteSchemas {
   }
 
   private static class SFixed64Schema<T> extends SFixed64DynamicSchema<T> {
-    protected final Getter<T, Long> getter;
+    protected final Getter<T, Object> getter;
 
     public SFixed64Schema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);
@@ -82,15 +81,15 @@ public class SFixed64WriteSchemas {
 
     @Override
     public final void getAndWriteTo(OutputEx output, T message) throws IOException {
-      Long value = getter.get(message);
+      Object value = getter.get(message);
       if (value != null) {
-        output.writeScalarSFixed64(tag, tagSize, value);
+        writeTo(output, value);
       }
     }
   }
 
   private static class SFixed64PrimitiveSchema<T> extends SFixed64DynamicSchema<T> {
-    private final LongGetter<T> primitiveGetter;
+    private final Getter<T, Long> primitiveGetter;
 
     public SFixed64PrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);

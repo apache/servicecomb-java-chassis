@@ -34,7 +34,7 @@ public class EnumWriteSchemas {
       return new EnumSchema<>(protoField, propertyDescriptor);
     }
 
-    return new EnumDynamicSchema<>(protoField, propertyDescriptor);
+    return new EnumSchema<>(protoField, propertyDescriptor);
   }
 
   private static class EnumDynamicSchema<T> extends FieldSchema<T> {
@@ -106,23 +106,19 @@ public class EnumWriteSchemas {
   }
 
   private static class EnumSchema<T> extends EnumDynamicSchema<T> {
-    protected final Getter<T, Enum<?>> getter;
+    protected final Getter<T, Object> getter;
 
     public EnumSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);
 
-      this.getter = javaType.isPrimitive() ? null : propertyDescriptor.getGetter();
+      this.getter = propertyDescriptor.getGetter();
     }
 
     @Override
     public final void getAndWriteTo(OutputEx output, T message) throws IOException {
-      // already be a Enum, need to check if it is a valid Enum?
-      // wrong case:
-      //   expect a Color enum, but be a Sharp enum?, who will do this?
-      // for safe, check it......
-      Enum<?> value = getter.get(message);
+      Object value = getter.get(message);
       if (value != null) {
-        stringWrite(output, value.name());
+        writeTo(output, value);
       }
     }
   }

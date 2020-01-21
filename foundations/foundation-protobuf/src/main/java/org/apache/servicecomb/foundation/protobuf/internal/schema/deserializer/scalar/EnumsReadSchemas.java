@@ -18,7 +18,6 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.
 
 import java.io.IOException;
 
-import org.apache.servicecomb.foundation.common.utils.bean.IntSetter;
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
@@ -96,7 +95,7 @@ public class EnumsReadSchemas {
   }
 
   private static class IntPrimitiveEnumSchema<T> extends FieldSchema<T> {
-    private final IntSetter<T> setter;
+    private final Setter<T, Integer> setter;
 
     public IntPrimitiveEnumSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor.getJavaType());

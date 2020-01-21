@@ -86,7 +86,7 @@ public class OperationConfig {
   private long nanoRestRequestWaitInPoolTimeout;
 
   @InjectProperty(keys = {
-      "operation.${service}.transport", // Deprecated
+      "operation${op-priority}.transport", // Deprecated
       "references.transport${op-priority}"
   })
   private String transport;

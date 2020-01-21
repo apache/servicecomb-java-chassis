@@ -18,7 +18,6 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.
 
 import java.io.IOException;
 
-import org.apache.servicecomb.foundation.common.utils.bean.BoolSetter;
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
@@ -61,7 +60,7 @@ public class BoolReadSchemas {
   }
 
   private static class BooleanPrimitiveSchema<T> extends FieldSchema<T> {
-    private final BoolSetter<T> setter;
+    private final Setter<T, Boolean> setter;
 
     public BooleanPrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor.getJavaType());

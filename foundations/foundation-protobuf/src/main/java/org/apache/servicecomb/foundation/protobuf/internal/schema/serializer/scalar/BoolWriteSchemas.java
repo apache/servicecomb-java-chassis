@@ -18,7 +18,6 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.sc
 
 import java.io.IOException;
 
-import org.apache.servicecomb.foundation.common.utils.bean.BoolGetter;
 import org.apache.servicecomb.foundation.common.utils.bean.Getter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
@@ -37,7 +36,7 @@ public class BoolWriteSchemas {
       return new BooleanSchema<>(protoField, propertyDescriptor);
     }
 
-    return new BooleanDynamicSchema<>(protoField, propertyDescriptor);
+    return new BooleanSchema<>(protoField, propertyDescriptor);
   }
 
   private static class BooleanDynamicSchema<T> extends FieldSchema<T> {
@@ -77,25 +76,25 @@ public class BoolWriteSchemas {
   }
 
   private static class BooleanSchema<T> extends BooleanDynamicSchema<T> {
-    protected final Getter<T, Boolean> getter;
+    protected final Getter<T, Object> getter;
 
     public BooleanSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);
 
-      this.getter = javaType.isPrimitive() ? null : propertyDescriptor.getGetter();
+      this.getter = propertyDescriptor.getGetter();
     }
 
     @Override
     public final void getAndWriteTo(OutputEx output, T message) throws IOException {
-      Boolean value = getter.get(message);
+      Object value = getter.get(message);
       if (value != null) {
-        output.writeScalarBool(tag, tagSize, value);
+        writeTo(output, value);
       }
     }
   }
 
   private static class BooleanPrimitiveSchema<T> extends BooleanDynamicSchema<T> {
-    private final BoolGetter<T> primitiveGetter;
+    private final Getter<T, Boolean> primitiveGetter;
 
     public BooleanPrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);

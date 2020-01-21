@@ -25,8 +25,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.apache.servicecomb.foundation.common.utils.bean.Getter;
-import org.apache.servicecomb.foundation.common.utils.bean.IntGetter;
-import org.apache.servicecomb.foundation.common.utils.bean.IntSetter;
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -70,8 +68,8 @@ public class TestLambdaMetafactoryUtils {
   @SuppressWarnings("unchecked")
   @Test
   public void createGetterSetterByMethod() throws Throwable {
-    IntGetter<Model> getter = LambdaMetafactoryUtils.createGetter(Model.class.getMethod("getF1"));
-    IntSetter<Model> setter = LambdaMetafactoryUtils.createSetter(Model.class.getMethod("setF1", int.class));
+    Getter<Model, Integer> getter = LambdaMetafactoryUtils.createGetter(Model.class.getMethod("getF1"));
+    Setter<Model, Integer> setter = LambdaMetafactoryUtils.createSetter(Model.class.getMethod("setF1", int.class));
     BiFunction<Object, Object, Object> echo = LambdaMetafactoryUtils
         .createLambda(Model.class.getMethod("echo", List.class), BiFunction.class);
 

@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar;
 
-import org.apache.servicecomb.foundation.common.utils.bean.IntSetter;
-import org.apache.servicecomb.foundation.common.utils.bean.LongSetter;
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
 
@@ -35,7 +33,7 @@ public class AbstractScalarReadSchemas {
   }
 
   static abstract class AbstractIntPrimitiveSchema<T> extends FieldSchema<T> {
-    protected final IntSetter<T> setter;
+    protected final Setter<T, Integer> setter;
 
     public AbstractIntPrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor.getJavaType());
@@ -53,7 +51,7 @@ public class AbstractScalarReadSchemas {
   }
 
   static abstract class AbstractLongPrimitiveSchema<T> extends FieldSchema<T> {
-    protected final LongSetter<T> setter;
+    protected final Setter<T, Long> setter;
 
     public AbstractLongPrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor.getJavaType());

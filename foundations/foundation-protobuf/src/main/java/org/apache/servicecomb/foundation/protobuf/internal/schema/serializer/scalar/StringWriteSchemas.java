@@ -32,7 +32,7 @@ public class StringWriteSchemas {
       return new StringSchema<>(protoField, propertyDescriptor);
     }
 
-    return new StringDynamicSchema<>(protoField, propertyDescriptor);
+    return new StringSchema<>(protoField, propertyDescriptor);
   }
 
   private static class StringDynamicSchema<T> extends FieldSchema<T> {
@@ -65,19 +65,19 @@ public class StringWriteSchemas {
   }
 
   private static class StringSchema<T> extends StringDynamicSchema<T> {
-    protected final Getter<T, String> getter;
+    protected final Getter<T, Object> getter;
 
     public StringSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);
 
-      this.getter = javaType.isPrimitive() ? null : propertyDescriptor.getGetter();
+      this.getter = propertyDescriptor.getGetter();
     }
 
     @Override
     public final void getAndWriteTo(OutputEx output, T message) throws IOException {
-      String value = getter.get(message);
+      Object value = getter.get(message);
       if (value != null) {
-        output.writeScalarString(tag, tagSize, value);
+        writeTo(output, value);
       }
     }
   }

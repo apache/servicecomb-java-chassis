@@ -169,22 +169,22 @@ public class TestRPCObjectParamType {
 
   private FlattenObjectRequest createFlattenObjectRequest() {
     FlattenObjectRequest request = new FlattenObjectRequest();
-    request.setaByte((byte) 8);
-    request.setaShort((short) 7);
+    request.setAnByte((byte) 8);
+    request.setAnShort((short) 7);
     request.setAnInt(6);
-    request.setaLong(5);
-    request.setaFloat(4.4f);
-    request.setaDouble(3.3);
-    request.setaBoolean(true);
-    request.setaChar('c');
-    request.setaWrappedByte((byte) 16);
-    request.setaWrappedShort((short) 15);
-    request.setaWrappedInteger(14);
-    request.setaWrappedLong(13L);
-    request.setaWrappedFloat(12.2f);
-    request.setaWrappedDouble(11.1);
-    request.setaWrappedBoolean(true);
-    request.setaWrappedCharacter('d');
+    request.setAnLong(5);
+    request.setAnFloat(4.4f);
+    request.setAnDouble(3.3);
+    request.setAnBoolean(true);
+    request.setAnChar('c');
+    request.setAnWrappedByte((byte) 16);
+    request.setAnWrappedShort((short) 15);
+    request.setAnWrappedInteger(14);
+    request.setAnWrappedLong(13L);
+    request.setAnWrappedFloat(12.2f);
+    request.setAnWrappedDouble(11.1);
+    request.setAnWrappedBoolean(true);
+    request.setAnWrappedCharacter('d');
     request.setString("abc");
     request.setColor(Color.BLUE);
     return request;
