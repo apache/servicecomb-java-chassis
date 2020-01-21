@@ -287,7 +287,7 @@ public class SCBEngine {
           status = SCBStatus.UP;
           triggerEvent(EventType.AFTER_REGISTRY);
           EventManager.unregister(this);
-          LOGGER.info("ServiceComb is ready.");
+          LOGGER.warn("ServiceComb is ready.");
         }
       }
     });
