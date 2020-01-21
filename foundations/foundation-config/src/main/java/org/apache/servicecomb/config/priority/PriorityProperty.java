@@ -167,7 +167,7 @@ public class PriorityProperty<T> {
       LOGGER.debug("config inited, \"{}\" set to {}, effective key is \"{}\".",
           joinedPriorityKeys, value, effectiveKey);
     } else {
-      LOGGER.info("config changed, \"{}\" changed from {} to {}, effective key is \"{}\".",
+      LOGGER.debug("config changed, \"{}\" changed from {} to {}, effective key is \"{}\".",
           joinedPriorityKeys, finalValue, value, effectiveKey);
     }
     finalValue = value;
