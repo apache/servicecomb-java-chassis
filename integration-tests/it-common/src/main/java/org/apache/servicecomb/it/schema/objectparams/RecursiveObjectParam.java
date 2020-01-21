@@ -28,7 +28,7 @@ public class RecursiveObjectParam {
 
   private String string;
 
-  private Color color;
+  private Color color = Color.RED; // If using highway, it's best practise to give default value to the first item. Or should take null equals to default value.
 
   public RecursiveObjectParam() {
   }

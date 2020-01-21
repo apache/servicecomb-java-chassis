@@ -40,7 +40,8 @@ public class TestDefaultJsonValueJaxrsSchema {
     Assert.assertEquals("expected:0:0", result);
 
     result = client.getForObject("/queryInput?size=", String.class);
-    Assert.assertEquals("expected:0:", result);
+    // For REST, getParameter will return empty string, but For HIGHWAY, will return 0
+    Assert.assertEquals(true, "expected:0:".equals(result) || "expected:0:0".equals(result));
   }
 
   @SuppressWarnings("unchecked")

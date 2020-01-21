@@ -18,7 +18,6 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.
 
 import java.io.IOException;
 
-import org.apache.servicecomb.foundation.common.utils.bean.FloatSetter;
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
@@ -61,7 +60,7 @@ public class FloatReadSchemas {
   }
 
   private static class FloatPrimitiveSchema<T> extends FieldSchema<T> {
-    private final FloatSetter<T> setter;
+    private final Setter<T, Float> setter;
 
     public FloatPrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor.getJavaType());

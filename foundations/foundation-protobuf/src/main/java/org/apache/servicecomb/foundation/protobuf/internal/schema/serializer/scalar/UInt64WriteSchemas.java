@@ -19,7 +19,6 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.sc
 import java.io.IOException;
 
 import org.apache.servicecomb.foundation.common.utils.bean.Getter;
-import org.apache.servicecomb.foundation.common.utils.bean.LongGetter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
 
@@ -37,7 +36,7 @@ public class UInt64WriteSchemas {
       return new UInt64Schema<>(protoField, propertyDescriptor);
     }
 
-    return new UInt64DynamicSchema<>(protoField, propertyDescriptor);
+    return new UInt64Schema<>(protoField, propertyDescriptor);
   }
 
   private static class UInt64DynamicSchema<T> extends FieldSchema<T> {
@@ -72,7 +71,7 @@ public class UInt64WriteSchemas {
   }
 
   private static class UInt64Schema<T> extends UInt64DynamicSchema<T> {
-    protected final Getter<T, Long> getter;
+    protected final Getter<T, Object> getter;
 
     public UInt64Schema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);
@@ -82,15 +81,15 @@ public class UInt64WriteSchemas {
 
     @Override
     public final void getAndWriteTo(OutputEx output, T message) throws IOException {
-      Long value = getter.get(message);
+      Object value = getter.get(message);
       if (value != null) {
-        output.writeScalarUInt64(tag, tagSize, value);
+        writeTo(output, value);
       }
     }
   }
 
   private static class UInt64PrimitiveSchema<T> extends UInt64DynamicSchema<T> {
-    private final LongGetter<T> primitiveGetter;
+    private final Getter<T, Long> primitiveGetter;
 
     public UInt64PrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);

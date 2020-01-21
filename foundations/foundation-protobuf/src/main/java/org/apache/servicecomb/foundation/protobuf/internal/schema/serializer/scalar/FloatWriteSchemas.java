@@ -18,7 +18,6 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.sc
 
 import java.io.IOException;
 
-import org.apache.servicecomb.foundation.common.utils.bean.FloatGetter;
 import org.apache.servicecomb.foundation.common.utils.bean.Getter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
@@ -37,7 +36,7 @@ public class FloatWriteSchemas {
       return new FloatSchema<>(protoField, propertyDescriptor);
     }
 
-    return new FloatDynamicSchema<>(protoField, propertyDescriptor);
+    return new FloatSchema<>(protoField, propertyDescriptor);
   }
 
   private static class FloatDynamicSchema<T> extends FieldSchema<T> {
@@ -72,7 +71,7 @@ public class FloatWriteSchemas {
   }
 
   private static class FloatSchema<T> extends FloatDynamicSchema<T> {
-    protected final Getter<T, Float> getter;
+    protected final Getter<T, Object> getter;
 
     public FloatSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);
@@ -82,15 +81,15 @@ public class FloatWriteSchemas {
 
     @Override
     public final void getAndWriteTo(OutputEx output, T message) throws IOException {
-      Float value = getter.get(message);
+      Object value = getter.get(message);
       if (value != null) {
-        output.writeScalarFloat(tag, tagSize, value);
+        writeTo(output, value);
       }
     }
   }
 
   private static class FloatPrimitiveSchema<T> extends FloatDynamicSchema<T> {
-    private final FloatGetter<T> primitiveGetter;
+    private final Getter<T, Float> primitiveGetter;
 
     public FloatPrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);

@@ -14,8 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.foundation.common.utils.bean;
 
-public interface IntSetter<T> {
-  void set(T instance, int value);
+package org.apache.servicecomb.it.schema;
+
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+
+import org.apache.servicecomb.foundation.test.scaffolding.model.Media;
+import org.apache.servicecomb.provider.rest.common.RestSchema;
+
+@RestSchema(schemaId = "paramCodecRestOnly")
+@Path("/v1/paramCodecRestOnly")
+public class ParamCodecSchemaRestOnly {
+  /**
+   * Test special enum name tagged by {@link com.fasterxml.jackson.annotation.JsonProperty}.
+   * Special name not supported by ProtoBuffer
+   */
+  @Path("enum/enumSpecialName")
+  @POST
+  public Media enumSpecialName(Media media) {
+    return media;
+  }
 }

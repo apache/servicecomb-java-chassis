@@ -20,56 +20,56 @@ package org.apache.servicecomb.it.schema.objectparams;
 import java.util.Objects;
 
 public class FlattenObjectRequest {
-  private byte aByte;
+  private byte anByte;
 
-  private short aShort;
+  private short anShort;
 
   private int anInt;
 
-  private long aLong;
+  private long anLong;
 
-  private float aFloat;
+  private float anFloat;
 
-  private double aDouble;
+  private double anDouble;
 
-  private boolean aBoolean;
+  private boolean anBoolean;
 
-  private char aChar;
+  private char anChar;
 
-  private Byte aWrappedByte;
+  private Byte anWrappedByte;
 
-  private Short aWrappedShort;
+  private Short anWrappedShort;
 
-  private Integer aWrappedInteger;
+  private Integer anWrappedInteger;
 
-  private Long aWrappedLong;
+  private Long anWrappedLong;
 
-  private Float aWrappedFloat;
+  private Float anWrappedFloat;
 
-  private Double aWrappedDouble;
+  private Double anWrappedDouble;
 
-  private Boolean aWrappedBoolean;
+  private Boolean anWrappedBoolean;
 
-  private Character aWrappedCharacter;
+  private Character anWrappedCharacter;
 
   private String string;
 
   private Color color;
 
-  public byte getaByte() {
-    return aByte;
+  public byte getAnByte() {
+    return anByte;
   }
 
-  public void setaByte(byte aByte) {
-    this.aByte = aByte;
+  public void setAnByte(byte anByte) {
+    this.anByte = anByte;
   }
 
-  public short getaShort() {
-    return aShort;
+  public short getAnShort() {
+    return anShort;
   }
 
-  public void setaShort(short aShort) {
-    this.aShort = aShort;
+  public void setAnShort(short anShort) {
+    this.anShort = anShort;
   }
 
   public int getAnInt() {
@@ -80,108 +80,108 @@ public class FlattenObjectRequest {
     this.anInt = anInt;
   }
 
-  public long getaLong() {
-    return aLong;
+  public long getAnLong() {
+    return anLong;
   }
 
-  public void setaLong(long aLong) {
-    this.aLong = aLong;
+  public void setAnLong(long anLong) {
+    this.anLong = anLong;
   }
 
-  public float getaFloat() {
-    return aFloat;
+  public float getAnFloat() {
+    return anFloat;
   }
 
-  public void setaFloat(float aFloat) {
-    this.aFloat = aFloat;
+  public void setAnFloat(float anFloat) {
+    this.anFloat = anFloat;
   }
 
-  public double getaDouble() {
-    return aDouble;
+  public double getAnDouble() {
+    return anDouble;
   }
 
-  public void setaDouble(double aDouble) {
-    this.aDouble = aDouble;
+  public void setAnDouble(double anDouble) {
+    this.anDouble = anDouble;
   }
 
-  public boolean isaBoolean() {
-    return aBoolean;
+  public boolean isAnBoolean() {
+    return anBoolean;
   }
 
-  public void setaBoolean(boolean aBoolean) {
-    this.aBoolean = aBoolean;
+  public void setAnBoolean(boolean anBoolean) {
+    this.anBoolean = anBoolean;
   }
 
-  public char getaChar() {
-    return aChar;
+  public char getAnChar() {
+    return anChar;
   }
 
-  public void setaChar(char aChar) {
-    this.aChar = aChar;
+  public void setAnChar(char anChar) {
+    this.anChar = anChar;
   }
 
-  public Byte getaWrappedByte() {
-    return aWrappedByte;
+  public Byte getAnWrappedByte() {
+    return anWrappedByte;
   }
 
-  public void setaWrappedByte(Byte aWrappedByte) {
-    this.aWrappedByte = aWrappedByte;
+  public void setAnWrappedByte(Byte anWrappedByte) {
+    this.anWrappedByte = anWrappedByte;
   }
 
-  public Short getaWrappedShort() {
-    return aWrappedShort;
+  public Short getAnWrappedShort() {
+    return anWrappedShort;
   }
 
-  public void setaWrappedShort(Short aWrappedShort) {
-    this.aWrappedShort = aWrappedShort;
+  public void setAnWrappedShort(Short anWrappedShort) {
+    this.anWrappedShort = anWrappedShort;
   }
 
-  public Integer getaWrappedInteger() {
-    return aWrappedInteger;
+  public Integer getAnWrappedInteger() {
+    return anWrappedInteger;
   }
 
-  public void setaWrappedInteger(Integer aWrappedInteger) {
-    this.aWrappedInteger = aWrappedInteger;
+  public void setAnWrappedInteger(Integer anWrappedInteger) {
+    this.anWrappedInteger = anWrappedInteger;
   }
 
-  public Long getaWrappedLong() {
-    return aWrappedLong;
+  public Long getAnWrappedLong() {
+    return anWrappedLong;
   }
 
-  public void setaWrappedLong(Long aWrappedLong) {
-    this.aWrappedLong = aWrappedLong;
+  public void setAnWrappedLong(Long anWrappedLong) {
+    this.anWrappedLong = anWrappedLong;
   }
 
-  public Float getaWrappedFloat() {
-    return aWrappedFloat;
+  public Float getAnWrappedFloat() {
+    return anWrappedFloat;
   }
 
-  public void setaWrappedFloat(Float aWrappedFloat) {
-    this.aWrappedFloat = aWrappedFloat;
+  public void setAnWrappedFloat(Float anWrappedFloat) {
+    this.anWrappedFloat = anWrappedFloat;
   }
 
-  public Double getaWrappedDouble() {
-    return aWrappedDouble;
+  public Double getAnWrappedDouble() {
+    return anWrappedDouble;
   }
 
-  public void setaWrappedDouble(Double aWrappedDouble) {
-    this.aWrappedDouble = aWrappedDouble;
+  public void setAnWrappedDouble(Double anWrappedDouble) {
+    this.anWrappedDouble = anWrappedDouble;
   }
 
-  public Boolean getaWrappedBoolean() {
-    return aWrappedBoolean;
+  public Boolean getAnWrappedBoolean() {
+    return anWrappedBoolean;
   }
 
-  public void setaWrappedBoolean(Boolean aWrappedBoolean) {
-    this.aWrappedBoolean = aWrappedBoolean;
+  public void setAnWrappedBoolean(Boolean anWrappedBoolean) {
+    this.anWrappedBoolean = anWrappedBoolean;
   }
 
-  public Character getaWrappedCharacter() {
-    return aWrappedCharacter;
+  public Character getAnWrappedCharacter() {
+    return anWrappedCharacter;
   }
 
-  public void setaWrappedCharacter(Character aWrappedCharacter) {
-    this.aWrappedCharacter = aWrappedCharacter;
+  public void setAnWrappedCharacter(Character anWrappedCharacter) {
+    this.anWrappedCharacter = anWrappedCharacter;
   }
 
   public String getString() {
@@ -203,22 +203,22 @@ public class FlattenObjectRequest {
   @Override
   public String toString() {
     final StringBuilder sb = new StringBuilder("FlattenObjectRequest{");
-    sb.append("aByte=").append(aByte);
-    sb.append(", aShort=").append(aShort);
+    sb.append("anByte=").append(anByte);
+    sb.append(", anShort=").append(anShort);
     sb.append(", anInt=").append(anInt);
-    sb.append(", aLong=").append(aLong);
-    sb.append(", aFloat=").append(aFloat);
-    sb.append(", aDouble=").append(aDouble);
-    sb.append(", aBoolean=").append(aBoolean);
-    sb.append(", aChar=").append(aChar);
-    sb.append(", aWrappedByte=").append(aWrappedByte);
-    sb.append(", aWrappedShort=").append(aWrappedShort);
-    sb.append(", aWrappedInteger=").append(aWrappedInteger);
-    sb.append(", aWrappedLong=").append(aWrappedLong);
-    sb.append(", aWrappedFloat=").append(aWrappedFloat);
-    sb.append(", aWrappedDouble=").append(aWrappedDouble);
-    sb.append(", aWrappedBoolean=").append(aWrappedBoolean);
-    sb.append(", aWrappedCharacter=").append(aWrappedCharacter);
+    sb.append(", anLong=").append(anLong);
+    sb.append(", anFloat=").append(anFloat);
+    sb.append(", anDouble=").append(anDouble);
+    sb.append(", anBoolean=").append(anBoolean);
+    sb.append(", anChar=").append(anChar);
+    sb.append(", anWrappedByte=").append(anWrappedByte);
+    sb.append(", anWrappedShort=").append(anWrappedShort);
+    sb.append(", anWrappedInteger=").append(anWrappedInteger);
+    sb.append(", anWrappedLong=").append(anWrappedLong);
+    sb.append(", anWrappedFloat=").append(anWrappedFloat);
+    sb.append(", anWrappedDouble=").append(anWrappedDouble);
+    sb.append(", anWrappedBoolean=").append(anWrappedBoolean);
+    sb.append(", anWrappedCharacter=").append(anWrappedCharacter);
     sb.append(", string='").append(string).append('\'');
     sb.append(", color=").append(color);
     sb.append('}');
@@ -234,22 +234,22 @@ public class FlattenObjectRequest {
       return false;
     }
     FlattenObjectRequest that = (FlattenObjectRequest) o;
-    return aByte == that.aByte &&
-        aShort == that.aShort &&
+    return anByte == that.anByte &&
+        anShort == that.anShort &&
         anInt == that.anInt &&
-        aLong == that.aLong &&
-        Float.compare(that.aFloat, aFloat) == 0 &&
-        Double.compare(that.aDouble, aDouble) == 0 &&
-        aBoolean == that.aBoolean &&
-        aChar == that.aChar &&
-        Objects.equals(aWrappedByte, that.aWrappedByte) &&
-        Objects.equals(aWrappedShort, that.aWrappedShort) &&
-        Objects.equals(aWrappedInteger, that.aWrappedInteger) &&
-        Objects.equals(aWrappedLong, that.aWrappedLong) &&
-        Objects.equals(aWrappedFloat, that.aWrappedFloat) &&
-        Objects.equals(aWrappedDouble, that.aWrappedDouble) &&
-        Objects.equals(aWrappedBoolean, that.aWrappedBoolean) &&
-        Objects.equals(aWrappedCharacter, that.aWrappedCharacter) &&
+        anLong == that.anLong &&
+        Float.compare(that.anFloat, anFloat) == 0 &&
+        Double.compare(that.anDouble, anDouble) == 0 &&
+        anBoolean == that.anBoolean &&
+        anChar == that.anChar &&
+        Objects.equals(anWrappedByte, that.anWrappedByte) &&
+        Objects.equals(anWrappedShort, that.anWrappedShort) &&
+        Objects.equals(anWrappedInteger, that.anWrappedInteger) &&
+        Objects.equals(anWrappedLong, that.anWrappedLong) &&
+        Objects.equals(anWrappedFloat, that.anWrappedFloat) &&
+        Objects.equals(anWrappedDouble, that.anWrappedDouble) &&
+        Objects.equals(anWrappedBoolean, that.anWrappedBoolean) &&
+        Objects.equals(anWrappedCharacter, that.anWrappedCharacter) &&
         Objects.equals(string, that.string) &&
         color == that.color;
   }
@@ -257,8 +257,8 @@ public class FlattenObjectRequest {
   @Override
   public int hashCode() {
     return Objects
-        .hash(aByte, aShort, anInt, aLong, aFloat, aDouble, aBoolean, aChar, aWrappedByte, aWrappedShort,
-            aWrappedInteger,
-            aWrappedLong, aWrappedFloat, aWrappedDouble, aWrappedBoolean, aWrappedCharacter, string, color);
+        .hash(anByte, anShort, anInt, anLong, anFloat, anDouble, anBoolean, anChar, anWrappedByte, anWrappedShort,
+            anWrappedInteger,
+            anWrappedLong, anWrappedFloat, anWrappedDouble, anWrappedBoolean, anWrappedCharacter, string, color);
   }
 }

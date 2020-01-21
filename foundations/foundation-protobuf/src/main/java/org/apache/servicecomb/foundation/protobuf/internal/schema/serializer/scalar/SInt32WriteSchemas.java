@@ -19,7 +19,6 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.sc
 import java.io.IOException;
 
 import org.apache.servicecomb.foundation.common.utils.bean.Getter;
-import org.apache.servicecomb.foundation.common.utils.bean.IntGetter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
 
@@ -37,7 +36,7 @@ public class SInt32WriteSchemas {
       return new SInt32Schema<>(protoField, propertyDescriptor);
     }
 
-    return new SInt32DynamicSchema<>(protoField, propertyDescriptor);
+    return new SInt32Schema<>(protoField, propertyDescriptor);
   }
 
   private static class SInt32DynamicSchema<T> extends FieldSchema<T> {
@@ -72,7 +71,7 @@ public class SInt32WriteSchemas {
   }
 
   private static class SInt32Schema<T> extends SInt32DynamicSchema<T> {
-    protected final Getter<T, Integer> getter;
+    protected final Getter<T, Object> getter;
 
     public SInt32Schema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);
@@ -82,15 +81,15 @@ public class SInt32WriteSchemas {
 
     @Override
     public final void getAndWriteTo(OutputEx output, T message) throws IOException {
-      Integer value = getter.get(message);
+      Object value = getter.get(message);
       if (value != null) {
-        output.writeScalarSInt32(tag, tagSize, value);
+        writeTo(output, value);
       }
     }
   }
 
   private static class SInt32PrimitiveSchema<T> extends SInt32DynamicSchema<T> {
-    private final IntGetter<T> primitiveGetter;
+    private final Getter<T, Integer> primitiveGetter;
 
     public SInt32PrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);

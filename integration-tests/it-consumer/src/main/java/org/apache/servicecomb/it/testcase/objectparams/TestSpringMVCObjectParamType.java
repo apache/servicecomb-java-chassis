@@ -46,10 +46,10 @@ public class TestSpringMVCObjectParamType {
   interface SpringMVCObjectParamTypeSchema extends ObjectParamTypeSchema {
     TestNullFieldAndDefaultValueParam testNullFieldAndDefaultValue(Object request);
 
-    FlattenObjectRequest testQueryObjectParam(byte aByte, short aShort, int anInt, long aLong, float aFloat,
-        double aDouble, boolean aBoolean, char aChar, Byte aWrappedByte, Short aWrappedShort, Integer aWrappedInteger,
-        Long aWrappedLong, Float aWrappedFloat, Double aWrappedDouble, Boolean aWrappedBoolean,
-        Character aWrappedCharacter, String string, Color color);
+    FlattenObjectRequest testQueryObjectParam(byte anByte, short anShort, int anInt, long anLong, float anFloat,
+        double anDouble, boolean anBoolean, char anChar, Byte anWrappedByte, Short anWrappedShort, Integer anWrappedInteger,
+        Long anWrappedLong, Float anWrappedFloat, Double anWrappedDouble, Boolean anWrappedBoolean,
+        Character anWrappedCharacter, String string, Color color);
   }
 
   static Consumers<SpringMVCObjectParamTypeSchema> consumers =
@@ -134,7 +134,8 @@ public class TestSpringMVCObjectParamType {
     responseEntity = consumers.getEdgeRestTemplate()
         .exchange("/testMultiLayerObjectParam", HttpMethod.PUT,
             new HttpEntity<>(null), MultiLayerObjectParam.class);
-    Assert.assertNull(responseEntity.getBody());
+    // Highway will not return null
+    Assert.assertTrue(responseEntity.getBody() == null || responseEntity.getBody().getString() == null);
     Assert.assertEquals(200, responseEntity.getStatusCodeValue());
   }
 
@@ -309,33 +310,33 @@ public class TestSpringMVCObjectParamType {
   public void testQueryObjectParam() {
     FlattenObjectRequest expected = createFlattenObjectRequest();
     FlattenObjectRequest response = consumers.getIntf().testQueryObjectParam(
-        expected.getaByte(), expected.getaShort(), expected.getAnInt(), expected.getaLong(), expected.getaFloat(),
-        expected.getaDouble(), expected.isaBoolean(), expected.getaChar(),
-        expected.getaWrappedByte(), expected.getaWrappedShort(), expected.getaWrappedInteger(),
-        expected.getaWrappedLong(), expected.getaWrappedFloat(), expected.getaWrappedDouble(),
-        expected.getaWrappedBoolean(), expected.getaWrappedCharacter(),
+        expected.getAnByte(), expected.getAnShort(), expected.getAnInt(), expected.getAnLong(), expected.getAnFloat(),
+        expected.getAnDouble(), expected.isAnBoolean(), expected.getAnChar(),
+        expected.getAnWrappedByte(), expected.getAnWrappedShort(), expected.getAnWrappedInteger(),
+        expected.getAnWrappedLong(), expected.getAnWrappedFloat(), expected.getAnWrappedDouble(),
+        expected.getAnWrappedBoolean(), expected.getAnWrappedCharacter(),
         expected.getString(), expected.getColor()
     );
     Assert.assertEquals(expected, response);
 
     StringBuilder requestUriBuilder = new StringBuilder();
     requestUriBuilder.append("/testQueryObjectParam?")
-        .append("aByte=" + expected.getaByte()).append("&")
-        .append("aShort=" + expected.getaShort()).append("&")
+        .append("anByte=" + expected.getAnByte()).append("&")
+        .append("anShort=" + expected.getAnShort()).append("&")
         .append("anInt=" + expected.getAnInt()).append("&")
-        .append("aLong=" + expected.getaLong()).append("&")
-        .append("aFloat=" + expected.getaFloat()).append("&")
-        .append("aDouble=" + expected.getaDouble()).append("&")
-        .append("aBoolean=" + expected.isaBoolean()).append("&")
-        .append("aChar=" + expected.getaChar()).append("&")
-        .append("aWrappedByte=" + expected.getaWrappedByte()).append("&")
-        .append("aWrappedShort=" + expected.getaWrappedShort()).append("&")
-        .append("aWrappedInteger=" + expected.getaWrappedInteger()).append("&")
-        .append("aWrappedLong=" + expected.getaWrappedLong()).append("&")
-        .append("aWrappedFloat=" + expected.getaWrappedFloat()).append("&")
-        .append("aWrappedDouble=" + expected.getaWrappedDouble()).append("&")
-        .append("aWrappedBoolean=" + expected.getaWrappedBoolean()).append("&")
-        .append("aWrappedCharacter=" + expected.getaWrappedCharacter()).append("&")
+        .append("anLong=" + expected.getAnLong()).append("&")
+        .append("anFloat=" + expected.getAnFloat()).append("&")
+        .append("anDouble=" + expected.getAnDouble()).append("&")
+        .append("anBoolean=" + expected.isAnBoolean()).append("&")
+        .append("anChar=" + expected.getAnChar()).append("&")
+        .append("anWrappedByte=" + expected.getAnWrappedByte()).append("&")
+        .append("anWrappedShort=" + expected.getAnWrappedShort()).append("&")
+        .append("anWrappedInteger=" + expected.getAnWrappedInteger()).append("&")
+        .append("anWrappedLong=" + expected.getAnWrappedLong()).append("&")
+        .append("anWrappedFloat=" + expected.getAnWrappedFloat()).append("&")
+        .append("anWrappedDouble=" + expected.getAnWrappedDouble()).append("&")
+        .append("anWrappedBoolean=" + expected.getAnWrappedBoolean()).append("&")
+        .append("anWrappedCharacter=" + expected.getAnWrappedCharacter()).append("&")
         .append("string=" + expected.getString()).append("&")
         .append("color=" + expected.getColor());
     ResponseEntity<FlattenObjectRequest> responseEntity = consumers.getSCBRestTemplate()
@@ -348,16 +349,16 @@ public class TestSpringMVCObjectParamType {
     Assert.assertEquals(expected, responseEntity.getBody());
     Assert.assertEquals(200, responseEntity.getStatusCodeValue());
 
-    expected.setaWrappedBoolean(null);
+    expected.setAnWrappedBoolean(null);
     expected.setString(null);
     expected.setAnInt(0);
-    expected.setaWrappedInteger(null);
+    expected.setAnWrappedInteger(null);
     response = consumers.getIntf().testQueryObjectParam(
-        expected.getaByte(), expected.getaShort(), expected.getAnInt(), expected.getaLong(), expected.getaFloat(),
-        expected.getaDouble(), expected.isaBoolean(), expected.getaChar(),
-        expected.getaWrappedByte(), expected.getaWrappedShort(), expected.getaWrappedInteger(),
-        expected.getaWrappedLong(), expected.getaWrappedFloat(), expected.getaWrappedDouble(),
-        expected.getaWrappedBoolean(), expected.getaWrappedCharacter(),
+        expected.getAnByte(), expected.getAnShort(), expected.getAnInt(), expected.getAnLong(), expected.getAnFloat(),
+        expected.getAnDouble(), expected.isAnBoolean(), expected.getAnChar(),
+        expected.getAnWrappedByte(), expected.getAnWrappedShort(), expected.getAnWrappedInteger(),
+        expected.getAnWrappedLong(), expected.getAnWrappedFloat(), expected.getAnWrappedDouble(),
+        expected.getAnWrappedBoolean(), expected.getAnWrappedCharacter(),
         expected.getString(), expected.getColor()
     );
     Assert.assertEquals(expected, response);
@@ -365,22 +366,22 @@ public class TestSpringMVCObjectParamType {
 
   private FlattenObjectRequest createFlattenObjectRequest() {
     FlattenObjectRequest request = new FlattenObjectRequest();
-    request.setaByte((byte) 8);
-    request.setaShort((short) 7);
+    request.setAnByte((byte) 8);
+    request.setAnShort((short) 7);
     request.setAnInt(6);
-    request.setaLong(5);
-    request.setaFloat(4.4f);
-    request.setaDouble(3.3);
-    request.setaBoolean(true);
-    request.setaChar('c');
-    request.setaWrappedByte((byte) 16);
-    request.setaWrappedShort((short) 15);
-    request.setaWrappedInteger(14);
-    request.setaWrappedLong(13L);
-    request.setaWrappedFloat(12.2f);
-    request.setaWrappedDouble(11.1);
-    request.setaWrappedBoolean(true);
-    request.setaWrappedCharacter('d');
+    request.setAnLong(5);
+    request.setAnFloat(4.4f);
+    request.setAnDouble(3.3);
+    request.setAnBoolean(true);
+    request.setAnChar('c');
+    request.setAnWrappedByte((byte) 16);
+    request.setAnWrappedShort((short) 15);
+    request.setAnWrappedInteger(14);
+    request.setAnWrappedLong(13L);
+    request.setAnWrappedFloat(12.2f);
+    request.setAnWrappedDouble(11.1);
+    request.setAnWrappedBoolean(true);
+    request.setAnWrappedCharacter('d');
     request.setString("abc");
     request.setColor(Color.BLUE);
     return request;
