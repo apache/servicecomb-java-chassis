@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
+import org.apache.servicecomb.demo.model.SpecialNameModel;
 import org.apache.servicecomb.demo.server.GenericsModel;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.provider.pojo.RpcReference;
@@ -89,6 +90,10 @@ interface GenericsModelInf {
   GenericsModel genericParamsModel(int code, GenericsModel model);
 }
 
+interface SpecialNameModelInf {
+  SpecialNameModel specialNameModel(int code, SpecialNameModel model);
+}
+
 @Component
 public class TestWeakSpringmvc implements CategorizedTestCase {
   @RpcReference(microserviceName = "springmvc", schemaId = "weakSpringmvc")
@@ -102,6 +107,9 @@ public class TestWeakSpringmvc implements CategorizedTestCase {
 
   @RpcReference(microserviceName = "springmvc", schemaId = "weakSpringmvc")
   private GenericsModelInf genericsModelInf;
+
+  @RpcReference(microserviceName = "springmvc", schemaId = "weakSpringmvc")
+  private SpecialNameModelInf specialNameModelInf;
 
   private RestTemplate restTemplate = RestTemplateBuilder.create();
 
@@ -117,14 +125,23 @@ public class TestWeakSpringmvc implements CategorizedTestCase {
 
   @Override
   public void testAllTransport() throws Exception {
-    getDiffName();
+    testDiffName();
 
     testGenerics();
 
-    getGenericsModel();
+    testGenericsModel();
+
+    testSpecailNameModel();
   }
 
-  private void getGenericsModel() throws JsonProcessingException {
+  private void testSpecailNameModel() {
+    SpecialNameModel model = new SpecialNameModel();
+    model.setaIntName(30);
+    SpecialNameModel result = specialNameModelInf.specialNameModel(0, model);
+    TestMgr.check(30, result.getaIntName());
+  }
+
+  private void testGenericsModel() throws JsonProcessingException {
     GenericsModel model = new GenericsModel();
     model.setName("model");
     List<List<String>> namesList = new ArrayList<>();
@@ -154,7 +171,7 @@ public class TestWeakSpringmvc implements CategorizedTestCase {
     TestMgr.check("hello", nameListResult.get(0).get(0));
   }
 
-  private void getDiffName() {
+  private void testDiffName() {
     TestMgr.check(7, diffNames.differentName(2, 3));
     TestMgr.check(8, diffNames2.differentName(2, 3));
     TestMgr.check(7, restTemplate.getForObject("cse://springmvc/weakSpringmvc/diffNames?x=2&y=3", Integer.class));

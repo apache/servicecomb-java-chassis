@@ -27,10 +27,10 @@ import org.apache.servicecomb.swagger.invocation.response.Headers;
 import io.vertx.core.buffer.Buffer;
 
 public class ResponseHeader {
-  // TODO : refactor reuse
   private static ProtoMapperFactory protoMapperFactory = new ProtoMapperFactory();
 
-  private static RootDeserializer<ResponseHeader> rootDeserializer = protoMapperFactory.createFromName("ResponseHeader.proto")
+  private static RootDeserializer<ResponseHeader> rootDeserializer = protoMapperFactory
+      .createFromName("ResponseHeader.proto")
       .createRootDeserializer("ResponseHeader", ResponseHeader.class);
 
   private static RootSerializer rootSerializer = protoMapperFactory.createFromName("ResponseHeader.proto")
@@ -64,7 +64,6 @@ public class ResponseHeader {
     this.flags = flags;
   }
 
-  //CHECKSTYLE:ON: magicnumber
   public int getStatusCode() {
     return statusCode;
   }

@@ -68,7 +68,7 @@ public final class HighwayCodec {
       List<Parameter> swaggerParameters = operationMeta.getSwaggerOperation()
           .getParameters();
       for (Parameter parameter : swaggerParameters) {
-        if (!parameter.getRequired() && swaggerArguments.get(parameter.getName()) == null) {
+        if (swaggerArguments.get(parameter.getName()) == null) {
           Type type = swaggerProducerOperation.getSwaggerParameterType(parameter.getName());
           if (type instanceof Class) {
             if (((Class) type).isPrimitive()) {

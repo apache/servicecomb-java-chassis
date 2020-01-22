@@ -32,32 +32,30 @@ public class HighwayOutputStream extends TcpOutputStream {
     write(RequestHeader.getRootSerializer().serialize(header), requestRootSerializer.serialize(body));
   }
 
-  public void write(ResponseHeader header, ResponseRootSerializer responseRootSerializer, Object body) throws Exception {
+  public void write(ResponseHeader header, ResponseRootSerializer responseRootSerializer, Object body)
+      throws Exception {
     write(ResponseHeader.getRootSerializer().serialize(header), responseRootSerializer.serialize(body));
   }
 
-  public void write(RequestHeader header, RootSerializer bodySchema, Object body) throws Exception {
-    write(RequestHeader.getRootSerializer(), header, bodySchema, body);
+  public void write(RequestHeader header, RootSerializer bodySerializer, Object body) throws Exception {
+    write(RequestHeader.getRootSerializer(), header, bodySerializer, body);
   }
 
-  public void write(ResponseHeader header, RootSerializer bodySchema, Object body) throws Exception {
-    write(ResponseHeader.getRootSerializer(), header, bodySchema, body);
+  public void write(ResponseHeader header, RootSerializer bodySerializer, Object body) throws Exception {
+    write(ResponseHeader.getRootSerializer(), header, bodySerializer, body);
   }
 
-  public void write(RootSerializer headerSchema, Object header, RootSerializer bodySchema, Object body)
+  public void write(RootSerializer headerSerializer, Object header, RootSerializer bodySerializer, Object body)
       throws Exception {
     byte[] headerBytes = new byte[0];
     byte[] bodyBytes = new byte[0];
 
-    // 写header
-    if (headerSchema != null) {
-      headerBytes = headerSchema.serialize(header);
+    if (headerSerializer != null) {
+      headerBytes = headerSerializer.serialize(header);
     }
 
-    // 写body
-    // void时bodySchema为null
-    if (bodySchema != null) {
-      bodyBytes = bodySchema.serialize(body);
+    if (bodySerializer != null) {
+      bodyBytes = bodySerializer.serialize(body);
     }
 
     write(headerBytes, bodyBytes);
