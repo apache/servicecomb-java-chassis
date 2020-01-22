@@ -25,15 +25,11 @@ import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 
 import io.vertx.core.buffer.Buffer;
 
-/**
- * tag的缺失、乱序，是因为要兼容历史版本
- * 1.tag(4)，是历史版本中的压缩算法名，转移到login消息中传递
- */
 public class RequestHeader {
-  // TODO : WEAK refactor reuse
   private static ProtoMapperFactory protoMapperFactory = new ProtoMapperFactory();
 
-  private static RootDeserializer<RequestHeader> rootDeserializer = protoMapperFactory.createFromName("RequestHeader.proto")
+  private static RootDeserializer<RequestHeader> rootDeserializer = protoMapperFactory
+      .createFromName("RequestHeader.proto")
       .createRootDeserializer("RequestHeader", RequestHeader.class);
 
   private static RootSerializer rootSerializer = protoMapperFactory.createFromName("RequestHeader.proto")
@@ -61,7 +57,6 @@ public class RequestHeader {
 
   private Map<String, String> context;
 
-  //CHECKSTYLE:ON
   public int getMsgType() {
     return msgType;
   }

@@ -23,10 +23,10 @@ import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import io.vertx.core.buffer.Buffer;
 
 public class LoginRequest {
-  // TODO : WEAK refactor reuse
   private static ProtoMapperFactory protoMapperFactory = new ProtoMapperFactory();
 
-  private static RootDeserializer<LoginRequest> rootDeserializer = protoMapperFactory.createFromName("LoginRequest.proto")
+  private static RootDeserializer<LoginRequest> rootDeserializer = protoMapperFactory
+      .createFromName("LoginRequest.proto")
       .createRootDeserializer("LoginRequest", LoginRequest.class);
 
   private static RootSerializer rootSerializer = protoMapperFactory.createFromName("LoginRequest.proto")
@@ -60,5 +60,4 @@ public class LoginRequest {
   public void setZipName(String zipName) {
     this.zipName = zipName;
   }
-
 }

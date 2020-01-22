@@ -19,6 +19,7 @@ package org.apache.servicecomb.demo.springmvc.server;
 
 import java.util.List;
 
+import org.apache.servicecomb.demo.model.SpecialNameModel;
 import org.apache.servicecomb.demo.server.GenericsModel;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.http.MediaType;
@@ -47,6 +48,12 @@ public class WeakSpringmvc {
   @GetMapping(path = "/genericParamsModel")
   @ApiOperation(value = "genericParamsModel", nickname = "genericParamsModel")
   public GenericsModel genericParamsModel(@RequestParam("code") int code, @RequestBody GenericsModel model) {
+    return model;
+  }
+
+  @GetMapping(path = "/specialNameModel")
+  @ApiOperation(value = "specialNameModel", nickname = "specialNameModel")
+  public SpecialNameModel specialNameModel(@RequestParam("code") int code, @RequestBody SpecialNameModel model) {
     return model;
   }
 }

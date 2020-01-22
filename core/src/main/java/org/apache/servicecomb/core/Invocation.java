@@ -250,8 +250,7 @@ public class Invocation extends SwaggerInvocation {
       this.invocationArguments = swaggerArguments;
     }
   }
-
-  // TODO: WEAK add release notes to tell this change in 2.0.0
+  
   public Object[] toProducerArguments() {
     Method method = operationMeta.getSwaggerProducerOperation().getProducerMethod();
     Object[] args = new Object[method.getParameterCount()];

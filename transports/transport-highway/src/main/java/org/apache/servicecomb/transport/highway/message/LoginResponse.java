@@ -23,10 +23,10 @@ import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import io.vertx.core.buffer.Buffer;
 
 public class LoginResponse {
-  // TODO : WEAK refactor reuse
   private static ProtoMapperFactory protoMapperFactory = new ProtoMapperFactory();
 
-  private static RootDeserializer<LoginResponse> rootDeserializer = protoMapperFactory.createFromName("LoginResponse.proto")
+  private static RootDeserializer<LoginResponse> rootDeserializer = protoMapperFactory
+      .createFromName("LoginResponse.proto")
       .createRootDeserializer("LoginResponse", LoginResponse.class);
 
   private static RootSerializer rootSerializer = protoMapperFactory.createFromName("LoginResponse.proto")

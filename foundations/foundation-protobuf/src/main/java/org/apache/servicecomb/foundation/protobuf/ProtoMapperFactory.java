@@ -37,7 +37,6 @@ public class ProtoMapperFactory {
   public ProtoMapperFactory() {
     jsonMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     jsonMapper.setSerializationInclusion(Include.NON_NULL);
-//    jsonMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE, JsonTypeInfo.As.PROPERTY);
 
     beanDescriptorManager = new BeanDescriptorManager(jsonMapper.getSerializationConfig());
   }
