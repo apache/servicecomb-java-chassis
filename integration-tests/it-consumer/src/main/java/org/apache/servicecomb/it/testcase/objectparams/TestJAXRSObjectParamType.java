@@ -97,7 +97,9 @@ public class TestJAXRSObjectParamType {
     MultiLayerObjectParam response = consumers.getIntf().testMultiLayerObjectParam(request);
     Assert.assertEquals(request, response);
 
-    Assert.assertNull(consumers.getIntf().testMultiLayerObjectParam(null));
+    //  Highway will not give null return value
+    response = consumers.getIntf().testMultiLayerObjectParam(null);
+    Assert.assertTrue(response == null || response.getString() == null);
   }
 
   @Test
@@ -113,7 +115,8 @@ public class TestJAXRSObjectParamType {
     responseEntity = consumers.getSCBRestTemplate()
         .exchange("/testMultiLayerObjectParam", HttpMethod.PUT,
             new HttpEntity<>(null), MultiLayerObjectParam.class);
-    Assert.assertNull(responseEntity.getBody());
+    //  Highway will not give null return value
+    Assert.assertTrue(responseEntity.getBody() == null || responseEntity.getBody().getString() == null);
     Assert.assertEquals(200, responseEntity.getStatusCodeValue());
   }
 

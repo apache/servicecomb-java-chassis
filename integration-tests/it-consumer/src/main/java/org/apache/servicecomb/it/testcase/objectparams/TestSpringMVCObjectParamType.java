@@ -47,7 +47,8 @@ public class TestSpringMVCObjectParamType {
     TestNullFieldAndDefaultValueParam testNullFieldAndDefaultValue(Object request);
 
     FlattenObjectRequest testQueryObjectParam(byte anByte, short anShort, int anInt, long anLong, float anFloat,
-        double anDouble, boolean anBoolean, char anChar, Byte anWrappedByte, Short anWrappedShort, Integer anWrappedInteger,
+        double anDouble, boolean anBoolean, char anChar, Byte anWrappedByte, Short anWrappedShort,
+        Integer anWrappedInteger,
         Long anWrappedLong, Float anWrappedFloat, Double anWrappedDouble, Boolean anWrappedBoolean,
         Character anWrappedCharacter, String string, Color color);
   }
@@ -100,8 +101,9 @@ public class TestSpringMVCObjectParamType {
         new MultiLayerObjectParam2("sss-2", 12.12, createFlattenObjectRequest()));
     MultiLayerObjectParam response = consumers.getIntf().testMultiLayerObjectParam(request);
     Assert.assertEquals(request, response);
-
-    Assert.assertNull(consumers.getIntf().testMultiLayerObjectParam(null));
+//  Highway will not give null return value
+    response = consumers.getIntf().testMultiLayerObjectParam(null);
+    Assert.assertTrue(response == null || response.getString() == null);
   }
 
   @Test
@@ -117,7 +119,8 @@ public class TestSpringMVCObjectParamType {
     responseEntity = consumers.getSCBRestTemplate()
         .exchange("/testMultiLayerObjectParam", HttpMethod.PUT,
             new HttpEntity<>(null), MultiLayerObjectParam.class);
-    Assert.assertNull(responseEntity.getBody());
+    //  Highway will not give null return value
+    Assert.assertTrue(responseEntity.getBody() == null || responseEntity.getBody().getString() == null);
     Assert.assertEquals(200, responseEntity.getStatusCodeValue());
   }
 

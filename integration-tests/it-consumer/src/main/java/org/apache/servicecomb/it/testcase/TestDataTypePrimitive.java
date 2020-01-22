@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.extend.engine.ITSCBRestTemplate;
+import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -1084,46 +1085,52 @@ public class TestDataTypePrimitive {
   // query array
   @Test
   public void queryArr_springmvc_intf() {
-    // default
-    assertEquals("[a, b, c]3",
-        consumersSpringmvc.getIntf().queryArr(new String[] {"a", "b", "c"}));
-    assertEquals("[a, ,  , b, c]5",
-        consumersSpringmvc.getIntf().queryArr(new String[] {"a", "", " ", "b", "c"}));
-    // CSV
-    assertEquals("[a, b, c]3",
-        consumersSpringmvc.getIntf().queryArrCSV(new String[] {"a", "b", "c"}));
-    assertEquals("[a, b, , c]4",
-        consumersSpringmvc.getIntf().queryArrCSV(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
-    assertEquals("[a, ,  , b, c]5",
-        consumersSpringmvc.getIntf().queryArrCSV(new String[] {"a", "", " ", "b", "c"}));
-    // SSV
-    assertEquals("[a, b, c]3",
-        consumersSpringmvc.getIntf().queryArrSSV(new String[] {"a", "b", "c"}));
-    assertEquals("[a, b, , c]4",
-        consumersSpringmvc.getIntf().queryArrSSV(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
-    // TSV
-    assertEquals("[a, b, c]3",
-        consumersSpringmvc.getIntf().queryArrTSV(new String[] {"a", "b", "c"}));
-    assertEquals("[a, b, , c]4",
-        consumersSpringmvc.getIntf().queryArrTSV(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
-    assertEquals("[a, ,  , b, c]5",
-        consumersSpringmvc.getIntf().queryArrTSV(new String[] {"a", "", " ", "b", "c"}));
-    // PIPES
-    assertEquals("[a, b, c]3",
-        consumersSpringmvc.getIntf().queryArrPIPES(new String[] {"a", "b", "c"}));
-    assertEquals("[a, b, , c]4",
-        consumersSpringmvc.getIntf()
-            .queryArrPIPES(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
-    assertEquals("[a, ,  , b, c]5",
-        consumersSpringmvc.getIntf().queryArrPIPES(new String[] {"a", "", " ", "b", "c"}));
-    // MULTI
-    assertEquals("[a, b, c]3",
-        consumersSpringmvc.getIntf().queryArrMULTI(new String[] {"a", "b", "c"}));
-    assertEquals("[a, b, , c]4",
-        consumersSpringmvc.getIntf()
-            .queryArrMULTI(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
-    assertEquals("[a, ,  , b, c]5",
-        consumersSpringmvc.getIntf().queryArrMULTI(new String[] {"a", "", " ", "b", "c"}));
+    // HIGHWAY do not support serialize null values in array
+    if ("rest".equalsIgnoreCase(ITJUnitUtils.getTransport())) {
+      // default
+      assertEquals("[a, b, c]3",
+          consumersSpringmvc.getIntf().queryArr(new String[] {"a", "b", "c"}));
+      assertEquals("[a, ,  , b, c]5",
+          consumersSpringmvc.getIntf().queryArr(new String[] {"a", "", " ", "b", "c"}));
+      // CSV
+      assertEquals("[a, b, c]3",
+          consumersSpringmvc.getIntf().queryArrCSV(new String[] {"a", "b", "c"}));
+      assertEquals("[a, b, , c]4",
+          consumersSpringmvc.getIntf()
+              .queryArrCSV(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
+      assertEquals("[a, ,  , b, c]5",
+          consumersSpringmvc.getIntf().queryArrCSV(new String[] {"a", "", " ", "b", "c"}));
+      // SSV
+      assertEquals("[a, b, c]3",
+          consumersSpringmvc.getIntf().queryArrSSV(new String[] {"a", "b", "c"}));
+      assertEquals("[a, b, , c]4",
+          consumersSpringmvc.getIntf()
+              .queryArrSSV(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
+      // TSV
+      assertEquals("[a, b, c]3",
+          consumersSpringmvc.getIntf().queryArrTSV(new String[] {"a", "b", "c"}));
+      assertEquals("[a, b, , c]4",
+          consumersSpringmvc.getIntf()
+              .queryArrTSV(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
+      assertEquals("[a, ,  , b, c]5",
+          consumersSpringmvc.getIntf().queryArrTSV(new String[] {"a", "", " ", "b", "c"}));
+      // PIPES
+      assertEquals("[a, b, c]3",
+          consumersSpringmvc.getIntf().queryArrPIPES(new String[] {"a", "b", "c"}));
+      assertEquals("[a, b, , c]4",
+          consumersSpringmvc.getIntf()
+              .queryArrPIPES(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
+      assertEquals("[a, ,  , b, c]5",
+          consumersSpringmvc.getIntf().queryArrPIPES(new String[] {"a", "", " ", "b", "c"}));
+      // MULTI
+      assertEquals("[a, b, c]3",
+          consumersSpringmvc.getIntf().queryArrMULTI(new String[] {"a", "b", "c"}));
+      assertEquals("[a, b, , c]4",
+          consumersSpringmvc.getIntf()
+              .queryArrMULTI(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
+      assertEquals("[a, ,  , b, c]5",
+          consumersSpringmvc.getIntf().queryArrMULTI(new String[] {"a", "", " ", "b", "c"}));
+    }
   }
 
   @Test
@@ -1171,45 +1178,48 @@ public class TestDataTypePrimitive {
 
   @Test
   public void queryArr_jaxrs_intf() {
-    assertEquals("[a, b, c]3",
-        consumersJaxrs.getIntf().queryArr(new String[] {"a", "b", "c"}));
-    assertEquals("[a, b, , c]4",
-        consumersJaxrs.getIntf().queryArr(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
-    assertEquals("[a, ,  , b, c]5",
-        consumersJaxrs.getIntf().queryArr(new String[] {"a", "", " ", "b", "c"}));
+    // HIGHWAY do not support serialize null values in array
+    if ("rest".equalsIgnoreCase(ITJUnitUtils.getTransport())) {
+      assertEquals("[a, b, c]3",
+          consumersJaxrs.getIntf().queryArr(new String[] {"a", "b", "c"}));
+      assertEquals("[a, b, , c]4",
+          consumersJaxrs.getIntf().queryArr(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
+      assertEquals("[a, ,  , b, c]5",
+          consumersJaxrs.getIntf().queryArr(new String[] {"a", "", " ", "b", "c"}));
 
-    assertEquals("[a, b, c]3",
-        consumersJaxrs.getIntf().queryArrCSV(new String[] {"a", "b", "c"}));
-    assertEquals("[a, b, , c]4",
-        consumersJaxrs.getIntf().queryArrCSV(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
-    assertEquals("[a, ,  , b, c]5",
-        consumersJaxrs.getIntf().queryArrCSV(new String[] {"a", "", " ", "b", "c"}));
+      assertEquals("[a, b, c]3",
+          consumersJaxrs.getIntf().queryArrCSV(new String[] {"a", "b", "c"}));
+      assertEquals("[a, b, , c]4",
+          consumersJaxrs.getIntf().queryArrCSV(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
+      assertEquals("[a, ,  , b, c]5",
+          consumersJaxrs.getIntf().queryArrCSV(new String[] {"a", "", " ", "b", "c"}));
 
-    assertEquals("[a, b, c]3",
-        consumersJaxrs.getIntf().queryArrSSV(new String[] {"a", "b", "c"}));
-    assertEquals("[a, b, , c]4",
-        consumersJaxrs.getIntf().queryArrSSV(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
+      assertEquals("[a, b, c]3",
+          consumersJaxrs.getIntf().queryArrSSV(new String[] {"a", "b", "c"}));
+      assertEquals("[a, b, , c]4",
+          consumersJaxrs.getIntf().queryArrSSV(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
 
-    assertEquals("[a, b, c]3",
-        consumersJaxrs.getIntf().queryArrTSV(new String[] {"a", "b", "c"}));
-    assertEquals("[a, b, , c]4",
-        consumersJaxrs.getIntf().queryArrTSV(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
-    assertEquals("[a, ,  , b, c]5",
-        consumersJaxrs.getIntf().queryArrTSV(new String[] {"a", "", " ", "b", "c"}));
+      assertEquals("[a, b, c]3",
+          consumersJaxrs.getIntf().queryArrTSV(new String[] {"a", "b", "c"}));
+      assertEquals("[a, b, , c]4",
+          consumersJaxrs.getIntf().queryArrTSV(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
+      assertEquals("[a, ,  , b, c]5",
+          consumersJaxrs.getIntf().queryArrTSV(new String[] {"a", "", " ", "b", "c"}));
 
-    assertEquals("[a, b, c]3",
-        consumersJaxrs.getIntf().queryArrPIPES(new String[] {"a", "b", "c"}));
-    assertEquals("[a, b, , c]4",
-        consumersJaxrs.getIntf().queryArrPIPES(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
-    assertEquals("[a, ,  , b, c]5",
-        consumersJaxrs.getIntf().queryArrPIPES(new String[] {"a", "", " ", "b", "c"}));
+      assertEquals("[a, b, c]3",
+          consumersJaxrs.getIntf().queryArrPIPES(new String[] {"a", "b", "c"}));
+      assertEquals("[a, b, , c]4",
+          consumersJaxrs.getIntf().queryArrPIPES(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
+      assertEquals("[a, ,  , b, c]5",
+          consumersJaxrs.getIntf().queryArrPIPES(new String[] {"a", "", " ", "b", "c"}));
 
-    assertEquals("[a, b, c]3",
-        consumersJaxrs.getIntf().queryArrMULTI(new String[] {"a", "b", "c"}));
-    assertEquals("[a, b, , c]4",
-        consumersJaxrs.getIntf().queryArrMULTI(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
-    assertEquals("[a, ,  , b, c]5",
-        consumersJaxrs.getIntf().queryArrMULTI(new String[] {"a", "", " ", "b", "c"}));
+      assertEquals("[a, b, c]3",
+          consumersJaxrs.getIntf().queryArrMULTI(new String[] {"a", "b", "c"}));
+      assertEquals("[a, b, , c]4",
+          consumersJaxrs.getIntf().queryArrMULTI(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
+      assertEquals("[a, ,  , b, c]5",
+          consumersJaxrs.getIntf().queryArrMULTI(new String[] {"a", "", " ", "b", "c"}));
+    }
   }
 
   @Test

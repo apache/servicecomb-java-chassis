@@ -70,6 +70,10 @@ public final class JsonUtils {
     return OBJ_MAPPER.convertValue(fromValue, toValueType);
   }
 
+  public static <T> T convertValue(Object fromValue, JavaType toValueType) {
+    return OBJ_MAPPER.convertValue(fromValue, toValueType);
+  }
+
   public static void writeValue(OutputStream out, Object value) throws IOException {
     OBJ_MAPPER.writeValue(out, value);
   }

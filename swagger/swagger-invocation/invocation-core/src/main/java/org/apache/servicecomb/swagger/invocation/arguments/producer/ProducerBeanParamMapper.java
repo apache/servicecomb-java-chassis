@@ -60,7 +60,10 @@ public class ProducerBeanParamMapper extends ProducerArgumentMapper {
 
       for (FieldMeta fieldMeta : fields) {
         Object value = swaggerArguments.get(fieldMeta.swaggerParameterName);
-        fieldMeta.setter.set(paramInstance, value);
+        if (value != null) {
+          // can not set primitive data
+          fieldMeta.setter.set(paramInstance, value);
+        }
       }
     } catch (Throwable e) {
       throw new IllegalStateException("failed to map bean param.", e);
