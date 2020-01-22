@@ -77,7 +77,9 @@ public class TestRPCObjectParamType {
     MultiLayerObjectParam response = consumers.getIntf().testMultiLayerObjectParam(request);
     Assert.assertEquals(request, response);
 
-    Assert.assertNull(consumers.getIntf().testMultiLayerObjectParam(null));
+    response = consumers.getIntf().testMultiLayerObjectParam(null);
+    //  Highway will not give null return value
+    Assert.assertTrue(response == null || response.getString() == null);
   }
 
   @Test
@@ -93,7 +95,8 @@ public class TestRPCObjectParamType {
     responseEntity = consumers.getSCBRestTemplate()
         .exchange("/testMultiLayerObjectParam", HttpMethod.POST,
             new HttpEntity<>(null), MultiLayerObjectParam.class);
-    Assert.assertNull(responseEntity.getBody());
+    // Highway will not give null return value
+    Assert.assertTrue(responseEntity.getBody() == null || responseEntity.getBody().getString() == null);
     Assert.assertEquals(200, responseEntity.getStatusCodeValue());
   }
 

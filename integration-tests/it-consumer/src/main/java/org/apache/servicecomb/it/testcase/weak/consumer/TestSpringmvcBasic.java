@@ -21,17 +21,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.it.Consumers;
-import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
-import org.springframework.web.client.RestTemplate;
 
 public class TestSpringmvcBasic {
-  private RestTemplate restTemplateInvoker = RestTemplateBuilder.create();
-
   static Consumers<SpringmvcBasicService> consumers =
       new Consumers<>("SpringmvcBasicEndpoint", SpringmvcBasicService.class);
 

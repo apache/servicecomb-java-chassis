@@ -18,8 +18,10 @@ package org.apache.servicecomb.codec.protobuf.definition;
 
 import java.io.IOException;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
+import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyWrapper;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -45,10 +47,28 @@ public class ResponseRootDeserializer<T> {
     if (obj instanceof PropertyWrapper) {
       obj = ((PropertyWrapper) obj).getValue();
     }
-    if (obj != null && !invocationTimeType.isPrimitive() && !invocationTimeType.getRawClass()
-        .isAssignableFrom(obj.getClass())) {
-      obj = JsonUtils.convertValue(obj, invocationTimeType.getRawClass());
+    if (needConvert(obj, invocationTimeType)) {
+      obj = JsonUtils.convertValue(obj, invocationTimeType);
     }
     return (T) obj;
+  }
+
+  public static boolean needConvert(Object obj, JavaType invocationTimeType) {
+    if (obj == null || ClassUtils.isPrimitiveOrWrapper(obj.getClass()) || invocationTimeType.isPrimitive()
+        || ProtoConst.OBJECT_TYPE.equals(invocationTimeType)) {
+      return false;
+    }
+
+    if (obj.getClass() == invocationTimeType.getRawClass()) {
+      return false;
+    }
+
+    if (invocationTimeType.getRawClass().isAssignableFrom(obj.getClass())) {
+      if (invocationTimeType.getContentType() == null) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }

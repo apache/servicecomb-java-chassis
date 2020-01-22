@@ -255,8 +255,8 @@ public class DataTypeJaxrsSchema {
 
   @Path("requestHeaders")
   @GET
-  public List<String> getRequestHeaders(@HeaderParam(value = "x-cse-test") String testServiceCombHeader,
-      @HeaderParam(value = "x-cse-test2") String testServiceCombHeader2, HttpServletRequest request) {
+  public List<String> getRequestHeaders(@HeaderParam(value = "x_cse_test") String testServiceCombHeader,
+      @HeaderParam(value = "x_cse_test2") String testServiceCombHeader2, HttpServletRequest request) {
     ArrayList<String> response = new ArrayList<>();
     Enumeration<String> requestHeaders = request.getHeaderNames();
     while (requestHeaders.hasMoreElements()) {
