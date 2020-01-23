@@ -48,6 +48,7 @@ import org.apache.servicecomb.swagger.generator.ResponseTypeProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
+import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
 
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JavaType;
@@ -83,6 +84,8 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
   protected Swagger swagger;
 
+  protected Class<?> clazz;
+
   protected Method method;
 
   protected String httpMethod;
@@ -100,6 +103,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   public AbstractOperationGenerator(AbstractSwaggerGenerator swaggerGenerator, Method method) {
     this.swaggerGenerator = swaggerGenerator;
     this.swagger = swaggerGenerator.getSwagger();
+    this.clazz = swaggerGenerator.getClazz();
     this.method = method;
     this.httpMethod = swaggerGenerator.getHttpMethod();
 
@@ -222,7 +226,9 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
   protected void initMethodParameterGenerators(Map<String, List<Annotation>> methodAnnotationMap) {
     for (java.lang.reflect.Parameter methodParameter : method.getParameters()) {
-      ParameterGenerator parameterGenerator = new ParameterGenerator(method, methodAnnotationMap, methodParameter);
+      Type genericType = ParamUtils.getGenericParameterType(clazz, method, methodParameter);
+      ParameterGenerator parameterGenerator = new ParameterGenerator(method, methodAnnotationMap, methodParameter,
+          genericType);
       validateParameter(parameterGenerator.getGenericType());
       if (isContextParameter(parameterGenerator.getGenericType())) {
         continue;
@@ -486,7 +492,8 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   protected Model createResponseModel() {
-    Type responseType = method.getGenericReturnType();
+    Type responseType = ParamUtils
+        .getGenericParameterType(clazz, method.getDeclaringClass(), method.getGenericReturnType());
     if (ReflectionUtils.isVoid(responseType)) {
       return null;
     }

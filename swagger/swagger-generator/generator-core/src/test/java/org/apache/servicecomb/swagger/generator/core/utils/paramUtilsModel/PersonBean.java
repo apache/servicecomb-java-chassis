@@ -15,11 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.swagger.generator.core.utils;
+package org.apache.servicecomb.swagger.generator.core.utils.paramUtilsModel;
 
-public class HelloEndpoint extends AbstractBaseClass<HelloBean> {
-  @Override
-  public HelloBean get(HelloBean param) {
-    return param;
-  }
+public class PersonBean extends AbstractBean {
 }

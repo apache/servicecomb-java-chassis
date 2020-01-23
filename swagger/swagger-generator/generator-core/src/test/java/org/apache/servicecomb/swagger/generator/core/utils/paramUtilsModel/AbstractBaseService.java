@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.swagger.generator.core;
+package org.apache.servicecomb.swagger.generator.core.utils.paramUtilsModel;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ public class AbstractBaseService<T extends AbstractBean> implements IBaseService
   }
 
   @Override
-  public PersonBean actual() {
-    return target.actual();
+  public PersonBean actual(PersonBean bean) {
+    return target.actual(bean);
   }
 }

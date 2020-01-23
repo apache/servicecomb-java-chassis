@@ -17,7 +17,6 @@
 package org.apache.servicecomb.swagger.engine;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -61,7 +60,7 @@ public class SwaggerEnvironment {
 
     SwaggerConsumer consumer = new SwaggerConsumer();
     consumer.setConsumerIntf(consumerIntf);
-    for (Method consumerMethod : consumerIntf.getMethods()) {
+    for (Method consumerMethod : MethodUtils.findSwaggerMethods(consumerIntf)) {
       String operationId = findOperationId(consumerMethod);
       SwaggerOperation swaggerOperation = swaggerOperations.findOperation(operationId);
       if (swaggerOperation == null) {
@@ -76,6 +75,7 @@ public class SwaggerEnvironment {
       ConsumerArgumentsMapperCreator creator = new ConsumerArgumentsMapperCreator(
           Json.mapper().getSerializationConfig(),
           contextFactorys,
+          consumerIntf,
           consumerMethod,
           swaggerOperation);
       ConsumerArgumentsMapper argsMapper = creator.createArgumentsMapper();
@@ -83,6 +83,7 @@ public class SwaggerEnvironment {
           .createResponseMapper(consumerMethod.getGenericReturnType());
 
       SwaggerConsumerOperation op = new SwaggerConsumerOperation();
+      op.setConsumerClass(consumerIntf);
       op.setConsumerMethod(consumerMethod);
       op.setSwaggerOperation(swaggerOperation);
       op.setArgumentsMapper(argsMapper);
@@ -114,7 +115,7 @@ public class SwaggerEnvironment {
     SwaggerOperations swaggerOperations = new SwaggerOperations(swagger);
 
     Class<?> producerCls = BeanUtils.getImplClassFromBean(producerInstance);
-    Map<String, Method> visibleProducerMethods = retrieveVisibleMethods(producerCls);
+    Map<String, Method> visibleProducerMethods = MethodUtils.findSwaggerMethodsMapOfOperationId(producerCls);
 
     SwaggerProducer producer = new SwaggerProducer();
     producer.setSwagger(swagger);
@@ -135,6 +136,7 @@ public class SwaggerEnvironment {
       ProducerArgumentsMapperCreator creator = new ProducerArgumentsMapperCreator(
           Json.mapper().getSerializationConfig(),
           contextFactorys,
+          producerCls,
           producerMethod,
           swaggerOperation);
       ProducerArgumentsMapper argsMapper = creator.createArgumentsMapper();
@@ -154,18 +156,5 @@ public class SwaggerEnvironment {
     }
 
     return producer;
-  }
-
-  private Map<String, Method> retrieveVisibleMethods(Class<?> clazz) {
-    Map<String, Method> visibleMethods = new HashMap<>();
-    for (Method method : clazz.getMethods()) {
-      if (MethodUtils.isHiddenInSwagger(method)) {
-        continue;
-      }
-      String operationId = MethodUtils.findSwaggerMethodName(method);
-
-      visibleMethods.put(operationId, method);
-    }
-    return visibleMethods;
   }
 }

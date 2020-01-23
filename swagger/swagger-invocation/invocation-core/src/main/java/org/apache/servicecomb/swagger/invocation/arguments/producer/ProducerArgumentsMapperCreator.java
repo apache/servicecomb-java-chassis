@@ -28,6 +28,7 @@ import java.util.Map;
 import org.apache.servicecomb.foundation.common.utils.LambdaMetafactoryUtils;
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
+import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
 import org.apache.servicecomb.swagger.invocation.arguments.AbstractArgumentsMapperCreator;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
 import org.apache.servicecomb.swagger.invocation.arguments.ContextArgumentMapperFactory;
@@ -44,9 +45,9 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
   private Map<String, Type> swaggerParameterTypes;
 
   public ProducerArgumentsMapperCreator(SerializationConfig serializationConfig,
-      Map<Class<?>, ContextArgumentMapperFactory> contextFactorys,
+      Map<Class<?>, ContextArgumentMapperFactory> contextFactorys, Class<?> producerClass,
       Method producerMethod, SwaggerOperation swaggerOperation) {
-    super(serializationConfig, contextFactorys, producerMethod, swaggerOperation);
+    super(serializationConfig, contextFactorys, producerClass, producerMethod, swaggerOperation);
 
     swaggerParameterTypes = new HashMap<>();
   }
@@ -75,8 +76,10 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
   @Override
   protected ArgumentMapper createKnownParameterMapper(int providerParamIdx, Integer swaggerIdx) {
     String swaggerArgumentName = swaggerParameters.get(swaggerIdx).getName();
+    final Type providerType = ParamUtils.getGenericParameterType(this.providerClass, this.providerMethod,
+        this.providerMethod.getParameters()[providerParamIdx]);
     swaggerParameterTypes
-        .put(swaggerArgumentName, providerMethod.getParameters()[providerParamIdx].getParameterizedType());
+        .put(swaggerArgumentName, providerType);
     return new ProducerArgumentSame(providerMethod.getParameters()[providerParamIdx].getName(), swaggerArgumentName);
   }
 
@@ -86,9 +89,11 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
     String swaggerArgumentName = swaggerParameters.get(swaggerBodyIdx).getName();
     swaggerParameterTypes
         .put(swaggerArgumentName, Object.class);
+    Type parameterType = ParamUtils.getGenericParameterType(this.providerClass, this.providerMethod,
+        providerMethod.getParameters()[producerParamIdx]);
     return new SwaggerBodyFieldToProducerArgument(providerMethod.getParameters()[producerParamIdx].getName(),
         swaggerArgumentName,
-        parameterName, providerMethod.getParameters()[producerParamIdx].getParameterizedType());
+        parameterName, parameterType);
   }
 
   @Override

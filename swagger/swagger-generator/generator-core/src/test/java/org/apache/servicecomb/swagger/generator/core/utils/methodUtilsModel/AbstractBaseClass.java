@@ -15,7 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.swagger.generator.core;
+package org.apache.servicecomb.swagger.generator.core.utils.methodUtilsModel;
 
-public class PersonBean extends AbstractBean {
+public abstract class AbstractBaseClass<T extends AbstractBean> {
+  abstract T get(T param);
+
+  public T getBase(T param) {
+    return param;
+  }
 }

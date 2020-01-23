@@ -14,17 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.swagger.generator.core.utils.paramUtilsModel;
 
-package org.apache.servicecomb.swagger.generator.core;
+import java.util.List;
 
-public abstract class AbstractBean {
-  private String name;
+import org.springframework.web.multipart.MultipartFile;
 
-  public String getName() {
-    return name;
+public class MyEndpoint2 implements IMyService {
+  @Override
+  public PersonBean hello(PersonBean a) {
+    return null;
   }
 
-  public void setName(String name) {
-    this.name = name;
+  @Override
+  public PersonBean[] helloBody(PersonBean[] a) {
+    return new PersonBean[0];
+  }
+
+  @Override
+  public List<PersonBean> helloList(List<PersonBean> a) {
+    return null;
+  }
+
+  @Override
+  public PersonBean actual(PersonBean bean) {
+    return null;
+  }
+
+  @Override
+  public List<MultipartFile> parentHello(List<MultipartFile> bean) {
+    return null;
   }
 }

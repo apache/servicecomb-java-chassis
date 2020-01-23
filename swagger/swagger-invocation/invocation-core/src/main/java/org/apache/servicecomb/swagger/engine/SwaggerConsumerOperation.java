@@ -24,6 +24,8 @@ import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgu
 import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
 
 public class SwaggerConsumerOperation {
+  private Class<?> consumerClass;
+
   private Method consumerMethod;
 
   private SwaggerOperation swaggerOperation;
@@ -42,6 +44,14 @@ public class SwaggerConsumerOperation {
 
   public void setConsumerMethod(Method consumerMethod) {
     this.consumerMethod = consumerMethod;
+  }
+
+  public Class<?> getConsumerClass() {
+    return consumerClass;
+  }
+
+  public void setConsumerClass(Class<?> consumerClass) {
+    this.consumerClass = consumerClass;
   }
 
   public SwaggerOperation getSwaggerOperation() {

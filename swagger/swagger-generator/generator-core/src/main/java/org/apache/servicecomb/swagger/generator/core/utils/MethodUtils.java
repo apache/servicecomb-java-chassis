@@ -21,7 +21,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -33,20 +35,27 @@ public class MethodUtils {
    * @param cls The REST interface class, or so called "controller" class, to be analysed.
    * @return the valid methods to be used to generate Swagger schema, sorted by their Swagger operation name.
    */
-  public static List<Method> findProducerMethods(Class<?> cls) {
+  public static List<Method> findSwaggerMethods(Class<?> cls) {
     Method[] methods = cls.getMethods();
-    List<Method> producerMethods = new ArrayList<>(methods.length);
+    List<Method> result = new ArrayList<>(methods.length);
 
     for (Method m : methods) {
       if (!isSkipMethod(cls, m)) {
-        producerMethods.add(m);
+        result.add(m);
       }
     }
 
     // order of cls.getMethods() is undefined and not stable
     // so we must sort them first to make generation is stable
-    producerMethods.sort(Comparator.comparing(MethodUtils::findSwaggerMethodName));
-    return producerMethods;
+    result.sort(Comparator.comparing(MethodUtils::findSwaggerMethodName));
+    return result;
+  }
+
+  public static Map<String, Method> findSwaggerMethodsMapOfOperationId(Class<?> cls) {
+    List<Method> methods = findSwaggerMethods(cls);
+    Map<String, Method> result = new HashMap<>();
+    methods.forEach((item) -> result.put(findSwaggerMethodName(item), item));
+    return result;
   }
 
   /**
@@ -97,13 +106,5 @@ public class MethodUtils {
     }
 
     return apiOperationAnnotation.nickname();
-  }
-
-  /**
-   * @return true if this method should NOT be displayed in schema; otherwise false
-   */
-  public static boolean isHiddenInSwagger(Method method) {
-    ApiOperation apiOperationAnnotation = method.getAnnotation(ApiOperation.class);
-    return null != apiOperationAnnotation && apiOperationAnnotation.hidden();
   }
 }

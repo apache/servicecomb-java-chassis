@@ -49,3 +49,5 @@ servicecomb:
       verticle-count: 8
   uploads:
     directory: target
+  codec:
+    printErrorMessage: true

@@ -20,19 +20,32 @@ package org.apache.servicecomb.swagger.generator.core.utils;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.apache.servicecomb.swagger.generator.core.utils.methodUtilsModel.AbstractBaseClass;
+import org.apache.servicecomb.swagger.generator.core.utils.methodUtilsModel.BaseInterface;
+import org.apache.servicecomb.swagger.generator.core.utils.methodUtilsModel.Hello2Endpoint;
+import org.apache.servicecomb.swagger.generator.core.utils.methodUtilsModel.HelloEndpoint;
+import org.apache.servicecomb.swagger.generator.core.utils.methodUtilsModel.ServiceInterface;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class TestMethodUtils {
   @Test
   public void testGetClassMethods() throws Exception {
-    List<Method> methods = MethodUtils.findProducerMethods(Hello2Endpoint.class);
+    List<Method> methods = MethodUtils.findSwaggerMethods(Hello2Endpoint.class);
     Assert.assertEquals(3, methods.size());
+    Assert.assertEquals(Hello2Endpoint.class, methods.get(0).getDeclaringClass());
+    Assert.assertEquals(Hello2Endpoint.class, methods.get(1).getDeclaringClass());
+    Assert.assertEquals(Hello2Endpoint.class, methods.get(2).getDeclaringClass());
 
-    methods = MethodUtils.findProducerMethods(HelloEndpoint.class);
+    methods = MethodUtils.findSwaggerMethods(HelloEndpoint.class);
     Assert.assertEquals(2, methods.size());
+    Assert.assertEquals(HelloEndpoint.class, methods.get(0).getDeclaringClass()); // get
+    Assert.assertEquals(AbstractBaseClass.class, methods.get(1).getDeclaringClass()); // getBase
 
-    methods = MethodUtils.findProducerMethods(ServiceInterface.class);
+    methods = MethodUtils.findSwaggerMethods(ServiceInterface.class);
     Assert.assertEquals(3, methods.size());
+    Assert.assertEquals(BaseInterface.class, methods.get(0).getDeclaringClass()); // get
+    Assert.assertEquals(BaseInterface.class, methods.get(1).getDeclaringClass()); // getArray
+    Assert.assertEquals(ServiceInterface.class, methods.get(2).getDeclaringClass()); // getBase
   }
 }
