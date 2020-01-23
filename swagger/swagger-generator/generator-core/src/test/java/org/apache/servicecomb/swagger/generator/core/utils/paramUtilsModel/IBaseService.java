@@ -14,28 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.generator.core;
+
+package org.apache.servicecomb.swagger.generator.core.utils.paramUtilsModel;
 
 import java.util.List;
 
-public class MyEndpoint2 implements IMyService {
-  @Override
-  public PersonBean hello(PersonBean a) {
-    return null;
-  }
+public interface IBaseService<T extends AbstractBean> {
+  T hello(T a);
 
-  @Override
-  public PersonBean[] helloBody(PersonBean[] a) {
-    return new PersonBean[0];
-  }
+  T[] helloBody(T[] a);
 
-  @Override
-  public List<PersonBean> helloList(List<PersonBean> a) {
-    return null;
-  }
+  List<T> helloList(List<T> a);
 
-  @Override
-  public PersonBean actual() {
-    return null;
-  }
+  PersonBean actual(PersonBean bean);
 }

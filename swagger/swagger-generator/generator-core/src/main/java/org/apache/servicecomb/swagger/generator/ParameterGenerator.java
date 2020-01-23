@@ -62,12 +62,12 @@ public class ParameterGenerator {
   }
 
   public ParameterGenerator(Executable executable, Map<String, List<Annotation>> methodAnnotationMap,
-      java.lang.reflect.Parameter methodParameter) {
+      java.lang.reflect.Parameter methodParameter, Type genericType) {
     this(executable,
         methodAnnotationMap,
         methodParameter.isNamePresent() ? methodParameter.getName() : null,
         methodParameter.getAnnotations(),
-        methodParameter.getParameterizedType());
+        genericType);
   }
 
   public ParameterGenerator(String parameterName, List<Annotation> annotations) {

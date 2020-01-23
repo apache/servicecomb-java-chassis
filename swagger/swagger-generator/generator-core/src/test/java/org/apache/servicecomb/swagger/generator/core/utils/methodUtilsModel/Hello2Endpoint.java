@@ -14,17 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.swagger.generator.core.utils.methodUtilsModel;
 
-package org.apache.servicecomb.swagger.generator.core;
+public class Hello2Endpoint implements ServiceInterface {
+  @Override
+  public HelloBean get(HelloBean param) {
+    return param;
+  }
 
-import java.util.List;
+  @Override
+  public HelloBean[] getArray(HelloBean[] param) {
+    return new HelloBean[0];
+  }
 
-public interface IBaseService<T extends AbstractBean> {
-  T hello(T a);
-
-  T[] helloBody(T[] a);
-
-  List<T> helloList(List<T> a);
-
-  PersonBean actual();
+  @Override
+  public HelloBean getBase(HelloBean param) {
+    return param;
+  }
 }

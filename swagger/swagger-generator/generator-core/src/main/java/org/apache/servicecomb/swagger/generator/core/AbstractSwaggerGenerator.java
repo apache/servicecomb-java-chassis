@@ -284,7 +284,7 @@ public abstract class AbstractSwaggerGenerator implements SwaggerGenerator {
   }
 
   protected void scanMethods() {
-    List<Method> methods = MethodUtils.findProducerMethods(cls);
+    List<Method> methods = MethodUtils.findSwaggerMethods(cls);
 
     for (Method method : methods) {
       if (isSkipMethod(method)) {

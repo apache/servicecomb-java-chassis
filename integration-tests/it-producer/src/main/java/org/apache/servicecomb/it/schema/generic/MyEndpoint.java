@@ -17,10 +17,10 @@
 
 package org.apache.servicecomb.it.schema.generic;
 
+import org.apache.servicecomb.provider.pojo.RpcSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 
-// TODO : WEAK RPC & highway both not support this now , need fix it
-//@RpcSchema(schemaId = "MyEndpoint")
+@RpcSchema(schemaId = "MyEndpoint")
 public class MyEndpoint extends AbstractBaseService<PersonBean> implements IMyService {
   public MyEndpoint(@Autowired IMyService other) {
     super(other);

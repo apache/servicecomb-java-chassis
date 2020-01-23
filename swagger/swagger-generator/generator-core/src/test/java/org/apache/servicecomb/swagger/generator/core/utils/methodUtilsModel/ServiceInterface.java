@@ -15,7 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.swagger.generator.core;
+package org.apache.servicecomb.swagger.generator.core.utils.methodUtilsModel;
 
-public interface IMyServiceChild2 extends IMyService, IBaseService<PersonBean> {
+import org.apache.servicecomb.swagger.generator.core.utils.methodUtilsModel.BaseInterface;
+import org.apache.servicecomb.swagger.generator.core.utils.methodUtilsModel.HelloBean;
+
+public interface ServiceInterface extends BaseInterface<HelloBean> {
+  HelloBean getBase(HelloBean param);
 }

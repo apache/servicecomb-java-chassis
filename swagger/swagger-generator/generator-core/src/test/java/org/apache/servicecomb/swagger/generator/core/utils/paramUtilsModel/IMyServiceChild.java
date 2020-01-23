@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.swagger.generator.core;
+package org.apache.servicecomb.swagger.generator.core.utils.paramUtilsModel;
 
-public interface IMyService extends IBaseService<PersonBean> {
+public interface IMyServiceChild extends IMyService {
 }

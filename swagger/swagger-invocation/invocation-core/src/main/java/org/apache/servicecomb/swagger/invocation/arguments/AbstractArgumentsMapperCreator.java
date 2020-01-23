@@ -99,6 +99,8 @@ public abstract class AbstractArgumentsMapperCreator {
   // consumer or producer
   protected Method providerMethod;
 
+  protected Class<?> providerClass;
+
   protected SwaggerOperation swaggerOperation;
 
   protected List<ArgumentMapper> mappers = new ArrayList<>();
@@ -115,10 +117,11 @@ public abstract class AbstractArgumentsMapperCreator {
   protected Set<String> processedSwaggerParamters;
 
   public AbstractArgumentsMapperCreator(SerializationConfig serializationConfig,
-      Map<Class<?>, ContextArgumentMapperFactory> contextFactorys,
+      Map<Class<?>, ContextArgumentMapperFactory> contextFactorys, Class<?> providerClass,
       Method providerMethod, SwaggerOperation swaggerOperation) {
     this.serializationConfig = serializationConfig;
     this.contextFactorys = contextFactorys;
+    this.providerClass = providerClass;
     this.providerMethod = providerMethod;
     this.swaggerOperation = swaggerOperation;
 

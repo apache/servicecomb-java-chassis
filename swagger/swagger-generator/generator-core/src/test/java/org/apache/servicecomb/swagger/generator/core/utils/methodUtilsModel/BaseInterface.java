@@ -14,9 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.swagger.generator.core.utils.methodUtilsModel;
 
-package org.apache.servicecomb.swagger.generator.core.utils;
+public interface BaseInterface<T extends AbstractBean> {
+  T get(T param);
 
-public interface ServiceInterface extends BaseInterface<HelloBean> {
-  HelloBean getBase(HelloBean param);
+  T[] getArray(T[] param);
 }

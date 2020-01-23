@@ -22,8 +22,7 @@ import org.apache.servicecomb.provider.pojo.RpcSchema;
 
 import io.swagger.annotations.ApiOperation;
 
-// TODO : WEAK RPC & highway both not support this now , need fix it
-//@RpcSchema(schemaId = "MyEndpointWithInterface")
+@RpcSchema(schemaId = "MyEndpointWithInterface")
 public class MyEndpointWithInterface implements IMyService {
   @Override
   @ApiOperation(nickname = "hello", value = "hello")

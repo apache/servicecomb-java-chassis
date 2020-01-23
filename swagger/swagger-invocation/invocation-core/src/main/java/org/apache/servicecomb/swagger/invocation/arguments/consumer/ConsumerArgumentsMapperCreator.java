@@ -44,9 +44,9 @@ public class ConsumerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
   private int unknownConsumerParams = 0;
 
   public ConsumerArgumentsMapperCreator(SerializationConfig serializationConfig,
-      Map<Class<?>, ContextArgumentMapperFactory> contextFactorys,
+      Map<Class<?>, ContextArgumentMapperFactory> contextFactorys, Class<?> consumerClass,
       Method consumerMethod, SwaggerOperation swaggerOperation) {
-    super(serializationConfig, contextFactorys, consumerMethod, swaggerOperation);
+    super(serializationConfig, contextFactorys, consumerClass, consumerMethod, swaggerOperation);
   }
 
   private boolean isAllSameMapper() {

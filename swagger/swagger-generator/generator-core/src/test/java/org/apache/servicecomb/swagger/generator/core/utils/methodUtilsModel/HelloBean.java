@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.swagger.generator.core.utils;
+package org.apache.servicecomb.swagger.generator.core.utils.methodUtilsModel;
 
 public class HelloBean extends AbstractBean {
   private String hello;

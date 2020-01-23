@@ -15,12 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.swagger.generator.core.utils;
+package org.apache.servicecomb.swagger.generator.core.utils.paramUtilsModel;
 
-public abstract class AbstractBaseClass<T extends AbstractBean> {
-  abstract T get(T param);
+import java.util.List;
 
-  public T getBase(T param) {
-    return param;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.multipart.MultipartFile;
+
+public class MyEndpoint extends AbstractBaseService<PersonBean> implements IMyService {
+  public MyEndpoint(@Autowired IMyService other) {
+    super(other);
+  }
+
+  @Override
+  public List<MultipartFile> parentHello(List<MultipartFile> bean) {
+    return null;
   }
 }

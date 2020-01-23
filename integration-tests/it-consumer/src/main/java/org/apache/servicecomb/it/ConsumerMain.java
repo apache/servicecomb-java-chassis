@@ -22,7 +22,7 @@ import org.apache.servicecomb.it.deploy.Deploys;
 import org.apache.servicecomb.it.deploy.MicroserviceDeploy;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.it.schema.TestApiOperation;
-import org.apache.servicecomb.it.testcase.weak.consumer.TestSpringmvcBasic;
+import org.apache.servicecomb.it.schema.generic.TestMyService;
 import org.apache.servicecomb.it.testcase.TestAcceptType;
 import org.apache.servicecomb.it.testcase.TestAnnotatedAttribute;
 import org.apache.servicecomb.it.testcase.TestApiOperationOverride;
@@ -53,6 +53,7 @@ import org.apache.servicecomb.it.testcase.objectparams.TestJAXRSObjectParamType;
 import org.apache.servicecomb.it.testcase.objectparams.TestRPCObjectParamType;
 import org.apache.servicecomb.it.testcase.objectparams.TestSpringMVCObjectParamType;
 import org.apache.servicecomb.it.testcase.thirdparty.Test3rdPartyInvocation;
+import org.apache.servicecomb.it.testcase.weak.consumer.TestSpringmvcBasic;
 
 public class ConsumerMain {
   private static ResultPrinter resultPrinter = new ResultPrinter();
@@ -109,8 +110,7 @@ public class ConsumerMain {
     ITJUnitUtils.runWithHighwayAndRest(TestChangeTransport.class);
     ITJUnitUtils.runWithHighwayAndRest(TestDataTypePrimitive.class);
     ITJUnitUtils.runWithHighwayAndRest(TestAnnotatedAttribute.class);
-    // TODO : WEAK RPC & highway both not support this now , need fix it
-    //    ITJUnitUtils.runWithHighwayAndRest(TestMyService.class);
+    ITJUnitUtils.runWithHighwayAndRest(TestMyService.class);
 
     // only rest support default value feature
     ITJUnitUtils.runWithRest(TestDefaultValue.class);

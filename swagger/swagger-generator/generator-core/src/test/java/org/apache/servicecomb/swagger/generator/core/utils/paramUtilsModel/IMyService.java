@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.swagger.generator.core;
+package org.apache.servicecomb.swagger.generator.core.utils.paramUtilsModel;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
 
-public class MyEndpoint extends AbstractBaseService<PersonBean> implements IMyService {
-  public MyEndpoint(@Autowired IMyService other) {
-    super(other);
-  }
+import org.springframework.web.multipart.MultipartFile;
+
+public interface IMyService extends IBaseService<PersonBean> {
+  List<MultipartFile> parentHello(List<MultipartFile> bean);
 }

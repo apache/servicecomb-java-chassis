@@ -15,7 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.swagger.generator.core;
+package org.apache.servicecomb.swagger.generator.core.utils.methodUtilsModel;
 
-public interface IMyServiceChild extends IMyService {
+public class HelloEndpoint extends AbstractBaseClass<HelloBean> {
+  @Override
+  public HelloBean get(HelloBean param) {
+    return param;
+  }
 }

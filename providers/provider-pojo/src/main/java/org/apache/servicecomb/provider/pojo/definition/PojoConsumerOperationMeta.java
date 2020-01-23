@@ -25,6 +25,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
+import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
 import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -51,7 +52,11 @@ public class PojoConsumerOperationMeta {
     operationMeta.getResponsesMeta().cloneTo(responsesMeta);
     operationMeta.setSwaggerConsumerOperation(swaggerConsumerOperation);
     responsesMeta.init(intfSwagger, intfOperation);
-    Type intfResponseType = swaggerConsumerOperation.getConsumerMethod().getGenericReturnType();
+    Type intfResponseType = ParamUtils
+        .getGenericParameterType(swaggerConsumerOperation.getConsumerClass(),
+            swaggerConsumerOperation.getConsumerMethod().getDeclaringClass(),
+            swaggerConsumerOperation.getConsumerMethod().getGenericReturnType());
+
     if (intfResponseType instanceof Class && Part.class.isAssignableFrom((Class<?>) intfResponseType)) {
       return;
     }

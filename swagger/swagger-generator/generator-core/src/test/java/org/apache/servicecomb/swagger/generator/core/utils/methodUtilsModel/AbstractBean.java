@@ -14,10 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.swagger.generator.core.utils;
 
-public interface BaseInterface<T extends AbstractBean> {
-  T get(T param);
+package org.apache.servicecomb.swagger.generator.core.utils.methodUtilsModel;
 
-  T[] getArray(T[] param);
+public abstract class AbstractBean {
+  private String type;
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
 }
