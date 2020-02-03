@@ -49,14 +49,22 @@ public class HttpServerFilterBeforeSendResponseExecutor {
   protected CompletableFuture<Void> safeInvoke(HttpServerFilter httpServerFilter) {
     try {
       if (httpServerFilter.enabled()) {
-        return httpServerFilter.beforeSendResponseAsync(invocation, responseEx);
+        CompletableFuture<Void> future = httpServerFilter.beforeSendResponseAsync(invocation, responseEx);
+        if (future == null) {
+          future = new CompletableFuture<>();
+          future.completeExceptionally(new IllegalStateException(
+              "HttpServerFilter beforeSendResponseAsync can not return null, do not override it. Class="
+                  + httpServerFilter.getClass()
+                  .getName()));
+        }
+        return future;
       } else {
-        CompletableFuture<Void> eFuture = new CompletableFuture<Void>();
+        CompletableFuture<Void> eFuture = new CompletableFuture<>();
         eFuture.complete(null);
         return eFuture;
       }
     } catch (Throwable e) {
-      CompletableFuture<Void> eFuture = new CompletableFuture<Void>();
+      CompletableFuture<Void> eFuture = new CompletableFuture<>();
       eFuture.completeExceptionally(e);
       return eFuture;
     }
