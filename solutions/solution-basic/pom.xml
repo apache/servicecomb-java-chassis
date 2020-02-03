@@ -29,6 +29,21 @@
   <artifactId>solution-basic</artifactId>
   <name>Java Chassis::Solutions::BASIC</name>
 
+  <properties>
+    <huaweicloudsdk-version>2.5.0</huaweicloudsdk-version>
+  </properties>
+
+  <repositories>
+    <repository>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <id>huaweicloudsdk-releases</id>
+      <name>huaweicloudsdk</name>
+      <url>https://repo.huaweicloud.com/repository/maven/huaweicloudsdk/</url>
+    </repository>
+  </repositories>
+
   <dependencies>
     <!-- default using log4j2 -->
     <dependency>
@@ -114,6 +129,13 @@
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>inspector</artifactId>
+    </dependency>
+
+    <!-- includes huawei cloud authentication filter and makes easier to access online service -->
+    <dependency>
+      <groupId>com.huawei.paas.cse</groupId>
+      <artifactId>foundation-auth</artifactId>
+      <version>${huaweicloudsdk-version}</version>
     </dependency>
   </dependencies>
 
