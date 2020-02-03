@@ -18,7 +18,7 @@
 package org.apache.servicecomb.loadbalance;
 
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.servicecomb.core.Invocation;
 
@@ -26,14 +26,12 @@ import org.apache.servicecomb.core.Invocation;
  * A random rule.
  */
 public class RandomRuleExt implements RuleExt {
-  private Random random = new Random();
-
   @Override
   public ServiceCombServer choose(List<ServiceCombServer> servers, Invocation invocation) {
     if (servers.isEmpty()) {
       return null;
     }
-    int index = Math.abs(random.nextInt()) % servers.size();
+    int index = Math.abs(ThreadLocalRandom.current().nextInt()) % servers.size();
     return servers.get(index);
   }
 }

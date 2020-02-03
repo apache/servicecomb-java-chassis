@@ -19,7 +19,7 @@ package org.apache.servicecomb.loadbalance;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.servicecomb.core.Invocation;
 
@@ -33,8 +33,6 @@ public class WeightedResponseTimeRuleExt extends RoundRobinRuleExt {
   private static final double MIN_GAP = 10d;
 
   private static final int RANDOM_PERCENT = 10;
-
-  private Random random = new Random();
 
   private LoadBalancer loadBalancer;
 
@@ -55,7 +53,7 @@ public class WeightedResponseTimeRuleExt extends RoundRobinRuleExt {
       for (int i = 0; i < stats.size() - 1; i++) {
         weights.add(finalTotal - stats.get(i));
       }
-      double ran = random.nextDouble() * finalTotal * (servers.size() - 1);
+      double ran = ThreadLocalRandom.current().nextDouble() * finalTotal * (servers.size() - 1);
       for (int i = 0; i < weights.size(); i++) {
         ran -= weights.get(i);
         if (ran < 0) {
@@ -72,7 +70,7 @@ public class WeightedResponseTimeRuleExt extends RoundRobinRuleExt {
       return doCalculateTotalWeights(servers);
     }
     // 10% possibilities to use weighed response rule when the normal access is very fast.
-    if (random.nextInt(RANDOM_PERCENT) == 0) {
+    if (ThreadLocalRandom.current().nextInt(RANDOM_PERCENT) == 0) {
       return doCalculateTotalWeights(servers);
     } else {
       return new ArrayList<>();
