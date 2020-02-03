@@ -16,20 +16,15 @@
  */
 package org.apache.servicecomb.router.custom;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.netflix.config.DynamicStringProperty;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
-import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.router.cache.RouterRuleCache;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
@@ -38,7 +33,9 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.netflix.config.DynamicPropertyFactory;
+import com.netflix.config.DynamicStringProperty;
 
 public class RouterInvokeFilter implements HttpServerFilter {
 
@@ -59,11 +56,6 @@ public class RouterInvokeFilter implements HttpServerFilter {
   @Override
   public boolean enabled() {
     return true;
-  }
-
-  @Override
-  public boolean needCacheRequest(OperationMeta operationMeta) {
-    return false;
   }
 
   /**
@@ -154,15 +146,5 @@ public class RouterInvokeFilter implements HttpServerFilter {
       }
     });
     return headerMap;
-  }
-
-  @Override
-  public CompletableFuture<Void> beforeSendResponseAsync(Invocation invocation,
-      HttpServletResponseEx responseEx) {
-    return null;
-  }
-
-  @Override
-  public void beforeSendResponse(Invocation invocation, HttpServletResponseEx responseEx) {
   }
 }
