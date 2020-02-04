@@ -18,6 +18,9 @@
 package org.apache.servicecomb.transport.rest.client.http;
 
 import java.util.List;
+import java.util.concurrent.TimeoutException;
+
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
@@ -41,6 +44,7 @@ import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultHttpSocketM
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -277,6 +281,12 @@ public class RestClientInvocation {
     stageTrace.finishClientFiltersResponse();
 
     try {
+      if (e instanceof TimeoutException) {
+        // give an accurate cause for timeout exception
+        asyncResp.consumerFail(new InvocationException(Status.REQUEST_TIMEOUT,
+            String.format("Request Timeout. Details: %s", e.getMessage())));
+        return;
+      }
       asyncResp.fail(invocation.getInvocationType(), e);
     } catch (Throwable e1) {
       LOGGER.error(invocation.getMarker(), "failed to invoke asyncResp.fail.", e1);
