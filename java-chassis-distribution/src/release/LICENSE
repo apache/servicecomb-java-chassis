@@ -209,6 +209,43 @@ subcomponents is subject to the terms and conditions of the
 following licenses.
 
 ================================================================
+For foundations/foundation-vertx/src/main/java/io/vertx/ext/web/impl/MimeTypesUtils.java
+    transports/transport-rest/transport-rest-vertx/src/main/java/org/apache/servicecomb/transport/rest/vertx/RestBodyHandler.java
+================================================================
+This product bundles files from vertx which is licensed under the Apache License v2.
+For details, see https://github.com/vert-x3/vertx-web
+
+================================================================
+For swagger/swagger-generator/generator-core/src/main/java/org/apache/servicecomb/swagger/extend/property/AbstractBaseIntegerProperty.java
+================================================================
+This product bundles files from swagger which is licensed under the Apache License v2.
+For details, see https://github.com/swagger-api/swagger-core
+
+================================================================
+For handlers/handler-bizkeeper/src/main/java/org/apache/servicecomb/bizkeeper/HystrixCommandPropertiesExt.java
+================================================================
+This product bundles files from Hystrix which is licensed under the Apache License v2.
+For details, see https://github.com/Netflix/Hystrix
+
+================================================================
+For foundations/foundation-protobuf/src/main/java/io/protostuff/runtime/ArrayFieldMapEx.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/runtime/FieldMapEx.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/runtime/FieldSchema.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/runtime/FieldTypeUtils.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/runtime/HashFieldMapEx.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/ByteArrayInputEx.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/InputEx.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/OutputEx.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/package-info.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/ProtobufOutputEx.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/SchemaEx.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/SchemaReader.java
+    foundations/foundation-protobuf/src/main/java/io/protostuff/SchemaWriter.java
+================================================================
+This product bundles files from protostuff which is licensed under the Apache License v2.
+For details, see  https://github.com/protostuff/protostuff
+
+================================================================
 This product bundles files from reactive-streams which is licensed under the
 CC0 license.
 For details, see http://www.reactive-streams.org/
@@ -410,39 +447,6 @@ You can find a copy of the License at licenses/LICENSE-abego
 * abego TreeLayout Core (org.abego.treelayout:org.abego.treelayout.core:1.0.3 - http://treelayout.sourceforge.net)
 
 ================================================================
-For foundations/foundation-vertx/src/main/java/io/vertx/ext/web/impl/MimeTypesUtils.java
-    transports/transport-rest/transport-rest-vertx/src/main/java/org/apache/servicecomb/transport/rest/vertx/RestBodyHandler.java
-================================================================
-This product bundles files from vertx which is licensed under the Apache License v2.
-For details, see https://github.com/vert-x3/vertx-web
-
-================================================================
-For swagger/swagger-generator/generator-core/src/main/java/org/apache/servicecomb/swagger/extend/property/AbstractBaseIntegerProperty.java
-================================================================
-This product bundles files from swagger which is licensed under the Apache License v2.
-For details, see https://github.com/swagger-api/swagger-core
-
-================================================================
-For handlers/handler-bizkeeper/src/main/java/org/apache/servicecomb/bizkeeper/HystrixCommandPropertiesExt.java
-================================================================
-This product bundles files from Hystrix which is licensed under the Apache License v2.
-For details, see https://github.com/Netflix/Hystrix
-
-================================================================
-For foundations/foundation-protobuf/src/main/java/io/protostuff/runtime/ArrayFieldMapEx.java
-    foundations/foundation-protobuf/src/main/java/io/protostuff/runtime/FieldMapEx.java
-    foundations/foundation-protobuf/src/main/java/io/protostuff/runtime/FieldSchema.java
-    foundations/foundation-protobuf/src/main/java/io/protostuff/runtime/FieldTypeUtils.java
-    foundations/foundation-protobuf/src/main/java/io/protostuff/runtime/HashFieldMapEx.java
-    foundations/foundation-protobuf/src/main/java/io/protostuff/ByteArrayInputEx.java
-    foundations/foundation-protobuf/src/main/java/io/protostuff/InputEx.java
-    foundations/foundation-protobuf/src/main/java/io/protostuff/OutputEx.java
-    foundations/foundation-protobuf/src/main/java/io/protostuff/package-info.java
-    foundations/foundation-protobuf/src/main/java/io/protostuff/ProtobufOutputEx.java
-    foundations/foundation-protobuf/src/main/java/io/protostuff/SchemaEx.java
-    foundations/foundation-protobuf/src/main/java/io/protostuff/SchemaReader.java
-    foundations/foundation-protobuf/src/main/java/io/protostuff/SchemaWriter.java
-================================================================
 This product bundles the following libraries which are licensed
 under the Apache License v2.
 For details, see their respective project links.
@@ -569,43 +573,44 @@ For details, see their respective project links.
 * SnakeYAML (org.yaml:snakeyaml:1.24 - http://www.snakeyaml.org)
 * spectator-api (com.netflix.spectator:spectator-api:0.83.0 - https://github.com/Netflix/spectator)
 * spectator-reg-servo (com.netflix.spectator:spectator-reg-servo:0.83.0 - https://github.com/Netflix/spectator)
-* Spring AOP (org.springframework:spring-aop:4.3.20.RELEASE - https://github.com/spring-projects/spring-framework)
-* Spring Aspects (org.springframework:spring-aspects:4.3.20.RELEASE - https://github.com/spring-projects/spring-framework)
-* Spring Beans (org.springframework:spring-beans:4.3.20.RELEASE - https://github.com/spring-projects/spring-framework)
-* Spring Boot (org.springframework.boot:spring-boot:1.5.19.RELEASE - http://projects.spring.io/spring-boot/)
-* Spring Boot Actuator (org.springframework.boot:spring-boot-actuator:1.5.19.RELEASE - http://projects.spring.io/spring-boot/)
-* Spring Boot Actuator Starter (org.springframework.boot:spring-boot-starter-actuator:1.5.19.RELEASE - http://projects.spring.io/spring-boot/)
-* Spring Boot AOP Starter (org.springframework.boot:spring-boot-starter-aop:1.5.19.RELEASE - http://projects.spring.io/spring-boot/)
-* Spring Boot AutoConfigure (org.springframework.boot:spring-boot-autoconfigure:1.5.19.RELEASE - http://projects.spring.io/spring-boot/)
+
+* Spring AOP (org.springframework:spring-aop:5.1.5.RELEASE - https://github.com/spring-projects/spring-framework)
+* Spring Aspects (org.springframework:spring-aspects:5.1.5.RELEASE - https://github.com/spring-projects/spring-framework)
+* Spring Beans (org.springframework:spring-beans:5.1.5.RELEASE - https://github.com/spring-projects/spring-framework)
+* Spring Context (org.springframework:spring-context:5.1.5.RELEASE - https://github.com/spring-projects/spring-framework)
+* Spring Core (org.springframework:spring-core:5.1.5.RELEASE - https://github.com/spring-projects/spring-framework)
+* Spring Expression Language (SpEL) (org.springframework:spring-expression:5.1.5.RELEASE - https://github.com/spring-projects/spring-framework)
+* spring-security-crypto (org.springframework.security:spring-security-crypto:5.1.5.RELEASE - http://spring.io/spring-security)
+* Spring Web (org.springframework:spring-web:5.1.5.RELEASE - https://github.com/spring-projects/spring-framework)
+* Spring WebFlux (org.springframework:spring-webflux:5.1.4.RELEASE - https://github.com/spring-projects/spring-framework)
+* Spring Web MVC (org.springframework:spring-webmvc:5.1.5.RELEASE - https://github.com/spring-projects/spring-framework)
+* spring-security-rsa (org.springframework.security:spring-security-rsa:1.0.7.RELEASE - http://github.com/spring-projects/spring-security-oauth)
+
+* Spring Boot (org.springframework.boot:spring-boot:2.1.6.RELEASE - http://projects.spring.io/spring-boot/)
+* Spring Boot Actuator (org.springframework.boot:spring-boot-actuator:2.1.6.RELEASE - http://projects.spring.io/spring-boot/)
+* Spring Boot Actuator Starter (org.springframework.boot:spring-boot-starter-actuator:2.1.6.RELEASE - http://projects.spring.io/spring-boot/)
+* Spring Boot AOP Starter (org.springframework.boot:spring-boot-starter-aop:2.1.6.RELEASE - http://projects.spring.io/spring-boot/)
+* Spring Boot AutoConfigure (org.springframework.boot:spring-boot-autoconfigure:2.1.6.RELEASE - http://projects.spring.io/spring-boot/)
 * Spring Boot Json Starter (org.springframework.boot:spring-boot-starter-json:2.1.6.RELEASE - https://projects.spring.io/spring-boot/#/spring-boot-parent/spring-boot-starters/spring-boot-starter-json)
-* Spring Boot Logging Starter (org.springframework.boot:spring-boot-starter-logging:1.5.19.RELEASE - http://projects.spring.io/spring-boot/)
+* Spring Boot Logging Starter (org.springframework.boot:spring-boot-starter-logging:2.1.6.RELEASE - http://projects.spring.io/spring-boot/)
 * Spring Boot Reactor Netty Starter (org.springframework.boot:spring-boot-starter-reactor-netty:2.1.6.RELEASE - https://projects.spring.io/spring-boot/#/spring-boot-parent/spring-boot-starters/spring-boot-starter-reactor-netty)
-* Spring Boot Starter (org.springframework.boot:spring-boot-starter:1.5.19.RELEASE - http://projects.spring.io/spring-boot/)
-* Spring Boot Tomcat Starter (org.springframework.boot:spring-boot-starter-tomcat:1.5.19.RELEASE - http://projects.spring.io/spring-boot/)
+* Spring Boot Starter (org.springframework.boot:spring-boot-starter:2.1.6.RELEASE - http://projects.spring.io/spring-boot/)
+* Spring Boot Tomcat Starter (org.springframework.boot:spring-boot-starter-tomcat:2.1.6.RELEASE - http://projects.spring.io/spring-boot/)
 * Spring Boot WebFlux Starter (org.springframework.boot:spring-boot-starter-webflux:2.1.6.RELEASE - https://projects.spring.io/spring-boot/#/spring-boot-parent/spring-boot-starters/spring-boot-starter-webflux)
-* Spring Boot Web Starter (org.springframework.boot:spring-boot-starter-web:1.5.19.RELEASE - http://projects.spring.io/spring-boot/)
-* Spring Cloud Commons (org.springframework.cloud:spring-cloud-commons:1.3.3.RELEASE - https://projects.spring.io/spring-cloud/spring-cloud-commons/)
-* Spring Cloud Context (org.springframework.cloud:spring-cloud-context:1.3.3.RELEASE - https://projects.spring.io/spring-cloud/spring-cloud-context/)
+* Spring Boot Web Starter (org.springframework.boot:spring-boot-starter-web:2.1.6.RELEASE - http://projects.spring.io/spring-boot/)
+
+* Spring Cloud Commons (org.springframework.cloud:spring-cloud-commons:2.1.0.RELEASE - https://projects.spring.io/spring-cloud/spring-cloud-commons/)
+* Spring Cloud Context (org.springframework.cloud:spring-cloud-context:2.1.0.RELEASE - https://projects.spring.io/spring-cloud/spring-cloud-context/)
 * Spring Cloud Gateway Core (org.springframework.cloud:spring-cloud-gateway-core:2.1.0.RELEASE - https://spring.io/spring-cloud/spring-cloud-gateway/spring-cloud-gateway-core)
 * spring-cloud-gateway-webflux (org.springframework.cloud:spring-cloud-gateway-webflux:2.1.0.RELEASE - https://spring.io/spring-cloud/spring-cloud-gateway/spring-cloud-gateway-webflux)
-* Spring Cloud Netflix Core (org.springframework.cloud:spring-cloud-netflix-core:1.4.4.RELEASE - https://spring.io/spring-cloud/spring-cloud-netflix/spring-cloud-netflix-core)
-* spring-cloud-starter (org.springframework.cloud:spring-cloud-starter:1.3.3.RELEASE - https://projects.spring.io/spring-cloud)
+* Spring Cloud Netflix Core (org.springframework.cloud:spring-cloud-netflix-core:2.1.0.RELEASE - https://spring.io/spring-cloud/spring-cloud-netflix/spring-cloud-netflix-core)
+* spring-cloud-starter (org.springframework.cloud:spring-cloud-starter:2.1.0.RELEASE - https://projects.spring.io/spring-cloud)
 * spring-cloud-starter-gateway (org.springframework.cloud:spring-cloud-starter-gateway:2.1.0.RELEASE - https://projects.spring.io/spring-cloud)
-* spring-cloud-starter-hystrix (org.springframework.cloud:spring-cloud-starter-hystrix:1.4.4.RELEASE - https://projects.spring.io/spring-cloud)
-* Spring Cloud Starter Netflix Archaius (org.springframework.cloud:spring-cloud-starter-netflix-archaius:1.4.4.RELEASE - https://projects.spring.io/spring-cloud)
-* Spring Cloud Starter Netflix Hystrix (org.springframework.cloud:spring-cloud-starter-netflix-hystrix:1.4.4.RELEASE - https://projects.spring.io/spring-cloud)
-* Spring Cloud Starter Netflix Ribbon (org.springframework.cloud:spring-cloud-starter-netflix-ribbon:1.4.4.RELEASE - https://projects.spring.io/spring-cloud)
-* Spring Cloud Starter Netflix Zuul (org.springframework.cloud:spring-cloud-starter-netflix-zuul:1.4.4.RELEASE - https://projects.spring.io/spring-cloud)
-* spring-cloud-starter-ribbon (org.springframework.cloud:spring-cloud-starter-ribbon:1.4.4.RELEASE - https://projects.spring.io/spring-cloud)
-* spring-cloud-starter-zuul (org.springframework.cloud:spring-cloud-starter-zuul:1.4.4.RELEASE - https://projects.spring.io/spring-cloud)
-* Spring Context (org.springframework:spring-context:4.3.20.RELEASE - https://github.com/spring-projects/spring-framework)
-* Spring Core (org.springframework:spring-core:4.3.20.RELEASE - https://github.com/spring-projects/spring-framework)
-* Spring Expression Language (SpEL) (org.springframework:spring-expression:4.3.20.RELEASE - https://github.com/spring-projects/spring-framework)
-* spring-security-crypto (org.springframework.security:spring-security-crypto:4.2.5.RELEASE - http://spring.io/spring-security)
-* spring-security-rsa (org.springframework.security:spring-security-rsa:1.0.3.RELEASE - http://github.com/spring-projects/spring-security-oauth)
-* Spring Web (org.springframework:spring-web:4.3.20.RELEASE - https://github.com/spring-projects/spring-framework)
-* Spring WebFlux (org.springframework:spring-webflux:5.1.4.RELEASE - https://github.com/spring-projects/spring-framework)
-* Spring Web MVC (org.springframework:spring-webmvc:4.3.20.RELEASE - https://github.com/spring-projects/spring-framework)
+* Spring Cloud Starter Netflix Archaius (org.springframework.cloud:spring-cloud-starter-netflix-archaius:2.1.0.RELEASE - https://projects.spring.io/spring-cloud)
+* Spring Cloud Starter Netflix Hystrix (org.springframework.cloud:spring-cloud-starter-netflix-hystrix:2.1.0.RELEASE - https://projects.spring.io/spring-cloud)
+* Spring Cloud Starter Netflix Ribbon (org.springframework.cloud:spring-cloud-starter-netflix-ribbon:2.1.0.RELEASE - https://projects.spring.io/spring-cloud)
+* Spring Cloud Starter Netflix Zuul (org.springframework.cloud:spring-cloud-starter-netflix-zuul:2.1.0.RELEASE - https://projects.spring.io/spring-cloud)
+
 * swagger2markup (io.github.swagger2markup:swagger2markup:1.3.3 - https://github.com/Swagger2Markup/swagger2markup)
 * swagger-annotations (io.swagger:swagger-annotations:1.5.22 - https://github.com/swagger-api/swagger-core/modules/swagger-annotations)
 * swagger-compat-spec-parser (io.swagger:swagger-compat-spec-parser:1.0.35 - http://nexus.sonatype.org/oss-repository-hosting.html/swagger-parser-project/modules/swagger-compat-spec-parser)
