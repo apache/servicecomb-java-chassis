@@ -33,7 +33,7 @@ public class ExceptionConvertHandler implements Handler {
     invocation.next(response -> {
       if (response.isFailed()) {
         Throwable e = response.getResult();
-        if (e instanceof TimeoutException || e.getCause() instanceof TimeoutException) {
+        if (e instanceof InvocationException && ((InvocationException)e).getStatusCode() == 408) {
           CustomException customException = new CustomException("change the response", 777);
           InvocationException stt = new InvocationException(Status.EXPECTATION_FAILED, customException);
           response.setResult(stt);

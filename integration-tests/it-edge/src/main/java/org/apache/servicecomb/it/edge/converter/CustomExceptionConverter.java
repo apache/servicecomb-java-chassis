@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.it.edge.converter;
 
-import java.util.concurrent.TimeoutException;
-
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -26,10 +24,10 @@ import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionToProducerResponseConverter;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
-public class CustomExceptionConverter implements ExceptionToProducerResponseConverter<TimeoutException> {
+public class CustomExceptionConverter implements ExceptionToProducerResponseConverter<InvocationException> {
   @Override
-  public Class<TimeoutException> getExceptionClass() {
-    return TimeoutException.class;
+  public Class<InvocationException> getExceptionClass() {
+    return InvocationException.class;
   }
 
   @Override
@@ -38,9 +36,13 @@ public class CustomExceptionConverter implements ExceptionToProducerResponseConv
   }
 
   @Override
-  public Response convert(SwaggerInvocation swaggerInvocation, TimeoutException e) {
-    CustomException customException = new CustomException("change the response", 777);
-    InvocationException stt = new InvocationException(Status.EXPECTATION_FAILED, customException);
-    return Response.failResp(stt);
+  public Response convert(SwaggerInvocation swaggerInvocation, InvocationException e) {
+    if (e.getStatusCode() == 408) {
+      CustomException customException = new CustomException("change the response", 777);
+      InvocationException stt = new InvocationException(Status.EXPECTATION_FAILED, customException);
+      return Response.failResp(stt);
+    } else {
+      return Response.failResp(e);
+    }
   }
 }

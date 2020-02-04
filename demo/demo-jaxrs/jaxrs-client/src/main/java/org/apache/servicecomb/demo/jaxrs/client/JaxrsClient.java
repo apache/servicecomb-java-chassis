@@ -514,10 +514,10 @@ public class JaxrsClient {
       template.postForObject(cseUrlPrefix + "add", params, Integer.class);
     } catch (InvocationException e) {
       isExcep = true;
-      TestMgr.check(490, e.getStatus().getStatusCode());
-      TestMgr.check(
-          "CommonExceptionData [message=Cse Internal Bad Request]",
-          e.getErrorData());
+      // implement timeout with same error code and message for rest and highway
+      TestMgr.check(408, e.getStatus().getStatusCode());
+      TestMgr.check(true,
+          e.getErrorData().toString().contains("CommonExceptionData [message=Request Timeout. Details:"));
     }
 
     TestMgr.check(true, isExcep);
