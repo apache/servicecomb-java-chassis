@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.servicecomb.serviceregistry.Features;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.registry.BasePath;
@@ -37,18 +38,14 @@ import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
-import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
-import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManagerNew;
 import org.apache.servicecomb.serviceregistry.client.IpPortManager;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceManager;
 import org.apache.servicecomb.serviceregistry.consumer.StaticMicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceNameParser;
-import org.apache.servicecomb.serviceregistry.swagger.SwaggerLoader;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceServiceCenterTask;
 import org.apache.servicecomb.serviceregistry.task.ServiceCenterTask;
 import org.apache.servicecomb.serviceregistry.task.event.RecoveryEvent;
@@ -74,10 +71,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   protected Microservice microservice;
 
-  protected AppManager appManager;
-
-  protected InstanceCacheManager instanceCacheManager;
-
   protected IpPortManager ipPortManager;
 
   protected ServiceRegistryClient srClient;
@@ -85,8 +78,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   protected ServiceRegistryConfig serviceRegistryConfig;
 
   protected ServiceCenterTask serviceCenterTask;
-
-  protected SwaggerLoader swaggerLoader = new SwaggerLoader(this);
 
   protected ExecutorService executorService = MoreExecutors.newDirectExecutorService();
 
@@ -100,9 +91,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   @Override
   public void init() {
-    appManager = new AppManager(this);
-    instanceCacheManager = new InstanceCacheManagerNew(appManager);
-    ipPortManager = new IpPortManager(serviceRegistryConfig, instanceCacheManager);
+    ipPortManager = new IpPortManager(serviceRegistryConfig, RegistryUtils.getInstanceCacheManager());
     if (srClient == null) {
       srClient = createServiceRegistryClient();
     }
@@ -110,16 +99,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     createServiceCenterTask();
 
     eventBus.register(this);
-  }
-
-  @Override
-  public SwaggerLoader getSwaggerLoader() {
-    return swaggerLoader;
-  }
-
-  @Override
-  public AppManager getAppManager() {
-    return appManager;
   }
 
   @Override
@@ -148,11 +127,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   public IpPortManager getIpPortManager() {
     return ipPortManager;
-  }
-
-  @Override
-  public InstanceCacheManager getInstanceCacheManager() {
-    return instanceCacheManager;
   }
 
   @Override
@@ -315,10 +289,12 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   public void registerMicroserviceMapping(String microserviceName, String version,
       List<MicroserviceInstance> instances, Class<?> schemaIntfCls) {
     MicroserviceNameParser parser = new MicroserviceNameParser(microservice.getAppId(), microserviceName);
-    MicroserviceManager microserviceManager = appManager.getOrCreateMicroserviceManager(parser.getAppId());
+    MicroserviceManager microserviceManager = RegistryUtils.getAppManager()
+        .getOrCreateMicroserviceManager(parser.getAppId());
     microserviceManager.getVersionsByName()
         .computeIfAbsent(microserviceName,
-            svcName -> new StaticMicroserviceVersions(this.appManager, parser.getAppId(), microserviceName)
+            svcName -> new StaticMicroserviceVersions(RegistryUtils.getAppManager(), parser.getAppId(),
+                microserviceName)
                 .init(schemaIntfCls, version, instances)
         );
   }
@@ -345,17 +321,17 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   // post from watch eventloop, should refresh the exact microservice instances immediately
   @Subscribe
   public void onMicroserviceInstanceChanged(MicroserviceInstanceChangedEvent changedEvent) {
-    executorService.execute(() -> appManager.onMicroserviceInstanceChanged(changedEvent));
+    executorService.execute(() -> RegistryUtils.getAppManager().onMicroserviceInstanceChanged(changedEvent));
   }
 
   // post from watch eventloop, should refresh all instances immediately
   @Subscribe
   public void serviceRegistryRecovery(RecoveryEvent event) {
-    executorService.execute(appManager::pullInstances);
+    executorService.execute(RegistryUtils.getAppManager()::pullInstances);
   }
 
   @Subscribe
   public void onSafeModeChanged(SafeModeChangeEvent modeChangeEvent) {
-    executorService.execute(() -> appManager.onSafeModeChanged(modeChangeEvent));
+    executorService.execute(() -> RegistryUtils.getAppManager().onSafeModeChanged(modeChangeEvent));
   }
 }

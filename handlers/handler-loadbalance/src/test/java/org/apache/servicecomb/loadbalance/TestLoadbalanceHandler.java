@@ -35,6 +35,7 @@ import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
@@ -99,7 +100,7 @@ public class TestLoadbalanceHandler {
   public static void classSetup() {
     scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest().run();
     serviceRegistry = scbEngine.getServiceRegistry();
-    instanceCacheManager = serviceRegistry.getInstanceCacheManager();
+    instanceCacheManager = RegistryUtils.getInstanceCacheManager();
     transportManager = scbEngine.getTransportManager();
   }
 

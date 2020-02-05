@@ -70,7 +70,7 @@ public class GateRestTemplate extends RestTemplate {
   }
 
   private String getUrlPrefix(String gateName, String producerName, String schemaId) {
-    MicroserviceVersionRule microserviceVersionRule = RegistryUtils.getServiceRegistry().getAppManager()
+    MicroserviceVersionRule microserviceVersionRule = RegistryUtils.getAppManager()
         .getOrCreateMicroserviceVersionRule(RegistryUtils.getAppId(), gateName,
             DefinitionConst.VERSION_RULE_ALL);
     MicroserviceInstance microserviceInstance = microserviceVersionRule.getInstances().values().stream().findFirst()

@@ -109,9 +109,9 @@ public class TestConsumers extends TestRegistryBase {
 
   @Test
   public void deleteWhenCreateMicroserviceVersion() {
-    new Expectations(appManager.getServiceRegistry()) {
+    new Expectations(RegistryUtils.getServiceRegistry()) {
       {
-        appManager.getServiceRegistry().getAggregatedRemoteMicroservice(serviceId);
+        RegistryUtils.getServiceRegistry().getAggregatedRemoteMicroservice(serviceId);
         result = null;
       }
     };

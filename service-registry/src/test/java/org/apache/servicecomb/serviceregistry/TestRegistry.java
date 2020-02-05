@@ -89,7 +89,6 @@ public class TestRegistry {
     Assert.assertEquals(serviceRegistry, RegistryUtils.getServiceRegistry());
 
     Assert.assertEquals(serviceRegistry.getServiceRegistryClient(), RegistryUtils.getServiceRegistryClient());
-    Assert.assertEquals(serviceRegistry.getInstanceCacheManager(), RegistryUtils.getInstanceCacheManager());
 
     Microservice microservice = RegistryUtils.getMicroservice();
     Assert.assertEquals(serviceRegistry.getMicroservice(), microservice);

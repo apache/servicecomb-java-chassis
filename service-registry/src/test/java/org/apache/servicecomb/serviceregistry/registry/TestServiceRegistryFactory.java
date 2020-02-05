@@ -30,7 +30,6 @@ import org.junit.Test;
 
 import com.google.common.eventbus.EventBus;
 
-import mockit.Deencapsulation;
 import mockit.Mocked;
 
 /**
@@ -52,20 +51,17 @@ public class TestServiceRegistryFactory {
     ServiceRegistryClient client = serviceRegistry.getServiceRegistryClient();
     Assert.assertTrue(client instanceof ServiceRegistryClientImpl);
 
-    serviceRegistry = ServiceRegistryFactory.getOrCreate(eventBus,
+    serviceRegistry = ServiceRegistryFactory.create(eventBus,
         serviceRegistryConfig,
         microserviceDefinition);
     Assert.assertTrue(serviceRegistry instanceof RemoteServiceRegistry);
-    Assert.assertEquals(serviceRegistry, ServiceRegistryFactory.getServiceRegistry());
-
-    Deencapsulation.setField(ServiceRegistryFactory.class, "serviceRegistry", null);
 
     System.setProperty("local.registry.file", "/tmp/test.yaml");
     serviceRegistry = ServiceRegistryFactory.create(eventBus, serviceRegistryConfig, microserviceDefinition);
     serviceRegistry.init();
     client = serviceRegistry.getServiceRegistryClient();
     Assert.assertTrue(client instanceof LocalServiceRegistryClientImpl);
-    Assert.assertTrue(ServiceRegistryFactory.getOrCreate(eventBus,
+    Assert.assertTrue(ServiceRegistryFactory.create(eventBus,
         serviceRegistryConfig,
         microserviceDefinition) instanceof LocalServiceRegistry);
     System.clearProperty("local.registry.file");

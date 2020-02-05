@@ -22,11 +22,8 @@ import java.util.Set;
 
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
-import org.apache.servicecomb.serviceregistry.consumer.AppManager;
-import org.apache.servicecomb.serviceregistry.swagger.SwaggerLoader;
 
 import com.google.common.eventbus.EventBus;
 
@@ -39,21 +36,24 @@ public interface ServiceRegistry {
 
   EventBus getEventBus();
 
-  SwaggerLoader getSwaggerLoader();
-
   Set<String> getCombinedMicroserviceNames();
 
+  /**
+   * Get the AppId of this microservice instance itself.
+   */
   String getAppId();
 
+  /**
+   * Get the {@link Microservice} of this microservice instance itself.
+   */
   Microservice getMicroservice();
 
+  /**
+   * Get the {@link MicroserviceInstance} of this microservice instance itself.
+   */
   MicroserviceInstance getMicroserviceInstance();
 
   ServiceRegistryClient getServiceRegistryClient();
-
-  AppManager getAppManager();
-
-  InstanceCacheManager getInstanceCacheManager();
 
   List<MicroserviceInstance> findServiceInstance(String appId, String microserviceName,
       String microserviceVersionRule);
@@ -65,8 +65,6 @@ public interface ServiceRegistry {
 
   /**
    * full update, not increase update
-   * @param instanceProperties
-   * @return
    */
   boolean updateInstanceProperties(Map<String, String> instanceProperties);
 

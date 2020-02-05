@@ -36,7 +36,7 @@ public class PreLoadBootListener implements BootListener {
   @Override
   public void onBootEvent(BootEvent bootEvent) {
     if (bootEvent.getEventType() == EventType.BEFORE_REGISTRY) {
-      MicroserviceVersionRule rule = RegistryUtils.getServiceRegistry().getAppManager()
+      MicroserviceVersionRule rule = RegistryUtils.getAppManager()
           .getOrCreateMicroserviceVersionRule(RegistryUtils.getAppId(), "it-producer", "0+");
       if (rule.getInstances().size() == 0) {
         LOGGER.warn("Prefetch not successful, maybe the provider not started.");

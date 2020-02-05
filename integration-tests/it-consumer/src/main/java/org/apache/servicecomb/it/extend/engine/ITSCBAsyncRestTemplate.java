@@ -51,7 +51,7 @@ public class ITSCBAsyncRestTemplate extends CseAsyncRestTemplate {
     ensureProviderBasePath(producerName);
 
     urlPrefix = String.format("cse://%s%s", producerName, basePath);
-    instance = RegistryUtils.getServiceRegistry().getAppManager()
+    instance = RegistryUtils.getAppManager()
         .getOrCreateMicroserviceManager(RegistryUtils.getAppId())
         .getOrCreateMicroserviceVersions(producerName).getPulledInstances().get(0);
 
@@ -78,7 +78,7 @@ public class ITSCBAsyncRestTemplate extends CseAsyncRestTemplate {
 
   private void ensureProviderBasePath(String producerName) {
     MicroserviceManager microserviceManager =
-        RegistryUtils.getServiceRegistry().getAppManager().getOrCreateMicroserviceManager(RegistryUtils.getAppId());
+        RegistryUtils.getAppManager().getOrCreateMicroserviceManager(RegistryUtils.getAppId());
     MicroserviceVersions producerMicroserviceVersions =
         microserviceManager.getOrCreateMicroserviceVersions(producerName);
     Optional<MicroserviceVersion> latestMicroserviceVersion =

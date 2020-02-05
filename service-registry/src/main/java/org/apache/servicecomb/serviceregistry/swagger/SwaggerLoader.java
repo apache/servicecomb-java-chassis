@@ -27,7 +27,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.apache.servicecomb.foundation.common.utils.ResourceUtil;
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.swagger.SwaggerUtils;
@@ -40,15 +40,12 @@ import io.swagger.models.Swagger;
 public class SwaggerLoader {
   private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerLoader.class);
 
-  private ServiceRegistry serviceRegistry;
-
   // first key : appId
   // second key: microservice short name
   // third key : schemaId
   private Map<String, Map<String, Map<String, Swagger>>> apps = new ConcurrentHashMapEx<>();
 
-  public SwaggerLoader(ServiceRegistry serviceRegistry) {
-    this.serviceRegistry = serviceRegistry;
+  public SwaggerLoader() {
   }
 
   /**
@@ -67,7 +64,7 @@ public class SwaggerLoader {
    * @param swaggersLocation eg. "test/schemas", will load all test/schemas/*.yaml
    */
   public void registerSwaggersInLocation(String swaggersLocation) {
-    String microserviceName = serviceRegistry.getMicroservice().getServiceName();
+    String microserviceName = RegistryUtils.getMicroservice().getServiceName();
     registerSwaggersInLocation(microserviceName, swaggersLocation);
   }
 
@@ -93,7 +90,7 @@ public class SwaggerLoader {
   }
 
   public void registerSwagger(String schemaId, Swagger swagger) {
-    registerSwagger(serviceRegistry.getMicroservice().getServiceName(), schemaId, swagger);
+    registerSwagger(RegistryUtils.getMicroservice().getServiceName(), schemaId, swagger);
   }
 
   public void registerSwagger(String microserviceName, String schemaId, String swaggerContent) {
@@ -108,7 +105,7 @@ public class SwaggerLoader {
   }
 
   public void registerSwagger(String microserviceName, String schemaId, Swagger swagger) {
-    MicroserviceNameParser parser = new MicroserviceNameParser(serviceRegistry.getAppId(), microserviceName);
+    MicroserviceNameParser parser = new MicroserviceNameParser(RegistryUtils.getAppId(), microserviceName);
     registerSwagger(parser.getAppId(), parser.getShortName(), schemaId, swagger);
   }
 
@@ -160,7 +157,7 @@ public class SwaggerLoader {
   }
 
   private Swagger loadFromResource(String appId, String shortName, String schemaId) {
-    if (appId.equals(serviceRegistry.getAppId())) {
+    if (appId.equals(RegistryUtils.getAppId())) {
       Swagger swagger = loadFromResource(String.format("microservices/%s/%s.yaml", shortName, schemaId));
       if (swagger != null) {
         return swagger;
@@ -181,7 +178,7 @@ public class SwaggerLoader {
   }
 
   private Swagger loadFromRemote(Microservice microservice, String schemaId) {
-    String schemaContent = serviceRegistry.getServiceRegistryClient()
+    String schemaContent = RegistryUtils
         .getAggregatedSchema(microservice.getServiceId(), schemaId);
     if (schemaContent != null) {
       LOGGER.info(

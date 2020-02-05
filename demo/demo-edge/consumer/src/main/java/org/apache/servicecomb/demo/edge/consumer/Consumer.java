@@ -264,7 +264,7 @@ public class Consumer {
 
   private URIEndpointObject prepareEdge(String prefix) {
     Microservice microservice = RegistryUtils.getMicroservice();
-    MicroserviceInstance microserviceInstance = (MicroserviceInstance) RegistryUtils.getServiceRegistry()
+    MicroserviceInstance microserviceInstance = (MicroserviceInstance) RegistryUtils
         .getAppManager()
         .getOrCreateMicroserviceVersionRule(microservice.getAppId(), "edge", DefinitionConst.VERSION_RULE_ALL)
         .getVersionedCache()
