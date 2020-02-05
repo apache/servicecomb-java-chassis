@@ -18,6 +18,7 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.sc
 
 import java.io.IOException;
 
+import org.apache.servicecomb.foundation.common.utils.bean.FloatGetter;
 import org.apache.servicecomb.foundation.common.utils.bean.Getter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
@@ -89,7 +90,7 @@ public class FloatWriteSchemas {
   }
 
   private static class FloatPrimitiveSchema<T> extends FloatDynamicSchema<T> {
-    private final Getter<T, Float> primitiveGetter;
+    private final FloatGetter<T> primitiveGetter;
 
     public FloatPrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);

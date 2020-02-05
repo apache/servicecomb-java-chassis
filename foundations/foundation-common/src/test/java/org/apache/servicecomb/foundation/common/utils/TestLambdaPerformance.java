@@ -24,6 +24,7 @@ import java.lang.reflect.Method;
 
 import org.apache.servicecomb.foundation.common.utils.TestLambdaMetafactoryUtils.Model;
 import org.apache.servicecomb.foundation.common.utils.bean.Getter;
+import org.apache.servicecomb.foundation.common.utils.bean.IntGetter;
 
 public class TestLambdaPerformance {
   static Model model = new Model();
@@ -37,7 +38,7 @@ public class TestLambdaPerformance {
 
   static MethodHandle mh_f1_getter;
 
-  static Getter<Model, Integer> lambda_f1_method_getter;
+  static IntGetter<Model> lambda_f1_method_getter;
 
   static Field f1_field;
 

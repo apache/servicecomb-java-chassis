@@ -19,6 +19,7 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.sc
 import java.io.IOException;
 
 import org.apache.servicecomb.foundation.common.utils.bean.Getter;
+import org.apache.servicecomb.foundation.common.utils.bean.LongGetter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
 
@@ -89,7 +90,7 @@ public class UInt64WriteSchemas {
   }
 
   private static class UInt64PrimitiveSchema<T> extends UInt64DynamicSchema<T> {
-    private final Getter<T, Long> primitiveGetter;
+    private final LongGetter<T> primitiveGetter;
 
     public UInt64PrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);

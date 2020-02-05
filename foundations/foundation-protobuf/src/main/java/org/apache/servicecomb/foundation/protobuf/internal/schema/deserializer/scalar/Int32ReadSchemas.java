@@ -18,9 +18,11 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.
 
 import java.io.IOException;
 
+import org.apache.servicecomb.foundation.common.utils.bean.ByteSetter;
+import org.apache.servicecomb.foundation.common.utils.bean.IntSetter;
+import org.apache.servicecomb.foundation.common.utils.bean.ShortSetter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.AbstractScalarReadSchemas.AbstractIntPrimitiveSchema;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.AbstractScalarReadSchemas.AbstractIntSchema;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -32,9 +34,16 @@ import io.protostuff.runtime.FieldSchema;
 public class Int32ReadSchemas {
   public static <T> FieldSchema<T> create(Field protoField, PropertyDescriptor propertyDescriptor) {
     JavaType javaType = propertyDescriptor.getJavaType();
-    if (int.class.equals(javaType.getRawClass()) || byte.class.equals(javaType.getRawClass()) || short.class
-        .equals(javaType.getRawClass())) {
-      return new Int32PrimitiveSchema<>(protoField, propertyDescriptor);
+    if (int.class.equals(javaType.getRawClass())) {
+      return new IntFieldIntPrimitiveSchema<>(protoField, propertyDescriptor);
+    }
+
+    if (short.class.equals(javaType.getRawClass())) {
+      return new ShortFieldIntPrimitiveSchema<>(protoField, propertyDescriptor);
+    }
+
+    if (byte.class.equals(javaType.getRawClass())) {
+      return new ByteFieldIntPrimitiveSchema<>(protoField, propertyDescriptor);
     }
 
     if (Integer.class.equals(javaType.getRawClass()) || Byte.class.equals(javaType.getRawClass()) || Short.class
@@ -55,9 +64,9 @@ public class Int32ReadSchemas {
     @Override
     public int mergeFrom(InputEx input, T message) throws IOException {
       int value = input.readInt32();
-      if (Byte.class.equals(javaType.getRawClass()) || byte.class.equals(javaType.getRawClass())) {
+      if (Byte.class.equals(javaType.getRawClass())) {
         setter.set(message, (byte) value);
-      } else if (Short.class.equals(javaType.getRawClass()) || short.class.equals(javaType.getRawClass())) {
+      } else if (Short.class.equals(javaType.getRawClass())) {
         setter.set(message, (short) value);
       } else {
         setter.set(message, value);
@@ -66,15 +75,50 @@ public class Int32ReadSchemas {
     }
   }
 
-  private static class Int32PrimitiveSchema<T> extends AbstractIntPrimitiveSchema<T> {
-    public Int32PrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
-      super(protoField, propertyDescriptor);
+  private static class IntFieldIntPrimitiveSchema<T> extends FieldSchema<T> {
+    protected final IntSetter<T> setter;
+
+    public IntFieldIntPrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
+      super(protoField, propertyDescriptor.getJavaType());
+      this.setter = propertyDescriptor.getSetter();
     }
 
     @Override
     public int mergeFrom(InputEx input, T message) throws IOException {
       int value = input.readInt32();
       setter.set(message, value);
+      return input.readFieldNumber();
+    }
+  }
+
+  private static class ShortFieldIntPrimitiveSchema<T> extends FieldSchema<T> {
+    protected final ShortSetter<T> setter;
+
+    public ShortFieldIntPrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
+      super(protoField, propertyDescriptor.getJavaType());
+      this.setter = propertyDescriptor.getSetter();
+    }
+
+    @Override
+    public int mergeFrom(InputEx input, T message) throws IOException {
+      int value = input.readInt32();
+      setter.set(message, (short) value);
+      return input.readFieldNumber();
+    }
+  }
+
+  private static class ByteFieldIntPrimitiveSchema<T> extends FieldSchema<T> {
+    protected final ByteSetter<T> setter;
+
+    public ByteFieldIntPrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
+      super(protoField, propertyDescriptor.getJavaType());
+      this.setter = propertyDescriptor.getSetter();
+    }
+
+    @Override
+    public int mergeFrom(InputEx input, T message) throws IOException {
+      int value = input.readInt32();
+      setter.set(message, (byte) value);
       return input.readFieldNumber();
     }
   }

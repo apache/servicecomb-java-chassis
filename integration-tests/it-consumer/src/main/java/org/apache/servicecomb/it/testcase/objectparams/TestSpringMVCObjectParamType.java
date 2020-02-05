@@ -58,7 +58,7 @@ public class TestSpringMVCObjectParamType {
 
   @Test
   public void testFlattenObjectParam_rpc() {
-    FlattenObjectRequest request = createFlattenObjectRequest();
+    FlattenObjectRequest request = FlattenObjectRequest.createFlattenObjectRequest();
     FlattenObjectResponse response = consumers.getIntf().testFlattenObjectParam(request);
     Assert.assertEquals(Json.encode(request), Json.encode(response));
 
@@ -69,7 +69,7 @@ public class TestSpringMVCObjectParamType {
 
   @Test
   public void testFlattenObjectParam_rt() {
-    FlattenObjectRequest request = createFlattenObjectRequest();
+    FlattenObjectRequest request = FlattenObjectRequest.createFlattenObjectRequest();
     FlattenObjectResponse response = consumers.getSCBRestTemplate()
         .postForObject("/testFlattenObjectParam", request, FlattenObjectResponse.class);
     Assert.assertEquals(Json.encode(request), Json.encode(response));
@@ -82,7 +82,7 @@ public class TestSpringMVCObjectParamType {
 
   @Test
   public void testFlattenObjectParam_edge() {
-    FlattenObjectRequest request = createFlattenObjectRequest();
+    FlattenObjectRequest request = FlattenObjectRequest.createFlattenObjectRequest();
     FlattenObjectResponse response = consumers.getEdgeRestTemplate()
         .postForObject("/testFlattenObjectParam", request, FlattenObjectResponse.class);
     Assert.assertEquals(Json.encode(request), Json.encode(response));
@@ -98,7 +98,7 @@ public class TestSpringMVCObjectParamType {
   @Test
   public void testMultiLayerObjectParam_rpc() {
     MultiLayerObjectParam request = new MultiLayerObjectParam("sss-1", new Date(),
-        new MultiLayerObjectParam2("sss-2", 12.12, createFlattenObjectRequest()));
+        new MultiLayerObjectParam2("sss-2", 12.12, FlattenObjectRequest.createFlattenObjectRequest()));
     MultiLayerObjectParam response = consumers.getIntf().testMultiLayerObjectParam(request);
     Assert.assertEquals(request, response);
 //  Highway will not give null return value
@@ -109,7 +109,7 @@ public class TestSpringMVCObjectParamType {
   @Test
   public void testMultiLayerObjectParam_rt() {
     MultiLayerObjectParam request = new MultiLayerObjectParam("sss-1", new Date(),
-        new MultiLayerObjectParam2("sss-2", 12.12, createFlattenObjectRequest()));
+        new MultiLayerObjectParam2("sss-2", 12.12, FlattenObjectRequest.createFlattenObjectRequest()));
     ResponseEntity<MultiLayerObjectParam> responseEntity = consumers.getSCBRestTemplate()
         .exchange("/testMultiLayerObjectParam", HttpMethod.PUT,
             new HttpEntity<>(request), MultiLayerObjectParam.class);
@@ -127,7 +127,7 @@ public class TestSpringMVCObjectParamType {
   @Test
   public void testMultiLayerObjectParam_edge() {
     MultiLayerObjectParam request = new MultiLayerObjectParam("sss-1", new Date(),
-        new MultiLayerObjectParam2("sss-2", 12.12, createFlattenObjectRequest()));
+        new MultiLayerObjectParam2("sss-2", 12.12, FlattenObjectRequest.createFlattenObjectRequest()));
     ResponseEntity<MultiLayerObjectParam> responseEntity = consumers.getEdgeRestTemplate()
         .exchange("/testMultiLayerObjectParam", HttpMethod.PUT,
             new HttpEntity<>(request), MultiLayerObjectParam.class);
@@ -311,7 +311,7 @@ public class TestSpringMVCObjectParamType {
 
   @Test
   public void testQueryObjectParam() {
-    FlattenObjectRequest expected = createFlattenObjectRequest();
+    FlattenObjectRequest expected = FlattenObjectRequest.createFlattenObjectRequest();
     FlattenObjectRequest response = consumers.getIntf().testQueryObjectParam(
         expected.getAnByte(), expected.getAnShort(), expected.getAnInt(), expected.getAnLong(), expected.getAnFloat(),
         expected.getAnDouble(), expected.isAnBoolean(), expected.getAnChar(),
@@ -365,29 +365,6 @@ public class TestSpringMVCObjectParamType {
         expected.getString(), expected.getColor()
     );
     Assert.assertEquals(expected, response);
-  }
-
-  private FlattenObjectRequest createFlattenObjectRequest() {
-    FlattenObjectRequest request = new FlattenObjectRequest();
-    request.setAnByte((byte) 8);
-    request.setAnShort((short) 7);
-    request.setAnInt(6);
-    request.setAnLong(5);
-    request.setAnFloat(4.4f);
-    request.setAnDouble(3.3);
-    request.setAnBoolean(true);
-    request.setAnChar('c');
-    request.setAnWrappedByte((byte) 16);
-    request.setAnWrappedShort((short) 15);
-    request.setAnWrappedInteger(14);
-    request.setAnWrappedLong(13L);
-    request.setAnWrappedFloat(12.2f);
-    request.setAnWrappedDouble(11.1);
-    request.setAnWrappedBoolean(true);
-    request.setAnWrappedCharacter('d');
-    request.setString("abc");
-    request.setColor(Color.BLUE);
-    return request;
   }
 
   private RecursiveObjectParam createRecursiveObjectParam() {

@@ -32,28 +32,10 @@ public class AbstractScalarReadSchemas {
     }
   }
 
-  static abstract class AbstractIntPrimitiveSchema<T> extends FieldSchema<T> {
-    protected final Setter<T, Integer> setter;
-
-    public AbstractIntPrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
-      super(protoField, propertyDescriptor.getJavaType());
-      this.setter = propertyDescriptor.getSetter();
-    }
-  }
-
   static abstract class AbstractLongSchema<T> extends FieldSchema<T> {
     protected final Setter<T, Object> setter;
 
     public AbstractLongSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
-      super(protoField, propertyDescriptor.getJavaType());
-      this.setter = propertyDescriptor.getSetter();
-    }
-  }
-
-  static abstract class AbstractLongPrimitiveSchema<T> extends FieldSchema<T> {
-    protected final Setter<T, Long> setter;
-
-    public AbstractLongPrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor.getJavaType());
       this.setter = propertyDescriptor.getSetter();
     }

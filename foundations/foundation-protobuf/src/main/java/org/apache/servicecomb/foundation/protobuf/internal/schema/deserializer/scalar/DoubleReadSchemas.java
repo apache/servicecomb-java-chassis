@@ -18,6 +18,7 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.
 
 import java.io.IOException;
 
+import org.apache.servicecomb.foundation.common.utils.bean.DoubleSetter;
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
@@ -60,7 +61,7 @@ public class DoubleReadSchemas {
   }
 
   private static class DoublePrimitiveSchema<T> extends FieldSchema<T> {
-    private final Setter<T, Double> setter;
+    private final DoubleSetter<T> setter;
 
     public DoublePrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor.getJavaType());

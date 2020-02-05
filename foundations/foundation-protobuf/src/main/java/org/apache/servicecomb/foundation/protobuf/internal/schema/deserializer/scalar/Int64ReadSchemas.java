@@ -20,9 +20,9 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Date;
 
+import org.apache.servicecomb.foundation.common.utils.bean.LongSetter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.AbstractScalarReadSchemas.AbstractLongPrimitiveSchema;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.AbstractScalarReadSchemas.AbstractLongSchema;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -35,7 +35,7 @@ public class Int64ReadSchemas {
   public static <T> FieldSchema<T> create(Field protoField, PropertyDescriptor propertyDescriptor) {
     JavaType javaType = propertyDescriptor.getJavaType();
     if (long.class.equals(javaType.getRawClass())) {
-      return new Int64PrimitiveSchema<>(protoField, propertyDescriptor);
+      return new LongFiledLongPrimitiveSchema<>(protoField, propertyDescriptor);
     }
 
     if (Long.class.equals(javaType.getRawClass()) || javaType.isJavaLangObject()
@@ -67,9 +67,12 @@ public class Int64ReadSchemas {
     }
   }
 
-  private static class Int64PrimitiveSchema<T> extends AbstractLongPrimitiveSchema<T> {
-    public Int64PrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
-      super(protoField, propertyDescriptor);
+  private static class LongFiledLongPrimitiveSchema<T> extends FieldSchema<T> {
+    protected final LongSetter<T> setter;
+
+    public LongFiledLongPrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
+      super(protoField, propertyDescriptor.getJavaType());
+      this.setter = propertyDescriptor.getSetter();
     }
 
     @Override

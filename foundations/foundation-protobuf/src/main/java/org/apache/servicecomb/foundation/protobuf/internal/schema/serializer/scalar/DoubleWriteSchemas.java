@@ -18,6 +18,7 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.sc
 
 import java.io.IOException;
 
+import org.apache.servicecomb.foundation.common.utils.bean.DoubleGetter;
 import org.apache.servicecomb.foundation.common.utils.bean.Getter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
@@ -89,7 +90,7 @@ public class DoubleWriteSchemas {
   }
 
   private static class DoublePrimitiveSchema<T> extends DoubleDynamicSchema<T> {
-    private final Getter<T, Double> primitiveGetter;
+    private final DoubleGetter<T> primitiveGetter;
 
     public DoublePrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);
