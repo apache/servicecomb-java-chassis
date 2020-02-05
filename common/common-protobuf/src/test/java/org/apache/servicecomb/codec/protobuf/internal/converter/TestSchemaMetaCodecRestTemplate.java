@@ -18,7 +18,6 @@
 package org.apache.servicecomb.codec.protobuf.internal.converter;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;

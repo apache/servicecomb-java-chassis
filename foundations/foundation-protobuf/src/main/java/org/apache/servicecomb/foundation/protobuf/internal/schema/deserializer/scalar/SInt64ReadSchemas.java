@@ -18,9 +18,9 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.
 
 import java.io.IOException;
 
+import org.apache.servicecomb.foundation.common.utils.bean.LongSetter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.AbstractScalarReadSchemas.AbstractLongPrimitiveSchema;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.AbstractScalarReadSchemas.AbstractLongSchema;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -57,9 +57,12 @@ public class SInt64ReadSchemas {
     }
   }
 
-  private static class SInt64PrimitiveSchema<T> extends AbstractLongPrimitiveSchema<T> {
+  private static class SInt64PrimitiveSchema<T> extends FieldSchema<T> {
+    protected final LongSetter<T> setter;
+
     public SInt64PrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
-      super(protoField, propertyDescriptor);
+      super(protoField, propertyDescriptor.getJavaType());
+      this.setter = propertyDescriptor.getSetter();
     }
 
     @Override

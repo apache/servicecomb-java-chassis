@@ -20,6 +20,8 @@ import java.lang.reflect.Method;
 
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.apache.servicecomb.foundation.common.utils.bean.Getter;
+import org.apache.servicecomb.foundation.common.utils.bean.IntGetter;
+import org.apache.servicecomb.foundation.common.utils.bean.IntSetter;
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 import org.junit.Assert;
 import org.junit.Test;
@@ -106,8 +108,8 @@ public class TestBeanDescriptorManager {
   @Test
   public void both() {
     PropertyDescriptor propertyDescriptor = beanDescriptor.getPropertyDescriptors().get("both");
-    ((Setter<Model, Integer>) propertyDescriptor.getSetter()).set(model, 1);
-    Assert.assertEquals(1, ((Getter<Model, Integer>) propertyDescriptor.getGetter()).get(model).intValue());
+    ((IntSetter<Model>) propertyDescriptor.getSetter()).set(model, 1);
+    Assert.assertEquals(1, ((IntGetter<Model>) propertyDescriptor.getGetter()).get(model));
     Assert.assertEquals(1, model.getBoth());
   }
 
@@ -118,7 +120,7 @@ public class TestBeanDescriptorManager {
     Assert.assertNull(propertyDescriptor.getSetter());
 
     model.onlyGet(1);
-    Assert.assertEquals(1, ((Getter<Model, Integer>) propertyDescriptor.getGetter()).get(model).intValue());
+    Assert.assertEquals(1, ((IntGetter<Model>) propertyDescriptor.getGetter()).get(model));
     Assert.assertEquals(1, model.getOnlyGet());
   }
 
@@ -128,7 +130,7 @@ public class TestBeanDescriptorManager {
     PropertyDescriptor propertyDescriptor = beanDescriptor.getPropertyDescriptors().get("onlySet");
     Assert.assertNull(propertyDescriptor.getGetter());
 
-    ((Setter<Model, Integer>) propertyDescriptor.getSetter()).set(model, 1);
+    ((IntSetter<Model>) propertyDescriptor.getSetter()).set(model, 1);
     Assert.assertEquals(1, model.onlySet());
   }
 

@@ -261,4 +261,27 @@ public class FlattenObjectRequest {
             anWrappedInteger,
             anWrappedLong, anWrappedFloat, anWrappedDouble, anWrappedBoolean, anWrappedCharacter, string, color);
   }
+
+  public static FlattenObjectRequest createFlattenObjectRequest() {
+    FlattenObjectRequest request = new FlattenObjectRequest();
+    request.setAnByte((byte) 8);
+    request.setAnShort((short) 7);
+    request.setAnInt(6);
+    request.setAnLong(5);
+    request.setAnFloat(4.4f);
+    request.setAnDouble(3.3);
+    request.setAnBoolean(true);
+    request.setAnChar('c');
+    request.setAnWrappedByte((byte) 16);
+    request.setAnWrappedShort((short) 15);
+    request.setAnWrappedInteger(14);
+    request.setAnWrappedLong(13L);
+    request.setAnWrappedFloat(12.2f);
+    request.setAnWrappedDouble(11.1);
+    request.setAnWrappedBoolean(true);
+    request.setAnWrappedCharacter('d');
+    request.setString("abc");
+    request.setColor(Color.BLUE);
+    return request;
+  }
 }

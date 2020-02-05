@@ -18,6 +18,7 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.sc
 
 import java.io.IOException;
 
+import org.apache.servicecomb.foundation.common.utils.bean.BoolGetter;
 import org.apache.servicecomb.foundation.common.utils.bean.Getter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
@@ -94,7 +95,7 @@ public class BoolWriteSchemas {
   }
 
   private static class BooleanPrimitiveSchema<T> extends BooleanDynamicSchema<T> {
-    private final Getter<T, Boolean> primitiveGetter;
+    private final BoolGetter<T> primitiveGetter;
 
     public BooleanPrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);

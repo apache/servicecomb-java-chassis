@@ -22,6 +22,7 @@ import java.time.temporal.ChronoField;
 import java.util.Date;
 
 import org.apache.servicecomb.foundation.common.utils.bean.Getter;
+import org.apache.servicecomb.foundation.common.utils.bean.LongGetter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
 
@@ -104,7 +105,7 @@ public class Int64WriteSchemas {
   }
 
   private static final class Int64PrimitiveSchema<T> extends Int64DynamicSchema<T> {
-    private final Getter<T, Long> primitiveGetter;
+    private final LongGetter<T> primitiveGetter;
 
     public Int64PrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
       super(protoField, propertyDescriptor);

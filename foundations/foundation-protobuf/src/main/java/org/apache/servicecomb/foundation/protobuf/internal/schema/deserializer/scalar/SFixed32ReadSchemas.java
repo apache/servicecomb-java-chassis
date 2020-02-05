@@ -18,9 +18,9 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.
 
 import java.io.IOException;
 
+import org.apache.servicecomb.foundation.common.utils.bean.IntSetter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
-import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.AbstractScalarReadSchemas.AbstractIntPrimitiveSchema;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.AbstractScalarReadSchemas.AbstractIntSchema;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -57,9 +57,12 @@ public class SFixed32ReadSchemas {
     }
   }
 
-  private static class SFixed32PrimitiveSchema<T> extends AbstractIntPrimitiveSchema<T> {
+  private static class SFixed32PrimitiveSchema<T> extends FieldSchema<T> {
+    protected final IntSetter<T> setter;
+
     public SFixed32PrimitiveSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
-      super(protoField, propertyDescriptor);
+      super(protoField, propertyDescriptor.getJavaType());
+      this.setter = propertyDescriptor.getSetter();
     }
 
     @Override
