@@ -100,7 +100,7 @@ public class MicroserviceReferenceConfig {
   }
 
   private void mark3rdPartyService(OperationMeta operationMeta, ReferenceConfig referenceConfig) {
-    final MicroserviceVersions microserviceVersions = RegistryUtils.getServiceRegistry().getAppManager()
+    final MicroserviceVersions microserviceVersions = RegistryUtils.getAppManager()
         .getOrCreateMicroserviceVersions(
             operationMeta.getMicroserviceMeta().getAppId(),
             operationMeta.getMicroserviceName());

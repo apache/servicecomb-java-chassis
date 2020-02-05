@@ -77,7 +77,7 @@ public final class ITUtils {
 
     Map<String, MicroserviceInstance> instances;
     for (; ; ) {
-      MicroserviceVersionRule microserviceVersionRule = RegistryUtils.getServiceRegistry()
+      MicroserviceVersionRule microserviceVersionRule = RegistryUtils
           .getAppManager()
           .getOrCreateMicroserviceVersionRule(appId, microserviceName, strVersionRule);
       instances = microserviceVersionRule.getInstances();
@@ -92,7 +92,7 @@ public final class ITUtils {
           minInstanceCount,
           instances.size());
       // pull at once
-      RegistryUtils.getServiceRegistry().getAppManager().pullInstances();
+      RegistryUtils.getAppManager().pullInstances();
       forceWait(TimeUnit.SECONDS, 1);
     }
 

@@ -116,7 +116,6 @@ public class DiscoveryTree {
   public DiscoveryTreeNode discovery(DiscoveryContext context, String appId, String microserviceName,
       String versionRule) {
     VersionedCache instanceVersionedCache = RegistryUtils
-        .getServiceRegistry()
         .getInstanceCacheManager()
         .getOrCreateVersionedCache(appId, microserviceName, versionRule);
 

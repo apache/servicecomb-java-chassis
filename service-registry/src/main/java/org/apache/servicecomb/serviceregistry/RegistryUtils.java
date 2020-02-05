@@ -32,11 +32,14 @@ import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
+import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManagerNew;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
+import org.apache.servicecomb.serviceregistry.swagger.SwaggerLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,17 +50,23 @@ import com.netflix.config.DynamicPropertyFactory;
 public final class RegistryUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(RegistryUtils.class);
 
-  private static ServiceRegistry serviceRegistry;
+  private static volatile ServiceRegistry serviceRegistry;
 
   // value is ip or {interface name}
   public static final String PUBLISH_ADDRESS = "servicecomb.service.publishAddress";
 
   private static final String PUBLISH_PORT = "servicecomb.{transport_name}.publishPort";
 
+  private static SwaggerLoader swaggerLoader = new SwaggerLoader();
+
+  private static AppManager appManager = new AppManager();
+
+  private static InstanceCacheManager instanceCacheManager = new InstanceCacheManagerNew(appManager);
+
   private RegistryUtils() {
   }
 
-  public static void init() {
+  public static synchronized void init() {
     if (serviceRegistry != null) {
       return;
     }
@@ -66,7 +75,7 @@ public final class RegistryUtils {
     MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
     serviceRegistry =
         ServiceRegistryFactory
-            .getOrCreate(EventManager.eventBus, ServiceRegistryConfig.INSTANCE, microserviceDefinition);
+            .create(EventManager.eventBus, ServiceRegistryConfig.INSTANCE, microserviceDefinition);
     serviceRegistry.init();
   }
 
@@ -99,7 +108,15 @@ public final class RegistryUtils {
   }
 
   public static InstanceCacheManager getInstanceCacheManager() {
-    return serviceRegistry.getInstanceCacheManager();
+    return instanceCacheManager;
+  }
+
+  public static SwaggerLoader getSwaggerLoader() {
+    return swaggerLoader;
+  }
+
+  public static AppManager getAppManager() {
+    return appManager;
   }
 
   public static String getAppId() {
@@ -233,5 +250,13 @@ public final class RegistryUtils {
 
   public static String calcSchemaSummary(String schemaContent) {
     return Hashing.sha256().newHasher().putString(schemaContent, Charsets.UTF_8).hash().toString();
+  }
+
+  public static String getAggregatedSchema(String microserviceId, String schemaId) {
+    return serviceRegistry.getServiceRegistryClient().getAggregatedSchema(microserviceId, schemaId);
+  }
+
+  public static Microservice getAggregatedRemoteMicroservice(String microserviceId) {
+    return serviceRegistry.getAggregatedRemoteMicroservice(microserviceId);
   }
 }

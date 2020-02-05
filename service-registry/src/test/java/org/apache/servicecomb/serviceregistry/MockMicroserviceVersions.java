@@ -30,7 +30,6 @@ import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersion;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
-import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import org.apache.servicecomb.serviceregistry.version.Version;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -45,14 +44,16 @@ public class MockMicroserviceVersions extends MicroserviceVersions {
   private List<MicroserviceInstance> mockedInstances = new ArrayList<>();
 
   public MockMicroserviceVersions() {
-    super(new AppManager(ServiceRegistryFactory.createLocal()), "appId", "msName");
+    super(new AppManager(), "appId", "msName");
 
-    new MockUp<ServiceRegistry>(appManager.getServiceRegistry()) {
+    ServiceRegistry serviceRegistry = new MockUp<ServiceRegistry>() {
       @Mock
       Microservice getAggregatedRemoteMicroservice(String microserviceId) {
         return mockedMicroservices.get(microserviceId);
       }
-    };
+    }.getMockInstance();
+
+    RegistryUtils.setServiceRegistry(serviceRegistry);
 
     addMock("1.0.0", 2);
     addMock("2.0.0", 2);

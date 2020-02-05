@@ -55,7 +55,7 @@ public class MicroserviceDeploy extends NormalDeploy {
   }
 
   public void ensureReady() throws Throwable {
-    MicroserviceVersionRule microserviceVersionRule = RegistryUtils.getServiceRegistry().getAppManager()
+    MicroserviceVersionRule microserviceVersionRule = RegistryUtils.getAppManager()
         .getOrCreateMicroserviceVersionRule(microserviceDeployDefinition.getAppId(),
             microserviceDeployDefinition.getMicroserviceName(),
             microserviceDeployDefinition.getVersion());
