@@ -28,6 +28,7 @@ import java.util.Map.Entry;
 import org.apache.servicecomb.foundation.common.VendorExtensions;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
@@ -35,9 +36,9 @@ import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceNameParser;
-import org.apache.servicecomb.serviceregistry.task.event.SafeModeChangeEvent;
 import org.apache.servicecomb.serviceregistry.event.CreateMicroserviceEvent;
 import org.apache.servicecomb.serviceregistry.event.DestroyMicroserviceEvent;
+import org.apache.servicecomb.serviceregistry.task.event.SafeModeChangeEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -177,7 +178,7 @@ public class MicroserviceVersions {
   }
 
   protected MicroserviceInstances findServiceInstances() {
-    return appManager.getServiceRegistry().findServiceInstances(appId,
+    return RegistryUtils.findServiceInstances(appId,
         microserviceName,
         DefinitionConst.VERSION_RULE_ALL,
         revision);

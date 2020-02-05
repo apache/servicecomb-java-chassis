@@ -29,6 +29,7 @@ import org.junit.Before;
 
 import com.google.common.eventbus.EventBus;
 
+import mockit.Deencapsulation;
 import mockit.Expectations;
 
 public class TestRegistryBase {
@@ -66,11 +67,12 @@ public class TestRegistryBase {
     serviceRegistry = ServiceRegistryFactory.createLocal("registry.yaml");
     serviceRegistry.init();
 
-    appManager = serviceRegistry.getAppManager();
+    Deencapsulation.setField(RegistryUtils.class, "appManager", new AppManager());
+    appManager = RegistryUtils.getAppManager();
     microserviceManager = appManager.getOrCreateMicroserviceManager(appId);
     eventBus = serviceRegistry.getEventBus();
 
-    serviceRegistry.getSwaggerLoader().registerSwagger(appId, serviceName, schemaId, Hello.class);
+    RegistryUtils.getSwaggerLoader().registerSwagger(appId, serviceName, schemaId, Hello.class);
 
     RegistryUtils.setServiceRegistry(serviceRegistry);
 
@@ -86,9 +88,9 @@ public class TestRegistryBase {
   protected void mockNotExist() {
     MicroserviceInstances microserviceInstances = new MicroserviceInstances();
     microserviceInstances.setMicroserviceNotExist(true);
-    new Expectations(appManager.getServiceRegistry()) {
+    new Expectations(RegistryUtils.getServiceRegistry()) {
       {
-        appManager.getServiceRegistry()
+        RegistryUtils.getServiceRegistry()
             .findServiceInstances(anyString, anyString, DefinitionConst.VERSION_RULE_ALL, anyString);
         result = microserviceInstances;
       }
@@ -96,9 +98,9 @@ public class TestRegistryBase {
   }
 
   protected void mockDisconnect() {
-    new Expectations(appManager.getServiceRegistry()) {
+    new Expectations(RegistryUtils.getServiceRegistry()) {
       {
-        appManager.getServiceRegistry()
+        RegistryUtils.getServiceRegistry()
             .findServiceInstances(anyString, anyString, DefinitionConst.VERSION_RULE_ALL, anyString);
         result = null;
       }

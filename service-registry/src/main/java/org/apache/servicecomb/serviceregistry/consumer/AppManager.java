@@ -20,30 +20,22 @@ package org.apache.servicecomb.serviceregistry.consumer;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.serviceregistry.task.event.SafeModeChangeEvent;
 
 import com.google.common.eventbus.EventBus;
 
 public class AppManager {
-  private ServiceRegistry serviceRegistry;
-
   // key: appId
   private Map<String, MicroserviceManager> apps = new ConcurrentHashMapEx<>();
 
-  public AppManager(ServiceRegistry serviceRegistry) {
-    this.serviceRegistry = serviceRegistry;
-
+  public AppManager() {
     getEventBus().register(this);
   }
 
-  public ServiceRegistry getServiceRegistry() {
-    return serviceRegistry;
-  }
-
   public EventBus getEventBus() {
-    return serviceRegistry.getEventBus();
+    return EventManager.getEventBus();
   }
 
   public Map<String, MicroserviceManager> getApps() {

@@ -35,27 +35,7 @@ import com.google.common.eventbus.EventBus;
 public final class ServiceRegistryFactory {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRegistryFactory.class);
 
-  private static final Object LOCK = new Object();
-
-  private static volatile ServiceRegistry serviceRegistry;
-
   private ServiceRegistryFactory() {
-  }
-
-  public static ServiceRegistry getServiceRegistry() {
-    return serviceRegistry;
-  }
-
-  public static ServiceRegistry getOrCreate(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
-      MicroserviceDefinition microserviceDefinition) {
-    if (serviceRegistry == null) {
-      synchronized (LOCK) {
-        if (serviceRegistry == null) {
-          serviceRegistry = create(eventBus, serviceRegistryConfig, microserviceDefinition);
-        }
-      }
-    }
-    return serviceRegistry;
   }
 
   public static ServiceRegistry createLocal() {

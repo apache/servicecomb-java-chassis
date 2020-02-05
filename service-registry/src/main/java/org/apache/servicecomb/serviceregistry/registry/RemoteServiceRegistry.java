@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.foundation.common.concurrency.SuppressedRunnableWrapper;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -83,7 +84,7 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
         TimeUnit.SECONDS);
 
     taskPool.scheduleAtFixedRate(
-        new SuppressedRunnableWrapper(appManager::pullInstances),
+        new SuppressedRunnableWrapper(RegistryUtils.getAppManager()::pullInstances),
         serviceRegistryConfig.getInstancePullInterval(),
         serviceRegistryConfig.getInstancePullInterval(),
         TimeUnit.SECONDS);

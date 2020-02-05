@@ -48,7 +48,7 @@ public class ITSCBRestTemplate extends CseRestTemplate {
     SchemaMeta schemaMeta = microserviceMeta.ensureFindSchemaMeta(schemaId);
     basePath = schemaMeta.getSwagger().getBasePath();
     urlPrefix = String.format("cse://%s%s", producerName, basePath);
-    instance = RegistryUtils.getServiceRegistry().getAppManager()
+    instance = RegistryUtils.getAppManager()
         .getOrCreateMicroserviceManager(RegistryUtils.getAppId())
         .getOrCreateMicroserviceVersions(producerName).getPulledInstances().get(0);
 

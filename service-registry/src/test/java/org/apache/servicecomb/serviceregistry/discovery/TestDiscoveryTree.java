@@ -24,7 +24,6 @@ import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -125,7 +124,7 @@ public class TestDiscoveryTree {
     Assert.assertFalse(discoveryTree.isExpired(new DiscoveryTreeNode().cacheVersion(0), parent));
   }
 
-  class DiscoveryFilterForTest implements DiscoveryFilter {
+  static class DiscoveryFilterForTest implements DiscoveryFilter {
     protected String groupName;
 
     public DiscoveryFilterForTest(String groupName) {
@@ -167,13 +166,10 @@ public class TestDiscoveryTree {
   }
 
   @Test
-  public void easyDiscovery(@Mocked ServiceRegistry serviceRegistry,
-      @Mocked InstanceCacheManager instanceCacheManager) {
+  public void easyDiscovery(@Mocked InstanceCacheManager instanceCacheManager) {
     new Expectations(RegistryUtils.class) {
       {
-        RegistryUtils.getServiceRegistry();
-        result = serviceRegistry;
-        serviceRegistry.getInstanceCacheManager();
+        RegistryUtils.getInstanceCacheManager();
         result = instanceCacheManager;
         instanceCacheManager.getOrCreateVersionedCache(anyString, anyString, anyString);
         result = parent;
@@ -186,13 +182,10 @@ public class TestDiscoveryTree {
   }
 
   @Test
-  public void discovery_filterReturnNull(@Mocked ServiceRegistry serviceRegistry,
-      @Mocked InstanceCacheManager instanceCacheManager) {
+  public void discovery_filterReturnNull(@Mocked InstanceCacheManager instanceCacheManager) {
     new Expectations(RegistryUtils.class) {
       {
-        RegistryUtils.getServiceRegistry();
-        result = serviceRegistry;
-        serviceRegistry.getInstanceCacheManager();
+        RegistryUtils.getInstanceCacheManager();
         result = instanceCacheManager;
         instanceCacheManager.getOrCreateVersionedCache(anyString, anyString, anyString);
         result = parent;

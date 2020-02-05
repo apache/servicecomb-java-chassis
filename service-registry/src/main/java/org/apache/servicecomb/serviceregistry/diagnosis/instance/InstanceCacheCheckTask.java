@@ -20,6 +20,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.registry.RemoteServiceRegistry;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryTaskInitializer;
@@ -86,7 +87,7 @@ public class InstanceCacheCheckTask implements ServiceRegistryTaskInitializer {
 
   @Override
   public void init(RemoteServiceRegistry remoteServiceRegistry) {
-    appManager = remoteServiceRegistry.getAppManager();
+    appManager = RegistryUtils.getAppManager();
     taskPool = remoteServiceRegistry.getTaskPool();
     eventBus = remoteServiceRegistry.getEventBus();
 

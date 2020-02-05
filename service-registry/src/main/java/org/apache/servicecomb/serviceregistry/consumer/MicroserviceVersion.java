@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.servicecomb.foundation.common.VendorExtensions;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.event.CreateMicroserviceVersionEvent;
@@ -47,10 +48,7 @@ public class MicroserviceVersion {
   public MicroserviceVersion(MicroserviceVersions microserviceVersions, String microserviceId,
       String microserviceName,
       Collection<MicroserviceInstance> instances) {
-    Microservice microservice = microserviceVersions
-        .getAppManager()
-        .getServiceRegistry()
-        .getAggregatedRemoteMicroservice(microserviceId);
+    Microservice microservice = RegistryUtils.getAggregatedRemoteMicroservice(microserviceId);
     if (microservice == null) {
       throw new IllegalStateException(
           String.format("failed to query by microserviceId '%s' from ServiceCenter.", microserviceId));

@@ -78,7 +78,7 @@ public class MultiErrorCodeServiceClient implements CategorizedTestCase {
 
   private static void prepareServerDirectURL() {
     Microservice microservice = RegistryUtils.getMicroservice();
-    MicroserviceInstance microserviceInstance = (MicroserviceInstance) RegistryUtils.getServiceRegistry()
+    MicroserviceInstance microserviceInstance = (MicroserviceInstance) RegistryUtils
         .getAppManager()
         .getOrCreateMicroserviceVersionRule(microservice.getAppId(), "jaxrs", DefinitionConst.VERSION_RULE_ALL)
         .getVersionedCache()

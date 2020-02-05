@@ -103,8 +103,6 @@ public class SCBEngine {
 
   private volatile SCBStatus status = SCBStatus.DOWN;
 
-  private ServiceRegistry serviceRegistry;
-
   private EventBus eventBus;
 
   private ExecutorManager executorManager = new ExecutorManager();
@@ -123,8 +121,7 @@ public class SCBEngine {
   private Thread shutdownHook;
 
   protected SCBEngine() {
-    serviceRegistry = RegistryUtils.getServiceRegistry();
-    eventBus = serviceRegistry.getEventBus();
+    eventBus = EventManager.getEventBus();
 
     // see SCB-1266, fix Log4j2 leak marker problem
     LogMarkerLeakFixUtils.fix();
@@ -142,7 +139,7 @@ public class SCBEngine {
   }
 
   public String getAppId() {
-    return serviceRegistry.getAppId();
+    return RegistryUtils.getAppId();
   }
 
   public void setStatus(SCBStatus status) {
@@ -165,11 +162,11 @@ public class SCBEngine {
   }
 
   public ServiceRegistry getServiceRegistry() {
-    return serviceRegistry;
+    return RegistryUtils.getServiceRegistry();
   }
 
   public SwaggerLoader getSwaggerLoader() {
-    return serviceRegistry.getSwaggerLoader();
+    return RegistryUtils.getSwaggerLoader();
   }
 
   public ConsumerHandlerManager getConsumerHandlerManager() {
@@ -324,13 +321,12 @@ public class SCBEngine {
     LOGGER.info(serviceInfo.toString());
   }
 
-
   private void doRun() throws Exception {
     status = SCBStatus.STARTING;
 
     bootListeners.sort(Comparator.comparingInt(BootListener::getOrder));
 
-    AbstractEndpointsCache.init(serviceRegistry.getInstanceCacheManager(), transportManager);
+    AbstractEndpointsCache.init(RegistryUtils.getInstanceCacheManager(), transportManager);
 
     triggerEvent(EventType.BEFORE_HANDLER);
     HandlerConfigUtils.init(consumerHandlerManager, producerHandlerManager);
@@ -354,14 +350,14 @@ public class SCBEngine {
 
     triggerAfterRegistryEvent();
 
-    serviceRegistry.run();
+    RegistryUtils.run();
 
     shutdownHook = new Thread(this::destroyForShutdownHook);
     Runtime.getRuntime().addShutdownHook(shutdownHook);
   }
 
   private void createProducerMicroserviceMeta() {
-    String microserviceName = serviceRegistry.getMicroservice().getServiceName();
+    String microserviceName = RegistryUtils.getMicroservice().getServiceName();
     List<Handler> consumerHandlerChain = consumerHandlerManager.getOrCreate(microserviceName);
     List<Handler> producerHandlerChain = producerHandlerManager.getOrCreate(microserviceName);
 
@@ -399,7 +395,7 @@ public class SCBEngine {
 
     //Step 3: Unregister microservice instance from Service Center and close vertx
     // Forbidden other consumers find me
-    serviceRegistry.destroy();
+    RegistryUtils.destroy();
     VertxUtils.blockCloseVertxByName("registry");
     serviceRegistryListener.destroy();
 
@@ -464,7 +460,7 @@ public class SCBEngine {
    * @return
    */
   public MicroserviceReferenceConfig createMicroserviceReferenceConfig(String microserviceName, String versionRule) {
-    MicroserviceVersions microserviceVersions = serviceRegistry.getAppManager()
+    MicroserviceVersions microserviceVersions = RegistryUtils.getAppManager()
         .getOrCreateMicroserviceVersions(parseAppId(microserviceName), microserviceName);
     ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = CoreMetaUtils
         .getMicroserviceVersionsMeta(microserviceVersions);
