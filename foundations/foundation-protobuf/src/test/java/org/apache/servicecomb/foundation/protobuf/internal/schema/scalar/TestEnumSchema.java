@@ -38,7 +38,7 @@ public class TestEnumSchema extends TestSchemaBase {
     Assert.assertEquals(0, rootSerializer.serialize(scbMap).length);
   }
 
-  private static class EnumRoot {
+  public static class EnumRoot {
     private int color;
 
     public int getColor() {

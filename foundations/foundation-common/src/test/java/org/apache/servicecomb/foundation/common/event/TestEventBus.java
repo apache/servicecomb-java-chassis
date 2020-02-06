@@ -32,7 +32,12 @@ public class TestEventBus {
 
   private List<Object> events = new ArrayList<>();
 
-  class SubscriberForTest {
+  public static class SubscriberForTest {
+    private List<Object> events;
+
+    public SubscriberForTest( List<Object> events) {
+      this.events = events;
+    }
     @Subscribe
     @AllowConcurrentEvents
     public void s1(Integer event) {
@@ -45,7 +50,13 @@ public class TestEventBus {
     }
   }
 
-  class SubscriberWithOrderForTest {
+  public static class SubscriberWithOrderForTest {
+    private List<Object> events;
+
+    public SubscriberWithOrderForTest( List<Object> events) {
+      this.events = events;
+    }
+
     @Subscribe
     @SubscriberOrder(100)
     public void s1(String event) {
@@ -61,7 +72,7 @@ public class TestEventBus {
 
   @Test
   public void order() {
-    eventBus.register(new SubscriberWithOrderForTest());
+    eventBus.register(new SubscriberWithOrderForTest(events));
 
     eventBus.post("value");
     Assert.assertThat(events, Matchers.contains("s2:value", "s1:value"));
@@ -69,7 +80,7 @@ public class TestEventBus {
 
   @Test
   public void unregister() {
-    Object obj = new SubscriberForTest();
+    Object obj = new SubscriberForTest(events);
 
     eventBus.register(obj);
     eventBus.unregister(obj);
@@ -77,7 +88,7 @@ public class TestEventBus {
 
   @Test
   public void oneSubscriber() {
-    Object obj = new SubscriberForTest();
+    Object obj = new SubscriberForTest(events);
 
     eventBus.register(obj);
 
@@ -97,8 +108,8 @@ public class TestEventBus {
 
   @Test
   public void twoSubscriber() {
-    Object obj1 = new SubscriberForTest();
-    Object obj2 = new SubscriberForTest();
+    Object obj1 = new SubscriberForTest(events);
+    Object obj2 = new SubscriberForTest(events);
 
     eventBus.register(obj1);
     eventBus.register(obj2);

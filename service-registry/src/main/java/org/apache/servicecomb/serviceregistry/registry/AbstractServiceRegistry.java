@@ -344,7 +344,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   // post from watch eventloop, should refresh the exact microservice instances immediately
   @Subscribe
-  private void onMicroserviceInstanceChanged(MicroserviceInstanceChangedEvent changedEvent) {
+  public void onMicroserviceInstanceChanged(MicroserviceInstanceChangedEvent changedEvent) {
     executorService.execute(() -> appManager.onMicroserviceInstanceChanged(changedEvent));
   }
 

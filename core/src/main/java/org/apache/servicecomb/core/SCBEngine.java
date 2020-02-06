@@ -276,21 +276,7 @@ public class SCBEngine {
    * <p>Check if {@code InstanceId} is null to judge whether the instance registry has succeeded.</p>
    */
   private void triggerAfterRegistryEvent() {
-    eventBus.register(new Object() {
-      @Subscribe
-      @EnableExceptionPropagation
-      public void afterRegistryInstance(MicroserviceInstanceRegisterTask microserviceInstanceRegisterTask) {
-        LOGGER.info("receive MicroserviceInstanceRegisterTask event, check instance Id...");
-
-        if (!StringUtils.isEmpty(RegistryUtils.getMicroserviceInstance().getInstanceId())) {
-          LOGGER.info("instance registry succeeds for the first time, will send AFTER_REGISTRY event.");
-          status = SCBStatus.UP;
-          triggerEvent(EventType.AFTER_REGISTRY);
-          EventManager.unregister(this);
-          LOGGER.warn("ServiceComb is ready.");
-        }
-      }
-    });
+    eventBus.register(new AfterRegistryEventHanlder(this));
   }
 
   @AllowConcurrentEvents
@@ -543,5 +529,27 @@ public class SCBEngine {
 
   public MicroserviceNameParser parseMicroserviceName(String microserviceName) {
     return new MicroserviceNameParser(getAppId(), microserviceName);
+  }
+
+  public static class AfterRegistryEventHanlder {
+    private SCBEngine engine;
+
+    public AfterRegistryEventHanlder(SCBEngine engine) {
+      this.engine = engine;
+    }
+
+    @Subscribe
+    @EnableExceptionPropagation
+    public void afterRegistryInstance(MicroserviceInstanceRegisterTask microserviceInstanceRegisterTask) {
+      LOGGER.info("receive MicroserviceInstanceRegisterTask event, check instance Id...");
+
+      if (!StringUtils.isEmpty(RegistryUtils.getMicroserviceInstance().getInstanceId())) {
+        LOGGER.info("instance registry succeeds for the first time, will send AFTER_REGISTRY event.");
+        engine.setStatus(SCBStatus.UP);
+        engine.triggerEvent(EventType.AFTER_REGISTRY);
+        EventManager.unregister(this);
+        LOGGER.warn("ServiceComb is ready.");
+      }
+    }
   }
 }

@@ -20,7 +20,6 @@ package org.apache.servicecomb.loadbalance;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
-import java.util.EventListener;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -241,6 +240,20 @@ public class TestLoadBalanceHandler2 {
     Assert.assertEquals("rest://localhost:9091", server.getEndpoint().getEndpoint());
   }
 
+  public class IsolationEndpointListener {
+    Holder<Integer> count;
+
+    public IsolationEndpointListener(Holder<Integer> count) {
+      this.count = count;
+    }
+
+    @Subscribe
+    public void listener(IsolationServerEvent event) {
+      count.value++;
+      Assert.assertSame("Isolation Endpoint", "rest://localhost:9090", event.getEndpoint().getEndpoint());
+    }
+  }
+
   @Test
   public void testIsolationEventWithEndpoint() throws Exception {
     ReferenceConfig referenceConfig = Mockito.mock(ReferenceConfig.class);
@@ -318,13 +331,7 @@ public class TestLoadBalanceHandler2 {
     ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.minIsolationTime", "10");
 
     Holder<Integer> count = new Holder<>(0);
-    EventListener isolationEndpointListener = new EventListener() {
-      @Subscribe
-      public void listener(IsolationServerEvent event) {
-        count.value++;
-        Assert.assertSame("Isolation Endpoint", "rest://localhost:9090", event.getEndpoint().getEndpoint());
-      }
-    };
+    IsolationEndpointListener isolationEndpointListener = new IsolationEndpointListener(count);
     EventManager.getEventBus().register(isolationEndpointListener);
     Assert.assertEquals(0, count.value.intValue());
     loadBalancer = handler.getOrCreateLoadBalancer(invocation);
