@@ -43,17 +43,25 @@ public class TestCircutBreakerEventNotifier {
 
   Object receiveEvent = null;
 
+  public static class EventSubscriber {
+    List<AlarmEvent> taskList;
+
+    public EventSubscriber(List<AlarmEvent> taskList) {
+      this.taskList = taskList;
+    }
+
+    @Subscribe
+    public void onEvent(AlarmEvent circutBreakerEvent) {
+      taskList.add(circutBreakerEvent);
+    }
+  }
+
   @Before
   public void setUp() throws Exception {
     taskList = new ArrayList<>();
     circutBreakerEventNotifier = new CircutBreakerEventNotifier();
     commandKey = Mockito.mock(HystrixCommandKey.class);
-    receiveEvent = new Object() {
-      @Subscribe
-      public void onEvent(AlarmEvent circutBreakerEvent) {
-        taskList.add(circutBreakerEvent);
-      }
-    };
+    receiveEvent = new EventSubscriber(taskList);
     circutBreakerEventNotifier.eventBus.register(receiveEvent);
   }
 
