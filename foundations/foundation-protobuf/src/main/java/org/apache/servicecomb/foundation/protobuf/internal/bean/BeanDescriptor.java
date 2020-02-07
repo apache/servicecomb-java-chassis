@@ -83,7 +83,7 @@ public class BeanDescriptor {
     return null;
   }
 
-  protected Object initSetter(BeanPropertyDefinition propertyDefinition) throws Throwable {
+  protected Object initSetter(BeanPropertyDefinition propertyDefinition) {
     if (propertyDefinition.hasSetter()) {
       return LambdaMetafactoryUtils.createSetter(propertyDefinition.getSetter().getAnnotated());
     }
