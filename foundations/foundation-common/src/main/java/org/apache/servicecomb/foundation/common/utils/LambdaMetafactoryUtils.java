@@ -169,7 +169,7 @@ public final class LambdaMetafactoryUtils {
     }
   }
 
-  public static <T> T createSetter(Method setMethod) throws Throwable {
+  public static <T> T createSetter(Method setMethod) {
     Class<?> setterCls = SETTER_MAP.getOrDefault(setMethod.getParameterTypes()[0], Setter.class);
     return createLambda(setMethod, setterCls);
   }
