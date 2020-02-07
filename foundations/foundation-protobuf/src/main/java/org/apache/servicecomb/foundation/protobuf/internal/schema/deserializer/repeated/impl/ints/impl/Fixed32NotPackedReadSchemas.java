@@ -26,8 +26,8 @@ import io.protostuff.compiler.model.Field;
 import io.protostuff.runtime.FieldSchema;
 
 public class Fixed32NotPackedReadSchemas {
-  private static class Fixed32NotPackedReaders extends AbstractPrimitiveReaders<int[], Integer> {
-    public Fixed32NotPackedReaders(Field protoField) {
+  private static class NotPackedReaders extends AbstractPrimitiveReaders<int[], Integer> {
+    public NotPackedReaders(Field protoField) {
       super(protoField);
 
       this.primitiveArrayReader = (input, builderWrapper) -> {
@@ -64,6 +64,6 @@ public class Fixed32NotPackedReadSchemas {
   }
 
   public static <T> FieldSchema<T> create(Field protoField, PropertyDescriptor propertyDescriptor) {
-    return IntRepeatedReadSchemas.create(protoField, propertyDescriptor, new Fixed32NotPackedReaders(protoField));
+    return IntRepeatedReadSchemas.create(protoField, propertyDescriptor, new NotPackedReaders(protoField));
   }
 }

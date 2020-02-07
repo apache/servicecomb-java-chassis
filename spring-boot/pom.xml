@@ -32,8 +32,8 @@
   <name>Java Chassis::Spring Boot</name>
 
   <modules>
-    <module>java-chassis-spring-boot-common</module>
-    <module>java-chassis-spring-boot-starters</module>
+    <module>spring-boot-common</module>
+    <module>spring-boot-starters</module>
   </modules>
 
 </project>
