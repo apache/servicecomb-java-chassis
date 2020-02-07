@@ -101,6 +101,13 @@ public class TestPathProcessor {
   }
 
   @Test
+  public void testGetColon() throws Exception {
+    prepareGetValue("name", String.class);
+    pathVars.put("name", "aa:bb");
+    Assert.assertEquals("aa:bb", processor.getValue(request));
+  }
+
+  @Test
   public void testGetProcessorType() {
     createProcessor("name", String.class);
     Assert.assertEquals("path", processor.getProcessorType());
