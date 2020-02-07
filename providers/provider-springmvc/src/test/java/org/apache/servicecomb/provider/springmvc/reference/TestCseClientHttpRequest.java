@@ -18,11 +18,10 @@ package org.apache.servicecomb.provider.springmvc.reference;
 
 import java.net.URI;
 
-import javax.xml.ws.Holder;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.AfterClass;
 import org.junit.Assert;

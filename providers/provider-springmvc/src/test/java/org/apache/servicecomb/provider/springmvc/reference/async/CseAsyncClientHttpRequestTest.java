@@ -20,11 +20,10 @@ package org.apache.servicecomb.provider.springmvc.reference.async;
 import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 
-import javax.xml.ws.Holder;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.provider.springmvc.reference.CseClientHttpResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.AfterClass;

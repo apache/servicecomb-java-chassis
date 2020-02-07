@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.foundation.test.scaffolding.model;
+package org.apache.servicecomb.foundation.common.testing;
 
-import javax.xml.ws.Holder;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
+
+import org.apache.servicecomb.foundation.common.Holder;
 
 public class MockClock extends Clock {
 

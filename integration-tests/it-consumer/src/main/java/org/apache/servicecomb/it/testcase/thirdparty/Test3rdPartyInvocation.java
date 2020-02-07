@@ -30,9 +30,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.extend.engine.ITSCBRestTemplate;

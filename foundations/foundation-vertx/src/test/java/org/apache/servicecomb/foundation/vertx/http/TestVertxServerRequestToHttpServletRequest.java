@@ -27,8 +27,8 @@ import javax.servlet.AsyncContext;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.Cookie;
 import javax.ws.rs.core.HttpHeaders;
-import javax.xml.ws.Holder;
 
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.http.HttpUtils;
 import org.hamcrest.Matchers;
 import org.junit.Assert;

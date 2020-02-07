@@ -22,8 +22,8 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.servlet.http.Part;
-import javax.xml.ws.Holder;
 
+import org.apache.servicecomb.foundation.common.Holder;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;

@@ -20,9 +20,8 @@ package org.apache.servicecomb.transport.rest.vertx.accesslog.impl;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
-import javax.xml.ws.Holder;
-
 import org.apache.log4j.Level;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.junit.After;
 import org.junit.Assert;

@@ -20,10 +20,10 @@ package org.apache.servicecomb.transport.rest.servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

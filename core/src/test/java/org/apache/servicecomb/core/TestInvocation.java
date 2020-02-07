@@ -19,8 +19,6 @@ package org.apache.servicecomb.core;
 import java.util.Arrays;
 import java.util.Map;
 
-import javax.xml.ws.Holder;
-
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.event.InvocationBaseEvent;
 import org.apache.servicecomb.core.event.InvocationBusinessMethodFinishEvent;
@@ -30,6 +28,7 @@ import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.core.tracing.BraveTraceIdGenerator;
 import org.apache.servicecomb.core.tracing.TraceIdGenerator;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;

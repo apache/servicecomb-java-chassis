@@ -19,9 +19,8 @@ package org.apache.servicecomb.serviceregistry.diagnosis.instance;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import javax.xml.ws.Holder;
-
-import org.apache.servicecomb.foundation.test.scaffolding.model.MockClock;
+import org.apache.servicecomb.foundation.common.Holder;
+import org.apache.servicecomb.foundation.common.testing.MockClock;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
