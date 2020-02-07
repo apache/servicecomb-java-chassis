@@ -17,7 +17,9 @@
 
 package org.apache.servicecomb.common.rest.codec.param;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.net.URLDecoder;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -41,7 +43,7 @@ public class PathProcessorCreator implements ParamValueProcessorCreator {
     }
 
     @Override
-    public Object getValue(HttpServletRequest request) {
+    public Object getValue(HttpServletRequest request) throws UnsupportedEncodingException {
       @SuppressWarnings("unchecked")
       Map<String, String> pathVarMap = (Map<String, String>) request.getAttribute(RestConst.PATH_PARAMETERS);
       if (pathVarMap == null) {
@@ -51,6 +53,9 @@ public class PathProcessorCreator implements ParamValueProcessorCreator {
       String value = pathVarMap.get(paramPath);
       if (value == null) {
         return null;
+      }
+      if (value.contains(":")) {
+        return convertValue(URLDecoder.decode(value, "UTF-8"), targetType);
       }
       return convertValue(HttpUtils.uriDecodePath(value), targetType);
     }
