@@ -35,9 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
-import javax.xml.ws.Holder;
-
 import org.apache.commons.io.IOUtils;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.apache.servicecomb.foundation.common.utils.ResourceUtil;

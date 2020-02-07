@@ -22,8 +22,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import javax.xml.ws.Holder;
-
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.junit.After;

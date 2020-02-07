@@ -18,8 +18,7 @@ package org.apache.servicecomb.serviceregistry.task;
 
 import java.util.EventListener;
 
-import javax.xml.ws.Holder;
-
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.task.event.SafeModeChangeEvent;

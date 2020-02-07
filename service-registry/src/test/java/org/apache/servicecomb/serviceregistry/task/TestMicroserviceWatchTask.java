@@ -16,8 +16,7 @@
  */
 package org.apache.servicecomb.serviceregistry.task;
 
-import javax.xml.ws.Holder;
-
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
 import org.apache.servicecomb.serviceregistry.api.MicroserviceKey;

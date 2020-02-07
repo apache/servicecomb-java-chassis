@@ -23,9 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import javax.xml.ws.Holder;
-
 import org.apache.log4j.PropertyConfigurator;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.config.impl.PropertiesLoader;
 import org.junit.Assert;
 import org.junit.Before;

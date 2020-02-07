@@ -20,11 +20,10 @@ package org.apache.servicecomb.loadbalance;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.servicecomb.foundation.test.scaffolding.model.MockClock;
+import org.apache.servicecomb.foundation.common.Holder;
+import org.apache.servicecomb.foundation.common.testing.MockClock;
 import org.junit.Assert;
 import org.junit.Test;
-
-import javax.xml.ws.Holder;
 
 public class TestServiceCombServerStats {
   @Test

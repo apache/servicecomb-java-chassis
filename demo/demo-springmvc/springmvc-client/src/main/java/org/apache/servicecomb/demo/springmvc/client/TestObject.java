@@ -22,10 +22,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.ws.Holder;
-
 import org.apache.servicecomb.demo.EmptyObject;
 import org.apache.servicecomb.demo.TestMgr;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import org.springframework.web.client.RestTemplate;

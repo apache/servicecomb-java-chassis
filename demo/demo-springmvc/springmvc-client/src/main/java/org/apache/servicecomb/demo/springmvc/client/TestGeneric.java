@@ -18,11 +18,10 @@ package org.apache.servicecomb.demo.springmvc.client;
 
 import java.util.Date;
 
-import javax.xml.ws.Holder;
-
 import org.apache.servicecomb.demo.Generic;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.server.User;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import org.springframework.http.HttpStatus;

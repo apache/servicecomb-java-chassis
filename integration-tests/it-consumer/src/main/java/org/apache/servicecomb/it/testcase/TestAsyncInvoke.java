@@ -24,8 +24,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
 
-import javax.xml.ws.Holder;
-
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.it.schema.DefaultJsonValueResponse;

@@ -22,10 +22,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.core.Response.Status;
-import javax.xml.ws.Holder;
 
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
 import org.apache.servicecomb.foundation.metrics.publish.spectator.MeasurementNode;

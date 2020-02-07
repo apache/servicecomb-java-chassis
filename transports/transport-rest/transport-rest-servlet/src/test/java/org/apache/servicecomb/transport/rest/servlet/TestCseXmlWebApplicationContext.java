@@ -19,8 +19,8 @@ package org.apache.servicecomb.transport.rest.servlet;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration.Dynamic;
-import javax.xml.ws.Holder;
 
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.hamcrest.Matchers;
 import org.junit.Assert;

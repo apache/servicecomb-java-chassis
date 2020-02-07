@@ -29,8 +29,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
-import javax.xml.ws.Holder;
-
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.schema.Generic;
 import org.apache.servicecomb.it.schema.User;
