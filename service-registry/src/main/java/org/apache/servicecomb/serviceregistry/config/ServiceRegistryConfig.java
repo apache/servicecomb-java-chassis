@@ -17,45 +17,27 @@
 
 package org.apache.servicecomb.serviceregistry.config;
 
-import java.net.URI;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
-import org.apache.servicecomb.deployment.Deployment;
-import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.foundation.common.net.IpPort;
-import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.netflix.config.DynamicBooleanProperty;
-import com.netflix.config.DynamicIntProperty;
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicStringProperty;
 
 import io.vertx.core.http.HttpVersion;
 
-/**
- * Created by   on 2016/12/23.
- */
 public final class ServiceRegistryConfig {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRegistryConfig.class);
+  public static final ServiceRegistryConfig INSTANCE = buildFromConfiguration();
 
-  public static final ServiceRegistryConfig INSTANCE = new ServiceRegistryConfig();
+  public static final int DEFAULT_TIMEOUT_IN_MS = 30000;
 
-  private static final int DEFAULT_TIMEOUT_IN_MS = 30000;
+  public static final int DEFAULT_TIMEOUT_IN_SECONDS = 30;
 
-  private static final int DEFAULT_TIMEOUT_IN_SECONDS = 30;
+  public static final int DEFAULT_REQUEST_TIMEOUT_IN_MS = 30000;
 
-  private static final int DEFAULT_REQUEST_TIMEOUT_IN_MS = 30000;
+  public static final int DEFAULT_REQUEST_HEARTBEAT_TIMEOUT_IN_MS = 3000;
 
-  private static final int DEFAULT_REQUEST_HEARTBEAT_TIMEOUT_IN_MS = 3000;
+  public static final int DEFAULT_CHECK_INTERVAL_IN_S = 30;
 
-  private static final int DEFAULT_CHECK_INTERVAL_IN_S = 30;
-
-  private static final int DEFAULT_CHECK_TIMES = 3;
+  public static final int DEFAULT_CHECK_TIMES = 3;
 
   public static final String AUTH_ENABLED = "servicecomb.auth.enabled";
 
@@ -72,8 +54,6 @@ public final class ServiceRegistryConfig {
   public static final String NO_TENANT = "default";
 
   public static final String NO_DOMAIN = "default";
-
-  private boolean ssl = true;
 
   public static final String PROXY_PRE_NAME = "servicecomb.proxy.";
 
@@ -101,222 +81,75 @@ public final class ServiceRegistryConfig {
 
   private String registryName = ServiceRegistry.DEFAULT_REGISTRY_NAME;
 
-  private ServiceRegistryConfig() {
+  private HttpVersion httpVersion;
 
-  }
+  private int instances;
 
-  public HttpVersion getHttpVersion() {
-    DynamicStringProperty property =
-        DynamicPropertyFactory.getInstance()
-            .getStringProperty("servicecomb.service.registry.client.httpVersion", "HTTP_1_1");
-    return HttpVersion.valueOf(property.get());
-  }
+  // TODO SCB-1691 getter of this field's behavior changed, should check
+  private boolean ssl = true;
 
-  public int getInstances() {
-    DynamicIntProperty property =
-        DynamicPropertyFactory.getInstance()
-            .getIntProperty(VERTICLE_INSTANCES, 1);
-    int deployInstances = property.get();
-    if (deployInstances <= 0) {
-      int nAvailableProcessors = Runtime.getRuntime().availableProcessors();
-      LOGGER.warn("The property `{}` must be positive integer, fallback to use number of available processors: {}",
-          VERTICLE_INSTANCES,
-          nAvailableProcessors);
-      return nAvailableProcessors;
-    }
-    return deployInstances;
-  }
+  private ArrayList<IpPort> ipPort;
 
-  public boolean isSsl() {
-    getIpPort();
-    return this.ssl;
-  }
+  private int connectionTimeout;
 
-  public ArrayList<IpPort> getIpPort() {
-    List<String> uriList = Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_SERVICE_CENTER)
-        .getAccessURL();
-    ArrayList<IpPort> ipPortList = new ArrayList<>();
-    uriList.forEach(anUriList -> {
-      try {
-        URI uri = new URI(anUriList.trim());
-        this.ssl = "https".equals(uri.getScheme());
-        ipPortList.add(NetUtils.parseIpPort(uri));
-      } catch (Exception e) {
-        LOGGER.error("servicecomb.service.registry.address invalid : {}", anUriList, e);
-      }
-    });
-    return ipPortList;
+  private int idleConnectionTimeout;
+
+  private int idleWatchTimeout;
+
+  private int requestTimeout;
+
+  //Set the timeout of the heartbeat request
+  private int heartBeatRequestTimeout;
+
+  private int heartbeatInterval;
+
+  private int instancePullInterval;
+
+  private boolean registryAutoDiscovery;
+
+  private int resendHeartBeatTimes;
+
+  private boolean emptyInstanceProtectionEnabled;
+
+  private boolean alwaysOverrideSchema;
+
+  private boolean preferIpAddress;
+
+  private boolean watch;
+
+  private boolean clientAuthEnabled;
+
+  private String registryApiVersion;
+
+  private String tenantName;
+
+  private String domainName;
+
+  private String accessKey;
+
+  private String secretKey;
+
+  private boolean proxyEnable;
+
+  private String proxyHost;
+
+  private int proxyPort;
+
+  private String proxyUsername;
+
+  private String proxyPasswd;
+
+  /**
+   * Read the service registry related configurations and build the {@link ServiceRegistryConfig}
+   * object. Since most of the service registry configurations are similar, this method may be
+   * convenient to construct multiple config objects.
+   */
+  public static ServiceRegistryConfig buildFromConfiguration() {
+    return new ServiceRegistryConfigBuilder().build();
   }
 
   public String getTransport() {
     return "rest";
-  }
-
-  public int getConnectionTimeout() {
-    DynamicIntProperty property =
-        DynamicPropertyFactory.getInstance()
-            .getIntProperty("servicecomb.service.registry.client.timeout.connection", DEFAULT_TIMEOUT_IN_MS);
-    int timeout = property.get();
-    return timeout < 0 ? DEFAULT_TIMEOUT_IN_MS : timeout;
-  }
-
-  public int getIdleConnectionTimeout() {
-    // connection pool idle timeout based on client heart beat interval. Heart beat default value is 30.
-    DynamicIntProperty property =
-        DynamicPropertyFactory.getInstance()
-            .getIntProperty("servicecomb.service.registry.client.timeout.idle", DEFAULT_TIMEOUT_IN_SECONDS * 2);
-    int timeout = property.get();
-    return timeout < 1 ? DEFAULT_TIMEOUT_IN_SECONDS * 2 : timeout;
-  }
-
-  public int getIdleWatchTimeout() {
-    // watch idle timeout based on SC PING/PONG interval. SC default value is 30.
-    DynamicIntProperty property =
-        DynamicPropertyFactory.getInstance()
-            .getIntProperty("servicecomb.service.registry.client.timeout.watch", DEFAULT_TIMEOUT_IN_SECONDS * 2);
-    int timeout = property.get();
-    return timeout < 1 ? DEFAULT_TIMEOUT_IN_SECONDS * 2 : timeout;
-  }
-
-  public int getRequestTimeout() {
-    DynamicIntProperty property =
-        DynamicPropertyFactory.getInstance()
-            .getIntProperty("servicecomb.service.registry.client.timeout.request", DEFAULT_REQUEST_TIMEOUT_IN_MS);
-    int timeout = property.get();
-    return timeout < 1 ? DEFAULT_REQUEST_TIMEOUT_IN_MS : timeout;
-  }
-
-  //Set the timeout of the heartbeat request
-  public int getHeartBeatRequestTimeout() {
-    DynamicIntProperty property =
-        DynamicPropertyFactory.getInstance()
-            .getIntProperty("servicecomb.service.registry.client.timeout.heartbeat",
-                DEFAULT_REQUEST_HEARTBEAT_TIMEOUT_IN_MS);
-    int timeout = property.get();
-    return timeout < 1 ? DEFAULT_REQUEST_HEARTBEAT_TIMEOUT_IN_MS : timeout;
-  }
-
-  public int getHeartbeatInterval() {
-    DynamicIntProperty property =
-        DynamicPropertyFactory.getInstance()
-            .getIntProperty("servicecomb.service.registry.instance.healthCheck.interval",
-                DEFAULT_CHECK_INTERVAL_IN_S);
-    int interval = property.get();
-    return interval < 0 ? DEFAULT_CHECK_INTERVAL_IN_S : interval;
-  }
-
-  public int getInstancePullInterval() {
-    DynamicIntProperty property =
-        DynamicPropertyFactory.getInstance()
-            .getIntProperty("servicecomb.service.registry.instance.pull.interval",
-                DEFAULT_CHECK_INTERVAL_IN_S);
-    int interval = property.get();
-    return interval < 0 ? DEFAULT_CHECK_INTERVAL_IN_S : interval;
-  }
-
-  public long getMsInstancePullInterval() {
-    return TimeUnit.SECONDS.toMillis(getInstancePullInterval());
-  }
-
-  public boolean isRegistryAutoDiscovery() {
-    DynamicBooleanProperty property =
-        DynamicPropertyFactory.getInstance()
-            .getBooleanProperty("servicecomb.service.registry.autodiscovery",
-                false);
-    return property.get();
-  }
-
-  public int getResendHeartBeatTimes() {
-    DynamicIntProperty property =
-        DynamicPropertyFactory.getInstance()
-            .getIntProperty("servicecomb.service.registry.instance.healthCheck.times",
-                DEFAULT_CHECK_TIMES);
-    int times = property.get();
-    return times < 0 ? DEFAULT_CHECK_TIMES : times;
-  }
-
-  public boolean isEmptyInstanceProtectionEnabled() {
-    DynamicBooleanProperty property =
-        DynamicPropertyFactory.getInstance()
-            .getBooleanProperty("servicecomb.service.registry.instance.empty.protection",
-                true);
-    return property.get();
-  }
-
-  public boolean isAlwaysOverrideSchema() {
-    DynamicBooleanProperty property =
-        DynamicPropertyFactory.getInstance()
-            .getBooleanProperty("servicecomb.service.registry.instance.alwaysOverrideSchema",
-                false);
-    return property.get();
-  }
-
-  public boolean isPreferIpAddress() {
-    DynamicBooleanProperty property =
-        DynamicPropertyFactory.getInstance()
-            .getBooleanProperty("servicecomb.service.registry.instance.preferIpAddress",
-                false);
-    return property.get();
-  }
-
-  public boolean isWatch() {
-    DynamicBooleanProperty property =
-        DynamicPropertyFactory.getInstance()
-            .getBooleanProperty("servicecomb.service.registry.instance.watch",
-                true);
-    return property.get();
-  }
-
-  public boolean isClientAuthEnabled() {
-    String isAuthEnabled = getProperty("false", AUTH_ENABLED);
-    return Boolean.parseBoolean(isAuthEnabled);
-  }
-
-  public String getRegistryApiVersion() {
-    return getProperty("v4", REGISTRY_API_VERSION);
-  }
-
-  public String getTenantName() {
-    return getProperty(NO_TENANT, TENANT_NAME);
-  }
-
-  public String getDomainName() {
-    return getProperty(NO_DOMAIN, DOMAIN_NAME);
-  }
-
-  public String getAccessKey() {
-    String tenantName = getProperty(null, TENANT_ACCESS_KEY);
-    return tenantName;
-  }
-
-  public String getSecretKey() {
-    String tenantName = getProperty(null, TENANT_SECRET_KEY);
-    return tenantName;
-  }
-
-  public Boolean isProxyEnable() {
-    String enable = getProperty("false", PROXY_ENABLE);
-    return Boolean.parseBoolean(enable);
-  }
-
-  public String getProxyHost() {
-    String host = getProperty("127.0.0.1", PROXY_HOST);
-    return host;
-  }
-
-  public int getProxyPort() {
-    String port = getProperty("8080", PROXY_PORT);
-    return Integer.parseInt(port);
-  }
-
-  public String getProxyUsername() {
-    String username = getProperty(null, PROXY_USERNAME);
-    return username;
-  }
-
-  public String getProxyPasswd() {
-    String passwd = getProperty(null, PROXY_PASSWD);
-    return passwd;
   }
 
   public String getRegistryName() {
@@ -328,19 +161,255 @@ public final class ServiceRegistryConfig {
     return this;
   }
 
-  private String getProperty(String defaultValue, String... keys) {
-    String property = null;
-    for (String key : keys) {
-      property = DynamicPropertyFactory.getInstance().getStringProperty(key, null).get();
-      if (property != null) {
-        break;
-      }
-    }
+  public HttpVersion getHttpVersion() {
+    return httpVersion;
+  }
 
-    if (property != null) {
-      return property;
-    } else {
-      return defaultValue;
-    }
+  public ServiceRegistryConfig setHttpVersion(HttpVersion httpVersion) {
+    this.httpVersion = httpVersion;
+    return this;
+  }
+
+  public int getInstances() {
+    return instances;
+  }
+
+  public ServiceRegistryConfig setInstances(int instances) {
+    this.instances = instances;
+    return this;
+  }
+
+  public boolean isSsl() {
+    return ssl;
+  }
+
+  public ServiceRegistryConfig setSsl(boolean ssl) {
+    this.ssl = ssl;
+    return this;
+  }
+
+  public ArrayList<IpPort> getIpPort() {
+    return ipPort;
+  }
+
+  public ServiceRegistryConfig setIpPort(ArrayList<IpPort> ipPort) {
+    this.ipPort = ipPort;
+    return this;
+  }
+
+  public int getConnectionTimeout() {
+    return connectionTimeout;
+  }
+
+  public ServiceRegistryConfig setConnectionTimeout(int connectionTimeout) {
+    this.connectionTimeout = connectionTimeout;
+    return this;
+  }
+
+  public int getIdleConnectionTimeout() {
+    return idleConnectionTimeout;
+  }
+
+  public ServiceRegistryConfig setIdleConnectionTimeout(int idleConnectionTimeout) {
+    this.idleConnectionTimeout = idleConnectionTimeout;
+    return this;
+  }
+
+  public int getIdleWatchTimeout() {
+    return idleWatchTimeout;
+  }
+
+  public ServiceRegistryConfig setIdleWatchTimeout(int idleWatchTimeout) {
+    this.idleWatchTimeout = idleWatchTimeout;
+    return this;
+  }
+
+  public int getRequestTimeout() {
+    return requestTimeout;
+  }
+
+  public ServiceRegistryConfig setRequestTimeout(int requestTimeout) {
+    this.requestTimeout = requestTimeout;
+    return this;
+  }
+
+  public int getHeartBeatRequestTimeout() {
+    return heartBeatRequestTimeout;
+  }
+
+  public ServiceRegistryConfig setHeartBeatRequestTimeout(int heartBeatRequestTimeout) {
+    this.heartBeatRequestTimeout = heartBeatRequestTimeout;
+    return this;
+  }
+
+  public int getHeartbeatInterval() {
+    return heartbeatInterval;
+  }
+
+  public ServiceRegistryConfig setHeartbeatInterval(int heartbeatInterval) {
+    this.heartbeatInterval = heartbeatInterval;
+    return this;
+  }
+
+  public int getInstancePullInterval() {
+    return instancePullInterval;
+  }
+
+  public ServiceRegistryConfig setInstancePullInterval(int instancePullInterval) {
+    this.instancePullInterval = instancePullInterval;
+    return this;
+  }
+
+  public boolean isRegistryAutoDiscovery() {
+    return registryAutoDiscovery;
+  }
+
+  public ServiceRegistryConfig setRegistryAutoDiscovery(boolean registryAutoDiscovery) {
+    this.registryAutoDiscovery = registryAutoDiscovery;
+    return this;
+  }
+
+  public int getResendHeartBeatTimes() {
+    return resendHeartBeatTimes;
+  }
+
+  public ServiceRegistryConfig setResendHeartBeatTimes(int resendHeartBeatTimes) {
+    this.resendHeartBeatTimes = resendHeartBeatTimes;
+    return this;
+  }
+
+  public boolean isEmptyInstanceProtectionEnabled() {
+    return emptyInstanceProtectionEnabled;
+  }
+
+  public ServiceRegistryConfig setEmptyInstanceProtectionEnabled(boolean emptyInstanceProtectionEnabled) {
+    this.emptyInstanceProtectionEnabled = emptyInstanceProtectionEnabled;
+    return this;
+  }
+
+  public boolean isAlwaysOverrideSchema() {
+    return alwaysOverrideSchema;
+  }
+
+  public ServiceRegistryConfig setAlwaysOverrideSchema(boolean alwaysOverrideSchema) {
+    this.alwaysOverrideSchema = alwaysOverrideSchema;
+    return this;
+  }
+
+  public boolean isPreferIpAddress() {
+    return preferIpAddress;
+  }
+
+  public ServiceRegistryConfig setPreferIpAddress(boolean preferIpAddress) {
+    this.preferIpAddress = preferIpAddress;
+    return this;
+  }
+
+  public boolean isWatch() {
+    return watch;
+  }
+
+  public ServiceRegistryConfig setWatch(boolean watch) {
+    this.watch = watch;
+    return this;
+  }
+
+  public boolean isClientAuthEnabled() {
+    return clientAuthEnabled;
+  }
+
+  public ServiceRegistryConfig setClientAuthEnabled(boolean clientAuthEnabled) {
+    this.clientAuthEnabled = clientAuthEnabled;
+    return this;
+  }
+
+  public String getRegistryApiVersion() {
+    return registryApiVersion;
+  }
+
+  public ServiceRegistryConfig setRegistryApiVersion(String registryApiVersion) {
+    this.registryApiVersion = registryApiVersion;
+    return this;
+  }
+
+  public String getTenantName() {
+    return tenantName;
+  }
+
+  public ServiceRegistryConfig setTenantName(String tenantName) {
+    this.tenantName = tenantName;
+    return this;
+  }
+
+  public String getDomainName() {
+    return domainName;
+  }
+
+  public ServiceRegistryConfig setDomainName(String domainName) {
+    this.domainName = domainName;
+    return this;
+  }
+
+  public String getAccessKey() {
+    return accessKey;
+  }
+
+  public ServiceRegistryConfig setAccessKey(String accessKey) {
+    this.accessKey = accessKey;
+    return this;
+  }
+
+  public String getSecretKey() {
+    return secretKey;
+  }
+
+  public ServiceRegistryConfig setSecretKey(String secretKey) {
+    this.secretKey = secretKey;
+    return this;
+  }
+
+  public Boolean isProxyEnable() {
+    return proxyEnable;
+  }
+
+  public ServiceRegistryConfig setProxyEnable(Boolean proxyEnable) {
+    this.proxyEnable = proxyEnable;
+    return this;
+  }
+
+  public String getProxyHost() {
+    return proxyHost;
+  }
+
+  public ServiceRegistryConfig setProxyHost(String proxyHost) {
+    this.proxyHost = proxyHost;
+    return this;
+  }
+
+  public int getProxyPort() {
+    return proxyPort;
+  }
+
+  public ServiceRegistryConfig setProxyPort(int proxyPort) {
+    this.proxyPort = proxyPort;
+    return this;
+  }
+
+  public String getProxyUsername() {
+    return proxyUsername;
+  }
+
+  public ServiceRegistryConfig setProxyUsername(String proxyUsername) {
+    this.proxyUsername = proxyUsername;
+    return this;
+  }
+
+  public String getProxyPasswd() {
+    return proxyPasswd;
+  }
+
+  public ServiceRegistryConfig setProxyPasswd(String proxyPasswd) {
+    this.proxyPasswd = proxyPasswd;
+    return this;
   }
 }

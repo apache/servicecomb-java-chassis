@@ -43,7 +43,7 @@ public class TestServiceRegistryConfig {
 
   @Test
   public void testServiceRegistryConfig() {
-    ServiceRegistryConfig oConfig = ServiceRegistryConfig.INSTANCE;
+    ServiceRegistryConfig oConfig = new ServiceRegistryConfigBuilder().build();
     Assert.assertNull(oConfig.getAccessKey());
     Assert.assertEquals(30000, oConfig.getConnectionTimeout());
     Assert.assertNotEquals(null, oConfig.getHeartbeatInterval());
@@ -62,10 +62,10 @@ public class TestServiceRegistryConfig {
     List<IpPort> ipPorts = oConfig.getIpPort();
     Assert.assertEquals("127.0.0.1:80", ipPorts.get(0).toString());
     Assert.assertEquals("127.0.0.1:443", ipPorts.get(1).toString());
-    Assert.assertFalse(ServiceRegistryConfig.INSTANCE.isProxyEnable());
-    Assert.assertEquals("127.0.0.1", ServiceRegistryConfig.INSTANCE.getProxyHost());
-    Assert.assertEquals(8080, ServiceRegistryConfig.INSTANCE.getProxyPort());
-    Assert.assertNull(ServiceRegistryConfig.INSTANCE.getProxyUsername());
-    Assert.assertNull(ServiceRegistryConfig.INSTANCE.getProxyPasswd());
+    Assert.assertFalse(oConfig.isProxyEnable());
+    Assert.assertEquals("127.0.0.1", oConfig.getProxyHost());
+    Assert.assertEquals(8080, oConfig.getProxyPort());
+    Assert.assertNull(oConfig.getProxyUsername());
+    Assert.assertNull(oConfig.getProxyPasswd());
   }
 }
