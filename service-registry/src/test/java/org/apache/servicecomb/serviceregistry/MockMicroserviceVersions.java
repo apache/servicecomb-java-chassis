@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
@@ -33,6 +34,8 @@ import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.version.Version;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+
+import com.google.common.eventbus.EventBus;
 
 import mockit.Mock;
 import mockit.MockUp;
@@ -50,6 +53,11 @@ public class MockMicroserviceVersions extends MicroserviceVersions {
       @Mock
       Microservice getAggregatedRemoteMicroservice(String microserviceId) {
         return mockedMicroservices.get(microserviceId);
+      }
+
+      @Mock
+      EventBus getEventBus() {
+        return EventManager.getEventBus();
       }
     }.getMockInstance();
 

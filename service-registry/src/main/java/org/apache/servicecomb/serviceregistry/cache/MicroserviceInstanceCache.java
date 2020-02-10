@@ -52,7 +52,7 @@ public class MicroserviceInstanceCache {
   public static Microservice getOrCreate(String serviceId) {
     try {
       return microservices.get(serviceId, () -> {
-        Microservice microservice = RegistryUtils.getServiceRegistryClient().getAggregatedMicroservice(serviceId);
+        Microservice microservice = RegistryUtils.getAggregatedRemoteMicroservice(serviceId);
         if (microservice == null) {
           throw new IllegalArgumentException("service id not exists.");
         }
@@ -70,9 +70,9 @@ public class MicroserviceInstanceCache {
       return instances.get(key, new Callable<MicroserviceInstance>() {
 
         @Override
-        public MicroserviceInstance call() throws Exception {
-          MicroserviceInstance instance = RegistryUtils.getServiceRegistryClient()
-              .findServiceInstance(serviceId, instanceId);
+        public MicroserviceInstance call() {
+          MicroserviceInstance instance = RegistryUtils.getResultFromFirstValidServiceRegistry(
+              sr -> sr.getServiceRegistryClient().findServiceInstance(serviceId, instanceId));
           if (instance == null) {
             throw new IllegalArgumentException("instance id not exists.");
           }
