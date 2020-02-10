@@ -43,7 +43,7 @@ public class PathProcessorCreator implements ParamValueProcessorCreator {
     }
 
     @Override
-    public Object getValue(HttpServletRequest request) throws UnsupportedEncodingException {
+    public Object getValue(HttpServletRequest request) throws Exception {
       @SuppressWarnings("unchecked")
       Map<String, String> pathVarMap = (Map<String, String>) request.getAttribute(RestConst.PATH_PARAMETERS);
       if (pathVarMap == null) {
@@ -54,10 +54,7 @@ public class PathProcessorCreator implements ParamValueProcessorCreator {
       if (value == null) {
         return null;
       }
-      if (value.contains(":")) {
-        return convertValue(URLDecoder.decode(value, "UTF-8"), targetType);
-      }
-      return convertValue(HttpUtils.uriDecodePath(value), targetType);
+      return convertValue(HttpUtils.decodePathParam(value), targetType);
     }
 
     @Override
