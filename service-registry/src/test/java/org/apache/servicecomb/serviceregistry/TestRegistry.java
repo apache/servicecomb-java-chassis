@@ -22,7 +22,7 @@ import static org.apache.servicecomb.serviceregistry.RegistryUtils.PUBLISH_ADDRE
 import java.net.InetAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +79,7 @@ public class TestRegistry {
     inMemoryConfig.clear();
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void testDelegate() {
     ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
@@ -99,7 +100,7 @@ public class TestRegistry {
     Assert.assertEquals(RegistryUtils.getMicroservice().getServiceId(), instanceList.get(0).getServiceId());
 
     instanceList = RegistryUtils.findServiceInstance("default", "notExists", "0.0.1");
-    Assert.assertEquals(null, instanceList);
+    Assert.assertNull(instanceList);
 
     MicroserviceInstances microserviceInstances =
         RegistryUtils.findServiceInstances("default", "default", "0.0.1", "0");
@@ -193,7 +194,7 @@ public class TestRegistry {
     };
 
     Assert.assertEquals("rest://172.0.0.0:8080", RegistryUtils.getPublishAddress("rest", "172.0.0.0:8080"));
-    Assert.assertEquals(null, RegistryUtils.getPublishAddress("rest", null));
+    Assert.assertNull(RegistryUtils.getPublishAddress("rest", null));
 
     URI uri = new URI(RegistryUtils.getPublishAddress("rest", "0.0.0.0:8080"));
     Assert.assertEquals("1.1.1.1:8080", uri.getAuthority());
@@ -224,7 +225,7 @@ public class TestRegistry {
         };
       }
     };
-    String query = URLEncodedUtils.format(Arrays.asList(new BasicNameValuePair("country", "中 国")),
+    String query = URLEncodedUtils.format(Collections.singletonList(new BasicNameValuePair("country", "中 国")),
         StandardCharsets.UTF_8.name());
     Assert.assertEquals("rest://1.1.1.1:8080?" + query,
         RegistryUtils.getPublishAddress("rest", "172.0.0.0:8080?" + query));

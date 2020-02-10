@@ -17,14 +17,15 @@
 package org.apache.servicecomb.springboot.common;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryFilter;
@@ -33,9 +34,10 @@ import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTree;
 public abstract class AbstractDiscoveryClient {
 
   private Map<String, DiscoveryTree> discoveryTrees = new ConcurrentHashMapEx<>();
-  private DiscoveryFilter filter = null;
 
-  public AbstractDiscoveryClient(DiscoveryFilter filter){
+  private DiscoveryFilter filter;
+
+  public AbstractDiscoveryClient(DiscoveryFilter filter) {
     this.filter = filter;
   }
 
@@ -44,7 +46,7 @@ public abstract class AbstractDiscoveryClient {
     context.setInputParameters(serviceId);
 
     DiscoveryTree discoveryTree = discoveryTrees.computeIfAbsent(serviceId, key -> {
-      DiscoveryTree tree =  new DiscoveryTree();
+      DiscoveryTree tree = new DiscoveryTree();
       tree.addFilter(filter);
       return tree;
     });
@@ -58,14 +60,14 @@ public abstract class AbstractDiscoveryClient {
   }
 
   public List<String> getServices() {
-    ServiceRegistryClient client = RegistryUtils.getServiceRegistryClient();
-    List<Microservice> services = client.getAllMicroservices();
-    List<String> serviceIDList = new ArrayList<>();
-    if (null != services && !services.isEmpty()) {
-      for (Microservice service : services) {
-        serviceIDList.add(service.getServiceName());
+    Set<String> uniqueServiceNames = new LinkedHashSet<>();
+    RegistryUtils.executeOnEachServiceRegistry(sr -> {
+      List<Microservice> allMicroservices = sr.getServiceRegistryClient().getAllMicroservices();
+      if (null == allMicroservices || allMicroservices.isEmpty()) {
+        return;
       }
-    }
-    return serviceIDList;
+      allMicroservices.forEach(ms -> uniqueServiceNames.add(ms.getServiceName()));
+    });
+    return new ArrayList<>(uniqueServiceNames);
   }
 }

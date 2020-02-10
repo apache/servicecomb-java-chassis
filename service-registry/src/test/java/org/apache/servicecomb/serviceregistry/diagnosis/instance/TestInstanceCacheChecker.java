@@ -177,7 +177,7 @@ public class TestInstanceCacheChecker {
   public void check_findInstances_revisionNotMatch() {
     Holder<MicroserviceInstances> findHolder = createFindServiceInstancesResult();
 
-    new MockUp<ServiceRegistry>(serviceRegistry) {
+    new MockUp<RegistryUtils>() {
       @Mock
       MicroserviceInstances findServiceInstances(String appId, String serviceName,
           String versionRule, String revision) {

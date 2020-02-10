@@ -21,14 +21,18 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
@@ -43,7 +47,10 @@ import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
+import org.apache.servicecomb.serviceregistry.registry.cache.AggregateServiceRegistryCache;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache;
+import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache.MicroserviceCacheStatus;
+import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCacheKey;
 import org.apache.servicecomb.serviceregistry.swagger.SwaggerLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +62,9 @@ import com.netflix.config.DynamicPropertyFactory;
 public final class RegistryUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(RegistryUtils.class);
 
+  /**
+   * The default ServiceRegistry instance
+   */
   private static volatile ServiceRegistry serviceRegistry;
 
   // value is ip or {interface name}
@@ -68,6 +78,12 @@ public final class RegistryUtils {
 
   private static InstanceCacheManager instanceCacheManager = new InstanceCacheManagerNew(appManager);
 
+  private static final Map<String, ServiceRegistryConfig> EXTRA_SERVICE_REGISTRY_CONFIGS = new LinkedHashMap<>();
+
+  private static final Map<String, ServiceRegistry> EXTRA_SERVICE_REGISTRIES = new LinkedHashMap<>();
+
+  static AggregateServiceRegistryCache aggregateServiceRegistryCache;
+
   private RegistryUtils() {
   }
 
@@ -78,18 +94,43 @@ public final class RegistryUtils {
 
     MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
     MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
+    initializeServiceRegistries(microserviceDefinition);
+
+    initAggregateServiceRegistryCache();
+  }
+
+  private static void initAggregateServiceRegistryCache() {
+    ArrayList<ServiceRegistry> serviceRegistries = new ArrayList<>();
+    executeOnEachServiceRegistry(serviceRegistries::add);
+    aggregateServiceRegistryCache = new AggregateServiceRegistryCache(serviceRegistries);
+    aggregateServiceRegistryCache.setCacheRefreshedWatcher(refreshedCaches -> {
+      appManager.pullInstances();
+    });
+
+    executeOnEachServiceRegistry(
+        serviceRegistry -> serviceRegistry
+            .getEventBus()
+            .register(aggregateServiceRegistryCache));
+  }
+
+  private static void initializeServiceRegistries(MicroserviceDefinition microserviceDefinition) {
     serviceRegistry =
         ServiceRegistryFactory
             .create(EventManager.eventBus, ServiceRegistryConfig.INSTANCE, microserviceDefinition);
-    serviceRegistry.init();
+    EXTRA_SERVICE_REGISTRY_CONFIGS.forEach((k, v) -> {
+      ServiceRegistry serviceRegistry = ServiceRegistryFactory
+          .create(EventManager.getEventBus(), v, microserviceDefinition);
+      addExtraServiceRegistry(serviceRegistry);
+    });
+    executeOnEachServiceRegistry(ServiceRegistry::init);
   }
 
   public static void run() {
-    serviceRegistry.run();
+    executeOnEachServiceRegistry(ServiceRegistry::run);
   }
 
   public static void destroy() {
-    serviceRegistry.destroy();
+    executeOnEachServiceRegistry(ServiceRegistry::destroy);
   }
 
   /**
@@ -106,8 +147,10 @@ public final class RegistryUtils {
 
   public static void setServiceRegistry(ServiceRegistry serviceRegistry) {
     RegistryUtils.serviceRegistry = serviceRegistry;
+    initAggregateServiceRegistryCache();
   }
 
+  @Deprecated
   public static ServiceRegistryClient getServiceRegistryClient() {
     return serviceRegistry.getServiceRegistryClient();
   }
@@ -236,21 +279,35 @@ public final class RegistryUtils {
 
   public static List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
       String versionRule) {
-    return serviceRegistry.findServiceInstance(appId, serviceName, versionRule);
+    MicroserviceCache serviceCache = aggregateServiceRegistryCache.findServiceCache(
+        MicroserviceCacheKey.builder()
+            .appId(appId).serviceName(serviceName).env(getMicroservice().getEnvironment())
+            .build()
+    );
+    return MicroserviceCacheStatus.SERVICE_NOT_FOUND.equals(serviceCache.getStatus()) ?
+        null : serviceCache.getInstances();
   }
 
   // update microservice instance properties
   public static boolean updateInstanceProperties(Map<String, String> instanceProperties) {
-    return serviceRegistry.updateInstanceProperties(instanceProperties);
+    Holder<Boolean> resultHolder = new Holder<>(true);
+    executeOnEachServiceRegistry(sr -> {
+      boolean updateResult = sr.updateInstanceProperties(instanceProperties);
+      resultHolder.value = updateResult && resultHolder.value;
+    });
+    return resultHolder.value;
   }
 
   public static Microservice getMicroservice(String microserviceId) {
-    return serviceRegistry.getRemoteMicroservice(microserviceId);
+    return getResultFromFirstValidServiceRegistry(sr -> sr.getRemoteMicroservice(microserviceId));
   }
 
   public static MicroserviceInstances findServiceInstances(String appId, String serviceName,
       String versionRule, String revision) {
-    return serviceRegistry.findServiceInstances(appId, serviceName, versionRule, revision);
+    MicroserviceCache serviceCache = aggregateServiceRegistryCache.findServiceCache(
+        MicroserviceCacheKey.builder().appId(appId).serviceName(serviceName).env(getMicroservice().getEnvironment())
+            .build());
+    return convertCacheToMicroserviceInstances(serviceCache);
   }
 
   /**
@@ -288,11 +345,56 @@ public final class RegistryUtils {
   }
 
   public static String getAggregatedSchema(String microserviceId, String schemaId) {
-    return serviceRegistry.getServiceRegistryClient().getAggregatedSchema(microserviceId, schemaId);
+    return getResultFromFirstValidServiceRegistry(
+        sr -> sr.getServiceRegistryClient().getAggregatedSchema(microserviceId, schemaId));
   }
 
   public static Microservice getAggregatedRemoteMicroservice(String microserviceId) {
-    return serviceRegistry.getAggregatedRemoteMicroservice(microserviceId);
+    return getResultFromFirstValidServiceRegistry(
+        sr -> sr.getAggregatedRemoteMicroservice(microserviceId));
+  }
+
+  public static <T> T getResultFromFirstValidServiceRegistry(Function<ServiceRegistry, T> action) {
+    Holder<T> resultHolder = new Holder<>();
+    executeOnEachServiceRegistry(sr -> {
+      if (null == resultHolder.value) {
+        resultHolder.value = action.apply(sr);
+      }
+    });
+    return resultHolder.value;
+  }
+
+  public static void executeOnEachServiceRegistry(Consumer<ServiceRegistry> action) {
+    if (null != getServiceRegistry()) {
+      action.accept(getServiceRegistry());
+    }
+    if (!EXTRA_SERVICE_REGISTRIES.isEmpty()) {
+      EXTRA_SERVICE_REGISTRIES.forEach((k, v) -> action.accept(v));
+    }
+  }
+
+  public static void addExtraServiceRegistry(ServiceRegistry serviceRegistry) {
+    Objects.requireNonNull(serviceRegistry);
+    LOGGER.info("extra ServiceRegistry added: [{}], [{}]", serviceRegistry.getName(), serviceRegistry.getClass());
+    EXTRA_SERVICE_REGISTRIES.put(serviceRegistry.getName(), serviceRegistry);
+  }
+
+  /**
+   * Add the configuration object of {@link ServiceRegistry}.
+   * The corresponding {@link ServiceRegistry} instances are instantiated later in {@link #init()}
+   */
+  public static void addExtraServiceRegistryConfig(ServiceRegistryConfig serviceRegistryConfig) {
+    validateRegistryConfig(serviceRegistryConfig);
+    EXTRA_SERVICE_REGISTRY_CONFIGS.put(serviceRegistryConfig.getRegistryName(), serviceRegistryConfig);
+  }
+
+  /**
+   * @throws NullPointerException serviceRegistryConfig is null
+   * @throws IllegalArgumentException config value is illegal
+   */
+  public static void validateRegistryConfig(ServiceRegistryConfig serviceRegistryConfig) {
+    Objects.requireNonNull(serviceRegistryConfig);
+    validateRegistryName(serviceRegistryConfig.getRegistryName());
   }
 
   /**
