@@ -119,7 +119,7 @@ public class TestLoadBalanceHandler2 {
     Invocation invocation = new Invocation(referenceConfig, operationMeta, new HashMap<>());
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
-    ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
+    ServiceRegistry serviceRegistry = mockUpServiceRegistry();
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
@@ -268,7 +268,7 @@ public class TestLoadBalanceHandler2 {
     Invocation invocation = new Invocation(referenceConfig, operationMeta, new HashMap<>());
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
-    ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
+    ServiceRegistry serviceRegistry = mockUpServiceRegistry();
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
@@ -357,7 +357,7 @@ public class TestLoadBalanceHandler2 {
     Invocation invocation = new Invocation(referenceConfig, operationMeta, new HashMap<>());
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
-    ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
+    ServiceRegistry serviceRegistry = mockUpServiceRegistry();
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
@@ -484,7 +484,7 @@ public class TestLoadBalanceHandler2 {
     });
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
-    ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
+    ServiceRegistry serviceRegistry = mockUpServiceRegistry();
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
@@ -627,7 +627,7 @@ public class TestLoadBalanceHandler2 {
     });
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
-    ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
+    ServiceRegistry serviceRegistry = mockUpServiceRegistry();
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
@@ -778,7 +778,7 @@ public class TestLoadBalanceHandler2 {
     AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
-    ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
+    ServiceRegistry serviceRegistry = mockUpServiceRegistry();
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
@@ -991,5 +991,11 @@ public class TestLoadBalanceHandler2 {
         return instanceCacheManager;
       }
     };
+  }
+
+  private ServiceRegistry mockUpServiceRegistry() {
+    ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
+    when(serviceRegistry.getEventBus()).thenReturn(EventManager.getEventBus());
+    return serviceRegistry;
   }
 }

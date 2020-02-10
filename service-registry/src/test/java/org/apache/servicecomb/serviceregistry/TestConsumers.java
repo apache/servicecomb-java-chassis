@@ -71,23 +71,6 @@ public class TestConsumers extends TestRegistryBase {
     MicroserviceInstanceChangedEvent event = new MicroserviceInstanceChangedEvent();
     event.setKey(key);
 
-    // not match
-    key.setAppId(appId + "1");
-    key.setServiceName(serviceName + "1");
-    eventBus.post(event);
-    Assert.assertEquals(1, microserviceManager.getVersionsByName().size());
-
-    key.setAppId(appId + "1");
-    key.setServiceName(serviceName);
-    eventBus.post(event);
-    Assert.assertEquals(1, microserviceManager.getVersionsByName().size());
-
-    key.setAppId(appId);
-    key.setServiceName(serviceName + "1");
-    eventBus.post(event);
-    Assert.assertEquals(1, microserviceManager.getVersionsByName().size());
-
-    // match
     key.setAppId(appId);
     key.setServiceName(serviceName);
     eventBus.post(event);

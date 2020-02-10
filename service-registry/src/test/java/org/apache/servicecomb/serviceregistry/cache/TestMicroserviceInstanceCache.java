@@ -18,6 +18,7 @@
 package org.apache.servicecomb.serviceregistry.cache;
 
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
@@ -25,20 +26,25 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestMicroserviceInstanceCache {
   @Test
-  public void testGetOrCreateMicroservice(@Mocked RegistryUtils utils, @Mocked ServiceRegistryClient client,
+  public void testGetOrCreateMicroservice(@Mocked ServiceRegistry serviceRegistry,
+      @Mocked ServiceRegistryClient client,
       @Mocked Microservice microservice) {
-    new Expectations() {
-      {
-        RegistryUtils.getServiceRegistryClient();
-        result = client;
-        client.getAggregatedMicroservice("forkedid");
-        result = microservice;
-        client.getAggregatedMicroservice("forkedidNull");
-        result = null;
+    new MockUp<RegistryUtils>() {
+      @Mock
+      Microservice getAggregatedRemoteMicroservice(String microserviceId) {
+        if ("forkedid".equals(microserviceId)) {
+          return microservice;
+        }
+        if ("forkedidNull".equals(microserviceId)) {
+          return null;
+        }
+        throw new IllegalArgumentException("unrecognized param");
       }
     };
     Microservice cachedService = MicroserviceInstanceCache.getOrCreate("forkedid");
@@ -50,11 +56,18 @@ public class TestMicroserviceInstanceCache {
   }
 
   @Test
-  public void testGetOrCreateMicroserviceInstance(@Mocked RegistryUtils utils, @Mocked ServiceRegistryClient client,
+  public void testGetOrCreateMicroserviceInstance(@Mocked ServiceRegistry serviceRegistry,
+      @Mocked ServiceRegistryClient client,
       @Mocked MicroserviceInstance instance) {
+    new MockUp<RegistryUtils>() {
+      @Mock
+      ServiceRegistry getServiceRegistry() {
+        return serviceRegistry;
+      }
+    };
     new Expectations() {
       {
-        RegistryUtils.getServiceRegistryClient();
+        serviceRegistry.getServiceRegistryClient();
         result = client;
         client.findServiceInstance("forkedserviceid", "forkedinstanceid");
         result = instance;

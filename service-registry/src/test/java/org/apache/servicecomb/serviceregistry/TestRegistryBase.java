@@ -22,7 +22,6 @@ import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceManager;
-import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -30,7 +29,8 @@ import org.junit.Before;
 import com.google.common.eventbus.EventBus;
 
 import mockit.Deencapsulation;
-import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
 
 public class TestRegistryBase {
   protected ServiceRegistry serviceRegistry;
@@ -88,21 +88,21 @@ public class TestRegistryBase {
   protected void mockNotExist() {
     MicroserviceInstances microserviceInstances = new MicroserviceInstances();
     microserviceInstances.setMicroserviceNotExist(true);
-    new Expectations(RegistryUtils.getServiceRegistry()) {
-      {
-        RegistryUtils.getServiceRegistry()
-            .findServiceInstances(anyString, anyString, DefinitionConst.VERSION_RULE_ALL, anyString);
-        result = microserviceInstances;
+    new MockUp<RegistryUtils>() {
+      @Mock
+      MicroserviceInstances findServiceInstances(String appId, String serviceName,
+          String versionRule, String revision) {
+        return microserviceInstances;
       }
     };
   }
 
   protected void mockDisconnect() {
-    new Expectations(RegistryUtils.getServiceRegistry()) {
-      {
-        RegistryUtils.getServiceRegistry()
-            .findServiceInstances(anyString, anyString, DefinitionConst.VERSION_RULE_ALL, anyString);
-        result = null;
+    new MockUp<RegistryUtils>() {
+      @Mock
+      MicroserviceInstances findServiceInstances(String appId, String serviceName,
+          String versionRule, String revision) {
+        return null;
       }
     };
   }
