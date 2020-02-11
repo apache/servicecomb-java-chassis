@@ -531,8 +531,6 @@ For details, see their respective project links.
 * Netty/Resolver/DNS (io.netty:netty-resolver-dns:4.1.45.Final - http://netty.io/netty-resolver-dns/)
 * Netty/Resolver (io.netty:netty-resolver:4.1.45.Final - http://netty.io/netty-resolver/)
 * Netty/TomcatNative [BoringSSL - Static] (io.netty:netty-tcnative-boringssl-static:2.0.28.Final - https://github.com/netty/netty-tcnative/netty-tcnative-boringssl-static/)
-* Netty/Transport/Native/Epoll (io.netty:netty-transport-native-epoll:4.1.36.Final - http://netty.io/netty-transport-native-epoll/)
-* Netty/Transport/Native/Unix/Common (io.netty:netty-transport-native-unix-common:4.1.36.Final - http://netty.io/netty-transport-native-unix-common/)
 * Netty/Transport (io.netty:netty-transport:4.1.45.Final - http://netty.io/netty-transport/)
 * nio-multipart-parser (org.synchronoss.cloud:nio-multipart-parser:1.1.0 - https://github.com/synchronoss/nio-multipart/nio-multipart-parser)
 * Objenesis (org.objenesis:objenesis:2.5.1 - http://objenesis.org)
