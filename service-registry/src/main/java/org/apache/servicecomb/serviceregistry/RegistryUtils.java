@@ -25,6 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -52,10 +53,13 @@ import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache.MicroserviceCacheStatus;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCacheKey;
 import org.apache.servicecomb.serviceregistry.swagger.SwaggerLoader;
+import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceRegisterTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import com.google.common.base.Charsets;
+import com.google.common.eventbus.Subscribe;
 import com.google.common.hash.Hashing;
 import com.netflix.config.DynamicPropertyFactory;
 
@@ -115,14 +119,13 @@ public final class RegistryUtils {
 
   private static void initializeServiceRegistries(MicroserviceDefinition microserviceDefinition) {
     serviceRegistry =
-        ServiceRegistryFactory
-            .create(EventManager.eventBus, ServiceRegistryConfig.INSTANCE, microserviceDefinition);
+        ServiceRegistryFactory.create(ServiceRegistryConfig.INSTANCE, microserviceDefinition);
     EXTRA_SERVICE_REGISTRY_CONFIGS.forEach((k, v) -> {
-      ServiceRegistry serviceRegistry = ServiceRegistryFactory
-          .create(EventManager.getEventBus(), v, microserviceDefinition);
+      ServiceRegistry serviceRegistry = ServiceRegistryFactory.create(v, microserviceDefinition);
       addExtraServiceRegistry(serviceRegistry);
     });
     executeOnEachServiceRegistry(ServiceRegistry::init);
+    executeOnEachServiceRegistry(AfterServiceInstanceRegistryHandler::new);
   }
 
   public static void run() {
@@ -409,6 +412,33 @@ public final class RegistryUtils {
     if (!isNameValid) {
       throw new IllegalArgumentException(
           "Illegal registry name, the format should be " + ServiceRegistry.REGISTRY_NAME_FORMAT);
+    }
+  }
+
+  public static class AfterServiceInstanceRegistryHandler {
+    private static AtomicInteger instanceRegisterCounter = new AtomicInteger(EXTRA_SERVICE_REGISTRIES.size() + 1);
+
+    private ServiceRegistry serviceRegistry;
+
+    AfterServiceInstanceRegistryHandler(ServiceRegistry serviceRegistry) {
+      this.serviceRegistry = serviceRegistry;
+      serviceRegistry.getEventBus().register(this);
+    }
+
+    @Subscribe
+    public void afterRegistryInstance(MicroserviceInstanceRegisterTask microserviceInstanceRegisterTask) {
+      LOGGER.info("receive MicroserviceInstanceRegisterTask event of [{}]", serviceRegistry.getName());
+      if (StringUtils.isEmpty(serviceRegistry.getMicroserviceInstance().getInstanceId())) {
+        return;
+      }
+
+      LOGGER.info("ServiceRegistry[{}] has completed instance registry", serviceRegistry.getName());
+      EventManager.unregister(this);
+
+      if (instanceRegisterCounter.decrementAndGet() > 0) {
+        return;
+      }
+      EventManager.getEventBus().post(microserviceInstanceRegisterTask);
     }
   }
 }

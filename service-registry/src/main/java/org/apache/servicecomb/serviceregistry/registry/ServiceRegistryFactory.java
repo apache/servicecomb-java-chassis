@@ -52,8 +52,16 @@ public final class ServiceRegistryFactory {
     return new LocalServiceRegistry(eventBus, serviceRegistryConfig, microserviceDefinition).localFile(localFile);
   }
 
+  public static ServiceRegistry create(ServiceRegistryConfig serviceRegistryConfig,
+      MicroserviceDefinition microserviceDefinition) {
+    return create(null, serviceRegistryConfig, microserviceDefinition);
+  }
+
   public static ServiceRegistry create(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
       MicroserviceDefinition microserviceDefinition) {
+    if (null == eventBus) {
+      eventBus = new SimpleEventBus();
+    }
     String localModeFile = System.getProperty(LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY);
     if (!StringUtils.isEmpty(localModeFile)) {
       LOGGER.info(
