@@ -35,7 +35,6 @@ public final class HttpUtils {
    * @param headerValue example: attachment;filename=a.txt
    *
    */
-  // 
   public static String parseParamFromHeaderValue(String headerValue, String paramName) {
     if (StringUtils.isEmpty(headerValue)) {
       return null;
