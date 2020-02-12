@@ -17,11 +17,8 @@
 package org.apache.servicecomb.foundation.common.http;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
-import java.net.URLDecoder;
 import org.springframework.util.StringUtils;
 
 import com.google.common.net.UrlEscapers;
@@ -93,14 +90,6 @@ public final class HttpUtils {
    */
   public static String encodePathParam(String pathParam) {
     return UrlEscapers.urlPathSegmentEscaper().escape(pathParam);
-  }
-
-  public static String decodePathParam(String pathParam) throws UnsupportedEncodingException {
-    String res = uriDecodePath(pathParam);
-    if (StringUtils.isEmpty(res)) {
-      return URLDecoder.decode(pathParam, "UTF-8");
-    }
-    return res;
   }
 
   public static String uriDecodePath(String path) {
