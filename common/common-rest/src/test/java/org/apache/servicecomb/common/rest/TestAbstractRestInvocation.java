@@ -31,7 +31,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.RestMetaUtils;
@@ -54,6 +53,7 @@ import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.executor.ReactiveExecutor;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
@@ -477,15 +477,23 @@ public class TestAbstractRestInvocation {
     Assert.assertSame(ProduceProcessorManager.PLAIN_PROCESSOR, restInvocation.produceProcessor);
   }
 
+  public static class SendResponseQuietlyNormalEventHandler {
+    private Holder<InvocationFinishEvent> eventHolder;
+
+    public SendResponseQuietlyNormalEventHandler(Holder<InvocationFinishEvent> eventHolder) {
+      this.eventHolder = eventHolder;
+    }
+
+    @Subscribe
+    public void onFinished(InvocationFinishEvent event) {
+      eventHolder.value = event;
+    }
+  }
+
   @Test
   public void sendResponseQuietlyNormal(@Mocked Response response) {
     Holder<InvocationFinishEvent> eventHolder = new Holder<>();
-    Object subscriber = new Object() {
-      @Subscribe
-      public void onFinished(InvocationFinishEvent event) {
-        eventHolder.value = event;
-      }
-    };
+    SendResponseQuietlyNormalEventHandler subscriber = new SendResponseQuietlyNormalEventHandler(eventHolder);
     EventManager.register(subscriber);
 
     Holder<Response> result = new Holder<>();
@@ -950,15 +958,23 @@ public class TestAbstractRestInvocation {
     Assert.assertSame(rejectedExecutionException, holder.value);
   }
 
+  public static class ScheduleInvocationEventHandler {
+    private Holder<InvocationStartEvent> eventHolder;
+
+    public ScheduleInvocationEventHandler(Holder<InvocationStartEvent> eventHolder) {
+      this.eventHolder = eventHolder;
+    }
+
+    @Subscribe
+    public void onFinished(InvocationStartEvent event) {
+      eventHolder.value = event;
+    }
+  }
+
   @Test
   public void scheduleInvocationNormal(@Mocked OperationMeta operationMeta) {
     Holder<InvocationStartEvent> eventHolder = new Holder<>();
-    Object subscriber = new Object() {
-      @Subscribe
-      public void onStart(InvocationStartEvent event) {
-        eventHolder.value = event;
-      }
-    };
+    Object subscriber = new ScheduleInvocationEventHandler(eventHolder);
     EventManager.register(subscriber);
 
     Executor executor = new ReactiveExecutor();

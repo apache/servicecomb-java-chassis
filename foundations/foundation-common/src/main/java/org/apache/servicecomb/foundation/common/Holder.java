@@ -14,28 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.foundation.common;
 
-package org.apache.servicecomb.demo.springmvc.tests;
+// do not use javax.xml.ws.Holder, use this one. Because JDK 11 above do not have javax.ws.Holder
+public final class Holder<T> {
 
-import org.apache.servicecomb.core.SCBEngine;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
-import org.springframework.boot.SpringApplication;
-import org.springframework.test.context.junit4.SpringRunner;
+  /**
+   * The value contained in the holder.
+   */
+  public T value;
 
-@RunWith(SpringRunner.class)
-public class SpringMvcSpringSimplifiedMappingAnnotationIntegrationTest extends SpringMvcIntegrationTestBase {
-  @BeforeClass
-  public static void init() {
-    System.setProperty("spring.profiles.active", "SimplifiedMapping");
-    System.setProperty("servicecomb.uploads.directory", "/tmp");
-    setUpLocalRegistry();
-    SpringApplication.run(SpringMvcSpringMain.class);
+  /**
+   * Creates a new holder with a <code>null</code> value.
+   */
+  public Holder() {
   }
 
-  @AfterClass
-  public static void shutdown() {
-    SCBEngine.getInstance().destroy();
+  /**
+   * Create a new holder with the specified value.
+   *
+   * @param value The value to be stored in the holder.
+   */
+  public Holder(T value) {
+    this.value = value;
   }
 }

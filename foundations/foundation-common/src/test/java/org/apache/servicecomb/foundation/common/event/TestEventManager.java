@@ -47,7 +47,7 @@ public class TestEventManager {
     LogCollector collector = new LogCollector();
 
     test(this);
-    Assert.assertTrue(collector.getEvents().isEmpty());
+    Assert.assertTrue(collector.getEvents().isEmpty()); // ensure no warning logs
     collector.teardown();
   }
 
@@ -65,8 +65,39 @@ public class TestEventManager {
         iCount++;
       }
     };
-    test(listener);
-    Assert.assertTrue(collector.getEvents().isEmpty());
+    try {
+      test(listener);
+      Assert.fail();
+    } catch (IllegalStateException e) {
+      Assert.assertTrue(true);
+    }
+
+    collector.teardown();
+  }
+
+  @Test
+  public void anonymousListenerPublic() {
+    LogCollector collector = new LogCollector();
+    Object listener = new Object() {
+      @Subscribe
+      public void onObject(Object obj) {
+        objCount++;
+      }
+
+      @Subscribe
+      public void onInt(Integer obj) {
+        iCount++;
+      }
+    };
+    try {
+      test(listener);
+      Assert.fail();
+    } catch (IllegalStateException e) {
+      Assert.assertTrue(true);
+    }
+
+    // ensure logs: "LOGGER.warn("Failed to create lambda for method: {}, fallback to reflect.", method, throwable);"
+    Assert.assertTrue(!collector.getEvents().isEmpty());
     collector.teardown();
   }
 

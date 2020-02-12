@@ -48,11 +48,6 @@ import org.apache.servicecomb.foundation.common.utils.bean.ShortGetter;
 import org.apache.servicecomb.foundation.common.utils.bean.ShortSetter;
 
 public final class LambdaMetafactoryUtils {
-  private static Field allowedModesField;
-
-  private static final int ALL_MODES = (MethodHandles.Lookup.PRIVATE | MethodHandles.Lookup.PROTECTED
-      | MethodHandles.Lookup.PACKAGE | MethodHandles.Lookup.PUBLIC);
-
   private static final Lookup LOOKUP = MethodHandles.lookup();
 
   private static final Map<Class<?>, Class<?>> GETTER_MAP = new HashMap<>();
@@ -60,7 +55,6 @@ public final class LambdaMetafactoryUtils {
   private static final Map<Class<?>, Class<?>> SETTER_MAP = new HashMap<>();
 
   static {
-    enhanceLambda();
     initGetterSetterMap();
   }
 
@@ -84,20 +78,6 @@ public final class LambdaMetafactoryUtils {
     SETTER_MAP.put(double.class, DoubleSetter.class);
   }
 
-  private static void enhanceLambda() {
-    try {
-      Field modifiersField = Field.class.getDeclaredField("modifiers");
-      modifiersField.setAccessible(true);
-
-      allowedModesField = Lookup.class.getDeclaredField("allowedModes");
-      allowedModesField.setAccessible(true);
-      int modifiers = allowedModesField.getModifiers();
-      modifiersField.setInt(allowedModesField, modifiers & ~Modifier.FINAL);
-    } catch (Throwable e) {
-      throw new IllegalStateException("Failed to init LambdaMetafactoryUtils.", e);
-    }
-  }
-
   private LambdaMetafactoryUtils() {
   }
 
@@ -114,17 +94,14 @@ public final class LambdaMetafactoryUtils {
   @SuppressWarnings("unchecked")
   public static <T> T createLambda(Object instance, Method instanceMethod, Class<?> functionalIntfCls) {
     try {
-      Lookup lookup = LOOKUP.in(instanceMethod.getDeclaringClass());
-      allowedModesField.set(lookup, ALL_MODES);
-
       Method intfMethod = findAbstractMethod(functionalIntfCls);
-      MethodHandle methodHandle = lookup.unreflect(instanceMethod);
+      MethodHandle methodHandle = LOOKUP.unreflect(instanceMethod);
 
       MethodType intfMethodType = MethodType.methodType(intfMethod.getReturnType(), intfMethod.getParameterTypes());
       MethodType instanceMethodType = MethodType
           .methodType(instanceMethod.getReturnType(), instanceMethod.getParameterTypes());
       CallSite callSite = LambdaMetafactory.metafactory(
-          lookup,
+          LOOKUP,
           intfMethod.getName(),
           MethodType.methodType(functionalIntfCls, instance.getClass()),
           intfMethodType,
@@ -144,16 +121,13 @@ public final class LambdaMetafactoryUtils {
       return null;
     }
     try {
-      Lookup lookup = LOOKUP.in(instanceMethod.getDeclaringClass());
-      allowedModesField.set(lookup, ALL_MODES);
-
       Method intfMethod = findAbstractMethod(functionalIntfCls);
-      MethodHandle methodHandle = lookup.unreflect(instanceMethod);
+      MethodHandle methodHandle = LOOKUP.unreflect(instanceMethod);
 
       MethodType intfMethodType = MethodType.methodType(intfMethod.getReturnType(), intfMethod.getParameterTypes());
       MethodType instanceMethodType = methodHandle.type();
       CallSite callSite = LambdaMetafactory.metafactory(
-          lookup,
+          LOOKUP,
           intfMethod.getName(),
           MethodType.methodType(functionalIntfCls),
           intfMethodType,
@@ -174,7 +148,7 @@ public final class LambdaMetafactoryUtils {
   // slower than reflect directly
   @SuppressWarnings("unchecked")
   public static <C, F> Getter<C, F> createGetter(Field field) {
-    field.setAccessible(true);
+    checkAccess(field);
     return instance -> {
       try {
         return (F) field.get(instance);
@@ -184,14 +158,25 @@ public final class LambdaMetafactoryUtils {
     };
   }
 
-  public static <T> T createSetter(Method setMethod) throws Throwable {
+  private static void checkAccess(Field field) {
+    // This check is not accurate. Most of time package visible and protected access can be ignored, so simply do this.
+    if (!Modifier.isPublic(field.getModifiers()) || !Modifier.isPublic(field.getDeclaringClass().getModifiers())) {
+      throw new IllegalStateException(
+          String.format("Can not access field, a public field or and accessor is required."
+                  + "Declaring class is %s, field is %s",
+              field.getDeclaringClass().getName(),
+              field.getName()));
+    }
+  }
+
+  public static <T> T createSetter(Method setMethod) {
     Class<?> setterCls = SETTER_MAP.getOrDefault(setMethod.getParameterTypes()[0], Setter.class);
     return createLambda(setMethod, setterCls);
   }
 
   // slower than reflect directly
   public static <C, F> Setter<C, F> createSetter(Field field) {
-    field.setAccessible(true);
+    checkAccess(field);
     return (instance, value) -> {
       try {
         field.set(instance, value);

@@ -23,9 +23,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.CountDownLatch;
 
-import javax.xml.ws.Holder;
-
 import org.apache.commons.io.FileUtils;
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.stream.BufferInputStream;
 import org.junit.Assert;

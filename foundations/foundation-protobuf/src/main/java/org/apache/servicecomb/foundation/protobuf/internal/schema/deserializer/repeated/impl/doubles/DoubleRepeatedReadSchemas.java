@@ -37,20 +37,20 @@ public class DoubleRepeatedReadSchemas {
       AbstractPrimitiveReaders<double[], Double> readers) {
     JavaType javaType = propertyDescriptor.getJavaType();
     if (double[].class.equals(javaType.getRawClass())) {
-      return new DoublePrimitiveArraySchema<>(protoField, propertyDescriptor, readers);
+      return new PrimitiveArraySchema<>(protoField, propertyDescriptor, readers);
     }
 
     return RepeatedReadSchemas.create(protoField, propertyDescriptor, readers);
   }
 
-  static class DoublePrimitiveArraySchema<T> extends FieldSchema<T> {
+  static class PrimitiveArraySchema<T> extends FieldSchema<T> {
     private final Getter<T, double[]> getter;
 
     private final Setter<T, double[]> setter;
 
     private final AbstractPrimitiveReaders<double[], Double> readers;
 
-    public DoublePrimitiveArraySchema(Field protoField, PropertyDescriptor propertyDescriptor,
+    public PrimitiveArraySchema(Field protoField, PropertyDescriptor propertyDescriptor,
         AbstractPrimitiveReaders<double[], Double> readers) {
       super(protoField, propertyDescriptor.getJavaType());
       this.getter = propertyDescriptor.getGetter();

@@ -17,6 +17,7 @@
 package org.apache.servicecomb.foundation.common.event;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.function.Consumer;
 
 import org.apache.servicecomb.foundation.common.utils.LambdaMetafactoryUtils;
@@ -51,18 +52,20 @@ public class SimpleSubscriber {
       order = subscriberOrder.value();
     }
 
-    method.setAccessible(true);
     try {
       lambda = LambdaMetafactoryUtils.createLambda(instance, method, Consumer.class);
     } catch (Throwable throwable) {
       // because enhance LambdaMetafactoryUtils to support ALL_MODES by reflect
       // never run into this branch.
       // otherwise create a listener instance of anonymous class will run into this branch
-      LOGGER.warn("Failed to create lambda for method: {}, fallback to reflect.", method);
+      LOGGER.warn("Failed to create lambda for method: {}, fallback to reflect.", method, throwable);
+
+      checkAccess(method);
       lambda = event -> {
         try {
           method.invoke(instance, event);
         } catch (Throwable e) {
+          LOGGER.warn("Failed to call event listener {}.", method.getName());
           throw new IllegalStateException(e);
         }
       };
@@ -71,6 +74,19 @@ public class SimpleSubscriber {
     dispatcher = this::syncDispatch;
     if (method.getAnnotation(AllowConcurrentEvents.class) != null) {
       dispatcher = this::concurrentDispatch;
+    }
+  }
+
+  private static void checkAccess(Method method) {
+    // This check is not accurate. Most of time package visible and protected access can be ignored, so simply do this.
+    if (!Modifier.isPublic(method.getModifiers()) || !Modifier.isPublic(method.getDeclaringClass().getModifiers())) {
+      throw new IllegalStateException(
+          String.format(
+              "The event handler must be a public accessible method. NOTICE: "
+                  + "this is change from 2.0 and using higher version of JDK. "
+                  + "Declaring class is %s, method is %s",
+              method.getDeclaringClass().getName(),
+              method.getName()));
     }
   }
 

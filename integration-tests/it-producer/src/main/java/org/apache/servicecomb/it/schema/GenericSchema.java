@@ -20,8 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.ws.Holder;
-
+import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.Assert;

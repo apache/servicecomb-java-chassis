@@ -24,10 +24,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import org.apache.servicecomb.foundation.common.utils.bean.Getter;
 import org.apache.servicecomb.foundation.common.utils.bean.IntGetter;
 import org.apache.servicecomb.foundation.common.utils.bean.IntSetter;
-import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
@@ -84,10 +82,17 @@ public class TestLambdaMetafactoryUtils {
   @Test
   public void createGetterSetterByField() throws Throwable {
     Field f1 = Model.class.getDeclaredField("f1");
-    Getter<Model, Integer> getter = LambdaMetafactoryUtils.createGetter(f1);
-    Setter<Model, Integer> setter = LambdaMetafactoryUtils.createSetter(f1);
-
-    setter.set(model, 1);
-    Assert.assertEquals(1, (int) getter.get(model));
+    try {
+      LambdaMetafactoryUtils.createGetter(f1);
+      Assert.fail();
+    } catch (IllegalStateException e) {
+      Assert.assertTrue(true);
+    }
+    try {
+      LambdaMetafactoryUtils.createSetter(f1);
+      Assert.fail();
+    } catch (IllegalStateException e) {
+      Assert.assertTrue(true);
+    }
   }
 }

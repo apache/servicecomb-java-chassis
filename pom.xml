@@ -106,7 +106,7 @@
   </distributionManagement>
 
   <modules>
-    <module>java-chassis-dependencies</module>
+    <module>dependencies</module>
     <module>parents</module>
     <module>common</module>
     <module>foundations</module>
@@ -122,7 +122,7 @@
     <module>metrics</module>
     <module>dynamic-config</module>
     <module>archetypes</module>
-    <module>java-chassis-spring-boot</module>
+    <module>spring-boot</module>
     <module>inspector</module>
     <module>solutions</module>
     <module>clients</module>
@@ -531,7 +531,7 @@
         <skip-remote-resource>false</skip-remote-resource>
       </properties>
       <modules>
-        <module>java-chassis-distribution</module>
+        <module>distribution</module>
       </modules>
     </profile>
     <profile>

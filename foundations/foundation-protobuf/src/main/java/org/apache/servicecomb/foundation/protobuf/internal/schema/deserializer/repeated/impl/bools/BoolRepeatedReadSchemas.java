@@ -37,20 +37,20 @@ public class BoolRepeatedReadSchemas {
       AbstractPrimitiveReaders<boolean[], Boolean> readers) {
     JavaType javaType = propertyDescriptor.getJavaType();
     if (boolean[].class.equals(javaType.getRawClass())) {
-      return new BoolPrimitiveArrayRepeatedSchema<>(protoField, propertyDescriptor, readers);
+      return new BoolPrimitiveArray<>(protoField, propertyDescriptor, readers);
     }
 
     return RepeatedReadSchemas.create(protoField, propertyDescriptor, readers);
   }
 
-  static class BoolPrimitiveArrayRepeatedSchema<T> extends FieldSchema<T> {
+  static class BoolPrimitiveArray<T> extends FieldSchema<T> {
     private final Getter<T, boolean[]> getter;
 
     private final Setter<T, boolean[]> setter;
 
     private final AbstractPrimitiveReaders<boolean[], Boolean> readers;
 
-    public BoolPrimitiveArrayRepeatedSchema(Field protoField, PropertyDescriptor propertyDescriptor,
+    public BoolPrimitiveArray(Field protoField, PropertyDescriptor propertyDescriptor,
         AbstractPrimitiveReaders<boolean[], Boolean> readers) {
       super(protoField, propertyDescriptor.getJavaType());
       this.getter = propertyDescriptor.getGetter();
