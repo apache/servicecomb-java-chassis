@@ -272,6 +272,13 @@ You can find a copy of the License at licenses/LICENSE-epl-v10
 
 ================================================================
 This product bundles libraries which are licensed under the
+Eclipse Distribution License  v1.0
+You can find a copy of the License at licenses/LICENSE-edl-v10
+
+* Jakarta Activation (com.sun.activation:jakarta.activation:1.2.1 - http://www.aspectj.org)
+
+================================================================
+This product bundles libraries which are licensed under the
 Eclipse Public License v2.0.
 You can find a copy of the License at licenses/LICENSE-epl-v20
 
