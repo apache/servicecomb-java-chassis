@@ -17,6 +17,7 @@
 package org.apache.servicecomb.swagger.invocation.validator;
 
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -25,6 +26,8 @@ import javax.validation.ValidatorFactory;
 import javax.validation.executable.ExecutableValidator;
 import javax.validation.groups.Default;
 
+import com.netflix.config.DynamicProperty;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.extension.ProducerInvokeExtension;
@@ -41,7 +44,22 @@ public class ParameterValidator implements ProducerInvokeExtension {
   public <T> void beforeMethodInvoke(SwaggerInvocation invocation, SwaggerProducerOperation producerOperation,
       Object[] args)
       throws ConstraintViolationException {
-
+    // First get dynamic config, if dynamic config exists and is false, just return;
+    // if not, get this config from system property, environment variables, configuration file, and if it exists and is false, just return.
+    ConcurrentHashMap<String, DynamicProperty> dynamicConfigMap = ConfigUtil.getAllDynamicProperties();
+    String boolValue = "true";
+    DynamicProperty dynamicProperty = dynamicConfigMap.get("servicecomb.rest.parameter.validation.enabled");
+    if(dynamicProperty != null){
+      boolValue = dynamicProperty.getString();
+    } else {
+      Object obj = ConfigUtil.getProperty("servicecomb.rest.parameter.validation.enabled");
+      if(obj != null){
+        boolValue = (String) obj;
+      }
+    }
+    if (boolValue.equals("false")) {
+      return;
+    }
     if (null == executableValidator) {
       ValidatorFactory factory =
           Validation.byDefaultProvider()
