@@ -27,6 +27,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>handler-router</artifactId>
+  <name>Java Chassis::Handlers::Router</name>
 
   <dependencies>
     <dependency>

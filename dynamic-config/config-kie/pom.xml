@@ -21,21 +21,36 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
+    <artifactId>dynamic-config</artifactId>
     <groupId>org.apache.servicecomb</groupId>
-    <artifactId>java-chassis-parent</artifactId>
     <version>2.0.0-SNAPSHOT</version>
-    <relativePath>../parents/default</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>dynamic-config</artifactId>
-  <name>Java Chassis::Dynamic Config</name>
-  <packaging>pom</packaging>
-  <modules>
-    <module>config-apollo</module>
-    <module>config-cc</module>
-    <module>config-nacos</module>
-    <module>config-kie</module>
-  </modules>
+  <artifactId>config-kie</artifactId>
+  <name>Java Chassis::Dynamic Config::Kie</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-config</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>deployment</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-ssl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-vertx</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-codegen</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 </project>
