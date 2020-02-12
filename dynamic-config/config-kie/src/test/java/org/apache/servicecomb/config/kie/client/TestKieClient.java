@@ -123,23 +123,31 @@ public class TestKieClient {
   }
 
 
+  public static class ConfigRefreshExceptionEvent {
+    Map<String, String> map;
+
+    public ConfigRefreshExceptionEvent(Map<String, String> map) {
+      this.map = map;
+    }
+
+    @Subscribe
+    public void testMsg(Object event) {
+      if (event instanceof ConnFailEvent) {
+        map.put("result", "Fail event trigger");
+      }
+      if (event instanceof ConnSuccEvent) {
+        map.put("result", "Succ event trigger");
+      }
+    }
+  }
+
   @SuppressWarnings("unchecked")
   @Test
   public void testConfigRefreshException(@Mocked ClientPoolManager<HttpClientWithContext> clientMgr,
       @Mocked HttpClientWithContext httpClientWithContext) {
     KieConfigurationSourceImpl impl = new KieConfigurationSourceImpl();
     Map<String, String> map = new HashMap<>();
-    EventManager.register(new Object() {
-      @Subscribe
-      public void testMsg(Object event) {
-        if (event instanceof ConnFailEvent) {
-          map.put("result", "Fail event trigger");
-        }
-        if (event instanceof ConnSuccEvent) {
-          map.put("result", "Succ event trigger");
-        }
-      }
-    });
+    EventManager.register(new ConfigRefreshExceptionEvent(map));
     UpdateHandler updateHandler = impl.new UpdateHandler();
     HttpClientRequest request = Mockito.mock(HttpClientRequest.class);
     Mockito.when(request.headers()).thenReturn(MultiMap.caseInsensitiveMultiMap());

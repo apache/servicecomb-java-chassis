@@ -34,15 +34,10 @@ import org.junit.Test;
 public class TestKieConfigurationSource {
 
   @Test
-  public void testCreate() throws Exception {
+  public void testCreate() {
 
     KieConfigurationSourceImpl kieSource = new KieConfigurationSourceImpl();
-    kieSource.addUpdateListener(new WatchedUpdateListener() {
-      @Override
-      public void updateConfiguration(WatchedUpdateResult result) {
-        Assert.assertTrue(!result.getAdded().isEmpty());
-      }
-    });
+    kieSource.addUpdateListener(result -> Assert.assertTrue(!result.getAdded().isEmpty()));
     UpdateHandler udateHandler = Deencapsulation.getField(kieSource, UpdateHandler.class);
     Map<String, Object> addedItems = new HashMap<>();
     addedItems.put("testKey", "testValue");
@@ -50,15 +45,10 @@ public class TestKieConfigurationSource {
   }
 
   @Test
-  public void testUpdate() throws Exception {
+  public void testUpdate() {
 
     KieConfigurationSourceImpl kieSource = new KieConfigurationSourceImpl();
-    kieSource.addUpdateListener(new WatchedUpdateListener() {
-      @Override
-      public void updateConfiguration(WatchedUpdateResult result) {
-        Assert.assertTrue(!result.getChanged().isEmpty());
-      }
-    });
+    kieSource.addUpdateListener(result -> Assert.assertTrue(!result.getChanged().isEmpty()));
     UpdateHandler udateHandler = Deencapsulation.getField(kieSource, UpdateHandler.class);
     Map<String, Object> addedItems = new HashMap<>();
     addedItems.put("testKey", "testValue");
@@ -68,12 +58,7 @@ public class TestKieConfigurationSource {
   @Test
   public void testDelete() throws Exception {
     KieConfigurationSourceImpl kieSource = new KieConfigurationSourceImpl();
-    kieSource.addUpdateListener(new WatchedUpdateListener() {
-      @Override
-      public void updateConfiguration(WatchedUpdateResult result) {
-        Assert.assertTrue(!result.getDeleted().isEmpty());
-      }
-    });
+    kieSource.addUpdateListener(result -> Assert.assertTrue(!result.getDeleted().isEmpty()));
     UpdateHandler udateHandler = Deencapsulation.getField(kieSource, UpdateHandler.class);
     Map<String, Object> addedItems = new HashMap<>();
     addedItems.put("testKey", "testValue");
