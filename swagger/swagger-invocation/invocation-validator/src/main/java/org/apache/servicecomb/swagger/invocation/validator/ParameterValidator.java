@@ -25,6 +25,7 @@ import javax.validation.ValidatorFactory;
 import javax.validation.executable.ExecutableValidator;
 import javax.validation.groups.Default;
 
+import com.netflix.config.DynamicBooleanProperty;
 import com.netflix.config.DynamicPropertyFactory;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
@@ -36,6 +37,16 @@ import org.slf4j.LoggerFactory;
 public class ParameterValidator implements ProducerInvokeExtension {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ParameterValidator.class);
+  private static final String PARAM_VALIDATION_ENABLED = "servicecomb.rest.parameter.validation.enabled";
+  private final DynamicBooleanProperty paramValidationEnabled = DynamicPropertyFactory.getInstance()
+          .getBooleanProperty(PARAM_VALIDATION_ENABLED, true);
+
+  public ParameterValidator() {
+    paramValidationEnabled.addCallback(() -> {
+      boolean newValue = paramValidationEnabled.get();
+      LOGGER.info("{} changed from {} to {}", PARAM_VALIDATION_ENABLED, paramValidationEnabled, newValue);
+    });
+  }
 
   private static ExecutableValidator executableValidator;
 
@@ -43,37 +54,24 @@ public class ParameterValidator implements ProducerInvokeExtension {
   public <T> void beforeMethodInvoke(SwaggerInvocation invocation, SwaggerProducerOperation producerOperation,
       Object[] args)
       throws ConstraintViolationException {
-    // First get dynamic config, if dynamic config exists and is false, just return;
-    // if not, get this config from system property, environment variables, configuration file, and if it exists and is false, just return.
-    boolean bool = DynamicPropertyFactory.getInstance()
-            .getBooleanProperty("servicecomb.rest.parameter.validation.enabled", true).get();
-    if (bool) {
-      Object obj = ConfigUtil.getProperty("servicecomb.rest.parameter.validation.enabled");
-      if (obj != null) {
-        if ("false".equals((String) obj)) {
-          return;
-        }
+    if(paramValidationEnabled.get()){
+      if (null == executableValidator) {
+        ValidatorFactory factory =
+                Validation.byDefaultProvider()
+                        .configure()
+                        .parameterNameProvider(new DefaultParameterNameProvider())
+                        .buildValidatorFactory();
+        executableValidator = factory.getValidator().forExecutables();
       }
-    } else {
-      return;
-    }
-
-    if (null == executableValidator) {
-      ValidatorFactory factory =
-          Validation.byDefaultProvider()
-              .configure()
-              .parameterNameProvider(new DefaultParameterNameProvider())
-              .buildValidatorFactory();
-      executableValidator = factory.getValidator().forExecutables();
-    }
-    Set<ConstraintViolation<Object>> violations =
-        executableValidator.validateParameters(producerOperation.getProducerInstance(),
-            producerOperation.getProducerMethod(),
-            args,
-            Default.class);
-    if (violations.size() > 0) {
-      LOGGER.warn("Parameter validation failed : " + violations.toString());
-      throw new ConstraintViolationException(violations);
+      Set<ConstraintViolation<Object>> violations =
+              executableValidator.validateParameters(producerOperation.getProducerInstance(),
+                      producerOperation.getProducerMethod(),
+                      args,
+                      Default.class);
+      if (violations.size() > 0) {
+        LOGGER.warn("Parameter validation failed : " + violations.toString());
+        throw new ConstraintViolationException(violations);
+      }
     }
   }
 
