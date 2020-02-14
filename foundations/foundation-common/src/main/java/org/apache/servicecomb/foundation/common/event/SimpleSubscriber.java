@@ -106,8 +106,8 @@ public class SimpleSubscriber {
     try {
       dispatcher.accept(event);
     } catch (Throwable e) {
-      LOGGER.error("event process should not throw error. ", e);
       if (enableExceptionPropagation) {
+        LOGGER.error("event process should not throw error. ", e);
         throw e;
       }
     }
