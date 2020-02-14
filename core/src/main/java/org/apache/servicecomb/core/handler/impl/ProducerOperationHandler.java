@@ -22,7 +22,6 @@ import java.util.concurrent.CompletableFuture;
 
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.ExceptionUtils;
