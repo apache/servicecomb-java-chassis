@@ -20,16 +20,15 @@ APPLICATION_ID: nacostest
 service_description:
   name: nacos-test
   version: 1.0.1
-nacos:
-  config:
-    serverAddr: 127.0.0.1:8848
-    dataId: example
-    group: DEFAULT_GROUP
 
 servicecomb:
   service:
     registry:
       address: http://127.0.0.1:30100
+  nacos:
+    serverAddr: 127.0.0.1:8848
+    dataId: example
+    group: DEFAULT_GROUP
   rest:
     address: 0.0.0.0:8080
   highway:

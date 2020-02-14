@@ -24,11 +24,11 @@ public class NacosConfig {
 
   private static Configuration finalConfig;
 
-  private static final String DATA_ID = "nacos.config.dataId";
+  private static final String DATA_ID = "servicecomb.nacos.dataId";
 
-  private static final String SERVER_ADDR = "nacos.config.serverAddr";
+  private static final String SERVER_ADDR = "servicecomb.nacos.serverAddr";
 
-  private static final String GROUP = "nacos.config.group";
+  private static final String GROUP = "servicecomb.nacos.group";
 
   private NacosConfig() {
   }
