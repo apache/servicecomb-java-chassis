@@ -20,6 +20,7 @@ package org.apache.servicecomb.serviceregistry;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -33,6 +34,7 @@ import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManagerNew;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
@@ -41,6 +43,7 @@ import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
+import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache;
 import org.apache.servicecomb.serviceregistry.swagger.SwaggerLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -248,6 +251,36 @@ public final class RegistryUtils {
   public static MicroserviceInstances findServiceInstances(String appId, String serviceName,
       String versionRule, String revision) {
     return serviceRegistry.findServiceInstances(appId, serviceName, versionRule, revision);
+  }
+
+  /**
+   * for compatibility
+   */
+  public static MicroserviceInstances convertCacheToMicroserviceInstances(MicroserviceCache microserviceCache) {
+    MicroserviceInstances microserviceInstances = new MicroserviceInstances();
+    switch (microserviceCache.getStatus()) {
+      case SERVICE_NOT_FOUND:
+        microserviceInstances.setMicroserviceNotExist(true);
+        microserviceInstances.setNeedRefresh(false);
+        microserviceInstances.setRevision("");
+        microserviceInstances.setInstancesResponse(null);
+        return microserviceInstances;
+      case NO_CHANGE:
+        microserviceInstances.setMicroserviceNotExist(false);
+        microserviceInstances.setNeedRefresh(false);
+        microserviceInstances.setRevision(microserviceCache.getRevisionId());
+        return microserviceInstances;
+      case REFRESHED:
+        microserviceInstances.setMicroserviceNotExist(false);
+        microserviceInstances.setNeedRefresh(true);
+        microserviceInstances.setRevision(microserviceCache.getRevisionId());
+        FindInstancesResponse findInstancesResponse = new FindInstancesResponse();
+        findInstancesResponse.setInstances(new ArrayList<>(microserviceCache.getInstances()));
+        microserviceInstances.setInstancesResponse(findInstancesResponse);
+        return microserviceInstances;
+      default:
+        return null;
+    }
   }
 
   public static String calcSchemaSummary(String schemaContent) {
