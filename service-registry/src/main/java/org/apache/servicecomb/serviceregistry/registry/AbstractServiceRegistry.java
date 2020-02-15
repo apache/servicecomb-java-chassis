@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
+import org.apache.servicecomb.foundation.common.concurrency.SuppressedRunnableWrapper;
 import org.apache.servicecomb.serviceregistry.Features;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
@@ -48,6 +49,8 @@ import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCacheKey;
+import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCacheRefreshedEvent;
+import org.apache.servicecomb.serviceregistry.registry.cache.RefreshableServiceRegistryCache;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceServiceCenterTask;
 import org.apache.servicecomb.serviceregistry.task.ServiceCenterTask;
 import org.apache.servicecomb.serviceregistry.task.event.RecoveryEvent;
@@ -85,6 +88,8 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   private String name;
 
+  RefreshableServiceRegistryCache serviceRegistryCache;
+
   public AbstractServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
       MicroserviceDefinition microserviceDefinition) {
     setName(serviceRegistryConfig.getRegistryName());
@@ -104,6 +109,14 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     createServiceCenterTask();
 
     eventBus.register(this);
+
+    initCache();
+  }
+
+  private void initCache() {
+    serviceRegistryCache = new RefreshableServiceRegistryCache(microservice, srClient);
+    serviceRegistryCache.setCacheRefreshedWatcher(
+        caches -> eventBus.post(new MicroserviceCacheRefreshedEvent(caches)));
   }
 
   @Override
@@ -207,50 +220,15 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   public MicroserviceInstances findServiceInstances(String appId, String serviceName,
       String versionRule, String revision) {
-    MicroserviceInstances microserviceInstances = srClient.findServiceInstances(microservice.getServiceId(),
-        appId,
-        serviceName,
-        versionRule,
-        revision);
-
-    if (microserviceInstances == null) {
-      LOGGER.error("Can not find any instances from service center due to previous errors. service={}/{}/{}",
-          appId,
-          serviceName,
-          versionRule);
-      return null;
-    }
-
-    if (microserviceInstances.isMicroserviceNotExist()) {
-      return microserviceInstances;
-    }
-
-    if (!microserviceInstances.isNeedRefresh()) {
-      LOGGER.debug("instances revision is not changed, service={}/{}/{}", appId, serviceName, versionRule);
-      return microserviceInstances;
-    }
-
-    List<MicroserviceInstance> instances = microserviceInstances.getInstancesResponse().getInstances();
-    LOGGER.info("find instances[{}] from service center success. service={}/{}/{}, old revision={}, new revision={}",
-        instances.size(),
-        appId,
-        serviceName,
-        versionRule,
-        revision,
-        microserviceInstances.getRevision());
-    for (MicroserviceInstance instance : instances) {
-      LOGGER.info("service id={}, instance id={}, endpoints={}",
-          instance.getServiceId(),
-          instance.getInstanceId(),
-          instance.getEndpoints());
-    }
-    return microserviceInstances;
+    MicroserviceCache microserviceCache = serviceRegistryCache
+        .findServiceCache(MicroserviceCacheKey.builder()
+            .serviceName(serviceName).appId(appId).env(microservice.getEnvironment()).build());
+    return RegistryUtils.convertCacheToMicroserviceInstances(microserviceCache);
   }
 
   @Override
   public MicroserviceCache findMicroserviceCache(MicroserviceCacheKey microserviceCacheKey) {
-    // TODO find MicroserviceCache from ServiceRegistryCache
-    return null;
+    return serviceRegistryCache.findServiceCache(microserviceCacheKey);
   }
 
   @Override
@@ -342,17 +320,28 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   // post from watch eventloop, should refresh the exact microservice instances immediately
   @Subscribe
   public void onMicroserviceInstanceChanged(MicroserviceInstanceChangedEvent changedEvent) {
-    executorService.execute(() -> RegistryUtils.getAppManager().onMicroserviceInstanceChanged(changedEvent));
+    executorService.execute(new SuppressedRunnableWrapper(
+        () -> {
+          serviceRegistryCache.onMicroserviceInstanceChanged(changedEvent);
+          RegistryUtils.getAppManager().onMicroserviceInstanceChanged(changedEvent);
+        }));
   }
 
   // post from watch eventloop, should refresh all instances immediately
   @Subscribe
   public void serviceRegistryRecovery(RecoveryEvent event) {
-    executorService.execute(RegistryUtils.getAppManager()::pullInstances);
+    executorService.execute(() -> {
+      serviceRegistryCache.forceRefreshCache();
+      RegistryUtils.getAppManager().pullInstances();
+    });
   }
 
   @Subscribe
   public void onSafeModeChanged(SafeModeChangeEvent modeChangeEvent) {
-    executorService.execute(() -> RegistryUtils.getAppManager().onSafeModeChanged(modeChangeEvent));
+    executorService.execute(() -> {
+      LOGGER.warn("receive SafeModeChangeEvent, current mode={}", modeChangeEvent.getCurrentMode());
+      serviceRegistryCache.onSafeModeChanged(modeChangeEvent);
+      RegistryUtils.getAppManager().onSafeModeChanged(modeChangeEvent);
+    });
   }
 }
