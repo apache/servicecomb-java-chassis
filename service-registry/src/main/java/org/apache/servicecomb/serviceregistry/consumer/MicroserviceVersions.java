@@ -166,7 +166,7 @@ public class MicroserviceVersions {
       return;
     }
 
-    if (!microserviceInstances.isNeedRefresh()) {
+    if (null != revision && revision.equals(microserviceInstances.getRevision())) {
       return;
     }
 
