@@ -78,18 +78,10 @@ public class TestRemoteServiceRegistry {
       {
         definition.getConfiguration();
         result = ConfigUtil.createLocalConfig();
-        config.getIpPort();
-        result = ipPortList;
-        config.getTransport();
-        result = "rest";
-        config.isRegistryAutoDiscovery();
-        result = true;
         config.getHeartbeatInterval();
         result = 30;
         config.getInstancePullInterval();
         result = 30;
-        config.isWatch();
-        result = false;
         config.getRegistryName();
         result = "TestRegistry";
         SPIServiceUtils.getOrLoadSortedService(ServiceRegistryTaskInitializer.class);

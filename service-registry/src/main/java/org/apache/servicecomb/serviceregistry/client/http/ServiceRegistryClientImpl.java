@@ -61,6 +61,8 @@ import org.apache.servicecomb.serviceregistry.client.ClientException;
 import org.apache.servicecomb.serviceregistry.client.IpPortManager;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import org.apache.servicecomb.serviceregistry.task.HeartbeatResult;
+import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceHeartbeatTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,6 +70,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.eventbus.Subscribe;
 
 import io.netty.handler.codec.http.HttpStatusClass;
 import io.vertx.core.Handler;
@@ -93,8 +96,8 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
 
   private WebsocketClientUtil websocketClientUtil;
 
-  public ServiceRegistryClientImpl(IpPortManager ipPortManager, ServiceRegistryConfig serviceRegistryConfig) {
-    this.ipPortManager = ipPortManager;
+  public ServiceRegistryClientImpl(ServiceRegistryConfig serviceRegistryConfig) {
+    this.ipPortManager = new IpPortManager(serviceRegistryConfig);
     this.restClientUtil = new RestClientUtil(serviceRegistryConfig);
     this.websocketClientUtil = new WebsocketClientUtil(serviceRegistryConfig);
   }
@@ -942,5 +945,12 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
           e);
     }
     return false;
+  }
+
+  @Subscribe
+  public void onMicroserviceHeartbeatTask(MicroserviceInstanceHeartbeatTask event) {
+    if (HeartbeatResult.SUCCESS.equals(event.getHeartbeatResult())) {
+      ipPortManager.initAutoDiscovery();
+    }
   }
 }
