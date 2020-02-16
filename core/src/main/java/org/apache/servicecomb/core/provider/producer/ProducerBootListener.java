@@ -28,6 +28,7 @@ import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.foundation.common.utils.IOUtils;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.registry.BasePath;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
@@ -65,10 +66,14 @@ public class ProducerBootListener implements BootListener {
           microserviceMeta.getMicroserviceName(),
           schemaMeta.getSchemaId(),
           content);
-      microservice.addSchema(schemaMeta.getSchemaId(), content);
+      RegistryUtils.executeOnEachServiceRegistry(sr -> {
+        sr.getMicroservice().addSchema(schemaMeta.getSchemaId(), content);
+      });
     }
 
-    saveBasePaths(microserviceMeta, microservice);
+    RegistryUtils.executeOnEachServiceRegistry(sr -> {
+      saveBasePaths(microserviceMeta, sr.getMicroservice());
+    });
   }
 
   // just compatible to old 3rd components， servicecomb not use it......
