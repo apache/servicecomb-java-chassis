@@ -78,7 +78,7 @@ public class TestServiceRegistryClientImpl {
 
   @Before
   public void setUp() throws Exception {
-    oClient = new ServiceRegistryClientImpl(ipPortManager, ServiceRegistryConfig.buildFromConfiguration());
+    oClient = new ServiceRegistryClientImpl(ServiceRegistryConfig.buildFromConfiguration());
 
     new MockUp<RegistryUtils>() {
       @Mock

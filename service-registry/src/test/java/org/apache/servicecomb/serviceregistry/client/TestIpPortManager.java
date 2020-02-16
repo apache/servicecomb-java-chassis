@@ -48,16 +48,12 @@ public class TestIpPortManager {
 
   AbstractServiceRegistry serviceRegistry;
 
-  IpPortManager manager;
-
   @Before
   public void setup() {
     ConfigUtil.createLocalConfig();
     serviceRegistry = (AbstractServiceRegistry) ServiceRegistryFactory.createLocal();
     serviceRegistry.setServiceRegistryClient(srClient);
     serviceRegistry.init();
-
-    manager = serviceRegistry.getIpPortManager();
   }
 
   @Test
@@ -79,7 +75,8 @@ public class TestIpPortManager {
       }
     };
 
-    IpPortManager manager = new IpPortManager(config, cacheManager);
+    IpPortManager manager = new IpPortManager(config);
+    manager.instanceCacheManager = cacheManager;
     IpPort address1 = manager.getAvailableAddress();
 
     if (address1.getPort() == 9980) {

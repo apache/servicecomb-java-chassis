@@ -39,7 +39,6 @@ import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
-import org.apache.servicecomb.serviceregistry.client.IpPortManager;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -76,8 +75,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   protected Microservice microservice;
 
-  protected IpPortManager ipPortManager;
-
   protected ServiceRegistryClient srClient;
 
   protected ServiceRegistryConfig serviceRegistryConfig;
@@ -101,9 +98,9 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   @Override
   public void init() {
-    ipPortManager = new IpPortManager(serviceRegistryConfig, RegistryUtils.getInstanceCacheManager());
     if (srClient == null) {
       srClient = createServiceRegistryClient();
+      eventBus.register(srClient);
     }
 
     createServiceCenterTask();
@@ -141,10 +138,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   public void setServiceRegistryClient(ServiceRegistryClient serviceRegistryClient) {
     this.srClient = serviceRegistryClient;
-  }
-
-  public IpPortManager getIpPortManager() {
-    return ipPortManager;
   }
 
   @Override

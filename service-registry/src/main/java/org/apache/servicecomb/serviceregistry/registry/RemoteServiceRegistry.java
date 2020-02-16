@@ -27,13 +27,10 @@ import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
-import org.apache.servicecomb.serviceregistry.task.HeartbeatResult;
-import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceHeartbeatTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 
 public class RemoteServiceRegistry extends AbstractServiceRegistry {
   private static final Logger LOGGER = LoggerFactory.getLogger(RemoteServiceRegistry.class);
@@ -71,7 +68,7 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
 
   @Override
   protected ServiceRegistryClient createServiceRegistryClient() {
-    return new ServiceRegistryClientImpl(ipPortManager, serviceRegistryConfig);
+    return new ServiceRegistryClientImpl(serviceRegistryConfig);
   }
 
   @Override
@@ -93,13 +90,6 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
 
     for (ServiceRegistryTaskInitializer initializer : taskInitializers) {
       initializer.init(this);
-    }
-  }
-
-  @Subscribe
-  public void onMicroserviceHeartbeatTask(MicroserviceInstanceHeartbeatTask event) {
-    if (HeartbeatResult.SUCCESS.equals(event.getHeartbeatResult())) {
-      ipPortManager.initAutoDiscovery();
     }
   }
 
