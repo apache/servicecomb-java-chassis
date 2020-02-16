@@ -48,6 +48,7 @@ import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.VendorExtensions;
+import org.apache.servicecomb.foundation.common.concurrency.SuppressedRunnableWrapper;
 import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.log.LogMarkerLeakFixUtils;
@@ -55,6 +56,8 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.serviceregistry.swagger.SwaggerLoader;
@@ -77,6 +80,10 @@ public class SCBEngine {
   static final String CFG_KEY_WAIT_UP_TIMEOUT = "servicecomb.boot.waitUp.timeoutInMilliseconds";
 
   static final long DEFAULT_WAIT_UP_TIMEOUT = 10_000;
+
+  static final String CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC = "servicecomb.boot.turnDown.waitInSeconds";
+
+  static final long DEFAULT_TURN_DOWN_STATUS_WAIT_SEC = 0;
 
   private static final Object initializationLock = new Object();
 
@@ -315,8 +322,8 @@ public class SCBEngine {
   private void printServiceInfo() {
     StringBuilder serviceInfo = new StringBuilder();
     serviceInfo.append("Service information is shown below:\n");
-    for (int i = 0; i < bootUpInformationCollectors.size(); i++) {
-      serviceInfo.append(bootUpInformationCollectors.get(i).collect()).append('\n');
+    for (BootUpInformationCollector bootUpInformationCollector : bootUpInformationCollectors) {
+      serviceInfo.append(bootUpInformationCollector.collect()).append('\n');
     }
     LOGGER.info(serviceInfo.toString());
   }
@@ -387,6 +394,12 @@ public class SCBEngine {
     if (shutdownHook != null) {
       Runtime.getRuntime().removeShutdownHook(shutdownHook);
     }
+
+    //Step 0: turn down the status of this instance in service center,
+    // so that the consumers can remove this instance record in advance
+    turnDownInstanceStatus();
+    blockShutDownOperationForConsumerRefresh();
+
     //Step 1: notify all component stop invoke via BEFORE_CLOSE Event
     safeTriggerEvent(EventType.BEFORE_CLOSE);
 
@@ -416,6 +429,30 @@ public class SCBEngine {
 
     //Step 7: notify all component do clean works via AFTER_CLOSE Event
     safeTriggerEvent(EventType.AFTER_CLOSE);
+  }
+
+  private void turnDownInstanceStatus() {
+    RegistryUtils.executeOnEachServiceRegistry(sr -> new SuppressedRunnableWrapper(() -> {
+      MicroserviceInstance selfInstance = sr.getMicroserviceInstance();
+      sr.getServiceRegistryClient().updateMicroserviceInstanceStatus(
+          selfInstance.getServiceId(),
+          selfInstance.getInstanceId(),
+          MicroserviceInstanceStatus.DOWN);
+    }).run());
+  }
+
+  private void blockShutDownOperationForConsumerRefresh() {
+    try {
+      long turnDownWaitSeconds = DynamicPropertyFactory.getInstance()
+          .getLongProperty(CFG_KEY_TURN_DOWN_STATUS_WAIT_SEC, DEFAULT_TURN_DOWN_STATUS_WAIT_SEC)
+          .get();
+      if (turnDownWaitSeconds <= 0) {
+        return;
+      }
+      Thread.sleep(TimeUnit.SECONDS.toMillis(turnDownWaitSeconds));
+    } catch (InterruptedException e) {
+      LOGGER.warn("failed to block the shutdown procedure", e);
+    }
   }
 
   private void validAllInvocationFinished() throws InterruptedException {
