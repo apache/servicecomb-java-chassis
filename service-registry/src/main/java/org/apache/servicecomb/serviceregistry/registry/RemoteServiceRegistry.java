@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.servicecomb.foundation.common.concurrency.SuppressedRunnableWrapper;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
-import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.slf4j.Logger;
@@ -68,7 +67,7 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
 
   @Override
   protected ServiceRegistryClient createServiceRegistryClient() {
-    return new ServiceRegistryClientImpl(serviceRegistryConfig);
+    return serviceRegistryConfig.createServiceRegistryClient(this);
   }
 
   @Override

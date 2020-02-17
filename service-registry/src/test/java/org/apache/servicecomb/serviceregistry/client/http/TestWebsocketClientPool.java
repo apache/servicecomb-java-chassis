@@ -41,7 +41,11 @@ public class TestWebsocketClientPool {
   public void createHttpClientOptions_http2() {
     ArchaiusUtils.setProperty("servicecomb.service.registry.client.httpVersion", HttpVersion.HTTP_2.name());
 
-    HttpClientOptions httpClientOptions = WebsocketClientPool.getHttpClientOptionsFromConfigurations(
+    HttpClientOptions httpClientOptions = new WebsocketClientPool(ServiceRegistryConfig.buildFromConfiguration()) {
+      @Override
+      public void create() {
+      }
+    }.getHttpClientOptionsFromConfigurations(
         ServiceRegistryConfig.buildFromConfiguration());
 
     Assert.assertEquals(HttpVersion.HTTP_2, httpClientOptions.getProtocolVersion());
@@ -50,7 +54,11 @@ public class TestWebsocketClientPool {
 
   @Test
   public void createHttpClientOptions_notHttp2() {
-    HttpClientOptions httpClientOptions = WebsocketClientPool.getHttpClientOptionsFromConfigurations(
+    HttpClientOptions httpClientOptions = new WebsocketClientPool(ServiceRegistryConfig.buildFromConfiguration()) {
+      @Override
+      public void create() {
+      }
+    }.getHttpClientOptionsFromConfigurations(
         ServiceRegistryConfig.buildFromConfiguration());
 
     Assert.assertEquals(HttpVersion.HTTP_1_1, httpClientOptions.getProtocolVersion());

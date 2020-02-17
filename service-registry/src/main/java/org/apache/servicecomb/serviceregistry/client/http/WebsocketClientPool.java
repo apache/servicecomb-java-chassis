@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpVersion;
 
-public final class WebsocketClientPool extends AbstractClientPool {
+public class WebsocketClientPool extends AbstractClientPool {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WebsocketClientPool.class);
 
@@ -35,11 +35,11 @@ public final class WebsocketClientPool extends AbstractClientPool {
   public static final WebsocketClientPool INSTANCE = new WebsocketClientPool();
 
   private WebsocketClientPool() {
-    super(getHttpClientOptionsFromConfigurations(ServiceRegistryConfig.INSTANCE));
+    super(ServiceRegistryConfig.INSTANCE);
   }
 
   WebsocketClientPool(ServiceRegistryConfig serviceRegistryConfig) {
-    super(getHttpClientOptionsFromConfigurations(serviceRegistryConfig));
+    super(serviceRegistryConfig);
   }
 
   @Override
@@ -47,7 +47,8 @@ public final class WebsocketClientPool extends AbstractClientPool {
     return true;
   }
 
-  static HttpClientOptions getHttpClientOptionsFromConfigurations(ServiceRegistryConfig serviceRegistryConfig) {
+  @Override
+  protected HttpClientOptions getHttpClientOptionsFromConfigurations(ServiceRegistryConfig serviceRegistryConfig) {
     HttpVersion ver = serviceRegistryConfig.getHttpVersion();
     HttpClientOptions httpClientOptions = new HttpClientOptions();
     httpClientOptions.setProtocolVersion(ver);
@@ -59,7 +60,7 @@ public final class WebsocketClientPool extends AbstractClientPool {
     }
     if (serviceRegistryConfig.isSsl()) {
       LOGGER.debug("service center ws client performs requests over TLS");
-      VertxTLSBuilder.buildHttpClientOptions(ServiceRegistryConfig.SSL_KEY, httpClientOptions);
+      VertxTLSBuilder.buildHttpClientOptions(serviceRegistryConfig.getSslConfigTag(), httpClientOptions);
     }
     return httpClientOptions;
   }
