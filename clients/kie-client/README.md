@@ -14,7 +14,6 @@
     <dependency>
         <groupId>org.apache.servicecomb</groupId>
         <artifactId>kie-client</artifactId>
-        <version>2.0.0-SNAPSHOT</version>
     </dependency>
    ```
 
