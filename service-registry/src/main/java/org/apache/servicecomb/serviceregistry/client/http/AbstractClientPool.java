@@ -41,16 +41,22 @@ import io.vertx.core.http.HttpClientOptions;
 abstract class AbstractClientPool implements ClientPool {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractClientPool.class);
 
+  private ServiceRegistryConfig serviceRegistryConfig;
+
   private HttpClientOptions httpClientOptions;
 
   private ClientPoolManager<HttpClientWithContext> clientMgr;
 
-  AbstractClientPool(HttpClientOptions httpClientOptions) {
-    this.httpClientOptions = httpClientOptions;
+  AbstractClientPool(ServiceRegistryConfig serviceRegistryConfig) {
+    this.serviceRegistryConfig = serviceRegistryConfig;
+    this.httpClientOptions = getHttpClientOptionsFromConfigurations(serviceRegistryConfig);
     create();
   }
 
   protected abstract boolean isWorker();
+
+  protected abstract HttpClientOptions getHttpClientOptionsFromConfigurations(
+      ServiceRegistryConfig serviceRegistryConfig);
 
   public HttpClientWithContext getClient() {
     return this.clientMgr.findThreadBindClientPool();
@@ -64,7 +70,7 @@ abstract class AbstractClientPool implements ClientPool {
 
     // 这里面是同步接口，且好像直接在事件线程中用，保险起见，先使用独立的vertx实例
     VertxOptions vertxOptions = new VertxOptions()
-        .setAddressResolverOptions(AddressResolverConfig.getAddressResover(ServiceRegistryConfig.SSL_KEY))
+        .setAddressResolverOptions(AddressResolverConfig.getAddressResover(serviceRegistryConfig.getSslConfigTag()))
         .setEventLoopPoolSize(property.get());
     Vertx vertx = VertxUtils.getOrCreateVertxByName("registry", vertxOptions);
     clientMgr = new ClientPoolManager<>(vertx, new HttpClientPoolFactory(httpClientOptions));

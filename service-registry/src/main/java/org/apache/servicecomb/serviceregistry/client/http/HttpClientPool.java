@@ -27,7 +27,7 @@ import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpVersion;
 import io.vertx.core.net.ProxyOptions;
 
-final class HttpClientPool extends AbstractClientPool {
+class HttpClientPool extends AbstractClientPool {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(HttpClientPool.class);
 
@@ -37,11 +37,11 @@ final class HttpClientPool extends AbstractClientPool {
   public static final HttpClientPool INSTANCE = new HttpClientPool();
 
   private HttpClientPool() {
-    super(getHttpClientOptionsFromConfigurations(ServiceRegistryConfig.INSTANCE));
+    super(ServiceRegistryConfig.INSTANCE);
   }
 
   HttpClientPool(ServiceRegistryConfig serviceRegistryConfig) {
-    super(getHttpClientOptionsFromConfigurations(serviceRegistryConfig));
+    super(serviceRegistryConfig);
   }
 
   @Override
@@ -49,7 +49,8 @@ final class HttpClientPool extends AbstractClientPool {
     return false;
   }
 
-  static HttpClientOptions getHttpClientOptionsFromConfigurations(ServiceRegistryConfig serviceRegistryConfig) {
+  @Override
+  protected HttpClientOptions getHttpClientOptionsFromConfigurations(ServiceRegistryConfig serviceRegistryConfig) {
     HttpVersion ver = serviceRegistryConfig.getHttpVersion();
     HttpClientOptions httpClientOptions = new HttpClientOptions();
     httpClientOptions.setProtocolVersion(ver);
@@ -61,7 +62,7 @@ final class HttpClientPool extends AbstractClientPool {
       proxy.setPort(serviceRegistryConfig.getProxyPort());
       proxy.setUsername(serviceRegistryConfig.getProxyUsername());
       proxy.setPassword(
-          Encryptions.decode(serviceRegistryConfig.getProxyPasswd(), ServiceRegistryConfig.PROXY_KEY));
+          Encryptions.decode(serviceRegistryConfig.getProxyPasswd(), serviceRegistryConfig.getProxyConfigTag()));
       httpClientOptions.setProxyOptions(proxy);
     }
     if (ver == HttpVersion.HTTP_2) {
@@ -70,7 +71,7 @@ final class HttpClientPool extends AbstractClientPool {
     }
     if (serviceRegistryConfig.isSsl()) {
       LOGGER.debug("service center client performs requests over TLS");
-      VertxTLSBuilder.buildHttpClientOptions(ServiceRegistryConfig.SSL_KEY, httpClientOptions);
+      VertxTLSBuilder.buildHttpClientOptions(serviceRegistryConfig.getSslConfigTag(), httpClientOptions);
     }
     return httpClientOptions;
   }

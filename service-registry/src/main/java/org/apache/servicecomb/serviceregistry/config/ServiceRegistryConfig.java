@@ -19,10 +19,13 @@ package org.apache.servicecomb.serviceregistry.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
+import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl;
 
 import io.vertx.core.http.HttpVersion;
 
@@ -141,7 +144,17 @@ public final class ServiceRegistryConfig {
 
   private String proxyPasswd;
 
+  private String sslConfigTag = SSL_KEY;
+
+  private String proxyConfigTag = PROXY_KEY;
+
   private List<AuthHeaderProvider> authHeaderProviders;
+
+  private Function<ServiceRegistry, ServiceRegistryClient> serviceRegistryClientConstructor =
+      serviceRegistry -> new ServiceRegistryClientImpl(this);
+
+  public ServiceRegistryConfig() {
+  }
 
   /**
    * Read the service registry related configurations and build the {@link ServiceRegistryConfig}
@@ -417,6 +430,24 @@ public final class ServiceRegistryConfig {
     return this;
   }
 
+  public String getSslConfigTag() {
+    return sslConfigTag;
+  }
+
+  public ServiceRegistryConfig setSslConfigTag(String sslConfigTag) {
+    this.sslConfigTag = sslConfigTag;
+    return this;
+  }
+
+  public String getProxyConfigTag() {
+    return proxyConfigTag;
+  }
+
+  public ServiceRegistryConfig setProxyConfigTag(String proxyConfigTag) {
+    this.proxyConfigTag = proxyConfigTag;
+    return this;
+  }
+
   public List<AuthHeaderProvider> getAuthHeaderProviders() {
     return authHeaderProviders;
   }
@@ -425,5 +456,15 @@ public final class ServiceRegistryConfig {
       List<AuthHeaderProvider> authHeaderProviders) {
     this.authHeaderProviders = authHeaderProviders;
     return this;
+  }
+
+  public ServiceRegistryConfig setServiceRegistryClientConstructor(
+      Function<ServiceRegistry, ServiceRegistryClient> serviceRegistryClientConstructor) {
+    this.serviceRegistryClientConstructor = serviceRegistryClientConstructor;
+    return this;
+  }
+
+  public ServiceRegistryClient createServiceRegistryClient(ServiceRegistry serviceRegistry) {
+    return this.serviceRegistryClientConstructor.apply(serviceRegistry);
   }
 }
