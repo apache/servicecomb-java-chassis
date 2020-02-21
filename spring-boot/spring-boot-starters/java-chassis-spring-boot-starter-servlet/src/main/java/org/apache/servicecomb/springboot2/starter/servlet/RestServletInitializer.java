@@ -41,7 +41,7 @@ public class RestServletInitializer
     implements WebServerFactoryCustomizer<AbstractConfigurableWebServerFactory>, ServletContextInitializer {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestServletInitializer.class);
 
-  private AbstractConfigurableWebServerFactory factory;
+  private AbstractConfigurableWebServerFactory factory = null;
 
   @Override
   public void customize(AbstractConfigurableWebServerFactory factory) {
@@ -51,21 +51,28 @@ public class RestServletInitializer
   @Override
   @SuppressWarnings("try")
   public void onStartup(ServletContext servletContext) throws ServletException {
-    if (factory.getPort() == 0) {
-      LOGGER.warn(
-          "spring boot embed web container listen port is 0, serviceComb will not use container's port to handler RESTful request.");
+    if (StringUtils.isEmpty(ServletConfig.getServletUrlPattern())) {
+      // ensure the servlet will be instantiated
+      Configuration configuration = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
+      configuration.setProperty(ServletConfig.KEY_SERVLET_URL_PATTERN, ServletConfig.DEFAULT_URL_PATTERN);
+    }
+
+    if (this.factory == null) {
+      // when running in external tomcat, WebServerFactoryCustomizer will not be available, but now tomcat
+      // is already listening and we can call ServletUtils.init directly.
+      ServletUtils.init(servletContext);
       return;
     }
 
-    // web container did not did listen now.
+    if (factory.getPort() == 0) {
+      LOGGER.warn(
+          "spring boot embedded web container listen port is 0, ServiceComb will not use container's port to handler REST request.");
+      return;
+    }
+
+    // when running in embedded tomcat, web container did not listen now. Call ServletUtils.init needs server is ready,
     // so mock to listen, and then close.
     try (ServerSocket ss = new ServerSocket(factory.getPort(), 0, factory.getAddress())) {
-      if (StringUtils.isEmpty(ServletConfig.getServletUrlPattern())) {
-        // ensure the servlet will be instantiated
-        Configuration configuration = (Configuration) DynamicPropertyFactory.getBackingConfigurationSource();
-        configuration.setProperty(ServletConfig.KEY_SERVLET_URL_PATTERN, ServletConfig.DEFAULT_URL_PATTERN);
-      }
-
       ServletUtils.init(servletContext);
     } catch (IOException e) {
       throw new ServletException(e);
