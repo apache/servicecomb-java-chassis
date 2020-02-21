@@ -19,14 +19,14 @@ package org.apache.servicecomb.it.testcase;
 
 import static org.junit.Assert.fail;
 
+import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.base.Strings;
-
-import io.netty.handler.codec.TooLongFrameException;
 
 public class TestRestVertxTransportConfig {
   // GET /v1/restServerConfig/testMaxInitialLineLength?q=...... HTTP/1.1
@@ -85,8 +85,8 @@ public class TestRestVertxTransportConfig {
       consumers.getIntf().testClientReceiveHeaderSize(100001 - RESPONSE_HEADER.length());
       fail("an exception is expected!");
     } catch (InvocationException e) {
-      Assert.assertEquals(TooLongFrameException.class, e.getCause().getClass());
-      Assert.assertEquals("HTTP header is larger than 10000 bytes.", e.getCause().getMessage());
+      Assert.assertThat(ExceptionUtils.getExceptionMessageWithoutTrace(e),
+          CoreMatchers.containsString("HTTP header is larger than 10000 bytes."));
     }
   }
 }
