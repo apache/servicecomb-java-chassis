@@ -19,6 +19,7 @@ package org.apache.servicecomb.common.rest.definition.path;
 
 import java.util.Map;
 
+import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.common.rest.definition.RestParam;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder.URLPathStringBuilder;
 import org.apache.servicecomb.foundation.common.http.HttpUtils;
@@ -33,8 +34,15 @@ public class PathVarParamWriter extends AbstractUrlParamWriter {
 
   @Override
   public void write(URLPathStringBuilder builder, Map<String, Object> args) throws Exception {
-    String paramValue = getParamValue(args).toString();
-    String encodedPathParam = HttpUtils.encodePathParam(paramValue);
+    if (getParamValue(args) == null) {
+      throw new IllegalArgumentException("path parameter can not be null.");
+    }
+    String encodedPathParam = encodeNotNullValue(getParamValue(args));
     builder.appendPath(encodedPathParam);
+  }
+
+  private String encodeNotNullValue(Object value) throws Exception {
+    String strValue = RestObjectMapperFactory.getRestObjectMapper().convertToString(value);
+    return HttpUtils.encodePathParam(strValue);
   }
 }

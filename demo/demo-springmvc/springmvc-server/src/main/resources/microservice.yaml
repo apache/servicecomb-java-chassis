@@ -70,6 +70,7 @@ servicecomb:
     name: myDC
     region: my-Region
     availableZone: my-Zone
+  codec.printErrorMessage: true
 #########SSL options
 ssl.protocols: TLSv1.2
 ssl.authPeer: true
