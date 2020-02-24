@@ -94,7 +94,7 @@ public class TestVertxMetersInitializer {
     @Override
     public void start(Future<Void> startFuture) {
       HttpClient client = vertx.createHttpClient();
-      client.post(port, "127.127.127.127", "/").handler(resp -> {
+      client.post(port, "127.0.0.1", "/").handler(resp -> {
         resp.bodyHandler((buffer) -> {
           startFuture.complete();
         });
@@ -174,7 +174,7 @@ public class TestVertxMetersInitializer {
         + "      remote                connectCount disconnectCount queue         connections send(Bps) receive(Bps)\n";
     if (printDetail) {
       expect += String.format(
-          "      127.127.127.127:%-5s 1            0               0             1           4         21\n",
+          "      127.0.0.1:%-5s       1            0               0             1           4         21\n",
           port);
     }
     expect += ""
