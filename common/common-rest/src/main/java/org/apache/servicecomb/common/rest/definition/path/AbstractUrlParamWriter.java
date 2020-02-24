@@ -25,6 +25,13 @@ public abstract class AbstractUrlParamWriter implements UrlParamWriter {
   protected RestParam param;
 
   protected Object getParamValue(Map<String, Object> args) {
+    if (param == null) {
+      // Wrong server definition
+      //  @GetMapping(path = "/getLocalDateTime/{paramX}")
+      //  public LocalDateTime getLocalDateTimePath(@PathParam("paramY") LocalDateTime date) {
+      throw new IllegalArgumentException("Path parameter name not valid in provider. Check if provider "
+          + "path pattern has the parameter name.");
+    }
     return args.get(param.getParamName());
   }
 }

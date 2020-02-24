@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import io.vertx.core.json.JsonObject;
 
@@ -74,6 +75,7 @@ public class RestObjectMapper extends AbstractRestObjectMapper {
     // custom types
     module.addSerializer(JsonObject.class, new JsonObjectSerializer());
     registerModule(module);
+    registerModule(new JavaTimeModule());
   }
 
   @Override
