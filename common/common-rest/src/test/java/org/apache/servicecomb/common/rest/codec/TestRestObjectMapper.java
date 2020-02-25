@@ -20,6 +20,7 @@ package org.apache.servicecomb.common.rest.codec;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import org.apache.servicecomb.foundation.common.utils.RestObjectMapper;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.common.rest.codec;
+package org.apache.servicecomb.foundation.common.utils;
 
 import java.io.IOException;
 import java.text.FieldPosition;

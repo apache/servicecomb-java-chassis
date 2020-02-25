@@ -21,7 +21,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.concurrent.Callable;
 
-import org.apache.servicecomb.common.rest.codec.RestObjectMapper;
+import org.apache.servicecomb.foundation.common.utils.RestObjectMapper;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.junit.Assert;
 import org.junit.Test;
