@@ -19,6 +19,8 @@ package org.apache.servicecomb.common.rest.codec;
 
 import java.util.List;
 
+import org.apache.servicecomb.foundation.common.utils.AbstractRestObjectMapper;
+import org.apache.servicecomb.foundation.common.utils.RestObjectMapper;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 
 import com.fasterxml.jackson.databind.Module;

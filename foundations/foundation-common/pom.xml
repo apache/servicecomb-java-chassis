@@ -91,7 +91,14 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>foundation-test-scaffolding</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.vertx</groupId>
+      <artifactId>vertx-core</artifactId>
+    </dependency>
     <!-- some unit test case depend on log4j1, so set this dependency after test scope area -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>

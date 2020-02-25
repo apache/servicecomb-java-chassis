@@ -18,6 +18,8 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.sc
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoField;
 import java.util.Date;
 
@@ -34,10 +36,6 @@ public class Int64WriteSchemas {
   public static <T> FieldSchema<T> create(Field protoField, PropertyDescriptor propertyDescriptor) {
     if (long.class.equals(propertyDescriptor.getJavaType().getRawClass())) {
       return new Int64PrimitiveSchema<>(protoField, propertyDescriptor);
-    }
-
-    if (Long.class.equals(propertyDescriptor.getJavaType().getRawClass())) {
-      return new Int64Schema<>(protoField, propertyDescriptor);
     }
 
     return new Int64Schema<>(protoField, propertyDescriptor);
@@ -78,6 +76,12 @@ public class Int64WriteSchemas {
 
       if (value instanceof LocalDate) {
         long parsedValue = ((LocalDate) value).getLong(ChronoField.EPOCH_DAY);
+        output.writeScalarInt64(tag, tagSize, parsedValue);
+        return;
+      }
+
+      if (value instanceof LocalDateTime) {
+        long parsedValue = ((LocalDateTime) value).toInstant(ZoneOffset.UTC).toEpochMilli();
         output.writeScalarInt64(tag, tagSize, parsedValue);
         return;
       }

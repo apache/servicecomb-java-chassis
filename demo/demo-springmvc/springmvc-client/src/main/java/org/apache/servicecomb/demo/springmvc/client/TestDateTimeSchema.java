@@ -54,7 +54,7 @@ public class TestDateTimeSchema implements CategorizedTestCase {
 
   @Override
   public void testRestTransport() throws Exception {
-    testDateTimeSchema();
+
   }
 
   @Override
@@ -64,7 +64,7 @@ public class TestDateTimeSchema implements CategorizedTestCase {
 
   @Override
   public void testAllTransport() throws Exception {
-
+    testDateTimeSchema();
   }
 
   private void testDateTimeSchema() {

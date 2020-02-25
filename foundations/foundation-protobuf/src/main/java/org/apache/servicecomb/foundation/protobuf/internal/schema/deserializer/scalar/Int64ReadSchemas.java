@@ -17,11 +17,13 @@
 package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 
 import org.apache.servicecomb.foundation.common.utils.bean.LongSetter;
-import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
 import org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.scalar.AbstractScalarReadSchemas.AbstractLongSchema;
 
@@ -38,14 +40,7 @@ public class Int64ReadSchemas {
       return new LongFiledLongPrimitiveSchema<>(protoField, propertyDescriptor);
     }
 
-    if (Long.class.equals(javaType.getRawClass()) || javaType.isJavaLangObject()
-        || Date.class.equals(javaType.getRawClass())
-        || LocalDate.class.equals(javaType.getRawClass())) {
-      return new Int64Schema<>(protoField, propertyDescriptor);
-    }
-
-    ProtoUtils.throwNotSupportMerge(protoField, propertyDescriptor.getJavaType());
-    return null;
+    return new Int64Schema<>(protoField, propertyDescriptor);
   }
 
   private static class Int64Schema<T> extends AbstractLongSchema<T> {
@@ -60,6 +55,8 @@ public class Int64ReadSchemas {
         setter.set(message, new Date(value));
       } else if (LocalDate.class.equals(javaType.getRawClass())) {
         setter.set(message, LocalDate.ofEpochDay(value));
+      } else if (LocalDateTime.class.equals(javaType.getRawClass())) {
+        setter.set(message, LocalDateTime.ofInstant(Instant.ofEpochMilli(value), ZoneOffset.UTC));
       } else {
         setter.set(message, value);
       }
