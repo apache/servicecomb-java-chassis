@@ -43,7 +43,6 @@ import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.api.response.GetSchemasResponse;
 import org.apache.servicecomb.serviceregistry.api.response.GetServiceResponse;
 import org.apache.servicecomb.serviceregistry.client.ClientException;
-import org.apache.servicecomb.serviceregistry.client.IpPortManager;
 import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl.ResponseWrapper;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
@@ -69,9 +68,6 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestServiceRegistryClientImpl {
-  @Mocked
-  private IpPortManager ipPortManager;
-
   private ServiceRegistryClientImpl oClient = null;
 
   private Microservice microservice = new Microservice();
@@ -161,6 +157,14 @@ public class TestServiceRegistryClientImpl {
 
   @Test
   public void testRegisterSchemaNoResponse() {
+    new MockUp<RestClientUtil>() {
+      @Mock
+      void put(IpPort ipPort, String uri, RequestParam requestParam,
+          Handler<RestResponse> responseHandler) {
+        // do nothing to mock null response
+      }
+    };
+
     new RegisterSchemaTester() {
       void doRun(java.util.List<LoggingEvent> events) {
         oClient.registerSchema("msid", "schemaId", "content");
