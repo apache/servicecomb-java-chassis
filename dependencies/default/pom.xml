@@ -39,7 +39,6 @@
     <assertj.version>3.11.1</assertj.version>
     <brave.version>5.6.0</brave.version>
     <classmate.version>1.5.0</classmate.version>
-    <commons-beanutils.version>1.9.3</commons-beanutils.version>
     <commons-configuration.version>1.10</commons-configuration.version>
     <commons-io.version>2.6</commons-io.version>
     <commons-lang.version>2.6</commons-lang.version>
@@ -401,12 +400,6 @@
         <groupId>com.thoughtworks.xstream</groupId>
         <artifactId>xstream</artifactId>
         <version>${xstream.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>commons-beanutils</groupId>
-        <artifactId>commons-beanutils</artifactId>
-        <version>${commons-beanutils.version}</version>
       </dependency>
 
       <dependency>
