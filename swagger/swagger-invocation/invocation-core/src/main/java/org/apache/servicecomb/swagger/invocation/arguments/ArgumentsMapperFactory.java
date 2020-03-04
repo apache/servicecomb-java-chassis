@@ -33,6 +33,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.converter.Converter;
@@ -167,38 +168,50 @@ public abstract class ArgumentsMapperFactory<T> {
   }
 
   public static String retrieveVisibleParamName(Annotation annotation) {
-    if (CookieParam.class.isInstance(annotation)) {
+    if (annotation instanceof CookieParam) {
       return ((CookieParam) annotation).value();
     }
-    if (CookieValue.class.isInstance(annotation)) {
-      return ((CookieValue) annotation).name();
+    if (annotation instanceof CookieValue) {
+      return StringUtils.isEmpty(((CookieValue) annotation).name()) ?
+          ((CookieValue) annotation).value() :
+          ((CookieValue) annotation).name();
     }
-    if (FormParam.class.isInstance(annotation)) {
+    if (annotation instanceof FormParam) {
       return ((FormParam) annotation).value();
     }
-    if (HeaderParam.class.isInstance(annotation)) {
+    if (annotation instanceof HeaderParam) {
       return ((HeaderParam) annotation).value();
     }
-    if (PathParam.class.isInstance(annotation)) {
+    if (annotation instanceof PathParam) {
       return ((PathParam) annotation).value();
     }
-    if (PathVariable.class.isInstance(annotation)) {
-      return ((PathVariable) annotation).value();
+    if (annotation instanceof PathVariable) {
+      return StringUtils.isEmpty(((PathVariable) annotation).name()) ?
+          ((PathVariable) annotation).value() :
+          ((PathVariable) annotation).name();
     }
-    if (QueryParam.class.isInstance(annotation)) {
+    if (annotation instanceof QueryParam) {
       return ((QueryParam) annotation).value();
     }
-    if (RequestAttribute.class.isInstance(annotation)) {
-      return ((RequestAttribute) annotation).name();
+    if (annotation instanceof RequestAttribute) {
+      return StringUtils.isEmpty(((RequestAttribute) annotation).name()) ?
+          ((RequestAttribute) annotation).value() :
+          ((RequestAttribute) annotation).name();
     }
-    if (RequestHeader.class.isInstance(annotation)) {
-      return ((RequestHeader) annotation).name();
+    if (annotation instanceof RequestHeader) {
+      return StringUtils.isEmpty(((RequestHeader) annotation).name()) ?
+          ((RequestHeader) annotation).value() :
+          ((RequestHeader) annotation).name();
     }
-    if (RequestParam.class.isInstance(annotation)) {
-      return ((RequestParam) annotation).name();
+    if (annotation instanceof RequestParam) {
+      return StringUtils.isEmpty(((RequestParam) annotation).name()) ?
+          ((RequestParam) annotation).value() :
+          ((RequestParam) annotation).name();
     }
-    if (RequestPart.class.isInstance(annotation)) {
-      return ((RequestPart) annotation).name();
+    if (annotation instanceof RequestPart) {
+      return StringUtils.isEmpty(((RequestPart) annotation).name()) ?
+          ((RequestPart) annotation).value() :
+          ((RequestPart) annotation).name();
     }
 
     return null;
