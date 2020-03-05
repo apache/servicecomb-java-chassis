@@ -31,6 +31,12 @@ public class RPCObjectParamTypeSchema implements ObjectParamTypeSchema {
   }
 
   @Override
+  public FluentSetterFlattenObjectResponse testFluentSetterFlattenObjectParam(
+      FluentSetterFlattenObjectRequest request) {
+    return RestObjectMapperFactory.getRestObjectMapper().convertValue(request, FluentSetterFlattenObjectResponse.class);
+  }
+
+  @Override
   public MultiLayerObjectParam testMultiLayerObjectParam(MultiLayerObjectParam request) {
     return request;
   }

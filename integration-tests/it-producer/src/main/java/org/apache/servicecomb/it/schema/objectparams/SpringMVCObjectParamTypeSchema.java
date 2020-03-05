@@ -44,6 +44,13 @@ public class SpringMVCObjectParamTypeSchema implements ObjectParamTypeSchema {
     return RestObjectMapperFactory.getRestObjectMapper().convertValue(request, FlattenObjectResponse.class);
   }
 
+  @PostMapping("testFluentSetterFlattenObjectParam")
+  @Override
+  public FluentSetterFlattenObjectResponse testFluentSetterFlattenObjectParam(
+      @RequestBody FluentSetterFlattenObjectRequest request) {
+    return RestObjectMapperFactory.getRestObjectMapper().convertValue(request, FluentSetterFlattenObjectResponse.class);
+  }
+
   @PutMapping("testMultiLayerObjectParam")
   @Override
   public MultiLayerObjectParam testMultiLayerObjectParam(@RequestBody(required = false) MultiLayerObjectParam request) {
@@ -75,6 +82,11 @@ public class SpringMVCObjectParamTypeSchema implements ObjectParamTypeSchema {
    */
   @GetMapping("testQueryObjectParam")
   public FlattenObjectRequest testQueryObjectParam(FlattenObjectRequest request) {
+    return request;
+  }
+
+  @GetMapping("testFluentSetterQueryObjectParam")
+  public FluentSetterFlattenObjectRequest testFluentSetterQueryObjectParam(FluentSetterFlattenObjectRequest request) {
     return request;
   }
 

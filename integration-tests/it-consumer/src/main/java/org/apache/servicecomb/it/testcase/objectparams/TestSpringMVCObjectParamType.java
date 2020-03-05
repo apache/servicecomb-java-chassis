@@ -27,6 +27,8 @@ import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.schema.objectparams.Color;
 import org.apache.servicecomb.it.schema.objectparams.FlattenObjectRequest;
 import org.apache.servicecomb.it.schema.objectparams.FlattenObjectResponse;
+import org.apache.servicecomb.it.schema.objectparams.FluentSetterFlattenObjectRequest;
+import org.apache.servicecomb.it.schema.objectparams.FluentSetterFlattenObjectResponse;
 import org.apache.servicecomb.it.schema.objectparams.GenericObjectParam;
 import org.apache.servicecomb.it.schema.objectparams.InnerRecursiveObjectParam;
 import org.apache.servicecomb.it.schema.objectparams.MultiLayerObjectParam;
@@ -47,6 +49,13 @@ public class TestSpringMVCObjectParamType {
     TestNullFieldAndDefaultValueParam testNullFieldAndDefaultValue(Object request);
 
     FlattenObjectRequest testQueryObjectParam(byte anByte, short anShort, int anInt, long anLong, float anFloat,
+        double anDouble, boolean anBoolean, char anChar, Byte anWrappedByte, Short anWrappedShort,
+        Integer anWrappedInteger,
+        Long anWrappedLong, Float anWrappedFloat, Double anWrappedDouble, Boolean anWrappedBoolean,
+        Character anWrappedCharacter, String string, Color color);
+
+    FluentSetterFlattenObjectRequest testFluentSetterQueryObjectParam(byte anByte, short anShort, int anInt,
+        long anLong, float anFloat,
         double anDouble, boolean anBoolean, char anChar, Byte anWrappedByte, Short anWrappedShort,
         Integer anWrappedInteger,
         Long anWrappedLong, Float anWrappedFloat, Double anWrappedDouble, Boolean anWrappedBoolean,
@@ -92,6 +101,46 @@ public class TestSpringMVCObjectParamType {
         .postForEntity("/testFlattenObjectParam", request, FlattenObjectResponse.class);
     Assert.assertEquals(Json.encode(request), Json.encode(responseEntity.getBody()));
     Assert.assertEquals(FlattenObjectResponse.class, responseEntity.getBody().getClass());
+    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+  }
+
+  @Test
+  public void testFluentSetterFlattenObjectParam_rpc() {
+    FluentSetterFlattenObjectRequest fluentRequest = FluentSetterFlattenObjectRequest.createFlattenObjectRequest();
+    FluentSetterFlattenObjectResponse fluentResponse = consumers.getIntf()
+        .testFluentSetterFlattenObjectParam(fluentRequest);
+    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
+
+    fluentRequest = new FluentSetterFlattenObjectRequest();
+    fluentResponse = consumers.getIntf().testFluentSetterFlattenObjectParam(fluentRequest);
+    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
+  }
+
+  @Test
+  public void testFluentSetterFlattenObjectParam_rt() {
+    FluentSetterFlattenObjectRequest fluentRequest = FluentSetterFlattenObjectRequest.createFlattenObjectRequest();
+    FluentSetterFlattenObjectResponse fluentResponse = consumers.getSCBRestTemplate()
+        .postForObject("/testFluentSetterFlattenObjectParam", fluentRequest, FluentSetterFlattenObjectResponse.class);
+    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
+
+    fluentRequest = new FluentSetterFlattenObjectRequest();
+    fluentResponse = consumers.getSCBRestTemplate()
+        .postForObject("/testFluentSetterFlattenObjectParam", fluentRequest, FluentSetterFlattenObjectResponse.class);
+    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
+  }
+
+  @Test
+  public void testFluentSetterFlattenObjectParam_edge() {
+    FluentSetterFlattenObjectRequest fluentRequest = FluentSetterFlattenObjectRequest.createFlattenObjectRequest();
+    FluentSetterFlattenObjectResponse response = consumers.getEdgeRestTemplate()
+        .postForObject("/testFluentSetterFlattenObjectParam", fluentRequest, FluentSetterFlattenObjectResponse.class);
+    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(response));
+
+    fluentRequest = new FluentSetterFlattenObjectRequest();
+    ResponseEntity<FluentSetterFlattenObjectResponse> responseEntity = consumers.getEdgeRestTemplate()
+        .postForEntity("/testFluentSetterFlattenObjectParam", fluentRequest, FluentSetterFlattenObjectResponse.class);
+    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(responseEntity.getBody()));
+    Assert.assertEquals(FluentSetterFlattenObjectResponse.class, responseEntity.getBody().getClass());
     Assert.assertEquals(200, responseEntity.getStatusCodeValue());
   }
 
@@ -357,6 +406,64 @@ public class TestSpringMVCObjectParamType {
     expected.setAnInt(0);
     expected.setAnWrappedInteger(null);
     response = consumers.getIntf().testQueryObjectParam(
+        expected.getAnByte(), expected.getAnShort(), expected.getAnInt(), expected.getAnLong(), expected.getAnFloat(),
+        expected.getAnDouble(), expected.isAnBoolean(), expected.getAnChar(),
+        expected.getAnWrappedByte(), expected.getAnWrappedShort(), expected.getAnWrappedInteger(),
+        expected.getAnWrappedLong(), expected.getAnWrappedFloat(), expected.getAnWrappedDouble(),
+        expected.getAnWrappedBoolean(), expected.getAnWrappedCharacter(),
+        expected.getString(), expected.getColor()
+    );
+    Assert.assertEquals(expected, response);
+  }
+
+  @Test
+  public void testFluentSetterQueryObjectParam() {
+    FluentSetterFlattenObjectRequest expected = FluentSetterFlattenObjectRequest.createFlattenObjectRequest();
+    FluentSetterFlattenObjectRequest response = consumers.getIntf().testFluentSetterQueryObjectParam(
+        expected.getAnByte(), expected.getAnShort(), expected.getAnInt(), expected.getAnLong(), expected.getAnFloat(),
+        expected.getAnDouble(), expected.isAnBoolean(), expected.getAnChar(),
+        expected.getAnWrappedByte(), expected.getAnWrappedShort(), expected.getAnWrappedInteger(),
+        expected.getAnWrappedLong(), expected.getAnWrappedFloat(), expected.getAnWrappedDouble(),
+        expected.getAnWrappedBoolean(), expected.getAnWrappedCharacter(),
+        expected.getString(), expected.getColor()
+    );
+    Assert.assertEquals(expected, response);
+
+    StringBuilder requestUriBuilder = new StringBuilder();
+    requestUriBuilder.append("/testFluentSetterQueryObjectParam?")
+        .append("anByte=" + expected.getAnByte()).append("&")
+        .append("anShort=" + expected.getAnShort()).append("&")
+        .append("anInt=" + expected.getAnInt()).append("&")
+        .append("anLong=" + expected.getAnLong()).append("&")
+        .append("anFloat=" + expected.getAnFloat()).append("&")
+        .append("anDouble=" + expected.getAnDouble()).append("&")
+        .append("anBoolean=" + expected.isAnBoolean()).append("&")
+        .append("anChar=" + expected.getAnChar()).append("&")
+        .append("anWrappedByte=" + expected.getAnWrappedByte()).append("&")
+        .append("anWrappedShort=" + expected.getAnWrappedShort()).append("&")
+        .append("anWrappedInteger=" + expected.getAnWrappedInteger()).append("&")
+        .append("anWrappedLong=" + expected.getAnWrappedLong()).append("&")
+        .append("anWrappedFloat=" + expected.getAnWrappedFloat()).append("&")
+        .append("anWrappedDouble=" + expected.getAnWrappedDouble()).append("&")
+        .append("anWrappedBoolean=" + expected.getAnWrappedBoolean()).append("&")
+        .append("anWrappedCharacter=" + expected.getAnWrappedCharacter()).append("&")
+        .append("string=" + expected.getString()).append("&")
+        .append("color=" + expected.getColor());
+    ResponseEntity<FluentSetterFlattenObjectRequest> responseEntity = consumers.getSCBRestTemplate()
+        .getForEntity(requestUriBuilder.toString(), FluentSetterFlattenObjectRequest.class);
+    Assert.assertEquals(expected, responseEntity.getBody());
+    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+
+    responseEntity = consumers.getEdgeRestTemplate()
+        .getForEntity(requestUriBuilder.toString(), FluentSetterFlattenObjectRequest.class);
+    Assert.assertEquals(expected, responseEntity.getBody());
+    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+
+    expected.setAnWrappedBoolean(null);
+    expected.setString(null);
+    expected.setAnInt(0);
+    expected.setAnWrappedInteger(null);
+    response = consumers.getIntf().testFluentSetterQueryObjectParam(
         expected.getAnByte(), expected.getAnShort(), expected.getAnInt(), expected.getAnLong(), expected.getAnFloat(),
         expected.getAnDouble(), expected.isAnBoolean(), expected.getAnChar(),
         expected.getAnWrappedByte(), expected.getAnWrappedShort(), expected.getAnWrappedInteger(),

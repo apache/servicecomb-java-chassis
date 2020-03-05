@@ -39,6 +39,14 @@ public class JAXRSObjectParamTypeSchema implements ObjectParamTypeSchema {
     return RestObjectMapperFactory.getRestObjectMapper().convertValue(request, FlattenObjectResponse.class);
   }
 
+  @Path("testFluentSetterFlattenObjectParam")
+  @POST
+  @Override
+  public FluentSetterFlattenObjectResponse testFluentSetterFlattenObjectParam(
+      FluentSetterFlattenObjectRequest request) {
+    return RestObjectMapperFactory.getRestObjectMapper().convertValue(request, FluentSetterFlattenObjectResponse.class);
+  }
+
   @Path("testMultiLayerObjectParam")
   @PUT
   @Override
@@ -74,4 +82,13 @@ public class JAXRSObjectParamTypeSchema implements ObjectParamTypeSchema {
   public BeanParamRequest testBeanParamRequest(@BeanParam BeanParamRequest request) {
     return request;
   }
+
+  @Path("/fluentSetterBeanParamRequest/{path}")
+  @GET
+  public FluentSetterBeanParamRequest testFluentSetterBeanParamRequest(
+      @BeanParam FluentSetterBeanParamRequest request) {
+    return request;
+  }
 }
+
+

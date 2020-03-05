@@ -42,6 +42,11 @@ public class TestLambdaMetafactoryUtils {
       this.f1 = f1;
     }
 
+    public Model fluentSetF1(int f1) {
+      this.f1 = f1;
+      return this;
+    }
+
     public List<Integer> echo(List<Integer> value) {
       return value;
     }
@@ -70,6 +75,8 @@ public class TestLambdaMetafactoryUtils {
   public void createGetterSetterByMethod() throws Throwable {
     IntGetter<Model> getter = LambdaMetafactoryUtils.createGetter(Model.class.getMethod("getF1"));
     IntSetter<Model> setter = LambdaMetafactoryUtils.createSetter(Model.class.getMethod("setF1", int.class));
+    IntSetter<Model> fluentSetter = LambdaMetafactoryUtils
+        .createSetter(Model.class.getMethod("fluentSetF1", int.class));
     BiFunction<Object, Object, Object> echo = LambdaMetafactoryUtils
         .createLambda(Model.class.getMethod("echo", List.class), BiFunction.class);
 
@@ -77,6 +84,10 @@ public class TestLambdaMetafactoryUtils {
     int f1 = getter.get(model);
     Assert.assertEquals(1, f1);
     Assert.assertThat((List<Integer>) echo.apply(model, Arrays.asList(2)), Matchers.contains(2));
+
+    fluentSetter.set(model, 2);
+    int ff1 = getter.get(model);
+    Assert.assertEquals(2, ff1);
   }
 
   @Test
