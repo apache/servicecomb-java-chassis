@@ -86,7 +86,7 @@ public final class RegistryUtils {
 
   private static final Map<String, ServiceRegistry> EXTRA_SERVICE_REGISTRIES = new LinkedHashMap<>();
 
-  static AggregateServiceRegistryCache aggregateServiceRegistryCache;
+  private static AggregateServiceRegistryCache aggregateServiceRegistryCache;
 
   private RegistryUtils() {
   }
@@ -107,9 +107,7 @@ public final class RegistryUtils {
     ArrayList<ServiceRegistry> serviceRegistries = new ArrayList<>();
     executeOnEachServiceRegistry(serviceRegistries::add);
     aggregateServiceRegistryCache = new AggregateServiceRegistryCache(serviceRegistries);
-    aggregateServiceRegistryCache.setCacheRefreshedWatcher(refreshedCaches -> {
-      appManager.pullInstances();
-    });
+    aggregateServiceRegistryCache.setCacheRefreshedWatcher(refreshedCaches -> appManager.pullInstances());
 
     executeOnEachServiceRegistry(
         serviceRegistry -> serviceRegistry
