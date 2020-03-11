@@ -68,7 +68,7 @@ public class DatetimeConfigurableItem implements LogItem<RoutingContext> {
     }
     if (3 != configArr.length) {
       throw new IllegalArgumentException(
-        "wrong format of configuration, \"PATTERN|TIMEZONE|LOCALE\" is expected, but actually is \"" + config + "\"");
+          "wrong format of configuration, \"PATTERN|TIMEZONE|LOCALE\" is expected, but actually is \"" + config + "\"");
     }
 
     setConfigruations(configArr);
@@ -91,7 +91,10 @@ public class DatetimeConfigurableItem implements LogItem<RoutingContext> {
 
   @Override
   public void appendFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    doAppendFormattedItem(finishEvent.getInvocation().getInvocationStageTrace().getStart() / 1000_000, builder);
+    long milliDuration = (finishEvent.getInvocation().getInvocationStageTrace().getStartSend() -
+        finishEvent.getInvocation().getInvocationStageTrace().getStart()) / 1000_000;
+    doAppendFormattedItem(
+        finishEvent.getInvocation().getInvocationStageTrace().getStartCurrentTime() + milliDuration, builder);
   }
 
   private void doAppendFormattedItem(long milliStartTime, StringBuilder builder) {

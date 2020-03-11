@@ -44,11 +44,8 @@ public class ResponseSizeItem implements LogItem<RoutingContext> {
 
   @Override
   public void appendFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    if (null == finishEvent.getResponse().getResult()) {
-      builder.append(zeroBytes);
-      return;
-    }
-    builder.append(finishEvent.getResponse().getResult().toString().length());
+    //client do not know how to calculate is write..
+    builder.append(zeroBytes);
   }
 
   public String getZeroBytes() {

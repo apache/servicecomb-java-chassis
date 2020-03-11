@@ -34,6 +34,6 @@ public class DurationSecondItem implements LogItem<RoutingContext> {
   @Override
   public void appendFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
     builder.append((finishEvent.getInvocation().getInvocationStageTrace().getFinish() -
-      finishEvent.getInvocation().getInvocationStageTrace().getStart()) / 1000_000_000);
+      finishEvent.getInvocation().getInvocationStageTrace().getStartSend()) / 1000_000_000);
   }
 }

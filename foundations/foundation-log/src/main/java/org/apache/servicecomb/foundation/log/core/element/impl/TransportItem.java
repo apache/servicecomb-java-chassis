@@ -17,21 +17,35 @@
 
 package org.apache.servicecomb.foundation.log.core.element.impl;
 
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.foundation.log.core.element.LogItem;
 
 import io.vertx.ext.web.RoutingContext;
 
-public class DurationMillisecondItem implements LogItem<RoutingContext> {
+public class TransportItem implements LogItem<RoutingContext> {
+  private static final String EMPTY_STR = "-";
+
   @Override
   public void appendFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
-    builder.append(accessLogEvent.getMilliEndTime() - accessLogEvent.getMilliStartTime());
+    builder.append(EMPTY_STR);
   }
 
   @Override
   public void appendFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    builder.append((finishEvent.getInvocation().getInvocationStageTrace().getFinish() -
-        finishEvent.getInvocation().getInvocationStageTrace().getStartSend()) / 1000_000);
+    String transportName = finishEvent.getInvocation().getConfigTransportName();
+    if (!StringUtils.isEmpty(transportName)) {
+      builder.append(transportName);
+      return;
+    }
+    Endpoint endpoint = finishEvent.getInvocation().getEndpoint();
+    if (endpoint == null || StringUtils.isEmpty(endpoint.getEndpoint())) {
+      builder.append(EMPTY_STR);
+      return;
+    }
+    builder.append(endpoint.getEndpoint().split(":")[0]);
   }
 }

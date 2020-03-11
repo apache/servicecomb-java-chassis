@@ -42,9 +42,6 @@ public class RequestProtocolItem implements LogItem<RoutingContext> {
     builder.append(getStringVersion(request.version()));
   }
 
-  /**
-   * 先这样实现, 后面讨论
-   */
   @Override
   public void appendFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
     Endpoint endpoint = finishEvent.getInvocation().getEndpoint();
