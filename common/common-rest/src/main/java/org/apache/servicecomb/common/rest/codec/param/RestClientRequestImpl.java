@@ -277,6 +277,22 @@ public class RestClientRequestImpl implements RestClientRequest {
     request.putHeader(HttpHeaders.COOKIE, builder.toString());
   }
 
+  public Context getContext() {
+    return context;
+  }
+
+  public HttpClientRequest getRequest() {
+    return request;
+  }
+
+  public Map<String, String> getCookieMap() {
+    return cookieMap;
+  }
+
+  public Map<String, Object> getFormMap() {
+    return formMap;
+  }
+
   @Override
   public void addCookie(String name, String value) {
     if (cookieMap == null) {
