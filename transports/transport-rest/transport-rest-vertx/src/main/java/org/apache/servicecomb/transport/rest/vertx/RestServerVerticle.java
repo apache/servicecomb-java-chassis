@@ -26,10 +26,14 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.Endpoint;
+import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.core.transport.AbstractTransport;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.foundation.log.LogConfig;
+import org.apache.servicecomb.foundation.log.core.element.impl.LocalHostItem;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
@@ -38,8 +42,6 @@ import org.apache.servicecomb.foundation.vertx.metrics.DefaultHttpServerMetrics;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultServerEndpointMetric;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.AccessLogConfiguration;
-import org.apache.servicecomb.transport.rest.vertx.accesslog.impl.AccessLogHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -161,14 +163,19 @@ public class RestServerVerticle extends AbstractVerticle {
   }
 
   private void mountAccessLogHandler(Router mainRouter) {
-    if (AccessLogConfiguration.INSTANCE.getAccessLogEnabled()) {
-      String pattern = AccessLogConfiguration.INSTANCE.getAccesslogPattern();
-      LOGGER.info("access log enabled, pattern = {}", pattern);
-      mainRouter.route()
-          .handler(new AccessLogHandler(
-              pattern
-          ));
+    if (!LogConfig.INSTANCE.isServerLogEnabled()) {
+      return;
     }
+    LOGGER.info("access log enabled, pattern = {}", LogConfig.INSTANCE.getServerLogPattern());
+    mainRouter.route().handler(context -> {
+      ServerAccessLogEvent accessLogEvent = new ServerAccessLogEvent()
+          .setRoutingContext(context)
+          .setMilliStartTime(System.currentTimeMillis())
+          .setLocalAddress(LocalHostItem.getLocalAddress(context));
+      context.response().endHandler(event ->
+          EventManager.post(accessLogEvent.setMilliEndTime(System.currentTimeMillis())));
+      context.next();
+    });
   }
 
   /**
