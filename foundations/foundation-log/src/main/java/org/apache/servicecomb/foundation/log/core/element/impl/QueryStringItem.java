@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.foundation.log.core.element.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
@@ -44,7 +45,8 @@ public class QueryStringItem implements LogItem<RoutingContext> {
   public void appendFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
     RestClientRequestImpl restRequestImpl = (RestClientRequestImpl) finishEvent.getInvocation().getHandlerContext()
       .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);
-    if (null == restRequestImpl || null == restRequestImpl.getRequest()) {
+    if (null == restRequestImpl || null == restRequestImpl.getRequest()
+        || StringUtils.isEmpty(restRequestImpl.getRequest().query())) {
       builder.append(EMPTY_RESULT);
       return;
     }

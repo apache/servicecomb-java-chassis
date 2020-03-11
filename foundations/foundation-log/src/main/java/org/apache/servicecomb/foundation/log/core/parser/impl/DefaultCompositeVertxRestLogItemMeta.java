@@ -28,6 +28,7 @@ import org.apache.servicecomb.foundation.log.core.element.impl.DurationSecondIte
 import org.apache.servicecomb.foundation.log.core.element.impl.FirstLineOfRequestItem;
 import org.apache.servicecomb.foundation.log.core.element.impl.HttpMethodItem;
 import org.apache.servicecomb.foundation.log.core.element.impl.HttpStatusItem;
+import org.apache.servicecomb.foundation.log.core.element.impl.TransportItem;
 import org.apache.servicecomb.foundation.log.core.element.impl.InvocationContextItem;
 import org.apache.servicecomb.foundation.log.core.element.impl.LocalHostItem;
 import org.apache.servicecomb.foundation.log.core.element.impl.LocalPortItem;
@@ -72,6 +73,7 @@ public class DefaultCompositeVertxRestLogItemMeta extends CompositeVertxRestLogI
     SUPPORTED_META.add(new VertxRestLogItemMeta("%H", config -> new RequestProtocolItem()));
     SUPPORTED_META.add(new VertxRestLogItemMeta("%t", config -> new DatetimeConfigurableItem()));
     SUPPORTED_META.add(new VertxRestLogItemMeta("%SCB-traceId", config -> new TraceIdItem()));
+    SUPPORTED_META.add(new VertxRestLogItemMeta("%SCB-transport", config -> new TransportItem()));
 
     SUPPORTED_META.add(new VertxRestLogItemMeta("%{", "}t", DatetimeConfigurableItem::new));
     SUPPORTED_META.add(new VertxRestLogItemMeta("%{", "}i", RequestHeaderItem::new));
