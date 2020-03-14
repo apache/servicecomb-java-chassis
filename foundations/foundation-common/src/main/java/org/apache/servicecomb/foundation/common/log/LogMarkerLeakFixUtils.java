@@ -20,6 +20,8 @@ import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentMap;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
+import org.apache.logging.slf4j.Log4jLoggerFactory;
+import org.apache.logging.slf4j.Log4jMarkerFactory;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.slf4j.IMarkerFactory;
 import org.slf4j.Logger;
@@ -45,36 +47,52 @@ public final class LogMarkerLeakFixUtils {
   @SuppressWarnings("unchecked")
   public static void fix() {
     Class<?> staticMarkerBinderClass = ReflectUtils.getClassByName("org.slf4j.impl.StaticMarkerBinder");
-    if (staticMarkerBinderClass == null) {
-      return;
-    }
-
-    IMarkerFactory markerFactory = StaticMarkerBinder.SINGLETON.getMarkerFactory();
-    if (markerFactory.getClass().getName()
-        .equals("org.apache.servicecomb.foundation.common.log.NoCacheLog4jMarkerFactory")) {
-      return;
-    }
-
-    if (markerFactory.getClass().getName().equals("org.apache.logging.slf4j.Log4jMarkerFactory")) {
-      fixMarkerFactory(markerFactory, new NoCacheLog4jMarkerFactory(),
-          "Failed to fix Log4jMarkerFactory leak problem.");
+    if (staticMarkerBinderClass != null) {
+      IMarkerFactory markerFactory = StaticMarkerBinder.SINGLETON.getMarkerFactory();
+      // fix log4j-slf4j-impl (used with SLF$J 1.7.x releases or older)
+      IMarkerFactory fixedMarkerFactory = getFixedSlf4jMarkerFactory(markerFactory);
+      ReflectUtils.setField(StaticMarkerBinder.SINGLETON, "markerFactory", fixedMarkerFactory);
       LOGGER.info("fixed Log4jMarkerFactory marker leak problem.");
-      return;
+    } else if (LoggerFactory.getILoggerFactory().getClass().getName().equals("org.apache.logging.slf4j.Log4jLoggerFactory")) {
+      // fix log4j-slf4j18-impl (used with SLF$J 1.8.x releases or newer)
+      Log4jLoggerFactory log4jLoggerFactory = (Log4jLoggerFactory) LoggerFactory.getILoggerFactory();
+      try {
+        Field markerFactoryField = Log4jLoggerFactory.class.getDeclaredField("markerFactory");
+        markerFactoryField.setAccessible(true);
+        Log4jMarkerFactory markerFactory = (Log4jMarkerFactory) markerFactoryField.get(log4jLoggerFactory);
+        IMarkerFactory fixedMarkerFactory = getFixedSlf4jMarkerFactory(markerFactory);
+        ReflectUtils.setField(log4jLoggerFactory, "markerFactory", fixedMarkerFactory);
+        LOGGER.info("fixed Log4jMarkerFactory marker leak problem.");
+      } catch (NoSuchFieldException | IllegalAccessException e) {
+        // if slf4j upgrade again and fixed failed, we should just fail the whole application.
+        throw new IllegalStateException("Failed to fix Log4jMarkerFactory leak problem.", e);
+      }
     }
   }
 
+  private static IMarkerFactory getFixedSlf4jMarkerFactory(IMarkerFactory markerFactory) {
+    if (markerFactory.getClass().getName().equals("org.apache.logging.slf4j.Log4jMarkerFactory")) {
+      IMarkerFactory fixedMarkerFactory = getFixedMarkerFactory(markerFactory, new NoCacheLog4jMarkerFactory(),
+              "Failed to fix Log4jMarkerFactory leak problem.");
+      return fixedMarkerFactory;
+    }
+
+    return markerFactory;
+  }
+
+
   @SuppressWarnings("unchecked")
-  private static void fixMarkerFactory(IMarkerFactory orgFactory, NoCacheLog4jMarkerFactory fixedFactory,
-      String failMessage) {
+  private static IMarkerFactory getFixedMarkerFactory(IMarkerFactory orgFactory, NoCacheLog4jMarkerFactory fixedFactory,
+                                                      String failMessage) {
     try {
       Field markerField = FieldUtils.getDeclaredField(orgFactory.getClass(), "markerMap", true);
       ConcurrentMap<String, Marker> orgMarkerMap = (ConcurrentMap<String, Marker>) FieldUtils
-          .readField(markerField, orgFactory);
+              .readField(markerField, orgFactory);
 
       ConcurrentMap<String, Marker> newMarkerMap = (ConcurrentMap<String, Marker>) FieldUtils
-          .readField(markerField, fixedFactory);
+              .readField(markerField, fixedFactory);
       newMarkerMap.putAll(orgMarkerMap);
-      ReflectUtils.setField(StaticMarkerBinder.SINGLETON, "markerFactory", fixedFactory);
+      return fixedFactory;
     } catch (Throwable e) {
       throw new IllegalStateException(failMessage, e);
     }
