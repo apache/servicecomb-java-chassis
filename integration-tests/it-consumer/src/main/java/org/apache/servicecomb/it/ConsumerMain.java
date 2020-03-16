@@ -49,6 +49,7 @@ import org.apache.servicecomb.it.testcase.TestTrace;
 import org.apache.servicecomb.it.testcase.TestTraceEdge;
 import org.apache.servicecomb.it.testcase.TestUpload;
 import org.apache.servicecomb.it.testcase.base.TestGeneric;
+import org.apache.servicecomb.it.testcase.objectParams.TestSpringMVCObjectParam;
 import org.apache.servicecomb.it.testcase.thirdparty.Test3rdPartyInvocation;
 
 public class ConsumerMain {
@@ -103,6 +104,7 @@ public class ConsumerMain {
   }
 
   private static void runShareTestCases() throws Throwable {
+    ITJUnitUtils.runWithHighwayAndRest(TestSpringMVCObjectParam.class);
     ITJUnitUtils.runWithHighwayAndRest(TestChangeTransport.class);
     ITJUnitUtils.runWithHighwayAndRest(TestDataTypePrimitive.class);
     ITJUnitUtils.runWithHighwayAndRest(TestAnnotatedAttribute.class);
