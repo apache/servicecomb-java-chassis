@@ -20,7 +20,7 @@ package org.apache.servicecomb.it.schema;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@RestSchema(schemaId = "EmptyScheam")
-@RequestMapping(path = "/v1/EmptyScheam")
-public class EmptyScheam {
+@RestSchema(schemaId = "EmptySchema")
+@RequestMapping(path = "/v1/EmptySchema")
+public class EmptySchema {
 }
