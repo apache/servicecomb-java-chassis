@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.ProducerProvider;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.CoreMetaUtils;
@@ -30,10 +31,13 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.executor.ExecutorManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 import io.swagger.models.Swagger;
 
@@ -92,6 +96,7 @@ public class ProducerProviderManager {
     SwaggerProducer swaggerProducer = scbEngine.getSwaggerEnvironment()
         .createProducer(instance, swagger);
     swagger = swaggerProducer.getSwagger();
+    registerUrlPrefixToSwagger(swagger);
 
     SchemaMeta schemaMeta = producerMicroserviceMeta.registerSchemaMeta(schemaId, swagger);
     schemaMeta.putExtData(CoreMetaUtils.SWAGGER_PRODUCER, swaggerProducer);
@@ -106,5 +111,18 @@ public class ProducerProviderManager {
     }
 
     return schemaMeta;
+  }
+
+  // This is special requirement by users: When service deployed in tomcat,user want to use RestTemplate to
+  // call REST service by the full url. e.g. restTemplate.getForObejct("cse://serviceName/root/prefix/health")
+  // By default, user's do not need context prefix, e.g. restTemplate.getForObejct("cse://serviceName/health")
+  private void registerUrlPrefixToSwagger( Swagger swagger) {
+    String urlPrefix = System.getProperty(Const.URL_PREFIX);
+    if (!StringUtils.isEmpty(urlPrefix) && !swagger.getBasePath().startsWith(urlPrefix)
+        && DynamicPropertyFactory.getInstance()
+        .getBooleanProperty(Const.REGISTER_URL_PREFIX, false).get()) {
+      LOGGER.info("Add swagger base path prefix for {} with {}", swagger.getBasePath(), urlPrefix);
+      swagger.setBasePath(urlPrefix + swagger.getBasePath());
+    }
   }
 }
