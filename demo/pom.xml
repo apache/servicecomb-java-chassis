@@ -45,6 +45,7 @@
     <module>demo-edge</module>
     <module>demo-spring-boot-provider</module>
     <module>demo-spring-boot-transport</module>
+    <module>demo-register-url-prefix</module>
     <module>perf</module>
   </modules>
 
