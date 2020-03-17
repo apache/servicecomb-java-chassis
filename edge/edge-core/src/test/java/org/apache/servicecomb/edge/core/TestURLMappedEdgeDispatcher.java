@@ -19,7 +19,6 @@ package org.apache.servicecomb.edge.core;
 
 import java.util.Map;
 
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
 import org.junit.Assert;
@@ -35,7 +34,6 @@ import mockit.Mocked;
 public class TestURLMappedEdgeDispatcher {
   @Before
   public void setUp() throws Exception {
-    Log4jUtils.init();
   }
 
   @After

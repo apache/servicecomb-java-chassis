@@ -27,6 +27,14 @@
   <artifactId>demo-edge</artifactId>
   <name>Java Chassis::Demo::Edge</name>
   <packaging>pom</packaging>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-log4j</artifactId>
+    </dependency>
+  </dependencies>
+
   <modules>
     <module>edge-service</module>
 
