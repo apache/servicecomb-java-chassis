@@ -50,7 +50,9 @@ public class InvocationContextItem implements LogItem<RoutingContext> {
 
   @Override
   public void appendFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    if (StringUtils.isEmpty(finishEvent.getInvocation().getContext().get(varName))) {
+    Invocation invocation = finishEvent.getInvocation();
+    if (null == invocation || invocation.getContext() == null
+        || StringUtils.isEmpty(finishEvent.getInvocation().getContext().get(varName))) {
       builder.append(NOT_FOUND);
       return;
     }

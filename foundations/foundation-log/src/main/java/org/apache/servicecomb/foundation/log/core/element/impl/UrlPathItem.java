@@ -48,7 +48,7 @@ public class UrlPathItem implements LogItem<RoutingContext> {
   public void appendFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
     OperationMeta operationMeta = finishEvent.getInvocation().getOperationMeta();
     SchemaMeta schemaMeta = finishEvent.getInvocation().getSchemaMeta();
-    if (operationMeta != null && schemaMeta != null) {
+    if (operationMeta != null && schemaMeta != null && schemaMeta.getSwagger() != null) {
       builder.append(schemaMeta.getSwagger().getBasePath()).append(operationMeta.getOperationPath());
       return;
     }

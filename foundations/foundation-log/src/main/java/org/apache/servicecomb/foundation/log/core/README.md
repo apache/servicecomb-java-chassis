@@ -5,9 +5,12 @@
 To enable access log printing, you can config access log in microservice.yaml like below:
 ```yaml
 servicecomb:
+  outlog:
+    enabled: true
+    pattern: "%h %SCB-transport - - %t %r %s %D"
   accesslog:
     enabled: true
-    pattern: "%h - - %t %r %s %B"
+    pattern: "%h - - %t %r %s %B %D"
 ```
 
 ***Access Log Configurations in microservice.yaml***

@@ -21,36 +21,21 @@ import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.foundation.log.core.element.LogItem;
 
-import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 
-public class ResponseSizeItem implements LogItem<RoutingContext> {
-  // print zeroBytes when bytes is zero
-  private final String zeroBytes;
-
-  public ResponseSizeItem(String zeroBytesPlaceholder) {
-    zeroBytes = zeroBytesPlaceholder;
-  }
+/**
+ * For access log extension test, will be overridden by {@link RemoteHostItem}("%h"),
+ * and takes no effect.
+ */
+public class UserDefinedAccessLogItemLowPriority implements LogItem<RoutingContext> {
 
   @Override
   public void appendFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
-    HttpServerResponse response = accessLogEvent.getRoutingContext().response();
-    if (null == response || 0 == response.bytesWritten()) {
-      builder.append(zeroBytes);
-      return;
-    }
-    builder.append(response.bytesWritten());
+    builder.append("OverriddenItem");
   }
 
   @Override
-  public void appendFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    /**
-     * client do not know how to calculate is right, maybe Object#toString().length
-     */
-    builder.append(zeroBytes);
-  }
-
-  public String getZeroBytes() {
-    return zeroBytes;
+  public void appendFormattedItem(InvocationFinishEvent clientLogEvent, StringBuilder builder) {
+    builder.append("OverriddenItem");
   }
 }

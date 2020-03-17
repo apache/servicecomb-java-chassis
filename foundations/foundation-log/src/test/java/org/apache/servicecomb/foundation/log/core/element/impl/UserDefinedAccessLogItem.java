@@ -17,40 +17,32 @@
 
 package org.apache.servicecomb.foundation.log.core.element.impl;
 
+
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.foundation.log.core.element.LogItem;
 
-import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 
-public class ResponseSizeItem implements LogItem<RoutingContext> {
-  // print zeroBytes when bytes is zero
-  private final String zeroBytes;
+/**
+ * For access log extension test
+ */
+public class UserDefinedAccessLogItem implements LogItem<RoutingContext> {
+  private String config;
 
-  public ResponseSizeItem(String zeroBytesPlaceholder) {
-    zeroBytes = zeroBytesPlaceholder;
+  public UserDefinedAccessLogItem(String config) {
+    this.config = config;
   }
 
   @Override
   public void appendFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
-    HttpServerResponse response = accessLogEvent.getRoutingContext().response();
-    if (null == response || 0 == response.bytesWritten()) {
-      builder.append(zeroBytes);
-      return;
-    }
-    builder.append(response.bytesWritten());
+    builder.append("user-defined-")
+        .append(config);
   }
 
   @Override
-  public void appendFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    /**
-     * client do not know how to calculate is right, maybe Object#toString().length
-     */
-    builder.append(zeroBytes);
-  }
-
-  public String getZeroBytes() {
-    return zeroBytes;
+  public void appendFormattedItem(InvocationFinishEvent clientLogEvent, StringBuilder builder) {
+    builder.append("user-defined-")
+        .append(config);
   }
 }

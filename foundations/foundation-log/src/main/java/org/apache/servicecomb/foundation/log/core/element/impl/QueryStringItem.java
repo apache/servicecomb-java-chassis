@@ -34,7 +34,7 @@ public class QueryStringItem implements LogItem<RoutingContext> {
   @Override
   public void appendFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
     HttpServerRequest request = accessLogEvent.getRoutingContext().request();
-    if (null == request || null == request.query()) {
+    if (null == request || StringUtils.isEmpty(request.query())) {
       builder.append(EMPTY_RESULT);
       return;
     }

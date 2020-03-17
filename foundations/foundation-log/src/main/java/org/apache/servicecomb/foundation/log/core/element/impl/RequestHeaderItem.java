@@ -50,10 +50,10 @@ public class RequestHeaderItem implements LogItem<RoutingContext> {
   @Override
   public void appendFormattedItem(InvocationFinishEvent clientLogEvent, StringBuilder builder) {
     RestClientRequestImpl restRequestImpl = (RestClientRequestImpl) clientLogEvent.getInvocation().getHandlerContext()
-      .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);
+        .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);
     if (null == restRequestImpl || null == restRequestImpl.getRequest()
-      || null == restRequestImpl.getRequest().headers()
-      || StringUtils.isEmpty(restRequestImpl.getRequest().headers().get(varName))) {
+        || null == restRequestImpl.getRequest().headers()
+        || StringUtils.isEmpty(restRequestImpl.getRequest().headers().get(varName))) {
       builder.append(RESULT_NOT_FOUND);
       return;
     }
