@@ -25,14 +25,14 @@ import javax.validation.ValidatorFactory;
 import javax.validation.executable.ExecutableValidator;
 import javax.validation.groups.Default;
 
-import com.netflix.config.DynamicBooleanProperty;
-import com.netflix.config.DynamicPropertyFactory;
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.extension.ProducerInvokeExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.netflix.config.DynamicBooleanProperty;
+import com.netflix.config.DynamicPropertyFactory;
 
 public class ParameterValidator implements ProducerInvokeExtension {
 

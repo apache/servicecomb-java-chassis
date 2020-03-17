@@ -69,7 +69,6 @@
     <javax-inject.version>1</javax-inject.version>
     <javax-resource.version>1.5</javax-resource.version>
     <javax-transaction.version>1.2</javax-transaction.version>
-    <javax-validation.version>2.0.1.Final</javax-validation.version>
     <javax-ws-rs.version>2.1</javax-ws-rs.version>
     <jedis.version>2.9.0</jedis.version>
     <jersey.version>2.27</jersey.version>
@@ -98,6 +97,7 @@
     <servo.version>0.12.25</servo.version>
     <servlet-api.version>4.0.3</servlet-api.version>
     <activation.version>1.2.1</activation.version>
+    <jakarta.el.version>3.0.3</jakarta.el.version>
     <slf4j.version>1.7.26</slf4j.version>
     <snakeyaml.version>1.24</snakeyaml.version>
     <spectator.version>0.83.0</spectator.version>
@@ -672,6 +672,11 @@
         <version>${activation.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.glassfish</groupId>
+        <artifactId>jakarta.el</artifactId>
+        <version>${jakarta.el.version}</version>
+      </dependency>
+      <dependency>
         <groupId>javax.annotation</groupId>
         <artifactId>javax.annotation-api</artifactId>
         <version>${javax-annotation.version}</version>
@@ -693,12 +698,6 @@
         <groupId>javax.transaction</groupId>
         <artifactId>javax.transaction-api</artifactId>
         <version>${javax-transaction.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>javax.validation</groupId>
-        <artifactId>validation-api</artifactId>
-        <version>${javax-validation.version}</version>
       </dependency>
 
       <dependency>

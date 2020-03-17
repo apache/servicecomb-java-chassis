@@ -27,8 +27,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.validation.constraints.NotNull;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.ConfigMapping;
 import org.apache.servicecomb.config.client.ApolloClient;
@@ -77,12 +75,12 @@ public class ApolloConfigurationSourceImpl implements ConfigCenterConfigurationS
   }
 
   @Override
-  public void addUpdateListener(@NotNull WatchedUpdateListener watchedUpdateListener) {
+  public void addUpdateListener(WatchedUpdateListener watchedUpdateListener) {
     listeners.add(watchedUpdateListener);
   }
 
   @Override
-  public void removeUpdateListener(@NotNull WatchedUpdateListener watchedUpdateListener) {
+  public void removeUpdateListener(WatchedUpdateListener watchedUpdateListener) {
     listeners.remove(watchedUpdateListener);
   }
 
