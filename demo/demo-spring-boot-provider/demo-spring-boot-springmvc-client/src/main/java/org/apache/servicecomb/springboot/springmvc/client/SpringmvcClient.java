@@ -18,9 +18,7 @@
 package org.apache.servicecomb.springboot.springmvc.client;
 
 import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;

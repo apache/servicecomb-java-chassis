@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.foundation.common.log;
 
-import org.apache.logging.slf4j.Log4jMarkerFactory;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
 import org.junit.After;
 import org.junit.Assert;
@@ -47,39 +46,15 @@ public class TestLogMarkerLeakFixUtils {
     LogMarkerLeakFixUtils.fix();
   }
 
-  // log4j1 not support marker, no need to fix
-  @Test
-  public void log4j1() {
-    Assert.assertEquals("org.slf4j.helpers.BasicMarkerFactory", orgMarkerFactory.getClass().getName());
-
-    LogMarkerLeakFixUtils.fix();
-
-    Assert.assertSame(orgMarkerFactory, StaticMarkerBinder.SINGLETON.getMarkerFactory());
-  }
-
   // log4j2 need to adapt slf4j marker to log4j2 marker, and always cache the adapt result
   // need to fix
   @Test
   public void log4j2() {
-    Assert.assertEquals("org.slf4j.helpers.BasicMarkerFactory", orgMarkerFactory.getClass().getName());
-
-    // change to log4j2
-    ReflectUtils.setField(StaticMarkerBinder.SINGLETON, "markerFactory", new Log4jMarkerFactory());
     Assert.assertEquals("org.apache.logging.slf4j.Log4jMarkerFactory",
         StaticMarkerBinder.SINGLETON.getMarkerFactory().getClass().getName());
 
     LogMarkerLeakFixUtils.fix();
 
     Assert.assertEquals(NoCacheLog4jMarkerFactory.class, StaticMarkerBinder.SINGLETON.getMarkerFactory().getClass());
-  }
-
-  // logback no need to adapt marker type, just use it directly, no need to fix
-  @Test
-  public void logback() {
-    Assert.assertEquals("org.slf4j.helpers.BasicMarkerFactory", orgMarkerFactory.getClass().getName());
-
-    LogMarkerLeakFixUtils.fix();
-
-    Assert.assertSame(orgMarkerFactory, StaticMarkerBinder.SINGLETON.getMarkerFactory());
   }
 }

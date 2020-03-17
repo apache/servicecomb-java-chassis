@@ -31,5 +31,10 @@
     <module>springmvc-server</module>
     <module>springmvc-client</module>
   </modules>
-
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-log4j</artifactId>
+    </dependency>
+  </dependencies>
 </project>

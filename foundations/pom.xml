@@ -35,5 +35,7 @@
     <module>foundation-ssl</module>
     <module>foundation-test-scaffolding</module>
     <module>foundation-protobuf</module>
+    <module>foundation-log4j</module>
+    <module>foundation-log4j2</module>
   </modules>
 </project>

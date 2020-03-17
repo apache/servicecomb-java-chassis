@@ -51,7 +51,6 @@ import org.apache.servicecomb.foundation.common.VendorExtensions;
 import org.apache.servicecomb.foundation.common.concurrency.SuppressedRunnableWrapper;
 import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
 import org.apache.servicecomb.foundation.common.event.EventManager;
-import org.apache.servicecomb.foundation.common.log.LogMarkerLeakFixUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
@@ -129,9 +128,6 @@ public class SCBEngine {
 
   protected SCBEngine() {
     eventBus = EventManager.getEventBus();
-
-    // see SCB-1266, fix Log4j2 leak marker problem
-    LogMarkerLeakFixUtils.fix();
 
     eventBus.register(this);
 

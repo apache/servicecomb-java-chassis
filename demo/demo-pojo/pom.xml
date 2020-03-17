@@ -32,5 +32,10 @@
     <module>pojo-client</module>
     <module>pojo-tests</module>
   </modules>
-
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-log4j</artifactId>
+    </dependency>
+  </dependencies>
 </project>
