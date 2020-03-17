@@ -147,7 +147,11 @@ public class TestServiceRegistryClientImpl {
       }.getMockInstance();
       rootLogger.addAppender(appender);
 
-      doRun(events);
+      try {
+        doRun(events);
+      } catch (Throwable e) {
+        e.printStackTrace();
+      }
 
       rootLogger.removeAppender(appender);
     }
@@ -175,6 +179,14 @@ public class TestServiceRegistryClientImpl {
 
   @Test
   public void testRegisterSchemaException() {
+    new MockUp<RestClientUtil>() {
+      @Mock
+      void put(IpPort ipPort, String uri, RequestParam requestParam,
+          Handler<RestResponse> responseHandler) {
+        // do nothing to mock null response
+      }
+    };
+
     InterruptedException e = new InterruptedException();
     new MockUp<CountDownLatch>() {
       @Mock
