@@ -287,6 +287,7 @@ You can find a copy of the License at licenses/LICENSE-epl-v20
 * JRuby Lib Setup (org.jruby:jruby-stdlib:9.2.6.0 - https://github.com/jruby/jruby/jruby-stdlib)
 * JRuby Main Maven Artifact (org.jruby:jruby:9.2.6.0 - https://github.com/jruby/jruby/jruby-artifacts/jruby)
 * Vert.x Core (io.vertx:vertx-core:3.8.3 - https://github.com/eclipse-vertx/vert.x)
+* Jakarta Expression Language (org.glassfish:jakarta.el:3.0.3 - http://projects.eclipse.org/projects/ee4j.el)
 
 ================================================================
 This product bundles libraries which are licensed under the
@@ -319,7 +320,6 @@ COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.1.
 You can find a copy of the License at licenses/LICENSE-cddl
 
 * JavaMail API jar (javax.mail:mailapi:1.4.3 - http://java.sun.com/projects/javamail/mailapi)
-* Expression Language 3.0 (org.glassfish:javax.el:3.0.0 - http://el-spec.java.net)
 * Jakarta Servlet API (jakarta.servlet:jakarta.servlet-api:4.0.3 - https://projects.eclipse.org/projects/ee4j.servlet)
 * javax.ws.rs-api (javax.ws.rs:javax.ws.rs-api:2.1 - http://jax-rs-spec.java.net)
 * Jersey Apache HTTP Client 4.x (com.sun.jersey.contribs:jersey-apache-client4:2.27 - https://jersey.java.net/jersey-contribs/jersey-apache-client4/)
@@ -478,7 +478,6 @@ For details, see their respective project links.
 * asciidoctorj-api (org.asciidoctor:asciidoctorj-api:1.6.2 - https://github.com/asciidoctor/asciidoctorj)
 * Awaitility (org.awaitility:awaitility:3.0.0 - http://awaitility.org)
 * backport9 (com.headius:backport9:1.1 - http://nexus.sonatype.org/oss-repository-hosting.html/backport9)
-* Bean Validation API (javax.validation:validation-api:2.0.1.Final - http://beanvalidation.org)
 * Brave (io.zipkin.brave:brave:5.6.0 - https://github.com/openzipkin/brave/brave)
 * Brave Context: Log4J 1.2 (io.zipkin.brave:brave-context-log4j12:5.6.0 - https://github.com/openzipkin/brave/brave-context-parent/brave-context-log4j12)
 * Brave Instrumentation: Http Adapters (io.zipkin.brave:brave-instrumentation-http:5.6.0 - https://github.com/openzipkin/brave/brave-instrumentation-parent/brave-instrumentation-http)
@@ -611,7 +610,6 @@ For details, see their respective project links.
 * Spring Cloud Netflix Core (org.springframework.cloud:spring-cloud-netflix-core:2.1.0.RELEASE - https://spring.io/spring-cloud/spring-cloud-netflix/spring-cloud-netflix-core)
 * spring-cloud-starter (org.springframework.cloud:spring-cloud-starter:2.1.0.RELEASE - https://projects.spring.io/spring-cloud)
 * spring-cloud-starter-gateway (org.springframework.cloud:spring-cloud-starter-gateway:2.1.0.RELEASE - https://projects.spring.io/spring-cloud)
-* Spring Cloud Starter Netflix Hystrix (org.springframework.cloud:spring-cloud-starter-netflix-hystrix:2.1.0.RELEASE - https://projects.spring.io/spring-cloud)
 * Spring Cloud Starter Netflix Ribbon (org.springframework.cloud:spring-cloud-starter-netflix-ribbon:2.1.0.RELEASE - https://projects.spring.io/spring-cloud)
 * Spring Cloud Starter Netflix Zuul (org.springframework.cloud:spring-cloud-starter-netflix-zuul:2.1.0.RELEASE - https://projects.spring.io/spring-cloud)
 

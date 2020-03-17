@@ -24,17 +24,14 @@ import static org.apache.servicecomb.config.nacos.client.ConfigurationAction.SET
 
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.validation.constraints.NotNull;
-
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.ConfigMapping;
+import org.apache.servicecomb.config.nacos.client.ConfigurationAction;
 import org.apache.servicecomb.config.nacos.client.NacosClient;
 import org.apache.servicecomb.config.nacos.client.NacosConfig;
-import org.apache.servicecomb.config.nacos.client.ConfigurationAction;
 import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,12 +75,12 @@ public class NacosConfigurationSourceImpl implements ConfigCenterConfigurationSo
   }
 
   @Override
-  public void addUpdateListener(@NotNull WatchedUpdateListener watchedUpdateListener) {
+  public void addUpdateListener(WatchedUpdateListener watchedUpdateListener) {
     listeners.add(watchedUpdateListener);
   }
 
   @Override
-  public void removeUpdateListener(@NotNull WatchedUpdateListener watchedUpdateListener) {
+  public void removeUpdateListener(WatchedUpdateListener watchedUpdateListener) {
     listeners.remove(watchedUpdateListener);
   }
 
