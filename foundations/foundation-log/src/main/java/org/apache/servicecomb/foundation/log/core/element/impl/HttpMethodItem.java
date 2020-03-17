@@ -49,7 +49,7 @@ public class HttpMethodItem implements LogItem<RoutingContext> {
   @Override
   public void appendFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
     OperationMeta operationMeta = finishEvent.getInvocation().getOperationMeta();
-    if (!StringUtils.isEmpty(operationMeta.getHttpMethod())) {
+    if (operationMeta != null && !StringUtils.isEmpty(operationMeta.getHttpMethod())) {
       builder.append(operationMeta.getHttpMethod());
       return;
     }

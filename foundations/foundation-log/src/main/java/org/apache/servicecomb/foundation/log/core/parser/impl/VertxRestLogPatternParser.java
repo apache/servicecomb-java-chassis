@@ -63,7 +63,7 @@ public class VertxRestLogPatternParser implements LogPatternParser<RoutingContex
   private List<VertxRestLogItemMeta> metaList = new ArrayList<>();
 
   public VertxRestLogPatternParser() {
-    List<VertxRestLogItemMeta> loadedMeta = loadVertxRestAccessLogItemMeta();
+    List<VertxRestLogItemMeta> loadedMeta = loadVertxRestLogItemMeta();
     if (null == loadedMeta || loadedMeta.isEmpty()) {
       LOGGER.error("cannot load AccessLogItemMeta!");
       throw new IllegalStateException("cannot load AccessLogItemMeta!");
@@ -78,7 +78,7 @@ public class VertxRestLogPatternParser implements LogPatternParser<RoutingContex
     sortAccessLogItemMeta(this.metaList);
   }
 
-  private List<VertxRestLogItemMeta> loadVertxRestAccessLogItemMeta() {
+  private List<VertxRestLogItemMeta> loadVertxRestLogItemMeta() {
     return SPIServiceUtils.getOrLoadSortedService(VertxRestLogItemMeta.class);
   }
 

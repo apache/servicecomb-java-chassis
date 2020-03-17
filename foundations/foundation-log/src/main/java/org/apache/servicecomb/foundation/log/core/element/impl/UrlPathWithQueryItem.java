@@ -19,6 +19,7 @@ package org.apache.servicecomb.foundation.log.core.element.impl;
 
 import static org.apache.servicecomb.common.rest.RestConst.REST_CLIENT_REQUEST_PATH;
 
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.foundation.log.core.element.LogItem;
@@ -43,11 +44,12 @@ public class UrlPathWithQueryItem implements LogItem<RoutingContext> {
 
   @Override
   public void appendFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    Object path = finishEvent.getInvocation().getLocalContext(REST_CLIENT_REQUEST_PATH);
-    if (null == path || StringUtils.isEmpty(path.toString())) {
+    Invocation invocation = finishEvent.getInvocation();
+    if (null == invocation || null == invocation.getLocalContext(REST_CLIENT_REQUEST_PATH)
+        || StringUtils.isEmpty(invocation.getLocalContext(REST_CLIENT_REQUEST_PATH).toString())) {
       builder.append(EMPTY_RESULT);
       return;
     }
-    builder.append(path.toString());
+    builder.append(invocation.getLocalContext(REST_CLIENT_REQUEST_PATH).toString());
   }
 }

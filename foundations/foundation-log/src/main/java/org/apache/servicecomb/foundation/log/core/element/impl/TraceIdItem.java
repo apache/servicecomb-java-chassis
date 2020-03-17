@@ -17,10 +17,11 @@
 
 package org.apache.servicecomb.foundation.log.core.element.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Const;
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
-import org.springframework.util.StringUtils;
 
 public class TraceIdItem extends InvocationContextItem {
 
@@ -36,13 +37,17 @@ public class TraceIdItem extends InvocationContextItem {
     if (StringUtils.isEmpty(traceId)) {
       traceId = accessLogEvent.getRoutingContext().request().getHeader(TRACE_ID);
     }
-
     builder.append(StringUtils.isEmpty(traceId) ? InvocationContextItem.NOT_FOUND : traceId);
   }
 
   @Override
   public void appendFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    String traceId = finishEvent.getInvocation().getContext().get(TRACE_ID);
-    builder.append(StringUtils.isEmpty(traceId) ? InvocationContextItem.NOT_FOUND : traceId);
+    Invocation invocation = finishEvent.getInvocation();
+    if (invocation == null || invocation.getContext() == null
+        || StringUtils.isEmpty(invocation.getContext().get(TRACE_ID))) {
+      builder.append(InvocationContextItem.NOT_FOUND);
+      return;
+    }
+    builder.append(invocation.getContext().get(TRACE_ID));
   }
 }

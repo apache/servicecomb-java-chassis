@@ -45,7 +45,11 @@ public class RequestProtocolItem implements LogItem<RoutingContext> {
   @Override
   public void appendFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
     Endpoint endpoint = finishEvent.getInvocation().getEndpoint();
-    builder.append(((URIEndpointObject) endpoint.getAddress()).isSslEnabled() ? "https" : "http");
+    if (endpoint == null || endpoint.getAddress() == null) {
+      builder.append(EMPTY_RESULT);
+      return;
+    }
+    builder.append(((URIEndpointObject) endpoint.getAddress()).isSslEnabled() ? "HTTPS" : "HTTP");
   }
 
   private String getStringVersion(HttpVersion version) {

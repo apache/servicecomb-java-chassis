@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.foundation.log.core.element.impl;
 
-
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
@@ -34,7 +34,8 @@ public class RemoteHostItem implements LogItem<RoutingContext> {
   @Override
   public void appendFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
     HttpServerRequest request = accessLogEvent.getRoutingContext().request();
-    if (null == request || null == request.remoteAddress()) {
+    if (null == request || null == request.remoteAddress()
+        || StringUtils.isEmpty(request.remoteAddress().host())) {
       builder.append(EMPTY_RESULT);
       return;
     }
@@ -44,7 +45,8 @@ public class RemoteHostItem implements LogItem<RoutingContext> {
   @Override
   public void appendFormattedItem(InvocationFinishEvent clientLogEvent, StringBuilder builder) {
     Endpoint endpoint = clientLogEvent.getInvocation().getEndpoint();
-    if (null == endpoint || null == endpoint.getAddress()) {
+    if (null == endpoint || null == endpoint.getAddress()
+        || StringUtils.isEmpty(((URIEndpointObject) endpoint.getAddress()).getHostOrIp())) {
       builder.append(EMPTY_RESULT);
       return;
     }
