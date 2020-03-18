@@ -39,9 +39,6 @@ public class InvocationContext {
 
   protected Map<String, Object> localContext = new HashMap<>();
 
-  // provide traceid-invocationId, so that can log them by %marker
-  protected Marker marker;
-
   public InvocationContext() {
     httpStatus = Status.OK;
   }
@@ -131,9 +128,5 @@ public class InvocationContext {
 
   public void setStatus(int statusCode) {
     this.httpStatus = statusMgr.getOrCreateByStatusCode(statusCode);
-  }
-
-  public Marker getMarker() {
-    return marker;
   }
 }

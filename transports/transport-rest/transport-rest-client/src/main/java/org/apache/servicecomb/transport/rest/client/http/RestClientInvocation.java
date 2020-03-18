@@ -114,7 +114,7 @@ public class RestClientInvocation {
     }
 
     clientRequest.exceptionHandler(e -> {
-      LOGGER.error(invocation.getMarker(), "Failed to send request, local:{}, remote:{}.",
+      invocation.getTraceIdLogger().error(LOGGER, "Failed to send request, local:{}, remote:{}.",
           getLocalAddress(), ipPort.getSocketAddress(), e);
       throwableHandler.handle(e);
     });
@@ -139,7 +139,7 @@ public class RestClientInvocation {
       try {
         restClientRequest.end();
       } catch (Throwable e) {
-        LOGGER.error(invocation.getMarker(),
+        invocation.getTraceIdLogger().error(LOGGER,
             "send http request failed, local:{}, remote: {}.", getLocalAddress(), ipPort, e);
         fail((ConnectionBase) clientRequest.connection(), e);
       }
@@ -190,11 +190,12 @@ public class RestClientInvocation {
         .setURI(path);
 
     HttpMethod method = getMethod();
-    LOGGER.debug(invocation.getMarker(), "Sending request by rest, method={}, qualifiedName={}, path={}, endpoint={}.",
-        method,
-        invocation.getMicroserviceQualifiedName(),
-        path,
-        invocation.getEndpoint().getEndpoint());
+    invocation.getTraceIdLogger()
+        .debug(LOGGER, "Sending request by rest, method={}, qualifiedName={}, path={}, endpoint={}.",
+            method,
+            invocation.getMicroserviceQualifiedName(),
+            path,
+            invocation.getEndpoint().getEndpoint());
     clientRequest = httpClientWithContext.getHttpClient().request(method, requestOptions, this::handleResponse);
   }
 
@@ -209,7 +210,7 @@ public class RestClientInvocation {
     }
 
     httpClientResponse.exceptionHandler(e -> {
-      LOGGER.error(invocation.getMarker(), "Failed to receive response, local:{}, remote:{}.",
+      invocation.getTraceIdLogger().error(LOGGER, "Failed to receive response, local:{}, remote:{}.",
           getLocalAddress(), httpClientResponse.netSocket().remoteAddress(), e);
       fail((ConnectionBase) clientRequest.connection(), e);
     });
@@ -289,7 +290,7 @@ public class RestClientInvocation {
       }
       asyncResp.fail(invocation.getInvocationType(), e);
     } catch (Throwable e1) {
-      LOGGER.error(invocation.getMarker(), "failed to invoke asyncResp.fail.", e1);
+      invocation.getTraceIdLogger().error(LOGGER, "failed to invoke asyncResp.fail.", e1);
     }
   }
 
@@ -298,7 +299,7 @@ public class RestClientInvocation {
       String cseContext = JsonUtils.writeValueAsString(invocation.getContext());
       clientRequest.putHeader(org.apache.servicecomb.core.Const.CSE_CONTEXT, cseContext);
     } catch (Throwable e) {
-      LOGGER.debug(invocation.getMarker(), "Failed to encode and set cseContext.", e);
+      invocation.getTraceIdLogger().error(LOGGER, "Failed to encode and set cseContext.", e);
     }
   }
 

@@ -37,7 +37,6 @@ import org.apache.servicecomb.demo.jaxrs.client.pojoDefault.DefaultModelServiceC
 import org.apache.servicecomb.demo.jaxrs.client.validation.ValidationServiceClient;
 import org.apache.servicecomb.demo.validator.Student;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
@@ -73,7 +72,6 @@ public class JaxrsClient {
   }
 
   public static void init() throws Exception {
-    Log4jUtils.init();
     BeanUtils.init();
     RestObjectMapperFactory.setDefaultRestObjectMapper(new RestObjectMapperWithStringMapper());
     RestObjectMapperFactory.setConsumerWriterMapper(new RestObjectMapperWithStringMapperNotWriteNull());

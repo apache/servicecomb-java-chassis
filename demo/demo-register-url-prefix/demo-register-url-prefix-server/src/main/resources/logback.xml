@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<configuration scan="true">
+  <appender name="STDOUT-TRACING" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- If applicable, can use ch.qos.logback.classic.filter.MarkerFilter -->
+    <filter class="org.apache.servicecomb.foundation.logback.MarkerFilter">
+      <Marker>SERVICECOMB_MARKER</Marker>
+      <OnMismatch>DENY</OnMismatch>
+      <OnMatch>ACCEPT</OnMatch>
+    </filter>
+
+    <encoder>
+      <pattern>%d [%level] [%thread][%X{SERVICECOMB_TRACE_ID}] - %msg (%F:%L\)%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- If applicable, can use ch.qos.logback.classic.filter.MarkerFilter -->
+    <filter class="org.apache.servicecomb.foundation.logback.MarkerFilter">
+      <Marker>SERVICECOMB_MARKER</Marker>
+      <OnMismatch>ACCEPT</OnMismatch>
+      <OnMatch>DENY</OnMatch>
+    </filter>
+
+    <encoder>
+      <pattern>%d [%level] [%thread] - %msg (%F:%L\)%n</pattern>
+    </encoder>
+  </appender>
+
+  <root level="info">
+    <appender-ref ref="STDOUT"/>
+    <appender-ref ref="STDOUT-TRACING"/>
+  </root>
+</configuration>

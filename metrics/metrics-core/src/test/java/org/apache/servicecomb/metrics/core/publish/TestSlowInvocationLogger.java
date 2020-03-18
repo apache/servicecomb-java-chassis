@@ -25,6 +25,7 @@ import org.apache.servicecomb.core.definition.OperationConfig;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
+import org.apache.servicecomb.core.tracing.TraceIdLogger;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
@@ -113,6 +114,8 @@ public class TestSlowInvocationLogger {
         result = "rest://1.1.1.1:1234";
         invocation.isConsumer();
         result = true;
+        invocation.getTraceIdLogger();
+        result = new TraceIdLogger(invocation);
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
         result = restOperationMeta;
         operationConfig.isSlowInvocationEnabled();
@@ -155,6 +158,8 @@ public class TestSlowInvocationLogger {
         result = "rest://1.1.1.1:1234";
         invocation.isConsumer();
         result = true;
+        invocation.getTraceIdLogger();
+        result = new TraceIdLogger(invocation);
         invocation.isEdge();
         result = true;
         operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION);
@@ -199,6 +204,8 @@ public class TestSlowInvocationLogger {
       {
         invocation.getRequestEx();
         result = requestEx;
+        invocation.getTraceIdLogger();
+        result = new TraceIdLogger(invocation);
         requestEx.getRemoteAddr();
         result = "1.1.1.1";
         requestEx.getRemotePort();

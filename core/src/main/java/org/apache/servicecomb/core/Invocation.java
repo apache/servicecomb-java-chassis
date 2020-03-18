@@ -36,8 +36,8 @@ import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
-import org.apache.servicecomb.core.tracing.ScbMarker;
 import org.apache.servicecomb.core.tracing.TraceIdGenerator;
+import org.apache.servicecomb.core.tracing.TraceIdLogger;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
@@ -102,12 +102,18 @@ public class Invocation extends SwaggerInvocation {
 
   private long invocationId;
 
+  private TraceIdLogger traceIdLogger;
+
   private Map<String, Object> invocationArguments = Collections.emptyMap();
 
   private Map<String, Object> swaggerArguments = Collections.emptyMap();
 
   public long getInvocationId() {
     return invocationId;
+  }
+
+  public TraceIdLogger getTraceIdLogger() {
+    return this.traceIdLogger;
   }
 
   public HttpServletRequestEx getRequestEx() {
@@ -250,7 +256,7 @@ public class Invocation extends SwaggerInvocation {
       this.invocationArguments = swaggerArguments;
     }
   }
-  
+
   public Object[] toProducerArguments() {
     Method method = operationMeta.getSwaggerProducerOperation().getProducerMethod();
     Object[] args = new Object[method.getParameterCount()];
@@ -341,7 +347,7 @@ public class Invocation extends SwaggerInvocation {
       initTraceId(traceIdGenerator);
     }
 
-    marker = new ScbMarker(this);
+    traceIdLogger = new TraceIdLogger(this);
   }
 
   protected void initTraceId(TraceIdGenerator traceIdGenerator) {
