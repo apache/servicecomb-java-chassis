@@ -302,14 +302,12 @@ public class TestInvocation {
     Invocation invocation = new Invocation(referenceConfig, operationMeta, arguments);
     invocation.addContext(Const.TRACE_ID_NAME, "abc");
     invocation.onStart(0);
-    Assert.assertEquals("abc-0", invocation.getMarker().toString());
-    Assert.assertEquals("abc-0", invocation.getMarker().getName());
+    Assert.assertEquals("abc-0", invocation.getTraceIdLogger().getName());
 
     invocation = new Invocation(referenceConfig, operationMeta, arguments);
     invocation.addContext(Const.TRACE_ID_NAME, "abc");
     invocation.onStart(0);
-    Assert.assertEquals("abc-1", invocation.getMarker().toString());
-    Assert.assertEquals("abc-1", invocation.getMarker().getName());
+    Assert.assertEquals("abc-1", invocation.getTraceIdLogger().getName());
   }
 
   @Test

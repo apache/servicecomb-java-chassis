@@ -16,30 +16,19 @@
  */
 package org.apache.servicecomb.core.tracing;
 
-import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.log.AbstractMarker;
-import org.apache.servicecomb.foundation.common.log.NoCacheMarker;
 
-public class ScbMarker extends AbstractMarker implements NoCacheMarker {
+public class ScbMarker extends AbstractMarker {
   private static final long serialVersionUID = -1L;
 
-  private final Invocation invocation;
+  private static final String MARKER_NAME = "SERVICECOMB_MARKER";
 
-  private String name;
+  public ScbMarker() {
 
-  public ScbMarker(Invocation invocation) {
-    this.invocation = invocation;
-  }
-
-  public Invocation getInvocation() {
-    return invocation;
   }
 
   @Override
   public final String getName() {
-    if (name == null) {
-      name = invocation.getTraceId() + "-" + invocation.getInvocationId();
-    }
-    return name;
+    return MARKER_NAME;
   }
 }

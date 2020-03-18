@@ -41,7 +41,7 @@ import org.apache.servicecomb.core.definition.OperationConfig;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.executor.ReactiveExecutor;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
-import org.apache.servicecomb.core.tracing.ScbMarker;
+import org.apache.servicecomb.core.tracing.TraceIdLogger;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
@@ -154,7 +154,7 @@ public class TestRestClientInvocation {
     when(operationMeta.getExtData(RestConst.SWAGGER_REST_OPERATION)).thenReturn(swaggerRestOperation);
     when(operationMeta.getConfig()).thenReturn(operationConfig);
     when(invocation.getEndpoint()).thenReturn(endpoint);
-    when(invocation.getMarker()).thenReturn(new ScbMarker(invocation));
+    when(invocation.getTraceIdLogger()).thenReturn(new TraceIdLogger(invocation));
     when(endpoint.getAddress()).thenReturn(address);
     when(invocation.getHandlerContext()).then(answer -> handlerContext);
     when(invocation.getInvocationStageTrace()).thenReturn(invocationStageTrace);
