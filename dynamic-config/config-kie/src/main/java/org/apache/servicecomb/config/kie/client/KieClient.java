@@ -62,6 +62,8 @@ public class KieClient {
 
   private static final int LONG_POLLING_WAIT_TIME = 30;
 
+  private static final int SOCKET_TIMOUT = 50;
+
   private static final KieConfig KIE_CONFIG = KieConfig.INSTANCE;
 
   private final int refreshInterval = KIE_CONFIG.getRefreshInterval();
@@ -99,6 +101,8 @@ public class KieClient {
     Vertx vertx = VertxUtils.getOrCreateVertxByName("kie", vertxOptions);
 
     HttpClientOptions httpClientOptions = new HttpClientOptions();
+    httpClientOptions.setKeepAlive(true);
+    httpClientOptions.setIdleTimeout(SOCKET_TIMOUT);
     clientMgr = new ClientPoolManager<>(vertx, new HttpClientPoolFactory(httpClientOptions));
 
     DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientMgr, 1);
@@ -135,7 +139,7 @@ public class KieClient {
           + KieConfig.INSTANCE.getDomainName()
           + "/kie/kv?label=app:"
           + KieConfig.INSTANCE.getAppName();
-      if (!IS_FIRST_PULL.get()) {
+      if (enableLongPolling && !IS_FIRST_PULL.get()) {
         path += "&wait=" + LONG_POLLING_WAIT_TIME + "s";
       } else {
         IS_FIRST_PULL.compareAndSet(true, false);
