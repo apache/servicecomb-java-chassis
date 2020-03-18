@@ -36,6 +36,11 @@ public class TestRestServerConfigEdge {
 
   @Test
   public void testIllegalPathParam() throws IOException {
+    doTestIllegalPathParam();
+    doTestIllegalPathParam();
+  }
+
+  private void doTestIllegalPathParam() throws IOException {
     String paramString = "%%A";
     String requestUri = client.getUrlPrefix() + "/intPath/" + paramString;
 
@@ -59,6 +64,11 @@ public class TestRestServerConfigEdge {
 
   @Test
   public void test404ThrownByServicCombNotConvertedTo500() {
+    doTest404ThrownByServicCombNotConvertedTo500();
+    doTest404ThrownByServicCombNotConvertedTo500();
+  }
+
+  private void doTest404ThrownByServicCombNotConvertedTo500() {
     String notFoundRequestUri = client.getUrlPrefix() + "/intPath2/123";
 
     try {
@@ -74,6 +84,11 @@ public class TestRestServerConfigEdge {
 
   @Test
   public void testFailureHandlerInDispatcher() throws IOException {
+    doTestFailureHandlerInDispatcher();
+    doTestFailureHandlerInDispatcher();
+  }
+
+  private void doTestFailureHandlerInDispatcher() throws IOException {
     String requestUri = client.getUrlPrefix();
     requestUri = requestUri.substring(0, requestUri.indexOf("rest")) + "dispatcherWithFailureHandler/abc";
     URL url = new URL(requestUri);
@@ -100,6 +115,11 @@ public class TestRestServerConfigEdge {
 
   @Test
   public void testFailureHandlerInSomewhereElse() throws IOException {
+    doTestFailureHandlerInSomewhereElse();
+    doTestFailureHandlerInSomewhereElse();
+  }
+
+  private void doTestFailureHandlerInSomewhereElse() throws IOException {
     String requestUri = client.getUrlPrefix();
     requestUri = requestUri.substring(0, requestUri.indexOf("rest")) + "dispatcherWithoutFailureHandler/abc";
     URL url = new URL(requestUri);

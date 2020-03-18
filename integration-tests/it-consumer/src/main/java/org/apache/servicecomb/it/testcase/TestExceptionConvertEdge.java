@@ -39,5 +39,13 @@ public class TestExceptionConvertEdge {
       Assert.assertEquals(HttpStatus.EXPECTATION_FAILED.value(), exception.getRawStatusCode());
       Assert.assertTrue(exception.getResponseBodyAsString().contains("change the response"));
     }
+    try {
+      client.getForObject("/add?x=88&y=21", Object.class);
+      // This test case have some problem: for some test case, e.g. spring boot, will get result, others may timeout
+      // Because of timeout settings.
+    } catch (HttpClientErrorException exception) {
+      Assert.assertEquals(HttpStatus.EXPECTATION_FAILED.value(), exception.getRawStatusCode());
+      Assert.assertTrue(exception.getResponseBodyAsString().contains("change the response"));
+    }
   }
 }

@@ -85,9 +85,17 @@ public class TestJAXRSObjectParamType {
     FlattenObjectResponse response = consumers.getEdgeRestTemplate()
         .postForObject("/testFlattenObjectParam", request, FlattenObjectResponse.class);
     Assert.assertEquals(Json.encode(request), Json.encode(response));
+    response = consumers.getEdgeRestTemplate()
+        .postForObject("/testFlattenObjectParam", request, FlattenObjectResponse.class);
+    Assert.assertEquals(Json.encode(request), Json.encode(response));
 
     request = new FlattenObjectRequest();
     ResponseEntity<FlattenObjectResponse> responseEntity = consumers.getEdgeRestTemplate()
+        .postForEntity("/testFlattenObjectParam", request, FlattenObjectResponse.class);
+    Assert.assertEquals(Json.encode(request), Json.encode(responseEntity.getBody()));
+    Assert.assertEquals(FlattenObjectResponse.class, responseEntity.getBody().getClass());
+    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    responseEntity = consumers.getEdgeRestTemplate()
         .postForEntity("/testFlattenObjectParam", request, FlattenObjectResponse.class);
     Assert.assertEquals(Json.encode(request), Json.encode(responseEntity.getBody()));
     Assert.assertEquals(FlattenObjectResponse.class, responseEntity.getBody().getClass());
@@ -124,6 +132,9 @@ public class TestJAXRSObjectParamType {
     FluentSetterFlattenObjectResponse response = consumers.getEdgeRestTemplate()
         .postForObject("/testFluentSetterFlattenObjectParam", fluentRequest, FluentSetterFlattenObjectResponse.class);
     Assert.assertEquals(Json.encode(fluentRequest), Json.encode(response));
+    response = consumers.getEdgeRestTemplate()
+        .postForObject("/testFluentSetterFlattenObjectParam", fluentRequest, FluentSetterFlattenObjectResponse.class);
+    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(response));
 
     fluentRequest = new FluentSetterFlattenObjectRequest();
     ResponseEntity<FluentSetterFlattenObjectResponse> responseEntity = consumers.getEdgeRestTemplate()
@@ -131,8 +142,13 @@ public class TestJAXRSObjectParamType {
     Assert.assertEquals(Json.encode(fluentRequest), Json.encode(responseEntity.getBody()));
     Assert.assertEquals(FluentSetterFlattenObjectResponse.class, responseEntity.getBody().getClass());
     Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    responseEntity = consumers.getEdgeRestTemplate()
+        .postForEntity("/testFluentSetterFlattenObjectParam", fluentRequest, FluentSetterFlattenObjectResponse.class);
+    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(responseEntity.getBody()));
+    Assert.assertEquals(FluentSetterFlattenObjectResponse.class, responseEntity.getBody().getClass());
+    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
   }
-  
+
   @Test
   public void testMultiLayerObjectParam_rpc() {
     MultiLayerObjectParam request = new MultiLayerObjectParam("sss-1", new Date(),
@@ -172,7 +188,18 @@ public class TestJAXRSObjectParamType {
             new HttpEntity<>(request), MultiLayerObjectParam.class);
     Assert.assertEquals(request, responseEntity.getBody());
     Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    responseEntity = consumers.getEdgeRestTemplate()
+        .exchange("/testMultiLayerObjectParam", HttpMethod.PUT,
+            new HttpEntity<>(request), MultiLayerObjectParam.class);
+    Assert.assertEquals(request, responseEntity.getBody());
+    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
 
+    responseEntity = consumers.getEdgeRestTemplate()
+        .exchange("/testMultiLayerObjectParam", HttpMethod.PUT,
+            new HttpEntity<>(null), MultiLayerObjectParam.class);
+    // highway will not return null object
+    Assert.assertTrue(responseEntity.getBody() == null || responseEntity.getBody().getString() == null);
+    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
     responseEntity = consumers.getEdgeRestTemplate()
         .exchange("/testMultiLayerObjectParam", HttpMethod.PUT,
             new HttpEntity<>(null), MultiLayerObjectParam.class);
@@ -201,6 +228,10 @@ public class TestJAXRSObjectParamType {
   public void testRecursiveObjectParam_edge() {
     RecursiveObjectParam request = createRecursiveObjectParam();
     ResponseEntity<RecursiveObjectParam> responseEntity = consumers.getEdgeRestTemplate()
+        .postForEntity("/testRecursiveObjectParam", request, RecursiveObjectParam.class);
+    Assert.assertEquals(request, responseEntity.getBody());
+    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    responseEntity = consumers.getEdgeRestTemplate()
         .postForEntity("/testRecursiveObjectParam", request, RecursiveObjectParam.class);
     Assert.assertEquals(request, responseEntity.getBody());
     Assert.assertEquals(200, responseEntity.getStatusCodeValue());
@@ -238,6 +269,7 @@ public class TestJAXRSObjectParamType {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void testListObjectParam_edge() {
     List<GenericObjectParam<List<RecursiveObjectParam>>> request = Arrays.asList(
         new GenericObjectParam<>("s1", 1,
@@ -247,10 +279,12 @@ public class TestJAXRSObjectParamType {
             )),
         new GenericObjectParam<>("s2", 2, null)
     );
-    @SuppressWarnings("unchecked")
-    List<GenericObjectParam<List<RecursiveObjectParam>>> response = consumers.getEdgeRestTemplate()
+    List<GenericObjectParam<List<RecursiveObjectParam>>> responseRest = consumers.getEdgeRestTemplate()
         .postForObject("/testListObjectParam", request, List.class);
-    Assert.assertEquals(Json.encode(request), Json.encode(response));
+    Assert.assertEquals(Json.encode(request), Json.encode(responseRest));
+    List<GenericObjectParam<List<RecursiveObjectParam>>> responseHighway = consumers.getEdgeRestTemplate()
+        .postForObject("/testListObjectParam", request, List.class);
+    Assert.assertEquals(Json.encode(request), Json.encode(responseHighway));
   }
 
   @Test

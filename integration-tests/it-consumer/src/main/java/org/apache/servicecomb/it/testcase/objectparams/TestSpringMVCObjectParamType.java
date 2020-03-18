@@ -95,9 +95,17 @@ public class TestSpringMVCObjectParamType {
     FlattenObjectResponse response = consumers.getEdgeRestTemplate()
         .postForObject("/testFlattenObjectParam", request, FlattenObjectResponse.class);
     Assert.assertEquals(Json.encode(request), Json.encode(response));
+    response = consumers.getEdgeRestTemplate()
+        .postForObject("/testFlattenObjectParam", request, FlattenObjectResponse.class);
+    Assert.assertEquals(Json.encode(request), Json.encode(response));
 
     request = new FlattenObjectRequest();
     ResponseEntity<FlattenObjectResponse> responseEntity = consumers.getEdgeRestTemplate()
+        .postForEntity("/testFlattenObjectParam", request, FlattenObjectResponse.class);
+    Assert.assertEquals(Json.encode(request), Json.encode(responseEntity.getBody()));
+    Assert.assertEquals(FlattenObjectResponse.class, responseEntity.getBody().getClass());
+    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    responseEntity = consumers.getEdgeRestTemplate()
         .postForEntity("/testFlattenObjectParam", request, FlattenObjectResponse.class);
     Assert.assertEquals(Json.encode(request), Json.encode(responseEntity.getBody()));
     Assert.assertEquals(FlattenObjectResponse.class, responseEntity.getBody().getClass());
@@ -135,9 +143,17 @@ public class TestSpringMVCObjectParamType {
     FluentSetterFlattenObjectResponse response = consumers.getEdgeRestTemplate()
         .postForObject("/testFluentSetterFlattenObjectParam", fluentRequest, FluentSetterFlattenObjectResponse.class);
     Assert.assertEquals(Json.encode(fluentRequest), Json.encode(response));
+    response = consumers.getEdgeRestTemplate()
+        .postForObject("/testFluentSetterFlattenObjectParam", fluentRequest, FluentSetterFlattenObjectResponse.class);
+    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(response));
 
     fluentRequest = new FluentSetterFlattenObjectRequest();
     ResponseEntity<FluentSetterFlattenObjectResponse> responseEntity = consumers.getEdgeRestTemplate()
+        .postForEntity("/testFluentSetterFlattenObjectParam", fluentRequest, FluentSetterFlattenObjectResponse.class);
+    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(responseEntity.getBody()));
+    Assert.assertEquals(FluentSetterFlattenObjectResponse.class, responseEntity.getBody().getClass());
+    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    responseEntity = consumers.getEdgeRestTemplate()
         .postForEntity("/testFluentSetterFlattenObjectParam", fluentRequest, FluentSetterFlattenObjectResponse.class);
     Assert.assertEquals(Json.encode(fluentRequest), Json.encode(responseEntity.getBody()));
     Assert.assertEquals(FluentSetterFlattenObjectResponse.class, responseEntity.getBody().getClass());
@@ -182,7 +198,18 @@ public class TestSpringMVCObjectParamType {
             new HttpEntity<>(request), MultiLayerObjectParam.class);
     Assert.assertEquals(request, responseEntity.getBody());
     Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    responseEntity = consumers.getEdgeRestTemplate()
+        .exchange("/testMultiLayerObjectParam", HttpMethod.PUT,
+            new HttpEntity<>(request), MultiLayerObjectParam.class);
+    Assert.assertEquals(request, responseEntity.getBody());
+    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
 
+    responseEntity = consumers.getEdgeRestTemplate()
+        .exchange("/testMultiLayerObjectParam", HttpMethod.PUT,
+            new HttpEntity<>(null), MultiLayerObjectParam.class);
+    // Highway will not return null
+    Assert.assertTrue(responseEntity.getBody() == null || responseEntity.getBody().getString() == null);
+    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
     responseEntity = consumers.getEdgeRestTemplate()
         .exchange("/testMultiLayerObjectParam", HttpMethod.PUT,
             new HttpEntity<>(null), MultiLayerObjectParam.class);
@@ -211,6 +238,10 @@ public class TestSpringMVCObjectParamType {
   public void testRecursiveObjectParam_edge() {
     RecursiveObjectParam request = createRecursiveObjectParam();
     ResponseEntity<RecursiveObjectParam> responseEntity = consumers.getEdgeRestTemplate()
+        .postForEntity("/testRecursiveObjectParam", request, RecursiveObjectParam.class);
+    Assert.assertEquals(request, responseEntity.getBody());
+    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    responseEntity = consumers.getEdgeRestTemplate()
         .postForEntity("/testRecursiveObjectParam", request, RecursiveObjectParam.class);
     Assert.assertEquals(request, responseEntity.getBody());
     Assert.assertEquals(200, responseEntity.getStatusCodeValue());
@@ -248,6 +279,7 @@ public class TestSpringMVCObjectParamType {
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void testListObjectParam_edge() {
     List<GenericObjectParam<List<RecursiveObjectParam>>> request = Arrays.asList(
         new GenericObjectParam<>("s1", 1,
@@ -257,10 +289,13 @@ public class TestSpringMVCObjectParamType {
             )),
         new GenericObjectParam<>("s2", 2, null)
     );
-    @SuppressWarnings("unchecked")
-    List<GenericObjectParam<List<RecursiveObjectParam>>> response = consumers.getEdgeRestTemplate()
+
+    List<GenericObjectParam<List<RecursiveObjectParam>>> responseRest = consumers.getEdgeRestTemplate()
         .postForObject("/testListObjectParam", request, List.class);
-    Assert.assertEquals(Json.encode(request), Json.encode(response));
+    Assert.assertEquals(Json.encode(request), Json.encode(responseRest));
+    List<GenericObjectParam<List<RecursiveObjectParam>>> responseHighway = consumers.getEdgeRestTemplate()
+        .postForObject("/testListObjectParam", request, List.class);
+    Assert.assertEquals(Json.encode(request), Json.encode(responseHighway));
   }
 
   @Test
@@ -286,76 +321,6 @@ public class TestSpringMVCObjectParamType {
     Map<String, GenericObjectParam<Map<String, GenericObjectParam<RecursiveObjectParam>>>> responseEdge
         = consumers.getEdgeRestTemplate().postForObject("/testMapObjectParam", request, Map.class);
     Assert.assertEquals(Json.encode(request), Json.encode(responseEdge));
-  }
-
-  @Test
-  public void testNullFieldAndDefaultValue_rpc() {
-    LinkedHashMap<Object, Object> request = new LinkedHashMap<>();
-    request.put("s1", "sss1");
-    request.put("i1", 111);
-    TestNullFieldAndDefaultValueParam response =
-        consumers.getIntf().testNullFieldAndDefaultValue(request);
-    TestNullFieldAndDefaultValueParam expectedResponse =
-        new TestNullFieldAndDefaultValueParam("sss1", 111, null, 0, "defaultS3", 2333);
-    expectedResponse.setRawRequest(Json.encode(expectedResponse));
-    Assert.assertEquals(expectedResponse, response);
-
-    request.put("s2", "sss2");
-    request.put("i2", 1234);
-    request.put("s3", "sss3");
-    request.put("i3", 3333);
-    response = consumers.getIntf().testNullFieldAndDefaultValue(request);
-    expectedResponse = new TestNullFieldAndDefaultValueParam("sss1", 111, "sss2", 1234, "sss3", 3333);
-    expectedResponse.setRawRequest(Json.encode(expectedResponse));
-    Assert.assertEquals(expectedResponse, response);
-  }
-
-  @Test
-  public void testNullFieldAndDefaultValue_rt() {
-    LinkedHashMap<Object, Object> request = new LinkedHashMap<>();
-    request.put("s1", "sss1");
-    request.put("i1", 111);
-    TestNullFieldAndDefaultValueParam response = consumers.getSCBRestTemplate()
-        .postForObject("/testNullFieldAndDefaultValue", request, TestNullFieldAndDefaultValueParam.class);
-    TestNullFieldAndDefaultValueParam expectedResponse =
-        new TestNullFieldAndDefaultValueParam("sss1", 111, null, 0, "defaultS3", 2333);
-    expectedResponse.setRawRequest(Json.encode(expectedResponse));
-    Assert.assertEquals(expectedResponse, response);
-
-    request.put("s2", "sss2");
-    request.put("i2", 1234);
-    request.put("s3", "sss3");
-    request.put("i3", 3333);
-    ResponseEntity<TestNullFieldAndDefaultValueParam> responseEntity = consumers.getSCBRestTemplate()
-        .postForEntity("/testNullFieldAndDefaultValue", request, TestNullFieldAndDefaultValueParam.class);
-    expectedResponse = new TestNullFieldAndDefaultValueParam("sss1", 111, "sss2", 1234, "sss3", 3333);
-    expectedResponse.setRawRequest(Json.encode(expectedResponse));
-    Assert.assertEquals(expectedResponse, responseEntity.getBody());
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
-  }
-
-  @Test
-  public void testNullFieldAndDefaultValue_edge() {
-    LinkedHashMap<Object, Object> request = new LinkedHashMap<>();
-    request.put("s1", "sss1");
-    request.put("i1", 111);
-    TestNullFieldAndDefaultValueParam response = consumers.getEdgeRestTemplate()
-        .postForObject("/testNullFieldAndDefaultValue", request, TestNullFieldAndDefaultValueParam.class);
-    TestNullFieldAndDefaultValueParam expectedResponse =
-        new TestNullFieldAndDefaultValueParam("sss1", 111, null, 0, "defaultS3", 2333);
-    expectedResponse.setRawRequest(Json.encode(expectedResponse));
-    Assert.assertEquals(expectedResponse, response);
-
-    request.put("s2", "sss2");
-    request.put("i2", 1234);
-    request.put("s3", "sss3");
-    request.put("i3", 3333);
-    ResponseEntity<TestNullFieldAndDefaultValueParam> responseEntity = consumers.getEdgeRestTemplate()
-        .postForEntity("/testNullFieldAndDefaultValue", request, TestNullFieldAndDefaultValueParam.class);
-    expectedResponse = new TestNullFieldAndDefaultValueParam("sss1", 111, "sss2", 1234, "sss3", 3333);
-    expectedResponse.setRawRequest(Json.encode(expectedResponse));
-    Assert.assertEquals(expectedResponse, responseEntity.getBody());
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
   }
 
   @Test

@@ -52,7 +52,7 @@ servicecomb:
           transport: rest
       paramCodecRestOnly:
         transport: rest
-      SpringMVCObjectParamTypeSchema:
+      springMVCObjectRestSchemaRestOnly:
         transport: rest
     it-producer-h2:
       generic:
@@ -73,7 +73,7 @@ servicecomb:
           transport: rest
       paramCodecRestOnly:
         transport: rest
-      SpringMVCObjectParamTypeSchema:
+      springMVCObjectRestSchemaRestOnly:
         transport: rest
     it-producer-h2c:
       generic:
@@ -94,7 +94,7 @@ servicecomb:
           transport: rest
       paramCodecRestOnly:
         transport: rest
-      SpringMVCObjectParamTypeSchema:
+      springMVCObjectRestSchemaRestOnly:
         transport: rest
     it-producer-deploy-springboot2-servlet:
       generic:
@@ -115,7 +115,7 @@ servicecomb:
           transport: rest
       paramCodecRestOnly:
         transport: rest
-      SpringMVCObjectParamTypeSchema:
+      springMVCObjectRestSchemaRestOnly:
         transport: rest
     it-producer-deploy-springboot2-standalone:
       generic:
@@ -136,7 +136,7 @@ servicecomb:
           transport: rest
       paramCodecRestOnly:
         transport: rest
-      SpringMVCObjectParamTypeSchema:
+      springMVCObjectRestSchemaRestOnly:
         transport: rest
   http:
     dispatcher:
