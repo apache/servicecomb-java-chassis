@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.http.HttpStatus;
 import org.apache.servicecomb.config.kie.archaius.sources.KieConfigurationSourceImpl.UpdateHandler;
 import org.apache.servicecomb.config.kie.model.KVResponse;
@@ -48,15 +49,28 @@ public class KieClient {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(KieClient.class);
 
-  private ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(1);
+  private ScheduledExecutorService EXECUTOR = Executors.newScheduledThreadPool(1, (r) -> {
+    Thread thread = new Thread(r);
+    thread.setName("org.apache.servicecomb.config.kie");
+    thread.setDaemon(true);
+    return thread;
+  });
 
   private static final long TIME_OUT = 10000;
+
+  private static AtomicBoolean IS_FIRST_PULL = new AtomicBoolean(true);
+
+  private static final int LONG_POLLING_WAIT_TIME = 30;
+
+  private static final int SOCKET_TIMOUT = 50;
 
   private static final KieConfig KIE_CONFIG = KieConfig.INSTANCE;
 
   private final int refreshInterval = KIE_CONFIG.getRefreshInterval();
 
   private final int firstRefreshInterval = KIE_CONFIG.getFirstRefreshInterval();
+
+  private final boolean enableLongPolling = KIE_CONFIG.enableLongPolling();
 
   private final String serviceUri = KIE_CONFIG.getServerUri();
 
@@ -72,9 +86,12 @@ public class KieClient {
     } catch (InterruptedException e) {
       throw new IllegalStateException(e);
     }
-    EXECUTOR
-        .scheduleWithFixedDelay(new ConfigRefresh(serviceUri), firstRefreshInterval,
-            refreshInterval, TimeUnit.SECONDS);
+    if (enableLongPolling) {
+      EXECUTOR.execute(new ConfigRefresh(serviceUri));
+    } else {
+      EXECUTOR.scheduleWithFixedDelay(new ConfigRefresh(serviceUri), firstRefreshInterval,
+          refreshInterval, TimeUnit.SECONDS);
+    }
   }
 
   private void deployConfigClient() throws InterruptedException {
@@ -84,6 +101,8 @@ public class KieClient {
     Vertx vertx = VertxUtils.getOrCreateVertxByName("kie", vertxOptions);
 
     HttpClientOptions httpClientOptions = new HttpClientOptions();
+    httpClientOptions.setKeepAlive(true);
+    httpClientOptions.setIdleTimeout(SOCKET_TIMOUT);
     clientMgr = new ClientPoolManager<>(vertx, new HttpClientPoolFactory(httpClientOptions));
 
     DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientMgr, 1);
@@ -114,17 +133,22 @@ public class KieClient {
       }
     }
 
-    //todo : latch down
     @SuppressWarnings("deprecation")
     void refreshConfig() {
       String path = "/v1/"
           + KieConfig.INSTANCE.getDomainName()
           + "/kie/kv?label=app:"
           + KieConfig.INSTANCE.getAppName();
+      if (enableLongPolling && !IS_FIRST_PULL.get()) {
+        path += "&wait=" + LONG_POLLING_WAIT_TIME + "s";
+      } else {
+        IS_FIRST_PULL.compareAndSet(true, false);
+      }
+      String finalPath = path;
       clientMgr.findThreadBindClientPool().runOnContext(client -> {
         IpPort ipPort = NetUtils.parseIpPortFromURI(serviceUri);
         HttpClientRequest request = client
-            .get(ipPort.getPort(), ipPort.getHostOrIp(), path, rsp -> {
+            .get(ipPort.getPort(), ipPort.getHostOrIp(), finalPath, rsp -> {
               if (rsp.statusCode() == HttpResponseStatus.OK.code()) {
                 rsp.bodyHandler(buf -> {
                   try {
@@ -140,15 +164,16 @@ public class KieClient {
                         e.getMessage());
                   }
                 });
-                // latch.countDown();
               } else if (rsp.statusCode() == HttpStatus.SC_NOT_FOUND) {
                 EventManager.post(new ConnSuccEvent());
-//                latch.countDown();
               } else {
                 EventManager.post(new ConnFailEvent("fetch config fail"));
                 LOGGER.error("Config update from {} failed. Error message is [{}].",
                     serviceUri,
                     rsp.statusMessage());
+              }
+              if (enableLongPolling) {
+                EXECUTOR.execute(this);
               }
             }).setTimeout(TIME_OUT);
         request.exceptionHandler(e -> {
@@ -156,7 +181,6 @@ public class KieClient {
           LOGGER.error("Config update from {} failed. Error message is [{}].",
               serviceUri,
               e.getMessage());
-//          latch.countDown();
         });
         request.end();
       });

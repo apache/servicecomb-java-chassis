@@ -36,6 +36,8 @@ public class KieConfig {
 
   private static final String DOMAIN_NAME = "servicecomb.kie.domainName";
 
+  private static final String ENABLE_LONG_POLLING = "servicecomb.kie.enableLongPolling";
+
   private static final String APPLICATION_NAME = "APPLICATION_ID";
 
   private static final String SERVICE_NAME = "service_description.name";
@@ -44,10 +46,11 @@ public class KieConfig {
 
   private static final String INSTANCE_TAGS = "instance_description.properties.tags";
 
-
   private static final int DEFAULT_REFRESH_INTERVAL = 3000;
 
   private static final int DEFAULT_FIRST_REFRESH_INTERVAL = 0;
+
+  private static final boolean DEFAULT_ENABLE_LONG_POLLING = true;
 
   private KieConfig() {
   }
@@ -94,5 +97,9 @@ public class KieConfig {
 
   public int getFirstRefreshInterval() {
     return finalConfig.getInt(FIRST_REFRESH_INTERVAL, DEFAULT_FIRST_REFRESH_INTERVAL);
+  }
+
+  public boolean enableLongPolling() {
+    return finalConfig.getBoolean(ENABLE_LONG_POLLING, DEFAULT_ENABLE_LONG_POLLING);
   }
 }
