@@ -91,6 +91,7 @@ public class PojoClientTest {
         result);
   }
 
+  @SuppressWarnings({"deprecation"})
   private static void testCommonInvoke(String transport) {
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("index", 2);
