@@ -24,6 +24,8 @@ import java.util.Set;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.servicecomb.common.accessLog.AccessLogConfig;
+import org.apache.servicecomb.common.accessLog.core.element.impl.LocalHostItemAccess;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
@@ -32,8 +34,7 @@ import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.foundation.log.LogConfig;
-import org.apache.servicecomb.foundation.log.core.element.impl.LocalHostItem;
+
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
@@ -163,15 +164,15 @@ public class RestServerVerticle extends AbstractVerticle {
   }
 
   private void mountAccessLogHandler(Router mainRouter) {
-    if (!LogConfig.INSTANCE.isServerLogEnabled()) {
+    if (!AccessLogConfig.INSTANCE.isServerLogEnabled()) {
       return;
     }
-    LOGGER.info("access log enabled, pattern = {}", LogConfig.INSTANCE.getServerLogPattern());
+    LOGGER.info("access log enabled, pattern = {}", AccessLogConfig.INSTANCE.getServerLogPattern());
     mainRouter.route().handler(context -> {
       ServerAccessLogEvent accessLogEvent = new ServerAccessLogEvent()
           .setRoutingContext(context)
           .setMilliStartTime(System.currentTimeMillis())
-          .setLocalAddress(LocalHostItem.getLocalAddress(context));
+          .setLocalAddress(LocalHostItemAccess.getLocalAddress(context));
       context.response().endHandler(event ->
           EventManager.post(accessLogEvent.setMilliEndTime(System.currentTimeMillis())));
       context.next();

@@ -15,22 +15,31 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
   <parent>
+    <artifactId>common</artifactId>
     <groupId>org.apache.servicecomb</groupId>
-    <artifactId>java-chassis-parent</artifactId>
     <version>2.0.1-SNAPSHOT</version>
-    <relativePath>../parents/default</relativePath>
   </parent>
-  <artifactId>common</artifactId>
-  <name>Java Chassis::Common</name>
-  <packaging>pom</packaging>
-  <modules>
-    <module>common-javassist</module>
-    <module>common-protobuf</module>
-    <module>common-rest</module>
-    <module>common-access-log</module>
-  </modules>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>common-access-log</artifactId>
+  <name>Java Chassis::Common::CommonAccessLog</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>java-chassis-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>common-rest</artifactId>
+    </dependency>
+  </dependencies>
 </project>
