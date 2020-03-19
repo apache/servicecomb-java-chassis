@@ -23,6 +23,8 @@ import java.util.Map;
 public interface ObjectParamTypeSchema {
   FlattenObjectResponse testFlattenObjectParam(FlattenObjectRequest request);
 
+  FluentSetterFlattenObjectResponse testFluentSetterFlattenObjectParam(FluentSetterFlattenObjectRequest request);
+
   MultiLayerObjectParam testMultiLayerObjectParam(MultiLayerObjectParam request);
 
   RecursiveObjectParam testRecursiveObjectParam(RecursiveObjectParam request);

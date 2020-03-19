@@ -49,6 +49,9 @@ public class TestParamCodecEdge {
     String result = client.getForObject("/spaceCharCodec/" + paramString + "?q=" + paramString, String.class);
     assertEquals(matchOr(result, paramString + " +%20%% " + paramQueryStringResult + " true",
         paramString + " +%20%% " + paramString + " true"), result);
+    result = client.getForObject("/spaceCharCodec/" + paramString + "?q=" + paramString, String.class);
+    assertEquals(matchOr(result, paramString + " +%20%% " + paramQueryStringResult + " true",
+        paramString + " +%20%% " + paramString + " true"), result);
   }
 
   private String matchOr(String result, String expected1, String expected2) {
@@ -75,6 +78,11 @@ public class TestParamCodecEdge {
 
   @Test
   public void testStringUrlEncodedForm() throws IOException {
+    doTestStringUrlEncodedForm();
+    doTestStringUrlEncodedForm();
+  }
+
+  private void doTestStringUrlEncodedForm() throws IOException {
     String requestUri = client.getUrlPrefix() + "/stringUrlencodedForm";
     URL url = new URL(requestUri);
     HttpURLConnection httpConnection = (HttpURLConnection) url.openConnection();

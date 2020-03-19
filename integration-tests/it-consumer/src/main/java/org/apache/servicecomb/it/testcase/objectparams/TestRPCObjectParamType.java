@@ -27,6 +27,8 @@ import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.schema.objectparams.Color;
 import org.apache.servicecomb.it.schema.objectparams.FlattenObjectRequest;
 import org.apache.servicecomb.it.schema.objectparams.FlattenObjectResponse;
+import org.apache.servicecomb.it.schema.objectparams.FluentSetterFlattenObjectRequest;
+import org.apache.servicecomb.it.schema.objectparams.FluentSetterFlattenObjectResponse;
 import org.apache.servicecomb.it.schema.objectparams.GenericObjectParam;
 import org.apache.servicecomb.it.schema.objectparams.InnerRecursiveObjectParam;
 import org.apache.servicecomb.it.schema.objectparams.MultiLayerObjectParam;
@@ -68,6 +70,31 @@ public class TestRPCObjectParamType {
     response = consumers.getSCBRestTemplate()
         .postForObject("/testFlattenObjectParam", request, FlattenObjectResponse.class);
     Assert.assertEquals(Json.encode(request), Json.encode(response));
+  }
+
+  @Test
+  public void testFluentSetterFlattenObjectParam_rpc() {
+    FluentSetterFlattenObjectRequest fluentRequest = createFluentSetterFlattenObjectRequest();
+    FluentSetterFlattenObjectResponse fluentResponse = consumers.getIntf()
+        .testFluentSetterFlattenObjectParam(fluentRequest);
+    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
+
+    fluentRequest = new FluentSetterFlattenObjectRequest();
+    fluentResponse = consumers.getIntf().testFluentSetterFlattenObjectParam(fluentRequest);
+    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
+  }
+
+  @Test
+  public void testFluentSetterFlattenObjectParam_rt() {
+    FluentSetterFlattenObjectRequest fluentRequest = createFluentSetterFlattenObjectRequest();
+    FluentSetterFlattenObjectResponse fluentResponse = consumers.getSCBRestTemplate()
+        .postForObject("/testFluentSetterFlattenObjectParam", fluentRequest, FluentSetterFlattenObjectResponse.class);
+    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
+
+    fluentRequest = new FluentSetterFlattenObjectRequest();
+    fluentResponse = consumers.getSCBRestTemplate()
+        .postForObject("/testFluentSetterFlattenObjectParam", fluentRequest, FluentSetterFlattenObjectResponse.class);
+    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
   }
 
   @Test
@@ -191,6 +218,28 @@ public class TestRPCObjectParamType {
     request.setString("abc");
     request.setColor(Color.BLUE);
     return request;
+  }
+
+  private FluentSetterFlattenObjectRequest createFluentSetterFlattenObjectRequest() {
+    FluentSetterFlattenObjectRequest request = new FluentSetterFlattenObjectRequest();
+    return request.setAnByte((byte) 8)
+        .setAnShort((short) 7)
+        .setAnInt(6)
+        .setAnLong(5)
+        .setAnFloat(4.4f)
+        .setAnDouble(3.3)
+        .setAnBoolean(true)
+        .setAnChar('c')
+        .setAnWrappedByte((byte) 16)
+        .setAnWrappedShort((short) 15)
+        .setAnWrappedInteger(14)
+        .setAnWrappedLong(13L)
+        .setAnWrappedFloat(12.2f)
+        .setAnWrappedDouble(11.1)
+        .setAnWrappedBoolean(true)
+        .setAnWrappedCharacter('d')
+        .setString("abc")
+        .setColor(Color.BLUE);
   }
 
   private RecursiveObjectParam createRecursiveObjectParam() {

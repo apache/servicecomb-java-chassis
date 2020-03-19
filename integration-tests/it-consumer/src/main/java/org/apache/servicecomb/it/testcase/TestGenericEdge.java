@@ -32,18 +32,22 @@ public class TestGenericEdge {
   private static GateRestTemplate client = GateRestTemplate.createEdgeRestTemplate("generic");
 
   @Test
+  @SuppressWarnings("unchecked")
   public void testGenericMap() {
     Generic<Map<String, String>> mapGeneric = new Generic<>();
     Map<String, String> map = new HashMap<>();
     map.put("test", "hello");
     mapGeneric.value = map;
-    @SuppressWarnings("unchecked")
     Generic<Map<String, String>> result = client.postForObject("/genericMap", mapGeneric, Generic.class);
     String test = result.value.get("test");
+    assertEquals(test, "hello");
+    result = client.postForObject("/genericMap", mapGeneric, Generic.class);
+    test = result.value.get("test");
     assertEquals(test, "hello");
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void testGenericMapList() {
     Generic<Map<String, List<String>>> mapListGeneric = new Generic<>();
     Map<String, List<String>> map = new HashMap<>();
@@ -51,21 +55,26 @@ public class TestGenericEdge {
     list.add("hello");
     map.put("test", list);
     mapListGeneric.value = map;
-    @SuppressWarnings("unchecked")
     Generic<Map<String, List<String>>> result = client.postForObject("/genericMapList", mapListGeneric, Generic.class);
     String test = result.value.get("test").get(0);
+    assertEquals("hello", test);
+    result = client.postForObject("/genericMapList", mapListGeneric, Generic.class);
+    test = result.value.get("test").get(0);
     assertEquals("hello", test);
   }
 
   @Test
+  @SuppressWarnings("unchecked")
   public void testGenericUser() {
     Generic<User> generic = new Generic<>();
     generic.value = new User();
-    @SuppressWarnings("unchecked")
+
     Generic<Map<String, Object>> result = client.postForObject("/genericUser", generic, Generic.class);
-    Map<String, Object> resultUser = result.value;
-    assertEquals("nameA", resultUser.get("name"));
-    assertEquals(100, resultUser.get("age"));
+    assertEquals("nameA", result.value.get("name"));
+    assertEquals(100, result.value.get("age"));
+    result = client.postForObject("/genericUser", generic, Generic.class);
+    assertEquals("nameA", result.value.get("name"));
+    assertEquals(100, result.value.get("age"));
   }
 
   @Test
@@ -81,7 +90,11 @@ public class TestGenericEdge {
     Generic<Map<String, List<Map<String, Object>>>> result = client
         .postForObject("/genericMapListUser", mapListUserGeneric, Generic.class);
     Map<String, Object> resultUser = result.value.get("test").get(0);
+    assertEquals("nameA", resultUser.get("name"));
+    assertEquals(100, resultUser.get("age"));
 
+    result = client.postForObject("/genericMapListUser", mapListUserGeneric, Generic.class);
+    resultUser = result.value.get("test").get(0);
     assertEquals("nameA", resultUser.get("name"));
     assertEquals(100, resultUser.get("age"));
   }

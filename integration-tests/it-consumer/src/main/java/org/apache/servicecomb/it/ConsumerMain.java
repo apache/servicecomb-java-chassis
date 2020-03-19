@@ -52,6 +52,7 @@ import org.apache.servicecomb.it.testcase.base.TestGeneric;
 import org.apache.servicecomb.it.testcase.objectparams.TestJAXRSObjectParamType;
 import org.apache.servicecomb.it.testcase.objectparams.TestRPCObjectParamType;
 import org.apache.servicecomb.it.testcase.objectparams.TestSpringMVCObjectParamType;
+import org.apache.servicecomb.it.testcase.objectparams.TestSpringMVCObjectParamTypeRestOnly;
 import org.apache.servicecomb.it.testcase.thirdparty.Test3rdPartyInvocation;
 import org.apache.servicecomb.it.testcase.weak.consumer.TestSpringmvcBasic;
 
@@ -141,6 +142,7 @@ public class ConsumerMain {
     ITJUnitUtils.runWithHighwayAndRest(TestApiOperationOverride.class);
 
     ITJUnitUtils.runWithHighwayAndRest(TestSpringMVCObjectParamType.class);
+    ITJUnitUtils.runWithHighwayAndRest(TestSpringMVCObjectParamTypeRestOnly.class);
     ITJUnitUtils.runWithHighwayAndRest(TestJAXRSObjectParamType.class);
     ITJUnitUtils.runWithHighwayAndRest(TestRPCObjectParamType.class);
 

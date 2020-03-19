@@ -52,6 +52,8 @@ servicecomb:
           transport: rest
       paramCodecRestOnly:
         transport: rest
+      springMVCObjectRestSchemaRestOnly:
+        transport: rest
     it-producer-h2:
       generic:
         genericUser:
@@ -70,6 +72,8 @@ servicecomb:
         restControllerSchemaQueries:
           transport: rest
       paramCodecRestOnly:
+        transport: rest
+      springMVCObjectRestSchemaRestOnly:
         transport: rest
     it-producer-h2c:
       generic:
@@ -90,6 +94,8 @@ servicecomb:
           transport: rest
       paramCodecRestOnly:
         transport: rest
+      springMVCObjectRestSchemaRestOnly:
+        transport: rest
     it-producer-deploy-springboot2-servlet:
       generic:
         genericUser:
@@ -109,6 +115,8 @@ servicecomb:
           transport: rest
       paramCodecRestOnly:
         transport: rest
+      springMVCObjectRestSchemaRestOnly:
+        transport: rest
     it-producer-deploy-springboot2-standalone:
       generic:
         genericUser:
@@ -127,6 +135,8 @@ servicecomb:
         restControllerSchemaQueries:
           transport: rest
       paramCodecRestOnly:
+        transport: rest
+      springMVCObjectRestSchemaRestOnly:
         transport: rest
   http:
     dispatcher:

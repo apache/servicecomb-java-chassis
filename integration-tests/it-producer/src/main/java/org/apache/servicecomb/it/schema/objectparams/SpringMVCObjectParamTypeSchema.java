@@ -44,6 +44,13 @@ public class SpringMVCObjectParamTypeSchema implements ObjectParamTypeSchema {
     return RestObjectMapperFactory.getRestObjectMapper().convertValue(request, FlattenObjectResponse.class);
   }
 
+  @PostMapping("testFluentSetterFlattenObjectParam")
+  @Override
+  public FluentSetterFlattenObjectResponse testFluentSetterFlattenObjectParam(
+      @RequestBody FluentSetterFlattenObjectRequest request) {
+    return RestObjectMapperFactory.getRestObjectMapper().convertValue(request, FluentSetterFlattenObjectResponse.class);
+  }
+
   @PutMapping("testMultiLayerObjectParam")
   @Override
   public MultiLayerObjectParam testMultiLayerObjectParam(@RequestBody(required = false) MultiLayerObjectParam request) {
@@ -78,24 +85,8 @@ public class SpringMVCObjectParamTypeSchema implements ObjectParamTypeSchema {
     return request;
   }
 
-  /**
-   * Request body doesn't carry a certain fields, and will not overwrite the default field value of
-   * provider param definition.
-   * <p/>
-   * There are two test cases:
-   * <ul>
-   *   <li>consumer invoke provider directly</li>
-   *   <li>consumer invoke provider via EdgeService</li>
-   * </ul>
-   *
-   */
-  @PostMapping("testNullFieldAndDefaultValue")
-  public TestNullFieldAndDefaultValueParam testNullFieldAndDefaultValue(
-      @RequestBody TestNullFieldAndDefaultValueParam request) {
-    String jsonRequest = Json.encode(request);
-    request.setRawRequest(jsonRequest);
-    LOGGER.info("return testNullFieldAndDefaultValue response: {}", request);
-    LOGGER.info("raw json is {}", Json.encode(request));
+  @GetMapping("testFluentSetterQueryObjectParam")
+  public FluentSetterFlattenObjectRequest testFluentSetterQueryObjectParam(FluentSetterFlattenObjectRequest request) {
     return request;
   }
 }

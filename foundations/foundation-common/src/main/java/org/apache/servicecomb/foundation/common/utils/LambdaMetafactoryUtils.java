@@ -125,7 +125,10 @@ public final class LambdaMetafactoryUtils {
       MethodHandle methodHandle = LOOKUP.unreflect(instanceMethod);
 
       MethodType intfMethodType = MethodType.methodType(intfMethod.getReturnType(), intfMethod.getParameterTypes());
-      MethodType instanceMethodType = methodHandle.type();
+
+      // the return type of fluent setter is object instead of void, but we can assume the return type is void. it doesn't matter
+      MethodType instanceMethodType = MethodType
+          .methodType(intfMethod.getReturnType(), methodHandle.type().parameterList());
       CallSite callSite = LambdaMetafactory.metafactory(
           LOOKUP,
           intfMethod.getName(),

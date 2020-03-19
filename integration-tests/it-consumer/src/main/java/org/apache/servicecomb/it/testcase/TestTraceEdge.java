@@ -36,5 +36,7 @@ public class TestTraceEdge {
 
     String traceId = client.exchange("/echo-proxy", HttpMethod.GET, requestEntity, String.class).getBody();
     Assert.assertEquals("testId", traceId);
+    traceId = client.exchange("/echo-proxy", HttpMethod.GET, requestEntity, String.class).getBody();
+    Assert.assertEquals("testId", traceId);
   }
 }

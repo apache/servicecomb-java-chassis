@@ -62,10 +62,18 @@ public class TestRestController {
       System.out.println("restControllerSchemaClientRestControllerSchemaQueries run with REST edge.");
       result = restControllerSchemaClientEdge.getForObject("/v1/restControllerSchemaQueries?a=2", String.class);
       Assert.assertEquals("/v1/restControllerSchemaQueries?a=2", result);
+      result = restControllerSchemaClientEdge.getForObject("/v1/restControllerSchemaQueries?a=2", String.class);
+      Assert.assertEquals("/v1/restControllerSchemaQueries?a=2", result);
+      result = restControllerSchemaClientEdge.getForObject("/v1/restControllerSchemaQueries?b=3", String.class);
+      Assert.assertEquals("/v1/restControllerSchemaQueries?b=3", result);
       result = restControllerSchemaClientEdge.getForObject("/v1/restControllerSchemaQueries?b=3", String.class);
       Assert.assertEquals("/v1/restControllerSchemaQueries?b=3", result);
       result = restControllerSchemaClientEdge.getForObject("/v1/restControllerSchemaQueries?a=2&b=3&c=4", String.class);
       Assert.assertEquals("/v1/restControllerSchemaQueries?a=2&b=3&c=4", result);
+      result = restControllerSchemaClientEdge.getForObject("/v1/restControllerSchemaQueries?a=2&b=3&c=4", String.class);
+      Assert.assertEquals("/v1/restControllerSchemaQueries?a=2&b=3&c=4", result);
+      result = restControllerSchemaClientEdge.getForObject("/v1/restControllerSchemaQueries?a=2&&&", String.class);
+      Assert.assertEquals("/v1/restControllerSchemaQueries?a=2", result);
       result = restControllerSchemaClientEdge.getForObject("/v1/restControllerSchemaQueries?a=2&&&", String.class);
       Assert.assertEquals("/v1/restControllerSchemaQueries?a=2", result);
     } else {
