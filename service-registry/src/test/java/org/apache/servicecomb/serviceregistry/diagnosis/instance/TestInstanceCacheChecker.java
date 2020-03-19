@@ -44,6 +44,8 @@ import mockit.Mock;
 import mockit.MockUp;
 
 public class TestInstanceCacheChecker {
+  AppManager originalAppManager = RegistryUtils.getAppManager();
+
   ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
 
   InstanceCacheChecker checker;
@@ -69,6 +71,7 @@ public class TestInstanceCacheChecker {
 
   @After
   public void tearDown() throws Exception {
+    Deencapsulation.setField(RegistryUtils.class, "appManager", originalAppManager);
     RegistryUtils.setServiceRegistry(null);
   }
 
