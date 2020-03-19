@@ -50,6 +50,7 @@ public class CrossappClient {
     System.setProperty("sun.net.http.allowRestrictedHeaders", "false");
   }
 
+  @SuppressWarnings({"deprecation"})
   public static void run() {
     Object result = InvokerUtils.syncInvoke("appServer:appService", "helloworld", "sayHello", null);
     TestMgr.check("hello world", result);

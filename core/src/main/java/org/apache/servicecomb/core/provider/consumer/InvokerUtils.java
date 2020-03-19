@@ -17,7 +17,10 @@
 
 package org.apache.servicecomb.core.provider.consumer;
 
+import java.lang.reflect.Type;
 import java.util.Map;
+
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
@@ -30,19 +33,46 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 public final class InvokerUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(InvokerUtils.class);
 
-  public static Object syncInvoke(String microserviceName, String schemaId, String operationId,
-      Map<String, Object> swaggerArguments) {
-    return syncInvoke(microserviceName, null, null, schemaId, operationId, swaggerArguments);
+  @SuppressWarnings({"unchecked"})
+  public static <T> T syncInvoke(String microserviceName, String microserviceVersion, String transport,
+      String schemaId, String operationId, Map<String, Object> swaggerArguments, Type responseType) {
+    Invocation invocation = createInvocation(microserviceName, microserviceVersion, transport, schemaId, operationId,
+        swaggerArguments, responseType);
+    return (T) syncInvoke(invocation);
   }
 
-  public static Object syncInvoke(String microserviceName, String microserviceVersion, String transport,
-      String schemaId, String operationId, Map<String, Object> swaggerArguments) {
+  public static void reactiveInvoke(String microserviceName, String microserviceVersion, String transport,
+      String schemaId, String operationId, Map<String, Object> swaggerArguments, Type responseType,
+      AsyncResponse asyncResp) {
+    Invocation invocation = createInvocation(microserviceName, microserviceVersion, transport, schemaId, operationId,
+        swaggerArguments, responseType);
+    reactiveInvoke(invocation, asyncResp);
+  }
+
+  public static <T> T syncInvoke(String microserviceName, String schemaId, String operationId,
+      Map<String, Object> swaggerArguments, Type responseType) {
+    return syncInvoke(microserviceName, null, null,
+        schemaId, operationId, swaggerArguments, responseType);
+  }
+
+  public static void reactiveInvoke(String microserviceName, String schemaId, String operationId,
+      Map<String, Object> swaggerArguments, Type responseType,
+      AsyncResponse asyncResp) {
+    reactiveInvoke(microserviceName, null, null,
+        schemaId, operationId, swaggerArguments, responseType, asyncResp);
+  }
+
+  private static Invocation createInvocation(String microserviceName, String microserviceVersion, String transport,
+      String schemaId, String operationId, Map<String, Object> swaggerArguments, Type responseType) {
     MicroserviceReferenceConfig microserviceReferenceConfig = SCBEngine.getInstance()
         .createMicroserviceReferenceConfig(microserviceName, microserviceVersion);
     MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getLatestMicroserviceMeta();
@@ -51,11 +81,47 @@ public final class InvokerUtils {
 
     ReferenceConfig referenceConfig = microserviceReferenceConfig.createReferenceConfig(transport, operationMeta);
     Invocation invocation = InvocationFactory.forConsumer(referenceConfig, operationMeta, swaggerArguments);
-    return syncInvoke(invocation);
+    setInvocationResponseType(invocation, responseType);
+    return invocation;
+  }
+
+  private static void setInvocationResponseType(Invocation invocation, Type responseType) {
+    if (responseType != null) {
+      ResponsesMeta responsesMeta = new ResponsesMeta();
+      invocation.getOperationMeta().getResponsesMeta().cloneTo(responsesMeta);
+      responsesMeta.getResponseMap().put(Status.OK.getStatusCode(),
+          TypeFactory.defaultInstance().constructType(responseType));
+      invocation.setResponsesMeta(responsesMeta);
+    }
   }
 
   /**
-   * it's a internal API, caller make sure already invoked SCBEngine.ensureStatusUp
+   *
+   * use of this method , the response type can not be determined.
+   * use {@link #syncInvoke(String, String, String, Map, Type)} instead.
+   *
+   */
+  @Deprecated
+  public static Object syncInvoke(String microserviceName, String schemaId, String operationId,
+      Map<String, Object> swaggerArguments) {
+    return syncInvoke(microserviceName, null, null, schemaId, operationId, swaggerArguments);
+  }
+
+  /**
+   *
+   * use of this method , the response type can not be determined.
+   * use {@link #syncInvoke(String, String, String, String, String, Map, Type)} instead.
+   *
+   */
+  @Deprecated
+  public static Object syncInvoke(String microserviceName, String microserviceVersion, String transport,
+      String schemaId, String operationId, Map<String, Object> swaggerArguments) {
+    return syncInvoke(microserviceName, microserviceVersion, transport, schemaId, operationId, swaggerArguments,
+        null);
+  }
+
+  /**
+   * This is an internal API, caller make sure already invoked SCBEngine.ensureStatusUp
    * @param invocation
    * @return contract result
    * @throws InvocationException
@@ -69,7 +135,7 @@ public final class InvokerUtils {
   }
 
   /**
-   * it's a internal API, caller make sure already invoked SCBEngine.ensureStatusUp
+   * This is an internal API, caller make sure already invoked SCBEngine.ensureStatusUp
    * @param invocation
    * @return servicecomb response object
    */
@@ -100,7 +166,7 @@ public final class InvokerUtils {
   }
 
   /**
-   * it's a internal API, caller make sure already invoked SCBEngine.ensureStatusUp
+   * This is an internal API, caller make sure already invoked SCBEngine.ensureStatusUp
    * @param invocation
    * @param asyncResp
    */
@@ -131,10 +197,5 @@ public final class InvokerUtils {
       LOGGER.error("invoke failed, {}", invocation.getOperationMeta().getMicroserviceQualifiedName());
       asyncResp.handle(response);
     }
-  }
-
-  @Deprecated
-  public static Object invoke(Invocation invocation) {
-    return syncInvoke(invocation);
   }
 }

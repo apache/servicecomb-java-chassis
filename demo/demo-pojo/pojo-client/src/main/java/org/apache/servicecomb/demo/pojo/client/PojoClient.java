@@ -259,6 +259,7 @@ public class PojoClient {
     TestMgr.check("User [name=nameA,  users count:0, age=100, index=1]", result);
   }
 
+  @SuppressWarnings({"deprecation"})
   private static void testCommonInvoke(String transport) {
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("index", 2);
