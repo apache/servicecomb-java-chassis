@@ -23,6 +23,7 @@ import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceManager;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 
@@ -33,6 +34,8 @@ import mockit.Mock;
 import mockit.MockUp;
 
 public class TestRegistryBase {
+  private AppManager originalAppManager = RegistryUtils.getAppManager();
+
   protected ServiceRegistry serviceRegistry;
 
   protected AppManager appManager;
@@ -68,6 +71,7 @@ public class TestRegistryBase {
     serviceRegistry.init();
 
     Deencapsulation.setField(RegistryUtils.class, "appManager", new AppManager());
+
     appManager = RegistryUtils.getAppManager();
     microserviceManager = appManager.getOrCreateMicroserviceManager(appId);
     eventBus = serviceRegistry.getEventBus();
@@ -77,6 +81,11 @@ public class TestRegistryBase {
     RegistryUtils.setServiceRegistry(serviceRegistry);
 
     Logger.getRootLogger().setLevel(Level.INFO);
+  }
+
+  @After
+  public void tearDown() {
+    Deencapsulation.setField(RegistryUtils.class, "appManager", originalAppManager);
   }
 
   @AfterClass
