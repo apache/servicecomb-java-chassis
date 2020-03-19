@@ -39,6 +39,6 @@ public class Application {
     TestMgr.check("2", template
         .getForObject("cse://demo-register-url-prefix-server/hellodemo/register/url/prefix/getName?name=2",
             String.class));
-
+    TestMgr.summary();
   }
 }

@@ -19,6 +19,7 @@
 <!--this is sample configuration, please modify as your wish-->
 <configuration>
   <Appenders>
+    <!-- can use MarkerFilter to separate logs with trace id
     <Console name="Console" target="SYSTEM_OUT">
       <MarkerFilter marker="SERVICECOMB_MARKER" onMatch="DENY" onMismatch="ACCEPT"/>
       <PatternLayout pattern="[%d][%t][%p][%c:%L] %m%n"/>
@@ -27,11 +28,14 @@
       <MarkerFilter marker="SERVICECOMB_MARKER" onMismatch="DENY" onMatch="ACCEPT"/>
       <PatternLayout pattern="[%d][%t][%p][%c:%L][%X{SERVICECOMB_TRACE_ID}] %m%n"/>
     </Console>
+    -->
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="[%d][%t][%p][%c:%L][%X{SERVICECOMB_TRACE_ID}] %m%n"/>
+    </Console>
   </Appenders>
   <Loggers>
     <Root level="info">
       <AppenderRef ref="Console"/>
-      <AppenderRef ref="Console-Tracing"/>
     </Root>
   </Loggers>
 </configuration>
