@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.it.testcase.objectparams;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -34,18 +36,20 @@ import org.apache.servicecomb.it.schema.objectparams.InnerRecursiveObjectParam;
 import org.apache.servicecomb.it.schema.objectparams.MultiLayerObjectParam;
 import org.apache.servicecomb.it.schema.objectparams.MultiLayerObjectParam2;
 import org.apache.servicecomb.it.schema.objectparams.ObjectParamTypeSchema;
+import org.apache.servicecomb.it.schema.objectparams.QueryObjectModel;
 import org.apache.servicecomb.it.schema.objectparams.RecursiveObjectParam;
 import org.apache.servicecomb.it.schema.objectparams.TestNullFieldAndDefaultValueParam;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
 import io.vertx.core.json.Json;
 
 public class TestSpringMVCObjectParamType {
-  interface SpringMVCObjectParamTypeSchema extends ObjectParamTypeSchema {
+  interface SpringMVCObjectParamTypeSchemaIntf extends ObjectParamTypeSchema {
     TestNullFieldAndDefaultValueParam testNullFieldAndDefaultValue(Object request);
 
     FlattenObjectRequest testQueryObjectParam(byte anByte, short anShort, int anInt, long anLong, float anFloat,
@@ -60,20 +64,42 @@ public class TestSpringMVCObjectParamType {
         Integer anWrappedInteger,
         Long anWrappedLong, Float anWrappedFloat, Double anWrappedDouble, Boolean anWrappedBoolean,
         Character anWrappedCharacter, String string, Color color);
+
+    String testQueryObjectWithHeader(String prefix, int index, String name);
+
+    String testQueryObjectWithHeaderName(String prefix, int index, String name);
+
+    String testQueryObjectWithHeaderValue(String prefix, int index, String name);
+
+    String testQueryObjectWithHeaderValueAndName(String prefix, String suffix, int index, String name);
+
+    String testQueryObjectWithParam(String prefix, int index, String name);
+
+    String testQueryObjectWithParamName(String prefix, int index, String name);
+
+    String testQueryObjectWithParamValue(String prefix, int index, String name);
   }
 
-  static Consumers<SpringMVCObjectParamTypeSchema> consumers =
-      new Consumers<>("SpringMVCObjectParamTypeSchema", SpringMVCObjectParamTypeSchema.class);
+  static Consumers<SpringMVCObjectParamTypeSchemaIntf> consumers =
+      new Consumers<>("SpringMVCObjectParamTypeSchema", SpringMVCObjectParamTypeSchemaIntf.class);
+
+  private String prefix = "prefix-";
+
+  private String suffix = "-suffix";
+
+  private QueryObjectModel queryModel = new QueryObjectModel(23, "demo");
+
+  private String queryParam = "index=23&name=demo";
 
   @Test
   public void testFlattenObjectParam_rpc() {
     FlattenObjectRequest request = FlattenObjectRequest.createFlattenObjectRequest();
     FlattenObjectResponse response = consumers.getIntf().testFlattenObjectParam(request);
-    Assert.assertEquals(Json.encode(request), Json.encode(response));
+    assertEquals(Json.encode(request), Json.encode(response));
 
     request = new FlattenObjectRequest();
     response = consumers.getIntf().testFlattenObjectParam(request);
-    Assert.assertEquals(Json.encode(request), Json.encode(response));
+    assertEquals(Json.encode(request), Json.encode(response));
   }
 
   @Test
@@ -81,12 +107,12 @@ public class TestSpringMVCObjectParamType {
     FlattenObjectRequest request = FlattenObjectRequest.createFlattenObjectRequest();
     FlattenObjectResponse response = consumers.getSCBRestTemplate()
         .postForObject("/testFlattenObjectParam", request, FlattenObjectResponse.class);
-    Assert.assertEquals(Json.encode(request), Json.encode(response));
+    assertEquals(Json.encode(request), Json.encode(response));
 
     request = new FlattenObjectRequest();
     response = consumers.getSCBRestTemplate()
         .postForObject("/testFlattenObjectParam", request, FlattenObjectResponse.class);
-    Assert.assertEquals(Json.encode(request), Json.encode(response));
+    assertEquals(Json.encode(request), Json.encode(response));
   }
 
   @Test
@@ -94,22 +120,22 @@ public class TestSpringMVCObjectParamType {
     FlattenObjectRequest request = FlattenObjectRequest.createFlattenObjectRequest();
     FlattenObjectResponse response = consumers.getEdgeRestTemplate()
         .postForObject("/testFlattenObjectParam", request, FlattenObjectResponse.class);
-    Assert.assertEquals(Json.encode(request), Json.encode(response));
+    assertEquals(Json.encode(request), Json.encode(response));
     response = consumers.getEdgeRestTemplate()
         .postForObject("/testFlattenObjectParam", request, FlattenObjectResponse.class);
-    Assert.assertEquals(Json.encode(request), Json.encode(response));
+    assertEquals(Json.encode(request), Json.encode(response));
 
     request = new FlattenObjectRequest();
     ResponseEntity<FlattenObjectResponse> responseEntity = consumers.getEdgeRestTemplate()
         .postForEntity("/testFlattenObjectParam", request, FlattenObjectResponse.class);
-    Assert.assertEquals(Json.encode(request), Json.encode(responseEntity.getBody()));
-    Assert.assertEquals(FlattenObjectResponse.class, responseEntity.getBody().getClass());
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    assertEquals(Json.encode(request), Json.encode(responseEntity.getBody()));
+    assertEquals(FlattenObjectResponse.class, responseEntity.getBody().getClass());
+    assertEquals(200, responseEntity.getStatusCodeValue());
     responseEntity = consumers.getEdgeRestTemplate()
         .postForEntity("/testFlattenObjectParam", request, FlattenObjectResponse.class);
-    Assert.assertEquals(Json.encode(request), Json.encode(responseEntity.getBody()));
-    Assert.assertEquals(FlattenObjectResponse.class, responseEntity.getBody().getClass());
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    assertEquals(Json.encode(request), Json.encode(responseEntity.getBody()));
+    assertEquals(FlattenObjectResponse.class, responseEntity.getBody().getClass());
+    assertEquals(200, responseEntity.getStatusCodeValue());
   }
 
   @Test
@@ -117,11 +143,11 @@ public class TestSpringMVCObjectParamType {
     FluentSetterFlattenObjectRequest fluentRequest = FluentSetterFlattenObjectRequest.createFlattenObjectRequest();
     FluentSetterFlattenObjectResponse fluentResponse = consumers.getIntf()
         .testFluentSetterFlattenObjectParam(fluentRequest);
-    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
+    assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
 
     fluentRequest = new FluentSetterFlattenObjectRequest();
     fluentResponse = consumers.getIntf().testFluentSetterFlattenObjectParam(fluentRequest);
-    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
+    assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
   }
 
   @Test
@@ -129,12 +155,12 @@ public class TestSpringMVCObjectParamType {
     FluentSetterFlattenObjectRequest fluentRequest = FluentSetterFlattenObjectRequest.createFlattenObjectRequest();
     FluentSetterFlattenObjectResponse fluentResponse = consumers.getSCBRestTemplate()
         .postForObject("/testFluentSetterFlattenObjectParam", fluentRequest, FluentSetterFlattenObjectResponse.class);
-    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
+    assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
 
     fluentRequest = new FluentSetterFlattenObjectRequest();
     fluentResponse = consumers.getSCBRestTemplate()
         .postForObject("/testFluentSetterFlattenObjectParam", fluentRequest, FluentSetterFlattenObjectResponse.class);
-    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
+    assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
   }
 
   @Test
@@ -142,22 +168,22 @@ public class TestSpringMVCObjectParamType {
     FluentSetterFlattenObjectRequest fluentRequest = FluentSetterFlattenObjectRequest.createFlattenObjectRequest();
     FluentSetterFlattenObjectResponse response = consumers.getEdgeRestTemplate()
         .postForObject("/testFluentSetterFlattenObjectParam", fluentRequest, FluentSetterFlattenObjectResponse.class);
-    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(response));
+    assertEquals(Json.encode(fluentRequest), Json.encode(response));
     response = consumers.getEdgeRestTemplate()
         .postForObject("/testFluentSetterFlattenObjectParam", fluentRequest, FluentSetterFlattenObjectResponse.class);
-    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(response));
+    assertEquals(Json.encode(fluentRequest), Json.encode(response));
 
     fluentRequest = new FluentSetterFlattenObjectRequest();
     ResponseEntity<FluentSetterFlattenObjectResponse> responseEntity = consumers.getEdgeRestTemplate()
         .postForEntity("/testFluentSetterFlattenObjectParam", fluentRequest, FluentSetterFlattenObjectResponse.class);
-    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(responseEntity.getBody()));
-    Assert.assertEquals(FluentSetterFlattenObjectResponse.class, responseEntity.getBody().getClass());
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    assertEquals(Json.encode(fluentRequest), Json.encode(responseEntity.getBody()));
+    assertEquals(FluentSetterFlattenObjectResponse.class, responseEntity.getBody().getClass());
+    assertEquals(200, responseEntity.getStatusCodeValue());
     responseEntity = consumers.getEdgeRestTemplate()
         .postForEntity("/testFluentSetterFlattenObjectParam", fluentRequest, FluentSetterFlattenObjectResponse.class);
-    Assert.assertEquals(Json.encode(fluentRequest), Json.encode(responseEntity.getBody()));
-    Assert.assertEquals(FluentSetterFlattenObjectResponse.class, responseEntity.getBody().getClass());
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    assertEquals(Json.encode(fluentRequest), Json.encode(responseEntity.getBody()));
+    assertEquals(FluentSetterFlattenObjectResponse.class, responseEntity.getBody().getClass());
+    assertEquals(200, responseEntity.getStatusCodeValue());
   }
 
   @Test
@@ -165,7 +191,7 @@ public class TestSpringMVCObjectParamType {
     MultiLayerObjectParam request = new MultiLayerObjectParam("sss-1", new Date(),
         new MultiLayerObjectParam2("sss-2", 12.12, FlattenObjectRequest.createFlattenObjectRequest()));
     MultiLayerObjectParam response = consumers.getIntf().testMultiLayerObjectParam(request);
-    Assert.assertEquals(request, response);
+    assertEquals(request, response);
 //  Highway will not give null return value
     response = consumers.getIntf().testMultiLayerObjectParam(null);
     Assert.assertTrue(response == null || response.getString() == null);
@@ -178,15 +204,15 @@ public class TestSpringMVCObjectParamType {
     ResponseEntity<MultiLayerObjectParam> responseEntity = consumers.getSCBRestTemplate()
         .exchange("/testMultiLayerObjectParam", HttpMethod.PUT,
             new HttpEntity<>(request), MultiLayerObjectParam.class);
-    Assert.assertEquals(request, responseEntity.getBody());
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    assertEquals(request, responseEntity.getBody());
+    assertEquals(200, responseEntity.getStatusCodeValue());
 
     responseEntity = consumers.getSCBRestTemplate()
         .exchange("/testMultiLayerObjectParam", HttpMethod.PUT,
             new HttpEntity<>(null), MultiLayerObjectParam.class);
     //  Highway will not give null return value
     Assert.assertTrue(responseEntity.getBody() == null || responseEntity.getBody().getString() == null);
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    assertEquals(200, responseEntity.getStatusCodeValue());
   }
 
   @Test
@@ -196,33 +222,33 @@ public class TestSpringMVCObjectParamType {
     ResponseEntity<MultiLayerObjectParam> responseEntity = consumers.getEdgeRestTemplate()
         .exchange("/testMultiLayerObjectParam", HttpMethod.PUT,
             new HttpEntity<>(request), MultiLayerObjectParam.class);
-    Assert.assertEquals(request, responseEntity.getBody());
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    assertEquals(request, responseEntity.getBody());
+    assertEquals(200, responseEntity.getStatusCodeValue());
     responseEntity = consumers.getEdgeRestTemplate()
         .exchange("/testMultiLayerObjectParam", HttpMethod.PUT,
             new HttpEntity<>(request), MultiLayerObjectParam.class);
-    Assert.assertEquals(request, responseEntity.getBody());
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    assertEquals(request, responseEntity.getBody());
+    assertEquals(200, responseEntity.getStatusCodeValue());
 
     responseEntity = consumers.getEdgeRestTemplate()
         .exchange("/testMultiLayerObjectParam", HttpMethod.PUT,
             new HttpEntity<>(null), MultiLayerObjectParam.class);
     // Highway will not return null
     Assert.assertTrue(responseEntity.getBody() == null || responseEntity.getBody().getString() == null);
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    assertEquals(200, responseEntity.getStatusCodeValue());
     responseEntity = consumers.getEdgeRestTemplate()
         .exchange("/testMultiLayerObjectParam", HttpMethod.PUT,
             new HttpEntity<>(null), MultiLayerObjectParam.class);
     // Highway will not return null
     Assert.assertTrue(responseEntity.getBody() == null || responseEntity.getBody().getString() == null);
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    assertEquals(200, responseEntity.getStatusCodeValue());
   }
 
   @Test
   public void testRecursiveObjectParam_rpc() {
     RecursiveObjectParam request = createRecursiveObjectParam();
     RecursiveObjectParam response = consumers.getIntf().testRecursiveObjectParam(request);
-    Assert.assertEquals(request, response);
+    assertEquals(request, response);
   }
 
   @Test
@@ -230,8 +256,8 @@ public class TestSpringMVCObjectParamType {
     RecursiveObjectParam request = createRecursiveObjectParam();
     ResponseEntity<RecursiveObjectParam> responseEntity = consumers.getSCBRestTemplate()
         .postForEntity("/testRecursiveObjectParam", request, RecursiveObjectParam.class);
-    Assert.assertEquals(request, responseEntity.getBody());
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    assertEquals(request, responseEntity.getBody());
+    assertEquals(200, responseEntity.getStatusCodeValue());
   }
 
   @Test
@@ -239,12 +265,12 @@ public class TestSpringMVCObjectParamType {
     RecursiveObjectParam request = createRecursiveObjectParam();
     ResponseEntity<RecursiveObjectParam> responseEntity = consumers.getEdgeRestTemplate()
         .postForEntity("/testRecursiveObjectParam", request, RecursiveObjectParam.class);
-    Assert.assertEquals(request, responseEntity.getBody());
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    assertEquals(request, responseEntity.getBody());
+    assertEquals(200, responseEntity.getStatusCodeValue());
     responseEntity = consumers.getEdgeRestTemplate()
         .postForEntity("/testRecursiveObjectParam", request, RecursiveObjectParam.class);
-    Assert.assertEquals(request, responseEntity.getBody());
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    assertEquals(request, responseEntity.getBody());
+    assertEquals(200, responseEntity.getStatusCodeValue());
   }
 
   @Test
@@ -259,7 +285,7 @@ public class TestSpringMVCObjectParamType {
     );
     List<GenericObjectParam<List<RecursiveObjectParam>>> response = consumers.getIntf()
         .testListObjectParam(request);
-    Assert.assertEquals(request, response);
+    assertEquals(request, response);
   }
 
   @Test
@@ -275,7 +301,7 @@ public class TestSpringMVCObjectParamType {
     @SuppressWarnings("unchecked")
     List<GenericObjectParam<List<RecursiveObjectParam>>> response = consumers.getSCBRestTemplate()
         .postForObject("/testListObjectParam", request, List.class);
-    Assert.assertEquals(request, response);
+    assertEquals(request, response);
   }
 
   @Test
@@ -292,10 +318,10 @@ public class TestSpringMVCObjectParamType {
 
     List<GenericObjectParam<List<RecursiveObjectParam>>> responseRest = consumers.getEdgeRestTemplate()
         .postForObject("/testListObjectParam", request, List.class);
-    Assert.assertEquals(Json.encode(request), Json.encode(responseRest));
+    assertEquals(Json.encode(request), Json.encode(responseRest));
     List<GenericObjectParam<List<RecursiveObjectParam>>> responseHighway = consumers.getEdgeRestTemplate()
         .postForObject("/testListObjectParam", request, List.class);
-    Assert.assertEquals(Json.encode(request), Json.encode(responseHighway));
+    assertEquals(Json.encode(request), Json.encode(responseHighway));
   }
 
   @Test
@@ -310,17 +336,17 @@ public class TestSpringMVCObjectParamType {
     request.put("k2", new GenericObjectParam<>("k2", 2, innerMap));
     Map<String, GenericObjectParam<Map<String, GenericObjectParam<RecursiveObjectParam>>>> response =
         consumers.getIntf().testMapObjectParam(request);
-    Assert.assertEquals(Json.encode(request), Json.encode(response));
+    assertEquals(Json.encode(request), Json.encode(response));
 
     @SuppressWarnings("unchecked")
     Map<String, GenericObjectParam<Map<String, GenericObjectParam<RecursiveObjectParam>>>> responseRT
         = consumers.getSCBRestTemplate().postForObject("/testMapObjectParam", request, Map.class);
-    Assert.assertEquals(Json.encode(request), Json.encode(responseRT));
+    assertEquals(Json.encode(request), Json.encode(responseRT));
 
     @SuppressWarnings("unchecked")
     Map<String, GenericObjectParam<Map<String, GenericObjectParam<RecursiveObjectParam>>>> responseEdge
         = consumers.getEdgeRestTemplate().postForObject("/testMapObjectParam", request, Map.class);
-    Assert.assertEquals(Json.encode(request), Json.encode(responseEdge));
+    assertEquals(Json.encode(request), Json.encode(responseEdge));
   }
 
   @Test
@@ -334,7 +360,7 @@ public class TestSpringMVCObjectParamType {
         expected.getAnWrappedBoolean(), expected.getAnWrappedCharacter(),
         expected.getString(), expected.getColor()
     );
-    Assert.assertEquals(expected, response);
+    assertEquals(expected, response);
 
     StringBuilder requestUriBuilder = new StringBuilder();
     requestUriBuilder.append("/testQueryObjectParam?")
@@ -358,13 +384,13 @@ public class TestSpringMVCObjectParamType {
         .append("color=" + expected.getColor());
     ResponseEntity<FlattenObjectRequest> responseEntity = consumers.getSCBRestTemplate()
         .getForEntity(requestUriBuilder.toString(), FlattenObjectRequest.class);
-    Assert.assertEquals(expected, responseEntity.getBody());
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    assertEquals(expected, responseEntity.getBody());
+    assertEquals(200, responseEntity.getStatusCodeValue());
 
     responseEntity = consumers.getEdgeRestTemplate()
         .getForEntity(requestUriBuilder.toString(), FlattenObjectRequest.class);
-    Assert.assertEquals(expected, responseEntity.getBody());
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    assertEquals(expected, responseEntity.getBody());
+    assertEquals(200, responseEntity.getStatusCodeValue());
 
     expected.setAnWrappedBoolean(null);
     expected.setString(null);
@@ -378,7 +404,7 @@ public class TestSpringMVCObjectParamType {
         expected.getAnWrappedBoolean(), expected.getAnWrappedCharacter(),
         expected.getString(), expected.getColor()
     );
-    Assert.assertEquals(expected, response);
+    assertEquals(expected, response);
   }
 
   @Test
@@ -392,7 +418,7 @@ public class TestSpringMVCObjectParamType {
         expected.getAnWrappedBoolean(), expected.getAnWrappedCharacter(),
         expected.getString(), expected.getColor()
     );
-    Assert.assertEquals(expected, response);
+    assertEquals(expected, response);
 
     StringBuilder requestUriBuilder = new StringBuilder();
     requestUriBuilder.append("/testFluentSetterQueryObjectParam?")
@@ -416,13 +442,13 @@ public class TestSpringMVCObjectParamType {
         .append("color=" + expected.getColor());
     ResponseEntity<FluentSetterFlattenObjectRequest> responseEntity = consumers.getSCBRestTemplate()
         .getForEntity(requestUriBuilder.toString(), FluentSetterFlattenObjectRequest.class);
-    Assert.assertEquals(expected, responseEntity.getBody());
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    assertEquals(expected, responseEntity.getBody());
+    assertEquals(200, responseEntity.getStatusCodeValue());
 
     responseEntity = consumers.getEdgeRestTemplate()
         .getForEntity(requestUriBuilder.toString(), FluentSetterFlattenObjectRequest.class);
-    Assert.assertEquals(expected, responseEntity.getBody());
-    Assert.assertEquals(200, responseEntity.getStatusCodeValue());
+    assertEquals(expected, responseEntity.getBody());
+    assertEquals(200, responseEntity.getStatusCodeValue());
 
     expected.setAnWrappedBoolean(null);
     expected.setString(null);
@@ -436,7 +462,111 @@ public class TestSpringMVCObjectParamType {
         expected.getAnWrappedBoolean(), expected.getAnWrappedCharacter(),
         expected.getString(), expected.getColor()
     );
-    Assert.assertEquals(expected, response);
+    assertEquals(expected, response);
+  }
+
+  @Test
+  public void testQueryObjectWithHeader_rt() {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("prefix", prefix);
+    assertEquals(prefix + queryModel.toString(),
+        queryObjectHeader(consumers, headers, "/testQueryObjectWithHeader?" + queryParam));
+  }
+
+  @Test
+  public void testQueryObjectWithHeader_pojo() {
+    assertEquals(prefix + queryModel.toString(),
+        consumers.getIntf().testQueryObjectWithHeader(prefix, 23, "demo"));
+  }
+
+  @Test
+  public void testQueryObjectWithHeaderName_rt() {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("prefix", prefix);
+    assertEquals(prefix + queryModel.toString(),
+        queryObjectHeader(consumers, headers, "/testQueryObjectWithHeaderName?" + queryParam));
+  }
+
+  @Test
+  public void testQueryObjectWithHeaderName_pojo() {
+    assertEquals(prefix + queryModel.toString(),
+        consumers.getIntf().testQueryObjectWithHeaderName(prefix, 23, "demo"));
+  }
+
+  @Test
+  public void testQueryObjectWithHeaderValue_rt() {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("prefix", prefix);
+    assertEquals(prefix + queryModel.toString(),
+        queryObjectHeader(consumers, headers, "/testQueryObjectWithHeaderValue?" + queryParam));
+  }
+
+  @Test
+  public void testQueryObjectWithHeaderValue_pojo() {
+    assertEquals(prefix + queryModel.toString(),
+        consumers.getIntf().testQueryObjectWithHeaderValue(prefix, 23, "demo"));
+  }
+
+  @Test
+  public void testQueryObjectWithHeaderValueAndName_rt() {
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("prefix", prefix);
+    headers.add("suffix", suffix);
+    assertEquals(prefix + queryModel.toString() + suffix,
+        queryObjectHeader(consumers, headers, "/testQueryObjectWithHeaderValueAndName?" + queryParam));
+  }
+
+  @Test
+  public void testQueryObjectWithHeaderValueAndName_pojo() {
+    assertEquals(prefix + queryModel.toString() + suffix,
+        consumers.getIntf().testQueryObjectWithHeaderValueAndName(prefix, suffix, 23, "demo"));
+  }
+
+  @Test
+  public void testQueryObjectWithParam_rt() {
+    assertEquals(prefix + queryModel.toString(), consumers.getSCBRestTemplate()
+        .getForObject("/testQueryObjectWithParam?prefix=" + prefix + "&" + queryParam, String.class));
+  }
+
+  @Test
+  public void testQueryObjectWithParam_pojo() {
+    assertEquals(prefix + queryModel.toString(),
+        consumers.getIntf().testQueryObjectWithParam(prefix, 23, "demo"));
+  }
+
+  @Test
+  public void testQueryObjectWithParamName_rt() {
+    assertEquals(prefix + queryModel.toString(), consumers.getSCBRestTemplate()
+        .getForObject("/testQueryObjectWithParamName?prefix=" + prefix + "&" + queryParam, String.class));
+  }
+
+  @Test
+  public void testQueryObjectWithParamName_pojo() {
+    assertEquals(prefix + queryModel.toString(),
+        consumers.getIntf().testQueryObjectWithParamName(prefix, 23, "demo"));
+  }
+
+  @Test
+  public void testQueryObjectWithParamValue_rt() {
+    assertEquals(prefix + queryModel.toString(), consumers.getSCBRestTemplate()
+        .getForObject("/testQueryObjectWithParamValue?prefix=" + prefix + "&" + queryParam, String.class));
+  }
+
+  @Test
+  public void testQueryObjectWithParamValue_pojo() {
+    assertEquals(prefix + queryModel.toString(),
+        consumers.getIntf().testQueryObjectWithParamValue(prefix, 23, "demo"));
+  }
+
+  protected String queryObjectHeader(Consumers<SpringMVCObjectParamTypeSchemaIntf> consumers, HttpHeaders headers,
+      String url) {
+    HttpEntity<?> entity = new HttpEntity<>(headers);
+    ResponseEntity<String> response = consumers.getSCBRestTemplate()
+        .exchange(url,
+            HttpMethod.GET,
+            entity,
+            String.class);
+    return response.getBody();
   }
 
   private RecursiveObjectParam createRecursiveObjectParam() {

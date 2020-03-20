@@ -22,21 +22,17 @@ import java.util.Map;
 
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import io.vertx.core.json.Json;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestSchema(schemaId = "SpringMVCObjectParamTypeSchema")
 @RequestMapping(path = "/v1/springMVCObjectParamTypeSchema")
 public class SpringMVCObjectParamTypeSchema implements ObjectParamTypeSchema {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(SpringMVCObjectParamTypeSchema.class);
 
   @PostMapping("testFlattenObjectParam")
   @Override
@@ -88,5 +84,48 @@ public class SpringMVCObjectParamTypeSchema implements ObjectParamTypeSchema {
   @GetMapping("testFluentSetterQueryObjectParam")
   public FluentSetterFlattenObjectRequest testFluentSetterQueryObjectParam(FluentSetterFlattenObjectRequest request) {
     return request;
+  }
+
+  @GetMapping("testQueryObjectWithHeader")
+  public String testQueryObjectWithHeader(@RequestHeader("prefix") String prefix, QueryObjectModel QueryObjectModel) {
+    return prefix + QueryObjectModel.toString();
+  }
+
+  @GetMapping("testQueryObjectWithHeaderName")
+  public String testQueryObjectWithHeaderName(@RequestHeader(name = "prefix") String prefix,
+      QueryObjectModel QueryObjectModel) {
+    return prefix + QueryObjectModel.toString();
+  }
+
+  /**
+   * <a href="https://issues.apache.org/jira/browse/SCB-1793">SCB-1793</a> support @RequestHeader(value ="xxx")
+   */
+  @GetMapping("testQueryObjectWithHeaderValue")
+  public String testQueryObjectWithHeaderValue(@RequestHeader(value = "prefix") String prefix,
+      QueryObjectModel QueryObjectModel) {
+    return prefix + QueryObjectModel.toString();
+  }
+
+  @GetMapping("testQueryObjectWithHeaderValueAndName")
+  public String testQueryObjectWithHeaderValueAndName(@RequestHeader(name = "prefix") String prefix,
+      @RequestHeader(value = "suffix") String suffix, QueryObjectModel QueryObjectModel) {
+    return prefix + QueryObjectModel.toString() + suffix;
+  }
+
+  @GetMapping("testQueryObjectWithParam")
+  public String testQueryObjectWithParam(@RequestParam("prefix") String prefix, QueryObjectModel QueryObjectModel) {
+    return prefix + QueryObjectModel.toString();
+  }
+
+  @GetMapping("testQueryObjectWithParamName")
+  public String testQueryObjectWithParamName(@RequestParam(name = "prefix") String prefix,
+      QueryObjectModel QueryObjectModel) {
+    return prefix + QueryObjectModel.toString();
+  }
+
+  @GetMapping("testQueryObjectWithParamValue")
+  public String testQueryObjectWithParamValue(@RequestParam(value = "prefix") String prefix,
+      QueryObjectModel QueryObjectModel) {
+    return prefix + QueryObjectModel.toString();
   }
 }
