@@ -16,8 +16,10 @@
  */
 package org.apache.servicecomb.serviceregistry.diagnosis.instance;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import io.vertx.core.json.Json;
+import mockit.Deencapsulation;
+import mockit.Mock;
+import mockit.MockUp;
 
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.testing.MockClock;
@@ -37,13 +39,16 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import io.vertx.core.json.Json;
-import mockit.Deencapsulation;
-import mockit.Mock;
-import mockit.MockUp;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class TestInstanceCacheChecker {
+  private static final Logger LOGGER = LoggerFactory.getLogger(TestInstanceCacheChecker.class);
+
   AppManager originalAppManager = RegistryUtils.getAppManager();
 
   ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
@@ -84,10 +89,15 @@ public class TestInstanceCacheChecker {
 
   @Test
   public void check_microserviceManager_empty() {
-    appId = "notExist";
-    RegistryUtils.getAppManager().getOrCreateMicroserviceVersions(appId, microserviceName);
-    InstanceCacheSummary instanceCacheSummary = checker.check();
-    Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
+    try {
+      appId = "notExist";
+      RegistryUtils.getAppManager().getOrCreateMicroserviceVersions(appId, microserviceName);
+      InstanceCacheSummary instanceCacheSummary = checker.check();
+      Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
+    } catch (Exception e) {
+      LOGGER.error("", e);
+      Assert.fail();
+    }
   }
 
   protected Holder<MicroserviceInstances> createFindServiceInstancesResult() {
@@ -130,18 +140,23 @@ public class TestInstanceCacheChecker {
         .getOrCreateMicroserviceVersionRule(appId, microserviceName, DefinitionConst.VERSION_RULE_ALL);
 
     findHolder.value = null;
-    InstanceCacheSummary instanceCacheSummary = checker.check();
+    try {
+      InstanceCacheSummary instanceCacheSummary = checker.check();
 
-    InstanceCacheResult instanceCacheResult = new InstanceCacheResult();
-    instanceCacheResult.setAppId(appId);
-    instanceCacheResult.setMicroserviceName(microserviceName);
-    instanceCacheResult.setStatus(Status.UNKNOWN);
-    instanceCacheResult.setDetail("failed to find instances from service center");
-    instanceCacheResult.setPulledInstances(new ArrayList<>());
-    expectedSummary.getProducers().add(instanceCacheResult);
-    expectedSummary.setStatus(Status.UNKNOWN);
+      InstanceCacheResult instanceCacheResult = new InstanceCacheResult();
+      instanceCacheResult.setAppId(appId);
+      instanceCacheResult.setMicroserviceName(microserviceName);
+      instanceCacheResult.setStatus(Status.UNKNOWN);
+      instanceCacheResult.setDetail("failed to find instances from service center");
+      instanceCacheResult.setPulledInstances(new ArrayList<>());
+      expectedSummary.getProducers().add(instanceCacheResult);
+      expectedSummary.setStatus(Status.UNKNOWN);
 
-    Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
+      Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
+    } catch (Exception e) {
+      LOGGER.error("", e);
+      Assert.fail();
+    }
   }
 
   @Test
@@ -162,18 +177,23 @@ public class TestInstanceCacheChecker {
         .getOrCreateMicroserviceVersionRule(appId, microserviceName, DefinitionConst.VERSION_RULE_ALL);
 
     findHolder.value.setMicroserviceNotExist(true);
-    InstanceCacheSummary instanceCacheSummary = checker.check();
+    try {
+      InstanceCacheSummary instanceCacheSummary = checker.check();
 
-    InstanceCacheResult instanceCacheResult = new InstanceCacheResult();
-    instanceCacheResult.setAppId(appId);
-    instanceCacheResult.setMicroserviceName(microserviceName);
-    instanceCacheResult.setStatus(Status.UNKNOWN);
-    instanceCacheResult.setDetail("microservice is not exist anymore, will be deleted from memory in next pull");
-    instanceCacheResult.setPulledInstances(new ArrayList<>());
-    expectedSummary.getProducers().add(instanceCacheResult);
-    expectedSummary.setStatus(Status.UNKNOWN);
+      InstanceCacheResult instanceCacheResult = new InstanceCacheResult();
+      instanceCacheResult.setAppId(appId);
+      instanceCacheResult.setMicroserviceName(microserviceName);
+      instanceCacheResult.setStatus(Status.UNKNOWN);
+      instanceCacheResult.setDetail("microservice is not exist anymore, will be deleted from memory in next pull");
+      instanceCacheResult.setPulledInstances(new ArrayList<>());
+      expectedSummary.getProducers().add(instanceCacheResult);
+      expectedSummary.setStatus(Status.UNKNOWN);
 
-    Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
+      Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
+    } catch (Exception e) {
+      LOGGER.error("", e);
+      Assert.fail();
+    }
   }
 
   @Test
