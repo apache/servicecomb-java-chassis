@@ -27,7 +27,7 @@
   <fileSets>
     <fileSet>
       <directory>../</directory>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory>./</outputDirectory>
       <includes>
         <include>DISCLAIMER</include>
         <include>README.md</include>
@@ -35,7 +35,7 @@
     </fileSet>
     <fileSet>
       <directory>src/release</directory>
-      <outputDirectory>/</outputDirectory>
+      <outputDirectory>./</outputDirectory>
       <includes>
         <include>NOTICE</include>
         <include>LICENSE</include>
@@ -47,8 +47,12 @@
     <dependencySet>
       <useProjectArtifact>true</useProjectArtifact>
       <unpack>false</unpack>
-      <outputDirectory>/libs</outputDirectory>
+      <outputDirectory>./libs</outputDirectory>
       <scope>runtime</scope>
+      <includes>
+        <include>org.apache.servicecomb:*</include>
+        <include>org.apache.servicecomb.archetypes:*</include>
+      </includes>
     </dependencySet>
   </dependencySets>
 </assembly>
