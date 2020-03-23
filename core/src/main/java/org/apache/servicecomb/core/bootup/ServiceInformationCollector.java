@@ -19,8 +19,9 @@ package org.apache.servicecomb.core.bootup;
 
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 
-public class ServiceInformationCollector implements BootUpInformationCollector {
+import io.vertx.core.spi.json.JsonCodec;
 
+public class ServiceInformationCollector implements BootUpInformationCollector {
 
   @Override
   public String collect() {
@@ -29,7 +30,12 @@ public class ServiceInformationCollector implements BootUpInformationCollector {
         + "\n" + "Version: " + RegistryUtils.getMicroservice().getVersion()
         + "\n" + "Environment: " + RegistryUtils.getMicroservice().getEnvironment()
         + "\n" + "Service ID: " + RegistryUtils.getMicroserviceInstance().getServiceId()
-        + "\n" + "Instance ID: " + RegistryUtils.getMicroserviceInstance().getInstanceId();
+        + "\n" + "Instance ID: " + RegistryUtils.getMicroserviceInstance().getInstanceId()
+        + "\n" + "Endpoints: " + getEndpoints();
+  }
+
+  private String getEndpoints() {
+    return JsonCodec.INSTANCE.toString(RegistryUtils.getMicroserviceInstance().getEndpoints());
   }
 
   @Override
