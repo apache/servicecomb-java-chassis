@@ -39,7 +39,16 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.util.StringUtils;
 
 public class KieUtil {
+
   private static final Logger LOGGER = LoggerFactory.getLogger(KieUtil.class);
+
+  private static final String LABEL_ENV = "environment";
+
+  private static final String LABEL_APP = "app";
+
+  private static final String LABEL_SERVICE = "service";
+
+  private static final String LABEL_VERSION = "version";
 
   public static String encrypt(String dataStr) {
     MessageDigest messageDigest = null;
@@ -62,20 +71,19 @@ public class KieUtil {
     List<KVDoc> versionList = new ArrayList<>();
     for (KVDoc kvDoc : resp.getData()) {
       Map<String, String> labelsMap = kvDoc.getLabels();
-      //todo:how to deal env
-      if (labelsMap.containsKey("app") && labelsMap.get("app")
+      if (labelsMap.containsKey(LABEL_APP) && labelsMap.get(LABEL_APP)
           .equals(KieConfig.INSTANCE.getAppName())
-          && labelsMap.containsKey("env") && labelsMap.get("env")
+          && labelsMap.containsKey(LABEL_ENV) && labelsMap.get(LABEL_ENV)
           .equals(KieConfig.INSTANCE.getEnvironment())) {
-        if (!labelsMap.containsKey("service")) {
+        if (!labelsMap.containsKey(LABEL_SERVICE)) {
           appList.add(kvDoc);
         }
-        if (labelsMap.containsKey("service") && labelsMap.get("service")
+        if (labelsMap.containsKey(LABEL_SERVICE) && labelsMap.get(LABEL_SERVICE)
             .equals(KieConfig.INSTANCE.getServiceName())) {
-          if (!kvDoc.getLabels().containsKey("version")) {
+          if (!kvDoc.getLabels().containsKey(LABEL_VERSION)) {
             serviceList.add(kvDoc);
           }
-          if (labelsMap.containsKey("version") && labelsMap.get("version")
+          if (labelsMap.containsKey(LABEL_VERSION) && labelsMap.get(LABEL_VERSION)
               .equals(KieConfig.INSTANCE.getServiceName())) {
             versionList.add(kvDoc);
           }
