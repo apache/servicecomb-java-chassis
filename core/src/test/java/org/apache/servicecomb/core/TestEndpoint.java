@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.core;
 
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -34,6 +35,15 @@ public class TestEndpoint {
     };
     Endpoint endpoint = new Endpoint(transport, "rest://123.6.6.6:8080");
     Assert.assertEquals(endpoint.getAddress(), "rest://123.6.6.6:8080");
+    Assert.assertEquals(endpoint.getEndpoint(), "rest://123.6.6.6:8080");
+    Assert.assertEquals(endpoint.getTransport(), transport);
+    Assert.assertEquals(endpoint.toString(), "rest://123.6.6.6:8080");
+  }
+
+  @Test
+  public void testEndpointAddressConstructor(@Mocked Transport transport, @Mocked MicroserviceInstance instance) {
+    Endpoint endpoint = new Endpoint(transport, "rest://123.6.6.6:8080", instance, "iot://123.6.6.6:8080");
+    Assert.assertEquals(endpoint.getAddress(), "iot://123.6.6.6:8080");
     Assert.assertEquals(endpoint.getEndpoint(), "rest://123.6.6.6:8080");
     Assert.assertEquals(endpoint.getTransport(), transport);
     Assert.assertEquals(endpoint.toString(), "rest://123.6.6.6:8080");
