@@ -29,7 +29,39 @@
   <packaging>pom</packaging>
   <dependencies>
     <!-- sort by project directory name, easy to check if the module is missed -->
+    <!-- archetypes -->
+    <dependency>
+      <groupId>org.apache.servicecomb.archetypes</groupId>
+      <artifactId>business-service-jaxrs-archetype</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb.archetypes</groupId>
+      <artifactId>business-service-pojo-archetype</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb.archetypes</groupId>
+      <artifactId>business-service-spring-boot2-starter-archetype</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb.archetypes</groupId>
+      <artifactId>business-service-springmvc-archetype</artifactId>
+    </dependency>
+
+    <!-- clients -->
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>kie-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>service-center-client</artifactId>
+    </dependency>
+
     <!-- common -->
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>common-access-log</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>common-javassist</artifactId>
@@ -43,16 +75,19 @@
       <artifactId>common-rest</artifactId>
     </dependency>
 
+    <!-- core -->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>java-chassis-core</artifactId>
     </dependency>
 
+    <!-- deployment -->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>deployment</artifactId>
     </dependency>
 
+    <!-- dynamic-config -->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>config-apollo</artifactId>
@@ -65,6 +100,10 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>config-kie</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>config-nacos</artifactId>
+    </dependency>
 
     <!-- edge -->
     <dependency>
@@ -72,7 +111,7 @@
       <artifactId>edge-core</artifactId>
     </dependency>
 
-    <!-- foundation -->
+    <!-- foundations -->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>foundation-common</artifactId>
@@ -125,43 +164,17 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>handler-tracing-zipkin</artifactId>
+      <artifactId>handler-router</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>handler-router</artifactId>
+      <artifactId>handler-tracing-zipkin</artifactId>
     </dependency>
 
+    <!-- inspector -->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>inspector</artifactId>
-    </dependency>
-
-    <!-- spring boot -->
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>java-chassis-spring-boot-common</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>java-chassis-spring-boot-starter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>java-chassis-spring-boot-starter-discovery</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>java-chassis-spring-boot-starter-gateway</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>java-chassis-spring-boot-starter-servlet</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>java-chassis-spring-boot-starter-standalone</artifactId>
     </dependency>
 
     <!-- metrics -->
@@ -192,12 +205,46 @@
       <artifactId>provider-springmvc</artifactId>
     </dependency>
 
+    <!-- service registry -->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>service-registry</artifactId>
     </dependency>
 
-    <!-- swagger generator -->
+    <!-- solutions -->
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>solution-basic</artifactId>
+    </dependency>
+
+    <!-- spring boot -->
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>java-chassis-spring-boot-common</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>java-chassis-spring-boot-starter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>java-chassis-spring-boot-starter-discovery</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>java-chassis-spring-boot-starter-gateway</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>java-chassis-spring-boot-starter-servlet</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>java-chassis-spring-boot-starter-standalone</artifactId>
+    </dependency>
+
+    <!-- swagger -->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>swagger-generator-core</artifactId>
@@ -208,14 +255,13 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>swagger-generator-springmvc</artifactId>
+      <artifactId>swagger-generator-spring-data</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>swagger-generator-spring-data</artifactId>
+      <artifactId>swagger-generator-springmvc</artifactId>
     </dependency>
 
-    <!-- swagger invocation -->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>swagger-invocation-core</artifactId>
@@ -250,11 +296,11 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>transport-rest-client</artifactId>
+      <artifactId>transport-highway</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>transport-highway</artifactId>
+      <artifactId>transport-rest-client</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
