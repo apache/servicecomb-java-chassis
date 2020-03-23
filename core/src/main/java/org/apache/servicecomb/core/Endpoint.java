@@ -45,6 +45,13 @@ public class Endpoint {
     this.address = transport.parseAddress(this.endpoint);
   }
 
+  public Endpoint(Transport transport, String endpoint, MicroserviceInstance instance, Object address) {
+    this.transport = transport;
+    this.endpoint = endpoint;
+    this.instance = instance;
+    this.address = address;
+  }
+
   public String getEndpoint() {
     return endpoint;
   }
