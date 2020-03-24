@@ -151,10 +151,14 @@ public final class Const {
     public static final String MICROSERVICE_WATCH;
 
     static {
+      /**
+       *   if connect to normal ServiceCenter, same with the url which does not contain the query "global=true"
+       *   if connect to ServiceCenter Aggregator, it can watch the server register on the other sc in the clusters
+       */
       if (VERSION_V3.equals(CURRENT_VERSION)) {
-        MICROSERVICE_WATCH = "/registry/v3/microservices/%s/watcher";
+        MICROSERVICE_WATCH = "/registry/v3/microservices/%s/watcher?global=true";
       } else {
-        MICROSERVICE_WATCH = V4_PREFIX + "/microservices/%s/watcher";
+        MICROSERVICE_WATCH = V4_PREFIX + "/microservices/%s/watcher?global=true";
       }
     }
 

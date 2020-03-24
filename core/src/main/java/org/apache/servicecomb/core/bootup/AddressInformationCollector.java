@@ -18,15 +18,21 @@
 package org.apache.servicecomb.core.bootup;
 
 import org.apache.servicecomb.deployment.Deployment;
+import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.deployment.SystemBootstrapInfo;
 
 public class AddressInformationCollector implements BootUpInformationCollector {
   @Override
   public String collect() {
-    return "Service Center: "
-        + getCenterInfo(Deployment.getSystemBootStrapInfo("ServiceCenter"))
-        + "\n" + "Config Center: "
-        + getCenterInfo(Deployment.getSystemBootStrapInfo("ConfigCenter"));
+    return "Service Center:\n"
+        + "  Registration: "
+        + getCenterInfo(Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_SERVICE_CENTER_REGISTRY))
+        + "\n"
+        + "  Discovery: "
+        + getCenterInfo(Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_SERVICE_CENTER_DISCOVERY))
+        + "\n"
+        + "Config Center: "
+        + getCenterInfo(Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_CONFIG_CENTER));
   }
 
   @Override

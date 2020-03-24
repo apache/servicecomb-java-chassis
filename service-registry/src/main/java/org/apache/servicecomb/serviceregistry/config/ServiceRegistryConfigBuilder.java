@@ -54,6 +54,8 @@ class ServiceRegistryConfigBuilder {
         .setHttpVersion(getHttpVersion())
         .setInstances(getInstances())
         .setIpPort(getIpPort())
+        .setRegistryIpPort(getRegistryIpPort())
+        .setDiscoveryIpPort(getDiscoveryIpPort())
         .setSsl(isSsl())
         .setConnectionTimeout(getConnectionTimeout())
         .setIdleConnectionTimeout(getIdleConnectionTimeout())
@@ -124,6 +126,46 @@ class ServiceRegistryConfigBuilder {
         ipPortList.add(NetUtils.parseIpPort(uri));
       } catch (Exception e) {
         LOGGER.error("servicecomb.service.registry.address invalid : {}", anUriList, e);
+      }
+    });
+    return ipPortList;
+  }
+
+  public ArrayList<IpPort> getRegistryIpPort() {
+    List<String> uriList = Objects
+        .requireNonNull(Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_SERVICE_CENTER_REGISTRY),
+            "no registry sc address found!")
+        .getAccessURL();
+    ArrayList<IpPort> ipPortList = new ArrayList<>();
+    uriList.forEach(anUriList -> {
+      try {
+        URI uri = new URI(anUriList.trim());
+        this.ssl = "https".equals(uri.getScheme());
+        ipPortList.add(NetUtils.parseIpPort(uri));
+      } catch (Exception e) {
+        LOGGER.error(
+            "both servicecomb.service.registry.registrator.address and servicecomb.service.registry.address are invalid : {}",
+            anUriList, e);
+      }
+    });
+    return ipPortList;
+  }
+
+  public ArrayList<IpPort> getDiscoveryIpPort() {
+    List<String> uriList = Objects
+        .requireNonNull(Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_SERVICE_CENTER_DISCOVERY),
+            "no discovery sc address found!")
+        .getAccessURL();
+    ArrayList<IpPort> ipPortList = new ArrayList<>();
+    uriList.forEach(anUriList -> {
+      try {
+        URI uri = new URI(anUriList.trim());
+        this.ssl = "https".equals(uri.getScheme());
+        ipPortList.add(NetUtils.parseIpPort(uri));
+      } catch (Exception e) {
+        LOGGER.error(
+            "both servicecomb.service.registry.serviceDiscovery.address and servicecomb.service.registry.address are invalid : {}",
+            anUriList, e);
       }
     });
     return ipPortList;

@@ -74,7 +74,7 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
   @Override
   protected boolean doRegister() {
     LOGGER.info("running microservice register task.");
-    String serviceId = srClient.getMicroserviceId(microservice.getAppId(),
+    String serviceId = srClient.getMicroserviceIdWhenRegistering(microservice.getAppId(),
         microservice.getServiceName(),
         microservice.getVersion(),
         microservice.getEnvironment());

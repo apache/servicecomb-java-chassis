@@ -43,6 +43,7 @@ import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.api.response.GetSchemasResponse;
 import org.apache.servicecomb.serviceregistry.api.response.GetServiceResponse;
 import org.apache.servicecomb.serviceregistry.client.ClientException;
+import org.apache.servicecomb.serviceregistry.client.IpPortEndpoint;
 import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl.ResponseWrapper;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
@@ -118,7 +119,7 @@ public class TestServiceRegistryClientImpl {
     Assert.assertNull(oClient.registerMicroservice(microservice));
     Assert.assertNull(oClient.registerMicroserviceInstance(microservice.getInstance()));
     oClient.init();
-    Assert.assertNull(oClient.getMicroserviceId(microservice.getAppId(),
+    Assert.assertNull(oClient.getMicroserviceIdWhenRegistering(microservice.getAppId(),
         microservice.getServiceName(),
         microservice.getVersion(),
         microservice.getEnvironment()));
@@ -276,12 +277,12 @@ public class TestServiceRegistryClientImpl {
   }
 
   @Test
-  public void syncHandler_failed(@Mocked RequestContext requestContext,
+  public void syncHandler_failed(@Mocked RequestContext requestContext, @Mocked IpPortEndpoint ipPortEndpoint,
       @Mocked HttpClientResponse response) {
     CountDownLatch countDownLatch = new CountDownLatch(1);
     Class<GetExistenceResponse> cls = GetExistenceResponse.class;
     Holder<GetExistenceResponse> holder = new Holder<>();
-    Handler<RestResponse> handler = oClient.syncHandler(countDownLatch, cls, holder);
+    Handler<RestResponse> handler = oClient.syncHandler(countDownLatch, cls, holder, ipPortEndpoint);
 
     Holder<Handler<Buffer>> bodyHandlerHolder = new Holder<>();
     new MockUp<HttpClientResponse>(response) {
@@ -317,7 +318,7 @@ public class TestServiceRegistryClientImpl {
     new MockUp<RestClientUtil>() {
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
-        Holder<GetExistenceResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
+        Holder<GetExistenceResponse> holder = Deencapsulation.getField(responseHandler, "arg$5");
         holder.value = new GetExistenceResponse();
       }
     };
@@ -330,7 +331,7 @@ public class TestServiceRegistryClientImpl {
     new MockUp<RestClientUtil>() {
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
-        Holder<GetServiceResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
+        Holder<GetServiceResponse> holder = Deencapsulation.getField(responseHandler, "arg$5");
         holder.value = Json
             .decodeValue(
                 "{\"service\":{\"serviceId\":\"serviceId\",\"framework\":null"
@@ -356,7 +357,7 @@ public class TestServiceRegistryClientImpl {
 
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
-        Holder<GetSchemaResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
+        Holder<GetSchemaResponse> holder = Deencapsulation.getField(responseHandler, "arg$5");
         holder.value = Json
             .decodeValue(
                 "{ \"schema\": \"schema\", \"schemaId\":\"metricsEndpoint\",\"summary\":\"c1188d709631a9038874f9efc6eb894f\"}",
@@ -389,7 +390,7 @@ public class TestServiceRegistryClientImpl {
     new MockUp<RestClientUtil>() {
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
-        Holder<GetSchemasResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
+        Holder<GetSchemasResponse> holder = Deencapsulation.getField(responseHandler, "arg$5");
         GetSchemasResponse schemasResp = Json.decodeValue(
             "{\"schema\":[{\"schemaId\":\"metricsEndpoint\",\"summary\":\"c1188d709631a9038874f9efc6eb894f\"},{\"schemaId\":\"comment\",\"summary\":\"bfa81d625cfbd3a57f38745323e16824\"},"
                 + "{\"schemaId\":\"healthEndpoint\",\"summary\":\"96a0aaaaa454cfa0c716e70c0017fe27\"}]}",
@@ -412,7 +413,7 @@ public class TestServiceRegistryClientImpl {
     new MockUp<RestClientUtil>() {
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
-        Holder<GetSchemasResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
+        Holder<GetSchemasResponse> holder = Deencapsulation.getField(responseHandler, "arg$5");
         GetSchemasResponse schemasResp = Json.decodeValue(
             "{\"schemas\":[{\"schemaId\":\"metricsEndpoint\",\"summary\":\"c1188d709631a9038874f9efc6eb894f\"},{\"schemaId\":\"comment\",\"summary\":\"bfa81d625cfbd3a57f38745323e16824\"},"
                 + "{\"schemaId\":\"healthEndpoint\",\"summary\":\"96a0aaaaa454cfa0c716e70c0017fe27\"}]}",
@@ -435,7 +436,7 @@ public class TestServiceRegistryClientImpl {
     new MockUp<RestClientUtil>() {
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
-        Holder<GetSchemasResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
+        Holder<GetSchemasResponse> holder = Deencapsulation.getField(responseHandler, "arg$5");
         holder.setStatusCode(Status.NOT_FOUND.getStatusCode());
       }
     };
@@ -514,7 +515,7 @@ public class TestServiceRegistryClientImpl {
     new MockUp<RestClientUtil>() {
       @Mock
       void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {
-        Holder<ServiceCenterInfo> holder = Deencapsulation.getField(responseHandler, "arg$4");
+        Holder<ServiceCenterInfo> holder = Deencapsulation.getField(responseHandler, "arg$5");
         holder.value = serviceCenterInfo;
       }
     };
@@ -558,7 +559,7 @@ public class TestServiceRegistryClientImpl {
     new MockUp<RestClientUtil>() {
       @Mock
       void put(IpPort ipPort, String uri, RequestParam requestParam, Handler<RestResponse> responseHandler) {
-        Holder<HttpClientResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
+        Holder<HttpClientResponse> holder = Deencapsulation.getField(responseHandler, "arg$5");
         holder.value = httpClientResponse;
       }
     };
@@ -579,7 +580,7 @@ public class TestServiceRegistryClientImpl {
     new MockUp<RestClientUtil>() {
       @Mock
       void put(IpPort ipPort, String uri, RequestParam requestParam, Handler<RestResponse> responseHandler) {
-        Holder<HttpClientResponse> holder = Deencapsulation.getField(responseHandler, "arg$4");
+        Holder<HttpClientResponse> holder = Deencapsulation.getField(responseHandler, "arg$5");
         holder.value = httpClientResponse;
       }
     };

@@ -95,6 +95,10 @@ public final class ServiceRegistryConfig {
 
   private ArrayList<IpPort> ipPort;
 
+  private ArrayList<IpPort> registryIpPort;
+
+  private ArrayList<IpPort> discoveryIpPort;
+
   private int connectionTimeout;
 
   private int idleConnectionTimeout;
@@ -211,6 +215,26 @@ public final class ServiceRegistryConfig {
 
   public ServiceRegistryConfig setIpPort(ArrayList<IpPort> ipPort) {
     this.ipPort = ipPort;
+    return this;
+  }
+
+  public ArrayList<IpPort> getRegistryIpPort() {
+    return registryIpPort;
+  }
+
+  public ServiceRegistryConfig setRegistryIpPort(
+      ArrayList<IpPort> registryIpPort) {
+    this.registryIpPort = registryIpPort;
+    return this;
+  }
+
+  public ArrayList<IpPort> getDiscoveryIpPort() {
+    return discoveryIpPort;
+  }
+
+  public ServiceRegistryConfig setDiscoveryIpPort(
+      ArrayList<IpPort> discoveryIpPort) {
+    this.discoveryIpPort = discoveryIpPort;
     return this;
   }
 

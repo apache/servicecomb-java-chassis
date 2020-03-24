@@ -47,7 +47,9 @@ public class TestClientHttp {
     IpPort ipPort = new IpPort("127.0.0.1", 8853);
     new Expectations() {
       {
-        manager.getAvailableAddress();
+        manager.getDiscoveryAvailableAddress();
+        result = ipPort;
+        manager.getRegistryAvailableAddress();
         result = ipPort;
       }
     };
@@ -104,7 +106,7 @@ public class TestClientHttp {
         microservice.getServiceName(),
         microservice.getVersion(),
         "0"));
-    Assert.assertNull(oClient.getMicroserviceId(microservice.getAppId(),
+    Assert.assertNull(oClient.getMicroserviceIdWhenRegistering(microservice.getAppId(),
         microservice.getServiceName(),
         microservice.getVersion(),
         microservice.getEnvironment()));
@@ -162,7 +164,10 @@ public class TestClientHttp {
   @Test
   public void testIpPortManager() {
     IpPortManager oManager = new IpPortManager(ServiceRegistryConfig.INSTANCE);
-    IpPort oIPPort = oManager.getNextAvailableAddress(new IpPort("", 33));
-    Assert.assertEquals(oIPPort.getHostOrIp(), oManager.getAvailableAddress().getHostOrIp());
+    IpPort oDiscoveryIPPort = oManager.getDiscoveryEndpoint().getNextAvailableAddress(new IpPort("", 33));
+    Assert.assertEquals(oDiscoveryIPPort.getHostOrIp(), oManager.getDiscoveryAvailableAddress().getHostOrIp());
+
+    IpPort oRegistryIPPort = oManager.getRegistryEndpoint().getNextAvailableAddress(new IpPort("", 33));
+    Assert.assertEquals(oRegistryIPPort.getHostOrIp(), oManager.getRegistryAvailableAddress().getHostOrIp());
   }
 }

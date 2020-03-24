@@ -20,46 +20,45 @@ package org.apache.servicecomb.serviceregistry.client;
 import static org.apache.servicecomb.serviceregistry.api.Const.REGISTRY_APP_ID;
 import static org.apache.servicecomb.serviceregistry.api.Const.REGISTRY_SERVICE_NAME;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.foundation.common.net.IpPort;
-import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCache;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManagerNew;
+import org.apache.servicecomb.serviceregistry.client.IpPortEndpoint.EndpointTag;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class IpPortManager {
-  private static final Logger LOGGER = LoggerFactory.getLogger(IpPortManager.class);
-
   private ServiceRegistryConfig serviceRegistryConfig;
 
   InstanceCacheManager instanceCacheManager;
 
   private String defaultTransport = "rest";
 
-  private ArrayList<IpPort> defaultIpPort;
+  private IpPortEndpoint registryEndpoint;
 
-  private AtomicInteger currentAvailableIndex;
+  private IpPortEndpoint discoveryEndpoint;
+
+  /**
+   *  defaultEndpoint is only for the sc which support both registration and discovery,
+   *  it's not suitable for the occasion that register on one of the sc but discover on the other.
+   */
+  @Deprecated
+  private IpPortEndpoint defaultEndpoint;
 
   private boolean autoDiscoveryInited = false;
-
-  private int maxRetryTimes;
 
   public void setAutoDiscoveryInited(boolean autoDiscoveryInited) {
     this.autoDiscoveryInited = autoDiscoveryInited;
   }
 
+  @Deprecated
   public int getMaxRetryTimes() {
-    return maxRetryTimes;
+    return defaultEndpoint.getMaxRetryTimes();
   }
 
   public IpPortManager(ServiceRegistryConfig serviceRegistryConfig) {
@@ -67,13 +66,9 @@ public class IpPortManager {
     this.instanceCacheManager = new InstanceCacheManagerNew(new AppManager());
 
     defaultTransport = serviceRegistryConfig.getTransport();
-    defaultIpPort = serviceRegistryConfig.getIpPort();
-    if (defaultIpPort.isEmpty()) {
-      throw new IllegalArgumentException("Service center address is required to start the application.");
-    }
-    int initialIndex = new Random().nextInt(defaultIpPort.size());
-    currentAvailableIndex = new AtomicInteger(initialIndex);
-    maxRetryTimes = defaultIpPort.size();
+    defaultEndpoint = new IpPortEndpoint(serviceRegistryConfig.getIpPort(), this, EndpointTag.REGISTRY_DISCOVERY);
+    registryEndpoint = new IpPortEndpoint(serviceRegistryConfig.getRegistryIpPort(), this, EndpointTag.REGISTRY);
+    discoveryEndpoint = new IpPortEndpoint(serviceRegistryConfig.getDiscoveryIpPort(), this, EndpointTag.DISCOVERY);
   }
 
   // we have to do this operation after the first time setup has already done
@@ -90,37 +85,43 @@ public class IpPortManager {
     }
   }
 
+  @Deprecated
   public IpPort getNextAvailableAddress(IpPort failedIpPort) {
-    int currentIndex = currentAvailableIndex.get();
-    IpPort current = getAvailableAddress(currentIndex);
-    if (current.equals(failedIpPort)) {
-      currentAvailableIndex.compareAndSet(currentIndex, currentIndex + 1);
-      current = getAvailableAddress();
-    }
-
-    LOGGER.info("Change service center address from {} to {}", failedIpPort.toString(), current.toString());
-    return current;
+    return defaultEndpoint.getNextAvailableAddress(failedIpPort);
   }
 
+  @Deprecated
   public IpPort getAvailableAddress() {
-    return getAvailableAddress(currentAvailableIndex.get());
+    return defaultEndpoint.getAvailableAddress();
   }
 
-  private IpPort getAvailableAddress(int index) {
-    if (index < defaultIpPort.size()) {
-      return defaultIpPort.get(index);
-    }
-    List<CacheEndpoint> endpoints = getDiscoveredIpPort();
-    if (endpoints == null || (index >= defaultIpPort.size() + endpoints.size())) {
-      currentAvailableIndex.set(0);
-      return defaultIpPort.get(0);
-    }
-    maxRetryTimes = defaultIpPort.size() + endpoints.size();
-    CacheEndpoint nextEndpoint = endpoints.get(index - defaultIpPort.size());
-    return new URIEndpointObject(nextEndpoint.getEndpoint());
+  public IpPort getRegistryAvailableAddress() {
+    return registryEndpoint.getAvailableAddress();
   }
 
-  private List<CacheEndpoint> getDiscoveredIpPort() {
+  public IpPort getDiscoveryAvailableAddress() {
+    return discoveryEndpoint.getAvailableAddress();
+  }
+
+  //if global is false, it means that we are registering services, so we should use registry address to find from remote sc.
+  public IpPort getAvailableAddressByGlobal(boolean global) {
+    return global ? discoveryEndpoint.getAvailableAddress() : registryEndpoint.getAvailableAddress();
+  }
+
+  //if global is false, it means that we are registering services, so we should use registry endpoint to find from remote sc.
+  public IpPortEndpoint getEndpointByGlobal(boolean global) {
+    return global ? discoveryEndpoint : registryEndpoint;
+  }
+
+  public IpPortEndpoint getRegistryEndpoint() {
+    return registryEndpoint;
+  }
+
+  public IpPortEndpoint getDiscoveryEndpoint() {
+    return discoveryEndpoint;
+  }
+
+  public List<CacheEndpoint> getDiscoveredIpPort() {
     if (!autoDiscoveryInited || !this.serviceRegistryConfig.isRegistryAutoDiscovery()) {
       return null;
     }

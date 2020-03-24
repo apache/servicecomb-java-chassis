@@ -20,6 +20,7 @@ package org.apache.servicecomb.deployment;
 import java.util.Arrays;
 
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.ConfigUtil;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -30,25 +31,36 @@ public class DefaultDeploymentProvider implements DeploymentProvider {
   @Override
   public SystemBootstrapInfo getSystemBootStrapInfo(String systemKey) {
     switch (systemKey) {
+      case SYSTEM_KEY_SERVICE_CENTER_REGISTRY:
+        SystemBootstrapInfo tryGetScRegistry = doGetSystemBootstrapInfo(
+            "servicecomb.service.registry.registrator.address", null);
+        return tryGetScRegistry != null ? tryGetScRegistry
+            : doGetSystemBootstrapInfo("servicecomb.service.registry.address", "https://127.0.0.1:30100");
+      case SYSTEM_KEY_SERVICE_CENTER_DISCOVERY:
+        SystemBootstrapInfo tryGetScDiscovery = doGetSystemBootstrapInfo(
+            "servicecomb.service.registry.serviceDiscovery.address", null);
+        return tryGetScDiscovery != null ? tryGetScDiscovery
+            : doGetSystemBootstrapInfo("servicecomb.service.registry.address", "https://127.0.0.1:30100");
       case SYSTEM_KEY_SERVICE_CENTER:
-        SystemBootstrapInfo sc = new SystemBootstrapInfo();
-        String[] urls = configuration.getStringArray("servicecomb.service.registry.address");
-        if (urls == null || urls.length == 0) {
-          urls = new String[] {"https://127.0.0.1:30100"};
-        }
-        sc.setAccessURL(Arrays.asList(urls));
-        return sc;
+        return doGetSystemBootstrapInfo("servicecomb.service.registry.address", "https://127.0.0.1:30100");
       case SYSTEM_KEY_CONFIG_CENTER:
-        String[] ccAddresses = configuration.getStringArray("servicecomb.config.client.serverUri");
-        if (ccAddresses == null || ccAddresses.length == 0) {
-          return null;
-        }
-        SystemBootstrapInfo cc = new SystemBootstrapInfo();
-        cc.setAccessURL(Arrays.asList(ccAddresses));
-        return cc;
+        return doGetSystemBootstrapInfo("servicecomb.config.client.serverUri", null);
       default:
         return null;
     }
+  }
+
+  private SystemBootstrapInfo doGetSystemBootstrapInfo(String config, String defaultUrl) {
+    String[] urls = configuration.getStringArray(config);
+    if (urls == null || urls.length == 0) {
+      if (StringUtils.isEmpty(defaultUrl)) {
+        return null;
+      }
+      urls = new String[] {defaultUrl};
+    }
+    SystemBootstrapInfo bootstrapInfo = new SystemBootstrapInfo();
+    bootstrapInfo.setAccessURL(Arrays.asList(urls));
+    return bootstrapInfo;
   }
 
   @VisibleForTesting

@@ -40,10 +40,9 @@ public interface ServiceRegistryClient {
   List<Microservice> getAllMicroservices();
 
   /**
-   *
-   * 获取微服务唯一标识
+   * get service id. only use for register process, so we should use register address to find
    */
-  String getMicroserviceId(String appId, String microserviceName, String versionRule, String environment);
+  String getMicroserviceIdWhenRegistering(String appId, String microserviceName, String versionRule, String environment);
 
   /**
    *
