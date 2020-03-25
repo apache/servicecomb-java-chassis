@@ -37,7 +37,7 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
 
 public class QueryStringItemTest {
-  private static final QueryStringItemAccess ITEM = new QueryStringItemAccess();
+  private static final QueryStringAccessItem ITEM = new QueryStringAccessItem();
 
   private StringBuilder strBuilder;
 

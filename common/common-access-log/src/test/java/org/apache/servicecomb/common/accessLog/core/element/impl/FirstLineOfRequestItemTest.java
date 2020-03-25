@@ -42,7 +42,7 @@ import io.vertx.ext.web.RoutingContext;
 
 public class FirstLineOfRequestItemTest {
 
-  public static final FirstLineOfRequestItemAccess ELEMENT = new FirstLineOfRequestItemAccess();
+  public static final FirstLineOfRequestAccessItem ELEMENT = new FirstLineOfRequestAccessItem();
 
   private StringBuilder strBuilder;
 

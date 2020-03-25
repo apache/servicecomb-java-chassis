@@ -17,49 +17,39 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
-import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
+import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
-import org.springframework.util.StringUtils;
+import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 
-import io.vertx.core.MultiMap;
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
 
-public class RequestHeaderItemAccess implements AccessLogItem<RoutingContext> {
-  public static final String RESULT_NOT_FOUND = "-";
+public class RemoteHostAccessItem implements AccessLogItem<RoutingContext> {
 
-  private final String varName;
-
-  public RequestHeaderItemAccess(String varName) {
-    this.varName = varName;
-  }
+  public static final String EMPTY_RESULT = "-";
 
   @Override
   public void appendServerFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
-    MultiMap headers = accessLogEvent.getRoutingContext().request().headers();
-    if (null == headers || StringUtils.isEmpty(headers.get(varName))) {
-      builder.append(RESULT_NOT_FOUND);
+    HttpServerRequest request = accessLogEvent.getRoutingContext().request();
+    if (null == request || null == request.remoteAddress()
+        || StringUtils.isEmpty(request.remoteAddress().host())) {
+      builder.append(EMPTY_RESULT);
       return;
     }
-    builder.append(headers.get(varName));
+    builder.append(request.remoteAddress().host());
   }
 
   @Override
   public void appendClientFormattedItem(InvocationFinishEvent clientLogEvent, StringBuilder builder) {
-    RestClientRequestImpl restRequestImpl = (RestClientRequestImpl) clientLogEvent.getInvocation().getHandlerContext()
-        .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);
-    if (null == restRequestImpl || null == restRequestImpl.getRequest()
-        || null == restRequestImpl.getRequest().headers()
-        || StringUtils.isEmpty(restRequestImpl.getRequest().headers().get(varName))) {
-      builder.append(RESULT_NOT_FOUND);
+    Endpoint endpoint = clientLogEvent.getInvocation().getEndpoint();
+    if (null == endpoint || null == endpoint.getAddress()
+        || StringUtils.isEmpty(((URIEndpointObject) endpoint.getAddress()).getHostOrIp())) {
+      builder.append(EMPTY_RESULT);
       return;
     }
-    builder.append(restRequestImpl.getRequest().headers().get(varName));
-  }
-
-  public String getVarName() {
-    return varName;
+    builder.append(((URIEndpointObject) endpoint.getAddress()).getHostOrIp());
   }
 }

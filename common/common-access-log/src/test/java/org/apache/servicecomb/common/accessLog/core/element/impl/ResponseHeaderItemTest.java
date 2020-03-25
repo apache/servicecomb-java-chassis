@@ -41,7 +41,7 @@ public class ResponseHeaderItemTest {
 
   private static final String VAR_NAME = "varName";
 
-  private static final ResponseHeaderItemAccess ELEMENT = new ResponseHeaderItemAccess(VAR_NAME);
+  private static final ResponseHeaderAccessItem ELEMENT = new ResponseHeaderAccessItem(VAR_NAME);
 
   private StringBuilder strBuilder;
 

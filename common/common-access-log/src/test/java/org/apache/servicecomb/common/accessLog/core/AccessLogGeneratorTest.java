@@ -24,11 +24,11 @@ import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
-import org.apache.servicecomb.common.accessLog.core.element.impl.DatetimeConfigurableItemAccess;
-import org.apache.servicecomb.common.accessLog.core.element.impl.HttpMethodItemAccess;
-import org.apache.servicecomb.common.accessLog.core.element.impl.PlainTextItemAccess;
-import org.apache.servicecomb.common.accessLog.core.element.impl.RemoteHostItemAccess;
-import org.apache.servicecomb.common.accessLog.core.element.impl.UserDefinedAccessAccessLogItem;
+import org.apache.servicecomb.common.accessLog.core.element.impl.ConfigurableDatetimeAccessItem;
+import org.apache.servicecomb.common.accessLog.core.element.impl.HttpMethodAccessItem;
+import org.apache.servicecomb.common.accessLog.core.element.impl.PlainTextAccessItem;
+import org.apache.servicecomb.common.accessLog.core.element.impl.RemoteHostAccessItem;
+import org.apache.servicecomb.common.accessLog.core.element.impl.UserDefinedAccessLogItem;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
@@ -55,9 +55,9 @@ public class AccessLogGeneratorTest {
   public void testConstructor() {
     AccessLogItem<RoutingContext>[] elements = Deencapsulation.getField(LOG_GENERATOR, "accessLogItems");
     assertEquals(3, elements.length);
-    assertEquals(HttpMethodItemAccess.class, elements[0].getClass());
-    assertEquals(PlainTextItemAccess.class, elements[1].getClass());
-    assertEquals(DatetimeConfigurableItemAccess.class, elements[2].getClass());
+    assertEquals(HttpMethodAccessItem.class, elements[0].getClass());
+    assertEquals(PlainTextAccessItem.class, elements[1].getClass());
+    assertEquals(ConfigurableDatetimeAccessItem.class, elements[2].getClass());
   }
 
   @Test
@@ -67,8 +67,8 @@ public class AccessLogGeneratorTest {
     long startMillisecond = 1416863450581L;
     ServerAccessLogEvent serverAccessLogEvent = new ServerAccessLogEvent();
     serverAccessLogEvent.setMilliStartTime(startMillisecond).setRoutingContext(context);
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DatetimeConfigurableItemAccess.DEFAULT_DATETIME_PATTERN,
-        DatetimeConfigurableItemAccess.DEFAULT_LOCALE);
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(ConfigurableDatetimeAccessItem.DEFAULT_DATETIME_PATTERN,
+        ConfigurableDatetimeAccessItem.DEFAULT_LOCALE);
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
 
     when(context.request()).thenReturn(request);
@@ -92,8 +92,8 @@ public class AccessLogGeneratorTest {
     when(invocation.getInvocationStageTrace()).thenReturn(stageTrace);
 
     InvocationFinishEvent finishEvent = new InvocationFinishEvent(invocation, null);
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DatetimeConfigurableItemAccess.DEFAULT_DATETIME_PATTERN,
-        DatetimeConfigurableItemAccess.DEFAULT_LOCALE);
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(ConfigurableDatetimeAccessItem.DEFAULT_DATETIME_PATTERN,
+        ConfigurableDatetimeAccessItem.DEFAULT_LOCALE);
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
     when(operationMeta.getHttpMethod()).thenReturn(HttpMethod.DELETE.toString());
     String log = LOG_GENERATOR.generateClientLog(finishEvent);
@@ -104,8 +104,8 @@ public class AccessLogGeneratorTest {
   public void testUserDefinedLogGenerator() {
     AccessLogItem<RoutingContext>[] elements = Deencapsulation.getField(USER_DEFINED_LOG_GENERATOR, "accessLogItems");
     assertEquals(3, elements.length);
-    assertEquals(RemoteHostItemAccess.class, elements[0].getClass());
-    assertEquals(PlainTextItemAccess.class, elements[1].getClass());
-    assertEquals(UserDefinedAccessAccessLogItem.class, elements[2].getClass());
+    assertEquals(RemoteHostAccessItem.class, elements[0].getClass());
+    assertEquals(PlainTextAccessItem.class, elements[1].getClass());
+    assertEquals(UserDefinedAccessLogItem.class, elements[2].getClass());
   }
 }

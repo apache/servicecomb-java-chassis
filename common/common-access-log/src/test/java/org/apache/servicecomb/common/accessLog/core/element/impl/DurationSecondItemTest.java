@@ -30,7 +30,7 @@ import org.mockito.Mockito;
 
 public class DurationSecondItemTest {
 
-  public static final DurationSecondItemAccess ELEMENT = new DurationSecondItemAccess();
+  public static final DurationSecondAccessItem ELEMENT = new DurationSecondAccessItem();
 
   private StringBuilder strBuilder;
 

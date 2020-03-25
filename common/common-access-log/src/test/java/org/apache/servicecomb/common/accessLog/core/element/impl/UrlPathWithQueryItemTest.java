@@ -33,7 +33,7 @@ import io.vertx.ext.web.RoutingContext;
 
 public class UrlPathWithQueryItemTest {
 
-  public static final UrlPathWithQueryItemAccess ELEMENT = new UrlPathWithQueryItemAccess();
+  public static final UrlPathWithQueryAccessItem ELEMENT = new UrlPathWithQueryAccessItem();
 
   private StringBuilder strBuilder;
 

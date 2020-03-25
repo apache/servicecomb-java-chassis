@@ -25,7 +25,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.common.accessLog.AccessLogConfig;
-import org.apache.servicecomb.common.accessLog.core.element.impl.LocalHostItemAccess;
+import org.apache.servicecomb.common.accessLog.core.element.impl.LocalHostAccessItem;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
@@ -172,7 +172,7 @@ public class RestServerVerticle extends AbstractVerticle {
       ServerAccessLogEvent accessLogEvent = new ServerAccessLogEvent()
           .setRoutingContext(context)
           .setMilliStartTime(System.currentTimeMillis())
-          .setLocalAddress(LocalHostItemAccess.getLocalAddress(context));
+          .setLocalAddress(LocalHostAccessItem.getLocalAddress(context));
       context.response().endHandler(event ->
           EventManager.post(accessLogEvent.setMilliEndTime(System.currentTimeMillis())));
       context.next();

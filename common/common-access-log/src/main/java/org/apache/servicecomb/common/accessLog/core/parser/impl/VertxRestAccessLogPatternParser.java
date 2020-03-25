@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
-import org.apache.servicecomb.common.accessLog.core.element.impl.PlainTextItemAccess;
+import org.apache.servicecomb.common.accessLog.core.element.impl.PlainTextAccessItem;
 import org.apache.servicecomb.common.accessLog.core.parser.AccessLogItemMeta;
 import org.apache.servicecomb.common.accessLog.core.parser.AccessLogPatternParser;
 import org.apache.servicecomb.common.accessLog.core.parser.CompositeVertxRestAccessLogItemMeta;
@@ -211,10 +211,10 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
   /**
    * After processing of {@link #matchAccessLogItem(String)}, all of the placeholders of {@link AccessLogItem} have been
    * picked out. So the rest part of rawPattern should be treated as plain text. Those parts will be located in this
-   * method and wrapped as {@link PlainTextItemAccess}.
+   * method and wrapped as {@link PlainTextAccessItem}.
    * @param rawPattern raw pattern string of access log
    * @param locationList locations picked out by {@link #matchAccessLogItem(String)}
-   * @return all of the locations including {@link PlainTextItemAccess}.
+   * @return all of the locations including {@link PlainTextAccessItem}.
    */
   private List<AccessLogItemLocation> fillInPlainTextLocation(String rawPattern,
       List<AccessLogItemLocation> locationList) {
@@ -260,7 +260,7 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
       VertxRestAccessLogItemMeta accessLogItemMeta = accessLogItemLocation.accessLogItemMeta;
       if (null == accessLogItemMeta) {
         // a PlainTextItem location
-        itemList.add(new PlainTextItemAccess(rawPattern.substring(
+        itemList.add(new PlainTextAccessItem(rawPattern.substring(
             accessLogItemLocation.prefixIndex, accessLogItemLocation.tail
         )));
         continue;
@@ -304,7 +304,7 @@ public class VertxRestAccessLogPatternParser implements AccessLogPatternParser<R
     VertxRestAccessLogItemMeta accessLogItemMeta;
 
     /**
-     * for {@link PlainTextItemAccess} only
+     * for {@link PlainTextAccessItem} only
      */
     AccessLogItemLocation(int prefixIndex, int suffixIndex) {
       this.prefixIndex = prefixIndex;

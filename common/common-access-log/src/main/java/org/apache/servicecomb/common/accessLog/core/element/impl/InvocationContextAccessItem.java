@@ -17,47 +17,58 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
+import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
+import org.springframework.util.StringUtils;
 
-import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
 
-public class LocalHostItemAccess implements AccessLogItem<RoutingContext> {
-  public static final String EMPTY_RESULT = "-";
+public class InvocationContextAccessItem implements AccessLogItem<RoutingContext> {
+
+  public static final String NOT_FOUND = "-";
+
+  String varName;
+
+  public InvocationContextAccessItem(String varName) {
+    this.varName = varName;
+  }
 
   @Override
   public void appendServerFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
-    builder.append(accessLogEvent.getLocalAddress());
-  }
-
-  /**
-   * client do not need localhost
-   */
-  @Override
-  public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    RestClientRequestImpl restRequestImpl = (RestClientRequestImpl) finishEvent.getInvocation().getHandlerContext()
-        .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);
-    if (null == restRequestImpl || null == restRequestImpl.getRequest()
-        || null == restRequestImpl.getRequest().connection()
-        || null == restRequestImpl.getRequest().connection().localAddress()
-        || StringUtils.isEmpty(restRequestImpl.getRequest().connection().localAddress().host())) {
-      builder.append(EMPTY_RESULT);
+    String invocationContextValue = getValueFromInvocationContext(accessLogEvent);
+    if (StringUtils.isEmpty(invocationContextValue)) {
+      builder.append(NOT_FOUND);
       return;
     }
-    builder.append(restRequestImpl.getRequest().connection().localAddress().host());
+    builder.append(invocationContextValue);
   }
 
-  public static String getLocalAddress(RoutingContext context) {
-    HttpServerRequest request = context.request();
-    if (null == request || null == request.localAddress() || StringUtils.isEmpty(request.localAddress().host())) {
-      return EMPTY_RESULT;
+  @Override
+  public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
+    Invocation invocation = finishEvent.getInvocation();
+    if (null == invocation || invocation.getContext() == null
+        || StringUtils.isEmpty(finishEvent.getInvocation().getContext().get(varName))) {
+      builder.append(NOT_FOUND);
+      return;
     }
-    return request.localAddress().host();
+    builder.append(finishEvent.getInvocation().getContext().get(varName));
+  }
+
+
+  protected String getValueFromInvocationContext(ServerAccessLogEvent accessLogEvent) {
+    Map<String, Object> data = accessLogEvent.getRoutingContext().data();
+    if (null == data || null == data.get(RestConst.REST_INVOCATION_CONTEXT)) {
+      return null;
+    }
+    return ((Invocation) data.get(RestConst.REST_INVOCATION_CONTEXT)).getContext(varName);
+  }
+
+  public String getVarName() {
+    return varName;
   }
 }

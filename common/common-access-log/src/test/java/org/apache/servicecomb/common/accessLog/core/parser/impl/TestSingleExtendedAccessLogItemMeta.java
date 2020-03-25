@@ -17,23 +17,12 @@
 
 package org.apache.servicecomb.common.accessLog.core.parser.impl;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.servicecomb.common.accessLog.core.element.impl.UserDefinedAccessAccessLogItem;
-import org.apache.servicecomb.common.accessLog.core.parser.CompositeVertxRestAccessLogItemMeta;
+import org.apache.servicecomb.common.accessLog.core.element.impl.UserDefinedAccessLogItemLowPriority;
 import org.apache.servicecomb.common.accessLog.core.parser.VertxRestAccessLogItemMeta;
 
-
-public class TestCompositeExtendedAccessAccessLogItemMeta extends CompositeVertxRestAccessLogItemMeta {
-  private static final List<VertxRestAccessLogItemMeta> META_LIST = new ArrayList<>();
-
-  static {
-    META_LIST.add(new VertxRestAccessLogItemMeta("%{", "}user-defined", UserDefinedAccessAccessLogItem::new));
-  }
-
-  @Override
-  public List<VertxRestAccessLogItemMeta> getAccessLogItemMetas() {
-    return META_LIST;
+public class TestSingleExtendedAccessLogItemMeta extends VertxRestAccessLogItemMeta {
+  public TestSingleExtendedAccessLogItemMeta() {
+    super("%h", null, config -> new UserDefinedAccessLogItemLowPriority(), 1);
   }
 }

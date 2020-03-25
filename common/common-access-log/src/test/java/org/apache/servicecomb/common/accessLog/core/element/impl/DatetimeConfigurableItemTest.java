@@ -65,7 +65,7 @@ public class DatetimeConfigurableItemTest {
 
   @Test
   public void serverFormattedElement() {
-    DatetimeConfigurableItemAccess element = new DatetimeConfigurableItemAccess(
+    ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
         "EEE, yyyy MMM dd HH:mm:ss zzz|GMT-08|zh-CN");
     element.appendServerFormattedItem(accessLogEvent, strBuilder);
     assertEquals("星期一, 2014 十一月 24 13:10:50 GMT-08:00", strBuilder.toString());
@@ -73,7 +73,7 @@ public class DatetimeConfigurableItemTest {
 
   @Test
   public void clientFormattedElement() {
-    DatetimeConfigurableItemAccess element = new DatetimeConfigurableItemAccess(
+    ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
         "EEE, yyyy MMM dd HH:mm:ss zzz|GMT-08|zh-CN");
     element.appendClientFormattedItem(finishEvent, strBuilder);
     assertEquals("星期一, 2014 十一月 24 13:10:50 GMT-08:00", strBuilder.toString());
@@ -81,7 +81,7 @@ public class DatetimeConfigurableItemTest {
 
   @Test
   public void serverFormattedElementOnNoPattern() {
-    DatetimeConfigurableItemAccess element = new DatetimeConfigurableItemAccess(
+    ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
         "|GMT+08|zh-CN");
 
     element.appendServerFormattedItem(accessLogEvent, strBuilder);
@@ -90,7 +90,7 @@ public class DatetimeConfigurableItemTest {
 
   @Test
   public void clientFormattedElementOnNoPattern() {
-    DatetimeConfigurableItemAccess element = new DatetimeConfigurableItemAccess(
+    ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
         "|GMT+08|zh-CN");
 
     element.appendClientFormattedItem(finishEvent, strBuilder);
@@ -99,7 +99,7 @@ public class DatetimeConfigurableItemTest {
 
   @Test
   public void getFormattedElementOnNoTimezone() {
-    DatetimeConfigurableItemAccess element = new DatetimeConfigurableItemAccess(
+    ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
         "yyyy/MM/dd zzz||zh-CN");
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd zzz", Locale.forLanguageTag("zh-CN"));
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
@@ -110,7 +110,7 @@ public class DatetimeConfigurableItemTest {
 
   @Test
   public void clientFormattedElementOnNoTimezone() {
-    DatetimeConfigurableItemAccess element = new DatetimeConfigurableItemAccess(
+    ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
         "yyyy/MM/dd zzz||zh-CN");
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd zzz", Locale.forLanguageTag("zh-CN"));
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
@@ -121,7 +121,7 @@ public class DatetimeConfigurableItemTest {
 
   @Test
   public void serverFormattedElementOnNoLocale() {
-    DatetimeConfigurableItemAccess element = new DatetimeConfigurableItemAccess(
+    ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
         "EEE, dd MMM yyyy HH:mm:ss zzz|GMT+08|");
 
     element.appendServerFormattedItem(accessLogEvent, strBuilder);
@@ -130,7 +130,7 @@ public class DatetimeConfigurableItemTest {
 
   @Test
   public void clientFormattedElementOnNoLocale() {
-    DatetimeConfigurableItemAccess element = new DatetimeConfigurableItemAccess(
+    ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
         "EEE, dd MMM yyyy HH:mm:ss zzz|GMT+08|");
 
     element.appendClientFormattedItem(finishEvent, strBuilder);
@@ -139,9 +139,9 @@ public class DatetimeConfigurableItemTest {
 
   @Test
   public void serverFormattedElementOnNoConfig() {
-    DatetimeConfigurableItemAccess element = new DatetimeConfigurableItemAccess(
+    ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
         "||");
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DatetimeConfigurableItemAccess.DEFAULT_DATETIME_PATTERN,
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(ConfigurableDatetimeAccessItem.DEFAULT_DATETIME_PATTERN,
         Locale.US);
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
 
@@ -151,9 +151,9 @@ public class DatetimeConfigurableItemTest {
 
   @Test
   public void clientFormattedElementOnNoConfig() {
-    DatetimeConfigurableItemAccess element = new DatetimeConfigurableItemAccess(
+    ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem(
         "||");
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DatetimeConfigurableItemAccess.DEFAULT_DATETIME_PATTERN,
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(ConfigurableDatetimeAccessItem.DEFAULT_DATETIME_PATTERN,
         Locale.US);
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
 
@@ -163,7 +163,7 @@ public class DatetimeConfigurableItemTest {
 
   @Test
   public void serverConstructorWithNoArg() {
-    DatetimeConfigurableItemAccess element = new DatetimeConfigurableItemAccess();
+    ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem();
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
 
@@ -176,7 +176,7 @@ public class DatetimeConfigurableItemTest {
 
   @Test
   public void clientConstructorWithNoArg() {
-    DatetimeConfigurableItemAccess element = new DatetimeConfigurableItemAccess();
+    ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem();
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.US);
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
 
@@ -189,7 +189,7 @@ public class DatetimeConfigurableItemTest {
 
   @Test
   public void serverConstructorWithNoSeparator() {
-    DatetimeConfigurableItemAccess element = new DatetimeConfigurableItemAccess("yyyy/MM/dd HH:mm:ss zzz");
+    ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem("yyyy/MM/dd HH:mm:ss zzz");
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss zzz", Locale.US);
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
 
@@ -202,7 +202,7 @@ public class DatetimeConfigurableItemTest {
 
   @Test
   public void clientConstructorWithNoSeparator() {
-    DatetimeConfigurableItemAccess element = new DatetimeConfigurableItemAccess("yyyy/MM/dd HH:mm:ss zzz");
+    ConfigurableDatetimeAccessItem element = new ConfigurableDatetimeAccessItem("yyyy/MM/dd HH:mm:ss zzz");
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss zzz", Locale.US);
     simpleDateFormat.setTimeZone(TimeZone.getDefault());
 

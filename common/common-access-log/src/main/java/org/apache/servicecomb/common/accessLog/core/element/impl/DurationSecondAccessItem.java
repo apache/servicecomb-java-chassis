@@ -17,25 +17,23 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
+
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 
 import io.vertx.ext.web.RoutingContext;
 
-/**
- * For access log extension test, will be overridden by {@link RemoteHostItemAccess}("%h"),
- * and takes no effect.
- */
-public class UserDefinedAccessAccessLogItemLowPriority implements AccessLogItem<RoutingContext> {
+public class DurationSecondAccessItem implements AccessLogItem<RoutingContext> {
 
   @Override
   public void appendServerFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
-    builder.append("OverriddenItem");
+    builder.append((accessLogEvent.getMilliEndTime() - accessLogEvent.getMilliStartTime()) / 1000);
   }
 
   @Override
-  public void appendClientFormattedItem(InvocationFinishEvent clientLogEvent, StringBuilder builder) {
-    builder.append("OverriddenItem");
+  public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
+    builder.append((finishEvent.getInvocation().getInvocationStageTrace().getFinish() -
+        finishEvent.getInvocation().getInvocationStageTrace().getStartSend()) / 1000_000_000);
   }
 }

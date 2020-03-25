@@ -23,11 +23,11 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 
-public class TraceIdItemAccess extends InvocationContextItemAccess {
+public class TraceIdAccessItem extends InvocationContextAccessItem {
 
   public static final String TRACE_ID = Const.TRACE_ID_NAME;
 
-  public TraceIdItemAccess() {
+  public TraceIdAccessItem() {
     super(TRACE_ID);
   }
 
@@ -37,7 +37,7 @@ public class TraceIdItemAccess extends InvocationContextItemAccess {
     if (StringUtils.isEmpty(traceId)) {
       traceId = accessLogEvent.getRoutingContext().request().getHeader(TRACE_ID);
     }
-    builder.append(StringUtils.isEmpty(traceId) ? InvocationContextItemAccess.NOT_FOUND : traceId);
+    builder.append(StringUtils.isEmpty(traceId) ? InvocationContextAccessItem.NOT_FOUND : traceId);
   }
 
   @Override
@@ -45,7 +45,7 @@ public class TraceIdItemAccess extends InvocationContextItemAccess {
     Invocation invocation = finishEvent.getInvocation();
     if (invocation == null || invocation.getContext() == null
         || StringUtils.isEmpty(invocation.getContext().get(TRACE_ID))) {
-      builder.append(InvocationContextItemAccess.NOT_FOUND);
+      builder.append(InvocationContextAccessItem.NOT_FOUND);
       return;
     }
     builder.append(invocation.getContext().get(TRACE_ID));

@@ -32,7 +32,7 @@ import io.vertx.ext.web.RoutingContext;
 
 public class HttpStatusItemTest {
 
-  private static final HttpStatusItemAccess STATUS_ELEMENT = new HttpStatusItemAccess();
+  private static final HttpStatusAccessItem STATUS_ELEMENT = new HttpStatusAccessItem();
 
   private StringBuilder strBuilder;
 

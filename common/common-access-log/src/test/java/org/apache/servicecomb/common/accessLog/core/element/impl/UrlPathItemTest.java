@@ -40,7 +40,7 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
 
 public class UrlPathItemTest {
-  private static final UrlPathItemAccess ITEM = new UrlPathItemAccess();
+  private static final UrlPathAccessItem ITEM = new UrlPathAccessItem();
 
   private StringBuilder strBuilder;
 

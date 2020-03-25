@@ -39,7 +39,7 @@ import io.vertx.core.net.SocketAddress;
 import io.vertx.ext.web.RoutingContext;
 
 public class LocalPortItemTest {
-  public static final LocalPortItemAccess ELEMENT = new LocalPortItemAccess();
+  public static final LocalPortAccessItem ELEMENT = new LocalPortAccessItem();
 
   private StringBuilder strBuilder;
 

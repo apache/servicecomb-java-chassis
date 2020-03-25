@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.servicecomb.common.accessLog.core.parser.impl.TestCompositeExtendedAccessAccessLogItemMeta
-org.apache.servicecomb.common.accessLog.core.parser.impl.TestSingleExtendedAccessAccessLogItemMeta
+org.apache.servicecomb.common.accessLog.core.parser.impl.TestCompositeExtendedAccessLogItemMeta
+org.apache.servicecomb.common.accessLog.core.parser.impl.TestSingleExtendedAccessLogItemMeta

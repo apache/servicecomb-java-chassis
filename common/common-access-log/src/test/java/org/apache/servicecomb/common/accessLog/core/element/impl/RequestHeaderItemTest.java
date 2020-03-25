@@ -41,7 +41,7 @@ import io.vertx.ext.web.RoutingContext;
 public class RequestHeaderItemTest {
   private static final String VAR_NAME = "varName";
 
-  private static final RequestHeaderItemAccess ELEMENT = new RequestHeaderItemAccess(VAR_NAME);
+  private static final RequestHeaderAccessItem ELEMENT = new RequestHeaderAccessItem(VAR_NAME);
 
   private StringBuilder strBuilder;
 

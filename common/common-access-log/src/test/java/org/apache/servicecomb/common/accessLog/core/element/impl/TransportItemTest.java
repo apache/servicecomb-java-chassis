@@ -29,7 +29,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 public class TransportItemTest {
-  private static final TransportItemAccess ITEM = new TransportItemAccess();
+  private static final TransportAccessItem ITEM = new TransportAccessItem();
 
   private StringBuilder strBuilder;
 

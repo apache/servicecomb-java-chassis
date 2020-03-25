@@ -17,49 +17,62 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
+import java.util.Map;
+import java.util.Map.Entry;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
-import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 
-import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.http.Cookie;
 import io.vertx.ext.web.RoutingContext;
 
-/**
- * HTTP method
- */
-public class HttpMethodItemAccess implements AccessLogItem<RoutingContext> {
+public class CookieAccessItem implements AccessLogItem<RoutingContext> {
 
-  public static final String EMPTY_RESULT = "-";
+  public static final String RESULT_NOT_FOUND = "-";
+
+  private final String varName;
+
+  public CookieAccessItem(String varName) {
+    this.varName = varName;
+  }
 
   @Override
   public void appendServerFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
-    HttpServerRequest request = accessLogEvent.getRoutingContext().request();
-    if (null == request || null == request.method()) {
-      builder.append(EMPTY_RESULT);
+    Map<String, Cookie> cookieMap = accessLogEvent.getRoutingContext().cookieMap();
+    if (null == cookieMap) {
+      builder.append(RESULT_NOT_FOUND);
       return;
     }
-    builder.append(request.method().toString());
+    for (Cookie cookie : cookieMap.values()) {
+      if (varName.equals(cookie.getName())) {
+        builder.append(cookie.getValue());
+        return;
+      }
+    }
+    builder.append(RESULT_NOT_FOUND);
   }
 
   @Override
   public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    OperationMeta operationMeta = finishEvent.getInvocation().getOperationMeta();
-    if (operationMeta != null && !StringUtils.isEmpty(operationMeta.getHttpMethod())) {
-      builder.append(operationMeta.getHttpMethod());
-      return;
-    }
     RestClientRequestImpl restRequestImpl = (RestClientRequestImpl) finishEvent.getInvocation().getHandlerContext()
       .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);
-    if (null == restRequestImpl || null == restRequestImpl.getRequest()
-      || null == restRequestImpl.getRequest().method()) {
-      builder.append(EMPTY_RESULT);
+    if (null == restRequestImpl || null == restRequestImpl.getCookieMap()) {
+      builder.append(RESULT_NOT_FOUND);
       return;
     }
-    builder.append(restRequestImpl.getRequest().method().toString());
+    for (Entry<String, String> entry : restRequestImpl.getCookieMap().entrySet()) {
+      if (entry.getKey().equals(varName)) {
+        builder.append(entry.getValue());
+        return;
+      }
+    }
+    builder.append(RESULT_NOT_FOUND);
+  }
+
+  public String getVarName() {
+    return varName;
   }
 }

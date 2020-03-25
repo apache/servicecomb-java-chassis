@@ -30,7 +30,7 @@ import org.mockito.Mockito;
 
 public class DurationMillisecondItemTest {
 
-  public static final DurationMillisecondItemAccess ELEMENT = new DurationMillisecondItemAccess();
+  public static final DurationMillisecondAccessItem ELEMENT = new DurationMillisecondAccessItem();
 
   private StringBuilder strBuilder;
 

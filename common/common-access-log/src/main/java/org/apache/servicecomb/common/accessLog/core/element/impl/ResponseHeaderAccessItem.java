@@ -17,45 +17,46 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 
-public class HttpStatusItemAccess implements AccessLogItem<RoutingContext> {
-  private static Logger LOGGER = LoggerFactory.getLogger(HttpStatusItemAccess.class);
+public class ResponseHeaderAccessItem implements AccessLogItem<RoutingContext> {
 
-  public static final String EMPTY_RESULT = "-";
+  public static final String RESULT_NOT_FOUND = "-";
+
+  private final String varName;
+
+  public ResponseHeaderAccessItem(String varName) {
+    this.varName = varName;
+  }
 
   @Override
   public void appendServerFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
     HttpServerResponse response = accessLogEvent.getRoutingContext().response();
-    if (null == response) {
-      builder.append(EMPTY_RESULT);
+    if (null == response || null == response.headers() || StringUtils.isEmpty(response.headers().get(varName))) {
+      builder.append(RESULT_NOT_FOUND);
       return;
     }
-    if (response.closed() && !response.ended()) {
-      LOGGER.warn(
-          "Response is closed before sending any data. "
-              + "Please check idle connection timeout for provider is properly configured.");
-      builder.append(EMPTY_RESULT);
-      return;
-    }
-    builder.append(response.getStatusCode());
+    builder.append(response.headers().get(varName));
   }
 
   @Override
   public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
     Response response = finishEvent.getResponse();
-    if (null == response) {
-      builder.append(EMPTY_RESULT);
+    if (null == response || null == response.getHeaders() || null == response.getHeaders().getFirst(varName)) {
+      builder.append(RESULT_NOT_FOUND);
       return;
     }
-    builder.append(response.getStatusCode());
+    builder.append(response.getHeaders().getFirst(varName));
+  }
+
+  public String getVarName() {
+    return varName;
   }
 }

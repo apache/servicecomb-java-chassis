@@ -34,7 +34,7 @@ import io.vertx.core.http.HttpVersion;
 import io.vertx.ext.web.RoutingContext;
 
 public class RequestProtocolItemTest {
-  private static final RequestProtocolItemAccess ITEM = new RequestProtocolItemAccess();
+  private static final RequestProtocolAccessItem ITEM = new RequestProtocolAccessItem();
 
   private StringBuilder strBuilder;
 
