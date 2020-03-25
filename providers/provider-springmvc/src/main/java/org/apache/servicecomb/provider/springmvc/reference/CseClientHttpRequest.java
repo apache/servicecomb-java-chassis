@@ -218,7 +218,8 @@ public class CseClientHttpRequest implements ClientHttpRequest {
         path + (this.uri.getRawQuery() == null ? "" : "?" + this.uri.getRawQuery()));
 
     if (context != null) {
-      invocation.addContext(context);
+      invocation.addContext(context.getContext());
+      invocation.addLocalContext(context.getLocalContext());
     }
 
     if (responseType != null &&
