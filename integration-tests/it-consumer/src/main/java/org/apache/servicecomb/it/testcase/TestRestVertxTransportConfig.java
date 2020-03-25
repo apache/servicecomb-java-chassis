@@ -85,8 +85,10 @@ public class TestRestVertxTransportConfig {
       consumers.getIntf().testClientReceiveHeaderSize(100001 - RESPONSE_HEADER.length());
       fail("an exception is expected!");
     } catch (InvocationException e) {
+      // in slow environment, may cause connection close. 
       Assert.assertThat(ExceptionUtils.getExceptionMessageWithoutTrace(e),
-          CoreMatchers.containsString("HTTP header is larger than 10000 bytes."));
+          CoreMatchers.anyOf(CoreMatchers.containsString("HTTP header is larger than 10000 bytes"),
+              CoreMatchers.containsString("Connection was closed")));
     }
   }
 }
