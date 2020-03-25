@@ -277,7 +277,7 @@ public class TestInvoker {
     Deencapsulation.invoke(invoker, "ensureStatusUp");
     PojoConsumerMeta meta = Deencapsulation.invoke(invoker, "refreshMeta");
 
-    JavaType javaType = meta.findOperationMeta("download").getResponsesMeta().findResponseType(200);
+    JavaType javaType = meta.findOperationMeta("download", DownloadIntf.class).getResponsesMeta().findResponseType(200);
     Assert.assertSame(Part.class, javaType.getRawClass());
 
     scbEngine.destroy();

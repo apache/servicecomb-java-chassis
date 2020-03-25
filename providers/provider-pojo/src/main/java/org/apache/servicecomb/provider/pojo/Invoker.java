@@ -148,7 +148,7 @@ public class Invoker implements InvocationHandler {
     }
 
     PojoConsumerOperationMeta pojoConsumerOperationMeta = consumerMeta
-        .findOperationMeta(MethodUtils.findSwaggerMethodName(method));
+        .findOperationMeta(MethodUtils.findSwaggerMethodName(method), consumerIntf);
     if (pojoConsumerOperationMeta == null) {
       throw new IllegalStateException(
           String.format(
@@ -162,6 +162,8 @@ public class Invoker implements InvocationHandler {
 
     SwaggerConsumerOperation consumerOperation = pojoConsumerOperationMeta.getSwaggerConsumerOperation();
     OperationMeta operationMeta = pojoConsumerOperationMeta.getOperationMeta();
+    // operation meta is static data based on swagger, while consumer operation based on invoker, have interface info
+    operationMeta.setSwaggerConsumerOperation(consumerOperation);
     Invocation invocation = InvocationFactory.forConsumer(
         findReferenceConfig(operationMeta),
         operationMeta,

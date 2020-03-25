@@ -56,6 +56,7 @@ servicecomb:
     enabled: true
     samplingRate: 0.5
   loadbalance:
+    userDefinedEndpoint.enabled: true
     strategy:
       name: WeightedResponse
     retryEnabled: true

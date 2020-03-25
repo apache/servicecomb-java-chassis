@@ -31,20 +31,17 @@ import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 public class PojoConsumerMeta {
   private MicroserviceReferenceConfig microserviceReferenceConfig;
 
-  private Class<?> consumerIntf;
-
   private SchemaMeta schemaMeta;
 
   // key is consumer method name
-  private Map<String, PojoConsumerOperationMeta> operationMetas = new HashMap<>();
+  private Map<PojoConsumerMapKey, PojoConsumerOperationMeta> operationMetas = new HashMap<>();
 
   public PojoConsumerMeta(MicroserviceReferenceConfig microserviceReferenceConfig, SwaggerConsumer swaggerConsumer,
       SchemaMeta schemaMeta) {
     this.microserviceReferenceConfig = microserviceReferenceConfig;
-    this.consumerIntf = swaggerConsumer.getConsumerIntf();
     this.schemaMeta = schemaMeta;
 
-    SwaggerGenerator intfSwaggerGenerator = SwaggerGenerator.create(consumerIntf);
+    SwaggerGenerator intfSwaggerGenerator = SwaggerGenerator.create(swaggerConsumer.getConsumerIntf());
     intfSwaggerGenerator.scanClassAnnotation();
     for (SwaggerConsumerOperation swaggerConsumerOperation : swaggerConsumer.getOperations().values()) {
       String operationId = swaggerConsumerOperation.getSwaggerOperation().getOperationId();
@@ -57,16 +54,14 @@ public class PojoConsumerMeta {
       PojoConsumerOperationMeta pojoConsumerOperationMeta = new PojoConsumerOperationMeta(this, operationMeta,
           swaggerConsumerOperation, intfSwaggerGenerator.getSwagger(), intfOperationGenerator.getOperation());
 
-      operationMetas.put(swaggerConsumerOperation.getSchemaOperationId(), pojoConsumerOperationMeta);
+      operationMetas.put(
+          new PojoConsumerMapKey(swaggerConsumerOperation.getSchemaOperationId(), swaggerConsumer.getConsumerIntf()),
+          pojoConsumerOperationMeta);
     }
   }
 
   public MicroserviceReferenceConfig getMicroserviceReferenceConfig() {
     return microserviceReferenceConfig;
-  }
-
-  public Class<?> getConsumerIntf() {
-    return consumerIntf;
   }
 
   public boolean isExpired() {
@@ -81,7 +76,7 @@ public class PojoConsumerMeta {
     return schemaMeta;
   }
 
-  public PojoConsumerOperationMeta findOperationMeta(String consumerMethodName) {
-    return operationMetas.get(consumerMethodName);
+  public PojoConsumerOperationMeta findOperationMeta(String consumerMethodName, Class<?> consumerInf) {
+    return operationMetas.get(new PojoConsumerMapKey(consumerMethodName, consumerInf));
   }
 }
