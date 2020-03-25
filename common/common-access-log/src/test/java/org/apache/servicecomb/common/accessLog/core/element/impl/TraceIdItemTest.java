@@ -37,7 +37,7 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
 
 public class TraceIdItemTest {
-  private static final TraceIdItemAccess ELEMENT = new TraceIdItemAccess();
+  private static final TraceIdAccessItem ELEMENT = new TraceIdAccessItem();
 
   private StringBuilder strBuilder;
 

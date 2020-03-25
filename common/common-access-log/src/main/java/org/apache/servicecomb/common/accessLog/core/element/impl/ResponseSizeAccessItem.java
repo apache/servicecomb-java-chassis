@@ -24,11 +24,11 @@ import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 
-public class ResponseSizeItemAccess implements AccessLogItem<RoutingContext> {
+public class ResponseSizeAccessItem implements AccessLogItem<RoutingContext> {
   // print zeroBytes when bytes is zero
   private final String zeroBytes;
 
-  public ResponseSizeItemAccess(String zeroBytesPlaceholder) {
+  public ResponseSizeAccessItem(String zeroBytesPlaceholder) {
     zeroBytes = zeroBytesPlaceholder;
   }
 

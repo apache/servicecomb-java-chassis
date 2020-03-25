@@ -17,58 +17,49 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
-import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
+import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
-import org.springframework.util.StringUtils;
 
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
 
-public class InvocationContextItemAccess implements AccessLogItem<RoutingContext> {
+/**
+ * HTTP method
+ */
+public class HttpMethodAccessItem implements AccessLogItem<RoutingContext> {
 
-  public static final String NOT_FOUND = "-";
-
-  String varName;
-
-  public InvocationContextItemAccess(String varName) {
-    this.varName = varName;
-  }
+  public static final String EMPTY_RESULT = "-";
 
   @Override
   public void appendServerFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
-    String invocationContextValue = getValueFromInvocationContext(accessLogEvent);
-    if (StringUtils.isEmpty(invocationContextValue)) {
-      builder.append(NOT_FOUND);
+    HttpServerRequest request = accessLogEvent.getRoutingContext().request();
+    if (null == request || null == request.method()) {
+      builder.append(EMPTY_RESULT);
       return;
     }
-    builder.append(invocationContextValue);
+    builder.append(request.method().toString());
   }
 
   @Override
   public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    Invocation invocation = finishEvent.getInvocation();
-    if (null == invocation || invocation.getContext() == null
-        || StringUtils.isEmpty(finishEvent.getInvocation().getContext().get(varName))) {
-      builder.append(NOT_FOUND);
+    OperationMeta operationMeta = finishEvent.getInvocation().getOperationMeta();
+    if (operationMeta != null && !StringUtils.isEmpty(operationMeta.getHttpMethod())) {
+      builder.append(operationMeta.getHttpMethod());
       return;
     }
-    builder.append(finishEvent.getInvocation().getContext().get(varName));
-  }
-
-
-  protected String getValueFromInvocationContext(ServerAccessLogEvent accessLogEvent) {
-    Map<String, Object> data = accessLogEvent.getRoutingContext().data();
-    if (null == data || null == data.get(RestConst.REST_INVOCATION_CONTEXT)) {
-      return null;
+    RestClientRequestImpl restRequestImpl = (RestClientRequestImpl) finishEvent.getInvocation().getHandlerContext()
+      .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);
+    if (null == restRequestImpl || null == restRequestImpl.getRequest()
+      || null == restRequestImpl.getRequest().method()) {
+      builder.append(EMPTY_RESULT);
+      return;
     }
-    return ((Invocation) data.get(RestConst.REST_INVOCATION_CONTEXT)).getContext(varName);
-  }
-
-  public String getVarName() {
-    return varName;
+    builder.append(restRequestImpl.getRequest().method().toString());
   }
 }

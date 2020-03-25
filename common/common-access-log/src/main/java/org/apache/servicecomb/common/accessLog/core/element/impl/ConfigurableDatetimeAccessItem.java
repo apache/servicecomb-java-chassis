@@ -32,7 +32,7 @@ import io.vertx.ext.web.RoutingContext;
 /**
  * Configurable dateTime element.
  */
-public class DatetimeConfigurableItemAccess implements AccessLogItem<RoutingContext> {
+public class ConfigurableDatetimeAccessItem implements AccessLogItem<RoutingContext> {
 
   public static final String DEFAULT_DATETIME_PATTERN = "EEE, dd MMM yyyy HH:mm:ss zzz";
 
@@ -49,7 +49,7 @@ public class DatetimeConfigurableItemAccess implements AccessLogItem<RoutingCont
   /**
    * all configuration is set to default value.
    */
-  public DatetimeConfigurableItemAccess() {
+  public ConfigurableDatetimeAccessItem() {
     this(DEFAULT_DATETIME_PATTERN);
   }
 
@@ -57,7 +57,7 @@ public class DatetimeConfigurableItemAccess implements AccessLogItem<RoutingCont
    * the configurations not specified will get a default value.
    * @param config the format of configuration is "PATTERN|TIMEZONE|LOCALE" or "PATTERN". It depends on whether the config contains the separator "|"
    */
-  public DatetimeConfigurableItemAccess(String config) {
+  public ConfigurableDatetimeAccessItem(String config) {
     String[] configArr = null;
     if (config.contains("|")) {
       configArr = splitConfig(config);

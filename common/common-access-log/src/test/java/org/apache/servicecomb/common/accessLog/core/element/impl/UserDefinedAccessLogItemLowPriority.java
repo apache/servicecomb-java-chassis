@@ -23,32 +23,19 @@ import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 
 import io.vertx.ext.web.RoutingContext;
 
-public class FirstLineOfRequestItemAccess implements AccessLogItem<RoutingContext> {
-  private static final HttpMethodItemAccess METHOD_ELEMENT = new HttpMethodItemAccess();
-
-  private static final UrlPathItemAccess URI_PATH_ONLY_ELEMENT = new UrlPathItemAccess();
-
-  private static final RequestProtocolItemAccess VERSION_OR_PROTOCOL_ELEMENT = new RequestProtocolItemAccess();
+/**
+ * For access log extension test, will be overridden by {@link RemoteHostAccessItem}("%h"),
+ * and takes no effect.
+ */
+public class UserDefinedAccessLogItemLowPriority implements AccessLogItem<RoutingContext> {
 
   @Override
   public void appendServerFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
-    builder.append("\"");
-    METHOD_ELEMENT.appendServerFormattedItem(accessLogEvent, builder);
-    builder.append(" ");
-    URI_PATH_ONLY_ELEMENT.appendServerFormattedItem(accessLogEvent, builder);
-    builder.append(" ");
-    VERSION_OR_PROTOCOL_ELEMENT.appendServerFormattedItem(accessLogEvent, builder);
-    builder.append("\"");
+    builder.append("OverriddenItem");
   }
 
   @Override
-  public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    builder.append("\"");
-    METHOD_ELEMENT.appendClientFormattedItem(finishEvent, builder);
-    builder.append(" ");
-    URI_PATH_ONLY_ELEMENT.appendClientFormattedItem(finishEvent, builder);
-    builder.append(" ");
-    VERSION_OR_PROTOCOL_ELEMENT.appendClientFormattedItem(finishEvent, builder);
-    builder.append("\"");
+  public void appendClientFormattedItem(InvocationFinishEvent clientLogEvent, StringBuilder builder) {
+    builder.append("OverriddenItem");
   }
 }

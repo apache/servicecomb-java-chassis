@@ -19,37 +19,36 @@ package org.apache.servicecomb.common.accessLog.core.element.impl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
-import org.apache.servicecomb.core.Endpoint;
+import org.apache.servicecomb.common.rest.RestConst;
+import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
-import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
 
-public class RemoteHostItemAccess implements AccessLogItem<RoutingContext> {
-
+public class QueryStringAccessItem implements AccessLogItem<RoutingContext> {
   public static final String EMPTY_RESULT = "-";
 
   @Override
   public void appendServerFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
     HttpServerRequest request = accessLogEvent.getRoutingContext().request();
-    if (null == request || null == request.remoteAddress()
-        || StringUtils.isEmpty(request.remoteAddress().host())) {
+    if (null == request || StringUtils.isEmpty(request.query())) {
       builder.append(EMPTY_RESULT);
       return;
     }
-    builder.append(request.remoteAddress().host());
+    builder.append(request.query());
   }
 
   @Override
-  public void appendClientFormattedItem(InvocationFinishEvent clientLogEvent, StringBuilder builder) {
-    Endpoint endpoint = clientLogEvent.getInvocation().getEndpoint();
-    if (null == endpoint || null == endpoint.getAddress()
-        || StringUtils.isEmpty(((URIEndpointObject) endpoint.getAddress()).getHostOrIp())) {
+  public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
+    RestClientRequestImpl restRequestImpl = (RestClientRequestImpl) finishEvent.getInvocation().getHandlerContext()
+        .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);
+    if (null == restRequestImpl || null == restRequestImpl.getRequest()
+        || StringUtils.isEmpty(restRequestImpl.getRequest().query())) {
       builder.append(EMPTY_RESULT);
       return;
     }
-    builder.append(((URIEndpointObject) endpoint.getAddress()).getHostOrIp());
+    builder.append(restRequestImpl.getRequest().query());
   }
 }

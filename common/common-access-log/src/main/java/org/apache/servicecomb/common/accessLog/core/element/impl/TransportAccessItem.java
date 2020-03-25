@@ -18,39 +18,37 @@
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
-import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
+import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 
-import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
 
-public class LocalPortItemAccess implements AccessLogItem<RoutingContext> {
+public class TransportAccessItem implements AccessLogItem<RoutingContext> {
+  private static final String EMPTY_STR = "-";
 
-  public static final String EMPTY_RESULT = "-";
-
+  /**
+   * access log only support rest
+   */
   @Override
   public void appendServerFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
-    HttpServerRequest request = accessLogEvent.getRoutingContext().request();
-    if (null == request || null == request.localAddress()) {
-      builder.append(EMPTY_RESULT);
-      return;
-    }
-    builder.append(request.localAddress().port());
+    builder.append("rest");
   }
 
   @Override
   public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    RestClientRequestImpl restRequestImpl = (RestClientRequestImpl) finishEvent.getInvocation().getHandlerContext()
-        .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);
-    if (null == restRequestImpl || null == restRequestImpl.getRequest()
-        || null == restRequestImpl.getRequest().connection()
-        || null == restRequestImpl.getRequest().connection().localAddress()) {
-      builder.append(EMPTY_RESULT);
+    String transportName = finishEvent.getInvocation().getConfigTransportName();
+    if (!StringUtils.isEmpty(transportName)) {
+      builder.append(transportName);
       return;
     }
-    builder.append(restRequestImpl.getRequest().connection().localAddress().port());
+    Endpoint endpoint = finishEvent.getInvocation().getEndpoint();
+    if (endpoint == null || StringUtils.isEmpty(endpoint.getEndpoint())) {
+      builder.append(EMPTY_STR);
+      return;
+    }
+    builder.append(endpoint.getEndpoint().split(":")[0]);
   }
 }

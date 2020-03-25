@@ -17,59 +17,46 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
+import org.springframework.util.StringUtils;
 
-import io.vertx.core.http.Cookie;
+import io.vertx.core.MultiMap;
 import io.vertx.ext.web.RoutingContext;
 
-public class CookieItemAccess implements AccessLogItem<RoutingContext> {
-
+public class RequestHeaderAccessItem implements AccessLogItem<RoutingContext> {
   public static final String RESULT_NOT_FOUND = "-";
 
   private final String varName;
 
-  public CookieItemAccess(String varName) {
+  public RequestHeaderAccessItem(String varName) {
     this.varName = varName;
   }
 
   @Override
   public void appendServerFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
-    Map<String, Cookie> cookieMap = accessLogEvent.getRoutingContext().cookieMap();
-    if (null == cookieMap) {
+    MultiMap headers = accessLogEvent.getRoutingContext().request().headers();
+    if (null == headers || StringUtils.isEmpty(headers.get(varName))) {
       builder.append(RESULT_NOT_FOUND);
       return;
     }
-    for (Cookie cookie : cookieMap.values()) {
-      if (varName.equals(cookie.getName())) {
-        builder.append(cookie.getValue());
-        return;
-      }
-    }
-    builder.append(RESULT_NOT_FOUND);
+    builder.append(headers.get(varName));
   }
 
   @Override
-  public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    RestClientRequestImpl restRequestImpl = (RestClientRequestImpl) finishEvent.getInvocation().getHandlerContext()
-      .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);
-    if (null == restRequestImpl || null == restRequestImpl.getCookieMap()) {
+  public void appendClientFormattedItem(InvocationFinishEvent clientLogEvent, StringBuilder builder) {
+    RestClientRequestImpl restRequestImpl = (RestClientRequestImpl) clientLogEvent.getInvocation().getHandlerContext()
+        .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);
+    if (null == restRequestImpl || null == restRequestImpl.getRequest()
+        || null == restRequestImpl.getRequest().headers()
+        || StringUtils.isEmpty(restRequestImpl.getRequest().headers().get(varName))) {
       builder.append(RESULT_NOT_FOUND);
       return;
     }
-    for (Entry<String, String> entry : restRequestImpl.getCookieMap().entrySet()) {
-      if (entry.getKey().equals(varName)) {
-        builder.append(entry.getValue());
-        return;
-      }
-    }
-    builder.append(RESULT_NOT_FOUND);
+    builder.append(restRequestImpl.getRequest().headers().get(varName));
   }
 
   public String getVarName() {

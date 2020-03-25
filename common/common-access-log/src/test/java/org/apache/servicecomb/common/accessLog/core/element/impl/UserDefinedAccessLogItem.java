@@ -17,39 +17,32 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
-import static org.apache.servicecomb.common.rest.RestConst.REST_CLIENT_REQUEST_PATH;
 
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
-import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
-import org.springframework.util.StringUtils;
 
-import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
 
-public class UrlPathWithQueryItemAccess implements AccessLogItem<RoutingContext> {
+/**
+ * For access log extension test
+ */
+public class UserDefinedAccessLogItem implements AccessLogItem<RoutingContext> {
+  private String config;
 
-  public static final String EMPTY_RESULT = "-";
-
-  @Override
-  public void appendServerFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
-    HttpServerRequest request = accessLogEvent.getRoutingContext().request();
-    if (null == request || StringUtils.isEmpty(request.uri())) {
-      builder.append(EMPTY_RESULT);
-      return;
-    }
-    builder.append(request.uri());
+  public UserDefinedAccessLogItem(String config) {
+    this.config = config;
   }
 
   @Override
-  public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    Invocation invocation = finishEvent.getInvocation();
-    if (null == invocation || null == invocation.getLocalContext(REST_CLIENT_REQUEST_PATH)
-        || StringUtils.isEmpty(invocation.getLocalContext(REST_CLIENT_REQUEST_PATH).toString())) {
-      builder.append(EMPTY_RESULT);
-      return;
-    }
-    builder.append(invocation.getLocalContext(REST_CLIENT_REQUEST_PATH).toString());
+  public void appendServerFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
+    builder.append("user-defined-")
+        .append(config);
+  }
+
+  @Override
+  public void appendClientFormattedItem(InvocationFinishEvent clientLogEvent, StringBuilder builder) {
+    builder.append("user-defined-")
+        .append(config);
   }
 }

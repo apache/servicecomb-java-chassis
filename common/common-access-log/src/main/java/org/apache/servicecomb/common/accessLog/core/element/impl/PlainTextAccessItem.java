@@ -17,21 +17,30 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
+
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 
 import io.vertx.ext.web.RoutingContext;
 
-public class DurationMillisecondItemAccess implements AccessLogItem<RoutingContext> {
+/**
+ * Print content as it is.
+ */
+public class PlainTextAccessItem implements AccessLogItem<RoutingContext> {
+  private final String content;
+
+  public PlainTextAccessItem(String content) {
+    this.content = content;
+  }
+
   @Override
   public void appendServerFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
-    builder.append(accessLogEvent.getMilliEndTime() - accessLogEvent.getMilliStartTime());
+    builder.append(content);
   }
 
   @Override
   public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    builder.append((finishEvent.getInvocation().getInvocationStageTrace().getFinish() -
-        finishEvent.getInvocation().getInvocationStageTrace().getStartSend()) / 1000_000);
+    builder.append(content);
   }
 }

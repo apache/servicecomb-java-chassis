@@ -17,52 +17,39 @@
 
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
+import static org.apache.servicecomb.common.rest.RestConst.REST_CLIENT_REQUEST_PATH;
 
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
-import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.springframework.util.StringUtils;
 
 import io.vertx.core.http.HttpServerRequest;
-import io.vertx.core.http.HttpVersion;
 import io.vertx.ext.web.RoutingContext;
 
-public class RequestProtocolItemAccess implements AccessLogItem<RoutingContext> {
+public class UrlPathWithQueryAccessItem implements AccessLogItem<RoutingContext> {
+
   public static final String EMPTY_RESULT = "-";
 
   @Override
   public void appendServerFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
     HttpServerRequest request = accessLogEvent.getRoutingContext().request();
-    if (null == request || null == request.version()) {
+    if (null == request || StringUtils.isEmpty(request.uri())) {
       builder.append(EMPTY_RESULT);
       return;
     }
-    builder.append(getStringVersion(request.version()));
+    builder.append(request.uri());
   }
 
   @Override
   public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
     Invocation invocation = finishEvent.getInvocation();
-    if (invocation == null || null == invocation.getEndpoint() || null == invocation.getEndpoint().getAddress()
-        || !(invocation.getEndpoint().getAddress() instanceof URIEndpointObject)
-        || !((URIEndpointObject) invocation.getEndpoint().getAddress()).isHttp2Enabled()) {
-      builder.append("HTTP/1.1");
+    if (null == invocation || null == invocation.getLocalContext(REST_CLIENT_REQUEST_PATH)
+        || StringUtils.isEmpty(invocation.getLocalContext(REST_CLIENT_REQUEST_PATH).toString())) {
+      builder.append(EMPTY_RESULT);
       return;
     }
-    builder.append("HTTP/2.0");
-  }
-
-  private String getStringVersion(HttpVersion version) {
-    switch (version) {
-      case HTTP_2:
-        return "HTTP/2.0";
-      case HTTP_1_0:
-        return "HTTP/1.0";
-      case HTTP_1_1:
-        return "HTTP/1.1";
-      default:
-        return EMPTY_RESULT;
-    }
+    builder.append(invocation.getLocalContext(REST_CLIENT_REQUEST_PATH).toString());
   }
 }

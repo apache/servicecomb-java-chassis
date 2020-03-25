@@ -34,7 +34,7 @@ import io.vertx.core.net.SocketAddress;
 import io.vertx.ext.web.RoutingContext;
 
 public class RemoteHostItemTest {
-  public static final RemoteHostItemAccess ELEMENT = new RemoteHostItemAccess();
+  public static final RemoteHostAccessItem ELEMENT = new RemoteHostAccessItem();
 
   private StringBuilder strBuilder;
 

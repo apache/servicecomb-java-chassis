@@ -30,7 +30,7 @@ import io.vertx.core.http.HttpServerResponse;
 import io.vertx.ext.web.RoutingContext;
 
 public class ResponseSizeItemTest {
-  private static final ResponseSizeItemAccess ELEMENT = new ResponseSizeItemAccess("0");
+  private static final ResponseSizeAccessItem ELEMENT = new ResponseSizeAccessItem("0");
 
   private StringBuilder strBuilder;
 

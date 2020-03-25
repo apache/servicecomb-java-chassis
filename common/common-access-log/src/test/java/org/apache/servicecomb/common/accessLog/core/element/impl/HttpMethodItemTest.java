@@ -40,7 +40,7 @@ import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
 
 public class HttpMethodItemTest {
-  private static final HttpMethodItemAccess ITEM = new HttpMethodItemAccess();
+  private static final HttpMethodAccessItem ITEM = new HttpMethodAccessItem();
 
   private StringBuilder strBuilder;
 

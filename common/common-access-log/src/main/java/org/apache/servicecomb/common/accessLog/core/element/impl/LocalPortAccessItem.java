@@ -19,30 +19,38 @@ package org.apache.servicecomb.common.accessLog.core.element.impl;
 
 
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
+import org.apache.servicecomb.common.rest.RestConst;
+import org.apache.servicecomb.common.rest.codec.param.RestClientRequestImpl;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 
+import io.vertx.core.http.HttpServerRequest;
 import io.vertx.ext.web.RoutingContext;
 
-/**
- * For access log extension test
- */
-public class UserDefinedAccessAccessLogItem implements AccessLogItem<RoutingContext> {
-  private String config;
+public class LocalPortAccessItem implements AccessLogItem<RoutingContext> {
 
-  public UserDefinedAccessAccessLogItem(String config) {
-    this.config = config;
-  }
+  public static final String EMPTY_RESULT = "-";
 
   @Override
   public void appendServerFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
-    builder.append("user-defined-")
-        .append(config);
+    HttpServerRequest request = accessLogEvent.getRoutingContext().request();
+    if (null == request || null == request.localAddress()) {
+      builder.append(EMPTY_RESULT);
+      return;
+    }
+    builder.append(request.localAddress().port());
   }
 
   @Override
-  public void appendClientFormattedItem(InvocationFinishEvent clientLogEvent, StringBuilder builder) {
-    builder.append("user-defined-")
-        .append(config);
+  public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
+    RestClientRequestImpl restRequestImpl = (RestClientRequestImpl) finishEvent.getInvocation().getHandlerContext()
+        .get(RestConst.INVOCATION_HANDLER_REQUESTCLIENT);
+    if (null == restRequestImpl || null == restRequestImpl.getRequest()
+        || null == restRequestImpl.getRequest().connection()
+        || null == restRequestImpl.getRequest().connection().localAddress()) {
+      builder.append(EMPTY_RESULT);
+      return;
+    }
+    builder.append(restRequestImpl.getRequest().connection().localAddress().port());
   }
 }

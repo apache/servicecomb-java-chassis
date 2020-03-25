@@ -18,37 +18,51 @@
 package org.apache.servicecomb.common.accessLog.core.element.impl;
 
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.accessLog.core.element.AccessLogItem;
-import org.apache.servicecomb.core.Endpoint;
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
+import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 
+import io.vertx.core.http.HttpServerRequest;
+import io.vertx.core.http.HttpVersion;
 import io.vertx.ext.web.RoutingContext;
 
-public class TransportItemAccess implements AccessLogItem<RoutingContext> {
-  private static final String EMPTY_STR = "-";
+public class RequestProtocolAccessItem implements AccessLogItem<RoutingContext> {
+  public static final String EMPTY_RESULT = "-";
 
-  /**
-   * access log only support rest
-   */
   @Override
   public void appendServerFormattedItem(ServerAccessLogEvent accessLogEvent, StringBuilder builder) {
-    builder.append("rest");
+    HttpServerRequest request = accessLogEvent.getRoutingContext().request();
+    if (null == request || null == request.version()) {
+      builder.append(EMPTY_RESULT);
+      return;
+    }
+    builder.append(getStringVersion(request.version()));
   }
 
   @Override
   public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
-    String transportName = finishEvent.getInvocation().getConfigTransportName();
-    if (!StringUtils.isEmpty(transportName)) {
-      builder.append(transportName);
+    Invocation invocation = finishEvent.getInvocation();
+    if (invocation == null || null == invocation.getEndpoint() || null == invocation.getEndpoint().getAddress()
+        || !(invocation.getEndpoint().getAddress() instanceof URIEndpointObject)
+        || !((URIEndpointObject) invocation.getEndpoint().getAddress()).isHttp2Enabled()) {
+      builder.append("HTTP/1.1");
       return;
     }
-    Endpoint endpoint = finishEvent.getInvocation().getEndpoint();
-    if (endpoint == null || StringUtils.isEmpty(endpoint.getEndpoint())) {
-      builder.append(EMPTY_STR);
-      return;
+    builder.append("HTTP/2.0");
+  }
+
+  private String getStringVersion(HttpVersion version) {
+    switch (version) {
+      case HTTP_2:
+        return "HTTP/2.0";
+      case HTTP_1_0:
+        return "HTTP/1.0";
+      case HTTP_1_1:
+        return "HTTP/1.1";
+      default:
+        return EMPTY_RESULT;
     }
-    builder.append(endpoint.getEndpoint().split(":")[0]);
   }
 }

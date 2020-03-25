@@ -40,7 +40,7 @@ import io.vertx.core.net.SocketAddress;
 import io.vertx.ext.web.RoutingContext;
 
 public class LocalHostItemTest {
-  public static final LocalHostItemAccess ELEMENT = new LocalHostItemAccess();
+  public static final LocalHostAccessItem ELEMENT = new LocalHostAccessItem();
 
   private StringBuilder strBuilder;
 
@@ -107,14 +107,14 @@ public class LocalHostItemTest {
     Mockito.when(serverRequest.localAddress()).thenReturn(socketAddress);
     Mockito.when(socketAddress.host()).thenReturn(localHost);
 
-    String result = LocalHostItemAccess.getLocalAddress(routingContext);
+    String result = LocalHostAccessItem.getLocalAddress(routingContext);
     assertEquals(localHost, result);
   }
 
   @Test
   public void serverLocalAddressOnRequestIsNull() {
     Mockito.when(routingContext.request()).thenReturn(null);
-    String result = LocalHostItemAccess.getLocalAddress(routingContext);
+    String result = LocalHostAccessItem.getLocalAddress(routingContext);
     assertEquals("-", result);
   }
 
@@ -129,7 +129,7 @@ public class LocalHostItemTest {
   public void serverLocalAddressOnLocalAddressIsNull() {
     Mockito.when(routingContext.request()).thenReturn(serverRequest);
     Mockito.when(serverRequest.localAddress()).thenReturn(null);
-    String result = LocalHostItemAccess.getLocalAddress(routingContext);
+    String result = LocalHostAccessItem.getLocalAddress(routingContext);
     assertEquals("-", result);
   }
 
@@ -148,7 +148,7 @@ public class LocalHostItemTest {
     Mockito.when(serverRequest.localAddress()).thenReturn(socketAddress);
     Mockito.when(socketAddress.host()).thenReturn(null);
 
-    String result = LocalHostItemAccess.getLocalAddress(routingContext);
+    String result = LocalHostAccessItem.getLocalAddress(routingContext);
     assertEquals("-", result);
   }
 
@@ -169,7 +169,7 @@ public class LocalHostItemTest {
     Mockito.when(serverRequest.localAddress()).thenReturn(socketAddress);
     Mockito.when(socketAddress.host()).thenReturn(localHost);
 
-    String result = LocalHostItemAccess.getLocalAddress(routingContext);
+    String result = LocalHostAccessItem.getLocalAddress(routingContext);
     assertEquals("-", result);
   }
 

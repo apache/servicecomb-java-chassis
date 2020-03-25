@@ -42,7 +42,7 @@ public class CookieItemTest {
 
   public static final String COOKIE_VALUE = "cookieVALUE";
 
-  private static final CookieItemAccess ELEMENT = new CookieItemAccess(COOKIE_NAME);
+  private static final CookieAccessItem ELEMENT = new CookieAccessItem(COOKIE_NAME);
 
   private StringBuilder strBuilder;
 

@@ -41,14 +41,14 @@ public class PlainTextItemTest {
 
   @Test
   public void serverFormattedElement() {
-    PlainTextItemAccess element = new PlainTextItemAccess("contentTest");
+    PlainTextAccessItem element = new PlainTextAccessItem("contentTest");
     element.appendServerFormattedItem(accessLogEvent, strBuilder);
     assertEquals("contentTest", strBuilder.toString());
   }
 
   @Test
   public void clientFormattedElement() {
-    PlainTextItemAccess element = new PlainTextItemAccess("contentTest");
+    PlainTextAccessItem element = new PlainTextAccessItem("contentTest");
     element.appendClientFormattedItem(finishEvent, strBuilder);
     assertEquals("contentTest", strBuilder.toString());
   }

@@ -40,7 +40,7 @@ public class InvocationContextItemTest {
 
   public static final String INVOCATION_CONTEXT_VALUE = "testValue";
 
-  private static InvocationContextItemAccess ITEM = new InvocationContextItemAccess(INVOCATION_CONTEXT_KEY);
+  private static InvocationContextAccessItem ITEM = new InvocationContextAccessItem(INVOCATION_CONTEXT_KEY);
 
   private StringBuilder strBuilder;
 
@@ -94,7 +94,7 @@ public class InvocationContextItemTest {
     when(invocation.getContext(INVOCATION_CONTEXT_KEY)).thenReturn(null);
 
     ITEM.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextItemAccess.NOT_FOUND));
+    Assert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextAccessItem.NOT_FOUND));
   }
 
   @Test
@@ -105,7 +105,7 @@ public class InvocationContextItemTest {
     context.put(INVOCATION_CONTEXT_KEY, null);
 
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextItemAccess.NOT_FOUND));
+    Assert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextAccessItem.NOT_FOUND));
   }
 
   @Test
@@ -114,7 +114,7 @@ public class InvocationContextItemTest {
     when(routingContext.data()).thenReturn(routingContextData);
 
     ITEM.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextItemAccess.NOT_FOUND));
+    Assert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextAccessItem.NOT_FOUND));
   }
 
   @Test
@@ -124,14 +124,14 @@ public class InvocationContextItemTest {
     when(invocation.getContext()).thenReturn(context);
 
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextItemAccess.NOT_FOUND));
+    Assert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextAccessItem.NOT_FOUND));
   }
 
   @Test
   public void testGetFormattedItemOnRoutingContextDataNotFound() {
     when(routingContext.data()).thenReturn(null);
     ITEM.appendServerFormattedItem(accessLogEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextItemAccess.NOT_FOUND));
+    Assert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextAccessItem.NOT_FOUND));
   }
 
   @Test
@@ -139,13 +139,13 @@ public class InvocationContextItemTest {
     when(finishEvent.getInvocation()).thenReturn(invocation);
     when(invocation.getContext()).thenReturn(null);
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextItemAccess.NOT_FOUND));
+    Assert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextAccessItem.NOT_FOUND));
   }
 
   @Test
   public void clientGetFormattedItemOnInvocationNotFound() {
     when(finishEvent.getInvocation()).thenReturn(null);
     ITEM.appendClientFormattedItem(finishEvent, strBuilder);
-    Assert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextItemAccess.NOT_FOUND));
+    Assert.assertThat(strBuilder.toString(), Matchers.is(InvocationContextAccessItem.NOT_FOUND));
   }
 }
