@@ -51,7 +51,7 @@ public class TestConst {
       Assert.assertEquals("/registry/v3/microservices/%s/schemas/%s", Const.REGISTRY_API.MICROSERVICE_SCHEMA);
       Assert.assertEquals("/registry/v3/microservices/%s/instances/%s/heartbeat",
           Const.REGISTRY_API.MICROSERVICE_HEARTBEAT);
-      Assert.assertEquals("/registry/v3/microservices/%s/watcher", Const.REGISTRY_API.MICROSERVICE_WATCH);
+      Assert.assertEquals("/registry/v3/microservices/%s/watcher?global=true", Const.REGISTRY_API.MICROSERVICE_WATCH);
       Assert.assertEquals("/registry/v3/instances", Const.REGISTRY_API.MICROSERVICE_INSTANCES);
       Assert.assertEquals("/registry/v3/microservices/%s/properties",
           Const.REGISTRY_API.MICROSERVICE_PROPERTIES);
@@ -70,7 +70,7 @@ public class TestConst {
           Const.REGISTRY_API.MICROSERVICE_SCHEMA);
       Assert.assertEquals(prefix + "microservices/%s/instances/%s/heartbeat",
           Const.REGISTRY_API.MICROSERVICE_HEARTBEAT);
-      Assert.assertEquals(prefix + "microservices/%s/watcher", Const.REGISTRY_API.MICROSERVICE_WATCH);
+      Assert.assertEquals(prefix + "microservices/%s/watcher?global=true", Const.REGISTRY_API.MICROSERVICE_WATCH);
       Assert.assertEquals(prefix + "instances", Const.REGISTRY_API.MICROSERVICE_INSTANCES);
       Assert.assertEquals(prefix + "microservices/%s/properties",
           Const.REGISTRY_API.MICROSERVICE_PROPERTIES);

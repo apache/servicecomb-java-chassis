@@ -62,10 +62,28 @@ public class TestServiceRegistryConfig {
     List<IpPort> ipPorts = oConfig.getIpPort();
     Assert.assertEquals("127.0.0.1:80", ipPorts.get(0).toString());
     Assert.assertEquals("127.0.0.1:443", ipPorts.get(1).toString());
+    List<IpPort> discoveryIpPort = oConfig.getDiscoveryIpPort();
+    Assert.assertEquals("127.0.0.1:80", discoveryIpPort.get(0).toString());
+    Assert.assertEquals("127.0.0.1:443", discoveryIpPort.get(1).toString());
+    List<IpPort> registryIpPort = oConfig.getRegistryIpPort();
+    Assert.assertEquals("127.0.0.1:80", registryIpPort.get(0).toString());
+    Assert.assertEquals("127.0.0.1:443", registryIpPort.get(1).toString());
     Assert.assertFalse(oConfig.isProxyEnable());
     Assert.assertEquals("127.0.0.1", oConfig.getProxyHost());
     Assert.assertEquals(8080, oConfig.getProxyPort());
     Assert.assertNull(oConfig.getProxyUsername());
     Assert.assertNull(oConfig.getProxyPasswd());
+
+    ArchaiusUtils.resetConfig();
+    System.setProperty("servicecomb.service.registry.registrator.address", "http://127.0.0.2, https://127.0.0.2");
+    System.setProperty("servicecomb.service.registry.serviceDiscovery.address", "http://127.0.0.3, https://127.0.0.3");
+    DefaultDeploymentProvider.setConfiguration(ConfigUtil.createLocalConfig());
+    ServiceRegistryConfig serviceRegistryConfig = new ServiceRegistryConfigBuilder().build();
+    List<IpPort> configDiscoveryIpPort = serviceRegistryConfig.getDiscoveryIpPort();
+    Assert.assertEquals("127.0.0.3:80", configDiscoveryIpPort.get(0).toString());
+    Assert.assertEquals("127.0.0.3:443", configDiscoveryIpPort.get(1).toString());
+    List<IpPort> configRegistryIpPort = serviceRegistryConfig.getRegistryIpPort();
+    Assert.assertEquals("127.0.0.2:80", configRegistryIpPort.get(0).toString());
+    Assert.assertEquals("127.0.0.2:443", configRegistryIpPort.get(1).toString());
   }
 }
