@@ -54,6 +54,10 @@ servicecomb:
         transport: rest
       springMVCObjectRestSchemaRestOnly:
         transport: rest
+      edgePublicHeadersJaxrsSchema:
+        transport: rest
+      edgePublicHeadersSpringMVCSchema:
+        transport: rest
     it-producer-h2:
       generic:
         genericUser:
@@ -74,6 +78,10 @@ servicecomb:
       paramCodecRestOnly:
         transport: rest
       springMVCObjectRestSchemaRestOnly:
+        transport: rest
+      edgePublicHeadersJaxrsSchema:
+        transport: rest
+      edgePublicHeadersSpringMVCSchema:
         transport: rest
     it-producer-h2c:
       generic:
@@ -96,6 +104,10 @@ servicecomb:
         transport: rest
       springMVCObjectRestSchemaRestOnly:
         transport: rest
+      edgePublicHeadersJaxrsSchema:
+        transport: rest
+      edgePublicHeadersSpringMVCSchema:
+        transport: rest
     it-producer-deploy-springboot2-servlet:
       generic:
         genericUser:
@@ -116,6 +128,10 @@ servicecomb:
       paramCodecRestOnly:
         transport: rest
       springMVCObjectRestSchemaRestOnly:
+        transport: rest
+      edgePublicHeadersJaxrsSchema:
+        transport: rest
+      edgePublicHeadersSpringMVCSchema:
         transport: rest
     it-producer-deploy-springboot2-standalone:
       generic:
@@ -138,9 +154,16 @@ servicecomb:
         transport: rest
       springMVCObjectRestSchemaRestOnly:
         transport: rest
+      edgePublicHeadersJaxrsSchema:
+        transport: rest
+      edgePublicHeadersSpringMVCSchema:
+        transport: rest
   http:
     dispatcher:
       edge:
+        public:
+          headers: external_1,external_2
+          enabled: true
         default:
           enabled: true
           prefix: rest
