@@ -31,6 +31,7 @@
   <packaging>pom</packaging>
 
   <modules>
+    <module>bom</module>
     <module>default</module>
   </modules>
 
