@@ -158,12 +158,14 @@ servicecomb:
         transport: rest
       edgePublicHeadersSpringMVCSchema:
         transport: rest
+  edge:
+    filter:
+      addHeader:
+        enabled: true
+        allowedHeaders: external_1,external_2
   http:
     dispatcher:
       edge:
-        public:
-          headers: external_1,external_2
-          enabled: true
         default:
           enabled: true
           prefix: rest
