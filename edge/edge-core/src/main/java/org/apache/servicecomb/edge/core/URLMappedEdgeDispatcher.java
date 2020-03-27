@@ -43,7 +43,7 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
 
   private static final String KEY_PATTERN = "servicecomb.http.dispatcher.edge.url.pattern";
 
-  private static final String KEY_MAPPING_PREIX = "servicecomb.http.dispatcher.edge.url.mappings";
+  private static final String KEY_MAPPING_PREFIX = "servicecomb.http.dispatcher.edge.url.mappings";
 
   private Map<String, URLMappedConfigurationItem> configurations = new HashMap<>();
 
@@ -74,11 +74,11 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
   private void loadConfigurations() {
     ConcurrentCompositeConfiguration config = (ConcurrentCompositeConfiguration) DynamicPropertyFactory
         .getBackingConfigurationSource();
-    configurations = URLMappedConfigurationLoader.loadConfigurations(config, KEY_MAPPING_PREIX);
+    configurations = URLMappedConfigurationLoader.loadConfigurations(config, KEY_MAPPING_PREFIX);
     config.addConfigurationListener(event -> {
-      if (event.getPropertyName().startsWith(KEY_MAPPING_PREIX)) {
+      if (event.getPropertyName().startsWith(KEY_MAPPING_PREFIX)) {
         LOG.info("Map rule have been changed. Reload configurations. Event=" + event.getType());
-        configurations = URLMappedConfigurationLoader.loadConfigurations(config, KEY_MAPPING_PREIX);
+        configurations = URLMappedConfigurationLoader.loadConfigurations(config, KEY_MAPPING_PREFIX);
       }
     });
   }

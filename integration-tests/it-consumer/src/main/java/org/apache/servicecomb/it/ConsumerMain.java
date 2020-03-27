@@ -53,6 +53,7 @@ import org.apache.servicecomb.it.testcase.objectparams.TestJAXRSObjectParamType;
 import org.apache.servicecomb.it.testcase.objectparams.TestRPCObjectParamType;
 import org.apache.servicecomb.it.testcase.objectparams.TestSpringMVCObjectParamType;
 import org.apache.servicecomb.it.testcase.objectparams.TestSpringMVCObjectParamTypeRestOnly;
+import org.apache.servicecomb.it.testcase.publicHeaders.TestPublicHeadersEdge;
 import org.apache.servicecomb.it.testcase.thirdparty.Test3rdPartyInvocation;
 import org.apache.servicecomb.it.testcase.weak.consumer.TestSpringmvcBasic;
 
@@ -108,6 +109,7 @@ public class ConsumerMain {
   }
 
   private static void runShareTestCases() throws Throwable {
+    ITJUnitUtils.runWithHighwayAndRest(TestPublicHeadersEdge.class);
     ITJUnitUtils.runWithHighwayAndRest(TestChangeTransport.class);
     ITJUnitUtils.runWithHighwayAndRest(TestDataTypePrimitive.class);
     ITJUnitUtils.runWithHighwayAndRest(TestAnnotatedAttribute.class);
