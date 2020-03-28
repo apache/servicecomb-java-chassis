@@ -53,7 +53,7 @@ public class TestKieClient {
   String mockKvResponse = "{\n"
       + "  \"data\": [\n"
       + "    {\n"
-      + "      \"_id\": \"string\",\n"
+      + "      \"id\": \"string\",\n"
       + "      \"check\": \"string\",\n"
       + "      \"domain\": \"string\",\n"
       + "      \"key\": \"string\",\n"

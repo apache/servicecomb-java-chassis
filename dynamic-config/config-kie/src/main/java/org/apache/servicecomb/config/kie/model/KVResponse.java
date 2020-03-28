@@ -25,27 +25,7 @@ public class KVResponse {
 
   private LabelDocResponse label;
 
-  private Integer num;
-
-  private Integer size;
-
   private Integer total;
-
-  public Integer getNum() {
-    return num;
-  }
-
-  public void setNum(Integer num) {
-    this.num = num;
-  }
-
-  public Integer getSize() {
-    return size;
-  }
-
-  public void setSize(Integer size) {
-    this.size = size;
-  }
 
   public Integer getTotal() {
     return total;

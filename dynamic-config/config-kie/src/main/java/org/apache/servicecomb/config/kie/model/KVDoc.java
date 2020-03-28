@@ -23,7 +23,6 @@ import java.util.Map;
 
 public class KVDoc {
 
-  @JsonAlias("_id")
   private String id;
 
   private String check;
@@ -43,6 +42,16 @@ public class KVDoc {
 
   @JsonAlias("value_type")
   private String valueType;
+
+  private String status;
+
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
 
   public String getId() {
     return id;

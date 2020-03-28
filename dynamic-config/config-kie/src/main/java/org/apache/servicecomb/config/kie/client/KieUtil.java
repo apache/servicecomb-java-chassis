@@ -50,6 +50,8 @@ public class KieUtil {
 
   private static final String LABEL_VERSION = "version";
 
+  private static final String STATUS_ENABLED = "enabled";
+
   public static String encrypt(String dataStr) {
     MessageDigest messageDigest = null;
     String result = "";
@@ -70,6 +72,9 @@ public class KieUtil {
     List<KVDoc> serviceList = new ArrayList<>();
     List<KVDoc> versionList = new ArrayList<>();
     for (KVDoc kvDoc : resp.getData()) {
+      if (!StringUtils.isEmpty(kvDoc.getStatus()) && !kvDoc.getStatus().equals(STATUS_ENABLED)) {
+        continue;
+      }
       Map<String, String> labelsMap = kvDoc.getLabels();
       if (labelsMap.containsKey(LABEL_APP) && labelsMap.get(LABEL_APP)
           .equals(KieConfig.INSTANCE.getAppName())
