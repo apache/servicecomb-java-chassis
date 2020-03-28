@@ -224,11 +224,7 @@ public class LoadbalanceHandler implements Handler {
     }
   }
 
-  private boolean defineEndpointAndHandle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    String endpointUri = invocation.getLocalContext(SERVICECOMB_SERVER_ENDPOINT);
-    if (endpointUri == null) {
-      return false;
-    }
+  private Endpoint parseEndpoint(String endpointUri) throws Exception {
     URI formatUri = new URI(endpointUri);
     Transport transport = SCBEngine.getInstance().getTransportManager().findTransport(formatUri.getScheme());
     if (transport == null) {
@@ -236,8 +232,20 @@ public class LoadbalanceHandler implements Handler {
       throw new InvocationException(Status.BAD_REQUEST,
           "the endpoint's transport is not found.");
     }
-    Endpoint endpoint = new Endpoint(transport, endpointUri);
-    invocation.setEndpoint(endpoint);
+    return new Endpoint(transport, endpointUri);
+  }
+
+  private boolean defineEndpointAndHandle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    Object endpoint = invocation.getLocalContext(SERVICECOMB_SERVER_ENDPOINT);
+    if (endpoint == null) {
+      return false;
+    }
+    if (endpoint instanceof String) {
+      // compatible to old usage
+      endpoint = parseEndpoint((String) endpoint);
+    }
+
+    invocation.setEndpoint((Endpoint) endpoint);
     invocation.next(resp -> {
       asyncResp.handle(resp);
     });

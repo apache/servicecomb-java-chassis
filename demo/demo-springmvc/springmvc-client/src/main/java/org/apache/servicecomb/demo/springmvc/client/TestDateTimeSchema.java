@@ -17,13 +17,19 @@
 
 package org.apache.servicecomb.demo.springmvc.client;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
+import org.apache.servicecomb.core.Endpoint;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
@@ -34,6 +40,7 @@ import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTree;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
+import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -120,7 +127,7 @@ public class TestDateTimeSchema implements CategorizedTestCase {
             .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS")));
   }
 
-  private void testDateTimeSchemaMulticast() {
+  private void testDateTimeSchemaMulticast() throws Exception {
     DiscoveryContext context = new DiscoveryContext();
     VersionedCache serversVersionedCache = discoveryTree.discovery(context, "springmvctest", "springmvc", "0+");
     List<String> enpoints = serversVersionedCache.data();
@@ -130,7 +137,18 @@ public class TestDateTimeSchema implements CategorizedTestCase {
       invocationContext.addLocalContext(LoadbalanceHandler.SERVICECOMB_SERVER_ENDPOINT, endpoint);
       Date date = new Date();
       TestMgr.check(date.getTime(), dateTimeSchemaWithContextInf.getDate(invocationContext, date).getTime());
+
+      invocationContext = new InvocationContext();
+      invocationContext.addLocalContext(LoadbalanceHandler.SERVICECOMB_SERVER_ENDPOINT, parseEndpoint(endpoint));
+      date = new Date();
+      TestMgr.check(date.getTime(), dateTimeSchemaWithContextInf.getDate(invocationContext, date).getTime());
     }
+  }
+
+  private Endpoint parseEndpoint(String endpointUri) throws Exception {
+    URI formatUri = new URI(endpointUri);
+    Transport transport = SCBEngine.getInstance().getTransportManager().findTransport(formatUri.getScheme());
+    return new Endpoint(transport, endpointUri);
   }
 
   private void testDateTimeSchemaMulticastRestTemplate() throws Exception {
@@ -148,6 +166,18 @@ public class TestDateTimeSchema implements CategorizedTestCase {
 
       Date date = new Date();
       String dateValue = RestObjectMapperFactory.getRestObjectMapper().convertToString(date);
+      TestMgr.check(date.getTime(),
+          restTemplate
+              .exchange("cse://springmvc/dateTime/getDate?date={1}", HttpMethod.GET,
+                  entity, Date.class, dateValue).getBody().getTime());
+
+      entity = new CseHttpEntity<>(null);
+      invocationContext = new InvocationContext();
+      invocationContext.addLocalContext(LoadbalanceHandler.SERVICECOMB_SERVER_ENDPOINT, parseEndpoint(endpoint));
+      entity.setContext(invocationContext);
+
+      date = new Date();
+      dateValue = RestObjectMapperFactory.getRestObjectMapper().convertToString(date);
       TestMgr.check(date.getTime(),
           restTemplate
               .exchange("cse://springmvc/dateTime/getDate?date={1}", HttpMethod.GET,
