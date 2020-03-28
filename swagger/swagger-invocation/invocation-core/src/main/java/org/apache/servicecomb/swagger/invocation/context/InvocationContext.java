@@ -24,17 +24,14 @@ import java.util.Map.Entry;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
 
-import org.slf4j.Marker;
-
 /**
- * 设置特定的Cse Context数据
+ *  InvocationContext is used to pass data between microservices or in microservice different layer.
  */
 public class InvocationContext {
   private static HttpStatusManager statusMgr = new HttpStatusManager();
 
   protected StatusType httpStatus;
 
-  // value只能是简单类型
   protected Map<String, String> context = new HashMap<>();
 
   protected Map<String, Object> localContext = new HashMap<>();
