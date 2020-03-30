@@ -171,18 +171,18 @@ public class TestVertxMetersInitializer {
         + "    transport  0\n"
         + "  transport:\n"
         + "    client.endpoints:\n"
-        + "      remote                connectCount disconnectCount queue         connections send(Bps) receive(Bps)\n";
+        + "      connectCount disconnectCount queue         connections send(Bps) receive(Bps) remote\n";
     if (printDetail) {
       expect += String.format(
-          "      127.0.0.1:%-5s       1            0               0             1           4         21\n",
+          "      1            0               0             1           4         21           127.0.0.1:%-5s\n",
           port);
     }
     expect += ""
-        + "      (summary)             1            0               0             1           4         21\n"
+        + "      1            0               0             1           4         21           (summary)\n"
         + "    server.endpoints:\n"
-        + "      listen                connectCount disconnectCount rejectByLimit connections send(Bps) receive(Bps)\n"
-        + "      0.0.0.0:0             1            0               0             1           21        4\n"
-        + "      (summary)             1            0               0             1           21        4\n\n";
+        + "      connectCount disconnectCount rejectByLimit connections send(Bps) receive(Bps) listen\n"
+        + "      1            0               0             1           21        4            0.0.0.0:0\n"
+        + "      1            0               0             1           21        4            (summary)\n\n";
     Assert.assertEquals(expect, actual);
   }
 }
