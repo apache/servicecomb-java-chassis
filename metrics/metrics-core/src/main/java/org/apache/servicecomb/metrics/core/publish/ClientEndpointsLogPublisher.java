@@ -33,7 +33,7 @@ public class ClientEndpointsLogPublisher extends AbstractMeasurementNodeLogPubli
   @Override
   public void print(boolean printDetail) {
     appendLine(sb, "    client.endpoints:");
-    appendLine(sb, "      remote                connectCount disconnectCount queue         connections send(Bps) receive(Bps)");
+    appendLine(sb, "      connectCount disconnectCount queue         connections send(Bps) receive(Bps) remote");
 
     double connect = 0;
     double disconnect = 0;
@@ -50,26 +50,26 @@ public class ClientEndpointsLogPublisher extends AbstractMeasurementNodeLogPubli
       writeSize += address.findChild(EndpointMeter.BYTES_WRITTEN).summary();
 
       if (printDetail) {
-        appendLine(sb, "      %-21s %-12.0f %-15.0f %-13.0f %-11.0f %-9s %s",
-            address.getName(),
+        appendLine(sb, "      %-12.0f %-15.0f %-13.0f %-11.0f %-9s %-12s %s",
             address.findChild(EndpointMeter.CONNECT_COUNT).summary(),
             address.findChild(EndpointMeter.DISCONNECT_COUNT).summary(),
             address.findChild(HttpClientEndpointMeter.QUEUE_COUNT).summary(),
             address.findChild(EndpointMeter.CONNECTIONS).summary(),
             NetUtils.humanReadableBytes((long) address.findChild(EndpointMeter.BYTES_WRITTEN).summary()),
-            NetUtils.humanReadableBytes((long) address.findChild(EndpointMeter.BYTES_READ).summary())
+            NetUtils.humanReadableBytes((long) address.findChild(EndpointMeter.BYTES_READ).summary()),
+            address.getName()
         );
       }
     }
 
-    appendLine(sb, "      %-21s %-12.0f %-15.0f %-13.0f %-11.0f %-9s %s",
-        "(summary)",
+    appendLine(sb, "      %-12.0f %-15.0f %-13.0f %-11.0f %-9s %-12s %s",
         connect,
         disconnect,
         queue,
         connections,
         NetUtils.humanReadableBytes((long) writeSize),
-        NetUtils.humanReadableBytes((long) readSize)
+        NetUtils.humanReadableBytes((long) readSize),
+        "(summary)"
     );
   }
 }
