@@ -1,0 +1,116 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.apache.servicecomb.serviceregistry.diagnosis.instance;
+
+import java.util.Arrays;
+
+import org.apache.servicecomb.foundation.common.Holder;
+import org.apache.servicecomb.foundation.common.testing.MockClock;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.ServiceRegistry;
+import org.apache.servicecomb.serviceregistry.consumer.AppManager;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
+import org.apache.servicecomb.serviceregistry.diagnosis.Status;
+import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.vertx.core.json.Json;
+import mockit.Deencapsulation;
+
+public class TestInstanceCacheCheckerWithoutMock {
+  private static final Logger LOGGER = LoggerFactory.getLogger(TestInstanceCacheCheckerWithoutMock.class);
+
+  AppManager originalAppManager = RegistryUtils.getAppManager();
+
+  ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
+
+  InstanceCacheChecker checker;
+
+  InstanceCacheSummary expectedSummary = new InstanceCacheSummary();
+
+  String appId = "appId";
+
+  String microserviceName = "msName";
+
+  @Before
+  public void setUp() throws Exception {
+    Deencapsulation.setField(RegistryUtils.class, "appManager", new AppManager());
+
+    serviceRegistry.init();
+    RegistryUtils.setServiceRegistry(serviceRegistry);
+
+    checker = new InstanceCacheChecker(RegistryUtils.getAppManager());
+    checker.clock = new MockClock(new Holder<>(1L));
+    expectedSummary.setStatus(Status.NORMAL);
+    expectedSummary.setTimestamp(1);
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    Deencapsulation.setField(RegistryUtils.class, "appManager", originalAppManager);
+    RegistryUtils.setServiceRegistry(null);
+  }
+
+  @Test
+  public void check_appManager_empty() {
+    InstanceCacheSummary instanceCacheSummary = checker.check();
+
+    Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
+  }
+
+  @Test
+  public void check_microserviceManager_empty() {
+    try {
+      appId = "notExist";
+      RegistryUtils.getAppManager().getOrCreateMicroserviceVersions(appId, microserviceName);
+      InstanceCacheSummary instanceCacheSummary = checker.check();
+      Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
+    } catch (Exception e) {
+      LOGGER.error("", e);
+      Assert.fail();
+    }
+  }
+
+  @Test
+  public void check_StaticMicroservice() {
+    microserviceName = appId + ":" + microserviceName;
+    serviceRegistry.registerMicroserviceMappingByEndpoints(microserviceName,
+        "1",
+        Arrays.asList("rest://localhost:8080"),
+        ThirdPartyServiceForUT.class);
+
+    MicroserviceVersionRule microserviceVersionRule = RegistryUtils.getAppManager()
+        .getOrCreateMicroserviceVersionRule(appId, microserviceName, DefinitionConst.VERSION_RULE_ALL);
+    Assert.assertEquals(microserviceName, microserviceVersionRule.getLatestMicroserviceVersion().getMicroserviceName());
+
+    InstanceCacheSummary instanceCacheSummary = checker.check();
+
+    expectedSummary.setStatus(Status.NORMAL);
+
+    Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
+  }
+
+  private interface ThirdPartyServiceForUT {
+    String sayHello(String name);
+  }
+}
