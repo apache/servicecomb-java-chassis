@@ -16,10 +16,7 @@
  */
 package org.apache.servicecomb.serviceregistry.diagnosis.instance;
 
-import io.vertx.core.json.Json;
-import mockit.Deencapsulation;
-import mockit.Mock;
-import mockit.MockUp;
+import java.util.ArrayList;
 
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.testing.MockClock;
@@ -30,7 +27,6 @@ import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.diagnosis.Status;
@@ -42,12 +38,13 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import io.vertx.core.json.Json;
+import mockit.Deencapsulation;
+import mockit.Mock;
+import mockit.MockUp;
 
-public class TestInstanceCacheChecker {
-  private static final Logger LOGGER = LoggerFactory.getLogger(TestInstanceCacheChecker.class);
+public class TestInstanceCacheCheckerMock {
+  private static final Logger LOGGER = LoggerFactory.getLogger(TestInstanceCacheCheckerWithoutMock.class);
 
   AppManager originalAppManager = RegistryUtils.getAppManager();
 
@@ -80,27 +77,7 @@ public class TestInstanceCacheChecker {
     RegistryUtils.setServiceRegistry(null);
   }
 
-  @Test
-  public void check_appManager_empty() {
-    InstanceCacheSummary instanceCacheSummary = checker.check();
-
-    Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
-  }
-
-  @Test
-  public void check_microserviceManager_empty() {
-    try {
-      appId = "notExist";
-      RegistryUtils.getAppManager().getOrCreateMicroserviceVersions(appId, microserviceName);
-      InstanceCacheSummary instanceCacheSummary = checker.check();
-      Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
-    } catch (Exception e) {
-      LOGGER.error("", e);
-      Assert.fail();
-    }
-  }
-
-  protected Holder<MicroserviceInstances> createFindServiceInstancesResult() {
+  private Holder<MicroserviceInstances> createFindServiceInstancesResult() {
     MicroserviceInstances microserviceInstances = new MicroserviceInstances();
     microserviceInstances.setNeedRefresh(true);
     microserviceInstances.setRevision("first");
@@ -113,7 +90,7 @@ public class TestInstanceCacheChecker {
     return findHolder;
   }
 
-  protected void registerMicroservice(String appId, String microserviceName) {
+  private void registerMicroservice(String appId, String microserviceName) {
     Microservice microservice = new Microservice();
     microservice.setAppId(appId);
     microservice.setServiceName(microserviceName);
@@ -265,28 +242,5 @@ public class TestInstanceCacheChecker {
 
     Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
     Assert.assertNull(microserviceVersions.getRevision());
-  }
-
-  @Test
-  public void check_StaticMicroservice() {
-    microserviceName = appId + ":" + microserviceName;
-    serviceRegistry.registerMicroserviceMappingByEndpoints(microserviceName,
-        "1",
-        Arrays.asList("rest://localhost:8080"),
-        ThirdPartyServiceForUT.class);
-
-    MicroserviceVersionRule microserviceVersionRule = RegistryUtils.getAppManager()
-        .getOrCreateMicroserviceVersionRule(appId, microserviceName, DefinitionConst.VERSION_RULE_ALL);
-    Assert.assertEquals(microserviceName, microserviceVersionRule.getLatestMicroserviceVersion().getMicroserviceName());
-
-    InstanceCacheSummary instanceCacheSummary = checker.check();
-
-    expectedSummary.setStatus(Status.NORMAL);
-
-    Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
-  }
-
-  private interface ThirdPartyServiceForUT {
-    String sayHello(String name);
   }
 }
