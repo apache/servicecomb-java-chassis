@@ -26,9 +26,10 @@ import io.vertx.ext.web.RoutingContext;
 import mockit.Expectations;
 import mockit.Mocked;
 
+// HttpServerRequestWrapper is a package visible class, so put this test in package io.vertx.ext.web.impl
 public class TestHttpServerRequestUtils {
   @Test
-  public void VertxServerRequestToHttpServletRequest(@Mocked RoutingContext context,
+  public void testVertxServerRequestToHttpServletRequest(@Mocked RoutingContext context,
       @Mocked HttpServerRequest request) {
     HttpServerRequestWrapper wrapper = new HttpServerRequestWrapper(request);
     new Expectations() {

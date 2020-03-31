@@ -209,7 +209,7 @@ subcomponents is subject to the terms and conditions of the
 following licenses.
 
 ================================================================
-For foundations/foundation-vertx/src/main/java/io/vertx/ext/web/impl/MimeTypesUtils.java
+For foundations/foundation-vertx/src/main/java/org/apache/servicecomb/foundation/common/utils/MimeTypesUtils.java
     transports/transport-rest/transport-rest-vertx/src/main/java/org/apache/servicecomb/transport/rest/vertx/RestBodyHandler.java
 ================================================================
 This product bundles files from vertx which is licensed under the Apache License v2.

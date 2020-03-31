@@ -20,7 +20,7 @@
  * Because we uses getSortedAcceptableMimeTypes method which is removed by vertx.
  */
 
-package io.vertx.ext.web.impl;
+package org.apache.servicecomb.foundation.common.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;

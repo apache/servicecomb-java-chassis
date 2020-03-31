@@ -35,6 +35,7 @@ import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.path.PathRegExp;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.common.utils.MimeTypesUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,6 @@ import io.swagger.models.parameters.Parameter;
 import io.swagger.models.properties.FileProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.StringProperty;
-import io.vertx.ext.web.impl.MimeTypesUtils;
 
 public class RestOperationMeta {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestOperationMeta.class);
