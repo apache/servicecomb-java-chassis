@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package io.vertx.ext.web.impl;
+package org.apache.servicecomb.foundation.common.utils;
 
 import static org.junit.Assert.assertEquals;
 

@@ -27,7 +27,6 @@ import io.vertx.core.Context;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetSocket;
 import io.vertx.core.net.impl.NetSocketImpl;
-import io.vertx.core.net.impl.VertxHelper;
 
 public class TcpConnection {
   protected String protocol;
@@ -81,7 +80,7 @@ public class TcpConnection {
   public void initNetSocket(NetSocketImpl netSocket) {
     this.netSocket = netSocket;
 
-    this.context = VertxHelper.getConnectionContext(netSocket);
+    this.context = netSocket.getContext();
   }
 
   public void write(ByteBuf buf) {
