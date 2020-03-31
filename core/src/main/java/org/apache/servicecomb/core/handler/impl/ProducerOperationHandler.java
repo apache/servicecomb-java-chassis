@@ -94,7 +94,7 @@ public class ProducerOperationHandler implements Handler {
         asyncResp.handle(processException(invocation, ex));
       });
     } catch (IllegalArgumentException ae) {
-      LOGGER.error("Parameters not valid or types not match {},",
+      invocation.getTraceIdLogger().error(LOGGER, "Parameters not valid or types not match {},",
           invocation.getInvocationQualifiedName(), ae);
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();
@@ -102,7 +102,7 @@ public class ProducerOperationHandler implements Handler {
           new InvocationException(Status.BAD_REQUEST.getStatusCode(), "",
               new CommonExceptionData("Parameters not valid or types not match."), ae)));
     } catch (Throwable e) {
-      LOGGER.error("unexpected error {},",
+      invocation.getTraceIdLogger().error(LOGGER, "unexpected error {},",
           invocation.getInvocationQualifiedName(), e);
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();
@@ -133,7 +133,7 @@ public class ProducerOperationHandler implements Handler {
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();
     } catch (IllegalArgumentException ae) {
-      LOGGER.error("Parameters not valid or types not match {},",
+      invocation.getTraceIdLogger().error(LOGGER, "Parameters not valid or types not match {},",
           invocation.getInvocationQualifiedName(), ae);
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();
@@ -143,7 +143,7 @@ public class ProducerOperationHandler implements Handler {
               new CommonExceptionData("Parameters not valid or types not match."), ae));
     } catch (Throwable e) {
       if (shouldPrintErrorLog(e)) {
-        LOGGER.error("unexpected error {},",
+        invocation.getTraceIdLogger().error(LOGGER, "unexpected error {},",
             invocation.getInvocationQualifiedName(), e);
       }
       invocation.onBusinessMethodFinish();
