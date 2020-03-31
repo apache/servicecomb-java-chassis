@@ -144,6 +144,7 @@ public class Invocation extends SwaggerInvocation {
 
   public Invocation() {
     // An empty invocation, used to mock or some other scenario do not need operation information.
+	traceIdLogger = new TraceIdLogger(this);
   }
 
   public Invocation(ReferenceConfig referenceConfig, OperationMeta operationMeta,
@@ -167,6 +168,7 @@ public class Invocation extends SwaggerInvocation {
     this.setSwaggerArguments(swaggerArguments);
     this.handlerList = getHandlerChain();
     handlerIndex = 0;
+    traceIdLogger = new TraceIdLogger(this);
   }
 
   public Transport getTransport() {
@@ -346,8 +348,6 @@ public class Invocation extends SwaggerInvocation {
     for (TraceIdGenerator traceIdGenerator : TRACE_ID_GENERATORS) {
       initTraceId(traceIdGenerator);
     }
-
-    traceIdLogger = new TraceIdLogger(this);
   }
 
   protected void initTraceId(TraceIdGenerator traceIdGenerator) {

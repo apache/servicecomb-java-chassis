@@ -97,9 +97,10 @@ public class LoadbalanceHandler implements Handler {
 
     @Override
     public Server chooseServer(Object key) {
+      Invocation invocation = (Invocation) key;
       boolean isRetry = null != lastServer;
       for (int i = 0; i < COUNT; i++) {
-        Server s = delegate.chooseServer((Invocation) key);
+        Server s = delegate.chooseServer(invocation);
         if (s == null) {
           break;
         }
@@ -109,7 +110,7 @@ public class LoadbalanceHandler implements Handler {
         }
       }
       if (isRetry) {
-        LOGGER.info("retry to instance [{}]", lastServer.getHostPort());
+        invocation.getTraceIdLogger().info(LOGGER, "retry to instance [{}]", lastServer.getHostPort());
       }
 
       return lastServer;
@@ -316,19 +317,20 @@ public class LoadbalanceHandler implements Handler {
       @Override
       public void onExceptionWithServer(ExecutionContext<Invocation> context, Throwable exception,
           ExecutionInfo info) {
-        LOGGER.error("Invoke server failed. Operation {}; server {}; {}-{} msg {}",
-            context.getRequest().getInvocationQualifiedName(),
-            context.getRequest().getEndpoint(),
-            info.getNumberOfPastServersAttempted(),
-            info.getNumberOfPastAttemptsOnServer(),
-            ExceptionUtils.getExceptionMessageWithoutTrace(exception));
+        context.getRequest().getTraceIdLogger()
+            .error(LOGGER, "Invoke server failed. Operation {}; server {}; {}-{} msg {}",
+                context.getRequest().getInvocationQualifiedName(),
+                context.getRequest().getEndpoint(),
+                info.getNumberOfPastServersAttempted(),
+                info.getNumberOfPastAttemptsOnServer(),
+                ExceptionUtils.getExceptionMessageWithoutTrace(exception));
       }
 
       @Override
       public void onExecutionSuccess(ExecutionContext<Invocation> context, Response response,
           ExecutionInfo info) {
         if (info.getNumberOfPastServersAttempted() > 0 || info.getNumberOfPastAttemptsOnServer() > 0) {
-          LOGGER.error("Invoke server success. Operation {}; server {}",
+          context.getRequest().getTraceIdLogger().error(LOGGER, "Invoke server success. Operation {}; server {}",
               context.getRequest().getInvocationQualifiedName(),
               context.getRequest().getEndpoint());
         }
@@ -344,7 +346,7 @@ public class LoadbalanceHandler implements Handler {
       @Override
       public void onExecutionFailed(ExecutionContext<Invocation> context, Throwable finalException,
           ExecutionInfo info) {
-        LOGGER.error("Invoke all server failed. Operation {}, e={}",
+        context.getRequest().getTraceIdLogger().error(LOGGER, "Invoke all server failed. Operation {}, e={}",
             context.getRequest().getInvocationQualifiedName(),
             ExceptionUtils.getExceptionMessageWithoutTrace(finalException));
         if (orginExecutor != null) {
@@ -391,7 +393,7 @@ public class LoadbalanceHandler implements Handler {
             invocation.setEndpoint(server.getEndpoint());
             invocation.next(resp -> {
               if (isFailedResponse(resp)) {
-                LOGGER.error("service {}, call error, msg is {}, server is {} ",
+                invocation.getTraceIdLogger().error(LOGGER, "service {}, call error, msg is {}, server is {} ",
                     invocation.getInvocationQualifiedName(),
                     ExceptionUtils.getExceptionMessageWithoutTrace((Throwable) resp.getResult()),
                     s);
@@ -408,7 +410,8 @@ public class LoadbalanceHandler implements Handler {
               }
             });
           } catch (Exception e) {
-            LOGGER.error("execution error, msg is {}", ExceptionUtils.getExceptionMessageWithoutTrace(e));
+            invocation.getTraceIdLogger()
+                .error(LOGGER, "execution error, msg is {}", ExceptionUtils.getExceptionMessageWithoutTrace(e));
             f.onError(e);
           }
         });

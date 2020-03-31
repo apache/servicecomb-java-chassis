@@ -119,14 +119,14 @@ public class RestClientInvocation {
       throwableHandler.handle(e);
     });
     clientRequest.connectionHandler(connection -> {
-      LOGGER.debug("http connection connected, local:{}, remote:{}.",
+      invocation.getTraceIdLogger().debug(LOGGER, "http connection connected, local:{}, remote:{}.",
           connection.localAddress(), connection.remoteAddress());
       connection.closeHandler(v ->
-          LOGGER.debug("http connection closed, local:{}, remote:{}.",
+          invocation.getTraceIdLogger().debug(LOGGER, "http connection closed, local:{}, remote:{}.",
               connection.localAddress(), connection.remoteAddress())
       );
       connection.exceptionHandler(e ->
-          LOGGER.info("http connection exception, local:{}, remote:{}.",
+          invocation.getTraceIdLogger().info(LOGGER, "http connection exception, local:{}, remote:{}.",
               connection.localAddress(), connection.remoteAddress(), e)
       );
     });
