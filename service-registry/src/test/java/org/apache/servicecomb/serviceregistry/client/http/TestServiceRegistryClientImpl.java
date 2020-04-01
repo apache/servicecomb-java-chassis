@@ -33,6 +33,7 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.servicecomb.foundation.common.net.IpPort;
+import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
@@ -74,6 +75,8 @@ public class TestServiceRegistryClientImpl {
 
   @Before
   public void setUp() throws Exception {
+    HttpClients.load();
+
     oClient = new ServiceRegistryClientImpl(ServiceRegistryConfig.buildFromConfiguration());
 
     new MockUp<RegistryUtils>() {
@@ -93,6 +96,7 @@ public class TestServiceRegistryClientImpl {
   @After
   public void tearDown() throws Exception {
     oClient = null;
+    HttpClients.destroy();
   }
 
   @Test

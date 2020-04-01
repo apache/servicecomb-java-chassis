@@ -18,12 +18,8 @@ package org.apache.servicecomb.serviceregistry.client.http;
 
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
-import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
-import org.apache.servicecomb.foundation.vertx.client.ClientVerticle;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
@@ -72,17 +68,5 @@ public class TestAbstractClientPool {
   @After
   public void teardown() {
     ArchaiusUtils.resetConfig();
-  }
-
-  @Test
-  public void create() {
-    HttpClientPool.INSTANCE.create();
-
-    Assert.assertEquals("registry", vertxName);
-
-    Assert.assertEquals(ClientVerticle.class, verticleCls);
-    Assert.assertEquals(ClientPoolManager.class,
-        deployOptions.getConfig().getValue(ClientVerticle.CLIENT_MGR).getClass());
-    System.out.println(deployOptions);
   }
 }
