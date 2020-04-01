@@ -23,7 +23,5 @@ import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext
  * Created by on 2017/4/28.
  */
 interface ClientPool {
-  void create();
-
   HttpClientWithContext getClient();
 }

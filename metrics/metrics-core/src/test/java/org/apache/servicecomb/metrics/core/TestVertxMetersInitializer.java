@@ -26,6 +26,7 @@ import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
+import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.metrics.core.publish.DefaultLogPublisher;
 import org.junit.After;
 import org.junit.Assert;
@@ -104,12 +105,12 @@ public class TestVertxMetersInitializer {
 
   @Before
   public void setup() {
-    VertxUtils.blockCloseVertxByName("transport");
+    HttpClients.load();
   }
 
   @After
   public void teardown() {
-    VertxUtils.blockCloseVertxByName("transport");
+    HttpClients.destroy();
   }
 
   @Test
@@ -168,6 +169,8 @@ public class TestVertxMetersInitializer {
     String expect = "vertx:\n"
         + "  instances:\n"
         + "    name       eventLoopContext-created\n"
+        + "    registry   0\n"
+        + "    registry-watch 0\n"
         + "    transport  0\n"
         + "  transport:\n"
         + "    client.endpoints:\n"

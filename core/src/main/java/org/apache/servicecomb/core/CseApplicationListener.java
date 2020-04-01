@@ -18,6 +18,7 @@
 package org.apache.servicecomb.core;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -39,6 +40,7 @@ public class CseApplicationListener
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
     this.applicationContext = applicationContext;
     BeanUtils.setContext(applicationContext);
+    HttpClients.load();
     RegistryUtils.init();
     SCBEngine.getInstance();
   }

@@ -53,6 +53,7 @@ import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
+import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
@@ -405,7 +406,6 @@ public class SCBEngine {
     //Step 3: Unregister microservice instance from Service Center and close vertx
     // Forbidden other consumers find me
     RegistryUtils.destroy();
-    VertxUtils.blockCloseVertxByName("registry");
     serviceRegistryListener.destroy();
 
     //Step 4: wait all invocation finished
@@ -415,13 +415,16 @@ public class SCBEngine {
       LOGGER.error("wait all invocation finished interrupted", e);
     }
 
-    //Step 5: Stop vertx to prevent blocking exit
+    //Step 5: destroy config center source
+    ConfigUtil.destroyConfigCenterConfigurationSource();
+    priorityPropertyManager.close();
+
+    //Step 6: Stop vertx to prevent blocking exit
+	// delete the following two lines when every refactor is done.
     VertxUtils.blockCloseVertxByName("config-center");
     VertxUtils.blockCloseVertxByName("transport");
 
-    //Step 6: destroy config center source
-    ConfigUtil.destroyConfigCenterConfigurationSource();
-    priorityPropertyManager.close();
+    HttpClients.destroy();
 
     //Step 7: notify all component do clean works via AFTER_CLOSE Event
     safeTriggerEvent(EventType.AFTER_CLOSE);
