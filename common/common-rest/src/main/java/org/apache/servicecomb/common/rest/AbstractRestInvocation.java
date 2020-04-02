@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.common.rest;
 
+import static org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager.DEFAULT_SERIAL_CLASS;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
@@ -180,7 +182,7 @@ public abstract class AbstractRestInvocation {
       try {
         providerQpsFlowControlHandler.handle(invocation, response -> {
           qpsFlowControlReject.value = true;
-          produceProcessor = ProduceProcessorManager.JSON_PROCESSOR;
+          produceProcessor = ProduceProcessorManager.INSTANCE.getJsonProcessorMap().get(DEFAULT_SERIAL_CLASS);
           sendResponse(response);
         });
       } catch (Throwable e) {
@@ -247,7 +249,8 @@ public abstract class AbstractRestInvocation {
 
   public void sendFailResponse(Throwable throwable) {
     if (produceProcessor == null) {
-      produceProcessor = ProduceProcessorManager.DEFAULT_PROCESSOR;
+      produceProcessor = ProduceProcessorManager.INSTANCE.getDefaultProcessorMap()
+          .get(DEFAULT_SERIAL_CLASS);
     }
 
     Response response = Response.createProducerFail(throwable);

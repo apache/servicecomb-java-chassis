@@ -28,6 +28,22 @@ import com.fasterxml.jackson.databind.JavaType;
 
 public class ProduceJsonProcessor implements ProduceProcessor {
 
+  private Class<?> serializationView;
+
+  @Override
+  public String getSerializationView() {
+    return serializationView == null ? ProduceProcessorManager.DEFAULT_SERIAL_CLASS
+        : serializationView.getCanonicalName();
+  }
+
+  @Override
+  public void setSerializationView(Class<?> serializationView) {
+    if (serializationView == null) {
+      return;
+    }
+    this.serializationView = serializationView;
+  }
+
   @Override
   public String getName() {
     return MediaType.APPLICATION_JSON;
@@ -35,13 +51,16 @@ public class ProduceJsonProcessor implements ProduceProcessor {
 
   @Override
   public void doEncodeResponse(OutputStream output, Object result) throws Exception {
-    RestObjectMapperFactory.getRestObjectMapper().writeValue(output, result);
+    if (serializationView == null) {
+      RestObjectMapperFactory.getRestObjectMapper().writeValue(output, result);
+      return;
+    }
+    RestObjectMapperFactory.getRestObjectMapper().writerWithView(serializationView).writeValue(output, result);
   }
 
   @Override
   public Object doDecodeResponse(InputStream input, JavaType type) throws Exception {
-    return RestObjectMapperFactory.getRestObjectMapper()
-        .readValue(input, type);
+    return RestObjectMapperFactory.getRestObjectMapper().readValue(input, type);
   }
 
   @Override

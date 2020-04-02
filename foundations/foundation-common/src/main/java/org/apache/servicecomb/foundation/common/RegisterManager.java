@@ -65,6 +65,10 @@ public class RegisterManager<KEY, VALUE> {
     }
   }
 
+  public Map<KEY, VALUE> getObjMap() {
+    return objMap;
+  }
+
   public VALUE findValue(KEY key) {
     return objMap.get(key);
   }

@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.common.rest.codec.produce;
 
+import static org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager.DEFAULT_SERIAL_CLASS;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
@@ -30,7 +32,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.vertx.core.buffer.Buffer;
 
 public class TestProduceTextPlainProcessor {
-  ProduceProcessor pp = ProduceProcessorManager.PLAIN_PROCESSOR;
+  ProduceProcessor pp = ProduceProcessorManager.INSTANCE.getPlainProcessorMap().get(DEFAULT_SERIAL_CLASS);
 
   JavaType stringType = TypeFactory.defaultInstance().constructType(String.class);
 

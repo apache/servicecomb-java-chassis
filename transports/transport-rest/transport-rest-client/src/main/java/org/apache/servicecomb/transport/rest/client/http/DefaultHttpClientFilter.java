@@ -97,7 +97,8 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
               responseEx.getStatusType().getReasonPhrase(),
               responseEx.getHeader(HttpHeaders.CONTENT_TYPE));
       LOGGER.warn(msg);
-      produceProcessor = ProduceProcessorManager.DEFAULT_PROCESSOR;
+      produceProcessor = ProduceProcessorManager.INSTANCE.getDefaultProcessorMap()
+          .get(ProduceProcessorManager.DEFAULT_SERIAL_CLASS);
     }
 
     try {

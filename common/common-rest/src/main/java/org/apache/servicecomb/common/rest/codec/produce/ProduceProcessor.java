@@ -32,6 +32,14 @@ public interface ProduceProcessor {
 
   int getOrder();
 
+  default String getSerializationView() {
+    return ProduceProcessorManager.DEFAULT_SERIAL_CLASS;
+  }
+
+  default void setSerializationView(Class<?> serializationView) {
+    // do nothing default
+  }
+
   default void encodeResponse(OutputStream output, Object result) throws Exception {
     if (result == null) {
       return;

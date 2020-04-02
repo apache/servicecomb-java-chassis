@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.common.rest;
 
+import static org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager.DEFAULT_SERIAL_CLASS;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
@@ -170,7 +171,7 @@ public class TestAbstractRestInvocation {
   }
 
   private void initRestInvocation() {
-    restInvocation.produceProcessor = ProduceProcessorManager.JSON_PROCESSOR;
+    restInvocation.produceProcessor = ProduceProcessorManager.INSTANCE.getJsonProcessorMap().get(DEFAULT_SERIAL_CLASS);
     restInvocation.requestEx = requestEx;
     restInvocation.responseEx = responseEx;
     restInvocation.invocation = invocation;
@@ -452,7 +453,8 @@ public class TestAbstractRestInvocation {
     restInvocation.produceProcessor = null;
     restInvocation.sendFailResponse(new RuntimeExceptionWithoutStackTrace());
 
-    Assert.assertSame(ProduceProcessorManager.JSON_PROCESSOR, restInvocation.produceProcessor);
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getJsonProcessorMap().get(DEFAULT_SERIAL_CLASS),
+        restInvocation.produceProcessor);
   }
 
   @Test
@@ -469,12 +471,14 @@ public class TestAbstractRestInvocation {
       }
     };
     initRestInvocation();
-    restInvocation.produceProcessor = ProduceProcessorManager.PLAIN_PROCESSOR;
+    restInvocation.produceProcessor = ProduceProcessorManager.INSTANCE.getPlainProcessorMap().get(DEFAULT_SERIAL_CLASS);
 
     Throwable e = new InvocationException(Status.BAD_GATEWAY, "");
     restInvocation.sendFailResponse(e);
     Assert.assertSame(e, result.value.getResult());
-    Assert.assertSame(ProduceProcessorManager.PLAIN_PROCESSOR, restInvocation.produceProcessor);
+    Assert.assertSame(
+        ProduceProcessorManager.INSTANCE.getPlainProcessorMap().get(ProduceProcessorManager.DEFAULT_SERIAL_CLASS),
+        restInvocation.produceProcessor);
   }
 
   public static class SendResponseQuietlyNormalEventHandler {
