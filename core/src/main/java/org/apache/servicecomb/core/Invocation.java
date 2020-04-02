@@ -144,7 +144,7 @@ public class Invocation extends SwaggerInvocation {
 
   public Invocation() {
     // An empty invocation, used to mock or some other scenario do not need operation information.
-	traceIdLogger = new TraceIdLogger(this);
+    traceIdLogger = new TraceIdLogger(this);
   }
 
   public Invocation(ReferenceConfig referenceConfig, OperationMeta operationMeta,

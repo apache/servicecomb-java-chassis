@@ -68,6 +68,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.UnknownHttpStatusCodeException;
@@ -639,9 +640,9 @@ public class SpringMvcIntegrationTestBase {
       restTemplate
           .getForEntity(controllerUrl + "sayhi?name=throwexception", String.class);
       assertFalse(true);
-    } catch (UnknownHttpStatusCodeException e) {
-      assertThat(e.getRawStatusCode(), is(590));
-      assertThat(e.getResponseBodyAsString(), is("{\"message\":\"Cse Internal Server Error\"}"));
+    } catch (HttpServerErrorException e) {
+      assertThat(e.getRawStatusCode(), is(500));
+      assertThat(e.getResponseBodyAsString(), is("{\"message\":\"Unexpected exception when processing the request.\"}"));
     }
   }
 

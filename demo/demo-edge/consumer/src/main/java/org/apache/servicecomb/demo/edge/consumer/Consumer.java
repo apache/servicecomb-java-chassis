@@ -168,8 +168,12 @@ public class Consumer {
     int response = template.getForObject(url + "?x=2&y=3", Integer.class);
     Assert.isTrue(response == 5, "not get 5.");
 
+    try {
     Map raw = template.getForObject(url + "?x=99&y=3", Map.class);
-    Assert.isTrue(raw.get("message").equals("Cse Internal Server Error"), "x99");
+    } catch (HttpServerErrorException e) {
+      Assert.isTrue(e.getRawStatusCode() == 500, "x99");
+      Assert.isTrue(e.getResponseBodyAsString().contains("Unexpected exception when processing the request"), "x99");
+    }
 
     try {
       template.getForObject(url + "?x=88&y=3", Map.class);

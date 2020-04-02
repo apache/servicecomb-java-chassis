@@ -20,6 +20,7 @@ package org.apache.servicecomb.edge.core;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.transport.rest.vertx.RestBodyHandler;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -54,6 +55,8 @@ public class TestURLMappedEdgeDispatcher {
 
     new Expectations() {
       {
+        context.get(RestBodyHandler.BYPASS_BODY_HANDLER);
+        result = Boolean.TRUE;
         context.next();
       }
     };
@@ -81,8 +84,14 @@ public class TestURLMappedEdgeDispatcher {
     Assert.assertEquals(item.getStringPattern(), "/a/b/c/.*");
     Assert.assertEquals(item.getVersionRule(), "2.0.0+");
 
+    URLMappedConfigurationItem finalItem = item;
     new Expectations() {
       {
+        context.get(RestBodyHandler.BYPASS_BODY_HANDLER);
+        result = Boolean.FALSE;
+        context.get(URLMappedEdgeDispatcher.CONFIGURATION_ITEM);
+        result = finalItem;
+
         context.request();
         result = requst;
         requst.path();

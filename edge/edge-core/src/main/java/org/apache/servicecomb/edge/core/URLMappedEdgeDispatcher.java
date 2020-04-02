@@ -20,6 +20,7 @@ package org.apache.servicecomb.edge.core;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicecomb.transport.rest.vertx.RestBodyHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,8 @@ import io.vertx.ext.web.RoutingContext;
  */
 public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
   private static final Logger LOG = LoggerFactory.getLogger(URLMappedEdgeDispatcher.class);
+
+  public static final String CONFIGURATION_ITEM = "URLMappedConfigurationItem";
 
   private static final String PATTERN_ANY = "/(.*)";
 
@@ -67,8 +70,10 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
   public void init(Router router) {
     // cookies handler are enabled by default start from 3.8.3
     String pattern = DynamicPropertyFactory.getInstance().getStringProperty(KEY_PATTERN, PATTERN_ANY).get();
-    router.routeWithRegex(pattern).handler(createBodyHandler());
-    router.routeWithRegex(pattern).failureHandler(this::onFailure).handler(this::onRequest);
+    router.routeWithRegex(pattern).failureHandler(this::onFailure)
+        .handler(this::preCheck)
+        .handler(createBodyHandler())
+        .handler(this::onRequest);
   }
 
   private void loadConfigurations() {
@@ -83,13 +88,28 @@ public class URLMappedEdgeDispatcher extends AbstractEdgeDispatcher {
     });
   }
 
-
-  protected void onRequest(RoutingContext context) {
+  protected void preCheck(RoutingContext context) {
     URLMappedConfigurationItem configurationItem = findConfigurationItem(context.request().path());
     if (configurationItem == null) {
+      // by pass body handler flag
+      context.put(RestBodyHandler.BYPASS_BODY_HANDLER, Boolean.TRUE);
       context.next();
       return;
     }
+    context.put(CONFIGURATION_ITEM, configurationItem);
+    context.next();
+  }
+
+  protected void onRequest(RoutingContext context) {
+    Boolean bypass = context.get(RestBodyHandler.BYPASS_BODY_HANDLER);
+    if (Boolean.TRUE.equals(bypass)) {
+      // clear flag
+      context.put(RestBodyHandler.BYPASS_BODY_HANDLER, Boolean.FALSE);
+      context.next();
+      return;
+    }
+
+    URLMappedConfigurationItem configurationItem = context.get(CONFIGURATION_ITEM);
 
     String path = Utils.findActualPath(context.request().path(), configurationItem.getPrefixSegmentCount());
 
