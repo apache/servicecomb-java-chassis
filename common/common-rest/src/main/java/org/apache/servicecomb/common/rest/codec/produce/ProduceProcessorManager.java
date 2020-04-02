@@ -17,16 +17,20 @@
 
 package org.apache.servicecomb.common.rest.codec.produce;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.foundation.common.RegisterManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public final class ProduceProcessorManager extends RegisterManager<String, ProduceProcessor> {
+public final class ProduceProcessorManager extends RegisterManager<String, Map<String, ProduceProcessor>> {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ProduceProcessorManager.class);
+
   private static final List<ProduceProcessor> produceProcessor =
       SPIServiceUtils.getSortedService(ProduceProcessor.class);
 
@@ -34,23 +38,68 @@ public final class ProduceProcessorManager extends RegisterManager<String, Produ
 
   public static final String DEFAULT_TYPE = MediaType.APPLICATION_JSON;
 
+  public static final String DEFAULT_SERIAL_CLASS = "servicecomb_default_class";
+
   public static final ProduceProcessorManager INSTANCE = new ProduceProcessorManager();
 
-  public static final ProduceProcessor JSON_PROCESSOR =
-      SPIServiceUtils.getTargetService(ProduceProcessor.class, ProduceJsonProcessor.class);
+  private Map<String, ProduceProcessor> jsonProcessorMap;
 
-  public static final ProduceProcessor PLAIN_PROCESSOR =
-      SPIServiceUtils.getTargetService(ProduceProcessor.class, ProduceTextPlainProcessor.class);
+  private Map<String, ProduceProcessor> plainProcessorMap;
 
-  public static final ProduceProcessor DEFAULT_PROCESSOR = JSON_PROCESSOR;
+  private Map<String, ProduceProcessor> defaultProcessorMap;
 
   private ProduceProcessorManager() {
     super(NAME);
-    Set<String> set = new HashSet<>();
     produceProcessor.forEach(processor -> {
-      if (set.add(processor.getName())) {
-        register(processor.getName(), processor);
-      }
+      Map<String, ProduceProcessor> prodProcessorMap = getObjMap()
+          .computeIfAbsent(processor.getName(), key -> new HashMap<>());
+      prodProcessorMap.put(processor.getSerializationView(), processor);
     });
+    jsonProcessorMap = ensureFindValue(MediaType.APPLICATION_JSON);
+    plainProcessorMap = ensureFindValue(MediaType.TEXT_PLAIN);
+    defaultProcessorMap = jsonProcessorMap;
+  }
+
+  public static ProduceProcessor cloneNewProduceProcessor(String acceptType, Class<?> serialViewClass,
+      Map<String, ProduceProcessor> produceViewMap) {
+    ProduceProcessor newInstance;
+    try {
+      newInstance = produceViewMap.get(DEFAULT_SERIAL_CLASS).getClass().newInstance();
+      newInstance.setSerializationView(serialViewClass);
+      return newInstance;
+    } catch (Throwable e) {
+      LOGGER.error(String.format("Failed to create produceProcessor with %s", acceptType), e);
+    }
+    return produceViewMap.get(DEFAULT_SERIAL_CLASS);
+  }
+
+  public Map<String, ProduceProcessor> getJsonProcessorMap() {
+    return jsonProcessorMap;
+  }
+
+  public ProduceProcessorManager setJsonProcessorMap(
+      Map<String, ProduceProcessor> jsonProcessorMap) {
+    this.jsonProcessorMap = jsonProcessorMap;
+    return this;
+  }
+
+  public Map<String, ProduceProcessor> getPlainProcessorMap() {
+    return plainProcessorMap;
+  }
+
+  public ProduceProcessorManager setPlainProcessorMap(
+      Map<String, ProduceProcessor> plainProcessorMap) {
+    this.plainProcessorMap = plainProcessorMap;
+    return this;
+  }
+
+  public Map<String, ProduceProcessor> getDefaultProcessorMap() {
+    return defaultProcessorMap;
+  }
+
+  public ProduceProcessorManager setDefaultProcessorMap(
+      Map<String, ProduceProcessor> defaultProcessorMap) {
+    this.defaultProcessorMap = defaultProcessorMap;
+    return this;
   }
 }

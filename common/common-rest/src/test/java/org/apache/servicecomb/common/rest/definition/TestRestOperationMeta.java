@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.common.rest.definition;
 
+import static org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager.DEFAULT_SERIAL_CLASS;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
@@ -129,13 +130,14 @@ public class TestRestOperationMeta {
     operationMeta.produces = null;
     operationMeta.createProduceProcessors();
 
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
         operationMeta.ensureFindProduceProcessor((String) null));
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR, operationMeta.ensureFindProduceProcessor("*/*"));
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
+        operationMeta.ensureFindProduceProcessor("*/*"));
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
         operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
     for (String produce : ProduceProcessorManager.INSTANCE.keys()) {
-      ProduceProcessor expected = ProduceProcessorManager.INSTANCE.findValue(produce);
+      ProduceProcessor expected = ProduceProcessorManager.INSTANCE.findValue(produce).get(DEFAULT_SERIAL_CLASS);
       Assert.assertSame(expected, operationMeta.findProduceProcessor(produce));
     }
   }
@@ -146,13 +148,14 @@ public class TestRestOperationMeta {
     operationMeta.produces = Arrays.asList();
     operationMeta.createProduceProcessors();
 
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
         operationMeta.ensureFindProduceProcessor((String) null));
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR, operationMeta.ensureFindProduceProcessor("*/*"));
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
+        operationMeta.ensureFindProduceProcessor("*/*"));
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
         operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
     for (String produce : ProduceProcessorManager.INSTANCE.keys()) {
-      ProduceProcessor expected = ProduceProcessorManager.INSTANCE.findValue(produce);
+      ProduceProcessor expected = ProduceProcessorManager.INSTANCE.findValue(produce).get(DEFAULT_SERIAL_CLASS);
       Assert.assertSame(expected, operationMeta.findProduceProcessor(produce));
     }
   }
@@ -161,12 +164,13 @@ public class TestRestOperationMeta {
   public void testCreateProduceProcessorsNormal() {
     findOperation("json");
 
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
         operationMeta.ensureFindProduceProcessor((String) null));
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR, operationMeta.ensureFindProduceProcessor("*/*"));
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
+        operationMeta.ensureFindProduceProcessor("*/*"));
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
         operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
-    Assert.assertSame(ProduceProcessorManager.JSON_PROCESSOR,
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getJsonProcessorMap().get(DEFAULT_SERIAL_CLASS),
         operationMeta.findProduceProcessor(MediaType.APPLICATION_JSON));
     Assert.assertNull(operationMeta.findProduceProcessor(MediaType.TEXT_PLAIN));
   }
@@ -175,12 +179,13 @@ public class TestRestOperationMeta {
   public void testCreateProduceProcessorsNotSupported() {
     findOperation("notSupport");
 
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
         operationMeta.ensureFindProduceProcessor((String) null));
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR, operationMeta.ensureFindProduceProcessor("*/*"));
-    Assert.assertSame(ProduceProcessorManager.DEFAULT_PROCESSOR,
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
+        operationMeta.ensureFindProduceProcessor("*/*"));
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
         operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
-    Assert.assertSame(ProduceProcessorManager.JSON_PROCESSOR,
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getJsonProcessorMap().get(DEFAULT_SERIAL_CLASS),
         operationMeta.findProduceProcessor(MediaType.APPLICATION_JSON));
     Assert.assertNull(operationMeta.findProduceProcessor(MediaType.TEXT_PLAIN));
   }
@@ -189,12 +194,12 @@ public class TestRestOperationMeta {
   public void testCreateProduceProcessorsTextAndWildcard() {
     findOperation("textPlain");
 
-    Assert.assertSame(ProduceProcessorManager.PLAIN_PROCESSOR,
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getPlainProcessorMap().get(DEFAULT_SERIAL_CLASS),
         operationMeta.ensureFindProduceProcessor(MediaType.WILDCARD));
-    Assert.assertSame(ProduceProcessorManager.PLAIN_PROCESSOR,
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getPlainProcessorMap().get(DEFAULT_SERIAL_CLASS),
         operationMeta.ensureFindProduceProcessor(MediaType.TEXT_PLAIN));
     Assert.assertNull(operationMeta.ensureFindProduceProcessor(MediaType.APPLICATION_JSON));
-    Assert.assertSame(ProduceProcessorManager.PLAIN_PROCESSOR,
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getPlainProcessorMap().get(DEFAULT_SERIAL_CLASS),
         operationMeta.ensureFindProduceProcessor(
             MediaType.APPLICATION_JSON + "," + MediaType.APPLICATION_XML + "," + MediaType.WILDCARD));
   }
@@ -203,9 +208,9 @@ public class TestRestOperationMeta {
   public void testCreateProduceProcessorsWithSemicolon() {
     findOperation("textCharJsonChar");
 
-    Assert.assertSame(ProduceProcessorManager.PLAIN_PROCESSOR,
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getPlainProcessorMap().get(DEFAULT_SERIAL_CLASS),
         operationMeta.ensureFindProduceProcessor(MediaType.TEXT_PLAIN));
-    Assert.assertSame(ProduceProcessorManager.JSON_PROCESSOR,
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getJsonProcessorMap().get(DEFAULT_SERIAL_CLASS),
         operationMeta.ensureFindProduceProcessor(MediaType.APPLICATION_JSON));
   }
 
@@ -219,14 +224,15 @@ public class TestRestOperationMeta {
       }
     };
 
-    Assert.assertSame(ProduceProcessorManager.JSON_PROCESSOR, operationMeta.ensureFindProduceProcessor(requestEx));
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getJsonProcessorMap().get(DEFAULT_SERIAL_CLASS),
+        operationMeta.ensureFindProduceProcessor(requestEx));
   }
 
   @Test
   public void testEnsureFindProduceProcessorAcceptFound() {
     findOperation("textCharJsonChar");
 
-    Assert.assertSame(ProduceProcessorManager.JSON_PROCESSOR,
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getJsonProcessorMap().get(DEFAULT_SERIAL_CLASS),
         operationMeta.ensureFindProduceProcessor("text/plain;q=0.7;charset=utf-8,application/json;q=0.8"));
   }
 
@@ -234,7 +240,7 @@ public class TestRestOperationMeta {
   public void testEnsureFindProduceProcessorWithDownload() {
     findOperation("download");
 
-    Assert.assertSame(ProduceProcessorManager.JSON_PROCESSOR,
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.getJsonProcessorMap().get(DEFAULT_SERIAL_CLASS),
         operationMeta.ensureFindProduceProcessor("text/plain"));
   }
 

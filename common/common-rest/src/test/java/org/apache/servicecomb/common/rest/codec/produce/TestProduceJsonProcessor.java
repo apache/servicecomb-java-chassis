@@ -31,7 +31,8 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.vertx.core.buffer.Buffer;
 
 public class TestProduceJsonProcessor {
-  ProduceProcessor pp = ProduceProcessorManager.JSON_PROCESSOR;
+  ProduceProcessor pp = ProduceProcessorManager.INSTANCE.getJsonProcessorMap()
+      .get(ProduceProcessorManager.DEFAULT_SERIAL_CLASS);
 
   JavaType stringType = TypeFactory.defaultInstance().constructType(String.class);
 

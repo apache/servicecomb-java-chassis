@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.common.rest.definition;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -34,11 +35,15 @@ import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.path.PathRegExp;
 import org.apache.servicecomb.common.rest.definition.path.URLPathBuilder;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.utils.MimeTypesUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 import io.swagger.models.Model;
 import io.swagger.models.ModelImpl;
@@ -71,10 +76,10 @@ public class RestOperationMeta {
   protected List<String> fileKeys = new ArrayList<>();
 
   // key为数据类型，比如json之类
-  private Map<String, ProduceProcessor> produceProcessorMap = new LinkedHashMap<>();
+  private Map<String, Map<String, ProduceProcessor>> produceProcessorAcceptMap = new LinkedHashMap<>();
 
   // 不一定等于mgr中的default，因为本operation可能不支持mgr中的default
-  private ProduceProcessor defaultProcessor;
+  private Map<String, ProduceProcessor> defaultProcessorViewMap;
 
   protected String absolutePath;
 
@@ -216,29 +221,30 @@ public class RestOperationMeta {
   // 为operation创建支持的多种produce processor
   protected void createProduceProcessors() {
     if (null == produces || produces.isEmpty()) {
-      for (ProduceProcessor processor : ProduceProcessorManager.INSTANCE.values()) {
-        this.produceProcessorMap.put(processor.getName(), processor);
-      }
+      ProduceProcessorManager.INSTANCE.getObjMap().forEach((processorName, prodMap) -> {
+        this.produceProcessorAcceptMap.put(processorName, prodMap);
+      });
     } else {
       for (String produce : produces) {
         if (produce.contains(";")) {
           produce = produce.substring(0, produce.indexOf(";"));
         }
-        ProduceProcessor processor = ProduceProcessorManager.INSTANCE.findValue(produce);
-        if (processor == null) {
+        Map<String, ProduceProcessor> processorMap = ProduceProcessorManager.INSTANCE.findValue(produce);
+        if (processorMap == null) {
           LOGGER.error("produce {} is not supported", produce);
           continue;
         }
-        this.produceProcessorMap.put(produce, processor);
+        this.produceProcessorAcceptMap.put(produce, processorMap);
       }
 
-      if (produceProcessorMap.isEmpty()) {
-        produceProcessorMap.put(ProduceProcessorManager.DEFAULT_TYPE, ProduceProcessorManager.DEFAULT_PROCESSOR);
+      if (produceProcessorAcceptMap.isEmpty()) {
+        produceProcessorAcceptMap
+            .put(ProduceProcessorManager.DEFAULT_TYPE, ProduceProcessorManager.INSTANCE.getDefaultProcessorMap());
       }
     }
 
-    defaultProcessor = produceProcessorMap.values().stream().findFirst().get();
-    produceProcessorMap.putIfAbsent(MediaType.WILDCARD, defaultProcessor);
+    defaultProcessorViewMap = produceProcessorAcceptMap.values().stream().findFirst().get();
+    produceProcessorAcceptMap.putIfAbsent(MediaType.WILDCARD, defaultProcessorViewMap);
   }
 
   public URLPathBuilder getPathBuilder() {
@@ -257,31 +263,68 @@ public class RestOperationMeta {
     paramMap.put(param.getParamName(), param);
   }
 
+  public ProduceProcessor findProduceProcessor(String type, String serialView) {
+    if (this.produceProcessorAcceptMap.get(type) == null) {
+      LOGGER.error(String.format("Unable to  find produce processor with type/%s", type));
+      return null;
+    }
+    return this.produceProcessorAcceptMap.get(type).get(serialView);
+  }
+
   public ProduceProcessor findProduceProcessor(String type) {
-    return this.produceProcessorMap.get(type);
+    return findProduceProcessor(type, ProduceProcessorManager.DEFAULT_SERIAL_CLASS);
   }
 
   // 选择与accept匹配的produce processor或者缺省的
   public ProduceProcessor ensureFindProduceProcessor(HttpServletRequestEx requestEx) {
     String acceptType = requestEx.getHeader(HttpHeaders.ACCEPT);
-    return ensureFindProduceProcessor(acceptType);
+    SwaggerProducerOperation producerOperation = operationMeta.getExtData(Const.PRODUCER_OPERATION);
+    return ensureFindProduceProcessor(acceptType, producerOperation.getProducerMethod().getDeclaredAnnotations());
   }
 
   public ProduceProcessor ensureFindProduceProcessor(String acceptType) {
+    return doEnsureFindProduceProcessor(acceptType, null);
+  }
+
+  public ProduceProcessor ensureFindProduceProcessor(String acceptType, Annotation[] annotations) {
+    if (annotations == null || annotations.length < 1) {
+      return doEnsureFindProduceProcessor(acceptType, null);
+    }
+    for (Annotation annotation : annotations) {
+      if (annotation.annotationType() == JsonView.class) {
+        Class<?>[] value = ((JsonView) annotation).value();
+        if (value.length != 1) {
+          throw new IllegalArgumentException(
+              "@JsonView only supported for exactly 1 class argument ");
+        }
+        return doEnsureFindProduceProcessor(acceptType, value[0]);
+      }
+    }
+    return doEnsureFindProduceProcessor(acceptType, null);
+  }
+
+  private ProduceProcessor doEnsureFindProduceProcessor(String acceptType, Class<?> serialViewClass) {
+    String serialViewKey =
+        (serialViewClass == null ? ProduceProcessorManager.DEFAULT_SERIAL_CLASS : serialViewClass.getCanonicalName());
     if (downloadFile) {
       //do not check accept type, when the produces of provider is text/plain there will return text/plain processor
       //when the produces of provider is application/json there will return the application/json processor
       //so do not care what accept type the consumer will set.
-      return this.produceProcessorMap.get(MediaType.WILDCARD);
+      return this.produceProcessorAcceptMap.get(MediaType.WILDCARD)
+          .computeIfAbsent(serialViewKey, key -> ProduceProcessorManager.cloneNewProduceProcessor(
+              acceptType, serialViewClass, produceProcessorAcceptMap.get(MediaType.WILDCARD)));
     }
     if (StringUtils.isEmpty(acceptType)) {
-      return defaultProcessor;
+      return defaultProcessorViewMap
+          .computeIfAbsent(serialViewKey, key -> ProduceProcessorManager.cloneNewProduceProcessor(
+              acceptType, serialViewClass, defaultProcessorViewMap));
     }
     List<String> mimeTypes = MimeTypesUtils.getSortedAcceptableMimeTypes(acceptType.toLowerCase(Locale.US));
     for (String mime : mimeTypes) {
-      ProduceProcessor processor = this.produceProcessorMap.get(mime);
-      if (null != processor) {
-        return processor;
+      Map<String, ProduceProcessor> processorMap = this.produceProcessorAcceptMap.get(mime);
+      if (null != processorMap) {
+        return processorMap.computeIfAbsent(serialViewKey, key ->
+            ProduceProcessorManager.cloneNewProduceProcessor(acceptType, serialViewClass, processorMap));
       }
     }
 
