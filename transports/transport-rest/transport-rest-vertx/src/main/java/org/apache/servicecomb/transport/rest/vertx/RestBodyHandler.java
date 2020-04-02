@@ -60,14 +60,20 @@ public class RestBodyHandler implements BodyHandler {
   private static final String BODY_HANDLED = "__body-handled";
 
   private long bodyLimit = DEFAULT_BODY_LIMIT;
+
   private boolean handleFileUploads;
+
   private String uploadsDir;
 
   private boolean mergeFormAttributes = DEFAULT_MERGE_FORM_ATTRIBUTES;
 
   private boolean deleteUploadedFilesOnEnd = DEFAULT_DELETE_UPLOADED_FILES_ON_END;
+
   private boolean isPreallocateBodyBuffer = DEFAULT_PREALLOCATE_BODY_BUFFER;
+
   private static final int DEFAULT_INITIAL_BODY_BUFFER_SIZE = 1024; //bytes
+
+  public static final String BYPASS_BODY_HANDLER = "__bypass_body_handler";
 
   public RestBodyHandler() {
     this(true, DEFAULT_UPLOADS_DIRECTORY);
@@ -90,6 +96,12 @@ public class RestBodyHandler implements BodyHandler {
   public void handle(RoutingContext context) {
     HttpServerRequest request = context.request();
     if (request.headers().contains(HttpHeaders.UPGRADE, HttpHeaders.WEBSOCKET, true)) {
+      context.next();
+      return;
+    }
+
+    Boolean bypass = context.get(BYPASS_BODY_HANDLER);
+    if (Boolean.TRUE.equals(bypass)) {
       context.next();
       return;
     }
@@ -150,14 +162,13 @@ public class RestBodyHandler implements BodyHandler {
 
   private long parseContentLengthHeader(HttpServerRequest request) {
     String contentLength = request.getHeader(HttpHeaders.CONTENT_LENGTH);
-    if(contentLength == null || contentLength.isEmpty()) {
+    if (contentLength == null || contentLength.isEmpty()) {
       return -1;
     }
     try {
       long parsedContentLength = Long.parseLong(contentLength);
-      return  parsedContentLength < 0 ? null : parsedContentLength;
-    }
-    catch (NumberFormatException ex) {
+      return parsedContentLength < 0 ? null : parsedContentLength;
+    } catch (NumberFormatException ex) {
       return -1;
     }
   }
@@ -246,18 +257,16 @@ public class RestBodyHandler implements BodyHandler {
 
     private void initBodyBuffer(long contentLength) {
       int initialBodyBufferSize;
-      if(contentLength < 0) {
+      if (contentLength < 0) {
         initialBodyBufferSize = DEFAULT_INITIAL_BODY_BUFFER_SIZE;
-      }
-      else if(contentLength > MAX_PREALLOCATED_BODY_BUFFER_BYTES) {
+      } else if (contentLength > MAX_PREALLOCATED_BODY_BUFFER_BYTES) {
         initialBodyBufferSize = MAX_PREALLOCATED_BODY_BUFFER_BYTES;
-      }
-      else {
+      } else {
         initialBodyBufferSize = (int) contentLength;
       }
 
-      if(bodyLimit != -1) {
-        initialBodyBufferSize = (int)Math.min(initialBodyBufferSize, bodyLimit);
+      if (bodyLimit != -1) {
+        initialBodyBufferSize = (int) Math.min(initialBodyBufferSize, bodyLimit);
       }
 
       this.body = Buffer.buffer(initialBodyBufferSize);

@@ -20,8 +20,6 @@ package org.apache.servicecomb.core.handler.impl;
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.CompletableFuture;
 
-import javax.ws.rs.core.Response.Status;
-
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.ExceptionUtils;
@@ -30,7 +28,6 @@ import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
-import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.extension.ProducerInvokeExtension;
@@ -93,17 +90,11 @@ public class ProducerOperationHandler implements Handler {
 
         asyncResp.handle(processException(invocation, ex));
       });
-    } catch (IllegalArgumentException ae) {
-      invocation.getTraceIdLogger().error(LOGGER, "Parameters not valid or types not match {},",
-          invocation.getInvocationQualifiedName(), ae);
-      invocation.onBusinessMethodFinish();
-      invocation.onBusinessFinish();
-      asyncResp.handle(processException(invocation,
-          new InvocationException(Status.BAD_REQUEST.getStatusCode(), "",
-              new CommonExceptionData("Parameters not valid or types not match."), ae)));
     } catch (Throwable e) {
-      invocation.getTraceIdLogger().error(LOGGER, "unexpected error {},",
-          invocation.getInvocationQualifiedName(), e);
+      if (shouldPrintErrorLog(e)) {
+        invocation.getTraceIdLogger().error(LOGGER, "unexpected error {},",
+            invocation.getInvocationQualifiedName(), e);
+      }
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();
       asyncResp.handle(processException(invocation, e));
@@ -132,15 +123,6 @@ public class ProducerOperationHandler implements Handler {
 
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();
-    } catch (IllegalArgumentException ae) {
-      invocation.getTraceIdLogger().error(LOGGER, "Parameters not valid or types not match {},",
-          invocation.getInvocationQualifiedName(), ae);
-      invocation.onBusinessMethodFinish();
-      invocation.onBusinessFinish();
-      // ae.getMessage() is always null. Give a custom error message.
-      response = processException(invocation,
-          new InvocationException(Status.BAD_REQUEST.getStatusCode(), "",
-              new CommonExceptionData("Parameters not valid or types not match."), ae));
     } catch (Throwable e) {
       if (shouldPrintErrorLog(e)) {
         invocation.getTraceIdLogger().error(LOGGER, "unexpected error {},",

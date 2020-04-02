@@ -56,3 +56,21 @@ servicecomb:
               path: "/url/business/v2/.*"
               microserviceName: business
               versionRule: 2.0.0-3.0.0
+        http:
+          enabled: true
+          mappings:
+            businessV2:
+              prefixSegmentCount: 1
+              path: "/http/business/v2/.*"
+              microserviceName: business
+              versionRule: 2.0.0
+            businessV1:
+              prefixSegmentCount: 1
+              path: "/http/business/v1/add.*"
+              microserviceName: business
+              versionRule: 1.0.0-1.2.0
+            businessV1_1:
+              prefixSegmentCount: 1
+              path: "/http/business/v1/dec.*"
+              microserviceName: business
+              versionRule: 1.1.0

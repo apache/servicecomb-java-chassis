@@ -15,6 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.servicecomb.edge.core.DefaultEdgeDispatcher
-org.apache.servicecomb.edge.core.URLMappedEdgeDispatcher
-org.apache.servicecomb.edge.core.CommonHttpEdgeDispatcher
+org.apache.servicecomb.core.exception.IllegalArgumentExceptionToProducerResponseConverter
+org.apache.servicecomb.core.exception.ThrowableExceptionToProducerResponseConverter

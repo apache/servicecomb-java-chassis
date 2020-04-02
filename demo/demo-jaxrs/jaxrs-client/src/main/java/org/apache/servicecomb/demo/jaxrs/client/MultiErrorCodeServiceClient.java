@@ -41,8 +41,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.client.UnknownHttpStatusCodeException;
 
 import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonObject;
@@ -110,8 +110,8 @@ public class MultiErrorCodeServiceClient implements CategorizedTestCase {
       result = template
           .postForEntity(serverDirectURL + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
       TestMgr.check(590, 200);
-    } catch (UnknownHttpStatusCodeException e) {
-      TestMgr.check(e.getRawStatusCode(), 590);
+    } catch (HttpServerErrorException e) {
+      TestMgr.check(e.getRawStatusCode(), 500);
     }
 
     // not recommend
