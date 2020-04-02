@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.common.rest.codec.produce;
 
+import static org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager.DEFAULT_SERIAL_CLASS;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
@@ -32,7 +34,7 @@ import io.vertx.core.buffer.Buffer;
 
 public class TestProduceJsonProcessor {
   ProduceProcessor pp = ProduceProcessorManager.INSTANCE.getJsonProcessorMap()
-      .get(ProduceProcessorManager.DEFAULT_SERIAL_CLASS);
+      .get(DEFAULT_SERIAL_CLASS);
 
   JavaType stringType = TypeFactory.defaultInstance().constructType(String.class);
 
@@ -59,7 +61,6 @@ public class TestProduceJsonProcessor {
     } catch (Exception e) {
       Assert.assertTrue(e instanceof MismatchedInputException);
     }
-
   }
 
   @Test
@@ -86,5 +87,16 @@ public class TestProduceJsonProcessor {
 
     os.close();
     is.close();
+  }
+
+  @Test
+  public void testSetSerializationView() {
+    Assert.assertEquals(DEFAULT_SERIAL_CLASS, pp.getSerializationView());
+
+    pp.setSerializationView(null);
+    Assert.assertEquals(DEFAULT_SERIAL_CLASS, pp.getSerializationView());
+
+    pp.setSerializationView(Object.class);
+    Assert.assertEquals(Object.class.getCanonicalName(), pp.getSerializationView());
   }
 }

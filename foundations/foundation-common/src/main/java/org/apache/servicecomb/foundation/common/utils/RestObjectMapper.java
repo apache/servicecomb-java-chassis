@@ -26,6 +26,7 @@ import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -68,6 +69,8 @@ public class RestObjectMapper extends AbstractRestObjectMapper {
     // Developers can use validation api to do more checks.
     disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+    // no view annotations shouldn't be included in JSON
+    disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
     enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);
     enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 

@@ -38,6 +38,7 @@ import org.apache.servicecomb.it.testcase.TestExceptionConvertEdge;
 import org.apache.servicecomb.it.testcase.TestGenericEdge;
 import org.apache.servicecomb.it.testcase.TestIgnoreMethod;
 import org.apache.servicecomb.it.testcase.TestIgnoreStaticMethod;
+import org.apache.servicecomb.it.testcase.TestJsonView;
 import org.apache.servicecomb.it.testcase.TestOptional;
 import org.apache.servicecomb.it.testcase.TestParamCodec;
 import org.apache.servicecomb.it.testcase.TestParamCodecEdge;
@@ -114,6 +115,9 @@ public class ConsumerMain {
     ITJUnitUtils.runWithHighwayAndRest(TestDataTypePrimitive.class);
     ITJUnitUtils.runWithHighwayAndRest(TestAnnotatedAttribute.class);
     ITJUnitUtils.runWithHighwayAndRest(TestMyService.class);
+
+    //only rest support Json view
+    ITJUnitUtils.runWithRest(TestJsonView.class);
 
     // only rest support default value feature
     ITJUnitUtils.runWithRest(TestDefaultValue.class);
