@@ -82,4 +82,15 @@ public class TestProduceTextPlainProcessor {
     os.close();
     is.close();
   }
+
+  @Test
+  public void testSetSerializationView() {
+    Assert.assertEquals(DEFAULT_SERIAL_CLASS, pp.getSerializationView());
+
+    pp.setSerializationView(null);
+    Assert.assertEquals(DEFAULT_SERIAL_CLASS, pp.getSerializationView());
+
+    pp.setSerializationView(Object.class);
+    Assert.assertEquals(DEFAULT_SERIAL_CLASS, pp.getSerializationView());
+  }
 }

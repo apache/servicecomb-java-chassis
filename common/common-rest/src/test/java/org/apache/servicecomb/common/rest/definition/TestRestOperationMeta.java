@@ -22,6 +22,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
+import java.lang.annotation.Annotation;
 import java.util.Arrays;
 
 import javax.ws.rs.FormParam;
@@ -42,6 +43,8 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 import io.swagger.models.Swagger;
 import mockit.Expectations;
@@ -215,33 +218,67 @@ public class TestRestOperationMeta {
   }
 
   @Test
-  public void testEnsureFindProduceProcessorRequest(@Mocked HttpServletRequestEx requestEx) {
+  public void testEnsureFindProduceProcessorRequest(@Mocked HttpServletRequestEx requestEx,
+      @Mocked JsonView annotation) {
     findOperation("emptyProduces");
     new Expectations() {
       {
         requestEx.getHeader(HttpHeaders.ACCEPT);
         result = null;
+        annotation.value();
+        result = Object.class;
       }
     };
-
     Assert.assertSame(ProduceProcessorManager.INSTANCE.getJsonProcessorMap().get(DEFAULT_SERIAL_CLASS),
         operationMeta.ensureFindProduceProcessor(requestEx));
+
+    ProduceProcessor actualProcessor = operationMeta
+        .ensureFindProduceProcessor(requestEx.getHeader(HttpHeaders.ACCEPT), new Annotation[] {annotation});
+    ProduceProcessor expectProcessor = ProduceProcessorManager.INSTANCE.getJsonProcessorMap()
+        .get(Object.class.getCanonicalName());
+    Assert.assertSame(expectProcessor, actualProcessor);
+    Assert.assertEquals(expectProcessor.getSerializationView(), Object.class.getCanonicalName());
   }
 
   @Test
-  public void testEnsureFindProduceProcessorAcceptFound() {
+  public void testEnsureFindProduceProcessorAcceptFound(@Mocked JsonView annotation) {
     findOperation("textCharJsonChar");
-
+    new Expectations() {
+      {
+        annotation.value();
+        result = Object.class;
+      }
+    };
     Assert.assertSame(ProduceProcessorManager.INSTANCE.getJsonProcessorMap().get(DEFAULT_SERIAL_CLASS),
         operationMeta.ensureFindProduceProcessor("text/plain;q=0.7;charset=utf-8,application/json;q=0.8"));
+
+    ProduceProcessor actualProcessor = operationMeta
+        .ensureFindProduceProcessor("text/plain;q=0.7;charset=utf-8,application/json;q=0.8",
+            new Annotation[] {annotation});
+    ProduceProcessor expectProcessor = ProduceProcessorManager.INSTANCE.getJsonProcessorMap()
+        .get(Object.class.getCanonicalName());
+    Assert.assertSame(expectProcessor, actualProcessor);
+    Assert.assertEquals(expectProcessor.getSerializationView(), Object.class.getCanonicalName());
   }
 
   @Test
-  public void testEnsureFindProduceProcessorWithDownload() {
+  public void testEnsureFindProduceProcessorWithDownload(@Mocked JsonView annotation) {
     findOperation("download");
-
+    new Expectations() {
+      {
+        annotation.value();
+        result = Object.class;
+      }
+    };
     Assert.assertSame(ProduceProcessorManager.INSTANCE.getJsonProcessorMap().get(DEFAULT_SERIAL_CLASS),
         operationMeta.ensureFindProduceProcessor("text/plain"));
+
+    ProduceProcessor actualProcessor = operationMeta
+        .ensureFindProduceProcessor("text/plain", new Annotation[] {annotation});
+    ProduceProcessor expectProcessor = ProduceProcessorManager.INSTANCE.getJsonProcessorMap()
+        .get(Object.class.getCanonicalName());
+    Assert.assertSame(expectProcessor, actualProcessor);
+    Assert.assertEquals(expectProcessor.getSerializationView(), Object.class.getCanonicalName());
   }
 
   @Test
