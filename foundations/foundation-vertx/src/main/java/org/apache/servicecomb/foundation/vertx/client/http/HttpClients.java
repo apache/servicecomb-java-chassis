@@ -26,6 +26,10 @@ import org.apache.servicecomb.foundation.vertx.AddressResolverConfig;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
 import org.apache.servicecomb.foundation.vertx.client.ClientVerticle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.annotations.VisibleForTesting;
 
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
@@ -35,27 +39,38 @@ import io.vertx.core.VertxOptions;
  *  load and manages a set of HttpClient at boot up.
  */
 public class HttpClients {
-  private static Map<String, ClientPoolManager<HttpClientWithContext>> httpClients;
+  private static final Logger LOGGER = LoggerFactory.getLogger(HttpClients.class);
+
+  private static final Map<String, ClientPoolManager<HttpClientWithContext>> httpClients = new HashMap<>();
 
   /* load at boot up, call this method once and only once. */
   public static void load() {
-    httpClients = new HashMap<>();
     List<HttpClientOptionsSPI> clientOptionsList = SPIServiceUtils.getOrLoadSortedService(HttpClientOptionsSPI.class);
     clientOptionsList.forEach(option -> {
       if (option.enabled()) {
         ClientPoolManager<HttpClientWithContext> clientPoolManager = httpClients.get(option.clientName());
         if (clientPoolManager != null) {
-          throw new IllegalStateException(
-              "Can not configure two http client with the same name: " + option.clientName());
+          LOGGER.warn("client pool {} initialized again.", option.clientName());
         }
         httpClients.put(option.clientName(), createClientPoolManager(option));
       }
     });
   }
 
+  @VisibleForTesting
+  public static void mockClientPoolManager(String name, ClientPoolManager<HttpClientWithContext> clientPool) {
+    httpClients.put(name, clientPool);
+  }
+
+  /* used for configurations module: these module must be boot before other HttpClients is initialized. so can
+  *  not load by SPI, must add manually  */
+  public static void addNewClientPoolManager(HttpClientOptionsSPI option) {
+    httpClients.put(option.clientName(), createClientPoolManager(option));
+  }
+
   /* destroy at shutdown. */
   public static void destroy() {
-    httpClients = null;
+    httpClients.clear();
     List<HttpClientOptionsSPI> clientOptionsList = SPIServiceUtils.getOrLoadSortedService(HttpClientOptionsSPI.class);
     clientOptionsList.forEach(option -> {
       VertxUtils.blockCloseVertxByName(option.clientName());

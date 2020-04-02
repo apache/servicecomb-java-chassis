@@ -38,6 +38,10 @@ public class CseApplicationListener
 
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    if(this.applicationContext == applicationContext) {
+      // same object. avoid initialize many times.
+      return;
+    }
     this.applicationContext = applicationContext;
     BeanUtils.setContext(applicationContext);
     HttpClients.load();

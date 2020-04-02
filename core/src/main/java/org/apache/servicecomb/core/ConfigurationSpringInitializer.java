@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config;
+package org.apache.servicecomb.core;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
@@ -203,7 +204,9 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
           if (ignoreResolveFailure()) {
             LOGGER.warn("set up spring property source failed.", e);
           } else {
-            throw new RuntimeException("set up spring property source failed.If you still want to start up the application and ignore errors, you can set servicecomb.config.ignoreResolveFailure to true.", e);
+            throw new RuntimeException(
+                "set up spring property source failed.If you still want to start up the application and ignore errors, you can set servicecomb.config.ignoreResolveFailure to true.",
+                e);
           }
         }
       }
@@ -215,7 +218,7 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
 
   private boolean ignoreResolveFailure() {
     return ConfigUtil
-            .createLocalConfig()
-            .getBoolean("servicecomb.config.ignoreResolveFailure", false);
+        .createLocalConfig()
+        .getBoolean("servicecomb.config.ignoreResolveFailure", false);
   }
 }

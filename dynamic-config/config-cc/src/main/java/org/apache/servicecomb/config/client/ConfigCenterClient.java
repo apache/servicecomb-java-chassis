@@ -41,53 +41,31 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.servicecomb.config.archaius.sources.ConfigCenterConfigurationSourceImpl;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.foundation.auth.SignRequest;
-import org.apache.servicecomb.foundation.common.encrypt.Encryptions;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
-import org.apache.servicecomb.foundation.ssl.SSLCustom;
-import org.apache.servicecomb.foundation.ssl.SSLOption;
-import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
-import org.apache.servicecomb.foundation.vertx.AddressResolverConfig;
-import org.apache.servicecomb.foundation.vertx.VertxTLSBuilder;
-import org.apache.servicecomb.foundation.vertx.VertxUtils;
-import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
-import org.apache.servicecomb.foundation.vertx.client.ClientVerticle;
-import org.apache.servicecomb.foundation.vertx.client.http.HttpClientPoolFactory;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
+import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
-import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.CaseInsensitiveHeaders;
-import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.WebSocket;
 import io.vertx.core.http.WebSocketConnectOptions;
 import io.vertx.core.http.impl.FrameType;
 import io.vertx.core.http.impl.ws.WebSocketFrameImpl;
-import io.vertx.core.net.ProxyOptions;
-
-/**
- * Created by on 2016/5/17.
- */
 
 public class ConfigCenterClient {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigCenterClient.class);
 
   private static final ConfigCenterConfig CONFIG_CENTER_CONFIG = ConfigCenterConfig.INSTANCE;
-
-  private static final String SSL_KEY = "cc.consumer";
-
-  public static final String PROXY_KEY = "cc.consumer";
 
   private static final long HEARTBEAT_INTERVAL = 30000;
 
@@ -115,8 +93,6 @@ public class ConfigCenterClient {
 
   private ConfigCenterConfigurationSourceImpl.UpdateHandler updateHandler;
 
-  private ClientPoolManager<HttpClientWithContext> clientMgr;
-
   private boolean isWatching = false;
 
   private final ServiceLoader<AuthHeaderProvider> authHeaderProviders =
@@ -125,6 +101,7 @@ public class ConfigCenterClient {
   private URIConst uriConst = new URIConst();
 
   public ConfigCenterClient(ConfigCenterConfigurationSourceImpl.UpdateHandler updateHandler) {
+    HttpClients.addNewClientPoolManager(new ConfigCenterHttpClientOptionsSPI());
     this.updateHandler = updateHandler;
   }
 
@@ -134,11 +111,6 @@ public class ConfigCenterClient {
       return;
     }
     ParseConfigUtils.getInstance().initWithUpdateHandler(updateHandler);
-    try {
-      deployConfigClient();
-    } catch (InterruptedException e) {
-      throw new IllegalStateException(e);
-    }
     refreshMembers(memberDiscovery);
     ConfigRefresh refreshTask = new ConfigRefresh(ParseConfigUtils.getInstance(), memberDiscovery);
     refreshTask.run(true);
@@ -164,7 +136,7 @@ public class ConfigCenterClient {
     if (CONFIG_CENTER_CONFIG.getAutoDiscoveryEnabled()) {
       String configCenter = memberDiscovery.getConfigServer();
       IpPort ipPort = NetUtils.parseIpPortFromURI(configCenter);
-      clientMgr.findThreadBindClientPool().runOnContext(client -> {
+      HttpClients.getClient(ConfigCenterHttpClientOptionsSPI.CLIENT_NAME).runOnContext(client -> {
         @SuppressWarnings("deprecation")
         HttpClientRequest request =
             client.get(ipPort.getPort(), ipPort.getHostOrIp(), uriConst.MEMBERS, rsp -> {
@@ -190,47 +162,6 @@ public class ConfigCenterClient {
         request.end();
       });
     }
-  }
-
-  private void deployConfigClient() throws InterruptedException {
-    VertxOptions vertxOptions = new VertxOptions();
-    vertxOptions.setAddressResolverOptions(AddressResolverConfig.getAddressResover(SSL_KEY,
-        ConfigCenterConfig.INSTANCE.getConcurrentCompositeConfiguration()));
-    Vertx vertx = VertxUtils.getOrCreateVertxByName("config-center", vertxOptions);
-
-    HttpClientOptions httpClientOptions = createHttpClientOptions();
-    clientMgr = new ClientPoolManager<>(vertx, new HttpClientPoolFactory(httpClientOptions));
-
-    DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientMgr, 1);
-    VertxUtils.blockDeploy(vertx, ClientVerticle.class, deployOptions);
-  }
-
-  private HttpClientOptions createHttpClientOptions() {
-    HttpClientOptions httpClientOptions = new HttpClientOptions();
-    if (ConfigCenterConfig.INSTANCE.isProxyEnable()) {
-      ProxyOptions proxy = new ProxyOptions()
-          .setHost(ConfigCenterConfig.INSTANCE.getProxyHost())
-          .setPort(ConfigCenterConfig.INSTANCE.getProxyPort())
-          .setUsername(ConfigCenterConfig.INSTANCE.getProxyUsername())
-          .setPassword(Encryptions.decode(ConfigCenterConfig.INSTANCE.getProxyPasswd(), PROXY_KEY));
-      httpClientOptions.setProxyOptions(proxy);
-    }
-    httpClientOptions.setConnectTimeout(CONFIG_CENTER_CONFIG.getConnectionTimeout());
-    if (this.memberDiscovery.getConfigServer().toLowerCase().startsWith("https")) {
-      LOGGER.debug("config center client performs requests over TLS");
-      SSLOptionFactory factory = SSLOptionFactory.createSSLOptionFactory(SSL_KEY,
-          ConfigCenterConfig.INSTANCE.getConcurrentCompositeConfiguration());
-      SSLOption sslOption;
-      if (factory == null) {
-        sslOption = SSLOption.buildFromYaml(SSL_KEY,
-            ConfigCenterConfig.INSTANCE.getConcurrentCompositeConfiguration());
-      } else {
-        sslOption = factory.createSSLOption();
-      }
-      SSLCustom sslCustom = SSLCustom.createSSLCustom(sslOption.getSslCustomClass());
-      VertxTLSBuilder.buildHttpClientOptions(sslOption, sslCustom, httpClientOptions);
-    }
-    return httpClientOptions;
   }
 
   class ConfigRefresh implements Runnable {
@@ -281,7 +212,8 @@ public class ConfigCenterClient {
       }
       headers.put("x-environment", environment);
 
-      HttpClientWithContext vertxHttpClient = clientMgr.findThreadBindClientPool();
+      HttpClientWithContext vertxHttpClient = HttpClients.getClient(ConfigCenterHttpClientOptionsSPI.CLIENT_NAME);
+
       vertxHttpClient.runOnContext(client -> {
         Map<String, String> authHeaders = new HashMap<>();
         authHeaderProviders.forEach(provider -> authHeaders.putAll(provider.getSignAuthHeaders(
@@ -377,7 +309,7 @@ public class ConfigCenterClient {
       }
       String path = uriConst.ITEMS + "?dimensionsInfo=" + encodeServiceName + "&revision="
           + ParseConfigUtils.getInstance().getCurrentVersionInfo();
-      clientMgr.findThreadBindClientPool().runOnContext(client -> {
+      HttpClients.getClient(ConfigCenterHttpClientOptionsSPI.CLIENT_NAME).runOnContext(client -> {
         IpPort ipPort = NetUtils.parseIpPortFromURI(configcenter);
         @SuppressWarnings("deprecation")
         HttpClientRequest request = client.get(ipPort.getPort(), ipPort.getHostOrIp(), path, rsp -> {
