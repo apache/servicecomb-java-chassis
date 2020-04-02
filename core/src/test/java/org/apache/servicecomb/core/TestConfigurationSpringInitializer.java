@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.config;
+package org.apache.servicecomb.core;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -30,6 +30,7 @@ import java.util.Map.Entry;
 import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;

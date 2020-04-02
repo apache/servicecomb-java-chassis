@@ -71,6 +71,14 @@ public final class ConfigCenterConfig {
 
   public static final String PROXY_PASSWD = PROXY_PRE_NAME + "passwd";
 
+  public static final String CONNECTION_TIME_OUT = "servicecomb.config.client.timeout.connection";
+
+  public static final String EVENT_LOOP_SIZE = "servicecomb.config.client.eventLoopSize";
+
+  public static final String VERTICAL_INSTANCE_COUNT = "servicecomb.config.client.verticalInstanceCount";
+
+  public static final String IDLE_TIMEOUT_IN_SECONDES = "servicecomb.config.client.idleTimeoutInSeconds";
+
   private static final int DEFAULT_REFRESH_MODE = 0;
 
   private static final int DEFAULT_REFRESH_PORT = 30104;
@@ -180,7 +188,19 @@ public final class ConfigCenterConfig {
   }
 
   public int getConnectionTimeout() {
-    return finalConfig.getInt("servicecomb.config.client.timeout.connection", DEFAULT_TIMEOUT_IN_MS);
+    return finalConfig.getInt(CONNECTION_TIME_OUT, 1000);
+  }
+
+  public int getEventLoopSize() {
+    return finalConfig.getInt(EVENT_LOOP_SIZE, 2);
+  }
+
+  public int getVerticalInstanceCount() {
+    return finalConfig.getInt(VERTICAL_INSTANCE_COUNT, 1);
+  }
+
+  public int getIdleTimeoutInSeconds() {
+    return finalConfig.getInt(IDLE_TIMEOUT_IN_SECONDES, 60);
   }
 
   public String getEnvironment() {

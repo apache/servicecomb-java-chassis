@@ -420,8 +420,7 @@ public class SCBEngine {
     priorityPropertyManager.close();
 
     //Step 6: Stop vertx to prevent blocking exit
-	// delete the following two lines when every refactor is done.
-    VertxUtils.blockCloseVertxByName("config-center");
+	// delete the following one line when every refactor is done.
     VertxUtils.blockCloseVertxByName("transport");
 
     HttpClients.destroy();

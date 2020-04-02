@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
@@ -41,11 +40,6 @@ import io.vertx.core.http.HttpVersion;
 
 class ServiceRegistryConfigBuilder {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRegistryConfigBuilder.class);
-
-  static {
-    // ensure configurations are loaded properly
-    ConfigUtil.installDynamicConfig();
-  }
 
   private boolean ssl;
 

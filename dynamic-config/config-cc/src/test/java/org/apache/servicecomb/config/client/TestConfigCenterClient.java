@@ -31,6 +31,7 @@ import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext.RunHandler;
+import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -62,7 +63,9 @@ public class TestConfigCenterClient {
 
   @SuppressWarnings("unchecked")
   @Test
-  public void testConnectServer() {
+  public void testConnectServer(@Mocked ClientPoolManager<HttpClientWithContext> clientMgr) {
+    HttpClients.mockClientPoolManager("config-center", clientMgr);
+
     HttpClientRequest request = Mockito.mock(HttpClientRequest.class);
     Mockito.when(request.method()).thenReturn(HttpMethod.GET);
     Mockito.when(request.headers()).thenReturn(MultiMap.caseInsensitiveMultiMap());
@@ -114,23 +117,22 @@ public class TestConfigCenterClient {
     Assert.assertFalse(status);
   }
 
+  @SuppressWarnings({"unchecked", "rawtypes"})
   @Test
-  public void testConfigRefreshModeOne(@Mocked ClientPoolManager<HttpClientWithContext> clientMgr,
-      @Mocked HttpClientWithContext httpClientWithContext) {
-    String version1 = refreshAndGetCurrentRevision(clientMgr, httpClientWithContext, 200, "huawei");
+  public void testConfigRefreshModeOne(@Mocked ClientPoolManager clientMgr) {
+    String version1 = refreshAndGetCurrentRevision(clientMgr, 200, "huawei");
     //test the sdk get and change the latestRevision
     Assert.assertEquals("huawei", version1);
-    String version2 = refreshAndGetCurrentRevision(clientMgr, httpClientWithContext, 304, "rkd");
+    String version2 = refreshAndGetCurrentRevision(clientMgr, 304, "rkd");
     //test that when return code is 304, the sdk do not change the latestRevision
     Assert.assertNotEquals("rkd", version2);
-    String version3 = refreshAndGetCurrentRevision(clientMgr, httpClientWithContext, 200, "");
+    String version3 = refreshAndGetCurrentRevision(clientMgr, 200, "");
     //make sure the current version is not ""
     Assert.assertNotEquals("", version3);
   }
 
-  @SuppressWarnings("unchecked")
-  private String refreshAndGetCurrentRevision(ClientPoolManager<HttpClientWithContext> clientMgr,
-      HttpClientWithContext httpClientWithContext, int statusCode, String version) {
+  @SuppressWarnings({"unchecked", "rawtypes"})
+  private String refreshAndGetCurrentRevision(ClientPoolManager clientMgr, int statusCode, String version) {
 
     ConfigCenterConfigurationSourceImpl impl = new ConfigCenterConfigurationSourceImpl();
     UpdateHandler updateHandler = impl.new UpdateHandler();
@@ -159,12 +161,15 @@ public class TestConfigCenterClient {
           return request;
         });
 
-    new MockUp<HttpClientWithContext>() {
+    HttpClientWithContext httpClientWithContext = new MockUp<HttpClientWithContext>() {
       @Mock
       public void runOnContext(RunHandler handler) {
         handler.run(httpClient);
       }
-    };
+    }.getMockInstance();
+
+    HttpClients.mockClientPoolManager("config-center", clientMgr);
+
     new Expectations() {
       {
         clientMgr.findThreadBindClientPool();
@@ -173,7 +178,6 @@ public class TestConfigCenterClient {
     };
 
     ConfigCenterClient cc = new ConfigCenterClient(updateHandler);
-    Deencapsulation.setField(cc, "clientMgr", clientMgr);
     ParseConfigUtils parseConfigUtils = new ParseConfigUtils(updateHandler);
     MemberDiscovery memberdis = new MemberDiscovery(Arrays.asList("http://configcentertest:30103"));
     ConfigRefresh refresh = cc.new ConfigRefresh(parseConfigUtils, memberdis);
@@ -183,10 +187,9 @@ public class TestConfigCenterClient {
     return currentVersionInfo;
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "rawtypes"})
   @Test
-  public void testConfigRefreshModeZero(@Mocked ClientPoolManager<HttpClientWithContext> clientMgr,
-      @Mocked HttpClientWithContext httpClientWithContext) {
+  public void testConfigRefreshModeZero(@Mocked ClientPoolManager clientMgr) {
     ConfigCenterConfigurationSourceImpl impl = new ConfigCenterConfigurationSourceImpl();
     UpdateHandler updateHandler = impl.new UpdateHandler();
     HttpClientRequest request = Mockito.mock(HttpClientRequest.class);
@@ -231,12 +234,16 @@ public class TestConfigCenterClient {
           handler.handle(websocket);
           return null;
         });
-    new MockUp<HttpClientWithContext>() {
+
+    HttpClientWithContext httpClientWithContext = new MockUp<HttpClientWithContext>() {
       @Mock
       public void runOnContext(RunHandler handler) {
         handler.run(httpClient);
       }
-    };
+    }.getMockInstance();
+
+    HttpClients.mockClientPoolManager("config-center", clientMgr);
+
     new Expectations() {
       {
         clientMgr.findThreadBindClientPool();
@@ -245,7 +252,6 @@ public class TestConfigCenterClient {
     };
 
     ConfigCenterClient cc = new ConfigCenterClient(updateHandler);
-    Deencapsulation.setField(cc, "clientMgr", clientMgr);
     ParseConfigUtils parseConfigUtils = new ParseConfigUtils(updateHandler);
     MemberDiscovery memberdis = new MemberDiscovery(Arrays.asList("http://configcentertest:30103"));
     ConfigRefresh refresh = cc.new ConfigRefresh(parseConfigUtils, memberdis);
@@ -319,7 +325,7 @@ public class TestConfigCenterClient {
       }
     };
     ConfigCenterClient cc = new ConfigCenterClient(updateHandler);
-    Deencapsulation.setField(cc, "clientMgr", clientMgr);
+    HttpClients.mockClientPoolManager("config-center", clientMgr);
     ParseConfigUtils parseConfigUtils = new ParseConfigUtils(updateHandler);
     MemberDiscovery memberdis = new MemberDiscovery(Arrays.asList("http://configcentertest:30103"));
     ConfigRefresh refresh = cc.new ConfigRefresh(parseConfigUtils, memberdis);

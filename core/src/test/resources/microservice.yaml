@@ -27,3 +27,7 @@ servicecomb:
     chain:
       Consumer:
         default: simpleLB
+zq:
+  - tlist: a
+  - tlist: b
+  - tlist: 1
