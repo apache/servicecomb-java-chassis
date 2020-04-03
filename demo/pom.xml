@@ -33,6 +33,7 @@
   <modules>
     <module>docker-build-config</module>
     <module>docker-run-config</module>
+    <module>docker-run-config-edge</module>
     <module>demo-schema</module>
     <module>demo-pojo</module>
     <module>demo-jaxrs</module>
