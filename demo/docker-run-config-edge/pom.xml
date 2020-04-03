@@ -62,7 +62,7 @@
                 <run>
                   <env>
                     <JAVA_OPTS>
-                      -Dservicecomb.service.registry.address=http://sc.servicecomb.io:30100 -Dservicecomb.service.publishAddress=${docker.hostname}
+                      -Dservicecomb.service.registry.address=http://sc.servicecomb.io:30100
                     </JAVA_OPTS>
                     <JAR_PATH>/maven/maven/authentication-${project.version}.jar</JAR_PATH>
                   </env>
@@ -97,7 +97,7 @@
                 <run>
                   <env>
                     <JAVA_OPTS>
-                      -Dservicecomb.service.registry.address=http://sc.servicecomb.io:30100 -Dservicecomb.service.publishAddress=${docker.hostname}
+                      -Dservicecomb.service.registry.address=http://sc.servicecomb.io:30100
                     </JAVA_OPTS>
                     <JAR_PATH>/maven/maven/business-1-0-0-${project.version}.jar</JAR_PATH>
                   </env>
@@ -132,7 +132,7 @@
                 <run>
                   <env>
                     <JAVA_OPTS>
-                      -Dservicecomb.service.registry.address=http://sc.servicecomb.io:30100 -Dservicecomb.service.publishAddress=${docker.hostname}
+                      -Dservicecomb.service.registry.address=http://sc.servicecomb.io:30100
                     </JAVA_OPTS>
                     <JAR_PATH>/maven/maven/business-1-1-0-${project.version}.jar</JAR_PATH>
                   </env>
@@ -167,7 +167,7 @@
                 <run>
                   <env>
                     <JAVA_OPTS>
-                      -Dservicecomb.service.registry.address=http://sc.servicecomb.io:30100 -Dservicecomb.service.publishAddress=${docker.hostname}
+                      -Dservicecomb.service.registry.address=http://sc.servicecomb.io:30100
                     </JAVA_OPTS>
                     <JAR_PATH>/maven/maven/business-2-0-0-${project.version}.jar</JAR_PATH>
                   </env>

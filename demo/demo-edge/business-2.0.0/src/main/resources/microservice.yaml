@@ -24,6 +24,6 @@ servicecomb:
     registry:
       address: http://127.0.0.1:30100
   rest:
-    address: 127.0.0.1:8091
+    address: 0.0.0.0:8091
     server:
       verticle-count: 1
