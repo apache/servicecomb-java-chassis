@@ -52,7 +52,7 @@
                     <descriptor>${root.basedir}/demo/assembly/assembly.xml</descriptor>
                   </assembly>
                   <entryPoint>
-                    <shell>java $JAVA_OPTS -jar $JAR_PATH</shell>
+                    <shell>java -Xmx64m $JAVA_OPTS -jar $JAR_PATH</shell>
                   </entryPoint>
                 </build>
               </image>

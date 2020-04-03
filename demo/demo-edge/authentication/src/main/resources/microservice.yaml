@@ -26,4 +26,5 @@ servicecomb:
   rest:
     address: 127.0.0.1:7070
     server:
-      verticle-count: 10
+      # for test case run in one core machine
+      verticle-count: 1
