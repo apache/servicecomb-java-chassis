@@ -24,7 +24,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.metrics.core.publish.model.DefaultPublishModel;
 import org.junit.Assert;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
@@ -40,6 +42,7 @@ import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestThreadPoolPublishModelFactory {
   protected EventBus eventBus = new EventBus();
 
@@ -67,14 +70,19 @@ public class TestThreadPoolPublishModelFactory {
 
       }
     };
-    ThreadPoolMonitor.attach(registry, threadPoolExecutor, "test");
+    try {
+      ThreadPoolMonitor.attach(registry, threadPoolExecutor, "test");
 
-    PolledMeter.update(registry);
-    PublishModelFactory factory = new PublishModelFactory(Lists.newArrayList(registry.iterator()));
-    DefaultPublishModel model = factory.createDefaultPublishModel();
+      PolledMeter.update(registry);
+      PublishModelFactory factory = new PublishModelFactory(Lists.newArrayList(registry.iterator()));
+      DefaultPublishModel model = factory.createDefaultPublishModel();
 
-    Assert.assertEquals(
-        "{\"test\":{\"avgTaskCount\":0.0,\"avgCompletedTaskCount\":0.0,\"currentThreadsBusy\":0,\"maxThreads\":0,\"poolSize\":0,\"corePoolSize\":0,\"queueSize\":10,\"rejected\":\"NaN\"}}",
-        JsonUtils.writeValueAsString(model.getThreadPools()));
+      Assert.assertEquals(
+          "{\"test\":{\"avgTaskCount\":0.0,\"avgCompletedTaskCount\":0.0,\"currentThreadsBusy\":0,\"maxThreads\":0,\"poolSize\":0,\"corePoolSize\":0,\"queueSize\":10,\"rejected\":\"NaN\"}}",
+          JsonUtils.writeValueAsString(model.getThreadPools()));
+    } catch (Throwable e) {
+      e.printStackTrace();
+      Assert.fail("unexpected error happen. " + e.getMessage());
+    }
   }
 }
