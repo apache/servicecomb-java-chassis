@@ -18,6 +18,8 @@ package org.apache.servicecomb.it.schema;
 
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -75,5 +77,22 @@ public class JsonViewSpringmvcSchema {
   @JsonView(PersonViewModel.SummaryWithDetails.class)
   public String jsonViewPlainDefaultWithSummaryDetails() {
     return PersonViewModel.generatePersonViewModel().toString();
+  }
+
+  @PostMapping("/jsonViewPostDefault")
+  public PersonViewModel jsonViewPostDefault(@RequestBody PersonViewModel personViewModel) {
+    return personViewModel;
+  }
+
+  @PostMapping("/jsonViewPostDefaultWithSummary")
+  public PersonViewModel jsonViewPostDefaultWithSummary(
+      @JsonView(PersonViewModel.Summary.class) @RequestBody PersonViewModel personViewModel) {
+    return personViewModel;
+  }
+
+  @PostMapping("/jsonViewPostDefaultWithSummaryDetails")
+  public PersonViewModel jsonViewPostDefaultWithSummaryDetails(
+      @JsonView(PersonViewModel.SummaryWithDetails.class) @RequestBody PersonViewModel personViewModel) {
+    return personViewModel;
   }
 }

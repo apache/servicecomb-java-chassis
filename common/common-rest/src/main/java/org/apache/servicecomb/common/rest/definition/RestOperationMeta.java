@@ -279,6 +279,9 @@ public class RestOperationMeta {
   public ProduceProcessor ensureFindProduceProcessor(HttpServletRequestEx requestEx) {
     String acceptType = requestEx.getHeader(HttpHeaders.ACCEPT);
     SwaggerProducerOperation producerOperation = operationMeta.getExtData(Const.PRODUCER_OPERATION);
+    if (producerOperation == null || producerOperation.getProducerMethod() == null) {
+      return ensureFindProduceProcessor(acceptType);
+    }
     return ensureFindProduceProcessor(acceptType, producerOperation.getProducerMethod().getDeclaredAnnotations());
   }
 

@@ -32,7 +32,7 @@ public class ProduceJsonProcessor implements ProduceProcessor {
 
   @Override
   public String getSerializationView() {
-    return serializationView == null ? ProduceProcessorManager.DEFAULT_SERIAL_CLASS
+    return serializationView == null ? ProduceProcessor.super.getSerializationView()
         : serializationView.getCanonicalName();
   }
 
@@ -60,7 +60,11 @@ public class ProduceJsonProcessor implements ProduceProcessor {
 
   @Override
   public Object doDecodeResponse(InputStream input, JavaType type) throws Exception {
-    return RestObjectMapperFactory.getRestObjectMapper().readValue(input, type);
+    if (serializationView == null) {
+      return RestObjectMapperFactory.getRestObjectMapper().readValue(input, type);
+    }
+    return RestObjectMapperFactory.getRestObjectMapper().readerWithView(serializationView)
+        .forType(type).readValue(input);
   }
 
   @Override

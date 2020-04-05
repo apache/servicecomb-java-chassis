@@ -41,6 +41,12 @@ public class TestJsonView {
     String jsonViewPlainDefaultWithSummary();
 
     String jsonViewPlainDefaultWithSummaryDetails();
+
+    PersonViewModel jsonViewPostDefault(PersonViewModel personViewModel);
+
+    PersonViewModel jsonViewPostDefaultWithSummary(PersonViewModel personViewModel);
+
+    PersonViewModel jsonViewPostDefaultWithSummaryDetails(PersonViewModel personViewModel);
   }
 
   private static Consumers<JsonViewRestIntf> consumersPojo = new Consumers<>("jsonViewPojoSchema",
@@ -247,5 +253,72 @@ public class TestJsonView {
     assertEquals(EXPECT_NO_VIEW.toString(), restConsumersPojo);
     String pojoConsumersPojo = consumersPojo.getIntf().jsonViewPlainDefaultWithSummaryDetails();
     assertEquals(EXPECT_NO_VIEW.toString(), pojoConsumersPojo);
+  }
+
+  @Test
+  public void testJsonViewPostDefault() {
+    PersonViewModel restPersonViewSpringMvc = consumersSpringmvc.getSCBRestTemplate()
+        .postForObject("/jsonViewPostDefault", EXPECT_NO_VIEW, PersonViewModel.class);
+    assertEquals(EXPECT_NO_VIEW, restPersonViewSpringMvc);
+    PersonViewModel pojoPersonViewSpringMvc = consumersSpringmvc.getIntf()
+        .jsonViewPostDefault(EXPECT_NO_VIEW);
+    assertEquals(EXPECT_NO_VIEW, pojoPersonViewSpringMvc);
+
+    PersonViewModel restPersonViewJaxrs = consumersJaxrs.getSCBRestTemplate()
+        .postForObject("/jsonViewPostDefault", EXPECT_NO_VIEW, PersonViewModel.class);
+    assertEquals(EXPECT_NO_VIEW, restPersonViewJaxrs);
+    PersonViewModel pojoPersonViewJaxrs = consumersJaxrs.getIntf().jsonViewPostDefault(EXPECT_NO_VIEW);
+    assertEquals(EXPECT_NO_VIEW, pojoPersonViewJaxrs);
+
+    PersonViewModel restPersonViewPojo = consumersPojo.getSCBRestTemplate()
+        .postForObject("/jsonViewPostDefault", EXPECT_NO_VIEW, PersonViewModel.class);
+    assertEquals(EXPECT_NO_VIEW, restPersonViewPojo);
+    PersonViewModel pojoPersonViewPojo = consumersPojo.getIntf().jsonViewPostDefault(EXPECT_NO_VIEW);
+    assertEquals(EXPECT_NO_VIEW, pojoPersonViewPojo);
+  }
+
+  @Test
+  public void testJsonViewPostDefaultWithSummary() {
+    PersonViewModel restPersonViewSpringMvc = consumersSpringmvc.getSCBRestTemplate()
+        .postForObject("/jsonViewPostDefaultWithSummary", EXPECT_NO_VIEW, PersonViewModel.class);
+    assertEquals(EXPECT_SUMMARY_VIEW, restPersonViewSpringMvc);
+    PersonViewModel pojoPersonViewSpringMvc = consumersSpringmvc.getIntf()
+        .jsonViewPostDefaultWithSummary(EXPECT_NO_VIEW);
+    assertEquals(EXPECT_SUMMARY_VIEW, pojoPersonViewSpringMvc);
+
+    PersonViewModel restPersonViewJaxrs = consumersJaxrs.getSCBRestTemplate()
+        .postForObject("/jsonViewPostDefaultWithSummary", EXPECT_NO_VIEW, PersonViewModel.class);
+    assertEquals(EXPECT_SUMMARY_VIEW, restPersonViewJaxrs);
+    PersonViewModel pojoPersonViewJaxrs = consumersJaxrs.getIntf().jsonViewPostDefaultWithSummary(EXPECT_NO_VIEW);
+    assertEquals(EXPECT_SUMMARY_VIEW, pojoPersonViewJaxrs);
+
+    PersonViewModel restPersonViewPojo = consumersPojo.getSCBRestTemplate()
+        .postForObject("/jsonViewPostDefaultWithSummary", EXPECT_NO_VIEW, PersonViewModel.class);
+    assertEquals(EXPECT_SUMMARY_VIEW, restPersonViewPojo);
+    PersonViewModel pojoPersonViewPojo = consumersPojo.getIntf().jsonViewPostDefaultWithSummary(EXPECT_NO_VIEW);
+    assertEquals(EXPECT_SUMMARY_VIEW, pojoPersonViewPojo);
+  }
+
+  @Test
+  public void testJsonViewPostDefaultWithSummaryDetails() {
+    PersonViewModel restPersonViewSpringMvc = consumersSpringmvc.getSCBRestTemplate()
+        .postForObject("/jsonViewPostDefaultWithSummaryDetails", EXPECT_NO_VIEW, PersonViewModel.class);
+    assertEquals(EXPECT_SUMMARY_DETAILS_VIEW, restPersonViewSpringMvc);
+    PersonViewModel pojoPersonViewSpringMvc = consumersSpringmvc.getIntf()
+        .jsonViewPostDefaultWithSummaryDetails(EXPECT_NO_VIEW);
+    assertEquals(EXPECT_SUMMARY_DETAILS_VIEW, pojoPersonViewSpringMvc);
+
+    PersonViewModel restPersonViewJaxrs = consumersJaxrs.getSCBRestTemplate()
+        .postForObject("/jsonViewPostDefaultWithSummaryDetails", EXPECT_NO_VIEW, PersonViewModel.class);
+    assertEquals(EXPECT_SUMMARY_DETAILS_VIEW, restPersonViewJaxrs);
+    PersonViewModel pojoPersonViewJaxrs = consumersJaxrs.getIntf()
+        .jsonViewPostDefaultWithSummaryDetails(EXPECT_NO_VIEW);
+    assertEquals(EXPECT_SUMMARY_DETAILS_VIEW, pojoPersonViewJaxrs);
+
+    PersonViewModel restPersonViewPojo = consumersPojo.getSCBRestTemplate()
+        .postForObject("/jsonViewPostDefaultWithSummaryDetails", EXPECT_NO_VIEW, PersonViewModel.class);
+    assertEquals(EXPECT_SUMMARY_DETAILS_VIEW, restPersonViewPojo);
+    PersonViewModel pojoPersonViewPojo = consumersPojo.getIntf().jsonViewPostDefaultWithSummaryDetails(EXPECT_NO_VIEW);
+    assertEquals(EXPECT_SUMMARY_DETAILS_VIEW, pojoPersonViewPojo);
   }
 }

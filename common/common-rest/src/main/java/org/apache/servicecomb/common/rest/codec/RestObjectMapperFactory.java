@@ -32,10 +32,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class RestObjectMapperFactory {
   private static AbstractRestObjectMapper defaultMapper = new RestObjectMapper();
 
+  private static AbstractRestObjectMapper viewMapper = new RestObjectMapper();
+
   private static AbstractRestObjectMapper consumerWriterMapper = defaultMapper;
 
   static {
     registerModules(defaultMapper);
+    registerModules(viewMapper);
   }
 
   private static void registerModules(ObjectMapper mapper) {
@@ -51,6 +54,10 @@ public class RestObjectMapperFactory {
 
   public static AbstractRestObjectMapper getRestObjectMapper() {
     return defaultMapper;
+  }
+
+  public static AbstractRestObjectMapper getRestViewMapper() {
+    return viewMapper;
   }
 
   public static void setConsumerWriterMapper(AbstractRestObjectMapper customMapper) {

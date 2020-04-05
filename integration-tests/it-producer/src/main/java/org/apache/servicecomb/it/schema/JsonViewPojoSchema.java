@@ -66,4 +66,18 @@ public class JsonViewPojoSchema {
   public String jsonViewPlainDefaultWithSummaryDetails() {
     return PersonViewModel.generatePersonViewModel().toString();
   }
+
+  public PersonViewModel jsonViewPostDefault(PersonViewModel personViewModel) {
+    return personViewModel;
+  }
+
+  public PersonViewModel jsonViewPostDefaultWithSummary(
+      @JsonView(PersonViewModel.Summary.class) PersonViewModel personViewModel) {
+    return personViewModel;
+  }
+
+  public PersonViewModel jsonViewPostDefaultWithSummaryDetails(
+      @JsonView(PersonViewModel.SummaryWithDetails.class) PersonViewModel personViewModel) {
+    return personViewModel;
+  }
 }

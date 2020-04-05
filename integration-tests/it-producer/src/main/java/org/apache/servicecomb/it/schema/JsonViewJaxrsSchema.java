@@ -17,10 +17,12 @@
 package org.apache.servicecomb.it.schema;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
 import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -92,5 +94,25 @@ public class JsonViewJaxrsSchema {
   @JsonView(PersonViewModel.SummaryWithDetails.class)
   public String jsonViewPlainDefaultWithSummaryDetails() {
     return PersonViewModel.generatePersonViewModel().toString();
+  }
+
+  @POST
+  @Path("jsonViewPostDefault")
+  public PersonViewModel jsonViewPostDefault(@RequestBody PersonViewModel personViewModel) {
+    return personViewModel;
+  }
+
+  @POST
+  @Path("jsonViewPostDefaultWithSummary")
+  public PersonViewModel jsonViewPostDefaultWithSummary(
+      @JsonView(PersonViewModel.Summary.class) @RequestBody PersonViewModel personViewModel) {
+    return personViewModel;
+  }
+
+  @POST
+  @Path("jsonViewPostDefaultWithSummaryDetails")
+  public PersonViewModel jsonViewPostDefaultWithSummaryDetails(
+      @JsonView(PersonViewModel.SummaryWithDetails.class) @RequestBody PersonViewModel personViewModel) {
+    return personViewModel;
   }
 }

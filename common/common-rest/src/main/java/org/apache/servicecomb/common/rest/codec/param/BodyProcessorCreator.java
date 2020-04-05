@@ -20,6 +20,7 @@ package org.apache.servicecomb.common.rest.codec.param;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,11 +34,13 @@ import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.converter.ConverterMgr;
+import org.apache.servicecomb.swagger.generator.core.processor.parameter.JsonViewProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.type.SimpleType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -64,14 +67,32 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
   public static class BodyProcessor implements ParamValueProcessor {
     protected JavaType targetType;
 
+    protected Class<?> serialViewClass;
+
     private boolean isString;
 
     protected boolean isRequired;
 
     public BodyProcessor(JavaType targetType, boolean isString, boolean isRequired) {
+      this(targetType, null, isString, isRequired);
+    }
+
+    public BodyProcessor(JavaType targetType, String serialViewClass, boolean isString, boolean isRequired) {
+      if (serialViewClass != null) {
+        try {
+          this.serialViewClass = Class.forName(serialViewClass);
+        } catch (Throwable e) {
+          //ignore
+        }
+      }
       this.targetType = targetType;
       this.isString = isString;
       this.isRequired = isRequired;
+    }
+
+    @Override
+    public Class<?> getSerialViewClass() {
+      return serialViewClass;
     }
 
     @Override
@@ -99,16 +120,17 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
 
       if (!contentType.isEmpty() && !contentType.startsWith(MediaType.APPLICATION_JSON)) {
         // TODO: we should consider body encoding
-        return IOUtils.toString(inputStream, "UTF-8");
+        return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
       }
-
       try {
+        ObjectReader reader = serialViewClass != null
+            ? RestObjectMapperFactory.getRestObjectMapper().readerWithView(serialViewClass)
+            : RestObjectMapperFactory.getRestObjectMapper().reader();
         if (decodeAsObject) {
-          return RestObjectMapperFactory.getRestObjectMapper()
-              .readValue(inputStream, OBJECT_TYPE);
+          return reader.forType(OBJECT_TYPE).readValue(inputStream);
         }
-        return RestObjectMapperFactory.getRestObjectMapper()
-            .readValue(inputStream, targetType == null ? OBJECT_TYPE : targetType);
+        return reader.forType(targetType == null ? OBJECT_TYPE : targetType)
+            .readValue(inputStream);
       } catch (MismatchedInputException e) {
         // there is no way to detect InputStream is empty, so have to catch the exception
         if (!isRequired && e.getMessage().contains("No content to map due to end-of-input")) {
@@ -138,7 +160,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
      */
     private Buffer createBodyBuffer(String contentType, Object arg) throws IOException {
       if (MediaType.TEXT_PLAIN.equals(contentType)) {
-        if (!String.class.isInstance(arg)) {
+        if (!(arg instanceof String)) {
           throw new IllegalArgumentException("Content-Type is text/plain while arg type is not String");
         }
         return new BufferImpl().appendBytes(((String) arg).getBytes());
@@ -180,7 +202,11 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
 
   public static class RawJsonBodyProcessor extends BodyProcessor {
     public RawJsonBodyProcessor(JavaType targetType, boolean isString, boolean isRequired) {
-      super(targetType, isString, isRequired);
+      this(targetType, null, isString, isRequired);
+    }
+
+    public RawJsonBodyProcessor(JavaType targetType, String serialViewClass, boolean isString, boolean isRequired) {
+      super(targetType, serialViewClass, isString, isRequired);
     }
 
     @Override
@@ -196,7 +222,7 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
       }
 
       // TODO: we should consider body encoding
-      return IOUtils.toString(inputStream, "UTF-8");
+      return IOUtils.toString(inputStream, StandardCharsets.UTF_8);
     }
 
     @Override
@@ -228,9 +254,11 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
         genericParamType == null ? null : TypeFactory.defaultInstance().constructType(genericParamType);
     boolean rawJson = SwaggerUtils.isRawJsonType(parameter);
     if (rawJson) {
-      return new RawJsonBodyProcessor(targetType, isString, parameter.getRequired());
+      return new RawJsonBodyProcessor(targetType, (String) parameter.getVendorExtensions().get(
+          JsonViewProcessor.VENDOR_EXTENSION_KEY), isString, parameter.getRequired());
     }
 
-    return new BodyProcessor(targetType, isString, parameter.getRequired());
+    return new BodyProcessor(targetType, (String) parameter.getVendorExtensions().get(
+        JsonViewProcessor.VENDOR_EXTENSION_KEY), isString, parameter.getRequired());
   }
 }
