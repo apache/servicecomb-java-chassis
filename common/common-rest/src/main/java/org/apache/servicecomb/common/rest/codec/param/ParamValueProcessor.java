@@ -33,7 +33,11 @@ public interface ParamValueProcessor {
     if (value == null || targetType == null) {
       return value;
     }
-
+    if (getSerialViewClass() != null) {
+      return RestObjectMapperFactory.getRestViewMapper().setConfig(
+          RestObjectMapperFactory.getRestViewMapper().getDeserializationConfig().withView(getSerialViewClass()))
+          .convertValue(value, targetType);
+    }
     return RestObjectMapperFactory.getRestObjectMapper()
         .convertValue(value, targetType);
   }
@@ -41,4 +45,8 @@ public interface ParamValueProcessor {
   String getParameterPath();
 
   String getProcessorType();
+
+  default Class<?> getSerialViewClass() {
+    return null;
+  }
 }

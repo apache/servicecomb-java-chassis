@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.common.rest.codec;
 
+import static org.junit.Assert.assertFalse;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
@@ -26,6 +28,7 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -35,13 +38,18 @@ public class TestRestObjectMapper {
 
   @Test
   public void testAutoCloseSource() {
-    Assert.assertFalse(RestObjectMapperFactory.getRestObjectMapper().getFactory().isEnabled(Feature.AUTO_CLOSE_SOURCE));
+    assertFalse(RestObjectMapperFactory.getRestObjectMapper().getFactory().isEnabled(Feature.AUTO_CLOSE_SOURCE));
   }
 
   @Test
   public void testDeserializationFeature() {
-    Assert.assertFalse(
+    assertFalse(
         RestObjectMapperFactory.getRestObjectMapper().isEnabled(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES));
+  }
+
+  @Test
+  public void testDefaultViewInclusionFeature() {
+    assertFalse(RestObjectMapperFactory.getRestObjectMapper().isEnabled(MapperFeature.DEFAULT_VIEW_INCLUSION));
   }
 
   @Test

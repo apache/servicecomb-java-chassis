@@ -21,3 +21,4 @@ org.apache.servicecomb.swagger.generator.core.processor.parameter.RawJsonRequest
 org.apache.servicecomb.swagger.generator.core.processor.parameter.PartProcessor
 org.apache.servicecomb.swagger.generator.core.processor.parameter.PartArrayProcessor
 org.apache.servicecomb.swagger.generator.core.processor.parameter.PartListProcessor
+org.apache.servicecomb.swagger.generator.core.processor.parameter.JsonViewProcessor
