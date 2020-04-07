@@ -31,4 +31,6 @@ public final class SwaggerConst {
   public static final String EXT_JAVA_CLASS = "x-java-class";
 
   public static final String EXT_RAW_JSON_TYPE = "x-raw-json";
+
+  public static final String EXT_JSON_VIEW = "x-json-view";
 }

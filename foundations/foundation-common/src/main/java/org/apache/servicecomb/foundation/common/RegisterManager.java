@@ -69,7 +69,7 @@ public class RegisterManager<KEY, VALUE> {
     }
   }
 
-  public Map<KEY, VALUE> getObjMap() {
+  protected Map<KEY, VALUE> getObjMap() {
     return objMap;
   }
 

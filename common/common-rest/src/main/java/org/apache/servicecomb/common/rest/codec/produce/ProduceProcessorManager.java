@@ -27,6 +27,7 @@ import org.apache.servicecomb.foundation.common.RegisterManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 
 public final class ProduceProcessorManager extends RegisterManager<String, Map<String, ProduceProcessor>> {
   private static final Logger LOGGER = LoggerFactory.getLogger(ProduceProcessorManager.class);
@@ -42,6 +43,8 @@ public final class ProduceProcessorManager extends RegisterManager<String, Map<S
 
   public static final ProduceProcessorManager INSTANCE = new ProduceProcessorManager();
 
+  private Map<String, ProduceProcessor> nonSerialViewMap = new HashMap<>();
+
   private Map<String, ProduceProcessor> jsonProcessorMap;
 
   private Map<String, ProduceProcessor> plainProcessorMap;
@@ -51,6 +54,7 @@ public final class ProduceProcessorManager extends RegisterManager<String, Map<S
   private ProduceProcessorManager() {
     super(NAME);
     produceProcessor.forEach(processor -> {
+      nonSerialViewMap.put(processor.getName(), processor);
       Map<String, ProduceProcessor> prodProcessorMap = getObjMap()
           .computeIfAbsent(processor.getName(), key -> new HashMap<>());
       prodProcessorMap.putIfAbsent(processor.getSerializationView(), processor);
@@ -60,7 +64,7 @@ public final class ProduceProcessorManager extends RegisterManager<String, Map<S
     defaultProcessorMap = jsonProcessorMap;
   }
 
-  public static ProduceProcessor cloneNewProduceProcessor(String acceptType, Class<?> serialViewClass,
+  private static ProduceProcessor cloneNewProduceProcessor(Class<?> serialViewClass,
       Map<String, ProduceProcessor> produceViewMap) {
     ProduceProcessor newInstance;
     try {
@@ -68,38 +72,71 @@ public final class ProduceProcessorManager extends RegisterManager<String, Map<S
       newInstance.setSerializationView(serialViewClass);
       return newInstance;
     } catch (Throwable e) {
-      LOGGER.error(String.format("Failed to create produceProcessor with %s", acceptType), e);
+      // ignore exception
+      LOGGER.warn("Failed to create produceProcessor with {}", serialViewClass.getName(), e);
     }
     return produceViewMap.get(DEFAULT_SERIAL_CLASS);
   }
 
-  public Map<String, ProduceProcessor> getJsonProcessorMap() {
-    return jsonProcessorMap;
+  // key -> accept type
+  public Map<String, ProduceProcessor> getOrCreateAcceptMap(Class<?> serialViewClass) {
+    if (serialViewClass == null) {
+      return nonSerialViewMap;
+    }
+    Map<String, ProduceProcessor> result = new HashMap<>();
+    getObjMap().forEach((acceptKey, viewMap) -> {
+      ProduceProcessor produceProcessor = viewMap.computeIfAbsent(serialViewClass.getName(),
+          viewKey -> cloneNewProduceProcessor(serialViewClass, viewMap));
+      result.put(acceptKey, produceProcessor);
+    });
+    return result;
   }
 
-  public ProduceProcessorManager setJsonProcessorMap(
-      Map<String, ProduceProcessor> jsonProcessorMap) {
-    this.jsonProcessorMap = jsonProcessorMap;
-    return this;
+  public ProduceProcessor findProcessor(String acceptType, Class<?> serialViewClass) {
+    Map<String, ProduceProcessor> viewMap = findValue(acceptType);
+    if (CollectionUtils.isEmpty(viewMap)) {
+      return null;
+    }
+    if (serialViewClass == null) {
+      return viewMap.get(DEFAULT_SERIAL_CLASS);
+    }
+    return viewMap.computeIfAbsent(serialViewClass.getName(),
+        viewKey -> cloneNewProduceProcessor(serialViewClass, viewMap));
   }
 
-  public Map<String, ProduceProcessor> getPlainProcessorMap() {
-    return plainProcessorMap;
+  public ProduceProcessor findJsonProcessorByViewClass(Class<?> serialViewClass) {
+    if (serialViewClass == null) {
+      return jsonProcessorMap.get(DEFAULT_SERIAL_CLASS);
+    }
+    return jsonProcessorMap.computeIfAbsent(serialViewClass.getName(),
+        viewKey -> cloneNewProduceProcessor(serialViewClass, jsonProcessorMap));
   }
 
-  public ProduceProcessorManager setPlainProcessorMap(
-      Map<String, ProduceProcessor> plainProcessorMap) {
-    this.plainProcessorMap = plainProcessorMap;
-    return this;
+  public ProduceProcessor findDefaultProcessorByViewClass(Class<?> serialViewClass) {
+    if (serialViewClass == null) {
+      return defaultProcessorMap.get(DEFAULT_SERIAL_CLASS);
+    }
+    return defaultProcessorMap.computeIfAbsent(serialViewClass.getName(),
+        viewKey -> cloneNewProduceProcessor(serialViewClass, defaultProcessorMap));
   }
 
-  public Map<String, ProduceProcessor> getDefaultProcessorMap() {
-    return defaultProcessorMap;
+  public ProduceProcessor findPlainProcessorByViewClass(Class<?> serialViewClass) {
+    if (serialViewClass == null) {
+      return plainProcessorMap.get(DEFAULT_SERIAL_CLASS);
+    }
+    return plainProcessorMap.computeIfAbsent(serialViewClass.getName(),
+        viewKey -> cloneNewProduceProcessor(serialViewClass, plainProcessorMap));
   }
 
-  public ProduceProcessorManager setDefaultProcessorMap(
-      Map<String, ProduceProcessor> defaultProcessorMap) {
-    this.defaultProcessorMap = defaultProcessorMap;
-    return this;
+  public ProduceProcessor findDefaultJsonProcessor() {
+    return jsonProcessorMap.get(DEFAULT_SERIAL_CLASS);
+  }
+
+  public ProduceProcessor findDefaultProcessor() {
+    return defaultProcessorMap.get(DEFAULT_SERIAL_CLASS);
+  }
+
+  public ProduceProcessor findDefaultPlainProcessor() {
+    return plainProcessorMap.get(DEFAULT_SERIAL_CLASS);
   }
 }

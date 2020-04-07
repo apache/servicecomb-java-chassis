@@ -33,7 +33,7 @@ public class ProduceJsonProcessor implements ProduceProcessor {
   @Override
   public String getSerializationView() {
     return serializationView == null ? ProduceProcessor.super.getSerializationView()
-        : serializationView.getCanonicalName();
+        : serializationView.getName();
   }
 
   @Override

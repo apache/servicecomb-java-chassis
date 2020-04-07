@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.demo;
 
-import static org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager.DEFAULT_SERIAL_CLASS;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -148,8 +146,7 @@ public class CodeFirstRestTemplate {
         HttpMethod.POST,
         requestEntity,
         JAXBPerson.class);
-    TestMgr.check(-1, ProduceProcessorManager.INSTANCE.ensureFindValue(MediaType.APPLICATION_XML_VALUE)
-        .get(DEFAULT_SERIAL_CLASS).getOrder());
+    TestMgr.check(-1, ProduceProcessorManager.INSTANCE.findProcessor(MediaType.APPLICATION_XML_VALUE, null).getOrder());
     TestMgr.check(person, resEntity.getBody());
   }
 
