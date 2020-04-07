@@ -44,6 +44,9 @@ public interface HttpClientOptionsSPI {
   /*****************  vert.x common settings ***************************/
   int getEventLoopPoolSize();
 
+  boolean useSharedVertx();
+
+  /*****************  vert.x vertical common settings ***************************/
   int getInstanceCount();
 
   boolean isWorker();
@@ -59,6 +62,24 @@ public interface HttpClientOptionsSPI {
 
   int getIdleTimeoutInSeconds();
 
+  boolean isTryUseCompression();
+
+  int getMaxWaitQueueSize();
+
+  int getMaxPoolSize();
+
+  boolean isKeepAlive();
+
+  int getMaxHeaderSize();
+
+  int getKeepAliveTimeout();
+
+  /***************** http 2 settings ****************************/
+  int getHttp2MultiplexingLimit();
+
+  int getHttp2MaxPoolSize();
+
+  boolean isUseAlpn();
   /*****************  proxy settings ***************************/
   boolean isProxyEnable();
 
@@ -79,6 +100,13 @@ public interface HttpClientOptionsSPI {
     httpClientOptions.setProtocolVersion(spi.getHttpVersion());
     httpClientOptions.setConnectTimeout(spi.getConnectTimeoutInMillis());
     httpClientOptions.setIdleTimeout(spi.getIdleTimeoutInSeconds());
+    httpClientOptions.setTryUseCompression(spi.isTryUseCompression());
+    httpClientOptions.setMaxWaitQueueSize(spi.getMaxWaitQueueSize());
+    httpClientOptions.setMaxPoolSize(spi.getMaxPoolSize());
+    httpClientOptions.setKeepAlive(spi.isKeepAlive());
+    httpClientOptions.setMaxHeaderSize(spi.getMaxHeaderSize());
+    httpClientOptions.setKeepAliveTimeout(spi.getKeepAliveTimeout());
+
     if (spi.isProxyEnable()) {
       ProxyOptions proxy = new ProxyOptions();
       proxy.setHost(spi.getProxyHost());
@@ -88,8 +116,12 @@ public interface HttpClientOptionsSPI {
           Encryptions.decode(spi.getProxyPassword(), spi.getConfigTag()));
       httpClientOptions.setProxyOptions(proxy);
     }
+
     if (spi.getHttpVersion() == HttpVersion.HTTP_2) {
       httpClientOptions.setHttp2ClearTextUpgrade(false);
+      httpClientOptions.setUseAlpn(spi.isUseAlpn());
+      httpClientOptions.setHttp2MultiplexingLimit(spi.getHttp2MultiplexingLimit());
+      httpClientOptions.setHttp2MaxPoolSize(spi.getHttp2MaxPoolSize());
     }
 
     if (spi.isSsl()) {

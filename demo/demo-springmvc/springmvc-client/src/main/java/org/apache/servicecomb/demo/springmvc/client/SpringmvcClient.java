@@ -29,6 +29,7 @@ import org.apache.servicecomb.demo.controller.Person;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.provider.springmvc.reference.UrlWithProviderPrefixClientHttpRequestFactory;
@@ -79,6 +80,7 @@ public class SpringmvcClient {
   }
 
   public static void run() throws Exception {
+    testHttpClientsIsOk();
     testConfigurationDuplicate();
 
     templateUrlWithServiceName.setRequestFactory(new UrlWithServiceNameClientHttpRequestFactory());
@@ -105,6 +107,20 @@ public class SpringmvcClient {
     testAllTransport(microserviceName);
     testRestTransport(microserviceName, prefix);
     CategorizedTestCaseRunner.runCategorizedTestCase(microserviceName);
+  }
+
+  private static void testHttpClientsIsOk() {
+    TestMgr.check(HttpClients.getClient("registry") != null, true);
+    TestMgr.check(HttpClients.getClient("registry-watch") != null, true);
+    TestMgr.check(HttpClients.getClient("config-center") != null, true);
+    TestMgr.check(HttpClients.getClient("http-transport-client") != null, true);
+    TestMgr.check(HttpClients.getClient("http2-transport-client") != null, true);
+
+    TestMgr.check(HttpClients.getClient("registry", false) != null, true);
+    TestMgr.check(HttpClients.getClient("registry-watch", false) != null, true);
+    TestMgr.check(HttpClients.getClient("config-center", false) != null, true);
+    TestMgr.check(HttpClients.getClient("http-transport-client", false) != null, true);
+    TestMgr.check(HttpClients.getClient("http2-transport-client", false) != null, true);
   }
 
   private static void testRestTransport(String microserviceName, String prefix) {

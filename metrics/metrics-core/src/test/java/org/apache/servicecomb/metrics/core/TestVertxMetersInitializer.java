@@ -19,12 +19,11 @@ package org.apache.servicecomb.metrics.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.core.transport.AbstractTransport;
-import org.apache.servicecomb.core.transport.TransportVertxFactory;
 import org.apache.servicecomb.foundation.metrics.PolledEvent;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
+import org.apache.servicecomb.foundation.vertx.SharedVertxFactory;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.metrics.core.publish.DefaultLogPublisher;
@@ -47,7 +46,6 @@ import io.vertx.core.Future;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpServer;
 import io.vertx.ext.web.Router;
-import mockit.Expectations;
 
 public class TestVertxMetersInitializer {
   GlobalRegistry globalRegistry = new GlobalRegistry(new ManualClock());
@@ -55,8 +53,6 @@ public class TestVertxMetersInitializer {
   Registry registry = new DefaultRegistry(globalRegistry.getClock());
 
   EventBus eventBus = new EventBus();
-
-  TransportVertxFactory transportVertxFactory;
 
   VertxMetersInitializer vertxMetersInitializer = new VertxMetersInitializer();
 
@@ -115,29 +111,13 @@ public class TestVertxMetersInitializer {
 
   @Test
   public void init() throws InterruptedException {
-    transportVertxFactory = new TransportVertxFactory();
-    new Expectations(AbstractTransport.class) {
-      {
-        AbstractTransport.getTransportVertxFactory();
-        result = transportVertxFactory;
-      }
-    };
-    // TODO will be fixed by next vertx update.
-//    new Expectations(VertxUtils.class) {
-//      {
-
-//        VertxUtils.getEventLoopContextCreatedCount(anyString);
-//        result = 4;
-//      }
-//    };
-
     globalRegistry.add(registry);
     vertxMetersInitializer.init(globalRegistry, eventBus, null);
     logPublisher.init(null, eventBus, null);
     VertxUtils
-        .blockDeploy(transportVertxFactory.getTransportVertx(), TestServerVerticle.class, new DeploymentOptions());
+        .blockDeploy(SharedVertxFactory.getSharedVertx(), TestServerVerticle.class, new DeploymentOptions());
     VertxUtils
-        .blockDeploy(transportVertxFactory.getTransportVertx(), TestClientVerticle.class, new DeploymentOptions());
+        .blockDeploy(SharedVertxFactory.getSharedVertx(), TestClientVerticle.class, new DeploymentOptions());
 
     globalRegistry.poll(1);
     List<Meter> meters = Lists.newArrayList(registry.iterator());

@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.AddressResolverConfig;
+import org.apache.servicecomb.foundation.vertx.SharedVertxFactory;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
 import org.apache.servicecomb.foundation.vertx.client.ClientVerticle;
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 
+import io.vertx.core.Context;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -78,12 +80,18 @@ public class HttpClients {
   }
 
   private static ClientPoolManager<HttpClientWithContext> createClientPoolManager(HttpClientOptionsSPI option) {
-    VertxOptions vertxOptions = new VertxOptions()
-        .setAddressResolverOptions(AddressResolverConfig.getAddressResover(option.getConfigTag()))
-        .setEventLoopPoolSize(option.getEventLoopPoolSize());
+    Vertx vertx;
 
-    // Maybe we can deploy only one vert.x for the application. However this has did it like this.
-    Vertx vertx = VertxUtils.getOrCreateVertxByName(option.clientName(), vertxOptions);
+    if (option.useSharedVertx()) {
+      vertx = SharedVertxFactory.getSharedVertx();
+    } else {
+      VertxOptions vertxOptions = new VertxOptions()
+          .setAddressResolverOptions(AddressResolverConfig.getAddressResover(option.getConfigTag()))
+          .setEventLoopPoolSize(option.getEventLoopPoolSize());
+
+      // Maybe we can deploy only one vert.x for the application. However this has did it like this.
+      vertx = VertxUtils.getOrCreateVertxByName(option.clientName(), vertxOptions);
+    }
 
     ClientPoolManager<HttpClientWithContext> clientPoolManager = new ClientPoolManager<>(vertx,
         new HttpClientPoolFactory(HttpClientOptionsSPI.createHttpClientOptions(option)));
@@ -107,6 +115,39 @@ public class HttpClients {
    * @return the deployed instance name
    */
   public static HttpClientWithContext getClient(String clientName) {
+    if (httpClients.get(clientName) == null) {
+      LOGGER.error("client name [{}] not exists, should only happen in tests.", clientName);
+      return null;
+    }
     return httpClients.get(clientName).findThreadBindClientPool();
+  }
+
+  /**
+   * get client instance by name
+   * @param clientName instance name
+   * @param sync reactive or not. false for reactive.
+   * @return the deployed instance name
+   */
+  public static HttpClientWithContext getClient(String clientName, boolean sync) {
+    if (httpClients.get(clientName) == null) {
+      LOGGER.error("client name [{}] not exists, should only happen in tests.", clientName);
+      return null;
+    }
+    return httpClients.get(clientName).findClientPool(sync);
+  }
+
+  /**
+   * get client instance by name
+   * @param clientName instance name
+   * @param sync reactive or not. false for reactive.
+   * @param targetContext running context
+   * @return the deployed instance name
+   */
+  public static HttpClientWithContext getClient(String clientName, boolean sync, Context targetContext) {
+    if (httpClients.get(clientName) == null) {
+      LOGGER.error("client name [{}] not exists, should only happen in tests.", clientName);
+      return null;
+    }
+    return httpClients.get(clientName).findClientPool(sync, targetContext);
   }
 }

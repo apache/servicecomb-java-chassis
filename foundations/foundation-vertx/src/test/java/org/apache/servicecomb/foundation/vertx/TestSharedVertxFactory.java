@@ -14,19 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.core.transport;
+package org.apache.servicecomb.foundation.vertx;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-public class TestTransportVertxFactory {
+public class TestSharedVertxFactory {
   @Test
   public void getTransportVertx() {
-    TransportVertxFactory vertxFactory = new TransportVertxFactory();
+    Assert.assertNotNull(SharedVertxFactory.getSharedVertx());
+    Assert.assertSame(SharedVertxFactory.getSharedVertx(), SharedVertxFactory.getSharedVertx());
 
-    Assert.assertNotNull(vertxFactory.getTransportVertx());
-    Assert.assertSame(vertxFactory.getTransportVertx(), vertxFactory.getTransportVertx());
-
-    vertxFactory.getTransportVertx().close();
+    SharedVertxFactory.getSharedVertx().close();
   }
 }

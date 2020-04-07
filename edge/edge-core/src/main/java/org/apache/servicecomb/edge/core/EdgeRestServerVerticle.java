@@ -16,15 +16,11 @@
  */
 package org.apache.servicecomb.edge.core;
 
-import org.apache.servicecomb.transport.rest.client.RestTransportClient;
 import org.apache.servicecomb.transport.rest.vertx.RestServerVerticle;
 
 public class EdgeRestServerVerticle extends RestServerVerticle {
   @Override
   public void start() throws Exception {
     super.start();
-
-    RestTransportClient restClient = (RestTransportClient) config().getValue(RestTransportClient.class.getName());
-    restClient.getClientMgr().findClientPool(false, context);
   }
 }

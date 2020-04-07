@@ -16,10 +16,10 @@
  */
 package org.apache.servicecomb.metrics.core;
 
-import org.apache.servicecomb.core.transport.AbstractTransport;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
+import org.apache.servicecomb.foundation.vertx.SharedVertxFactory;
 import org.apache.servicecomb.metrics.core.meter.vertx.HttpClientEndpointsMeter;
 import org.apache.servicecomb.metrics.core.meter.vertx.ServerEndpointsMeter;
 import org.apache.servicecomb.metrics.core.meter.vertx.VertxEndpointsMeter;
@@ -45,9 +45,7 @@ public class VertxMetersInitializer implements MetricsInitializer {
     Id endpointsId = registry.createId(VERTX_ENDPOINTS);
     VertxEndpointsMeter clientMeter = new HttpClientEndpointsMeter(
         endpointsId.withTag(ENDPOINTS_TYPE, ENDPOINTS_CLINET),
-        AbstractTransport
-            .getTransportVertxFactory()
-            .getMetricsFactory()
+        SharedVertxFactory.getMetricsFactory()
             .getVertxMetrics()
             .getClientEndpointMetricManager()
             .getClientEndpointMetricMap());
@@ -55,9 +53,7 @@ public class VertxMetersInitializer implements MetricsInitializer {
 
     VertxEndpointsMeter serverMeter = new ServerEndpointsMeter(
         endpointsId.withTag(ENDPOINTS_TYPE, ENDPOINTS_SERVER),
-        AbstractTransport
-            .getTransportVertxFactory()
-            .getMetricsFactory()
+        SharedVertxFactory.getMetricsFactory()
             .getVertxMetrics()
             .getServerEndpointMetricMap());
     SpectatorUtils.registerMeter(registry, serverMeter);

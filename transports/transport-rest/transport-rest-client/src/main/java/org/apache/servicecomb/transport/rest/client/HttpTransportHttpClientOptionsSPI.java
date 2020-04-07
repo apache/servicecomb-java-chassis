@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.client;
+package org.apache.servicecomb.transport.rest.client;
 
-import org.apache.servicecomb.deployment.Deployment;
-import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientOptionsSPI;
 
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpVersion;
 
-public class ConfigCenterHttpClientOptionsSPI implements HttpClientOptionsSPI {
-  public static final String CLIENT_NAME = "config-center";
+public class HttpTransportHttpClientOptionsSPI implements HttpClientOptionsSPI {
+  public static final String CLIENT_NAME = "http-transport-client";
+
+  public static final String CLIENT_TAG = "rest.consumer";
 
   @Override
   public String clientName() {
@@ -35,32 +35,33 @@ public class ConfigCenterHttpClientOptionsSPI implements HttpClientOptionsSPI {
 
   @Override
   public int getOrder() {
-    return -100;
+    return 100;
   }
 
   @Override
   public boolean enabled() {
-    return Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_CONFIG_CENTER) != null;
+    return TransportClientConfig.isHttpTransportClientEnabled();
   }
 
   @Override
   public String getConfigTag() {
-    return "cc.consumer";
+    return CLIENT_TAG;
   }
 
   @Override
   public int getEventLoopPoolSize() {
-    return ConfigCenterConfig.INSTANCE.getEventLoopSize();
+    // not reading this, using shared transport vert.x
+    return -1;
   }
 
   @Override
   public boolean useSharedVertx() {
-    return false;
+    return true;
   }
 
   @Override
   public int getInstanceCount() {
-    return ConfigCenterConfig.INSTANCE.getVerticalInstanceCount();
+    return TransportClientConfig.getThreadCount();
   }
 
   @Override
@@ -85,42 +86,42 @@ public class ConfigCenterHttpClientOptionsSPI implements HttpClientOptionsSPI {
 
   @Override
   public int getConnectTimeoutInMillis() {
-    return ConfigCenterConfig.INSTANCE.getConnectionTimeout();
+    return TransportClientConfig.getConnectionTimeoutInMillis();
   }
 
   @Override
   public int getIdleTimeoutInSeconds() {
-    return ConfigCenterConfig.INSTANCE.getIdleTimeoutInSeconds();
+    return TransportClientConfig.getConnectionIdleTimeoutInSeconds();
   }
 
   @Override
   public boolean isTryUseCompression() {
-    return HttpClientOptions.DEFAULT_TRY_USE_COMPRESSION;
+    return TransportClientConfig.getConnectionCompression();
   }
 
   @Override
   public int getMaxWaitQueueSize() {
-    return HttpClientOptions.DEFAULT_MAX_WAIT_QUEUE_SIZE;
+    return TransportClientConfig.getMaxWaitQueueSize();
   }
 
   @Override
   public int getMaxPoolSize() {
-    return HttpClientOptions.DEFAULT_MAX_POOL_SIZE;
+    return TransportClientConfig.getConnectionMaxPoolSize();
   }
 
   @Override
   public boolean isKeepAlive() {
-    return HttpClientOptions.DEFAULT_KEEP_ALIVE;
+    return TransportClientConfig.getConnectionKeepAlive();
   }
 
   @Override
   public int getMaxHeaderSize() {
-    return HttpClientOptions.DEFAULT_MAX_HEADER_SIZE;
+    return TransportClientConfig.getMaxHeaderSize();
   }
 
   @Override
   public int getKeepAliveTimeout() {
-    return HttpClientOptions.DEFAULT_KEEP_ALIVE_TIMEOUT;
+    return TransportClientConfig.getConnectionIdleTimeoutInSeconds();
   }
 
   @Override
@@ -140,31 +141,32 @@ public class ConfigCenterHttpClientOptionsSPI implements HttpClientOptionsSPI {
 
   @Override
   public boolean isProxyEnable() {
-    return ConfigCenterConfig.INSTANCE.isProxyEnable();
+    // now transport proxy not implemented
+    return false;
   }
 
   @Override
   public String getProxyHost() {
-    return ConfigCenterConfig.INSTANCE.getProxyHost();
+    return null;
   }
 
   @Override
   public int getProxyPort() {
-    return ConfigCenterConfig.INSTANCE.getProxyPort();
+    return 0;
   }
 
   @Override
   public String getProxyUsername() {
-    return ConfigCenterConfig.INSTANCE.getProxyUsername();
+    return null;
   }
 
   @Override
   public String getProxyPassword() {
-    return ConfigCenterConfig.INSTANCE.getProxyPasswd();
+    return null;
   }
 
   @Override
   public boolean isSsl() {
-    return ConfigCenterConfig.INSTANCE.getServerUri().get(0).startsWith("https");
+    return true;
   }
 }

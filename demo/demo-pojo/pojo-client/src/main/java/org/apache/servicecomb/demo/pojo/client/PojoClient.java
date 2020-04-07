@@ -42,6 +42,7 @@ import org.apache.servicecomb.demo.smartcare.SmartCare;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
@@ -108,6 +109,7 @@ public class PojoClient {
   }
 
   public static void run() throws Exception {
+    testHttpClientsIsOk();
     CategorizedTestCaseRunner.runCategorizedTestCase("pojo");
 
     smartcare = BeanUtils.getBean("smartcare");
@@ -168,6 +170,20 @@ public class PojoClient {
 
       testTraceIdOnContextContainsTraceId();
     }
+  }
+
+  private static void testHttpClientsIsOk() {
+    TestMgr.check(HttpClients.getClient("registry") != null, true);
+    TestMgr.check(HttpClients.getClient("registry-watch") != null, false);
+    TestMgr.check(HttpClients.getClient("config-center") != null, false);
+    TestMgr.check(HttpClients.getClient("http-transport-client") != null, false);
+    TestMgr.check(HttpClients.getClient("http2-transport-client") != null, true);
+
+    TestMgr.check(HttpClients.getClient("registry", false) != null, true);
+    TestMgr.check(HttpClients.getClient("registry-watch", false) != null, false);
+    TestMgr.check(HttpClients.getClient("config-center", false) != null, false);
+    TestMgr.check(HttpClients.getClient("http-transport-client", false) != null, false);
+    TestMgr.check(HttpClients.getClient("http2-transport-client", false) != null, true);
   }
 
   /**
