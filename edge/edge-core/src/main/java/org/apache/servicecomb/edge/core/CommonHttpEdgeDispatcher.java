@@ -34,6 +34,8 @@ import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTree;
+import org.apache.servicecomb.transport.rest.client.Http2TransportHttpClientOptionsSPI;
+import org.apache.servicecomb.transport.rest.client.HttpTransportHttpClientOptionsSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -136,16 +138,16 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
         .setSsl(endpointObject.isSslEnabled())
         .setURI(uri);
 
-    // TODO: now use registry client, after next PR transport client is fixed, using that.
-    HttpClient httpClient = HttpClients.getClient("registry").getHttpClient();
+    HttpClient httpClient;
+    if (endpointObject.isHttp2Enabled()) {
+      httpClient = HttpClients.getClient(Http2TransportHttpClientOptionsSPI.CLIENT_NAME, false).getHttpClient();
+    } else {
+      httpClient = HttpClients.getClient(HttpTransportHttpClientOptionsSPI.CLIENT_NAME, false).getHttpClient();
+    }
     HttpClientRequest httpClientRequest = httpClient
         .request(context.request().method(), requestOptions, httpClientResponse -> {
           context.response().setStatusCode(httpClientResponse.statusCode());
           httpClientResponse.headers().forEach((header) -> {
-            // any headers need to exclude can add here
-//              if ("Content-Length".equalsIgnoreCase(header.getKey())) {
-//                return;
-//              }
             context.response().headers().set(header.getKey(), header.getValue());
           });
           httpClientResponse.handler(data -> {
@@ -154,10 +156,6 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
           httpClientResponse.endHandler((v) -> context.response().end());
         });
     context.request().headers().forEach((header) -> {
-      // any headers need to exclude can add here
-//              if ("Content-Length".equalsIgnoreCase(header.getKey())) {
-//                return;
-//              }
       httpClientRequest.headers().set(header.getKey(), header.getValue());
     });
     context.request().handler(data -> httpClientRequest.write(data));

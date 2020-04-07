@@ -29,6 +29,7 @@ servicecomb:
         watch: false
         empty:
           protection: true
+  rest.client.enabled: false # using only http2
   handler:
     chain:
       Consumer:
@@ -39,3 +40,6 @@ servicecomb:
   loadbalance:
     strategy:
       name: Random
+  metrics:
+    window_time: 12000
+    publisher.defaultLog.enabled: false # when in testing , can turn on

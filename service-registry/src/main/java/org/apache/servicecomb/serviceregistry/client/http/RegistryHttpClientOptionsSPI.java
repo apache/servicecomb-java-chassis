@@ -23,6 +23,7 @@ import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.VertxOptions;
+import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpVersion;
 
 public class RegistryHttpClientOptionsSPI implements HttpClientOptionsSPI {
@@ -54,6 +55,11 @@ public class RegistryHttpClientOptionsSPI implements HttpClientOptionsSPI {
   public int getEventLoopPoolSize() {
     return DynamicPropertyFactory.getInstance()
         .getIntProperty(ServiceRegistryConfig.EVENT_LOOP_POOL_SIZE, 4).get();
+  }
+
+  @Override
+  public boolean useSharedVertx() {
+    return false;
   }
 
   @Override
@@ -89,6 +95,51 @@ public class RegistryHttpClientOptionsSPI implements HttpClientOptionsSPI {
   @Override
   public int getIdleTimeoutInSeconds() {
     return serviceRegistryConfig.getIdleConnectionTimeout();
+  }
+
+  @Override
+  public boolean isTryUseCompression() {
+    return false;
+  }
+
+  @Override
+  public int getMaxWaitQueueSize() {
+    return HttpClientOptions.DEFAULT_MAX_WAIT_QUEUE_SIZE;
+  }
+
+  @Override
+  public int getMaxPoolSize() {
+    return HttpClientOptions.DEFAULT_MAX_POOL_SIZE;
+  }
+
+  @Override
+  public boolean isKeepAlive() {
+    return HttpClientOptions.DEFAULT_KEEP_ALIVE;
+  }
+
+  @Override
+  public int getMaxHeaderSize() {
+    return HttpClientOptions.DEFAULT_MAX_HEADER_SIZE;
+  }
+
+  @Override
+  public int getKeepAliveTimeout() {
+    return HttpClientOptions.DEFAULT_KEEP_ALIVE_TIMEOUT;
+  }
+
+  @Override
+  public int getHttp2MultiplexingLimit() {
+    return HttpClientOptions.DEFAULT_HTTP2_MULTIPLEXING_LIMIT;
+  }
+
+  @Override
+  public int getHttp2MaxPoolSize() {
+    return HttpClientOptions.DEFAULT_HTTP2_MAX_POOL_SIZE;
+  }
+
+  @Override
+  public boolean isUseAlpn() {
+    return HttpClientOptions.DEFAULT_USE_ALPN;
   }
 
   @Override

@@ -14,9 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.core.transport;
+package org.apache.servicecomb.foundation.vertx;
 
-import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.metrics.DefaultVertxMetricsFactory;
 import org.apache.servicecomb.foundation.vertx.metrics.MetricsOptionsEx;
 
@@ -24,15 +23,15 @@ import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.shareddata.Shareable;
 
-public class TransportVertxFactory {
-  static class TransportVertxInfo implements Shareable {
+public class SharedVertxFactory {
+  static class SharedVertxInfo implements Shareable {
     public VertxOptions vertxOptions = new VertxOptions();
 
     public DefaultVertxMetricsFactory metricsFactory = new DefaultVertxMetricsFactory();
 
     public MetricsOptionsEx metricsOptionsEx = (MetricsOptionsEx) metricsFactory.newOptions();
 
-    public TransportVertxInfo() {
+    public SharedVertxInfo() {
       vertxOptions.setMetricsOptions(metricsOptionsEx);
     }
   }
@@ -41,18 +40,18 @@ public class TransportVertxFactory {
 
   private static final String INFO = "transport-vertx-info";
 
-  public DefaultVertxMetricsFactory getMetricsFactory() {
-    TransportVertxInfo info = (TransportVertxInfo) getTransportVertx().sharedData().getLocalMap(LOCAL_MAP_NAME)
+  public static DefaultVertxMetricsFactory getMetricsFactory() {
+    SharedVertxInfo info = (SharedVertxInfo) getSharedVertx().sharedData().getLocalMap(LOCAL_MAP_NAME)
         .get(INFO);
     return info.metricsFactory;
   }
 
-  public Vertx getTransportVertx() {
-    return VertxUtils.getVertxMap().computeIfAbsent("transport", this::createTransportVertx);
+  public static Vertx getSharedVertx() {
+    return VertxUtils.getVertxMap().computeIfAbsent("transport", SharedVertxFactory::createSharedVertx);
   }
 
-  private Vertx createTransportVertx(String name) {
-    TransportVertxInfo info = new TransportVertxInfo();
+  private static Vertx createSharedVertx(String name) {
+    SharedVertxInfo info = new SharedVertxInfo();
 
     Vertx vertx = VertxUtils.init(info.vertxOptions);
     info.metricsFactory.setVertx(vertx, info.vertxOptions);
