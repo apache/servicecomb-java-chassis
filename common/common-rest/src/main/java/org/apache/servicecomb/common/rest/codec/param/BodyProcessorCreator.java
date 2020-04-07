@@ -34,7 +34,7 @@ import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
 import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.converter.ConverterMgr;
-import org.apache.servicecomb.swagger.generator.core.processor.parameter.JsonViewProcessor;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -78,11 +78,12 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
     }
 
     public BodyProcessor(JavaType targetType, String serialViewClass, boolean isString, boolean isRequired) {
-      if (serialViewClass != null) {
+      if (!StringUtils.isEmpty(serialViewClass)) {
         try {
           this.serialViewClass = Class.forName(serialViewClass);
         } catch (Throwable e) {
           //ignore
+          LOGGER.warn("Failed to create body processor {}, annotation @JsonView may be invalid", serialViewClass, e);
         }
       }
       this.targetType = targetType;
@@ -254,11 +255,11 @@ public class BodyProcessorCreator implements ParamValueProcessorCreator {
         genericParamType == null ? null : TypeFactory.defaultInstance().constructType(genericParamType);
     boolean rawJson = SwaggerUtils.isRawJsonType(parameter);
     if (rawJson) {
-      return new RawJsonBodyProcessor(targetType, (String) parameter.getVendorExtensions().get(
-          JsonViewProcessor.VENDOR_EXTENSION_KEY), isString, parameter.getRequired());
+      return new RawJsonBodyProcessor(targetType, (String) parameter.getVendorExtensions()
+          .get(SwaggerConst.EXT_JSON_VIEW), isString, parameter.getRequired());
     }
 
-    return new BodyProcessor(targetType, (String) parameter.getVendorExtensions().get(
-        JsonViewProcessor.VENDOR_EXTENSION_KEY), isString, parameter.getRequired());
+    return new BodyProcessor(targetType, (String) parameter.getVendorExtensions()
+        .get(SwaggerConst.EXT_JSON_VIEW), isString, parameter.getRequired());
   }
 }

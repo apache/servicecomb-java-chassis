@@ -17,12 +17,10 @@
 
 package org.apache.servicecomb.common.rest.definition;
 
-import static org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager.DEFAULT_SERIAL_CLASS;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.File;
-import java.lang.annotation.Annotation;
 import java.util.Arrays;
 
 import javax.ws.rs.FormParam;
@@ -30,7 +28,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
@@ -38,7 +35,6 @@ import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -48,7 +44,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import io.swagger.models.Swagger;
 import mockit.Expectations;
-import mockit.Mocked;
 
 public class TestRestOperationMeta {
   @Path("/")
@@ -60,10 +55,26 @@ public class TestRestOperationMeta {
       return null;
     }
 
+    @Path("/emptyProducesWithView")
+    @GET
+    @Produces("")
+    @JsonView(Object.class)
+    public String emptyProducesWithView() {
+      return null;
+    }
+
     @Path("/notSupport")
     @GET
     @Produces("notSupport")
     public void notSupport() {
+
+    }
+
+    @Path("/notSupportWithView")
+    @GET
+    @Produces("notSupport")
+    @JsonView(Object.class)
+    public void notSupportWithView() {
 
     }
 
@@ -74,10 +85,26 @@ public class TestRestOperationMeta {
       return null;
     }
 
+    @Path("/textPlainWithView")
+    @GET
+    @Produces(MediaType.TEXT_PLAIN)
+    @JsonView(Object.class)
+    public String textPlainWithView() {
+      return null;
+    }
+
     @Path("/json")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public String json() {
+      return null;
+    }
+
+    @Path("/jsonWithView")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @JsonView(Object.class)
+    public String jsonWithView() {
       return null;
     }
 
@@ -88,6 +115,14 @@ public class TestRestOperationMeta {
 
     }
 
+    @Path("/textCharJsonCharWithView")
+    @GET
+    @Produces({MediaType.APPLICATION_JSON + ";charset=UTF-8", MediaType.TEXT_PLAIN + ";charset=UTF-8"})
+    @JsonView(Object.class)
+    public void textCharJsonCharWithView() {
+
+    }
+
     @Path("/download")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -95,9 +130,22 @@ public class TestRestOperationMeta {
       return null;
     }
 
+    @Path("/downloadWithView")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @JsonView(Object.class)
+    public File downloadWithView() {
+      return null;
+    }
+
     @Path("/form")
     @POST
     public void form(@FormParam("form") String form) {
+    }
+
+    @Path("/formWithView")
+    @POST
+    public void formWithView(@FormParam("form") String form) {
     }
   }
 
@@ -133,14 +181,32 @@ public class TestRestOperationMeta {
     operationMeta.produces = null;
     operationMeta.createProduceProcessors();
 
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
         operationMeta.ensureFindProduceProcessor((String) null));
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
         operationMeta.ensureFindProduceProcessor("*/*"));
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
         operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
     for (String produce : ProduceProcessorManager.INSTANCE.keys()) {
-      ProduceProcessor expected = ProduceProcessorManager.INSTANCE.findValue(produce).get(DEFAULT_SERIAL_CLASS);
+      ProduceProcessor expected = ProduceProcessorManager.INSTANCE.findProcessor(produce, null);
+      Assert.assertSame(expected, operationMeta.findProduceProcessor(produce));
+    }
+  }
+
+  @Test
+  public void testCreateProduceProcessorsNullWithView() {
+    findOperation("emptyProducesWithView");
+    operationMeta.produces = null;
+    operationMeta.createProduceProcessors();
+
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor((String) null));
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor("*/*"));
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
+    for (String produce : ProduceProcessorManager.INSTANCE.keys()) {
+      ProduceProcessor expected = ProduceProcessorManager.INSTANCE.findProcessor(produce, Object.class);
       Assert.assertSame(expected, operationMeta.findProduceProcessor(produce));
     }
   }
@@ -151,14 +217,32 @@ public class TestRestOperationMeta {
     operationMeta.produces = Arrays.asList();
     operationMeta.createProduceProcessors();
 
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
         operationMeta.ensureFindProduceProcessor((String) null));
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
         operationMeta.ensureFindProduceProcessor("*/*"));
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
         operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
     for (String produce : ProduceProcessorManager.INSTANCE.keys()) {
-      ProduceProcessor expected = ProduceProcessorManager.INSTANCE.findValue(produce).get(DEFAULT_SERIAL_CLASS);
+      ProduceProcessor expected = ProduceProcessorManager.INSTANCE.findProcessor(produce, null);
+      Assert.assertSame(expected, operationMeta.findProduceProcessor(produce));
+    }
+  }
+
+  @Test
+  public void testCreateProduceProcessorsEmptyWithView() {
+    findOperation("emptyProducesWithView");
+    operationMeta.produces = Arrays.asList();
+    operationMeta.createProduceProcessors();
+
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor((String) null));
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor("*/*"));
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
+    for (String produce : ProduceProcessorManager.INSTANCE.keys()) {
+      ProduceProcessor expected = ProduceProcessorManager.INSTANCE.findProcessor(produce, Object.class);
       Assert.assertSame(expected, operationMeta.findProduceProcessor(produce));
     }
   }
@@ -167,13 +251,28 @@ public class TestRestOperationMeta {
   public void testCreateProduceProcessorsNormal() {
     findOperation("json");
 
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
         operationMeta.ensureFindProduceProcessor((String) null));
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
         operationMeta.ensureFindProduceProcessor("*/*"));
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
         operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getJsonProcessorMap().get(DEFAULT_SERIAL_CLASS),
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultJsonProcessor(),
+        operationMeta.findProduceProcessor(MediaType.APPLICATION_JSON));
+    Assert.assertNull(operationMeta.findProduceProcessor(MediaType.TEXT_PLAIN));
+  }
+
+  @Test
+  public void testCreateProduceProcessorsNormalWithView() {
+    findOperation("jsonWithView");
+
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findJsonProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor((String) null));
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findJsonProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor("*/*"));
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findJsonProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findJsonProcessorByViewClass(Object.class),
         operationMeta.findProduceProcessor(MediaType.APPLICATION_JSON));
     Assert.assertNull(operationMeta.findProduceProcessor(MediaType.TEXT_PLAIN));
   }
@@ -182,13 +281,28 @@ public class TestRestOperationMeta {
   public void testCreateProduceProcessorsNotSupported() {
     findOperation("notSupport");
 
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
         operationMeta.ensureFindProduceProcessor((String) null));
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
         operationMeta.ensureFindProduceProcessor("*/*"));
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS),
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessor(),
         operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getJsonProcessorMap().get(DEFAULT_SERIAL_CLASS),
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultJsonProcessor(),
+        operationMeta.findProduceProcessor(MediaType.APPLICATION_JSON));
+    Assert.assertNull(operationMeta.findProduceProcessor(MediaType.TEXT_PLAIN));
+  }
+
+  @Test
+  public void testCreateProduceProcessorsNotSupportedWithView() {
+    findOperation("notSupportWithView");
+
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor((String) null));
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor("*/*"));
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor(ProduceProcessorManager.DEFAULT_TYPE));
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(Object.class),
         operationMeta.findProduceProcessor(MediaType.APPLICATION_JSON));
     Assert.assertNull(operationMeta.findProduceProcessor(MediaType.TEXT_PLAIN));
   }
@@ -197,12 +311,26 @@ public class TestRestOperationMeta {
   public void testCreateProduceProcessorsTextAndWildcard() {
     findOperation("textPlain");
 
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getPlainProcessorMap().get(DEFAULT_SERIAL_CLASS),
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultPlainProcessor(),
         operationMeta.ensureFindProduceProcessor(MediaType.WILDCARD));
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getPlainProcessorMap().get(DEFAULT_SERIAL_CLASS),
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultPlainProcessor(),
         operationMeta.ensureFindProduceProcessor(MediaType.TEXT_PLAIN));
     Assert.assertNull(operationMeta.ensureFindProduceProcessor(MediaType.APPLICATION_JSON));
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getPlainProcessorMap().get(DEFAULT_SERIAL_CLASS),
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultPlainProcessor(),
+        operationMeta.ensureFindProduceProcessor(
+            MediaType.APPLICATION_JSON + "," + MediaType.APPLICATION_XML + "," + MediaType.WILDCARD));
+  }
+
+  @Test
+  public void testCreateProduceProcessorsTextAndWildcardWithView() {
+    findOperation("textPlainWithView");
+
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findPlainProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor(MediaType.WILDCARD));
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findPlainProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor(MediaType.TEXT_PLAIN));
+    Assert.assertNull(operationMeta.ensureFindProduceProcessor(MediaType.APPLICATION_JSON));
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findPlainProcessorByViewClass(Object.class),
         operationMeta.ensureFindProduceProcessor(
             MediaType.APPLICATION_JSON + "," + MediaType.APPLICATION_XML + "," + MediaType.WILDCARD));
   }
@@ -211,80 +339,31 @@ public class TestRestOperationMeta {
   public void testCreateProduceProcessorsWithSemicolon() {
     findOperation("textCharJsonChar");
 
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getPlainProcessorMap().get(DEFAULT_SERIAL_CLASS),
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultPlainProcessor(),
         operationMeta.ensureFindProduceProcessor(MediaType.TEXT_PLAIN));
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getJsonProcessorMap().get(DEFAULT_SERIAL_CLASS),
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultJsonProcessor(),
         operationMeta.ensureFindProduceProcessor(MediaType.APPLICATION_JSON));
   }
 
   @Test
-  public void testEnsureFindProduceProcessorRequest(@Mocked HttpServletRequestEx requestEx,
-      @Mocked JsonView annotation) {
-    findOperation("emptyProduces");
-    new Expectations() {
-      {
-        requestEx.getHeader(HttpHeaders.ACCEPT);
-        result = null;
-        annotation.value();
-        result = Object.class;
-      }
-    };
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getJsonProcessorMap().get(DEFAULT_SERIAL_CLASS),
-        operationMeta.ensureFindProduceProcessor(requestEx));
+  public void testCreateProduceProcessorsWithSemicolonWithView() {
+    findOperation("textCharJsonCharWithView");
 
-    ProduceProcessor actualProcessor = operationMeta
-        .ensureFindProduceProcessor(requestEx.getHeader(HttpHeaders.ACCEPT), new Annotation[] {annotation});
-    ProduceProcessor expectProcessor = ProduceProcessorManager.INSTANCE.getJsonProcessorMap()
-        .get(Object.class.getCanonicalName());
-    Assert.assertSame(expectProcessor, actualProcessor);
-    Assert.assertEquals(expectProcessor.getSerializationView(), Object.class.getCanonicalName());
-  }
-
-  @Test
-  public void testEnsureFindProduceProcessorAcceptFound(@Mocked JsonView annotation) {
-    findOperation("textCharJsonChar");
-    new Expectations() {
-      {
-        annotation.value();
-        result = Object.class;
-      }
-    };
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getJsonProcessorMap().get(DEFAULT_SERIAL_CLASS),
-        operationMeta.ensureFindProduceProcessor("text/plain;q=0.7;charset=utf-8,application/json;q=0.8"));
-
-    ProduceProcessor actualProcessor = operationMeta
-        .ensureFindProduceProcessor("text/plain;q=0.7;charset=utf-8,application/json;q=0.8",
-            new Annotation[] {annotation});
-    ProduceProcessor expectProcessor = ProduceProcessorManager.INSTANCE.getJsonProcessorMap()
-        .get(Object.class.getCanonicalName());
-    Assert.assertSame(expectProcessor, actualProcessor);
-    Assert.assertEquals(expectProcessor.getSerializationView(), Object.class.getCanonicalName());
-  }
-
-  @Test
-  public void testEnsureFindProduceProcessorWithDownload(@Mocked JsonView annotation) {
-    findOperation("download");
-    new Expectations() {
-      {
-        annotation.value();
-        result = Object.class;
-      }
-    };
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getJsonProcessorMap().get(DEFAULT_SERIAL_CLASS),
-        operationMeta.ensureFindProduceProcessor("text/plain"));
-
-    ProduceProcessor actualProcessor = operationMeta
-        .ensureFindProduceProcessor("text/plain", new Annotation[] {annotation});
-    ProduceProcessor expectProcessor = ProduceProcessorManager.INSTANCE.getJsonProcessorMap()
-        .get(Object.class.getCanonicalName());
-    Assert.assertSame(expectProcessor, actualProcessor);
-    Assert.assertEquals(expectProcessor.getSerializationView(), Object.class.getCanonicalName());
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findPlainProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor(MediaType.TEXT_PLAIN));
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findJsonProcessorByViewClass(Object.class),
+        operationMeta.ensureFindProduceProcessor(MediaType.APPLICATION_JSON));
   }
 
   @Test
   public void testEnsureFindProduceProcessorAcceptNotFound() {
     findOperation("textCharJsonChar");
+    Assert.assertNull(operationMeta.ensureFindProduceProcessor("notSupport"));
+  }
 
+  @Test
+  public void testEnsureFindProduceProcessorAcceptNotFoundWithView() {
+    findOperation("textCharJsonCharWithView");
     Assert.assertNull(operationMeta.ensureFindProduceProcessor("notSupport"));
   }
 

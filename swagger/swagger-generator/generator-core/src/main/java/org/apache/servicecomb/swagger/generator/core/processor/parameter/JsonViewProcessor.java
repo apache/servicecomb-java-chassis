@@ -20,6 +20,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 import org.apache.servicecomb.swagger.generator.ParameterProcessor;
+import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -29,7 +30,6 @@ import io.swagger.models.Swagger;
 import io.swagger.models.parameters.Parameter;
 
 public class JsonViewProcessor implements ParameterProcessor<Parameter, Annotation> {
-  public static final String VENDOR_EXTENSION_KEY = "x-json-view";
 
   @Override
   public Type getProcessType() {
@@ -58,6 +58,6 @@ public class JsonViewProcessor implements ParameterProcessor<Parameter, Annotati
       throw new IllegalArgumentException(
           "@JsonView only supported for exactly 1 class argument ");
     }
-    parameter.getVendorExtensions().put(VENDOR_EXTENSION_KEY, jvValue[0].getName());
+    parameter.getVendorExtensions().put(SwaggerConst.EXT_JSON_VIEW, jvValue[0].getName());
   }
 }

@@ -17,15 +17,13 @@
 
 package org.apache.servicecomb.common.rest.codec.produce;
 
-import static org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager.DEFAULT_SERIAL_CLASS;
-
 import org.junit.Assert;
 import org.junit.Test;
 
 public class TestProduceProcessorManager {
   @Test
   public void testDefault() {
-    Assert.assertSame(ProduceProcessorManager.INSTANCE.getJsonProcessorMap().get(DEFAULT_SERIAL_CLASS),
-        ProduceProcessorManager.INSTANCE.getDefaultProcessorMap().get(DEFAULT_SERIAL_CLASS));
+    Assert.assertSame(ProduceProcessorManager.INSTANCE.findDefaultJsonProcessor(),
+        ProduceProcessorManager.INSTANCE.findDefaultProcessor());
   }
 }

@@ -32,7 +32,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import io.vertx.core.buffer.Buffer;
 
 public class TestProduceTextPlainProcessor {
-  ProduceProcessor pp = ProduceProcessorManager.INSTANCE.getPlainProcessorMap().get(DEFAULT_SERIAL_CLASS);
+  ProduceProcessor pp = ProduceProcessorManager.INSTANCE.findDefaultPlainProcessor();
 
   JavaType stringType = TypeFactory.defaultInstance().constructType(String.class);
 

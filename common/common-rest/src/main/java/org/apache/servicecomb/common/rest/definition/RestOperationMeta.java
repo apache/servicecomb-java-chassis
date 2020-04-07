@@ -76,10 +76,10 @@ public class RestOperationMeta {
   protected List<String> fileKeys = new ArrayList<>();
 
   // key为数据类型，比如json之类
-  private Map<String, Map<String, ProduceProcessor>> produceProcessorAcceptMap = new LinkedHashMap<>();
+  private Map<String, ProduceProcessor> produceProcessorMap = new LinkedHashMap<>();
 
   // 不一定等于mgr中的default，因为本operation可能不支持mgr中的default
-  private Map<String, ProduceProcessor> defaultProcessorViewMap;
+  private ProduceProcessor defaultProcessor;
 
   protected String absolutePath;
 
@@ -218,33 +218,61 @@ public class RestOperationMeta {
     return operationMeta;
   }
 
-  // 为operation创建支持的多种produce processor
   protected void createProduceProcessors() {
+    SwaggerProducerOperation producerOperation = operationMeta.getExtData(Const.PRODUCER_OPERATION);
+    if (producerOperation != null && producerOperation.getProducerMethod() != null) {
+      createProduceProcessors(producerOperation.getProducerMethod().getDeclaredAnnotations());
+      return;
+    }
+    createProduceProcessors(null);
+  }
+
+  // serialViewClass is deterministic for each operation
+  protected void createProduceProcessors(Annotation[] annotations) {
+    if (annotations == null || annotations.length < 1) {
+      doCreateProduceProcessors(null);
+      return;
+    }
+    for (Annotation annotation : annotations) {
+      if (annotation.annotationType() == JsonView.class) {
+        Class<?>[] value = ((JsonView) annotation).value();
+        if (value.length != 1) {
+          throw new IllegalArgumentException(
+              "@JsonView only supported for exactly 1 class argument ");
+        }
+        doCreateProduceProcessors(value[0]);
+        return;
+      }
+    }
+    doCreateProduceProcessors(null);
+  }
+
+  // 为operation创建支持的多种produce processor
+  protected void doCreateProduceProcessors(Class<?> serialViewClass) {
     if (null == produces || produces.isEmpty()) {
-      ProduceProcessorManager.INSTANCE.getObjMap().forEach((processorName, prodMap) -> {
-        this.produceProcessorAcceptMap.put(processorName, prodMap);
-      });
+      produceProcessorMap.putAll(
+          ProduceProcessorManager.INSTANCE.getOrCreateAcceptMap(serialViewClass));
     } else {
       for (String produce : produces) {
         if (produce.contains(";")) {
           produce = produce.substring(0, produce.indexOf(";"));
         }
-        Map<String, ProduceProcessor> processorMap = ProduceProcessorManager.INSTANCE.findValue(produce);
-        if (processorMap == null) {
+        ProduceProcessor processor = ProduceProcessorManager.INSTANCE.findProcessor(produce, serialViewClass);
+        if (processor == null) {
           LOGGER.error("produce {} is not supported", produce);
           continue;
         }
-        this.produceProcessorAcceptMap.put(produce, processorMap);
+        this.produceProcessorMap.put(produce, processor);
       }
 
-      if (produceProcessorAcceptMap.isEmpty()) {
-        produceProcessorAcceptMap
-            .put(ProduceProcessorManager.DEFAULT_TYPE, ProduceProcessorManager.INSTANCE.getDefaultProcessorMap());
+      if (produceProcessorMap.isEmpty()) {
+        produceProcessorMap.put(ProduceProcessorManager.DEFAULT_TYPE,
+            ProduceProcessorManager.INSTANCE.findDefaultProcessorByViewClass(serialViewClass));
       }
     }
 
-    defaultProcessorViewMap = produceProcessorAcceptMap.values().stream().findFirst().get();
-    produceProcessorAcceptMap.putIfAbsent(MediaType.WILDCARD, defaultProcessorViewMap);
+    defaultProcessor = produceProcessorMap.values().stream().findFirst().get();
+    produceProcessorMap.putIfAbsent(MediaType.WILDCARD, defaultProcessor);
   }
 
   public URLPathBuilder getPathBuilder() {
@@ -263,71 +291,31 @@ public class RestOperationMeta {
     paramMap.put(param.getParamName(), param);
   }
 
-  public ProduceProcessor findProduceProcessor(String type, String serialView) {
-    if (this.produceProcessorAcceptMap.get(type) == null) {
-      LOGGER.error(String.format("Unable to  find produce processor with type/%s", type));
-      return null;
-    }
-    return this.produceProcessorAcceptMap.get(type).get(serialView);
-  }
-
   public ProduceProcessor findProduceProcessor(String type) {
-    return findProduceProcessor(type, ProduceProcessorManager.DEFAULT_SERIAL_CLASS);
+    return this.produceProcessorMap.get(type);
   }
 
   // 选择与accept匹配的produce processor或者缺省的
   public ProduceProcessor ensureFindProduceProcessor(HttpServletRequestEx requestEx) {
     String acceptType = requestEx.getHeader(HttpHeaders.ACCEPT);
-    SwaggerProducerOperation producerOperation = operationMeta.getExtData(Const.PRODUCER_OPERATION);
-    if (producerOperation == null || producerOperation.getProducerMethod() == null) {
-      return ensureFindProduceProcessor(acceptType);
-    }
-    return ensureFindProduceProcessor(acceptType, producerOperation.getProducerMethod().getDeclaredAnnotations());
+    return ensureFindProduceProcessor(acceptType);
   }
 
   public ProduceProcessor ensureFindProduceProcessor(String acceptType) {
-    return doEnsureFindProduceProcessor(acceptType, null);
-  }
-
-  public ProduceProcessor ensureFindProduceProcessor(String acceptType, Annotation[] annotations) {
-    if (annotations == null || annotations.length < 1) {
-      return doEnsureFindProduceProcessor(acceptType, null);
-    }
-    for (Annotation annotation : annotations) {
-      if (annotation.annotationType() == JsonView.class) {
-        Class<?>[] value = ((JsonView) annotation).value();
-        if (value.length != 1) {
-          throw new IllegalArgumentException(
-              "@JsonView only supported for exactly 1 class argument ");
-        }
-        return doEnsureFindProduceProcessor(acceptType, value[0]);
-      }
-    }
-    return doEnsureFindProduceProcessor(acceptType, null);
-  }
-
-  private ProduceProcessor doEnsureFindProduceProcessor(String acceptType, Class<?> serialViewClass) {
-    String serialViewKey =
-        (serialViewClass == null ? ProduceProcessorManager.DEFAULT_SERIAL_CLASS : serialViewClass.getCanonicalName());
     if (downloadFile) {
       //do not check accept type, when the produces of provider is text/plain there will return text/plain processor
       //when the produces of provider is application/json there will return the application/json processor
       //so do not care what accept type the consumer will set.
-      return this.produceProcessorAcceptMap.get(MediaType.WILDCARD)
-          .computeIfAbsent(serialViewKey, key -> ProduceProcessorManager.cloneNewProduceProcessor(
-              acceptType, serialViewClass, produceProcessorAcceptMap.get(MediaType.WILDCARD)));
+      return this.produceProcessorMap.get(MediaType.WILDCARD);
     }
     if (StringUtils.isEmpty(acceptType)) {
-      return defaultProcessorViewMap
-          .computeIfAbsent(serialViewKey, key -> ProduceProcessorManager.cloneNewProduceProcessor(
-              acceptType, serialViewClass, defaultProcessorViewMap));
+      return defaultProcessor;
     }
     List<String> mimeTypes = MimeTypesUtils.getSortedAcceptableMimeTypes(acceptType.toLowerCase(Locale.US));
     for (String mime : mimeTypes) {
-      Map<String, ProduceProcessor> processorMap = this.produceProcessorAcceptMap.get(mime);
-      if (null != processorMap) {
-        return processorMap.computeIfAbsent(serialViewKey, key ->
-            ProduceProcessorManager.cloneNewProduceProcessor(acceptType, serialViewClass, processorMap));
+      ProduceProcessor processor = this.produceProcessorMap.get(mime);
+      if (null != processor) {
+        return processor;
       }
     }
 

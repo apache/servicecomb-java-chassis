@@ -182,7 +182,7 @@ public abstract class AbstractRestInvocation {
       try {
         providerQpsFlowControlHandler.handle(invocation, response -> {
           qpsFlowControlReject.value = true;
-          produceProcessor = ProduceProcessorManager.INSTANCE.getJsonProcessorMap().get(DEFAULT_SERIAL_CLASS);
+          produceProcessor = ProduceProcessorManager.INSTANCE.findDefaultJsonProcessor();
           sendResponse(response);
         });
       } catch (Throwable e) {
@@ -249,8 +249,7 @@ public abstract class AbstractRestInvocation {
 
   public void sendFailResponse(Throwable throwable) {
     if (produceProcessor == null) {
-      produceProcessor = ProduceProcessorManager.INSTANCE.getDefaultProcessorMap()
-          .get(DEFAULT_SERIAL_CLASS);
+      produceProcessor = ProduceProcessorManager.INSTANCE.findDefaultProcessor();
     }
 
     Response response = Response.createProducerFail(throwable);
