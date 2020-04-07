@@ -1,5 +1,4 @@
-# Java Chassis  
-[中文](README_ZH.md)[![Build Status](https://travis-ci.org/apache/servicecomb-java-chassis.svg?branch=master)](https://travis-ci.org/apache/servicecomb-java-chassis?branch=master) [![Coverage Status](https://coveralls.io/repos/github/apache/servicecomb-java-chassis/badge.svg?branch=master)](https://coveralls.io/github/apache/servicecomb-java-chassis?branch=master) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.servicecomb/java-chassis-core/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Corg.apache.servicecomb) [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html) [![Gitter](https://img.shields.io/badge/ServiceComb-Gitter-ff69b4.svg)](https://gitter.im/ServiceCombUsers/Lobby)  
+# Java Chassis [中文](README_ZH.md) [![Build Status](https://travis-ci.org/apache/servicecomb-java-chassis.svg?branch=master)](https://travis-ci.org/apache/servicecomb-java-chassis?branch=master) [![Coverage Status](https://coveralls.io/repos/github/apache/servicecomb-java-chassis/badge.svg?branch=master)](https://coveralls.io/github/apache/servicecomb-java-chassis?branch=master) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.servicecomb/java-chassis-core/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Corg.apache.servicecomb) [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html) [![Gitter](https://img.shields.io/badge/ServiceComb-Gitter-ff69b4.svg)](https://gitter.im/ServiceCombUsers/Lobby)  
 
 Apache ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid development of microservices in Java, providing service registration, service discovery, dynamic routing, and service management features
 
@@ -32,7 +31,7 @@ Apache ServiceComb Java Chassis is a Software Development Kit (SDK) for rapid de
   built by other languages are also able to work with ServiceComb components. And Java Chassis can communicate with such
   microservices and make use of the built-in capabilities.
 
-## Quick Start
+# Quick Start
 
 Provider service:
 ```java
@@ -59,81 +58,51 @@ public class HelloWorldConsumer  {
 }
 ```
 
-## Documentation
+# Documentation
 
-Project documentation is available on the [ServiceComb website][servicecomb-website].
+Project documentation is available on the [ServiceComb Java Chassis Developer Guide][java-chassis-developer-guide].
 
-[servicecomb-website]: http://servicecomb.apache.org/
+[java-chassis-developer-guide]: https://docs.servicecomb.io/java-chassis/en_US/
 
-## Building
+# Building
 
 You don’t need to build from source to use Java Chassis (binaries in apache nexus ), but if you want to try out the latest and greatest, Java Chassis can be easily built with the maven.  You also need JDK 1.8.
 
       mvn clean install
 
-If you want to build the release kits from the source
-
-      mvn clean install  -Prelease,distribution
-
 The first build may take a longer than expected as Maven downloads all the dependencies.
 
-## Automated Testing
+# Automated Testing
 
   To build the docker image and run the integration tests with docker, you can use maven docker profile
 
-      mvn clean install -Pdocker -Pit
+      mvn clean install -Pdocker -Pit  -Pdemo-run-release
 
   If you are using docker machine, please use the following command
 
-      mvn clean install -Pdocker -Pit -Pdocker-machine
+      mvn clean install -Pdocker -Pit -Pdocker-machine -Pdemo-run-release
 
 
-## Get The Latest Release
+# Get The Latest Release
 
 [Download Java-Chassis](http://servicecomb.apache.org/release/java-chassis-downloads/)
 
-## Get The Latest SNAPSHOT
 
-We publish the snapshot version to Apache nexus repo, please add below repositories into your pom.xml.
-
-       <repositories>
-          <repository>
-            <releases />
-            <snapshots>
-              <enabled>true</enabled>
-            </snapshots>
-            <id>repo.apache.snapshot</id>
-            <url>https://repository.apache.org/content/repositories/snapshots/</url>
-          </repository>
-        </repositories>
-        <pluginRepositories>
-          <pluginRepository>
-            <releases />
-            <snapshots>
-              <enabled>true</enabled>
-            </snapshots>
-            <id>repo.apache.snapshot</id>
-            <url>https://repository.apache.org/content/repositories/snapshots/</url>
-          </pluginRepository>
-        </pluginRepositories>
-
-
-
-## Contact
+# Contact
 
 Bugs: [issues](https://issues.apache.org/jira/browse/SCB)
 
 mailing list: [subscribe](mailto:dev-subscribe@servicecomb.apache.org)  [dev](https://lists.apache.org/list.html?dev@servicecomb.apache.org)
 
 
-## Contributing
+# Contributing
 
 See [CONTRIBUTING](http://servicecomb.apache.org/developers/contributing) for details on submitting patches and the contribution workflow.
 
-## License
+# License
 Licensed under an [Apache 2.0 license](LICENSE).
 
-## Export Notice
+# Export Notice
 
 This distribution includes cryptographic software. The country in which you currently reside may have restrictions on the import, possession, use, and/or re-export to another country, of encryption software. BEFORE using any encryption software, please check your country's laws, regulations and policies concerning the import, possession, or use, and re-export of encryption software, to see if this is permitted. See <http://www.wassenaar.org/> for more information.
 

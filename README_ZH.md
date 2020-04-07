@@ -1,5 +1,4 @@
-# Java Chassis  
-[English](README.md)[![Build Status](https://travis-ci.org/apache/servicecomb-java-chassis.svg?branch=master)](https://travis-ci.org/apache/servicecomb-java-chassis?branch=master) [![Coverage Status](https://coveralls.io/repos/github/apache/servicecomb-java-chassis/badge.svg?branch=master)](https://coveralls.io/github/apache/servicecomb-java-chassis?branch=master) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.servicecomb/java-chassis-core/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Corg.apache.servicecomb) [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html) [![Gitter](https://img.shields.io/badge/ServiceComb-Gitter-ff69b4.svg)](https://gitter.im/ServiceCombUsers/Lobby)  
+# Java Chassis | [English](README.md) [![Build Status](https://travis-ci.org/apache/servicecomb-java-chassis.svg?branch=master)](https://travis-ci.org/apache/servicecomb-java-chassis?branch=master) [![Coverage Status](https://coveralls.io/repos/github/apache/servicecomb-java-chassis/badge.svg?branch=master)](https://coveralls.io/github/apache/servicecomb-java-chassis?branch=master) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.servicecomb/java-chassis-core/badge.svg)](http://search.maven.org/#search%7Cga%7C1%7Corg.apache.servicecomb) [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html) [![Gitter](https://img.shields.io/badge/ServiceComb-Gitter-ff69b4.svg)](https://gitter.im/ServiceCombUsers/Lobby)  
 
 Apache ServiceComb Java Chassis 给开发者提供一个快速构建微服务的JAVA SDK。它包含如下特性：
 
@@ -7,7 +6,7 @@ Apache ServiceComb Java Chassis 给开发者提供一个快速构建微服务的
 * 多种通信协议, HTTP over Vert.x、Http Over Servlet、Highway等
 * 统一一致的服务提供者、服务消费者处理链，以及基于契约的开箱即用的服务治理能力
 
-开发者可以通过[Apache ServiceComb 的开放性设计](http://servicecomb.apache.org/cn/docs/open-design/)了解更多特性和设计原理。
+开发者可以通过[设计选型参考](https://docs.servicecomb.io/java-chassis/zh_CN/start/design/)了解更多特性和设计原理。
 
 # 为什么使用Java Chassis
 
@@ -28,7 +27,7 @@ Apache ServiceComb Java Chassis 给开发者提供一个快速构建微服务的
   Java Chassis 提供了大量开箱即用的服务治理能力，包括服务发现、熔断容错、负载均衡、流量控制等。
 
 
-## 快速开始
+# 快速开始
 
 定义提供者:
 ```java
@@ -55,80 +54,48 @@ public class HelloWorldConsumer  {
 }
 ```
 
-## 用户文档
+# 用户文档
 
-请访问 [ServiceComb website][servicecomb-website].
+请访问 [ServiceComb Java Chassis 开发指南][java-chassis-developer-guide].
 
-[servicecomb-website]: http://servicecomb.apache.org/cn/
+[java-chassis-developer-guide]: https://docs.servicecomb.io/java-chassis/zh_CN/
 
-## 编译Java Chassis
+# 编译Java Chassis
 
 开发者可以通过公有mavan仓库使用Java Chassis。 如果需要构建项目，需要使用JDK 8版本，并预先安装maven。 
 
       mvn clean install
 
-发布构建：
-
-      mvn clean install  -Prelease,distribution
-
-
-## 运行测试用例
+# 运行测试用例
 
 开发者需要预先安装docker。
 
-      mvn clean install -Pdocker -Pit
+      mvn clean install -Pdocker -Pit  -Pdemo-run-release
 
 使用docker machine。
 
-      mvn clean install -Pdocker -Pit -Pdocker-machine
+      mvn clean install -Pdocker -Pit -Pdocker-machine -Pdemo-run-release
 
 
-## 获取最新版本
+# 获取最新版本
 
 [下载链接](http://servicecomb.apache.org/cn/release/java-chassis-downloads/)
 
-## 获取最新的SNAPSHOT版本
-
-SNAPSHOT版本发布在apache仓库，在maven配置中增加下面的内容。
-
-       <repositories>
-          <repository>
-            <releases />
-            <snapshots>
-              <enabled>true</enabled>
-            </snapshots>
-            <id>repo.apache.snapshot</id>
-            <url>https://repository.apache.org/content/repositories/snapshots/</url>
-          </repository>
-        </repositories>
-        <pluginRepositories>
-          <pluginRepository>
-            <releases />
-            <snapshots>
-              <enabled>true</enabled>
-            </snapshots>
-            <id>repo.apache.snapshot</id>
-            <url>https://repository.apache.org/content/repositories/snapshots/</url>
-          </pluginRepository>
-        </pluginRepositories>
-
-
-
-## 联系我们
+# 联系我们
 
 Bugs: [issues](https://issues.apache.org/jira/browse/SCB)
 
 mailing list: [subscribe](mailto:dev-subscribe@servicecomb.apache.org)  [dev](https://lists.apache.org/list.html?dev@servicecomb.apache.org)
 
 
-## 参与代码提交
+# 参与代码提交
 
 参考 [如何做贡献](http://servicecomb.apache.org/cn/developers/contributing).
 
-## License
+# License
 Licensed under an [Apache 2.0 license](LICENSE).
 
-## Export Notice
+# Export Notice
 
 This distribution includes cryptographic software. The country in which you currently reside may have restrictions on the import, possession, use, and/or re-export to another country, of encryption software. BEFORE using any encryption software, please check your country's laws, regulations and policies concerning the import, possession, or use, and re-export of encryption software, to see if this is permitted. See <http://www.wassenaar.org/> for more information.
 
