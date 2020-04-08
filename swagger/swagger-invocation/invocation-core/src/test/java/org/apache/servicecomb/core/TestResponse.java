@@ -58,12 +58,12 @@ public class TestResponse {
 
     ar.consumerFail(new RuntimeExceptionWithoutStackTrace("abc"));
     CommonExceptionData data = (CommonExceptionData) ((InvocationException) response.getResult()).getErrorData();
-    Assert.assertEquals("Cse Internal Bad Request", data.getMessage());
+    Assert.assertEquals("Unexpected consumer error, please check logs for details", data.getMessage());
     Assert.assertEquals(ExceptionFactory.CONSUMER_INNER_STATUS_CODE, response.getStatusCode());
 
     ar.fail(InvocationType.CONSUMER, new RuntimeExceptionWithoutStackTrace("abc"));
     data = (CommonExceptionData) ((InvocationException) response.getResult()).getErrorData();
-    Assert.assertEquals("Cse Internal Bad Request", data.getMessage());
+    Assert.assertEquals("Unexpected consumer error, please check logs for details", data.getMessage());
     Assert.assertEquals(ExceptionFactory.CONSUMER_INNER_STATUS_CODE, response.getStatusCode());
 
     InvocationException consumerException = new InvocationException(300, "abc", "def");
@@ -77,12 +77,12 @@ public class TestResponse {
 
     ar.producerFail(new RuntimeExceptionWithoutStackTrace("abc"));
     data = (CommonExceptionData) ((InvocationException) response.getResult()).getErrorData();
-    Assert.assertEquals("Cse Internal Server Error", data.getMessage());
+    Assert.assertEquals("Unexpected producer error, please check logs for details", data.getMessage());
     Assert.assertEquals(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, response.getStatusCode());
 
     ar.fail(InvocationType.PRODUCER, new RuntimeExceptionWithoutStackTrace("abc"));
     data = (CommonExceptionData) ((InvocationException) response.getResult()).getErrorData();
-    Assert.assertEquals("Cse Internal Server Error", data.getMessage());
+    Assert.assertEquals("Unexpected producer error, please check logs for details", data.getMessage());
     Assert.assertEquals(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, response.getStatusCode());
 
     InvocationException producerException = new InvocationException(500, "abc", "def");
