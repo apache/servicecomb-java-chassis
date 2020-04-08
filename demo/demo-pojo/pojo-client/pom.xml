@@ -81,10 +81,6 @@
       <id>docker</id>
       <properties>
         <demo.service.name>pojo-server</demo.service.name>
-        <demo.vm.options>
-          -Dcse.highway.address=0.0.0.0:7070
-          -Dcse.rest.address=0.0.0.0:8080
-        </demo.vm.options>
       </properties>
       <build>
         <plugins>

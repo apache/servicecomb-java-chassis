@@ -26,5 +26,7 @@ servicecomb:
   rest:
     address: 0.0.0.0:7070?protocol=http2
     server:
+      http2:
+        useAlpnEnabled: false
       # for test case run in one core machine
       verticle-count: 1

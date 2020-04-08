@@ -38,15 +38,15 @@
     <module>demo-pojo</module>
     <module>demo-jaxrs</module>
     <module>demo-springmvc</module>
-
-    <module>demo-server-servlet</module>
     <module>demo-crossapp</module>
-    <module>demo-multiple</module>
-    <module>demo-signature</module>
-    <module>demo-edge</module>
+    <module>demo-register-url-prefix</module>
     <module>demo-spring-boot-provider</module>
     <module>demo-spring-boot-transport</module>
-    <module>demo-register-url-prefix</module>
+    <module>demo-edge</module>
+
+    <module>demo-server-servlet</module>
+    <module>demo-multiple</module>
+    <module>demo-signature</module>
     <module>perf</module>
   </modules>
 

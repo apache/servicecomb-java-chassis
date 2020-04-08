@@ -17,11 +17,16 @@
 
 package org.apache.servicecomb.demo;
 
+import java.io.File;
 import java.net.URL;
 
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DemoSSLCustom extends SSLCustom {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DemoSSLCustom.class);
+
   @Override
   public char[] decode(char[] encrypted) {
     return encrypted;
@@ -29,6 +34,26 @@ public class DemoSSLCustom extends SSLCustom {
 
   @Override
   public String getFullPath(String filename) {
+    LOGGER.info("current working dir :" + System.getProperty("user.dir"));
+
+    // local
+    File localFile = new File(System.getProperty("user.dir") + "/src/main/resources/certificates/" + filename);
+    if (localFile.isFile()) {
+      return localFile.getAbsolutePath();
+    }
+
+    localFile = new File(System.getProperty("user.dir") + "/certificates/" + filename);
+    if (localFile.isFile()) {
+      return localFile.getAbsolutePath();
+    }
+
+    // docker
+    localFile = new File("/maven/maven/certificates/" + filename);
+    if (localFile.isFile()) {
+      return localFile.getAbsolutePath();
+    }
+
+    // debug
     URL url = Thread.currentThread().getContextClassLoader().getResource("certificates/" + filename);
     if (url == null) {
       return filename;
