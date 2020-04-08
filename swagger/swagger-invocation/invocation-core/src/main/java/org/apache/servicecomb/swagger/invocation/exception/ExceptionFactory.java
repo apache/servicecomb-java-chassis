@@ -32,7 +32,7 @@ public final class ExceptionFactory {
   //    private static final int PROVIDER_INNER_STATUS_CODE = 510;
   public static final int PRODUCER_INNER_STATUS_CODE = 590;
 
-  public static final String PRODUCER_INNER_REASON_PHRASE = "Cse Internal Server Error";
+  public static final String PRODUCER_INNER_REASON_PHRASE = "Unexpected producer error, please check logs for details";
 
   public static final StatusType PRODUCER_INNER_STATUS =
       new HttpStatus(PRODUCER_INNER_STATUS_CODE, PRODUCER_INNER_REASON_PHRASE);
@@ -42,7 +42,7 @@ public final class ExceptionFactory {
   //    private static final int CONSUMER_INNER_STATUS_CODE = 420;
   public static final int CONSUMER_INNER_STATUS_CODE = 490;
 
-  public static final String CONSUMER_INNER_REASON_PHRASE = "Cse Internal Bad Request";
+  public static final String CONSUMER_INNER_REASON_PHRASE = "Unexpected consumer error, please check logs for details";
 
   private static ExceptionToProducerResponseConverters exceptionToProducerResponseConverters = new ExceptionToProducerResponseConverters();
 

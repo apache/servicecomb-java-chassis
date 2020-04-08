@@ -90,7 +90,7 @@ public class TestSimpleLoadBalanceHandler {
     handler.handle(invocation, ar);
 
     Throwable result = response.getResult();
-    Assert.assertEquals("InvocationException: code=490;msg=CommonExceptionData [message=Cse Internal Bad Request]",
+    Assert.assertEquals("InvocationException: code=490;msg=CommonExceptionData [message=Unexpected consumer error, please check logs for details]",
         result.getMessage());
     Assert.assertEquals("No available address found. microserviceName=null, version=null, discoveryGroupName=parent/",
         result.getCause().getMessage());

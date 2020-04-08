@@ -1105,7 +1105,7 @@ public class TestAbstractRestInvocation {
     restInvocation.scheduleInvocation();
 
     assertEquals(Integer.valueOf(590), status.value);
-    assertEquals("Cse Internal Server Error", reasonPhrase.value);
+    assertEquals("Unexpected producer error, please check logs for details", reasonPhrase.value);
     assertEquals(Integer.valueOf(1), endCount.value);
   }
 
