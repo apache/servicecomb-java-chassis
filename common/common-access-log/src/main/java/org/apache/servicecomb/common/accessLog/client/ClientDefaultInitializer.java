@@ -22,6 +22,7 @@ import org.apache.servicecomb.common.accessLog.AccessLogInitializer;
 import org.apache.servicecomb.common.accessLog.core.AccessLogGenerator;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +47,8 @@ public class ClientDefaultInitializer implements AccessLogInitializer {
   @Subscribe
   @AllowConcurrentEvents
   public void onRequestOut(InvocationFinishEvent finishEvent) {
-    LOGGER.info(accessLogGenerator.generateClientLog(finishEvent));
+    if (InvocationType.CONSUMER.equals(finishEvent.getInvocation().getInvocationType())) {
+        LOGGER.info(accessLogGenerator.generateClientLog(finishEvent));
+    }
   }
 }
