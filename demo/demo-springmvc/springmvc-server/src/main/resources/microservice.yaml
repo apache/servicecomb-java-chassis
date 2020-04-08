@@ -54,11 +54,11 @@ servicecomb:
   uploads:
     directory: target
   rest:
-    address: 0.0.0.0:8082?sslEnabled=false
+    address: 0.0.0.0:8080?sslEnabled=false
     server:
       compression: true
   highway:
-    address: 0.0.0.0:7072?sslEnabled=true
+    address: 0.0.0.0:7070?sslEnabled=true
   handler:
     chain:
       Provider:

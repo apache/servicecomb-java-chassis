@@ -63,10 +63,6 @@
       <id>docker</id>
       <properties>
         <demo.service.name>multiple-server</demo.service.name>
-        <demo.vm.options>
-          -Dservicecomb.highway.address=0.0.0.0:7070
-          -Dservicecomb.rest.address=0.0.0.0:8080
-        </demo.vm.options>
       </properties>
       <build>
         <plugins>

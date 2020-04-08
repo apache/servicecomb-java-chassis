@@ -34,6 +34,13 @@
         <include>**/*.jar</include>
       </includes>
     </fileSet>
+    <fileSet>
+      <outputDirectory>/maven</outputDirectory>
+      <directory>${project.build.directory}/classes</directory>
+      <includes>
+        <include>certificates/*</include>
+      </includes>
+    </fileSet>
   </fileSets>
 
 </assembly>

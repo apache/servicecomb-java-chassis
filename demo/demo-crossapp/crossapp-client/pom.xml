@@ -73,7 +73,6 @@
       <id>docker</id>
       <properties>
         <demo.service.name>crossapp-server</demo.service.name>
-        <demo.vm.options>-Dcse.rest.address=0.0.0.0:8080</demo.vm.options>
       </properties>
       <build>
         <plugins>
