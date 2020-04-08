@@ -113,4 +113,29 @@ public class TestPrometheusPublisher {
 
     publisher.destroy();
   }
+
+  @Test
+  public void collectRest() throws IllegalAccessException, IOException {
+    new Expectations(RegistryUtils.class) {
+      {
+        RegistryUtils.getAppId();
+        result = "testAppId";
+      }
+    };
+    ArchaiusUtils.setProperty(PrometheusPublisher.METRICS_PROMETHEUS_REST.getName(), true);
+    publisher.init(globalRegistry, null, null);
+
+    Registry registry = new DefaultRegistry(new ManualClock());
+    globalRegistry.add(registry);
+
+    Counter counter = registry.counter("count.name", "tag1", "tag1v", "tag2", "tag2v");
+    counter.increment();
+
+    String content = publisher.prometheus(null);
+      Assert.assertEquals("# HELP ServiceComb_Metrics ServiceComb Metrics\n" +
+                      "# TYPE ServiceComb_Metrics untyped\n" +
+                      "count_name{appId=\"testAppId\",tag1=\"tag1v\",tag2=\"tag2v\",} 1.0\n",
+               content);
+    publisher.destroy();
+  }
 }

@@ -17,10 +17,17 @@
 
 package org.apache.servicecomb.metrics.prometheus;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import com.netflix.config.DynamicBooleanProperty;
+import io.prometheus.client.exporter.common.TextFormat;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
@@ -41,8 +48,18 @@ import io.prometheus.client.Collector.MetricFamilySamples.Sample;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.HTTPServer;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+@Path("/prometheus")
 public class PrometheusPublisher extends Collector implements Collector.Describable, MetricsInitializer {
   private static final Logger LOGGER = LoggerFactory.getLogger(PrometheusPublisher.class);
+
+  static final DynamicBooleanProperty METRICS_PROMETHEUS_REST = DynamicPropertyFactory.getInstance()
+          .getBooleanProperty("servicecomb.metrics.prometheus.rest", false);
 
   static final String METRICS_PROMETHEUS_ADDRESS = "servicecomb.metrics.prometheus.address";
 
@@ -53,6 +70,11 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
   @Override
   public void init(GlobalRegistry globalRegistry, EventBus eventBus, MetricsBootstrapConfig config) {
     this.globalRegistry = globalRegistry;
+    if (METRICS_PROMETHEUS_REST.get()) {
+        register();
+        LOGGER.info("Prometheus restful enabled.");
+        return;
+    }
 
     //prometheus default port allocation is here : https://github.com/prometheus/prometheus/wiki/Default-port-allocations
     String address =
@@ -129,5 +151,28 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
     httpServer.stop();
     httpServer = null;
     LOGGER.info("Prometheus httpServer stopped.");
+  }
+
+  @ApiResponses({
+          @ApiResponse(code = 400, response = String.class, message = "illegal request content"),
+  })
+  @GET
+  @Path("/")
+  @Produces(MediaType.TEXT_PLAIN)
+  public String prometheus(HttpServletRequest request) throws IOException {
+    String query = request != null ? request.getQueryString() : null;
+    Set<String> names = HTTPServerEx.parseQuery(query);
+    StringWriter sw = new StringWriter(40960);
+    TextFormat.write004(sw, CollectorRegistry.defaultRegistry.filteredMetricFamilySamples(names));
+    return sw.toString();
+  }
+
+  static class HTTPServerEx extends HTTPServer {
+    public HTTPServerEx(int port) throws IOException {
+      super(port);
+    }
+    public static Set<String> parseQuery(String query) throws IOException {
+      return HTTPServer.parseQuery(query);
+    }
   }
 }
