@@ -32,13 +32,13 @@ public class TestEnvAdapterManager {
   public void testLoadAdapter() {
     assertEquals(3, manager.values().size());
     assertNull(manager.findValue("cas-env-three"));
-    assertNotNull(manager.findValue("default-env-default-adapter"));
+    assertNotNull(manager.findValue("default-env-adapter"));
     assertNotNull(manager.findValue("cas_env_one"));
     assertNotNull(manager.findValue("cas_env_two"));
 
     assertEquals(0, manager.findValue("cas_env_one").getOrder());
     assertEquals(0, manager.findValue("cas_env_two").getOrder());
-    assertEquals(0, manager.findValue("default-env-default-adapter").getOrder());
+    assertEquals(0, manager.findValue("default-env-adapter").getOrder());
   }
 
   @Test
@@ -48,7 +48,7 @@ public class TestEnvAdapterManager {
 
     assertEquals("order=0", microservice.getProperties().get("cas_env_one"));
     assertEquals("order=0", microservice.getProperties().get("cas_env_two"));
-    assertNull(microservice.getProperties().get("default-env-default-adapter"));
+    assertNull(microservice.getProperties().get("default-env-adapter"));
   }
 
   @Test
@@ -58,6 +58,6 @@ public class TestEnvAdapterManager {
 
     assertEquals("order=0", instance.getProperties().get("cas_env_one"));
     assertEquals("order=0", instance.getProperties().get("cas_env_two"));
-    assertNull(instance.getProperties().get("default-env-default-adapter"));
+    assertNull(instance.getProperties().get("default-env-adapter"));
   }
 }

@@ -24,8 +24,8 @@
     <version>2.0.2-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>cas-env-variables</artifactId>
-  <name>Java Chassis::Third-Part Extensions::Cas Env Variables</name>
+  <artifactId>servicestage</artifactId>
+  <name>Java Chassis::Huawei Cloud::ServiceStage</name>
 
   <dependencies>
     <dependency>

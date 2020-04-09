@@ -14,16 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 CAS_APPLICATION_ID:
-  - servicecomb.cas.application-id
+  - servicecomb.huaweicloud.servicestage.cas.application-id
 CAS_COMPONENT_NAME:
-  - servicecomb.cas.component-name
+  - servicecomb.huaweicloud.servicestage.cas.component-name
 CAS_INSTANCE_VERSION:
-  - servicecomb.cas.instance-version
+  - servicecomb.huaweicloud.servicestage.cas.instance-version
 CAS_INSTANCE_ID:
-  - servicecomb.cas.instance-id
+  - servicecomb.huaweicloud.servicestage.cas.instance-id
 CAS_ENVIRONMENT_ID:
-  - servicecomb.cas.environment-id
+  - servicecomb.huaweicloud.servicestage.cas.environment-id
 PAAS_CSE_ENDPOINT:
   - servicecomb.service.registry.address
   - servicecomb.config.client.serverUri

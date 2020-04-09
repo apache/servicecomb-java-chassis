@@ -14,33 +14,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.cas;
+package org.apache.servicecomb.huaweicloud.servicestage;
 
 import static org.junit.Assert.assertEquals;
 
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class TestCasEnvConfig {
+public class TestEnvVariablesAdapter {
 
   @BeforeClass
   public static void init() {
-    System.setProperty("servicecomb.cas.application-id", "application-id");
-    System.setProperty("servicecomb.cas.environment-id", "env-id");
+    System.setProperty("servicecomb.huaweicloud.servicestage.cas.application-id", "application-id");
+    System.setProperty("servicecomb.huaweicloud.servicestage.cas.environment-id", "env-id");
   }
 
   @Test
-  public void testConfig() {
-    CasEnvConfig instance = CasEnvConfig.INSTANCE;
-    assertEquals(2, instance.getNonEmptyProperties().size());
-    assertEquals("application-id", instance.getNonEmptyProperties().get("CAS_APPLICATION_ID"));
-    assertEquals("env-id", instance.getNonEmptyProperties().get("CAS_ENVIRONMENT_ID"));
+  public void testProcessInstance() {
+    CasEnvVariablesAdapter adapter = new CasEnvVariablesAdapter();
+    MicroserviceInstance instance = new MicroserviceInstance();
+    adapter.beforeRegisterInstance(instance);
+
+    assertEquals(2, instance.getProperties().size());
+    assertEquals("application-id", instance.getProperties().get("CAS_APPLICATION_ID"));
+    assertEquals("env-id", instance.getProperties().get("CAS_ENVIRONMENT_ID"));
   }
 
   @AfterClass
   public static void destroy() {
-    System.getProperties().remove("servicecomb.cas.application-id");
-    System.getProperties().remove("servicecomb.cas.environment-id");
+    System.getProperties().remove("servicecomb.huaweicloud.servicestage.cas.application-id");
+    System.getProperties().remove("servicecomb.huaweicloud.servicestage.cas.environment-id");
   }
 }

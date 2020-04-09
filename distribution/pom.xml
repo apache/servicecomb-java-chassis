@@ -244,6 +244,12 @@
       <artifactId>java-chassis-spring-boot-starter-standalone</artifactId>
     </dependency>
 
+    <!-- ServiceComb ServiceStage extension -->
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>servicestage</artifactId>
+    </dependency>
+
     <!-- swagger -->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
