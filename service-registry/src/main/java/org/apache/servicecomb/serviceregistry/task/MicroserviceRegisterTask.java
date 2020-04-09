@@ -33,6 +33,7 @@ import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.Holder;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import org.apache.servicecomb.serviceregistry.adapter.EnvAdapterManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,6 +94,7 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
         return false;
       }
     } else {
+      EnvAdapterManager.INSTANCE.processMicroserviceWithAdapters(microservice);
       serviceId = srClient.registerMicroservice(microservice);
       if (StringUtils.isEmpty(serviceId)) {
         LOGGER.error(
@@ -342,6 +344,7 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
    * @return true if register success, otherwise false
    */
   private boolean registerSingleSchema(String schemaId, String content) {
+    EnvAdapterManager.INSTANCE.processSchemaWithAdapters(schemaId, content);
     return srClient.registerSchema(microservice.getServiceId(), schemaId, content);
   }
 
