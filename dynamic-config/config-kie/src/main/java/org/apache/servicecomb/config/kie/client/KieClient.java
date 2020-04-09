@@ -57,6 +57,8 @@ public class KieClient {
 
   private static final int LONG_POLLING_WAIT_TIME_IN_SECONDS = 30;
 
+  private static String revision = "0";
+
   private static final KieConfig KIE_CONFIG = KieConfig.INSTANCE;
 
   private final int refreshInterval = KIE_CONFIG.getRefreshInterval();
@@ -115,8 +117,8 @@ public class KieClient {
       String path = "/v1/"
           + KieConfig.INSTANCE.getDomainName()
           + "/kie/kv?label=app:"
-          + KieConfig.INSTANCE.getAppName();
-
+          + KieConfig.INSTANCE.getAppName()
+          + "&revision=" + revision;
       long timeout;
       if (enableLongPolling && !IS_FIRST_PULL.get()) {
         path += "&wait=" + LONG_POLLING_WAIT_TIME_IN_SECONDS + "s";
@@ -131,6 +133,7 @@ public class KieClient {
         HttpClientRequest request = client
             .get(ipPort.getPort(), ipPort.getHostOrIp(), finalPath, rsp -> {
               if (rsp.statusCode() == HttpStatus.SC_OK) {
+                revision = rsp.getHeader("X-Kie-Revision");
                 rsp.bodyHandler(buf -> {
                   try {
                     Map<String, Object> resMap = KieUtil.getConfigByLabel(JsonUtils.OBJ_MAPPER
