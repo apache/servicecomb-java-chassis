@@ -19,7 +19,7 @@ package org.apache.servicecomb.serviceregistry.adapter;
 public class DefaultEnvAdapter implements EnvAdapter {
   @Override
   public String getEnvName() {
-    return "default-env-default-adapter";
+    return "default-env-adapter";
   }
 
   @Override

@@ -25,13 +25,13 @@
     <relativePath>../parents/default</relativePath>
   </parent>
 
-  <artifactId>third-part-extensions</artifactId>
-  <name>Java Chassis::Third-Part Extensions</name>
+  <artifactId>huawei-cloud</artifactId>
+  <name>Java Chassis::Huawei Cloud</name>
   <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
 
   <modules>
-    <module>cas-env-variables</module>
+    <module>servicestage</module>
   </modules>
 
 </project>

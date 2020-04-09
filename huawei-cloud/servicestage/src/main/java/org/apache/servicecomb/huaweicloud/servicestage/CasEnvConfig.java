@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.cas;
+package org.apache.servicecomb.huaweicloud.servicestage;
 
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.netflix.config.DynamicPropertyFactory;
 
 public class CasEnvConfig {
-  private static final String CAS_BASE = "servicecomb.cas.";
+  private static final String CAS_BASE = "servicecomb.huaweicloud.servicestage.cas.";
 
   private static final String APPLICATION_ID = CAS_BASE + "application-id";
 

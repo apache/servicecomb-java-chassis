@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.cas;
+package org.apache.servicecomb.huaweicloud.servicestage;
 
 import org.apache.servicecomb.serviceregistry.adapter.EnvAdapter;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
