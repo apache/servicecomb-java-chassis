@@ -18,20 +18,10 @@
 package org.apache.servicecomb.config.kie.model;
 
 public enum ValueType {
-  YML("yml"),
-  YMAL("yaml"),
-  STRING("string"),
-  TEXT("text"),
-  JSON("json"),
-  PROPERTIES("properties");
-  
-  private String value;
-
-  ValueType(String value) {
-    this.value = value;
-  }
-
-  public String getValue() {
-    return this.value;
-  }
+  YML,
+  YAML,
+  STRING,
+  TEXT,
+  JSON,
+  PROPERTIES
 }
