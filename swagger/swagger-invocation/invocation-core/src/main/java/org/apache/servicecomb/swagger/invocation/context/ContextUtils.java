@@ -17,12 +17,18 @@
 
 package org.apache.servicecomb.swagger.invocation.context;
 
+import org.slf4j.MDC;
+
 import java.util.concurrent.CompletableFuture;
 
 /**
  * 传递调用过程的上下文数据
  */
 public final class ContextUtils {
+  public static final String TRACE_ID_NAME = "X-B3-TraceId";
+
+  public static final String KEY_TRACE_ID = "SERVICECOMB_TRACE_ID";
+
   private ContextUtils() {
   }
 
@@ -35,16 +41,19 @@ public final class ContextUtils {
   public static InvocationContext getAndRemoveInvocationContext() {
     InvocationContext context = contextMgr.get();
     if (context != null) {
+      MDC.remove(KEY_TRACE_ID);
       contextMgr.remove();
     }
     return context;
   }
 
   public static void setInvocationContext(InvocationContext invocationContext) {
+    MDC.put(KEY_TRACE_ID, invocationContext.getContext(TRACE_ID_NAME));
     contextMgr.set(invocationContext);
   }
 
   public static void removeInvocationContext() {
+    MDC.remove(KEY_TRACE_ID);
     contextMgr.remove();
   }
 
