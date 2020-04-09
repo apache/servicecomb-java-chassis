@@ -17,18 +17,14 @@
 
 package org.apache.servicecomb.config.kie.client;
 
-import io.netty.handler.codec.http.HttpResponseStatus;
-import io.vertx.core.DeploymentOptions;
-import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
-import io.vertx.core.http.HttpClientOptions;
-import io.vertx.core.http.HttpClientRequest;
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.apache.http.HttpStatus;
 import org.apache.servicecomb.config.kie.archaius.sources.KieConfigurationSourceImpl.UpdateHandler;
 import org.apache.servicecomb.config.kie.model.KVResponse;
@@ -36,14 +32,11 @@ import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
-import org.apache.servicecomb.foundation.vertx.AddressResolverConfig;
-import org.apache.servicecomb.foundation.vertx.VertxUtils;
-import org.apache.servicecomb.foundation.vertx.client.ClientPoolManager;
-import org.apache.servicecomb.foundation.vertx.client.ClientVerticle;
-import org.apache.servicecomb.foundation.vertx.client.http.HttpClientPoolFactory;
-import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
+import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.vertx.core.http.HttpClientRequest;
 
 public class KieClient {
 
@@ -56,13 +49,13 @@ public class KieClient {
     return thread;
   });
 
-  private static final long TIME_OUT = 10000;
+  private static final long PULL_REQUEST_TIME_OUT_IN_MILLIS = 10000;
+
+  private static final long LONG_POLLING_REQUEST_TIME_OUT_IN_MILLIS = 60000;
 
   private static AtomicBoolean IS_FIRST_PULL = new AtomicBoolean(true);
 
-  private static final int LONG_POLLING_WAIT_TIME = 30;
-
-  private static final int SOCKET_TIMOUT = 50;
+  private static final int LONG_POLLING_WAIT_TIME_IN_SECONDS = 30;
 
   private static final KieConfig KIE_CONFIG = KieConfig.INSTANCE;
 
@@ -74,39 +67,18 @@ public class KieClient {
 
   private final String serviceUri = KIE_CONFIG.getServerUri();
 
-  private ClientPoolManager<HttpClientWithContext> clientMgr;
-
   public KieClient(UpdateHandler updateHandler) {
+    HttpClients.addNewClientPoolManager(new ConfigKieHttpClientOptionsSPI());
     KieWatcher.INSTANCE.setUpdateHandler(updateHandler);
   }
 
   public void refreshKieConfig() {
-    try {
-      deployConfigClient();
-    } catch (InterruptedException e) {
-      throw new IllegalStateException(e);
-    }
     if (enableLongPolling) {
       EXECUTOR.execute(new ConfigRefresh(serviceUri));
     } else {
       EXECUTOR.scheduleWithFixedDelay(new ConfigRefresh(serviceUri), firstRefreshInterval,
           refreshInterval, TimeUnit.MILLISECONDS);
     }
-  }
-
-  private void deployConfigClient() throws InterruptedException {
-    VertxOptions vertxOptions = new VertxOptions();
-    vertxOptions.setAddressResolverOptions(AddressResolverConfig.getAddressResover("kie.consumer",
-        KieConfig.getFinalConfig()));
-    Vertx vertx = VertxUtils.getOrCreateVertxByName("kie", vertxOptions);
-
-    HttpClientOptions httpClientOptions = new HttpClientOptions();
-    httpClientOptions.setKeepAlive(true);
-    httpClientOptions.setIdleTimeout(SOCKET_TIMOUT);
-    clientMgr = new ClientPoolManager<>(vertx, new HttpClientPoolFactory(httpClientOptions));
-
-    DeploymentOptions deployOptions = VertxUtils.createClientDeployOptions(clientMgr, 1);
-    VertxUtils.blockDeploy(vertx, ClientVerticle.class, deployOptions);
   }
 
   public void destroy() {
@@ -127,29 +99,38 @@ public class KieClient {
     @Override
     public void run() {
       try {
-        refreshConfig();
+        CountDownLatch latch = new CountDownLatch(1);
+        refreshConfig(latch);
+        latch.await();
       } catch (Throwable e) {
         LOGGER.error("client refresh thread exception ", e);
+      }
+      if (enableLongPolling) {
+        EXECUTOR.execute(this);
       }
     }
 
     @SuppressWarnings("deprecation")
-    void refreshConfig() {
+    void refreshConfig(CountDownLatch latch) {
       String path = "/v1/"
           + KieConfig.INSTANCE.getDomainName()
           + "/kie/kv?label=app:"
           + KieConfig.INSTANCE.getAppName();
+
+      long timeout;
       if (enableLongPolling && !IS_FIRST_PULL.get()) {
-        path += "&wait=" + LONG_POLLING_WAIT_TIME + "s";
+        path += "&wait=" + LONG_POLLING_WAIT_TIME_IN_SECONDS + "s";
+        timeout = LONG_POLLING_REQUEST_TIME_OUT_IN_MILLIS;
       } else {
         IS_FIRST_PULL.compareAndSet(true, false);
+        timeout = PULL_REQUEST_TIME_OUT_IN_MILLIS;
       }
       String finalPath = path;
-      clientMgr.findThreadBindClientPool().runOnContext(client -> {
+      HttpClients.getClient(ConfigKieHttpClientOptionsSPI.CLIENT_NAME).runOnContext(client -> {
         IpPort ipPort = NetUtils.parseIpPortFromURI(serviceUri);
         HttpClientRequest request = client
             .get(ipPort.getPort(), ipPort.getHostOrIp(), finalPath, rsp -> {
-              if (rsp.statusCode() == HttpResponseStatus.OK.code()) {
+              if (rsp.statusCode() == HttpStatus.SC_OK) {
                 rsp.bodyHandler(buf -> {
                   try {
                     Map<String, Object> resMap = KieUtil.getConfigByLabel(JsonUtils.OBJ_MAPPER
@@ -163,24 +144,27 @@ public class KieClient {
                         serviceUri,
                         e.getMessage());
                   }
+                  latch.countDown();
                 });
-              } else if (rsp.statusCode() == HttpStatus.SC_NOT_FOUND) {
+              } else if (rsp.statusCode() == HttpStatus.SC_NOT_MODIFIED) {
                 EventManager.post(new ConnSuccEvent());
+                latch.countDown();
               } else {
                 EventManager.post(new ConnFailEvent("fetch config fail"));
-                LOGGER.error("Config update from {} failed. Error message is [{}].",
+                LOGGER.error("Config update from {} failed. Error code is {}, error message is [{}].",
                     serviceUri,
+                    rsp.statusCode(),
                     rsp.statusMessage());
+                latch.countDown();
               }
-              if (enableLongPolling) {
-                EXECUTOR.execute(this);
-              }
-            }).setTimeout(TIME_OUT);
+            }).setTimeout(timeout);
+
         request.exceptionHandler(e -> {
           EventManager.post(new ConnFailEvent("fetch config fail"));
           LOGGER.error("Config update from {} failed. Error message is [{}].",
               serviceUri,
               e.getMessage());
+          latch.countDown();
         });
         request.end();
       });

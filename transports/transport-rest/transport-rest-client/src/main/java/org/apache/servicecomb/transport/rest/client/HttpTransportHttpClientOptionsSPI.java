@@ -19,6 +19,8 @@ package org.apache.servicecomb.transport.rest.client;
 
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientOptionsSPI;
 
+import com.netflix.config.ConcurrentCompositeConfiguration;
+
 import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpVersion;
@@ -46,6 +48,11 @@ public class HttpTransportHttpClientOptionsSPI implements HttpClientOptionsSPI {
   @Override
   public String getConfigTag() {
     return CLIENT_TAG;
+  }
+
+  @Override
+  public ConcurrentCompositeConfiguration getConfigReader() {
+    return null;
   }
 
   @Override

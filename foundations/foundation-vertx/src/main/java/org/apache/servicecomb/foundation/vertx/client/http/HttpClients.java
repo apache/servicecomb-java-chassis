@@ -86,7 +86,8 @@ public class HttpClients {
       vertx = SharedVertxFactory.getSharedVertx();
     } else {
       VertxOptions vertxOptions = new VertxOptions()
-          .setAddressResolverOptions(AddressResolverConfig.getAddressResover(option.getConfigTag()))
+          .setAddressResolverOptions(AddressResolverConfig
+              .getAddressResover(option.getConfigTag(), option.getConfigReader()))
           .setEventLoopPoolSize(option.getEventLoopPoolSize());
 
       // Maybe we can deploy only one vert.x for the application. However this has did it like this.

@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.deployment.DeploymentProvider;
+import org.apache.servicecomb.foundation.vertx.VertxConst;
 
 import com.google.common.base.Joiner;
 import com.netflix.config.ConcurrentCompositeConfiguration;
@@ -59,18 +60,6 @@ public final class ConfigCenterConfig {
 
   private static final String INSTANCE_TAGS = "instance_description.properties.tags";
 
-  public static final String PROXY_PRE_NAME = "servicecomb.proxy.";
-
-  public static final String PROXY_ENABLE = PROXY_PRE_NAME + "enable";
-
-  public static final String PROXY_HOST = PROXY_PRE_NAME + "host";
-
-  public static final String PROXY_PORT = PROXY_PRE_NAME + "port";
-
-  public static final String PROXY_USERNAME = PROXY_PRE_NAME + "username";
-
-  public static final String PROXY_PASSWD = PROXY_PRE_NAME + "passwd";
-
   public static final String CONNECTION_TIME_OUT = "servicecomb.config.client.timeout.connection";
 
   public static final String EVENT_LOOP_SIZE = "servicecomb.config.client.eventLoopSize";
@@ -87,8 +76,6 @@ public final class ConfigCenterConfig {
 
   private static final int DEFAULT_FIRST_REFRESH_INTERVAL = 0;
 
-  private static final int DEFAULT_TIMEOUT_IN_MS = 30000;
-
   private ConfigCenterConfig() {
   }
 
@@ -96,7 +83,7 @@ public final class ConfigCenterConfig {
     finalConfig = config;
   }
 
-  public ConcurrentCompositeConfiguration getConcurrentCompositeConfiguration() {
+  public static ConcurrentCompositeConfiguration getConcurrentCompositeConfiguration() {
     return finalConfig;
   }
 
@@ -133,23 +120,23 @@ public final class ConfigCenterConfig {
   }
 
   public Boolean isProxyEnable() {
-    return finalConfig.getBoolean(PROXY_ENABLE, false);
+    return finalConfig.getBoolean(VertxConst.PROXY_ENABLE, false);
   }
 
   public String getProxyHost() {
-    return finalConfig.getString(PROXY_HOST, "127.0.0.1");
+    return finalConfig.getString(VertxConst.PROXY_HOST, "127.0.0.1");
   }
 
   public int getProxyPort() {
-    return finalConfig.getInt(PROXY_PORT, 8080);
+    return finalConfig.getInt(VertxConst.PROXY_PORT, 8080);
   }
 
   public String getProxyUsername() {
-    return finalConfig.getString(PROXY_USERNAME, null);
+    return finalConfig.getString(VertxConst.PROXY_USERNAME, null);
   }
 
   public String getProxyPasswd() {
-    return finalConfig.getString(PROXY_PASSWD, null);
+    return finalConfig.getString(VertxConst.PROXY_PASSWD, null);
   }
 
   @SuppressWarnings("unchecked")

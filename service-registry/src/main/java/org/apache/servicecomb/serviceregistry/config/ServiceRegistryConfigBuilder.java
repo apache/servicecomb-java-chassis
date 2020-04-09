@@ -28,6 +28,7 @@ import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.foundation.vertx.VertxConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -268,25 +269,25 @@ class ServiceRegistryConfigBuilder {
   }
 
   public Boolean isProxyEnable() {
-    String enable = getProperty("false", ServiceRegistryConfig.PROXY_ENABLE);
+    String enable = getProperty("false", VertxConst.PROXY_ENABLE);
     return Boolean.parseBoolean(enable);
   }
 
   public String getProxyHost() {
-    return getProperty("127.0.0.1", ServiceRegistryConfig.PROXY_HOST);
+    return getProperty("127.0.0.1", VertxConst.PROXY_HOST);
   }
 
   public int getProxyPort() {
-    String port = getProperty("8080", ServiceRegistryConfig.PROXY_PORT);
+    String port = getProperty("8080", VertxConst.PROXY_PORT);
     return Integer.parseInt(port);
   }
 
   public String getProxyUsername() {
-    return getProperty(null, ServiceRegistryConfig.PROXY_USERNAME);
+    return getProperty(null, VertxConst.PROXY_USERNAME);
   }
 
   public String getProxyPasswd() {
-    return getProperty(null, ServiceRegistryConfig.PROXY_PASSWD);
+    return getProperty(null, VertxConst.PROXY_PASSWD);
   }
 
   public List<AuthHeaderProvider> getAuthHeaderProviders() {

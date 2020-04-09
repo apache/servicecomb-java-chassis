@@ -178,14 +178,9 @@ public class TestKieClient {
         handler.run(httpClient);
       }
     };
-    new Expectations() {
-      {
-        clientMgr.findThreadBindClientPool();
-        result = httpClientWithContext;
-      }
-    };
+
     KieClient kie = new KieClient(updateHandler);
-    Deencapsulation.setField(kie, "clientMgr", clientMgr);
+
     ConfigRefresh refresh = kie.new ConfigRefresh("http://configcentertest:30103");
     refresh.run();
     Assert.assertEquals("Fail event trigger", map.get("result"));

@@ -20,6 +20,7 @@ package org.apache.servicecomb.serviceregistry.client.http;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientOptionsSPI;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 
+import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.vertx.core.VertxOptions;
@@ -49,6 +50,11 @@ public class RegistryHttpClientOptionsSPI implements HttpClientOptionsSPI {
   @Override
   public String getConfigTag() {
     return "sc.consumer";
+  }
+
+  @Override
+  public ConcurrentCompositeConfiguration getConfigReader() {
+    return null;
   }
 
   @Override

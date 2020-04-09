@@ -20,6 +20,8 @@ package org.apache.servicecomb.foundation.vertx.client.http;
 import org.apache.servicecomb.foundation.common.encrypt.Encryptions;
 import org.apache.servicecomb.foundation.vertx.VertxTLSBuilder;
 
+import com.netflix.config.ConcurrentCompositeConfiguration;
+
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpVersion;
 import io.vertx.core.net.ProxyOptions;
@@ -40,6 +42,9 @@ public interface HttpClientOptionsSPI {
   /* config tag is used for group configurations, like ssl, address resolver, etc. set config tag to distinguish
   *  other clients configuration or read the common configuration. */
   String getConfigTag();
+
+  /* for config modules, the configuration is not ready, need set up config reader */
+  ConcurrentCompositeConfiguration getConfigReader();
 
   /*****************  vert.x common settings ***************************/
   int getEventLoopPoolSize();
