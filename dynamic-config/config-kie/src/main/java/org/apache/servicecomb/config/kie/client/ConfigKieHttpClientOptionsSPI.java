@@ -15,10 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.config.client;
+package org.apache.servicecomb.config.kie.client;
 
-import org.apache.servicecomb.deployment.Deployment;
-import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientOptionsSPI;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
@@ -27,8 +25,8 @@ import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpVersion;
 
-public class ConfigCenterHttpClientOptionsSPI implements HttpClientOptionsSPI {
-  public static final String CLIENT_NAME = "config-center";
+public class ConfigKieHttpClientOptionsSPI implements HttpClientOptionsSPI {
+  public static final String CLIENT_NAME = "config-kie";
 
   @Override
   public String clientName() {
@@ -37,27 +35,27 @@ public class ConfigCenterHttpClientOptionsSPI implements HttpClientOptionsSPI {
 
   @Override
   public int getOrder() {
-    return -100;
+    return -200;
   }
 
   @Override
   public boolean enabled() {
-    return Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_CONFIG_CENTER) != null;
+    return KieConfig.INSTANCE.getServerUri() != null;
   }
 
   @Override
   public String getConfigTag() {
-    return "cc.consumer";
+    return "kie.consumer";
   }
 
   @Override
   public ConcurrentCompositeConfiguration getConfigReader() {
-    return ConfigCenterConfig.getConcurrentCompositeConfiguration();
+    return KieConfig.getFinalConfig();
   }
 
   @Override
   public int getEventLoopPoolSize() {
-    return ConfigCenterConfig.INSTANCE.getEventLoopSize();
+    return KieConfig.INSTANCE.getEventLoopSize();
   }
 
   @Override
@@ -67,7 +65,7 @@ public class ConfigCenterHttpClientOptionsSPI implements HttpClientOptionsSPI {
 
   @Override
   public int getInstanceCount() {
-    return ConfigCenterConfig.INSTANCE.getVerticalInstanceCount();
+    return KieConfig.INSTANCE.getVerticalInstanceCount();
   }
 
   @Override
@@ -92,12 +90,12 @@ public class ConfigCenterHttpClientOptionsSPI implements HttpClientOptionsSPI {
 
   @Override
   public int getConnectTimeoutInMillis() {
-    return ConfigCenterConfig.INSTANCE.getConnectionTimeout();
+    return KieConfig.INSTANCE.getConnectionTimeOut();
   }
 
   @Override
   public int getIdleTimeoutInSeconds() {
-    return ConfigCenterConfig.INSTANCE.getIdleTimeoutInSeconds();
+    return KieConfig.INSTANCE.getIdleTimeoutInSeconds();
   }
 
   @Override
@@ -147,31 +145,31 @@ public class ConfigCenterHttpClientOptionsSPI implements HttpClientOptionsSPI {
 
   @Override
   public boolean isProxyEnable() {
-    return ConfigCenterConfig.INSTANCE.isProxyEnable();
+    return KieConfig.INSTANCE.isProxyEnable();
   }
 
   @Override
   public String getProxyHost() {
-    return ConfigCenterConfig.INSTANCE.getProxyHost();
+    return KieConfig.INSTANCE.getProxyHost();
   }
 
   @Override
   public int getProxyPort() {
-    return ConfigCenterConfig.INSTANCE.getProxyPort();
+    return KieConfig.INSTANCE.getProxyPort();
   }
 
   @Override
   public String getProxyUsername() {
-    return ConfigCenterConfig.INSTANCE.getProxyUsername();
+    return KieConfig.INSTANCE.getProxyUsername();
   }
 
   @Override
   public String getProxyPassword() {
-    return ConfigCenterConfig.INSTANCE.getProxyPasswd();
+    return KieConfig.INSTANCE.getProxyPasswd();
   }
 
   @Override
   public boolean isSsl() {
-    return ConfigCenterConfig.INSTANCE.getServerUri().get(0).startsWith("https");
+    return KieConfig.INSTANCE.getServerUri() != null && KieConfig.INSTANCE.getServerUri().startsWith("https");
   }
 }

@@ -60,18 +60,6 @@ public final class ServiceRegistryConfig {
 
   public static final String NO_DOMAIN = "default";
 
-  public static final String PROXY_PRE_NAME = "servicecomb.proxy.";
-
-  public static final String PROXY_ENABLE = PROXY_PRE_NAME + "enable";
-
-  public static final String PROXY_HOST = PROXY_PRE_NAME + "host";
-
-  public static final String PROXY_PORT = PROXY_PRE_NAME + "port";
-
-  public static final String PROXY_USERNAME = PROXY_PRE_NAME + "username";
-
-  public static final String PROXY_PASSWD = PROXY_PRE_NAME + "passwd";
-
   public static final String SSL_KEY = "sc.consumer";
 
   public static final String PROXY_KEY = "sc.consumer";
