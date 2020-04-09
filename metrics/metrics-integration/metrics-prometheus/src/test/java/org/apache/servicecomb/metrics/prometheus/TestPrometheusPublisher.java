@@ -23,6 +23,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
+import io.prometheus.client.CollectorRegistry;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
@@ -90,6 +91,7 @@ public class TestPrometheusPublisher {
         result = "testAppId";
       }
     };
+    CollectorRegistry.defaultRegistry.clear();
     ArchaiusUtils.setProperty(PrometheusPublisher.METRICS_PROMETHEUS_ADDRESS, "localhost:0");
     publisher.init(globalRegistry, null, null);
 
@@ -122,6 +124,7 @@ public class TestPrometheusPublisher {
         result = "testAppId";
       }
     };
+    CollectorRegistry.defaultRegistry.clear();
     ArchaiusUtils.setProperty(PrometheusPublisher.METRICS_PROMETHEUS_REST.getName(), true);
     publisher.init(globalRegistry, null, null);
 
