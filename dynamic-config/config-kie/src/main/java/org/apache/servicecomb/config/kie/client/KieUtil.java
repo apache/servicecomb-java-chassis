@@ -29,6 +29,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.kie.model.KVDoc;
 import org.apache.servicecomb.config.kie.model.KVResponse;
 import org.apache.servicecomb.config.kie.model.ValueType;
@@ -36,7 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.util.StringUtils;
 
 public class KieUtil {
 
@@ -109,34 +110,44 @@ public class KieUtil {
   }
 
   public static Map<String, String> processValueType(KVDoc kvDoc) {
-    ValueType vtype;
-    try {
-      vtype = ValueType.valueOf(kvDoc.getValueType());
-    } catch (IllegalArgumentException e) {
-      throw new RuntimeException("value type not support");
-    }
+    ValueType valueType = parseValueType(kvDoc.getValueType());
+
     Properties properties = new Properties();
     Map<String, String> kvMap = new HashMap<>();
     try {
-      if (vtype == (ValueType.YMAL) || vtype == (ValueType.YML)) {
+      if (valueType == (ValueType.YAML) || valueType == (ValueType.YML)) {
         YamlPropertiesFactoryBean yamlFactory = new YamlPropertiesFactoryBean();
         yamlFactory.setResources(new ByteArrayResource(kvDoc.getValue().getBytes()));
         properties = yamlFactory.getObject();
-      } else if (vtype == (ValueType.PROPERTIES)) {
+      } else if (valueType == (ValueType.PROPERTIES)) {
         properties.load(new StringReader(kvDoc.getValue()));
-      } else if (vtype == (ValueType.TEXT) || vtype == (ValueType.STRING)) {
+      } else if (valueType == (ValueType.TEXT) || valueType == (ValueType.STRING)) {
         kvMap.put(kvDoc.getKey(), kvDoc.getValue());
         return kvMap;
       } else {
+        // ValueType.JSON
         kvMap.put(kvDoc.getKey(), kvDoc.getValue());
         return kvMap;
       }
       kvMap = toMap(kvDoc.getKey(), properties);
       return kvMap;
     } catch (Exception e) {
-      LOGGER.error("read config failed");
+      LOGGER.error("read config failed", e);
     }
     return Collections.emptyMap();
+  }
+
+  private static ValueType parseValueType(String valueType) {
+    if (StringUtils.isEmpty(valueType)) {
+      return ValueType.STRING;
+    }
+
+    try {
+      return ValueType.valueOf(valueType.toUpperCase());
+    } catch (IllegalArgumentException e) {
+      LOGGER.warn("read unrecognized value type {}", valueType);
+      return ValueType.STRING;
+    }
   }
 
 
@@ -146,10 +157,12 @@ public class KieUtil {
     Enumeration<String> keys = (Enumeration<String>) properties.propertyNames();
     while (keys.hasMoreElements()) {
       String key = keys.nextElement();
+      Object value = properties.getProperty(key);
+
       if (!StringUtils.isEmpty(prefix)) {
         key = prefix + "." + key;
       }
-      Object value = properties.getProperty(key);
+
       if (value != null) {
         result.put(key, ((String) value).trim());
       } else {

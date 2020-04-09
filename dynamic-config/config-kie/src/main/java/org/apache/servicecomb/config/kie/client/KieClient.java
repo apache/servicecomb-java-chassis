@@ -90,7 +90,7 @@ public class KieClient {
       EXECUTOR.execute(new ConfigRefresh(serviceUri));
     } else {
       EXECUTOR.scheduleWithFixedDelay(new ConfigRefresh(serviceUri), firstRefreshInterval,
-          refreshInterval, TimeUnit.SECONDS);
+          refreshInterval, TimeUnit.MILLISECONDS);
     }
   }
 
