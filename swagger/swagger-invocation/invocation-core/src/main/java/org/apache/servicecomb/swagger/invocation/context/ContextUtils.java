@@ -48,7 +48,10 @@ public final class ContextUtils {
   }
 
   public static void setInvocationContext(InvocationContext invocationContext) {
-    MDC.put(KEY_TRACE_ID, invocationContext.getContext(TRACE_ID_NAME));
+    String traceId = invocationContext.getContext(TRACE_ID_NAME);
+    if (traceId != null) {
+      MDC.put(KEY_TRACE_ID, traceId);
+    }
     contextMgr.set(invocationContext);
   }
 
