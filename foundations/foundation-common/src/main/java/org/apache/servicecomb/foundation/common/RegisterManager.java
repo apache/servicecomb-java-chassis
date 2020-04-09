@@ -35,6 +35,10 @@ public class RegisterManager<KEY, VALUE> {
 
   private Object lockObj = new Object();
 
+  protected Map<KEY, VALUE> getObjMap() {
+    return objMap;
+  }
+
   public RegisterManager(String name) {
     this.name = name;
   }

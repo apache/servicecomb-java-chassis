@@ -365,6 +365,12 @@
         <artifactId>transport-rest-vertx</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <!-- ServiceComb third-extensions -->
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>cas-env-variables</artifactId>
+        <version>${project.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 </project>
