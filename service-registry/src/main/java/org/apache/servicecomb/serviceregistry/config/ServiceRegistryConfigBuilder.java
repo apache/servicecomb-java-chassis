@@ -132,9 +132,9 @@ class ServiceRegistryConfigBuilder {
     DynamicIntProperty property =
         DynamicPropertyFactory.getInstance()
             .getIntProperty("servicecomb.service.registry.client.timeout.connection",
-                ServiceRegistryConfig.DEFAULT_TIMEOUT_IN_MS);
+                1000);
     int timeout = property.get();
-    return timeout < 0 ? ServiceRegistryConfig.DEFAULT_TIMEOUT_IN_MS : timeout;
+    return timeout < 0 ? 1000 : timeout;
   }
 
   public int getIdleConnectionTimeout() {
