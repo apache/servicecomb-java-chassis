@@ -18,8 +18,6 @@
 package org.apache.servicecomb.foundation.common.utils;
 
 import java.io.IOException;
-import java.text.FieldPosition;
-import java.util.Date;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser.Feature;
@@ -48,22 +46,7 @@ public class RestObjectMapper extends AbstractRestObjectMapper {
 
   private static final JavaType STRING_JAVA_TYPE = TypeFactory.defaultInstance().constructType(String.class);
 
-  @SuppressWarnings("deprecation")
   public RestObjectMapper() {
-
-    // swagger中要求date使用ISO8601格式传递，这里与之做了功能绑定，这在cse中是没有问题的
-    setDateFormat(new com.fasterxml.jackson.databind.util.ISO8601DateFormat() {
-      private static final long serialVersionUID = 7798938088541203312L;
-
-      // to support millis
-      @Override
-      public StringBuffer format(Date date, StringBuffer toAppendTo, FieldPosition fieldPosition) {
-        String value = com.fasterxml.jackson.databind.util.ISO8601Utils.format(date, true);
-        toAppendTo.append(value);
-        return toAppendTo;
-      }
-    });
-
     getFactory().disable(Feature.AUTO_CLOSE_SOURCE);
     // Enable features that can tolerance errors and not enable those make more constraints for compatible reasons.
     // Developers can use validation api to do more checks.
@@ -71,6 +54,7 @@ public class RestObjectMapper extends AbstractRestObjectMapper {
     disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
     // no view annotations shouldn't be included in JSON
     disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
+    disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     enable(DeserializationFeature.UNWRAP_SINGLE_VALUE_ARRAYS);
     enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 

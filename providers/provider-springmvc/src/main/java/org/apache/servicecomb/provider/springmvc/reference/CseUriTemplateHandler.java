@@ -38,6 +38,7 @@ public class CseUriTemplateHandler extends org.springframework.web.util.DefaultU
 
   public CseUriTemplateHandler() {
     ReflectionUtils.makeAccessible(hostField);
+    setStrictEncoding(true);
   }
 
   @Override
