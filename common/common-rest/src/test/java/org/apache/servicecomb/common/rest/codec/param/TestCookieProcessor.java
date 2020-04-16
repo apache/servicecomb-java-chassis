@@ -30,6 +30,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
 
 import mockit.Expectations;
 import mockit.Mock;
@@ -185,10 +186,22 @@ public class TestCookieProcessor {
   }
 
   @Test
+  public void testSetValueDateFixed() throws Exception {
+    Date date = new Date(1586957400199L);
+    String strDate =  "2020-04-15T13:30:00.199+0000";
+
+    createClientRequest();
+
+    CookieProcessor processor = createProcessor("h1", Date.class);
+    processor.setValue(clientRequest, date);
+    Assert.assertEquals(strDate, cookies.get("h1"));
+  }
+
+  @Test
   public void testSetValueDate() throws Exception {
     Date date = new Date();
-    @SuppressWarnings("deprecation")
-    String strDate = com.fasterxml.jackson.databind.util.ISO8601Utils.format(date, true);
+
+    String strDate =  new StdDateFormat().format(date);
 
     createClientRequest();
 

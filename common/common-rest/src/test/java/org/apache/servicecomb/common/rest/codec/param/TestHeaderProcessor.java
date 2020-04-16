@@ -36,6 +36,7 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
 
 import io.swagger.models.parameters.HeaderParameter;
 import io.swagger.models.properties.ArrayProperty;
@@ -222,11 +223,21 @@ public class TestHeaderProcessor {
   }
 
   @Test
+  public void testSetValueDateFixed() throws Exception {
+    Date date = new Date(1586957400199L);
+    String strDate =  "2020-04-15T13:30:00.199+0000";
+
+    createClientRequest();
+
+    HeaderProcessor processor = createProcessor("h1", Date.class);
+    processor.setValue(clientRequest, date);
+    Assert.assertEquals(strDate, headers.get("h1"));
+  }
+
+  @Test
   public void testSetValueDate() throws Exception {
     Date date = new Date();
-    @SuppressWarnings("deprecation")
-    String strDate = com.fasterxml.jackson.databind.util.ISO8601Utils.format(date, true);
-
+    String strDate =  new StdDateFormat().format(date);
     createClientRequest();
 
     HeaderProcessor processor = createProcessor("h1", Date.class);

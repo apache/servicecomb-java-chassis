@@ -151,10 +151,7 @@ public class TestResponse {
     Throwable cause = exception.getCause();
     TestMgr.check(InvalidFormatException.class, cause.getClass());
     TestMgr.check(
-        "Cannot deserialize value of type `java.util.Date` from String \"returnOK\": not a valid representation "
-            + "(error: Failed to parse Date value 'returnOK': Failed to parse date \"returnOK\": Invalid number: retu)\n"
-            + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 12] "
-            + "(through reference chain: org.apache.servicecomb.demo.springmvc.decoderesponse.DecodeTestResponse[\"content\"])",
-        ((InvalidFormatException) cause).getMessage());
+        ((InvalidFormatException) cause).getMessage().contains("Cannot deserialize value of type `java.util.Date`"),
+        true);
   }
 }

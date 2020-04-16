@@ -19,7 +19,6 @@ package org.apache.servicecomb.codec.protobuf.definition;
 import java.io.IOException;
 
 import org.apache.commons.lang3.ClassUtils;
-import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyWrapper;
@@ -48,7 +47,7 @@ public class ResponseRootDeserializer<T> {
       obj = ((PropertyWrapper) obj).getValue();
     }
     if (needConvert(obj, invocationTimeType)) {
-      obj = JsonUtils.convertValue(obj, invocationTimeType);
+      obj = HighwayJsonUtils.convertValue(obj, invocationTimeType);
     }
     return (T) obj;
   }
