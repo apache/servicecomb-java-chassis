@@ -54,6 +54,7 @@ import com.netflix.spectator.api.Measurement;
 
 import io.vertx.core.impl.VertxImpl;
 import mockit.Expectations;
+import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
@@ -135,8 +136,8 @@ public class TestDefaultLogPublisher {
   }
 
   @Test
-  public void onPolledEvent(@Mocked VertxImpl vertxImpl, @Mocked MeasurementTree tree,
-      @Mocked GlobalRegistry globalRegistry, @Mocked EventBus eventBus, @Mocked MetricsBootstrapConfig config) {
+  public void onPolledEvent(@Injectable VertxImpl vertxImpl, @Injectable MeasurementTree tree,
+      @Injectable GlobalRegistry globalRegistry, @Injectable EventBus eventBus, @Injectable MetricsBootstrapConfig config) {
     try {
       ArchaiusUtils.setProperty("servicecomb.metrics.publisher.defaultLog.enabled", true);
       ArchaiusUtils.setProperty("servicecomb.metrics.invocation.latencyDistribution", "0,1,100");
@@ -145,9 +146,6 @@ public class TestDefaultLogPublisher {
         {
           VertxUtils.getVertxMap();
           result = Collections.singletonMap("v", vertxImpl);
-          // TODO will be fixed by next vertx update.
-          //        vertxImpl.getEventLoopContextCreatedCount();;
-          //        result = 1;
         }
       };
       DefaultPublishModel model = new DefaultPublishModel();
