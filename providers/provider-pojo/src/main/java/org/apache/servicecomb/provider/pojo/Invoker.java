@@ -29,6 +29,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
@@ -148,7 +149,7 @@ public class Invoker implements InvocationHandler {
     }
 
     PojoConsumerOperationMeta pojoConsumerOperationMeta = consumerMeta
-        .findOperationMeta(MethodUtils.findSwaggerMethodName(method), consumerIntf);
+        .findOperationMeta(MethodUtils.findSwaggerMethodName(method));
     if (pojoConsumerOperationMeta == null) {
       throw new IllegalStateException(
           String.format(
@@ -162,13 +163,17 @@ public class Invoker implements InvocationHandler {
 
     SwaggerConsumerOperation consumerOperation = pojoConsumerOperationMeta.getSwaggerConsumerOperation();
     OperationMeta operationMeta = pojoConsumerOperationMeta.getOperationMeta();
-    // operation meta is static data based on swagger, while consumer operation based on invoker, have interface info
-    operationMeta.setSwaggerConsumerOperation(consumerOperation);
+    InvocationRuntimeType invocationRuntimeType = operationMeta.buildBaseConsumerRuntimeType();
+    invocationRuntimeType.setArgumentsMapper(consumerOperation.getArgumentsMapper());
+    invocationRuntimeType.setAssociatedClass(consumerOperation.getConsumerClass());
+    invocationRuntimeType.setAssociatedMethod(consumerOperation.getConsumerMethod());
+
     Invocation invocation = InvocationFactory.forConsumer(
         findReferenceConfig(operationMeta),
         operationMeta,
+        invocationRuntimeType,
         null);
-    invocation.setResponsesMeta(pojoConsumerOperationMeta.getResponsesMeta());
+    invocation.setSuccessResponseType(pojoConsumerOperationMeta.getResponsesType());
     Map<String, Object> invocationArguments = toArguments(method, args);
 
     invocation.setInvocationArguments(invocationArguments);

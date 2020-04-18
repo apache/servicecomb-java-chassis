@@ -21,13 +21,12 @@ import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.fin
 import java.lang.reflect.Type;
 
 import javax.servlet.http.Part;
-import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
-import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.Operation;
@@ -40,7 +39,7 @@ public class PojoConsumerOperationMeta {
 
   private SwaggerConsumerOperation swaggerConsumerOperation;
 
-  private ResponsesMeta responsesMeta = new ResponsesMeta();
+  private JavaType responseType;
 
   public PojoConsumerOperationMeta(PojoConsumerMeta pojoConsumerMeta, OperationMeta operationMeta,
       SwaggerConsumerOperation swaggerConsumerOperation,
@@ -49,22 +48,19 @@ public class PojoConsumerOperationMeta {
     this.operationMeta = operationMeta;
     this.swaggerConsumerOperation = swaggerConsumerOperation;
 
-    operationMeta.getResponsesMeta().cloneTo(responsesMeta);
-    operationMeta.setSwaggerConsumerOperation(swaggerConsumerOperation);
-    responsesMeta.init(intfSwagger, intfOperation);
     Type intfResponseType = ParamUtils
         .getGenericParameterType(swaggerConsumerOperation.getConsumerClass(),
             swaggerConsumerOperation.getConsumerMethod().getDeclaringClass(),
             swaggerConsumerOperation.getConsumerMethod().getGenericReturnType());
 
     if (intfResponseType instanceof Class && Part.class.isAssignableFrom((Class<?>) intfResponseType)) {
+      responseType = TypeFactory.defaultInstance().constructType(Part.class);
       return;
     }
 
     intfResponseType = findResponseTypeProcessor(intfResponseType).extractResponseType(intfResponseType);
     if (intfResponseType != null) {
-      responsesMeta.getResponseMap().put(Status.OK.getStatusCode(),
-          TypeFactory.defaultInstance().constructType(intfResponseType));
+      responseType = TypeFactory.defaultInstance().constructType(intfResponseType);
     }
   }
 
@@ -80,7 +76,7 @@ public class PojoConsumerOperationMeta {
     return swaggerConsumerOperation;
   }
 
-  public ResponsesMeta getResponsesMeta() {
-    return responsesMeta;
+  public JavaType getResponsesType() {
+    return responseType;
   }
 }

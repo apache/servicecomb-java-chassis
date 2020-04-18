@@ -21,7 +21,6 @@ import java.util.concurrent.Executor;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.foundation.common.VendorExtensions;
-import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
@@ -76,14 +75,6 @@ public class OperationMeta {
     return (SwaggerProducerOperation) this.getExtData(Const.PRODUCER_OPERATION);
   }
 
-  public void setSwaggerConsumerOperation(SwaggerConsumerOperation swaggerConsumerOperation) {
-    this.putExtData(Const.CONSUMER_OPERATION, swaggerConsumerOperation);
-  }
-
-  public SwaggerConsumerOperation getSwaggerConsumerOperation() {
-    return (SwaggerConsumerOperation) this.getExtData(Const.CONSUMER_OPERATION);
-  }
-
   public OperationConfig getConfig() {
     return config;
   }
@@ -101,7 +92,15 @@ public class OperationMeta {
   }
 
   public ResponsesMeta getResponsesMeta() {
+    // TODO : this method now called by highway, and highway always use swagger type
+    // in the future improvement , highway can use runtime type and this method can be removed
     return responsesMeta;
+  }
+
+  private ResponsesMeta cloneResponseMeta() {
+    ResponsesMeta result = new ResponsesMeta();
+    this.responsesMeta.cloneTo(result);
+    return result;
   }
 
   public MicroserviceMeta getMicroserviceMeta() {
@@ -159,5 +158,16 @@ public class OperationMeta {
   @Deprecated
   public Handler getProviderQpsFlowControlHandler() {
     return getMicroserviceMeta().getProviderQpsFlowControlHandler();
+  }
+
+  public InvocationRuntimeType buildBaseProviderRuntimeType() {
+    SwaggerProducerOperation swaggerProducerOperation = this.getSwaggerProducerOperation();
+    return new InvocationRuntimeType(swaggerProducerOperation.getProducerClass(),
+        swaggerProducerOperation.getProducerMethod(), this.cloneResponseMeta(),
+        swaggerProducerOperation.getArgumentsMapper());
+  }
+
+  public InvocationRuntimeType buildBaseConsumerRuntimeType() {
+    return new InvocationRuntimeType(this.cloneResponseMeta());
   }
 }

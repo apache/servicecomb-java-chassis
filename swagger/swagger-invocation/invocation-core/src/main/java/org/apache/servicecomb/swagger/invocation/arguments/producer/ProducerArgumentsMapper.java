@@ -23,17 +23,19 @@ import java.util.Map;
 
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
+import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapper;
 
 /**
  * map swagger arguments to producer arguments
  */
-public class ProducerArgumentsMapper {
+public class ProducerArgumentsMapper implements ArgumentsMapper {
   private List<ArgumentMapper> producerArgMapperList;
 
   public ProducerArgumentsMapper(List<ArgumentMapper> producerArgMapperList) {
     this.producerArgMapperList = producerArgMapperList;
   }
 
+  @Override
   public Map<String, Object> swaggerArgumentToInvocationArguments(SwaggerInvocation invocation,
       Map<String, Object> swaggerArguments) {
     Map<String, Object> invocationArguments = new HashMap<>(swaggerArguments.size());

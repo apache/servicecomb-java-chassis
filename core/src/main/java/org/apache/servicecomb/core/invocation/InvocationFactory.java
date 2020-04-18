@@ -23,8 +23,8 @@ import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 
@@ -37,21 +37,13 @@ public final class InvocationFactory {
   }
 
   public static Invocation forConsumer(ReferenceConfig referenceConfig, OperationMeta operationMeta,
-      Map<String, Object> swaggerArguments) {
+      InvocationRuntimeType invocationRuntimeType, Map<String, Object> swaggerArguments) {
     Invocation invocation = new Invocation(referenceConfig,
         operationMeta,
+        invocationRuntimeType,
         swaggerArguments);
     invocation.addContext(Const.SRC_MICROSERVICE, getMicroserviceName());
     return invocation;
-  }
-
-  /*
-   * consumer端使用，schemaMeta级别的缓存，每次调用根据operationName来执行
-   */
-  public static Invocation forConsumer(ReferenceConfig referenceConfig, SchemaMeta schemaMeta, String operationId,
-      Map<String, Object> swaggerArguments) {
-    OperationMeta operationMeta = schemaMeta.ensureFindOperation(operationId);
-    return forConsumer(referenceConfig, operationMeta, swaggerArguments);
   }
 
   /*

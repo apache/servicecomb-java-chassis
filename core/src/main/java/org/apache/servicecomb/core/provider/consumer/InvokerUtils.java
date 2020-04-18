@@ -20,10 +20,9 @@ package org.apache.servicecomb.core.provider.consumer;
 import java.lang.reflect.Type;
 import java.util.Map;
 
-import javax.ws.rs.core.Response.Status;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
@@ -33,11 +32,8 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.databind.type.TypeFactory;
 
 public final class InvokerUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(InvokerUtils.class);
@@ -80,20 +76,13 @@ public final class InvokerUtils {
     OperationMeta operationMeta = schemaMeta.ensureFindOperation(operationId);
 
     ReferenceConfig referenceConfig = microserviceReferenceConfig.createReferenceConfig(transport, operationMeta);
-    Invocation invocation = InvocationFactory.forConsumer(referenceConfig, operationMeta, swaggerArguments);
-    setInvocationResponseType(invocation, responseType);
+    InvocationRuntimeType invocationRuntimeType = operationMeta.buildBaseConsumerRuntimeType();
+    invocationRuntimeType.setSuccessResponseType(responseType);
+    Invocation invocation = InvocationFactory
+        .forConsumer(referenceConfig, operationMeta, invocationRuntimeType, swaggerArguments);
     return invocation;
   }
 
-  private static void setInvocationResponseType(Invocation invocation, Type responseType) {
-    if (responseType != null) {
-      ResponsesMeta responsesMeta = new ResponsesMeta();
-      invocation.getOperationMeta().getResponsesMeta().cloneTo(responsesMeta);
-      responsesMeta.getResponseMap().put(Status.OK.getStatusCode(),
-          TypeFactory.defaultInstance().constructType(responseType));
-      invocation.setResponsesMeta(responsesMeta);
-    }
-  }
 
   /**
    *

@@ -33,7 +33,6 @@ import org.apache.servicecomb.codec.protobuf.definition.RequestRootSerializer;
 import org.apache.servicecomb.codec.protobuf.definition.ResponseRootDeserializer;
 import org.apache.servicecomb.codec.protobuf.definition.ResponseRootSerializer;
 import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchema;
-import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchemaIntf;
 import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchemaPojo;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -43,8 +42,6 @@ import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.foundation.test.scaffolding.model.Empty;
 import org.apache.servicecomb.foundation.test.scaffolding.model.People;
 import org.apache.servicecomb.foundation.test.scaffolding.model.User;
-import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
-import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
@@ -105,11 +102,6 @@ public class TestSchemaMetaCodec {
     }
 
     consumerSchemaMeta = new SchemaMeta(consumerMicroserviceMeta, "ProtoSchema", swagger);
-    SwaggerConsumer swaggerConsumer = swaggerEnvironment.createConsumer(ProtoSchemaIntf.class, swagger);
-    for (SwaggerConsumerOperation consumerOperation : swaggerConsumer.getOperations().values()) {
-      OperationMeta operationMeta = consumerSchemaMeta.ensureFindOperation(consumerOperation.getSchemaOperationId());
-      operationMeta.setSwaggerConsumerOperation(consumerOperation);
-    }
   }
 
   @Test

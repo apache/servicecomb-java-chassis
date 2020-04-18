@@ -30,6 +30,7 @@ import org.apache.servicecomb.core.NonSwaggerInvocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
@@ -108,6 +109,7 @@ public class TestLoadBalanceHandler2 {
   public void testZoneAwareAndIsolationFilterWorks() throws Exception {
     ReferenceConfig referenceConfig = Mockito.mock(ReferenceConfig.class);
     OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    InvocationRuntimeType invocationRuntimeType = Mockito.mock(InvocationRuntimeType.class);
     SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
     when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
     MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
@@ -116,7 +118,7 @@ public class TestLoadBalanceHandler2 {
     when(microserviceMeta.getAppId()).thenReturn("testApp");
     when(referenceConfig.getVersionRule()).thenReturn("0.0.0+");
     when(referenceConfig.getTransport()).thenReturn("rest");
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, new HashMap<>());
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, new HashMap<>());
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
     ServiceRegistry serviceRegistry = mockUpServiceRegistry();
@@ -257,6 +259,7 @@ public class TestLoadBalanceHandler2 {
   public void testIsolationEventWithEndpoint() throws Exception {
     ReferenceConfig referenceConfig = Mockito.mock(ReferenceConfig.class);
     OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    InvocationRuntimeType invocationRuntimeType = Mockito.mock(InvocationRuntimeType.class);
     SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
     when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
     MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
@@ -265,7 +268,7 @@ public class TestLoadBalanceHandler2 {
     when(microserviceMeta.getAppId()).thenReturn("testApp");
     when(referenceConfig.getVersionRule()).thenReturn("0.0.0+");
     when(referenceConfig.getTransport()).thenReturn("rest");
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, new HashMap<>());
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, new HashMap<>());
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
     ServiceRegistry serviceRegistry = mockUpServiceRegistry();
@@ -346,6 +349,7 @@ public class TestLoadBalanceHandler2 {
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.isolation.emptyInstanceProtectionEnabled", "true");
     ReferenceConfig referenceConfig = Mockito.mock(ReferenceConfig.class);
     OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    InvocationRuntimeType invocationRuntimeType = Mockito.mock(InvocationRuntimeType.class);
     SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
     when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
     MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
@@ -354,7 +358,7 @@ public class TestLoadBalanceHandler2 {
     when(microserviceMeta.getAppId()).thenReturn("testApp");
     when(referenceConfig.getVersionRule()).thenReturn("0.0.0+");
     when(referenceConfig.getTransport()).thenReturn("rest");
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, new HashMap<>());
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, new HashMap<>());
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
     ServiceRegistry serviceRegistry = mockUpServiceRegistry();
@@ -766,6 +770,7 @@ public class TestLoadBalanceHandler2 {
   public void testConfigEndpoint() {
     ReferenceConfig referenceConfig = Mockito.mock(ReferenceConfig.class);
     OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
+    InvocationRuntimeType invocationRuntimeType = Mockito.mock(InvocationRuntimeType.class);
     SchemaMeta schemaMeta = Mockito.mock(SchemaMeta.class);
     when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
     MicroserviceMeta microserviceMeta = Mockito.mock(MicroserviceMeta.class);
@@ -774,7 +779,7 @@ public class TestLoadBalanceHandler2 {
     when(microserviceMeta.getAppId()).thenReturn("testApp");
     when(referenceConfig.getVersionRule()).thenReturn("0.0.0+");
     when(referenceConfig.getTransport()).thenReturn("rest");
-    Invocation invocation = new Invocation(referenceConfig, operationMeta, new HashMap<>());
+    Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, new HashMap<>());
     AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);

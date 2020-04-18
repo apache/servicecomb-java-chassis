@@ -20,7 +20,7 @@ import java.lang.reflect.Method;
 
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
-import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapper;
+import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
 
 public class SwaggerConsumerOperation {
@@ -30,7 +30,7 @@ public class SwaggerConsumerOperation {
 
   private SwaggerOperation swaggerOperation;
 
-  private ConsumerArgumentsMapper argumentsMapper;
+  private ArgumentsMapper argumentsMapper;
 
   private ConsumerResponseMapper responseMapper;
 
@@ -62,11 +62,11 @@ public class SwaggerConsumerOperation {
     this.swaggerOperation = swaggerOperation;
   }
 
-  public ConsumerArgumentsMapper getArgumentsMapper() {
+  public ArgumentsMapper getArgumentsMapper() {
     return argumentsMapper;
   }
 
-  public void setArgumentsMapper(ConsumerArgumentsMapper argumentsMapper) {
+  public void setArgumentsMapper(ArgumentsMapper argumentsMapper) {
     this.argumentsMapper = argumentsMapper;
   }
 
