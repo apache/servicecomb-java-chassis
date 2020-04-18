@@ -23,6 +23,7 @@ import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
+import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.schemas.ConsumerAddBodyV2;
 import org.apache.servicecomb.swagger.invocation.schemas.ConsumerAddV2;
 import org.apache.servicecomb.swagger.invocation.schemas.JaxrsAddBeanParamV1;
@@ -42,7 +43,7 @@ public class TestJaxrsV2V1 {
     Swagger swagger = SwaggerGenerator.generate(JaxrsAddV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV2.class, swagger);
-    ConsumerArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
+    ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
 
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("x", 1);
@@ -63,7 +64,7 @@ public class TestJaxrsV2V1 {
     Swagger swagger = SwaggerGenerator.generate(JaxrsAddBeanParamV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV2.class, swagger);
-    ConsumerArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
+    ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
 
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("x", 1);
@@ -84,7 +85,7 @@ public class TestJaxrsV2V1 {
     Swagger swagger = SwaggerGenerator.generate(JaxrsAddBodyV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV2.class, swagger);
-    ConsumerArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
+    ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
 
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("x", 1);
@@ -107,7 +108,7 @@ public class TestJaxrsV2V1 {
     Swagger swagger = SwaggerGenerator.generate(JaxrsAddV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV2.class, swagger);
-    ConsumerArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
+    ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
 
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("addBody", new AddWrapperV2(1, 2, 3));
@@ -126,7 +127,7 @@ public class TestJaxrsV2V1 {
     Swagger swagger = SwaggerGenerator.generate(JaxrsAddBeanParamV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV2.class, swagger);
-    ConsumerArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
+    ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
 
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("addBody", new AddWrapperV2(1, 2, 3));
@@ -144,7 +145,7 @@ public class TestJaxrsV2V1 {
     SwaggerEnvironment environment = new SwaggerEnvironment();
     Swagger swagger = SwaggerGenerator.generate(JaxrsAddBodyV1.class);
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV2.class, swagger);
-    ConsumerArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
+    ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
 
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("addBody", new AddWrapperV2(1, 2, 3));

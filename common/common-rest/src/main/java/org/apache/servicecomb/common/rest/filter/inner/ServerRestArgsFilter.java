@@ -100,6 +100,6 @@ public class ServerRestArgsFilter implements HttpServerFilter {
    */
   private boolean isDownloadFileResponseType(Invocation invocation, Response response) {
     return Part.class.isAssignableFrom(
-        invocation.getOperationMeta().getResponsesMeta().findResponseType(response.getStatusCode()).getRawClass());
+        invocation.findResponseType(response.getStatusCode()).getRawClass());
   }
 }

@@ -134,4 +134,8 @@ public class ResponsesMeta {
 
     return responseType;
   }
+
+  public void setResponseType(int statusCode, JavaType javaType) {
+    this.responseMap.put(statusCode, javaType);
+  }
 }

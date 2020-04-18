@@ -25,7 +25,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.Part;
-import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestCodec;
@@ -43,7 +42,6 @@ import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
-import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
@@ -211,9 +209,9 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     Invocation invocation =
         InvocationFactory.forConsumer(requestMeta.getReferenceConfig(),
             requestMeta.getOperationMeta(),
+            requestMeta.getOperationMeta().buildBaseConsumerRuntimeType(),
             swaggerArguments);
 
-    invocation.setWeakInvoke(true);
     invocation.getHandlerContext().put(RestConst.REST_CLIENT_REQUEST_PATH,
         path + (this.uri.getRawQuery() == null ? "" : "?" + this.uri.getRawQuery()));
 
@@ -224,11 +222,7 @@ public class CseClientHttpRequest implements ClientHttpRequest {
 
     if (responseType != null &&
         !(responseType instanceof Class && Part.class.isAssignableFrom((Class<?>) responseType))) {
-      ResponsesMeta responsesMeta = new ResponsesMeta();
-      invocation.getOperationMeta().getResponsesMeta().cloneTo(responsesMeta);
-      responsesMeta.getResponseMap().put(Status.OK.getStatusCode(),
-          TypeFactory.defaultInstance().constructType(responseType));
-      invocation.setResponsesMeta(responsesMeta);
+      invocation.setSuccessResponseType(TypeFactory.defaultInstance().constructType(responseType));
     }
 
     invocation.getHandlerContext().put(RestConst.CONSUMER_HEADER, httpHeaders);

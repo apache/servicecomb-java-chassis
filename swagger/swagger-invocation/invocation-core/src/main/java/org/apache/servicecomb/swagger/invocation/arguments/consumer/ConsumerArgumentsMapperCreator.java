@@ -27,6 +27,7 @@ import org.apache.servicecomb.foundation.common.utils.bean.Getter;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.invocation.arguments.AbstractArgumentsMapperCreator;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
+import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.arguments.ContextArgumentMapperFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +62,7 @@ public class ConsumerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
     return true;
   }
 
-  public ConsumerArgumentsMapper createArgumentsMapper() {
+  public ArgumentsMapper createArgumentsMapper() {
     doCreateArgumentsMapper();
 
     // if all mappers are SameMapper, then no need any mapper

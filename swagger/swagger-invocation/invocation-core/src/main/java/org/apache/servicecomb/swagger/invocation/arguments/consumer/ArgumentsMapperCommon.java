@@ -22,11 +22,12 @@ import java.util.Map;
 
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
+import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapper;
 
 /**
  * map consumer arguments to swagger arguments
  */
-public class ArgumentsMapperCommon implements ConsumerArgumentsMapper {
+public class ArgumentsMapperCommon implements ArgumentsMapper {
   private List<ArgumentMapper> mappers;
 
   public ArgumentsMapperCommon(List<ArgumentMapper> mappers) {

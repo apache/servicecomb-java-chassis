@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.junit.Assert;
@@ -45,6 +46,9 @@ public class TestInvocationStageTrace {
   @Mocked
   OperationMeta operationMeta;
 
+  @Mocked
+  InvocationRuntimeType invocationRuntimeType;
+
   Map<String, Object> args = new HashMap<>();
 
   static long nanoTime = 0;
@@ -61,7 +65,7 @@ public class TestInvocationStageTrace {
 
   @Test
   public void consumer() {
-    invocation = new Invocation(referenceConfig, operationMeta, args);
+    invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, args);
     stageTrace = new InvocationStageTrace(invocation);
 
     stageTrace.start(1);
@@ -158,7 +162,7 @@ public class TestInvocationStageTrace {
 
   @Test
   public void edge() {
-    invocation = new Invocation(referenceConfig, operationMeta, args);
+    invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, args);
     stageTrace = new InvocationStageTrace(invocation);
     invocation.setEdge(true);
 

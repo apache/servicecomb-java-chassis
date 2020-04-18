@@ -25,6 +25,7 @@ import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
+import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.schemas.ConsumerOneArg;
 import org.apache.servicecomb.swagger.invocation.schemas.PojoOneArg;
 import org.junit.Assert;
@@ -40,7 +41,7 @@ public class TestPojoOneArg {
     Swagger swagger = SwaggerGenerator.generate(PojoOneArg.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerOneArg.class, swagger);
-    ConsumerArgumentsMapper mapper = swaggerConsumer.findOperation("simple").getArgumentsMapper();
+    ArgumentsMapper mapper = swaggerConsumer.findOperation("simple").getArgumentsMapper();
 
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("name", "name");
@@ -60,7 +61,7 @@ public class TestPojoOneArg {
     Swagger swagger = SwaggerGenerator.generate(PojoOneArg.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerOneArg.class, swagger);
-    ConsumerArgumentsMapper mapper = swaggerConsumer.findOperation("bean").getArgumentsMapper();
+    ArgumentsMapper mapper = swaggerConsumer.findOperation("bean").getArgumentsMapper();
 
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("user", new User());
@@ -78,7 +79,7 @@ public class TestPojoOneArg {
     Swagger swagger = SwaggerGenerator.generate(PojoOneArg.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerOneArg.class, swagger);
-    ConsumerArgumentsMapper mapper = swaggerConsumer.findOperation("enumBody").getArgumentsMapper();
+    ArgumentsMapper mapper = swaggerConsumer.findOperation("enumBody").getArgumentsMapper();
 
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("color", Color.BLUE);

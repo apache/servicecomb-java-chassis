@@ -23,6 +23,7 @@ import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
+import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.apache.servicecomb.swagger.invocation.schemas.ConsumerAddBodyV1;
 import org.apache.servicecomb.swagger.invocation.schemas.ConsumerAddV1;
@@ -43,7 +44,7 @@ public class TestPojoV1V1 {
     Swagger swagger = SwaggerGenerator.generate(PojoAddV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV1.class, swagger);
-    ConsumerArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
+    ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
 
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("x", 1);
@@ -65,7 +66,7 @@ public class TestPojoV1V1 {
     Swagger swagger = SwaggerGenerator.generate(PojoAddBodyV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV1.class, swagger);
-    ConsumerArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
+    ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
 
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("x", 1);
@@ -87,7 +88,7 @@ public class TestPojoV1V1 {
     Swagger swagger = SwaggerGenerator.generate(PojoAddV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV1.class, swagger);
-    ConsumerArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
+    ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
 
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("addBody", new AddWrapperV1(1, 2));
@@ -103,7 +104,7 @@ public class TestPojoV1V1 {
     SwaggerEnvironment environment = new SwaggerEnvironment();
     Swagger swagger = SwaggerGenerator.generate(PojoAddBodyV1.class);
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddBodyV1.class, swagger);
-    ConsumerArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
+    ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
 
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("addBody", new AddWrapperV1(1, 2));
@@ -125,7 +126,7 @@ public class TestPojoV1V1 {
     Swagger swagger = SwaggerGenerator.generate(PojoAddV1.class);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddWithContext.class, swagger);
-    ConsumerArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
+    ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();
 
     InvocationContext invocationContext = new InvocationContext();
     invocationContext.addContext("k1", "v1");

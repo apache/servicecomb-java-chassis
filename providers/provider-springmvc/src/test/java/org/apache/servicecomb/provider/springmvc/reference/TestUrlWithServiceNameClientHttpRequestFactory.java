@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
@@ -65,7 +66,8 @@ public class TestUrlWithServiceNameClientHttpRequestFactory {
       {
         invocation.getHandlerContext();
         result = handlerContext;
-        InvocationFactory.forConsumer((ReferenceConfig) any, (OperationMeta) any, (Map<String, Object>) any);
+        InvocationFactory.forConsumer((ReferenceConfig) any, (OperationMeta) any, (InvocationRuntimeType) any,
+            (Map<String, Object>) any);
         result = invocation;
       }
     };

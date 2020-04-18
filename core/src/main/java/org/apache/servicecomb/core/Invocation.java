@@ -27,6 +27,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
@@ -45,7 +46,6 @@ import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
-import org.apache.servicecomb.swagger.invocation.response.ResponsesMeta;
 
 import com.fasterxml.jackson.databind.JavaType;
 
@@ -60,7 +60,7 @@ public class Invocation extends SwaggerInvocation {
 
   private ReferenceConfig referenceConfig;
 
-  private ResponsesMeta responsesMeta;
+  private InvocationRuntimeType invocationRuntimeType;
 
   // 本次调用对应的schemaMeta
   private SchemaMeta schemaMeta;
@@ -95,10 +95,6 @@ public class Invocation extends SwaggerInvocation {
   // not extend InvocationType
   // because isEdge() only affect to apm/metrics output, no need to change so many logic
   private boolean edge;
-
-  // Check if consumer invocation without types info. e.g. using RestTemplate to invoke provider
-  // or using InvokerUtils to invoke provider and only provide operation id and arguments
-  private boolean weakInvoke;
 
   private long invocationId;
 
@@ -148,15 +144,17 @@ public class Invocation extends SwaggerInvocation {
   }
 
   public Invocation(ReferenceConfig referenceConfig, OperationMeta operationMeta,
+      InvocationRuntimeType invocationRuntimeType,
       Map<String, Object> swaggerArguments) {
     this.invocationType = InvocationType.CONSUMER;
     this.referenceConfig = referenceConfig;
-    this.responsesMeta = operationMeta.getResponsesMeta();
+    this.invocationRuntimeType = invocationRuntimeType;
     init(operationMeta, swaggerArguments);
   }
 
   public Invocation(Endpoint endpoint, OperationMeta operationMeta, Map<String, Object> swaggerArguments) {
     this.invocationType = InvocationType.PRODUCER;
+    this.invocationRuntimeType = operationMeta.buildBaseProviderRuntimeType();
     this.endpoint = endpoint;
     init(operationMeta, swaggerArguments);
   }
@@ -228,9 +226,8 @@ public class Invocation extends SwaggerInvocation {
   }
 
   private void buildSwaggerArguments() {
-    if (operationMeta.getSwaggerConsumerOperation() != null && !isEdge()
-        && !isWeakInvoke()) {
-      this.swaggerArguments = operationMeta.getSwaggerConsumerOperation().getArgumentsMapper()
+    if (!this.invocationRuntimeType.isRawConsumer()) {
+      this.swaggerArguments = this.invocationRuntimeType.getArgumentsMapper()
           .invocationArgumentToSwaggerArguments(this,
               this.invocationArguments);
     } else {
@@ -327,12 +324,12 @@ public class Invocation extends SwaggerInvocation {
     return referenceConfig.getVersionRule();
   }
 
-  public void setResponsesMeta(ResponsesMeta responsesMeta) {
-    this.responsesMeta = responsesMeta;
+  public JavaType findResponseType(int statusCode) {
+    return this.invocationRuntimeType.findResponseType(statusCode);
   }
 
-  public JavaType findResponseType(int statusCode) {
-    return responsesMeta.findResponseType(statusCode);
+  public void setSuccessResponseType(JavaType javaType) {
+    this.invocationRuntimeType.setSuccessResponseType(javaType);
   }
 
   public String getInvocationQualifiedName() {
@@ -429,14 +426,6 @@ public class Invocation extends SwaggerInvocation {
 
   public boolean isConsumer() {
     return InvocationType.CONSUMER.equals(invocationType);
-  }
-
-  public boolean isWeakInvoke() {
-    return weakInvoke;
-  }
-
-  public void setWeakInvoke(boolean weakInvoke) {
-    this.weakInvoke = weakInvoke;
   }
 
   public boolean isEdge() {

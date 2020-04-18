@@ -27,8 +27,8 @@ import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperations;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
+import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.arguments.ContextArgumentMapperFactory;
-import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerArgumentsMapperCreator;
 import org.apache.servicecomb.swagger.invocation.arguments.consumer.ConsumerContextArgumentMapperFactory;
 import org.apache.servicecomb.swagger.invocation.arguments.producer.ProducerArgumentsMapper;
@@ -78,7 +78,7 @@ public class SwaggerEnvironment {
           consumerIntf,
           consumerMethod,
           swaggerOperation);
-      ConsumerArgumentsMapper argsMapper = creator.createArgumentsMapper();
+      ArgumentsMapper argsMapper = creator.createArgumentsMapper();
       ConsumerResponseMapper responseMapper = consumerResponseMapperFactorys
           .createResponseMapper(consumerMethod.getGenericReturnType());
 

@@ -19,8 +19,9 @@ package org.apache.servicecomb.swagger.invocation.arguments.consumer;
 import java.util.Map;
 
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
+import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapper;
 
-public class ArgumentsMapperDirectReuse implements ConsumerArgumentsMapper {
+public class ArgumentsMapperDirectReuse implements ArgumentsMapper {
   @Override
   public Map<String, Object> invocationArgumentToSwaggerArguments(SwaggerInvocation swaggerInvocation,
       Map<String, Object> invocationArguments) {

@@ -162,7 +162,7 @@ public class TestAbstractRestInvocation {
       responseEx = new StandardHttpServletResponseEx(servletResponse);
     }
 
-    invocation = new Invocation(endpoint, operationMeta, arguments);
+    invocation = new Invocation(endpoint, operationMeta, operationMeta.buildBaseConsumerRuntimeType(), arguments);
 
     initRestInvocation();
     List<HttpServerFilter> httpServerFilters = SPIServiceUtils.getSortedService(HttpServerFilter.class);
