@@ -60,16 +60,16 @@ public final class HighwayCodec {
   }
 
   @SuppressWarnings({"rawtypes", "unchecked"})
-  private static Map<String, Object> addPrimitiveTypeDefaultValues(Invocation invocation, OperationMeta operationMeta,
+  private static Map<String, Object> addPrimitiveTypeDefaultValues(Invocation invocation,
       Map<String, Object> swaggerArguments) {
     // proto buffer never serialize default values, put it back in provider
-    SwaggerProducerOperation swaggerProducerOperation = operationMeta.getSwaggerProducerOperation();
-    if (swaggerProducerOperation != null && !invocation.isEdge()) {
-      List<Parameter> swaggerParameters = operationMeta.getSwaggerOperation()
+    if (invocation.getOperationMeta().getSwaggerProducerOperation() != null && !invocation.isEdge()) {
+      List<Parameter> swaggerParameters = invocation.getOperationMeta().getSwaggerOperation()
           .getParameters();
       for (Parameter parameter : swaggerParameters) {
         if (swaggerArguments.get(parameter.getName()) == null) {
-          Type type = swaggerProducerOperation.getSwaggerParameterType(parameter.getName());
+          Type type = invocation.getOperationMeta().getSwaggerProducerOperation()
+              .getSwaggerParameterType(parameter.getName());
           if (type instanceof Class) {
             if (((Class) type).isPrimitive()) {
               swaggerArguments.put(parameter.getName(), Defaults.defaultValue((Class) type));
@@ -86,7 +86,7 @@ public final class HighwayCodec {
       Buffer bodyBuffer) throws Exception {
     RequestRootDeserializer<Object> requestDeserializer = operationProtobuf.getRequestRootDeserializer();
     Map<String, Object> swaggerArguments = requestDeserializer.deserialize(bodyBuffer.getBytes());
-    addPrimitiveTypeDefaultValues(invocation, operationProtobuf.getOperationMeta(), swaggerArguments);
+    addPrimitiveTypeDefaultValues(invocation, swaggerArguments);
     invocation.setSwaggerArguments(swaggerArguments);
     invocation.mergeContext(header.getContext());
   }

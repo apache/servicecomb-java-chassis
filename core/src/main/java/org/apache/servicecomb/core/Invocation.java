@@ -324,6 +324,10 @@ public class Invocation extends SwaggerInvocation {
     return referenceConfig.getVersionRule();
   }
 
+  public InvocationRuntimeType getInvocationRuntimeType() {
+    return this.invocationRuntimeType;
+  }
+
   public JavaType findResponseType(int statusCode) {
     return this.invocationRuntimeType.findResponseType(statusCode);
   }

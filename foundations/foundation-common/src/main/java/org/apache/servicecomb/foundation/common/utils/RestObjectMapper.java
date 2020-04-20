@@ -74,7 +74,7 @@ public class RestObjectMapper extends AbstractRestObjectMapper {
   @SuppressWarnings("unchecked")
   public <T> T convertValue(Object fromValue, JavaType toValueType) throws IllegalArgumentException {
     // After jackson 2.10.*, will by pass the following check when convert value. But this is useful
-    // for java chassis applications and do not need to convert. So add the check here.(conversion is
+    // for java chassis applications and do not need to convert to keep performance. So add the check here.(conversion is
     // not necessary and will cause some trouble in some user applications that depend on this)
     if (fromValue == null) {
       return null;
