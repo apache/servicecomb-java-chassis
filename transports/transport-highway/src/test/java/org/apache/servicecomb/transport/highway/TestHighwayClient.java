@@ -130,7 +130,7 @@ public class TestHighwayClient {
 
     new MockUp<ProtobufManager>() {
       @Mock
-      public OperationProtobuf getOrCreateOperation(OperationMeta operationMeta) {
+      public OperationProtobuf getOrCreateOperation(Invocation operationMeta) {
         return operationProtobuf;
       }
     };

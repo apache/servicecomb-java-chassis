@@ -21,9 +21,9 @@ import static org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils.isW
 import java.lang.reflect.Type;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.common.utils.TypesUtil;
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
 import org.apache.servicecomb.foundation.protobuf.RootDeserializer;
-import org.apache.servicecomb.foundation.protobuf.RootSerializer;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
@@ -124,7 +124,13 @@ public class DeserializerSchemaManager extends SchemaManager {
             protoField.isRepeated() && !protoField.isMap() ? ProtoConst.LIST_TYPE
                 : ProtoConst.MAP_TYPE;
       }
-      javaType = TypeFactory.defaultInstance().constructParametricType(PropertyWrapper.class, javaType);
+
+      if (javaType.isPrimitive()) {
+        javaType = TypeFactory.defaultInstance()
+            .constructParametricType(PropertyWrapper.class, TypesUtil.primitiveJavaTypeToWrapper(javaType));
+      } else {
+        javaType = TypeFactory.defaultInstance().constructParametricType(PropertyWrapper.class, javaType);
+      }
     }
 
     if (javaType.isJavaLangObject()) {

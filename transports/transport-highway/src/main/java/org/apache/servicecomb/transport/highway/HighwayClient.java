@@ -92,7 +92,7 @@ public class HighwayClient {
     HighwayClientConnectionPool tcpClientPool = clientMgr.findClientPool(invocation.isSync());
 
     OperationMeta operationMeta = invocation.getOperationMeta();
-    OperationProtobuf operationProtobuf = ProtobufManager.getOrCreateOperation(operationMeta);
+    OperationProtobuf operationProtobuf = ProtobufManager.getOrCreateOperation(invocation);
 
     HighwayClientConnection tcpClient =
         tcpClientPool.findOrCreateClient(invocation.getEndpoint().getEndpoint());

@@ -52,8 +52,6 @@ public class HighwayServerInvoke {
 
   private OperationMeta operationMeta;
 
-  private OperationProtobuf operationProtobuf;
-
   private TcpConnection connection;
 
   private long msgId;
@@ -62,9 +60,11 @@ public class HighwayServerInvoke {
 
   private Endpoint endpoint;
 
-  Invocation invocation;
+  private Invocation invocation;
 
-  protected long start;
+  private OperationProtobuf operationProtobuf;
+
+  private long start;
 
   public HighwayServerInvoke(Endpoint endpoint) {
     this.start = System.nanoTime();
@@ -97,8 +97,6 @@ public class HighwayServerInvoke {
     MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     SchemaMeta schemaMeta = microserviceMeta.ensureFindSchemaMeta(header.getSchemaId());
     this.operationMeta = schemaMeta.ensureFindOperation(header.getOperationName());
-    this.operationProtobuf = ProtobufManager.getOrCreateOperation(operationMeta);
-
     this.bodyBuffer = bodyBuffer;
   }
 
@@ -154,9 +152,9 @@ public class HighwayServerInvoke {
       invocation.getInvocationStageTrace().finishServerFiltersResponse();
       connection.write(respBuffer.getByteBuf());
     } catch (Exception e) {
-      // 没招了，直接打日志
+      // keep highway performance and simple, this encoding/decoding error not need handle by client
       String msg = String.format("encode response failed, %s, msgId=%d",
-          operationProtobuf.getOperationMeta().getMicroserviceQualifiedName(),
+          invocation.getOperationMeta().getMicroserviceQualifiedName(),
           msgId);
       LOGGER.error(msg, e);
     } finally {
@@ -172,8 +170,9 @@ public class HighwayServerInvoke {
   public void execute() {
     try {
       invocation = InvocationFactory.forProvider(endpoint,
-          operationProtobuf.getOperationMeta(),
+          operationMeta,
           null);
+      operationProtobuf = ProtobufManager.getOrCreateOperation(invocation);
       invocation.onStart(null, start);
       invocation.getInvocationStageTrace().startSchedule();
 

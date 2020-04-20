@@ -25,7 +25,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.Status.Family;
 
 import org.apache.servicecomb.codec.protobuf.utils.ScopedProtobufSchemaManager;
-import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.protobuf.ProtoMapper;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoConst;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
@@ -36,8 +36,6 @@ import io.protostuff.compiler.model.Message;
 
 @SuppressWarnings("rawtypes")
 public class OperationProtobuf {
-  private OperationMeta operationMeta;
-
   private RequestRootSerializer requestRootSerializer;
 
   private RequestRootDeserializer<Object> requestRootDeserializer;
@@ -50,10 +48,9 @@ public class OperationProtobuf {
 
   private ResponseRootDeserializer<Object> anyResponseRootDeserializer;
 
-  public OperationProtobuf(ScopedProtobufSchemaManager scopedProtobufSchemaManager, OperationMeta operationMeta) {
-    this.operationMeta = operationMeta;
-    initRequestCodec(scopedProtobufSchemaManager, operationMeta);
-    initResponseCodec(scopedProtobufSchemaManager, operationMeta);
+  public OperationProtobuf(ScopedProtobufSchemaManager scopedProtobufSchemaManager, Invocation invocation) {
+    initRequestCodec(scopedProtobufSchemaManager, invocation);
+    initResponseCodec(scopedProtobufSchemaManager, invocation);
   }
 
   public RequestRootSerializer getRequestRootSerializer() {
@@ -78,89 +75,103 @@ public class OperationProtobuf {
     return anyResponseRootDeserializer;
   }
 
-  public OperationMeta getOperationMeta() {
-    return operationMeta;
-  }
-
-  private void initRequestCodec(ScopedProtobufSchemaManager scopedProtobufSchemaManager, OperationMeta operationMeta) {
-    ProtoMapper mapper = scopedProtobufSchemaManager.getOrCreateProtoMapper(operationMeta.getSchemaMeta());
-    Message requestMessage = mapper.getRequestMessage(operationMeta.getOperationId());
-
-    if (operationMeta.getSwaggerProducerOperation() != null) {
-      Map<String, Type> swaggerParameterTypes = operationMeta.getSwaggerProducerOperation()
-          .getSwaggerParameterTypes();
-      if (ProtoUtils.isWrapArguments(requestMessage)) {
-        requestRootDeserializer = new RequestRootDeserializer<>(
-            mapper.createRootDeserializer(requestMessage, swaggerParameterTypes), true, null);
-      } else {
-        if (swaggerParameterTypes.isEmpty()) {
-          requestRootDeserializer = new RequestRootDeserializer<>(
-              mapper.createRootDeserializer(requestMessage, Object.class), false, null);
-        } else if (swaggerParameterTypes.size() == 1) {
-          Entry<String, Type> entry = swaggerParameterTypes.entrySet().iterator().next();
-          requestRootDeserializer = new RequestRootDeserializer<>(mapper.createRootDeserializer(requestMessage,
-              entry.getValue()), false, entry.getKey());
-        } else {
-          throw new IllegalStateException(
-              "unexpected operation definition " + operationMeta.getMicroserviceQualifiedName());
-        }
-      }
+  private void initProducerRequestCodec(Invocation invocation, Message requestMessage, ProtoMapper mapper) {
+    Map<String, Type> swaggerParameterTypes = invocation.getOperationMeta().getSwaggerProducerOperation()
+        .getSwaggerParameterTypes();
+    if (ProtoUtils.isWrapArguments(requestMessage)) {
+      requestRootDeserializer = new RequestRootDeserializer<>(
+          mapper.createRootDeserializer(requestMessage, swaggerParameterTypes), true, null);
     } else {
-      if (ProtoUtils.isWrapArguments(requestMessage)) {
-        requestRootSerializer = new RequestRootSerializer(
-            mapper.createRootSerializer(requestMessage, Object.class), true, false);
+      if (swaggerParameterTypes.isEmpty()) {
+        requestRootDeserializer = new RequestRootDeserializer<>(
+            mapper.createRootDeserializer(requestMessage, Object.class), false, null);
+      } else if (swaggerParameterTypes.size() == 1) {
+        Entry<String, Type> entry = swaggerParameterTypes.entrySet().iterator().next();
+        requestRootDeserializer = new RequestRootDeserializer<>(mapper.createRootDeserializer(requestMessage,
+            entry.getValue()), false, entry.getKey());
       } else {
-        if (operationMeta.getSwaggerOperation().getParameters().isEmpty()) {
-          requestRootSerializer = new RequestRootSerializer(mapper.createRootSerializer(requestMessage, Object.class),
-              false, false);
-        } else if (operationMeta.getSwaggerOperation().getParameters().size() == 1) {
-          requestRootSerializer = new RequestRootSerializer(mapper.createRootSerializer(requestMessage,
-              Object.class), false, true);
-        } else {
-          throw new IllegalStateException(
-              "unexpected operation definition " + operationMeta.getMicroserviceQualifiedName());
-        }
+        throw new IllegalStateException(
+            "unexpected operation definition " + invocation.getOperationMeta().getMicroserviceQualifiedName());
       }
     }
   }
 
-  private void initResponseCodec(ScopedProtobufSchemaManager scopedProtobufSchemaManager, OperationMeta operationMeta) {
-    ProtoMapper mapper = scopedProtobufSchemaManager.getOrCreateProtoMapper(operationMeta.getSchemaMeta());
-    Message responseMessage = mapper.getResponseMessage(operationMeta.getOperationId());
-
-    JavaType responseType = operationMeta.getResponsesMeta().findResponseType(Status.OK.getStatusCode());
-    if (operationMeta.getSwaggerProducerOperation() != null) {
-      if (ProtoUtils.isWrapProperty(responseMessage)) {
-        responseRootSerializer = new ResponseRootSerializer(
-            mapper.createRootSerializer(responseMessage, responseType), true, false);
-      } else {
-        if (ProtoUtils.isEmptyMessage(responseMessage)) {
-          responseRootSerializer = new ResponseRootSerializer(mapper.createRootSerializer(responseMessage,
-              Object.class), false, false);
-        } else {
-          responseRootSerializer = new ResponseRootSerializer(mapper.createRootSerializer(responseMessage,
-              responseType), false, true);
-        }
-      }
+  private void initConsumerRequestCodec(Invocation invocation, Message requestMessage, ProtoMapper mapper) {
+    if (ProtoUtils.isWrapArguments(requestMessage)) {
+      requestRootSerializer = new RequestRootSerializer(
+          mapper.createRootSerializer(requestMessage, Object.class), true, false);
     } else {
-      if (ProtoUtils.isWrapProperty(responseMessage)) {
-        responseRootSerializer = new ResponseRootSerializer(
-            mapper.createRootSerializer(responseMessage, responseType), true, false);
+      if (invocation.getOperationMeta().getSwaggerOperation().getParameters().isEmpty()) {
+        requestRootSerializer = new RequestRootSerializer(mapper.createRootSerializer(requestMessage, Object.class),
+            false, false);
+      } else if (invocation.getOperationMeta().getSwaggerOperation().getParameters().size() == 1) {
+        requestRootSerializer = new RequestRootSerializer(mapper.createRootSerializer(requestMessage,
+            Object.class), false, true);
+      } else {
+        throw new IllegalStateException(
+            "unexpected operation definition " + invocation.getOperationMeta().getMicroserviceQualifiedName());
+      }
+    }
+  }
+
+  private void initRequestCodec(ScopedProtobufSchemaManager scopedProtobufSchemaManager, Invocation invocation) {
+    ProtoMapper mapper = scopedProtobufSchemaManager.getOrCreateProtoMapper(invocation.getSchemaMeta());
+    Message requestMessage = mapper.getRequestMessage(invocation.getOperationMeta().getOperationId());
+
+    if (!invocation.isConsumer()) {
+      initProducerRequestCodec(invocation, requestMessage, mapper);
+    } else {
+      initConsumerRequestCodec(invocation, requestMessage, mapper);
+    }
+  }
+
+  private void initProviderResponseCode(Message responseMessage, ProtoMapper mapper,
+      JavaType responseType) {
+    if (ProtoUtils.isWrapProperty(responseMessage)) {
+      responseRootSerializer = new ResponseRootSerializer(
+          mapper.createRootSerializer(responseMessage, responseType), true, false);
+    } else {
+      if (ProtoUtils.isEmptyMessage(responseMessage)) {
+        responseRootSerializer = new ResponseRootSerializer(mapper.createRootSerializer(responseMessage,
+            Object.class), false, false);
+      } else {
+        responseRootSerializer = new ResponseRootSerializer(mapper.createRootSerializer(responseMessage,
+            responseType), false, true);
+      }
+    }
+  }
+
+  private void initConsumerResponseCode(Message responseMessage, ProtoMapper mapper,
+      JavaType responseType) {
+    if (ProtoUtils.isWrapProperty(responseMessage)) {
+      responseRootSerializer = new ResponseRootSerializer(
+          mapper.createRootSerializer(responseMessage, responseType), true, false);
+      responseRootDeserializer = new ResponseRootDeserializer<>(
+          mapper.createRootDeserializer(responseMessage, responseType), false);
+    } else {
+      if (ProtoUtils.isEmptyMessage(responseMessage)) {
+        responseRootSerializer = new ResponseRootSerializer(mapper.createRootSerializer(responseMessage,
+            Object.class), false, false);
+        responseRootDeserializer = new ResponseRootDeserializer<>(
+            mapper.createRootDeserializer(responseMessage, Object.class), true);
+      } else {
+        responseRootSerializer = new ResponseRootSerializer(mapper.createRootSerializer(responseMessage,
+            responseType), false, false);
         responseRootDeserializer = new ResponseRootDeserializer<>(
             mapper.createRootDeserializer(responseMessage, responseType), false);
-      } else {
-        if (ProtoUtils.isEmptyMessage(responseMessage)) {
-          responseRootSerializer = new ResponseRootSerializer(mapper.createRootSerializer(responseMessage,
-              Object.class), false, false);
-          responseRootDeserializer = new ResponseRootDeserializer<>(
-              mapper.createRootDeserializer(responseMessage, Object.class), true);
-        } else {
-          responseRootSerializer = new ResponseRootSerializer(mapper.createRootSerializer(responseMessage,
-              responseType), false, false);
-          responseRootDeserializer = new ResponseRootDeserializer<>(
-              mapper.createRootDeserializer(responseMessage, responseType), false);
-        }
       }
+    }
+  }
+
+  private void initResponseCodec(ScopedProtobufSchemaManager scopedProtobufSchemaManager, Invocation invocation) {
+    ProtoMapper mapper = scopedProtobufSchemaManager.getOrCreateProtoMapper(invocation.getSchemaMeta());
+    Message responseMessage = mapper.getResponseMessage(invocation.getOperationMeta().getOperationId());
+
+    JavaType responseType = invocation.findResponseType(Status.OK.getStatusCode());
+    if (!invocation.isConsumer()) {
+      initProviderResponseCode(responseMessage, mapper, responseType);
+    } else {
+      initConsumerResponseCode(responseMessage, mapper, responseType);
     }
     anyResponseRootSerializer = new ResponseRootSerializer(mapper.createRootSerializer(ProtoConst.ANY,
         Object.class), false, true);

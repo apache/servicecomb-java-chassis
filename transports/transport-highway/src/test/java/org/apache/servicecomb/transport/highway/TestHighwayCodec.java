@@ -181,7 +181,7 @@ public class TestHighwayCodec {
     Mockito.when(bodyBuffer.getByteBuf()).thenReturn(lByteBuf);
     Mockito.when(bodyBuffer.getBytes()).thenReturn(new byte[0]);
     Mockito.when(lByteBuf.nioBuffer()).thenReturn(nioBuffer);
-    Mockito.when(operationProtobuf.getOperationMeta()).thenReturn(operationMeta);
+
     Mockito.when(operationMeta.getSchemaMeta()).thenReturn(schemaMeta);
     Mockito.when(schemaMeta.getMicroserviceMeta()).thenReturn(microserviceMeta);
   }

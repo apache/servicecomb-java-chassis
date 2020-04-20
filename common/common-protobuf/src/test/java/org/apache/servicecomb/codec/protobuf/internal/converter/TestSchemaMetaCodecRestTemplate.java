@@ -31,6 +31,8 @@ import org.apache.servicecomb.codec.protobuf.definition.RequestRootSerializer;
 import org.apache.servicecomb.codec.protobuf.definition.ResponseRootDeserializer;
 import org.apache.servicecomb.codec.protobuf.definition.ResponseRootSerializer;
 import org.apache.servicecomb.codec.protobuf.internal.converter.model.ProtoSchema;
+import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
@@ -41,9 +43,11 @@ import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.generator.springmvc.SpringmvcSwaggerGenerator;
+import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
@@ -67,6 +71,8 @@ public class TestSchemaMetaCodecRestTemplate {
 
   @Before
   public void setUp() {
+    ProtobufManager.clear();
+
     new Expectations() {
       {
         providerMicroserviceMeta.getMicroserviceName();
@@ -93,12 +99,46 @@ public class TestSchemaMetaCodecRestTemplate {
     consumerSchemaMeta = new SchemaMeta(consumerMicroserviceMeta, "ProtoSchema", swagger);
   }
 
+  private Invocation mockInvocation(String operation, InvocationType invocationType) {
+    OperationMeta operationMeta;
+    boolean isConsumer;
+    Invocation invocation = Mockito.mock(Invocation.class);
+    InvocationRuntimeType invocationRuntimeType;
+
+    if (InvocationType.CONSUMER == invocationType) {
+      operationMeta = consumerSchemaMeta.getOperations().get(operation);
+      isConsumer = true;
+      Mockito.when(invocation.getSchemaMeta()).thenReturn(consumerSchemaMeta);
+      invocationRuntimeType = operationMeta.buildBaseConsumerRuntimeType();
+    } else {
+      operationMeta = providerSchemaMeta.getOperations().get(operation);
+      isConsumer = false;
+      Mockito.when(invocation.getSchemaMeta()).thenReturn(providerSchemaMeta);
+      invocationRuntimeType = operationMeta.buildBaseProviderRuntimeType();
+    }
+
+    MicroserviceMeta microserviceMeta = operationMeta.getMicroserviceMeta();
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+    Mockito.when(invocation.getInvocationRuntimeType())
+        .thenReturn(invocationRuntimeType);
+    Mockito.when(invocation.findResponseType(200))
+        .thenReturn(invocationRuntimeType.findResponseType(200));
+    Mockito.when(invocation.getInvocationType()).thenReturn(invocationType);
+    Mockito.when(invocation.getMicroserviceMeta()).thenReturn(microserviceMeta);
+
+    Mockito.when(invocation.isConsumer()).thenReturn(isConsumer);
+    return invocation;
+  }
+
   @Test
   public void testProtoSchemaOperationUser() throws Exception {
+    Invocation consumerInvocation = mockInvocation("user", InvocationType.CONSUMER);
+    Invocation providerInvocation = mockInvocation("user", InvocationType.PRODUCER);
+
     OperationProtobuf providerOperationProtobuf = ProtobufManager
-        .getOrCreateOperation(providerSchemaMeta.getOperations().get("user"));
+        .getOrCreateOperation(providerInvocation);
     OperationProtobuf consumerOperationProtobuf = ProtobufManager
-        .getOrCreateOperation(consumerSchemaMeta.getOperations().get("user"));
+        .getOrCreateOperation(consumerInvocation);
     User user = new User();
     user.name = "user";
     User friend = new User();
@@ -124,13 +164,15 @@ public class TestSchemaMetaCodecRestTemplate {
     ResponseRootSerializer responseSerializer = providerOperationProtobuf.findResponseRootSerializer(200);
     values = responseSerializer.serialize(user);
     ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseRootDeserializer(200);
-    User decodedUser = (User) responseDeserializer.deserialize(values, TypeFactory.defaultInstance().constructType(User.class));
+    User decodedUser = (User) responseDeserializer
+        .deserialize(values, TypeFactory.defaultInstance().constructType(User.class));
     Assert.assertEquals(user.name, decodedUser.name);
     Assert.assertEquals(user.friends.get(0).name, decodedUser.friends.get(0).name);
 
     user.friends = new ArrayList<>();
     values = responseSerializer.serialize(user);
-    decodedUser = (User) responseDeserializer.deserialize(values, TypeFactory.defaultInstance().constructType(User.class));
+    decodedUser = (User) responseDeserializer
+        .deserialize(values, TypeFactory.defaultInstance().constructType(User.class));
     Assert.assertEquals(user.name, decodedUser.name);
     // proto buffer encode and decode empty list to be null
     Assert.assertEquals(null, decodedUser.friends);
@@ -139,10 +181,13 @@ public class TestSchemaMetaCodecRestTemplate {
   @Test
   @SuppressWarnings({"rawtypes", "unchecked"})
   public void testProtoSchemaOperationBase() throws Exception {
+    Invocation consumerInvocation = mockInvocation("base", InvocationType.CONSUMER);
+    Invocation providerInvocation = mockInvocation("base", InvocationType.PRODUCER);
+
     OperationProtobuf providerOperationProtobuf = ProtobufManager
-        .getOrCreateOperation(providerSchemaMeta.getOperations().get("base"));
+        .getOrCreateOperation(providerInvocation);
     OperationProtobuf consumerOperationProtobuf = ProtobufManager
-        .getOrCreateOperation(consumerSchemaMeta.getOperations().get("base"));
+        .getOrCreateOperation(consumerInvocation);
     byte[] values;
 
     // request message
@@ -214,7 +259,8 @@ public class TestSchemaMetaCodecRestTemplate {
     ResponseRootSerializer responseSerializer = providerOperationProtobuf.findResponseRootSerializer(200);
     values = responseSerializer.serialize(30);
     ResponseRootDeserializer<Object> responseDeserializer = consumerOperationProtobuf.findResponseRootDeserializer(200);
-    Object decodedValue = responseDeserializer.deserialize(values, TypeFactory.defaultInstance().constructType(int.class));
+    Object decodedValue = responseDeserializer
+        .deserialize(values, TypeFactory.defaultInstance().constructType(int.class));
     Assert.assertEquals(30, (int) decodedValue);
   }
 }
