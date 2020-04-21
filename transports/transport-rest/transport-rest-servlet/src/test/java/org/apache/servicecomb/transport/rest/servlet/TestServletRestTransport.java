@@ -20,12 +20,14 @@ package org.apache.servicecomb.transport.rest.servlet;
 import java.io.IOException;
 import java.net.ServerSocket;
 
+import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.serviceregistry.Features;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.transport.rest.client.RestTransportClient;
 import org.apache.servicecomb.transport.rest.client.RestTransportClientManager;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -36,6 +38,11 @@ import mockit.Mocked;
 
 public class TestServletRestTransport {
   ServletRestTransport transport = new ServletRestTransport();
+
+  @After
+  public void tearDown() {
+    Deployment.clearClassLoaderScopeProperty();
+  }
 
   @Test
   public void testInitNotPublish(@Mocked RestTransportClient restTransportClient) {
@@ -71,8 +78,6 @@ public class TestServletRestTransport {
         result = "1.1.1.1:1234";
       }
     };
-    System.clearProperty(Const.URL_PREFIX);
-
     Assert.assertTrue(transport.init());
     Assert.assertEquals("rest://1.1.1.1:1234", transport.getPublishEndpoint().getEndpoint());
   }
@@ -103,12 +108,10 @@ public class TestServletRestTransport {
         result = "1.1.1.1:1234";
       }
     };
-    System.setProperty(Const.URL_PREFIX, "/root");
+    Deployment.setClassLoaderScopeProperty(Const.URL_PREFIX, "/root");
 
     Assert.assertTrue(transport.init());
     Assert.assertEquals("rest://1.1.1.1:1234?urlPrefix=/root", transport.getPublishEndpoint().getEndpoint());
-
-    System.clearProperty(Const.URL_PREFIX);
   }
 
   @Test

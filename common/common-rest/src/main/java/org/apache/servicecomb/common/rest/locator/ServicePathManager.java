@@ -24,6 +24,7 @@ import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,7 +102,7 @@ public class ServicePathManager {
   }
 
   public void buildProducerPaths() {
-    String urlPrefix = System.getProperty(Const.URL_PREFIX);
+    String urlPrefix = Deployment.getClassLoaderScopeProperty(Const.URL_PREFIX);
     if (StringUtils.isEmpty(urlPrefix)) {
       producerPaths = swaggerPaths;
       producerPaths.printPaths();
