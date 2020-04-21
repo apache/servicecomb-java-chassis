@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.transport.AbstractTransport;
+import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.transport.rest.client.RestTransportClient;
@@ -58,7 +59,7 @@ public class ServletRestTransport extends AbstractTransport {
 
   @Override
   public boolean init() {
-    String urlPrefix = System.getProperty(Const.URL_PREFIX);
+    String urlPrefix = Deployment.getClassLoaderScopeProperty(Const.URL_PREFIX);
     Map<String, String> queryMap = new HashMap<>();
     if (!StringUtils.isEmpty(urlPrefix)) {
       queryMap.put(Const.URL_PREFIX, urlPrefix);

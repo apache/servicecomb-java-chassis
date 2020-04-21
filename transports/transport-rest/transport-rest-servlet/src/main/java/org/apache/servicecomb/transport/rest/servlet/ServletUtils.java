@@ -29,6 +29,7 @@ import javax.servlet.ServletRegistration;
 import javax.servlet.ServletRegistration.Dynamic;
 
 import org.apache.servicecomb.common.rest.UploadConfig;
+import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
@@ -132,7 +133,7 @@ public class ServletUtils {
       return;
     }
 
-    System.setProperty(Const.URL_PREFIX, urlPrefix);
+    Deployment.setClassLoaderScopeProperty(Const.URL_PREFIX, urlPrefix);
     LOGGER.info("UrlPrefix of this instance is \"{}\".", urlPrefix);
   }
 

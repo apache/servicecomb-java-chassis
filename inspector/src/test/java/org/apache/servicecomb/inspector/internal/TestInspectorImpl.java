@@ -44,6 +44,7 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.definition.CoreMetaUtils;
+import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
@@ -92,7 +93,7 @@ public class TestInspectorImpl {
     if (StringUtils.isNotEmpty(urlPrefix)) {
       Map<String, Transport> transportMap = Deencapsulation.getField(scbEngine.getTransportManager(), "transportMap");
       transportMap.put(RESTFUL, new ServletRestTransport());
-      System.setProperty(URL_PREFIX, urlPrefix);
+      Deployment.setClassLoaderScopeProperty(URL_PREFIX, urlPrefix);
     }
 
     scbEngine.run();
@@ -106,6 +107,7 @@ public class TestInspectorImpl {
   public static void teardown() {
     ArchaiusUtils.resetConfig();
     SCBEngine.getInstance().destroy();
+    Deployment.clearClassLoaderScopeProperty();
   }
 
   private Map<String, String> unzip(InputStream is) throws IOException {
@@ -377,6 +379,5 @@ public class TestInspectorImpl {
     Assert.assertTrue(schemas.get("schema1").indexOf("/webroot/rest/metrics") > 0);
 
     inspector.getScbEngine().getPriorityPropertyManager().unregisterConfigObject(inspector.getInspectorConfig());
-    System.clearProperty(URL_PREFIX);
   }
 }

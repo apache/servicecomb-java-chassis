@@ -19,15 +19,20 @@ package org.apache.servicecomb.common.rest.locator;
 
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.serviceregistry.api.Const;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class TestServicePathManager {
+  @After
+  public void tearDown() {
+    Deployment.clearClassLoaderScopeProperty();
+  }
+
   @Test
   public void testBuildProducerPathsNoPrefix() {
-    System.clearProperty(Const.URL_PREFIX);
-
     SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest()
         .addProducerMeta("sid1", new TestPathSchema())
         .run();
@@ -40,7 +45,7 @@ public class TestServicePathManager {
 
   @Test
   public void testBuildProducerPathsHasPrefix() {
-    System.setProperty(Const.URL_PREFIX, "/root/rest");
+    Deployment.setClassLoaderScopeProperty(Const.URL_PREFIX, "/root/rest");
 
     SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest()
         .addProducerMeta("sid1", new TestPathSchema())
@@ -54,7 +59,5 @@ public class TestServicePathManager {
     spm.producerLocateOperation("/root/rest/dynamicEx/1/", "GET");
 
     scbEngine.destroy();
-
-    System.clearProperty(Const.URL_PREFIX);
   }
 }

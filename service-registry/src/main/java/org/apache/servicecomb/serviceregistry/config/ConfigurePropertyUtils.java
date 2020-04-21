@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
+import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.registry.BasePath;
 
@@ -72,7 +73,7 @@ public final class ConfigurePropertyUtils {
   }
 
   private static String buildPath(String path) {
-    String prefix = System.getProperty(Const.URL_PREFIX);
+    String prefix = Deployment.getClassLoaderScopeProperty(Const.URL_PREFIX);
     if (StringUtils.isNotEmpty(prefix)) {
       if (!path.startsWith(prefix)) {
         path = prefix + path;

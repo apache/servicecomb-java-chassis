@@ -27,6 +27,7 @@ import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.foundation.common.utils.IOUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.Const;
@@ -82,7 +83,7 @@ public class ProducerBootListener implements BootListener {
       return;
     }
 
-    String urlPrefix = System.getProperty(Const.URL_PREFIX);
+    String urlPrefix = Deployment.getClassLoaderScopeProperty(Const.URL_PREFIX);
     Map<String, BasePath> basePaths = new LinkedHashMap<>();
     for (SchemaMeta schemaMeta : microserviceMeta.getSchemaMetas().values()) {
       Swagger swagger = schemaMeta.getSwagger();

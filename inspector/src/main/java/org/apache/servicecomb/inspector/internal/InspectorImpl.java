@@ -54,6 +54,7 @@ import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.foundation.common.part.InputStreamPart;
 import org.apache.servicecomb.inspector.internal.model.DynamicPropertyView;
 import org.apache.servicecomb.inspector.internal.model.PriorityPropertyView;
@@ -130,7 +131,7 @@ public class InspectorImpl {
       return;
     }
 
-    String urlPrefix = System.getProperty(URL_PREFIX);
+    String urlPrefix = Deployment.getClassLoaderScopeProperty(URL_PREFIX);
     if (StringUtils.isEmpty(urlPrefix)) {
       return;
     }
