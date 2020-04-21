@@ -28,7 +28,7 @@
   <name>Java Chassis::Common</name>
   <packaging>pom</packaging>
   <modules>
-    <module>common-javassist</module>
+
     <module>common-protobuf</module>
     <module>common-rest</module>
     <module>common-access-log</module>
