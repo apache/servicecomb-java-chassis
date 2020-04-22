@@ -20,10 +20,6 @@ import org.apache.servicecomb.router.util.VersionCompareUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
-/**
- * @Author GuoYl123
- * @Date 2019/11/21
- **/
 public class VersionCompareUtilTest {
 
   @Test
@@ -31,7 +27,7 @@ public class VersionCompareUtilTest {
     Assert.assertTrue(VersionCompareUtil.compareVersion("0.0.1", "0.0.0") > 0);
     Assert.assertEquals(0, VersionCompareUtil.compareVersion("0.0.0", "0.0.0"));
     Assert.assertTrue(VersionCompareUtil.compareVersion("0.0.0", "0.0.1") < 0);
-    Assert.assertTrue(VersionCompareUtil.compareVersion("0.0.0", "0.0.0.0") < 0);
+    Assert.assertEquals(0, VersionCompareUtil.compareVersion("0.0.0", "0.0.0.0"));
     Assert.assertTrue(VersionCompareUtil.compareVersion("0.0.1", "0.0.0.0") > 0);
     Assert.assertTrue(VersionCompareUtil.compareVersion("0.0.1", "0.0.0.0") > 0);
   }
