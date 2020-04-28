@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.servicecomb.serviceregistry.api.Const;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -196,7 +196,7 @@ public class Microservice {
 
   public static String generateAbsoluteMicroserviceName(String appId, String microserviceName) {
     StringBuilder sb = new StringBuilder(appId.length() + microserviceName.length() + 1);
-    sb.append(appId).append(Const.APP_SERVICE_SEPARATOR).append(microserviceName);
+    sb.append(appId).append(DefinitionConst.APP_SERVICE_SEPARATOR).append(microserviceName);
     return sb.toString();
   }
 

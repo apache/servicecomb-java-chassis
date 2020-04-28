@@ -315,7 +315,7 @@ public class MicroserviceVersions {
     return (appId.equals(changedEvent.getKey().getAppId()) &&
         microserviceName.equals(changedEvent.getKey().getServiceName())) ||
         microserviceName.equals(
-            changedEvent.getKey().getAppId() + Const.APP_SERVICE_SEPARATOR + changedEvent.getKey().getServiceName());
+            changedEvent.getKey().getAppId() + DefinitionConst.APP_SERVICE_SEPARATOR + changedEvent.getKey().getServiceName());
   }
 
   public void destroy() {
