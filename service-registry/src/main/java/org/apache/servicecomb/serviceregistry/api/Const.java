@@ -184,11 +184,10 @@ public final class Const {
 
   public static final String REGISTRY_SERVICE_NAME = "SERVICECENTER";
 
-  public static final String APP_SERVICE_SEPARATOR = ":";
 
   public static final String PATH_CHECKSESSION = "checksession";
 
-  public static final String URL_PREFIX = "urlPrefix";
+
 
   public static final String INSTANCE_PUBKEY_PRO = "publickey";
 
