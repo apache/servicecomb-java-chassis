@@ -15,28 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.serviceregistry.api.response;
+package org.apache.servicecomb.serviceregistry.event;
 
-import java.util.List;
-
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-
-public class FindInstancesResponse {
-  private List<MicroserviceInstance> instances;
-
-  public List<MicroserviceInstance> getInstances() {
-    return instances;
-  }
-
-  public void setInstances(List<MicroserviceInstance> instances) {
-    this.instances = instances;
-  }
-
-  public void mergeInstances(List<MicroserviceInstance> instances) {
-    if (this.instances == null) {
-      this.instances = instances;
-    } else {
-      this.instances.addAll(instances);
-    }
-  }
+public class MicroserviceInstanceRegisteredEvent {
+  // TODO: registry need publish this event instead of MicroserviceInstanceRegisterTask
 }

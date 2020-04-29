@@ -28,12 +28,11 @@ import java.util.Map.Entry;
 import org.apache.servicecomb.foundation.common.VendorExtensions;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.api.Const;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
-import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import org.apache.servicecomb.serviceregistry.config.ServiceRegistryCommonConfig;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.serviceregistry.event.CreateMicroserviceEvent;
@@ -178,7 +177,7 @@ public class MicroserviceVersions {
   }
 
   protected MicroserviceInstances findServiceInstances() {
-    return RegistryUtils.findServiceInstances(appId,
+    return DiscoveryManager.INSTANCE.findServiceInstances(appId,
         microserviceName,
         DefinitionConst.VERSION_RULE_ALL,
         revision);
@@ -250,7 +249,7 @@ public class MicroserviceVersions {
       return mergedInstances;
     }
 
-    if (pulledInstances.isEmpty() && inUseInstances != null && ServiceRegistryConfig.INSTANCE
+    if (pulledInstances.isEmpty() && inUseInstances != null && ServiceRegistryCommonConfig
         .isEmptyInstanceProtectionEnabled()) {
       MicroserviceInstancePing ping = SPIServiceUtils.getPriorityHighestService(MicroserviceInstancePing.class);
       inUseInstances.stream().forEach(instance -> {
@@ -315,7 +314,8 @@ public class MicroserviceVersions {
     return (appId.equals(changedEvent.getKey().getAppId()) &&
         microserviceName.equals(changedEvent.getKey().getServiceName())) ||
         microserviceName.equals(
-            changedEvent.getKey().getAppId() + DefinitionConst.APP_SERVICE_SEPARATOR + changedEvent.getKey().getServiceName());
+            changedEvent.getKey().getAppId() + DefinitionConst.APP_SERVICE_SEPARATOR + changedEvent.getKey()
+                .getServiceName());
   }
 
   public void destroy() {

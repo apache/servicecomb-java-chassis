@@ -76,11 +76,7 @@ public final class RegistryUtils {
 
   private static final String PUBLISH_PORT = "servicecomb.{transport_name}.publishPort";
 
-  private static SwaggerLoader swaggerLoader = new SwaggerLoader();
-
-  private static AppManager appManager = new AppManager();
-
-  private static InstanceCacheManager instanceCacheManager = new InstanceCacheManagerNew(appManager);
+  private static InstanceCacheManager instanceCacheManager = new InstanceCacheManagerNew(DiscoveryManager.INSTANCE.getAppManager());
 
   private static final Map<String, ServiceRegistryConfig> EXTRA_SERVICE_REGISTRY_CONFIGS = new LinkedHashMap<>();
 
@@ -158,14 +154,6 @@ public final class RegistryUtils {
 
   public static InstanceCacheManager getInstanceCacheManager() {
     return instanceCacheManager;
-  }
-
-  public static SwaggerLoader getSwaggerLoader() {
-    return swaggerLoader;
-  }
-
-  public static AppManager getAppManager() {
-    return appManager;
   }
 
   public static String getAppId() {

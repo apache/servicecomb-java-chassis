@@ -24,15 +24,15 @@ import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.BootListener;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.foundation.common.utils.IOUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.api.Const;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.apache.servicecomb.serviceregistry.api.registry.BasePath;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +48,7 @@ public class ProducerBootListener implements BootListener {
   @Override
   public void onAfterTransport(BootEvent event) {
     // register schema to microservice;
-    Microservice microservice = event.getScbEngine().getServiceRegistry().getMicroservice();
+    Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
 
     String swaggerSchema = "http";
     for (String endpoint : microservice.getInstance().getEndpoints()) {
@@ -67,23 +67,21 @@ public class ProducerBootListener implements BootListener {
           microserviceMeta.getMicroserviceName(),
           schemaMeta.getSchemaId(),
           content);
-      RegistryUtils.executeOnEachServiceRegistry(sr -> {
-        sr.getMicroservice().addSchema(schemaMeta.getSchemaId(), content);
-      });
+      // TODO: don't forget to implement this in registry
+      RegistrationManager.INSTANCE.addSchema(schemaMeta.getSchemaId(), content);
     }
 
-    RegistryUtils.executeOnEachServiceRegistry(sr -> {
-      saveBasePaths(microserviceMeta, sr.getMicroservice());
-    });
+    // TODO: don't forget to implement this in registry
+    saveBasePaths(microserviceMeta);
   }
 
   // just compatible to old 3rd components， servicecomb not use it......
-  private void saveBasePaths(MicroserviceMeta microserviceMeta, Microservice microservice) {
-    if (!DynamicPropertyFactory.getInstance().getBooleanProperty(Const.REGISTER_SERVICE_PATH, false).get()) {
+  private void saveBasePaths(MicroserviceMeta microserviceMeta) {
+    if (!DynamicPropertyFactory.getInstance().getBooleanProperty(DefinitionConst.REGISTER_SERVICE_PATH, false).get()) {
       return;
     }
 
-    String urlPrefix = Deployment.getClassLoaderScopeProperty(Const.URL_PREFIX);
+    String urlPrefix = SCBEngine.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX);
     Map<String, BasePath> basePaths = new LinkedHashMap<>();
     for (SchemaMeta schemaMeta : microserviceMeta.getSchemaMetas().values()) {
       Swagger swagger = schemaMeta.getSwagger();
@@ -98,7 +96,8 @@ public class ProducerBootListener implements BootListener {
         basePaths.put(basePath, basePathObj);
       }
     }
-    microservice.getPaths().addAll(basePaths.values());
+
+    RegistrationManager.INSTANCE.addBasePath(basePaths.values());
   }
 
   // bug: can not close all thread for edge

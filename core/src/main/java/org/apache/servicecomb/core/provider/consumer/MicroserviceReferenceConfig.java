@@ -23,7 +23,7 @@ import org.apache.servicecomb.core.definition.ConsumerMicroserviceVersionsMeta;
 import org.apache.servicecomb.core.definition.CoreMetaUtils;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersion;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
@@ -100,7 +100,7 @@ public class MicroserviceReferenceConfig {
   }
 
   private void mark3rdPartyService(OperationMeta operationMeta, ReferenceConfig referenceConfig) {
-    final MicroserviceVersions microserviceVersions = RegistryUtils.getAppManager()
+    final MicroserviceVersions microserviceVersions = DiscoveryManager.INSTANCE
         .getOrCreateMicroserviceVersions(
             operationMeta.getMicroserviceMeta().getAppId(),
             operationMeta.getMicroserviceName());
