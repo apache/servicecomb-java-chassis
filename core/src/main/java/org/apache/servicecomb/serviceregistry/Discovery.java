@@ -15,28 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.serviceregistry.api.response;
+package org.apache.servicecomb.serviceregistry;
 
-import java.util.List;
+import org.apache.servicecomb.foundation.common.utils.SPIOrder;
+import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
+import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
 
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+public interface Discovery extends SPIOrder, LifeCycle {
+  MicroserviceInstances findServiceInstances(String appId, String serviceName,
+      String versionRule);
 
-public class FindInstancesResponse {
-  private List<MicroserviceInstance> instances;
+  MicroserviceVersions getOrCreateMicroserviceVersions(String appId, String microserviceName);
 
-  public List<MicroserviceInstance> getInstances() {
-    return instances;
-  }
+  String getRevision();
 
-  public void setInstances(List<MicroserviceInstance> instances) {
-    this.instances = instances;
-  }
+  void setRevision(String revision);
 
-  public void mergeInstances(List<MicroserviceInstance> instances) {
-    if (this.instances == null) {
-      this.instances = instances;
-    } else {
-      this.instances.addAll(instances);
-    }
-  }
+  String name();
 }

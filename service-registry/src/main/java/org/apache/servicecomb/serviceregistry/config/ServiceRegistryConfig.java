@@ -102,8 +102,6 @@ public final class ServiceRegistryConfig {
 
   private int resendHeartBeatTimes;
 
-  private boolean emptyInstanceProtectionEnabled;
-
   private boolean alwaysOverrideSchema;
 
   private boolean preferIpAddress;
@@ -280,15 +278,6 @@ public final class ServiceRegistryConfig {
 
   public ServiceRegistryConfig setResendHeartBeatTimes(int resendHeartBeatTimes) {
     this.resendHeartBeatTimes = resendHeartBeatTimes;
-    return this;
-  }
-
-  public boolean isEmptyInstanceProtectionEnabled() {
-    return emptyInstanceProtectionEnabled;
-  }
-
-  public ServiceRegistryConfig setEmptyInstanceProtectionEnabled(boolean emptyInstanceProtectionEnabled) {
-    this.emptyInstanceProtectionEnabled = emptyInstanceProtectionEnabled;
     return this;
   }
 

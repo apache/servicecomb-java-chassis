@@ -24,13 +24,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceInstancePing;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.task.event.SafeModeChangeEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -242,7 +242,7 @@ public class RefreshableMicroserviceCache implements MicroserviceCache {
         && ( // microserviceName matched
         key.getServiceName().equals(event.getKey().getServiceName())
             || key.getServiceName().equals(
-            event.getKey().getAppId() + Const.APP_SERVICE_SEPARATOR + event.getKey().getServiceName()
+            event.getKey().getAppId() + DefinitionConst.APP_SERVICE_SEPARATOR + event.getKey().getServiceName()
         ));
   }
 }

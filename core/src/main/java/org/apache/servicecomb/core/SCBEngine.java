@@ -38,7 +38,6 @@ import org.apache.servicecomb.core.definition.CoreMetaUtils;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.MicroserviceVersionsMeta;
 import org.apache.servicecomb.core.definition.ServiceRegistryListener;
-import org.apache.servicecomb.core.endpoint.AbstractEndpointsCache;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.executor.ExecutorManager;
@@ -50,18 +49,18 @@ import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.VendorExtensions;
-import org.apache.servicecomb.foundation.common.concurrency.SuppressedRunnableWrapper;
 import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceNameParser;
+import org.apache.servicecomb.serviceregistry.event.MicroserviceInstanceRegisteredEvent;
 import org.apache.servicecomb.serviceregistry.swagger.SwaggerLoader;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceRegisterTask;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
@@ -161,7 +160,7 @@ public class SCBEngine {
   }
 
   public String getAppId() {
-    return RegistryUtils.getAppId();
+    return DiscoveryManager.INSTANCE.getApplicationId();
   }
 
   public void setStatus(SCBStatus status) {
@@ -183,12 +182,8 @@ public class SCBEngine {
     return INSTANCE;
   }
 
-  public ServiceRegistry getServiceRegistry() {
-    return RegistryUtils.getServiceRegistry();
-  }
-
   public SwaggerLoader getSwaggerLoader() {
-    return RegistryUtils.getSwaggerLoader();
+    return RegistrationManager.INSTANCE.getSwaggerLoader();
   }
 
 
@@ -362,8 +357,6 @@ public class SCBEngine {
 
     bootListeners.sort(Comparator.comparingInt(BootListener::getOrder));
 
-    AbstractEndpointsCache.init(RegistryUtils.getInstanceCacheManager(), transportManager);
-
     triggerEvent(EventType.BEFORE_HANDLER);
     HandlerConfigUtils.init(consumerHandlerManager, producerHandlerManager);
     triggerEvent(EventType.AFTER_HANDLER);
@@ -386,14 +379,15 @@ public class SCBEngine {
 
     triggerAfterRegistryEvent();
 
-    RegistryUtils.run();
+    RegistrationManager.INSTANCE.run();
+    DiscoveryManager.INSTANCE.run();
 
     shutdownHook = new Thread(this::destroyForShutdownHook);
     Runtime.getRuntime().addShutdownHook(shutdownHook);
   }
 
   private void createProducerMicroserviceMeta() {
-    String microserviceName = RegistryUtils.getMicroservice().getServiceName();
+    String microserviceName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
     List<Handler> consumerHandlerChain = consumerHandlerManager.getOrCreate(microserviceName);
     List<Handler> producerHandlerChain = producerHandlerManager.getOrCreate(microserviceName);
 
@@ -437,7 +431,9 @@ public class SCBEngine {
 
     //Step 3: Unregister microservice instance from Service Center and close vertx
     // Forbidden other consumers find me
-    RegistryUtils.destroy();
+    RegistrationManager.INSTANCE.destroy();
+    DiscoveryManager.INSTANCE.destroy();
+
     serviceRegistryListener.destroy();
 
     //Step 4: wait all invocation finished
@@ -452,7 +448,7 @@ public class SCBEngine {
     priorityPropertyManager.close();
 
     //Step 6: Stop vertx to prevent blocking exit
-	// delete the following one line when every refactor is done.
+    // delete the following one line when every refactor is done.
     VertxUtils.blockCloseVertxByName("transport");
 
     HttpClients.destroy();
@@ -462,13 +458,7 @@ public class SCBEngine {
   }
 
   private void turnDownInstanceStatus() {
-    RegistryUtils.executeOnEachServiceRegistry(sr -> new SuppressedRunnableWrapper(() -> {
-      MicroserviceInstance selfInstance = sr.getMicroserviceInstance();
-      sr.getServiceRegistryClient().updateMicroserviceInstanceStatus(
-          selfInstance.getServiceId(),
-          selfInstance.getInstanceId(),
-          MicroserviceInstanceStatus.DOWN);
-    }).run());
+    RegistrationManager.INSTANCE.updateMicroserviceInstanceStatus(MicroserviceInstanceStatus.DOWN);
   }
 
   private void blockShutDownOperationForConsumerRefresh() {
@@ -527,7 +517,7 @@ public class SCBEngine {
    * @return
    */
   public MicroserviceReferenceConfig createMicroserviceReferenceConfig(String microserviceName, String versionRule) {
-    MicroserviceVersions microserviceVersions = RegistryUtils.getAppManager()
+    MicroserviceVersions microserviceVersions = DiscoveryManager.INSTANCE
         .getOrCreateMicroserviceVersions(parseAppId(microserviceName), microserviceName);
     ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = CoreMetaUtils
         .getMicroserviceVersionsMeta(microserviceVersions);
@@ -603,10 +593,10 @@ public class SCBEngine {
 
     @Subscribe
     @EnableExceptionPropagation
-    public void afterRegistryInstance(MicroserviceInstanceRegisterTask microserviceInstanceRegisterTask) {
-      LOGGER.info("receive MicroserviceInstanceRegisterTask event, check instance Id...");
+    public void afterRegistryInstance(MicroserviceInstanceRegisteredEvent microserviceInstanceRegisteredEvent) {
+      LOGGER.info("receive MicroserviceInstanceRegisteredEvent event, check instance Id...");
 
-      if (!StringUtils.isEmpty(RegistryUtils.getMicroserviceInstance().getInstanceId())) {
+      if (!StringUtils.isEmpty(RegistrationManager.INSTANCE.getMicroserviceInstance().getInstanceId())) {
         LOGGER.info("instance registry succeeds for the first time, will send AFTER_REGISTRY event.");
         engine.setStatus(SCBStatus.UP);
         engine.triggerEvent(EventType.AFTER_REGISTRY);

@@ -59,7 +59,6 @@ class ServiceRegistryConfigBuilder {
         .setInstancePullInterval(getInstancePullInterval())
         .setRegistryAutoDiscovery(isRegistryAutoDiscovery())
         .setResendHeartBeatTimes(getResendHeartBeatTimes())
-        .setEmptyInstanceProtectionEnabled(isEmptyInstanceProtectionEnabled())
         .setAlwaysOverrideSchema(isAlwaysOverrideSchema())
         .setPreferIpAddress(isPreferIpAddress())
         .setWatch(isWatch())
@@ -209,14 +208,6 @@ class ServiceRegistryConfigBuilder {
                 ServiceRegistryConfig.DEFAULT_CHECK_TIMES);
     int times = property.get();
     return times < 0 ? ServiceRegistryConfig.DEFAULT_CHECK_TIMES : times;
-  }
-
-  public boolean isEmptyInstanceProtectionEnabled() {
-    DynamicBooleanProperty property =
-        DynamicPropertyFactory.getInstance()
-            .getBooleanProperty("servicecomb.service.registry.instance.empty.protection",
-                true);
-    return property.get();
   }
 
   public boolean isAlwaysOverrideSchema() {

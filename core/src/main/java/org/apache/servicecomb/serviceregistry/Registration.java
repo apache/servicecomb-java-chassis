@@ -15,21 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.core.endpoint;
+package org.apache.servicecomb.serviceregistry;
 
-import org.apache.servicecomb.core.Endpoint;
-import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
+import java.util.Collection;
 
-public class EndpointsCache extends AbstractEndpointsCache<Endpoint> {
+import org.apache.servicecomb.foundation.common.utils.SPIOrder;
+import org.apache.servicecomb.serviceregistry.api.registry.BasePath;
+import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 
-  public EndpointsCache(String appId, String microserviceName, String microserviceVersionRule,
-      String transportName) {
-    super(appId, microserviceName, microserviceVersionRule, transportName);
-  }
+public interface Registration extends SPIOrder, LifeCycle {
+  MicroserviceInstance getMicroserviceInstance();
 
-  @Override
-  protected Endpoint createEndpoint(Transport transport, CacheEndpoint cacheEndpoint) {
-    return new Endpoint(transport, cacheEndpoint.getEndpoint(), cacheEndpoint.getInstance());
-  }
+  Microservice getMicroservice();
+
+  boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status);
+
+  void addSchema(String schemaId, String content);
+
+  void addBasePath(Collection<BasePath> basePaths);
 }

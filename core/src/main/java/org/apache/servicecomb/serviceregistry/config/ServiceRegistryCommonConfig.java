@@ -15,28 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.serviceregistry.api.response;
+package org.apache.servicecomb.serviceregistry.config;
 
-import java.util.List;
+import com.netflix.config.DynamicPropertyFactory;
 
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+public class ServiceRegistryCommonConfig {
+  private static final String REGISTRY_EMPTY_PROTECTION = "servicecomb.service.registry.instance.empty.protection";
 
-public class FindInstancesResponse {
-  private List<MicroserviceInstance> instances;
-
-  public List<MicroserviceInstance> getInstances() {
-    return instances;
-  }
-
-  public void setInstances(List<MicroserviceInstance> instances) {
-    this.instances = instances;
-  }
-
-  public void mergeInstances(List<MicroserviceInstance> instances) {
-    if (this.instances == null) {
-      this.instances = instances;
-    } else {
-      this.instances.addAll(instances);
-    }
+  public static boolean isEmptyInstanceProtectionEnabled() {
+    return
+        DynamicPropertyFactory.getInstance()
+            .getBooleanProperty(REGISTRY_EMPTY_PROTECTION,
+                true).get();
   }
 }

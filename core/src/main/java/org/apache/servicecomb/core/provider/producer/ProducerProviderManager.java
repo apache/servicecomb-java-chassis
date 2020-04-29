@@ -30,9 +30,8 @@ import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.executor.ExecutorManager;
-import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.serviceregistry.api.Const;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.slf4j.Logger;
@@ -117,11 +116,11 @@ public class ProducerProviderManager {
   // This is special requirement by users: When service deployed in tomcat,user want to use RestTemplate to
   // call REST service by the full url. e.g. restTemplate.getForObejct("cse://serviceName/root/prefix/health")
   // By default, user's do not need context prefix, e.g. restTemplate.getForObejct("cse://serviceName/health")
-  private void registerUrlPrefixToSwagger( Swagger swagger) {
-    String urlPrefix = Deployment.getClassLoaderScopeProperty(Const.URL_PREFIX);
+  private void registerUrlPrefixToSwagger(Swagger swagger) {
+    String urlPrefix = SCBEngine.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX);
     if (!StringUtils.isEmpty(urlPrefix) && !swagger.getBasePath().startsWith(urlPrefix)
         && DynamicPropertyFactory.getInstance()
-        .getBooleanProperty(Const.REGISTER_URL_PREFIX, false).get()) {
+        .getBooleanProperty(DefinitionConst.REGISTER_URL_PREFIX, false).get()) {
       LOGGER.info("Add swagger base path prefix for {} with {}", swagger.getBasePath(), urlPrefix);
       swagger.setBasePath(urlPrefix + swagger.getBasePath());
     }

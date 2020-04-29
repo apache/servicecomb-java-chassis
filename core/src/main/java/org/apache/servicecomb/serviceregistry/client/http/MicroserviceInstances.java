@@ -19,9 +19,6 @@ package org.apache.servicecomb.serviceregistry.client.http;
 
 import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
 
-/**
- * Created by on 2017/12/28.
- */
 public class MicroserviceInstances {
   private boolean microserviceNotExist;
 
@@ -61,5 +58,41 @@ public class MicroserviceInstances {
 
   public void setInstancesResponse(FindInstancesResponse instancesResponse) {
     this.instancesResponse = instancesResponse;
+  }
+
+  public void mergeMicroserviceInstances(MicroserviceInstances other) {
+    mergeNeedRefresh(other.needRefresh);
+    mergeMicroserviceNotExist(other.microserviceNotExist);
+    mergeRevision(other.revision);
+    mergeInstanceResponse(other.getInstancesResponse());
+    mergeRevision(other.getRevision());
+  }
+
+  private void mergeRevision(String revision) {
+    if (this.revision == null || this.revision.compareTo(revision) < 0) {
+      this.revision = revision;
+    }
+  }
+
+  private void mergeMicroserviceNotExist(boolean microserviceNotExist) {
+    // if one of discovery not exist, all mark not exist
+    if (microserviceNotExist) {
+      this.microserviceNotExist = microserviceNotExist;
+    }
+  }
+
+  private void mergeNeedRefresh(boolean needRefresh) {
+    // if one of discovery need refresh, all need refresh
+    if (needRefresh) {
+      this.needRefresh = needRefresh;
+    }
+  }
+
+  private void mergeInstanceResponse(FindInstancesResponse instancesResponse) {
+    if (this.instancesResponse == null) {
+      this.instancesResponse = instancesResponse;
+    } else {
+      this.instancesResponse.mergeInstances(instancesResponse.getInstances());
+    }
   }
 }
