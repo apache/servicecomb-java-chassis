@@ -17,9 +17,6 @@
 
 package org.apache.servicecomb.serviceregistry;
 
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -30,13 +27,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.event.EventManager;
-import org.apache.servicecomb.foundation.common.net.IpPort;
-import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
@@ -45,14 +39,12 @@ import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManagerNew;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import org.apache.servicecomb.serviceregistry.registry.cache.AggregateServiceRegistryCache;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache.MicroserviceCacheStatus;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCacheKey;
-import org.apache.servicecomb.serviceregistry.swagger.SwaggerLoader;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceRegisterTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +53,6 @@ import org.springframework.util.StringUtils;
 import com.google.common.base.Charsets;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.hash.Hashing;
-import com.netflix.config.DynamicPropertyFactory;
 
 public final class RegistryUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(RegistryUtils.class);
@@ -71,12 +62,9 @@ public final class RegistryUtils {
    */
   private static volatile ServiceRegistry serviceRegistry;
 
-  // value is ip or {interface name}
-  public static final String PUBLISH_ADDRESS = "servicecomb.service.publishAddress";
 
-  private static final String PUBLISH_PORT = "servicecomb.{transport_name}.publishPort";
-
-  private static InstanceCacheManager instanceCacheManager = new InstanceCacheManagerNew(DiscoveryManager.INSTANCE.getAppManager());
+  private static InstanceCacheManager instanceCacheManager = new InstanceCacheManagerNew(
+      DiscoveryManager.INSTANCE.getAppManager());
 
   private static final Map<String, ServiceRegistryConfig> EXTRA_SERVICE_REGISTRY_CONFIGS = new LinkedHashMap<>();
 
@@ -103,7 +91,8 @@ public final class RegistryUtils {
     ArrayList<ServiceRegistry> serviceRegistries = new ArrayList<>();
     executeOnEachServiceRegistry(serviceRegistries::add);
     aggregateServiceRegistryCache = new AggregateServiceRegistryCache(serviceRegistries);
-    aggregateServiceRegistryCache.setCacheRefreshedWatcher(refreshedCaches -> appManager.pullInstances());
+    aggregateServiceRegistryCache
+        .setCacheRefreshedWatcher(refreshedCaches -> DiscoveryManager.INSTANCE.getAppManager().pullInstances());
 
     executeOnEachServiceRegistry(
         serviceRegistry -> serviceRegistry
@@ -168,103 +157,6 @@ public final class RegistryUtils {
     return serviceRegistry.getMicroserviceInstance();
   }
 
-  public static String getPublishAddress() {
-    String publicAddressSetting =
-        DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "").get();
-    publicAddressSetting = publicAddressSetting.trim();
-    if (publicAddressSetting.isEmpty()) {
-      return NetUtils.getHostAddress();
-    }
-
-    // placeholder is network interface name
-    if (publicAddressSetting.startsWith("{") && publicAddressSetting.endsWith("}")) {
-      return NetUtils
-          .ensureGetInterfaceAddress(publicAddressSetting.substring(1, publicAddressSetting.length() - 1))
-          .getHostAddress();
-    }
-
-    return publicAddressSetting;
-  }
-
-  public static String getPublishHostName() {
-    String publicAddressSetting =
-        DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "").get();
-    publicAddressSetting = publicAddressSetting.trim();
-    if (publicAddressSetting.isEmpty()) {
-      return NetUtils.getHostName();
-    }
-
-    if (publicAddressSetting.startsWith("{") && publicAddressSetting.endsWith("}")) {
-      return NetUtils
-          .ensureGetInterfaceAddress(publicAddressSetting.substring(1, publicAddressSetting.length() - 1))
-          .getHostName();
-    }
-
-    return publicAddressSetting;
-  }
-
-  /**
-   * In the case that listening address configured as 0.0.0.0, the publish address will be determined
-   * by the query result for the net interfaces.
-   *
-   * @return the publish address, or {@code null} if the param {@code address} is null.
-   */
-  public static String getPublishAddress(String schema, String address) {
-    if (address == null) {
-      return address;
-    }
-
-    try {
-      URI originalURI = new URI(schema + "://" + address);
-      IpPort ipPort = NetUtils.parseIpPort(originalURI);
-      if (ipPort == null) {
-        LOGGER.warn("address {} not valid.", address);
-        return null;
-      }
-
-      IpPort publishIpPort = genPublishIpPort(schema, ipPort);
-      URIBuilder builder = new URIBuilder(originalURI);
-      return builder.setHost(publishIpPort.getHostOrIp()).setPort(publishIpPort.getPort()).build().toString();
-    } catch (URISyntaxException e) {
-      LOGGER.warn("address {} not valid.", address);
-      return null;
-    }
-  }
-
-  private static IpPort genPublishIpPort(String schema, IpPort ipPort) {
-    String publicAddressSetting = DynamicPropertyFactory.getInstance()
-        .getStringProperty(PUBLISH_ADDRESS, "")
-        .get();
-    publicAddressSetting = publicAddressSetting.trim();
-
-    if (publicAddressSetting.isEmpty()) {
-      InetSocketAddress socketAddress = ipPort.getSocketAddress();
-      if (socketAddress.getAddress().isAnyLocalAddress()) {
-        String host = NetUtils.getHostAddress();
-        LOGGER.warn("address {}, auto select a host address to publish {}:{}, maybe not the correct one",
-            socketAddress,
-            host,
-            socketAddress.getPort());
-        return new IpPort(host, ipPort.getPort());
-      }
-
-      return ipPort;
-    }
-
-    if (publicAddressSetting.startsWith("{") && publicAddressSetting.endsWith("}")) {
-      publicAddressSetting = NetUtils
-          .ensureGetInterfaceAddress(
-              publicAddressSetting.substring(1, publicAddressSetting.length() - 1))
-          .getHostAddress();
-    }
-
-    String publishPortKey = PUBLISH_PORT.replace("{transport_name}", schema);
-    int publishPortSetting = DynamicPropertyFactory.getInstance()
-        .getIntProperty(publishPortKey, 0)
-        .get();
-    int publishPort = publishPortSetting == 0 ? ipPort.getPort() : publishPortSetting;
-    return new IpPort(publicAddressSetting, publishPort);
-  }
 
   public static List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
       String versionRule) {
@@ -338,6 +230,7 @@ public final class RegistryUtils {
         sr -> sr.getServiceRegistryClient().getAggregatedSchema(microserviceId, schemaId));
   }
 
+  // TODO : rename to getMiscroservice and delete original getMiscroservice
   public static Microservice getAggregatedRemoteMicroservice(String microserviceId) {
     return getResultFromFirstValidServiceRegistry(
         sr -> sr.getAggregatedRemoteMicroservice(microserviceId));

@@ -90,8 +90,6 @@ public class TestMicroserviceInstanceRegisterTask {
     MicroserviceInstance instance = microservice.getInstance();
     new Expectations(RegistryUtils.class) {
       {
-        RegistryUtils.getPublishAddress();
-        result = "127.0.0.1";
         serviceRegistryConfig.isPreferIpAddress();
         result = true;
         serviceRegistryConfig.getHeartbeatInterval();
@@ -120,8 +118,6 @@ public class TestMicroserviceInstanceRegisterTask {
     MicroserviceInstance instance = microservice.getInstance();
     new Expectations(RegistryUtils.class) {
       {
-        RegistryUtils.getPublishHostName();
-        result = "hostName";
         serviceRegistryConfig.isPreferIpAddress();
         result = false;
         serviceRegistryConfig.getHeartbeatInterval();
@@ -150,8 +146,6 @@ public class TestMicroserviceInstanceRegisterTask {
     MicroserviceInstance instance = microservice.getInstance();
     new Expectations(RegistryUtils.class) {
       {
-        RegistryUtils.getPublishAddress();
-        result = "127.0.0.1";
         serviceRegistryConfig.isPreferIpAddress();
         result = true;
         serviceRegistryConfig.getHeartbeatInterval();

@@ -26,7 +26,8 @@ import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.provider.springmvc.reference.async.CseAsyncRestTemplate;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersion;
@@ -51,8 +52,8 @@ public class ITSCBAsyncRestTemplate extends CseAsyncRestTemplate {
     ensureProviderBasePath(producerName);
 
     urlPrefix = String.format("cse://%s%s", producerName, basePath);
-    instance = RegistryUtils.getAppManager()
-        .getOrCreateMicroserviceManager(RegistryUtils.getAppId())
+    instance = DiscoveryManager.INSTANCE.getAppManager()
+        .getOrCreateMicroserviceManager(RegistrationManager.INSTANCE.getMicroservice().getAppId())
         .getOrCreateMicroserviceVersions(producerName).getPulledInstances().get(0);
 
     setUriTemplateHandler(new ITUriTemplateHandler(urlPrefix));
@@ -78,7 +79,8 @@ public class ITSCBAsyncRestTemplate extends CseAsyncRestTemplate {
 
   private void ensureProviderBasePath(String producerName) {
     MicroserviceManager microserviceManager =
-        RegistryUtils.getAppManager().getOrCreateMicroserviceManager(RegistryUtils.getAppId());
+        DiscoveryManager.INSTANCE.getAppManager()
+            .getOrCreateMicroserviceManager(RegistrationManager.INSTANCE.getMicroservice().getAppId());
     MicroserviceVersions producerMicroserviceVersions =
         microserviceManager.getOrCreateMicroserviceVersions(producerName);
     Optional<MicroserviceVersion> latestMicroserviceVersion =

@@ -17,7 +17,6 @@
 package org.apache.servicecomb.inspector.internal;
 
 import static org.apache.servicecomb.core.Const.RESTFUL;
-import static org.apache.servicecomb.serviceregistry.api.Const.URL_PREFIX;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,15 +43,14 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.definition.CoreMetaUtils;
-import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.inspector.internal.model.DynamicPropertyView;
 import org.apache.servicecomb.inspector.internal.model.PriorityPropertyView;
 import org.apache.servicecomb.inspector.internal.swagger.SchemaFormat;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
@@ -93,7 +91,7 @@ public class TestInspectorImpl {
     if (StringUtils.isNotEmpty(urlPrefix)) {
       Map<String, Transport> transportMap = Deencapsulation.getField(scbEngine.getTransportManager(), "transportMap");
       transportMap.put(RESTFUL, new ServletRestTransport());
-      Deployment.setClassLoaderScopeProperty(URL_PREFIX, urlPrefix);
+      SCBEngine.setClassLoaderScopeProperty(DefinitionConst.URL_PREFIX, urlPrefix);
     }
 
     scbEngine.run();
@@ -107,7 +105,7 @@ public class TestInspectorImpl {
   public static void teardown() {
     ArchaiusUtils.resetConfig();
     SCBEngine.getInstance().destroy();
-    Deployment.clearClassLoaderScopeProperty();
+    SCBEngine.clearClassLoaderScopeProperty();
   }
 
   private Map<String, String> unzip(InputStream is) throws IOException {
@@ -140,15 +138,6 @@ public class TestInspectorImpl {
   }
 
   private void testDownloadSchemasSwagger(Microservice microservice, SchemaFormat format) throws IOException {
-    new Expectations(RegistryUtils.class) {
-      {
-        RegistryUtils.getMicroservice();
-        result = microservice;
-        microservice.getServiceName();
-        result = "ms";
-      }
-    };
-
     Response response = inspector.downloadSchemas(format);
     Part part = response.getResult();
     Assert.assertEquals("ms.yaml.zip", part.getSubmittedFileName());
@@ -164,14 +153,6 @@ public class TestInspectorImpl {
 
   @Test
   public void downloadSchemas_html(@Mocked Microservice microservice) throws IOException {
-    new Expectations(RegistryUtils.class) {
-      {
-        RegistryUtils.getMicroservice();
-        result = microservice;
-        microservice.getServiceName();
-        result = "ms";
-      }
-    };
 
     Response response = inspector.downloadSchemas(SchemaFormat.HTML);
     Part part = response.getResult();

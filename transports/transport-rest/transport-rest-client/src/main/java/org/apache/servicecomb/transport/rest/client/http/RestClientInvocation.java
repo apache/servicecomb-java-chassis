@@ -41,7 +41,7 @@ import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.foundation.vertx.http.VertxClientRequestToHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.VertxClientResponseToHttpServletResponse;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultHttpSocketMetric;
-import org.apache.servicecomb.serviceregistry.api.Const;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -305,7 +305,7 @@ public class RestClientInvocation {
 
   protected String createRequestPath(RestOperationMeta swaggerRestOperation) throws Exception {
     URIEndpointObject address = (URIEndpointObject) invocation.getEndpoint().getAddress();
-    String urlPrefix = address.getFirst(Const.URL_PREFIX);
+    String urlPrefix = address.getFirst(DefinitionConst.URL_PREFIX);
 
     String path = (String) invocation.getHandlerContext().get(RestConst.REST_CLIENT_REQUEST_PATH);
     if (path == null) {

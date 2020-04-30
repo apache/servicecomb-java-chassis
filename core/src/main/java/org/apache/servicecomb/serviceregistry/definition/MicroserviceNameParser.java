@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.serviceregistry.definition;
 
-import org.apache.servicecomb.serviceregistry.api.Const;
-
 /**
  * <pre>
  *   1. if microserviceName format is app:name, then will ignore defaultAppId
@@ -47,7 +45,7 @@ public class MicroserviceNameParser {
   private void parseMicroserviceName(String defaultAppId, String microserviceName) {
     this.microserviceName = microserviceName;
 
-    int idxAt = microserviceName.indexOf(Const.APP_SERVICE_SEPARATOR);
+    int idxAt = microserviceName.indexOf(DefinitionConst.APP_SERVICE_SEPARATOR);
     if (idxAt == -1) {
       this.appId = defaultAppId;
       this.shortName = microserviceName;

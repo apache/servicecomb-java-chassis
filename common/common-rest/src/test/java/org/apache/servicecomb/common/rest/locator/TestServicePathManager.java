@@ -19,8 +19,7 @@ package org.apache.servicecomb.common.rest.locator;
 
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
-import org.apache.servicecomb.deployment.Deployment;
-import org.apache.servicecomb.serviceregistry.api.Const;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
@@ -28,7 +27,7 @@ import org.junit.Test;
 public class TestServicePathManager {
   @After
   public void tearDown() {
-    Deployment.clearClassLoaderScopeProperty();
+    SCBEngine.clearClassLoaderScopeProperty();
   }
 
   @Test
@@ -45,7 +44,7 @@ public class TestServicePathManager {
 
   @Test
   public void testBuildProducerPathsHasPrefix() {
-    Deployment.setClassLoaderScopeProperty(Const.URL_PREFIX, "/root/rest");
+    SCBEngine.setClassLoaderScopeProperty(DefinitionConst.URL_PREFIX, "/root/rest");
 
     SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest()
         .addProducerMeta("sid1", new TestPathSchema())

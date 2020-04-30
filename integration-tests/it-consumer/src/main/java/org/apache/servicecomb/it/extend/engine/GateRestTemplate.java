@@ -24,7 +24,8 @@ import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
@@ -70,8 +71,8 @@ public class GateRestTemplate extends RestTemplate {
   }
 
   private String getUrlPrefix(String gateName, String producerName, String schemaId) {
-    MicroserviceVersionRule microserviceVersionRule = RegistryUtils.getAppManager()
-        .getOrCreateMicroserviceVersionRule(RegistryUtils.getAppId(), gateName,
+    MicroserviceVersionRule microserviceVersionRule = DiscoveryManager.INSTANCE.getAppManager()
+        .getOrCreateMicroserviceVersionRule(RegistrationManager.INSTANCE.getMicroservice().getAppId(), gateName,
             DefinitionConst.VERSION_RULE_ALL);
     MicroserviceInstance microserviceInstance = microserviceVersionRule.getInstances().values().stream().findFirst()
         .get();

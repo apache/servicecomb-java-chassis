@@ -19,7 +19,6 @@ package org.apache.servicecomb.core;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -38,15 +37,13 @@ public class CseApplicationListener
 
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-    if(this.applicationContext == applicationContext) {
+    if (this.applicationContext == applicationContext) {
       // same object. avoid initialize many times.
       return;
     }
     this.applicationContext = applicationContext;
     BeanUtils.setContext(applicationContext);
     HttpClients.load();
-    RegistryUtils.init();
-    SCBEngine.getInstance();
   }
 
   public void setInitEventClass(Class<?> initEventClass) {

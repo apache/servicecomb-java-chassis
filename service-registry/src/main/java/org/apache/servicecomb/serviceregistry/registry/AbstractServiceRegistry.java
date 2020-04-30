@@ -28,7 +28,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
 import org.apache.servicecomb.foundation.common.concurrency.SuppressedRunnableWrapper;
-import org.apache.servicecomb.serviceregistry.Features;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.Const;
@@ -65,8 +65,6 @@ import com.google.common.util.concurrent.MoreExecutors;
 
 public abstract class AbstractServiceRegistry implements ServiceRegistry {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractServiceRegistry.class);
-
-  private Features features = new Features();
 
   private MicroserviceFactory microserviceFactory = new MicroserviceFactory();
 
@@ -115,11 +113,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     serviceRegistryCache = new RefreshableServiceRegistryCache(microservice, srClient);
     serviceRegistryCache.setCacheRefreshedWatcher(
         caches -> eventBus.post(new MicroserviceCacheRefreshedEvent(caches)));
-  }
-
-  @Override
-  public Features getFeatures() {
-    return features;
   }
 
   @Override
@@ -269,14 +262,15 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   }
 
   @Override
+  // TODO: this is for 3rd party invocation, and a better way can be provided
   public void registerMicroserviceMapping(String microserviceName, String version,
       List<MicroserviceInstance> instances, Class<?> schemaIntfCls) {
     MicroserviceNameParser parser = new MicroserviceNameParser(microservice.getAppId(), microserviceName);
-    MicroserviceManager microserviceManager = RegistryUtils.getAppManager()
+    MicroserviceManager microserviceManager = DiscoveryManager.INSTANCE.getAppManager()
         .getOrCreateMicroserviceManager(parser.getAppId());
     microserviceManager.getVersionsByName()
         .computeIfAbsent(microserviceName,
-            svcName -> new StaticMicroserviceVersions(RegistryUtils.getAppManager(), parser.getAppId(),
+            svcName -> new StaticMicroserviceVersions(DiscoveryManager.INSTANCE.getAppManager(), parser.getAppId(),
                 microserviceName)
                 .init(schemaIntfCls, version, instances)
         );
@@ -321,7 +315,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     executorService.execute(new SuppressedRunnableWrapper(
         () -> {
           serviceRegistryCache.onMicroserviceInstanceChanged(changedEvent);
-          RegistryUtils.getAppManager().onMicroserviceInstanceChanged(changedEvent);
+          DiscoveryManager.INSTANCE.getAppManager().onMicroserviceInstanceChanged(changedEvent);
         }));
   }
 
@@ -330,7 +324,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   public void serviceRegistryRecovery(RecoveryEvent event) {
     executorService.execute(() -> {
       serviceRegistryCache.forceRefreshCache();
-      RegistryUtils.getAppManager().pullInstances();
+      DiscoveryManager.INSTANCE.getAppManager().pullInstances();
     });
   }
 
@@ -339,7 +333,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     executorService.execute(() -> {
       LOGGER.warn("receive SafeModeChangeEvent, current mode={}", modeChangeEvent.getCurrentMode());
       serviceRegistryCache.onSafeModeChanged(modeChangeEvent);
-      RegistryUtils.getAppManager().onSafeModeChanged(modeChangeEvent);
+      DiscoveryManager.INSTANCE.getAppManager().onSafeModeChanged(modeChangeEvent);
     });
   }
 }

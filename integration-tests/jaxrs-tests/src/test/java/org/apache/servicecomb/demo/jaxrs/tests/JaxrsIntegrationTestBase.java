@@ -145,16 +145,11 @@ public class JaxrsIntegrationTestBase {
 
   @Test
   public void getsJaxrsResponse() {
-    //    String srcMicroserviceName = RegistryUtils.getMicroservice().getServiceName();
-    //    String context = String.format("{x-cse-src-microservice=%s}", srcMicroserviceName);
-
     ResponseEntity<User> responseEntity = restTemplate
         .getForEntity(codeFirstUrl + "response", User.class);
 
     assertEquals(202, responseEntity.getStatusCode().value());
     assertEquals("User [name=nameA, age=100, index=0]", responseEntity.getBody().toString());
-    //      assertEquals("h1v " + context, responseEntity.getHeaders().getFirst("h1"));
-    //      assertEquals("h2v " + context, responseEntity.getHeaders().getFirst("h2"));
   }
 
   @Test

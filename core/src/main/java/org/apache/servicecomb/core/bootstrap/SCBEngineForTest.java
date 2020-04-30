@@ -24,7 +24,6 @@ import org.apache.servicecomb.core.executor.GroupExecutor;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.event.SimpleEventBus;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 
 /**
  * not depend on remote service registry and spring context
@@ -39,7 +38,7 @@ public class SCBEngineForTest extends SCBEngine {
     super.destroy();
 
     ReflectUtils.setField(SCBEngine.class, null, "INSTANCE", null);
-    RegistryUtils.setServiceRegistry(null);
+    
     EventManager.eventBus = new SimpleEventBus();
   }
 }

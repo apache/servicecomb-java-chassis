@@ -24,18 +24,7 @@ import org.apache.servicecomb.provider.pojo.RpcSchema;
  * verify https://issues.apache.org/jira/browse/SCB-858
  */
 @RpcSchema(schemaId = "reactiveWithIntf")
-public class ReactiveWithIntfSchema implements ReactiveHelloIntf {//}, BootListener {
-//  @ApiOperation(value = "", hidden = true)
-//  @Override
-//  public void onAfterProducerProvider(BootEvent event) {
-//    Microservice microservice = RegistryUtils.getMicroservice();
-//    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
-//    SchemaMeta schemaMeta = microserviceMeta.findSchemaMeta("reactiveWithIntf");
-//    schemaMeta.getSwagger().getInfo()
-//        .setVendorExtension(SwaggerConst.EXT_JAVA_INTF, ReactiveHelloIntf.class.getName());
-//    String content = SwaggerUtils.swaggerToString(schemaMeta.getSwagger());
-//    microservice.getSchemaMap().put(schemaMeta.getSchemaId(), content);
-//  }
+public class ReactiveWithIntfSchema implements ReactiveHelloIntf {
 
   @Override
   public CompletableFuture<String> hello(String name) {

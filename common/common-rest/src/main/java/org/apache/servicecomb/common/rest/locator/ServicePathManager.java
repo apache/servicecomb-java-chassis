@@ -21,11 +21,11 @@ import java.util.Collection;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
-import org.apache.servicecomb.deployment.Deployment;
-import org.apache.servicecomb.serviceregistry.api.Const;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -102,7 +102,7 @@ public class ServicePathManager {
   }
 
   public void buildProducerPaths() {
-    String urlPrefix = Deployment.getClassLoaderScopeProperty(Const.URL_PREFIX);
+    String urlPrefix = SCBEngine.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX);
     if (StringUtils.isEmpty(urlPrefix)) {
       producerPaths = swaggerPaths;
       producerPaths.printPaths();

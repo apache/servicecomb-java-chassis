@@ -23,7 +23,7 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.compute.GenericParam;
 import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.provider.pojo.Invoker;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.http.ResponseEntity;
@@ -60,7 +60,7 @@ public class TestResponse {
   }
 
   private void testCseResponse() {
-    String srcName = RegistryUtils.getMicroservice().getServiceName();
+    String srcName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
     Response cseResponse = intf.cseResponse();
     TestMgr.check("User [name=nameA, age=100, index=0]", cseResponse.getResult());
     TestMgr.check("h1v " + srcName, cseResponse.getHeaders().getFirst("h1"));
@@ -70,7 +70,7 @@ public class TestResponse {
   private void testResponseEntity() {
     Date date = new Date();
 
-    String srcName = RegistryUtils.getMicroservice().getServiceName();
+    String srcName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
 
     ResponseEntity<Date> responseEntity = intf.responseEntity(date);
     TestMgr.check(date, responseEntity.getBody());

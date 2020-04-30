@@ -19,7 +19,7 @@ package org.apache.servicecomb.metrics.core;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +35,7 @@ public class TestMetricsBootListener {
   public void registerSchemas() {
     new SCBBootstrap().useLocalRegistry().createSCBEngineForTest().run();
 
-    Microservice microservice = RegistryUtils.getMicroservice();
+    Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
     microservice.getSchemas().contains("healthEndpoint");
     microservice.getSchemaMap().containsKey("healthEndpoint");
 

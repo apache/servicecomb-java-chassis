@@ -16,20 +16,22 @@
  */
 package org.apache.servicecomb.authentication.provider;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.concurrent.TimeUnit;
+
 import org.apache.servicecomb.authentication.RSAAuthenticationToken;
 import org.apache.servicecomb.foundation.common.utils.RSAUtils;
-import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.MicroserviceInstanceCache;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 public class RSAProviderTokenManager {
 
@@ -90,7 +92,7 @@ public class RSAProviderTokenManager {
   private String getPublicKey(String instanceId, String serviceId) {
     MicroserviceInstance instances = MicroserviceInstanceCache.getOrCreate(serviceId, instanceId);
     if (instances != null) {
-      return instances.getProperties().get(Const.INSTANCE_PUBKEY_PRO);
+      return instances.getProperties().get(DefinitionConst.INSTANCE_PUBKEY_PRO);
     } else {
       LOGGER.error("not instance found {}-{}, maybe attack", instanceId, serviceId);
       return "";

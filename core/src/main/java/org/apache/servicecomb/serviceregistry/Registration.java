@@ -34,5 +34,7 @@ public interface Registration extends SPIOrder, LifeCycle {
 
   void addSchema(String schemaId, String content);
 
+  void addEndpoint(String endpoint);
+
   void addBasePath(Collection<BasePath> basePaths);
 }

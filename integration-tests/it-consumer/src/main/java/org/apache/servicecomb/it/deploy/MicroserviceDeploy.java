@@ -18,7 +18,8 @@ package org.apache.servicecomb.it.deploy;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.servicecomb.it.ITUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,13 +50,13 @@ public class MicroserviceDeploy extends NormalDeploy {
   protected String[] addArgs(String[] cmds) {
     // add jar
     return ArrayUtils.addAll(super.addArgs(cmds),
-        "-DselfController=" + RegistryUtils.getMicroserviceInstance().getInstanceId(),
+        "-DselfController=" + RegistrationManager.INSTANCE.getMicroserviceInstance().getInstanceId(),
         "-Dservice_description.name=" + microserviceDeployDefinition.getMicroserviceName(),
         deployDefinition.getCmd());
   }
 
   public void ensureReady() throws Throwable {
-    MicroserviceVersionRule microserviceVersionRule = RegistryUtils.getAppManager()
+    MicroserviceVersionRule microserviceVersionRule = DiscoveryManager.INSTANCE.getAppManager()
         .getOrCreateMicroserviceVersionRule(microserviceDeployDefinition.getAppId(),
             microserviceDeployDefinition.getMicroserviceName(),
             microserviceDeployDefinition.getVersion());

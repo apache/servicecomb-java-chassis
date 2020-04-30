@@ -32,9 +32,6 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.foundation.vertx.server.TcpParser;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
-import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import org.apache.servicecomb.transport.highway.message.RequestHeader;
 import org.junit.After;
 import org.junit.Assert;
@@ -75,9 +72,6 @@ public class TestHighwayCodec {
 
   @Before
   public void setUp() {
-    ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
-    serviceRegistry.init();
-    RegistryUtils.setServiceRegistry(serviceRegistry);
 
     operationProtobuf = Mockito.mock(OperationProtobuf.class);
 

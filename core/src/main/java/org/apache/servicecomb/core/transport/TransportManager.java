@@ -29,8 +29,7 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,10 +60,7 @@ public class TransportManager {
         Endpoint endpoint = transport.getPublishEndpoint();
         if (endpoint != null && endpoint.getEndpoint() != null) {
           LOGGER.info("endpoint to publish: {}", endpoint.getEndpoint());
-          RegistryUtils.executeOnEachServiceRegistry(sr -> {
-            Microservice microservice = sr.getMicroservice();
-            microservice.getInstance().getEndpoints().add(endpoint.getEndpoint());
-          });
+          RegistrationManager.INSTANCE.addEndpoint(endpoint.getEndpoint());
         }
         continue;
       }

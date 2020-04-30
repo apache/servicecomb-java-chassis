@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.SCBStatus;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import org.slf4j.Logger;
@@ -77,7 +77,7 @@ public final class ITUtils {
 
     Map<String, MicroserviceInstance> instances;
     for (; ; ) {
-      MicroserviceVersionRule microserviceVersionRule = RegistryUtils
+      MicroserviceVersionRule microserviceVersionRule = DiscoveryManager.INSTANCE
           .getAppManager()
           .getOrCreateMicroserviceVersionRule(appId, microserviceName, strVersionRule);
       instances = microserviceVersionRule.getInstances();
@@ -92,7 +92,7 @@ public final class ITUtils {
           minInstanceCount,
           instances.size());
       // pull at once
-      RegistryUtils.getAppManager().pullInstances();
+      DiscoveryManager.INSTANCE.getAppManager().pullInstances();
       forceWait(TimeUnit.SECONDS, 1);
     }
 

@@ -56,13 +56,11 @@ import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.serviceregistry.DiscoveryManager;
 import org.apache.servicecomb.serviceregistry.RegistrationManager;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.serviceregistry.event.MicroserviceInstanceRegisteredEvent;
 import org.apache.servicecomb.serviceregistry.swagger.SwaggerLoader;
-import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceRegisterTask;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
@@ -294,11 +292,11 @@ public class SCBEngine {
 
   /**
    * <p>As the process of instance registry is asynchronous, the {@code AFTER_REGISTRY}
-   * event should not be sent immediately after {@link RegistryUtils#run()} is invoked.
-   * When the instance registry succeeds, {@link MicroserviceInstanceRegisterTask} will be posted in {@link EventManager},
+   * event should not be sent immediately.
+   * When the instance registry succeeds, {@link MicroserviceInstanceRegisteredEvent} will be posted in {@link EventManager},
    * register a subscriber to watch this event and send {@code AFTER_REGISTRY}.</p>
    *
-   * <p>This method should be called before {@link RegistryUtils#run()} to avoid that the registry process is too quick
+   * <p>This method should be called before registry initialization to avoid that the registry process is too quick
    * that the event is not watched by this subscriber.</p>
    *
    * <p>Check if {@code InstanceId} is null to judge whether the instance registry has succeeded.</p>

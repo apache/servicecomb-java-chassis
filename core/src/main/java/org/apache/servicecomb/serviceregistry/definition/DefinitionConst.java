@@ -45,6 +45,8 @@ public interface DefinitionConst {
 
   String URL_PREFIX = "urlPrefix";
 
+  public static final String INSTANCE_PUBKEY_PRO = "publickey";
+
   public static final String REGISTER_URL_PREFIX = "servicecomb.service.registry.registerUrlPrefix";
 
   public static final String REGISTER_SERVICE_PATH = "servicecomb.service.registry.registerPath";

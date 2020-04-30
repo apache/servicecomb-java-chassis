@@ -17,28 +17,16 @@
 package org.apache.servicecomb.core.bootstrap;
 
 import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
-import org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl;
-import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 
 public class SCBBootstrap {
   public SCBBootstrap useLocalRegistry() {
-    return useLocalRegistry(System.getProperty(LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY));
+    // TODO: local registry intialization
+    return this;
   }
 
   public SCBBootstrap useLocalRegistry(String localFile) {
-    return useLocalRegistry(ServiceRegistryFactory.createLocal(localFile));
-  }
-
-  private SCBBootstrap useLocalRegistry(ServiceRegistry serviceRegistry) {
-    serviceRegistry.init();
-    RegistryUtils.setServiceRegistry(serviceRegistry);
-
-    EventManager.eventBus = serviceRegistry.getEventBus();
-
+    // TODO: local registry intialization
     return this;
   }
 

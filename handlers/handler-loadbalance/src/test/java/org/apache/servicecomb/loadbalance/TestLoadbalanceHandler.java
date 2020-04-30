@@ -35,8 +35,6 @@ import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
@@ -69,8 +67,6 @@ import mockit.Mocked;
 public class TestLoadbalanceHandler {
   static SCBEngine scbEngine;
 
-  static ServiceRegistry serviceRegistry;
-
   static InstanceCacheManager instanceCacheManager;
 
   static TransportManager transportManager;
@@ -99,8 +95,6 @@ public class TestLoadbalanceHandler {
   @BeforeClass
   public static void classSetup() {
     scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest().run();
-    serviceRegistry = scbEngine.getServiceRegistry();
-    instanceCacheManager = RegistryUtils.getInstanceCacheManager();
     transportManager = scbEngine.getTransportManager();
   }
 
@@ -224,7 +218,8 @@ public class TestLoadbalanceHandler {
 
     Assert.assertEquals(1,
         loadBalancer.getLoadBalancerStats().getSingleServerStat(server).getSuccessiveConnectionFailureCount());
-    Assert.assertEquals("InvocationException: code=490;msg=CommonExceptionData [message=Unexpected consumer error, please check logs for details]",
+    Assert.assertEquals(
+        "InvocationException: code=490;msg=CommonExceptionData [message=Unexpected consumer error, please check logs for details]",
         result.value.getMessage());
   }
 

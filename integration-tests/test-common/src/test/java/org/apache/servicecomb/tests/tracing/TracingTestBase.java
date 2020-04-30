@@ -18,7 +18,6 @@
 package org.apache.servicecomb.tests.tracing;
 
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_TRACING_COLLECTOR_ADDRESS;
-import static org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY;
 import static org.hamcrest.collection.IsIterableContainingInAnyOrder.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 
@@ -58,7 +57,8 @@ public class TracingTestBase {
   }
 
   private static void setUpLocalRegistry() {
-    System.setProperty(LOCAL_REGISTRY_FILE_KEY, "notExistJustForceLocal");
+    // TODO : local registry
+//    System.setProperty(LOCAL_REGISTRY_FILE_KEY, "notExistJustForceLocal");
   }
 
   protected void assertThatSpansReceivedByZipkin(Collection<String> logs, String... values) {
