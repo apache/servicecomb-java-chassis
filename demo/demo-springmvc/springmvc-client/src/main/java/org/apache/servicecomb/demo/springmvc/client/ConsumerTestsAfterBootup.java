@@ -18,7 +18,7 @@ package org.apache.servicecomb.demo.springmvc.client;
 
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ConsumerTestsAfterBootup implements BootListener {
   public void testRegisterPath() {
-    TestMgr.check(RegistryUtils.getMicroservice().getPaths().size(), 0);
+    TestMgr.check(RegistrationManager.INSTANCE.getMicroservice().getPaths().size(), 0);
   }
 
   @Override

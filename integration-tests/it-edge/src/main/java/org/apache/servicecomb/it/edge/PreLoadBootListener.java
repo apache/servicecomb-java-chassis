@@ -18,7 +18,8 @@
 package org.apache.servicecomb.it.edge;
 
 import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +37,9 @@ public class PreLoadBootListener implements BootListener {
   @Override
   public void onBootEvent(BootEvent bootEvent) {
     if (bootEvent.getEventType() == EventType.BEFORE_REGISTRY) {
-      MicroserviceVersionRule rule = RegistryUtils.getAppManager()
-          .getOrCreateMicroserviceVersionRule(RegistryUtils.getAppId(), "it-producer", "0+");
+      MicroserviceVersionRule rule = DiscoveryManager.INSTANCE.getAppManager()
+          .getOrCreateMicroserviceVersionRule(RegistrationManager.INSTANCE.getMicroservice().getAppId(), "it-producer",
+              "0+");
       if (rule.getInstances().size() == 0) {
         LOGGER.warn("Prefetch not successful, maybe the provider not started.");
       }

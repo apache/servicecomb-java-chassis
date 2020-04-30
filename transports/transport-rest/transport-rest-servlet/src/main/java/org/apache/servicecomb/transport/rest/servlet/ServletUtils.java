@@ -29,11 +29,11 @@ import javax.servlet.ServletRegistration;
 import javax.servlet.ServletRegistration.Dynamic;
 
 import org.apache.servicecomb.common.rest.UploadConfig;
-import org.apache.servicecomb.deployment.Deployment;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
-import org.apache.servicecomb.serviceregistry.api.Const;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -133,7 +133,7 @@ public class ServletUtils {
       return;
     }
 
-    Deployment.setClassLoaderScopeProperty(Const.URL_PREFIX, urlPrefix);
+    SCBEngine.setClassLoaderScopeProperty(DefinitionConst.URL_PREFIX, urlPrefix);
     LOGGER.info("UrlPrefix of this instance is \"{}\".", urlPrefix);
   }
 

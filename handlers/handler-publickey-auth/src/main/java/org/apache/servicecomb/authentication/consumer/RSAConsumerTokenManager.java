@@ -25,7 +25,7 @@ import java.security.spec.InvalidKeySpecException;
 import org.apache.servicecomb.authentication.RSAAuthenticationToken;
 import org.apache.servicecomb.foundation.common.utils.RSAUtils;
 import org.apache.servicecomb.foundation.token.RSAKeypair4Auth;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,8 +51,8 @@ public class RSAConsumerTokenManager {
 
   public String createToken() {
     PrivateKey privateKey = RSAKeypair4Auth.INSTANCE.getPrivateKey();
-    String instanceId = RegistryUtils.getMicroserviceInstance().getInstanceId();
-    String serviceId = RegistryUtils.getMicroservice().getServiceId();
+    String instanceId = RegistrationManager.INSTANCE.getMicroserviceInstance().getInstanceId();
+    String serviceId = RegistrationManager.INSTANCE.getMicroservice().getServiceId();
     @SuppressWarnings("deprecation")
     String randomCode = org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric(128);
     long generateTime = System.currentTimeMillis();

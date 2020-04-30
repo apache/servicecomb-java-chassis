@@ -20,13 +20,10 @@ import org.apache.servicecomb.AuthHandlerBoot;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.foundation.token.RSAKeypair4Auth;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.junit.Assert;
 import org.junit.Test;
-
-import mockit.Expectations;
 
 public class TestAuthHandlerBoot {
 
@@ -36,13 +33,6 @@ public class TestAuthHandlerBoot {
     MicroserviceInstance microserviceInstance = new MicroserviceInstance();
     Microservice microservice = new Microservice();
     microservice.setInstance(microserviceInstance);
-    new Expectations(RegistryUtils.class) {
-      {
-
-        RegistryUtils.getMicroserviceInstance();
-        result = microserviceInstance;
-      }
-    };
 
     AuthHandlerBoot authHandlerBoot = new AuthHandlerBoot();
     BootEvent bootEvent = new BootEvent();

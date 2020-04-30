@@ -22,6 +22,10 @@ import java.util.List;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
+import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManagerNew;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
@@ -33,6 +37,8 @@ public class DiscoveryManager {
   private List<Discovery> discoveryList = SPIServiceUtils.getOrLoadSortedService(Discovery.class);
 
   private final AppManager appManager = new AppManager();
+
+  private InstanceCacheManager instanceCacheManager = new InstanceCacheManagerNew(appManager);
 
   private final MicroserviceDefinition microserviceDefinition;
 
@@ -55,8 +61,42 @@ public class DiscoveryManager {
     return result;
   }
 
+  public InstanceCacheManager getInstanceCacheManager() {
+    return this.instanceCacheManager;
+  }
+
   public AppManager getAppManager() {
     return this.appManager;
+  }
+
+  public MicroserviceInstance findMicroserviceInstance(String serviceId, String instanceId) {
+    for (Discovery discovery : discoveryList) {
+      MicroserviceInstance microserviceInstance = discovery.findMicroserviceInstance(serviceId, instanceId);
+      if (microserviceInstance != null) {
+        return microserviceInstance;
+      }
+    }
+    return null;
+  }
+
+  public String getSchema(String microserviceId, String schemaId) {
+    for (Discovery discovery : discoveryList) {
+      String schema = discovery.getSchema(microserviceId, schemaId);
+      if (schema != null) {
+        return schema;
+      }
+    }
+    return null;
+  }
+
+  public Microservice getMicroservice(String microserviceId) {
+    for (Discovery discovery : discoveryList) {
+      Microservice microservice = discovery.getMicroservice(microserviceId);
+      if (microservice != null) {
+        return microservice;
+      }
+    }
+    return null;
   }
 
   public MicroserviceVersions getOrCreateMicroserviceVersions(String appId, String microserviceName) {

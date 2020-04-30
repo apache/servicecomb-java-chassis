@@ -30,7 +30,7 @@ import org.apache.servicecomb.demo.jaxbbean.JAXBJob;
 import org.apache.servicecomb.demo.jaxbbean.JAXBPerson;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.springframework.http.HttpEntity;
@@ -167,7 +167,7 @@ public class CodeFirstRestTemplate {
 
   private void testCseResponse(String targetMicroserviceName, RestTemplate template,
       String cseUrlPrefix) {
-    String srcMicroserviceName = RegistryUtils.getMicroservice().getServiceName();
+    String srcMicroserviceName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
 
     ResponseEntity<User> responseEntity =
         template.exchange(cseUrlPrefix + "cseResponse", HttpMethod.GET, null, User.class);

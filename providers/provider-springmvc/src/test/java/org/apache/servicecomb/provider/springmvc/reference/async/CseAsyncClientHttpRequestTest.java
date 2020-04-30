@@ -25,8 +25,6 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.provider.springmvc.reference.CseClientHttpResponse;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -40,14 +38,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import mockit.Deencapsulation;
-
 public class CseAsyncClientHttpRequestTest {
   static SCBEngine scbEngine;
 
   @BeforeClass
   public static void classSetup() {
-    Deencapsulation.setField(RegistryUtils.class, "appManager", new AppManager());
     scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest()
         .addProducerMeta("sid1", new CseAsyncClientHttpRequestTestSchema()).run();
   }

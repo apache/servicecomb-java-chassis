@@ -34,7 +34,7 @@ import mockit.Mock;
 import mockit.MockUp;
 
 public class TestRegistryBase {
-  private AppManager originalAppManager = RegistryUtils.getAppManager();
+  private AppManager originalAppManager = DiscoveryManager.INSTANCE.getAppManager();
 
   protected ServiceRegistry serviceRegistry;
 
@@ -72,11 +72,11 @@ public class TestRegistryBase {
 
     Deencapsulation.setField(RegistryUtils.class, "appManager", new AppManager());
 
-    appManager = RegistryUtils.getAppManager();
+    appManager = DiscoveryManager.INSTANCE.getAppManager();
     microserviceManager = appManager.getOrCreateMicroserviceManager(appId);
     eventBus = serviceRegistry.getEventBus();
 
-    RegistryUtils.getSwaggerLoader().registerSwagger(appId, serviceName, schemaId, Hello.class);
+    RegistrationManager.INSTANCE.getSwaggerLoader().registerSwagger(appId, serviceName, schemaId, Hello.class);
 
     RegistryUtils.setServiceRegistry(serviceRegistry);
 

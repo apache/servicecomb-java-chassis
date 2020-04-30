@@ -20,8 +20,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.consumer.AppManager;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
 import org.apache.servicecomb.serviceregistry.registry.RemoteServiceRegistry;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryTaskInitializer;
 import org.slf4j.Logger;
@@ -48,8 +47,6 @@ public class InstanceCacheCheckTask implements ServiceRegistryTaskInitializer {
   // auto task
   private ScheduledFuture<?> scheduledFuture;
 
-  private AppManager appManager;
-
   private ScheduledThreadPoolExecutor taskPool;
 
   private EventBus eventBus;
@@ -63,10 +60,6 @@ public class InstanceCacheCheckTask implements ServiceRegistryTaskInitializer {
   // make test easier
   public void setTimeUnit(TimeUnit timeUnit) {
     this.timeUnit = timeUnit;
-  }
-
-  public void setAppManager(AppManager appManager) {
-    this.appManager = appManager;
   }
 
   public void setTaskPool(ScheduledThreadPoolExecutor taskPool) {
@@ -87,7 +80,6 @@ public class InstanceCacheCheckTask implements ServiceRegistryTaskInitializer {
 
   @Override
   public void init(RemoteServiceRegistry remoteServiceRegistry) {
-    appManager = RegistryUtils.getAppManager();
     taskPool = remoteServiceRegistry.getTaskPool();
     eventBus = remoteServiceRegistry.getEventBus();
 
@@ -128,7 +120,7 @@ public class InstanceCacheCheckTask implements ServiceRegistryTaskInitializer {
 
   protected void runTask() {
     try {
-      InstanceCacheChecker checker = new InstanceCacheChecker(appManager);
+      InstanceCacheChecker checker = new InstanceCacheChecker(DiscoveryManager.INSTANCE.getAppManager());
       InstanceCacheSummary instanceCacheSummary = checker.check();
       eventBus.post(instanceCacheSummary);
 

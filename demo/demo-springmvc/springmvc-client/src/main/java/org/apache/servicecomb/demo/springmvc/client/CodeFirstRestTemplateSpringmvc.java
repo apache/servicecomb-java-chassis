@@ -35,7 +35,7 @@ import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.part.FilePart;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.provider.springmvc.reference.CseHttpEntity;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
@@ -218,7 +218,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     CseHttpEntity<Map<String, Object>> httpEntity = new CseHttpEntity<>(body);
     httpEntity.addContext("contextKey", "contextValue");
 
-    String srcName = RegistryUtils.getMicroservice().getServiceName();
+    String srcName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
 
     ResponseEntity<Date> responseEntity =
         template.exchange(cseUrlPrefix + "responseEntity", HttpMethod.POST, httpEntity, Date.class);

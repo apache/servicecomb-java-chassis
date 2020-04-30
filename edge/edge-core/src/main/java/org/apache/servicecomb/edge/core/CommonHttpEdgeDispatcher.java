@@ -31,7 +31,7 @@ import org.apache.servicecomb.loadbalance.LoadbalanceHandler;
 import org.apache.servicecomb.loadbalance.RuleExt;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryTree;
 import org.apache.servicecomb.transport.rest.client.Http2TransportHttpClientOptionsSPI;
@@ -166,7 +166,7 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
     DiscoveryContext context = new DiscoveryContext();
     context.setInputParameters(invocation);
     VersionedCache serversVersionedCache = discoveryTree.discovery(context,
-        RegistryUtils.getAppId(),
+        RegistrationManager.INSTANCE.getMicroservice().getAppId(),
         microserviceName,
         versionRule);
     invocation.addLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST, serversVersionedCache.data());

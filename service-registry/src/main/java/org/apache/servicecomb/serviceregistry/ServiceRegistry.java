@@ -94,8 +94,6 @@ public interface ServiceRegistry {
    */
   Microservice getAggregatedRemoteMicroservice(String microserviceId);
 
-  Features getFeatures();
-
   /**
    * <p>
    * Register a third party service if not registered before, and set it's instances into

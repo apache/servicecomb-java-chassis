@@ -49,7 +49,7 @@ import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultEndpointMetric;
 import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultHttpSocketMetric;
-import org.apache.servicecomb.serviceregistry.api.Const;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -442,7 +442,7 @@ public class TestRestClientInvocation {
 
   @Test
   public void createRequestPath_NoUrlPrefixNoPath() throws Exception {
-    when(address.getFirst(Const.URL_PREFIX)).thenReturn(null);
+    when(address.getFirst(DefinitionConst.URL_PREFIX)).thenReturn(null);
 
     when(urlPathBuilder.createRequestPath(any())).thenReturn("/path");
 
@@ -453,7 +453,7 @@ public class TestRestClientInvocation {
   @Test
   public void createRequestPath_noUrlPrefixHavePath() throws Exception {
     handlerContext.put(RestConst.REST_CLIENT_REQUEST_PATH, "/client/path");
-    when(address.getFirst(Const.URL_PREFIX)).thenReturn(null);
+    when(address.getFirst(DefinitionConst.URL_PREFIX)).thenReturn(null);
 
     String path = restClientInvocation.createRequestPath(swaggerRestOperation);
     Assert.assertEquals("/client/path", path);
@@ -461,7 +461,7 @@ public class TestRestClientInvocation {
 
   @Test
   public void createRequestPath_haveUrlPrefixNoPath() throws Exception {
-    when(address.getFirst(Const.URL_PREFIX)).thenReturn("/prefix");
+    when(address.getFirst(DefinitionConst.URL_PREFIX)).thenReturn("/prefix");
 
     when(urlPathBuilder.createRequestPath(any())).thenReturn("/path");
 
@@ -471,7 +471,7 @@ public class TestRestClientInvocation {
 
   @Test
   public void createRequestPath_haveUrlPrefixHavePath() throws Exception {
-    when(address.getFirst(Const.URL_PREFIX)).thenReturn("/prefix");
+    when(address.getFirst(DefinitionConst.URL_PREFIX)).thenReturn("/prefix");
     handlerContext.put(RestConst.REST_CLIENT_REQUEST_PATH, "/client/path");
 
     String path = restClientInvocation.createRequestPath(swaggerRestOperation);
@@ -480,7 +480,7 @@ public class TestRestClientInvocation {
 
   @Test
   public void createRequestPath_haveUrlPrefixHavePathAndStartWith() throws Exception {
-    when(address.getFirst(Const.URL_PREFIX)).thenReturn("/prefix");
+    when(address.getFirst(DefinitionConst.URL_PREFIX)).thenReturn("/prefix");
     handlerContext.put(RestConst.REST_CLIENT_REQUEST_PATH, "/prefix/client/path");
 
     String path = restClientInvocation.createRequestPath(swaggerRestOperation);

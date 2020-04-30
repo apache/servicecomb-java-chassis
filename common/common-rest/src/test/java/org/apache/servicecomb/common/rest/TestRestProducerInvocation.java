@@ -27,7 +27,6 @@ import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.common.rest.locator.TestPathSchema;
-import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
@@ -37,7 +36,6 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.AfterClass;
@@ -155,14 +153,6 @@ public class TestRestProducerInvocation {
     Microservice microservice = new Microservice();
     microservice.setServiceName("ms");
 
-    new Expectations(RegistryUtils.class) {
-      {
-        requestEx.getHeader(Const.TARGET_MICROSERVICE);
-        result = null;
-        RegistryUtils.getMicroservice();
-        result = microservice;
-      }
-    };
     new Expectations(ServicePathManager.class) {
       {
         //just make the method throw Exception

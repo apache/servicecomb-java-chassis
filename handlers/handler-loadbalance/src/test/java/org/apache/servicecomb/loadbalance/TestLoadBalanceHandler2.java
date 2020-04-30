@@ -43,8 +43,6 @@ import org.apache.servicecomb.loadbalance.event.IsolationServerEvent;
 import org.apache.servicecomb.loadbalance.filter.IsolationDiscoveryFilter;
 import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
 import org.apache.servicecomb.loadbalance.filter.ZoneAwareDiscoveryFilter;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.registry.DataCenterInfo;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
@@ -121,7 +119,7 @@ public class TestLoadBalanceHandler2 {
     Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, new HashMap<>());
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
-    ServiceRegistry serviceRegistry = mockUpServiceRegistry();
+
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
@@ -171,10 +169,6 @@ public class TestLoadBalanceHandler2 {
     DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent").data(data);
     scbEngine.setTransportManager(transportManager);
 
-    RegistryUtils.setServiceRegistry(serviceRegistry);
-
-    when(serviceRegistry.getMicroserviceInstance()).thenReturn(myself);
-    mockUpInstanceCacheManager(instanceCacheManager);
     when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
         .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
@@ -271,7 +265,6 @@ public class TestLoadBalanceHandler2 {
     Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, new HashMap<>());
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
-    ServiceRegistry serviceRegistry = mockUpServiceRegistry();
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
@@ -299,10 +292,6 @@ public class TestLoadBalanceHandler2 {
     DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent").data(data);
     scbEngine.setTransportManager(transportManager);
 
-    RegistryUtils.setServiceRegistry(serviceRegistry);
-
-    when(serviceRegistry.getMicroserviceInstance()).thenReturn(myself);
-    mockUpInstanceCacheManager(instanceCacheManager);
     when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
         .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
@@ -361,7 +350,6 @@ public class TestLoadBalanceHandler2 {
     Invocation invocation = new Invocation(referenceConfig, operationMeta, invocationRuntimeType, new HashMap<>());
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
-    ServiceRegistry serviceRegistry = mockUpServiceRegistry();
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
@@ -411,10 +399,6 @@ public class TestLoadBalanceHandler2 {
     DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent").data(data);
     scbEngine.setTransportManager(transportManager);
 
-    RegistryUtils.setServiceRegistry(serviceRegistry);
-
-    when(serviceRegistry.getMicroserviceInstance()).thenReturn(myself);
-    mockUpInstanceCacheManager(instanceCacheManager);
     when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
         .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
@@ -488,7 +472,6 @@ public class TestLoadBalanceHandler2 {
     });
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
-    ServiceRegistry serviceRegistry = mockUpServiceRegistry();
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
@@ -538,10 +521,6 @@ public class TestLoadBalanceHandler2 {
     DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent").data(data);
     scbEngine.setTransportManager(transportManager);
 
-    RegistryUtils.setServiceRegistry(serviceRegistry);
-
-    when(serviceRegistry.getMicroserviceInstance()).thenReturn(myself);
-    mockUpInstanceCacheManager(instanceCacheManager);
     when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
         .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
@@ -631,7 +610,6 @@ public class TestLoadBalanceHandler2 {
     });
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
-    ServiceRegistry serviceRegistry = mockUpServiceRegistry();
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
@@ -682,10 +660,6 @@ public class TestLoadBalanceHandler2 {
     DiscoveryTreeNode parent = new DiscoveryTreeNode().name("parent").data(data);
     scbEngine.setTransportManager(transportManager);
 
-    RegistryUtils.setServiceRegistry(serviceRegistry);
-
-    when(serviceRegistry.getMicroserviceInstance()).thenReturn(myself);
-    mockUpInstanceCacheManager(instanceCacheManager);
     when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
         .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
@@ -783,7 +757,7 @@ public class TestLoadBalanceHandler2 {
     AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
 
     InstanceCacheManager instanceCacheManager = Mockito.mock(InstanceCacheManager.class);
-    ServiceRegistry serviceRegistry = mockUpServiceRegistry();
+
     TransportManager transportManager = Mockito.mock(TransportManager.class);
     Transport transport = Mockito.mock(Transport.class);
     ArchaiusUtils.setProperty("servicecomb.loadbalance.filter.operation.enabled", "false");
@@ -802,10 +776,6 @@ public class TestLoadBalanceHandler2 {
     scbEngine.setTransportManager(transportManager);
     SCBEngine.getInstance().setTransportManager(transportManager);
 
-    RegistryUtils.setServiceRegistry(serviceRegistry);
-
-    when(serviceRegistry.getMicroserviceInstance()).thenReturn(myself);
-    mockUpInstanceCacheManager(instanceCacheManager);
     when(instanceCacheManager.getOrCreateVersionedCache("testApp", "testMicroserviceName", "0.0.0+"))
         .thenReturn(parent);
     when(transportManager.findTransport("rest")).thenReturn(transport);
@@ -987,20 +957,5 @@ public class TestLoadBalanceHandler2 {
 
   private void mockDelayMillis(long delay) {
     mockTimeMillis.value += delay;
-  }
-
-  private void mockUpInstanceCacheManager(InstanceCacheManager instanceCacheManager) {
-    new MockUp<RegistryUtils>() {
-      @Mock
-      InstanceCacheManager getInstanceCacheManager() {
-        return instanceCacheManager;
-      }
-    };
-  }
-
-  private ServiceRegistry mockUpServiceRegistry() {
-    ServiceRegistry serviceRegistry = Mockito.mock(ServiceRegistry.class);
-    when(serviceRegistry.getEventBus()).thenReturn(EventManager.getEventBus());
-    return serviceRegistry;
   }
 }

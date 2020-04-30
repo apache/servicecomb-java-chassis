@@ -21,7 +21,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.slf4j.Logger;
@@ -52,7 +52,7 @@ public class MicroserviceInstanceCache {
   public static Microservice getOrCreate(String serviceId) {
     try {
       return microservices.get(serviceId, () -> {
-        Microservice microservice = RegistryUtils.getAggregatedRemoteMicroservice(serviceId);
+        Microservice microservice = DiscoveryManager.INSTANCE.getMicroservice(serviceId);
         if (microservice == null) {
           throw new IllegalArgumentException("service id not exists.");
         }
@@ -71,8 +71,7 @@ public class MicroserviceInstanceCache {
 
         @Override
         public MicroserviceInstance call() {
-          MicroserviceInstance instance = RegistryUtils.getResultFromFirstValidServiceRegistry(
-              sr -> sr.getServiceRegistryClient().findServiceInstance(serviceId, instanceId));
+          MicroserviceInstance instance = DiscoveryManager.INSTANCE.findMicroserviceInstance(serviceId, instanceId);
           if (instance == null) {
             throw new IllegalArgumentException("instance id not exists.");
           }

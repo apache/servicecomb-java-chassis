@@ -20,8 +20,8 @@ import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.foundation.common.utils.RSAKeyPairEntry;
 import org.apache.servicecomb.foundation.common.utils.RSAUtils;
 import org.apache.servicecomb.foundation.token.RSAKeypair4Auth;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.api.Const;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.springframework.stereotype.Component;
 
 /**
@@ -41,7 +41,7 @@ public class AuthHandlerBoot implements BootListener {
       RSAKeypair4Auth.INSTANCE.setPrivateKey(rsaKeyPairEntry.getPrivateKey());
       RSAKeypair4Auth.INSTANCE.setPublicKey(rsaKeyPairEntry.getPublicKey());
       RSAKeypair4Auth.INSTANCE.setPublicKeyEncoded(rsaKeyPairEntry.getPublicKeyEncoded());
-      RegistryUtils.getMicroserviceInstance().getProperties().put(Const.INSTANCE_PUBKEY_PRO,
+      RegistrationManager.INSTANCE.getMicroserviceInstance().getProperties().put(DefinitionConst.INSTANCE_PUBKEY_PRO,
           rsaKeyPairEntry.getPublicKeyEncoded());
     }
   }

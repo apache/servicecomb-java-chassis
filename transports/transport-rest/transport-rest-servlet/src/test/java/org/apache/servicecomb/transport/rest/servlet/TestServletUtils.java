@@ -36,10 +36,10 @@ import javax.servlet.ServletRegistration.Dynamic;
 import javax.servlet.http.HttpServlet;
 
 import org.apache.servicecomb.common.rest.RestConst;
-import org.apache.servicecomb.deployment.Deployment;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.serviceregistry.api.Const;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -175,18 +175,18 @@ public class TestServletUtils {
 
   @Test
   public void testSaveUrlPrefixNull(@Mocked ServletContext servletContext) {
-    Deployment.clearClassLoaderScopeProperty();
+    SCBEngine.clearClassLoaderScopeProperty();
 
     ServletUtils.saveUrlPrefix(servletContext);
 
-    Assert.assertNull(Deployment.getClassLoaderScopeProperty(Const.URL_PREFIX));
-    Deployment.clearClassLoaderScopeProperty();
+    Assert.assertNull(SCBEngine.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX));
+    SCBEngine.clearClassLoaderScopeProperty();
   }
 
   @Test
   public void testSaveUrlPrefixNormal(@Mocked ServletContext servletContext,
       @Mocked ServletRegistration servletRegistration) {
-    Deployment.clearClassLoaderScopeProperty();
+    SCBEngine.clearClassLoaderScopeProperty();
     new Expectations() {
       {
         servletContext.getContextPath();
@@ -202,8 +202,8 @@ public class TestServletUtils {
 
     ServletUtils.saveUrlPrefix(servletContext);
 
-    Assert.assertThat(Deployment.getClassLoaderScopeProperty(Const.URL_PREFIX), Matchers.is("/root/rest"));
-    Deployment.clearClassLoaderScopeProperty();
+    Assert.assertThat(SCBEngine.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX), Matchers.is("/root/rest"));
+    SCBEngine.clearClassLoaderScopeProperty();
   }
 
   @Test

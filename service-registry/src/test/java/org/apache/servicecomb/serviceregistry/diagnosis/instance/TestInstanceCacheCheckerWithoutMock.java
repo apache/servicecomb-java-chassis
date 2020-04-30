@@ -20,6 +20,7 @@ import java.util.Arrays;
 
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.testing.MockClock;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
@@ -40,7 +41,7 @@ import mockit.Deencapsulation;
 public class TestInstanceCacheCheckerWithoutMock {
   private static final Logger LOGGER = LoggerFactory.getLogger(TestInstanceCacheCheckerWithoutMock.class);
 
-  AppManager originalAppManager = RegistryUtils.getAppManager();
+  AppManager originalAppManager = DiscoveryManager.INSTANCE.getAppManager();
 
   ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
 
@@ -59,7 +60,7 @@ public class TestInstanceCacheCheckerWithoutMock {
     serviceRegistry.init();
     RegistryUtils.setServiceRegistry(serviceRegistry);
 
-    checker = new InstanceCacheChecker(RegistryUtils.getAppManager());
+    checker = new InstanceCacheChecker(DiscoveryManager.INSTANCE.getAppManager());
     checker.clock = new MockClock(new Holder<>(1L));
     expectedSummary.setStatus(Status.NORMAL);
     expectedSummary.setTimestamp(1);
@@ -82,7 +83,7 @@ public class TestInstanceCacheCheckerWithoutMock {
   public void check_microserviceManager_empty() {
     try {
       appId = "notExist";
-      RegistryUtils.getAppManager().getOrCreateMicroserviceVersions(appId, microserviceName);
+      DiscoveryManager.INSTANCE.getAppManager().getOrCreateMicroserviceVersions(appId, microserviceName);
       InstanceCacheSummary instanceCacheSummary = checker.check();
       Assert.assertEquals(Json.encode(expectedSummary), Json.encode(instanceCacheSummary));
     } catch (Exception e) {
@@ -99,7 +100,7 @@ public class TestInstanceCacheCheckerWithoutMock {
         Arrays.asList("rest://localhost:8080"),
         ThirdPartyServiceForUT.class);
 
-    MicroserviceVersionRule microserviceVersionRule = RegistryUtils.getAppManager()
+    MicroserviceVersionRule microserviceVersionRule = DiscoveryManager.INSTANCE.getAppManager()
         .getOrCreateMicroserviceVersionRule(appId, microserviceName, DefinitionConst.VERSION_RULE_ALL);
     Assert.assertEquals(microserviceName, microserviceVersionRule.getLatestMicroserviceVersion().getMicroserviceName());
 

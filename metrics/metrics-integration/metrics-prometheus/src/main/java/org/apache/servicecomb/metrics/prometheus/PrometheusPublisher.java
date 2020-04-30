@@ -25,7 +25,7 @@ import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrapConfig;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,7 +105,7 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
     List<String> labelValues = new ArrayList<>();
 
     labelNames.add("appId");
-    labelValues.add(RegistryUtils.getAppId());
+    labelValues.add(RegistrationManager.INSTANCE.getMicroservice().getAppId());
 
     for (Tag tag : measurement.id().tags()) {
       labelNames.add(tag.key());

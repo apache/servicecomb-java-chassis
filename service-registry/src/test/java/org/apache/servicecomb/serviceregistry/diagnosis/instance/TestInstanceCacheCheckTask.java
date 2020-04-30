@@ -24,7 +24,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -37,11 +36,8 @@ import io.vertx.core.json.Json;
 import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
-import mockit.Mocked;
 
 public class TestInstanceCacheCheckTask {
-  @Mocked
-  AppManager appManager;
 
   ScheduledThreadPoolExecutor taskPool = new ScheduledThreadPoolExecutor(2,
       task -> new Thread(task, "Service Center Task test thread"),
@@ -55,7 +51,6 @@ public class TestInstanceCacheCheckTask {
 
   @Before
   public void setUp() {
-    task.setAppManager(appManager);
     task.setTaskPool(taskPool);
     task.setEventBus(eventBus);
     task.setTimeUnit(TimeUnit.MILLISECONDS);

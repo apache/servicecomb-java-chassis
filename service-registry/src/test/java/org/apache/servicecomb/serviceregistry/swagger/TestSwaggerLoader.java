@@ -40,7 +40,7 @@ import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.apache.servicecomb.foundation.common.utils.ResourceUtil;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.apache.servicecomb.serviceregistry.TestRegistryBase;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.swagger.SwaggerUtils;
@@ -63,11 +63,11 @@ public class TestSwaggerLoader extends TestRegistryBase {
   @Test
   public void registerSwagger() {
     Swagger swagger = SwaggerGenerator.generate(Hello.class);
-    RegistryUtils.getSwaggerLoader().registerSwagger("default:ms2", schemaId, swagger);
+    RegistrationManager.INSTANCE.getSwaggerLoader().registerSwagger("default:ms2", schemaId, swagger);
 
     Microservice microservice = appManager.getOrCreateMicroserviceVersions(appId, serviceName)
         .getVersions().values().iterator().next().getMicroservice();
-    Assert.assertSame(swagger, RegistryUtils.getSwaggerLoader().loadSwagger(microservice, schemaId));
+    Assert.assertSame(swagger, RegistrationManager.INSTANCE.getSwaggerLoader().loadSwagger(microservice, schemaId));
   }
 
   @Test
@@ -80,11 +80,11 @@ public class TestSwaggerLoader extends TestRegistryBase {
       }
     };
 
-    RegistryUtils.getSwaggerLoader().unregisterSwagger(appId, serviceName, schemaId);
+    RegistrationManager.INSTANCE.getSwaggerLoader().unregisterSwagger(appId, serviceName, schemaId);
 
     Microservice microservice = appManager.getOrCreateMicroserviceVersions(appId, serviceName)
         .getVersions().values().iterator().next().getMicroservice();
-    Swagger loadedSwagger = RegistryUtils.getSwaggerLoader().loadSwagger(microservice, schemaId);
+    Swagger loadedSwagger = RegistrationManager.INSTANCE.getSwaggerLoader().loadSwagger(microservice, schemaId);
     Assert.assertNotSame(swagger, loadedSwagger);
     Assert.assertEquals(swagger, loadedSwagger);
   }
@@ -94,11 +94,11 @@ public class TestSwaggerLoader extends TestRegistryBase {
     Swagger swagger = SwaggerGenerator.generate(Hello.class);
     mockLocalResource(swagger, String.format("microservices/%s/%s.yaml", serviceName, schemaId));
 
-    RegistryUtils.getSwaggerLoader().unregisterSwagger(appId, serviceName, schemaId);
+    RegistrationManager.INSTANCE.getSwaggerLoader().unregisterSwagger(appId, serviceName, schemaId);
 
     Microservice microservice = appManager.getOrCreateMicroserviceVersions(appId, serviceName)
         .getVersions().values().iterator().next().getMicroservice();
-    Swagger loadedSwagger = RegistryUtils.getSwaggerLoader().loadSwagger(microservice, schemaId);
+    Swagger loadedSwagger = RegistrationManager.INSTANCE.getSwaggerLoader().loadSwagger(microservice, schemaId);
     Assert.assertNotSame(swagger, loadedSwagger);
     Assert.assertEquals(swagger, loadedSwagger);
   }
@@ -108,11 +108,11 @@ public class TestSwaggerLoader extends TestRegistryBase {
     Swagger swagger = SwaggerGenerator.generate(Hello.class);
     mockLocalResource(swagger, String.format("applications/%s/%s/%s.yaml", appId, serviceName, schemaId));
 
-    RegistryUtils.getSwaggerLoader().unregisterSwagger(appId, serviceName, schemaId);
+    RegistrationManager.INSTANCE.getSwaggerLoader().unregisterSwagger(appId, serviceName, schemaId);
 
     Microservice microservice = appManager.getOrCreateMicroserviceVersions(appId, serviceName)
         .getVersions().values().iterator().next().getMicroservice();
-    Swagger loadedSwagger = RegistryUtils.getSwaggerLoader().loadSwagger(microservice, schemaId);
+    Swagger loadedSwagger = RegistrationManager.INSTANCE.getSwaggerLoader().loadSwagger(microservice, schemaId);
     Assert.assertNotSame(swagger, loadedSwagger);
     Assert.assertEquals(swagger, loadedSwagger);
   }
@@ -128,7 +128,7 @@ public class TestSwaggerLoader extends TestRegistryBase {
     expectedException.expect(IllegalStateException.class);
     expectedException.expectMessage(
         "no schema in local, and can not get schema from service center, appId=other, microserviceName=ms3, version=1.0, serviceId=003, schemaId=hello.");
-    RegistryUtils.getSwaggerLoader().loadSwagger(microservice, schemaId);
+    RegistrationManager.INSTANCE.getSwaggerLoader().loadSwagger(microservice, schemaId);
   }
 
   @Test
@@ -138,7 +138,7 @@ public class TestSwaggerLoader extends TestRegistryBase {
 
     Microservice microservice = appManager.getOrCreateMicroserviceVersions("other", "ms3")
         .getVersions().values().iterator().next().getMicroservice();
-    Swagger loadedSwagger = RegistryUtils.getSwaggerLoader().loadSwagger(microservice, schemaId);
+    Swagger loadedSwagger = RegistrationManager.INSTANCE.getSwaggerLoader().loadSwagger(microservice, schemaId);
     Assert.assertNotSame(swagger, loadedSwagger);
     Assert.assertEquals(swagger, loadedSwagger);
   }
@@ -196,16 +196,16 @@ public class TestSwaggerLoader extends TestRegistryBase {
 
   @Test
   public void should_ignore_not_exist_location_when_register_swagger_in_location() {
-    Map<String, Object> apps = Deencapsulation.getField(RegistryUtils.getSwaggerLoader(), "apps");
+    Map<String, Object> apps = Deencapsulation.getField(RegistrationManager.INSTANCE.getSwaggerLoader(), "apps");
     apps.clear();
-    RegistryUtils.getSwaggerLoader().registerSwaggersInLocation("notExistPath");
+    RegistrationManager.INSTANCE.getSwaggerLoader().registerSwaggersInLocation("notExistPath");
     assertThat(apps).isEmpty();
   }
 
   @Test
   public void should_ignore_non_yaml_file_when_register_swagger_in_location() {
-    RegistryUtils.getSwaggerLoader().registerSwaggersInLocation("swagger-del");
-    assertThat(RegistryUtils.getSwaggerLoader().loadFromMemory(appId, serviceName, "other")).isNull();
+    RegistrationManager.INSTANCE.getSwaggerLoader().registerSwaggersInLocation("swagger-del");
+    assertThat(RegistrationManager.INSTANCE.getSwaggerLoader().loadFromMemory(appId, serviceName, "other")).isNull();
   }
 
   @Test
@@ -249,12 +249,12 @@ public class TestSwaggerLoader extends TestRegistryBase {
       }
     };
 
-    RegistryUtils.getSwaggerLoader().registerSwaggersInLocation("location");
+    RegistrationManager.INSTANCE.getSwaggerLoader().registerSwaggersInLocation("location");
   }
 
   @Test
   public void should_correct_register_swagger_in_location() {
-    RegistryUtils.getSwaggerLoader().registerSwaggersInLocation("swagger-del");
-    assertThat(RegistryUtils.getSwaggerLoader().loadFromMemory(appId, serviceName, "hello")).isNotNull();
+    RegistrationManager.INSTANCE.getSwaggerLoader().registerSwaggersInLocation("swagger-del");
+    assertThat(RegistrationManager.INSTANCE.getSwaggerLoader().loadFromMemory(appId, serviceName, "hello")).isNotNull();
   }
 }

@@ -27,7 +27,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.apache.servicecomb.foundation.common.utils.ResourceUtil;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.swagger.SwaggerUtils;
@@ -64,7 +65,7 @@ public class SwaggerLoader {
    * @param swaggersLocation eg. "test/schemas", will load all test/schemas/*.yaml
    */
   public void registerSwaggersInLocation(String swaggersLocation) {
-    String microserviceName = RegistryUtils.getMicroservice().getServiceName();
+    String microserviceName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
     registerSwaggersInLocation(microserviceName, swaggersLocation);
   }
 
@@ -90,7 +91,7 @@ public class SwaggerLoader {
   }
 
   public void registerSwagger(String schemaId, Swagger swagger) {
-    registerSwagger(RegistryUtils.getMicroservice().getServiceName(), schemaId, swagger);
+    registerSwagger(RegistrationManager.INSTANCE.getMicroservice().getServiceName(), schemaId, swagger);
   }
 
   public void registerSwagger(String microserviceName, String schemaId, String swaggerContent) {
@@ -105,7 +106,8 @@ public class SwaggerLoader {
   }
 
   public void registerSwagger(String microserviceName, String schemaId, Swagger swagger) {
-    MicroserviceNameParser parser = new MicroserviceNameParser(RegistryUtils.getAppId(), microserviceName);
+    MicroserviceNameParser parser = new MicroserviceNameParser(
+        RegistrationManager.INSTANCE.getMicroservice().getAppId(), microserviceName);
     registerSwagger(parser.getAppId(), parser.getShortName(), schemaId, swagger);
   }
 
@@ -157,7 +159,7 @@ public class SwaggerLoader {
   }
 
   private Swagger loadFromResource(String appId, String shortName, String schemaId) {
-    if (appId.equals(RegistryUtils.getAppId())) {
+    if (appId.equals(RegistrationManager.INSTANCE.getMicroservice().getAppId())) {
       Swagger swagger = loadFromResource(String.format("microservices/%s/%s.yaml", shortName, schemaId));
       if (swagger != null) {
         return swagger;
@@ -178,8 +180,7 @@ public class SwaggerLoader {
   }
 
   private Swagger loadFromRemote(Microservice microservice, String schemaId) {
-    String schemaContent = RegistryUtils
-        .getAggregatedSchema(microservice.getServiceId(), schemaId);
+    String schemaContent = DiscoveryManager.INSTANCE.getSchema(microservice.getServiceId(), schemaId);
     if (schemaContent != null) {
       LOGGER.info(
           "load schema from service center, appId={}, microserviceName={}, version={}, serviceId={}, schemaId={}.",

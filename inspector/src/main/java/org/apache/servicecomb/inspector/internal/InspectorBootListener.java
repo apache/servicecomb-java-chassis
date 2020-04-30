@@ -17,7 +17,7 @@
 package org.apache.servicecomb.inspector.internal;
 
 import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +42,7 @@ public class InspectorBootListener implements BootListener {
     LOGGER.info("inspector is enabled.");
     // will not register this schemas to service registry
     InspectorImpl inspector = new InspectorImpl(event.getScbEngine(), inspectorConfig,
-        RegistryUtils.getServiceRegistry().getMicroservice().getSchemaMap());
+        RegistrationManager.INSTANCE.getMicroservice().getSchemaMap());
     inspector.setPriorityPropertyManager(event.getScbEngine().getPriorityPropertyManager());
     event.getScbEngine().getProducerProviderManager().registerSchema("inspector", inspector);
   }

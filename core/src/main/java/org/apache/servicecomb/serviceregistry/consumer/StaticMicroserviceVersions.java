@@ -20,7 +20,7 @@ package org.apache.servicecomb.serviceregistry.consumer;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
@@ -49,7 +49,7 @@ public class StaticMicroserviceVersions extends MicroserviceVersions {
   public StaticMicroserviceVersions init(Class<?> schemaIntfCls, String version,
       List<MicroserviceInstance> addedInstances) {
     this.schemaIntfCls = schemaIntfCls;
-    Swagger swagger = RegistryUtils.getSwaggerLoader()
+    Swagger swagger = RegistrationManager.INSTANCE.getSwaggerLoader()
         .registerSwagger(appId, shortName, shortName, schemaIntfCls);
     String swaggerContent = SwaggerUtils.swaggerToString(swagger);
     LOGGER.info("generate swagger for 3rd party service [{}]/[{}], swagger: {}",
@@ -89,7 +89,7 @@ public class StaticMicroserviceVersions extends MicroserviceVersions {
   }
 
   private void createMicroservice(String version) {
-    String environment = RegistryUtils.getMicroservice().getEnvironment();
+    String environment = RegistrationManager.INSTANCE.getMicroservice().getEnvironment();
 
     microservice.setAppId(this.getAppId());
     microservice.setServiceName(this.getShortName());

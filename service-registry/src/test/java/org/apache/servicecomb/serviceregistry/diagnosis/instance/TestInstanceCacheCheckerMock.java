@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.testing.MockClock;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
@@ -46,7 +47,7 @@ import mockit.MockUp;
 public class TestInstanceCacheCheckerMock {
   private static final Logger LOGGER = LoggerFactory.getLogger(TestInstanceCacheCheckerWithoutMock.class);
 
-  AppManager originalAppManager = RegistryUtils.getAppManager();
+  AppManager originalAppManager = DiscoveryManager.INSTANCE.getAppManager();
 
   ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
 
@@ -65,7 +66,7 @@ public class TestInstanceCacheCheckerMock {
     serviceRegistry.init();
     RegistryUtils.setServiceRegistry(serviceRegistry);
 
-    checker = new InstanceCacheChecker(RegistryUtils.getAppManager());
+    checker = new InstanceCacheChecker(DiscoveryManager.INSTANCE.getAppManager());
     checker.clock = new MockClock(new Holder<>(1L));
     expectedSummary.setStatus(Status.NORMAL);
     expectedSummary.setTimestamp(1);
@@ -73,8 +74,7 @@ public class TestInstanceCacheCheckerMock {
 
   @After
   public void tearDown() throws Exception {
-    Deencapsulation.setField(RegistryUtils.class, "appManager", originalAppManager);
-    RegistryUtils.setServiceRegistry(null);
+
   }
 
   private Holder<MicroserviceInstances> createFindServiceInstancesResult() {
@@ -113,7 +113,7 @@ public class TestInstanceCacheCheckerMock {
 
     registerMicroservice(appId, microserviceName);
 
-    RegistryUtils.getAppManager()
+    DiscoveryManager.INSTANCE.getAppManager()
         .getOrCreateMicroserviceVersionRule(appId, microserviceName, DefinitionConst.VERSION_RULE_ALL);
 
     findHolder.value = null;
@@ -150,7 +150,7 @@ public class TestInstanceCacheCheckerMock {
 
     registerMicroservice(appId, microserviceName);
 
-    RegistryUtils.getAppManager()
+    DiscoveryManager.INSTANCE.getAppManager()
         .getOrCreateMicroserviceVersionRule(appId, microserviceName, DefinitionConst.VERSION_RULE_ALL);
 
     findHolder.value.setMicroserviceNotExist(true);
@@ -187,7 +187,7 @@ public class TestInstanceCacheCheckerMock {
 
     registerMicroservice(appId, microserviceName);
 
-    RegistryUtils.getAppManager()
+    DiscoveryManager.INSTANCE.getAppManager()
         .getOrCreateMicroserviceVersionRule(appId, microserviceName, DefinitionConst.VERSION_RULE_ALL);
 
     findHolder.value.setRevision("second");
@@ -220,7 +220,7 @@ public class TestInstanceCacheCheckerMock {
 
     registerMicroservice(appId, microserviceName);
 
-    MicroserviceVersions microserviceVersions = RegistryUtils.getAppManager()
+    MicroserviceVersions microserviceVersions = DiscoveryManager.INSTANCE.getAppManager()
         .getOrCreateMicroserviceVersions(appId, microserviceName);
     microserviceVersions.setRevision("first");
     microserviceVersions.getOrCreateMicroserviceVersionRule(DefinitionConst.VERSION_RULE_ALL);

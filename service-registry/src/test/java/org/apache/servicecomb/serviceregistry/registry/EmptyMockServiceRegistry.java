@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.servicecomb.serviceregistry.Features;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
@@ -117,11 +116,6 @@ public class EmptyMockServiceRegistry implements ServiceRegistry {
 
   @Override
   public Microservice getAggregatedRemoteMicroservice(String microserviceId) {
-    return null;
-  }
-
-  @Override
-  public Features getFeatures() {
     return null;
   }
 

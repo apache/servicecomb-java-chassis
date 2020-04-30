@@ -34,7 +34,8 @@ import org.apache.servicecomb.demo.edge.model.RecursiveSelfType;
 import org.apache.servicecomb.demo.edge.model.ResultWithInstance;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
@@ -169,7 +170,7 @@ public class Consumer {
     Assert.isTrue(response == 5, "not get 5.");
 
     try {
-    Map raw = template.getForObject(url + "?x=99&y=3", Map.class);
+      Map raw = template.getForObject(url + "?x=99&y=3", Map.class);
     } catch (HttpServerErrorException e) {
       Assert.isTrue(e.getRawStatusCode() == 500, "x99");
       Assert.isTrue(e.getResponseBodyAsString().contains("Unexpected exception when processing the request"), "x99");
@@ -267,8 +268,8 @@ public class Consumer {
   }
 
   private URIEndpointObject prepareEdge(String prefix) {
-    Microservice microservice = RegistryUtils.getMicroservice();
-    MicroserviceInstance microserviceInstance = (MicroserviceInstance) RegistryUtils
+    Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
+    MicroserviceInstance microserviceInstance = (MicroserviceInstance) DiscoveryManager.INSTANCE
         .getAppManager()
         .getOrCreateMicroserviceVersionRule(microservice.getAppId(), "edge", DefinitionConst.VERSION_RULE_ALL)
         .getVersionedCache()

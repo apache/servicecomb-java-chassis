@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.serviceregistry;
 
-import static org.apache.servicecomb.serviceregistry.RegistryUtils.PUBLISH_ADDRESS;
-
 import java.net.InetAddress;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -126,20 +124,20 @@ public class TestRegistry {
         result = "1.1.1.1";
       }
     };
-    String address = RegistryUtils.getPublishAddress();
+    String address = RegistrationManager.getPublishAddress();
     Assert.assertEquals("1.1.1.1", address);
 
     new Expectations(DynamicPropertyFactory.getInstance()) {
       {
-        DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "");
-        result = new DynamicStringProperty(PUBLISH_ADDRESS, "") {
+        DynamicPropertyFactory.getInstance().getStringProperty(RegistrationManager.PUBLISH_ADDRESS, "");
+        result = new DynamicStringProperty(RegistrationManager.PUBLISH_ADDRESS, "") {
           public String get() {
             return "127.0.0.1";
           }
         };
       }
     };
-    Assert.assertEquals("127.0.0.1", RegistryUtils.getPublishAddress());
+    Assert.assertEquals("127.0.0.1", RegistrationManager.getPublishAddress());
 
     new Expectations(DynamicPropertyFactory.getInstance()) {
       {
@@ -147,15 +145,15 @@ public class TestRegistry {
         result = "1.1.1.1";
         NetUtils.ensureGetInterfaceAddress("eth100");
         result = ethAddress;
-        DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "");
-        result = new DynamicStringProperty(PUBLISH_ADDRESS, "") {
+        DynamicPropertyFactory.getInstance().getStringProperty(RegistrationManager.PUBLISH_ADDRESS, "");
+        result = new DynamicStringProperty(RegistrationManager.PUBLISH_ADDRESS, "") {
           public String get() {
             return "{eth100}";
           }
         };
       }
     };
-    Assert.assertEquals("1.1.1.1", RegistryUtils.getPublishAddress());
+    Assert.assertEquals("1.1.1.1", RegistrationManager.getPublishAddress());
   }
 
   @Test
@@ -166,11 +164,11 @@ public class TestRegistry {
         result = "testHostName";
       }
     };
-    String host = RegistryUtils.getPublishHostName();
+    String host = RegistrationManager.getPublishHostName();
     Assert.assertEquals("testHostName", host);
 
-    inMemoryConfig.addProperty(PUBLISH_ADDRESS, "127.0.0.1");
-    Assert.assertEquals("127.0.0.1", RegistryUtils.getPublishHostName());
+    inMemoryConfig.addProperty(RegistrationManager.PUBLISH_ADDRESS, "127.0.0.1");
+    Assert.assertEquals("127.0.0.1", RegistrationManager.getPublishHostName());
 
     new Expectations(DynamicPropertyFactory.getInstance()) {
       {
@@ -180,8 +178,8 @@ public class TestRegistry {
         result = ethAddress;
       }
     };
-    inMemoryConfig.addProperty(PUBLISH_ADDRESS, "{eth100}");
-    Assert.assertEquals("testHostName", RegistryUtils.getPublishHostName());
+    inMemoryConfig.addProperty(RegistrationManager.PUBLISH_ADDRESS, "{eth100}");
+    Assert.assertEquals("testHostName", RegistrationManager.getPublishHostName());
   }
 
   @Test
@@ -193,23 +191,23 @@ public class TestRegistry {
       }
     };
 
-    Assert.assertEquals("rest://172.0.0.0:8080", RegistryUtils.getPublishAddress("rest", "172.0.0.0:8080"));
-    Assert.assertNull(RegistryUtils.getPublishAddress("rest", null));
+    Assert.assertEquals("rest://172.0.0.0:8080", RegistrationManager.getPublishAddress("rest", "172.0.0.0:8080"));
+    Assert.assertNull(RegistrationManager.getPublishAddress("rest", null));
 
-    URI uri = new URI(RegistryUtils.getPublishAddress("rest", "0.0.0.0:8080"));
+    URI uri = new URI(RegistrationManager.getPublishAddress("rest", "0.0.0.0:8080"));
     Assert.assertEquals("1.1.1.1:8080", uri.getAuthority());
 
     new Expectations(DynamicPropertyFactory.getInstance()) {
       {
-        DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "");
-        result = new DynamicStringProperty(PUBLISH_ADDRESS, "") {
+        DynamicPropertyFactory.getInstance().getStringProperty(RegistrationManager.PUBLISH_ADDRESS, "");
+        result = new DynamicStringProperty(RegistrationManager.PUBLISH_ADDRESS, "") {
           public String get() {
             return "1.1.1.1";
           }
         };
       }
     };
-    Assert.assertEquals("rest://1.1.1.1:8080", RegistryUtils.getPublishAddress("rest", "172.0.0.0:8080"));
+    Assert.assertEquals("rest://1.1.1.1:8080", RegistrationManager.getPublishAddress("rest", "172.0.0.0:8080"));
 
     InetAddress ethAddress = Mockito.mock(InetAddress.class);
     Mockito.when(ethAddress.getHostAddress()).thenReturn("1.1.1.1");
@@ -217,8 +215,8 @@ public class TestRegistry {
       {
         NetUtils.ensureGetInterfaceAddress("eth20");
         result = ethAddress;
-        DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "");
-        result = new DynamicStringProperty(PUBLISH_ADDRESS, "") {
+        DynamicPropertyFactory.getInstance().getStringProperty(RegistrationManager.PUBLISH_ADDRESS, "");
+        result = new DynamicStringProperty(RegistrationManager.PUBLISH_ADDRESS, "") {
           public String get() {
             return "{eth20}";
           }
@@ -228,6 +226,6 @@ public class TestRegistry {
     String query = URLEncodedUtils.format(Collections.singletonList(new BasicNameValuePair("country", "中 国")),
         StandardCharsets.UTF_8.name());
     Assert.assertEquals("rest://1.1.1.1:8080?" + query,
-        RegistryUtils.getPublishAddress("rest", "172.0.0.0:8080?" + query));
+        RegistrationManager.getPublishAddress("rest", "172.0.0.0:8080?" + query));
   }
 }

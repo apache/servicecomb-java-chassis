@@ -21,7 +21,7 @@ import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -89,7 +89,7 @@ public class ProducerTestsAfterBootup implements BootListener {
   }
 
   public void testRegisteredBasePath() {
-    TestMgr.check(14, RegistryUtils.getMicroservice().getPaths().size());
+    TestMgr.check(14, RegistrationManager.INSTANCE.getMicroservice().getPaths().size());
   }
 
   private String getSwaggerContent(Swagger swagger) {

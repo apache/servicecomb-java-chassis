@@ -25,7 +25,7 @@ import java.util.List;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,7 +115,7 @@ public class DiscoveryTree {
 
   public DiscoveryTreeNode discovery(DiscoveryContext context, String appId, String microserviceName,
       String versionRule) {
-    VersionedCache instanceVersionedCache = RegistryUtils
+    VersionedCache instanceVersionedCache = DiscoveryManager.INSTANCE
         .getInstanceCacheManager()
         .getOrCreateVersionedCache(appId, microserviceName, versionRule);
 

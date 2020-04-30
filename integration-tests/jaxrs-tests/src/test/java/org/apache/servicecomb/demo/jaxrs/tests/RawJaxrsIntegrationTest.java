@@ -17,15 +17,14 @@
 
 package org.apache.servicecomb.demo.jaxrs.tests;
 
-import static org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY;
-
 import org.junit.BeforeClass;
 
 public class RawJaxrsIntegrationTest extends JaxrsIntegrationTestBase {
 
   @BeforeClass
   public static void setUp() throws Exception {
-    System.setProperty(LOCAL_REGISTRY_FILE_KEY, "notExistJustForceLocal");
+    // TODO : local test
+//    System.setProperty(LOCAL_REGISTRY_FILE_KEY, "notExistJustForceLocal");
     JaxrsTestMain.main(new String[0]);
   }
 }

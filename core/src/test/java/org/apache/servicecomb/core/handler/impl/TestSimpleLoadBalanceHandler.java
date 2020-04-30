@@ -27,7 +27,6 @@ import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryFilter;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
@@ -65,14 +64,6 @@ public class TestSimpleLoadBalanceHandler {
         result = Collections.emptyList();
         invocation.getConfigTransportName();
         result = "";
-      }
-    };
-
-    new Expectations(RegistryUtils.getInstanceCacheManager()) {
-      {
-        RegistryUtils.getInstanceCacheManager()
-            .getOrCreateVersionedCache(anyString, anyString, anyString);
-        result = instanceVersionedCache;
       }
     };
 

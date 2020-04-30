@@ -27,8 +27,6 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.registry.AbstractServiceRegistry;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -39,8 +37,6 @@ import org.springframework.util.ReflectionUtils;
 
 import com.netflix.config.DynamicProperty;
 
-import mockit.Expectations;
-import mockit.Injectable;
 import mockit.Mocked;
 
 public class TestAbstractTransport {
@@ -69,17 +65,14 @@ public class TestAbstractTransport {
     }
   }
 
-  @Injectable
-  AbstractServiceRegistry serviceRegistry;
-
   @Before
   public void setup() {
-    RegistryUtils.setServiceRegistry(serviceRegistry);
+
   }
 
   @After
   public void teardown() {
-    RegistryUtils.setServiceRegistry(null);
+
   }
 
   @AfterClass
@@ -89,12 +82,6 @@ public class TestAbstractTransport {
 
   @Test
   public void testSetListenAddressWithoutSchemaChineseSpaceNewSC() throws UnsupportedEncodingException {
-    new Expectations() {
-      {
-        serviceRegistry.getFeatures().isCanEncodeEndpoint();
-        result = true;
-      }
-    };
 
     MyAbstractTransport transport = new MyAbstractTransport();
     transport.setListenAddressWithoutSchema("127.0.0.1:9090", Collections.singletonMap("country", "中 国"));

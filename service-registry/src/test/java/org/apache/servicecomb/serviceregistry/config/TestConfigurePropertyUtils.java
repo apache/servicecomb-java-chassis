@@ -23,16 +23,18 @@ import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.registry.BasePath;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class TestConfigurePropertyUtils {
   @Test
   public void testGetPropertiesWithPrefix() {
-    Deployment.clearClassLoaderScopeProperty();
+    SCBEngine.clearClassLoaderScopeProperty();
     Configuration configuration = ConfigUtil.createLocalConfig();
 
     String prefix = "service_description.properties";
@@ -46,11 +48,11 @@ public class TestConfigurePropertyUtils {
     Assert.assertEquals(paths.get(0).getPath(), "/test1/testpath");
     Assert.assertEquals(paths.get(0).getProperty().get("checksession"), false);
 
-    Deployment.setClassLoaderScopeProperty(Const.URL_PREFIX, "/webroot");
+    SCBEngine.setClassLoaderScopeProperty(DefinitionConst.URL_PREFIX, "/webroot");
     paths = ConfigurePropertyUtils.getMicroservicePaths(configuration);
     Assert.assertEquals(2, paths.size());
     Assert.assertEquals(paths.get(0).getPath(), "/webroot/test1/testpath");
     Assert.assertEquals(paths.get(0).getProperty().get("checksession"), false);
-    Deployment.clearClassLoaderScopeProperty();
+    SCBEngine.clearClassLoaderScopeProperty();
   }
 }

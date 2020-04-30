@@ -24,7 +24,8 @@ import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.provider.springmvc.reference.CseRestTemplate;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 
 public class ITSCBRestTemplate extends CseRestTemplate {
@@ -48,8 +49,8 @@ public class ITSCBRestTemplate extends CseRestTemplate {
     SchemaMeta schemaMeta = microserviceMeta.ensureFindSchemaMeta(schemaId);
     basePath = schemaMeta.getSwagger().getBasePath();
     urlPrefix = String.format("cse://%s%s", producerName, basePath);
-    instance = RegistryUtils.getAppManager()
-        .getOrCreateMicroserviceManager(RegistryUtils.getAppId())
+    instance = DiscoveryManager.INSTANCE.getAppManager()
+        .getOrCreateMicroserviceManager(RegistrationManager.INSTANCE.getMicroservice().getAppId())
         .getOrCreateMicroserviceVersions(producerName).getPulledInstances().get(0);
 
     setUriTemplateHandler(new ITUriTemplateHandler(urlPrefix));

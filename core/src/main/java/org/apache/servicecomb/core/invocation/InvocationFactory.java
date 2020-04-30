@@ -26,14 +26,14 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 
 public final class InvocationFactory {
   private InvocationFactory() {
   }
 
   private static String getMicroserviceName() {
-    return RegistryUtils.getMicroservice().getServiceName();
+    return RegistrationManager.INSTANCE.getMicroservice().getServiceName();
   }
 
   public static Invocation forConsumer(ReferenceConfig referenceConfig, OperationMeta operationMeta,

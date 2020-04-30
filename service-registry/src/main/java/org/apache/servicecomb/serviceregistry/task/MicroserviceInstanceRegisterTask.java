@@ -16,12 +16,12 @@
  */
 package org.apache.servicecomb.serviceregistry.task;
 
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
+import org.apache.servicecomb.serviceregistry.adapter.EnvAdapterManager;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.apache.servicecomb.serviceregistry.adapter.EnvAdapterManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
@@ -60,9 +60,9 @@ public class MicroserviceInstanceRegisterTask extends AbstractRegisterTask {
     LOGGER.info("running microservice instance register task.");
     String hostName = "";
     if (serviceRegistryConfig.isPreferIpAddress()) {
-      hostName = RegistryUtils.getPublishAddress();
+      hostName = RegistrationManager.getPublishAddress();
     } else {
-      hostName = RegistryUtils.getPublishHostName();
+      hostName = RegistrationManager.getPublishHostName();
     }
     microserviceInstance.setHostName(hostName);
     microserviceInstance.getHealthCheck().setInterval(serviceRegistryConfig.getHeartbeatInterval());

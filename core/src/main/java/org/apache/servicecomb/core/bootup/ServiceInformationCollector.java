@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.core.bootup;
 
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 
 import io.vertx.core.spi.json.JsonCodec;
 
@@ -25,17 +25,17 @@ public class ServiceInformationCollector implements BootUpInformationCollector {
 
   @Override
   public String collect() {
-    return "App ID: " + RegistryUtils.getMicroservice().getAppId()
-        + "\n" + "Service Name: " + RegistryUtils.getMicroservice().getServiceName()
-        + "\n" + "Version: " + RegistryUtils.getMicroservice().getVersion()
-        + "\n" + "Environment: " + RegistryUtils.getMicroservice().getEnvironment()
-        + "\n" + "Service ID: " + RegistryUtils.getMicroserviceInstance().getServiceId()
-        + "\n" + "Instance ID: " + RegistryUtils.getMicroserviceInstance().getInstanceId()
+    return "App ID: " + RegistrationManager.INSTANCE.getMicroservice().getAppId()
+        + "\n" + "Service Name: " + RegistrationManager.INSTANCE.getMicroservice().getServiceName()
+        + "\n" + "Version: " + RegistrationManager.INSTANCE.getMicroservice().getVersion()
+        + "\n" + "Environment: " + RegistrationManager.INSTANCE.getMicroservice().getEnvironment()
+        + "\n" + "Service ID: " + RegistrationManager.INSTANCE.getMicroserviceInstance().getServiceId()
+        + "\n" + "Instance ID: " + RegistrationManager.INSTANCE.getMicroserviceInstance().getInstanceId()
         + "\n" + "Endpoints: " + getEndpoints();
   }
 
   private String getEndpoints() {
-    return JsonCodec.INSTANCE.toString(RegistryUtils.getMicroserviceInstance().getEndpoints());
+    return JsonCodec.INSTANCE.toString(RegistrationManager.INSTANCE.getMicroserviceInstance().getEndpoints());
   }
 
   @Override
