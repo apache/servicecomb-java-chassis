@@ -49,6 +49,8 @@ definitions:
         type: "array"
         items:
           type: "object"
+      empty:
+        type: "boolean"
       first:
         type: "boolean"
       last:
@@ -80,6 +82,8 @@ definitions:
         type: "array"
         items:
           type: "string"
+      empty:
+        type: "boolean"
       first:
         type: "boolean"
       last:
@@ -126,6 +130,8 @@ definitions:
   Sort:
     type: "object"
     properties:
+      empty:
+        type: "boolean"
       sorted:
         type: "boolean"
       unsorted:

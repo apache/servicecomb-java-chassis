@@ -40,6 +40,8 @@
       <!-- based on business project dependency -->
       <optional>true</optional>
       <scope>provided</scope>
+      <!-- This is provided scope, better not add to dependency management, so add version here -->
+      <version>2.1.9.RELEASE</version>
     </dependency>
 
   </dependencies>
