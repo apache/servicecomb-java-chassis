@@ -96,9 +96,6 @@ public class SCBEngine {
  *
  * users who using this feature can feed back your problems in issues.
  *
- * NOTICE： this context is better put into module `core`, however now `core` depends on `service-registry`.
- *
- * Maybe it's better to refactor project that `service-registry` depends on `core`.
  */
   private static final Map<String, String> CLASS_LOADER_SCOPE_CONTEXT = new HashMap<>();
 
