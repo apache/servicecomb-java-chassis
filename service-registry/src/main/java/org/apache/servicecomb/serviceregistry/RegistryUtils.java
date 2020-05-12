@@ -40,6 +40,7 @@ import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
+import org.apache.servicecomb.serviceregistry.event.MicroserviceInstanceRegisteredEvent;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import org.apache.servicecomb.serviceregistry.registry.cache.AggregateServiceRegistryCache;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache;
@@ -61,10 +62,6 @@ public final class RegistryUtils {
    * The default ServiceRegistry instance
    */
   private static volatile ServiceRegistry serviceRegistry;
-
-
-  private static InstanceCacheManager instanceCacheManager = new InstanceCacheManagerNew(
-      DiscoveryManager.INSTANCE.getAppManager());
 
   private static final Map<String, ServiceRegistryConfig> EXTRA_SERVICE_REGISTRY_CONFIGS = new LinkedHashMap<>();
 
@@ -139,10 +136,6 @@ public final class RegistryUtils {
   @Deprecated
   public static ServiceRegistryClient getServiceRegistryClient() {
     return serviceRegistry.getServiceRegistryClient();
-  }
-
-  public static InstanceCacheManager getInstanceCacheManager() {
-    return instanceCacheManager;
   }
 
   public static String getAppId() {
@@ -317,7 +310,7 @@ public final class RegistryUtils {
       if (instanceRegisterCounter.decrementAndGet() > 0) {
         return;
       }
-      EventManager.getEventBus().post(microserviceInstanceRegisterTask);
+      EventManager.getEventBus().post(new MicroserviceInstanceRegisteredEvent());
     }
   }
 }

@@ -94,6 +94,11 @@ public class RegistrationManager {
     registrationList.forEach(registration -> registration.run());
   }
 
+
+  public void init() {
+    registrationList.forEach(discovery -> discovery.init());
+  }
+
   public static String getPublishAddress() {
     String publicAddressSetting =
         DynamicPropertyFactory.getInstance().getStringProperty(PUBLISH_ADDRESS, "").get();

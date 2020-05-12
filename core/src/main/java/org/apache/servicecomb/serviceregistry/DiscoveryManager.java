@@ -34,21 +34,25 @@ import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 public class DiscoveryManager {
   public static DiscoveryManager INSTANCE = new DiscoveryManager();
 
-  private List<Discovery> discoveryList = SPIServiceUtils.getOrLoadSortedService(Discovery.class);
+  private final List<Discovery> discoveryList;
 
-  private final AppManager appManager = new AppManager();
+  private final AppManager appManager;
 
-  private InstanceCacheManager instanceCacheManager = new InstanceCacheManagerNew(appManager);
+  private final InstanceCacheManager instanceCacheManager;
 
   private final MicroserviceDefinition microserviceDefinition;
 
   public DiscoveryManager() {
+    appManager = new AppManager();
+    instanceCacheManager = new InstanceCacheManagerNew(appManager);
+    discoveryList = SPIServiceUtils.getOrLoadSortedService(Discovery.class);
+
     MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
     microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
   }
 
   public MicroserviceInstances findServiceInstances(String appId, String serviceName,
-      String versionRule, String revision) {
+      String versionRule) {
     MicroserviceInstances result = new MicroserviceInstances();
 
     discoveryList
@@ -113,5 +117,9 @@ public class DiscoveryManager {
 
   public void run() {
     discoveryList.forEach(discovery -> discovery.run());
+  }
+
+  public void init() {
+    discoveryList.forEach(discovery -> discovery.init());
   }
 }

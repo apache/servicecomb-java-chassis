@@ -30,6 +30,7 @@ import org.apache.servicecomb.foundation.common.event.SubscriberOrder;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersion;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
+import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.event.CreateMicroserviceEvent;
 import org.apache.servicecomb.serviceregistry.event.CreateMicroserviceVersionEvent;
 import org.apache.servicecomb.serviceregistry.event.DestroyMicroserviceEvent;
@@ -87,10 +88,16 @@ public class ServiceRegistryListener {
     MicroserviceVersions microserviceVersions = microserviceVersion.getMicroserviceVersions();
     microserviceMeta.setMicroserviceVersionsMeta(getMicroserviceVersionsMeta(microserviceVersions));
 
-    // TODO: service center do not have schema. But this logic expected to work. Deleted old code and comments.
-    for (String schemaId : microservice.getSchemas()) {
-      Swagger swagger = scbEngine.getSwaggerLoader().loadSwagger(microservice, schemaId);
-      microserviceMeta.registerSchemaMeta(schemaId, swagger);
+    boolean isServiceCenter = DefinitionConst.REGISTRY_APP_ID.equals(microservice.getAppId())
+        && DefinitionConst.REGISTRY_SERVICE_NAME.equals(microservice.getServiceName());
+    // do not load service center schemas, because service center did not provide swagger,but can get schema ids....
+    // service center better to resolve the problem.
+    if (!isServiceCenter) {
+      // TODO: get schemas from instance
+      for (String schemaId : microservice.getSchemas()) {
+        Swagger swagger = scbEngine.getSwaggerLoader().loadSwagger(microservice, schemaId);
+        microserviceMeta.registerSchemaMeta(schemaId, swagger);
+      }
     }
 
     microserviceMeta.putExtData(CORE_MICROSERVICE_VERSION, microserviceVersion);

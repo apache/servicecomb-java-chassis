@@ -67,11 +67,10 @@ public class ProducerBootListener implements BootListener {
           microserviceMeta.getMicroserviceName(),
           schemaMeta.getSchemaId(),
           content);
-      // TODO: don't forget to implement this in registry
+
       RegistrationManager.INSTANCE.addSchema(schemaMeta.getSchemaId(), content);
     }
 
-    // TODO: don't forget to implement this in registry
     saveBasePaths(microserviceMeta);
   }
 

@@ -19,6 +19,8 @@ package org.apache.servicecomb.serviceregistry;
 
 import java.util.Arrays;
 
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.serviceregistry.api.MicroserviceKey;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
@@ -28,12 +30,23 @@ import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.task.event.RecoveryEvent;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import mockit.Expectations;
 
 public class TestConsumers extends TestRegistryBase {
+  @Before
+  public void before() {
+
+  }
+
+  @After
+  public void tearDown() {
+  }
+
   @Test
   public void getOrCreateMicroserviceVersionRule() {
     MicroserviceVersionRule microserviceVersionRule = appManager

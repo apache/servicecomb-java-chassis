@@ -20,13 +20,18 @@ package org.apache.servicecomb.serviceregistry.discovery;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -36,6 +41,15 @@ import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestDiscoveryTree {
+  @Before
+  public void before() {
+    ConfigUtil.installDynamicConfig();
+  }
+  @After
+  public void tearDown() {
+    ArchaiusUtils.resetConfig();
+  }
+
   DiscoveryTree discoveryTree = new DiscoveryTree();
 
   List<DiscoveryFilter> filters = Deencapsulation.getField(discoveryTree, "filters");
@@ -167,9 +181,9 @@ public class TestDiscoveryTree {
 
   @Test
   public void easyDiscovery(@Mocked InstanceCacheManager instanceCacheManager) {
-    new Expectations(RegistryUtils.class) {
+    new Expectations(DiscoveryManager.class) {
       {
-        RegistryUtils.getInstanceCacheManager();
+        DiscoveryManager.INSTANCE.getInstanceCacheManager();
         result = instanceCacheManager;
         instanceCacheManager.getOrCreateVersionedCache(anyString, anyString, anyString);
         result = parent;
@@ -183,9 +197,9 @@ public class TestDiscoveryTree {
 
   @Test
   public void discovery_filterReturnNull(@Mocked InstanceCacheManager instanceCacheManager) {
-    new Expectations(RegistryUtils.class) {
+    new Expectations(DiscoveryManager.class) {
       {
-        RegistryUtils.getInstanceCacheManager();
+        DiscoveryManager.INSTANCE.getInstanceCacheManager();
         result = instanceCacheManager;
         instanceCacheManager.getOrCreateVersionedCache(anyString, anyString, anyString);
         result = parent;

@@ -18,6 +18,8 @@
 package org.apache.servicecomb.serviceregistry;
 
 public interface LifeCycle {
+  void init();
+
   void run();
 
   void destroy();

@@ -35,8 +35,6 @@ public interface Discovery extends SPIOrder, LifeCycle {
   MicroserviceInstances findServiceInstances(String appId, String serviceName,
       String versionRule);
 
-  MicroserviceVersions getOrCreateMicroserviceVersions(String appId, String microserviceName);
-
   String getRevision();
 
   void setRevision(String revision);
