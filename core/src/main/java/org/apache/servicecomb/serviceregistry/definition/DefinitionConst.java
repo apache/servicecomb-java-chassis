@@ -50,4 +50,8 @@ public interface DefinitionConst {
   public static final String REGISTER_URL_PREFIX = "servicecomb.service.registry.registerUrlPrefix";
 
   public static final String REGISTER_SERVICE_PATH = "servicecomb.service.registry.registerPath";
+
+  public static final String REGISTRY_APP_ID = "default";
+
+  public static final String REGISTRY_SERVICE_NAME = "SERVICECENTER";
 }

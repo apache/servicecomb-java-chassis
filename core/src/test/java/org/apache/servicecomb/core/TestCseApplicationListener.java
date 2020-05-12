@@ -16,17 +16,23 @@
  */
 package org.apache.servicecomb.core;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.CseApplicationListener;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.SCBStatus;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.event.ContextClosedEvent;
 
 import mockit.Mocked;
 
 public class TestCseApplicationListener {
+  @Before
+  public void before() {
+
+  }
   @Test
   public void onApplicationEvent_close(@Mocked ContextClosedEvent contextClosedEvent) {
     SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();

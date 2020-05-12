@@ -18,24 +18,21 @@ package org.apache.servicecomb.serviceregistry;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceManager;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 
 import com.google.common.eventbus.EventBus;
 
-import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
 
 public class TestRegistryBase {
-  private AppManager originalAppManager = DiscoveryManager.INSTANCE.getAppManager();
-
   protected ServiceRegistry serviceRegistry;
 
   protected AppManager appManager;
@@ -62,15 +59,13 @@ public class TestRegistryBase {
 
   @Before
   public void setup() {
+    ConfigUtil.installDynamicConfig();
+
     // avoid write too many logs
     Logger.getRootLogger().setLevel(Level.OFF);
 
-    ArchaiusUtils.resetConfig();
-
     serviceRegistry = ServiceRegistryFactory.createLocal("registry.yaml");
     serviceRegistry.init();
-
-    Deencapsulation.setField(RegistryUtils.class, "appManager", new AppManager());
 
     appManager = DiscoveryManager.INSTANCE.getAppManager();
     microserviceManager = appManager.getOrCreateMicroserviceManager(appId);
@@ -83,11 +78,6 @@ public class TestRegistryBase {
     Logger.getRootLogger().setLevel(Level.INFO);
   }
 
-  @After
-  public void tearDown() {
-    Deencapsulation.setField(RegistryUtils.class, "appManager", originalAppManager);
-  }
-
   @AfterClass
   public static void classTeardown() {
     RegistryUtils.setServiceRegistry(null);
@@ -97,20 +87,20 @@ public class TestRegistryBase {
   protected void mockNotExist() {
     MicroserviceInstances microserviceInstances = new MicroserviceInstances();
     microserviceInstances.setMicroserviceNotExist(true);
-    new MockUp<RegistryUtils>() {
+    new MockUp<DiscoveryManager>() {
       @Mock
       MicroserviceInstances findServiceInstances(String appId, String serviceName,
-          String versionRule, String revision) {
+          String versionRule) {
         return microserviceInstances;
       }
     };
   }
 
   protected void mockDisconnect() {
-    new MockUp<RegistryUtils>() {
+    new MockUp<DiscoveryManager>() {
       @Mock
       MicroserviceInstances findServiceInstances(String appId, String serviceName,
-          String versionRule, String revision) {
+          String versionRule) {
         return null;
       }
     };

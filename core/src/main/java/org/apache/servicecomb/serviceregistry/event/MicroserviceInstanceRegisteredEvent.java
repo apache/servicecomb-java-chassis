@@ -17,6 +17,9 @@
 
 package org.apache.servicecomb.serviceregistry.event;
 
+/**
+ * when registration is ready, should post this event.
+ */
 public class MicroserviceInstanceRegisteredEvent {
-  // TODO: registry need publish this event instead of MicroserviceInstanceRegisterTask
+
 }

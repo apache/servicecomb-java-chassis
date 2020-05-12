@@ -19,6 +19,8 @@ package org.apache.servicecomb.core;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -44,6 +46,8 @@ public class CseApplicationListener
     this.applicationContext = applicationContext;
     BeanUtils.setContext(applicationContext);
     HttpClients.load();
+    RegistrationManager.INSTANCE.init();
+    DiscoveryManager.INSTANCE.init();
   }
 
   public void setInitEventClass(Class<?> initEventClass) {
