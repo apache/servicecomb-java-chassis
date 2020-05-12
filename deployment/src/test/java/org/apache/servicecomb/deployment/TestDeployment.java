@@ -33,7 +33,7 @@ public class TestDeployment {
   public void testConfiguration() {
     DefaultDeploymentProvider.setConfiguration(ConfigUtil.createLocalConfig());
     SystemBootstrapInfo info = Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_SERVICE_CENTER);
-    Assert.assertEquals(info.getAccessURL().get(0), "https://127.0.0.1:30100");
+    Assert.assertEquals(info.getAccessURL().get(0), "http://127.0.0.1:30100");
     info = Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_CONFIG_CENTER);
     Assert.assertEquals(info.getAccessURL().get(0), "http://lcalhost/custom");
 

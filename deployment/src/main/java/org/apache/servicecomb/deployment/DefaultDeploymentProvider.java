@@ -34,7 +34,7 @@ public class DefaultDeploymentProvider implements DeploymentProvider {
         SystemBootstrapInfo sc = new SystemBootstrapInfo();
         String[] urls = configuration.getStringArray("servicecomb.service.registry.address");
         if (urls == null || urls.length == 0) {
-          urls = new String[] {"https://127.0.0.1:30100"};
+          urls = new String[] {"http://127.0.0.1:30100"};
         }
         sc.setAccessURL(Arrays.asList(urls));
         return sc;
