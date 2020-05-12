@@ -43,7 +43,7 @@ public class KieWatcher {
   public void refreshConfigItems(Map<String, Object> remoteItems) {
     String md5Vaule = KieUtil.encrypt(remoteItems.toString());
     if (CollectionUtils.isEmpty(remoteItems)) {
-      updateHandler.handle("delete", remoteItems);
+      updateHandler.handle("delete", lastTimeData);
       lastTimeData = remoteItems;
       return;
     }
