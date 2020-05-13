@@ -23,6 +23,8 @@ import org.junit.Test;
 public class TestFrameworkVersions {
   @Test
   public void testFrameworkVersions() {
-    Assert.assertEquals("ServiceComb:null", FrameworkVersions.allVersions());
+    // this.getClass().getPackage().getImplementationVersion()
+    // is not stable, may get null or 2.0.1-SNAPSHOT
+    Assert.assertTrue(FrameworkVersions.allVersions().contains("ServiceComb"));
   }
 }
