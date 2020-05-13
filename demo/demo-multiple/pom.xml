@@ -58,6 +58,10 @@
         <artifactId>b-client</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>service-registry</artifactId>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
