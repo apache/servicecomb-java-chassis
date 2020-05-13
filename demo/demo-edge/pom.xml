@@ -30,6 +30,10 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>service-registry</artifactId>
+    </dependency>
+    <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
     </dependency>
