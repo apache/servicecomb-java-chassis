@@ -20,11 +20,14 @@ package org.apache.servicecomb.provider.springmvc.reference.async;
 import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.provider.springmvc.reference.CseClientHttpResponse;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -43,7 +46,10 @@ public class CseAsyncClientHttpRequestTest {
 
   @BeforeClass
   public static void classSetup() {
-    scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest()
+    ConfigUtil.installDynamicConfig();
+    RegistryUtils.initWithLocalRegistry();
+    DiscoveryManager.renewInstance();
+    scbEngine = SCBBootstrap.createSCBEngineForTest()
         .addProducerMeta("sid1", new CseAsyncClientHttpRequestTestSchema()).run();
   }
 

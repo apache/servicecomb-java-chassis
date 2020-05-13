@@ -40,7 +40,7 @@ public class TestRestServlet {
   public void setUp() {
     restservlet = new RestServlet();
 
-    new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();
+    SCBBootstrap.createSCBEngineForTest();
   }
 
   @After

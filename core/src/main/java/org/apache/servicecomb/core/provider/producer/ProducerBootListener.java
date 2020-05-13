@@ -24,10 +24,10 @@ import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.foundation.common.utils.IOUtils;
 import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.apache.servicecomb.serviceregistry.api.registry.BasePath;
@@ -80,7 +80,7 @@ public class ProducerBootListener implements BootListener {
       return;
     }
 
-    String urlPrefix = SCBEngine.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX);
+    String urlPrefix = ClassLoaderScopeContext.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX);
     Map<String, BasePath> basePaths = new LinkedHashMap<>();
     for (SchemaMeta schemaMeta : microserviceMeta.getSchemaMetas().values()) {
       Swagger swagger = schemaMeta.getSwagger();

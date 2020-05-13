@@ -41,7 +41,7 @@ public class TestEndpointDiscoveryFilter {
   @Mocked
   Invocation invocation;
 
-  SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();
+  SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
 
   @Before
   public void setup() {

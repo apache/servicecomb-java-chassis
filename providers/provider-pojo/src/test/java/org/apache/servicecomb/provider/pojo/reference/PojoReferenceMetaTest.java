@@ -30,7 +30,7 @@ import org.junit.Test;
 public class PojoReferenceMetaTest {
   @Test
   public void testHasConsumerInterface() {
-    SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();
+    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
 
     PojoReferenceMeta pojoReferenceMeta = new PojoReferenceMeta();
     pojoReferenceMeta.setMicroserviceName("test");

@@ -19,9 +19,7 @@ package org.apache.servicecomb.core;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
@@ -67,7 +65,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -86,18 +83,6 @@ public class SCBEngine {
   static final long DEFAULT_TURN_DOWN_STATUS_WAIT_SEC = 0;
 
   private static final Object initializationLock = new Object();
-
-  /*
- * class loader scope property is used when users run java-chassis in an class loader separated environment.
- *
- * For examples, deploy two war's to web container, or deploy two bundles in an OSGI container.
- *
- * Now java chassis not testing this feature carefully, but we will support users doing so.
- *
- * users who using this feature can feed back your problems in issues.
- *
- */
-  private static final Map<String, String> CLASS_LOADER_SCOPE_CONTEXT = new HashMap<>();
 
   private volatile static SCBEngine INSTANCE;
 
@@ -155,7 +140,7 @@ public class SCBEngine {
   }
 
   public String getAppId() {
-    return DiscoveryManager.INSTANCE.getApplicationId();
+    return RegistrationManager.INSTANCE.getAppId();
   }
 
   public void setStatus(SCBStatus status) {
@@ -179,20 +164,6 @@ public class SCBEngine {
 
   public SwaggerLoader getSwaggerLoader() {
     return RegistrationManager.INSTANCE.getSwaggerLoader();
-  }
-
-
-  public static void setClassLoaderScopeProperty(String key, String value) {
-    CLASS_LOADER_SCOPE_CONTEXT.put(key, value);
-  }
-
-  public static String getClassLoaderScopeProperty(String key) {
-    return CLASS_LOADER_SCOPE_CONTEXT.get(key);
-  }
-
-  @VisibleForTesting
-  public static void clearClassLoaderScopeProperty() {
-    CLASS_LOADER_SCOPE_CONTEXT.clear();
   }
 
   public ConsumerHandlerManager getConsumerHandlerManager() {

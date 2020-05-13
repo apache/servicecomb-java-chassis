@@ -28,6 +28,7 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -41,6 +42,7 @@ import com.netflix.spectator.api.Registry;
 import com.sun.net.httpserver.HttpServer;
 
 import io.prometheus.client.exporter.HTTPServer;
+import mockit.Expectations;
 
 @SuppressWarnings("restriction")
 public class TestPrometheusPublisher {
@@ -82,6 +84,12 @@ public class TestPrometheusPublisher {
 
   @Test
   public void collect() throws IllegalAccessException, IOException {
+    new Expectations(RegistrationManager.INSTANCE) {
+      {
+        RegistrationManager.INSTANCE.getAppId();
+        result = "testAppId";
+      }
+    };
     ArchaiusUtils.setProperty(PrometheusPublisher.METRICS_PROMETHEUS_ADDRESS, "localhost:0");
     publisher.init(globalRegistry, null, null);
 

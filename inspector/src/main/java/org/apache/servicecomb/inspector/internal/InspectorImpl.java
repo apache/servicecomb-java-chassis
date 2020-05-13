@@ -53,6 +53,7 @@ import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.common.part.InputStreamPart;
+import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.inspector.internal.model.DynamicPropertyView;
 import org.apache.servicecomb.inspector.internal.model.PriorityPropertyView;
 import org.apache.servicecomb.inspector.internal.swagger.AppendStyleProcessor;
@@ -129,7 +130,7 @@ public class InspectorImpl {
       return;
     }
 
-    String urlPrefix = SCBEngine.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX);
+    String urlPrefix = ClassLoaderScopeContext.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX);
     if (StringUtils.isEmpty(urlPrefix)) {
       return;
     }

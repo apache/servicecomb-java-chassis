@@ -44,7 +44,7 @@ public class TestServerDiscoveryFilter {
 
   @BeforeClass
   public static void setup() {
-    scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest().run();
+    scbEngine = SCBBootstrap.createSCBEngineForTest().run();
     transportManager = scbEngine.getTransportManager();
   }
 

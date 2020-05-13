@@ -58,7 +58,11 @@
       <groupId>io.github.swagger2markup</groupId>
       <artifactId>swagger2markup</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>service-registry</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>foundation-test-scaffolding</artifactId>

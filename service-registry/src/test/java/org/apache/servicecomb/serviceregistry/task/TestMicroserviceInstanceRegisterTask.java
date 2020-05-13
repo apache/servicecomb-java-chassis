@@ -19,6 +19,9 @@ package org.apache.servicecomb.serviceregistry.task;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.HealthCheck;
 import org.apache.servicecomb.serviceregistry.api.registry.HealthCheckMode;
@@ -26,6 +29,7 @@ import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -51,6 +55,7 @@ public class TestMicroserviceInstanceRegisterTask {
 
   @Before
   public void setup() {
+    ConfigUtil.installDynamicConfig();
     eventBus = new EventBus();
 
     taskList = new ArrayList<>();
@@ -73,6 +78,11 @@ public class TestMicroserviceInstanceRegisterTask {
     microservice.getInstance().setHealthCheck(healthCheck);
   }
 
+  @AfterClass
+  public static void classTeardown() {
+    ArchaiusUtils.resetConfig();
+  }
+
   @Test
   public void microserviceNotRegistered() {
     microservice.setServiceId(null);
@@ -88,6 +98,12 @@ public class TestMicroserviceInstanceRegisterTask {
   @Test
   public void registerIpSuccess() {
     MicroserviceInstance instance = microservice.getInstance();
+    new Expectations(RegistrationManager.class) {
+      {
+        RegistrationManager.getPublishAddress();
+        result = "127.0.0.1";
+      }
+    };
     new Expectations(RegistryUtils.class) {
       {
         serviceRegistryConfig.isPreferIpAddress();
@@ -116,6 +132,12 @@ public class TestMicroserviceInstanceRegisterTask {
   @Test
   public void registerHostSuccess() {
     MicroserviceInstance instance = microservice.getInstance();
+    new Expectations(RegistrationManager.class) {
+      {
+        RegistrationManager.getPublishHostName();
+        result = "hostName";
+      }
+    };
     new Expectations(RegistryUtils.class) {
       {
         serviceRegistryConfig.isPreferIpAddress();
@@ -144,6 +166,12 @@ public class TestMicroserviceInstanceRegisterTask {
   @Test
   public void registerIpFailed() {
     MicroserviceInstance instance = microservice.getInstance();
+    new Expectations(RegistrationManager.class) {
+      {
+        RegistrationManager.getPublishAddress();
+        result = "127.0.0.1";
+      }
+    };
     new Expectations(RegistryUtils.class) {
       {
         serviceRegistryConfig.isPreferIpAddress();

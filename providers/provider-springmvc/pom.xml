@@ -35,11 +35,21 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
+      <artifactId>service-registry</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>swagger-invocation-springmvc</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>swagger-generator-springmvc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-test-scaffolding</artifactId>
+      <scope>test</scope>
     </dependency>
     <!-- compile CseHttpMessageConverter need this one .-->
     <dependency>

@@ -19,8 +19,11 @@ package org.apache.servicecomb.serviceregistry.consumer;
 
 import java.util.Collections;
 
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.MockMicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,9 +35,15 @@ public class TestMicroserviceVersionRuleLatest {
 
   @Before
   public void setup() {
+    ConfigUtil.installDynamicConfig();
     mockMicroserviceVersions = new MockMicroserviceVersions();
     microserviceVersionRule = mockMicroserviceVersions
         .getOrCreateMicroserviceVersionRule(DefinitionConst.VERSION_RULE_LATEST);
+  }
+
+  @AfterClass
+  public static void classTeardown() {
+    ArchaiusUtils.resetConfig();
   }
 
   @Test

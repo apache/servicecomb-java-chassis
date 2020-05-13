@@ -43,7 +43,7 @@ public class TestMicroservicePaths {
 
   @BeforeClass
   public static void setup() {
-    scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest()
+    scbEngine = SCBBootstrap.createSCBEngineForTest()
         .addProducerMeta("sid1", new TestPathSchema())
         .run();
 

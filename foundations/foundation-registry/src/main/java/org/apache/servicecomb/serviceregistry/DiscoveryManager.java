@@ -31,6 +31,8 @@ import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 
+import com.google.common.annotations.VisibleForTesting;
+
 public class DiscoveryManager {
   public static DiscoveryManager INSTANCE = new DiscoveryManager();
 
@@ -42,13 +44,18 @@ public class DiscoveryManager {
 
   private final MicroserviceDefinition microserviceDefinition;
 
-  public DiscoveryManager() {
+  private DiscoveryManager() {
     appManager = new AppManager();
     instanceCacheManager = new InstanceCacheManagerNew(appManager);
     discoveryList = SPIServiceUtils.getOrLoadSortedService(Discovery.class);
 
     MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
     microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
+  }
+
+  @VisibleForTesting
+  public static void renewInstance() {
+    DiscoveryManager.INSTANCE = new DiscoveryManager();
   }
 
   public MicroserviceInstances findServiceInstances(String appId, String serviceName,
@@ -105,10 +112,6 @@ public class DiscoveryManager {
 
   public MicroserviceVersions getOrCreateMicroserviceVersions(String appId, String microserviceName) {
     return appManager.getOrCreateMicroserviceVersions(appId, microserviceName);
-  }
-
-  public String getApplicationId() {
-    return microserviceDefinition.getApplicationId();
   }
 
   public void destroy() {

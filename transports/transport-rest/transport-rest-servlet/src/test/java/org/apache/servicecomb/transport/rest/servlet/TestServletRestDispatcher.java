@@ -53,7 +53,7 @@ public class TestServletRestDispatcher {
 
   @Before
   public void setup() {
-    new SCBBootstrap().useLocalRegistry().createSCBEngineForTest().setTransportManager(transportManager);
+    SCBBootstrap.createSCBEngineForTest().setTransportManager(transportManager);
   }
 
   @After

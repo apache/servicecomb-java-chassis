@@ -18,10 +18,13 @@ package org.apache.servicecomb.provider.springmvc.reference;
 
 import java.net.URI;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.Holder;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -39,13 +42,16 @@ public class TestCseClientHttpRequest {
 
   @BeforeClass
   public static void classSetup() {
-    scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest()
+    ConfigUtil.installDynamicConfig();
+    RegistryUtils.initWithLocalRegistry();
+    scbEngine = SCBBootstrap.createSCBEngineForTest()
         .addProducerMeta("sid1", new SpringmvcImpl()).run();
   }
 
   @AfterClass
   public static void classTeardown() {
     scbEngine.destroy();
+    ArchaiusUtils.resetConfig();
   }
 
   @RequestMapping(path = "SpringmvcImpl")

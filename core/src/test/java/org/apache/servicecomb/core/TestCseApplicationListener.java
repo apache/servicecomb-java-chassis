@@ -21,6 +21,9 @@ import org.apache.servicecomb.core.CseApplicationListener;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.SCBStatus;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,11 +34,18 @@ import mockit.Mocked;
 public class TestCseApplicationListener {
   @Before
   public void before() {
-
+    ConfigUtil.installDynamicConfig();
   }
+
+  @AfterClass
+  public static void classTeardown() {
+    DiscoveryManager.renewInstance();
+    ArchaiusUtils.resetConfig();
+  }
+
   @Test
   public void onApplicationEvent_close(@Mocked ContextClosedEvent contextClosedEvent) {
-    SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();
+    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
     scbEngine.setStatus(SCBStatus.UP);
 
     CseApplicationListener listener = new CseApplicationListener();

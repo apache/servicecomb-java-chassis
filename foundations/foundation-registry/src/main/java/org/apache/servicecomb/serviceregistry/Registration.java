@@ -27,10 +27,12 @@ import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceS
 
 public interface Registration extends SPIOrder, LifeCycle {
   String name();
-  
+
   MicroserviceInstance getMicroserviceInstance();
 
   Microservice getMicroservice();
+
+  String getAppId();
 
   boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status);
 

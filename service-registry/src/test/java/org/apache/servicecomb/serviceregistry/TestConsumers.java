@@ -19,10 +19,9 @@ package org.apache.servicecomb.serviceregistry;
 
 import java.util.Arrays;
 
-import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.serviceregistry.api.MicroserviceKey;
+import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersion;
@@ -35,7 +34,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import mockit.Expectations;
+import mockit.Mock;
+import mockit.MockUp;
 
 public class TestConsumers extends TestRegistryBase {
   @Before
@@ -105,10 +105,10 @@ public class TestConsumers extends TestRegistryBase {
 
   @Test
   public void deleteWhenCreateMicroserviceVersion() {
-    new Expectations(RegistryUtils.getServiceRegistry()) {
-      {
-        RegistryUtils.getServiceRegistry().getAggregatedRemoteMicroservice(serviceId);
-        result = null;
+    new MockUp<DiscoveryManager>() {
+      @Mock
+      public Microservice getMicroservice(String microserviceId) {
+        return null;
       }
     };
 

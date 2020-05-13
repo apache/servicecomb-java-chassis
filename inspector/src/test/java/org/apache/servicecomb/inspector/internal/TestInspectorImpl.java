@@ -43,12 +43,15 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.definition.CoreMetaUtils;
+import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.inspector.internal.model.DynamicPropertyView;
 import org.apache.servicecomb.inspector.internal.model.PriorityPropertyView;
 import org.apache.servicecomb.inspector.internal.swagger.SchemaFormat;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
@@ -75,7 +78,8 @@ public class TestInspectorImpl {
 
   @BeforeClass
   public static void setup() throws IOException {
-    ArchaiusUtils.resetConfig();
+    ConfigUtil.installDynamicConfig();
+    RegistryUtils.initWithLocalRegistry();
     schemas.put("schema1", IOUtils
         .toString(TestInspectorImpl.class.getClassLoader().getResource("schema1.yaml"), StandardCharsets.UTF_8));
     schemas.put("schema2", IOUtils
@@ -85,13 +89,13 @@ public class TestInspectorImpl {
   }
 
   private static InspectorImpl initInspector(String urlPrefix) {
-    SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();
+    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
     scbEngine.getTransportManager().clearTransportBeforeInit();
 
     if (StringUtils.isNotEmpty(urlPrefix)) {
       Map<String, Transport> transportMap = Deencapsulation.getField(scbEngine.getTransportManager(), "transportMap");
       transportMap.put(RESTFUL, new ServletRestTransport());
-      SCBEngine.setClassLoaderScopeProperty(DefinitionConst.URL_PREFIX, urlPrefix);
+      ClassLoaderScopeContext.setClassLoaderScopeProperty(DefinitionConst.URL_PREFIX, urlPrefix);
     }
 
     scbEngine.run();
@@ -105,7 +109,7 @@ public class TestInspectorImpl {
   public static void teardown() {
     ArchaiusUtils.resetConfig();
     SCBEngine.getInstance().destroy();
-    SCBEngine.clearClassLoaderScopeProperty();
+    ClassLoaderScopeContext.clearClassLoaderScopeProperty();
   }
 
   private Map<String, String> unzip(InputStream is) throws IOException {
@@ -138,6 +142,15 @@ public class TestInspectorImpl {
   }
 
   private void testDownloadSchemasSwagger(Microservice microservice, SchemaFormat format) throws IOException {
+    new Expectations(RegistrationManager.INSTANCE) {
+      {
+        RegistrationManager.INSTANCE.getMicroservice();
+        result = microservice;
+        microservice.getServiceName();
+        result = "ms";
+      }
+    };
+
     Response response = inspector.downloadSchemas(format);
     Part part = response.getResult();
     Assert.assertEquals("ms.yaml.zip", part.getSubmittedFileName());
@@ -153,7 +166,14 @@ public class TestInspectorImpl {
 
   @Test
   public void downloadSchemas_html(@Mocked Microservice microservice) throws IOException {
-
+    new Expectations(RegistrationManager.INSTANCE) {
+      {
+        RegistrationManager.INSTANCE.getMicroservice();
+        result = microservice;
+        microservice.getServiceName();
+        result = "ms";
+      }
+    };
     Response response = inspector.downloadSchemas(SchemaFormat.HTML);
     Part part = response.getResult();
     Assert.assertEquals("ms.html.zip", part.getSubmittedFileName());

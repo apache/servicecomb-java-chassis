@@ -105,7 +105,7 @@ public class PrometheusPublisher extends Collector implements Collector.Describa
     List<String> labelValues = new ArrayList<>();
 
     labelNames.add("appId");
-    labelValues.add(RegistrationManager.INSTANCE.getMicroservice().getAppId());
+    labelValues.add(RegistrationManager.INSTANCE.getAppId());
 
     for (Tag tag : measurement.id().tags()) {
       labelNames.add(tag.key());

@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.inspector.internal;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
@@ -23,6 +24,7 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -35,7 +37,8 @@ public class TestInspectorBootListener {
 
   @BeforeClass
   public static void setup() {
-    ArchaiusUtils.resetConfig();
+    ConfigUtil.installDynamicConfig();
+    RegistryUtils.initWithLocalRegistry();
     priorityPropertyManager = new PriorityPropertyManager();
     inspectorConfig = priorityPropertyManager.createConfigObject(InspectorConfig.class);
   }
@@ -72,7 +75,7 @@ public class TestInspectorBootListener {
   public void diabled() {
     ArchaiusUtils.setProperty("servicecomb.inspector.enabled", false);
 
-    SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();
+    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
     scbEngine.getTransportManager().clearTransportBeforeInit();
     scbEngine.run();
     Assert.assertNull(scbEngine.getProducerMicroserviceMeta().findSchemaMeta("inspector"));
@@ -83,7 +86,7 @@ public class TestInspectorBootListener {
   public void enabled() {
     ArchaiusUtils.setProperty("servicecomb.inspector.enabled", true);
 
-    SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();
+    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
     scbEngine.getTransportManager().clearTransportBeforeInit();
     scbEngine.run();
     Assert.assertNotNull(scbEngine.getProducerMicroserviceMeta().findSchemaMeta("inspector"));

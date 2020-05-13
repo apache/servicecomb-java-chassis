@@ -48,6 +48,11 @@ public class TestURIEndpointObject {
     Assert.assertTrue(obj.isSslEnabled());
     Assert.assertTrue(obj.isHttp2Enabled());
     Assert.assertNull(obj.getFirst("notExist"));
+
+    obj = new URIEndpointObject("rest://127.0.2.0:8080?urlPrefix=%2Froot");
+    Assert.assertEquals("127.0.2.0", obj.getHostOrIp());
+    Assert.assertEquals(8080, obj.getPort());
+    Assert.assertEquals("/root", obj.getQuery("urlPrefix").get(0));
   }
 
   @Test(expected = IllegalArgumentException.class)

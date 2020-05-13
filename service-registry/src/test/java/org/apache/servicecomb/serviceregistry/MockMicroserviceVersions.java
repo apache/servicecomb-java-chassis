@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
@@ -34,8 +33,6 @@ import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.version.Version;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
-
-import com.google.common.eventbus.EventBus;
 
 import mockit.Mock;
 import mockit.MockUp;
@@ -49,19 +46,12 @@ public class MockMicroserviceVersions extends MicroserviceVersions {
   public MockMicroserviceVersions() {
     super(new AppManager(), "appId", "msName");
 
-    ServiceRegistry serviceRegistry = new MockUp<ServiceRegistry>() {
+    new MockUp<DiscoveryManager>() {
       @Mock
-      Microservice getAggregatedRemoteMicroservice(String microserviceId) {
+      public Microservice getMicroservice(String microserviceId) {
         return mockedMicroservices.get(microserviceId);
       }
-
-      @Mock
-      EventBus getEventBus() {
-        return EventManager.getEventBus();
-      }
-    }.getMockInstance();
-
-    RegistryUtils.setServiceRegistry(serviceRegistry);
+    };
 
     addMock("1.0.0", 2);
     addMock("2.0.0", 2);

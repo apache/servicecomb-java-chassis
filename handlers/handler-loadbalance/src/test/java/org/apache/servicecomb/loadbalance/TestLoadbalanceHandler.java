@@ -27,6 +27,7 @@ import java.util.concurrent.ExecutorService;
 
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
@@ -35,6 +36,7 @@ import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
@@ -92,19 +94,13 @@ public class TestLoadbalanceHandler {
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
 
-  @BeforeClass
-  public static void classSetup() {
-    scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest().run();
-    transportManager = scbEngine.getTransportManager();
-  }
-
-  @AfterClass
-  public static void classTeardown() {
-    scbEngine.destroy();
-  }
-
   @Before
   public void setUp() {
+    ConfigUtil.installDynamicConfig();
+    RegistryUtils.initWithLocalRegistry();
+    scbEngine = SCBBootstrap.createSCBEngineForTest().run();
+    transportManager = scbEngine.getTransportManager();
+
     new MockUp<Invocation>(invocation) {
       @Mock
       String getMicroserviceName() {
@@ -144,7 +140,9 @@ public class TestLoadbalanceHandler {
 
   @After
   public void teardown() {
+    scbEngine.destroy();
     ArchaiusUtils.resetConfig();
+
   }
 
   @Test

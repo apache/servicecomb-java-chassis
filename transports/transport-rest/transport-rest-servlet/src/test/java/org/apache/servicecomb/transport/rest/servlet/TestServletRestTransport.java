@@ -20,7 +20,7 @@ package org.apache.servicecomb.transport.rest.servlet;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.transport.rest.client.RestTransportClient;
 import org.apache.servicecomb.transport.rest.client.RestTransportClientManager;
@@ -38,7 +38,7 @@ public class TestServletRestTransport {
 
   @After
   public void tearDown() {
-    SCBEngine.clearClassLoaderScopeProperty();
+    ClassLoaderScopeContext.clearClassLoaderScopeProperty();
   }
 
   @Test
@@ -95,10 +95,10 @@ public class TestServletRestTransport {
         result = "1.1.1.1:1234";
       }
     };
-    SCBEngine.setClassLoaderScopeProperty(DefinitionConst.URL_PREFIX, "/root");
+    ClassLoaderScopeContext.setClassLoaderScopeProperty(DefinitionConst.URL_PREFIX, "/root");
 
     Assert.assertTrue(transport.init());
-    Assert.assertEquals("rest://1.1.1.1:1234?urlPrefix=/root", transport.getPublishEndpoint().getEndpoint());
+    Assert.assertEquals("rest://1.1.1.1:1234?urlPrefix=%2Froot", transport.getPublishEndpoint().getEndpoint());
   }
 
   @Test

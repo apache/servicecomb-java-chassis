@@ -33,7 +33,7 @@ public class TestMetricsBootListener {
 
   @Test
   public void registerSchemas() {
-    new SCBBootstrap().useLocalRegistry().createSCBEngineForTest().run();
+    SCBBootstrap.createSCBEngineForTest().run();
 
     Microservice microservice = RegistrationManager.INSTANCE.getMicroservice();
     microservice.getSchemas().contains("healthEndpoint");

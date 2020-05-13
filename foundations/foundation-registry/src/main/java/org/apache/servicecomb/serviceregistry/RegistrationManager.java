@@ -61,6 +61,10 @@ public class RegistrationManager {
     return primary.getMicroservice();
   }
 
+  public String getAppId() {
+    return primary.getAppId();
+  }
+
   public SwaggerLoader getSwaggerLoader() {
     return swaggerLoader;
   }

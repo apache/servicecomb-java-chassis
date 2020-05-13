@@ -21,12 +21,15 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryFilter;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
@@ -54,16 +57,25 @@ public class TestSimpleLoadBalanceHandler {
 
   AsyncResponse ar = resp -> response = resp;
 
-  SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();
+  SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
 
   @Before
   public void setUp() throws Exception {
+    ConfigUtil.installDynamicConfig();
     new Expectations(SPIServiceUtils.class) {
       {
         SPIServiceUtils.getSortedService(DiscoveryFilter.class);
         result = Collections.emptyList();
         invocation.getConfigTransportName();
         result = "";
+      }
+    };
+
+    new Expectations(DiscoveryManager.INSTANCE.getInstanceCacheManager()) {
+      {
+        DiscoveryManager.INSTANCE.getInstanceCacheManager()
+            .getOrCreateVersionedCache(anyString, anyString, anyString);
+        result = instanceVersionedCache;
       }
     };
 
@@ -74,6 +86,7 @@ public class TestSimpleLoadBalanceHandler {
   @After
   public void teardown() {
     scbEngine.destroy();
+    ArchaiusUtils.resetConfig();
   }
 
   @Test
@@ -81,7 +94,8 @@ public class TestSimpleLoadBalanceHandler {
     handler.handle(invocation, ar);
 
     Throwable result = response.getResult();
-    Assert.assertEquals("InvocationException: code=490;msg=CommonExceptionData [message=Unexpected consumer error, please check logs for details]",
+    Assert.assertEquals(
+        "InvocationException: code=490;msg=CommonExceptionData [message=Unexpected consumer error, please check logs for details]",
         result.getMessage());
     Assert.assertEquals("No available address found. microserviceName=null, version=null, discoveryGroupName=parent/",
         result.getCause().getMessage());

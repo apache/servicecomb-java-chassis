@@ -17,10 +17,13 @@
 
 package org.apache.servicecomb.serviceregistry.cache;
 
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.MockMicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceManager;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,11 +39,17 @@ public class TestInstanceCacheManagerNew {
 
   @Before
   public void setup() {
+    ConfigUtil.installDynamicConfig();
     mockMicroserviceVersions = new MockMicroserviceVersions();
     appManager = mockMicroserviceVersions.getAppManager();
     microserviceManager = appManager
         .getOrCreateMicroserviceManager(mockMicroserviceVersions.getAppId());
     mgr = new InstanceCacheManagerNew(mockMicroserviceVersions.getAppManager());
+  }
+
+  @AfterClass
+  public static void classTeardown() {
+    ArchaiusUtils.resetConfig();
   }
 
   @Test
