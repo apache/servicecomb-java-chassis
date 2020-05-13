@@ -17,22 +17,33 @@
 
 package org.apache.servicecomb.common.rest.locator;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestServicePathManager {
+  @Before
+  public void setUp() {
+    ConfigUtil.installDynamicConfig();
+    RegistryUtils.initWithLocalRegistry();
+  }
   @After
   public void tearDown() {
-    SCBEngine.clearClassLoaderScopeProperty();
+    ArchaiusUtils.resetConfig();
+    ClassLoaderScopeContext.clearClassLoaderScopeProperty();
   }
 
   @Test
   public void testBuildProducerPathsNoPrefix() {
-    SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest()
+    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest()
         .addProducerMeta("sid1", new TestPathSchema())
         .run();
     ServicePathManager spm = ServicePathManager.getServicePathManager(scbEngine.getProducerMicroserviceMeta());
@@ -44,9 +55,9 @@ public class TestServicePathManager {
 
   @Test
   public void testBuildProducerPathsHasPrefix() {
-    SCBEngine.setClassLoaderScopeProperty(DefinitionConst.URL_PREFIX, "/root/rest");
+    ClassLoaderScopeContext.setClassLoaderScopeProperty(DefinitionConst.URL_PREFIX, "/root/rest");
 
-    SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest()
+    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest()
         .addProducerMeta("sid1", new TestPathSchema())
         .run();
     ServicePathManager spm = ServicePathManager.getServicePathManager(scbEngine.getProducerMicroserviceMeta());

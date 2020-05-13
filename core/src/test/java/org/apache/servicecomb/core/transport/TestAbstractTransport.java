@@ -24,19 +24,18 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.util.ReflectionUtils;
 
 import com.netflix.config.DynamicProperty;
 
+import mockit.Expectations;
 import mockit.Mocked;
 
 public class TestAbstractTransport {
@@ -65,16 +64,6 @@ public class TestAbstractTransport {
     }
   }
 
-  @Before
-  public void setup() {
-
-  }
-
-  @After
-  public void teardown() {
-
-  }
-
   @AfterClass
   public static void classTeardown() {
     VertxUtils.blockCloseVertxByName("transport");
@@ -82,27 +71,16 @@ public class TestAbstractTransport {
 
   @Test
   public void testSetListenAddressWithoutSchemaChineseSpaceNewSC() throws UnsupportedEncodingException {
+    new Expectations() {
+      {
+        RegistrationManager.getPublishAddress("my", "127.0.0.1:9090");
+      }
+    };
 
     MyAbstractTransport transport = new MyAbstractTransport();
     transport.setListenAddressWithoutSchema("127.0.0.1:9090", Collections.singletonMap("country", "中 国"));
     Assert.assertEquals("my://127.0.0.1:9090?country=" + URLEncoder.encode("中 国", StandardCharsets.UTF_8.name()),
         transport.getEndpoint().getEndpoint());
-  }
-
-  @Test
-  public void testSetListenAddressWithoutSchemaChineseSpaceOldSC() {
-    MyAbstractTransport transport = new MyAbstractTransport();
-    try {
-      transport.setListenAddressWithoutSchema("127.0.0.1:9090", Collections.singletonMap("country", "中 国"));
-      Assert.fail("must throw exception");
-    } catch (ServiceCombException e) {
-      Assert.assertEquals(
-          "current service center not support encoded endpoint, please do not use chinese or space or anything need to be encoded.",
-          e.getMessage());
-      Assert.assertEquals(
-          "Illegal character in query at index 31: rest://127.0.0.1:9090?country=中 国",
-          e.getCause().getMessage());
-    }
   }
 
   @Test

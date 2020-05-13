@@ -39,7 +39,7 @@ public class TestRpcReferenceProcessor {
 
   @Test
   public void testReference(@Injectable ApplicationContext applicationContext) {
-    SCBEngine scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();
+    SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
 
     PersonReference bean = new PersonReference();
 

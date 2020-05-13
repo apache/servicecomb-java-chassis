@@ -159,7 +159,7 @@ public class TestRestOperationMeta {
 
   @BeforeClass
   public static void classSetup() {
-    scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest()
+    scbEngine = SCBBootstrap.createSCBEngineForTest()
         .addProducerMeta("sid1", new RestOperationMetaSchema())
         .run();
     swagger = scbEngine.getProducerMicroserviceMeta().ensureFindSchemaMeta("sid1").getSwagger();

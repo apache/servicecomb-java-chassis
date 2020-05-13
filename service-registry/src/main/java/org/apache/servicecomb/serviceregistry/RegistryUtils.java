@@ -34,8 +34,6 @@ import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
-import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
-import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManagerNew;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -79,7 +77,15 @@ public final class RegistryUtils {
 
     MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
     MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
-    initializeServiceRegistries(microserviceDefinition);
+    initializeServiceRegistriesWithConfig(microserviceDefinition);
+
+    initAggregateServiceRegistryCache();
+  }
+
+  public static synchronized void initWithLocalRegistry() {
+    MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
+    MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
+    initializeLocalServiceRegistries(microserviceDefinition);
 
     initAggregateServiceRegistryCache();
   }
@@ -97,9 +103,19 @@ public final class RegistryUtils {
             .register(aggregateServiceRegistryCache));
   }
 
-  private static void initializeServiceRegistries(MicroserviceDefinition microserviceDefinition) {
+  private static void initializeServiceRegistriesWithConfig(MicroserviceDefinition microserviceDefinition) {
     serviceRegistry =
         ServiceRegistryFactory.create(ServiceRegistryConfig.INSTANCE, microserviceDefinition);
+    initializeServiceRegistries(microserviceDefinition);
+  }
+
+  private static void initializeLocalServiceRegistries(MicroserviceDefinition microserviceDefinition) {
+    serviceRegistry =
+        ServiceRegistryFactory.createLocal();
+    initializeServiceRegistries(microserviceDefinition);
+  }
+
+  private static void initializeServiceRegistries(MicroserviceDefinition microserviceDefinition) {
     EXTRA_SERVICE_REGISTRY_CONFIGS.forEach((k, v) -> {
       ServiceRegistry serviceRegistry = ServiceRegistryFactory.create(v, microserviceDefinition);
       addExtraServiceRegistry(serviceRegistry);

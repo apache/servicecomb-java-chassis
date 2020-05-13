@@ -17,16 +17,31 @@
 package org.apache.servicecomb.authentication;
 
 import org.apache.servicecomb.AuthHandlerBoot;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.core.BootListener.BootEvent;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.token.RSAKeypair4Auth;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestAuthHandlerBoot {
 
+  @Before
+  public void setUp() {
+    ConfigUtil.installDynamicConfig();
+    RegistryUtils.initWithLocalRegistry();
+  }
+
+  @After
+  public void teardown() {
+    ArchaiusUtils.resetConfig();
+  }
 
   @Test
   public void testGenerateRSAKey() {

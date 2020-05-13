@@ -18,8 +18,10 @@ package org.apache.servicecomb.serviceregistry.diagnosis.instance;
 
 import java.util.ArrayList;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.testing.MockClock;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.DiscoveryManager;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
@@ -27,7 +29,6 @@ import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
-import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.diagnosis.Status;
@@ -40,14 +41,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.vertx.core.json.Json;
-import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
 
 public class TestInstanceCacheCheckerMock {
   private static final Logger LOGGER = LoggerFactory.getLogger(TestInstanceCacheCheckerWithoutMock.class);
-
-  AppManager originalAppManager = DiscoveryManager.INSTANCE.getAppManager();
 
   ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
 
@@ -61,7 +59,7 @@ public class TestInstanceCacheCheckerMock {
 
   @Before
   public void setUp() throws Exception {
-    Deencapsulation.setField(RegistryUtils.class, "appManager", new AppManager());
+    ConfigUtil.installDynamicConfig();
 
     serviceRegistry.init();
     RegistryUtils.setServiceRegistry(serviceRegistry);
@@ -74,7 +72,7 @@ public class TestInstanceCacheCheckerMock {
 
   @After
   public void tearDown() throws Exception {
-
+    ArchaiusUtils.resetConfig();
   }
 
   private Holder<MicroserviceInstances> createFindServiceInstancesResult() {

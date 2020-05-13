@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.common.rest;
 
-import static org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager.DEFAULT_SERIAL_CLASS;
-
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;

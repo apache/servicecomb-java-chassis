@@ -40,6 +40,7 @@ import org.apache.servicecomb.common.rest.filter.HttpServerFilterBaseForTest;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.common.rest.locator.TestPathSchema;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Handler;
@@ -55,20 +56,24 @@ import org.apache.servicecomb.core.executor.ReactiveExecutor;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.AbstractHttpServletResponse;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.http.StandardHttpServletResponseEx;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.apache.servicecomb.swagger.invocation.response.Headers;
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -135,9 +140,11 @@ public class TestAbstractRestInvocation {
 
   static long nanoTime = 123;
 
-  @BeforeClass
-  public static void classSetup() {
-    scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest()
+  @Before
+  public void setup() {
+    ConfigUtil.installDynamicConfig();
+    RegistryUtils.initWithLocalRegistry();
+    scbEngine = SCBBootstrap.createSCBEngineForTest()
         .addProducerMeta("sid1", new TestPathSchema())
         .run();
     operationMeta = scbEngine.getProducerMicroserviceMeta().operationMetas().get("test.sid1.dynamicId");
@@ -149,15 +156,7 @@ public class TestAbstractRestInvocation {
         return nanoTime;
       }
     };
-  }
 
-  @AfterClass
-  public static void classTeardown() {
-    scbEngine.destroy();
-  }
-
-  @Before
-  public void setup() {
     if (responseEx == null) {
       responseEx = new StandardHttpServletResponseEx(servletResponse);
     }
@@ -167,6 +166,12 @@ public class TestAbstractRestInvocation {
     initRestInvocation();
     List<HttpServerFilter> httpServerFilters = SPIServiceUtils.getSortedService(HttpServerFilter.class);
     restInvocation.setHttpServerFilters(httpServerFilters);
+  }
+
+  @After
+  public void teardown() {
+    ArchaiusUtils.resetConfig();
+    scbEngine.destroy();
   }
 
   private void initRestInvocation() {
@@ -1149,8 +1154,7 @@ public class TestAbstractRestInvocation {
         responseBody.value = bodyBuffer.toString();
       }
     };
-    setup();
-
+    initRestInvocation();
     restInvocation.scheduleInvocation();
 
     assertEquals(Integer.valueOf(429), status.value);

@@ -27,7 +27,7 @@ import org.junit.Test;
 public class TestTransport {
   @BeforeClass
   public static void classSetup() {
-    new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();
+
   }
 
   @AfterClass

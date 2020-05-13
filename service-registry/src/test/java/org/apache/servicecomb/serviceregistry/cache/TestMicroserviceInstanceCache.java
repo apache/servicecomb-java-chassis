@@ -17,12 +17,17 @@
 
 package org.apache.servicecomb.serviceregistry.cache;
 
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import mockit.Expectations;
@@ -31,13 +36,22 @@ import mockit.MockUp;
 import mockit.Mocked;
 
 public class TestMicroserviceInstanceCache {
+  @Before
+  public void setup() {
+    ConfigUtil.installDynamicConfig();
+  }
+
+  @AfterClass
+  public static void classTeardown() {
+    ArchaiusUtils.resetConfig();
+  }
+
   @Test
-  public void testGetOrCreateMicroservice(@Mocked ServiceRegistry serviceRegistry,
-      @Mocked ServiceRegistryClient client,
+  public void testGetOrCreateMicroservice(
       @Mocked Microservice microservice) {
-    new MockUp<RegistryUtils>() {
+    new MockUp<DiscoveryManager>() {
       @Mock
-      Microservice getAggregatedRemoteMicroservice(String microserviceId) {
+      public Microservice getMicroservice(String microserviceId) {
         if ("forkedid".equals(microserviceId)) {
           return microservice;
         }
@@ -47,6 +61,7 @@ public class TestMicroserviceInstanceCache {
         throw new IllegalArgumentException("unrecognized param");
       }
     };
+
     Microservice cachedService = MicroserviceInstanceCache.getOrCreate("forkedid");
     Assert.assertNotNull(cachedService);
     cachedService = MicroserviceInstanceCache.getOrCreate("forkedid");

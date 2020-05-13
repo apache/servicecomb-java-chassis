@@ -41,7 +41,11 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>swagger-generator-jaxrs</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>service-registry</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>io.vertx</groupId>
       <artifactId>vertx-codegen</artifactId>

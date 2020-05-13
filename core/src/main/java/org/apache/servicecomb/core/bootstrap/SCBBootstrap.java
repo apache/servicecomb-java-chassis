@@ -20,26 +20,7 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 
 public class SCBBootstrap {
-  public SCBBootstrap useLocalRegistry() {
-    // TODO: local registry intialization
-    return this;
-  }
-
-  public SCBBootstrap useLocalRegistry(String localFile) {
-    // TODO: local registry intialization
-    return this;
-  }
-
-  public static SCBEngine runWithSpring() {
-    BeanUtils.init();
-    return SCBEngine.getInstance();
-  }
-
-  public SCBEngine createSCBEngine() {
-    return SCBEngine.getInstance();
-  }
-
-  public SCBEngine createSCBEngineForTest() {
+  public static SCBEngine createSCBEngineForTest() {
     return new SCBEngineForTest();
   }
 }

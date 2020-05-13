@@ -40,6 +40,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-registry</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>foundation-ssl</artifactId>
     </dependency>
     <dependency>

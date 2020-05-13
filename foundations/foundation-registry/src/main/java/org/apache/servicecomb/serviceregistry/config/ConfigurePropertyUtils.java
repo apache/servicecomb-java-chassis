@@ -25,7 +25,7 @@ import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
-import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.serviceregistry.api.registry.BasePath;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 
@@ -73,7 +73,7 @@ public final class ConfigurePropertyUtils {
   }
 
   private static String buildPath(String path) {
-    String prefix = SCBEngine.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX);
+    String prefix = ClassLoaderScopeContext.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX);
     if (StringUtils.isNotEmpty(prefix)) {
       if (!path.startsWith(prefix)) {
         path = prefix + path;

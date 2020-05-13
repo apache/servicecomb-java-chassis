@@ -81,7 +81,7 @@ public class TestRestProducerInvocation {
 
   @BeforeClass
   public static void classSetup() {
-    scbEngine = new SCBBootstrap().useLocalRegistry().createSCBEngineForTest()
+    scbEngine = SCBBootstrap.createSCBEngineForTest()
         .addProducerMeta("sid1", new TestPathSchema())
         .run();
     operationMeta = scbEngine.getProducerMicroserviceMeta().operationMetas().get("test.sid1.dynamicId");

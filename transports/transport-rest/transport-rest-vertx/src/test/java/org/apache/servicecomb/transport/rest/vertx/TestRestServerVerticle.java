@@ -66,7 +66,7 @@ public class TestRestServerVerticle {
     instance = new RestServerVerticle();
     startFuture = Future.future();
 
-    new SCBBootstrap().useLocalRegistry().createSCBEngineForTest();
+    SCBBootstrap.createSCBEngineForTest();
   }
 
   @After

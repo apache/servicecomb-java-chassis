@@ -67,6 +67,7 @@ public class TestRegistryBase {
     serviceRegistry = ServiceRegistryFactory.createLocal("registry.yaml");
     serviceRegistry.init();
 
+    DiscoveryManager.renewInstance();
     appManager = DiscoveryManager.INSTANCE.getAppManager();
     microserviceManager = appManager.getOrCreateMicroserviceManager(appId);
     eventBus = serviceRegistry.getEventBus();

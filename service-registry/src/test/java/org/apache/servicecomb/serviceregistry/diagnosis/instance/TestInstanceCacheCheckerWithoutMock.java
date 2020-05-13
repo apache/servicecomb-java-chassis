@@ -18,12 +18,13 @@ package org.apache.servicecomb.serviceregistry.diagnosis.instance;
 
 import java.util.Arrays;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.testing.MockClock;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.DiscoveryManager;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
-import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.diagnosis.Status;
@@ -36,12 +37,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.vertx.core.json.Json;
-import mockit.Deencapsulation;
 
 public class TestInstanceCacheCheckerWithoutMock {
   private static final Logger LOGGER = LoggerFactory.getLogger(TestInstanceCacheCheckerWithoutMock.class);
-
-  AppManager originalAppManager = DiscoveryManager.INSTANCE.getAppManager();
 
   ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
 
@@ -55,7 +53,9 @@ public class TestInstanceCacheCheckerWithoutMock {
 
   @Before
   public void setUp() throws Exception {
-    Deencapsulation.setField(RegistryUtils.class, "appManager", new AppManager());
+    ConfigUtil.installDynamicConfig();
+
+    DiscoveryManager.renewInstance();
 
     serviceRegistry.init();
     RegistryUtils.setServiceRegistry(serviceRegistry);
@@ -68,8 +68,7 @@ public class TestInstanceCacheCheckerWithoutMock {
 
   @After
   public void tearDown() throws Exception {
-    Deencapsulation.setField(RegistryUtils.class, "appManager", originalAppManager);
-    RegistryUtils.setServiceRegistry(null);
+    ArchaiusUtils.resetConfig();
   }
 
   @Test

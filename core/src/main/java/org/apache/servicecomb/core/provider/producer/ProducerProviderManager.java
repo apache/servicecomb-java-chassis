@@ -30,6 +30,7 @@ import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.executor.ExecutorManager;
+import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
@@ -117,7 +118,7 @@ public class ProducerProviderManager {
   // call REST service by the full url. e.g. restTemplate.getForObejct("cse://serviceName/root/prefix/health")
   // By default, user's do not need context prefix, e.g. restTemplate.getForObejct("cse://serviceName/health")
   private void registerUrlPrefixToSwagger(Swagger swagger) {
-    String urlPrefix = SCBEngine.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX);
+    String urlPrefix = ClassLoaderScopeContext.getClassLoaderScopeProperty(DefinitionConst.URL_PREFIX);
     if (!StringUtils.isEmpty(urlPrefix) && !swagger.getBasePath().startsWith(urlPrefix)
         && DynamicPropertyFactory.getInstance()
         .getBooleanProperty(DefinitionConst.REGISTER_URL_PREFIX, false).get()) {

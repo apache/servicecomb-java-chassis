@@ -27,6 +27,8 @@ import org.apache.servicecomb.foundation.common.utils.RSAKeyPairEntry;
 import org.apache.servicecomb.foundation.common.utils.RSAUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.token.RSAKeypair4Auth;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.MicroserviceInstanceCache;
@@ -45,12 +47,13 @@ public class TestRSAProviderTokenManager {
 
 
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     ConfigUtil.installDynamicConfig();
+    RegistryUtils.initWithLocalRegistry();
   }
 
   @After
-  public void tearDown() {
+  public void teardown() {
     ArchaiusUtils.resetConfig();
   }
 
@@ -116,7 +119,14 @@ public class TestRSAProviderTokenManager {
     properties.put(DefinitionConst.INSTANCE_PUBKEY_PRO, rsaKeyPairEntry.getPublicKeyEncoded());
     Microservice microservice = new Microservice();
     microservice.setServiceId(serviceId);
-
+    new Expectations(RegistrationManager.INSTANCE) {
+      {
+        RegistrationManager.INSTANCE.getMicroservice();
+        result = microservice;
+        RegistrationManager.INSTANCE.getMicroserviceInstance();
+        result = microserviceInstance;
+      }
+    };
     //Test Consumer first create token
     String token = rsaConsumerTokenManager.getToken();
     Assert.assertNotNull(token);

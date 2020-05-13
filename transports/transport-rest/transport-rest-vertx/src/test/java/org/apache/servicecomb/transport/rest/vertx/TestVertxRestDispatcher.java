@@ -95,7 +95,7 @@ public class TestVertxRestDispatcher {
       }
     };
 
-    new SCBBootstrap().useLocalRegistry().createSCBEngineForTest().setTransportManager(transportManager);
+    SCBBootstrap.createSCBEngineForTest().setTransportManager(transportManager);
   }
 
   @After

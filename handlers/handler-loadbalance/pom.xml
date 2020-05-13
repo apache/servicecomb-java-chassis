@@ -71,7 +71,11 @@
       <artifactId>annotations</artifactId>
       <scope>provided</scope>
     </dependency>
-
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>service-registry</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>foundation-test-scaffolding</artifactId>

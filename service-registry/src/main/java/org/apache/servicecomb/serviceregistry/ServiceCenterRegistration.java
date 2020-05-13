@@ -64,6 +64,11 @@ public class ServiceCenterRegistration implements Registration {
   }
 
   @Override
+  public String getAppId() {
+    return RegistryUtils.getAppId();
+  }
+
+  @Override
   public boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {
     RegistryUtils.executeOnEachServiceRegistry(sr -> new SuppressedRunnableWrapper(() -> {
       MicroserviceInstance selfInstance = sr.getMicroserviceInstance();
