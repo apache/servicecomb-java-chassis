@@ -46,6 +46,7 @@ public class TestResponse {
     checkQueryObject();
     testCseResponse();
     testResponseEntity();
+    testCseResponseCorrect();
   }
 
   public void runHighway() {
@@ -65,6 +66,16 @@ public class TestResponse {
     TestMgr.check("User [name=nameA, age=100, index=0]", cseResponse.getResult());
     TestMgr.check("h1v " + srcName, cseResponse.getHeaders().getFirst("h1"));
     TestMgr.check("h2v " + srcName, cseResponse.getHeaders().getFirst("h2"));
+    TestMgr.check(cseResponse.getStatusCode(), 202);
+  }
+
+  private void testCseResponseCorrect() {
+    String srcName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
+    Response cseResponse = intf.cseResponseCorrect();
+    TestMgr.check("User [name=nameA, age=100, index=0]", cseResponse.getResult());
+    TestMgr.check("h1v " + srcName, cseResponse.getHeaders().getFirst("h1"));
+    TestMgr.check("h2v " + srcName, cseResponse.getHeaders().getFirst("h2"));
+    TestMgr.check(cseResponse.getStatusCode(), 202);
   }
 
   private void testResponseEntity() {

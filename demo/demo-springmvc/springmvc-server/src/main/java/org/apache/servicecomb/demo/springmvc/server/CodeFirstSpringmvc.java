@@ -154,11 +154,30 @@ public class CodeFirstSpringmvc {
     return responseEntity(c1, date);
   }
 
+  // This definition is not correct, response type is not
+  // same as the actual one. May be not support in future.
   @ApiResponse(code = 200, response = User.class, message = "")
   @ResponseHeaders({@ResponseHeader(name = "h1", response = String.class),
       @ResponseHeader(name = "h2", response = String.class)})
   @RequestMapping(path = "/cseResponse", method = RequestMethod.GET)
   public Response cseResponse(InvocationContext c1) {
+    Response response = Response.createSuccess(Status.ACCEPTED, new User());
+    Headers headers = response.getHeaders();
+    headers.addHeader("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE));
+
+    InvocationContext c2 = ContextUtils.getInvocationContext();
+    headers.addHeader("h2", "h2v " + c2.getContext().get(Const.SRC_MICROSERVICE));
+
+    return response;
+  }
+
+  // This definition is correct, but not supported by highway.
+  // highway do not support define code other than 200
+  @ApiResponse(code = 202, response = User.class, message = "")
+  @ResponseHeaders({@ResponseHeader(name = "h1", response = String.class),
+      @ResponseHeader(name = "h2", response = String.class)})
+  @RequestMapping(path = "/cseResponseCorrect", method = RequestMethod.GET)
+  public Response cseResponseCorrect(InvocationContext c1) {
     Response response = Response.createSuccess(Status.ACCEPTED, new User());
     Headers headers = response.getHeaders();
     headers.addHeader("h1", "h1v " + c1.getContext().get(Const.SRC_MICROSERVICE));
