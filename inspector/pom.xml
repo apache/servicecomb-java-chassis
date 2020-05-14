@@ -60,7 +60,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>service-registry</artifactId>
+      <artifactId>registry-service-center</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
