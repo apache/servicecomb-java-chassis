@@ -36,6 +36,8 @@ public interface CodeFirstSpringmvcIntf {
 
   Response cseResponse();
 
+  Response cseResponseCorrect();
+
   Object testObject(Object input);
 
   EmptyObject testEmpty(EmptyObject input);
