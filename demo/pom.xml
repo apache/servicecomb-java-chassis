@@ -34,12 +34,14 @@
     <module>docker-build-config</module>
     <module>docker-run-config</module>
     <module>docker-run-config-edge</module>
+    <module>docker-run-config-local</module>
     <module>demo-schema</module>
     <module>demo-pojo</module>
     <module>demo-jaxrs</module>
     <module>demo-springmvc</module>
     <module>demo-crossapp</module>
     <module>demo-register-url-prefix</module>
+    <module>demo-local-registry</module>
     <module>demo-spring-boot-provider</module>
     <module>demo-spring-boot-transport</module>
     <module>demo-edge</module>

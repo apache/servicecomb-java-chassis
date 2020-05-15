@@ -68,7 +68,7 @@ public final class ServiceRegistryFactory {
           "It is running in the local development mode, the local file {} is using as the local registry",
           localModeFile);
 
-      return new LocalServiceRegistry(eventBus, serviceRegistryConfig, microserviceDefinition);
+      return new LocalServiceRegistry(eventBus, serviceRegistryConfig, microserviceDefinition).localFile(localModeFile);
     }
 
     LOGGER.info("It is running in the normal mode, a separated service registry is required");
