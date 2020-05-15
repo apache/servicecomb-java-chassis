@@ -32,5 +32,6 @@
 
   <modules>
     <module>registry-service-center</module>
+    <module>registry-zero-config</module>
   </modules>
 </project>
