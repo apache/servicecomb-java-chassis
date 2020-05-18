@@ -18,7 +18,7 @@ package org.apache.servicecomb.serviceregistry;
 
 public interface ZeroConfigRegistryConstants {
 
-    String ZERO_CONFIG_REGISTRY_FLAG = "zeroconfig.registry.flag";
+    String ZERO_CONFIG_REGISTRY_FLAG = "servicecomb.zeroconfig.registry";
     String ZERO_CONFIG_REGISTRY_ENABLE_FLAG = "enable";
 
     // MulticastSocket related
