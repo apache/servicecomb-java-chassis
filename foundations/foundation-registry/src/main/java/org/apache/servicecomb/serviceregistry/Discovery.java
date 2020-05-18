@@ -17,13 +17,14 @@
 
 package org.apache.servicecomb.serviceregistry;
 
+import org.apache.servicecomb.foundation.common.utils.SPIEnabled;
 import org.apache.servicecomb.foundation.common.utils.SPIOrder;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
 
-public interface Discovery extends SPIOrder, LifeCycle {
+public interface Discovery extends SPIEnabled, SPIOrder, LifeCycle {
   // TODO: microservice id may be different in Discovery, maybe better to use appId, serviceName and version.
   Microservice getMicroservice(String microserviceId);
 

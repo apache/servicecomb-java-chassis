@@ -18,66 +18,67 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.apache.servicecomb.demo</groupId>
-    <artifactId>demo-parent</artifactId>
+    <groupId>org.apache.servicecomb</groupId>
+    <artifactId>service-registry-parent</artifactId>
     <version>2.1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>perf</artifactId>
-  <name>Java Chassis::Demo::Perf</name>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>registry-local</artifactId>
+  <name>Java Chassis::Registry Service Center</name>
 
   <dependencies>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>registry-service-center</artifactId>
+      <artifactId>deployment</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>provider-pojo</artifactId>
+      <artifactId>foundation-vertx</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>provider-springmvc</artifactId>
+      <artifactId>foundation-config</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>transport-rest-vertx</artifactId>
+      <artifactId>foundation-common</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>transport-highway</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>inspector</artifactId>
+      <artifactId>swagger-generator-core</artifactId>
     </dependency>
 
     <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-registry</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
     </dependency>
 
     <dependency>
       <groupId>io.vertx</groupId>
-      <artifactId>vertx-redis-client</artifactId>
-      <version>${vertx.version}</version>
+      <artifactId>vertx-codegen</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>metrics-core</artifactId>
+      <artifactId>foundation-test-scaffolding</artifactId>
     </dependency>
   </dependencies>
-
-  <properties>
-    <demo.main>org.apache.servicecomb.demo.perf.PerfMain</demo.main>
-  </properties>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-      </plugin>
-    </plugins>
-  </build>
 </project>

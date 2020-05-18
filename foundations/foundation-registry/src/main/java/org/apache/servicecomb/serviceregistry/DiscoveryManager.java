@@ -18,6 +18,7 @@
 package org.apache.servicecomb.serviceregistry;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
@@ -47,7 +48,10 @@ public class DiscoveryManager {
   private DiscoveryManager() {
     appManager = new AppManager();
     instanceCacheManager = new InstanceCacheManagerNew(appManager);
-    discoveryList = SPIServiceUtils.getOrLoadSortedService(Discovery.class);
+    discoveryList = SPIServiceUtils.getOrLoadSortedService(Discovery.class)
+        .stream()
+        .filter((discovery -> discovery.enabled()))
+        .collect(Collectors.toList());
 
     MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
     microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());

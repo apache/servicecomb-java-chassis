@@ -70,10 +70,6 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>inspector</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>registry-service-center</artifactId>
-    </dependency>
   </dependencies>
   <build>
     <plugins>

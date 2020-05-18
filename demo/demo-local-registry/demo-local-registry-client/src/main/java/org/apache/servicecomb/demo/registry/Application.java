@@ -19,7 +19,6 @@ package org.apache.servicecomb.demo.registry;
 
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
-import org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl;
 import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -30,8 +29,6 @@ import org.springframework.web.client.RestTemplate;
 @EnableServiceComb
 public class Application {
   public static void main(final String[] args) throws Exception {
-    System.setProperty(LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY, "registry.yaml");
-
     new SpringApplicationBuilder().sources(Application.class).web(WebApplicationType.SERVLET).build().run(args);
 
     runTest();

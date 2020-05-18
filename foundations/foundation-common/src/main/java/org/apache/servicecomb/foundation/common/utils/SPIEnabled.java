@@ -15,17 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.registry;
+package org.apache.servicecomb.foundation.common.utils;
 
-import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
-import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-
-@SpringBootApplication
-@EnableServiceComb
-public class ServerApplication {
-  public static void main(final String[] args) throws Exception {
-    new SpringApplicationBuilder().sources(ServerApplication.class).web(WebApplicationType.SERVLET).build().run(args);
-  }
+public interface SPIEnabled {
+  boolean enabled();
 }

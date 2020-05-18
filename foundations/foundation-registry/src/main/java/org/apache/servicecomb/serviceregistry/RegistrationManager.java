@@ -22,6 +22,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.servicecomb.foundation.common.net.IpPort;
@@ -47,11 +48,24 @@ public class RegistrationManager {
 
   public static RegistrationManager INSTANCE = new RegistrationManager();
 
-  private List<Registration> registrationList = SPIServiceUtils.getOrLoadSortedService(Registration.class);
+  private final List<Registration> registrationList;
 
-  private Registration primary = SPIServiceUtils.getPriorityHighestService(Registration.class);
+  private final Registration primary;
 
   private static SwaggerLoader swaggerLoader = new SwaggerLoader();
+
+  private RegistrationManager() {
+    registrationList = SPIServiceUtils.getOrLoadSortedService(Registration.class)
+        .stream()
+        .filter((registration -> registration.enabled()))
+        .collect(Collectors.toList());
+    if (registrationList.isEmpty()) {
+      LOGGER.warn("No registration is enabled. Fix this if only in unit tests.");
+      primary = null;
+    } else {
+      primary = registrationList.get(0);
+    }
+  }
 
   public MicroserviceInstance getMicroserviceInstance() {
     return primary.getMicroserviceInstance();
