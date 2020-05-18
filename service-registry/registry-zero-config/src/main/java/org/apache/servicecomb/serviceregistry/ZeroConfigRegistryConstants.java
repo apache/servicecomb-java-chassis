@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.serviceregistry;
 
-public class ZeroConfigRegistryConstants {
+public interface ZeroConfigRegistryConstants {
 
     String ZERO_CONFIG_REGISTRY_FLAG = "zeroconfig.registry.flag";
     String ZERO_CONFIG_REGISTRY_ENABLE_FLAG = "enable";
