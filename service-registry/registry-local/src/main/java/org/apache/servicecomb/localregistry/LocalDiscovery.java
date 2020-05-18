@@ -15,65 +15,63 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.serviceregistry;
+package org.apache.servicecomb.localregistry;
 
+import org.apache.servicecomb.serviceregistry.Discovery;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
-import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 
 import com.netflix.config.DynamicPropertyFactory;
 
-public class ServiceCenterDiscovery implements Discovery {
-  public static final String NAME = "service center discovery";
+public class LocalDiscovery implements Discovery {
+  public static final String NAME = "local discovery";
 
-  public static final String ENABLED = "servicecomb.service.registry.discovery.enabled";
+  public static final String ENABLED = "servicecomb.local.registry.discovery.enabled";
+
+  private LocalDiscoveryStore localDiscoveryStore;
 
   private String revision;
 
   @Override
   public void init() {
-    // ServiceCenterRegistration has already done it
+    localDiscoveryStore = new LocalDiscoveryStore();
+    localDiscoveryStore.init();
   }
 
   @Override
   public void run() {
-    // ServiceCenterRegistration has already done it
+    localDiscoveryStore.run();
   }
 
   @Override
   public void destroy() {
-    // ServiceCenterRegistration has already done it
+    localDiscoveryStore = null;
   }
 
   @Override
   public int getOrder() {
-    return 0;
+    return 100;
   }
 
   @Override
   public Microservice getMicroservice(String microserviceId) {
-    return RegistryUtils.getMicroservice(microserviceId);
+    return localDiscoveryStore.getMicroservice(microserviceId);
   }
 
   @Override
   public String getSchema(String microserviceId, String schemaId) {
-    return RegistryUtils
-        .getAggregatedSchema(microserviceId, schemaId);
+    return localDiscoveryStore.getSchema(microserviceId, schemaId);
   }
 
   @Override
   public MicroserviceInstance findMicroserviceInstance(String serviceId, String instanceId) {
-    return RegistryUtils.getResultFromFirstValidServiceRegistry(
-        sr -> sr.getServiceRegistryClient().findServiceInstance(serviceId, instanceId));
+    return localDiscoveryStore.findMicroserviceInstance(serviceId, instanceId);
   }
 
   @Override
   public MicroserviceInstances findServiceInstances(String appId, String serviceName, String versionRule) {
-    return RegistryUtils.findServiceInstances(appId,
-        serviceName,
-        versionRule,
-        revision);
+    return localDiscoveryStore.findServiceInstances(appId, serviceName, versionRule);
   }
 
   @Override

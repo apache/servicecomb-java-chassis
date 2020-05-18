@@ -15,41 +15,47 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.serviceregistry;
+package org.apache.servicecomb.localregistry;
 
 import java.util.Collection;
 
-import org.apache.servicecomb.foundation.common.concurrency.SuppressedRunnableWrapper;
+import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.serviceregistry.Registration;
 import org.apache.servicecomb.serviceregistry.api.registry.BasePath;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
+import org.apache.servicecomb.serviceregistry.event.MicroserviceInstanceRegisteredEvent;
 
 import com.netflix.config.DynamicPropertyFactory;
 
-public class ServiceCenterRegistration implements Registration {
-  public static final String NAME = "service center registration";
+public class LocalRegistration implements Registration {
+  public static final String NAME = "local registration";
 
-  public static final String ENABLED = "servicecomb.service.registry.registration.enabled";
+  public static final String ENABLED = "servicecomb.local.registry.registration.enabled";
+
+  private LocalRegistrationStore localRegistrationStore;
 
   @Override
   public void init() {
-    RegistryUtils.init();
+    localRegistrationStore = new LocalRegistrationStore();
+    localRegistrationStore.init();
   }
 
   @Override
   public void run() {
-    RegistryUtils.run();
+    localRegistrationStore.run();
+    EventManager.getEventBus().post(new MicroserviceInstanceRegisteredEvent());
   }
 
   @Override
   public void destroy() {
-    RegistryUtils.destroy();
+    localRegistrationStore = null;
   }
 
   @Override
   public int getOrder() {
-    return 0;
+    return 100;
   }
 
   @Override
@@ -59,51 +65,38 @@ public class ServiceCenterRegistration implements Registration {
 
   @Override
   public MicroserviceInstance getMicroserviceInstance() {
-    return RegistryUtils.getMicroserviceInstance();
+    return localRegistrationStore.getMicroserviceInstance();
   }
 
   @Override
   public Microservice getMicroservice() {
-    return RegistryUtils.getMicroservice();
+    return localRegistrationStore.getMicroservice();
   }
 
   @Override
   public String getAppId() {
-    return RegistryUtils.getAppId();
+    return localRegistrationStore.getMicroservice().getAppId();
   }
 
   @Override
   public boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {
-    RegistryUtils.executeOnEachServiceRegistry(sr -> new SuppressedRunnableWrapper(() -> {
-      MicroserviceInstance selfInstance = sr.getMicroserviceInstance();
-      sr.getServiceRegistryClient().updateMicroserviceInstanceStatus(
-          selfInstance.getServiceId(),
-          selfInstance.getInstanceId(),
-          status);
-    }).run());
+    localRegistrationStore.getMicroserviceInstance().setStatus(status);
     return true;
   }
 
   @Override
   public void addSchema(String schemaId, String content) {
-    RegistryUtils.executeOnEachServiceRegistry(sr -> {
-      sr.getMicroservice().addSchema(schemaId, content);
-    });
+    localRegistrationStore.getMicroservice().addSchema(schemaId, content);
   }
 
   @Override
   public void addEndpoint(String endpoint) {
-    RegistryUtils.executeOnEachServiceRegistry(sr -> {
-      Microservice microservice = sr.getMicroservice();
-      microservice.getInstance().getEndpoints().add(endpoint);
-    });
+    localRegistrationStore.getMicroserviceInstance().getEndpoints().add(endpoint);
   }
 
   @Override
   public void addBasePath(Collection<BasePath> basePaths) {
-    RegistryUtils.executeOnEachServiceRegistry(sr -> {
-      sr.getMicroservice().getPaths().addAll(basePaths);
-    });
+    localRegistrationStore.getMicroservice().getPaths().addAll(basePaths);
   }
 
   @Override

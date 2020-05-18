@@ -19,13 +19,14 @@ package org.apache.servicecomb.serviceregistry;
 
 import java.util.Collection;
 
+import org.apache.servicecomb.foundation.common.utils.SPIEnabled;
 import org.apache.servicecomb.foundation.common.utils.SPIOrder;
 import org.apache.servicecomb.serviceregistry.api.registry.BasePath;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 
-public interface Registration extends SPIOrder, LifeCycle {
+public interface Registration extends SPIEnabled, SPIOrder, LifeCycle {
   String name();
 
   MicroserviceInstance getMicroserviceInstance();
