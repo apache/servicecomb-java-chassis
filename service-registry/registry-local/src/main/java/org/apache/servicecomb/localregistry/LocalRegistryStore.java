@@ -39,6 +39,8 @@ import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.yaml.snakeyaml.Yaml;
 
+import com.google.common.annotations.VisibleForTesting;
+
 public class LocalRegistryStore {
   private static final String REGISTRY_FILE_NAME = "registry.yaml";
 
@@ -57,6 +59,12 @@ public class LocalRegistryStore {
 
   public LocalRegistryStore() {
 
+  }
+
+  @VisibleForTesting
+  public void initSelfWithMocked(Microservice microservice, MicroserviceInstance microserviceInstance) {
+    this.selfMicroservice = microservice;
+    this.selfMicroserviceInstance = microserviceInstance;
   }
 
   public void init() {
@@ -80,6 +88,10 @@ public class LocalRegistryStore {
       initFromData(is);
     }
 
+    addSelf();
+  }
+
+  private void addSelf() {
     microserviceMap.put(selfMicroservice.getServiceId(), selfMicroservice);
     Map<String, MicroserviceInstance> selfInstanceMap = new HashMap<>(1);
     selfInstanceMap.put(selfMicroserviceInstance.getInstanceId(), selfMicroserviceInstance);

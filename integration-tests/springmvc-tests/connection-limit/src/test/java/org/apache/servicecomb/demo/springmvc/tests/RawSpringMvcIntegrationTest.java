@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.demo.springmvc.tests;
 
-import static org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY;
 import static org.junit.Assert.fail;
 
 import org.apache.servicecomb.core.SCBEngine;
@@ -39,7 +38,6 @@ public class RawSpringMvcIntegrationTest {
   @BeforeClass
   public static void init() throws Exception {
     System.setProperty("servicecomb.uploads.directory", "/tmp");
-    System.setProperty(LOCAL_REGISTRY_FILE_KEY, "notExistJustForceLocal");
     SpringMvcTestMain.main(new String[0]);
   }
 

@@ -30,7 +30,6 @@ public class SimplifiedMappingAnnotationIntegrationTest extends SpringMvcIntegra
   public static void init() {
     System.setProperty("spring.profiles.active", "SimplifiedMapping");
     System.setProperty("servicecomb.uploads.directory", "/tmp");
-    setUpLocalRegistry();
     SpringApplication.run(SpringMvcSpringMain.class);
   }
 

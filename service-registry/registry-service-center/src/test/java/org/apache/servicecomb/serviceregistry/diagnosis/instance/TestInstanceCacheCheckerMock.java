@@ -32,7 +32,7 @@ import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.diagnosis.Status;
-import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
+import org.apache.servicecomb.serviceregistry.registry.LocalServiceRegistryFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,7 +47,7 @@ import mockit.MockUp;
 public class TestInstanceCacheCheckerMock {
   private static final Logger LOGGER = LoggerFactory.getLogger(TestInstanceCacheCheckerWithoutMock.class);
 
-  ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
+  ServiceRegistry serviceRegistry = LocalServiceRegistryFactory.createLocal();
 
   InstanceCacheChecker checker;
 

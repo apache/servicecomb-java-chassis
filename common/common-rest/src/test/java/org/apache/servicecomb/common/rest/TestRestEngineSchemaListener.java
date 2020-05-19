@@ -20,8 +20,10 @@ package org.apache.servicecomb.common.rest;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.common.rest.locator.TestPathSchema;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -40,6 +42,7 @@ public class TestRestEngineSchemaListener {
 
   @BeforeClass
   public static void setup() {
+    ConfigUtil.installDynamicConfig();
     scbEngine = SCBBootstrap.createSCBEngineForTest()
         .addProducerMeta("sid1", new TestPathSchema())
         .run();
@@ -49,6 +52,7 @@ public class TestRestEngineSchemaListener {
   @AfterClass
   public static void teardown() {
     scbEngine.destroy();
+    ArchaiusUtils.resetConfig();
   }
 
   @Test

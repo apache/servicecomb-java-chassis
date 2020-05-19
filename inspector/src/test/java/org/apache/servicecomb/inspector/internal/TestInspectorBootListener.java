@@ -24,7 +24,6 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -38,7 +37,6 @@ public class TestInspectorBootListener {
   @BeforeClass
   public static void setup() {
     ConfigUtil.installDynamicConfig();
-    RegistryUtils.initWithLocalRegistry();
     priorityPropertyManager = new PriorityPropertyManager();
     inspectorConfig = priorityPropertyManager.createConfigObject(InspectorConfig.class);
   }

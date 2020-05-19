@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.demo.pojo.test;
 
-import static org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.greaterThan;
@@ -48,10 +47,6 @@ import org.junit.Test;
 
 @Ignore
 public class PojoIntegrationTestBase {
-
-  protected static void setUpLocalRegistry() {
-    System.setProperty(LOCAL_REGISTRY_FILE_KEY, "notExistJustForceLocal");
-  }
 
   @Test
   public void remoteHelloPojo_sayHello() {

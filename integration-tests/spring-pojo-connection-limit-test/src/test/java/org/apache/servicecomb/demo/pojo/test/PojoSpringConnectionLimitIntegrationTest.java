@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.demo.pojo.test;
 
-import static org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY;
 import static org.junit.Assert.fail;
 
 import org.junit.Assert;
@@ -30,7 +29,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 public class PojoSpringConnectionLimitIntegrationTest {
   @BeforeClass
   public static void setUpClass() throws Exception {
-    System.setProperty(LOCAL_REGISTRY_FILE_KEY, "notExistJustForceLocal");
     PojoTestMain.main(null);
   }
 

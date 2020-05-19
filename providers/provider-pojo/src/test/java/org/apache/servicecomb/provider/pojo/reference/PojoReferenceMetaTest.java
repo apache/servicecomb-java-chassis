@@ -20,14 +20,28 @@ package org.apache.servicecomb.provider.pojo.reference;
 import static org.hamcrest.core.IsInstanceOf.instanceOf;
 import static org.junit.Assert.assertThat;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.pojo.IPerson;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class PojoReferenceMetaTest {
+  @Before
+  public void setUp() {
+    ConfigUtil.installDynamicConfig();
+  }
+
+  @After
+  public void teardown() {
+    ArchaiusUtils.resetConfig();
+  }
+
   @Test
   public void testHasConsumerInterface() {
     SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();

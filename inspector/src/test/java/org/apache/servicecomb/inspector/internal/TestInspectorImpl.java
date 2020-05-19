@@ -51,7 +51,6 @@ import org.apache.servicecomb.inspector.internal.model.DynamicPropertyView;
 import org.apache.servicecomb.inspector.internal.model.PriorityPropertyView;
 import org.apache.servicecomb.inspector.internal.swagger.SchemaFormat;
 import org.apache.servicecomb.serviceregistry.RegistrationManager;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
@@ -79,7 +78,6 @@ public class TestInspectorImpl {
   @BeforeClass
   public static void setup() throws IOException {
     ConfigUtil.installDynamicConfig();
-    RegistryUtils.initWithLocalRegistry();
     schemas.put("schema1", IOUtils
         .toString(TestInspectorImpl.class.getClassLoader().getResource("schema1.yaml"), StandardCharsets.UTF_8));
     schemas.put("schema2", IOUtils

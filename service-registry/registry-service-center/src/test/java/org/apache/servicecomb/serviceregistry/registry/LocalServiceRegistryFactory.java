@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.serviceregistry.registry;
 
+import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.foundation.common.event.SimpleEventBus;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -24,20 +25,28 @@ import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 
 import com.google.common.eventbus.EventBus;
 
-public final class ServiceRegistryFactory {
-  private ServiceRegistryFactory() {
+public class LocalServiceRegistryFactory {
+  private static final String REGISTRY_FILE = "registry.yaml";
+
+  public static ServiceRegistry createLocal() {
+    return createLocal(REGISTRY_FILE);
   }
 
-  public static ServiceRegistry create(ServiceRegistryConfig serviceRegistryConfig,
-      MicroserviceDefinition microserviceDefinition) {
-    return create(null, serviceRegistryConfig, microserviceDefinition);
+  public static ServiceRegistry createLocal(String localFile) {
+    EventBus eventBus = new SimpleEventBus();
+    ServiceRegistryConfig serviceRegistryConfig = ServiceRegistryConfig.INSTANCE;
+    MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
+    loader.loadAndSort();
+
+    MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
+    return new LocalServiceRegistry(eventBus, serviceRegistryConfig, microserviceDefinition).localFile(localFile);
   }
 
-  public static ServiceRegistry create(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
+  public static ServiceRegistry createLocal(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
       MicroserviceDefinition microserviceDefinition) {
     if (null == eventBus) {
       eventBus = new SimpleEventBus();
     }
-    return new RemoteServiceRegistry(eventBus, serviceRegistryConfig, microserviceDefinition);
+    return new LocalServiceRegistry(eventBus, serviceRegistryConfig, microserviceDefinition).localFile(REGISTRY_FILE);
   }
 }

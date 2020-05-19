@@ -22,7 +22,8 @@ service_description:
 servicecomb:
   service:
     registry:
-      address: http://127.0.0.1:30100
+      registration.enabled: false
+      discovery.enabled: false
   rest:
     address: 0.0.0.0:7070
     server:

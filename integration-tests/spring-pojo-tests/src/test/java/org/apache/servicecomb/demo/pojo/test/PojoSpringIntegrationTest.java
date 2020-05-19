@@ -28,7 +28,6 @@ public class PojoSpringIntegrationTest extends PojoIntegrationTestBase {
 
   @BeforeClass
   public static void setUpClass() throws Exception {
-    setUpLocalRegistry();
     PojoTestMain.main(null);
   }
 

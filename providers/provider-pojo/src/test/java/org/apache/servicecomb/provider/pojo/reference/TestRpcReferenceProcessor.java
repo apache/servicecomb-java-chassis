@@ -17,12 +17,16 @@
 
 package org.apache.servicecomb.provider.pojo.reference;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.spring.SpringUtils;
 import org.apache.servicecomb.provider.pojo.Person;
 import org.apache.servicecomb.provider.pojo.PersonReference;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
@@ -30,6 +34,16 @@ import mockit.Injectable;
 
 public class TestRpcReferenceProcessor {
   RpcReferenceProcessor consumers = new RpcReferenceProcessor();
+
+  @Before
+  public void setUp() {
+    ConfigUtil.installDynamicConfig();
+  }
+
+  @After
+  public void teardown() {
+    ArchaiusUtils.resetConfig();
+  }
 
   @Test
   public void postProcessAfterInitialization() {

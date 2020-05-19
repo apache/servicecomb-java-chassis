@@ -17,11 +17,13 @@
 
 package org.apache.servicecomb.loadbalance.filter;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.transport.TransportManager;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.junit.AfterClass;
@@ -44,6 +46,7 @@ public class TestServerDiscoveryFilter {
 
   @BeforeClass
   public static void setup() {
+    ConfigUtil.installDynamicConfig();
     scbEngine = SCBBootstrap.createSCBEngineForTest().run();
     transportManager = scbEngine.getTransportManager();
   }
@@ -51,6 +54,7 @@ public class TestServerDiscoveryFilter {
   @AfterClass
   public static void teardown() {
     scbEngine.destroy();
+    ArchaiusUtils.resetConfig();
   }
 
   @Test

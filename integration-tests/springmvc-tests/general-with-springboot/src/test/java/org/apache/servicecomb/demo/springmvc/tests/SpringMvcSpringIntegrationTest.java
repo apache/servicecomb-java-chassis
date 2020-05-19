@@ -29,7 +29,6 @@ public class SpringMvcSpringIntegrationTest extends SpringMvcIntegrationTestBase
   @BeforeClass
   public static void init() {
     System.setProperty("servicecomb.uploads.directory", "/tmp");
-    setUpLocalRegistry();
     SpringApplication.run(SpringMvcSpringMain.class);
   }
 

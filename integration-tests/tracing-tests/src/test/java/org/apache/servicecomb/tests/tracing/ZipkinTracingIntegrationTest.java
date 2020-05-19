@@ -43,8 +43,6 @@ public class ZipkinTracingIntegrationTest extends TracingTestBase {
     assertThat(entity.getStatusCode(), is(OK));
     assertThat(entity.getBody(), is("hello world, bonjour le monde, hi pojo"));
 
-    TimeUnit.MILLISECONDS.sleep(1000);
-
     Collection<String> tracingMessages = appender.pollLogs(".*\\[\\w+/\\w+/\\w*\\]\\s+INFO.*in /.*");
     assertThat(tracingMessages.size(), greaterThanOrEqualTo(2));
 

@@ -28,7 +28,6 @@ import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.provider.pojo.definition.PojoConsumerMeta;
 import org.apache.servicecomb.serviceregistry.DiscoveryManager;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -53,7 +52,6 @@ public class TestInvoker {
   public void setUp() {
     ConfigUtil.installDynamicConfig();
     DiscoveryManager.renewInstance();
-    RegistryUtils.initWithLocalRegistry();
   }
 
   @After
