@@ -23,7 +23,6 @@ public class RawPojoIntegrationTest extends PojoIntegrationTestBase {
 
   @BeforeClass
   public static void setUp() throws Exception {
-    setUpLocalRegistry();
     PojoTestMain.main(new String[0]);
   }
 }

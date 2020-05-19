@@ -33,6 +33,7 @@ import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
+import org.apache.servicecomb.serviceregistry.registry.LocalServiceRegistryFactory;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -80,7 +81,7 @@ public class TestRegistry {
   @SuppressWarnings("deprecation")
   @Test
   public void testDelegate() {
-    ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
+    ServiceRegistry serviceRegistry = LocalServiceRegistryFactory.createLocal();
     serviceRegistry.init();
     serviceRegistry.run();
 

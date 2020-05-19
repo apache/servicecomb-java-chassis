@@ -29,6 +29,7 @@ import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
+import org.apache.servicecomb.serviceregistry.registry.LocalServiceRegistryFactory;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import org.junit.Assert;
 import org.junit.Test;
@@ -86,7 +87,7 @@ public class TestPropertiesLoader {
 
   @Test
   public void testMicroservicePropertiesLoader() throws Exception {
-    Microservice microservice = ServiceRegistryFactory.createLocal().getMicroservice();
+    Microservice microservice = LocalServiceRegistryFactory.createLocal().getMicroservice();
     Map<String, String> expectedMap = new HashMap<>();
     expectedMap.put("key1", "value1");
     expectedMap.put("key2", "value2");
@@ -96,7 +97,7 @@ public class TestPropertiesLoader {
 
   @Test
   public void testInstancePropertiesLoader() {
-    Microservice microservice = ServiceRegistryFactory.createLocal().getMicroservice();
+    Microservice microservice = LocalServiceRegistryFactory.createLocal().getMicroservice();
     MicroserviceInstance instance = microservice.getInstance();
     Map<String, String> expectedMap = new HashMap<>();
     expectedMap.put("key0", "value0");

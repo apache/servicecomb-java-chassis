@@ -23,7 +23,7 @@ import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceManager;
-import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
+import org.apache.servicecomb.serviceregistry.registry.LocalServiceRegistryFactory;
 import org.junit.AfterClass;
 import org.junit.Before;
 
@@ -64,7 +64,7 @@ public class TestRegistryBase {
     // avoid write too many logs
     Logger.getRootLogger().setLevel(Level.OFF);
 
-    serviceRegistry = ServiceRegistryFactory.createLocal("registry.yaml");
+    serviceRegistry = LocalServiceRegistryFactory.createLocal("registry.yaml");
     serviceRegistry.init();
 
     DiscoveryManager.renewInstance();

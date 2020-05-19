@@ -28,7 +28,7 @@ public class TestLocalServiceRegistry {
 
   @Test
   public void testLifeCycle() {
-    ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
+    ServiceRegistry serviceRegistry = LocalServiceRegistryFactory.createLocal();
     serviceRegistry.init();
 
     Assert.assertNull(serviceRegistry.getMicroserviceInstance().getInstanceId());
@@ -43,7 +43,7 @@ public class TestLocalServiceRegistry {
 
   @Test
   public void testUpdateProperties() {
-    ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
+    ServiceRegistry serviceRegistry = LocalServiceRegistryFactory.createLocal();
     serviceRegistry.init();
     serviceRegistry.run();
 
@@ -76,7 +76,7 @@ public class TestLocalServiceRegistry {
 
   @Test
   public void testSchema() {
-    ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
+    ServiceRegistry serviceRegistry = LocalServiceRegistryFactory.createLocal();
     Microservice microservice = serviceRegistry.getMicroservice();
     microservice.addSchema("s1", "s1-content");
     serviceRegistry.init();
@@ -103,7 +103,7 @@ public class TestLocalServiceRegistry {
 
   @Test
   public void registerMicroservice() {
-    ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
+    ServiceRegistry serviceRegistry = LocalServiceRegistryFactory.createLocal();
     serviceRegistry.init();
     serviceRegistry.run();
 

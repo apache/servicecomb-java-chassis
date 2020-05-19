@@ -32,9 +32,6 @@ import com.google.common.eventbus.EventBus;
 
 import mockit.Mocked;
 
-/**
- * Created by   on 2017/3/31.
- */
 public class TestServiceRegistryFactory {
   @Test
   // mock ServiceRegistryClientImpl to avoid send request to remote SC
@@ -56,14 +53,12 @@ public class TestServiceRegistryFactory {
         microserviceDefinition);
     Assert.assertTrue(serviceRegistry instanceof RemoteServiceRegistry);
 
-    System.setProperty("local.registry.file", "/tmp/test.yaml");
-    serviceRegistry = ServiceRegistryFactory.create(eventBus, serviceRegistryConfig, microserviceDefinition);
+    serviceRegistry = LocalServiceRegistryFactory.createLocal(eventBus, serviceRegistryConfig, microserviceDefinition);
     serviceRegistry.init();
     client = serviceRegistry.getServiceRegistryClient();
     Assert.assertTrue(client instanceof LocalServiceRegistryClientImpl);
-    Assert.assertTrue(ServiceRegistryFactory.create(eventBus,
+    Assert.assertTrue(LocalServiceRegistryFactory.createLocal(eventBus,
         serviceRegistryConfig,
         microserviceDefinition) instanceof LocalServiceRegistry);
-    System.clearProperty("local.registry.file");
   }
 }

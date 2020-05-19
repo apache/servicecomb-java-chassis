@@ -31,6 +31,7 @@ import org.apache.servicecomb.serviceregistry.cache.InstanceCache;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.registry.AbstractServiceRegistry;
+import org.apache.servicecomb.serviceregistry.registry.LocalServiceRegistryFactory;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import org.junit.Assert;
 import org.junit.Before;
@@ -51,7 +52,7 @@ public class TestIpPortManager {
   @Before
   public void setup() {
     ConfigUtil.createLocalConfig();
-    serviceRegistry = (AbstractServiceRegistry) ServiceRegistryFactory.createLocal();
+    serviceRegistry = (AbstractServiceRegistry) LocalServiceRegistryFactory.createLocal();
     serviceRegistry.setServiceRegistryClient(srClient);
     serviceRegistry.init();
   }

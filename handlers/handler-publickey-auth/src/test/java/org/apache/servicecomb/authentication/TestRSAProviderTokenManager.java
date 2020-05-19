@@ -28,7 +28,6 @@ import org.apache.servicecomb.foundation.common.utils.RSAUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.token.RSAKeypair4Auth;
 import org.apache.servicecomb.serviceregistry.RegistrationManager;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.MicroserviceInstanceCache;
@@ -49,7 +48,6 @@ public class TestRSAProviderTokenManager {
   @Before
   public void setUp() {
     ConfigUtil.installDynamicConfig();
-    RegistryUtils.initWithLocalRegistry();
   }
 
   @After

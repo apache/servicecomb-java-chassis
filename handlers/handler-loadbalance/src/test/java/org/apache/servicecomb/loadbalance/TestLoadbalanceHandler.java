@@ -36,7 +36,6 @@ import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
@@ -45,10 +44,8 @@ import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -97,7 +94,6 @@ public class TestLoadbalanceHandler {
   @Before
   public void setUp() {
     ConfigUtil.installDynamicConfig();
-    RegistryUtils.initWithLocalRegistry();
     scbEngine = SCBBootstrap.createSCBEngineForTest().run();
     transportManager = scbEngine.getTransportManager();
 
@@ -142,7 +138,6 @@ public class TestLoadbalanceHandler {
   public void teardown() {
     scbEngine.destroy();
     ArchaiusUtils.resetConfig();
-
   }
 
   @Test

@@ -22,7 +22,6 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.junit.After;
 import org.junit.Assert;
@@ -33,8 +32,8 @@ public class TestServicePathManager {
   @Before
   public void setUp() {
     ConfigUtil.installDynamicConfig();
-    RegistryUtils.initWithLocalRegistry();
   }
+
   @After
   public void tearDown() {
     ArchaiusUtils.resetConfig();

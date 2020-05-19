@@ -32,9 +32,11 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -159,6 +161,7 @@ public class TestRestOperationMeta {
 
   @BeforeClass
   public static void classSetup() {
+    ConfigUtil.installDynamicConfig();
     scbEngine = SCBBootstrap.createSCBEngineForTest()
         .addProducerMeta("sid1", new RestOperationMetaSchema())
         .run();
@@ -168,6 +171,7 @@ public class TestRestOperationMeta {
   @AfterClass
   public static void classTeardown() {
     scbEngine.destroy();
+    ArchaiusUtils.resetConfig();
   }
 
   private void findOperation(String operationId) {

@@ -82,14 +82,6 @@ public final class RegistryUtils {
     initAggregateServiceRegistryCache();
   }
 
-  public static synchronized void initWithLocalRegistry() {
-    MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
-    MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
-    initializeLocalServiceRegistries(microserviceDefinition);
-
-    initAggregateServiceRegistryCache();
-  }
-
   private static void initAggregateServiceRegistryCache() {
     ArrayList<ServiceRegistry> serviceRegistries = new ArrayList<>();
     executeOnEachServiceRegistry(serviceRegistries::add);
@@ -109,12 +101,6 @@ public final class RegistryUtils {
     initializeServiceRegistries(microserviceDefinition);
   }
 
-  private static void initializeLocalServiceRegistries(MicroserviceDefinition microserviceDefinition) {
-    serviceRegistry =
-        ServiceRegistryFactory.createLocal();
-    initializeServiceRegistries(microserviceDefinition);
-  }
-
   private static void initializeServiceRegistries(MicroserviceDefinition microserviceDefinition) {
     EXTRA_SERVICE_REGISTRY_CONFIGS.forEach((k, v) -> {
       ServiceRegistry serviceRegistry = ServiceRegistryFactory.create(v, microserviceDefinition);
@@ -130,14 +116,6 @@ public final class RegistryUtils {
 
   public static void destroy() {
     executeOnEachServiceRegistry(ServiceRegistry::destroy);
-  }
-
-  /**
-   * @deprecated Replace by {@link #destroy()}
-   */
-  @Deprecated
-  public static void destory() {
-    destroy();
   }
 
   public static ServiceRegistry getServiceRegistry() {

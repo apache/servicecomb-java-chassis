@@ -18,7 +18,6 @@
 package org.apache.servicecomb.demo.springmvc.tests;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
-import static org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl.LOCAL_REGISTRY_FILE_KEY;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -69,9 +68,7 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.client.UnknownHttpStatusCodeException;
 
 @Ignore
 @SuppressWarnings("deprecation")
@@ -89,10 +86,6 @@ public class SpringMvcIntegrationTestBase {
   private final String codeFirstUrl = baseUrl + "codeFirstSpringmvc/";
 
   private final String controllerUrl = baseUrl + "springmvc/controller/";
-
-  public static void setUpLocalRegistry() {
-    System.setProperty(LOCAL_REGISTRY_FILE_KEY, "notExistJustForceLocal");
-  }
 
   @Test
   public void ableToQueryAtRootBasePath() throws Exception {
@@ -642,7 +635,8 @@ public class SpringMvcIntegrationTestBase {
       assertFalse(true);
     } catch (HttpServerErrorException e) {
       assertThat(e.getRawStatusCode(), is(500));
-      assertThat(e.getResponseBodyAsString(), is("{\"message\":\"Unexpected exception when processing the request.\"}"));
+      assertThat(e.getResponseBodyAsString(),
+          is("{\"message\":\"Unexpected exception when processing the request.\"}"));
     }
   }
 

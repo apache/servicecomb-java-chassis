@@ -18,9 +18,11 @@
 package org.apache.servicecomb.common.rest.locator;
 
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -43,6 +45,7 @@ public class TestMicroservicePaths {
 
   @BeforeClass
   public static void setup() {
+    ConfigUtil.installDynamicConfig();
     scbEngine = SCBBootstrap.createSCBEngineForTest()
         .addProducerMeta("sid1", new TestPathSchema())
         .run();
@@ -54,6 +57,7 @@ public class TestMicroservicePaths {
   @AfterClass
   public static void teardown() {
     scbEngine.destroy();
+    ArchaiusUtils.resetConfig();
   }
 
   @Test

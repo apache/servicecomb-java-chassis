@@ -28,7 +28,7 @@ import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.diagnosis.Status;
-import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
+import org.apache.servicecomb.serviceregistry.registry.LocalServiceRegistryFactory;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -41,7 +41,7 @@ import io.vertx.core.json.Json;
 public class TestInstanceCacheCheckerWithoutMock {
   private static final Logger LOGGER = LoggerFactory.getLogger(TestInstanceCacheCheckerWithoutMock.class);
 
-  ServiceRegistry serviceRegistry = ServiceRegistryFactory.createLocal();
+  ServiceRegistry serviceRegistry = LocalServiceRegistryFactory.createLocal();
 
   InstanceCacheChecker checker;
 
