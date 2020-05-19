@@ -34,11 +34,10 @@ public class LocalRegistration implements Registration {
 
   public static final String ENABLED = "servicecomb.local.registry.registration.enabled";
 
-  private LocalRegistrationStore localRegistrationStore;
+  private LocalRegistryStore localRegistrationStore = LocalRegistryStore.INSTANCE;
 
   @Override
   public void init() {
-    localRegistrationStore = new LocalRegistrationStore();
     localRegistrationStore.init();
   }
 
@@ -50,7 +49,7 @@ public class LocalRegistration implements Registration {
 
   @Override
   public void destroy() {
-    localRegistrationStore = null;
+
   }
 
   @Override
@@ -65,38 +64,38 @@ public class LocalRegistration implements Registration {
 
   @Override
   public MicroserviceInstance getMicroserviceInstance() {
-    return localRegistrationStore.getMicroserviceInstance();
+    return localRegistrationStore.getSelfMicroserviceInstance();
   }
 
   @Override
   public Microservice getMicroservice() {
-    return localRegistrationStore.getMicroservice();
+    return localRegistrationStore.getSelfMicroservice();
   }
 
   @Override
   public String getAppId() {
-    return localRegistrationStore.getMicroservice().getAppId();
+    return localRegistrationStore.getSelfMicroservice().getAppId();
   }
 
   @Override
   public boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {
-    localRegistrationStore.getMicroserviceInstance().setStatus(status);
+    localRegistrationStore.getSelfMicroserviceInstance().setStatus(status);
     return true;
   }
 
   @Override
   public void addSchema(String schemaId, String content) {
-    localRegistrationStore.getMicroservice().addSchema(schemaId, content);
+    localRegistrationStore.getSelfMicroservice().addSchema(schemaId, content);
   }
 
   @Override
   public void addEndpoint(String endpoint) {
-    localRegistrationStore.getMicroserviceInstance().getEndpoints().add(endpoint);
+    localRegistrationStore.getSelfMicroserviceInstance().getEndpoints().add(endpoint);
   }
 
   @Override
   public void addBasePath(Collection<BasePath> basePaths) {
-    localRegistrationStore.getMicroservice().getPaths().addAll(basePaths);
+    localRegistrationStore.getSelfMicroservice().getPaths().addAll(basePaths);
   }
 
   @Override

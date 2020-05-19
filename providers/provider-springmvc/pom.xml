@@ -35,7 +35,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>registry-service-center</artifactId>
+      <artifactId>registry-local</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

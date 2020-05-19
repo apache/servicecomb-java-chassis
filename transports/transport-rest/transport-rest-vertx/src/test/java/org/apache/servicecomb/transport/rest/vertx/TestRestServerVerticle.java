@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
@@ -63,6 +64,7 @@ public class TestRestServerVerticle {
   @SuppressWarnings("deprecation")
   // TODO: vert.x 3.8.3 does not update startListen to promise, so we keep use deprecated API now. update in newer version.
   public void setUp() {
+    ConfigUtil.installDynamicConfig();
     instance = new RestServerVerticle();
     startFuture = Future.future();
 
@@ -74,6 +76,7 @@ public class TestRestServerVerticle {
     instance = null;
     startFuture = null;
     SCBEngine.getInstance().destroy();
+    ArchaiusUtils.resetConfig();
   }
 
   @Test
