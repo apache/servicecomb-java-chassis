@@ -21,9 +21,11 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.Holder;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -38,6 +40,8 @@ public class TestRestServlet {
 
   @Before
   public void setUp() {
+    ConfigUtil.installDynamicConfig();
+
     restservlet = new RestServlet();
 
     SCBBootstrap.createSCBEngineForTest();
@@ -47,6 +51,7 @@ public class TestRestServlet {
   public void tearDown() {
     restservlet = null;
     SCBEngine.getInstance().destroy();
+    ArchaiusUtils.resetConfig();
   }
 
   @Test

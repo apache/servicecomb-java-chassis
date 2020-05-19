@@ -40,5 +40,8 @@ public class Application {
         .getForObject("cse://demo-local-registry-server/register/url/prefix/getName?name=2",
             String.class));
     TestMgr.summary();
+    if (!TestMgr.errors().isEmpty()) {
+      throw new IllegalStateException("tests failed");
+    }
   }
 }

@@ -29,24 +29,23 @@ public class LocalDiscovery implements Discovery {
 
   public static final String ENABLED = "servicecomb.local.registry.discovery.enabled";
 
-  private LocalDiscoveryStore localDiscoveryStore;
+  private LocalRegistryStore localDiscoveryStore = LocalRegistryStore.INSTANCE;
 
   private String revision;
 
   @Override
   public void init() {
-    localDiscoveryStore = new LocalDiscoveryStore();
-    localDiscoveryStore.init();
+    // done in registration
   }
 
   @Override
   public void run() {
-    localDiscoveryStore.run();
+    // done in registration
   }
 
   @Override
   public void destroy() {
-    localDiscoveryStore = null;
+    // done in registration
   }
 
   @Override

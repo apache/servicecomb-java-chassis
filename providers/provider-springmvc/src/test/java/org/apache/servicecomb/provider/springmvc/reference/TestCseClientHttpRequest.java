@@ -24,7 +24,8 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.DiscoveryManager;
+import org.apache.servicecomb.serviceregistry.RegistrationManager;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -43,7 +44,7 @@ public class TestCseClientHttpRequest {
   @BeforeClass
   public static void classSetup() {
     ConfigUtil.installDynamicConfig();
-    RegistryUtils.initWithLocalRegistry();
+
     scbEngine = SCBBootstrap.createSCBEngineForTest()
         .addProducerMeta("sid1", new SpringmvcImpl()).run();
   }
@@ -51,6 +52,7 @@ public class TestCseClientHttpRequest {
   @AfterClass
   public static void classTeardown() {
     scbEngine.destroy();
+    DiscoveryManager.renewInstance();
     ArchaiusUtils.resetConfig();
   }
 
@@ -88,7 +90,7 @@ public class TestCseClientHttpRequest {
 
     client.execute();
 
-    Assert.assertArrayEquals(body, (byte[] )holder.value.getInvocationArguments().get("input"));
+    Assert.assertArrayEquals(body, (byte[]) holder.value.getInvocationArguments().get("input"));
     Assert.assertEquals("123", holder.value.getInvocationArguments().get("token"));
   }
 }

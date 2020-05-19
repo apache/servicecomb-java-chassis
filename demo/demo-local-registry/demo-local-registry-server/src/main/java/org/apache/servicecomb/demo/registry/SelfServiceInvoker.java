@@ -14,17 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.core.bootstrap;
 
-import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.serviceregistry.DiscoveryManager;
-import org.apache.servicecomb.serviceregistry.RegistrationManager;
+package org.apache.servicecomb.demo.registry;
 
-public class SCBBootstrap {
-  public static SCBEngine createSCBEngineForTest() {
-    RegistrationManager.INSTANCE.init();
-    DiscoveryManager.INSTANCE.init();
-    return new SCBEngineForTest();
+import java.util.concurrent.CountDownLatch;
+
+import org.apache.servicecomb.core.BootListener;
+import org.apache.servicecomb.provider.pojo.RpcReference;
+import org.springframework.stereotype.Component;
+
+@Component("SelfServiceInvoker")
+public class SelfServiceInvoker implements BootListener {
+  interface IServerEndpoint {
+    String getName(String name);
+  }
+
+  @RpcReference(microserviceName = "demo-local-registry-server", schemaId = "ServerEndpoint")
+  IServerEndpoint endpoint;
+
+  public CountDownLatch latch = new CountDownLatch(1);
+
+  public String result = "";
+
+  public void onAfterRegistry(BootEvent event) {
+    result = endpoint.getName("hello");
+    latch.countDown();
   }
 }

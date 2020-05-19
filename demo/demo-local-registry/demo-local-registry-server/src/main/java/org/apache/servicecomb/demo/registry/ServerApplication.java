@@ -17,6 +17,10 @@
 
 package org.apache.servicecomb.demo.registry;
 
+import java.util.concurrent.TimeUnit;
+
+import org.apache.servicecomb.demo.TestMgr;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -27,5 +31,14 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 public class ServerApplication {
   public static void main(final String[] args) throws Exception {
     new SpringApplicationBuilder().sources(ServerApplication.class).web(WebApplicationType.SERVLET).build().run(args);
+
+    SelfServiceInvoker invoker = BeanUtils.getBean("SelfServiceInvoker");
+    invoker.latch.await(10, TimeUnit.SECONDS);
+    TestMgr.check(invoker.result, "hello");
+
+    TestMgr.summary();
+    if (!TestMgr.errors().isEmpty()) {
+      System.exit(1);
+    }
   }
 }

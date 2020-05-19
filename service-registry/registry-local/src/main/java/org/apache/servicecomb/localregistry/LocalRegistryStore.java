@@ -21,6 +21,7 @@ import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,14 +29,24 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
+import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
 import org.yaml.snakeyaml.Yaml;
 
-public class LocalDiscoveryStore {
+public class LocalRegistryStore {
   private static final String REGISTRY_FILE_NAME = "registry.yaml";
+
+  public static final LocalRegistryStore INSTANCE = new LocalRegistryStore();
+
+  private Microservice selfMicroservice;
+
+  private MicroserviceInstance selfMicroserviceInstance;
 
   // key is microservice id
   private Map<String, Microservice> microserviceMap = new ConcurrentHashMap<>();
@@ -44,20 +55,43 @@ public class LocalDiscoveryStore {
   // second key is instance id
   private Map<String, Map<String, MicroserviceInstance>> microserviceInstanceMap = new ConcurrentHashMap<>();
 
-  public LocalDiscoveryStore() {
+  public LocalRegistryStore() {
 
   }
 
   public void init() {
-
+    MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
+    MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
+    MicroserviceFactory microserviceFactory = new MicroserviceFactory();
+    selfMicroservice = microserviceFactory.create(microserviceDefinition);
+    selfMicroserviceInstance = selfMicroservice.getInstance();
+    microserviceMap.clear();
+    microserviceInstanceMap.clear();
   }
 
   public void run() {
+    selfMicroservice.setServiceId("[local]-[" + selfMicroservice.getAppId()
+        + "]-[" + selfMicroservice.getServiceName() + "]");
+    selfMicroserviceInstance.setInstanceId(selfMicroservice.getServiceId());
+    selfMicroserviceInstance.setServiceId(selfMicroservice.getServiceId());
+
     InputStream is = this.getClass().getClassLoader().getResourceAsStream(REGISTRY_FILE_NAME);
-    if (is == null) {
-      return;
+    if (is != null) {
+      initFromData(is);
     }
-    initFromData(is);
+
+    microserviceMap.put(selfMicroservice.getServiceId(), selfMicroservice);
+    Map<String, MicroserviceInstance> selfInstanceMap = new HashMap<>(1);
+    selfInstanceMap.put(selfMicroserviceInstance.getInstanceId(), selfMicroserviceInstance);
+    microserviceInstanceMap.put(selfMicroservice.getServiceId(), selfInstanceMap);
+  }
+
+  public Microservice getSelfMicroservice() {
+    return selfMicroservice;
+  }
+
+  public MicroserviceInstance getSelfMicroserviceInstance() {
+    return selfMicroserviceInstance;
   }
 
   private void initFromData(InputStream is) {

@@ -53,8 +53,8 @@
       <artifactId>java-chassis-spring-boot-starter-servlet</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>inspector</artifactId>
+      <groupId>org.apache.servicecomb.demo</groupId>
+      <artifactId>demo-schema</artifactId>
     </dependency>
 
   </dependencies>
