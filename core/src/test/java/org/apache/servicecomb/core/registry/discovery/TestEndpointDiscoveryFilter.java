@@ -15,14 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.core.filter;
+package org.apache.servicecomb.core.registry.discovery;
 
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.junit.After;
@@ -41,16 +43,20 @@ public class TestEndpointDiscoveryFilter {
   @Mocked
   Invocation invocation;
 
-  SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest();
+  SCBEngine scbEngine;
 
   @Before
   public void setup() {
+    ArchaiusUtils.resetConfig();
+    ConfigUtil.installDynamicConfig();
     context.setInputParameters(invocation);
+    scbEngine = SCBBootstrap.createSCBEngineForTest();
   }
 
   @After
   public void teardown() {
     scbEngine.destroy();
+    ArchaiusUtils.resetConfig();
   }
 
   @Test

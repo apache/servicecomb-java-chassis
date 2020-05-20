@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.core.filter;
+package org.apache.servicecomb.core.registry.discovery;
 
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Invocation;
@@ -33,7 +33,7 @@ public class EndpointDiscoveryFilter extends AbstractEndpointDiscoveryFilter {
 
   @Override
   public int getOrder() {
-    return (int) Short.MAX_VALUE;
+    return Short.MAX_VALUE;
   }
 
   @Override
