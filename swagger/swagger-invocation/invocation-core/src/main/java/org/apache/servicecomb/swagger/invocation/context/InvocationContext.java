@@ -36,6 +36,8 @@ public class InvocationContext {
 
   protected Map<String, Object> localContext = new HashMap<>();
 
+  protected TransportContext transportContext;
+
   public InvocationContext() {
     httpStatus = Status.OK;
   }
@@ -125,5 +127,14 @@ public class InvocationContext {
 
   public void setStatus(int statusCode) {
     this.httpStatus = statusMgr.getOrCreateByStatusCode(statusCode);
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T extends TransportContext> T getTransportContext() {
+    return (T) transportContext;
+  }
+
+  public void setTransportContext(TransportContext transportContext) {
+    this.transportContext = transportContext;
   }
 }

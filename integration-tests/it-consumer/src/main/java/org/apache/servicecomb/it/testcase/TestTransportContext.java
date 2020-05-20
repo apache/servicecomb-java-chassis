@@ -14,22 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.it.testcase;
 
-package org.apache.servicecomb.common.rest;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
+import org.apache.servicecomb.it.Consumers;
+import org.junit.Test;
 
-import io.vertx.ext.web.RoutingContext;
+public class TestTransportContext {
+  interface TransportContextIntf {
+    String context();
+  }
 
-public class VertxRestInvocation extends RestProducerInvocation {
-  @Override
-  protected void createInvocation() {
-    super.createInvocation();
+  static Consumers<TransportContextIntf> consumers = new Consumers<>("transport-context", TransportContextIntf.class);
 
-    RoutingContext routingContext = ((VertxServerRequestToHttpServletRequest) this.requestEx).getContext();
-    VertxHttpTransportContext transportContext = new VertxHttpTransportContext(routingContext, requestEx, responseEx);
-    
-    invocation.setTransportContext(transportContext);
-    routingContext.put(RestConst.REST_INVOCATION_CONTEXT, this.invocation);
+  public static String expectName;
+
+  @Test
+  public void should_get_transport_context_name() {
+    assertThat(consumers.getIntf().context()).isEqualTo(expectName);
   }
 }

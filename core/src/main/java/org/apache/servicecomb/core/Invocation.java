@@ -336,6 +336,7 @@ public class Invocation extends SwaggerInvocation {
     this.invocationRuntimeType.setSuccessResponseType(javaType);
   }
 
+  @Override
   public String getInvocationQualifiedName() {
     return invocationType.name() + " " + getRealTransportName() + " "
         + getOperationMeta().getMicroserviceQualifiedName();
@@ -382,6 +383,7 @@ public class Invocation extends SwaggerInvocation {
 
   public void onStart(HttpServletRequestEx requestEx, long start) {
     this.requestEx = requestEx;
+
     onStart(start);
   }
 
