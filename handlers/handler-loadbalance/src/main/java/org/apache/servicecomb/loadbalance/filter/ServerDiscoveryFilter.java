@@ -19,7 +19,7 @@ package org.apache.servicecomb.loadbalance.filter;
 
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.core.filter.EndpointDiscoveryFilter;
+import org.apache.servicecomb.core.registry.discovery.EndpointDiscoveryFilter;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.cache.CacheEndpoint;

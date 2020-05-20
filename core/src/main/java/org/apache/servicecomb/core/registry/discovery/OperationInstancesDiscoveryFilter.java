@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.core.filter;
+package org.apache.servicecomb.core.registry.discovery;
 
 import java.util.Comparator;
 import java.util.HashMap;

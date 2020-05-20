@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.core.filter;
+package org.apache.servicecomb.core.registry.discovery;
 
 public class TestOperationInstancesDiscoveryFilter {
 //  @SwaggerDefinition(basePath = "/v1")
