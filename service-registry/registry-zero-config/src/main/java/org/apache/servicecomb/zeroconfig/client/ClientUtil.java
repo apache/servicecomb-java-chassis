@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.serviceregistry.client;
+package org.apache.servicecomb.zeroconfig.client;
 
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
-import org.apache.servicecomb.serviceregistry.server.ServerMicroserviceInstance;
+import org.apache.servicecomb.zeroconfig.server.ServerMicroserviceInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import static org.apache.servicecomb.serviceregistry.ZeroConfigRegistryConstants.*;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.*;
 
 public class ClientUtil {
 

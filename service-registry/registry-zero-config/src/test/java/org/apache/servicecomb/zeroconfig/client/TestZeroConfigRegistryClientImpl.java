@@ -14,20 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.serviceregistry.client;
+package org.apache.servicecomb.zeroconfig.client;
 
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
-import org.apache.servicecomb.serviceregistry.server.ServerMicroserviceInstance;
+import org.apache.servicecomb.zeroconfig.server.ServerMicroserviceInstance;
 import org.mockito.Mock;
 
-import static org.apache.servicecomb.serviceregistry.ZeroConfigRegistryConstants.INSTANCE_ID;
-import static org.apache.servicecomb.serviceregistry.ZeroConfigRegistryConstants.SCHEMA_CONTENT_ENDPOINT_BASE_PATH;
-import static org.apache.servicecomb.serviceregistry.ZeroConfigRegistryConstants.SCHEMA_CONTENT_ENDPOINT_QUERY_KEYWORD;
-import static org.apache.servicecomb.serviceregistry.ZeroConfigRegistryConstants.SCHEMA_CONTENT_ENDPOINT_SUBPATH;
-import static org.apache.servicecomb.serviceregistry.ZeroConfigRegistryConstants.INSTANCE_HEARTBEAT_RESPONSE_MESSAGE_OK;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.INSTANCE_ID;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.INSTANCE_HEARTBEAT_RESPONSE_MESSAGE_OK;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.times;
@@ -36,7 +33,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.server.ZeroConfigRegistryService;
+import org.apache.servicecomb.zeroconfig.server.ZeroConfigRegistryService;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -260,7 +257,7 @@ public class TestZeroConfigRegistryClientImpl {
     public void test_getSchema_whenForOtherMicroservice_shouldCallZeroConfigRegistryService(){
         ClientUtil.microserviceSelf = prepareService(selfServiceId, true);
         when(zeroConfigRegistryService.getMicroservice(otherServiceId)).thenReturn(prepareServerServiceInstance(true));
-        String schemaContentEndpoint = endpoint1 + SCHEMA_CONTENT_ENDPOINT_BASE_PATH + SCHEMA_CONTENT_ENDPOINT_SUBPATH + "?" + SCHEMA_CONTENT_ENDPOINT_QUERY_KEYWORD + "=" + schemaId1;
+        String schemaContentEndpoint = endpoint1 + "/schemaEndpoint/schemas?schemaId=" + schemaId1;
         when(restTemplate.postForObject(schemaContentEndpoint, null, String.class)).thenReturn(schemaContent1);
 
         String returnedSchemaContent = target.getSchema(otherServiceId, schemaId1);

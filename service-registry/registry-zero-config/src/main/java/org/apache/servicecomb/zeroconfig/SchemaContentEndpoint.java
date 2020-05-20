@@ -14,26 +14,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.serviceregistry;
+package org.apache.servicecomb.zeroconfig;
 
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 
-import org.apache.servicecomb.serviceregistry.client.ClientUtil;
+import org.apache.servicecomb.zeroconfig.client.ClientUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import javax.ws.rs.core.MediaType;
 import java.util.Map;
 
-import static org.apache.servicecomb.serviceregistry.ZeroConfigRegistryConstants.*;
-
-@RestSchema(schemaId = SCHEMA_CONTENT_ENDPOINT)
-@RequestMapping(path = SCHEMA_CONTENT_ENDPOINT_BASE_PATH)
+@RestSchema(schemaId = "schemaContentEndpoint")
+@RequestMapping(path = "/schemaEndpoint")
 public class SchemaContentEndpoint {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SchemaContentEndpoint.class);
     // each service self-expose this endpoint for others(consumers) to retrieve the schema content
-    @RequestMapping(path = SCHEMA_CONTENT_ENDPOINT_SUBPATH, produces = MediaType.TEXT_PLAIN, method = RequestMethod.POST )
-    public String getSchemaEndpoint(@RequestParam(name = SCHEMA_CONTENT_ENDPOINT_QUERY_KEYWORD) String schemaId) {
+    @RequestMapping(path = "/schemas", produces = MediaType.TEXT_PLAIN, method = RequestMethod.GET )
+    public String getSchemaEndpoint(@RequestParam(name = "schemaId") String schemaId) {
         Map<String, String> schemaMap = ClientUtil.microserviceSelf.getSchemaMap();
-        return schemaMap != null ? schemaMap.computeIfPresent(schemaId,  (key, schemaContent) -> { return schemaContent;}) : null;
+        if (!schemaMap.isEmpty() && schemaMap.containsKey(schemaId)){
+           return schemaMap.get(schemaId);
+        }
+        LOGGER.warn("schemaId: {} doesn't exist:", schemaId);
+        return null;
     }
 }
