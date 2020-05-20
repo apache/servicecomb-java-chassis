@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.serviceregistry;
+package org.apache.servicecomb.zeroconfig;
 
 public interface ZeroConfigRegistryConstants {
 
@@ -51,12 +51,6 @@ public interface ZeroConfigRegistryConstants {
     String ENDPOINTS = "endpoints";
     String HOST_NAME = "hostName";
     String INSTANCE_HEARTBEAT_RESPONSE_MESSAGE_OK = "OK";
-
-    // Schema Content Endpoint and Path related
-    String SCHEMA_CONTENT_ENDPOINT = "schemaContentEndpoint";
-    String SCHEMA_CONTENT_ENDPOINT_BASE_PATH = "/schemaEndpoint";
-    String SCHEMA_CONTENT_ENDPOINT_SUBPATH = "/schemas";
-    String SCHEMA_CONTENT_ENDPOINT_QUERY_KEYWORD= "schemaId";
 
     // others
     String MAP_STRING_LEFT = "{";

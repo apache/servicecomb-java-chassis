@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.serviceregistry.server;
+package org.apache.servicecomb.zeroconfig.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.apache.servicecomb.serviceregistry.ZeroConfigRegistryConstants.*;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.*;
 
 public class ZeroConfigRegistryService {
 

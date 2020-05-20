@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.serviceregistry.client;
+package org.apache.servicecomb.zeroconfig.client;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
@@ -30,10 +30,11 @@ import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse
 import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
+import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
-import org.apache.servicecomb.serviceregistry.server.ServerMicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.server.ServerUtil;
-import org.apache.servicecomb.serviceregistry.server.ZeroConfigRegistryService;
+import org.apache.servicecomb.zeroconfig.server.ServerMicroserviceInstance;
+import org.apache.servicecomb.zeroconfig.server.ServerUtil;
+import org.apache.servicecomb.zeroconfig.server.ZeroConfigRegistryService;
 import org.apache.servicecomb.serviceregistry.client.http.Holder;
 import org.apache.servicecomb.serviceregistry.version.Version;
 import org.apache.servicecomb.serviceregistry.version.VersionRule;
@@ -54,7 +55,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.web.client.RestTemplate;
 
-import static org.apache.servicecomb.serviceregistry.ZeroConfigRegistryConstants.*;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.*;
 
 public class ZeroConfigRegistryClientImpl implements ServiceRegistryClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(ZeroConfigRegistryClientImpl.class);
@@ -174,10 +175,10 @@ public class ZeroConfigRegistryClientImpl implements ServiceRegistryClient {
             if (endpoint == null){
                 throw new IllegalArgumentException("Provider's endpoint can NOT be Null");
             }
-            String schemaContentEndpoint = endpoint + SCHEMA_CONTENT_ENDPOINT_BASE_PATH + SCHEMA_CONTENT_ENDPOINT_SUBPATH + "?" + SCHEMA_CONTENT_ENDPOINT_QUERY_KEYWORD + "=" + schemaId;
+            String schemaContentEndpoint = endpoint + "/schemaEndpoint/schemas?schemaId=" + schemaId;
             // LOGGER.info("Going to retrieve schema content from endpoint:{}", schemaContentEndpoint);
             // Make a rest call to provider's endpoint directly to retrieve the schema content
-            String schemaContent = this.restTemplate.postForObject(schemaContentEndpoint, null, String.class);
+            String schemaContent = this.restTemplate.getForObject(schemaContentEndpoint, String.class);
             //LOGGER.debug("Retrieved the schema content for microserviceId: {}, schemaId: {}, schemaContent: {}", microserviceId, schemaId, schemaContent);
             return schemaContent;
         }

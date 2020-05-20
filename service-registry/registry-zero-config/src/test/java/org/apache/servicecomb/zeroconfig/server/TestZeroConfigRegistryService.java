@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.serviceregistry.server;
+package org.apache.servicecomb.zeroconfig.server;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.junit.Assert;
@@ -27,15 +27,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.apache.servicecomb.serviceregistry.ZeroConfigRegistryConstants.APP_ID;
-import static org.apache.servicecomb.serviceregistry.ZeroConfigRegistryConstants.ENDPOINTS;
-import static org.apache.servicecomb.serviceregistry.ZeroConfigRegistryConstants.HOST_NAME;
-import static org.apache.servicecomb.serviceregistry.ZeroConfigRegistryConstants.INSTANCE_ID;
-import static org.apache.servicecomb.serviceregistry.ZeroConfigRegistryConstants.SCHEMA_IDS;
-import static org.apache.servicecomb.serviceregistry.ZeroConfigRegistryConstants.SERVICE_ID;
-import static org.apache.servicecomb.serviceregistry.ZeroConfigRegistryConstants.SERVICE_NAME;
-import static org.apache.servicecomb.serviceregistry.ZeroConfigRegistryConstants.STATUS;
-import static org.apache.servicecomb.serviceregistry.ZeroConfigRegistryConstants.VERSION;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.APP_ID;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.ENDPOINTS;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.HOST_NAME;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.INSTANCE_ID;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.SCHEMA_IDS;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.SERVICE_ID;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.SERVICE_NAME;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.STATUS;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.VERSION;
 
 public class TestZeroConfigRegistryService {
 
