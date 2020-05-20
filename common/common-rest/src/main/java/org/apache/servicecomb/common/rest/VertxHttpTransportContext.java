@@ -14,22 +14,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.common.rest;
 
-import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
+import org.apache.servicecomb.swagger.invocation.context.VertxTransportContext;
 
+import io.vertx.core.Context;
+import io.vertx.core.Vertx;
 import io.vertx.ext.web.RoutingContext;
 
-public class VertxRestInvocation extends RestProducerInvocation {
-  @Override
-  protected void createInvocation() {
-    super.createInvocation();
+public class VertxHttpTransportContext extends HttpTransportContext implements VertxTransportContext {
+  private RoutingContext routingContext;
 
-    RoutingContext routingContext = ((VertxServerRequestToHttpServletRequest) this.requestEx).getContext();
-    VertxHttpTransportContext transportContext = new VertxHttpTransportContext(routingContext, requestEx, responseEx);
-    
-    invocation.setTransportContext(transportContext);
-    routingContext.put(RestConst.REST_INVOCATION_CONTEXT, this.invocation);
+  private Context vertxContext;
+
+  public VertxHttpTransportContext(RoutingContext routingContext, HttpServletRequestEx requestEx,
+      HttpServletResponseEx responseEx) {
+    super(requestEx, responseEx);
+
+    this.routingContext = routingContext;
+    this.vertxContext = Vertx.currentContext();
+  }
+
+  public RoutingContext getRoutingContext() {
+    return routingContext;
+  }
+
+  @Override
+  public Context getVertxContext() {
+    return vertxContext;
   }
 }

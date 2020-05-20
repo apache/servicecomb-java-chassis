@@ -173,6 +173,7 @@ public class HighwayServerInvoke {
           operationMeta,
           null);
       operationProtobuf = ProtobufManager.getOrCreateOperation(invocation);
+      invocation.setTransportContext(new HighwayTransportContext());
       invocation.onStart(null, start);
       invocation.getInvocationStageTrace().startSchedule();
 

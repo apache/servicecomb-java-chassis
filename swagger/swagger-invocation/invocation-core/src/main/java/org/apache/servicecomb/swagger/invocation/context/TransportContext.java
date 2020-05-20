@@ -15,21 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.common.rest;
+package org.apache.servicecomb.swagger.invocation.context;
 
-import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
-
-import io.vertx.ext.web.RoutingContext;
-
-public class VertxRestInvocation extends RestProducerInvocation {
-  @Override
-  protected void createInvocation() {
-    super.createInvocation();
-
-    RoutingContext routingContext = ((VertxServerRequestToHttpServletRequest) this.requestEx).getContext();
-    VertxHttpTransportContext transportContext = new VertxHttpTransportContext(routingContext, requestEx, responseEx);
-    
-    invocation.setTransportContext(transportContext);
-    routingContext.put(RestConst.REST_INVOCATION_CONTEXT, this.invocation);
-  }
+/**
+ * currently, only for server side
+ */
+public interface TransportContext {
 }

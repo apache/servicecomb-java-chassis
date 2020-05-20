@@ -14,22 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.common.rest;
 
-import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
+import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
+import org.apache.servicecomb.swagger.invocation.context.TransportContext;
 
-import io.vertx.ext.web.RoutingContext;
+public class HttpTransportContext implements TransportContext {
+  private HttpServletRequestEx requestEx;
 
-public class VertxRestInvocation extends RestProducerInvocation {
-  @Override
-  protected void createInvocation() {
-    super.createInvocation();
+  private HttpServletResponseEx responseEx;
 
-    RoutingContext routingContext = ((VertxServerRequestToHttpServletRequest) this.requestEx).getContext();
-    VertxHttpTransportContext transportContext = new VertxHttpTransportContext(routingContext, requestEx, responseEx);
-    
-    invocation.setTransportContext(transportContext);
-    routingContext.put(RestConst.REST_INVOCATION_CONTEXT, this.invocation);
+  public HttpTransportContext(HttpServletRequestEx requestEx, HttpServletResponseEx responseEx) {
+    this.requestEx = requestEx;
+    this.responseEx = responseEx;
+  }
+
+  public HttpServletRequestEx getRequestEx() {
+    return requestEx;
+  }
+
+  public HttpServletResponseEx getResponseEx() {
+    return responseEx;
   }
 }

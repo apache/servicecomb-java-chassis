@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.it;
 
+import org.apache.servicecomb.common.rest.HttpTransportContext;
+import org.apache.servicecomb.common.rest.VertxHttpTransportContext;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.it.deploy.Deploys;
@@ -48,6 +50,7 @@ import org.apache.servicecomb.it.testcase.TestRestServerConfigEdge;
 import org.apache.servicecomb.it.testcase.TestRestVertxTransportConfig;
 import org.apache.servicecomb.it.testcase.TestTrace;
 import org.apache.servicecomb.it.testcase.TestTraceEdge;
+import org.apache.servicecomb.it.testcase.TestTransportContext;
 import org.apache.servicecomb.it.testcase.TestUpload;
 import org.apache.servicecomb.it.testcase.base.TestGeneric;
 import org.apache.servicecomb.it.testcase.objectparams.TestJAXRSObjectParamType;
@@ -57,6 +60,7 @@ import org.apache.servicecomb.it.testcase.objectparams.TestSpringMVCObjectParamT
 import org.apache.servicecomb.it.testcase.publicHeaders.TestPublicHeadersEdge;
 import org.apache.servicecomb.it.testcase.thirdparty.Test3rdPartyInvocation;
 import org.apache.servicecomb.it.testcase.weak.consumer.TestSpringmvcBasic;
+import org.apache.servicecomb.transport.highway.HighwayTransportContext;
 
 public class ConsumerMain {
   private static ResultPrinter resultPrinter = new ResultPrinter();
@@ -183,6 +187,12 @@ public class ConsumerMain {
 
     // currently, only support vertx download
     ITJUnitUtils.run(TestDownloadSlowStreamEdge.class);
+
+    TestTransportContext.expectName = VertxHttpTransportContext.class.getName();
+    ITJUnitUtils.runWithRest(TestTransportContext.class);
+
+    TestTransportContext.expectName = HighwayTransportContext.class.getName();
+    ITJUnitUtils.runWithHighway(TestTransportContext.class);
   }
 
   private static void testH2CStandalone() throws Throwable {
@@ -210,5 +220,8 @@ public class ConsumerMain {
 
   private static void testSpringBoot2Servlet() throws Throwable {
     runShareTestCases();
+
+    TestTransportContext.expectName = HttpTransportContext.class.getName();
+    ITJUnitUtils.runWithRest(TestTransportContext.class);
   }
 }
