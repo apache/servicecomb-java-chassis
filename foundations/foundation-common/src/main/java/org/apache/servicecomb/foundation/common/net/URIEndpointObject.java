@@ -53,8 +53,8 @@ public class URIEndpointObject extends IpPort {
     setPort(uri.getPort());
     querys = splitQuery(uri);
     sslEnabled = Boolean.parseBoolean(getFirst(SSL_ENABLED_KEY));
-    String httpversion = getFirst(PROTOCOL_KEY);
-    if (httpversion != null && httpversion.equals(HTTP2)) {
+    String httpVersion = getFirst(PROTOCOL_KEY);
+    if (httpVersion != null && httpVersion.equals(HTTP2)) {
       http2Enabled = true;
     }
   }
@@ -63,9 +63,7 @@ public class URIEndpointObject extends IpPort {
     final Map<String, List<String>> queryPairs = new LinkedHashMap<>();
     List<NameValuePair> pairs = URLEncodedUtils.parse(uri, StandardCharsets.UTF_8);
     for (NameValuePair pair : pairs) {
-      List<String> list = queryPairs.computeIfAbsent(pair.getName(), name -> {
-        return new ArrayList<>();
-      });
+      List<String> list = queryPairs.computeIfAbsent(pair.getName(), name -> new ArrayList<>());
       list.add(pair.getValue());
     }
     return queryPairs;
