@@ -21,121 +21,123 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ServerMicroserviceInstance {
-    private String appId;
 
-    private String serviceName;
+  private String appId;
 
-    private String version;
+  private String serviceName;
 
-    private String instanceId;
+  private String version;
 
-    private String serviceId;
+  private String instanceId;
 
-    private List<String> endpoints = new ArrayList<>();
+  private String serviceId;
 
-    private List<String> schemas = new ArrayList<>();
+  private List<String> endpoints = new ArrayList<>();
 
-    private String hostName;
+  private List<String> schemas = new ArrayList<>();
 
-    private String status;
+  private String hostName;
 
-    private Instant lastHeartbeatTimeStamp;
+  private String status;
 
-    public ServerMicroserviceInstance(){}
+  private Instant lastHeartbeatTimeStamp;
 
-    public Instant getLastHeartbeatTimeStamp() {
-        return lastHeartbeatTimeStamp;
-    }
+  public ServerMicroserviceInstance() {
+  }
 
-    public void setLastHeartbeatTimeStamp(Instant lastHeartbeatTimeStamp) {
-        this.lastHeartbeatTimeStamp = lastHeartbeatTimeStamp;
-    }
+  public Instant getLastHeartbeatTimeStamp() {
+    return lastHeartbeatTimeStamp;
+  }
 
-    public String getAppId() {
-        return appId;
-    }
+  public void setLastHeartbeatTimeStamp(Instant lastHeartbeatTimeStamp) {
+    this.lastHeartbeatTimeStamp = lastHeartbeatTimeStamp;
+  }
 
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
+  public String getAppId() {
+    return appId;
+  }
 
-    public String getServiceName() {
-        return serviceName;
-    }
+  public void setAppId(String appId) {
+    this.appId = appId;
+  }
 
-    public void setServiceName(String serviceName) {
-        this.serviceName = serviceName;
-    }
+  public String getServiceName() {
+    return serviceName;
+  }
 
-    public String getVersion() {
-        return version;
-    }
+  public void setServiceName(String serviceName) {
+    this.serviceName = serviceName;
+  }
 
-    public void setVersion(String version) {
-        this.version = version;
-    }
+  public String getVersion() {
+    return version;
+  }
 
-    public String getInstanceId() {
-        return instanceId;
-    }
+  public void setVersion(String version) {
+    this.version = version;
+  }
 
-    public void setInstanceId(String instanceId) {
-        this.instanceId = instanceId;
-    }
+  public String getInstanceId() {
+    return instanceId;
+  }
 
-    public String getServiceId() {
-        return serviceId;
-    }
+  public void setInstanceId(String instanceId) {
+    this.instanceId = instanceId;
+  }
 
-    public void setServiceId(String serviceId) {
-        this.serviceId = serviceId;
-    }
+  public String getServiceId() {
+    return serviceId;
+  }
 
-    public List<String> getEndpoints() {
-        return endpoints;
-    }
+  public void setServiceId(String serviceId) {
+    this.serviceId = serviceId;
+  }
 
-    public void setEndpoints(List<String> endpoints) {
-        this.endpoints = endpoints;
-    }
+  public List<String> getEndpoints() {
+    return endpoints;
+  }
 
-    public String getHostName() {
-        return hostName;
-    }
+  public void setEndpoints(List<String> endpoints) {
+    this.endpoints = endpoints;
+  }
 
-    public void setHostName(String hostName) {
-        this.hostName = hostName;
-    }
+  public String getHostName() {
+    return hostName;
+  }
 
-    public String getStatus() {
-        return status;
-    }
+  public void setHostName(String hostName) {
+    this.hostName = hostName;
+  }
 
-    public void setStatus(String status) {
-        this.status = status;
-    }
+  public String getStatus() {
+    return status;
+  }
 
-    public List<String> getSchemas() {
-        return schemas;
-    }
+  public void setStatus(String status) {
+    this.status = status;
+  }
 
-    public void setSchemas(List<String> schemas) {
-        this.schemas = schemas;
-    }
+  public List<String> getSchemas() {
+    return schemas;
+  }
 
-    @Override
-    public String toString() {
-        return "ServerMicroserviceInstance{" +
-                "appId='" + appId + '\'' +
-                ", serviceName='" + serviceName + '\'' +
-                ", version='" + version + '\'' +
-                ", instanceId='" + instanceId + '\'' +
-                ", serviceId='" + serviceId + '\'' +
-                ", endpoints=" + endpoints +
-                ", schemas=" + schemas +
-                ", hostName='" + hostName + '\'' +
-                ", status='" + status + '\'' +
-                ", lastHeartbeatTimeStamp=" + lastHeartbeatTimeStamp +
-                '}';
-    }
+  public void setSchemas(List<String> schemas) {
+    this.schemas = schemas;
+  }
+
+  @Override
+  public String toString() {
+    return "ServerMicroserviceInstance{" +
+        "appId='" + appId + '\'' +
+        ", serviceName='" + serviceName + '\'' +
+        ", version='" + version + '\'' +
+        ", instanceId='" + instanceId + '\'' +
+        ", serviceId='" + serviceId + '\'' +
+        ", endpoints=" + endpoints +
+        ", schemas=" + schemas +
+        ", hostName='" + hostName + '\'' +
+        ", status='" + status + '\'' +
+        ", lastHeartbeatTimeStamp=" + lastHeartbeatTimeStamp +
+        '}';
+  }
 }
