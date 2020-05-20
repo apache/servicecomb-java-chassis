@@ -46,36 +46,41 @@ import java.util.function.Function;
 
 @Configuration
 @Order(-1001)
-public class ZeroConfigRegistryApplicationListener implements ApplicationListener<ApplicationEvent>, ApplicationContextAware {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ZeroConfigRegistryApplicationListener.class);
+public class ZeroConfigRegistryApplicationListener implements ApplicationListener<ApplicationEvent>,
+    ApplicationContextAware {
 
-    private ApplicationContext applicationContext;
-    private MulticastSocket multicastSocket;
+  private static final Logger LOGGER = LoggerFactory
+      .getLogger(ZeroConfigRegistryApplicationListener.class);
 
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException{
+  private ApplicationContext applicationContext;
+  private MulticastSocket multicastSocket;
 
-        // same mechanism as Local registry to enable the Zero Config registry
-        String flag = System.getProperty(ZeroConfigRegistryConstants.ZERO_CONFIG_REGISTRY_FLAG);
-        if (flag != null && flag.equals(ZeroConfigRegistryConstants.ZERO_CONFIG_REGISTRY_ENABLE_FLAG)){
-            this.applicationContext = applicationContext;
-            BeanUtils.setContext(applicationContext);
-            ServerUtil.init();
-            ClientUtil.init();
+  @Override
+  public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 
-            try{
-                this.multicastSocket = new MulticastSocket();
-            } catch (IOException e) {
-                LOGGER.error("Failed create MulticastSocket object", e);
-            }
+    // same mechanism as Local registry to enable the Zero Config registry
+    String flag = System.getProperty(ZeroConfigRegistryConstants.ZERO_CONFIG_REGISTRY_FLAG);
+    if (flag != null && flag.equals(ZeroConfigRegistryConstants.ZERO_CONFIG_REGISTRY_ENABLE_FLAG)) {
+      this.applicationContext = applicationContext;
+      BeanUtils.setContext(applicationContext);
+      ServerUtil.init();
+      ClientUtil.init();
 
-            Function<ServiceRegistry, ServiceRegistryClient> registryClientConstructor =
-                    serviceRegistry -> new ZeroConfigRegistryClientImpl(new ZeroConfigRegistryService(), multicastSocket, new RestTemplate());
+      try {
+        this.multicastSocket = new MulticastSocket();
+      } catch (IOException e) {
+        LOGGER.error("Failed create MulticastSocket object", e);
+      }
 
-            ServiceRegistryConfig.INSTANCE.setServiceRegistryClientConstructor(registryClientConstructor);
-        }
+      Function<ServiceRegistry, ServiceRegistryClient> registryClientConstructor =
+          serviceRegistry -> new ZeroConfigRegistryClientImpl(new ZeroConfigRegistryService(),
+              multicastSocket, new RestTemplate());
+
+      ServiceRegistryConfig.INSTANCE.setServiceRegistryClientConstructor(registryClientConstructor);
     }
+  }
 
-    @Override
-    public void onApplicationEvent(ApplicationEvent event) {}
+  @Override
+  public void onApplicationEvent(ApplicationEvent event) {
+  }
 }

@@ -30,15 +30,13 @@ import java.util.Map;
 @RestSchema(schemaId = "schemaContentEndpoint")
 @RequestMapping(path = "/schemaEndpoint")
 public class SchemaContentEndpoint {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SchemaContentEndpoint.class);
-    // each service self-expose this endpoint for others(consumers) to retrieve the schema content
-    @RequestMapping(path = "/schemas", produces = MediaType.TEXT_PLAIN, method = RequestMethod.GET )
-    public String getSchemaEndpoint(@RequestParam(name = "schemaId") String schemaId) {
-        Map<String, String> schemaMap = ClientUtil.microserviceSelf.getSchemaMap();
-        if (!schemaMap.isEmpty() && schemaMap.containsKey(schemaId)){
-           return schemaMap.get(schemaId);
-        }
-        LOGGER.warn("schemaId: {} doesn't exist:", schemaId);
-        return null;
-    }
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(SchemaContentEndpoint.class);
+
+  // each service self-expose this endpoint for others(consumers) to retrieve the schema content
+  @RequestMapping(path = "/schemas", produces = MediaType.TEXT_PLAIN, method = RequestMethod.GET)
+  public String getSchemaEndpoint(@RequestParam(name = "schemaId") String schemaId) {
+    Map<String, String> schemaMap = ClientUtil.getMicroserviceSelf().getSchemaMap();
+    return schemaMap.get(schemaId);
+  }
 }

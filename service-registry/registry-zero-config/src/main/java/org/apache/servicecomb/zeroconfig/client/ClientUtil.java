@@ -23,12 +23,12 @@ import org.apache.servicecomb.zeroconfig.server.ServerMicroserviceInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,102 +40,123 @@ import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.*;
 
 public class ClientUtil {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClientUtil.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ClientUtil.class);
 
-    private static ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+  private static ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
-    public static Microservice microserviceSelf = new Microservice();
+  private static Microservice microserviceSelf = new Microservice();
 
-    public static Map<String, String> serviceInstanceMapForHeartbeat = null;
+  private static Map<String, String> serviceInstanceMapForHeartbeat = null;
 
-    public static synchronized void init(){
-        Runnable heartbeatRunnable = new Runnable() {
-            @Override
-            public void run() {
-                if (serviceInstanceMapForHeartbeat != null && !serviceInstanceMapForHeartbeat.isEmpty()){
-                    // after first registration succeeds
-                    try {
-                        byte[] heartbeatEventDataBytes = serviceInstanceMapForHeartbeat.toString().getBytes();
-                        MulticastSocket multicastSocket = new MulticastSocket();
-                        multicastSocket.setLoopbackMode(false);
-                        multicastSocket.setTimeToLive(TIME_TO_LIVE);
+  private static MulticastSocket multicastSocket;
 
-                        DatagramPacket instanceDataPacket = new DatagramPacket(heartbeatEventDataBytes, heartbeatEventDataBytes.length,
-                                InetAddress.getByName(GROUP), PORT);
+  public static Microservice getMicroserviceSelf() {
+    return microserviceSelf;
+  }
 
-                        multicastSocket.send(instanceDataPacket);
-                    } catch (Exception e) {
-                        LOGGER.error("Failed to send heartbeat event for object: {}", serviceInstanceMapForHeartbeat, e);
-                    }
-                }
-            }
-        };
-        executor.scheduleAtFixedRate(heartbeatRunnable, CLIENT_DELAY, HEALTH_CHECK_INTERVAL, TimeUnit.SECONDS);
+  public static void setMicroserviceSelf(Microservice microserviceSelf) {
+    ClientUtil.microserviceSelf = microserviceSelf;
+  }
+
+  public static Map<String, String> getServiceInstanceMapForHeartbeat() {
+    return serviceInstanceMapForHeartbeat;
+  }
+
+  public static void setServiceInstanceMapForHeartbeat(
+      Map<String, String> serviceInstanceMapForHeartbeat) {
+    ClientUtil.serviceInstanceMapForHeartbeat = serviceInstanceMapForHeartbeat;
+  }
+
+  public static synchronized void init() {
+    try {
+      multicastSocket = new MulticastSocket();
+      multicastSocket.setLoopbackMode(false);
+      multicastSocket.setTimeToLive(TIME_TO_LIVE);
+    } catch (IOException e) {
+      LOGGER.error("Failed to create MulticastSocket object", e);
     }
 
-    public static Optional<Map<String, String>> convertToRegisterDataModel(String serviceId, String microserviceInstanceId,
-                                                                           MicroserviceInstance microserviceInstance, Microservice microservice) {
-        Map<String, String> serviceInstanceTextAttributesMap = new HashMap<>();
+    Runnable heartbeatRunnable = new Runnable() {
+      @Override
+      public void run() {
+        if (serviceInstanceMapForHeartbeat != null && !serviceInstanceMapForHeartbeat.isEmpty()) {
+          // after first registration succeeds
+          try {
+            byte[] heartbeatEventDataBytes = serviceInstanceMapForHeartbeat.toString().getBytes();
+            DatagramPacket instanceDataPacket = new DatagramPacket(heartbeatEventDataBytes,
+                heartbeatEventDataBytes.length,
+                InetAddress.getByName(GROUP), PORT);
 
-        serviceInstanceTextAttributesMap.put(EVENT, REGISTER_EVENT);
-        serviceInstanceTextAttributesMap.put(VERSION, microservice.getVersion());
-        serviceInstanceTextAttributesMap.put(SERVICE_ID, serviceId);
-        serviceInstanceTextAttributesMap.put(INSTANCE_ID, microserviceInstanceId);
-        serviceInstanceTextAttributesMap.put(STATUS, microserviceInstance.getStatus().toString());
-        serviceInstanceTextAttributesMap.put(APP_ID, microservice.getAppId());
-        serviceInstanceTextAttributesMap.put(SERVICE_NAME, microservice.getServiceName());
-
-        String hostName = microserviceInstance.getHostName();
-        serviceInstanceTextAttributesMap.put(HOST_NAME, hostName);
-
-        // schema1$schema2
-        serviceInstanceTextAttributesMap.put(ENDPOINTS, convertListToString(microserviceInstance.getEndpoints()));
-        serviceInstanceTextAttributesMap.put(SCHEMA_IDS, convertListToString(microservice.getSchemas()));
-
-        return Optional.of(serviceInstanceTextAttributesMap);
-    }
-
-    private static String convertListToString (List<String> list){
-        if (list != null && !list.isEmpty()){
-            StringBuilder sb = new StringBuilder();
-            for (String item : list) {
-                sb.append(item + LIST_STRING_SPLITER);
-            }
-            // remove the last $
-            return sb.toString().substring(0, sb.toString().length()-1);
+            multicastSocket.send(instanceDataPacket);
+          } catch (Exception e) {
+            LOGGER.error("Failed to send heartbeat event for object: {}",
+                serviceInstanceMapForHeartbeat, e);
+          }
         }
-        return "";
-    }
+      }
+    };
+    executor.scheduleAtFixedRate(heartbeatRunnable, CLIENT_DELAY, HEALTH_CHECK_INTERVAL,
+        TimeUnit.SECONDS);
+  }
 
-    public static MicroserviceInstance convertToClientMicroserviceInstance(ServerMicroserviceInstance serverMicroserviceInstance) {
-        MicroserviceInstance microserviceInstance =  new MicroserviceInstance();
-        microserviceInstance.setServiceId(serverMicroserviceInstance.getServiceId());
-        microserviceInstance.setInstanceId(serverMicroserviceInstance.getInstanceId());
-        microserviceInstance.setHostName(serverMicroserviceInstance.getHostName());
-        microserviceInstance.setEndpoints(serverMicroserviceInstance.getEndpoints());
-        microserviceInstance.setStatus(MicroserviceInstanceStatus.valueOf(serverMicroserviceInstance.getStatus()));
-        return microserviceInstance;
-    }
+  public static Optional<Map<String, String>> convertToRegisterDataModel(String serviceId,
+      String microserviceInstanceId,
+      MicroserviceInstance microserviceInstance, Microservice microservice) {
+    Map<String, String> serviceInstanceTextAttributesMap = new HashMap<>();
 
-    public static Microservice convertToClientMicroservice(ServerMicroserviceInstance serverMicroserviceInstance) {
-        Microservice microservice=  new Microservice();
-        microservice.setAppId(serverMicroserviceInstance.getAppId());
-        microservice.setServiceId(serverMicroserviceInstance.getServiceId());
-        microservice.setServiceName(serverMicroserviceInstance.getServiceName());
-        microservice.setVersion(serverMicroserviceInstance.getVersion());
-        microservice.setStatus(serverMicroserviceInstance.getStatus());
-        microservice.setSchemas(serverMicroserviceInstance.getSchemas());
-        return microservice;
-    }
+    serviceInstanceTextAttributesMap.put(EVENT, REGISTER_EVENT);
+    serviceInstanceTextAttributesMap.put(VERSION, microservice.getVersion());
+    serviceInstanceTextAttributesMap.put(SERVICE_ID, serviceId);
+    serviceInstanceTextAttributesMap.put(INSTANCE_ID, microserviceInstanceId);
+    serviceInstanceTextAttributesMap.put(STATUS, microserviceInstance.getStatus().toString());
+    serviceInstanceTextAttributesMap.put(APP_ID, microservice.getAppId());
+    serviceInstanceTextAttributesMap.put(SERVICE_NAME, microservice.getServiceName());
 
-    public static String generateServiceId(Microservice microservice){
-        String serviceIdStringIndex = String.join(SERVICE_ID_SPLITER, microservice.getAppId(),
-                microservice.getServiceName(), microservice.getVersion());
-        return UUID.nameUUIDFromBytes(serviceIdStringIndex.getBytes()).toString().split(UUID_SPLITER)[0];
-    }
+    String hostName = microserviceInstance.getHostName();
+    serviceInstanceTextAttributesMap.put(HOST_NAME, hostName);
 
-    public static String generateServiceInstanceId(MicroserviceInstance microserviceInstance){
-        return UUID.randomUUID().toString().split(UUID_SPLITER)[0];
-    }
+    // schema1$schema2
+    serviceInstanceTextAttributesMap
+        .put(ENDPOINTS, String.join(LIST_STRING_SPLITER, microserviceInstance.getEndpoints()));
+    serviceInstanceTextAttributesMap
+        .put(SCHEMA_IDS, String.join(LIST_STRING_SPLITER, microservice.getSchemas()));
+
+    return Optional.of(serviceInstanceTextAttributesMap);
+  }
+
+  public static MicroserviceInstance convertToClientMicroserviceInstance(
+      ServerMicroserviceInstance serverMicroserviceInstance) {
+    MicroserviceInstance microserviceInstance = new MicroserviceInstance();
+    microserviceInstance.setServiceId(serverMicroserviceInstance.getServiceId());
+    microserviceInstance.setInstanceId(serverMicroserviceInstance.getInstanceId());
+    microserviceInstance.setHostName(serverMicroserviceInstance.getHostName());
+    microserviceInstance.setEndpoints(serverMicroserviceInstance.getEndpoints());
+    microserviceInstance
+        .setStatus(MicroserviceInstanceStatus.valueOf(serverMicroserviceInstance.getStatus()));
+    return microserviceInstance;
+  }
+
+  public static Microservice convertToClientMicroservice(
+      ServerMicroserviceInstance serverMicroserviceInstance) {
+    Microservice microservice = new Microservice();
+    microservice.setAppId(serverMicroserviceInstance.getAppId());
+    microservice.setServiceId(serverMicroserviceInstance.getServiceId());
+    microservice.setServiceName(serverMicroserviceInstance.getServiceName());
+    microservice.setVersion(serverMicroserviceInstance.getVersion());
+    microservice.setStatus(serverMicroserviceInstance.getStatus());
+    microservice.setSchemas(serverMicroserviceInstance.getSchemas());
+    return microservice;
+  }
+
+  public static String generateServiceId(Microservice microservice) {
+    String serviceIdStringIndex = String.join(SERVICE_ID_SPLITER, microservice.getAppId(),
+        microservice.getServiceName(), microservice.getVersion());
+    return UUID.nameUUIDFromBytes(serviceIdStringIndex.getBytes()).toString()
+        .split(UUID_SPLITER)[0];
+  }
+
+  public static String generateServiceInstanceId() {
+    return UUID.randomUUID().toString().split(UUID_SPLITER)[0];
+  }
 
 }
