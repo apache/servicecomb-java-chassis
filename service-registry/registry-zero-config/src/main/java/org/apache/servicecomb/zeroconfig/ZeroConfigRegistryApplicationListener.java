@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.zeroconfig;
 
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import com.netflix.config.DynamicPropertyFactory;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -52,24 +52,23 @@ public class ZeroConfigRegistryApplicationListener implements ApplicationListene
   private static final Logger LOGGER = LoggerFactory
       .getLogger(ZeroConfigRegistryApplicationListener.class);
 
-  private ApplicationContext applicationContext;
   private MulticastSocket multicastSocket;
 
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 
     // same mechanism as Local registry to enable the Zero Config registry
-    String flag = System.getProperty(ZeroConfigRegistryConstants.ZERO_CONFIG_REGISTRY_FLAG);
-    if (flag != null && flag.equals(ZeroConfigRegistryConstants.ZERO_CONFIG_REGISTRY_ENABLE_FLAG)) {
-      this.applicationContext = applicationContext;
-      BeanUtils.setContext(applicationContext);
+    boolean enable = DynamicPropertyFactory.getInstance()
+        .getBooleanProperty("servicecomb.zeroconfig.enabled", false).get();
+
+    if (enable) {
       ServerUtil.init();
       ClientUtil.init();
 
       try {
         this.multicastSocket = new MulticastSocket();
       } catch (IOException e) {
-        LOGGER.error("Failed create MulticastSocket object", e);
+        LOGGER.error("Failed to create MulticastSocket object", e);
       }
 
       Function<ServiceRegistry, ServiceRegistryClient> registryClientConstructor =
@@ -78,6 +77,7 @@ public class ZeroConfigRegistryApplicationListener implements ApplicationListene
 
       ServiceRegistryConfig.INSTANCE.setServiceRegistryClientConstructor(registryClientConstructor);
     }
+
   }
 
   @Override
