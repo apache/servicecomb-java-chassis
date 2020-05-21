@@ -17,6 +17,7 @@
 package org.apache.servicecomb.zeroconfig;
 
 import com.netflix.config.DynamicPropertyFactory;
+import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -61,22 +62,26 @@ public class ZeroConfigRegistryApplicationListener implements ApplicationListene
     boolean enable = DynamicPropertyFactory.getInstance()
         .getBooleanProperty("servicecomb.zeroconfig.enabled", false).get();
 
-    if (enable) {
-      ServerUtil.init();
-      ClientUtil.init();
-
-      try {
-        this.multicastSocket = new MulticastSocket();
-      } catch (IOException e) {
-        LOGGER.error("Failed to create MulticastSocket object", e);
-      }
-
-      Function<ServiceRegistry, ServiceRegistryClient> registryClientConstructor =
-          serviceRegistry -> new ZeroConfigRegistryClientImpl(new ZeroConfigRegistryService(),
-              multicastSocket, new RestTemplate());
-
-      ServiceRegistryConfig.INSTANCE.setServiceRegistryClientConstructor(registryClientConstructor);
+    if (!enable) {
+      return;
     }
+
+    LOGGER.info("ServiceComb is running in zero-config registry mode");
+    
+    ServerUtil.init();
+    ClientUtil.init();
+
+    try {
+      this.multicastSocket = new MulticastSocket();
+    } catch (IOException e) {
+      throw new ServiceCombException("Failed to create MulticastSocket object", e);
+    }
+
+    Function<ServiceRegistry, ServiceRegistryClient> registryClientConstructor =
+        serviceRegistry -> new ZeroConfigRegistryClientImpl(new ZeroConfigRegistryService(),
+            multicastSocket, new RestTemplate());
+
+    ServiceRegistryConfig.INSTANCE.setServiceRegistryClientConstructor(registryClientConstructor);
 
   }
 
