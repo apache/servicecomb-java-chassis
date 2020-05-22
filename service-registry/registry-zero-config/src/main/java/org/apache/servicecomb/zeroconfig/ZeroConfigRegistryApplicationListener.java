@@ -60,7 +60,7 @@ public class ZeroConfigRegistryApplicationListener implements ApplicationListene
 
     // same mechanism as Local registry to enable the Zero Config registry
     boolean enable = DynamicPropertyFactory.getInstance()
-        .getBooleanProperty("servicecomb.zeroconfig.enabled", false).get();
+        .getBooleanProperty("servicecomb.zeroconfig.enabled", true).get();
 
     if (!enable) {
       return;
