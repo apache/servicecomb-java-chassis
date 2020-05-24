@@ -77,7 +77,7 @@ public class MicroserviceMeta {
   private VendorExtensions vendorExtensions = new VendorExtensions();
 
   public MicroserviceMeta(SCBEngine scbEngine, String microserviceName, List<Handler> consumerHandlerChain,
-      List<Handler> providerHandlerChain) {
+      List<Handler> providerHandlerChain, boolean consumer) {
     this.scbEngine = scbEngine;
     MicroserviceNameParser parser = scbEngine.parseMicroserviceName(microserviceName);
     this.appId = parser.getAppId();
@@ -86,6 +86,7 @@ public class MicroserviceMeta {
 
     this.consumerHandlerChain = consumerHandlerChain;
     this.providerHandlerChain = providerHandlerChain;
+	this.consumer = consumer;
   }
 
   public MicroserviceConfig getMicroserviceConfig() {
@@ -106,15 +107,6 @@ public class MicroserviceMeta {
 
   public boolean isConsumer() {
     return consumer;
-  }
-
-  public void setConsumer(boolean consumer) {
-    this.consumer = consumer;
-  }
-
-  public MicroserviceMeta consumer(boolean consumer) {
-    this.consumer = consumer;
-    return this;
   }
 
   public String getMicroserviceName() {
