@@ -84,7 +84,7 @@ public class ServiceRegistryListener {
     List<Handler> producerHandlerChain = scbEngine.getProducerHandlerManager().getOrCreate(microserviceName);
 
     MicroserviceMeta microserviceMeta = new MicroserviceMeta(scbEngine, microserviceName,
-        consumerHandlerChain, producerHandlerChain);
+        consumerHandlerChain, producerHandlerChain, true);
     MicroserviceVersions microserviceVersions = microserviceVersion.getMicroserviceVersions();
     microserviceMeta.setMicroserviceVersionsMeta(getMicroserviceVersionsMeta(microserviceVersions));
 

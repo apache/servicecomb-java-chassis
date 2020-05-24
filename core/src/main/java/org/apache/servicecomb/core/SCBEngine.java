@@ -357,7 +357,7 @@ public class SCBEngine {
     List<Handler> consumerHandlerChain = consumerHandlerManager.getOrCreate(microserviceName);
     List<Handler> producerHandlerChain = producerHandlerManager.getOrCreate(microserviceName);
 
-    producerMicroserviceMeta = new MicroserviceMeta(this, microserviceName, consumerHandlerChain, producerHandlerChain);
+    producerMicroserviceMeta = new MicroserviceMeta(this, microserviceName, consumerHandlerChain, producerHandlerChain, false);
     producerMicroserviceMeta.setMicroserviceVersionsMeta(new MicroserviceVersionsMeta(this, microserviceName));
   }
 
