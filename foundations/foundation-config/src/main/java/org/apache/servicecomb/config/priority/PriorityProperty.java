@@ -19,7 +19,7 @@ package org.apache.servicecomb.config.priority;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import org.slf4j.Logger;
@@ -53,7 +53,7 @@ public class PriorityProperty<T> {
 
   private Function<DynamicProperty, T> internalValueReader;
 
-  private Consumer<T> callback = v -> {
+  private BiConsumer<T, Object> callback = (t, u) -> {
   };
 
   @SuppressWarnings("unchecked")
@@ -144,6 +144,10 @@ public class PriorityProperty<T> {
   }
 
   synchronized void updateFinalValue(boolean init) {
+    updateFinalValue(init, this);
+  }
+
+  synchronized void updateFinalValue(boolean init, Object target) {
     T lastValue = finalValue;
 
     String effectiveKey = "default value";
@@ -171,15 +175,15 @@ public class PriorityProperty<T> {
           joinedPriorityKeys, finalValue, value, effectiveKey);
     }
     finalValue = value;
-    callback.accept(finalValue);
+    callback.accept(finalValue, target);
   }
 
   public T getValue() {
     return finalValue;
   }
 
-  public void setCallback(Consumer<T> callback) {
+  public void setCallback(BiConsumer<T, Object> callback, Object target) {
     this.callback = callback;
-    callback.accept(finalValue);
+    callback.accept(finalValue, target);
   }
 }

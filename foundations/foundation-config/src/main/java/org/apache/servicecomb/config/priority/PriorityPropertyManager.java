@@ -23,25 +23,29 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 import org.apache.commons.configuration.event.ConfigurationEvent;
 import org.apache.commons.configuration.event.ConfigurationListener;
 import org.apache.servicecomb.config.inject.ConfigObjectFactory;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicPropertyFactory;
 
 public class PriorityPropertyManager {
   private ConfigurationListener configurationListener = this::configurationListener;
 
-  private Map<PriorityProperty<?>, PriorityProperty<?>> priorityPropertyMap = new ConcurrentHashMapEx<>();
+  private Map<PriorityProperty<?>, Boolean> priorityPropertyMap =
+      Collections.synchronizedMap(new WeakHashMap<>());
 
-  private Map<Object, List<PriorityProperty<?>>> configObjectMap = new ConcurrentHashMapEx<>();
+  private Map<Object, List<PriorityProperty<?>>> configObjectMap =
+      Collections.synchronizedMap(new WeakHashMap<>());
 
   // will be reset to null after register or unregister
   // and build when configuration changed
-  private Map<String, List<PriorityProperty<?>>> keyCache;
+  private Map<Object, Map<String, List<PriorityProperty<?>>>> keyCache;
 
   public PriorityPropertyManager() {
     // make sure create a DynamicPropertyFactory instance
@@ -62,30 +66,33 @@ public class PriorityPropertyManager {
 
     if (keyCache == null) {
       keyCache = new ConcurrentHashMapEx<>();
-      updateCache(priorityPropertyMap.values());
-      configObjectMap.values().stream().forEach(this::updateCache);
+      updateCache(new Object(), priorityPropertyMap.keySet());
+      configObjectMap.forEach((k, v) -> updateCache(k, v));
     }
 
     if (event.getPropertyName() != null) {
-      keyCache.getOrDefault(event.getPropertyName(), Collections.emptyList()).stream()
-          .forEach(p -> p.updateFinalValue(false));
+      keyCache.forEach((k, v) -> v.getOrDefault(event.getPropertyName(), Collections.emptyList()).stream()
+          .forEach(p -> p.updateFinalValue(false, k)));
       return;
     }
 
     // event like add configuration source, need to make a global refresh
-    keyCache.values().stream().flatMap(Collection::stream).forEach(p -> p.updateFinalValue(false));
+    keyCache.forEach(
+        (k, v) -> v.values().stream().flatMap(Collection::stream).forEach(
+            p -> p.updateFinalValue(false, k)));
   }
 
-  private void updateCache(Collection<PriorityProperty<?>> properties) {
+  private void updateCache(Object target, Collection<PriorityProperty<?>> properties) {
+    Map<String, List<PriorityProperty<?>>> targetMap = keyCache.computeIfAbsent(target, k -> new HashMap<>());
     for (PriorityProperty<?> priorityProperty : properties) {
       for (String key : priorityProperty.getPriorityKeys()) {
-        keyCache.computeIfAbsent(key, k -> new ArrayList<>()).add(priorityProperty);
+        targetMap.computeIfAbsent(key, k -> new ArrayList<>()).add(priorityProperty);
       }
-      priorityProperty.updateFinalValue(false);
+      priorityProperty.updateFinalValue(false, target);
     }
   }
 
-  public Map<PriorityProperty<?>, PriorityProperty<?>> getPriorityPropertyMap() {
+  public Map<PriorityProperty<?>, Boolean> getPriorityPropertyMap() {
     return priorityPropertyMap;
   }
 
@@ -94,7 +101,7 @@ public class PriorityPropertyManager {
   }
 
   private synchronized void registerPriorityProperty(PriorityProperty<?> property) {
-    priorityPropertyMap.put(property, property);
+    priorityPropertyMap.put(property, Boolean.TRUE);
     keyCache = null;
   }
 
@@ -138,6 +145,7 @@ public class PriorityPropertyManager {
     return new PriorityProperty<>(cls, invalidValue, defaultValue, priorityKeys);
   }
 
+  @VisibleForTesting
   public <T> PriorityProperty<T> createPriorityProperty(Type cls, T invalidValue, T defaultValue,
       String... priorityKeys) {
     PriorityProperty<T> priorityProperty = new PriorityProperty<>(cls, invalidValue, defaultValue, priorityKeys);

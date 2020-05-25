@@ -25,7 +25,6 @@ import org.apache.servicecomb.config.priority.PriorityProperty;
 import org.apache.servicecomb.config.priority.PriorityPropertyManager;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.common.utils.LambdaMetafactoryUtils;
-import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 import org.apache.servicecomb.foundation.common.utils.bean.SetterWrapper;
 
 import com.fasterxml.jackson.databind.BeanDescription;
@@ -104,7 +103,7 @@ public class ConfigObjectFactory {
           new SetterWrapper(LambdaMetafactoryUtils.createSetter(propertyDefinition.getSetter().getAnnotated()));
 
       PriorityProperty<?> priorityProperty = createPriorityProperty(propertyDefinition.getField().getAnnotated());
-      priorityProperty.setCallback(value -> setter.set(instance, value));
+      priorityProperty.setCallback((value, target) -> setter.set(target, value), instance);
       priorityProperties.add(priorityProperty);
     }
   }
