@@ -314,7 +314,8 @@ public class InspectorImpl {
     priorityPropertyManager.getConfigObjectMap().values().stream()
         .flatMap(Collection::stream)
         .forEach(p -> views.add(createPriorityPropertyView(p)));
-    priorityPropertyManager.getPriorityPropertyMap().values().forEach(p -> views.add(createPriorityPropertyView(p)));
+    priorityPropertyManager.getPriorityPropertyMap().keySet().forEach(p ->
+        views.add(createPriorityPropertyView(p)));
     return views;
   }
 
