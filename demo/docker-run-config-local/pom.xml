@@ -39,24 +39,6 @@
           <configuration>
             <images>
               <image>
-                <name>servicecomb/service-center</name>
-                <alias>service-center</alias>
-                <run>
-                  <wait>
-                    <log>server is ready</log>
-                    <tcp>
-                      <ports>
-                        <port>30100</port>
-                      </ports>
-                    </tcp>
-                    <time>60000</time>
-                  </wait>
-                  <ports>
-                    <port>service.center.port:30100</port>
-                  </ports>
-                </run>
-              </image>
-              <image>
                 <name>${demo.service.name}:${project.version}</name>
                 <alias>${demo.service.name}</alias>
                 <run>
@@ -66,17 +48,8 @@
                     </JAVA_OPTS>
                     <JAR_PATH>/maven/maven/${demo.service.name}-${project.version}.jar</JAR_PATH>
                   </env>
-                  <links>
-                    <link>service-center:sc.servicecomb.io</link>
-                  </links>
                   <wait>
                     <log>Register microservice instance success</log>
-                    <!--
-                        the log waiting of the plugin has a bug and fails frequently
-                        refer to https://github.com/fabric8io/docker-maven-plugin/issues/767
-                        this http checking is used as a temporary solution
-                    -->
-
                     <tcp>
                       <ports>
                         <port>8080</port>
@@ -85,12 +58,8 @@
                     <time>120000</time>
                   </wait>
                   <ports>
-                    <port>7070:7070</port>
                     <port>8080:8080</port>
                   </ports>
-                  <dependsOn>
-                    <container>service-center</container>
-                  </dependsOn>
                 </run>
               </image>
             </images>

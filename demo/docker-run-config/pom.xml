@@ -52,7 +52,7 @@
                     <time>60000</time>
                   </wait>
                   <ports>
-                    <port>service.center.port:30100</port>
+                    <port>30100:30100</port>
                   </ports>
                 </run>
               </image>
@@ -146,7 +146,7 @@
             <version>2.19.1</version>
             <configuration>
               <systemPropertyVariables>
-                <servicecomb.service.registry.address>http://${docker.hostname}:${service.center.port}</servicecomb.service.registry.address>
+                <servicecomb.service.registry.address>http://${docker.hostname}:30100</servicecomb.service.registry.address>
               </systemPropertyVariables>
               <argLine>${jacoco.failsafe.argLine}</argLine>
             </configuration>
