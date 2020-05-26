@@ -20,6 +20,7 @@ package org.apache.servicecomb.serviceregistry;
 import java.util.Collection;
 
 import org.apache.servicecomb.foundation.common.concurrency.SuppressedRunnableWrapper;
+import org.apache.servicecomb.serviceregistry.api.Registration;
 import org.apache.servicecomb.serviceregistry.api.registry.BasePath;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;

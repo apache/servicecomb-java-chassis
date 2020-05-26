@@ -17,10 +17,10 @@
 
 package org.apache.servicecomb.serviceregistry;
 
+import org.apache.servicecomb.serviceregistry.api.Discovery;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
-import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
 
 import com.netflix.config.DynamicPropertyFactory;
 
@@ -63,7 +63,7 @@ public class ServiceCenterDiscovery implements Discovery {
   }
 
   @Override
-  public MicroserviceInstance findMicroserviceInstance(String serviceId, String instanceId) {
+  public MicroserviceInstance getMicroserviceInstance(String serviceId, String instanceId) {
     return RegistryUtils.getResultFromFirstValidServiceRegistry(
         sr -> sr.getServiceRegistryClient().findServiceInstance(serviceId, instanceId));
   }

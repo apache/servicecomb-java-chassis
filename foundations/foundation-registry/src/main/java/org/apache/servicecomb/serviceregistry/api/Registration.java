@@ -15,30 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.serviceregistry;
+package org.apache.servicecomb.serviceregistry.api;
+
+import java.util.Collection;
 
 import org.apache.servicecomb.foundation.common.utils.SPIEnabled;
 import org.apache.servicecomb.foundation.common.utils.SPIOrder;
+import org.apache.servicecomb.serviceregistry.api.registry.BasePath;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 
-public interface Discovery extends SPIEnabled, SPIOrder, LifeCycle {
-  // TODO: microservice id may be different in Discovery, maybe better to use appId, serviceName and version.
-  Microservice getMicroservice(String microserviceId);
-
-  // TODO: microservice id may be different in Discovery, maybe better to use appId, serviceName and version.
-  String getSchema(String microserviceId, String schemaId);
-
-  MicroserviceInstance findMicroserviceInstance(String serviceId, String instanceId);
-
-  MicroserviceInstances findServiceInstances(String appId, String serviceName,
-      String versionRule);
-
-  String getRevision();
-
-  void setRevision(String revision);
-
+public interface Registration extends SPIEnabled, SPIOrder, LifeCycle {
   String name();
+
+  MicroserviceInstance getMicroserviceInstance();
+
+  Microservice getMicroservice();
+
+  String getAppId();
+
+  boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status);
+
+  void addSchema(String schemaId, String content);
+
+  void addEndpoint(String endpoint);
+
+  void addBasePath(Collection<BasePath> basePaths);
 }

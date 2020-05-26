@@ -42,6 +42,7 @@
     <module>demo-crossapp</module>
     <module>demo-register-url-prefix</module>
     <module>demo-local-registry</module>
+    <module>demo-multi-registries</module>
     <module>demo-spring-boot-provider</module>
     <module>demo-spring-boot-transport</module>
     <module>demo-edge</module>
