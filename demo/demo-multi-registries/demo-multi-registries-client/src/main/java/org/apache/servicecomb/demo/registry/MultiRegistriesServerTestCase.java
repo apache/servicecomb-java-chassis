@@ -17,31 +17,32 @@
 
 package org.apache.servicecomb.demo.registry;
 
-import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
+import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
-import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
-@SpringBootApplication
-@EnableServiceComb
 @Component
-public class Application {
+public class MultiRegistriesServerTestCase implements CategorizedTestCase {
+  RestTemplate template = RestTemplateBuilder.create();
 
-  public static void main(final String[] args) throws Exception {
-    new SpringApplicationBuilder().sources(Application.class).web(WebApplicationType.SERVLET).build().run(args);
+  @Override
+  public void testRestTransport() throws Exception {
 
-    runTest();
+    // invoke demo-multi-registries-server
+    TestMgr.check("2", template
+        .getForObject("cse://demo-multi-registries-server/register/url/prefix/getName?name=2",
+            String.class));
   }
 
-  public static void runTest() throws Exception {
-    CategorizedTestCaseRunner.runCategorizedTestCase("demo-multi-registries-server");
+  @Override
+  public void testHighwayTransport() throws Exception {
 
-    TestMgr.summary();
-    if (!TestMgr.errors().isEmpty()) {
-      throw new IllegalStateException("tests failed");
-    }
+  }
+
+  @Override
+  public void testAllTransport() throws Exception {
+
   }
 }

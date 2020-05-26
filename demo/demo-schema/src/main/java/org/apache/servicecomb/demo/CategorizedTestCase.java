@@ -32,4 +32,8 @@ public interface CategorizedTestCase {
    * test case which successful in both REST and HIGHWAY transport
    */
   void testAllTransport() throws Exception;
+
+  default String getMicroserviceName() {
+    return null;
+  }
 }

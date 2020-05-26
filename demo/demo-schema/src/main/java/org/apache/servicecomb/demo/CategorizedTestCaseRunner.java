@@ -26,8 +26,14 @@ public class CategorizedTestCaseRunner {
   public static void runCategorizedTestCase(String microserviceName) throws Exception {
     Map<String, CategorizedTestCase> tests = BeanUtils.getContext().getBeansOfType(CategorizedTestCase.class);
     for (String transport : DemoConst.transports) {
-      changeTransport(microserviceName, transport);
       for (CategorizedTestCase testCase : tests.values()) {
+
+        if (testCase.getMicroserviceName() != null) {
+          changeTransport(testCase.getMicroserviceName(), transport);
+        } else {
+          changeTransport(microserviceName, transport);
+        }
+
         testCase.testAllTransport();
         if ("rest".equals(transport)) {
           testCase.testRestTransport();
