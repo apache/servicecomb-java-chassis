@@ -122,6 +122,7 @@ public class TestAsyncInvoke {
     responseEntityCompletableFuture.whenComplete((responseEntity, ex) -> {
       checkLogic.accept(responseEntity, ex);
       responseChecked.value = true;
+      countDownLatch.countDown();
     });
 
     try {
