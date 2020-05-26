@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.localregistry;
 
-import org.apache.servicecomb.serviceregistry.Discovery;
+import org.apache.servicecomb.serviceregistry.api.Discovery;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
@@ -64,7 +64,7 @@ public class LocalDiscovery implements Discovery {
   }
 
   @Override
-  public MicroserviceInstance findMicroserviceInstance(String serviceId, String instanceId) {
+  public MicroserviceInstance getMicroserviceInstance(String serviceId, String instanceId) {
     return localDiscoveryStore.findMicroserviceInstance(serviceId, instanceId);
   }
 

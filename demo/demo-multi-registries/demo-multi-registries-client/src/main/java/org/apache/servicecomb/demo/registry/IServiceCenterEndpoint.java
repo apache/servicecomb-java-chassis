@@ -15,12 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.serviceregistry;
+package org.apache.servicecomb.demo.registry;
 
-public interface LifeCycle {
-  void init();
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 
-  void run();
-
-  void destroy();
+public interface IServiceCenterEndpoint {
+  // java name can not be `x-domain-name`, so interfaces define all parameters.
+  @GetMapping(path = "/instances")
+  Object getInstances(@RequestParam(name = "appId") String appId,
+      @RequestParam(name = "serviceName") String serviceName,
+      @RequestParam(name = "global") String global,
+      @RequestParam(name = "version") String version,
+      @RequestHeader(name = "x-domain-name") String domain);
 }

@@ -264,6 +264,7 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
                 case 200:
                   mInstances
                       .setInstancesResponse(JsonUtils.readValue(bodyBuffer.getBytes(), FindInstancesResponse.class));
+                  mInstances.setNeedRefresh(true);
                   break;
                 case 400: {
                   @SuppressWarnings("unchecked")

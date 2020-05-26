@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.serviceregistry.api.Discovery;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
@@ -65,7 +66,9 @@ public class DiscoveryManager {
   public MicroserviceInstances findServiceInstances(String appId, String serviceName,
       String versionRule) {
     MicroserviceInstances result = new MicroserviceInstances();
-
+    // default values not suitable for aggregate, reset.
+    result.setNeedRefresh(false);
+    result.setMicroserviceNotExist(true);
     discoveryList
         .forEach(discovery -> {
           MicroserviceInstances microserviceInstances = discovery.findServiceInstances(appId, serviceName, versionRule);
@@ -86,7 +89,7 @@ public class DiscoveryManager {
 
   public MicroserviceInstance findMicroserviceInstance(String serviceId, String instanceId) {
     for (Discovery discovery : discoveryList) {
-      MicroserviceInstance microserviceInstance = discovery.findMicroserviceInstance(serviceId, instanceId);
+      MicroserviceInstance microserviceInstance = discovery.getMicroserviceInstance(serviceId, instanceId);
       if (microserviceInstance != null) {
         return microserviceInstance;
       }

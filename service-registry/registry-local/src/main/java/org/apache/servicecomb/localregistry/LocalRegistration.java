@@ -20,7 +20,7 @@ package org.apache.servicecomb.localregistry;
 import java.util.Collection;
 
 import org.apache.servicecomb.foundation.common.event.EventManager;
-import org.apache.servicecomb.serviceregistry.Registration;
+import org.apache.servicecomb.serviceregistry.api.Registration;
 import org.apache.servicecomb.serviceregistry.api.registry.BasePath;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;

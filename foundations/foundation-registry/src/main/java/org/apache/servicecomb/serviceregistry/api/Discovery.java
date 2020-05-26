@@ -15,31 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.serviceregistry;
-
-import java.util.Collection;
+package org.apache.servicecomb.serviceregistry.api;
 
 import org.apache.servicecomb.foundation.common.utils.SPIEnabled;
 import org.apache.servicecomb.foundation.common.utils.SPIOrder;
-import org.apache.servicecomb.serviceregistry.api.registry.BasePath;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
+import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 
-public interface Registration extends SPIEnabled, SPIOrder, LifeCycle {
+/**
+ * This is the core registry discovery interface. <br/>
+ */
+public interface Discovery extends SPIEnabled, SPIOrder, LifeCycle {
+  Microservice getMicroservice(String microserviceId);
+
+  String getSchema(String microserviceId, String schemaId);
+
+  MicroserviceInstance getMicroserviceInstance(String serviceId, String instanceId);
+
+  /**
+   * Find all instances. Implementations can use <code>gerRevision</code> to retrieve the
+   * latest instances changed.
+   *
+   * @param appId application id
+   * @param serviceName microservice name
+   * @param versionRule literal version rule. e.g. 1.0.0, 1.0.0+, [1.0.0, 2.0.0)
+   * @return all instances match the criteria.
+   */
+  MicroserviceInstances findServiceInstances(String appId, String serviceName,
+      String versionRule);
+
+  String getRevision();
+
+  void setRevision(String revision);
+
   String name();
-
-  MicroserviceInstance getMicroserviceInstance();
-
-  Microservice getMicroservice();
-
-  String getAppId();
-
-  boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status);
-
-  void addSchema(String schemaId, String content);
-
-  void addEndpoint(String endpoint);
-
-  void addBasePath(Collection<BasePath> basePaths);
 }

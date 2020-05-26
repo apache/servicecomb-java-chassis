@@ -69,30 +69,38 @@ public class MicroserviceInstances {
   }
 
   private void mergeRevision(String revision) {
+    if (revision == null) {
+      return;
+    }
     if (this.revision == null || this.revision.compareTo(revision) < 0) {
       this.revision = revision;
     }
   }
 
   private void mergeMicroserviceNotExist(boolean microserviceNotExist) {
-    // if one of discovery not exist, all mark not exist
-    if (microserviceNotExist) {
+    // only is all not exists, set to not exits.
+    if (this.microserviceNotExist) {
       this.microserviceNotExist = microserviceNotExist;
     }
   }
 
   private void mergeNeedRefresh(boolean needRefresh) {
     // if one of discovery need refresh, all need refresh
-    if (needRefresh) {
+    if (!this.needRefresh) {
       this.needRefresh = needRefresh;
     }
   }
 
   private void mergeInstanceResponse(FindInstancesResponse instancesResponse) {
+    if (instancesResponse == null) {
+      return;
+    }
+
     if (this.instancesResponse == null) {
       this.instancesResponse = instancesResponse;
-    } else {
-      this.instancesResponse.mergeInstances(instancesResponse.getInstances());
+      return;
     }
+
+    this.instancesResponse.mergeInstances(instancesResponse.getInstances());
   }
 }
