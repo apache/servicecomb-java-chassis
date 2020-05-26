@@ -24,8 +24,6 @@ import org.slf4j.LoggerFactory;
 public class InspectorBootListener implements BootListener {
   private static final Logger LOGGER = LoggerFactory.getLogger(InspectorBootListener.class);
 
-  private InspectorConfig inspectorConfig;
-
   @Override
   public int getOrder() {
     return Short.MAX_VALUE;
@@ -33,7 +31,8 @@ public class InspectorBootListener implements BootListener {
 
   @Override
   public void onAfterTransport(BootEvent event) {
-    inspectorConfig = event.getScbEngine().getPriorityPropertyManager().createConfigObject(InspectorConfig.class);
+    InspectorConfig inspectorConfig = event.getScbEngine().getPriorityPropertyManager()
+        .createConfigObject(InspectorConfig.class);
     if (!inspectorConfig.isEnabled()) {
       LOGGER.info("inspector is not enabled.");
       return;
@@ -45,13 +44,5 @@ public class InspectorBootListener implements BootListener {
         RegistrationManager.INSTANCE.getMicroservice().getSchemaMap());
     inspector.setPriorityPropertyManager(event.getScbEngine().getPriorityPropertyManager());
     event.getScbEngine().getProducerProviderManager().registerSchema("inspector", inspector);
-  }
-
-  @Override
-  public void onAfterClose(BootEvent event) {
-    // some UT case, inspectorConfig is null
-    if (inspectorConfig != null) {
-      event.getScbEngine().getPriorityPropertyManager().unregisterConfigObject(inspectorConfig);
-    }
   }
 }

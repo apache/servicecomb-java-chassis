@@ -61,8 +61,6 @@ public class TestPriorityProperty extends TestPriorityPropertyBase {
 
     ArchaiusUtils.setProperty(low, null);
     Assert.assertEquals(-2L, (long) config.getValue());
-
-    priorityPropertyManager.unregisterPriorityProperty(config);
   }
 
   @Test
@@ -91,8 +89,6 @@ public class TestPriorityProperty extends TestPriorityPropertyBase {
 
     ArchaiusUtils.setProperty(low, null);
     Assert.assertEquals(-2, (int) config.getValue());
-
-    priorityPropertyManager.unregisterPriorityProperty(config);
   }
 
   @Test
@@ -121,8 +117,6 @@ public class TestPriorityProperty extends TestPriorityPropertyBase {
 
     ArchaiusUtils.setProperty(low, null);
     Assert.assertEquals("def", config.getValue());
-
-    priorityPropertyManager.unregisterPriorityProperty(config);
   }
 
   @Test
@@ -151,8 +145,6 @@ public class TestPriorityProperty extends TestPriorityPropertyBase {
 
     ArchaiusUtils.setProperty(low, null);
     Assert.assertFalse(config.getValue());
-
-    priorityPropertyManager.unregisterPriorityProperty(config);
   }
 
   @Test
@@ -181,8 +173,6 @@ public class TestPriorityProperty extends TestPriorityPropertyBase {
 
     ArchaiusUtils.setProperty(low, null);
     Assert.assertEquals(-2, config.getValue(), 0);
-
-    priorityPropertyManager.unregisterPriorityProperty(config);
   }
 
   @Test
@@ -211,8 +201,6 @@ public class TestPriorityProperty extends TestPriorityPropertyBase {
 
     ArchaiusUtils.setProperty(low, null);
     Assert.assertEquals(-2, config.getValue(), 0);
-
-    priorityPropertyManager.unregisterPriorityProperty(config);
   }
 
   @Test
@@ -226,7 +214,5 @@ public class TestPriorityProperty extends TestPriorityPropertyBase {
     config.addConfiguration(new MapConfiguration(Collections.singletonMap(high, "high-value")));
 
     Assert.assertEquals("high-value", property.getValue());
-
-    priorityPropertyManager.unregisterPriorityProperty(property);
   }
 }

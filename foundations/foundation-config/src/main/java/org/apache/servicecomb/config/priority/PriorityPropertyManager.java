@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.apache.commons.configuration.event.ConfigurationEvent;
@@ -30,15 +31,14 @@ import org.apache.commons.configuration.event.ConfigurationListener;
 import org.apache.servicecomb.config.inject.ConfigObjectFactory;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicPropertyFactory;
 
 public class PriorityPropertyManager {
   private ConfigurationListener configurationListener = this::configurationListener;
 
-  private Map<PriorityProperty<?>, Boolean> priorityPropertyMap =
-      Collections.synchronizedMap(new WeakHashMap<>());
+  private Set<PriorityProperty<?>> priorityPropertySet =
+      Collections.newSetFromMap(Collections.synchronizedMap(new WeakHashMap<>()));
 
   private Map<Object, List<PriorityProperty<?>>> configObjectMap =
       Collections.synchronizedMap(new WeakHashMap<>());
@@ -66,7 +66,7 @@ public class PriorityPropertyManager {
 
     if (keyCache == null) {
       keyCache = new ConcurrentHashMapEx<>();
-      updateCache(new Object(), priorityPropertyMap.keySet());
+      updateCache(new Object(), priorityPropertySet);
       configObjectMap.forEach((k, v) -> updateCache(k, v));
     }
 
@@ -92,8 +92,8 @@ public class PriorityPropertyManager {
     }
   }
 
-  public Map<PriorityProperty<?>, Boolean> getPriorityPropertyMap() {
-    return priorityPropertyMap;
+  public Set<PriorityProperty<?>> getPriorityPropertySet() {
+    return priorityPropertySet;
   }
 
   public Map<Object, List<PriorityProperty<?>>> getConfigObjectMap() {
@@ -101,26 +101,12 @@ public class PriorityPropertyManager {
   }
 
   private synchronized void registerPriorityProperty(PriorityProperty<?> property) {
-    priorityPropertyMap.put(property, Boolean.TRUE);
+    priorityPropertySet.add(property);
     keyCache = null;
   }
 
   private synchronized void registerConfigObject(Object configObject, List<PriorityProperty<?>> properties) {
     configObjectMap.put(configObject, properties);
-    keyCache = null;
-  }
-
-  public synchronized void unregisterPriorityProperty(PriorityProperty<?> property) {
-    priorityPropertyMap.remove(property);
-    keyCache = null;
-  }
-
-  public synchronized void unregisterConfigObject(Object configObject) {
-    if (configObject == null) {
-      return;
-    }
-
-    configObjectMap.remove(configObject);
     keyCache = null;
   }
 
@@ -145,7 +131,6 @@ public class PriorityPropertyManager {
     return new PriorityProperty<>(cls, invalidValue, defaultValue, priorityKeys);
   }
 
-  @VisibleForTesting
   public <T> PriorityProperty<T> createPriorityProperty(Type cls, T invalidValue, T defaultValue,
       String... priorityKeys) {
     PriorityProperty<T> priorityProperty = new PriorityProperty<>(cls, invalidValue, defaultValue, priorityKeys);

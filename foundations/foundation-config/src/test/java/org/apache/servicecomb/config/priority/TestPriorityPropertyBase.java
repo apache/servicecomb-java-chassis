@@ -18,13 +18,9 @@ package org.apache.servicecomb.config.priority;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
-
-import com.netflix.config.DynamicProperty;
 
 public class TestPriorityPropertyBase {
   protected PriorityPropertyManager priorityPropertyManager;
@@ -42,12 +38,6 @@ public class TestPriorityPropertyBase {
 
   @After
   public void teardown() {
-    Assert.assertTrue(priorityPropertyManager.getPriorityPropertyMap().isEmpty());
-    Assert.assertTrue(priorityPropertyManager.getConfigObjectMap().isEmpty());
-    for (DynamicProperty property : ConfigUtil.getAllDynamicProperties().values()) {
-      Assert.assertTrue(ConfigUtil.getCallbacks(property).isEmpty());
-    }
-
     ArchaiusUtils.resetConfig();
   }
 }
