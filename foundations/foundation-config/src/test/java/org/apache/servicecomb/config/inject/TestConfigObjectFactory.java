@@ -190,7 +190,6 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
     Assert.assertNull(config.booleanValueObj);
     Assert.assertNull(config.getBooleanValueObj1());
 
-    priorityPropertyManager.unregisterConfigObject(config);
   }
 
   @Test
@@ -253,7 +252,6 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
     Assert.assertTrue(config.booleanValueObj);
     Assert.assertTrue(config.getBooleanValueObj1());
 
-    priorityPropertyManager.unregisterConfigObject(config);
   }
 
   @Test
@@ -316,7 +314,6 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
     Assert.assertTrue(config.booleanValueObj);
     Assert.assertTrue(config.getBooleanValueObj1());
 
-    priorityPropertyManager.unregisterConfigObject(config);
   }
 
   @InjectProperties(prefix = "root")
@@ -363,7 +360,6 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
     Assert.assertEquals(4, config.doubleDef, 0);
     Assert.assertTrue(config.booleanDef);
 
-    priorityPropertyManager.unregisterConfigObject(config);
   }
 
   @Test
@@ -390,7 +386,6 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
     ArchaiusUtils.setProperty("root.low-1.a.high-1.b", Long.MAX_VALUE - 3);
     Assert.assertEquals(Long.MAX_VALUE - 3, config.longValue);
 
-    priorityPropertyManager.unregisterConfigObject(config);
   }
 
   @Test
@@ -406,7 +401,6 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
     ArchaiusUtils.setProperty("root.l1-1", String.valueOf(2f));
     Assert.assertEquals(2f, config.floatValue, 0);
 
-    priorityPropertyManager.unregisterConfigObject(config);
   }
 
   @Test
@@ -418,7 +412,6 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
     ArchaiusUtils.setProperty("root.k.value", "1");
     Assert.assertEquals(1, config.intValue);
 
-    priorityPropertyManager.unregisterConfigObject(config);
   }
 
   @Test
@@ -437,6 +430,5 @@ public class TestConfigObjectFactory extends TestPriorityPropertyBase {
     ArchaiusUtils.setProperty("override.low", null);
     Assert.assertNull(config.strValue);
 
-    priorityPropertyManager.unregisterConfigObject(config);
   }
 }

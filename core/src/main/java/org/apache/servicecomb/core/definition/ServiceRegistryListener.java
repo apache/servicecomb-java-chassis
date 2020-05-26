@@ -64,10 +64,7 @@ public class ServiceRegistryListener {
   @SubscriberOrder(-1000)
   @Subscribe
   public void onDestroyMicroservice(DestroyMicroserviceEvent event) {
-    MicroserviceVersions microserviceVersions = event.getMicroserviceVersions();
-    MicroserviceVersionsMeta microserviceVersionsMeta = microserviceVersions.getVendorExtensions()
-        .get(CORE_MICROSERVICE_VERSIONS_META);
-    microserviceVersionsMeta.destroy();
+
   }
 
   @EnableExceptionPropagation

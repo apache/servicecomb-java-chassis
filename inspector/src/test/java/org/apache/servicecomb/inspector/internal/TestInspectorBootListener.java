@@ -43,7 +43,6 @@ public class TestInspectorBootListener {
 
   @AfterClass
   public static void teardown() {
-    priorityPropertyManager.unregisterConfigObject(inspectorConfig);
     ArchaiusUtils.resetConfig();
   }
 

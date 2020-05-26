@@ -35,11 +35,6 @@ public class MicroserviceVersionsMeta {
         .createConfigObject(MicroserviceConfig.class, "service", microserviceName);
   }
 
-  public void destroy() {
-    scbEngine.getPriorityPropertyManager().unregisterConfigObject(microserviceConfig);
-    configs.values().stream()
-        .forEach(scbEngine.getPriorityPropertyManager()::unregisterConfigObject);
-  }
 
   public MicroserviceConfig getMicroserviceConfig() {
     return microserviceConfig;

@@ -362,10 +362,6 @@ public class TestInspectorImpl {
         views.get(0).getDynamicProperties().stream().map(DynamicPropertyView::getKey).collect(Collectors.toList()),
         Matchers.contains("high", "low"));
 
-    priorityPropertyManager.unregisterPriorityProperty(priorityProperty);
-    views = inspector.priorityProperties();
-    Assert.assertTrue(views.isEmpty());
-
     priorityPropertyManager.close();
     inspector.setPriorityPropertyManager(null);
   }
@@ -376,7 +372,5 @@ public class TestInspectorImpl {
 
     Map<String, String> schemas = Deencapsulation.getField(inspector, "schemas");
     Assert.assertTrue(schemas.get("schema1").indexOf("/webroot/rest/metrics") > 0);
-
-    inspector.getScbEngine().getPriorityPropertyManager().unregisterConfigObject(inspector.getInspectorConfig());
   }
 }
