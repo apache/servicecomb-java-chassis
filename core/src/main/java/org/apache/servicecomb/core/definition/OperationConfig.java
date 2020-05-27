@@ -17,7 +17,9 @@
 package org.apache.servicecomb.core.definition;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.config.inject.InjectProperties;
@@ -71,6 +73,13 @@ public class OperationConfig {
   /**
    * producer wait in thread pool timeout
    */
+  private Map<String, Long> nanoRequestWaitInPoolTimeoutByTransport = new HashMap<>();
+
+  @InjectProperty(keys = "Provider.requestWaitInPoolTimeout${op-priority}", defaultValue = "30000")
+  private long msDefaultRequestWaitInPoolTimeout;
+
+  private long nanoDefaultRequestWaitInPoolTimeout;
+
   @InjectProperty(keys = {
       "Provider.requestWaitInPoolTimeout${op-priority}",
       "highway.server.requestWaitInPoolTimeout"}, defaultValue = "30000")
@@ -120,6 +129,27 @@ public class OperationConfig {
     this.msRequestTimeout = msRequestTimeout;
   }
 
+  public long getNanoRequestWaitInPoolTimeout(String transport) {
+    return nanoRequestWaitInPoolTimeoutByTransport.getOrDefault(transport, nanoDefaultRequestWaitInPoolTimeout);
+  }
+
+  public void registerRequestWaitInPoolTimeout(String transport, long msTimeout) {
+    nanoRequestWaitInPoolTimeoutByTransport.put(transport, TimeUnit.MILLISECONDS.toNanos(msTimeout));
+  }
+
+  public long getMsDefaultRequestWaitInPoolTimeout() {
+    return msDefaultRequestWaitInPoolTimeout;
+  }
+
+  public void setMsDefaultRequestWaitInPoolTimeout(long msDefaultRequestWaitInPoolTimeout) {
+    this.msDefaultRequestWaitInPoolTimeout = msDefaultRequestWaitInPoolTimeout;
+    this.nanoDefaultRequestWaitInPoolTimeout = TimeUnit.MILLISECONDS.toNanos(msDefaultRequestWaitInPoolTimeout);
+  }
+
+  public long getNanoDefaultRequestWaitInPoolTimeout() {
+    return nanoDefaultRequestWaitInPoolTimeout;
+  }
+
   public long getMsHighwayRequestWaitInPoolTimeout() {
     return msHighwayRequestWaitInPoolTimeout;
   }
@@ -127,6 +157,7 @@ public class OperationConfig {
   public void setMsHighwayRequestWaitInPoolTimeout(long msHighwayRequestWaitInPoolTimeout) {
     this.msHighwayRequestWaitInPoolTimeout = msHighwayRequestWaitInPoolTimeout;
     this.nanoHighwayRequestWaitInPoolTimeout = TimeUnit.MILLISECONDS.toNanos(msHighwayRequestWaitInPoolTimeout);
+    registerRequestWaitInPoolTimeout(Const.HIGHWAY, msHighwayRequestWaitInPoolTimeout);
   }
 
   public long getNanoHighwayRequestWaitInPoolTimeout() {
@@ -140,6 +171,7 @@ public class OperationConfig {
   public void setMsRestRequestWaitInPoolTimeout(long msRestRequestWaitInPoolTimeout) {
     this.msRestRequestWaitInPoolTimeout = msRestRequestWaitInPoolTimeout;
     this.nanoRestRequestWaitInPoolTimeout = TimeUnit.MILLISECONDS.toNanos(msRestRequestWaitInPoolTimeout);
+    registerRequestWaitInPoolTimeout(Const.RESTFUL, msRestRequestWaitInPoolTimeout);
   }
 
   public long getNanoRestRequestWaitInPoolTimeout() {
