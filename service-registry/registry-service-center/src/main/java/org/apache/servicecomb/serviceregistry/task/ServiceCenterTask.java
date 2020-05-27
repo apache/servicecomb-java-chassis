@@ -18,8 +18,8 @@ package org.apache.servicecomb.serviceregistry.task;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.servicecomb.serviceregistry.task.event.ExceptionEvent;
-import org.apache.servicecomb.serviceregistry.task.event.SafeModeChangeEvent;
+import org.apache.servicecomb.registry.api.event.task.ExceptionEvent;
+import org.apache.servicecomb.registry.api.event.task.SafeModeChangeEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -39,7 +39,7 @@ import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;

@@ -26,8 +26,8 @@ import java.util.List;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.cache.CacheEndpoint;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;

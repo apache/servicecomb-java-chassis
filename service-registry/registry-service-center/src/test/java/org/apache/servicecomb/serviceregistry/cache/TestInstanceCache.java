@@ -23,8 +23,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.cache.CacheEndpoint;
+import org.apache.servicecomb.registry.cache.InstanceCache;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;

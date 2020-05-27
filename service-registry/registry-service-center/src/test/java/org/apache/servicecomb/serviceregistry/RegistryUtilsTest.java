@@ -19,8 +19,8 @@ package org.apache.servicecomb.serviceregistry;
 
 import java.util.Collections;
 
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache.MicroserviceCacheStatus;
 import org.apache.servicecomb.serviceregistry.registry.cache.MockedMicroserviceCache;
 import org.junit.Assert;

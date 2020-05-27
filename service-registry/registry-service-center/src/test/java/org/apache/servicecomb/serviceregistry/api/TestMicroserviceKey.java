@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.serviceregistry.api;
 
+import org.apache.servicecomb.registry.api.MicroserviceKey;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

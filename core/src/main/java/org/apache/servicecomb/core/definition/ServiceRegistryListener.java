@@ -27,13 +27,13 @@ import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
 import org.apache.servicecomb.foundation.common.event.SubscriberOrder;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersion;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
-import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
-import org.apache.servicecomb.serviceregistry.event.CreateMicroserviceEvent;
-import org.apache.servicecomb.serviceregistry.event.CreateMicroserviceVersionEvent;
-import org.apache.servicecomb.serviceregistry.event.DestroyMicroserviceEvent;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.consumer.MicroserviceVersion;
+import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.apache.servicecomb.registry.api.event.CreateMicroserviceEvent;
+import org.apache.servicecomb.registry.api.event.CreateMicroserviceVersionEvent;
+import org.apache.servicecomb.registry.api.event.DestroyMicroserviceEvent;
 
 import com.google.common.eventbus.Subscribe;
 

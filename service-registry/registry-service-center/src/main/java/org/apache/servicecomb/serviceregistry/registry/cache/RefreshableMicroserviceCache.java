@@ -24,14 +24,14 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
-import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceInstancePing;
-import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
-import org.apache.servicecomb.serviceregistry.task.event.SafeModeChangeEvent;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
+import org.apache.servicecomb.registry.consumer.MicroserviceInstancePing;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.apache.servicecomb.registry.api.event.task.SafeModeChangeEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

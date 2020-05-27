@@ -17,9 +17,8 @@
 package org.apache.servicecomb.core.bootstrap;
 
 import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.foundation.common.utils.BeanUtils;
-import org.apache.servicecomb.serviceregistry.DiscoveryManager;
-import org.apache.servicecomb.serviceregistry.RegistrationManager;
+import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.RegistrationManager;
 
 public class SCBBootstrap {
   public static SCBEngine createSCBEngineForTest() {

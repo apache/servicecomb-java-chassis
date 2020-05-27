@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.serviceregistry.api.registry;
 
+import org.apache.servicecomb.registry.api.registry.FrameworkVersions;
 import org.junit.Assert;
 import org.junit.Test;
 

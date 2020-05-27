@@ -16,9 +16,9 @@
  */
 package org.apache.servicecomb.zeroconfig.client;
 
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.zeroconfig.server.ServerMicroserviceInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

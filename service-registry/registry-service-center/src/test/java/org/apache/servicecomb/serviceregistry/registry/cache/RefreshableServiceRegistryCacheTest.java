@@ -23,9 +23,9 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 
 import org.apache.servicecomb.foundation.common.Holder;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
-import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache.MicroserviceCacheStatus;
 import org.junit.Assert;
 import org.junit.Before;

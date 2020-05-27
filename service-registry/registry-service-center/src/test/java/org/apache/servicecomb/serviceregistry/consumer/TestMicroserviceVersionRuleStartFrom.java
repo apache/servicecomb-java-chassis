@@ -19,6 +19,7 @@ package org.apache.servicecomb.serviceregistry.consumer;
 
 import java.util.Collections;
 
+import org.apache.servicecomb.registry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.serviceregistry.MockMicroserviceVersions;
 import org.junit.Assert;
 import org.junit.Before;

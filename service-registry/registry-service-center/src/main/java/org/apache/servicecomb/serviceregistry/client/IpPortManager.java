@@ -27,13 +27,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
-import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
-import org.apache.servicecomb.serviceregistry.cache.InstanceCache;
-import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManager;
-import org.apache.servicecomb.serviceregistry.cache.InstanceCacheManagerNew;
+import org.apache.servicecomb.registry.cache.CacheEndpoint;
+import org.apache.servicecomb.registry.cache.InstanceCache;
+import org.apache.servicecomb.registry.cache.InstanceCacheManager;
+import org.apache.servicecomb.registry.cache.InstanceCacheManagerNew;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.apache.servicecomb.serviceregistry.consumer.AppManager;
-import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
+import org.apache.servicecomb.registry.consumer.AppManager;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -17,10 +17,10 @@
 
 package org.apache.servicecomb.serviceregistry;
 
-import org.apache.servicecomb.serviceregistry.api.Discovery;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
+import org.apache.servicecomb.registry.api.Discovery;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 
 import com.netflix.config.DynamicPropertyFactory;
 

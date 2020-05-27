@@ -25,9 +25,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceInstancePing;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.cache.CacheEndpoint;
+import org.apache.servicecomb.registry.consumer.MicroserviceInstancePing;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;

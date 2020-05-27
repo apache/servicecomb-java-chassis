@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 
 import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
-import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.transport.rest.client.RestTransportClient;
 import org.apache.servicecomb.transport.rest.client.RestTransportClientManager;
 import org.junit.After;

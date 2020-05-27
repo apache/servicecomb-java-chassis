@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.core.bootup;
 
-import org.apache.servicecomb.serviceregistry.RegistrationManager;
+import org.apache.servicecomb.registry.RegistrationManager;
 
 import io.vertx.core.spi.json.JsonCodec;
 

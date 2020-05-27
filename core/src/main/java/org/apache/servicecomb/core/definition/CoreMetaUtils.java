@@ -16,12 +16,10 @@
  */
 package org.apache.servicecomb.core.definition;
 
-import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersion;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
+import org.apache.servicecomb.registry.consumer.MicroserviceVersion;
+import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.swagger.engine.SwaggerProducer;
-import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 
 public final class CoreMetaUtils {
   public static final String CORE_MICROSERVICE_VERSIONS_META = "scb_microservice_versions_meta";

@@ -26,7 +26,7 @@ import java.util.Map;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.common.VendorExtensions;
-import org.apache.servicecomb.serviceregistry.definition.MicroserviceNameParser;
+import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 
 import io.swagger.models.Swagger;

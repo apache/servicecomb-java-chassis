@@ -26,12 +26,12 @@ import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
 import org.apache.servicecomb.provider.springmvc.reference.async.CseAsyncRestTemplate;
-import org.apache.servicecomb.serviceregistry.DiscoveryManager;
-import org.apache.servicecomb.serviceregistry.RegistrationManager;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceManager;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersion;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
+import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.consumer.MicroserviceManager;
+import org.apache.servicecomb.registry.consumer.MicroserviceVersion;
+import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
 
 public class ITSCBAsyncRestTemplate extends CseAsyncRestTemplate {
   private String urlPrefix;

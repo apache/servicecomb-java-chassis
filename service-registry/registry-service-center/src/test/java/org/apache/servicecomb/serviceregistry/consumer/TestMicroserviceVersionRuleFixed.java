@@ -21,6 +21,7 @@ import java.util.Collections;
 
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.registry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.serviceregistry.MockMicroserviceVersions;
 import org.junit.AfterClass;
 import org.junit.Assert;

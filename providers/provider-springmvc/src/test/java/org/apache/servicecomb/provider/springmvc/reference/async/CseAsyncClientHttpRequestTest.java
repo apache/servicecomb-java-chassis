@@ -27,7 +27,7 @@ import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.provider.springmvc.reference.CseClientHttpResponse;
-import org.apache.servicecomb.serviceregistry.DiscoveryManager;
+import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.AfterClass;
 import org.junit.Assert;

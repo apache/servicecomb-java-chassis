@@ -17,7 +17,7 @@
 package org.apache.servicecomb.inspector.internal;
 
 import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.serviceregistry.RegistrationManager;
+import org.apache.servicecomb.registry.RegistrationManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

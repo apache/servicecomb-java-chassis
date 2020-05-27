@@ -17,12 +17,9 @@
 package org.apache.servicecomb.core;
 
 import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.core.CseApplicationListener;
-import org.apache.servicecomb.core.SCBEngine;
-import org.apache.servicecomb.core.SCBStatus;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.serviceregistry.DiscoveryManager;
+import org.apache.servicecomb.registry.DiscoveryManager;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;

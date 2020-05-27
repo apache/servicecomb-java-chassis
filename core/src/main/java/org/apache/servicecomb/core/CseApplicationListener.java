@@ -19,8 +19,8 @@ package org.apache.servicecomb.core;
 
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
-import org.apache.servicecomb.serviceregistry.DiscoveryManager;
-import org.apache.servicecomb.serviceregistry.RegistrationManager;
+import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.RegistrationManager;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;

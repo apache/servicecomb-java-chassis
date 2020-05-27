@@ -19,7 +19,7 @@ package org.apache.servicecomb.core.definition;
 
 import java.util.Map;
 
-import org.apache.servicecomb.serviceregistry.api.PropertyExtended;
+import org.apache.servicecomb.registry.api.PropertyExtended;
 
 public class MicroServicePropertyExtendedStub implements PropertyExtended {
   @Override

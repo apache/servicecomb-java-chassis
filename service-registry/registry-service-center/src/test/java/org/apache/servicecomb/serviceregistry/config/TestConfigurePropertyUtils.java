@@ -24,8 +24,9 @@ import java.util.Map;
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
-import org.apache.servicecomb.serviceregistry.api.registry.BasePath;
-import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
+import org.apache.servicecomb.registry.api.registry.BasePath;
+import org.apache.servicecomb.registry.config.ConfigurePropertyUtils;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.junit.Assert;
 import org.junit.Test;
 

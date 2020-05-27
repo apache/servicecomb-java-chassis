@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.localregistry;
 
-import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_APPLICATION_ID;
+import static org.apache.servicecomb.registry.definition.DefinitionConst.DEFAULT_APPLICATION_ID;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -31,12 +31,12 @@ import java.util.stream.Collectors;
 
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
-import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
-import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
+import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 import org.yaml.snakeyaml.Yaml;
 
 import com.google.common.annotations.VisibleForTesting;

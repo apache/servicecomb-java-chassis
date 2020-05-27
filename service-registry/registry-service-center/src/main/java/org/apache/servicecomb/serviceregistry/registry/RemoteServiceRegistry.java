@@ -25,7 +25,7 @@ import org.apache.servicecomb.foundation.common.concurrency.SuppressedRunnableWr
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
+import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

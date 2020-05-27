@@ -22,6 +22,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.servicecomb.registry.api.registry.BasePath;
+import org.apache.servicecomb.registry.api.registry.Framework;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

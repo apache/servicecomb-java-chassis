@@ -19,7 +19,7 @@ package org.apache.servicecomb.serviceregistry.client;
 
 import java.util.List;
 
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 
 /**
  * Created by   on 2016/12/27.

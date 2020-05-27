@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.demo.edge.model;
 
-import org.apache.servicecomb.serviceregistry.RegistrationManager;
+import org.apache.servicecomb.registry.RegistrationManager;
 
 public class ResultWithInstance {
   private int result;

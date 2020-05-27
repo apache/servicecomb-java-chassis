@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.serviceregistry.api.request;
 
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 
 /**
  * Created by   on 2016/12/6.

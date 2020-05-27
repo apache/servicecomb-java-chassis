@@ -20,8 +20,8 @@ package org.apache.servicecomb.loadbalance;
 import static org.junit.Assert.assertNotNull;
 
 import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.cache.CacheEndpoint;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

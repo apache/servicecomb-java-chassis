@@ -27,7 +27,7 @@ import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 import org.apache.servicecomb.provider.pojo.definition.PojoConsumerMeta;
-import org.apache.servicecomb.serviceregistry.DiscoveryManager;
+import org.apache.servicecomb.registry.DiscoveryManager;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

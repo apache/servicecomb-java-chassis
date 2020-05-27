@@ -18,7 +18,7 @@ package org.apache.servicecomb.serviceregistry.diagnosis.instance;
 
 import java.util.List;
 
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.diagnosis.Status;
 
 public class InstanceCacheResult {

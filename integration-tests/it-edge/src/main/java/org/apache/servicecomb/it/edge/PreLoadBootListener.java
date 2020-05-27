@@ -18,9 +18,9 @@
 package org.apache.servicecomb.it.edge;
 
 import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.serviceregistry.DiscoveryManager;
-import org.apache.servicecomb.serviceregistry.RegistrationManager;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
+import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.registry.consumer.MicroserviceVersionRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

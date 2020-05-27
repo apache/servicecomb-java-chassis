@@ -16,8 +16,8 @@
  */
 package org.apache.servicecomb.serviceregistry.adapter;
 
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 
 public class CasEnvAdapterTwo implements EnvAdapter {
   private static final String NAME = "cas_env_two";

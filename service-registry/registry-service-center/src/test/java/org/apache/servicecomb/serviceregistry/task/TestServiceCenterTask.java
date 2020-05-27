@@ -21,7 +21,7 @@ import java.util.EventListener;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.apache.servicecomb.serviceregistry.task.event.SafeModeChangeEvent;
+import org.apache.servicecomb.registry.api.event.task.SafeModeChangeEvent;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;

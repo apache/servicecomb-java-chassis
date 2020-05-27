@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.serviceregistry.client;
 
-import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_APPLICATION_ID;
+import static org.apache.servicecomb.registry.definition.DefinitionConst.DEFAULT_APPLICATION_ID;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -32,21 +32,21 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterConfig;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
-import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
+import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
 import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.api.response.HeartbeatResponse;
-import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
+import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.serviceregistry.client.http.Holder;
-import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
-import org.apache.servicecomb.serviceregistry.version.Version;
-import org.apache.servicecomb.serviceregistry.version.VersionRule;
-import org.apache.servicecomb.serviceregistry.version.VersionRuleUtils;
-import org.apache.servicecomb.serviceregistry.version.VersionUtils;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
+import org.apache.servicecomb.registry.version.Version;
+import org.apache.servicecomb.registry.version.VersionRule;
+import org.apache.servicecomb.registry.version.VersionRuleUtils;
+import org.apache.servicecomb.registry.version.VersionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;

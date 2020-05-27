@@ -20,7 +20,7 @@ package org.apache.servicecomb.serviceregistry.registry;
 import org.apache.servicecomb.foundation.common.event.SimpleEventBus;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
+import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 
 import com.google.common.eventbus.EventBus;
 

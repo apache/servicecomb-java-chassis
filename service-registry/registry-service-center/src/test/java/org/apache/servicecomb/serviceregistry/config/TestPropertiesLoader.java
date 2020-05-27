@@ -25,12 +25,13 @@ import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.archaius.sources.ConfigModel;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceFactory;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.config.AbstractPropertiesLoader;
+import org.apache.servicecomb.registry.config.MicroservicePropertiesLoader;
+import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.registry.LocalServiceRegistryFactory;
-import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -38,11 +39,6 @@ import com.netflix.config.DynamicConfiguration;
 
 public class TestPropertiesLoader {
   private static MicroserviceFactory microserviceFactory = new MicroserviceFactory();
-
-  @Test
-  public void testMergeStrings() {
-    Assert.assertEquals("abc123efg", AbstractPropertiesLoader.mergeStrings("abc", "123", "efg"));
-  }
 
   @Test
   public void testEmptyExtendedClass() {
@@ -105,18 +101,4 @@ public class TestPropertiesLoader {
     Assert.assertEquals(expectedMap, instance.getProperties());
   }
 
-  @Test
-  public void testExtendedClassCompatible() {
-    Configuration configuration = new DynamicConfiguration();
-    configuration.setProperty(CONFIG_SERVICE_DESCRIPTION_KEY + AbstractPropertiesLoader.EXTENDED_CLASS, "invalidClass");
-
-    AbstractPropertiesLoader loader = MicroservicePropertiesLoader.INSTANCE;
-    try {
-      loader.loadProperties(configuration);
-      Assert.fail("Must throw exception");
-    } catch (Error e) {
-      Assert.assertEquals(ClassNotFoundException.class, e.getCause().getClass());
-      Assert.assertEquals("invalidClass", e.getCause().getMessage());
-    }
-  }
 }
