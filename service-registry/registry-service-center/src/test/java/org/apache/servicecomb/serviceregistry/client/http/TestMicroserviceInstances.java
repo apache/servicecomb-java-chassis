@@ -20,8 +20,9 @@ package org.apache.servicecomb.serviceregistry.client.http;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
+import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

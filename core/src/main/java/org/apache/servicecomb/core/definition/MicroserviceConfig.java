@@ -18,7 +18,7 @@ package org.apache.servicecomb.core.definition;
 
 import org.apache.servicecomb.config.inject.InjectProperties;
 import org.apache.servicecomb.config.inject.InjectProperty;
-import org.apache.servicecomb.serviceregistry.version.VersionRuleUtils;
+import org.apache.servicecomb.registry.version.VersionRuleUtils;
 
 @InjectProperties(prefix = "servicecomb")
 public class MicroserviceConfig {

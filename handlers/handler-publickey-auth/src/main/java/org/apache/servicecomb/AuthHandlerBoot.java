@@ -20,8 +20,8 @@ import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.foundation.common.utils.RSAKeyPairEntry;
 import org.apache.servicecomb.foundation.common.utils.RSAUtils;
 import org.apache.servicecomb.foundation.token.RSAKeypair4Auth;
-import org.apache.servicecomb.serviceregistry.RegistrationManager;
-import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
+import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.springframework.stereotype.Component;
 
 /**

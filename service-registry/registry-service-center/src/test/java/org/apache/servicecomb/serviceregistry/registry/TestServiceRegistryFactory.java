@@ -24,7 +24,7 @@ import org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientI
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
+import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 import org.junit.Assert;
 import org.junit.Test;
 

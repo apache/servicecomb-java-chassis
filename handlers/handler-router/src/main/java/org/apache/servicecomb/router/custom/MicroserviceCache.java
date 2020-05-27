@@ -19,8 +19,8 @@ package org.apache.servicecomb.router.custom;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.serviceregistry.DiscoveryManager;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.api.registry.Microservice;
 
 public final class MicroserviceCache {
 

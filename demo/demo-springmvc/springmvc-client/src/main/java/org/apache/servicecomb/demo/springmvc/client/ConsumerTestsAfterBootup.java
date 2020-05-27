@@ -18,7 +18,7 @@ package org.apache.servicecomb.demo.springmvc.client;
 
 import org.apache.servicecomb.core.BootListener;
 import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.serviceregistry.RegistrationManager;
+import org.apache.servicecomb.registry.RegistrationManager;
 import org.springframework.stereotype.Component;
 
 /**

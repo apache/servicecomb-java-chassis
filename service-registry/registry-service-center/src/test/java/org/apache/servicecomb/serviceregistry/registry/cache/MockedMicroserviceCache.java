@@ -19,8 +19,8 @@ package org.apache.servicecomb.serviceregistry.registry.cache;
 
 import java.util.List;
 
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 
 public class MockedMicroserviceCache extends RefreshableMicroserviceCache {

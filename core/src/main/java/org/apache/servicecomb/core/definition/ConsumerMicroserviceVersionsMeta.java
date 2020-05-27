@@ -18,7 +18,7 @@ package org.apache.servicecomb.core.definition;
 
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
+import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
 
 public class ConsumerMicroserviceVersionsMeta extends MicroserviceVersionsMeta {
   private MicroserviceVersions microserviceVersions;

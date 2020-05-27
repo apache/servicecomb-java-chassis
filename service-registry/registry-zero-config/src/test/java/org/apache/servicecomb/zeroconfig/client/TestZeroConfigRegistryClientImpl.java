@@ -16,10 +16,10 @@
  */
 package org.apache.servicecomb.zeroconfig.client;
 
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.serviceregistry.api.response.HeartbeatResponse;
-import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.zeroconfig.server.ServerMicroserviceInstance;
 import org.mockito.Mock;
 
@@ -32,7 +32,7 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.zeroconfig.server.ZeroConfigRegistryService;
 import org.junit.After;
 import org.junit.Assert;

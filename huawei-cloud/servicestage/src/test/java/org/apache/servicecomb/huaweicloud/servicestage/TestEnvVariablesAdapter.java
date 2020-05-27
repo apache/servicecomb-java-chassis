@@ -18,7 +18,7 @@ package org.apache.servicecomb.huaweicloud.servicestage;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

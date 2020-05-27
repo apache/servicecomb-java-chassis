@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.core;
 
-import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
 
 public final class Const {
   private Const() {

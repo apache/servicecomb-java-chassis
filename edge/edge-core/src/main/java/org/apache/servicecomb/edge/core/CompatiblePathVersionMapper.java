@@ -21,8 +21,8 @@ import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-import org.apache.servicecomb.serviceregistry.version.VersionRule;
-import org.apache.servicecomb.serviceregistry.version.VersionRuleUtils;
+import org.apache.servicecomb.registry.version.VersionRule;
+import org.apache.servicecomb.registry.version.VersionRuleUtils;
 import org.springframework.util.StringUtils;
 
 public class CompatiblePathVersionMapper {

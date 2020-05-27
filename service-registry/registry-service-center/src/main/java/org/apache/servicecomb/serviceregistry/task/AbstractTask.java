@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.serviceregistry.task;
 
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 
 import com.google.common.eventbus.EventBus;

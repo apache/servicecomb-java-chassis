@@ -19,7 +19,7 @@ package org.apache.servicecomb.loadbalance;
 
 import java.util.Map;
 
-import org.apache.servicecomb.serviceregistry.config.ConfigurePropertyUtils;
+import org.apache.servicecomb.registry.config.ConfigurePropertyUtils;
 
 import com.netflix.config.DynamicPropertyFactory;
 

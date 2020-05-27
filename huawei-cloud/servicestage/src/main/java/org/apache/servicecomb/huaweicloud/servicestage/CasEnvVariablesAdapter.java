@@ -18,7 +18,7 @@
 package org.apache.servicecomb.huaweicloud.servicestage;
 
 import org.apache.servicecomb.serviceregistry.adapter.EnvAdapter;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 
 public class CasEnvVariablesAdapter implements EnvAdapter {
   private static final String NAME = "cas-env-variables-adapter";

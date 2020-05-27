@@ -18,7 +18,7 @@
 package org.apache.servicecomb.edge.core;
 
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
-import org.apache.servicecomb.serviceregistry.version.VersionRule;
+import org.apache.servicecomb.registry.version.VersionRule;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Rule;

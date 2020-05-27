@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.serviceregistry.api.response;
 
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.Microservice;
 
 /**
  * Created by   on 2016/12/8.

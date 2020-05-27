@@ -17,9 +17,10 @@
 
 package org.apache.servicecomb.serviceregistry.api.response;
 
-import org.apache.servicecomb.serviceregistry.api.MicroserviceKey;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.api.registry.WatchAction;
+import org.apache.servicecomb.registry.api.MicroserviceKey;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.WatchAction;
+import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

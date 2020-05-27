@@ -20,8 +20,8 @@ import java.util.List;
 
 import org.apache.servicecomb.foundation.common.RegisterManager;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

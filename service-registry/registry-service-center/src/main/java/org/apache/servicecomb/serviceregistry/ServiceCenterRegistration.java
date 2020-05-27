@@ -20,11 +20,11 @@ package org.apache.servicecomb.serviceregistry;
 import java.util.Collection;
 
 import org.apache.servicecomb.foundation.common.concurrency.SuppressedRunnableWrapper;
-import org.apache.servicecomb.serviceregistry.api.Registration;
-import org.apache.servicecomb.serviceregistry.api.registry.BasePath;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.api.Registration;
+import org.apache.servicecomb.registry.api.registry.BasePath;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 
 import com.netflix.config.DynamicPropertyFactory;
 

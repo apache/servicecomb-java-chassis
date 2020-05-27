@@ -19,8 +19,8 @@ package org.apache.servicecomb.serviceregistry.registry.cache;
 
 import java.util.Objects;
 
-import org.apache.servicecomb.serviceregistry.definition.DefinitionConst;
-import org.apache.servicecomb.serviceregistry.definition.MicroserviceNameParser;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
 
 public class MicroserviceCacheKey {
   private String env;

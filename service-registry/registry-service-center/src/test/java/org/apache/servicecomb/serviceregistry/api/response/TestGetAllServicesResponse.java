@@ -20,7 +20,7 @@ package org.apache.servicecomb.serviceregistry.api.response;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

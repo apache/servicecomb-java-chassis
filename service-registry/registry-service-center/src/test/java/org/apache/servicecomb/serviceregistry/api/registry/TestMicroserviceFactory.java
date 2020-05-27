@@ -19,15 +19,17 @@ package org.apache.servicecomb.serviceregistry.api.registry;
 
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_DESCRIPTION_KEY;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY;
-import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.CONFIG_ALLOW_CROSS_APP_KEY;
-import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_MICROSERVICE_VERSION;
+import static org.apache.servicecomb.registry.definition.DefinitionConst.CONFIG_ALLOW_CROSS_APP_KEY;
+import static org.apache.servicecomb.registry.definition.DefinitionConst.DEFAULT_MICROSERVICE_VERSION;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
-import org.apache.servicecomb.serviceregistry.definition.MicroserviceDefinition;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
+import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;

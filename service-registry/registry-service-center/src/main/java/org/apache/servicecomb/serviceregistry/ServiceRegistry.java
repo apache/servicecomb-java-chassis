@@ -21,10 +21,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.consumer.StaticMicroserviceVersions;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
-import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCacheKey;
 
@@ -97,7 +98,7 @@ public interface ServiceRegistry {
   /**
    * <p>
    * Register a third party service if not registered before, and set it's instances into
-   * {@linkplain org.apache.servicecomb.serviceregistry.consumer.StaticMicroserviceVersions StaticMicroserviceVersions}.
+   * {@linkplain StaticMicroserviceVersions StaticMicroserviceVersions}.
    * </p>
    * <p>
    * The registered third party service has the same {@code appId} and {@code environment} as this microservice instance has,

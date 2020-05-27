@@ -19,6 +19,7 @@ package org.apache.servicecomb.serviceregistry.api.registry;
 
 import java.util.HashMap;
 
+import org.apache.servicecomb.registry.api.registry.BasePath;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

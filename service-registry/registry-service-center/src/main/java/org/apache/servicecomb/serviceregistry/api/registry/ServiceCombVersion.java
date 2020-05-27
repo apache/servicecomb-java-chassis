@@ -19,7 +19,7 @@ package org.apache.servicecomb.serviceregistry.api.registry;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.serviceregistry.api.Versions;
+import org.apache.servicecomb.registry.api.Versions;
 
 public class ServiceCombVersion implements Versions {
 

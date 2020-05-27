@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.serviceregistry.api.registry;
 
+import org.apache.servicecomb.registry.api.registry.HealthCheck;
+import org.apache.servicecomb.registry.api.registry.HealthCheckMode;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

@@ -17,7 +17,7 @@
 
 package org.apache.servicecomb.core;
 
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 
 /**
  * Endpoint : 表示一个Endpoint。Transport识别其内部格式.

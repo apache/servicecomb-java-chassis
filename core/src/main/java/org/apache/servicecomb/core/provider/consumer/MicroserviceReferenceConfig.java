@@ -23,11 +23,11 @@ import org.apache.servicecomb.core.definition.ConsumerMicroserviceVersionsMeta;
 import org.apache.servicecomb.core.definition.CoreMetaUtils;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
-import org.apache.servicecomb.serviceregistry.DiscoveryManager;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersion;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersionRule;
-import org.apache.servicecomb.serviceregistry.consumer.MicroserviceVersions;
-import org.apache.servicecomb.serviceregistry.consumer.StaticMicroserviceVersions;
+import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.consumer.MicroserviceVersion;
+import org.apache.servicecomb.registry.consumer.MicroserviceVersionRule;
+import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
+import org.apache.servicecomb.registry.consumer.StaticMicroserviceVersions;
 
 /**
  * <pre>

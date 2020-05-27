@@ -22,8 +22,8 @@ import java.net.URISyntaxException;
 
 import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.core.Transport;
-import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.cache.CacheEndpoint;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.netflix.loadbalancer.Server;

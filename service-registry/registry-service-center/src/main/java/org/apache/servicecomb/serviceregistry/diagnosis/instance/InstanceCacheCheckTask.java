@@ -20,7 +20,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.servicecomb.serviceregistry.DiscoveryManager;
+import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.serviceregistry.registry.RemoteServiceRegistry;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryTaskInitializer;
 import org.slf4j.Logger;

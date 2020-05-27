@@ -16,7 +16,7 @@
  */
 package org.apache.servicecomb.router.util;
 
-import org.apache.servicecomb.serviceregistry.version.Version;
+import org.apache.servicecomb.registry.version.Version;
 
 public class VersionCompareUtil {
   public static int compareVersion(String version1, String version2) {

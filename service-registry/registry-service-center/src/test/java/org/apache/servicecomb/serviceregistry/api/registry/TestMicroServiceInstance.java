@@ -24,6 +24,9 @@ import java.util.Map;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.registry.api.registry.HealthCheck;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.junit.After;
 import org.junit.AfterClass;
