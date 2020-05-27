@@ -24,13 +24,13 @@ import static org.apache.servicecomb.core.definition.CoreMetaUtils.getMicroservi
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
 import org.apache.servicecomb.foundation.common.event.SubscriberOrder;
+import org.apache.servicecomb.registry.api.event.CreateMicroserviceEvent;
+import org.apache.servicecomb.registry.api.event.CreateMicroserviceVersionEvent;
+import org.apache.servicecomb.registry.api.event.DestroyMicroserviceEvent;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersion;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
-import org.apache.servicecomb.registry.api.event.CreateMicroserviceEvent;
-import org.apache.servicecomb.registry.api.event.CreateMicroserviceVersionEvent;
-import org.apache.servicecomb.registry.api.event.DestroyMicroserviceEvent;
 
 import com.google.common.eventbus.Subscribe;
 
@@ -87,7 +87,8 @@ public class ServiceRegistryListener {
     if (!isServiceCenter) {
       // TODO: get schemas from instance
       for (String schemaId : microservice.getSchemas()) {
-        Swagger swagger = scbEngine.getSwaggerLoader().loadSwagger(microservice, schemaId);
+        Swagger swagger = scbEngine.getSwaggerLoader().loadSwagger(microservice, microserviceVersion.getInstances(),
+            schemaId);
         microserviceMeta.registerSchemaMeta(schemaId, swagger);
       }
     }

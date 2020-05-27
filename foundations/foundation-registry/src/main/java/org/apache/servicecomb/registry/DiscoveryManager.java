@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.registry;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -87,7 +88,7 @@ public class DiscoveryManager {
     return this.appManager;
   }
 
-  public MicroserviceInstance findMicroserviceInstance(String serviceId, String instanceId) {
+  public MicroserviceInstance getMicroserviceInstance(String serviceId, String instanceId) {
     for (Discovery discovery : discoveryList) {
       MicroserviceInstance microserviceInstance = discovery.getMicroserviceInstance(serviceId, instanceId);
       if (microserviceInstance != null) {
@@ -97,9 +98,9 @@ public class DiscoveryManager {
     return null;
   }
 
-  public String getSchema(String microserviceId, String schemaId) {
+  public String getSchema(String microserviceId, Collection<MicroserviceInstance> instances, String schemaId) {
     for (Discovery discovery : discoveryList) {
-      String schema = discovery.getSchema(microserviceId, schemaId);
+      String schema = discovery.getSchema(microserviceId, instances, schemaId);
       if (schema != null) {
         return schema;
       }

@@ -18,6 +18,7 @@ package org.apache.servicecomb.registry.swagger;
 
 import java.net.URI;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import org.apache.servicecomb.foundation.common.utils.ResourceUtil;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
@@ -132,13 +134,14 @@ public class SwaggerLoader {
         .remove(schemaId);
   }
 
-  public Swagger loadSwagger(Microservice microservice, String schemaId) {
+  public Swagger loadSwagger(Microservice microservice,
+      Collection<MicroserviceInstance> instances, String schemaId) {
     Swagger swagger = loadLocalSwagger(microservice.getAppId(), microservice.getServiceName(), schemaId);
     if (swagger != null) {
       return swagger;
     }
 
-    return loadFromRemote(microservice, schemaId);
+    return loadFromRemote(microservice, instances, schemaId);
   }
 
   public Swagger loadLocalSwagger(String appId, String shortName, String schemaId) {
@@ -182,8 +185,9 @@ public class SwaggerLoader {
     return SwaggerUtils.parseAndValidateSwagger(url);
   }
 
-  private Swagger loadFromRemote(Microservice microservice, String schemaId) {
-    String schemaContent = DiscoveryManager.INSTANCE.getSchema(microservice.getServiceId(), schemaId);
+  private Swagger loadFromRemote(Microservice microservice, Collection<MicroserviceInstance> instances,
+      String schemaId) {
+    String schemaContent = DiscoveryManager.INSTANCE.getSchema(microservice.getServiceId(), instances, schemaId);
     if (schemaContent != null) {
       LOGGER.info(
           "load schema from service center, appId={}, microserviceName={}, version={}, serviceId={}, schemaId={}.",

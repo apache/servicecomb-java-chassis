@@ -71,7 +71,7 @@ public class MicroserviceInstanceCache {
 
         @Override
         public MicroserviceInstance call() {
-          MicroserviceInstance instance = DiscoveryManager.INSTANCE.findMicroserviceInstance(serviceId, instanceId);
+          MicroserviceInstance instance = DiscoveryManager.INSTANCE.getMicroserviceInstance(serviceId, instanceId);
           if (instance == null) {
             throw new IllegalArgumentException("instance id not exists.");
           }

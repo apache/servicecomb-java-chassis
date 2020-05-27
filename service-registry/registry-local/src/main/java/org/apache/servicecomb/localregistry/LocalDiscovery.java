@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.localregistry;
 
+import java.util.Collection;
+
 import org.apache.servicecomb.registry.api.Discovery;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
@@ -59,7 +61,7 @@ public class LocalDiscovery implements Discovery {
   }
 
   @Override
-  public String getSchema(String microserviceId, String schemaId) {
+  public String getSchema(String microserviceId, Collection<MicroserviceInstance> instances, String schemaId) {
     return localDiscoveryStore.getSchema(microserviceId, schemaId);
   }
 
