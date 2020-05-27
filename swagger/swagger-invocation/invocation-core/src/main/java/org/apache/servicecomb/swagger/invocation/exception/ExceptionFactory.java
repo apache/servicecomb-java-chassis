@@ -17,6 +17,8 @@
 package org.apache.servicecomb.swagger.invocation.exception;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
 
 import javax.ws.rs.core.Response.StatusType;
 
@@ -112,9 +114,7 @@ public final class ExceptionFactory {
   // 新创建的InvocationException，会使用errorMsg来构建CommonExceptionData
   protected static InvocationException convertException(int statusCode, String reasonPhrase, Throwable e,
       String errorMsg) {
-    if (InvocationTargetException.class.isInstance(e)) {
-      e = ((InvocationTargetException) e).getTargetException();
-    }
+    e = unwrap(e);
 
     if (InvocationException.class.isInstance(e)) {
       return (InvocationException) e;
@@ -126,5 +126,26 @@ public final class ExceptionFactory {
 
   public static Response convertExceptionToResponse(SwaggerInvocation swaggerInvocation, Throwable e) {
     return exceptionToProducerResponseConverters.convertExceptionToResponse(swaggerInvocation, e);
+  }
+
+  public static Throwable unwrapIncludeInvocationException(Throwable throwable) {
+    throwable = unwrap(throwable);
+    if (throwable instanceof InvocationException) {
+      throwable = throwable.getCause();
+    }
+    return throwable;
+  }
+
+  public static Throwable unwrap(Throwable throwable) {
+    if (throwable instanceof InvocationTargetException) {
+      throwable = ((InvocationTargetException) throwable).getTargetException();
+    }
+    if (throwable instanceof CompletionException) {
+      throwable = throwable.getCause();
+    }
+    if (throwable instanceof ExecutionException) {
+      throwable = throwable.getCause();
+    }
+    return throwable;
   }
 }

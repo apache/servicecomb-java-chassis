@@ -43,19 +43,29 @@ public class InvocationException extends RuntimeException {
   }
 
   public InvocationException(StatusType status, String msg) {
-    this.status = status;
-    this.errorData = new CommonExceptionData(msg);
+    this(status, new CommonExceptionData(msg));
   }
 
   public InvocationException(int statusCode, String reasonPhrase, Object errorData, Throwable cause) {
-    super(cause);
-    status = new HttpStatus(statusCode, reasonPhrase);
-    this.errorData = errorData;
+    this(new HttpStatus(statusCode, reasonPhrase), errorData, cause);
   }
 
   public InvocationException(int statusCode, String reasonPhrase, Object errorData) {
-    status = new HttpStatus(statusCode, reasonPhrase);
+    this(new HttpStatus(statusCode, reasonPhrase), errorData);
+  }
+
+  public InvocationException(StatusType status, Object errorData, Throwable cause) {
+    super(cause);
+    this.status = status;
     this.errorData = errorData;
+  }
+
+  public InvocationException(StatusType status, String code, String msg) {
+    this(status, new CommonExceptionData(code, msg));
+  }
+
+  public InvocationException(StatusType status, String code, String msg, Throwable cause) {
+    this(status, new CommonExceptionData(code, msg), cause);
   }
 
   public StatusType getStatus() {
