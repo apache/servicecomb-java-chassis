@@ -41,8 +41,8 @@ import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.apache.servicecomb.foundation.common.utils.ResourceUtil;
 import org.apache.servicecomb.registry.RegistrationManager;
-import org.apache.servicecomb.serviceregistry.TestRegistryBase;
 import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.serviceregistry.TestRegistryBase;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.junit.Assert;
@@ -67,7 +67,8 @@ public class TestSwaggerLoader extends TestRegistryBase {
 
     Microservice microservice = appManager.getOrCreateMicroserviceVersions(appId, serviceName)
         .getVersions().values().iterator().next().getMicroservice();
-    Assert.assertSame(swagger, RegistrationManager.INSTANCE.getSwaggerLoader().loadSwagger(microservice, schemaId));
+    Assert.assertSame(swagger, RegistrationManager.INSTANCE
+        .getSwaggerLoader().loadSwagger(microservice, null, schemaId));
   }
 
   @Test
@@ -84,7 +85,8 @@ public class TestSwaggerLoader extends TestRegistryBase {
 
     Microservice microservice = appManager.getOrCreateMicroserviceVersions(appId, serviceName)
         .getVersions().values().iterator().next().getMicroservice();
-    Swagger loadedSwagger = RegistrationManager.INSTANCE.getSwaggerLoader().loadSwagger(microservice, schemaId);
+    Swagger loadedSwagger = RegistrationManager.INSTANCE
+        .getSwaggerLoader().loadSwagger(microservice, null, schemaId);
     Assert.assertNotSame(swagger, loadedSwagger);
     Assert.assertEquals(swagger, loadedSwagger);
   }
@@ -98,7 +100,8 @@ public class TestSwaggerLoader extends TestRegistryBase {
 
     Microservice microservice = appManager.getOrCreateMicroserviceVersions(appId, serviceName)
         .getVersions().values().iterator().next().getMicroservice();
-    Swagger loadedSwagger = RegistrationManager.INSTANCE.getSwaggerLoader().loadSwagger(microservice, schemaId);
+    Swagger loadedSwagger = RegistrationManager.INSTANCE
+        .getSwaggerLoader().loadSwagger(microservice, null, schemaId);
     Assert.assertNotSame(swagger, loadedSwagger);
     Assert.assertEquals(swagger, loadedSwagger);
   }
@@ -112,7 +115,8 @@ public class TestSwaggerLoader extends TestRegistryBase {
 
     Microservice microservice = appManager.getOrCreateMicroserviceVersions(appId, serviceName)
         .getVersions().values().iterator().next().getMicroservice();
-    Swagger loadedSwagger = RegistrationManager.INSTANCE.getSwaggerLoader().loadSwagger(microservice, schemaId);
+    Swagger loadedSwagger = RegistrationManager.INSTANCE
+        .getSwaggerLoader().loadSwagger(microservice, null, schemaId);
     Assert.assertNotSame(swagger, loadedSwagger);
     Assert.assertEquals(swagger, loadedSwagger);
   }
@@ -128,7 +132,7 @@ public class TestSwaggerLoader extends TestRegistryBase {
     expectedException.expect(IllegalStateException.class);
     expectedException.expectMessage(
         "no schema in local, and can not get schema from service center, appId=other, microserviceName=ms3, version=1.0, serviceId=003, schemaId=hello.");
-    RegistrationManager.INSTANCE.getSwaggerLoader().loadSwagger(microservice, schemaId);
+    RegistrationManager.INSTANCE.getSwaggerLoader().loadSwagger(microservice, null, schemaId);
   }
 
   @Test
@@ -138,7 +142,8 @@ public class TestSwaggerLoader extends TestRegistryBase {
 
     Microservice microservice = appManager.getOrCreateMicroserviceVersions("other", "ms3")
         .getVersions().values().iterator().next().getMicroservice();
-    Swagger loadedSwagger = RegistrationManager.INSTANCE.getSwaggerLoader().loadSwagger(microservice, schemaId);
+    Swagger loadedSwagger = RegistrationManager.INSTANCE
+        .getSwaggerLoader().loadSwagger(microservice, null, schemaId);
     Assert.assertNotSame(swagger, loadedSwagger);
     Assert.assertEquals(swagger, loadedSwagger);
   }

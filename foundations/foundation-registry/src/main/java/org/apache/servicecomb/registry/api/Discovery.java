@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.registry.api;
 
+import java.util.Collection;
+
 import org.apache.servicecomb.foundation.common.utils.SPIEnabled;
 import org.apache.servicecomb.foundation.common.utils.SPIOrder;
 import org.apache.servicecomb.registry.api.registry.Microservice;
@@ -39,7 +41,7 @@ public interface Discovery extends SPIEnabled, SPIOrder, LifeCycle {
    *
    * Life Cycle：This method is called anytime after <code>run</code>.
    */
-  String getSchema(String microserviceId, String schemaId);
+  String getSchema(String microserviceId, Collection<MicroserviceInstance> instances, String schemaId);
 
   /**
    * get MicroserviceInstance </br>

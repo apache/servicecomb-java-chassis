@@ -53,6 +53,11 @@ public interface Registration extends SPIEnabled, SPIOrder, LifeCycle {
    */
   String getAppId();
 
+  /**
+   * update MicroserviceInstance status </br>
+   *
+   * Life Cycle：This method is called anytime after <code>run</code>.
+   */
   boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status);
 
   /**
