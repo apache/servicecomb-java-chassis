@@ -21,9 +21,6 @@ import static org.apache.servicecomb.core.definition.CoreMetaUtils.CORE_MICROSER
 import static org.apache.servicecomb.core.definition.CoreMetaUtils.CORE_MICROSERVICE_VERSIONS_META;
 import static org.apache.servicecomb.core.definition.CoreMetaUtils.getMicroserviceVersionsMeta;
 
-import java.util.List;
-
-import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.foundation.common.event.EnableExceptionPropagation;
 import org.apache.servicecomb.foundation.common.event.SubscriberOrder;
@@ -77,11 +74,9 @@ public class ServiceRegistryListener {
 
     // not shortName, to support cross app invoke
     String microserviceName = microserviceVersion.getMicroserviceName();
-    List<Handler> consumerHandlerChain = scbEngine.getConsumerHandlerManager().getOrCreate(microserviceName);
-    List<Handler> producerHandlerChain = scbEngine.getProducerHandlerManager().getOrCreate(microserviceName);
 
-    MicroserviceMeta microserviceMeta = new MicroserviceMeta(scbEngine, microserviceName,
-        consumerHandlerChain, producerHandlerChain, true);
+    MicroserviceMeta microserviceMeta = new MicroserviceMeta(scbEngine, microserviceName, true);
+    microserviceMeta.setHandlerChain(scbEngine.getConsumerHandlerManager().getOrCreate(microserviceName));
     MicroserviceVersions microserviceVersions = microserviceVersion.getMicroserviceVersions();
     microserviceMeta.setMicroserviceVersionsMeta(getMicroserviceVersionsMeta(microserviceVersions));
 
