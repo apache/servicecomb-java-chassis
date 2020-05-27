@@ -178,8 +178,7 @@ public class Invocation extends SwaggerInvocation {
   }
 
   public List<Handler> getHandlerChain() {
-    return (InvocationType.CONSUMER.equals(invocationType)) ? schemaMeta.getMicroserviceMeta().getConsumerHandlerChain()
-        : schemaMeta.getMicroserviceMeta().getProviderHandlerChain();
+    return schemaMeta.getMicroserviceMeta().getHandlerChain();
   }
 
   public Executor getResponseExecutor() {

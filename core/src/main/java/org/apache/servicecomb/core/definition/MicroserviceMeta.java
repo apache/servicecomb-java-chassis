@@ -62,11 +62,9 @@ public class MicroserviceMeta {
   // key is OperationMeta.getMicroserviceQualifiedName()
   private Map<String, OperationMeta> operationMetas = new HashMap<>();
 
-  private boolean consumer = true;
+  private boolean consumer;
 
-  private List<Handler> consumerHandlerChain;
-
-  private List<Handler> providerHandlerChain;
+  private List<Handler> handlerChain = Collections.singletonList((invocation, ar) -> ar.success(null));
 
   // providerQpsFlowControlHandler is a temporary field, only for internal usage
   private Handler providerQpsFlowControlHandler;
@@ -76,17 +74,13 @@ public class MicroserviceMeta {
 
   private VendorExtensions vendorExtensions = new VendorExtensions();
 
-  public MicroserviceMeta(SCBEngine scbEngine, String microserviceName, List<Handler> consumerHandlerChain,
-      List<Handler> providerHandlerChain, boolean consumer) {
+  public MicroserviceMeta(SCBEngine scbEngine, String microserviceName, boolean consumer) {
     this.scbEngine = scbEngine;
     MicroserviceNameParser parser = scbEngine.parseMicroserviceName(microserviceName);
     this.appId = parser.getAppId();
     this.shortName = parser.getShortName();
     this.microserviceName = parser.getMicroserviceName();
-
-    this.consumerHandlerChain = consumerHandlerChain;
-    this.providerHandlerChain = providerHandlerChain;
-	this.consumer = consumer;
+    this.consumer = consumer;
   }
 
   public MicroserviceConfig getMicroserviceConfig() {
@@ -195,12 +189,12 @@ public class MicroserviceMeta {
     return vendorExtensions.get(key);
   }
 
-  public List<Handler> getConsumerHandlerChain() {
-    return consumerHandlerChain;
+  public List<Handler> getHandlerChain() {
+    return handlerChain;
   }
 
-  public List<Handler> getProviderHandlerChain() {
-    return providerHandlerChain;
+  public void setHandlerChain(List<Handler> handlerChain) {
+    this.handlerChain = handlerChain;
   }
 
   /**
@@ -212,8 +206,7 @@ public class MicroserviceMeta {
       return providerQpsFlowControlHandler;
     }
 
-    List<Handler> providerHandlerChain = getProviderHandlerChain();
-    for (Handler handler : providerHandlerChain) {
+    for (Handler handler : handlerChain) {
       // matching by class name is more or less better than importing an extra maven dependency
       if ("org.apache.servicecomb.qps.ProviderQpsFlowControlHandler".equals(handler.getClass().getName())) {
         providerQpsFlowControlHandler = handler;

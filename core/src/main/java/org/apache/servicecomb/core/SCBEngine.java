@@ -354,10 +354,9 @@ public class SCBEngine {
 
   private void createProducerMicroserviceMeta() {
     String microserviceName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
-    List<Handler> consumerHandlerChain = consumerHandlerManager.getOrCreate(microserviceName);
-    List<Handler> producerHandlerChain = producerHandlerManager.getOrCreate(microserviceName);
 
-    producerMicroserviceMeta = new MicroserviceMeta(this, microserviceName, consumerHandlerChain, producerHandlerChain, false);
+    producerMicroserviceMeta = new MicroserviceMeta(this, microserviceName, false);
+    producerMicroserviceMeta.setHandlerChain(producerHandlerManager.getOrCreate(microserviceName));
     producerMicroserviceMeta.setMicroserviceVersionsMeta(new MicroserviceVersionsMeta(this, microserviceName));
   }
 
