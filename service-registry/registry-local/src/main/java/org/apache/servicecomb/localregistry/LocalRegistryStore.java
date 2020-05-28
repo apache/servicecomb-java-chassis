@@ -19,8 +19,11 @@ package org.apache.servicecomb.localregistry;
 
 import static org.apache.servicecomb.registry.definition.DefinitionConst.DEFAULT_APPLICATION_ID;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,17 +32,21 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
+import org.apache.servicecomb.foundation.common.base.ServiceCombConstants;
+import org.apache.servicecomb.foundation.common.utils.JvmUtils;
+import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 import org.yaml.snakeyaml.Yaml;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.netflix.config.DynamicPropertyFactory;
 
 public class LocalRegistryStore {
   private static final String REGISTRY_FILE_NAME = "registry.yaml";
@@ -83,9 +90,28 @@ public class LocalRegistryStore {
     selfMicroserviceInstance.setInstanceId(selfMicroservice.getServiceId());
     selfMicroserviceInstance.setServiceId(selfMicroservice.getServiceId());
 
-    InputStream is = this.getClass().getClassLoader().getResourceAsStream(REGISTRY_FILE_NAME);
-    if (is != null) {
-      initFromData(is);
+    InputStream is = null;
+
+    try {
+      ClassLoader loader = JvmUtils.findClassLoader();
+      Enumeration<URL> urls = loader.getResources(REGISTRY_FILE_NAME);
+      while (urls.hasMoreElements()) {
+        URL url = urls.nextElement();
+        is = url.openStream();
+        if (is != null) {
+          initFromData(is);
+        }
+      }
+    } catch (IOException e) {
+      throw new IllegalStateException(e);
+    } finally {
+      if (is != null) {
+        try {
+          is.close();
+        } catch (IOException e) {
+          // nothing to do
+        }
+      }
     }
 
     addSelf();
@@ -130,7 +156,7 @@ public class LocalRegistryStore {
         List<String> schemas = (List<String>) serviceConfig.get("schemaIds");
 
         Microservice microservice = new Microservice();
-        microservice.setAppId(appId == null ? DEFAULT_APPLICATION_ID : appId);
+        microservice.setAppId(validAppId(appId));
         microservice.setServiceName(name);
         microservice.setVersion(version);
         microservice.setServiceId(serviceId == null ? UUID.randomUUID().toString() : serviceId);
@@ -139,20 +165,41 @@ public class LocalRegistryStore {
           microservice.setSchemas(schemas);
         }
 
-        Map<String, MicroserviceInstance> instanceMap = new ConcurrentHashMap<>();
-        for (Map<String, Object> instanceConfig : instancesConfig) {
-          @SuppressWarnings("unchecked")
-          List<String> endpoints = (List<String>) instanceConfig.get("endpoints");
-
-          MicroserviceInstance instance = new MicroserviceInstance();
-          instance.setInstanceId(UUID.randomUUID().toString());
-          instance.setEndpoints(endpoints);
-          instance.setServiceId(microservice.getServiceId());
-
-          instanceMap.put(instance.getInstanceId(), instance);
-        }
-        microserviceInstanceMap.put(microservice.getServiceId(), instanceMap);
+        addInstances(instancesConfig, microservice);
       }
+    }
+  }
+
+  private String validAppId(String configAppId) {
+    if (!StringUtils.isEmpty(configAppId)) {
+      return configAppId;
+    }
+    if (DynamicPropertyFactory.getInstance()
+        .getStringProperty(ServiceCombConstants.CONFIG_APPLICATION_ID_KEY, null).get() != null) {
+      return DynamicPropertyFactory.getInstance()
+          .getStringProperty(ServiceCombConstants.CONFIG_APPLICATION_ID_KEY, null).get();
+    }
+    return DEFAULT_APPLICATION_ID;
+  }
+
+  private void addInstances(List<Map<String, Object>> instancesConfig, Microservice microservice) {
+    Map<String, MicroserviceInstance> instanceMap = new ConcurrentHashMap<>();
+    microserviceInstanceMap.put(microservice.getServiceId(), instanceMap);
+
+    if (instancesConfig == null) {
+      return;
+    }
+
+    for (Map<String, Object> instanceConfig : instancesConfig) {
+      @SuppressWarnings("unchecked")
+      List<String> endpoints = (List<String>) instanceConfig.get("endpoints");
+
+      MicroserviceInstance instance = new MicroserviceInstance();
+      instance.setInstanceId(UUID.randomUUID().toString());
+      instance.setEndpoints(endpoints);
+      instance.setServiceId(microservice.getServiceId());
+
+      instanceMap.put(instance.getInstanceId(), instance);
     }
   }
 

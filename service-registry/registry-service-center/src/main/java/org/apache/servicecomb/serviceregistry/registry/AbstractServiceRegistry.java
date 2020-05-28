@@ -263,6 +263,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   @Override
   // TODO: this is for 3rd party invocation, and a better way can be provided
+  // TODO:  microserviceManager.getVersionsByName() can not be used, will delete this in SCB-1949
   public void registerMicroserviceMapping(String microserviceName, String version,
       List<MicroserviceInstance> instances, Class<?> schemaIntfCls) {
     MicroserviceNameParser parser = new MicroserviceNameParser(microservice.getAppId(), microserviceName);

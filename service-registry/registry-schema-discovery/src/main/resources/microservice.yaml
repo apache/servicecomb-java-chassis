@@ -14,22 +14,9 @@
 ## See the License for the specific language governing permissions and
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
+servicecomb-config-order: -100
 
-thirdParty-service-center:
-  - id: "001"
-    version: "4.0.0"
-    appid: demo-multi-registries
-    schemaIds:
-      - ServiceCenterEndpoint
-    instances:
-      - endpoints:
-          - rest://localhost:30100
-thirdParty-no-schema-server:
-  - id: "002"
-    version: "4.0.0"
-    appid: demo-multi-registries
-    schemaIds:
-      - ServerEndpoint # not in local , discovery from demo-multi-registries-server
-    instances:
-      - endpoints:
-          - rest://localhost:8080 # actually will invoke to demo-multi-registries-server
+servicecomb:
+  loadbalance:
+    userDefinedEndpoint:
+      enabled: true
