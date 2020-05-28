@@ -44,7 +44,6 @@
     <module>it-common</module>
     <module>it-producer</module>
     <module>it-edge</module>
-    <module>it-common-service</module>
     <module>it-producer-deploy-springboot2-standalone</module>
     <module>it-producer-deploy-springboot2-servlet</module>
 
