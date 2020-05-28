@@ -209,17 +209,18 @@
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>registry-local</artifactId>
-      <version>${project.version}</version>
     </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>registry-schema-discovery</artifactId>
+      </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>registry-service-center</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>registry-zero-config</artifactId>
-      <version>${project.version}</version>
     </dependency>
 
     <!-- solutions -->

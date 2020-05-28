@@ -30,7 +30,6 @@
   <modules>
     <module>pojo-server</module>
     <module>pojo-client</module>
-    <module>pojo-tests</module>
   </modules>
   <dependencies>
     <dependency>
