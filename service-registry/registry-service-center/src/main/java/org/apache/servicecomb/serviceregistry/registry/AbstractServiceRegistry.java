@@ -29,23 +29,26 @@ import java.util.concurrent.ExecutorService;
 
 import org.apache.servicecomb.foundation.common.concurrency.SuppressedRunnableWrapper;
 import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
-import org.apache.servicecomb.serviceregistry.api.Const;
+import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
+import org.apache.servicecomb.registry.api.event.task.RecoveryEvent;
+import org.apache.servicecomb.registry.api.event.task.SafeModeChangeEvent;
+import org.apache.servicecomb.registry.api.event.task.ShutdownEvent;
 import org.apache.servicecomb.registry.api.registry.BasePath;
 import org.apache.servicecomb.registry.api.registry.Framework;
 import org.apache.servicecomb.registry.api.registry.FrameworkVersions;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
-import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
-import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.registry.consumer.MicroserviceManager;
 import org.apache.servicecomb.registry.consumer.StaticMicroserviceVersions;
 import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.ServiceRegistry;
+import org.apache.servicecomb.serviceregistry.api.Const;
+import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCacheKey;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCacheRefreshedEvent;
@@ -53,9 +56,6 @@ import org.apache.servicecomb.serviceregistry.registry.cache.RefreshableServiceR
 import org.apache.servicecomb.serviceregistry.registry.cache.ServiceRegistryCache;
 import org.apache.servicecomb.serviceregistry.task.MicroserviceServiceCenterTask;
 import org.apache.servicecomb.serviceregistry.task.ServiceCenterTask;
-import org.apache.servicecomb.registry.api.event.task.RecoveryEvent;
-import org.apache.servicecomb.registry.api.event.task.SafeModeChangeEvent;
-import org.apache.servicecomb.registry.api.event.task.ShutdownEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -262,8 +262,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   }
 
   @Override
-  // TODO: this is for 3rd party invocation, and a better way can be provided
-  // TODO:  microserviceManager.getVersionsByName() can not be used, will delete this in SCB-1949
   public void registerMicroserviceMapping(String microserviceName, String version,
       List<MicroserviceInstance> instances, Class<?> schemaIntfCls) {
     MicroserviceNameParser parser = new MicroserviceNameParser(microservice.getAppId(), microserviceName);

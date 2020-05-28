@@ -20,6 +20,7 @@ package org.apache.servicecomb.registry.consumer;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.registry.api.event.task.SafeModeChangeEvent;
 import org.slf4j.Logger;
@@ -33,7 +34,7 @@ public class MicroserviceManager {
   private String appId;
 
   // key: microserviceName
-  private Map<String, MicroserviceVersions> versionsByName = new HashMap<>();
+  private Map<String, MicroserviceVersions> versionsByName = new ConcurrentHashMapEx<>();
 
   private Object lock = new Object();
 
@@ -57,8 +58,8 @@ public class MicroserviceManager {
         microserviceVersions = versionsByName.get(microserviceName);
         if (microserviceVersions == null) {
           microserviceVersions = new MicroserviceVersions(appManager, appId, microserviceName);
-          versionsByName.put(microserviceName, microserviceVersions);
           microserviceVersions.pullInstances();
+          versionsByName.put(microserviceName, microserviceVersions);
         }
       }
     }
