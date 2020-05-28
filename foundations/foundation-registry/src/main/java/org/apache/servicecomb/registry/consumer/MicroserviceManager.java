@@ -17,9 +17,9 @@
 
 package org.apache.servicecomb.registry.consumer;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.registry.api.event.task.SafeModeChangeEvent;
 import org.slf4j.Logger;
@@ -33,7 +33,9 @@ public class MicroserviceManager {
   private String appId;
 
   // key: microserviceName
-  private Map<String, MicroserviceVersions> versionsByName = new ConcurrentHashMapEx<>();
+  private Map<String, MicroserviceVersions> versionsByName = new HashMap<>();
+
+  private Object lock = new Object();
 
   public MicroserviceManager(AppManager appManager, String appId) {
     this.appManager = appManager;
@@ -45,11 +47,21 @@ public class MicroserviceManager {
   }
 
   public MicroserviceVersions getOrCreateMicroserviceVersions(String microserviceName) {
-    MicroserviceVersions microserviceVersions = versionsByName.computeIfAbsent(microserviceName, name -> {
-      MicroserviceVersions instance = new MicroserviceVersions(appManager, appId, microserviceName);
-      instance.pullInstances();
-      return instance;
-    });
+    // do not use ConcurrentHashMap computeIfAbsent for versionsByName
+    // because: when create MicroserviceVersions, one creation may depend on another
+    // MicroserviceVersions. And pullInstances will create a new MicroserviceVersions.
+    // Calling ConcurrentHashMap computeIfAbsent inside will get deadlock.
+    MicroserviceVersions microserviceVersions = versionsByName.get(microserviceName);
+    if (microserviceVersions == null) {
+      synchronized (lock) {
+        microserviceVersions = versionsByName.get(microserviceName);
+        if (microserviceVersions == null) {
+          microserviceVersions = new MicroserviceVersions(appManager, appId, microserviceName);
+          versionsByName.put(microserviceName, microserviceVersions);
+          microserviceVersions.pullInstances();
+        }
+      }
+    }
 
     tryRemoveInvalidMicroservice(microserviceVersions);
 

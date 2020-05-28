@@ -28,17 +28,24 @@ public class CategorizedTestCaseRunner {
     for (String transport : DemoConst.transports) {
       for (CategorizedTestCase testCase : tests.values()) {
 
-        if (testCase.getMicroserviceName() != null) {
-          changeTransport(testCase.getMicroserviceName(), transport);
-        } else {
-          changeTransport(microserviceName, transport);
-        }
+        try {
+          if (testCase.getMicroserviceName() != null) {
+            changeTransport(testCase.getMicroserviceName(), transport);
+          } else {
+            changeTransport(microserviceName, transport);
+          }
 
-        testCase.testAllTransport();
-        if ("rest".equals(transport)) {
-          testCase.testRestTransport();
-        } else if ("highway".equals(transport)) {
-          testCase.testHighwayTransport();
+          testCase.testAllTransport();
+          if ("rest".equals(transport)) {
+            testCase.testRestTransport();
+          } else if ("highway".equals(transport)) {
+            testCase.testHighwayTransport();
+          }
+        } catch (Exception e) {
+          TestMgr.failed("run categorized test case " +
+                  testCase.getClass().getName() +
+                  " failed, reason " + e.getMessage(),
+              e);
         }
       }
     }

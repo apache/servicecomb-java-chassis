@@ -34,5 +34,6 @@
     <module>registry-service-center</module>
     <module>registry-local</module>
     <module>registry-zero-config</module>
+    <module>registry-schema-discovery</module>
   </modules>
 </project>

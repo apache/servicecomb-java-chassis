@@ -43,6 +43,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
+      <artifactId>registry-schema-discovery</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>registry-service-center</artifactId>
     </dependency>
     <dependency>

@@ -26,7 +26,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>registry-service-center</artifactId>
-  <name>Java Chassis::Registry Service Center</name>
+  <name>Java Chassis::Service Registry::Service Center</name>
 
   <dependencies>
     <dependency>
