@@ -27,8 +27,9 @@ public class VertxRestInvocation extends RestProducerInvocation {
     super.createInvocation();
 
     RoutingContext routingContext = ((VertxServerRequestToHttpServletRequest) this.requestEx).getContext();
-    VertxHttpTransportContext transportContext = new VertxHttpTransportContext(routingContext, requestEx, responseEx);
-    
+    VertxHttpTransportContext transportContext = new VertxHttpTransportContext(routingContext, requestEx, responseEx,
+        produceProcessor);
+
     invocation.setTransportContext(transportContext);
     routingContext.put(RestConst.REST_INVOCATION_CONTEXT, this.invocation);
   }

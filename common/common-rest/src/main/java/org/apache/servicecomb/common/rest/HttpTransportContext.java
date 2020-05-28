@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.common.rest;
 
+import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.context.TransportContext;
@@ -25,9 +26,13 @@ public class HttpTransportContext implements TransportContext {
 
   private HttpServletResponseEx responseEx;
 
-  public HttpTransportContext(HttpServletRequestEx requestEx, HttpServletResponseEx responseEx) {
+  private ProduceProcessor produceProcessor;
+
+  public HttpTransportContext(HttpServletRequestEx requestEx, HttpServletResponseEx responseEx,
+      ProduceProcessor produceProcessor) {
     this.requestEx = requestEx;
     this.responseEx = responseEx;
+    this.produceProcessor = produceProcessor;
   }
 
   public HttpServletRequestEx getRequestEx() {
@@ -36,5 +41,9 @@ public class HttpTransportContext implements TransportContext {
 
   public HttpServletResponseEx getResponseEx() {
     return responseEx;
+  }
+
+  public ProduceProcessor getProduceProcessor() {
+    return produceProcessor;
   }
 }
