@@ -16,13 +16,29 @@
  */
 package org.apache.servicecomb.transport.highway;
 
+import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
+import org.apache.servicecomb.foundation.vertx.tcp.TcpConnection;
 import org.apache.servicecomb.swagger.invocation.context.VertxTransportContext;
+import org.apache.servicecomb.transport.highway.message.RequestHeader;
 
 import io.vertx.core.Context;
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 
 public class HighwayTransportContext implements VertxTransportContext {
-  protected Context vertxContext;
+  private final Context vertxContext;
+
+  private TcpConnection connection;
+
+  private long msgId;
+
+  private RequestHeader header;
+
+  private Buffer bodyBuffer;
+
+  private OperationProtobuf operationProtobuf;
+
+  private Buffer responseBuffer;
 
   public HighwayTransportContext() {
     this.vertxContext = Vertx.currentContext();
@@ -31,5 +47,60 @@ public class HighwayTransportContext implements VertxTransportContext {
   @Override
   public Context getVertxContext() {
     return vertxContext;
+  }
+
+  public TcpConnection getConnection() {
+    return connection;
+  }
+
+  public HighwayTransportContext setConnection(TcpConnection connection) {
+    this.connection = connection;
+    return this;
+  }
+
+  public long getMsgId() {
+    return msgId;
+  }
+
+  public HighwayTransportContext setMsgId(long msgId) {
+    this.msgId = msgId;
+    return this;
+  }
+
+  public RequestHeader getHeader() {
+    return header;
+  }
+
+  public HighwayTransportContext setHeader(RequestHeader header) {
+    this.header = header;
+    return this;
+  }
+
+  public Buffer getBodyBuffer() {
+    return bodyBuffer;
+  }
+
+  public HighwayTransportContext setBodyBuffer(Buffer bodyBuffer) {
+    this.bodyBuffer = bodyBuffer;
+    return this;
+  }
+
+  public OperationProtobuf getOperationProtobuf() {
+    return operationProtobuf;
+  }
+
+  public HighwayTransportContext setOperationProtobuf(
+      OperationProtobuf operationProtobuf) {
+    this.operationProtobuf = operationProtobuf;
+    return this;
+  }
+
+  public Buffer getResponseBuffer() {
+    return responseBuffer;
+  }
+
+  public HighwayTransportContext setResponseBuffer(Buffer responseBuffer) {
+    this.responseBuffer = responseBuffer;
+    return this;
   }
 }
