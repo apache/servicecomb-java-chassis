@@ -102,6 +102,8 @@ public class Invocation extends SwaggerInvocation {
 
   private Map<String, Object> invocationArguments = Collections.emptyMap();
 
+  private Object[] producerArguments;
+
   private Map<String, Object> swaggerArguments = Collections.emptyMap();
 
   public long getInvocationId() {
@@ -256,12 +258,20 @@ public class Invocation extends SwaggerInvocation {
   }
 
   public Object[] toProducerArguments() {
+    if (producerArguments != null) {
+      return producerArguments;
+    }
+
     Method method = operationMeta.getSwaggerProducerOperation().getProducerMethod();
     Object[] args = new Object[method.getParameterCount()];
     for (int i = 0; i < method.getParameterCount(); i++) {
       args[i] = this.invocationArguments.get(method.getParameters()[i].getName());
     }
-    return args;
+    return producerArguments = args;
+  }
+
+  public void clearProducerArguments() {
+    producerArguments = null;
   }
 
   public Endpoint getEndpoint() {
