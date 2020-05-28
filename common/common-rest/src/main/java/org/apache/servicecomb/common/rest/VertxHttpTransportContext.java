@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.common.rest;
 
+import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.context.VertxTransportContext;
@@ -30,8 +31,8 @@ public class VertxHttpTransportContext extends HttpTransportContext implements V
   private Context vertxContext;
 
   public VertxHttpTransportContext(RoutingContext routingContext, HttpServletRequestEx requestEx,
-      HttpServletResponseEx responseEx) {
-    super(requestEx, responseEx);
+      HttpServletResponseEx responseEx, ProduceProcessor produceProcessor) {
+    super(requestEx, responseEx, produceProcessor);
 
     this.routingContext = routingContext;
     this.vertxContext = Vertx.currentContext();

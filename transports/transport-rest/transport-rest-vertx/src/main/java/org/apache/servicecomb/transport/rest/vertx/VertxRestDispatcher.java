@@ -68,7 +68,7 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
   public void init(Router router) {
     // cookies handler are enabled by default start from 3.8.3
     String pattern = DynamicPropertyFactory.getInstance().getStringProperty(KEY_PATTERN, null).get();
-    if(pattern == null) {
+    if (pattern == null) {
       router.route().handler(createBodyHandler());
       router.route().failureHandler(this::failureHandler).handler(this::onRequest);
     } else {
@@ -82,9 +82,9 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
 
     AbstractRestInvocation restProducerInvocation = context.get(RestConst.REST_PRODUCER_INVOCATION);
     Throwable e = context.failure();
-    if (ErrorDataDecoderException.class.isInstance(e)) {
+    if (e instanceof ErrorDataDecoderException) {
       Throwable cause = e.getCause();
-      if (InvocationException.class.isInstance(cause)) {
+      if (cause instanceof InvocationException) {
         e = cause;
       }
     }
@@ -138,7 +138,7 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
    * Use routingContext to send failure information in throwable.
    */
   private void sendExceptionByRoutingContext(RoutingContext context, Throwable e) {
-    if (InvocationException.class.isInstance(e)) {
+    if (e instanceof InvocationException) {
       InvocationException invocationException = (InvocationException) e;
       context.response().putHeader(HttpHeaders.CONTENT_TYPE, MediaType.WILDCARD)
           .setStatusCode(invocationException.getStatusCode()).setStatusMessage(invocationException.getReasonPhrase())
