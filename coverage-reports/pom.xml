@@ -527,7 +527,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
-      <artifactId>pojo-tests</artifactId>
+      <artifactId>pojo-test</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
