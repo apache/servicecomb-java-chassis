@@ -26,6 +26,13 @@ import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 
 public class FilterNode {
+  public static final FilterNode EMPTY = new FilterNode(null) {
+    @Override
+    public CompletableFuture<Response> onFilter(Invocation invocation1) {
+      return CompletableFuture.completedFuture(Response.ok(null));
+    }
+  };
+
   public static FilterNode buildChain(Filter... filters) {
     return buildChain(Arrays.asList(filters));
   }
