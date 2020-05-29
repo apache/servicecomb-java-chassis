@@ -501,7 +501,6 @@ public class TestDefaultValue {
     assertEquals(defaultFloat, consumersSpringmvc.getIntf().floatHeaderRequire(null), 0.0f);
   }
 
-
   @Test
   public void floatHeader_require_springmvc_rt() {
     assertEquals(defaultFloat,
@@ -523,7 +522,7 @@ public class TestDefaultValue {
   public void stringHeader_springmvc_cart() {
     HttpHeaders headers = new HttpHeaders();
     headers.add("input", "setHeader");
-    HttpEntity<String> requestEntity = new HttpEntity<String>(null, headers);
+    HttpEntity<String> requestEntity = new HttpEntity<>(null, headers);
     assertNotEquals(defaultStr,
         consumersSpringmvc.getCseAsyncRestTemplate()
             .exchange("/stringHeader", HttpMethod.GET, requestEntity, String.class));
