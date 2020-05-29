@@ -337,151 +337,179 @@
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>crossapp-client</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>crossapp-server</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <!-- demo-edge -->
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>authentication</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>business-1-0-0</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>business-1-1-0</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>business-2-0-0</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>consumer</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>edge-service</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>model</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <!-- demo-jaxrs -->
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>jaxrs-client</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>jaxrs-server</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <!-- demo-local-registry -->
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-local-registry-client</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-local-registry-server</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <!-- demo-multi-registries -->
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-multi-registries-client</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-multi-registries-server</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <!-- demo-pojo -->
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>pojo-client</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>pojo-server</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <!-- demo-register-url-prefix -->
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-register-url-prefix-client</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-register-url-prefix-server</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <!-- demo schema -->
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-schema</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <!-- demo spring boot provider -->
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-spring-boot-jaxrs-client</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-spring-boot-jaxrs-server</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-spring-boot-springmvc-client</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-spring-boot-springmvc-server</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <!-- demo spring boot transport-->
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-spring-boot-pojo-client</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-spring-boot-pojo-server</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <!-- demo springmvc -->
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>springmvc-client</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>springmvc-server</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
 
     <!-- test cases in integration-test folder, sort by folder name -->
@@ -489,102 +517,122 @@
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>dynamic-config-tests</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>it-common</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>it-consumer</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>it-edge</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>it-producer</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>it-producer-deploy-springboot2-servlet</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>it-producer-deploy-springboot2-standalone</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>jaxrs-tests</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>pojo-test</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>spring-jaxrs-tests</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>spring-pojo-connection-limit-test</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>spring-pojo-tests</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <!-- springmvc-tests -->
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>springmvc-tests-common</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>springmvc-tests-connection-limit</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>springmvc-tests-general</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>springmvc-tests-general-with-springboot</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>springmvc-tests-simplified-mapping</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>springmvc-tests-simplified-mapping-with-springboot</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>test-common</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.tests</groupId>
       <artifactId>tracing-tests</artifactId>
       <version>${project.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
