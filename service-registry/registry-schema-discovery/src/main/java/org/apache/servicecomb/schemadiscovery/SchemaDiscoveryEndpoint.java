@@ -20,6 +20,7 @@ package org.apache.servicecomb.schemadiscovery;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.provider.rest.common.RestSchema;
@@ -31,7 +32,7 @@ import org.apache.servicecomb.registry.RegistrationManager;
 public class SchemaDiscoveryEndpoint {
   @Path("/getSchema")
   @GET
-  public String getSchema(String schemaId) {
+  public String getSchema(@QueryParam("schemaId") String schemaId) {
     return RegistrationManager.INSTANCE.getMicroservice().getSchemaMap().get(schemaId);
   }
 }

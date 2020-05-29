@@ -115,7 +115,7 @@ public class RegistrationManager {
 
 
   public void init() {
-    registrationList.forEach(discovery -> discovery.init());
+    registrationList.forEach(registration -> registration.init());
   }
 
   public static String getPublishAddress() {
