@@ -234,20 +234,7 @@
     <!-- spring boot -->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>java-chassis-spring-boot-common</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
       <artifactId>java-chassis-spring-boot-starter</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>java-chassis-spring-boot-starter-discovery</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>java-chassis-spring-boot-starter-gateway</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
