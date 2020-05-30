@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.core.filter.impl;
 
+import static org.apache.servicecomb.swagger.invocation.InvocationType.PRODUCER;
+
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
@@ -27,7 +29,7 @@ import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.swagger.invocation.Response;
 
-@FilterMeta(name = "schedule")
+@FilterMeta(name = "schedule", invocationType = PRODUCER)
 public class ScheduleFilter implements Filter {
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode next) {
