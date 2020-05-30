@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.registry;
+package org.apache.servicecomb.demo.localRegistryServer;
 
 import javax.ws.rs.core.MediaType;
 
