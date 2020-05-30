@@ -18,6 +18,7 @@ package org.apache.servicecomb.core.exception;
 
 public interface ExceptionCodes {
   String GENERIC_CLIENT = "SCB.0000";
+  String NOT_DEFINED_ANY_SCHEMA = "SCB.0002";
 
   String GENERIC_SERVER = "SCB.5000";
 }
