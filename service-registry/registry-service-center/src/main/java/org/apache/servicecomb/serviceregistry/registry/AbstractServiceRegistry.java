@@ -252,6 +252,10 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     return microservice;
   }
 
+  public List<Microservice> getAllMicroservices() {
+    return srClient.getAllMicroservices();
+  }
+
   public MicroserviceInstance getMicroserviceInstance() {
     return microservice.getInstance();
   }

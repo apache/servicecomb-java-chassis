@@ -17,9 +17,7 @@
 
 package org.apache.servicecomb.demo.registry;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
@@ -30,7 +28,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-public class MultiRegistriesServerTestCase implements CategorizedTestCase {
+public class LocalRegistryServerTest implements CategorizedTestCase {
   RestTemplate template = RestTemplateBuilder.create();
 
   @Override
@@ -41,24 +39,26 @@ public class MultiRegistriesServerTestCase implements CategorizedTestCase {
 
   private void testGetAllMicroservice() {
     List<Microservice> microserviceList = DiscoveryManager.INSTANCE.getAllMicroservices();
-    Set<String> names = new HashSet<>();
+    int expectedCount = 0;
 
     for (Microservice m : microserviceList) {
-      if (m.getServiceName().equals("demo-multi-registries-client")
-          || m.getServiceName().equals("demo-multi-registries-server")
-          || m.getServiceName().equals("thirdParty-service-center")
-          || m.getServiceName().equals("thirdParty-no-schema-server")) {
-        names.add(m.getServiceName());
+      if (m.getServiceName().equals("demo-local-registry-client")
+          || m.getServiceName().equals("demo-local-registry-server")) {
+        expectedCount++;
       }
     }
-    TestMgr.check(4, names.size());
+    TestMgr.check(2, expectedCount);
   }
 
   private void testServerGetName() {
-    // invoke demo-multi-registries-server
+    RestTemplate template = RestTemplateBuilder.create();
     TestMgr.check("2", template
-        .getForObject("cse://demo-multi-registries-server/register/url/prefix/getName?name=2",
+        .getForObject("cse://demo-local-registry-server/register/url/prefix/getName?name=2",
             String.class));
+    TestMgr.summary();
+    if (!TestMgr.errors().isEmpty()) {
+      throw new IllegalStateException("tests failed");
+    }
   }
 
   @Override

@@ -21,11 +21,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
+import org.apache.servicecomb.serviceregistry.ServiceRegistry;
+import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCacheKey;
 
@@ -69,6 +69,11 @@ public class EmptyMockServiceRegistry implements ServiceRegistry {
 
   @Override
   public Microservice getMicroservice() {
+    return null;
+  }
+
+  @Override
+  public List<Microservice> getAllMicroservices() {
     return null;
   }
 

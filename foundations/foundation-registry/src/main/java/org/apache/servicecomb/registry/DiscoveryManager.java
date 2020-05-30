@@ -18,6 +18,7 @@
 package org.apache.servicecomb.registry;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -116,6 +117,17 @@ public class DiscoveryManager {
       }
     }
     return null;
+  }
+
+  public List<Microservice> getAllMicroservices() {
+    List<Microservice> result = new LinkedList<>();
+    for (Discovery discovery : discoveryList) {
+      List<Microservice> microservices = discovery.getAllMicroservices();
+      if (microservices != null) {
+        result.addAll(microservices);
+      }
+    }
+    return result;
   }
 
   public MicroserviceVersions getOrCreateMicroserviceVersions(String appId, String microserviceName) {

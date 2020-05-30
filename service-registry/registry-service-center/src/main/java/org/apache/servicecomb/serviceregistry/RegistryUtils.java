@@ -32,14 +32,14 @@ import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
+import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
-import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
-import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
-import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
+import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
 import org.apache.servicecomb.serviceregistry.registry.cache.AggregateServiceRegistryCache;
 import org.apache.servicecomb.serviceregistry.registry.cache.MicroserviceCache;
@@ -139,6 +139,10 @@ public final class RegistryUtils {
 
   public static Microservice getMicroservice() {
     return serviceRegistry.getMicroservice();
+  }
+
+  public static List<Microservice> getAllMicroservices() {
+    return serviceRegistry.getAllMicroservices();
   }
 
   public static MicroserviceInstance getMicroserviceInstance() {
