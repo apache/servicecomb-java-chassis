@@ -14,12 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.core.exception;
+package org.apache.servicecomb.core.filter.impl;
 
-public interface ExceptionCodes {
-  String GENERIC_CLIENT = "SCB.0000";
-  String LB_ADDRESS_NOT_FOUND = "SCB.0001";
-  String NOT_DEFINED_ANY_SCHEMA = "SCB.0002";
+import java.util.Arrays;
+import java.util.List;
 
-  String GENERIC_SERVER = "SCB.5000";
+import org.apache.servicecomb.core.filter.Filter;
+import org.apache.servicecomb.core.filter.FilterProvider;
+
+public class DefaultFilterProvider implements FilterProvider {
+  @Override
+  public List<Class<? extends Filter>> getFilters() {
+    return Arrays.asList(
+        SimpleLoadBalanceFilter.class,
+        ScheduleFilter.class);
+  }
 }
