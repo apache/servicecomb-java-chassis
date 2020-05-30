@@ -78,7 +78,7 @@ public class RestProducerInvocationCreatorTest {
   static SCBEngine engine;
 
   @BeforeClass
-  public static void beforeClass() throws Exception {
+  public static void beforeClass() {
     ArchaiusUtils.resetConfig();
     ConfigUtil.installDynamicConfig();
 
@@ -87,7 +87,7 @@ public class RestProducerInvocationCreatorTest {
   }
 
   @AfterClass
-  public static void afterClass() throws Exception {
+  public static void afterClass() {
     engine.destroy();
     ArchaiusUtils.resetConfig();
   }
