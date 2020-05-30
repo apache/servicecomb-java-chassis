@@ -17,6 +17,9 @@
 
 package org.apache.servicecomb.core.filter;
 
+import static org.apache.servicecomb.swagger.invocation.InvocationType.CONSUMER;
+import static org.apache.servicecomb.swagger.invocation.InvocationType.PRODUCER;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
@@ -24,12 +27,20 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.apache.servicecomb.swagger.invocation.InvocationType;
+
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Inherited
 public @interface FilterMeta {
   String name();
+
+  /**
+   *
+   * @return can be used for the specific invocation type
+   */
+  InvocationType[] invocationType() default {CONSUMER, PRODUCER};
 
   /**
    *

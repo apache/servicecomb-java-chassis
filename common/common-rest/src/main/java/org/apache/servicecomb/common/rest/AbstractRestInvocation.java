@@ -21,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 
 import javax.ws.rs.core.HttpHeaders;
@@ -33,6 +32,7 @@ import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessorManager;
 import org.apache.servicecomb.common.rest.definition.RestOperationMeta;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilterBeforeSendResponseExecutor;
+import org.apache.servicecomb.common.rest.filter.inner.RestServerCodecFilter;
 import org.apache.servicecomb.common.rest.locator.OperationLocator;
 import org.apache.servicecomb.common.rest.locator.ServicePathManager;
 import org.apache.servicecomb.core.Const;
@@ -268,16 +268,8 @@ public abstract class AbstractRestInvocation {
 
   @SuppressWarnings("deprecation")
   protected void sendResponse(Response response) {
-    if (response.getHeaders().getHeaderMap() != null) {
-      for (Entry<String, List<Object>> entry : response.getHeaders().getHeaderMap().entrySet()) {
-        for (Object value : entry.getValue()) {
-          if (!entry.getKey().equalsIgnoreCase(HttpHeaders.CONTENT_LENGTH)
-              && !entry.getKey().equalsIgnoreCase("Transfer-Encoding")) {
-            responseEx.addHeader(entry.getKey(), String.valueOf(value));
-          }
-        }
-      }
-    }
+    RestServerCodecFilter.copyHeadersToHttpResponse(response.getHeaders().getHeaderMap(), responseEx);
+
     responseEx.setStatus(response.getStatusCode(), response.getReasonPhrase());
     responseEx.setAttribute(RestConst.INVOCATION_HANDLER_RESPONSE, response);
     responseEx.setAttribute(RestConst.INVOCATION_HANDLER_PROCESSOR, produceProcessor);

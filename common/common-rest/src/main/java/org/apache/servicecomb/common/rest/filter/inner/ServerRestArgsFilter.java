@@ -17,10 +17,10 @@
 
 package org.apache.servicecomb.common.rest.filter.inner;
 
+import static org.apache.servicecomb.common.rest.filter.inner.RestServerCodecFilter.isDownloadFileResponseType;
+
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-
-import javax.servlet.http.Part;
 
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestCodec;
@@ -90,16 +90,5 @@ public class ServerRestArgsFilter implements HttpServerFilter {
       future.completeExceptionally(ExceptionFactory.convertProducerException(e));
     }
     return future;
-  }
-
-  /**
-   * Check whether this response is a downloaded file response,
-   * according to the schema recorded in {@link org.apache.servicecomb.swagger.invocation.response.ResponsesMeta}
-   * and response status code.
-   * @return true if this response is a downloaded file, otherwise false.
-   */
-  private boolean isDownloadFileResponseType(Invocation invocation, Response response) {
-    return Part.class.isAssignableFrom(
-        invocation.findResponseType(response.getStatusCode()).getRawClass());
   }
 }
