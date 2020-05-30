@@ -18,6 +18,7 @@
 package org.apache.servicecomb.demo.localRegistryClient;
 
 import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
+import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -30,6 +31,11 @@ public class Application {
     new SpringApplicationBuilder().sources(Application.class).web(WebApplicationType.SERVLET).build().run(args);
 
     runTest();
+
+    TestMgr.summary();
+    if (!TestMgr.errors().isEmpty()) {
+      throw new IllegalStateException("tests failed");
+    }
   }
 
   public static void runTest() throws Exception {
