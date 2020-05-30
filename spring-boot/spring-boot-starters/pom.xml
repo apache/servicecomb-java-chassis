@@ -35,8 +35,6 @@
     <module>java-chassis-spring-boot-starter</module>
     <module>java-chassis-spring-boot-starter-servlet</module>
     <module>java-chassis-spring-boot-starter-standalone</module>
-    <module>java-chassis-spring-boot-starter-discovery</module>
-    <module>java-chassis-spring-boot-starter-gateway</module>   
   </modules>
 
   <build>
