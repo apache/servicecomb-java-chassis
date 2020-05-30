@@ -55,10 +55,6 @@ public class LocalRegistryServerTest implements CategorizedTestCase {
     TestMgr.check("2", template
         .getForObject("cse://demo-local-registry-server/register/url/prefix/getName?name=2",
             String.class));
-    TestMgr.summary();
-    if (!TestMgr.errors().isEmpty()) {
-      throw new IllegalStateException("tests failed");
-    }
   }
 
   @Override
