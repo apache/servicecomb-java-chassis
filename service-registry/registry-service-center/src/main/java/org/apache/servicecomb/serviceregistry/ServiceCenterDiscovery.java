@@ -18,6 +18,7 @@
 package org.apache.servicecomb.serviceregistry;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.apache.servicecomb.registry.api.Discovery;
 import org.apache.servicecomb.registry.api.registry.Microservice;
@@ -56,6 +57,11 @@ public class ServiceCenterDiscovery implements Discovery {
   @Override
   public Microservice getMicroservice(String microserviceId) {
     return RegistryUtils.getMicroservice(microserviceId);
+  }
+
+  @Override
+  public List<Microservice> getAllMicroservices() {
+    return RegistryUtils.getAllMicroservices();
   }
 
   @Override

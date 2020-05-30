@@ -207,6 +207,10 @@ public class LocalRegistryStore {
     return microserviceMap.get(microserviceId);
   }
 
+  public List<Microservice> getAllMicroservices() {
+    return microserviceMap.values().stream().collect(Collectors.toList());
+  }
+
   public String getSchema(String microserviceId, String schemaId) {
     return microserviceMap.get(microserviceId).getSchemaMap().get(schemaId);
   }

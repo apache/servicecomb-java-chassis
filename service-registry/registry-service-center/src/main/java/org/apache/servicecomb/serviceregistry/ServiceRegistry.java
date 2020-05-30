@@ -63,6 +63,11 @@ public interface ServiceRegistry {
   Microservice getMicroservice();
 
   /**
+   * Get all Microservices under this application
+   */
+  List<Microservice> getAllMicroservices();
+
+  /**
    * Get the {@link MicroserviceInstance} of this microservice instance itself.
    */
   MicroserviceInstance getMicroserviceInstance();

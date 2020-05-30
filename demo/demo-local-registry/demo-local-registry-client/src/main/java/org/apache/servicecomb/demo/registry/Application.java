@@ -17,13 +17,11 @@
 
 package org.apache.servicecomb.demo.registry;
 
-import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @EnableServiceComb
@@ -34,14 +32,7 @@ public class Application {
     runTest();
   }
 
-  public static void runTest() {
-    RestTemplate template = RestTemplateBuilder.create();
-    TestMgr.check("2", template
-        .getForObject("cse://demo-local-registry-server/register/url/prefix/getName?name=2",
-            String.class));
-    TestMgr.summary();
-    if (!TestMgr.errors().isEmpty()) {
-      throw new IllegalStateException("tests failed");
-    }
+  public static void runTest() throws Exception {
+    CategorizedTestCaseRunner.runCategorizedTestCase("demo-local-registry-server");
   }
 }

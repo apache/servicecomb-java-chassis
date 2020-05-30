@@ -49,6 +49,11 @@ public class SchemaDiscovery implements Discovery {
   }
 
   @Override
+  public List<Microservice> getAllMicroservices() {
+    return null;
+  }
+
+  @Override
   public String getSchema(String microserviceId, Collection<MicroserviceInstance> instances, String schemaId) {
     if (instances == null || instances.isEmpty()) {
       return null;
