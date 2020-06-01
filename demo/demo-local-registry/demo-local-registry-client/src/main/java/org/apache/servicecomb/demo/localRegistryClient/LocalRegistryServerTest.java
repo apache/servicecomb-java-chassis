@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
+import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.registry.Microservice;
@@ -29,11 +30,15 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class LocalRegistryServerTest implements CategorizedTestCase {
+  @RpcReference(microserviceName = "demo-local-registry-server", schemaId = "CodeFirstEndpoint")
+  private CodeFirstService codeFirstService;
+
   RestTemplate template = RestTemplateBuilder.create();
 
   @Override
   public void testRestTransport() throws Exception {
     testServerGetName();
+    testCodeFirstGetName();
     testGetAllMicroservice();
   }
 
@@ -48,6 +53,10 @@ public class LocalRegistryServerTest implements CategorizedTestCase {
       }
     }
     TestMgr.check(2, expectedCount);
+  }
+
+  private void testCodeFirstGetName() {
+    TestMgr.check("2", codeFirstService.getName("2"));
   }
 
   private void testServerGetName() {

@@ -21,6 +21,7 @@ demo-local-registry-server:
     appid: demo-local-registry
     schemaIds:
       - ServerEndpoint
+      - CodeFirstEndpoint
     instances:
       - endpoints:
           - rest://localhost:8080

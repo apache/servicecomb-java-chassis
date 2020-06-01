@@ -42,6 +42,7 @@ public class CategorizedTestCaseRunner {
             testCase.testHighwayTransport();
           }
         } catch (Exception e) {
+          e.printStackTrace();
           TestMgr.failed("run categorized test case " +
                   testCase.getClass().getName() +
                   " failed, reason " + e.getMessage(),
