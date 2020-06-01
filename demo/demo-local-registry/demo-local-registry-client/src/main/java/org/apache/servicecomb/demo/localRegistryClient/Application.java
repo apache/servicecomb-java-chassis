@@ -19,6 +19,7 @@ package org.apache.servicecomb.demo.localRegistryClient;
 
 import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.demo.TestMgr;
+import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -30,6 +31,8 @@ public class Application {
   public static void main(final String[] args) throws Exception {
     new SpringApplicationBuilder().sources(Application.class).web(WebApplicationType.SERVLET).build().run(args);
 
+    registerSchema();
+
     runTest();
 
     TestMgr.summary();
@@ -38,7 +41,13 @@ public class Application {
     }
   }
 
-  public static void runTest() throws Exception {
+  private static void registerSchema() {
+    RegistrationManager.INSTANCE.getSwaggerLoader().registerSwagger("demo-local-registry",
+        "demo-local-registry-server",
+        "CodeFirstEndpoint", CodeFirstService.class);
+  }
+
+  private static void runTest() throws Exception {
     CategorizedTestCaseRunner.runCategorizedTestCase("demo-local-registry-server");
   }
 }
