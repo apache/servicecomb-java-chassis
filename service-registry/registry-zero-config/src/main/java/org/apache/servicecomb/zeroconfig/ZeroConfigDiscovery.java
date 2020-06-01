@@ -17,7 +17,6 @@
 package org.apache.servicecomb.zeroconfig;
 
 import com.netflix.config.DynamicPropertyFactory;
-import com.sun.xml.internal.bind.v2.TODO;
 import java.util.Collection;
 import java.util.List;
 import org.apache.servicecomb.registry.api.Discovery;
