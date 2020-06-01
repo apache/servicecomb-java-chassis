@@ -27,6 +27,7 @@ public class DefaultFilterProvider implements FilterProvider {
   public List<Class<? extends Filter>> getFilters() {
     return Arrays.asList(
         SimpleLoadBalanceFilter.class,
-        ScheduleFilter.class);
+        ScheduleFilter.class,
+        ProducerOperationFilter.class);
   }
 }

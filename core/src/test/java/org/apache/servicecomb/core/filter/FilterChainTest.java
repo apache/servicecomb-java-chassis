@@ -139,14 +139,13 @@ public class FilterChainTest {
     };
     SimpleRetryFilter retryFilter = new SimpleRetryFilter().setMaxRetry(3);
 
-    ExecutionException executionException = (ExecutionException) catchThrowable(
-        () -> FilterNode.buildChain(retryFilter, recordThreadFilter, exceptionFilter)
-            .onFilter(invocation)
-            .get());
+    CompletableFuture<Response> future = FilterNode.buildChain(retryFilter, recordThreadFilter, exceptionFilter)
+        .onFilter(invocation);
 
     assertThat(msg).containsExactly("main", "main", "main");
-    assertThat(executionException.getCause())
-        .isInstanceOf(IOException.class)
+    assertThat(future)
+        .hasFailedWithThrowableThat()
+        .isExactlyInstanceOf(IOException.class)
         .hasMessage("net error");
   }
 }
