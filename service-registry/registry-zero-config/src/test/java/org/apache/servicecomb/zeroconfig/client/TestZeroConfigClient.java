@@ -72,7 +72,7 @@ public class TestZeroConfigClient {
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    target = new ZeroConfigClient(zeroConfigRegistryService, multicastSocket, restTemplate);
+    target = ZeroConfigClient.INSTANCE.initZeroConfigClientWithMocked(zeroConfigRegistryService, multicastSocket, restTemplate);
 
     prepareSelfMicroserviceAndInstance();
   }
@@ -134,15 +134,6 @@ public class TestZeroConfigClient {
     boolean returnedResult = target.register();
 
     Assert.assertTrue(returnedResult);
-  }
-
-  @Test
-  public void test_register_withWrongData_RegisterShouldFail() {
-    ZeroConfigRegistration.INSTANCE.setSelfMicroservice(null);
-
-    boolean returnedResult = target.register();
-
-    Assert.assertFalse(returnedResult);
   }
 
   @Test

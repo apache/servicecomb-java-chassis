@@ -16,8 +16,10 @@
  */
 package org.apache.servicecomb.zeroconfig;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.netflix.config.DynamicPropertyFactory;
 import java.util.Collection;
+import org.apache.commons.lang.StringUtils;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.registry.api.Registration;
@@ -33,6 +35,8 @@ import org.apache.servicecomb.zeroconfig.server.ServerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.ENABLED;
+
 public class ZeroConfigRegistration implements Registration {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ZeroConfigRegistration.class);
@@ -40,7 +44,6 @@ public class ZeroConfigRegistration implements Registration {
   public static ZeroConfigRegistration INSTANCE = new ZeroConfigRegistration();
 
   private static final String NAME = "zero-config registration";
-  private static final String ENABLED = "servicecomb.zeroconfig.registry.registration.enabled";
 
   private ZeroConfigClient zeroConfigClient = ZeroConfigClient.INSTANCE;
 
@@ -63,8 +66,25 @@ public class ZeroConfigRegistration implements Registration {
     this.selfMicroservice = microserviceFactory.create(microserviceDefinition);
     this.selfMicroserviceInstance = selfMicroservice.getInstance();
 
+    setServiceIdAndInstanceId();
+
     ServerUtil.init();
     ClientUtil.init();
+  }
+
+  private void  setServiceIdAndInstanceId(){
+    // set serviceId
+    if (StringUtils.isEmpty(selfMicroservice.getServiceId())) {
+      String serviceId = ClientUtil.generateServiceId(selfMicroservice);
+      selfMicroservice.setServiceId(serviceId);
+      selfMicroserviceInstance.setServiceId(serviceId);
+    }
+
+    // set instanceId
+    if (StringUtils.isEmpty(selfMicroserviceInstance.getInstanceId())) {
+      String instanceId = ClientUtil.generateServiceInstanceId();
+      selfMicroserviceInstance.setInstanceId(instanceId);
+    }
   }
 
   @Override
@@ -134,23 +154,24 @@ public class ZeroConfigRegistration implements Registration {
   }
 
   // setter/getter
-
-  public void setSelfMicroservice(
-      Microservice selfMicroservice) {
-    this.selfMicroservice = selfMicroservice;
-  }
-
   public Microservice getSelfMicroservice() {
     return this.selfMicroservice;
   }
 
+  public MicroserviceInstance getSelfMicroserviceInstance() {
+    return this.selfMicroserviceInstance;
+  }
+
+  @VisibleForTesting
   public void setSelfMicroserviceInstance(
       MicroserviceInstance selfMicroserviceInstance) {
     this.selfMicroserviceInstance = selfMicroserviceInstance;
   }
 
-  public MicroserviceInstance getSelfMicroserviceInstance() {
-    return this.selfMicroserviceInstance;
+  @VisibleForTesting
+  public void setSelfMicroservice(
+      Microservice selfMicroservice) {
+    this.selfMicroservice = selfMicroservice;
   }
 
 }

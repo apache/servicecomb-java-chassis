@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.zeroconfig.client;
 
+import com.google.common.annotations.VisibleForTesting;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -56,11 +57,22 @@ public class ZeroConfigClient {
   private MulticastSocket multicastSocket;
 
   // Constructor
-  public ZeroConfigClient(ZeroConfigRegistryService zeroConfigRegistryService,
+
+  private ZeroConfigClient(ZeroConfigRegistryService zeroConfigRegistryService,
       MulticastSocket multicastSocket, RestTemplate restTemplate) {
     this.zeroConfigRegistryService = zeroConfigRegistryService;
     this.restTemplate = restTemplate;
     this.multicastSocket = multicastSocket;
+  }
+
+  @VisibleForTesting
+  public ZeroConfigClient initZeroConfigClientWithMocked(
+      ZeroConfigRegistryService zeroConfigRegistryService,
+      MulticastSocket multicastSocket, RestTemplate restTemplate) {
+    this.zeroConfigRegistryService = zeroConfigRegistryService;
+    this.multicastSocket = multicastSocket;
+    this.restTemplate = restTemplate;
+    return this;
   }
 
   // builder method
@@ -263,34 +275,14 @@ public class ZeroConfigClient {
   }
 
   private Map<String, String> prepareRegisterData() {
-    // set serviceId
-    Microservice selfMicroservice = ZeroConfigRegistration.INSTANCE.getSelfMicroservice();
-    MicroserviceInstance selfMicroserviceInstance = ZeroConfigRegistration.INSTANCE
+    // Convert to Multicast data format
+    Microservice selfService = ZeroConfigRegistration.INSTANCE.getSelfMicroservice();
+    MicroserviceInstance selfInstance = ZeroConfigRegistration.INSTANCE
         .getSelfMicroserviceInstance();
 
-    if (selfMicroservice == null || selfMicroserviceInstance == null) {
-      return null;
-    }
-
-    String serviceId = selfMicroservice.getServiceId();
-    if (StringUtils.isEmpty(serviceId)) {
-      serviceId = ClientUtil.generateServiceId(selfMicroservice);
-      selfMicroservice.setServiceId(serviceId);
-      selfMicroserviceInstance.setServiceId(serviceId);
-    }
-
-    // set instanceId
-    String instanceId = selfMicroserviceInstance
-        .getInstanceId(); // allow client to set the instanceId
-    if (StringUtils.isEmpty(instanceId)) {
-      instanceId = ClientUtil.generateServiceInstanceId();
-      selfMicroserviceInstance.setInstanceId(instanceId);
-    }
-
-    // Convert to Multicast data format
     Optional<Map<String, String>> optionalDataMap = ClientUtil
-        .convertToRegisterDataModel(serviceId, instanceId, selfMicroserviceInstance,
-            selfMicroservice);
+        .convertToRegisterDataModel(selfService.getServiceId(), selfInstance.getInstanceId(),
+            selfInstance, selfService);
 
     return optionalDataMap.orElse(null);
   }
