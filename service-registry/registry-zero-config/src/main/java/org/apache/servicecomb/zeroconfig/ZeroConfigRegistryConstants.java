@@ -23,6 +23,7 @@ public interface ZeroConfigRegistryConstants {
   // MulticastSocket related
   String GROUP = "225.0.0.0";
   Integer PORT = 6666;
+  String ENCODE = "UTF-8";
   /**
    * ttl=1，local network, ttl=32，local network station, ttl=64，local area；ttl=128，local continent
    * ttl=255，all places. Default value is 1;

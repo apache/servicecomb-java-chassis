@@ -188,7 +188,7 @@ public class ServerUtil {
       while (true) {
         DatagramPacket receivePacketBuffer = new DatagramPacket(buffer, buffer.length);
         multicastSocket.receive(receivePacketBuffer);
-        String receivedPacketString = new String(receivePacketBuffer.getData());
+        String receivedPacketString = new String(receivePacketBuffer.getData(), ENCODE);
 
         Map<String, String> receivedStringMap = getMapFromString(receivedPacketString);
 

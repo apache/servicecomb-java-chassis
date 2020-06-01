@@ -101,7 +101,7 @@ public class ZeroConfigClient {
 
   private String doRegister(Map<String, String> serviceInstanceDataMap) {
     try {
-      byte[] instanceData = serviceInstanceDataMap.toString().getBytes();
+      byte[] instanceData = serviceInstanceDataMap.toString().getBytes(ENCODE);
       DatagramPacket instanceDataPacket = new DatagramPacket(instanceData, instanceData.length,
           InetAddress.getByName(GROUP), PORT);
       this.multicastSocket.send(instanceDataPacket);
@@ -134,7 +134,7 @@ public class ZeroConfigClient {
       unregisterEventMap.put(EVENT, UNREGISTER_EVENT);
       unregisterEventMap.put(SERVICE_ID, foundInstance.getServiceId());
       unregisterEventMap.put(INSTANCE_ID, foundInstance.getInstanceId());
-      byte[] unregisterEventBytes = unregisterEventMap.toString().getBytes();
+      byte[] unregisterEventBytes = unregisterEventMap.toString().getBytes(ENCODE);
       DatagramPacket unregisterEventDataPacket = new DatagramPacket(unregisterEventBytes,
           unregisterEventBytes.length, InetAddress.getByName(GROUP), PORT);
       this.multicastSocket.send(unregisterEventDataPacket);
@@ -171,6 +171,7 @@ public class ZeroConfigClient {
     }
   }
 
+
   public String getSchema(String microserviceId, String schemaId) {
     Microservice selfMicroservice = ZeroConfigRegistration.INSTANCE.getSelfMicroservice();
     LOGGER.info("Retrieve schema content for Microservice ID: {}, Schema ID: {}",
@@ -179,17 +180,8 @@ public class ZeroConfigClient {
     if (selfMicroservice.getServiceId().equals(microserviceId)) {
       return selfMicroservice.getSchemaMap().computeIfPresent(schemaId, (k, v) -> v);
     } else {
-      // called by consumer to load provider's schema content for the very first time
-      String providerEndpoint = this.getEndpointForMicroservice(microserviceId);
-      if (providerEndpoint == null) {
-        throw new IllegalArgumentException("Provider's endpoint can NOT be Null");
-      }
-      String providerSchemaContentEndpoint =
-          providerEndpoint + "/schemaEndpoint/schemas?schemaId=" + schemaId;
-
-      LOGGER.info("Retrieve schema content from endpoint:{}", providerSchemaContentEndpoint);
-      // Make a rest call to provider's endpoint directly to retrieve the schema content
-      return restTemplate.getForObject(providerSchemaContentEndpoint, String.class);
+      // TODO will need to rely on the registry-schema-discovery module to getSchema
+      return null;
     }
   }
 

@@ -207,27 +207,15 @@ public class TestZeroConfigClient {
     verifyZeroInteractions(zeroConfigRegistryService);
   }
 
+  // TODO
   @Test
-  public void test_getSchema_forOtherMicroservice_shouldCallZeroConfigRegistryService_And_Succeed() {
-    when(zeroConfigRegistryService.getMicroservice(otherServiceId))
-        .thenReturn(prepareServerServiceInstance(true));
-    String schemaContentEndpoint = endpoint1 + "/schemaEndpoint/schemas?schemaId=" + schemaId1;
-    when(restTemplate.getForObject(schemaContentEndpoint, String.class)).thenReturn(schemaContent1);
-
+  public void test_getSchema_forOtherMicroservice_shouldReturnNull() {
     String returnedResult = target.getSchema(otherServiceId, schemaId1);
 
-    Assert.assertEquals(schemaContent1, returnedResult);
+    Assert.assertNull(returnedResult);
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void test_getSchema_whenProviderEndpointIsNull_shouldThrowIllegalArgumentException() {
-    when(zeroConfigRegistryService.getMicroservice(otherServiceId))
-        .thenReturn(prepareServerServiceInstance(false));
 
-    target.getSchema(otherServiceId, schemaId1);
-
-    verifyZeroInteractions(restTemplate);
-  }
 
   // test findMicroserviceInstance method
   @Test
