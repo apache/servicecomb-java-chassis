@@ -41,7 +41,6 @@ import org.apache.servicecomb.zeroconfig.server.ServerUtil;
 import org.apache.servicecomb.zeroconfig.server.ZeroConfigRegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.client.RestTemplate;
 
 import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.*;
 
@@ -53,25 +52,21 @@ public class ZeroConfigClient {
 
   // Constructor Parameters
   private ZeroConfigRegistryService zeroConfigRegistryService;
-  private RestTemplate restTemplate;
   private MulticastSocket multicastSocket;
 
   // Constructor
-
   private ZeroConfigClient(ZeroConfigRegistryService zeroConfigRegistryService,
-      MulticastSocket multicastSocket, RestTemplate restTemplate) {
+      MulticastSocket multicastSocket) {
     this.zeroConfigRegistryService = zeroConfigRegistryService;
-    this.restTemplate = restTemplate;
     this.multicastSocket = multicastSocket;
   }
 
   @VisibleForTesting
   public ZeroConfigClient initZeroConfigClientWithMocked(
       ZeroConfigRegistryService zeroConfigRegistryService,
-      MulticastSocket multicastSocket, RestTemplate restTemplate) {
+      MulticastSocket multicastSocket) {
     this.zeroConfigRegistryService = zeroConfigRegistryService;
     this.multicastSocket = multicastSocket;
-    this.restTemplate = restTemplate;
     return this;
   }
 
@@ -86,8 +81,7 @@ public class ZeroConfigClient {
       LOGGER.error("Failed to create MulticastSocket object in Zero-Config mode", e);
       //throw new ServiceCombException("Failed to create MulticastSocket object", e);
     }
-    return new ZeroConfigClient(new ZeroConfigRegistryService(), multicastSocket,
-        new RestTemplate());
+    return new ZeroConfigClient(new ZeroConfigRegistryService(), multicastSocket);
   }
 
   public boolean register() {
