@@ -40,7 +40,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.web.client.RestTemplate;
 
 public class TestZeroConfigClient {
 
@@ -51,9 +50,6 @@ public class TestZeroConfigClient {
 
   @Mock
   MulticastSocket multicastSocket;
-
-  @Mock
-  RestTemplate restTemplate;
 
   // testing data
   String selfServiceId = "123";
@@ -72,7 +68,7 @@ public class TestZeroConfigClient {
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    target = ZeroConfigClient.INSTANCE.initZeroConfigClientWithMocked(zeroConfigRegistryService, multicastSocket, restTemplate);
+    target = ZeroConfigClient.INSTANCE.initZeroConfigClientWithMocked(zeroConfigRegistryService, multicastSocket);
 
     prepareSelfMicroserviceAndInstance();
   }
