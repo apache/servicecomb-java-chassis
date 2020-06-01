@@ -17,6 +17,7 @@
 package org.apache.servicecomb.zeroconfig;
 
 import com.netflix.config.DynamicPropertyFactory;
+import com.sun.xml.internal.bind.v2.TODO;
 import java.util.Collection;
 import java.util.List;
 import org.apache.servicecomb.registry.api.Discovery;
@@ -25,10 +26,11 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.zeroconfig.client.ZeroConfigClient;
 
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.ENABLED;
+
 public class ZeroConfigDiscovery implements Discovery {
 
   private static final String NAME = "zero-config discovery";
-  private static final String ENABLED = "servicecomb.zeroconfig.registry.discovery.enabled";
 
   private ZeroConfigClient zeroConfigClient = ZeroConfigClient.INSTANCE;
   private String revision;
@@ -68,6 +70,7 @@ public class ZeroConfigDiscovery implements Discovery {
     return zeroConfigClient.getAllMicroservices();
   }
 
+  //TODO
   @Override
   public String getSchema(String microserviceId, Collection<MicroserviceInstance> instances,
       String schemaId) {

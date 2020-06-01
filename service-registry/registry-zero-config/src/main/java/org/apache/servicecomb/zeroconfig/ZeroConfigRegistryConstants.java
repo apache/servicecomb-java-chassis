@@ -18,6 +18,8 @@ package org.apache.servicecomb.zeroconfig;
 
 public interface ZeroConfigRegistryConstants {
 
+  String ENABLED = "servicecomb.zeroconfig.registry.enabled";
+
   // MulticastSocket related
   String GROUP = "225.0.0.0";
   Integer PORT = 6666;
