@@ -16,4 +16,5 @@
 #
 
 org.apache.servicecomb.core.exception.converter.InvocationExceptionConverter
+org.apache.servicecomb.core.exception.converter.IllegalArgumentExceptionConverter
 org.apache.servicecomb.core.exception.converter.DefaultExceptionConverter
