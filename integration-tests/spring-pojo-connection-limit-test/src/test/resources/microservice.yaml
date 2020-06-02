@@ -22,8 +22,7 @@ service_description:
 servicecomb:
   service:
     registry:
-      registration.enabled: false
-      discovery.enabled: false
+      enabled: false
   rest:
     address: 0.0.0.0:7070
     server:

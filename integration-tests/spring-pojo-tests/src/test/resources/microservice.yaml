@@ -18,5 +18,4 @@
 servicecomb:
   service:
     registry:
-      registration.enabled: false
-      discovery.enabled: false
+      enabled: false
