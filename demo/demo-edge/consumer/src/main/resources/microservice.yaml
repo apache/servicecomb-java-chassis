@@ -25,3 +25,7 @@ servicecomb:
       address: http://127.0.0.1:30100
   rest:
     client.http2.useAlpnEnabled: false
+  handler:
+    chain:
+      Consumer:
+        default: loadbalance
