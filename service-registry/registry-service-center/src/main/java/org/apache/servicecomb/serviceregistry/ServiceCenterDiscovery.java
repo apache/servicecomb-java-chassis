@@ -24,13 +24,12 @@ import org.apache.servicecomb.registry.api.Discovery;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
+import org.apache.servicecomb.serviceregistry.api.Const;
 
 import com.netflix.config.DynamicPropertyFactory;
 
 public class ServiceCenterDiscovery implements Discovery {
   public static final String NAME = "service center discovery";
-
-  public static final String ENABLED = "servicecomb.service.registry.discovery.enabled";
 
   private String revision;
 
@@ -51,7 +50,7 @@ public class ServiceCenterDiscovery implements Discovery {
 
   @Override
   public int getOrder() {
-    return 0;
+    return Const.SERVICE_CENTER_ORDER;
   }
 
   @Override
@@ -102,6 +101,6 @@ public class ServiceCenterDiscovery implements Discovery {
   @Override
   public boolean enabled() {
     return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty(ENABLED, true).get();
+        .getBooleanProperty(Const.SERVICE_CENTER_ENABLED, true).get();
   }
 }

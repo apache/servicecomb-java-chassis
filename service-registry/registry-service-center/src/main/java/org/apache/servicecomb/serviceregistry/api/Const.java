@@ -177,7 +177,6 @@ public final class Const {
         MICROSERVICE_INSTANCE_STATUS = V4_PREFIX + "/microservices/%s/instances/%s/status";
       }
     }
-
   }
 
   public static final String REGISTRY_APP_ID = "default";
@@ -187,9 +186,9 @@ public final class Const {
 
   public static final String PATH_CHECKSESSION = "checksession";
 
-
+  public static final int SERVICE_CENTER_ORDER = 100;
 
   public static final String SERVICECENTER_FRAMEWORK_VERSION = "1.0.0";
 
-
+  public static final String SERVICE_CENTER_ENABLED = "servicecomb.service.registry.enabled";
 }

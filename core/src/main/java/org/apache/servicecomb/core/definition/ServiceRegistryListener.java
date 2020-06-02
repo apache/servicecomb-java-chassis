@@ -85,7 +85,6 @@ public class ServiceRegistryListener {
     // do not load service center schemas, because service center did not provide swagger,but can get schema ids....
     // service center better to resolve the problem.
     if (!isServiceCenter) {
-      // TODO: get schemas from instance
       for (String schemaId : microservice.getSchemas()) {
         Swagger swagger = scbEngine.getSwaggerLoader().loadSwagger(microservice, microserviceVersion.getInstances(),
             schemaId);

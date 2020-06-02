@@ -39,8 +39,6 @@ public class SchemaDiscovery implements Discovery {
 
   public static final String NAME = "schema discovery";
 
-  public static final String ENABLED = "servicecomb.schema.registry.discovery.enabled";
-
   private SchemaDiscoveryService schemaDiscoveryService = null;
 
   @Override
@@ -134,7 +132,7 @@ public class SchemaDiscovery implements Discovery {
   @Override
   public boolean enabled() {
     return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty(ENABLED, true).get();
+        .getBooleanProperty(Const.SCHEMA_DISCOVERY_ENABLED, true).get();
   }
 
   @Override
@@ -154,6 +152,6 @@ public class SchemaDiscovery implements Discovery {
 
   @Override
   public int getOrder() {
-    return 1000;
+    return Const.SCHEMA_DISCOVERY_ORDER;
   }
 }
