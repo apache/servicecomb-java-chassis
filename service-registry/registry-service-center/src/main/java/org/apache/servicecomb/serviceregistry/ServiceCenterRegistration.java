@@ -25,13 +25,12 @@ import org.apache.servicecomb.registry.api.registry.BasePath;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
+import org.apache.servicecomb.serviceregistry.api.Const;
 
 import com.netflix.config.DynamicPropertyFactory;
 
 public class ServiceCenterRegistration implements Registration {
   public static final String NAME = "service center registration";
-
-  public static final String ENABLED = "servicecomb.service.registry.registration.enabled";
 
   @Override
   public void init() {
@@ -50,7 +49,7 @@ public class ServiceCenterRegistration implements Registration {
 
   @Override
   public int getOrder() {
-    return 0;
+    return Const.SERVICE_CENTER_ORDER;
   }
 
   @Override
@@ -110,6 +109,6 @@ public class ServiceCenterRegistration implements Registration {
   @Override
   public boolean enabled() {
     return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty(ENABLED, true).get();
+        .getBooleanProperty(Const.SERVICE_CENTER_ENABLED, true).get();
   }
 }

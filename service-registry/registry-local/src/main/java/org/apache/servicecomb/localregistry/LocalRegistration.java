@@ -21,18 +21,16 @@ import java.util.Collection;
 
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.registry.api.Registration;
+import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
 import org.apache.servicecomb.registry.api.registry.BasePath;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
-import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
 
 import com.netflix.config.DynamicPropertyFactory;
 
 public class LocalRegistration implements Registration {
   public static final String NAME = "local registration";
-
-  public static final String ENABLED = "servicecomb.local.registry.registration.enabled";
 
   private LocalRegistryStore localRegistrationStore = LocalRegistryStore.INSTANCE;
 
@@ -54,7 +52,7 @@ public class LocalRegistration implements Registration {
 
   @Override
   public int getOrder() {
-    return 100;
+    return Const.LOCAL_ORDER;
   }
 
   @Override
@@ -101,6 +99,6 @@ public class LocalRegistration implements Registration {
   @Override
   public boolean enabled() {
     return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty(ENABLED, true).get();
+        .getBooleanProperty(Const.LOCAL_ENABLED, true).get();
   }
 }

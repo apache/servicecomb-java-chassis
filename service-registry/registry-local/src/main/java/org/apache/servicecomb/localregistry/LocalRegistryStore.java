@@ -212,10 +212,18 @@ public class LocalRegistryStore {
   }
 
   public String getSchema(String microserviceId, String schemaId) {
+    Microservice microservice = microserviceMap.get(microserviceId);
+    if (microservice == null) {
+      return null;
+    }
     return microserviceMap.get(microserviceId).getSchemaMap().get(schemaId);
   }
 
   public MicroserviceInstance findMicroserviceInstance(String serviceId, String instanceId) {
+    Map<String, MicroserviceInstance> microserviceInstance = microserviceInstanceMap.get(serviceId);
+    if (microserviceInstance == null) {
+      return null;
+    }
     return microserviceInstanceMap.get(serviceId).get(instanceId);
   }
 

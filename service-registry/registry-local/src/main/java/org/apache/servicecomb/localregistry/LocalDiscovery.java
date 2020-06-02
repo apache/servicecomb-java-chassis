@@ -30,8 +30,6 @@ import com.netflix.config.DynamicPropertyFactory;
 public class LocalDiscovery implements Discovery {
   public static final String NAME = "local discovery";
 
-  public static final String ENABLED = "servicecomb.local.registry.discovery.enabled";
-
   private LocalRegistryStore localDiscoveryStore = LocalRegistryStore.INSTANCE;
 
   private String revision;
@@ -53,7 +51,7 @@ public class LocalDiscovery implements Discovery {
 
   @Override
   public int getOrder() {
-    return 100;
+    return Const.LOCAL_ORDER;
   }
 
   @Override
@@ -99,6 +97,6 @@ public class LocalDiscovery implements Discovery {
   @Override
   public boolean enabled() {
     return DynamicPropertyFactory.getInstance()
-        .getBooleanProperty(ENABLED, true).get();
+        .getBooleanProperty(Const.LOCAL_ENABLED, true).get();
   }
 }
