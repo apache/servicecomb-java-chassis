@@ -23,8 +23,7 @@ servicecomb:
   service:
     registry:
       address: http://127.0.0.1:30100
-      registration.enabled: false
-      discovery.enabled: false
+      enabled: false
   rest:
     address: 0.0.0.0:8080
   handler:
