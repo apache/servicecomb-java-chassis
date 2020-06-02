@@ -34,6 +34,10 @@
       <artifactId>registry-service-center</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>registry-schema-discovery</artifactId>
+    </dependency>
+    <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
     </dependency>

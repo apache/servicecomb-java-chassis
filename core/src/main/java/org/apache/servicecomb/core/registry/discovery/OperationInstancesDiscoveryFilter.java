@@ -105,21 +105,15 @@ public class OperationInstancesDiscoveryFilter extends AbstractDiscoveryFilter {
 
     Map<String, DiscoveryTreeNode> operationNodes = new ConcurrentHashMapEx<>();
     for (MicroserviceVersion microserviceVersion : microserviceVersions) {
-      DiscoveryTreeNode shareNode = null;
-
       MicroserviceMeta microserviceMeta = CoreMetaUtils.getMicroserviceMeta(microserviceVersion);
       for (OperationMeta operationMeta : microserviceMeta.getOperations()) {
         DiscoveryTreeNode node = operationNodes.get(operationMeta.getMicroserviceQualifiedName());
         if (node == null) {
-          // not exist, use the share node
-          if (shareNode == null) {
-            Map<String, MicroserviceInstance> instanceMap = microserviceVersion.getInstances().stream()
-                .collect(Collectors.toMap(MicroserviceInstance::getInstanceId, Function.identity()));
-            shareNode = createOperationNode(parent, microserviceVersion);
-            shareNode.data(instanceMap);
-          }
-
-          operationNodes.put(operationMeta.getMicroserviceQualifiedName(), shareNode);
+          Map<String, MicroserviceInstance> instanceMap = microserviceVersion.getInstances().stream()
+              .collect(Collectors.toMap(MicroserviceInstance::getInstanceId, Function.identity()));
+          DiscoveryTreeNode tempNode = createOperationNode(parent, microserviceVersion);
+          tempNode.data(instanceMap);
+          operationNodes.put(operationMeta.getMicroserviceQualifiedName(), tempNode);
           continue;
         }
 
