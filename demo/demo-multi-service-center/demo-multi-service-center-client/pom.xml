@@ -78,6 +78,7 @@
                     <name>servicecomb/service-center</name>
                     <alias>service-center-01</alias>
                     <run>
+                      <containerNamePattern>%a</containerNamePattern>
                       <wait>
                         <log>server is ready</log>
                         <tcp>
@@ -96,6 +97,7 @@
                     <name>servicecomb/service-center</name>
                     <alias>service-center-02</alias>
                     <run>
+                      <containerNamePattern>%a</containerNamePattern>
                       <wait>
                         <log>server is ready</log>
                         <tcp>
