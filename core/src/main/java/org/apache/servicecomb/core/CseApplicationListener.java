@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.core;
 
+import org.apache.servicecomb.core.filter.FilterChainsManager;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.registry.DiscoveryManager;
@@ -75,6 +76,7 @@ public class CseApplicationListener
 //        SCBEngine.getInstance().setProducerProviderManager(applicationContext.getBean(ProducerProviderManager.class));
 //        SCBEngine.getInstance().setConsumerProviderManager(applicationContext.getBean(ConsumerProviderManager.class));
 //        SCBEngine.getInstance().setTransportManager(applicationContext.getBean(TransportManager.class));
+      scbEngine.setFilterChainsManager(applicationContext.getBean(FilterChainsManager.class));
       scbEngine.getConsumerProviderManager().getConsumerProviderList()
           .addAll(applicationContext.getBeansOfType(ConsumerProvider.class).values());
       scbEngine.getProducerProviderManager().getProducerProviderList()

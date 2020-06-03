@@ -72,7 +72,8 @@ public class ProducerOperationFilterTest {
   }
 
   @Test
-  public void should_record_invocation_trace_time() {
+  public void should_record_invocation_trace_time() throws NoSuchMethodException {
+    setInvokeSyncMethod();
     filter.onFilter(invocation, FilterNode.EMPTY);
 
     new Verifications() {

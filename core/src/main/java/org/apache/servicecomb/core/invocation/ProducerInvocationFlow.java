@@ -20,7 +20,6 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
-import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -62,7 +61,7 @@ public abstract class ProducerInvocationFlow {
     }
 
     invocation.onStart(requestEx, startTime);
-    getOrCreateFilterChain(invocation)
+    invocation.getMicroserviceMeta().getFilterChain()
         .onFilter(invocation)
         .whenComplete((response, Throwable) -> sendResponse(invocation, response))
         .whenComplete((response, Throwable) -> finishInvocation(invocation, response, Throwable));
@@ -84,8 +83,6 @@ public abstract class ProducerInvocationFlow {
     LOGGER.error("Failed to finish invocation, operation:{}, request uri:{}",
         invocation.getMicroserviceQualifiedName(), requestEx.getRequestURI(), throwable);
   }
-
-  protected abstract FilterNode getOrCreateFilterChain(Invocation invocation);
 
   protected abstract Invocation sendCreateInvocationException(Throwable throwable);
 

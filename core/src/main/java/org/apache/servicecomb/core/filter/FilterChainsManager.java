@@ -131,6 +131,10 @@ public class FilterChainsManager {
   }
 
   private FilterNode createFilterNode(FilterChainsConfig chainsConfig, String microservice) {
+    if (!enabled) {
+      return FilterNode.EMPTY;
+    }
+
     List<Filter> filters = createFilters(chainsConfig, microservice);
     return FilterNode.buildChain(filters);
   }

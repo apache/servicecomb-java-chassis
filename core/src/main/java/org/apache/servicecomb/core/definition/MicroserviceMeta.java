@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.foundation.common.VendorExtensions;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.swagger.SwaggerUtils;
@@ -65,6 +66,8 @@ public class MicroserviceMeta {
   private boolean consumer;
 
   private List<Handler> handlerChain = Collections.singletonList((invocation, ar) -> ar.success(null));
+
+  private FilterNode filterChain = FilterNode.EMPTY;
 
   // providerQpsFlowControlHandler is a temporary field, only for internal usage
   private Handler providerQpsFlowControlHandler;
@@ -195,6 +198,14 @@ public class MicroserviceMeta {
 
   public void setHandlerChain(List<Handler> handlerChain) {
     this.handlerChain = handlerChain;
+  }
+
+  public FilterNode getFilterChain() {
+    return filterChain;
+  }
+
+  public void setFilterChain(FilterNode filterChain) {
+    this.filterChain = filterChain;
   }
 
   /**

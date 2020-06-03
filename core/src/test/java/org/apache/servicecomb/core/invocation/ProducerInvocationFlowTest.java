@@ -19,9 +19,8 @@ package org.apache.servicecomb.core.invocation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
@@ -29,19 +28,15 @@ import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.junit.Test;
 
+import mockit.Expectations;
 import mockit.Injectable;
-import mockit.Mock;
-import mockit.MockUp;
+import mockit.Mocked;
+import mockit.Verifications;
 
 public class ProducerInvocationFlowTest {
   class TestFlow extends ProducerInvocationFlow {
     public TestFlow(InvocationCreator invocationCreator) {
       super(invocationCreator);
-    }
-
-    @Override
-    protected FilterNode getOrCreateFilterChain(Invocation invocation) {
-      return filterNode;
     }
 
     @Override
@@ -62,6 +57,12 @@ public class ProducerInvocationFlowTest {
 
   Invocation sendInvocation;
 
+  @Injectable
+  Invocation invocation;
+
+  @Mocked
+  MicroserviceMeta microserviceMeta;
+
   @Test
   public void should_send_exception_response_when_failed_to_create_invocation() {
     RuntimeException exception = new RuntimeExceptionWithoutStackTrace();
@@ -74,23 +75,33 @@ public class ProducerInvocationFlowTest {
     assertThat(Exceptions.unwrap(sendException)).isSameAs(exception);
   }
 
-  @Test
-  public void should_start_invocation_when_succeed_to_create_invocation(@Injectable Invocation invocation) {
-    TestFlow flow = new TestFlow(() -> invocation);
-    AtomicLong startTime = new AtomicLong();
-    new MockUp<Invocation>() {
-      @Mock
-      void onStart(HttpServletRequestEx requestEx, long start) {
-        startTime.set(start);
+  private void mockFilterChain() {
+    new Expectations() {
+      {
+        microserviceMeta.getFilterChain();
+        result = filterNode;
       }
     };
-    flow.run();
-
-    assertThat(startTime.get()).isNotEqualTo(0);
   }
 
   @Test
-  public void should_send_response_when_invocation_success(@Injectable Invocation invocation) {
+  public void should_start_invocation_when_succeed_to_create_invocation() {
+    mockFilterChain();
+    TestFlow flow = new TestFlow(() -> invocation);
+
+    flow.run();
+
+    new Verifications() {
+      {
+        invocation.onStart((HttpServletRequestEx) any, anyLong);
+        times = 1;
+      }
+    };
+  }
+
+  @Test
+  public void should_send_response_when_invocation_success() {
+    mockFilterChain();
     TestFlow flow = new TestFlow(() -> invocation);
 
     flow.run();
@@ -99,27 +110,31 @@ public class ProducerInvocationFlowTest {
   }
 
   @Test
-  public void should_finish_invocation_when_invocation_success(@Injectable Invocation invocation) {
+  public void should_finish_invocation_when_invocation_success() {
+    mockFilterChain();
     TestFlow flow = new TestFlow(() -> invocation);
-    AtomicLong finishTime = new AtomicLong();
-    new MockUp<Invocation>() {
-      @Mock
-      void onFinish(Response response) {
-        finishTime.set(1);
-      }
-    };
 
     flow.run();
 
-    assertThat(finishTime.get()).isEqualTo(1);
+    new Verifications() {
+      {
+        invocation.onFinish((Response) any);
+        times = 1;
+      }
+    };
   }
 
-  @Test
-  public void should_send_response_when_invocation_fail(@Injectable Invocation invocation) {
-    TestFlow flow = new TestFlow(() -> invocation);
+  private void mockInvocationFailed() {
     filterNode = new FilterNode((_invocation, _node) -> {
       throw new RuntimeExceptionWithoutStackTrace();
     });
+    mockFilterChain();
+  }
+
+  @Test
+  public void should_send_response_when_invocation_fail() {
+    mockInvocationFailed();
+    TestFlow flow = new TestFlow(() -> invocation);
 
     flow.run();
 
@@ -127,21 +142,17 @@ public class ProducerInvocationFlowTest {
   }
 
   @Test
-  public void should_finish_invocation_when_invocation_fail(@Injectable Invocation invocation) {
+  public void should_finish_invocation_when_invocation_fail() {
+    mockInvocationFailed();
     TestFlow flow = new TestFlow(() -> invocation);
-    filterNode = new FilterNode((_invocation, _node) -> {
-      throw new RuntimeExceptionWithoutStackTrace();
-    });
-    AtomicLong finishTime = new AtomicLong();
-    new MockUp<Invocation>() {
-      @Mock
-      void onFinish(Response response) {
-        finishTime.set(1);
-      }
-    };
 
     flow.run();
 
-    assertThat(finishTime.get()).isEqualTo(1);
+    new Verifications() {
+      {
+        invocation.onFinish((Response) any);
+        times = 1;
+      }
+    };
   }
 }

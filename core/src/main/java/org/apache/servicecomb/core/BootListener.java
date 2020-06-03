@@ -21,6 +21,8 @@ public interface BootListener {
   enum EventType {
     BEFORE_HANDLER,
     AFTER_HANDLER,
+    BEFORE_FILTER,
+    AFTER_FILTER,
     BEFORE_PRODUCER_PROVIDER,
     AFTER_PRODUCER_PROVIDER,
     BEFORE_CONSUMER_PROVIDER,
@@ -67,6 +69,12 @@ public interface BootListener {
       case AFTER_HANDLER:
         onAfterHandler(event);
         return;
+      case BEFORE_FILTER:
+        onBeforeFilter(event);
+        return;
+      case AFTER_FILTER:
+        onAfterFilter(event);
+        return;
       case BEFORE_PRODUCER_PROVIDER:
         onBeforeProducerProvider(event);
         return;
@@ -107,6 +115,14 @@ public interface BootListener {
   }
 
   default void onAfterHandler(BootEvent event) {
+
+  }
+
+  default void onBeforeFilter(BootEvent event) {
+
+  }
+
+  default void onAfterFilter(BootEvent event) {
 
   }
 

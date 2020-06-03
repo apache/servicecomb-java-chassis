@@ -22,12 +22,8 @@ import javax.ws.rs.core.Response.StatusType;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.ExceptionConverter;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class IllegalArgumentExceptionConverter implements ExceptionConverter<IllegalArgumentException> {
-  private static final Logger LOGGER = LoggerFactory.getLogger(IllegalArgumentExceptionConverter.class);
-
   @Override
   public int getOrder() {
     return Short.MAX_VALUE;
@@ -41,8 +37,6 @@ public class IllegalArgumentExceptionConverter implements ExceptionConverter<Ill
   @Override
   public InvocationException convert(@Nullable Invocation invocation, IllegalArgumentException throwable,
       StatusType genericStatus) {
-    LOGGER.error("convert IllegalArgumentException exception to InvocationException.", throwable);
-
     return new InvocationException(genericStatus, ExceptionConverter.getGenericCode(genericStatus),
         "Parameters not valid or types not match.", throwable);
   }
