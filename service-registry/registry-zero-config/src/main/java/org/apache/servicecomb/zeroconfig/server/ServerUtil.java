@@ -32,7 +32,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -121,9 +120,9 @@ public class ServerUtil {
     }
   }
 
-  public static Optional<ServerMicroserviceInstance> convertToServerMicroserviceInstance(
+  public static ServerMicroserviceInstance convertToServerMicroserviceInstance(
       Map<String, String> serviceInstanceAttributeMap) {
-    return Optional.of(buildServerMicroserviceInstanceFromMap(serviceInstanceAttributeMap));
+    return buildServerMicroserviceInstanceFromMap(serviceInstanceAttributeMap);
   }
 
   private static ServerMicroserviceInstance buildServerMicroserviceInstanceFromMap(

@@ -45,7 +45,6 @@ import java.io.IOException;
 import java.net.MulticastSocket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class TestZeroConfigRegistryClientImpl {
 
@@ -303,7 +302,7 @@ public class TestZeroConfigRegistryClientImpl {
   public void test_unregisterMicroserviceInstance_whenInstanceNotExist_shoulReturnFalse()
       throws IOException {
     when(zeroConfigRegistryService.findServiceInstance(selfServiceId, selfInstanceId))
-        .thenReturn(Optional.empty());
+        .thenReturn(null);
 
     boolean returnedResult = target.unregisterMicroserviceInstance(selfServiceId, selfInstanceId);
 
@@ -316,7 +315,7 @@ public class TestZeroConfigRegistryClientImpl {
   public void test_unregisterMicroserviceInstance_withNullInstanceId_shouldGenerateInstanceId_and_succeed()
       throws IOException {
     when(zeroConfigRegistryService.findServiceInstance(selfServiceId, selfInstanceId))
-        .thenReturn(Optional.of(prepareServerServiceInstance(true)));
+        .thenReturn(prepareServerServiceInstance(true));
     doNothing().when(multicastSocket).send(anyObject());
 
     boolean returnedResult = target.unregisterMicroserviceInstance(selfServiceId, selfInstanceId);
@@ -381,7 +380,7 @@ public class TestZeroConfigRegistryClientImpl {
   @Test
   public void test_findServiceInstance_forNonExistInstance_shouldReturnNull() {
     when(zeroConfigRegistryService.findServiceInstance(selfServiceId, selfInstanceId))
-        .thenReturn(Optional.empty());
+        .thenReturn(null);
 
     MicroserviceInstance returnedResult = target.findServiceInstance(selfServiceId, selfInstanceId);
 
@@ -391,7 +390,7 @@ public class TestZeroConfigRegistryClientImpl {
   @Test
   public void test_findServiceInstance_forExistInstance_shouldReturnInstance() {
     when(zeroConfigRegistryService.findServiceInstance(otherServiceId, selfInstanceId))
-        .thenReturn(Optional.of(prepareServerServiceInstance(true)));
+        .thenReturn(prepareServerServiceInstance(true));
 
     MicroserviceInstance returnedResult = target
         .findServiceInstance(otherServiceId, selfInstanceId);

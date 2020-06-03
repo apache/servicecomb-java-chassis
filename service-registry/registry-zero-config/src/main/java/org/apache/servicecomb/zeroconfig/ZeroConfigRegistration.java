@@ -16,19 +16,13 @@
  */
 package org.apache.servicecomb.zeroconfig;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.netflix.config.DynamicPropertyFactory;
 import java.util.Collection;
-import org.apache.commons.lang.StringUtils;
-import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.registry.api.Registration;
 import org.apache.servicecomb.registry.api.registry.BasePath;
 import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
-import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.zeroconfig.client.ClientUtil;
 import org.apache.servicecomb.zeroconfig.client.ZeroConfigClient;
 import org.apache.servicecomb.zeroconfig.server.ServerUtil;
@@ -47,10 +41,6 @@ public class ZeroConfigRegistration implements Registration {
 
   private ZeroConfigClient zeroConfigClient = ZeroConfigClient.INSTANCE;
 
-  // registration objects
-  private Microservice selfMicroservice;
-  private MicroserviceInstance selfMicroserviceInstance;
-
   @Override
   public boolean enabled() {
     return DynamicPropertyFactory.getInstance().getBooleanProperty(ENABLED, true).get();
@@ -58,33 +48,9 @@ public class ZeroConfigRegistration implements Registration {
 
   @Override
   public void init() {
-    // init self Microservice & MicroserviceInstance objects
-    MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
-    MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(
-        loader.getConfigModels());
-    MicroserviceFactory microserviceFactory = new MicroserviceFactory();
-    this.selfMicroservice = microserviceFactory.create(microserviceDefinition);
-    this.selfMicroserviceInstance = selfMicroservice.getInstance();
-
-    setServiceIdAndInstanceId();
-
+    zeroConfigClient.init();
     ServerUtil.init();
     ClientUtil.init();
-  }
-
-  private void  setServiceIdAndInstanceId(){
-    // set serviceId
-    if (StringUtils.isEmpty(selfMicroservice.getServiceId())) {
-      String serviceId = ClientUtil.generateServiceId(selfMicroservice);
-      selfMicroservice.setServiceId(serviceId);
-      selfMicroserviceInstance.setServiceId(serviceId);
-    }
-
-    // set instanceId
-    if (StringUtils.isEmpty(selfMicroserviceInstance.getInstanceId())) {
-      String instanceId = ClientUtil.generateServiceInstanceId();
-      selfMicroserviceInstance.setInstanceId(instanceId);
-    }
   }
 
   @Override
@@ -119,59 +85,38 @@ public class ZeroConfigRegistration implements Registration {
 
   @Override
   public MicroserviceInstance getMicroserviceInstance() {
-    return this.selfMicroserviceInstance;
+    return zeroConfigClient.getSelfMicroserviceInstance();
   }
 
   @Override
   public Microservice getMicroservice() {
-    return this.selfMicroservice;
+    return zeroConfigClient.getSelfMicroservice();
   }
 
   @Override
   public String getAppId() {
-    return this.selfMicroservice.getAppId();
+    return zeroConfigClient.getSelfMicroservice().getAppId();
   }
 
   @Override
   public boolean updateMicroserviceInstanceStatus(MicroserviceInstanceStatus status) {
-    this.selfMicroserviceInstance.setStatus(status);
+    zeroConfigClient.getSelfMicroserviceInstance().setStatus(status);
     return true;
   }
 
   @Override
   public void addSchema(String schemaId, String content) {
-    this.selfMicroservice.addSchema(schemaId, content);
+    zeroConfigClient.getSelfMicroservice().addSchema(schemaId, content);
   }
 
   @Override
   public void addEndpoint(String endpoint) {
-    this.selfMicroserviceInstance.getEndpoints().add(endpoint);
+    zeroConfigClient.getSelfMicroserviceInstance().getEndpoints().add(endpoint);
   }
 
   @Override
   public void addBasePath(Collection<BasePath> basePaths) {
-    this.selfMicroservice.getPaths().addAll(basePaths);
-  }
-
-  // setter/getter
-  public Microservice getSelfMicroservice() {
-    return this.selfMicroservice;
-  }
-
-  public MicroserviceInstance getSelfMicroserviceInstance() {
-    return this.selfMicroserviceInstance;
-  }
-
-  @VisibleForTesting
-  public void setSelfMicroserviceInstance(
-      MicroserviceInstance selfMicroserviceInstance) {
-    this.selfMicroserviceInstance = selfMicroserviceInstance;
-  }
-
-  @VisibleForTesting
-  public void setSelfMicroservice(
-      Microservice selfMicroservice) {
-    this.selfMicroservice = selfMicroservice;
+    zeroConfigClient.getSelfMicroservice().getPaths().addAll(basePaths);
   }
 
 }

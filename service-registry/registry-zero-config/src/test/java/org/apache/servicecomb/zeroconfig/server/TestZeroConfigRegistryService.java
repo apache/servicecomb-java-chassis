@@ -25,7 +25,6 @@ import org.mockito.MockitoAnnotations;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.APP_ID;
 import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.ENDPOINTS;
@@ -175,20 +174,18 @@ public class TestZeroConfigRegistryService {
   public void test_findServiceInstance_whenInstanceExist_shouldSucceed() {
     ServerUtil.microserviceInstanceMap = prepareServiceInstanceMap(false);
 
-    Optional<ServerMicroserviceInstance> returnedResult = target
-        .findServiceInstance(serviceId, instanceId);
+    ServerMicroserviceInstance returnedResult = target.findServiceInstance(serviceId, instanceId);
 
-    Assert.assertTrue(returnedResult.isPresent());
+    Assert.assertNotNull(returnedResult);
   }
 
   @Test
   public void test_findServiceInstance_whenInstanceNotExist_shouldReturnEmptyOptionalObject() {
     ServerUtil.microserviceInstanceMap = prepareServiceInstanceMap(false);
 
-    Optional<ServerMicroserviceInstance> returnedResult = target
-        .findServiceInstance(serviceId, instanceId1);
+    ServerMicroserviceInstance returnedResult = target.findServiceInstance(serviceId, instanceId1);
 
-    Assert.assertFalse(returnedResult.isPresent());
+    Assert.assertNull(returnedResult);
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -202,11 +199,11 @@ public class TestZeroConfigRegistryService {
   public void test_getMicroserviceInstance_whenServiceHasInstance_shouldReturnAllInstances() {
     ServerUtil.microserviceInstanceMap = prepareServiceInstanceMap(true);
 
-    Optional<List<ServerMicroserviceInstance>> returnedResult = target
+    List<ServerMicroserviceInstance> returnedResult = target
         .getMicroserviceInstance(serviceId, serviceId);
 
-    Assert.assertTrue(returnedResult.isPresent());
-    Assert.assertEquals(2, returnedResult.get().size());
+    Assert.assertNotNull(returnedResult);
+    Assert.assertEquals(2, returnedResult.size());
   }
 
   @Test

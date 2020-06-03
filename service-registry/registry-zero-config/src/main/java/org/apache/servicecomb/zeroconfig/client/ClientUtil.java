@@ -30,7 +30,6 @@ import java.net.MulticastSocket;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -99,7 +98,7 @@ public class ClientUtil {
         TimeUnit.SECONDS);
   }
 
-  public static Optional<Map<String, String>> convertToRegisterDataModel(String serviceId,
+  public static Map<String, String> convertToRegisterDataModel(String serviceId,
       String microserviceInstanceId,
       MicroserviceInstance microserviceInstance, Microservice microservice) {
     Map<String, String> serviceInstanceTextAttributesMap = new HashMap<>();
@@ -121,7 +120,7 @@ public class ClientUtil {
     serviceInstanceTextAttributesMap
         .put(SCHEMA_IDS, String.join(LIST_STRING_SPLITER, microservice.getSchemas()));
 
-    return Optional.of(serviceInstanceTextAttributesMap);
+    return serviceInstanceTextAttributesMap;
   }
 
   public static MicroserviceInstance convertToClientMicroserviceInstance(
