@@ -23,7 +23,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.*;
@@ -44,7 +43,7 @@ public class ZeroConfigRegistryService {
     }
 
     // convert to server side ServerMicroserviceInstance object
-    Optional<ServerMicroserviceInstance> newServerMicroserviceInstance = ServerUtil
+    ServerMicroserviceInstance newServerMicroserviceInstance = ServerUtil
         .convertToServerMicroserviceInstance(serviceAttributeMap);
     Map<String, ServerMicroserviceInstance> innerInstanceMap = ServerUtil.microserviceInstanceMap.
         computeIfAbsent(serviceId, id -> new ConcurrentHashMap<>());
@@ -55,7 +54,7 @@ public class ZeroConfigRegistryService {
       // register a new instance for the service
       LOGGER.info("Register a new instance for  serviceId: {}, instanceId: {}", serviceId,
           instanceId);
-      innerInstanceMap.put(instanceId, newServerMicroserviceInstance.get());
+      innerInstanceMap.put(instanceId, newServerMicroserviceInstance);
     }
   }
 
@@ -84,22 +83,24 @@ public class ZeroConfigRegistryService {
 
   }
 
-  public Optional<ServerMicroserviceInstance> findServiceInstance(String serviceId,
+  public ServerMicroserviceInstance findServiceInstance(String serviceId,
       String instanceId) {
     Map<String, ServerMicroserviceInstance> serverMicroserviceInstanceMap = ServerUtil.microserviceInstanceMap
         .get(serviceId);
-    return serverMicroserviceInstanceMap != null ? Optional
-        .ofNullable(serverMicroserviceInstanceMap.get(instanceId)) : Optional.empty();
+    if (serverMicroserviceInstanceMap == null || serverMicroserviceInstanceMap.isEmpty()) {
+      return null;
+    }
+    return serverMicroserviceInstanceMap.get(instanceId);
   }
 
-  public Optional<List<ServerMicroserviceInstance>> getMicroserviceInstance(String consumerId,
+  public List<ServerMicroserviceInstance> getMicroserviceInstance(String consumerId,
       String providerId) {
     Map<String, ServerMicroserviceInstance> instanceIdMap = ServerUtil.microserviceInstanceMap
         .get(providerId);
     if (instanceIdMap == null || instanceIdMap.isEmpty()) {
       throw new IllegalArgumentException("Invalid serviceId, serviceId=" + providerId);
     }
-    return Optional.ofNullable(new ArrayList<>(instanceIdMap.values()));
+    return new ArrayList<>(instanceIdMap.values());
   }
 
   // for scenario: when other service started before this one start

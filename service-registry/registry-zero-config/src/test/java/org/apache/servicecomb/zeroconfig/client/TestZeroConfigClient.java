@@ -27,12 +27,10 @@ import java.io.IOException;
 import java.net.MulticastSocket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
-import org.apache.servicecomb.zeroconfig.ZeroConfigRegistration;
 import org.apache.servicecomb.zeroconfig.server.ServerMicroserviceInstance;
 import org.apache.servicecomb.zeroconfig.server.ZeroConfigRegistryService;
 import org.junit.Assert;
@@ -68,7 +66,8 @@ public class TestZeroConfigClient {
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
-    target = ZeroConfigClient.INSTANCE.initZeroConfigClientWithMocked(zeroConfigRegistryService, multicastSocket);
+    target = ZeroConfigClient.INSTANCE
+        .initZeroConfigClientWithMocked(zeroConfigRegistryService, multicastSocket);
 
     prepareSelfMicroserviceAndInstance();
   }
@@ -97,8 +96,8 @@ public class TestZeroConfigClient {
     microserviceInstance.setHostName(host);
 
     microservice.setInstance(microserviceInstance);
-    ZeroConfigRegistration.INSTANCE.setSelfMicroservice(microservice);
-    ZeroConfigRegistration.INSTANCE.setSelfMicroserviceInstance(microserviceInstance);
+    target.setSelfMicroservice(microservice);
+    target.setSelfMicroserviceInstance(microserviceInstance);
   }
 
   private ServerMicroserviceInstance prepareServerServiceInstance(boolean withEndpoint) {
@@ -145,7 +144,7 @@ public class TestZeroConfigClient {
   @Test
   public void test_unregister_withCorrectData_UnregisterShouldSucceed() {
     when(zeroConfigRegistryService.findServiceInstance(selfServiceId, selfInstanceId))
-        .thenReturn(Optional.of(prepareServerServiceInstance(true)));
+        .thenReturn(prepareServerServiceInstance(true));
 
     boolean returnedResult = target.unregister();
 
@@ -155,7 +154,7 @@ public class TestZeroConfigClient {
   @Test
   public void test_unregister_withWrongData_UnregisterShouldFail() {
     when(zeroConfigRegistryService.findServiceInstance(selfServiceId, selfInstanceId))
-        .thenReturn(Optional.empty());
+        .thenReturn(null);
 
     boolean returnedResult = target.unregister();
 
@@ -165,7 +164,7 @@ public class TestZeroConfigClient {
   @Test
   public void test_unregister_MulticastThrowException_UnregisterShouldFail() throws IOException {
     when(zeroConfigRegistryService.findServiceInstance(selfServiceId, selfInstanceId))
-        .thenReturn(Optional.of(prepareServerServiceInstance(true)));
+        .thenReturn(prepareServerServiceInstance(true));
     doThrow(IOException.class).when(multicastSocket).send(anyObject());
 
     boolean returnedResult = target.unregister();
@@ -178,9 +177,7 @@ public class TestZeroConfigClient {
   public void test_getMicroservice_forItself_shouldReturnItself_And_NotCallZeroConfigRegistryService() {
     Microservice returnedResult = target.getMicroservice(selfServiceId);
 
-    Assert
-        .assertEquals(ZeroConfigRegistration.INSTANCE.getSelfMicroservice().getServiceId(),
-            returnedResult.getServiceId());
+    Assert.assertEquals(target.getSelfMicroservice().getServiceId(), returnedResult.getServiceId());
     verifyZeroInteractions(zeroConfigRegistryService);
   }
 
@@ -212,12 +209,11 @@ public class TestZeroConfigClient {
   }
 
 
-
   // test findMicroserviceInstance method
   @Test
   public void test_findMicroserviceInstance_forNonExistInstance_shouldReturnNull() {
     when(zeroConfigRegistryService.findServiceInstance(selfServiceId, selfInstanceId))
-        .thenReturn(Optional.empty());
+        .thenReturn(null);
 
     MicroserviceInstance returnedResult = target
         .findMicroserviceInstance(selfServiceId, selfInstanceId);
@@ -228,7 +224,7 @@ public class TestZeroConfigClient {
   @Test
   public void test_findMicroServiceInstance_forExistInstance_shouldReturnInstance() {
     when(zeroConfigRegistryService.findServiceInstance(otherServiceId, selfInstanceId))
-        .thenReturn(Optional.of(prepareServerServiceInstance(true)));
+        .thenReturn(prepareServerServiceInstance(true));
 
     MicroserviceInstance returnedResult = target
         .findMicroserviceInstance(otherServiceId, selfInstanceId);

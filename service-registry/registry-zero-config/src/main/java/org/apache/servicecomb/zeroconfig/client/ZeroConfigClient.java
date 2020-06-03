@@ -25,17 +25,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import org.apache.commons.lang.StringUtils;
+import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
 import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
+import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.registry.version.Version;
 import org.apache.servicecomb.registry.version.VersionRule;
 import org.apache.servicecomb.registry.version.VersionRuleUtils;
 import org.apache.servicecomb.registry.version.VersionUtils;
-import org.apache.servicecomb.zeroconfig.ZeroConfigRegistration;
 import org.apache.servicecomb.zeroconfig.server.ServerMicroserviceInstance;
 import org.apache.servicecomb.zeroconfig.server.ServerUtil;
 import org.apache.servicecomb.zeroconfig.server.ZeroConfigRegistryService;
@@ -54,6 +56,10 @@ public class ZeroConfigClient {
   private ZeroConfigRegistryService zeroConfigRegistryService;
   private MulticastSocket multicastSocket;
 
+  // registration objects
+  private Microservice selfMicroservice;
+  private MicroserviceInstance selfMicroserviceInstance;
+
   // Constructor
   private ZeroConfigClient(ZeroConfigRegistryService zeroConfigRegistryService,
       MulticastSocket multicastSocket) {
@@ -68,6 +74,29 @@ public class ZeroConfigClient {
     this.zeroConfigRegistryService = zeroConfigRegistryService;
     this.multicastSocket = multicastSocket;
     return this;
+  }
+
+  public void init() {
+    MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
+    MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(
+        loader.getConfigModels());
+    MicroserviceFactory microserviceFactory = new MicroserviceFactory();
+    selfMicroservice = microserviceFactory.create(microserviceDefinition);
+    selfMicroserviceInstance = selfMicroservice.getInstance();
+
+    // set serviceId
+    if (StringUtils.isEmpty(selfMicroservice.getServiceId())) {
+      String serviceId = ClientUtil.generateServiceId(selfMicroservice);
+      selfMicroservice.setServiceId(serviceId);
+      selfMicroserviceInstance.setServiceId(serviceId);
+    }
+
+    // set instanceId
+    if (StringUtils.isEmpty(selfMicroserviceInstance.getInstanceId())) {
+      String instanceId = ClientUtil.generateServiceInstanceId();
+      selfMicroserviceInstance.setInstanceId(instanceId);
+    }
+
   }
 
   // builder method
@@ -154,7 +183,7 @@ public class ZeroConfigClient {
   }
 
   public Microservice getMicroservice(String microserviceId) {
-    Microservice selfMicroservice = ZeroConfigRegistration.INSTANCE.getSelfMicroservice();
+
     // for registration
     if (selfMicroservice.getServiceId().equals(microserviceId)) {
       return selfMicroservice;
@@ -165,9 +194,7 @@ public class ZeroConfigClient {
     }
   }
 
-
   public String getSchema(String microserviceId, String schemaId) {
-    Microservice selfMicroservice = ZeroConfigRegistration.INSTANCE.getSelfMicroservice();
     LOGGER.info("Retrieve schema content for Microservice ID: {}, Schema ID: {}",
         microserviceId, schemaId);
     // called by service registration task when registering itself
@@ -193,18 +220,16 @@ public class ZeroConfigClient {
   }
 
   public MicroserviceInstance findMicroserviceInstance(String serviceId, String instanceId) {
-    Optional<ServerMicroserviceInstance> optionalInstance = this.zeroConfigRegistryService.
-        findServiceInstance(serviceId, instanceId);
+    ServerMicroserviceInstance instance = this.zeroConfigRegistryService
+        .findServiceInstance(serviceId, instanceId);
 
-    if (optionalInstance.isPresent()) {
-      return ClientUtil
-          .convertToClientMicroserviceInstance(optionalInstance.get());
-    } else {
+    if (instance == null) {
       LOGGER.error(
           "Invalid serviceId OR instanceId! Failed to retrieve Microservice Instance for serviceId {} and instanceId {}",
           serviceId, instanceId);
       return null;
     }
+    return ClientUtil.convertToClientMicroserviceInstance(instance);
   }
 
   public MicroserviceInstances findServiceInstances(String appId, String providerServiceName,
@@ -262,26 +287,35 @@ public class ZeroConfigClient {
 
   private Map<String, String> prepareRegisterData() {
     // Convert to Multicast data format
-    Microservice selfService = ZeroConfigRegistration.INSTANCE.getSelfMicroservice();
-    MicroserviceInstance selfInstance = ZeroConfigRegistration.INSTANCE
-        .getSelfMicroserviceInstance();
-
-    Optional<Map<String, String>> optionalDataMap = ClientUtil
-        .convertToRegisterDataModel(selfService.getServiceId(), selfInstance.getInstanceId(),
-            selfInstance, selfService);
-
-    return optionalDataMap.orElse(null);
+    return ClientUtil.convertToRegisterDataModel(selfMicroservice.getServiceId(),
+        selfMicroserviceInstance.getInstanceId(), selfMicroserviceInstance, selfMicroservice);
   }
 
   private ServerMicroserviceInstance preUnregisterCheck() {
-    MicroserviceInstance instance = ZeroConfigRegistration.INSTANCE.getSelfMicroserviceInstance();
-    String serviceId = instance.getServiceId();
-    String instanceId = instance.getInstanceId();
-    Optional<ServerMicroserviceInstance> optionalInstance = zeroConfigRegistryService
-        .findServiceInstance(serviceId, instanceId);
-    if (optionalInstance.isPresent()) {
-      return optionalInstance.get();
-    }
-    return null;
+    ServerMicroserviceInstance instance = zeroConfigRegistryService
+        .findServiceInstance(selfMicroserviceInstance.getServiceId(),
+            selfMicroserviceInstance.getInstanceId());
+    return instance;
   }
+
+  public Microservice getSelfMicroservice() {
+    return selfMicroservice;
+  }
+
+  @VisibleForTesting
+  public void setSelfMicroservice(
+      Microservice selfMicroservice) {
+    this.selfMicroservice = selfMicroservice;
+  }
+
+  public MicroserviceInstance getSelfMicroserviceInstance() {
+    return selfMicroserviceInstance;
+  }
+
+  @VisibleForTesting
+  public void setSelfMicroserviceInstance(
+      MicroserviceInstance selfMicroserviceInstance) {
+    this.selfMicroserviceInstance = selfMicroserviceInstance;
+  }
+
 }

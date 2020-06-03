@@ -51,7 +51,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.web.client.RestTemplate;
 
@@ -245,7 +244,7 @@ public class ZeroConfigRegistryClientImpl implements ServiceRegistryClient {
     try {
       Map<String, String> serviceInstanceMap = ClientUtil
           .convertToRegisterDataModel(serviceId, instanceId, instance,
-              ClientUtil.getMicroserviceSelf()).get();
+              ClientUtil.getMicroserviceSelf());
       byte[] instanceData = serviceInstanceMap.toString().getBytes();
       DatagramPacket instanceDataPacket = new DatagramPacket(instanceData, instanceData.length,
           InetAddress.getByName(GROUP), PORT);
@@ -267,17 +266,18 @@ public class ZeroConfigRegistryClientImpl implements ServiceRegistryClient {
   @Override
   public List<MicroserviceInstance> getMicroserviceInstance(String consumerId, String providerId) {
     List<MicroserviceInstance> microserviceInstanceResultList = new ArrayList<>();
-    Optional<List<ServerMicroserviceInstance>> optionalServerMicroserviceInstanceList = this.zeroConfigRegistryService
-        .
-            getMicroserviceInstance(consumerId, providerId);
-    if (optionalServerMicroserviceInstanceList.isPresent()) {
-      microserviceInstanceResultList = optionalServerMicroserviceInstanceList.get().stream()
-          .map(serverInstance -> {
-            return ClientUtil.convertToClientMicroserviceInstance(serverInstance);
-          }).collect(Collectors.toList());
-    } else {
+    List<ServerMicroserviceInstance> serverMicroserviceInstanceList = this.zeroConfigRegistryService
+        .getMicroserviceInstance(consumerId, providerId);
+    if (serverMicroserviceInstanceList == null || serverMicroserviceInstanceList.isEmpty()) {
       LOGGER.error("Invalid serviceId: {}", providerId);
+      return microserviceInstanceResultList;
     }
+
+    microserviceInstanceResultList = serverMicroserviceInstanceList.stream()
+        .map(serverInstance -> {
+          return ClientUtil.convertToClientMicroserviceInstance(serverInstance);
+        }).collect(Collectors.toList());
+
     return microserviceInstanceResultList;
   }
 
@@ -303,32 +303,32 @@ public class ZeroConfigRegistryClientImpl implements ServiceRegistryClient {
 
   @Override
   public boolean unregisterMicroserviceInstance(String serviceId, String instanceId) {
-    Optional<ServerMicroserviceInstance> optionalServerMicroserviceInstance = this.zeroConfigRegistryService
+    ServerMicroserviceInstance serverMicroserviceInstance = this.zeroConfigRegistryService
         .findServiceInstance(serviceId, instanceId);
 
-    if (optionalServerMicroserviceInstance.isPresent()) {
-      try {
-        LOGGER.info(
-            "Start unregister microservice instance. The instance with servcieId: {} instanceId:{}",
-            serviceId, instanceId);
-        Map<String, String> unregisterEventMap = new HashMap<>();
-        unregisterEventMap.put(EVENT, UNREGISTER_EVENT);
-        unregisterEventMap.put(SERVICE_ID, serviceId);
-        unregisterEventMap.put(INSTANCE_ID, instanceId);
-        byte[] unregisterEventBytes = unregisterEventMap.toString().getBytes();
-        DatagramPacket unregisterEventDataPacket = new DatagramPacket(unregisterEventBytes,
-            unregisterEventBytes.length,
-            InetAddress.getByName(GROUP), PORT);
-        this.multicastSocket.send(unregisterEventDataPacket);
-        return true;
-      } catch (IOException e) {
-        LOGGER
-            .error("Failed to unregister microservice instance event. servcieId: {} instanceId:{}",
-                serviceId, instanceId, e);
-        return false;
-      }
+    if (serverMicroserviceInstance == null) {
+      return false;
     }
-    return false;
+
+    try {
+      LOGGER.info(
+          "Start unregister microservice instance. The instance with servcieId: {} instanceId:{}",
+          serviceId, instanceId);
+      Map<String, String> unregisterEventMap = new HashMap<>();
+      unregisterEventMap.put(EVENT, UNREGISTER_EVENT);
+      unregisterEventMap.put(SERVICE_ID, serviceId);
+      unregisterEventMap.put(INSTANCE_ID, instanceId);
+      byte[] unregisterEventBytes = unregisterEventMap.toString().getBytes();
+      DatagramPacket unregisterEventDataPacket = new DatagramPacket(unregisterEventBytes,
+          unregisterEventBytes.length,
+          InetAddress.getByName(GROUP), PORT);
+      this.multicastSocket.send(unregisterEventDataPacket);
+      return true;
+    } catch (IOException e) {
+      LOGGER.error("Failed to unregister microservice instance event. servcieId: {} instanceId:{}",
+          serviceId, instanceId, e);
+      return false;
+    }
   }
 
   @Override
@@ -351,7 +351,6 @@ public class ZeroConfigRegistryClientImpl implements ServiceRegistryClient {
       AsyncResultCallback<MicroserviceInstanceChangedEvent> callback,
       AsyncResultCallback<Void> onOpen, AsyncResultCallback<Void> onClose) {
   }
-
 
   @Override
   public List<MicroserviceInstance> findServiceInstance(String selfMicroserviceId, String appId,
@@ -436,19 +435,15 @@ public class ZeroConfigRegistryClientImpl implements ServiceRegistryClient {
 
   @Override
   public MicroserviceInstance findServiceInstance(String serviceId, String instanceId) {
-    Optional<ServerMicroserviceInstance> optionalServerMicroserviceInstance = this.zeroConfigRegistryService
-        .
-            findServiceInstance(serviceId, instanceId);
-
-    if (optionalServerMicroserviceInstance.isPresent()) {
-      return ClientUtil
-          .convertToClientMicroserviceInstance(optionalServerMicroserviceInstance.get());
-    } else {
+    ServerMicroserviceInstance serverMicroserviceInstance = this.zeroConfigRegistryService
+        .findServiceInstance(serviceId, instanceId);
+    if (serverMicroserviceInstance == null) {
       LOGGER.error(
           "Invalid serviceId OR instanceId! Failed to retrieve Microservice Instance for serviceId {} and instanceId {}",
           serviceId, instanceId);
       return null;
     }
+    return ClientUtil.convertToClientMicroserviceInstance(serverMicroserviceInstance);
   }
 
   // for compatibility with existing registration logic. only used in the existing UT code.
