@@ -20,6 +20,7 @@ public interface ExceptionCodes {
   String GENERIC_CLIENT = "SCB.0000";
   String LB_ADDRESS_NOT_FOUND = "SCB.0001";
   String NOT_DEFINED_ANY_SCHEMA = "SCB.0002";
+  String DEFAULT_VALIDATE = "SCB.0003";
 
   String GENERIC_SERVER = "SCB.5000";
 }

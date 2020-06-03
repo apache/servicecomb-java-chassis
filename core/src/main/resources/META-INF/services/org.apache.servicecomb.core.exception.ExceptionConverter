@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 
+org.apache.servicecomb.core.exception.converter.ConstraintViolationExceptionConverter
 org.apache.servicecomb.core.exception.converter.InvocationExceptionConverter
 org.apache.servicecomb.core.exception.converter.IllegalArgumentExceptionConverter
 org.apache.servicecomb.core.exception.converter.DefaultExceptionConverter
