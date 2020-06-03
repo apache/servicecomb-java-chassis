@@ -14,21 +14,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.core.filter.impl;
+package org.apache.servicecomb.core.exception.converter;
 
-import java.util.Arrays;
-import java.util.List;
+public class ValidateDetail {
+  private String propertyPath;
 
-import org.apache.servicecomb.core.filter.Filter;
-import org.apache.servicecomb.core.filter.FilterProvider;
+  private String message;
 
-public class DefaultFilterProvider implements FilterProvider {
-  @Override
-  public List<Class<? extends Filter>> getFilters() {
-    return Arrays.asList(
-        SimpleLoadBalanceFilter.class,
-        ScheduleFilter.class,
-        ParameterValidatorFilter.class,
-        ProducerOperationFilter.class);
+  public ValidateDetail() {
+  }
+
+  public ValidateDetail(String propertyPath, String message) {
+    this.propertyPath = propertyPath;
+    this.message = message;
+  }
+
+  public String getPropertyPath() {
+    return propertyPath;
+  }
+
+  public ValidateDetail setPropertyPath(String propertyPath) {
+    this.propertyPath = propertyPath;
+    return this;
+  }
+
+  public String getMessage() {
+    return message;
+  }
+
+  public ValidateDetail setMessage(String message) {
+    this.message = message;
+    return this;
   }
 }
