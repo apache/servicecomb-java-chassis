@@ -21,14 +21,17 @@ import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_KEY_SPLITER;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICECOMB_PREFIX;
 
-import com.netflix.config.DynamicBooleanProperty;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.stream.Collectors;
+
+import javax.annotation.Nonnull;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
@@ -96,6 +99,12 @@ public final class ConfigUtil {
       return configuration.getProperty(key);
     }
     return null;
+  }
+
+  public static List<String> getStringList(@Nonnull Configuration config, @Nonnull String key) {
+    return config.getList(key).stream()
+        .map(v -> Objects.toString(v, null))
+        .collect(Collectors.toList());
   }
 
   private static void setMicroserviceConfigLoader(Configuration config, MicroserviceConfigLoader loader) {
