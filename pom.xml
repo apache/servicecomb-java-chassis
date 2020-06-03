@@ -305,7 +305,7 @@
         <plugin>
           <groupId>io.fabric8</groupId>
           <artifactId>docker-maven-plugin</artifactId>
-          <version>0.20.0</version>
+          <version>1.2.0</version>
         </plugin>
         <plugin>
           <groupId>org.codehaus.gmaven</groupId>
