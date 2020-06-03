@@ -18,7 +18,9 @@
 package org.apache.servicecomb.foundation.common.utils;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -131,6 +133,14 @@ public final class BeanUtils {
     return (T) context.getBean(name);
   }
 
+  public static <T> Map<String, T> getBeansOfType(Class<T> type) {
+    if (context == null) {
+      // for some test case
+      return Collections.emptyMap();
+    }
+    return context.getBeansOfType(type);
+  }
+
   /**
    * Get the implemented class of the given instance
    * @param bean the instance to get implemented class from
@@ -140,5 +150,4 @@ public final class BeanUtils {
   public static Class<?> getImplClassFromBean(Object bean) {
     return AopProxyUtils.ultimateTargetClass(bean);
   }
-
 }

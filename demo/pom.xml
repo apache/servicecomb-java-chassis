@@ -46,8 +46,8 @@
     <module>demo-spring-boot-provider</module>
     <module>demo-spring-boot-transport</module>
     <module>demo-edge</module>
-
     <module>demo-multiple</module>
+    <module>demo-multi-service-center</module>
     <module>demo-signature</module>
     <module>perf</module>
   </modules>

@@ -31,6 +31,7 @@ import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
 import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
@@ -61,8 +62,6 @@ public final class RegistryUtils {
    * The default ServiceRegistry instance
    */
   private static volatile ServiceRegistry serviceRegistry;
-
-  private static final Map<String, ServiceRegistryConfig> EXTRA_SERVICE_REGISTRY_CONFIGS = new LinkedHashMap<>();
 
   private static final Map<String, ServiceRegistry> EXTRA_SERVICE_REGISTRIES = new LinkedHashMap<>();
 
@@ -103,7 +102,8 @@ public final class RegistryUtils {
   }
 
   private static void initializeServiceRegistries(MicroserviceDefinition microserviceDefinition) {
-    EXTRA_SERVICE_REGISTRY_CONFIGS.forEach((k, v) -> {
+    Map<String, ServiceRegistryConfig> configs = BeanUtils.getBeansOfType(ServiceRegistryConfig.class);
+    configs.forEach((k, v) -> {
       ServiceRegistry serviceRegistry = ServiceRegistryFactory.create(v, microserviceDefinition);
       addExtraServiceRegistry(serviceRegistry);
     });
@@ -251,15 +251,6 @@ public final class RegistryUtils {
     Objects.requireNonNull(serviceRegistry);
     LOGGER.info("extra ServiceRegistry added: [{}], [{}]", serviceRegistry.getName(), serviceRegistry.getClass());
     EXTRA_SERVICE_REGISTRIES.put(serviceRegistry.getName(), serviceRegistry);
-  }
-
-  /**
-   * Add the configuration object of {@link ServiceRegistry}.
-   * The corresponding {@link ServiceRegistry} instances are instantiated later in {@link #init()}
-   */
-  public static void addExtraServiceRegistryConfig(ServiceRegistryConfig serviceRegistryConfig) {
-    validateRegistryConfig(serviceRegistryConfig);
-    EXTRA_SERVICE_REGISTRY_CONFIGS.put(serviceRegistryConfig.getRegistryName(), serviceRegistryConfig);
   }
 
   /**

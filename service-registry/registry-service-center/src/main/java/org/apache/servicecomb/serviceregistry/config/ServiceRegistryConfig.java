@@ -29,7 +29,7 @@ import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientI
 
 import io.vertx.core.http.HttpVersion;
 
-public final class ServiceRegistryConfig {
+public class ServiceRegistryConfig {
   public static final ServiceRegistryConfig INSTANCE = buildFromConfiguration();
 
   public static final int DEFAULT_TIMEOUT_IN_MS = 30000;
