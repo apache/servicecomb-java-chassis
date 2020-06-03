@@ -1,0 +1,205 @@
+<?xml version="1.0"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<project
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>demo-multi-service-center-client</artifactId>
+  <name>Java Chassis::Demo::Multi Service Center Client</name>
+  <parent>
+    <groupId>org.apache.servicecomb.demo</groupId>
+    <artifactId>demo-multi-service-center</artifactId>
+    <version>2.1.0-SNAPSHOT</version>
+  </parent>
+
+  <properties>
+    <demo.main>org.apache.servicecomb.demo.multiServiceCenterClient.Application</demo.main>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>java-chassis-spring-boot-starter-servlet</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb.demo</groupId>
+      <artifactId>demo-schema</artifactId>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.github.odavid.maven.plugins</groupId>
+        <artifactId>mixin-maven-plugin</artifactId>
+        <configuration>
+          <mixins>
+            <mixin>
+              <groupId>org.apache.servicecomb.demo</groupId>
+              <artifactId>docker-run-config</artifactId>
+              <version>${project.version}</version>
+            </mixin>
+          </mixins>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>docker</id>
+      <properties>
+        <demo.service.name>demo-multi-registries-server</demo.service.name>
+      </properties>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>io.fabric8</groupId>
+              <artifactId>docker-maven-plugin</artifactId>
+              <configuration>
+                <images>
+                  <image>
+                    <name>servicecomb/service-center</name>
+                    <alias>service-center-01</alias>
+                    <run>
+                      <wait>
+                        <log>server is ready</log>
+                        <tcp>
+                          <ports>
+                            <port>30100</port>
+                          </ports>
+                        </tcp>
+                        <time>60000</time>
+                      </wait>
+                      <ports>
+                        <port>30100:30100</port>
+                      </ports>
+                    </run>
+                  </image>
+                  <image>
+                    <name>servicecomb/service-center</name>
+                    <alias>service-center-02</alias>
+                    <run>
+                      <wait>
+                        <log>server is ready</log>
+                        <tcp>
+                          <ports>
+                            <port>30100</port>
+                          </ports>
+                        </tcp>
+                        <time>60000</time>
+                      </wait>
+                      <ports>
+                        <port>40100:30100</port>
+                      </ports>
+                    </run>
+                  </image>
+                  <image>
+                    <name>demo-multi-service-center-serverA:${project.version}</name>
+                    <alias>demo-multi-service-center-serverA</alias>
+                    <run>
+                      <env>
+                        <JAVA_OPTS>
+                          -Dservicecomb.service.registry.address=http://${service-center-01}:30100
+                          -Dservicecomb.service.publishAddress=${docker.hostname}
+                        </JAVA_OPTS>
+                        <JAR_PATH>/maven/maven/demo-multi-service-center-serverA-${project.version}.jar</JAR_PATH>
+                      </env>
+                      <links>
+                        <link>service-center-01:service-center-01</link>
+                      </links>
+                      <wait>
+                        <log>Register microservice instance success</log>
+                        <tcp>
+                          <ports>
+                            <port>8080</port>
+                          </ports>
+                        </tcp>
+                        <time>120000</time>
+                      </wait>
+                      <ports>
+                        <port>8080:8080</port>
+                      </ports>
+                      <dependsOn>
+                        <container>service-center-01</container>
+                      </dependsOn>
+                    </run>
+                  </image>
+                  <image>
+                    <name>demo-multi-service-center-serverB:${project.version}</name>
+                    <alias>demo-multi-service-center-serverB</alias>
+                    <run>
+                      <env>
+                        <JAVA_OPTS>
+                          -Dservicecomb.service.registry.address=http://${service-center-02}:30100
+                          -Dservicecomb.service.publishAddress=${docker.hostname}
+                        </JAVA_OPTS>
+                        <JAR_PATH>/maven/maven/demo-multi-service-center-serverB-${project.version}.jar</JAR_PATH>
+                      </env>
+                      <links>
+                        <link>service-center-02:service-center-02</link>
+                      </links>
+                      <wait>
+                        <log>Register microservice instance success</log>
+                        <tcp>
+                          <ports>
+                            <port>8082</port>
+                          </ports>
+                        </tcp>
+                        <time>120000</time>
+                      </wait>
+                      <ports>
+                        <port>8082:8082</port>
+                      </ports>
+                      <dependsOn>
+                        <container>service-center-02</container>
+                      </dependsOn>
+                    </run>
+                  </image>
+                </images>
+              </configuration>
+              <executions>
+                <execution>
+                  <id>start</id>
+                  <phase>pre-integration-test</phase>
+                  <goals>
+                    <goal>start</goal>
+                  </goals>
+                </execution>
+                <execution>
+                  <id>stop</id>
+                  <phase>post-integration-test</phase>
+                  <goals>
+                    <goal>stop</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </pluginManagement>
+        <plugins>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>

@@ -15,31 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo;
+package org.apache.servicecomb.demo.multiServiceCenterClient;
 
-public interface CategorizedTestCase {
-  /**
-   * test case which only successful in REST transport
-   */
-  default void testRestTransport() throws Exception {
-
-  }
-
-  /**
-   * test case which only successful in HIGHWAY transport
-   */
-  default void testHighwayTransport() throws Exception {
-
-  }
-
-  /**
-   * test case which successful in both REST and HIGHWAY transport
-   */
-  default void testAllTransport() throws Exception {
-
-  }
-
-  default String getMicroserviceName() {
-    return null;
-  }
+public interface IServerEndpoint {
+  String getName(String name);
 }

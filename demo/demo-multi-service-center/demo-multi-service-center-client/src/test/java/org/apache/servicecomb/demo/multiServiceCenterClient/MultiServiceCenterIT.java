@@ -15,31 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo;
+package org.apache.servicecomb.demo.multiServiceCenterClient;
 
-public interface CategorizedTestCase {
-  /**
-   * test case which only successful in REST transport
-   */
-  default void testRestTransport() throws Exception {
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
+import org.apache.servicecomb.demo.TestMgr;
+import org.junit.Before;
+import org.junit.Test;
+
+public class MultiServiceCenterIT {
+  @Before
+  public void setUp() throws Exception {
+    TestMgr.errors().clear();
   }
 
-  /**
-   * test case which only successful in HIGHWAY transport
-   */
-  default void testHighwayTransport() throws Exception {
+  @Test
+  public void clientGetsNoError() throws Exception {
+    Application.main(new String[0]);
 
-  }
-
-  /**
-   * test case which successful in both REST and HIGHWAY transport
-   */
-  default void testAllTransport() throws Exception {
-
-  }
-
-  default String getMicroserviceName() {
-    return null;
+    assertThat(TestMgr.errors().isEmpty(), is(true));
   }
 }

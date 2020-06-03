@@ -15,31 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo;
+package org.apache.servicecomb.demo.multiServiceCenterClient;
 
-public interface CategorizedTestCase {
-  /**
-   * test case which only successful in REST transport
-   */
-  default void testRestTransport() throws Exception {
+import org.apache.servicecomb.demo.CategorizedTestCase;
+import org.apache.servicecomb.demo.TestMgr;
+import org.apache.servicecomb.provider.pojo.RpcReference;
+import org.springframework.stereotype.Component;
 
-  }
+@Component
+public class ServerATest implements CategorizedTestCase {
+  @RpcReference(microserviceName = "demo-multi-service-center-serverA", schemaId = "ServerEndpoint")
+  private IServerEndpoint serverEndpoint;
 
-  /**
-   * test case which only successful in HIGHWAY transport
-   */
-  default void testHighwayTransport() throws Exception {
-
-  }
-
-  /**
-   * test case which successful in both REST and HIGHWAY transport
-   */
-  default void testAllTransport() throws Exception {
-
-  }
-
-  default String getMicroserviceName() {
-    return null;
+  @Override
+  public void testRestTransport() throws Exception {
+    TestMgr.check("hello", serverEndpoint.getName("hello"));
   }
 }

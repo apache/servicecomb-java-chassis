@@ -15,31 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo;
+package org.apache.servicecomb.demo.multiServiceCenter;
 
-public interface CategorizedTestCase {
-  /**
-   * test case which only successful in REST transport
-   */
-  default void testRestTransport() throws Exception {
+import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
-  }
-
-  /**
-   * test case which only successful in HIGHWAY transport
-   */
-  default void testHighwayTransport() throws Exception {
-
-  }
-
-  /**
-   * test case which successful in both REST and HIGHWAY transport
-   */
-  default void testAllTransport() throws Exception {
-
-  }
-
-  default String getMicroserviceName() {
-    return null;
+@SpringBootApplication
+@EnableServiceComb
+public class ServerApplication {
+  public static void main(final String[] args) throws Exception {
+    new SpringApplicationBuilder().sources(ServerApplication.class)
+        .web(WebApplicationType.SERVLET).build().run(args);
   }
 }
