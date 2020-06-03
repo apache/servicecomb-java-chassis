@@ -75,8 +75,11 @@ public class ProducerOperationFilter implements Filter {
   }
 
   private void whenComplete(Invocation invocation, Throwable throwable) {
-    if (shouldPrintErrorLog(throwable)) {
-      LOGGER.error("unexpected error {},", invocation.getInvocationQualifiedName(), throwable);
+    if (throwable != null) {
+      Throwable unwrapped = Exceptions.unwrap(throwable);
+      if (shouldPrintErrorLog(unwrapped)) {
+        LOGGER.error("unexpected error, invocation={},", invocation.getInvocationQualifiedName(), unwrapped);
+      }
     }
 
     invocation.onBusinessMethodFinish();
@@ -88,7 +91,6 @@ public class ProducerOperationFilter implements Filter {
       return false;
     }
 
-    Throwable unwrapped = Exceptions.unwrap(throwable);
-    return !(unwrapped instanceof InvocationException);
+    return !(throwable instanceof InvocationException);
   }
 }

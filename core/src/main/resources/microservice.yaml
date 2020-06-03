@@ -17,3 +17,24 @@
 
 servicecomb-config-order: -500
 
+servicecomb:
+  filter-chains:
+    enabled: false
+    transport-filters:
+      #default-consumer-transport:
+      #  rest: rest-client-codec
+      #  highway: highway-client-codec
+      default-producer-tranport:
+        rest: rest-server-codec
+        highway: highway-server-codec
+    consumer:
+      default: simple-load-balance
+      #default: simple-load-balance, default-consumer-transport, transport-client
+      # samples for customize microservice filter chain
+      #policies:
+      #  ms-1: retry, load-balance, transport-client, ms-1-consumer-transport
+    producer:
+      default: default-producer-tranport, schedule, producer-operation
+      # samples for customize microservice filter chain
+      #policies:
+      #  ms-1: qps-limiter, ms-1-producer-transport, schedule, producer-operation

@@ -39,6 +39,7 @@ import org.apache.servicecomb.core.definition.ServiceRegistryListener;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.executor.ExecutorManager;
+import org.apache.servicecomb.core.filter.FilterChainsManager;
 import org.apache.servicecomb.core.handler.ConsumerHandlerManager;
 import org.apache.servicecomb.core.handler.HandlerConfigUtils;
 import org.apache.servicecomb.core.handler.ProducerHandlerManager;
@@ -85,6 +86,8 @@ public class SCBEngine {
   private static final Object initializationLock = new Object();
 
   private volatile static SCBEngine INSTANCE;
+
+  private FilterChainsManager filterChainsManager;
 
   private ConsumerHandlerManager consumerHandlerManager = new ConsumerHandlerManager();
 
@@ -164,6 +167,19 @@ public class SCBEngine {
 
   public SwaggerLoader getSwaggerLoader() {
     return RegistrationManager.INSTANCE.getSwaggerLoader();
+  }
+
+  public FilterChainsManager getFilterChainsManager() {
+    return filterChainsManager;
+  }
+
+  public SCBEngine setFilterChainsManager(FilterChainsManager filterChainsManager) {
+    this.filterChainsManager = filterChainsManager;
+    return this;
+  }
+
+  public boolean isFilterChainEnabled() {
+    return filterChainsManager.isEnabled();
   }
 
   public ConsumerHandlerManager getConsumerHandlerManager() {
@@ -327,6 +343,10 @@ public class SCBEngine {
     HandlerConfigUtils.init(consumerHandlerManager, producerHandlerManager);
     triggerEvent(EventType.AFTER_HANDLER);
 
+    triggerEvent(EventType.BEFORE_FILTER);
+    filterChainsManager.init(this);
+    triggerEvent(EventType.AFTER_FILTER);
+
     createProducerMicroserviceMeta();
 
     triggerEvent(EventType.BEFORE_PRODUCER_PROVIDER);
@@ -357,6 +377,7 @@ public class SCBEngine {
 
     producerMicroserviceMeta = new MicroserviceMeta(this, microserviceName, false);
     producerMicroserviceMeta.setHandlerChain(producerHandlerManager.getOrCreate(microserviceName));
+    producerMicroserviceMeta.setFilterChain(filterChainsManager.createProducerFilterChain(microserviceName));
     producerMicroserviceMeta.setMicroserviceVersionsMeta(new MicroserviceVersionsMeta(this, microserviceName));
   }
 
