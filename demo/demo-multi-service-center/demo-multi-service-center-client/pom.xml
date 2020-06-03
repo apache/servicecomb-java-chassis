@@ -42,23 +42,6 @@
       <artifactId>demo-schema</artifactId>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>com.github.odavid.maven.plugins</groupId>
-        <artifactId>mixin-maven-plugin</artifactId>
-        <configuration>
-          <mixins>
-            <mixin>
-              <groupId>org.apache.servicecomb.demo</groupId>
-              <artifactId>docker-run-config</artifactId>
-              <version>${project.version}</version>
-            </mixin>
-          </mixins>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 
   <profiles>
     <profile>
@@ -76,9 +59,9 @@
                 <images>
                   <image>
                     <name>servicecomb/service-center</name>
-                    <alias>service-center-01</alias>
+                    <alias>service30100</alias>
                     <run>
-                      <containerNamePattern>%a</containerNamePattern>
+                      <namingStrategy>alias</namingStrategy>
                       <wait>
                         <log>server is ready</log>
                         <tcp>
@@ -95,9 +78,9 @@
                   </image>
                   <image>
                     <name>servicecomb/service-center</name>
-                    <alias>service-center-02</alias>
+                    <alias>service40100</alias>
                     <run>
-                      <containerNamePattern>%a</containerNamePattern>
+                      <namingStrategy>alias</namingStrategy>
                       <wait>
                         <log>server is ready</log>
                         <tcp>
@@ -116,15 +99,16 @@
                     <name>demo-multi-service-center-servera:${project.version}</name>
                     <alias>demo-multi-service-center-servera</alias>
                     <run>
+                      <namingStrategy>alias</namingStrategy>
                       <env>
                         <JAVA_OPTS>
-                          -Dservicecomb.service.registry.address=http://${service-center-01}:30100
+                          -Dservicecomb.service.registry.address=http://service30100:30100
                           -Dservicecomb.service.publishAddress=${docker.hostname}
                         </JAVA_OPTS>
                         <JAR_PATH>/maven/maven/demo-multi-service-center-servera-${project.version}.jar</JAR_PATH>
                       </env>
                       <links>
-                        <link>service-center-01:service-center-01</link>
+                        <link>service30100:service30100</link>
                       </links>
                       <wait>
                         <log>Register microservice instance success</log>
@@ -138,24 +122,22 @@
                       <ports>
                         <port>8080:8080</port>
                       </ports>
-                      <dependsOn>
-                        <container>service-center-01</container>
-                      </dependsOn>
                     </run>
                   </image>
                   <image>
                     <name>demo-multi-service-center-serverb:${project.version}</name>
                     <alias>demo-multi-service-center-serverb</alias>
                     <run>
+                      <namingStrategy>alias</namingStrategy>
                       <env>
                         <JAVA_OPTS>
-                          -Dservicecomb.service.registry.address=http://${service-center-02}:30100
+                          -Dservicecomb.service.registry.address=http://service40100:30100
                           -Dservicecomb.service.publishAddress=${docker.hostname}
                         </JAVA_OPTS>
                         <JAR_PATH>/maven/maven/demo-multi-service-center-serverb-${project.version}.jar</JAR_PATH>
                       </env>
                       <links>
-                        <link>service-center-02:service-center-02</link>
+                        <link>service40100:service40100</link>
                       </links>
                       <wait>
                         <log>Register microservice instance success</log>
@@ -169,9 +151,6 @@
                       <ports>
                         <port>8082:8082</port>
                       </ports>
-                      <dependsOn>
-                        <container>service-center-02</container>
-                      </dependsOn>
                     </run>
                   </image>
                 </images>
@@ -199,6 +178,45 @@
           <plugin>
             <groupId>io.fabric8</groupId>
             <artifactId>docker-maven-plugin</artifactId>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.gmaven</groupId>
+            <artifactId>gmaven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>add-default-properties</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>execute</goal>
+                </goals>
+                <configuration>
+                  <source>
+                    project.properties.setProperty('docker.hostname', 'localhost')
+                    log.info("Docker hostname is " + project.properties['docker.hostname'])
+                  </source>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>2.19.1</version>
+            <configuration>
+              <systemPropertyVariables>
+                <servicecomb.service.registry.address>http://${docker.hostname}:30100
+                </servicecomb.service.registry.address>
+              </systemPropertyVariables>
+              <argLine>${jacoco.failsafe.argLine}</argLine>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>
