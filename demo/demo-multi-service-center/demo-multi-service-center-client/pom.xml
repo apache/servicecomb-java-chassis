@@ -21,7 +21,7 @@
   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <artifactId>demo-multi-service-center-client</artifactId>
-  <name>Java Chassis::Demo::Multi Service Center Client</name>
+  <name>Java Chassis::Demo::Multi Service Centers::Client</name>
   <parent>
     <groupId>org.apache.servicecomb.demo</groupId>
     <artifactId>demo-multi-service-center</artifactId>
@@ -111,15 +111,15 @@
                     </run>
                   </image>
                   <image>
-                    <name>demo-multi-service-center-serverA:${project.version}</name>
-                    <alias>demo-multi-service-center-serverA</alias>
+                    <name>demo-multi-service-center-servera:${project.version}</name>
+                    <alias>demo-multi-service-center-servera</alias>
                     <run>
                       <env>
                         <JAVA_OPTS>
                           -Dservicecomb.service.registry.address=http://${service-center-01}:30100
                           -Dservicecomb.service.publishAddress=${docker.hostname}
                         </JAVA_OPTS>
-                        <JAR_PATH>/maven/maven/demo-multi-service-center-serverA-${project.version}.jar</JAR_PATH>
+                        <JAR_PATH>/maven/maven/demo-multi-service-center-servera-${project.version}.jar</JAR_PATH>
                       </env>
                       <links>
                         <link>service-center-01:service-center-01</link>
@@ -142,15 +142,15 @@
                     </run>
                   </image>
                   <image>
-                    <name>demo-multi-service-center-serverB:${project.version}</name>
-                    <alias>demo-multi-service-center-serverB</alias>
+                    <name>demo-multi-service-center-serverb:${project.version}</name>
+                    <alias>demo-multi-service-center-serverb</alias>
                     <run>
                       <env>
                         <JAVA_OPTS>
                           -Dservicecomb.service.registry.address=http://${service-center-02}:30100
                           -Dservicecomb.service.publishAddress=${docker.hostname}
                         </JAVA_OPTS>
-                        <JAR_PATH>/maven/maven/demo-multi-service-center-serverB-${project.version}.jar</JAR_PATH>
+                        <JAR_PATH>/maven/maven/demo-multi-service-center-serverb-${project.version}.jar</JAR_PATH>
                       </env>
                       <links>
                         <link>service-center-02:service-center-02</link>
