@@ -22,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.filter.impl.TransportFilters;
 import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 
@@ -43,10 +44,25 @@ public class FilterNode {
         .collect(Collectors.toList());
 
     for (int idx = 0; idx < filterNodes.size() - 1; idx++) {
-      filterNodes.get(idx).setNextNode(filterNodes.get(idx + 1));
+      FilterNode currentNode = filterNodes.get(idx);
+      FilterNode nextNode = filterNodes.get(idx + 1);
+      currentNode.setNextNode(nextNode);
+
+      if (currentNode.filter instanceof TransportFilters) {
+        mergeToChain((TransportFilters) currentNode.filter, nextNode);
+      }
     }
 
     return filterNodes.get(0);
+  }
+
+  private static void mergeToChain(TransportFilters filter, FilterNode nextNode) {
+    for (FilterNode node : filter.getChainByTransport().values()) {
+      while (node.nextNode != null) {
+        node = node.nextNode;
+      }
+      node.nextNode = nextNode;
+    }
   }
 
   private final Filter filter;
