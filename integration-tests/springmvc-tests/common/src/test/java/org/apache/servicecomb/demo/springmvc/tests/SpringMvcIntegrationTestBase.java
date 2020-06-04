@@ -49,6 +49,7 @@ import org.apache.servicecomb.demo.compute.Person;
 import org.apache.servicecomb.demo.server.User;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.provider.springmvc.reference.async.CseAsyncRestTemplate;
+import org.hamcrest.Matchers;
 import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -636,7 +637,9 @@ public class SpringMvcIntegrationTestBase {
     } catch (HttpServerErrorException e) {
       assertThat(e.getRawStatusCode(), is(500));
       assertThat(e.getResponseBodyAsString(),
-          is("{\"message\":\"Unexpected exception when processing the request.\"}"));
+          Matchers.isOneOf(
+              "{\"message\":\"Unexpected exception when processing the request.\"}",
+              "{\"code\":\"SCB.5000\",\"message\":\"Unexpected exception when processing.\"}"));
     }
   }
 
