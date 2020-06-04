@@ -33,6 +33,9 @@ servicecomb:
         default: tracing-provider,bizkeeper-provider
       Consumer:
         default: tracing-consumer,loadbalance,bizkeeper-consumer
+  filter-chains:
+    producer:
+      default: default-producer-tranport, schedule, zipkin, validator, producer-operation
   tracing:
     collector:
       address: http://localhost:9411

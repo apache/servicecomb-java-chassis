@@ -43,6 +43,11 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
+      <artifactId>common-rest</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>registry-service-center</artifactId>
       <scope>test</scope>
     </dependency>
@@ -51,7 +56,6 @@
       <artifactId>vertx-codegen</artifactId>
       <scope>provided</scope>
     </dependency>
-
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
@@ -63,9 +67,8 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>common-rest</artifactId>
+      <artifactId>transport-highway</artifactId>
+      <scope>test</scope>
     </dependency>
-
   </dependencies>
-
 </project>

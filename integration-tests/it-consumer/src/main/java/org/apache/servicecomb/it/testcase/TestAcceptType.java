@@ -16,6 +16,9 @@
  */
 package org.apache.servicecomb.it.testcase;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
+
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Assert;
@@ -45,15 +48,12 @@ public class TestAcceptType {
   private void checkTextPlain(Consumers<AcceptTypeIntf> consumers) {
     String result = textHeader_rt(consumers, MediaType.TEXT_PLAIN_VALUE);
     Assert.assertEquals("cse", result);
-    try {
-      textHeader_rt(consumers, MediaType.APPLICATION_JSON_VALUE);
-      Assert.fail("should throw exception");
-    } catch (InvocationException e) {
-      Assert.assertEquals(406, e.getStatusCode());
-      Assert.assertTrue(e.getMessage().contains("Accept application/json is not supported"));
-    } catch (Throwable e) {
-      Assert.fail(" should throw InvocationException");
-    }
+
+    Throwable throwable = catchThrowable(() -> textHeader_rt(consumers, MediaType.APPLICATION_JSON_VALUE));
+    assertThat(throwable)
+        .isInstanceOf(InvocationException.class)
+        .hasMessageContaining("Accept application/json is not supported");
+    assertThat(((InvocationException) throwable).getStatusCode()).isEqualTo(406);
   }
 
   private String textHeader_rt(Consumers<AcceptTypeIntf> consumers, String type) {
