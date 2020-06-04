@@ -17,3 +17,4 @@
 
 org.apache.servicecomb.core.bootup.ServiceInformationCollector
 org.apache.servicecomb.core.bootup.AddressInformationCollector
+org.apache.servicecomb.core.bootup.FilterChainCollector

@@ -18,13 +18,26 @@
 package org.apache.servicecomb.core.bootup;
 
 import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.filter.FilterChainsManager;
 
-public interface BootUpInformationCollector {
-  default String collect(SCBEngine engine) {
-    return collect();
+public class FilterChainCollector implements BootUpInformationCollector {
+  @Override
+  public String collect(SCBEngine engine) {
+    FilterChainsManager mgr = engine.getFilterChainsManager();
+    if (!mgr.isEnabled()) {
+      return null;
+    }
+
+    return mgr.collectResolvedChains();
   }
 
-  String collect();
+  @Override
+  public String collect() {
+    return null;
+  }
 
-  int getOrder();
+  @Override
+  public int getOrder() {
+    return 300;
+  }
 }
