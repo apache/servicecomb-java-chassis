@@ -24,10 +24,14 @@ import javax.ws.rs.core.Response.Status.Family;
 
 import org.apache.servicecomb.common.rest.AbstractRestInvocation;
 import org.apache.servicecomb.common.rest.RestConst;
+import org.apache.servicecomb.common.rest.RestProducerInvocationFlow;
+import org.apache.servicecomb.common.rest.RestVertxProducerInvocationCreator;
 import org.apache.servicecomb.common.rest.VertxRestInvocation;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.core.definition.MicroserviceMeta;
+import org.apache.servicecomb.core.invocation.InvocationCreator;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
@@ -53,6 +57,8 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
   private static final String KEY_PATTERN = "servicecomb.http.dispatcher.rest.pattern";
 
   private Transport transport;
+
+  private MicroserviceMeta microserviceMeta;
 
   @Override
   public int getOrder() {
@@ -194,9 +200,19 @@ public class VertxRestDispatcher extends AbstractVertxHttpDispatcher {
   protected void onRequest(RoutingContext context) {
     if (transport == null) {
       transport = SCBEngine.getInstance().getTransportManager().findTransport(Const.RESTFUL);
+      microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     }
     HttpServletRequestEx requestEx = new VertxServerRequestToHttpServletRequest(context);
     HttpServletResponseEx responseEx = new VertxServerResponseToHttpServletResponse(context.response());
+
+    if (SCBEngine.getInstance().isFilterChainEnabled()) {
+      InvocationCreator creator = new RestVertxProducerInvocationCreator(context,
+          microserviceMeta, transport.getEndpoint(),
+          requestEx, responseEx);
+      new RestProducerInvocationFlow(creator, requestEx, responseEx)
+          .run();
+      return;
+    }
 
     VertxRestInvocation vertxRestInvocation = new VertxRestInvocation();
     context.put(RestConst.REST_PRODUCER_INVOCATION, vertxRestInvocation);

@@ -23,10 +23,13 @@ import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.servicecomb.common.rest.RestProducerInvocationFlow;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.core.definition.MicroserviceMeta;
+import org.apache.servicecomb.core.invocation.InvocationCreator;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
@@ -38,11 +41,14 @@ public class ServletRestDispatcher {
 
   private Transport transport;
 
+  private MicroserviceMeta microserviceMeta;
+
   private List<HttpServerFilter> httpServerFilters = SPIServiceUtils.getSortedService(HttpServerFilter.class);
 
   public void service(HttpServletRequest request, HttpServletResponse response) {
     if (transport == null) {
       transport = SCBEngine.getInstance().getTransportManager().findTransport(Const.RESTFUL);
+      microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
     }
 
     // 异步场景
@@ -52,6 +58,15 @@ public class ServletRestDispatcher {
 
     HttpServletRequestEx requestEx = new StandardHttpServletRequestEx(request);
     HttpServletResponseEx responseEx = new StandardHttpServletResponseEx(response);
+
+    if (SCBEngine.getInstance().isFilterChainEnabled()) {
+      ((StandardHttpServletRequestEx) requestEx).setCacheRequest(true);
+      InvocationCreator creator = new RestServletProducerInvocationCreator(microserviceMeta, transport.getEndpoint(),
+          requestEx, responseEx);
+      new RestProducerInvocationFlow(creator, requestEx, responseEx)
+          .run();
+      return;
+    }
 
     RestServletProducerInvocation restProducerInvocation = new RestServletProducerInvocation();
     restProducerInvocation.invoke(transport, requestEx, responseEx, httpServerFilters);

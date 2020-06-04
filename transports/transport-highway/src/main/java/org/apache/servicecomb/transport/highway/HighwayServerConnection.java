@@ -18,7 +18,16 @@ package org.apache.servicecomb.transport.highway;
 
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
+import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Endpoint;
+import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.definition.MicroserviceMeta;
+import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.core.invocation.InvocationCreator;
+import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.foundation.vertx.server.TcpBufferHandler;
 import org.apache.servicecomb.foundation.vertx.server.TcpParser;
 import org.apache.servicecomb.foundation.vertx.server.TcpServerConnection;
@@ -35,7 +44,7 @@ import io.vertx.core.net.NetSocket;
 public class HighwayServerConnection extends TcpServerConnection implements TcpBufferHandler {
   private static final Logger LOGGER = LoggerFactory.getLogger(HighwayServerConnection.class);
 
-  private Endpoint endpoint;
+  private final Endpoint endpoint;
 
   public HighwayServerConnection(Endpoint endpoint) {
     this.endpoint = endpoint;
@@ -68,9 +77,8 @@ public class HighwayServerConnection extends TcpServerConnection implements TcpB
   }
 
   protected RequestHeader decodeRequestHeader(long msgId, Buffer headerBuffer) {
-    RequestHeader requestHeader = null;
     try {
-      requestHeader = HighwayCodec.readRequestHeader(headerBuffer);
+      return HighwayCodec.readRequestHeader(headerBuffer);
     } catch (Exception e) {
       String msg = String.format("decode request header error, msgId=%d",
           msgId);
@@ -79,12 +87,10 @@ public class HighwayServerConnection extends TcpServerConnection implements TcpB
       netSocket.close();
       return null;
     }
-
-    return requestHeader;
   }
 
   protected void onLogin(long msgId, RequestHeader header, Buffer bodyBuffer) {
-    LoginRequest request = null;
+    LoginRequest request;
     try {
       request = LoginRequest.readObject(bodyBuffer);
     } catch (Exception e) {
@@ -117,9 +123,37 @@ public class HighwayServerConnection extends TcpServerConnection implements TcpB
   }
 
   protected void onRequest(long msgId, RequestHeader header, Buffer bodyBuffer) {
+    if (SCBEngine.getInstance().isFilterChainEnabled()) {
+      InvocationCreator creator = () -> createInvocation(msgId, header, bodyBuffer);
+      new HighwayProducerInvocationFlow(creator, this, msgId)
+          .run();
+      return;
+    }
+
     HighwayServerInvoke invoke = new HighwayServerInvoke(endpoint);
     if (invoke.init(this, msgId, header, bodyBuffer)) {
       invoke.execute();
     }
+  }
+
+  public Invocation createInvocation(long msgId, RequestHeader header, Buffer bodyBuffer) {
+    MicroserviceMeta microserviceMeta = SCBEngine.getInstance().getProducerMicroserviceMeta();
+    SchemaMeta schemaMeta = microserviceMeta.ensureFindSchemaMeta(header.getSchemaId());
+    OperationMeta operationMeta = schemaMeta.ensureFindOperation(header.getOperationName());
+
+    Invocation invocation = InvocationFactory.forProvider(endpoint,
+        operationMeta,
+        null);
+    invocation.getHandlerContext().put(Const.REMOTE_ADDRESS, netSocket.remoteAddress());
+
+    HighwayTransportContext transportContext = new HighwayTransportContext()
+        .setConnection(this)
+        .setMsgId(msgId)
+        .setHeader(header)
+        .setBodyBuffer(bodyBuffer)
+        .setOperationProtobuf(ProtobufManager.getOrCreateOperation(invocation));
+    invocation.setTransportContext(transportContext);
+
+    return invocation;
   }
 }
