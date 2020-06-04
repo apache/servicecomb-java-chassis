@@ -36,10 +36,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>registry-service-center</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
       <artifactId>foundation-common</artifactId>
     </dependency>
     <dependency>
