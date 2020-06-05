@@ -26,6 +26,8 @@ import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
 import org.apache.servicecomb.metrics.core.publish.MetricsRestPublisher;
 import org.apache.servicecomb.metrics.core.publish.SlowInvocationLogger;
 
+import com.netflix.config.DynamicPropertyFactory;
+
 public class MetricsBootListener implements BootListener {
   private MetricsBootstrap metricsBootstrap = new MetricsBootstrap();
 
@@ -41,6 +43,10 @@ public class MetricsBootListener implements BootListener {
 
   @Override
   public void onBeforeProducerProvider(BootEvent event) {
+    if (!DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.metrics.endpoint.enabled", true).get()) {
+      return;
+    }
+
     event.getScbEngine().getProducerProviderManager()
         .addProducerMeta("healthEndpoint", new HealthCheckerRestPublisher());
 
