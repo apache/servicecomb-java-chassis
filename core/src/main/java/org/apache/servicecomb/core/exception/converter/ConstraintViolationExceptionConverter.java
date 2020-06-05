@@ -35,6 +35,8 @@ import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 
 public class ConstraintViolationExceptionConverter implements ExceptionConverter<ConstraintViolationException> {
+  public static final short ORDER = Short.MAX_VALUE;
+
   public static final String KEY_CODE = "servicecomb.filters.validate.code";
 
   private DynamicStringProperty code;
@@ -53,7 +55,7 @@ public class ConstraintViolationExceptionConverter implements ExceptionConverter
 
   @Override
   public int getOrder() {
-    return Short.MAX_VALUE;
+    return ORDER;
   }
 
   @Override

@@ -24,7 +24,7 @@ import io.vertx.core.Vertx;
 public final class RestTransportClientManager {
   public static final RestTransportClientManager INSTANCE = new RestTransportClientManager();
 
-  // same instance in AbstractTranport. need refactor in future.
+  // same instance in AbstractTransport. need refactor in future.
   private final Vertx transportVertx = VertxUtils.getOrCreateVertxByName("transport", null);
 
   private RestTransportClient restClient;

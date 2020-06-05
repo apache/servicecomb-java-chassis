@@ -41,7 +41,7 @@ public class ProducerInvocationFlowTest {
 
     @Override
     protected Invocation sendCreateInvocationException(Throwable throwable) {
-      sendException = throwable;
+      sendException = Exceptions.unwrap(throwable);
       return null;
     }
 
@@ -72,7 +72,7 @@ public class ProducerInvocationFlowTest {
 
     flow.run();
 
-    assertThat(Exceptions.unwrap(sendException)).isSameAs(exception);
+    assertThat(sendException).isSameAs(exception);
   }
 
   private void mockFilterChain() {

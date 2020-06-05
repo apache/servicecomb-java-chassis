@@ -47,20 +47,30 @@ public class CommonExceptionData extends DynamicObject {
     return code;
   }
 
-  public void setCode(String code) {
+  public CommonExceptionData setCode(String code) {
     this.code = code;
+    return this;
   }
 
   public String getMessage() {
     return message;
   }
 
-  public void setMessage(String message) {
+  public CommonExceptionData setMessage(String message) {
     this.message = message;
+    return this;
   }
 
   @Override
   public String toString() {
-    return "CommonExceptionData [message=" + message + "]";
+    if (code == null) {
+      return "CommonExceptionData [message=" + message + "]";
+    }
+
+    return "CommonExceptionData{" +
+        "code='" + code + '\'' +
+        ", message='" + message + '\'' +
+        ", dynamic=" + dynamic +
+        '}';
   }
 }

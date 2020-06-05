@@ -24,9 +24,11 @@ import org.apache.servicecomb.core.exception.ExceptionConverter;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class InvocationExceptionConverter implements ExceptionConverter<InvocationException> {
+  public static final byte ORDER = Byte.MAX_VALUE;
+
   @Override
   public int getOrder() {
-    return Byte.MAX_VALUE;
+    return ORDER;
   }
 
   @Override

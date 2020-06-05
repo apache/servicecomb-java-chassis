@@ -24,7 +24,7 @@ servicecomb:
       #default-consumer-transport:
       #  rest: rest-client-codec
       #  highway: highway-client-codec
-      default-producer-tranport:
+      default-producer-transport:
         rest: rest-server-codec
         highway: highway-server-codec
     consumer:
@@ -34,7 +34,7 @@ servicecomb:
       #policies:
       #  ms-1: retry, load-balance, transport-client, ms-1-consumer-transport
     producer:
-      default: default-producer-tranport, schedule, producer-operation
+      default: default-producer-transport, schedule, producer-operation
       # samples for customize microservice filter chain
       #policies:
       #  ms-1: qps-limiter, ms-1-producer-transport, schedule, producer-operation

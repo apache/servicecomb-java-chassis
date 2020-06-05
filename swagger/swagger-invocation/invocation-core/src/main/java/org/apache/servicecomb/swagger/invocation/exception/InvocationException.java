@@ -84,6 +84,11 @@ public class InvocationException extends RuntimeException {
     return errorData;
   }
 
+  @SuppressWarnings("unchecked")
+  public <T> T getError() {
+    return (T) errorData;
+  }
+
   @Override
   public String getMessage() {
     return this.toString();
@@ -91,11 +96,7 @@ public class InvocationException extends RuntimeException {
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("InvocationException: code=");
-    sb.append(getStatusCode());
-    sb.append(";msg=");
-    sb.append(getErrorData());
-    return sb.toString();
+    return "InvocationException: code=" + getStatusCode()
+        + ";msg=" + getErrorData();
   }
 }
