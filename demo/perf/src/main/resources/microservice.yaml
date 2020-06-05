@@ -45,6 +45,8 @@ servicecomb:
     transport: highway
     transport: rest
   metrics:
+    endpoint:
+      enabled: false
     window_time: 1000
     invocation.latencyDistribution: 0,1,3,10,100
     Consumer.invocation.slow:
