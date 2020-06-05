@@ -28,8 +28,8 @@
   <name>Java Chassis::Demo::ZeroConfig-SchemaDiscovery Registry</name>
   <packaging>pom</packaging>
   <modules>
-    <module>demo-zeroconfig-schemadiscovery-registry-client</module>
     <module>demo-zeroconfig-schemadiscovery-registry-server</module>
+    <module>demo-zeroconfig-schemadiscovery-registry-client</module>
   </modules>
 
   <dependencies>
