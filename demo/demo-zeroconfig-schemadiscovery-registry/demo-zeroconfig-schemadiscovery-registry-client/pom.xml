@@ -63,7 +63,7 @@
     <profile>
       <id>docker</id>
       <properties>
-        <demo.service.name>demo-multi-registries-server</demo.service.name>
+        <demo.service.name>demo-zeroconfig-schemadiscovery-registry-server</demo.service.name>
       </properties>
       <build>
         <plugins>
