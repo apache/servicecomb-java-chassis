@@ -40,7 +40,8 @@ public class DynamicObject {
   }
 
   @JsonAnySetter
-  public void putDynamic(String key, Object value) {
+  public DynamicObject putDynamic(String key, Object value) {
     this.dynamic.put(key, value);
+    return this;
   }
 }

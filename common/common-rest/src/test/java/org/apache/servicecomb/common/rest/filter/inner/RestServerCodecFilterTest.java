@@ -147,7 +147,7 @@ public class RestServerCodecFilterTest {
 
     assertThat(response.getStatus()).isEqualTo(INTERNAL_SERVER_ERROR);
     assertThat(Json.encode(response.getResult()))
-        .isEqualTo("{\"code\":\"SCB.5000\",\"message\":\"encode request failed\"}");
+        .isEqualTo("{\"code\":\"SCB.50000000\",\"message\":\"encode request failed\"}");
   }
 
   private void success_invocation() throws InterruptedException, ExecutionException {

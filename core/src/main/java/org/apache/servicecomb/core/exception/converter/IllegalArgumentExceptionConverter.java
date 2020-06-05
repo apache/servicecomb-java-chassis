@@ -24,9 +24,11 @@ import org.apache.servicecomb.core.exception.ExceptionConverter;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 public class IllegalArgumentExceptionConverter implements ExceptionConverter<IllegalArgumentException> {
+  public static final short ORDER = Short.MAX_VALUE;
+
   @Override
   public int getOrder() {
-    return Short.MAX_VALUE;
+    return ORDER;
   }
 
   @Override

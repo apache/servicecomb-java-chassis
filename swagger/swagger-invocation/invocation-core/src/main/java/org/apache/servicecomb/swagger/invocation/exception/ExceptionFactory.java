@@ -136,7 +136,8 @@ public final class ExceptionFactory {
     return throwable;
   }
 
-  public static Throwable unwrap(Throwable throwable) {
+  @SuppressWarnings("unchecked")
+  public static <T extends Throwable> T unwrap(Throwable throwable) {
     if (throwable instanceof InvocationTargetException) {
       throwable = ((InvocationTargetException) throwable).getTargetException();
     }
@@ -146,6 +147,6 @@ public final class ExceptionFactory {
     if (throwable instanceof ExecutionException) {
       throwable = throwable.getCause();
     }
-    return throwable;
+    return (T) throwable;
   }
 }

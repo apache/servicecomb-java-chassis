@@ -17,10 +17,10 @@
 package org.apache.servicecomb.core.exception;
 
 public interface ExceptionCodes {
-  String GENERIC_CLIENT = "SCB.0000";
-  String LB_ADDRESS_NOT_FOUND = "SCB.0001";
-  String NOT_DEFINED_ANY_SCHEMA = "SCB.0002";
-  String DEFAULT_VALIDATE = "SCB.0003";
+  String GENERIC_CLIENT = "SCB.00000000";
+  String LB_ADDRESS_NOT_FOUND = "SCB.00000001";
+  String NOT_DEFINED_ANY_SCHEMA = "SCB.00000002";
+  String DEFAULT_VALIDATE = "SCB.00000003";
 
-  String GENERIC_SERVER = "SCB.5000";
+  String GENERIC_SERVER = "SCB.50000000";
 }

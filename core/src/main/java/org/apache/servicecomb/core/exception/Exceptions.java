@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.servicecomb.core.Invocation;
@@ -54,15 +53,19 @@ public final class Exceptions {
     return ExceptionFactory.unwrapIncludeInvocationException(throwable);
   }
 
-  public static Throwable unwrap(Throwable throwable) {
+  public static <T extends Throwable> T unwrap(Throwable throwable) {
     return ExceptionFactory.unwrap(throwable);
   }
 
-  public static InvocationException create(Status status, String code, String msg) {
+  public static InvocationException create(StatusType status, Object errorData) {
+    return new InvocationException(status, errorData);
+  }
+
+  public static InvocationException create(StatusType status, String code, String msg) {
     return new InvocationException(status, code, msg);
   }
 
-  private static InvocationException create(Status status, String code, String msg, Throwable cause) {
+  private static InvocationException create(StatusType status, String code, String msg, Throwable cause) {
     return new InvocationException(status, code, msg, cause);
   }
 

@@ -119,7 +119,7 @@ public class RestProducerInvocationCreatorTest {
     CommonExceptionData data = (CommonExceptionData) throwable.getErrorData();
 
     assertThat(throwable.getStatusCode()).isEqualTo(NOT_FOUND.getStatusCode());
-    assertThat(Json.encode(data)).isEqualTo("{\"code\":\"SCB.0002\",\"message\":\"Not Found\"}");
+    assertThat(Json.encode(data)).isEqualTo("{\"code\":\"SCB.00000002\",\"message\":\"Not Found\"}");
   }
 
   @Test
@@ -140,7 +140,7 @@ public class RestProducerInvocationCreatorTest {
 
     assertThat(throwable.getStatusCode()).isEqualTo(NOT_ACCEPTABLE.getStatusCode());
     assertThat(Json.encode(data))
-        .isEqualTo("{\"code\":\"SCB.0000\",\"message\":\"Accept test-type is not supported\"}");
+        .isEqualTo("{\"code\":\"SCB.00000000\",\"message\":\"Accept test-type is not supported\"}");
   }
 
   @Test

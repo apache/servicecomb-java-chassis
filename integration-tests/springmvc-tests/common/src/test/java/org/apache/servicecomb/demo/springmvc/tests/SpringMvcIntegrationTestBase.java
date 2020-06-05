@@ -639,7 +639,7 @@ public class SpringMvcIntegrationTestBase {
       assertThat(e.getResponseBodyAsString(),
           Matchers.isOneOf(
               "{\"message\":\"Unexpected exception when processing the request.\"}",
-              "{\"code\":\"SCB.5000\",\"message\":\"Unexpected exception when processing.\"}"));
+              "{\"code\":\"SCB.50000000\",\"message\":\"Unexpected exception when processing.\"}"));
     }
   }
 
