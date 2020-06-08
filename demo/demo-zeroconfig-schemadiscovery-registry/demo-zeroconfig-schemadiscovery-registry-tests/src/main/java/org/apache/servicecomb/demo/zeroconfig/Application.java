@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.demo.zeroconfig;
 
+import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
+import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -29,5 +31,17 @@ public class Application {
   public static void main(final String[] args) throws Exception {
     new SpringApplicationBuilder().sources(Application.class).web(WebApplicationType.SERVLET)
         .build().run(args);
+
+    runTest();
+
+    TestMgr.summary();
+    if (!TestMgr.errors().isEmpty()) {
+      throw new IllegalStateException("tests failed");
+    }
+  }
+
+  private static void runTest() throws Exception {
+    CategorizedTestCaseRunner
+        .runCategorizedTestCase("demo-zeroconfig-schemadiscovery-registry-server");
   }
 }

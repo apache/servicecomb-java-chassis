@@ -16,18 +16,16 @@
 ## ---------------------------------------------------------------------------
 
 server:
-  port: 8082
+  port: 8084
 
 # java-chassis configurations
 
 APPLICATION_ID: demo-zeroconfig-schemadiscovery-registry
 service_description:
-  name: demo-zeroconfig-schemadiscovery-registry-client
+  name: demo-zeroconfig-schemadiscovery-registry-tests
   version: 0.0.2
 servicecomb:
   handler:
     chain:
       Consumer:
         default: loadbalance
-  rest:
-    address: 0.0.0.0:8082

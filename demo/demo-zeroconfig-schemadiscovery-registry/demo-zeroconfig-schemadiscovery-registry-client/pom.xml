@@ -33,16 +33,33 @@
   </properties>
   <dependencies>
     <dependency>
+      <groupId>javax.ws.rs</groupId>
+      <artifactId>javax.ws.rs-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>java-chassis-spring-boot-starter-servlet</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>registry-schema-discovery</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>registry-zero-config</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-schema</artifactId>
     </dependency>
+
   </dependencies>
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
       <plugin>
         <groupId>com.github.odavid.maven.plugins</groupId>
         <artifactId>mixin-maven-plugin</artifactId>
@@ -50,7 +67,7 @@
           <mixins>
             <mixin>
               <groupId>org.apache.servicecomb.demo</groupId>
-              <artifactId>docker-run-config</artifactId>
+              <artifactId>docker-build-config</artifactId>
               <version>${project.version}</version>
             </mixin>
           </mixins>
@@ -62,19 +79,18 @@
   <profiles>
     <profile>
       <id>docker</id>
-      <properties>
-        <demo.service.name>demo-zeroconfig-schemadiscovery-registry-server</demo.service.name>
-      </properties>
       <build>
         <plugins>
           <plugin>
             <groupId>io.fabric8</groupId>
             <artifactId>docker-maven-plugin</artifactId>
           </plugin>
+          <plugin>
+            <groupId>org.commonjava.maven.plugins</groupId>
+            <artifactId>directory-maven-plugin</artifactId>
+          </plugin>
         </plugins>
       </build>
     </profile>
   </profiles>
 </project>
-
-

@@ -41,6 +41,14 @@
       <artifactId>java-chassis-spring-boot-starter-servlet</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>registry-schema-discovery</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>registry-zero-config</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-schema</artifactId>
     </dependency>

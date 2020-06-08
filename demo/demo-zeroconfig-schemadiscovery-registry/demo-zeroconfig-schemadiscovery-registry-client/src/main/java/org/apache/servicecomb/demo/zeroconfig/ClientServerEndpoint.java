@@ -20,26 +20,35 @@ package org.apache.servicecomb.demo.zeroconfig;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.apache.servicecomb.demo.CategorizedTestCase;
-import org.apache.servicecomb.demo.TestMgr;
-import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
+
+import javax.ws.rs.core.MediaType;
+
+import org.apache.servicecomb.provider.pojo.RpcReference;
+import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.registry.Microservice;
-import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@Component
-public class ServerTest implements CategorizedTestCase {
+@RestSchema(schemaId = "ClientServerEndpoint")
+@RequestMapping(path = "/register/url/prefix", produces = MediaType.APPLICATION_JSON)
+public class ClientServerEndpoint {
+  private static final Logger LOGGER
+      = LoggerFactory.getLogger(ClientServerEndpoint.class);
 
-  RestTemplate template = RestTemplateBuilder.create();
+  @RpcReference(microserviceName = "demo-zeroconfig-schemadiscovery-registry-server", schemaId = "ServerEndpoint")
+  private IServerEndpoint serverEndpoint;
 
-  @Override
-  public void testRestTransport() {
-    testServerGetName();
-    testGetAllMicroservice();
+  @GetMapping(path = "/getName")
+  public String getName(@RequestParam(name = "name") String name) {
+    return serverEndpoint.getName(name);
   }
 
-  private void testGetAllMicroservice() {
+  @GetMapping(path = "/getRegisteredMicroservice")
+  public Set<String> getRegisteredMicroservice() {
     List<Microservice> microserviceList = DiscoveryManager.INSTANCE.getAllMicroservices();
     Set<String> names = new HashSet<>();
 
@@ -49,24 +58,6 @@ public class ServerTest implements CategorizedTestCase {
         names.add(m.getServiceName());
       }
     }
-    TestMgr.check(2, names.size());
-  }
-
-  private void testServerGetName() {
-    // invoke demo-zeroconfig-schemadiscovery-registry-server
-    TestMgr.check("2", template
-        .getForObject(
-            "cse://demo-zeroconfig-schemadiscovery-registry-server/register/url/prefix/getName?name=2",
-            String.class));
-  }
-
-  @Override
-  public void testHighwayTransport() throws Exception {
-
-  }
-
-  @Override
-  public void testAllTransport() throws Exception {
-
+    return names;
   }
 }

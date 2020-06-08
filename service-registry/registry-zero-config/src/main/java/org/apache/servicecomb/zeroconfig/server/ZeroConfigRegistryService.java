@@ -52,8 +52,8 @@ public class ZeroConfigRegistryService {
       LOGGER.info("ServiceId: {}, instanceId: {} already exists", serviceId, instanceId);
     } else {
       // register a new instance for the service
-      LOGGER.info("Register a new instance for  serviceId: {}, instanceId: {}", serviceId,
-          instanceId);
+      LOGGER.info("Register a new instance for  serviceId: {}, instanceId: {}, status: {}, name: {}", serviceId,
+          instanceId, newServerMicroserviceInstance.getStatus(), newServerMicroserviceInstance.getServiceName());
       innerInstanceMap.put(instanceId, newServerMicroserviceInstance);
     }
   }

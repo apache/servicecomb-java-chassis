@@ -20,6 +20,8 @@ public interface ZeroConfigRegistryConstants {
 
   String ENABLED = "servicecomb.zeroconfig.registry.enabled";
 
+  int ORDER = 101;
+
   // MulticastSocket related
   String GROUP = "225.0.0.0";
   Integer PORT = 6666;
@@ -62,5 +64,4 @@ public interface ZeroConfigRegistryConstants {
   String SERVICE_ID_SPLITER = "/";
   String ENDPOINT_PREFIX_REST = "rest";
   String ENDPOINT_PREFIX_HTTP = "http";
-
 }
