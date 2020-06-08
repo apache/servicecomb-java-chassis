@@ -15,19 +15,13 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-server:
-  port: 8082
-
-# java-chassis configurations
-
-APPLICATION_ID: demo-zeroconfig-schemadiscovery-registry
-service_description:
-  name: demo-zeroconfig-schemadiscovery-registry-client
-  version: 0.0.2
-servicecomb:
-  handler:
-    chain:
-      Consumer:
-        default: loadbalance
-  rest:
-    address: 0.0.0.0:8082
+demo-zeroconfig-schemadiscovery-registry-client:
+  - id: "001"
+    version: "0.0.2"
+    appid: demo-zeroconfig-schemadiscovery-registry
+    schemaIds:
+      - ClientServerEndpoint
+      - SchemaDiscoveryEndpoint
+    instances:
+      - endpoints:
+          - rest://localhost:8082

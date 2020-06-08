@@ -17,17 +17,6 @@
 
 package org.apache.servicecomb.demo.zeroconfig;
 
-import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
-import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-
-@SpringBootApplication
-@EnableServiceComb
-public class Application {
-
-  public static void main(final String[] args) throws Exception {
-    new SpringApplicationBuilder().sources(Application.class).web(WebApplicationType.SERVLET)
-        .build().run(args);
-  }
+public interface IServerEndpoint {
+  String getName(String name);
 }

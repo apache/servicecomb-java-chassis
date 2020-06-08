@@ -26,6 +26,7 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.zeroconfig.client.ZeroConfigClient;
 
 import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.ENABLED;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.ORDER;
 
 public class ZeroConfigDiscovery implements Discovery {
 
@@ -56,7 +57,7 @@ public class ZeroConfigDiscovery implements Discovery {
 
   @Override
   public int getOrder() {
-    return 101;
+    return ORDER;
   }
 
   @Override

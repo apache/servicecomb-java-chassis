@@ -16,8 +16,11 @@
  */
 package org.apache.servicecomb.zeroconfig;
 
-import com.netflix.config.DynamicPropertyFactory;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.ENABLED;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.ORDER;
+
 import java.util.Collection;
+
 import org.apache.servicecomb.registry.api.Registration;
 import org.apache.servicecomb.registry.api.registry.BasePath;
 import org.apache.servicecomb.registry.api.registry.Microservice;
@@ -29,7 +32,7 @@ import org.apache.servicecomb.zeroconfig.server.ServerUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.ENABLED;
+import com.netflix.config.DynamicPropertyFactory;
 
 public class ZeroConfigRegistration implements Registration {
 
@@ -75,7 +78,7 @@ public class ZeroConfigRegistration implements Registration {
 
   @Override
   public int getOrder() {
-    return 101;
+    return ORDER;
   }
 
   @Override
@@ -118,5 +121,4 @@ public class ZeroConfigRegistration implements Registration {
   public void addBasePath(Collection<BasePath> basePaths) {
     zeroConfigClient.getSelfMicroservice().getPaths().addAll(basePaths);
   }
-
 }
