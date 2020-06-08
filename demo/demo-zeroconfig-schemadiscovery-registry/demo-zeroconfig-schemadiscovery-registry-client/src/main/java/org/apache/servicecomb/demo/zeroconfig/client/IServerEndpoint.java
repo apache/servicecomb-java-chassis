@@ -15,28 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.zeroconfig;
+package org.apache.servicecomb.demo.zeroconfig.client;
 
-import java.util.concurrent.CountDownLatch;
-import org.apache.servicecomb.core.BootListener;
-import org.apache.servicecomb.provider.pojo.RpcReference;
-import org.springframework.stereotype.Component;
-
-@Component("SelfServiceInvoker")
-public class SelfServiceInvoker implements BootListener {
-  interface IServerEndpoint {
-    String getName(String name);
-  }
-
-  @RpcReference(microserviceName = "demo-zeroconfig-schemadiscovery-registry-server", schemaId = "ServerEndpoint")
-  IServerEndpoint endpoint;
-
-  public CountDownLatch latch = new CountDownLatch(1);
-
-  public String result = "";
-
-  public void onAfterRegistry(BootEvent event) {
-    result = endpoint.getName("hello");
-    latch.countDown();
-  }
+public interface IServerEndpoint {
+  String getName(String name);
 }

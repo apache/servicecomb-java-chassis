@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.zeroconfig;
+package org.apache.servicecomb.demo.zeroconfig.tests;
 
 import java.util.List;
 

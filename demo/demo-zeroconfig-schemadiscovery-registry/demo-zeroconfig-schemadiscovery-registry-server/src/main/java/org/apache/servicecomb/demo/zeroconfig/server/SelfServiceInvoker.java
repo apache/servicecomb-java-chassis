@@ -15,19 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.zeroconfig;
+package org.apache.servicecomb.demo.zeroconfig.server;
 
-import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
-import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
+import java.util.concurrent.CountDownLatch;
+import org.apache.servicecomb.core.BootListener;
+import org.apache.servicecomb.provider.pojo.RpcReference;
+import org.springframework.stereotype.Component;
 
-@SpringBootApplication
-@EnableServiceComb
-public class Application {
+@Component("SelfServiceInvoker")
+public class SelfServiceInvoker implements BootListener {
+  interface IServerEndpoint {
+    String getName(String name);
+  }
 
-  public static void main(final String[] args) throws Exception {
-    new SpringApplicationBuilder().sources(Application.class).web(WebApplicationType.SERVLET)
-        .build().run(args);
+  @RpcReference(microserviceName = "demo-zeroconfig-schemadiscovery-registry-server", schemaId = "ServerEndpoint")
+  IServerEndpoint endpoint;
+
+  public CountDownLatch latch = new CountDownLatch(1);
+
+  public String result = "";
+
+  public void onAfterRegistry(BootEvent event) {
+    result = endpoint.getName("hello");
+    latch.countDown();
   }
 }
