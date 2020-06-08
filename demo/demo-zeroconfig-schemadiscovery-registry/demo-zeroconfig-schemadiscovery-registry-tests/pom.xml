@@ -74,11 +74,11 @@
                     <alias>demo-zeroconfig-schemadiscovery-registry-server</alias>
                     <run>
                       <env>
-                        <JAR_PATH>/maven/demo-zeroconfig-schemadiscovery-registry-server-${project.version}.jar
+                        <JAR_PATH>/maven/maven/demo-zeroconfig-schemadiscovery-registry-server-${project.version}.jar
                         </JAR_PATH>
                       </env>
                       <wait>
-                        <log>watching microservice successfully</log>
+                        <log>Service information is shown below</log>
                         <tcp>
                           <ports>
                             <port>8080</port>
@@ -97,11 +97,11 @@
                     <alias>demo-zeroconfig-schemadiscovery-registry-client</alias>
                     <run>
                       <env>
-                        <JAR_PATH>/maven/demo-zeroconfig-schemadiscovery-registry-client-${project.version}.jar
+                        <JAR_PATH>/maven/maven/demo-zeroconfig-schemadiscovery-registry-client-${project.version}.jar
                         </JAR_PATH>
                       </env>
                       <wait>
-                        <log>watching microservice successfully</log>
+                        <log>Service information is shown below</log>
                         <tcp>
                           <ports>
                             <port>8082</port>
