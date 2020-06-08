@@ -1,4 +1,3 @@
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -16,25 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.zeroconfig;
+package org.apache.servicecomb.demo.zeroconfig.client;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
-import org.apache.servicecomb.demo.TestMgr;
-import org.junit.Before;
-import org.junit.Test;
+@SpringBootApplication
+@EnableServiceComb
+public class Application {
 
-public class ZeroConfigRegistryIT {
-  @Before
-  public void setUp() throws Exception {
-    TestMgr.errors().clear();
-  }
-
-  @Test
-  public void clientGetsNoError() throws Exception {
-    Application.main(new String[0]);
-
-    assertThat(TestMgr.errors().isEmpty(), is(true));
+  public static void main(final String[] args) throws Exception {
+    new SpringApplicationBuilder().sources(Application.class).web(WebApplicationType.SERVLET)
+        .build().run(args);
   }
 }

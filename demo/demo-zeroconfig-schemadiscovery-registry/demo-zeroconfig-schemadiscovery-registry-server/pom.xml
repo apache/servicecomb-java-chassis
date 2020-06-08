@@ -29,7 +29,7 @@
   </parent>
 
   <properties>
-    <demo.main>org.apache.servicecomb.demo.zeroconfig.ServerApplication</demo.main>
+    <demo.main>org.apache.servicecomb.demo.zeroconfig.server.ServerApplication</demo.main>
   </properties>
   <dependencies>
     <dependency>

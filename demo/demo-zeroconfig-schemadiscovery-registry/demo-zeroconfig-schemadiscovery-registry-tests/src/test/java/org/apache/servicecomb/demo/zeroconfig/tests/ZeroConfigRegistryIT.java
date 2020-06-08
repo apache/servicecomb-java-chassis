@@ -1,3 +1,4 @@
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -15,8 +16,26 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.zeroconfig;
+package org.apache.servicecomb.demo.zeroconfig.tests;
 
-public interface IServerEndpoint {
-  String getName(String name);
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
+import org.apache.servicecomb.demo.TestMgr;
+import org.apache.servicecomb.demo.zeroconfig.tests.Application;
+import org.junit.Before;
+import org.junit.Test;
+
+public class ZeroConfigRegistryIT {
+  @Before
+  public void setUp() throws Exception {
+    TestMgr.errors().clear();
+  }
+
+  @Test
+  public void clientGetsNoError() throws Exception {
+    Application.main(new String[0]);
+
+    assertThat(TestMgr.errors().isEmpty(), is(true));
+  }
 }

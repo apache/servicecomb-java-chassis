@@ -15,27 +15,49 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.demo.zeroconfig;
+package org.apache.servicecomb.demo.zeroconfig.client;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.ws.rs.core.MediaType;
-import org.apache.servicecomb.core.Invocation;
+
+import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
-import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
+import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@RestSchema(schemaId = "ServerEndpoint")
+@RestSchema(schemaId = "ClientServerEndpoint")
 @RequestMapping(path = "/register/url/prefix", produces = MediaType.APPLICATION_JSON)
-public class ServerEndpoint {
+public class ClientServerEndpoint {
   private static final Logger LOGGER
-      = LoggerFactory.getLogger(ServerEndpoint.class);
+      = LoggerFactory.getLogger(ClientServerEndpoint.class);
+
+  @RpcReference(microserviceName = "demo-zeroconfig-schemadiscovery-registry-server", schemaId = "ServerEndpoint")
+  private IServerEndpoint serverEndpoint;
 
   @GetMapping(path = "/getName")
   public String getName(@RequestParam(name = "name") String name) {
-    ((Invocation) ContextUtils.getInvocationContext()).getTraceIdLogger().info(LOGGER, "get name invoked.");
-    return name;
+    return serverEndpoint.getName(name);
+  }
+
+  @GetMapping(path = "/getRegisteredMicroservice")
+  public Set<String> getRegisteredMicroservice() {
+    List<Microservice> microserviceList = DiscoveryManager.INSTANCE.getAllMicroservices();
+    Set<String> names = new HashSet<>();
+
+    for (Microservice m : microserviceList) {
+      if (m.getServiceName().equals("demo-zeroconfig-schemadiscovery-registry-client")
+          || m.getServiceName().equals("demo-zeroconfig-schemadiscovery-registry-server")) {
+        names.add(m.getServiceName());
+      }
+    }
+    return names;
   }
 }
