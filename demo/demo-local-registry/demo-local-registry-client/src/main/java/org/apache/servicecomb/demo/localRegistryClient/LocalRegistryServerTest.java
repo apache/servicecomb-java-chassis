@@ -33,6 +33,9 @@ public class LocalRegistryServerTest implements CategorizedTestCase {
   @RpcReference(microserviceName = "demo-local-registry-server", schemaId = "CodeFirstEndpoint")
   private CodeFirstService codeFirstService;
 
+  @RpcReference(microserviceName = "demo-local-registry-server-bean", schemaId = "CodeFirstEndpoint")
+  private CodeFirstService codeFirstServiceBean;
+
   RestTemplate template = RestTemplateBuilder.create();
 
   @Override
@@ -48,15 +51,17 @@ public class LocalRegistryServerTest implements CategorizedTestCase {
 
     for (Microservice m : microserviceList) {
       if (m.getServiceName().equals("demo-local-registry-client")
-          || m.getServiceName().equals("demo-local-registry-server")) {
+          || m.getServiceName().equals("demo-local-registry-server")
+          || m.getServiceName().equals("demo-local-registry-server-bean")) {
         expectedCount++;
       }
     }
-    TestMgr.check(2, expectedCount);
+    TestMgr.check(3, expectedCount);
   }
 
   private void testCodeFirstGetName() {
     TestMgr.check("2", codeFirstService.getName("2"));
+    TestMgr.check("2", codeFirstServiceBean.getName("2"));
   }
 
   private void testServerGetName() {
@@ -64,15 +69,8 @@ public class LocalRegistryServerTest implements CategorizedTestCase {
     TestMgr.check("2", template
         .getForObject("cse://demo-local-registry-server/register/url/prefix/getName?name=2",
             String.class));
-  }
-
-  @Override
-  public void testHighwayTransport() throws Exception {
-
-  }
-
-  @Override
-  public void testAllTransport() throws Exception {
-
+    TestMgr.check("2", template
+        .getForObject("cse://demo-local-registry-server-bean/register/url/prefix/getName?name=2",
+            String.class));
   }
 }
