@@ -498,6 +498,25 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+    <!-- demo zeroconfig shcema discovery -->
+    <dependency>
+      <groupId>org.apache.servicecomb.demo</groupId>
+      <artifactId>demo-zeroconfig-schemadiscovery-registry-client</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb.demo</groupId>
+      <artifactId>demo-zeroconfig-schemadiscovery-registry-server</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb.demo</groupId>
+      <artifactId>demo-zeroconfig-schemadiscovery-registry-tests</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
 
     <!-- test cases in integration-test folder, sort by folder name -->
     <dependency>

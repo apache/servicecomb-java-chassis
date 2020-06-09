@@ -45,6 +45,9 @@ public class Application {
     RegistrationManager.INSTANCE.getSwaggerLoader().registerSwagger("demo-local-registry",
         "demo-local-registry-server",
         "CodeFirstEndpoint", CodeFirstService.class);
+    RegistrationManager.INSTANCE.getSwaggerLoader().registerSwagger("demo-local-registry",
+        "demo-local-registry-server-bean",
+        "CodeFirstEndpoint", CodeFirstService.class);
   }
 
   private static void runTest() throws Exception {

@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.localregistry;
 
-import static org.apache.servicecomb.registry.definition.DefinitionConst.DEFAULT_APPLICATION_ID;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -32,11 +30,11 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
-import org.apache.servicecomb.foundation.common.base.ServiceCombConstants;
+import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
+import org.apache.servicecomb.localregistry.RegistryBean.Instance;
 import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
@@ -46,7 +44,6 @@ import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 import org.yaml.snakeyaml.Yaml;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.netflix.config.DynamicPropertyFactory;
 
 public class LocalRegistryStore {
   private static final String REGISTRY_FILE_NAME = "registry.yaml";
@@ -90,29 +87,11 @@ public class LocalRegistryStore {
     selfMicroserviceInstance.setInstanceId(selfMicroservice.getServiceId());
     selfMicroserviceInstance.setServiceId(selfMicroservice.getServiceId());
 
-    InputStream is = null;
+    List<RegistryBean> beans = loadYamlBeans();
+    BeanUtils.getBeansOfType(RegistryBean.class).entrySet()
+        .forEach(entry -> beans.add(entry.getValue()));
 
-    try {
-      ClassLoader loader = JvmUtils.findClassLoader();
-      Enumeration<URL> urls = loader.getResources(REGISTRY_FILE_NAME);
-      while (urls.hasMoreElements()) {
-        URL url = urls.nextElement();
-        is = url.openStream();
-        if (is != null) {
-          initFromData(is);
-        }
-      }
-    } catch (IOException e) {
-      throw new IllegalStateException(e);
-    } finally {
-      if (is != null) {
-        try {
-          is.close();
-        } catch (IOException e) {
-          // nothing to do
-        }
-      }
-    }
+    initRegistryFromBeans(beans);
 
     addSelf();
   }
@@ -132,73 +111,79 @@ public class LocalRegistryStore {
     return selfMicroserviceInstance;
   }
 
-  private void initFromData(InputStream is) {
-    Yaml yaml = new Yaml();
-    @SuppressWarnings("unchecked")
-    Map<String, Object> data = yaml.loadAs(is, Map.class);
-    initFromData(data);
-  }
+  private List<RegistryBean> loadYamlBeans() {
+    List<RegistryBean> beans = new ArrayList<>();
 
-  private void initFromData(Map<String, Object> data) {
-    for (Entry<String, Object> entry : data.entrySet()) {
-      String name = entry.getKey();
-      @SuppressWarnings("unchecked")
-      List<Map<String, Object>> serviceConfigs = (List<Map<String, Object>>) entry.getValue();
-      for (Map<String, Object> serviceConfig : serviceConfigs) {
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> instancesConfig =
-            (List<Map<String, Object>>) serviceConfig.get("instances");
+    InputStream is = null;
 
-        String appId = (String) serviceConfig.get("appid");
-        String version = (String) serviceConfig.get("version");
-        String serviceId = (String) serviceConfig.get("id");
-        @SuppressWarnings("unchecked")
-        List<String> schemas = (List<String>) serviceConfig.get("schemaIds");
-
-        Microservice microservice = new Microservice();
-        microservice.setAppId(validAppId(appId));
-        microservice.setServiceName(name);
-        microservice.setVersion(version);
-        microservice.setServiceId(serviceId == null ? UUID.randomUUID().toString() : serviceId);
-        microserviceMap.put(microservice.getServiceId(), microservice);
-        if (schemas != null) {
-          microservice.setSchemas(schemas);
+    try {
+      ClassLoader loader = JvmUtils.findClassLoader();
+      Enumeration<URL> urls = loader.getResources(REGISTRY_FILE_NAME);
+      while (urls.hasMoreElements()) {
+        URL url = urls.nextElement();
+        is = url.openStream();
+        if (is != null) {
+          beans.addAll(initFromData(is));
         }
-
-        addInstances(instancesConfig, microservice);
+      }
+    } catch (IOException e) {
+      throw new IllegalStateException(e);
+    } finally {
+      if (is != null) {
+        try {
+          is.close();
+        } catch (IOException e) {
+          // nothing to do
+        }
       }
     }
+
+    return beans;
   }
 
-  private String validAppId(String configAppId) {
-    if (!StringUtils.isEmpty(configAppId)) {
-      return configAppId;
-    }
-    if (DynamicPropertyFactory.getInstance()
-        .getStringProperty(ServiceCombConstants.CONFIG_APPLICATION_ID_KEY, null).get() != null) {
-      return DynamicPropertyFactory.getInstance()
-          .getStringProperty(ServiceCombConstants.CONFIG_APPLICATION_ID_KEY, null).get();
-    }
-    return DEFAULT_APPLICATION_ID;
+  @SuppressWarnings("unchecked")
+  private List<RegistryBean> initFromData(InputStream is) {
+    Yaml yaml = new Yaml();
+    Map<String, Object> data = yaml.loadAs(is, Map.class);
+    return initFromData(data);
   }
 
-  private void addInstances(List<Map<String, Object>> instancesConfig, Microservice microservice) {
+  @SuppressWarnings("unchecked")
+  private List<RegistryBean> initFromData(Map<String, Object> data) {
+    List<RegistryBean> beans = new ArrayList<>();
+
+    for (Entry<String, Object> entry : data.entrySet()) {
+      String name = entry.getKey();
+      List<Map<String, Object>> serviceConfigs = (List<Map<String, Object>>) entry.getValue();
+      for (Map<String, Object> serviceConfig : serviceConfigs) {
+        beans.add(RegistryBean.buildFromYamlModel(name, serviceConfig));
+      }
+    }
+    return beans;
+  }
+
+  private void initRegistryFromBeans(List<RegistryBean> beans) {
+    beans.forEach((bean -> {
+      Microservice microservice = new Microservice();
+      microservice.setAppId(bean.getAppId());
+      microservice.setServiceName(bean.getServiceName());
+      microservice.setVersion(bean.getVersion());
+      microservice.setServiceId(bean.getId());
+      microservice.setSchemas(bean.getSchemaIds());
+      microserviceMap.put(microservice.getServiceId(), microservice);
+      addInstances(bean, microservice);
+    }));
+  }
+
+  private void addInstances(RegistryBean bean, Microservice microservice) {
     Map<String, MicroserviceInstance> instanceMap = new ConcurrentHashMap<>();
     microserviceInstanceMap.put(microservice.getServiceId(), instanceMap);
 
-    if (instancesConfig == null) {
-      return;
-    }
-
-    for (Map<String, Object> instanceConfig : instancesConfig) {
-      @SuppressWarnings("unchecked")
-      List<String> endpoints = (List<String>) instanceConfig.get("endpoints");
-
+    for (Instance item : bean.getInstances().getInstances()) {
       MicroserviceInstance instance = new MicroserviceInstance();
       instance.setInstanceId(UUID.randomUUID().toString());
-      instance.setEndpoints(endpoints);
+      instance.setEndpoints(item.getEndpoints());
       instance.setServiceId(microservice.getServiceId());
-
       instanceMap.put(instance.getInstanceId(), instance);
     }
   }
