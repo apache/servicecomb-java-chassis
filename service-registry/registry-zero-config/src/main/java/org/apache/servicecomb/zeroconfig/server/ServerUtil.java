@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.zeroconfig.server;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.zeroconfig.client.ClientUtil;
 import org.slf4j.Logger;
@@ -156,23 +157,17 @@ public class ServerUtil {
     return resultList;
   }
 
-  private static Map<String, String> getMapFromString(String str) {
+  private static Map<String, String> getMapFromString(String inputStr) {
     Map<String, String> map = new HashMap<>();
-    String trimedString = str.trim();
-    if (trimedString.startsWith(MAP_STRING_LEFT) && trimedString.endsWith(MAP_STRING_RIGHT)
-        && trimedString.length() > 2) {
-      trimedString = trimedString.substring(1, trimedString.length() - 1);
-      String[] keyValue = trimedString.split(MAP_ELEMENT_SPILITER);
-      for (int i = 0; i < keyValue.length; i++) {
-        String[] str2 = keyValue[i].split(MAP_KV_SPILITER);
-        if (str2.length - 1 == 0) {
-          map.put(str2[0].trim(), "");
-        } else {
-          map.put(str2[0].trim(), str2[1].trim());
-        }
+    String str = inputStr.substring(1, inputStr.length() - 1);
+    String[] keyValue = str.split(MAP_ELEMENT_SPILITER);
+    for (int i = 0; i < keyValue.length; i++) {
+      String[] str2 = keyValue[i].split(MAP_KV_SPILITER);
+      if (str2.length - 1 == 0) {
+        map.put(str2[0].trim(), "");
+      } else {
+        map.put(str2[0].trim(), str2[1].trim());
       }
-    } else {
-      LOGGER.error("Wrong format of the input received string: {}", trimedString);
     }
     return map;
   }
@@ -187,12 +182,25 @@ public class ServerUtil {
       while (true) {
         DatagramPacket receivePacketBuffer = new DatagramPacket(buffer, buffer.length);
         multicastSocket.receive(receivePacketBuffer);
-        String receivedPacketString = new String(receivePacketBuffer.getData(), ENCODE);
+        int receivePacketBufferLength = receivePacketBuffer.getLength();
+        if (receivePacketBufferLength > 0) {
+          String receivedPacketString = new String(receivePacketBuffer.getData(), 0,
+              receivePacketBufferLength, ENCODE).trim();
 
-        Map<String, String> receivedStringMap = getMapFromString(receivedPacketString);
+          if (receivedPacketString.length() < 2
+              || !receivedPacketString.startsWith(MAP_STRING_LEFT) || !receivedPacketString
+              .endsWith(MAP_STRING_RIGHT)) {
+            LOGGER.error("Wrong format of the input received string: {}", receivedPacketString);
+            continue;
+          }
 
-        if (receivedStringMap != null && receivedStringMap.containsKey(EVENT)) {
+          Map<String, String> receivedStringMap = getMapFromString(receivedPacketString);
           String event = receivedStringMap.get(EVENT);
+          if (StringUtils.isEmpty(event)) {
+            LOGGER.warn("Received event is null or doesn't have event type. {}", receivedStringMap);
+            continue;
+          }
+
           if (event.equals(REGISTER_EVENT)) {
             LOGGER.info("Received REGISTER event{}", receivedStringMap);
             zeroConfigRegistryService.registerMicroserviceInstance(receivedStringMap);
@@ -208,9 +216,6 @@ public class ServerUtil {
           } else {
             LOGGER.error("Unrecognized event type. event: {}", event);
           }
-        } else {
-          LOGGER
-              .error("Received event is null or doesn't have event type. {}", receivedPacketString);
         }
       }
 
