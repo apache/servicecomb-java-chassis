@@ -40,18 +40,10 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>registry-schema-discovery</artifactId>
     </dependency>
-    <!-- TODO: include this module will cause zero config message broadcasting error, need first fix the bug
-      and then enable zero-config for this module.
-      NOTES: in integration tests enable zero config for this module is useless, because
-      server and client run in docker.  Here just to remember this bug.
-     -->
-    <!--
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>registry-zero-config</artifactId>
     </dependency>
-    -->
-
     <dependency>
       <groupId>org.apache.servicecomb.demo</groupId>
       <artifactId>demo-schema</artifactId>
