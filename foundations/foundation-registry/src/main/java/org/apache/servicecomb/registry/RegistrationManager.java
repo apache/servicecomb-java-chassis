@@ -20,7 +20,9 @@ package org.apache.servicecomb.registry;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,11 +30,14 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.registry.api.Registration;
 import org.apache.servicecomb.registry.api.registry.BasePath;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
-import org.apache.servicecomb.registry.api.Registration;
+import org.apache.servicecomb.registry.consumer.MicroserviceManager;
+import org.apache.servicecomb.registry.consumer.StaticMicroserviceVersions;
+import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.registry.swagger.SwaggerLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,6 +121,59 @@ public class RegistrationManager {
 
   public void init() {
     registrationList.forEach(registration -> registration.init());
+  }
+
+  /**
+   * <p>
+   * Register a third party service if not registered before, and set it's instances into
+   * {@linkplain StaticMicroserviceVersions StaticMicroserviceVersions}.
+   * </p>
+   * <p>
+   * The registered third party service has the same {@code appId} and {@code environment} as this microservice instance has,
+   * and there is only one schema represented by {@code schemaIntfCls}, whose name is the same as {@code microserviceName}.
+   * </p>
+   * <em>
+   *   This method is for initializing 3rd party service endpoint config.
+   *   i.e. If this service has not been registered before, this service will be registered and the instances will be set;
+   *   otherwise, NOTHING will happen.
+   * </em>
+   *
+   * @param microserviceName name of the 3rd party service, and this param also specifies the schemaId
+   * @param version version of this 3rd party service
+   * @param instances the instances of this 3rd party service. Users only need to specify the endpoint information, other
+   * necessary information will be generate and set in the implementation of this method.
+   * @param schemaIntfCls the producer interface of the service. This interface is used to generate swagger schema and
+   * can also be used for the proxy interface of RPC style invocation.
+   */
+  public void registerMicroserviceMapping(String microserviceName, String version, List<MicroserviceInstance> instances,
+      Class<?> schemaIntfCls) {
+    MicroserviceNameParser parser = new MicroserviceNameParser(getAppId(), microserviceName);
+    MicroserviceManager microserviceManager = DiscoveryManager.INSTANCE.getAppManager()
+        .getOrCreateMicroserviceManager(parser.getAppId());
+    microserviceManager.getVersionsByName()
+        .computeIfAbsent(microserviceName,
+            svcName -> new StaticMicroserviceVersions(DiscoveryManager.INSTANCE.getAppManager(), parser.getAppId(),
+                microserviceName)
+                .init(schemaIntfCls, version, instances)
+        );
+  }
+
+  /**
+   * @see #registerMicroserviceMapping(String, String, List, Class)
+   * @param endpoints the endpoints of 3rd party service. Each of endpoints will be treated as a separated instance.
+   * Format of the endpoints is the same as the endpoints that ServiceComb microservices register in service-center,
+   * like {@code rest://127.0.0.1:8080}
+   */
+  public void registerMicroserviceMappingByEndpoints(String microserviceName, String version,
+      List<String> endpoints, Class<?> schemaIntfCls) {
+    ArrayList<MicroserviceInstance> microserviceInstances = new ArrayList<>();
+    for (String endpoint : endpoints) {
+      MicroserviceInstance instance = new MicroserviceInstance();
+      instance.setEndpoints(Collections.singletonList(endpoint));
+      microserviceInstances.add(instance);
+    }
+
+    registerMicroserviceMapping(microserviceName, version, microserviceInstances, schemaIntfCls);
   }
 
   public static String getPublishAddress() {

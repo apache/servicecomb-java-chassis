@@ -39,7 +39,7 @@ import org.apache.servicecomb.it.extend.engine.ITSCBRestTemplate;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
 import org.apache.servicecomb.provider.springmvc.reference.async.CseAsyncRestTemplate;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -69,20 +69,18 @@ public class Test3rdPartyInvocation {
   public static void beforeClass() {
     String endpoint =
         ((ITSCBRestTemplate) consumersJaxrs.getSCBRestTemplate()).getAddress(Const.RESTFUL);
-    RegistryUtils.getServiceRegistry()
-        .registerMicroserviceMappingByEndpoints(
-            THIRD_PARTY_MICROSERVICE_NAME, "1.2.1",
-            Collections.singletonList(endpoint),
-            DataTypeJaxrsSchemaIntf.class);
+    RegistrationManager.INSTANCE.registerMicroserviceMappingByEndpoints(
+        THIRD_PARTY_MICROSERVICE_NAME, "1.2.1",
+        Collections.singletonList(endpoint),
+        DataTypeJaxrsSchemaIntf.class);
 
     MicroserviceInstance instance = new MicroserviceInstance();
     instance.setEndpoints(Collections.singletonList(endpoint));
-    RegistryUtils.getServiceRegistry()
-        .registerMicroserviceMapping(
-            ASYNC_THIRD_PARTY_MICROSERVICE_NAME, "1.1.1",
-            Collections.singletonList(instance),
-            DataTypeJaxrsSchemaAsyncIntf.class
-        );
+    RegistrationManager.INSTANCE.registerMicroserviceMapping(
+        ASYNC_THIRD_PARTY_MICROSERVICE_NAME, "1.1.1",
+        Collections.singletonList(instance),
+        DataTypeJaxrsSchemaAsyncIntf.class
+    );
 
     dataTypeJaxrsSchema = Invoker.createProxy(
         THIRD_PARTY_MICROSERVICE_NAME, THIRD_PARTY_MICROSERVICE_NAME, DataTypeJaxrsSchemaIntf.class);

@@ -123,16 +123,4 @@ public class EmptyMockServiceRegistry implements ServiceRegistry {
   public Microservice getAggregatedRemoteMicroservice(String microserviceId) {
     return null;
   }
-
-  @Override
-  public void registerMicroserviceMapping(String microserviceName, String version, List<MicroserviceInstance> instances,
-      Class<?> schemaIntfCls) {
-
-  }
-
-  @Override
-  public void registerMicroserviceMappingByEndpoints(String microserviceName, String version, List<String> endpoints,
-      Class<?> schemaIntfCls) {
-
-  }
 }
