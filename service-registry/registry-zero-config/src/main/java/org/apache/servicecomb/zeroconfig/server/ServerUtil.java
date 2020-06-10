@@ -172,57 +172,36 @@ public class ServerUtil {
     return map;
   }
 
+  private static void initMulticastSocket() throws IOException {
+    multicastSocket = new MulticastSocket(PORT);
+    group = InetAddress.getByName(GROUP);
+    multicastSocket.joinGroup(group); // need to join the group to be able to receive the data
+  }
+
   private static void startListenerForRegisterUnregisterEvent() {
     try {
       byte[] buffer = new byte[DATA_PACKET_BUFFER_SIZE];
-      multicastSocket = new MulticastSocket(PORT);
-      group = InetAddress.getByName(GROUP);
-      multicastSocket.joinGroup(group); // need to join the group to be able to receive the data
-
+      initMulticastSocket();
       while (true) {
         DatagramPacket receivePacketBuffer = new DatagramPacket(buffer, buffer.length);
-        multicastSocket.receive(receivePacketBuffer);
-        int receivePacketBufferLength = receivePacketBuffer.getLength();
-        if (receivePacketBufferLength > 0) {
-          String receivedPacketString = new String(receivePacketBuffer.getData(), 0,
-              receivePacketBufferLength, ENCODE).trim();
-
-          if (receivedPacketString.length() < 2
-              || !receivedPacketString.startsWith(MAP_STRING_LEFT) || !receivedPacketString
-              .endsWith(MAP_STRING_RIGHT)) {
-            LOGGER.error("Wrong format of the input received string: {}", receivedPacketString);
-            continue;
+        try {
+          multicastSocket.receive(receivePacketBuffer);
+        } catch (Throwable t) {
+          LOGGER.error("Caught error when receiving the data packet", t.getMessage());
+          if (multicastSocket.isClosed()) {
+            LOGGER.info("MulticastSocket is closed. Going to restart it.");
+            initMulticastSocket();
           }
-
-          Map<String, String> receivedStringMap = getMapFromString(receivedPacketString);
-          String event = receivedStringMap.get(EVENT);
-          if (StringUtils.isEmpty(event)) {
-            LOGGER.warn("Received event is null or doesn't have event type. {}", receivedStringMap);
-            continue;
-          }
-
-          if (event.equals(REGISTER_EVENT)) {
-            LOGGER.info("Received REGISTER event{}", receivedStringMap);
-            zeroConfigRegistryService.registerMicroserviceInstance(receivedStringMap);
-          } else if (event.equals(UNREGISTER_EVENT)) {
-            LOGGER.info("Received UNREGISTER event{}", receivedStringMap);
-            zeroConfigRegistryService.unregisterMicroserviceInstance(receivedStringMap);
-          } else if (event.equals(HEARTBEAT_EVENT)) {
-            // check if received event is for service instance itself
-            if (isSelfServiceInstance(receivedStringMap)) {
-              continue;
-            }
-            zeroConfigRegistryService.heartbeat(receivedStringMap);
-          } else {
-            LOGGER.error("Unrecognized event type. event: {}", event);
-          }
+          continue;
         }
-      }
 
+        String receivedEventString = new String(receivePacketBuffer.getData(), 0,
+            receivePacketBuffer.getLength(), ENCODE).trim();
+        handleReceivedEvent(receivedEventString);
+      }
     } catch (IOException e) {
-      //failed to create MulticastSocket, the PORT might have been occupied
-      LOGGER.error(
-          "Failed to create MulticastSocket object for receiving register/unregister event" + e);
+      throw new IllegalStateException(
+          "Failed to create MulticastSocket object. Zero-Config init failed! ", e);
     } finally {
       if (multicastSocket != null) {
         try {
@@ -234,6 +213,35 @@ public class ServerUtil {
         }
       }
     }
+  }
+
+  private static void handleReceivedEvent(String receivedString) {
+    if (receivedString.length() < 2
+        || !receivedString.startsWith(MAP_STRING_LEFT) || !receivedString
+        .endsWith(MAP_STRING_RIGHT)) {
+      LOGGER.warn("Wrong format of the received Event string. {}", receivedString);
+      return;
+    }
+
+    Map<String, String> receivedStringMap = getMapFromString(receivedString);
+    String event = receivedStringMap.get(EVENT);
+    if (StringUtils.isEmpty(event)) {
+      LOGGER.warn("There is no Event property defined. {}", receivedStringMap);
+      return;
+    }
+
+    if (event.equals(REGISTER_EVENT)) {
+      LOGGER.info("Received REGISTER event{}", receivedStringMap);
+      zeroConfigRegistryService.registerMicroserviceInstance(receivedStringMap);
+    } else if (event.equals(UNREGISTER_EVENT)) {
+      LOGGER.info("Received UNREGISTER event{}", receivedStringMap);
+      zeroConfigRegistryService.unregisterMicroserviceInstance(receivedStringMap);
+    } else if (event.equals(HEARTBEAT_EVENT) && !isSelfServiceInstance(receivedStringMap)) {
+      zeroConfigRegistryService.heartbeat(receivedStringMap);
+    } else {
+      LOGGER.error("Unrecognized event type. event: {}", event);
+    }
+    
   }
 
   private static boolean isSelfServiceInstance(Map<String, String> receivedStringMap) {
