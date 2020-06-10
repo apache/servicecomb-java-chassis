@@ -21,14 +21,15 @@ import java.util.Arrays;
 
 import org.apache.servicecomb.foundation.test.scaffolding.log.LogCollector;
 import org.apache.servicecomb.registry.DiscoveryManager;
+import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.MicroserviceKey;
+import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
+import org.apache.servicecomb.registry.api.event.task.RecoveryEvent;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersion;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
-import org.apache.servicecomb.registry.api.event.task.RecoveryEvent;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -141,7 +142,8 @@ public class TestConsumers extends TestRegistryBase {
   @Test
   public void registryMicroserviceMapping() {
     MicroserviceInstance microserviceInstance = new MicroserviceInstance();
-    serviceRegistry.registerMicroserviceMapping("3rd", "1.0.0", Arrays.asList(microserviceInstance), Hello.class);
+    RegistrationManager.INSTANCE
+        .registerMicroserviceMapping("3rd", "1.0.0", Arrays.asList(microserviceInstance), Hello.class);
 
     MicroserviceVersionRule microserviceVersionRule = appManager.getOrCreateMicroserviceVersionRule(appId, "3rd", "0+");
     Assert.assertThat(microserviceVersionRule.getInstances().values(), Matchers.contains(microserviceInstance));
@@ -149,7 +151,7 @@ public class TestConsumers extends TestRegistryBase {
 
   @Test
   public void registryMicroserviceMappingByEndpoints() {
-    serviceRegistry.registerMicroserviceMappingByEndpoints(
+    RegistrationManager.INSTANCE.registerMicroserviceMappingByEndpoints(
         "3rd",
         "1.0.0",
         Arrays.asList("cse://127.0.0.1:8080", "cse://127.0.0.1:8081"),

@@ -23,10 +23,11 @@ import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.testing.MockClock;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.registry.DiscoveryManager;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
+import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersionRule;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.diagnosis.Status;
 import org.apache.servicecomb.serviceregistry.registry.LocalServiceRegistryFactory;
 import org.junit.After;
@@ -94,7 +95,7 @@ public class TestInstanceCacheCheckerWithoutMock {
   @Test
   public void check_StaticMicroservice() {
     microserviceName = appId + ":" + microserviceName;
-    serviceRegistry.registerMicroserviceMappingByEndpoints(microserviceName,
+    RegistrationManager.INSTANCE.registerMicroserviceMappingByEndpoints(microserviceName,
         "1",
         Arrays.asList("rest://localhost:8080"),
         ThirdPartyServiceForUT.class);
