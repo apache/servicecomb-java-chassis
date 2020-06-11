@@ -19,23 +19,11 @@ package org.apache.servicecomb.core.bootup;
 
 import org.apache.servicecomb.registry.RegistrationManager;
 
-import io.vertx.core.spi.json.JsonCodec;
-
 public class ServiceInformationCollector implements BootUpInformationCollector {
 
   @Override
   public String collect() {
-    return "App ID: " + RegistrationManager.INSTANCE.getMicroservice().getAppId()
-        + "\n" + "Service Name: " + RegistrationManager.INSTANCE.getMicroservice().getServiceName()
-        + "\n" + "Version: " + RegistrationManager.INSTANCE.getMicroservice().getVersion()
-        + "\n" + "Environment: " + RegistrationManager.INSTANCE.getMicroservice().getEnvironment()
-        + "\n" + "Service ID: " + RegistrationManager.INSTANCE.getMicroserviceInstance().getServiceId()
-        + "\n" + "Instance ID: " + RegistrationManager.INSTANCE.getMicroserviceInstance().getInstanceId()
-        + "\n" + "Endpoints: " + getEndpoints();
-  }
-
-  private String getEndpoints() {
-    return JsonCodec.INSTANCE.toString(RegistrationManager.INSTANCE.getMicroserviceInstance().getEndpoints());
+    return RegistrationManager.INSTANCE.info();
   }
 
   @Override

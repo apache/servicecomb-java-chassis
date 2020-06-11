@@ -115,9 +115,6 @@ public class ZeroConfigClient {
 
   public boolean register() {
     Map<String, String> data = prepareRegisterData();
-    if (data == null || data.isEmpty()) {
-      return false;
-    }
     String serviceInstanceId = doRegister(data);
     return StringUtils.isNotEmpty(serviceInstanceId);
   }

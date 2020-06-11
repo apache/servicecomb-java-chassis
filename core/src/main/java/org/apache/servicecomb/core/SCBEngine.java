@@ -55,10 +55,10 @@ import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.RegistrationManager;
+import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
-import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
 import org.apache.servicecomb.registry.swagger.SwaggerLoader;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -582,14 +582,13 @@ public class SCBEngine {
 
     @Subscribe
     @EnableExceptionPropagation
-    public void afterRegistryInstance(MicroserviceInstanceRegisteredEvent microserviceInstanceRegisteredEvent) {
-      LOGGER.info("receive MicroserviceInstanceRegisteredEvent event, check instance Id...");
-
-      if (!StringUtils.isEmpty(RegistrationManager.INSTANCE.getMicroserviceInstance().getInstanceId())) {
+    public void afterRegistryInstance(MicroserviceInstanceRegisteredEvent event) {
+      if (event.isRegistrationManager()) {
         LOGGER.info("instance registry succeeds for the first time, will send AFTER_REGISTRY event.");
         engine.setStatus(SCBStatus.UP);
         engine.triggerEvent(EventType.AFTER_REGISTRY);
         EventManager.unregister(this);
+        // keep this message to be WARN, used to detect service ready. 
         LOGGER.warn("ServiceComb is ready.");
       }
     }

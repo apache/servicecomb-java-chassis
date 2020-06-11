@@ -300,7 +300,13 @@ public final class RegistryUtils {
       if (instanceRegisterCounter.decrementAndGet() > 0) {
         return;
       }
-      EventManager.getEventBus().post(new MicroserviceInstanceRegisteredEvent());
+
+      // for simplicity , only send the last one event. can do it better, maybe.
+      EventManager.getEventBus().post(new MicroserviceInstanceRegisteredEvent(
+          ServiceCenterRegistration.NAME,
+          serviceRegistry.getMicroserviceInstance().getInstanceId(),
+          false
+      ));
     }
   }
 }

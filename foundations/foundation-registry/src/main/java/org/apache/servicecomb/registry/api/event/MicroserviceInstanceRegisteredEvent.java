@@ -21,5 +21,29 @@ package org.apache.servicecomb.registry.api.event;
  * when registration is ready, should post this event.
  */
 public class MicroserviceInstanceRegisteredEvent {
+  private String registrationName;
 
+  private String instanceId;
+
+  // If this event is sent by RegistrationManager, which means all Registration are successful.
+  private boolean registrationManager;
+
+  public MicroserviceInstanceRegisteredEvent(String registrationName, String instanceId,
+      boolean registrationManager) {
+    this.registrationName = registrationName;
+    this.instanceId = instanceId;
+    this.registrationManager = registrationManager;
+  }
+
+  public String getInstanceId() {
+    return instanceId;
+  }
+
+  public String getRegistrationName() {
+    return registrationName;
+  }
+
+  public boolean isRegistrationManager() {
+    return registrationManager;
+  }
 }

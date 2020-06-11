@@ -24,13 +24,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.registry.api.Registration;
+import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
 import org.apache.servicecomb.registry.api.registry.BasePath;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
@@ -42,7 +46,10 @@ import org.apache.servicecomb.registry.swagger.SwaggerLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.eventbus.Subscribe;
 import com.netflix.config.DynamicPropertyFactory;
+
+import io.vertx.core.spi.json.JsonCodec;
 
 public class RegistrationManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(RegistrationManager.class);
@@ -115,6 +122,7 @@ public class RegistrationManager {
   }
 
   public void run() {
+    EventManager.getEventBus().register(new AfterServiceInstanceRegistryHandler(registrationList.size()));
     registrationList.forEach(registration -> registration.run());
   }
 
@@ -272,5 +280,56 @@ public class RegistrationManager {
         .get();
     int publishPort = publishPortSetting == 0 ? ipPort.getPort() : publishPortSetting;
     return new IpPort(publicAddressSetting, publishPort);
+  }
+
+  public String info() {
+    StringBuilder result = new StringBuilder();
+    AtomicBoolean first = new AtomicBoolean(true);
+    registrationList.forEach(registration -> {
+      if (first.getAndSet(false)) {
+        result.append("App ID: " + registration.getAppId() + "\n");
+        result.append("Service Name: " + registration.getMicroservice().getServiceName() + "\n");
+        result.append("Version: " + registration.getMicroservice().getVersion() + "\n");
+        result.append("Environment: " + registration.getMicroservice().getEnvironment() + "\n");
+        result.append("Endpoints: " + getEndpoints(registration.getMicroserviceInstance().getEndpoints()) + "\n");
+        result.append("Registration implementations:\n");
+      }
+
+      result.append("\tname:" + registration.name() + "\n");
+      result.append("\t\tService ID: " + registration.getMicroservice().getServiceId() + "\n");
+      result.append("\t\tInstance ID: " + registration.getMicroserviceInstance().getInstanceId() + "\n");
+    });
+    return result.toString();
+  }
+
+  private String getEndpoints(List<String> endpoints) {
+    return JsonCodec.INSTANCE.toString(endpoints);
+  }
+
+  public static class AfterServiceInstanceRegistryHandler {
+    private AtomicInteger instanceRegisterCounter;
+
+    AfterServiceInstanceRegistryHandler(int counter) {
+      instanceRegisterCounter = new AtomicInteger(counter);
+    }
+
+    @Subscribe
+    public void afterRegistryInstance(MicroserviceInstanceRegisteredEvent event) {
+      LOGGER.info("receive MicroserviceInstanceRegisteredEvent event, registration={}, instance id={}",
+          event.getRegistrationName(),
+          event.getInstanceId());
+
+      if (instanceRegisterCounter.decrementAndGet() > 0) {
+        return;
+      }
+
+      EventManager.unregister(this);
+
+      EventManager.getEventBus().post(new MicroserviceInstanceRegisteredEvent(
+          "Registration Manager",
+          null,
+          true
+      ));
+    }
   }
 }

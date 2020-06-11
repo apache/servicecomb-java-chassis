@@ -42,7 +42,8 @@ public class LocalRegistration implements Registration {
   @Override
   public void run() {
     localRegistrationStore.run();
-    EventManager.getEventBus().post(new MicroserviceInstanceRegisteredEvent());
+    EventManager.getEventBus().post(new MicroserviceInstanceRegisteredEvent(NAME,
+        localRegistrationStore.getSelfMicroserviceInstance().getInstanceId(), false));
   }
 
   @Override
