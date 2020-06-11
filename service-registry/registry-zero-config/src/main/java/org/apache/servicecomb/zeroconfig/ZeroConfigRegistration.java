@@ -21,7 +21,9 @@ import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.ORDE
 
 import java.util.Collection;
 
+import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.registry.api.Registration;
+import org.apache.servicecomb.registry.api.event.MicroserviceInstanceRegisteredEvent;
 import org.apache.servicecomb.registry.api.registry.BasePath;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
@@ -63,6 +65,12 @@ public class ZeroConfigRegistration implements Registration {
 
     if (!registerResult) {
       LOGGER.error("Failed to Register Service Instance in Zero-Config mode");
+    } else {
+      EventManager.getEventBus().post(new MicroserviceInstanceRegisteredEvent(
+          NAME,
+          getMicroserviceInstance().getInstanceId(),
+          false
+      ));
     }
   }
 
