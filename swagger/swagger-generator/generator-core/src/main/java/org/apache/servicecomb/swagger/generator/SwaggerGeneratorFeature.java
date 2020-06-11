@@ -48,15 +48,19 @@ public class SwaggerGeneratorFeature {
     return extJavaClassInVendor;
   }
 
-  public void setExtJavaClassInVendor(boolean extJavaClassInVendor) {
+  public SwaggerGeneratorFeature setExtJavaClassInVendor(boolean extJavaClassInVendor) {
     this.extJavaClassInVendor = extJavaClassInVendor;
+
+    return this;
   }
 
   public boolean isExtJavaInterfaceInVendor() {
     return extJavaInterfaceInVendor;
   }
 
-  public void setExtJavaInterfaceInVendor(boolean extJavaInterfaceInVendor) {
+  public SwaggerGeneratorFeature setExtJavaInterfaceInVendor(boolean extJavaInterfaceInVendor) {
     this.extJavaInterfaceInVendor = extJavaInterfaceInVendor;
+
+    return this;
   }
 }

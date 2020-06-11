@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.foundation.common.net;
+package org.apache.servicecomb.core.invocation.endpoint;
 
-import static org.apache.servicecomb.foundation.common.net.EndpointUtils.formatFromUri;
+import static org.apache.servicecomb.core.invocation.endpoint.EndpointUtils.formatFromUri;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Nested;

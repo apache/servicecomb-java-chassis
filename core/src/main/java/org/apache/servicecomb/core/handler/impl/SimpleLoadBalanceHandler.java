@@ -54,6 +54,11 @@ public class SimpleLoadBalanceHandler implements Handler {
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    if (invocation.getEndpoint() != null) {
+      invocation.next(asyncResp);
+      return;
+    }
+
     DiscoveryContext context = new DiscoveryContext();
     context.setInputParameters(invocation);
     VersionedCache endpointsVersionedCache = discoveryTree.discovery(context,

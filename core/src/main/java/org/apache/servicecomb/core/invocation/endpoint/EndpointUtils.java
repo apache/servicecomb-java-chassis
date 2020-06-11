@@ -14,14 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicecomb.foundation.common.net;
+package org.apache.servicecomb.core.invocation.endpoint;
 
 import static com.google.common.collect.ImmutableMap.of;
 
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
 
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.servicecomb.core.Endpoint;
+import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.Transport;
+import org.apache.servicecomb.core.exception.Exceptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <pre>
@@ -36,6 +43,8 @@ import org.apache.http.client.utils.URIBuilder;
  * </pre>
  **/
 public final class EndpointUtils {
+  private static final Logger LOGGER = LoggerFactory.getLogger(EndpointUtils.class);
+
   private static final String HTTP = "http";
 
   private static final String HTTPS = "https";
@@ -72,6 +81,22 @@ public final class EndpointUtils {
   );
 
   private EndpointUtils() {
+  }
+
+  /**
+   *
+   * @param uriEndpoint eg: rest://xxx?sslEnabled=true
+   * @return Endpoint object
+   */
+  public static Endpoint parse(String uriEndpoint) {
+    URI uri = URI.create(uriEndpoint);
+    Transport transport = SCBEngine.getInstance().getTransportManager().findTransport(uri.getScheme());
+    if (transport == null) {
+      LOGGER.error("not deployed transport, uri={}.", uriEndpoint);
+      throw Exceptions.genericConsumer("the endpoint's trnasport is not found.");
+    }
+
+    return new Endpoint(transport, uriEndpoint);
   }
 
   public static String formatFromUri(String inputUri) {

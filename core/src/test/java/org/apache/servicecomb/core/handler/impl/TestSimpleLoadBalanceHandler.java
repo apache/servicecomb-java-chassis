@@ -68,6 +68,8 @@ public class TestSimpleLoadBalanceHandler {
         result = Collections.emptyList();
         invocation.getConfigTransportName();
         result = "";
+        invocation.getEndpoint();
+        result = null;
       }
     };
 
