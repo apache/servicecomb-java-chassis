@@ -15,23 +15,33 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-demo-zeroconfig-schemadiscovery-registry-client:
-  - id: "001"
-    version: "0.0.2"
-    appid: demo-zeroconfig-schemadiscovery-registry
-    schemaIds:
-      - ClientServerEndpoint
-      - SchemaDiscoveryEndpoint
-    instances:
-      - endpoints:
-          - rest://localhost:8082
-demo-zeroconfig-schemadiscovery-registry-edge:
-  - id: "002"
-    version: "0.0.2"
-    appid: demo-zeroconfig-schemadiscovery-registry
-    schemaIds:
-      - ClientServerEndpoint
-      - SchemaDiscoveryEndpoint
-    instances:
-      - endpoints:
-          - rest://localhost:8888
+server:
+  port: 8888
+
+# java-chassis configurations
+
+APPLICATION_ID: demo-zeroconfig-schemadiscovery-registry
+service_description:
+  name: demo-zeroconfig-schemadiscovery-registry-edge
+  version: 0.0.2
+servicecomb:
+  rest:
+    address: 0.0.0.0:8888
+  handler:
+    chain:
+      Consumer:
+        default: loadbalance
+  http:
+    dispatcher:
+      edge:
+        default:
+          enabled: false
+        url:
+          enabled: true
+          pattern: /(.*)
+          mappings:
+            client:
+              prefixSegmentCount: 0
+              path: "/register/url/prefix/.*"
+              microserviceName: demo-zeroconfig-schemadiscovery-registry-client
+              versionRule: 0+

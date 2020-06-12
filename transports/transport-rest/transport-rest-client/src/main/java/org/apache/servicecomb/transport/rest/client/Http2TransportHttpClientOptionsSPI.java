@@ -43,6 +43,11 @@ public class Http2TransportHttpClientOptionsSPI extends HttpTransportHttpClientO
   }
 
   @Override
+  public String getWorkerPoolName() {
+    return "pool-transport-client-http2";
+  }
+
+  @Override
   public boolean isUseAlpn() {
     return TransportClientConfig.getUseAlpn();
   }

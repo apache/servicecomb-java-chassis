@@ -1,0 +1,39 @@
+---
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "swagger definition for org.apache.servicecomb.demo.zeroconfig.client.ClientServerEndpoint"
+  x-java-interface: "gen.swagger.ClientServerEndpointIntf"
+basePath: "/register/url/prefix"
+schemes:
+  - "http"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+paths:
+  /getName:
+    get:
+      operationId: "getName"
+      parameters:
+        - name: "name"
+          in: "query"
+          required: true
+          type: "string"
+      responses:
+        "200":
+          description: "response of 200"
+          schema:
+            type: "string"
+  /getRegisteredMicroservice:
+    get:
+      operationId: "getRegisteredMicroservice"
+      parameters: []
+      responses:
+        "200":
+          description: "response of 200"
+          schema:
+            type: "array"
+            items:
+              type: "string"
+            uniqueItems: true

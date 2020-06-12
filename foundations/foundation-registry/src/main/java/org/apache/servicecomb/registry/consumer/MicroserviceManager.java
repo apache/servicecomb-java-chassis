@@ -17,14 +17,16 @@
 
 package org.apache.servicecomb.registry.consumer;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.registry.api.event.task.SafeModeChangeEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.vertx.core.Vertx;
 
 public class MicroserviceManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(MicroserviceManager.class);
@@ -67,6 +69,33 @@ public class MicroserviceManager {
     tryRemoveInvalidMicroservice(microserviceVersions);
 
     return microserviceVersions;
+  }
+
+  public CompletableFuture<MicroserviceVersions> getOrCreateMicroserviceVersionsAsync(String microserviceName) {
+    CompletableFuture<MicroserviceVersions> result = new CompletableFuture<>();
+    MicroserviceVersions microserviceVersions = versionsByName.get(microserviceName);
+    if (microserviceVersions == null) {
+      if (Vertx.currentContext() == null) {
+        // not in event-loop, execute in current thread
+        result.complete(getOrCreateMicroserviceVersions(microserviceName));
+      } else {
+        // executing blocking code in event-loop
+        Vertx.currentContext().<MicroserviceVersions>executeBlocking(blockingCodeHandler -> {
+          blockingCodeHandler.complete(getOrCreateMicroserviceVersions(microserviceName));
+        }, r -> {
+          if (r.failed()) {
+            result.completeExceptionally(r.cause());
+          } else {
+            result.complete(r.result());
+          }
+        });
+      }
+    } else {
+      result.complete(microserviceVersions);
+      tryRemoveInvalidMicroservice(microserviceVersions);
+    }
+
+    return result;
   }
 
   private void tryRemoveInvalidMicroservice(MicroserviceVersions microserviceVersions) {
