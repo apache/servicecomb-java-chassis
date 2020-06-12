@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.core.invocation.endpoint.EndpointUtils;
 import org.apache.servicecomb.foundation.common.base.ServiceCombConstants;
 import org.apache.servicecomb.loadbalance.LoadbalanceHandler;
 import org.apache.servicecomb.provider.pojo.Invoker;
@@ -70,7 +71,8 @@ public class SchemaDiscovery implements Discovery {
 
       for (String endpoint : endpoints) {
         InvocationContext invocationContext = new InvocationContext();
-        invocationContext.addLocalContext(LoadbalanceHandler.SERVICECOMB_SERVER_ENDPOINT, endpoint);
+        invocationContext
+            .addLocalContext(LoadbalanceHandler.SERVICECOMB_SERVER_ENDPOINT, EndpointUtils.parse(endpoint));
         SchemaDiscoveryService schemaDiscoveryService = getOrCreateSchemaDiscoveryService();
         try {
           String schema = schemaDiscoveryService.getSchema(invocationContext, schemaId);

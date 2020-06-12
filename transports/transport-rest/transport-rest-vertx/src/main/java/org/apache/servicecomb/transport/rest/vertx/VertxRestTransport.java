@@ -76,6 +76,10 @@ public class VertxRestTransport extends AbstractTransport {
     json.put(ENDPOINT_KEY, getEndpoint());
     json.put(RestTransportClient.class.getName(), restClient);
     options.setConfig(json);
+    // now used not very frequently, hard code its options
+    options.setWorker(true);
+    options.setWorkerPoolName("pool-transport");
+    options.setWorkerPoolSize(2);
     return VertxUtils.blockDeploy(transportVertx, TransportConfig.getRestServerVerticle(), options);
   }
 

@@ -24,10 +24,10 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @SpringBootApplication
 @EnableServiceComb
-public class Application {
+public class ClientApplication {
 
   public static void main(final String[] args) throws Exception {
-    new SpringApplicationBuilder().sources(Application.class).web(WebApplicationType.SERVLET)
+    new SpringApplicationBuilder().sources(ClientApplication.class).web(WebApplicationType.SERVLET)
         .build().run(args);
   }
 }

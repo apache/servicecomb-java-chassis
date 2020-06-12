@@ -20,6 +20,7 @@ package org.apache.servicecomb.registry;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.apache.servicecomb.config.ConfigUtil;
@@ -128,6 +129,11 @@ public class DiscoveryManager {
       }
     }
     return result;
+  }
+
+  public CompletableFuture<MicroserviceVersions> getOrCreateMicroserviceVersionsAsync(String appId,
+      String microserviceName) {
+    return appManager.getOrCreateMicroserviceVersionsAsync(appId, microserviceName);
   }
 
   public MicroserviceVersions getOrCreateMicroserviceVersions(String appId, String microserviceName) {

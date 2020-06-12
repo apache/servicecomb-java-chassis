@@ -18,6 +18,7 @@
 package org.apache.servicecomb.demo.zeroconfig.tests;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
@@ -31,25 +32,51 @@ public class ServerTest implements CategorizedTestCase {
   RestTemplate template = RestTemplateBuilder.create();
 
   @Override
-  public void testRestTransport() {
+  public void testRestTransport() throws Exception {
     testServerGetName();
     testGetAllMicroservice();
   }
 
+  private void testServerGetName() throws Exception {
+    // invoke demo-zeroconfig-schemadiscovery-registry-client
+    TestMgr.check("world", template
+        .getForObject(
+            "cse://demo-zeroconfig-schemadiscovery-registry-client/register/url/prefix/getName?name=world",
+            String.class));
+    // invoke demo-zeroconfig-schemadiscovery-registry-edge
+    int thread = 32;
+    CountDownLatch latch = new CountDownLatch(thread);
+    for (int i = 0; i < thread; i++) {
+      new Thread(() -> {
+        for (int j = 0; j < 20; j++) {
+          try {
+            TestMgr.check("world", template
+                .getForObject(
+                    "cse://demo-zeroconfig-schemadiscovery-registry-edge/register/url/prefix/getName?name=world",
+                    String.class));
+          } catch (Exception e) {
+            TestMgr.failed("test failed", e);
+          }
+        }
+        latch.countDown();
+      }).start();
+    }
+
+    latch.await();
+  }
+
+  @SuppressWarnings("rawTypes")
   private void testGetAllMicroservice() {
     // invoke demo-zeroconfig-schemadiscovery-registry-client
     TestMgr.check("2", template
         .getForObject(
-            "cse://demo-zeroconfig-schemadiscovery-registry-client/register/url/prefix/getName?name=2",
-            String.class));
-  }
-
-  @SuppressWarnings("rawTypes")
-  private void testServerGetName() {
-    // invoke demo-zeroconfig-schemadiscovery-registry-client
+            "cse://demo-zeroconfig-schemadiscovery-registry-client"
+                + "/register/url/prefix/getRegisteredMicroservice",
+            List.class).size());
+    // invoke demo-zeroconfig-schemadiscovery-registry-edge
     TestMgr.check("2", template
         .getForObject(
-            "cse://demo-zeroconfig-schemadiscovery-registry-client"
+            "cse://demo-zeroconfig-schemadiscovery-registry-edge"
                 + "/register/url/prefix/getRegisteredMicroservice",
             List.class).size());
   }

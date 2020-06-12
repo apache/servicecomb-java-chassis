@@ -18,6 +18,7 @@
 package org.apache.servicecomb.registry.consumer;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.event.EventManager;
@@ -52,6 +53,12 @@ public class AppManager {
 
   public MicroserviceManager getOrCreateMicroserviceManager(String appId) {
     return apps.computeIfAbsent(appId, id -> new MicroserviceManager(this, appId));
+  }
+
+  public CompletableFuture<MicroserviceVersions> getOrCreateMicroserviceVersionsAsync(String appId
+      , String microserviceName) {
+    MicroserviceManager microserviceManager = getOrCreateMicroserviceManager(appId);
+    return microserviceManager.getOrCreateMicroserviceVersionsAsync(microserviceName);
   }
 
   public MicroserviceVersions getOrCreateMicroserviceVersions(String appId, String microserviceName) {

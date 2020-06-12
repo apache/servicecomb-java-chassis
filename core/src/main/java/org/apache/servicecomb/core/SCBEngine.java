@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicLong;
@@ -497,6 +498,32 @@ public class SCBEngine {
    */
   public MicroserviceReferenceConfig createMicroserviceReferenceConfig(String microserviceName) {
     return createMicroserviceReferenceConfig(microserviceName, null);
+  }
+
+  /**
+   * for edge, versionRule maybe controlled by url rule
+   * @param microserviceName hortName, or appId:shortName when invoke cross app
+   * @param versionRule if is empty, then use configuration value
+   * @return
+   */
+  public CompletableFuture<MicroserviceReferenceConfig> createMicroserviceReferenceConfigAsync(String microserviceName,
+      String versionRule) {
+    CompletableFuture<MicroserviceReferenceConfig> result = new CompletableFuture<>();
+
+    CompletableFuture<MicroserviceVersions> microserviceVersions = DiscoveryManager.INSTANCE
+        .getOrCreateMicroserviceVersionsAsync(parseAppId(microserviceName), microserviceName);
+
+    microserviceVersions.whenComplete((r, e) -> {
+      if (e != null) {
+        result.completeExceptionally(e);
+      } else {
+        ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = CoreMetaUtils
+            .getMicroserviceVersionsMeta(r);
+        result.complete(new MicroserviceReferenceConfig(microserviceVersionsMeta, versionRule));
+      }
+    });
+
+    return result;
   }
 
   /**

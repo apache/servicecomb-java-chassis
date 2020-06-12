@@ -18,6 +18,7 @@
 package org.apache.servicecomb.edge.core;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.common.rest.AbstractRestInvocation;
 import org.apache.servicecomb.common.rest.RestConst;
@@ -32,6 +33,7 @@ import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.VertxServerResponseToHttpServletResponse;
 
+import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.RoutingContext;
 
@@ -59,17 +61,25 @@ public class EdgeInvocation extends AbstractRestInvocation {
   }
 
   public void edgeInvoke() {
-    findMicroserviceVersionMeta();
-    findRestOperation(microserviceReferenceConfig.getLatestMicroserviceMeta());
-
-    scheduleInvocation();
+    Context currentContext = Vertx.currentContext();
+    findMicroserviceVersionMeta().whenComplete((r, e) -> {
+          // get back to the context so that registered handlers can work properly
+          currentContext.runOnContext((event) -> {
+            if (e != null) {
+              sendFailResponse(e);
+            } else {
+              microserviceReferenceConfig = r;
+              findRestOperation(microserviceReferenceConfig.getLatestMicroserviceMeta());
+              scheduleInvocation();
+            }
+          });
+        }
+    );
   }
 
-  protected void findMicroserviceVersionMeta() {
-    // if not present, should use configured value
-    String versionRule = chooseVersionRule();
-    microserviceReferenceConfig = SCBEngine.getInstance()
-        .createMicroserviceReferenceConfig(microserviceName, versionRule);
+  protected CompletableFuture<MicroserviceReferenceConfig> findMicroserviceVersionMeta() {
+    return SCBEngine.getInstance()
+        .createMicroserviceReferenceConfigAsync(microserviceName, chooseVersionRule());
   }
 
   public void setVersionRule(String versionRule) {
@@ -83,7 +93,7 @@ public class EdgeInvocation extends AbstractRestInvocation {
   //   v1->1.0.0-2.0.0
   //   v2->2.0.0-3.0.0
   // that means if a(1.x.x) bigger then b(1.y.y), then a compatible to b
-  //        but a(2.x.x) not compatible to b   
+  //        but a(2.x.x) not compatible to b
   protected String chooseVersionRule() {
     // this will use all instance of the microservice
     // and this required all new version compatible to old version

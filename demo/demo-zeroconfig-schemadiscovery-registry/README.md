@@ -10,8 +10,12 @@ This demo tests zeroconfig.
 
   run in docker, and find server instances through zeroconfig, find schemas through
   schema discovery
+
+* edge
+  run in docker, and find server instances through zeroconfig, find schemas through
+  schema discovery
   
 * tests
 
-  integration tests run in host machine, find client instances through local, 
+  integration tests run in host machine, find client/edge instances through local, 
   and schemas from schema discovery. 

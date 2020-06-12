@@ -29,15 +29,12 @@
   <packaging>pom</packaging>
   <modules>
     <module>demo-zeroconfig-schemadiscovery-registry-server</module>
+    <module>demo-zeroconfig-schemadiscovery-registry-edge</module>
     <module>demo-zeroconfig-schemadiscovery-registry-client</module>
     <module>demo-zeroconfig-schemadiscovery-registry-tests</module>
   </modules>
 
   <dependencies>
-    <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>java-chassis-spring-boot-starter-servlet</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>foundation-test-scaffolding</artifactId>
