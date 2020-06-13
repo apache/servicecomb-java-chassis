@@ -102,6 +102,29 @@
                       </ports>
                     </run>
                   </image>
+
+                  <image>
+                    <name>demo-zeroconfig-schemadiscovery-registry-edge:${project.version}</name>
+                    <alias>demo-zeroconfig-schemadiscovery-registry-edge</alias>
+                    <run>
+                      <env>
+                        <JAR_PATH>/maven/maven/demo-zeroconfig-schemadiscovery-registry-edge-${project.version}.jar
+                        </JAR_PATH>
+                      </env>
+                      <wait>
+                        <log>Service information is shown below</log>
+                        <tcp>
+                          <ports>
+                            <port>8888</port>
+                          </ports>
+                        </tcp>
+                        <time>120000</time>
+                      </wait>
+                      <ports>
+                        <port>8888:8888</port>
+                      </ports>
+                    </run>
+                  </image>
                 </images>
               </configuration>
               <executions>

@@ -70,8 +70,6 @@ public class ServiceRegistryConfig {
 
   public static final String WORKER_POOL_SIZE = "servicecomb.service.registry.client.workerPoolSize";
 
-  public static final String WORKER_POOL_NAME = "registry-vert.x-worker-thread";
-
   private String registryName = ServiceRegistry.DEFAULT_REGISTRY_NAME;
 
   private HttpVersion httpVersion;

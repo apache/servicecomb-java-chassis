@@ -44,7 +44,7 @@ public class Http2TransportHttpClientOptionsSPI extends HttpTransportHttpClientO
 
   @Override
   public String getWorkerPoolName() {
-    return "pool-transport-client-http2";
+    return "pool-worker-transport-client-http2";
   }
 
   @Override
