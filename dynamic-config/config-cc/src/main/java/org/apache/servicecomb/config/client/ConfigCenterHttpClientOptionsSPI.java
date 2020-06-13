@@ -77,7 +77,7 @@ public class ConfigCenterHttpClientOptionsSPI implements HttpClientOptionsSPI {
 
   @Override
   public String getWorkerPoolName() {
-    return null;
+    return "pool-worker-config-center-client";
   }
 
   @Override

@@ -75,7 +75,7 @@ public class ConfigKieHttpClientOptionsSPI implements HttpClientOptionsSPI {
 
   @Override
   public String getWorkerPoolName() {
-    return null;
+    return "pool-worker-kie-client";
   }
 
   @Override

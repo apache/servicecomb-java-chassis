@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.vertx.core.DeploymentOptions;
+import io.vertx.core.VertxOptions;
 
 public class VertxRestTransport extends AbstractTransport {
   private static final Logger LOGGER = LoggerFactory.getLogger(VertxRestTransport.class);
@@ -76,10 +77,8 @@ public class VertxRestTransport extends AbstractTransport {
     json.put(ENDPOINT_KEY, getEndpoint());
     json.put(RestTransportClient.class.getName(), restClient);
     options.setConfig(json);
-    // now used not very frequently, hard code its options
-    options.setWorker(true);
-    options.setWorkerPoolName("pool-transport");
-    options.setWorkerPoolSize(2);
+    options.setWorkerPoolName("pool-worker-transport");
+    options.setWorkerPoolSize(VertxOptions.DEFAULT_WORKER_POOL_SIZE);
     return VertxUtils.blockDeploy(transportVertx, TransportConfig.getRestServerVerticle(), options);
   }
 

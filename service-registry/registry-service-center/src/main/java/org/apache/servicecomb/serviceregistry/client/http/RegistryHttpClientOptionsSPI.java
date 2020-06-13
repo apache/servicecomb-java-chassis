@@ -80,7 +80,7 @@ public class RegistryHttpClientOptionsSPI implements HttpClientOptionsSPI {
 
   @Override
   public String getWorkerPoolName() {
-    return null;
+    return "pool-worker-service-center-client";
   }
 
   @Override

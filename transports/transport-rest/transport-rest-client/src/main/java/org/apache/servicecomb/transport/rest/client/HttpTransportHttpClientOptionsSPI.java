@@ -21,6 +21,7 @@ import org.apache.servicecomb.foundation.vertx.client.http.HttpClientOptionsSPI;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
 
+import io.vertx.core.VertxOptions;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpVersion;
 
@@ -72,17 +73,17 @@ public class HttpTransportHttpClientOptionsSPI implements HttpClientOptionsSPI {
 
   @Override
   public boolean isWorker() {
-    return true;
+    return false;
   }
 
   @Override
   public String getWorkerPoolName() {
-    return "pool-transport-client-http";
+    return "pool-worker-transport-client-http";
   }
 
   @Override
   public int getWorkerPoolSize() {
-    return 2;
+    return VertxOptions.DEFAULT_WORKER_POOL_SIZE;
   }
 
   @Override

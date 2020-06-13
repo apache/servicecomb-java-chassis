@@ -50,13 +50,13 @@ public class RegistryWatchHttpClientOptionsSPI extends RegistryHttpClientOptions
 
   @Override
   public String getWorkerPoolName() {
-    return ServiceRegistryConfig.WORKER_POOL_NAME;
+    return "pool-worker-service-center-watch";
   }
 
   @Override
   public int getWorkerPoolSize() {
     return DynamicPropertyFactory.getInstance()
-        .getIntProperty(ServiceRegistryConfig.WORKER_POOL_SIZE, 4).get();
+        .getIntProperty(ServiceRegistryConfig.WORKER_POOL_SIZE, 2).get();
   }
 
   @Override
