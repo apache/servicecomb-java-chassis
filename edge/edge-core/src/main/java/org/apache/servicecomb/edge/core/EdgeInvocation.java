@@ -68,9 +68,13 @@ public class EdgeInvocation extends AbstractRestInvocation {
             if (e != null) {
               sendFailResponse(e);
             } else {
-              microserviceReferenceConfig = r;
-              findRestOperation(microserviceReferenceConfig.getLatestMicroserviceMeta());
-              scheduleInvocation();
+              try {
+                microserviceReferenceConfig = r;
+                findRestOperation(microserviceReferenceConfig.getLatestMicroserviceMeta());
+                scheduleInvocation();
+              } catch (Throwable error) {
+                sendFailResponse(error);
+              }
             }
           });
         }
