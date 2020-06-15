@@ -30,10 +30,10 @@ import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
 import org.apache.servicecomb.core.provider.consumer.ReactiveResponseExecutor;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
+import org.apache.servicecomb.foundation.vertx.executor.VertxContextExecutor;
 import org.apache.servicecomb.foundation.vertx.http.VertxServerRequestToHttpServletRequest;
 import org.apache.servicecomb.foundation.vertx.http.VertxServerResponseToHttpServletResponse;
 
-import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 import io.vertx.ext.web.RoutingContext;
 
@@ -61,24 +61,19 @@ public class EdgeInvocation extends AbstractRestInvocation {
   }
 
   public void edgeInvoke() {
-    Context currentContext = Vertx.currentContext();
-    findMicroserviceVersionMeta().whenComplete((r, e) -> {
-          // get back to the context so that registered handlers can work properly
-          currentContext.runOnContext((event) -> {
-            if (e != null) {
-              sendFailResponse(e);
-            } else {
-              try {
-                microserviceReferenceConfig = r;
-                findRestOperation(microserviceReferenceConfig.getLatestMicroserviceMeta());
-                scheduleInvocation();
-              } catch (Throwable error) {
-                sendFailResponse(error);
-              }
-            }
-          });
+    findMicroserviceVersionMeta().whenCompleteAsync((r, e) -> {
+      if (e != null) {
+        sendFailResponse(e);
+      } else {
+        try {
+          microserviceReferenceConfig = r;
+          findRestOperation(microserviceReferenceConfig.getLatestMicroserviceMeta());
+          scheduleInvocation();
+        } catch (Throwable error) {
+          sendFailResponse(error);
         }
-    );
+      }
+    }, VertxContextExecutor.create(Vertx.currentContext()));
   }
 
   protected CompletableFuture<MicroserviceReferenceConfig> findMicroserviceVersionMeta() {

@@ -44,6 +44,7 @@ public class ServerTest implements CategorizedTestCase {
             "cse://demo-zeroconfig-schemadiscovery-registry-client/register/url/prefix/getName?name=world",
             String.class));
     // invoke demo-zeroconfig-schemadiscovery-registry-edge
+    // create many threads to test event-loop not blocking
     int thread = 32;
     CountDownLatch latch = new CountDownLatch(thread);
     for (int i = 0; i < thread; i++) {
