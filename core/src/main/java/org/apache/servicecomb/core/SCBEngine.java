@@ -508,22 +508,13 @@ public class SCBEngine {
    */
   public CompletableFuture<MicroserviceReferenceConfig> createMicroserviceReferenceConfigAsync(String microserviceName,
       String versionRule) {
-    CompletableFuture<MicroserviceReferenceConfig> result = new CompletableFuture<>();
-
-    CompletableFuture<MicroserviceVersions> microserviceVersions = DiscoveryManager.INSTANCE
-        .getOrCreateMicroserviceVersionsAsync(parseAppId(microserviceName), microserviceName);
-
-    microserviceVersions.whenComplete((r, e) -> {
-      if (e != null) {
-        result.completeExceptionally(e);
-      } else {
-        ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = CoreMetaUtils
-            .getMicroserviceVersionsMeta(r);
-        result.complete(new MicroserviceReferenceConfig(microserviceVersionsMeta, versionRule));
-      }
-    });
-
-    return result;
+    return DiscoveryManager.INSTANCE
+        .getOrCreateMicroserviceVersionsAsync(parseAppId(microserviceName), microserviceName)
+        .thenApply(versions -> {
+          ConsumerMicroserviceVersionsMeta microserviceVersionsMeta = CoreMetaUtils
+              .getMicroserviceVersionsMeta(versions);
+          return new MicroserviceReferenceConfig(microserviceVersionsMeta, versionRule);
+        });
   }
 
   /**

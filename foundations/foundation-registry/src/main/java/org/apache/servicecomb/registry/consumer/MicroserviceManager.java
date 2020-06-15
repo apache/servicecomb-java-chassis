@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.foundation.vertx.executor.SinglePoolBlockingExecutor;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.registry.api.event.task.SafeModeChangeEvent;
 import org.slf4j.Logger;
@@ -72,30 +73,21 @@ public class MicroserviceManager {
   }
 
   public CompletableFuture<MicroserviceVersions> getOrCreateMicroserviceVersionsAsync(String microserviceName) {
-    CompletableFuture<MicroserviceVersions> result = new CompletableFuture<>();
     MicroserviceVersions microserviceVersions = versionsByName.get(microserviceName);
     if (microserviceVersions == null) {
       if (Vertx.currentContext() == null) {
         // not in event-loop, execute in current thread
-        result.complete(getOrCreateMicroserviceVersions(microserviceName));
+        return CompletableFuture.completedFuture(getOrCreateMicroserviceVersions(microserviceName));
       } else {
-        // executing blocking code in event-loop
-        Vertx.currentContext().<MicroserviceVersions>executeBlocking(blockingCodeHandler -> {
-          blockingCodeHandler.complete(getOrCreateMicroserviceVersions(microserviceName));
-        }, r -> {
-          if (r.failed()) {
-            result.completeExceptionally(r.cause());
-          } else {
-            result.complete(r.result());
-          }
-        });
+        // execute in an single thread pool to make sure make less requests to service center
+        return CompletableFuture.supplyAsync(() -> getOrCreateMicroserviceVersions(microserviceName),
+            SinglePoolBlockingExecutor.create());
       }
     } else {
-      result.complete(microserviceVersions);
+      // here do not need switch to another thread, can improve performance
       tryRemoveInvalidMicroservice(microserviceVersions);
+      return CompletableFuture.completedFuture(microserviceVersions);
     }
-
-    return result;
   }
 
   private void tryRemoveInvalidMicroservice(MicroserviceVersions microserviceVersions) {
