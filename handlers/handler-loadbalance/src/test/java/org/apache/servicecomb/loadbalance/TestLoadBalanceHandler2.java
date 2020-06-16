@@ -806,6 +806,9 @@ public class TestLoadBalanceHandler2 {
     }
     Assert.assertEquals("rest://localhost:9092", invocation.getEndpoint().getEndpoint());
 
+    // reset
+    invocation.setEndpoint(null);
+
     //success
     invocation.addLocalContext("scb-endpoint", "rest://127.0.0.1:8080?sslEnabled=true&protocol=http2");
     try {
@@ -814,6 +817,9 @@ public class TestLoadBalanceHandler2 {
 
     }
     Assert.assertEquals("rest://127.0.0.1:8080?sslEnabled=true&protocol=http2", invocation.getEndpoint().getEndpoint());
+
+    // reset
+    invocation.setEndpoint(null);
 
     //endpoint format is not correct
     invocation.addLocalContext("scb-endpoint", "127.0.0.1:8080");
@@ -824,6 +830,9 @@ public class TestLoadBalanceHandler2 {
       Assert.assertTrue(e.getMessage()
           .contains("Illegal character in scheme name"));
     }
+
+    // reset
+    invocation.setEndpoint(null);
 
     //transport is not find
     invocation.addLocalContext("scb-endpoint", "my://127.0.0.1:8080?sslEnabled=true&protocol=http2");

@@ -201,10 +201,9 @@ public class LoadbalanceHandler implements Handler {
       }
       response.handle(async);
     };
-    if (supportDefinedEndpoint) {
-      if (defineEndpointAndHandle(invocation, asyncResp)) {
-        return;
-      }
+
+    if (handleSuppliedEndpoint(invocation, asyncResp)) {
+      return;
     }
 
     String strategy = Configuration.INSTANCE.getRuleStrategyName(invocation.getMicroserviceName());
@@ -223,6 +222,22 @@ public class LoadbalanceHandler implements Handler {
     } else {
       sendWithRetry(invocation, asyncResp, loadBalancer);
     }
+  }
+
+  // user's can invoke a service by supplying target Endpoint.
+  // in this case, we do not using load balancer, and no stats of server calculated, no retrying.
+  private boolean handleSuppliedEndpoint(Invocation invocation,
+      AsyncResponse asyncResp) throws Exception {
+    if (invocation.getEndpoint() != null) {
+      invocation.next(asyncResp);
+      return true;
+    }
+
+    if (supportDefinedEndpoint) {
+      return defineEndpointAndHandle(invocation, asyncResp);
+    }
+
+    return false;
   }
 
   private Endpoint parseEndpoint(String endpointUri) throws Exception {

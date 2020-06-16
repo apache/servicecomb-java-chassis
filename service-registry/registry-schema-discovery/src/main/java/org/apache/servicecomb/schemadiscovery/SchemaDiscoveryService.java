@@ -17,10 +17,11 @@
 
 package org.apache.servicecomb.schemadiscovery;
 
+import org.apache.servicecomb.core.Endpoint;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 
 public interface SchemaDiscoveryService {
   String SCHEMA_ID = "SchemaDiscoveryEndpoint";
 
-  String getSchema(InvocationContext context, String schemaId);
+  String getSchema(Endpoint endpoint, String schemaId);
 }
