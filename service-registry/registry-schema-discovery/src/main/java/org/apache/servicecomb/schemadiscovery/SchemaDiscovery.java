@@ -23,13 +23,11 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.invocation.endpoint.EndpointUtils;
 import org.apache.servicecomb.foundation.common.base.ServiceCombConstants;
-import org.apache.servicecomb.loadbalance.LoadbalanceHandler;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.registry.api.Discovery;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
-import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,12 +68,9 @@ public class SchemaDiscovery implements Discovery {
       }
 
       for (String endpoint : endpoints) {
-        InvocationContext invocationContext = new InvocationContext();
-        invocationContext
-            .addLocalContext(LoadbalanceHandler.SERVICECOMB_SERVER_ENDPOINT, EndpointUtils.parse(endpoint));
         SchemaDiscoveryService schemaDiscoveryService = getOrCreateSchemaDiscoveryService();
         try {
-          String schema = schemaDiscoveryService.getSchema(invocationContext, schemaId);
+          String schema = schemaDiscoveryService.getSchema(EndpointUtils.parse(endpoint), schemaId);
           if (!StringUtils.isEmpty(schema)) {
             return schema;
           }
