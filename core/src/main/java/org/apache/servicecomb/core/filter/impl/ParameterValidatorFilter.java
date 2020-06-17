@@ -37,12 +37,19 @@ import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.hibernate.validator.HibernateValidator;
+import org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator;
+import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
+import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 @FilterMeta(name = "validator", invocationType = PRODUCER)
 public class ParameterValidatorFilter implements Filter {
   private static final Logger LOGGER = LoggerFactory.getLogger(ParameterValidatorFilter.class);
+
+  private static final String ENABLE_EL = "servicecomb.filters.validation.useResourceBundleMessageInterpolator";
 
   private final ExecutableValidator validator;
 
@@ -51,8 +58,20 @@ public class ParameterValidatorFilter implements Filter {
         Validation.byProvider(HibernateValidator.class)
             .configure()
             .propertyNodeNameProvider(new JacksonPropertyNodeNameProvider())
+            .messageInterpolator(messageInterpolator())
             .buildValidatorFactory();
     validator = factory.getValidator().forExecutables();
+  }
+
+  private AbstractMessageInterpolator messageInterpolator() {
+    if (useResourceBundleMessageInterpolator()) {
+      return new ResourceBundleMessageInterpolator();
+    }
+    return new ParameterMessageInterpolator();
+  }
+
+  private boolean useResourceBundleMessageInterpolator() {
+    return DynamicPropertyFactory.getInstance().getBooleanProperty(ENABLE_EL, false).get();
   }
 
   @Override
