@@ -96,7 +96,6 @@
     <servo.version>0.12.25</servo.version>
     <servlet-api.version>4.0.3</servlet-api.version>
     <activation.version>1.2.1</activation.version>
-    <jakarta.el.version>3.0.3</jakarta.el.version>
     <slf4j.version>1.7.26</slf4j.version>
     <snakeyaml.version>1.24</snakeyaml.version>
     <spectator.version>0.83.0</spectator.version>
@@ -565,11 +564,6 @@
         <groupId>com.sun.activation</groupId>
         <artifactId>jakarta.activation</artifactId>
         <version>${activation.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.glassfish</groupId>
-        <artifactId>jakarta.el</artifactId>
-        <version>${jakarta.el.version}</version>
       </dependency>
       <dependency>
         <groupId>javax.annotation</groupId>

@@ -28,6 +28,9 @@ import javax.validation.groups.Default;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.SwaggerInvocation;
 import org.apache.servicecomb.swagger.invocation.extension.ProducerInvokeExtension;
+import org.hibernate.validator.messageinterpolation.AbstractMessageInterpolator;
+import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
+import org.hibernate.validator.messageinterpolation.ResourceBundleMessageInterpolator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +40,13 @@ import com.netflix.config.DynamicPropertyFactory;
 public class ParameterValidator implements ProducerInvokeExtension {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ParameterValidator.class);
+
   private static final String PARAM_VALIDATION_ENABLED = "servicecomb.rest.parameter.validation.enabled";
+
+  private static final String ENABLE_EL = "servicecomb.filters.validation.useResourceBundleMessageInterpolator";
+
   private final DynamicBooleanProperty paramValidationEnabled = DynamicPropertyFactory.getInstance()
-          .getBooleanProperty(PARAM_VALIDATION_ENABLED, true);
+      .getBooleanProperty(PARAM_VALIDATION_ENABLED, true);
 
   public ParameterValidator() {
     paramValidationEnabled.addCallback(() -> {
@@ -54,25 +61,37 @@ public class ParameterValidator implements ProducerInvokeExtension {
   public <T> void beforeMethodInvoke(SwaggerInvocation invocation, SwaggerProducerOperation producerOperation,
       Object[] args)
       throws ConstraintViolationException {
-    if(paramValidationEnabled.get()){
+    if (paramValidationEnabled.get()) {
       if (null == executableValidator) {
         ValidatorFactory factory =
-                Validation.byDefaultProvider()
-                        .configure()
-                        .parameterNameProvider(new DefaultParameterNameProvider())
-                        .buildValidatorFactory();
+            Validation.byDefaultProvider()
+                .configure()
+                .parameterNameProvider(new DefaultParameterNameProvider())
+                .messageInterpolator(messageInterpolator())
+                .buildValidatorFactory();
         executableValidator = factory.getValidator().forExecutables();
       }
       Set<ConstraintViolation<Object>> violations =
-              executableValidator.validateParameters(producerOperation.getProducerInstance(),
-                      producerOperation.getProducerMethod(),
-                      args,
-                      Default.class);
+          executableValidator.validateParameters(producerOperation.getProducerInstance(),
+              producerOperation.getProducerMethod(),
+              args,
+              Default.class);
       if (violations.size() > 0) {
         LOGGER.warn("Parameter validation failed : " + violations.toString());
         throw new ConstraintViolationException(violations);
       }
     }
+  }
+
+  private AbstractMessageInterpolator messageInterpolator() {
+    if (useResourceBundleMessageInterpolator()) {
+      return new ResourceBundleMessageInterpolator();
+    }
+    return new ParameterMessageInterpolator();
+  }
+
+  private boolean useResourceBundleMessageInterpolator() {
+    return DynamicPropertyFactory.getInstance().getBooleanProperty(ENABLE_EL, false).get();
   }
 
   @Override
