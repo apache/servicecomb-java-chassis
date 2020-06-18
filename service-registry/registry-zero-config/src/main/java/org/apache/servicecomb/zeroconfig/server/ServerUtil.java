@@ -230,18 +230,23 @@ public class ServerUtil {
       return;
     }
 
-    if (event.equals(REGISTER_EVENT)) {
-      LOGGER.info("Received REGISTER event{}", receivedStringMap);
-      zeroConfigRegistryService.registerMicroserviceInstance(receivedStringMap);
-    } else if (event.equals(UNREGISTER_EVENT)) {
-      LOGGER.info("Received UNREGISTER event{}", receivedStringMap);
-      zeroConfigRegistryService.unregisterMicroserviceInstance(receivedStringMap);
-    } else if (event.equals(HEARTBEAT_EVENT) && !isSelfServiceInstance(receivedStringMap)) {
-      zeroConfigRegistryService.heartbeat(receivedStringMap);
-    } else {
-      LOGGER.error("Unrecognized event type. event: {}", event);
+    switch (event) {
+      case REGISTER_EVENT:
+        LOGGER.info("Received REGISTER event{}", receivedStringMap);
+        zeroConfigRegistryService.registerMicroserviceInstance(receivedStringMap);
+        break;
+      case UNREGISTER_EVENT:
+        LOGGER.info("Received UNREGISTER event{}", receivedStringMap);
+        zeroConfigRegistryService.unregisterMicroserviceInstance(receivedStringMap);
+        break;
+      case HEARTBEAT_EVENT:
+        if (!isSelfServiceInstance(receivedStringMap)) {
+          zeroConfigRegistryService.heartbeat(receivedStringMap);
+        }
+        break;
+      default:
+        LOGGER.error("Unrecognized event type. event: {}", event);
     }
-    
   }
 
   private static boolean isSelfServiceInstance(Map<String, String> receivedStringMap) {
