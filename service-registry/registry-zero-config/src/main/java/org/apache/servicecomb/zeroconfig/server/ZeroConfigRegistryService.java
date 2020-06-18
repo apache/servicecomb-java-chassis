@@ -52,8 +52,11 @@ public class ZeroConfigRegistryService {
       LOGGER.info("ServiceId: {}, instanceId: {} already exists", serviceId, instanceId);
     } else {
       // register a new instance for the service
-      LOGGER.info("Register a new instance for  serviceId: {}, instanceId: {}, status: {}, name: {}", serviceId,
-          instanceId, newServerMicroserviceInstance.getStatus(), newServerMicroserviceInstance.getServiceName());
+      LOGGER
+          .info("Register a new instance for  serviceId: {}, instanceId: {}, status: {}, name: {}",
+              serviceId,
+              instanceId, newServerMicroserviceInstance.getStatus(),
+              newServerMicroserviceInstance.getServiceName());
       innerInstanceMap.put(instanceId, newServerMicroserviceInstance);
     }
   }
@@ -116,6 +119,9 @@ public class ZeroConfigRegistryService {
       instance.setLastHeartbeatTimeStamp(Instant.now());
     } else {
       heartbeatEventMap.put(EVENT, REGISTER_EVENT);
+      LOGGER.info(
+          "Received HEARTBEAT event from serviceId: {}, instancdId: {} for the first time. Register it instead.",
+          serviceId, instanceId);
       this.registerMicroserviceInstance(heartbeatEventMap);
     }
   }
