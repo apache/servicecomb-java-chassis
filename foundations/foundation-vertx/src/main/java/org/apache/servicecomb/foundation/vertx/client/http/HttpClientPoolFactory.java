@@ -18,6 +18,8 @@
 package org.apache.servicecomb.foundation.vertx.client.http;
 
 import org.apache.servicecomb.foundation.vertx.client.ClientPoolFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.vertx.core.Context;
 import io.vertx.core.http.HttpClient;
@@ -25,6 +27,8 @@ import io.vertx.core.http.HttpClientOptions;
 
 // execute in vertx context
 public class HttpClientPoolFactory implements ClientPoolFactory<HttpClientWithContext> {
+  private static final Logger LOGGER = LoggerFactory.getLogger(HttpClientPoolFactory.class);
+
   private HttpClientOptions httpClientOptions;
 
   public HttpClientPoolFactory(HttpClientOptions httpClientOptions) {
@@ -34,7 +38,18 @@ public class HttpClientPoolFactory implements ClientPoolFactory<HttpClientWithCo
   @Override
   public HttpClientWithContext createClientPool(Context context) {
     HttpClient httpClient = context.owner().createHttpClient(httpClientOptions);
-
+    httpClient.connectionHandler(connection -> {
+      LOGGER.debug("http connection connected, local:{}, remote:{}.",
+          connection.localAddress(), connection.remoteAddress());
+      connection.closeHandler(v ->
+          LOGGER.debug("http connection closed, local:{}, remote:{}.",
+              connection.localAddress(), connection.remoteAddress())
+      );
+      connection.exceptionHandler(e ->
+          LOGGER.info("http connection exception, local:{}, remote:{}.",
+              connection.localAddress(), connection.remoteAddress(), e)
+      );
+    });
     return new HttpClientWithContext(httpClient, context);
   }
 }
