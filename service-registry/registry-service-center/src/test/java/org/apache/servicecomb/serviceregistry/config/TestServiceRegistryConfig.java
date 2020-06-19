@@ -56,7 +56,6 @@ public class TestServiceRegistryConfig {
     Assert.assertNotEquals(null, oConfig.getResendHeartBeatTimes());
     Assert.assertFalse(oConfig.isPreferIpAddress());
     Assert.assertTrue(oConfig.isWatch());
-    Assert.assertFalse(oConfig.isClientAuthEnabled());
     Assert.assertEquals(ServiceRegistryConfig.NO_TENANT, oConfig.getTenantName());
     Assert.assertNull(oConfig.getSecretKey());
     List<IpPort> ipPorts = oConfig.getIpPort();

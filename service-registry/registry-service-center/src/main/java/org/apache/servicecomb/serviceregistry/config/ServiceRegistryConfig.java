@@ -32,8 +32,6 @@ import io.vertx.core.http.HttpVersion;
 public class ServiceRegistryConfig {
   public static final ServiceRegistryConfig INSTANCE = buildFromConfiguration();
 
-  public static final int DEFAULT_TIMEOUT_IN_MS = 30000;
-
   public static final int DEFAULT_TIMEOUT_IN_SECONDS = 30;
 
   public static final int DEFAULT_REQUEST_TIMEOUT_IN_MS = 30000;
@@ -60,10 +58,6 @@ public class ServiceRegistryConfig {
 
   public static final String NO_DOMAIN = "default";
 
-  public static final String SSL_KEY = "sc.consumer";
-
-  public static final String PROXY_KEY = "sc.consumer";
-
   public static final String VERTICLE_INSTANCES = "servicecomb.service.registry.client.instances";
 
   public static final String EVENT_LOOP_POOL_SIZE = "servicecomb.service.registry.client.eventLoopPoolSize";
@@ -85,8 +79,6 @@ public class ServiceRegistryConfig {
 
   private int idleConnectionTimeout;
 
-  private int idleWatchTimeout;
-
   private int requestTimeout;
 
   //Set the timeout of the heartbeat request
@@ -105,8 +97,6 @@ public class ServiceRegistryConfig {
   private boolean preferIpAddress;
 
   private boolean watch;
-
-  private boolean clientAuthEnabled;
 
   private String registryApiVersion;
 
@@ -127,10 +117,6 @@ public class ServiceRegistryConfig {
   private String proxyUsername;
 
   private String proxyPasswd;
-
-  private String sslConfigTag = SSL_KEY;
-
-  private String proxyConfigTag = PROXY_KEY;
 
   private List<AuthHeaderProvider> authHeaderProviders;
 
@@ -216,15 +202,6 @@ public class ServiceRegistryConfig {
     return this;
   }
 
-  public int getIdleWatchTimeout() {
-    return idleWatchTimeout;
-  }
-
-  public ServiceRegistryConfig setIdleWatchTimeout(int idleWatchTimeout) {
-    this.idleWatchTimeout = idleWatchTimeout;
-    return this;
-  }
-
   public int getRequestTimeout() {
     return requestTimeout;
   }
@@ -303,15 +280,6 @@ public class ServiceRegistryConfig {
 
   public ServiceRegistryConfig setWatch(boolean watch) {
     this.watch = watch;
-    return this;
-  }
-
-  public boolean isClientAuthEnabled() {
-    return clientAuthEnabled;
-  }
-
-  public ServiceRegistryConfig setClientAuthEnabled(boolean clientAuthEnabled) {
-    this.clientAuthEnabled = clientAuthEnabled;
     return this;
   }
 
@@ -402,24 +370,6 @@ public class ServiceRegistryConfig {
 
   public ServiceRegistryConfig setProxyPasswd(String proxyPasswd) {
     this.proxyPasswd = proxyPasswd;
-    return this;
-  }
-
-  public String getSslConfigTag() {
-    return sslConfigTag;
-  }
-
-  public ServiceRegistryConfig setSslConfigTag(String sslConfigTag) {
-    this.sslConfigTag = sslConfigTag;
-    return this;
-  }
-
-  public String getProxyConfigTag() {
-    return proxyConfigTag;
-  }
-
-  public ServiceRegistryConfig setProxyConfigTag(String proxyConfigTag) {
-    this.proxyConfigTag = proxyConfigTag;
     return this;
   }
 
