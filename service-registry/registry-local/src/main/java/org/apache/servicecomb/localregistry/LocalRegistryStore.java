@@ -41,6 +41,8 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
+import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.yaml.snakeyaml.Yaml;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -170,9 +172,17 @@ public class LocalRegistryStore {
       microservice.setVersion(bean.getVersion());
       microservice.setServiceId(bean.getId());
       microservice.setSchemas(bean.getSchemaIds());
+      addSchemaInterface(bean, microservice);
       microserviceMap.put(microservice.getServiceId(), microservice);
       addInstances(bean, microservice);
     }));
+  }
+
+  private void addSchemaInterface(RegistryBean bean, Microservice microservice) {
+    bean.getSchemaInterfaces().forEach((k, v) -> {
+      SwaggerGenerator generator = SwaggerGenerator.create(v);
+      microservice.getSchemaMap().put(k, SwaggerUtils.swaggerToString(generator.generate()));
+    });
   }
 
   private void addInstances(RegistryBean bean, Microservice microservice) {

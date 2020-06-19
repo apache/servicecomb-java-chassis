@@ -21,6 +21,7 @@ import static org.apache.servicecomb.registry.definition.DefinitionConst.DEFAULT
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -70,7 +71,9 @@ public class RegistryBean {
 
   private String appId;
 
-  private List<String> schemaIds;
+  private List<String> schemaIds = new ArrayList<>();
+
+  private Map<String, Class<?>> schemaInterfaces = new HashMap<>();
 
   private Instances instances;
 
@@ -160,6 +163,21 @@ public class RegistryBean {
 
   public List<String> getSchemaIds() {
     return schemaIds;
+  }
+
+  public RegistryBean addSchemaId(String schemaId) {
+    this.schemaIds.add(schemaId);
+    return this;
+  }
+
+  public RegistryBean addSchemaInterface(String schemaId, Class<?> schemaInterface) {
+    this.schemaInterfaces.put(schemaId, schemaInterface);
+    this.schemaIds.add(schemaId);
+    return this;
+  }
+
+  public Map<String, Class<?>> getSchemaInterfaces() {
+    return this.schemaInterfaces;
   }
 
   public RegistryBean setSchemaIds(List<String> schemaIds) {

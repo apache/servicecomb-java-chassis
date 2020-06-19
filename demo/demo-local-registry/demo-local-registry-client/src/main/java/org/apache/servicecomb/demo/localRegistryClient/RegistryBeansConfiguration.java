@@ -30,9 +30,6 @@ import org.springframework.context.annotation.Configuration;
 public class RegistryBeansConfiguration {
   @Bean
   public RegistryBean demoLocalRegistryServerBean() {
-    List<String> schemaIds = new ArrayList<>();
-    schemaIds.add("ServerEndpoint");
-    schemaIds.add("CodeFirstEndpoint");
     List<String> endpoints = new ArrayList<>();
     endpoints.add("rest://localhost:8080");
     List<Instance> instances = new ArrayList<>();
@@ -43,7 +40,24 @@ public class RegistryBeansConfiguration {
         .setId("002")
         .setVersion("0.0.3")
         .setAppId("demo-local-registry")
-        .setSchemaIds(schemaIds)
+        .addSchemaId("ServerEndpoint")
+        .addSchemaId("CodeFirstEndpoint")
+        .setInstances(new Instances().setInstances(instances));
+  }
+
+  @Bean
+  public RegistryBean demoLocalRegistryServerBean2() {
+    List<String> endpoints = new ArrayList<>();
+    endpoints.add("rest://localhost:8080");
+    List<Instance> instances = new ArrayList<>();
+    instances.add(new Instance().setEndpoints(endpoints));
+
+    return new RegistryBean()
+        .setServiceName("demo-local-registry-server-bean2")
+        .setId("003")
+        .setVersion("0.0.3")
+        .setAppId("demo-local-registry")
+        .addSchemaInterface("CodeFirstEndpoint2", CodeFirstService.class)
         .setInstances(new Instances().setInstances(instances));
   }
 }

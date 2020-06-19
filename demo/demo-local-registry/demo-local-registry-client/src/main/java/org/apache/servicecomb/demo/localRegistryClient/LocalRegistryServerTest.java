@@ -36,6 +36,9 @@ public class LocalRegistryServerTest implements CategorizedTestCase {
   @RpcReference(microserviceName = "demo-local-registry-server-bean", schemaId = "CodeFirstEndpoint")
   private CodeFirstService codeFirstServiceBean;
 
+  @RpcReference(microserviceName = "demo-local-registry-server-bean2", schemaId = "CodeFirstEndpoint2")
+  private CodeFirstService codeFirstServiceBean2;
+
   RestTemplate template = RestTemplateBuilder.create();
 
   @Override
@@ -62,6 +65,7 @@ public class LocalRegistryServerTest implements CategorizedTestCase {
   private void testCodeFirstGetName() {
     TestMgr.check("2", codeFirstService.getName("2"));
     TestMgr.check("2", codeFirstServiceBean.getName("2"));
+    TestMgr.check("2", codeFirstServiceBean2.getName("2"));
   }
 
   private void testServerGetName() {
