@@ -68,7 +68,6 @@
     <javax-resource.version>1.5</javax-resource.version>
     <javax-transaction.version>1.2</javax-transaction.version>
     <javax-ws-rs.version>2.1</javax-ws-rs.version>
-    <jedis.version>2.9.0</jedis.version>
     <jersey.version>2.27</jersey.version>
     <jettison.version>1.4.0</jettison.version>
     <jmockit.version>1.30</jmockit.version>
@@ -875,14 +874,6 @@
         <groupId>org.yaml</groupId>
         <artifactId>snakeyaml</artifactId>
         <version>${snakeyaml.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>redis.clients</groupId>
-        <artifactId>jedis</artifactId>
-        <version>${jedis.version}</version>
-        <scope>provided</scope>
-        <optional>true</optional>
       </dependency>
 
       <dependency>
