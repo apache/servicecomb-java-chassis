@@ -502,7 +502,7 @@
       </dependency>
       <dependency>
         <groupId>io.zipkin.brave</groupId>
-        <artifactId>brave-context-log4j12</artifactId>
+        <artifactId>brave-context-slf4j</artifactId>
         <version>${brave.version}</version>
       </dependency>
       <dependency>

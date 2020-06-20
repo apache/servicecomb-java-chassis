@@ -33,7 +33,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import brave.Tracing;
-import brave.context.log4j12.MDCScopeDecorator;
+import brave.context.slf4j.MDCScopeDecorator;
 import brave.http.HttpTracing;
 import brave.propagation.CurrentTraceContext;
 import brave.propagation.ThreadLocalCurrentTraceContext;
