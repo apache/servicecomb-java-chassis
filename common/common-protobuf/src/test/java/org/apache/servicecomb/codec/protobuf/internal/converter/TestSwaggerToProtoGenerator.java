@@ -52,6 +52,7 @@ public class TestSwaggerToProtoGenerator {
     Assert.assertEquals("hello_my_service", SwaggerToProtoGenerator.escapeMessageName("hello_my_service"));
     Assert.assertEquals("hello.my_service", SwaggerToProtoGenerator.escapePackageName("hello.my-service"));
     Assert.assertEquals("hello.test.test", SwaggerToProtoGenerator.escapePackageName("hello.test.test"));
+    Assert.assertEquals("hello_my.test.test", SwaggerToProtoGenerator.escapePackageName("hello:my.test.test"));
     Assert.assertEquals(false, SwaggerToProtoGenerator.isValidEnum("hello.test.test"));
     Assert.assertEquals(false, SwaggerToProtoGenerator.isValidEnum("hello.my-service"));
     Assert.assertEquals(true, SwaggerToProtoGenerator.isValidEnum("My_ENum"));

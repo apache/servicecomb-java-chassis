@@ -93,7 +93,7 @@ public class SwaggerToProtoGenerator {
   }
 
   public static String escapePackageName(String name) {
-    return name.replaceAll("\\-", "_");
+    return name.replaceAll("[\\-\\:]", "_");
   }
 
   public static String escapeMessageName(String name) {
