@@ -30,6 +30,7 @@ import org.apache.servicecomb.swagger.generator.core.processor.annotation.models
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ExampleProperty;
 import io.swagger.annotations.ResponseHeader;
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.Model;
@@ -79,6 +80,7 @@ public final class AnnotationUtils {
     responseConfig.setResponseContainer(apiResponse.responseContainer());
     responseConfig.setResponseReference(apiResponse.reference());
     responseConfig.setResponseHeaders(apiResponse.responseHeaders());
+    responseConfig.setExamples(apiResponse.examples());
     return responseConfig;
   }
 
@@ -150,13 +152,29 @@ public final class AnnotationUtils {
       response.setResponseSchema(model);
     }
     response.setDescription(responseConfig.getDescription());
-
+    addExamplesToResponse(response, responseConfig);
     if (responseConfig.getResponseHeaders() != null) {
       Map<String, Property> headers = generateResponseHeader(swagger, responseConfig.getResponseHeaders());
       response.setHeaders(headers);
     }
 
     responseConfig.setResponse(response);
+  }
+
+  private static void addExamplesToResponse(Response response, ResponseConfig responseConfig) {
+    if (responseConfig.getExamples() != null) {
+      for (ExampleProperty property : responseConfig.getExamples().value()) {
+        if (StringUtils.isEmpty(property.mediaType()) && StringUtils.isEmpty(property.value())) {
+          // @ApiResponse default value has one element, but type and value is empty.
+          // ignore this default value.
+          continue;
+        }
+        if (StringUtils.isEmpty(property.mediaType())) {
+          throw new IllegalStateException("media type is required in examples. e.g. 'text', 'json'.");
+        }
+        response.example(property.mediaType(), property.value());
+      }
+    }
   }
 
   private static Map<String, Property> generateResponseHeader(Swagger swagger,
