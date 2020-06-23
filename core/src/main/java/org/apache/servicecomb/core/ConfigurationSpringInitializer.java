@@ -178,6 +178,11 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
     }
 
     ConfigurableEnvironment configurableEnvironment = (ConfigurableEnvironment) environment;
+
+    if (ignoreResolveFailure()) {
+      configurableEnvironment.setIgnoreUnresolvableNestedPlaceholders(true);
+    }
+
     for (PropertySource<?> propertySource : configurableEnvironment.getPropertySources()) {
       getProperties(configurableEnvironment, propertySource, configFromSpringBoot);
     }
@@ -201,13 +206,9 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
         try {
           configFromSpringBoot.put(propertyName, environment.getProperty(propertyName, Object.class));
         } catch (Exception e) {
-          if (ignoreResolveFailure()) {
-            LOGGER.warn("set up spring property source failed.", e);
-          } else {
-            throw new RuntimeException(
-                "set up spring property source failed.If you still want to start up the application and ignore errors, you can set servicecomb.config.ignoreResolveFailure to true.",
-                e);
-          }
+          throw new RuntimeException(
+              "set up spring property source failed.If you still want to start up the application and ignore errors, you can set servicecomb.config.ignoreResolveFailure to true.",
+              e);
         }
       }
       return;
