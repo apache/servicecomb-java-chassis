@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.provider.pojo.definition;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,7 +34,7 @@ public class PojoConsumerMeta {
 
   private SchemaMeta schemaMeta;
 
-  private Map<String, PojoConsumerOperationMeta> operationMetas = new HashMap<>();
+  private Map<Method, PojoConsumerOperationMeta> operationMetas = new HashMap<>();
 
   public PojoConsumerMeta(MicroserviceReferenceConfig microserviceReferenceConfig, SwaggerConsumer swaggerConsumer,
       SchemaMeta schemaMeta) {
@@ -53,7 +54,7 @@ public class PojoConsumerMeta {
       PojoConsumerOperationMeta pojoConsumerOperationMeta = new PojoConsumerOperationMeta(this, operationMeta,
           swaggerConsumerOperation, intfSwaggerGenerator.getSwagger(), intfOperationGenerator.getOperation());
 
-      operationMetas.put(swaggerConsumerOperation.getSchemaOperationId(),
+      operationMetas.put(swaggerConsumerOperation.getConsumerMethod(),
           pojoConsumerOperationMeta);
     }
   }
@@ -76,5 +77,9 @@ public class PojoConsumerMeta {
 
   public PojoConsumerOperationMeta findOperationMeta(String consumerMethodName) {
     return operationMetas.get(consumerMethodName);
+  }
+
+  public PojoConsumerOperationMeta findOperationMeta(Method consumerMethod) {
+    return operationMetas.get(consumerMethod);
   }
 }

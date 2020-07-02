@@ -41,7 +41,6 @@ import org.apache.servicecomb.provider.pojo.definition.PojoConsumerMeta;
 import org.apache.servicecomb.provider.pojo.definition.PojoConsumerOperationMeta;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
-import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContextCompletableFuture;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
@@ -149,7 +148,7 @@ public class Invoker implements InvocationHandler {
     }
 
     PojoConsumerOperationMeta pojoConsumerOperationMeta = consumerMeta
-        .findOperationMeta(MethodUtils.findSwaggerMethodName(method));
+        .findOperationMeta(method);
     if (pojoConsumerOperationMeta == null) {
       throw new IllegalStateException(
           String.format(

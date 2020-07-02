@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.swagger.engine;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,7 +24,7 @@ public class SwaggerConsumer {
   private Class<?> consumerIntf;
 
   // key is consumer method name
-  private Map<String, SwaggerConsumerOperation> operations = new HashMap<>();
+  private Map<Method, SwaggerConsumerOperation> operations = new HashMap<>();
 
   public Class<?> getConsumerIntf() {
     return consumerIntf;
@@ -34,14 +35,14 @@ public class SwaggerConsumer {
   }
 
   public void addOperation(SwaggerConsumerOperation op) {
-    operations.put(op.getSchemaOperationId(), op);
+    operations.put(op.getConsumerMethod(), op);
   }
 
   public SwaggerConsumerOperation findOperation(String consumerMethodName) {
     return operations.get(consumerMethodName);
   }
 
-  public Map<String, SwaggerConsumerOperation> getOperations() {
+  public Map<Method, SwaggerConsumerOperation> getOperations() {
     return operations;
   }
 }
