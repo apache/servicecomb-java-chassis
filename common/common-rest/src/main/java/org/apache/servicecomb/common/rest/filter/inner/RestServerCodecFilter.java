@@ -59,7 +59,7 @@ public class RestServerCodecFilter implements Filter {
         .thenCompose(response -> encodeResponse(invocation, response));
   }
 
-  private CompletableFuture<Invocation> decodeRequest(Invocation invocation) {
+  protected CompletableFuture<Invocation> decodeRequest(Invocation invocation) {
     HttpTransportContext transportContext = invocation.getTransportContext();
     HttpServletRequestEx requestEx = transportContext.getRequestEx();
 
@@ -71,7 +71,7 @@ public class RestServerCodecFilter implements Filter {
     return CompletableFuture.completedFuture(invocation);
   }
 
-  private CompletableFuture<Response> encodeResponse(Invocation invocation, Response response) {
+  protected CompletableFuture<Response> encodeResponse(Invocation invocation, Response response) {
     HttpTransportContext transportContext = invocation.getTransportContext();
     ProduceProcessor produceProcessor = transportContext.getProduceProcessor();
     HttpServletResponseEx responseEx = transportContext.getResponseEx();

@@ -16,6 +16,9 @@
  */
 package org.apache.servicecomb.foundation.common.utils;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
+
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
@@ -31,8 +34,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class TestLambdaMetafactoryUtils {
-  static class Model {
-    private int f1;
+  public static class Model {
+    public int f1;
+
+    private int f2;
 
     public int getF1() {
       return f1;
@@ -91,19 +96,15 @@ public class TestLambdaMetafactoryUtils {
   }
 
   @Test
-  public void createGetterSetterByField() throws Throwable {
-    Field f1 = Model.class.getDeclaredField("f1");
-    try {
-      LambdaMetafactoryUtils.createGetter(f1);
-      Assert.fail();
-    } catch (IllegalStateException e) {
-      Assert.assertTrue(true);
-    }
-    try {
-      LambdaMetafactoryUtils.createSetter(f1);
-      Assert.fail();
-    } catch (IllegalStateException e) {
-      Assert.assertTrue(true);
-    }
+  public void should_failed_when_createGetterSetterByField_and_field_is_not_public() throws Throwable {
+    Field field = Model.class.getDeclaredField("f2");
+    assertThat(catchThrowable(() -> LambdaMetafactoryUtils.createGetter(field)))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessage(
+            "Can not access field, a public field or accessor is required.Declaring class is org.apache.servicecomb.foundation.common.utils.TestLambdaMetafactoryUtils$Model, field is f2");
+    assertThat(catchThrowable(() -> LambdaMetafactoryUtils.createSetter(field)))
+        .isInstanceOf(IllegalStateException.class)
+        .hasMessage(
+            "Can not access field, a public field or accessor is required.Declaring class is org.apache.servicecomb.foundation.common.utils.TestLambdaMetafactoryUtils$Model, field is f2");
   }
 }

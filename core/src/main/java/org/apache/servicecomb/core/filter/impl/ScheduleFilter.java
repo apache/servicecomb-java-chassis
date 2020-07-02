@@ -39,7 +39,7 @@ public class ScheduleFilter implements Filter {
         .thenComposeAsync(response -> runInExecutor(invocation, next), executor);
   }
 
-  private CompletableFuture<Response> runInExecutor(Invocation invocation, FilterNode next) {
+  protected CompletableFuture<Response> runInExecutor(Invocation invocation, FilterNode next) {
     invocation.onExecuteStart();
     InvocationStageTrace trace = invocation.getInvocationStageTrace();
     trace.startServerFiltersRequest();

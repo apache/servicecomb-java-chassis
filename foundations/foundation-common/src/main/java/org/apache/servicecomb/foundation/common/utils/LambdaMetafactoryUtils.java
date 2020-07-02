@@ -165,7 +165,7 @@ public final class LambdaMetafactoryUtils {
     // This check is not accurate. Most of time package visible and protected access can be ignored, so simply do this.
     if (!Modifier.isPublic(field.getModifiers()) || !Modifier.isPublic(field.getDeclaringClass().getModifiers())) {
       throw new IllegalStateException(
-          String.format("Can not access field, a public field or and accessor is required."
+          String.format("Can not access field, a public field or accessor is required."
                   + "Declaring class is %s, field is %s",
               field.getDeclaringClass().getName(),
               field.getName()));

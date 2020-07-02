@@ -45,7 +45,7 @@ public class HighwayServerCodecFilter implements Filter {
         .thenCompose(response -> encodeResponse(invocation, response));
   }
 
-  private CompletableFuture<Invocation> decodeRequest(Invocation invocation) {
+  protected CompletableFuture<Invocation> decodeRequest(Invocation invocation) {
     HighwayTransportContext transportContext = invocation.getTransportContext();
     try {
       HighwayCodec.decodeRequest(invocation,
@@ -58,7 +58,7 @@ public class HighwayServerCodecFilter implements Filter {
     }
   }
 
-  private CompletableFuture<Response> encodeResponse(Invocation invocation, Response response) {
+  protected CompletableFuture<Response> encodeResponse(Invocation invocation, Response response) {
     ResponseHeader header = new ResponseHeader();
     header.setStatusCode(response.getStatusCode());
     header.setReasonPhrase(response.getReasonPhrase());
