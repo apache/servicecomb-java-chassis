@@ -72,6 +72,8 @@ public class RestServerCodecFilter implements Filter {
   }
 
   protected CompletableFuture<Response> encodeResponse(Invocation invocation, Response response) {
+    invocation.onEncodeResponseStart(response);
+
     HttpTransportContext transportContext = invocation.getTransportContext();
     ProduceProcessor produceProcessor = transportContext.getProduceProcessor();
     HttpServletResponseEx responseEx = transportContext.getResponseEx();
