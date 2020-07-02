@@ -41,14 +41,19 @@ public class ScheduleFilter implements Filter {
 
   protected CompletableFuture<Response> runInExecutor(Invocation invocation, FilterNode next) {
     invocation.onExecuteStart();
-    InvocationStageTrace trace = invocation.getInvocationStageTrace();
-    trace.startServerFiltersRequest();
-    trace.startHandlersRequest();
 
-    checkInQueueTimeout(invocation);
+    try {
+      InvocationStageTrace trace = invocation.getInvocationStageTrace();
+      trace.startServerFiltersRequest();
+      trace.startHandlersRequest();
 
-    return next.onFilter(invocation)
-        .whenComplete((response, throwable) -> whenComplete(invocation));
+      checkInQueueTimeout(invocation);
+
+      return next.onFilter(invocation)
+          .whenComplete((response, throwable) -> whenComplete(invocation));
+    } finally {
+      invocation.onExecuteFinish();
+    }
   }
 
   private void checkInQueueTimeout(Invocation invocation) {

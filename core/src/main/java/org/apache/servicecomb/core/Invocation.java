@@ -33,7 +33,10 @@ import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.event.InvocationBusinessMethodFinishEvent;
 import org.apache.servicecomb.core.event.InvocationBusinessMethodStartEvent;
+import org.apache.servicecomb.core.event.InvocationEncodeResponseStartEvent;
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
+import org.apache.servicecomb.core.event.InvocationRunInExecutorFinishEvent;
+import org.apache.servicecomb.core.event.InvocationRunInExecutorStartEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
@@ -398,6 +401,11 @@ public class Invocation extends SwaggerInvocation {
 
   public void onExecuteStart() {
     invocationStageTrace.startExecution();
+    EventManager.post(new InvocationRunInExecutorStartEvent(this));
+  }
+
+  public void onExecuteFinish() {
+    EventManager.post(new InvocationRunInExecutorFinishEvent(this));
   }
 
   @Override
@@ -409,6 +417,10 @@ public class Invocation extends SwaggerInvocation {
   @Override
   public void onBusinessMethodFinish() {
     EventManager.post(new InvocationBusinessMethodFinishEvent(this));
+  }
+
+  public void onEncodeResponseStart(Response response) {
+    EventManager.post(new InvocationEncodeResponseStartEvent(this, response));
   }
 
   @Override

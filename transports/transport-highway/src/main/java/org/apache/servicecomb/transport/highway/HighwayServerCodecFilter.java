@@ -59,6 +59,8 @@ public class HighwayServerCodecFilter implements Filter {
   }
 
   protected CompletableFuture<Response> encodeResponse(Invocation invocation, Response response) {
+    invocation.onEncodeResponseStart(response);
+
     ResponseHeader header = new ResponseHeader();
     header.setStatusCode(response.getStatusCode());
     header.setReasonPhrase(response.getReasonPhrase());
