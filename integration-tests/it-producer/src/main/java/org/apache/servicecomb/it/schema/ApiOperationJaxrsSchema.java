@@ -33,8 +33,8 @@ public class ApiOperationJaxrsSchema {
   @GET
   @Produces("text/plain;charset=UTF-8")
   @ApiOperation(value = "", nickname = "sayHi")
-  public String sayHello() {
-    return "ApiOperationJaxrsSchema#sayHello";
+  public String sayHello(Long index) {
+    return "ApiOperationJaxrsSchema#sayHello" + index;
   }
 
   @Path("/sayHello")

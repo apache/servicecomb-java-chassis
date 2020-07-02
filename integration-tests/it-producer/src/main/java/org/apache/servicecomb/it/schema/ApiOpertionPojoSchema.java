@@ -24,8 +24,8 @@ import io.swagger.annotations.ApiOperation;
 public class ApiOpertionPojoSchema {
 
   @ApiOperation(value = "", nickname = "sayHi")
-  public String sayHello() {
-    return "ApiOpertionPojoSchema#sayHello";
+  public String sayHello(Long index) {
+    return "ApiOpertionPojoSchema#sayHello" + index;
   }
 
   @ApiOperation(value = "", nickname = "sayHello")

@@ -19,6 +19,7 @@ package org.apache.servicecomb.it.schema;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -28,8 +29,8 @@ public class ApiOperationSpringmvcSchema {
 
   @RequestMapping(path = "/sayHi", method = RequestMethod.GET, produces = "text/plain;charset=UTF-8")
   @ApiOperation(value = "", nickname = "sayHi")
-  public String sayHello() {
-    return "ApiOperationSpringmvcSchema#sayHello";
+  public String sayHello(@RequestParam("index") Long index) {
+    return "ApiOperationSpringmvcSchema#sayHello" + index;
   }
 
   @RequestMapping(path = "/sayHello", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
