@@ -116,7 +116,7 @@ public class Invoker implements InvocationHandler {
     return microserviceMeta.findSchemaMeta(consumerIntf.getName());
   }
 
-  private PojoConsumerMeta refreshMeta() {
+  protected PojoConsumerMeta refreshMeta() {
     MicroserviceReferenceConfig microserviceReferenceConfig = scbEngine
         .createMicroserviceReferenceConfig(microserviceName);
     MicroserviceMeta microserviceMeta = microserviceReferenceConfig.getLatestMicroserviceMeta();
@@ -184,7 +184,6 @@ public class Invoker implements InvocationHandler {
 
     return syncInvoke(invocation, consumerOperation);
   }
-
 
   public Map<String, Object> toArguments(Method method, Object[] args) {
     Map<String, Object> arguments = new HashMap<>();

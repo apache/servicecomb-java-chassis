@@ -54,13 +54,16 @@ public class ParameterValidatorFilter implements Filter {
   private final ExecutableValidator validator;
 
   public ParameterValidatorFilter() {
-    ValidatorFactory factory =
-        Validation.byProvider(HibernateValidator.class)
-            .configure()
-            .propertyNodeNameProvider(new JacksonPropertyNodeNameProvider())
-            .messageInterpolator(messageInterpolator())
-            .buildValidatorFactory();
-    validator = factory.getValidator().forExecutables();
+    validator = createValidatorFactory()
+        .getValidator().forExecutables();
+  }
+
+  protected ValidatorFactory createValidatorFactory() {
+    return Validation.byProvider(HibernateValidator.class)
+        .configure()
+        .propertyNodeNameProvider(new JacksonPropertyNodeNameProvider())
+        .messageInterpolator(messageInterpolator())
+        .buildValidatorFactory();
   }
 
   private AbstractMessageInterpolator messageInterpolator() {
@@ -76,16 +79,20 @@ public class ParameterValidatorFilter implements Filter {
 
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
-    SwaggerProducerOperation producerOperation = invocation.getOperationMeta().getSwaggerProducerOperation();
-    Object instance = producerOperation.getProducerInstance();
-    Method method = producerOperation.getProducerMethod();
-    Object[] args = invocation.toProducerArguments();
-    Set<ConstraintViolation<Object>> violations = validator.validateParameters(instance, method, args, Default.class);
+    Set<ConstraintViolation<Object>> violations = doValidate(invocation);
     if (violations.size() > 0) {
       LOGGER.error("Parameter validation failed : " + violations.toString());
       return AsyncUtils.completeExceptionally(new ConstraintViolationException(violations));
     }
 
     return nextNode.onFilter(invocation);
+  }
+
+  protected Set<ConstraintViolation<Object>> doValidate(Invocation invocation) {
+    SwaggerProducerOperation producerOperation = invocation.getOperationMeta().getSwaggerProducerOperation();
+    Object instance = producerOperation.getProducerInstance();
+    Method method = producerOperation.getProducerMethod();
+    Object[] args = invocation.toProducerArguments();
+    return validator.validateParameters(instance, method, args, Default.class);
   }
 }

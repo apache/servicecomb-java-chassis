@@ -52,7 +52,7 @@ public class ProducerOperationFilter implements Filter {
   }
 
   @SuppressWarnings("unchecked")
-  private CompletableFuture<Object> invoke(Invocation invocation, Object instance, Method method, Object[] args) {
+  protected CompletableFuture<Object> invoke(Invocation invocation, Object instance, Method method, Object[] args) {
     ContextUtils.setInvocationContext(invocation);
 
     try {
@@ -69,12 +69,12 @@ public class ProducerOperationFilter implements Filter {
     }
   }
 
-  private Response convertResultToResponse(Invocation invocation, SwaggerProducerOperation producerOperation,
+  protected Response convertResultToResponse(Invocation invocation, SwaggerProducerOperation producerOperation,
       Object result) {
     return producerOperation.getResponseMapper().mapResponse(invocation.getStatus(), result);
   }
 
-  private void whenComplete(Invocation invocation, Throwable throwable) {
+  protected void whenComplete(Invocation invocation, Throwable throwable) {
     if (throwable != null) {
       Throwable unwrapped = Exceptions.unwrap(throwable);
       if (shouldPrintErrorLog(unwrapped)) {

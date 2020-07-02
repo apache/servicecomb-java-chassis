@@ -40,9 +40,11 @@ import org.slf4j.LoggerFactory;
 public class DefaultExceptionConverter implements ExceptionConverter<Throwable> {
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultExceptionConverter.class);
 
+  public static final int ORDER = Integer.MAX_VALUE;
+
   @Override
   public int getOrder() {
-    return Integer.MAX_VALUE;
+    return ORDER;
   }
 
   @Override
