@@ -19,6 +19,9 @@ package org.apache.servicecomb.swagger.engine;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import com.google.common.annotations.VisibleForTesting;
 
 public class SwaggerConsumer {
   private Class<?> consumerIntf;
@@ -38,8 +41,18 @@ public class SwaggerConsumer {
     operations.put(op.getConsumerMethod(), op);
   }
 
+  @VisibleForTesting
   public SwaggerConsumerOperation findOperation(String consumerMethodName) {
-    return operations.get(consumerMethodName);
+    for (Entry<Method, SwaggerConsumerOperation> operationEntry : operations.entrySet()) {
+      if (operationEntry.getKey().getName().equals(consumerMethodName)) {
+        return operationEntry.getValue();
+      }
+    }
+    return null;
+  }
+
+  public SwaggerConsumerOperation findOperation(Method consumerMethod) {
+    return operations.get(consumerMethod);
   }
 
   public Map<Method, SwaggerConsumerOperation> getOperations() {
