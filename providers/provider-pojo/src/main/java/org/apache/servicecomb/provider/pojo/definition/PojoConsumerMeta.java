@@ -19,6 +19,7 @@ package org.apache.servicecomb.provider.pojo.definition;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -28,6 +29,8 @@ import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
+
+import com.google.common.annotations.VisibleForTesting;
 
 public class PojoConsumerMeta {
   private MicroserviceReferenceConfig microserviceReferenceConfig;
@@ -75,8 +78,14 @@ public class PojoConsumerMeta {
     return schemaMeta;
   }
 
+  @VisibleForTesting
   public PojoConsumerOperationMeta findOperationMeta(String consumerMethodName) {
-    return operationMetas.get(consumerMethodName);
+    for (Entry<Method, PojoConsumerOperationMeta> operationMetaEntry : operationMetas.entrySet()) {
+      if (operationMetaEntry.getKey().getName().equals(consumerMethodName)) {
+        return operationMetaEntry.getValue();
+      }
+    }
+    return null;
   }
 
   public PojoConsumerOperationMeta findOperationMeta(Method consumerMethod) {
