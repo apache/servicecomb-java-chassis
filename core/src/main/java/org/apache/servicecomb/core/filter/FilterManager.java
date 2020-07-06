@@ -143,8 +143,8 @@ public class FilterManager {
   private Filter createFilter(Class<? extends Filter> filterClass) {
     try {
       Filter filter = filterClass.newInstance();
-      filter.init(engine);
       injectSpringBean(filter);
+      filter.init(engine);
       return filter;
     } catch (Exception e) {
       throw new IllegalStateException("failed to create filter.", e);

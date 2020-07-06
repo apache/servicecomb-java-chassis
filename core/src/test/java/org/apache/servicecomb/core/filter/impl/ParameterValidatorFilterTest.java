@@ -42,6 +42,7 @@ import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -92,6 +93,11 @@ public class ParameterValidatorFilterTest {
 
   @Mocked
   SwaggerProducerOperation operation;
+
+  @BeforeClass
+  public static void beforeClass() throws Exception {
+    filter.init(null);
+  }
 
   @Before
   public void setUp() throws Exception {
