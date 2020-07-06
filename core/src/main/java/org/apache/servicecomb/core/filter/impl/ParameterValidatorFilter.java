@@ -30,6 +30,7 @@ import javax.validation.executable.ExecutableValidator;
 import javax.validation.groups.Default;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterMeta;
 import org.apache.servicecomb.core.filter.FilterNode;
@@ -51,9 +52,10 @@ public class ParameterValidatorFilter implements Filter {
 
   private static final String ENABLE_EL = "servicecomb.filters.validation.useResourceBundleMessageInterpolator";
 
-  private final ExecutableValidator validator;
+  private ExecutableValidator validator;
 
-  public ParameterValidatorFilter() {
+  @Override
+  public void init(SCBEngine engine) {
     validator = createValidatorFactory()
         .getValidator().forExecutables();
   }
@@ -66,7 +68,7 @@ public class ParameterValidatorFilter implements Filter {
         .buildValidatorFactory();
   }
 
-  private AbstractMessageInterpolator messageInterpolator() {
+  protected AbstractMessageInterpolator messageInterpolator() {
     if (useResourceBundleMessageInterpolator()) {
       return new ResourceBundleMessageInterpolator();
     }
