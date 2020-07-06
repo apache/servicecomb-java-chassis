@@ -76,6 +76,7 @@ public class CseApplicationListener
 //        SCBEngine.getInstance().setProducerProviderManager(applicationContext.getBean(ProducerProviderManager.class));
 //        SCBEngine.getInstance().setConsumerProviderManager(applicationContext.getBean(ConsumerProviderManager.class));
 //        SCBEngine.getInstance().setTransportManager(applicationContext.getBean(TransportManager.class));
+      scbEngine.setApplicationContext(applicationContext);
       scbEngine.setFilterChainsManager(applicationContext.getBean(FilterChainsManager.class));
       scbEngine.getConsumerProviderManager().getConsumerProviderList()
           .addAll(applicationContext.getBeansOfType(ConsumerProvider.class).values());

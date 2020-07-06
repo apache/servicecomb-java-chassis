@@ -30,11 +30,15 @@ import org.apache.servicecomb.core.filter.config.TransportFilterConfig;
 import org.apache.servicecomb.core.filter.impl.TransportFilters;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.invocation.InvocationType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class FilterManager {
+  private static final Logger LOGGER = LoggerFactory.getLogger(FilterManager.class);
+
   interface Factory {
     Filter create();
   }
@@ -140,9 +144,19 @@ public class FilterManager {
     try {
       Filter filter = filterClass.newInstance();
       filter.init(engine);
+      injectSpringBean(filter);
       return filter;
     } catch (Exception e) {
       throw new IllegalStateException("failed to create filter.", e);
     }
+  }
+
+  private void injectSpringBean(Filter filter) {
+    if (engine == null || engine.getApplicationContext() == null) {
+      LOGGER.error("engine or application context is null, only allowed when UT.");
+      return;
+    }
+
+    engine.getApplicationContext().getAutowireCapableBeanFactory().autowireBean(filter);
   }
 }

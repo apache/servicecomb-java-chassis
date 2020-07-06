@@ -65,6 +65,7 @@ import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
@@ -87,6 +88,8 @@ public class SCBEngine {
   private static final Object initializationLock = new Object();
 
   private volatile static SCBEngine INSTANCE;
+
+  private ApplicationContext applicationContext;
 
   private FilterChainsManager filterChainsManager;
 
@@ -137,6 +140,14 @@ public class SCBEngine {
 
     producerProviderManager = new ProducerProviderManager(this);
     serviceRegistryListener = new ServiceRegistryListener(this);
+  }
+
+  public ApplicationContext getApplicationContext() {
+    return applicationContext;
+  }
+
+  public void setApplicationContext(ApplicationContext applicationContext) {
+    this.applicationContext = applicationContext;
   }
 
   public VendorExtensions getVendorExtensions() {
