@@ -66,7 +66,6 @@ public class OperationMeta {
     return this;
   }
 
-
   public void setSwaggerProducerOperation(SwaggerProducerOperation swaggerProducerOperation) {
     this.putExtData(Const.PRODUCER_OPERATION, swaggerProducerOperation);
   }
@@ -142,6 +141,10 @@ public class OperationMeta {
 
   public <T> T getExtData(String key) {
     return vendorExtensions.get(key);
+  }
+
+  public VendorExtensions getVendorExtensions() {
+    return vendorExtensions;
   }
 
   public Executor getExecutor() {
