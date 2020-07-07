@@ -26,16 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.APP_ID;
-import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.ENDPOINTS;
-import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.HOST_NAME;
-import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.INSTANCE_ID;
-import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.SCHEMA_IDS;
-import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.SERVICE_ID;
-import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.SERVICE_NAME;
-import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.STATUS;
-import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.VERSION;
-
 public class TestZeroConfigRegistryService {
 
   ZeroConfigRegistryService target;
@@ -52,7 +42,6 @@ public class TestZeroConfigRegistryService {
   String status = "UP";
   String host = "host";
   String schemaId1 = "schemaId1";
-  ;
   String endpoint1 = "endpoint1";
 
   @Before
@@ -61,25 +50,11 @@ public class TestZeroConfigRegistryService {
     target = new ZeroConfigRegistryService();
   }
 
-  private Map<String, String> prepareServiceAttributeMap(boolean withServiceId) {
-    Map<String, String> map = new ConcurrentHashMapEx<>();
-    map.put(APP_ID, appId);
-    if (withServiceId) {
-      map.put(SERVICE_ID, serviceId);
-    }
-    map.put(INSTANCE_ID, instanceId);
-    map.put(VERSION, version);
-    map.put(STATUS, status);
-    map.put(SERVICE_NAME, serviceName);
-    map.put(HOST_NAME, host);
-    map.put(ENDPOINTS, endpoint1);
-    map.put(SCHEMA_IDS, schemaId1);
-    return map;
-  }
-
-  private ServerMicroserviceInstance prepareServerServiceInstance(String serviceInstanceId) {
+  private ServerMicroserviceInstance prepareServerServiceInstance(boolean withServiceId, String serviceInstanceId) {
     ServerMicroserviceInstance serverServiceInstance = new ServerMicroserviceInstance();
-    serverServiceInstance.setServiceId(serviceId);
+    if (withServiceId){
+      serverServiceInstance.setServiceId(serviceId);
+    }
     serverServiceInstance.setInstanceId(serviceInstanceId);
     serverServiceInstance.setServiceName(serviceName);
     serverServiceInstance.setAppId(appId);
@@ -104,9 +79,9 @@ public class TestZeroConfigRegistryService {
       boolean multipleInstances) {
     Map<String, Map<String, ServerMicroserviceInstance>> map = new ConcurrentHashMapEx<>();
     Map<String, ServerMicroserviceInstance> instanceIdMap = new ConcurrentHashMapEx<>();
-    instanceIdMap.put(instanceId, prepareServerServiceInstance(instanceId));
+    instanceIdMap.put(instanceId, prepareServerServiceInstance(true, instanceId));
     if (multipleInstances) {
-      instanceIdMap.put(instanceId1, prepareServerServiceInstance(instanceId1));
+      instanceIdMap.put(instanceId1, prepareServerServiceInstance(true, instanceId1));
     }
     map.put(serviceId, instanceIdMap);
     return map;
@@ -121,14 +96,14 @@ public class TestZeroConfigRegistryService {
 
   @Test(expected = IllegalArgumentException.class)
   public void test_registerMicroserviceInstance_whenServiceIdIsNull_shouldThrowIllegalArgumentException() {
-    target.registerMicroserviceInstance(prepareServiceAttributeMap(false));
+    target.registerMicroserviceInstance(prepareServerServiceInstance(false, instanceId));
   }
 
   @Test
   public void test_registerMicroserviceInstance_whenInstanceNotExist_shouldRegisterSuccessfully() {
     ServerUtil.microserviceInstanceMap = prepareEmptyServiceInstanceMap();
 
-    target.registerMicroserviceInstance(prepareServiceAttributeMap(true));
+    target.registerMicroserviceInstance(prepareServerServiceInstance(true, instanceId));
 
     Assert.assertTrue(ServerUtil.microserviceInstanceMap.containsKey(serviceId));
     Assert.assertTrue(ServerUtil.microserviceInstanceMap.get(serviceId).containsKey(instanceId));
@@ -138,7 +113,7 @@ public class TestZeroConfigRegistryService {
   public void test_registerMicroserviceInstance_whenInstanceExist_shouldRegisterSuccessfully() {
     ServerUtil.microserviceInstanceMap = prepareServiceInstanceMap(false);
 
-    target.registerMicroserviceInstance(prepareServiceAttributeMap(true));
+    target.registerMicroserviceInstance(prepareServerServiceInstance(true, instanceId));
 
     Assert.assertTrue(ServerUtil.microserviceInstanceMap.containsKey(serviceId));
     Assert.assertTrue(ServerUtil.microserviceInstanceMap.get(serviceId).containsKey(instanceId));
@@ -147,14 +122,14 @@ public class TestZeroConfigRegistryService {
 
   @Test(expected = IllegalArgumentException.class)
   public void test_unregisterMicroserviceInstance_whenServiceIdIsNull_shouldThrowIllegalArgumentException() {
-    target.unregisterMicroserviceInstance(prepareServiceAttributeMap(false));
+    target.unregisterMicroserviceInstance(prepareServerServiceInstance(false, instanceId));
   }
 
   @Test
   public void test_unregisterMicroserviceInstance_withServiceIdAndInstanceId_and_multipleInstance_shouldRemoveInstance() {
     ServerUtil.microserviceInstanceMap = prepareServiceInstanceMap(true);
 
-    target.unregisterMicroserviceInstance(prepareServiceAttributeMap(true));
+    target.unregisterMicroserviceInstance(prepareServerServiceInstance(true, instanceId));
 
     Assert.assertTrue(ServerUtil.microserviceInstanceMap.containsKey(serviceId));
     Assert.assertTrue(ServerUtil.microserviceInstanceMap.get(serviceId).containsKey(instanceId1));
@@ -165,7 +140,7 @@ public class TestZeroConfigRegistryService {
   public void test_unregisterMicroserviceInstance_withServiceIdAndInstanceId_and_singleInstance_shouldRemoveService() {
     ServerUtil.microserviceInstanceMap = prepareServiceInstanceMap(false);
 
-    target.unregisterMicroserviceInstance(prepareServiceAttributeMap(true));
+    target.unregisterMicroserviceInstance(prepareServerServiceInstance(true, instanceId));
 
     Assert.assertFalse(ServerUtil.microserviceInstanceMap.containsKey(serviceId));
   }
