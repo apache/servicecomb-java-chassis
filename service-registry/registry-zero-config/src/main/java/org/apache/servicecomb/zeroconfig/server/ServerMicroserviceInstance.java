@@ -22,6 +22,8 @@ import java.util.List;
 
 public class ServerMicroserviceInstance {
 
+  private String event;
+
   private String appId;
 
   private String serviceName;
@@ -125,10 +127,19 @@ public class ServerMicroserviceInstance {
     this.schemas = schemas;
   }
 
+  public String getEvent() {
+    return event;
+  }
+
+  public void setEvent(String event) {
+    this.event = event;
+  }
+
   @Override
   public String toString() {
     return "ServerMicroserviceInstance{" +
-        "appId='" + appId + '\'' +
+        "event='" + event + '\'' +
+        ", appId='" + appId + '\'' +
         ", serviceName='" + serviceName + '\'' +
         ", version='" + version + '\'' +
         ", instanceId='" + instanceId + '\'' +
@@ -140,4 +151,5 @@ public class ServerMicroserviceInstance {
         ", lastHeartbeatTimeStamp=" + lastHeartbeatTimeStamp +
         '}';
   }
+
 }

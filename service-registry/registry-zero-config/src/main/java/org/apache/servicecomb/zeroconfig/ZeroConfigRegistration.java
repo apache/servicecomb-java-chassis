@@ -40,8 +40,6 @@ public class ZeroConfigRegistration implements Registration {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ZeroConfigRegistration.class);
 
-  public static ZeroConfigRegistration INSTANCE = new ZeroConfigRegistration();
-
   private static final String NAME = "zero-config registration";
 
   private ZeroConfigClient zeroConfigClient = ZeroConfigClient.INSTANCE;
@@ -54,8 +52,8 @@ public class ZeroConfigRegistration implements Registration {
   @Override
   public void init() {
     zeroConfigClient.init();
-    ServerUtil.init();
-    ClientUtil.init();
+    ServerUtil.INSTANCE.init();
+    ClientUtil.INSTANCE.init();
   }
 
   @Override

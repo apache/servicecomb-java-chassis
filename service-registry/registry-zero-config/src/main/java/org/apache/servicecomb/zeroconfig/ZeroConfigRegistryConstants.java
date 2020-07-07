@@ -43,23 +43,12 @@ public interface ZeroConfigRegistryConstants {
   String HEARTBEAT_EVENT = "heartbeat";
 
   // Microservice & Instance Attributes
-  String APP_ID = "appId";
-  String SERVICE_NAME = "serviceName";
-  String VERSION = "version";
   String SERVICE_ID = "serviceId";
-  String STATUS = "status";
-  String SCHEMA_IDS = "schemas";
   String INSTANCE_ID = "instanceId";
-  String ENDPOINTS = "endpoints";
-  String HOST_NAME = "hostName";
-  String INSTANCE_HEARTBEAT_RESPONSE_MESSAGE_OK = "OK";
 
   // others
   String MAP_STRING_LEFT = "{";
   String MAP_STRING_RIGHT = "}";
-  String MAP_ELEMENT_SPILITER = ",";
-  String MAP_KV_SPILITER = "=";
-  String LIST_STRING_SPLITER = "$";
   String UUID_SPLITER = "-";
   String SERVICE_ID_SPLITER = "/";
   String ENDPOINT_PREFIX_REST = "rest";

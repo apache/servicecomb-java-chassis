@@ -31,10 +31,10 @@ public class ZeroConfigRegistryService {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ZeroConfigRegistryService.class);
 
-  public void registerMicroserviceInstance(Map<String, String> serviceAttributeMap) {
-    String instanceId = serviceAttributeMap.get(INSTANCE_ID);
-    String serviceId = serviceAttributeMap.get(SERVICE_ID);
-    String serviceName = serviceAttributeMap.get(SERVICE_NAME);
+  public void registerMicroserviceInstance(ServerMicroserviceInstance receivedInstance) {
+    String instanceId = receivedInstance.getInstanceId();
+    String serviceId = receivedInstance.getServiceId();
+    String serviceName = receivedInstance.getServiceName();
 
     if (serviceId == null || serviceName == null || instanceId == null) {
       throw new IllegalArgumentException("Invalid serviceId, serviceId=" + serviceId +
@@ -42,9 +42,6 @@ public class ZeroConfigRegistryService {
           + instanceId);
     }
 
-    // convert to server side ServerMicroserviceInstance object
-    ServerMicroserviceInstance newServerMicroserviceInstance = ServerUtil
-        .convertToServerMicroserviceInstance(serviceAttributeMap);
     Map<String, ServerMicroserviceInstance> innerInstanceMap = ServerUtil.microserviceInstanceMap.
         computeIfAbsent(serviceId, id -> new ConcurrentHashMap<>());
 
@@ -55,15 +52,15 @@ public class ZeroConfigRegistryService {
       LOGGER
           .info("Register a new instance for  serviceId: {}, instanceId: {}, status: {}, name: {}",
               serviceId,
-              instanceId, newServerMicroserviceInstance.getStatus(),
-              newServerMicroserviceInstance.getServiceName());
-      innerInstanceMap.put(instanceId, newServerMicroserviceInstance);
+              instanceId, receivedInstance.getStatus(),
+              receivedInstance.getServiceName());
+      innerInstanceMap.put(instanceId, receivedInstance);
     }
   }
 
-  public void unregisterMicroserviceInstance(Map<String, String> serviceAttributeMap) {
-    String unregisterServiceId = serviceAttributeMap.get(SERVICE_ID);
-    String unregisterInstanceId = serviceAttributeMap.get(INSTANCE_ID);
+  public void unregisterMicroserviceInstance(ServerMicroserviceInstance receivedInstance) {
+    String unregisterServiceId = receivedInstance.getServiceId();
+    String unregisterInstanceId = receivedInstance.getInstanceId();
 
     if (unregisterServiceId == null || unregisterInstanceId == null) {
       throw new IllegalArgumentException(
@@ -107,9 +104,9 @@ public class ZeroConfigRegistryService {
   }
 
   // for scenario: when other service started before this one start
-  public void heartbeat(Map<String, String> heartbeatEventMap) {
-    String serviceId = heartbeatEventMap.get(SERVICE_ID);
-    String instanceId = heartbeatEventMap.get(INSTANCE_ID);
+  public void heartbeat(ServerMicroserviceInstance receivedInstance) {
+    String serviceId = receivedInstance.getServiceId();
+    String instanceId = receivedInstance.getInstanceId();
 
     Map<String, ServerMicroserviceInstance> serverMicroserviceInstanceMap = ServerUtil.microserviceInstanceMap
         .get(serviceId);
@@ -118,11 +115,11 @@ public class ZeroConfigRegistryService {
       ServerMicroserviceInstance instance = serverMicroserviceInstanceMap.get(instanceId);
       instance.setLastHeartbeatTimeStamp(Instant.now());
     } else {
-      heartbeatEventMap.put(EVENT, REGISTER_EVENT);
+      receivedInstance.setEvent(REGISTER_EVENT);
       LOGGER.info(
           "Received HEARTBEAT event from serviceId: {}, instancdId: {} for the first time. Register it instead.",
           serviceId, instanceId);
-      this.registerMicroserviceInstance(heartbeatEventMap);
+      this.registerMicroserviceInstance(receivedInstance);
     }
   }
 

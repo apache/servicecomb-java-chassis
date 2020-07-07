@@ -17,6 +17,7 @@
 package org.apache.servicecomb.zeroconfig.client;
 
 import com.google.common.annotations.VisibleForTesting;
+import io.vertx.core.json.Json;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -114,28 +115,27 @@ public class ZeroConfigClient {
   }
 
   public boolean register() {
-    Map<String, String> data = prepareRegisterData();
-    String serviceInstanceId = doRegister(data);
+    String serviceInstanceId = doRegister(ClientUtil.convertToRegisterDataModel(selfMicroserviceInstance, selfMicroservice));
     return StringUtils.isNotEmpty(serviceInstanceId);
   }
 
-  private String doRegister(Map<String, String> serviceInstanceDataMap) {
+  private String doRegister(ServerMicroserviceInstance instance) {
     try {
-      byte[] instanceData = serviceInstanceDataMap.toString().getBytes(ENCODE);
+      byte[] instanceData = Json.encode(instance).getBytes(ENCODE);
       DatagramPacket instanceDataPacket = new DatagramPacket(instanceData, instanceData.length,
           InetAddress.getByName(GROUP), PORT);
       this.multicastSocket.send(instanceDataPacket);
 
       // set this variable for heartbeat itself status
-      serviceInstanceDataMap.put(EVENT, HEARTBEAT_EVENT);
-      ClientUtil.setServiceInstanceMapForHeartbeat(serviceInstanceDataMap);
+      instance.setEvent(HEARTBEAT_EVENT);
+      ClientUtil.INSTANCE.setServiceInstanceForHeartbeat(instance);
     } catch (IOException e) {
       LOGGER.error(
           "Failed to Multicast Microservice Instance Registration Event in Zero-Config mode. servcieId: {} instanceId:{}",
-          serviceInstanceDataMap.get(SERVICE_ID), serviceInstanceDataMap.get(INSTANCE_ID), e);
+          instance.getServiceId(), instance.getInstanceId(), e);
       return null;
     }
-    return serviceInstanceDataMap.get(INSTANCE_ID);
+    return instance.getInstanceId();
   }
 
   public boolean unregister() {
@@ -203,19 +203,6 @@ public class ZeroConfigClient {
     }
   }
 
-  private String getEndpointForMicroservice(String microserviceId) {
-    ServerMicroserviceInstance serverMicroserviceInstance = zeroConfigRegistryService
-        .getMicroservice(microserviceId);
-    LOGGER.info("Retrieve endpoint for serve rMicroservice Instance: {}",
-        serverMicroserviceInstance);
-    if (serverMicroserviceInstance != null && !serverMicroserviceInstance.getEndpoints()
-        .isEmpty()) {
-      return serverMicroserviceInstance.getEndpoints().get(0)
-          .replace(ENDPOINT_PREFIX_REST, ENDPOINT_PREFIX_HTTP);
-    }
-    return null;
-  }
-
   public MicroserviceInstance findMicroserviceInstance(String serviceId, String instanceId) {
     ServerMicroserviceInstance instance = this.zeroConfigRegistryService
         .findServiceInstance(serviceId, instanceId);
@@ -280,12 +267,6 @@ public class ZeroConfigClient {
       }
     }
     return latestVersionInstance;
-  }
-
-  private Map<String, String> prepareRegisterData() {
-    // Convert to Multicast data format
-    return ClientUtil.convertToRegisterDataModel(selfMicroservice.getServiceId(),
-        selfMicroserviceInstance.getInstanceId(), selfMicroserviceInstance, selfMicroservice);
   }
 
   private ServerMicroserviceInstance preUnregisterCheck() {
