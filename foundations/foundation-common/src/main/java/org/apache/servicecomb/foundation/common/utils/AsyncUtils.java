@@ -47,4 +47,13 @@ public final class AsyncUtils {
   public static <T extends Throwable> void rethrow(Throwable exception) throws T {
     throw (T) exception;
   }
+
+  public static <T> T toSync(CompletableFuture<T> future) {
+    try {
+      return future.get();
+    } catch (Throwable e) {
+      rethrow(e.getCause());
+      return null;
+    }
+  }
 }
