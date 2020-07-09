@@ -30,7 +30,7 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -109,10 +109,7 @@ public class RouterInvokeFilter implements HttpServerFilter {
   private boolean isHaveHeadersRule() {
     DynamicStringProperty headerStr = DynamicPropertyFactory.getInstance()
         .getStringProperty(SERVICECOMB_ROUTER_HEADER, null);
-    if (StringUtils.isEmpty(headerStr)) {
-      return false;
-    }
-    return true;
+    return !StringUtils.isEmpty(headerStr.get());
   }
 
   private boolean addAllHeaders(String str) {

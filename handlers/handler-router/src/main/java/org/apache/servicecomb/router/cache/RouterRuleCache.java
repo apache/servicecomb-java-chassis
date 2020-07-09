@@ -21,16 +21,14 @@ import com.google.common.collect.Interners;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.servicecomb.router.model.PolicyRuleItem;
 import org.apache.servicecomb.router.model.ServiceInfoCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 
 /**
@@ -106,10 +104,7 @@ public class RouterRuleCache {
   public static boolean isServerContainRule(String targetServiceName) {
     DynamicStringProperty lookFor = DynamicPropertyFactory.getInstance()
         .getStringProperty(String.format(ROUTE_RULE, targetServiceName), null);
-    if (StringUtils.isEmpty(lookFor.get())) {
-      return false;
-    }
-    return true;
+    return !StringUtils.isEmpty(lookFor.get());
   }
 
   public static ConcurrentHashMap<String, ServiceInfoCache> getServiceInfoCacheMap() {
