@@ -75,6 +75,9 @@ public class EdgeAddHeaderClientFilter implements HttpClientFilter {
 
   @Override
   public void beforeSendRequest(Invocation invocation, HttpServletRequestEx requestEx) {
+    if (!invocation.isEdge()) {
+      return;
+    }
     HttpServletRequestEx oldRequest = invocation.getRequestEx();
     publicHeaders.forEach(key -> {
       if (StringUtils.isEmpty(oldRequest.getHeader(key))) {
