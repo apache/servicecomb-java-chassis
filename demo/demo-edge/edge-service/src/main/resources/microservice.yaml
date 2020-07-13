@@ -23,6 +23,11 @@ servicecomb:
   service:
     registry:
       address: http://127.0.0.1:30100
+  edge:
+    filter:
+      addHeader:
+        enabled: true
+        allowedHeaders: xxx
   rest:
     address: 0.0.0.0:18080
     server:
