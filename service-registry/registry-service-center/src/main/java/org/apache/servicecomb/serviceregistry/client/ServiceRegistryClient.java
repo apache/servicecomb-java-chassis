@@ -21,15 +21,17 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
+import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
+import org.apache.servicecomb.serviceregistry.api.request.RbacTokenRequest;
 import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.api.response.HeartbeatResponse;
-import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
+import org.apache.servicecomb.serviceregistry.api.response.RbacTokenResponse;
 import org.apache.servicecomb.serviceregistry.client.http.Holder;
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 
 public interface ServiceRegistryClient {
   void init();
@@ -202,4 +204,6 @@ public interface ServiceRegistryClient {
    * @return whether this operation success
    */
   boolean updateMicroserviceInstanceStatus(String microserviceId, String instanceId, MicroserviceInstanceStatus status);
+
+  RbacTokenResponse getRbacToken(RbacTokenRequest request);
 }

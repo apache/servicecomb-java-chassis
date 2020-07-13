@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -45,6 +44,7 @@ import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.slf4j.Logger;
@@ -95,8 +95,8 @@ public class ConfigCenterClient {
 
   private boolean isWatching = false;
 
-  private final ServiceLoader<AuthHeaderProvider> authHeaderProviders =
-      ServiceLoader.load(AuthHeaderProvider.class);
+  private final List<AuthHeaderProvider> authHeaderProviders =
+      SPIServiceUtils.getSortedService(AuthHeaderProvider.class);
 
   private URIConst uriConst = new URIConst();
 

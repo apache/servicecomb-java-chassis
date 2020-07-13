@@ -177,12 +177,13 @@ public final class Const {
         MICROSERVICE_INSTANCE_STATUS = V4_PREFIX + "/microservices/%s/instances/%s/status";
       }
     }
+
+    public static final String RBAC_TOKEN = "/v4/token";
   }
 
   public static final String REGISTRY_APP_ID = "default";
 
   public static final String REGISTRY_SERVICE_NAME = "SERVICECENTER";
-
 
   public static final String PATH_CHECKSESSION = "checksession";
 
