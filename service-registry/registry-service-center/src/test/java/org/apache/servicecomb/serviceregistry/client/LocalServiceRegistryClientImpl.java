@@ -43,8 +43,10 @@ import org.apache.servicecomb.registry.version.VersionRuleUtils;
 import org.apache.servicecomb.registry.version.VersionUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterConfig;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
+import org.apache.servicecomb.serviceregistry.api.request.RbacTokenRequest;
 import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.api.response.HeartbeatResponse;
+import org.apache.servicecomb.serviceregistry.api.response.RbacTokenResponse;
 import org.apache.servicecomb.serviceregistry.client.http.Holder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -454,5 +456,10 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
 
     microserviceInstance.setStatus(status);
     return true;
+  }
+
+  @Override
+  public RbacTokenResponse getRbacToken(RbacTokenRequest request) {
+    return new RbacTokenResponse();
   }
 }
