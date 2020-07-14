@@ -20,36 +20,48 @@ package org.apache.servicecomb.config.nacos.client;
 import org.apache.commons.configuration.Configuration;
 
 public class NacosConfig {
-  public static final NacosConfig INSTANCE = new NacosConfig();
+    public static final NacosConfig INSTANCE = new NacosConfig();
 
-  private static Configuration finalConfig;
+    private static Configuration finalConfig;
 
-  private static final String DATA_ID = "servicecomb.nacos.dataId";
+    private static final String DATA_ID = "servicecomb.nacos.dataId";
 
-  private static final String SERVER_ADDR = "servicecomb.nacos.serverAddr";
+    private static final String SERVER_ADDR = "servicecomb.nacos.serverAddr";
 
-  private static final String GROUP = "servicecomb.nacos.group";
+    private static final String GROUP = "servicecomb.nacos.group";
 
-  private NacosConfig() {
-  }
+    private static final String NAMESPACE = "servicecomb.nacos.namespace";
 
-  public static void setConcurrentCompositeConfiguration(Configuration config) {
-    finalConfig = config;
-  }
+    private static final String FILE_EXTENSION = "servicecomb.nacos.fileExtension";
 
-  public Configuration getConcurrentCompositeConfiguration() {
-    return finalConfig;
-  }
+    private NacosConfig() {
+    }
 
-  public String getServerAddr() {
-    return finalConfig.getString(SERVER_ADDR);
-  }
+    public static void setConcurrentCompositeConfiguration(Configuration config) {
+        finalConfig = config;
+    }
 
-  public String getDataId(){
-    return finalConfig.getString(DATA_ID);
-  }
+    public Configuration getConcurrentCompositeConfiguration() {
+        return finalConfig;
+    }
 
-  public String getGroup(){
-    return finalConfig.getString(GROUP);
-  }
+    public String getServerAddr() {
+        return finalConfig.getString(SERVER_ADDR);
+    }
+
+    public String getDataId(){
+        return finalConfig.getString(DATA_ID);
+    }
+
+    public String getGroup(){
+        return finalConfig.getString(GROUP);
+    }
+
+    public String getNamespace(){
+        return finalConfig.getString(NAMESPACE);
+    }
+
+    public String getFileExtension(){
+        return finalConfig.getString(FILE_EXTENSION);
+    }
 }
