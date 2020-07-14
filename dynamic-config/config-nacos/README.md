@@ -17,11 +17,12 @@ JSON:
     }
 
 3.In base model,add info in microservice.yaml:
-nacos:
-  config:
+servicecomb:
+  nacos:
     serverAddr: 127.0.0.1:8848
-    dataId: example
     group: DEFAULT_GROUP
+    dataId: example.yaml
+    namespace: 6a39260c-b834-456c-b52b-2981fb437c59
 
 4.Then add blow code and start base model,you will get properties(If properties on nacos has changed, you can also get new value):
 @RestSchema(schemaId = "nacos")
