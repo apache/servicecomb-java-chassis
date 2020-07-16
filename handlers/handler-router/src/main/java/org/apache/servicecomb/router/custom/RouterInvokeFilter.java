@@ -109,7 +109,7 @@ public class RouterInvokeFilter implements HttpServerFilter {
   private boolean isHaveHeadersRule() {
     DynamicStringProperty headerStr = DynamicPropertyFactory.getInstance()
         .getStringProperty(SERVICECOMB_ROUTER_HEADER, null);
-    return !StringUtils.isEmpty(headerStr.get());
+    return StringUtils.isNotEmpty(headerStr.get());
   }
 
   private boolean addAllHeaders(String str) {
