@@ -14,15 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.apache.servicecomb.qps;
+package org.apache.servicecomb.qps.strategy;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public class QpsController {
-  private String key;
-
-  private Integer qpsLimit;
+/**
+ * @Date 2020/7/8
+ **/
+public class FixedWindowStrategy extends AbstractQpsStrategy {
 
   // Interval begin time
   private volatile long msCycleBegin;
@@ -35,26 +34,16 @@ public class QpsController {
 
   private static final int CYCLE_LENGTH = 1000;
 
-  public QpsController(String key, Integer qpsLimit) {
-    this.key = key;
-    this.qpsLimit = qpsLimit;
+  public FixedWindowStrategy(String key, Long qpsLimit) {
+    super(qpsLimit, key);
     this.msCycleBegin = System.currentTimeMillis();
-  }
-
-  public String getKey() {
-    return key;
-  }
-
-  public Integer getQpsLimit() {
-    return qpsLimit;
-  }
-
-  public void setQpsLimit(Integer qpsLimit) {
-    this.qpsLimit = qpsLimit;
   }
 
   // return true means new request need to be rejected
   public boolean isLimitNewRequest() {
+    if (this.getQpsLimit() == null) {
+      this.setQpsLimit(Long.MAX_VALUE);
+    }
     long newCount = requestCount.incrementAndGet();
     long msNow = System.currentTimeMillis();
     //Time jump cause the new request injected
@@ -66,7 +55,6 @@ public class QpsController {
 
     // Configuration update and use is at the situation of multi-threaded concurrency
     // It is possible that operation level updated to null,but schema level or microservice level does not updated
-    int limitValue = (qpsLimit == null) ? Integer.MAX_VALUE : qpsLimit;
-    return newCount - lastRequestCount >= limitValue;
+    return newCount - lastRequestCount >= this.getQpsLimit();
   }
 }

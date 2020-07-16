@@ -26,6 +26,15 @@ import com.netflix.config.DynamicPropertyFactory;
 public final class Config {
   private static final Logger LOGGER = LoggerFactory.getLogger(Config.class);
 
+  public static final String STRATEGY_KEY_PREFIX = "servicecomb.flowcontrol.strategy";
+
+  public static final String CONSUMER_BUCKET_KEY_PREFIX = "servicecomb.flowcontrol.Consumer.qps.bucket.";
+
+  public static final String PROVIDER_BUCKET_KEY_PREFIX = "servicecomb.flowcontrol.Provider.qps.bucket.";
+
+  public static final String PROVIDER_BUCKET_KEY_GLOBAL =
+      "servicecomb.flowcontrol.Provider.qps.global.bucket";
+
   public static final String CONSUMER_LIMIT_KEY_PREFIX = "servicecomb.flowcontrol.Consumer.qps.limit.";
 
   public static final String PROVIDER_LIMIT_KEY_PREFIX = "servicecomb.flowcontrol.Provider.qps.limit.";

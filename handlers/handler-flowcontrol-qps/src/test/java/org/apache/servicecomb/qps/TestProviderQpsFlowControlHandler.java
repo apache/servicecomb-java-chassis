@@ -26,6 +26,8 @@ import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.qps.strategy.AbstractQpsStrategy;
+import org.apache.servicecomb.qps.strategy.FixedWindowStrategy;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -97,11 +99,11 @@ public class TestProviderQpsFlowControlHandler {
 
   @Test
   public void testQpsController() {
-    QpsController qpsController = new QpsController("abc", 100);
-    assertFalse(qpsController.isLimitNewRequest());
+    AbstractQpsStrategy qpsStrategy = new FixedWindowStrategy("abc", 100L);
+    assertFalse(qpsStrategy.isLimitNewRequest());
 
-    qpsController.setQpsLimit(1);
-    assertTrue(qpsController.isLimitNewRequest());
+    qpsStrategy.setQpsLimit(1L);
+    assertTrue(qpsStrategy.isLimitNewRequest());
   }
 
   @Test
@@ -111,7 +113,7 @@ public class TestProviderQpsFlowControlHandler {
     Mockito.when(invocation.getHandlerIndex()).thenReturn(0);
     ArchaiusUtils.setProperty("servicecomb.flowcontrol.Provider.qps.global.limit", 1);
     ProviderQpsFlowControlHandler.qpsControllerMgr
-        .setGlobalQpsController("servicecomb.flowcontrol.Provider.qps.global.limit");
+        .setGlobalQpsStrategy(Config.PROVIDER_LIMIT_KEY_GLOBAL, Config.PROVIDER_BUCKET_KEY_GLOBAL);
 
     handler.handle(invocation, asyncResp);
     handler.handle(invocation, asyncResp);
@@ -141,8 +143,8 @@ public class TestProviderQpsFlowControlHandler {
 
     new MockUp<QpsControllerManager>() {
       @Mock
-      protected QpsController create(String qualifiedNameKey) {
-        return new QpsController(qualifiedNameKey, 1);
+      protected QpsStrategy create(String qualifiedNameKey) {
+        return new FixedWindowStrategy(qualifiedNameKey, 1L);
       }
     };
 
@@ -168,8 +170,8 @@ public class TestProviderQpsFlowControlHandler {
 
     new MockUp<QpsControllerManager>() {
       @Mock
-      protected QpsController create(String qualifiedNameKey) {
-        return new QpsController(qualifiedNameKey, 1);
+      protected QpsStrategy create(String qualifiedNameKey) {
+        return new FixedWindowStrategy(qualifiedNameKey, 1L);
       }
     };
     handler.handle(invocation, asyncResp);

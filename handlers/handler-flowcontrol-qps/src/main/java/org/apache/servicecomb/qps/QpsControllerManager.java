@@ -22,6 +22,11 @@ import java.util.Map.Entry;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.qps.strategy.AbstractQpsStrategy;
+import org.apache.servicecomb.qps.strategy.FixedWindowStrategy;
+import org.apache.servicecomb.qps.strategy.LeakyBucketStrategy;
+import org.apache.servicecomb.qps.strategy.StrategyType;
+import org.apache.servicecomb.qps.strategy.TokenBucketStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,31 +38,34 @@ public class QpsControllerManager {
   /**
    * Describe the relationship between configuration and qpsController.
    */
-  protected final Map<String, QpsController> configQpsControllerMap = new ConcurrentHashMapEx<>();
+  protected final Map<String, AbstractQpsStrategy> configQpsControllerMap = new ConcurrentHashMapEx<>();
 
   /**
    * Describe the relationship between qualifiedKey(format is "microservice.schema.operation") and qpsController.
    */
-  protected final Map<String, QpsController> qualifiedNameControllerMap = new ConcurrentHashMapEx<>();
+  protected final Map<String, AbstractQpsStrategy> qualifiedNameControllerMap = new ConcurrentHashMapEx<>();
 
-  protected QpsController globalQpsController;
+  protected AbstractQpsStrategy globalQpsStrategy;
 
   public static final String SEPARATOR = ".";
 
-  private String configKeyPrefix;
+  private String limitKeyPrefix;
 
-  public QpsController getOrCreate(String microserviceName, Invocation invocation) {
+  private String bucketKeyPrefix;
+
+  public QpsStrategy getOrCreate(String microserviceName, Invocation invocation) {
     return qualifiedNameControllerMap
-        .computeIfAbsent(microserviceName + SEPARATOR + invocation.getOperationMeta().getSchemaQualifiedName(), key -> {
-          return create(key, microserviceName, invocation);
-        });
+        .computeIfAbsent(
+            microserviceName + SEPARATOR + invocation.getOperationMeta().getSchemaQualifiedName(),
+            key -> create(key, microserviceName, invocation));
   }
 
   /**
    * Create relevant qpsLimit dynamicProperty and watch the configuration change.
    * Search and return a valid qpsController.
    */
-  protected QpsController create(String qualifiedNameKey, String microserviceName, Invocation invocation) {
+  protected AbstractQpsStrategy create(String qualifiedNameKey, String microserviceName,
+      Invocation invocation) {
     // create "microservice"
     createQpsControllerIfNotExist(microserviceName);
     // create "microservice.schema"
@@ -70,7 +78,7 @@ public class QpsControllerManager {
   }
 
   /**
-   * <p> Use qualifiedNameKey to search {@link QpsController}.
+   * <p> Use qualifiedNameKey to search {@link QpsStrategy}.
    * Firstly try to search "microservice.schema.operation". If no valid result found, then try "microservice.schema",
    * and then "microservice" or global qpsController(If there is a global qpsController).</p>
    * <p> This method ensures that there is always an existing qpsController returned, as the relevant qpsController has
@@ -79,42 +87,42 @@ public class QpsControllerManager {
    * @param qualifiedNameKey qualifiedNameKey in {@link #qualifiedNameControllerMap}
    * @return a qps controller, lower level controllers with valid qpsLimit have priority.
    */
-  protected QpsController searchQpsController(String qualifiedNameKey) {
-    QpsController qpsController = configQpsControllerMap.get(qualifiedNameKey);
-    if (isValidQpsController(qpsController)) {
-      return qpsController;
+  protected AbstractQpsStrategy searchQpsController(String qualifiedNameKey) {
+    AbstractQpsStrategy qpsStrategy = configQpsControllerMap.get(qualifiedNameKey);
+    if (isValidQpsController(qpsStrategy)) {
+      return qpsStrategy;
     }
 
     int index = qualifiedNameKey.lastIndexOf(SEPARATOR);
     while (index > 0) {
-      qpsController = configQpsControllerMap.get(qualifiedNameKey.substring(0, index));
-      if (isValidQpsController(qpsController)) {
-        return qpsController;
+      qpsStrategy = configQpsControllerMap.get(qualifiedNameKey.substring(0, index));
+      if (isValidQpsController(qpsStrategy)) {
+        return qpsStrategy;
       }
 
       index = qualifiedNameKey.lastIndexOf(SEPARATOR, index - 1);
     }
 
-    if (isValidQpsController(qpsController)) {
-      return qpsController;
+    if (isValidQpsController(qpsStrategy)) {
+      return qpsStrategy;
     }
 
-    if (null != globalQpsController) {
-      return globalQpsController;
+    if (null != globalQpsStrategy) {
+      return globalQpsStrategy;
     }
 
     // if null is returned, maybe the operation qps controller is not initiated correctly.
     // getOrCreateQpsController() should be invoked before.
-    return qpsController;
+    return qpsStrategy;
   }
 
-  private boolean keyMatch(String configKey, Entry<String, QpsController> controllerEntry) {
+  private boolean keyMatch(String configKey, Entry<String, AbstractQpsStrategy> controllerEntry) {
     return controllerEntry.getKey().equals(configKey)
         || controllerEntry.getKey().startsWith(configKey + SEPARATOR);
   }
 
-  private boolean isValidQpsController(QpsController qpsController) {
-    return null != qpsController && null != qpsController.getQpsLimit();
+  private boolean isValidQpsController(AbstractQpsStrategy qpsStrategy) {
+    return null != qpsStrategy && null != qpsStrategy.getQpsLimit();
   }
 
   private void createQpsControllerIfNotExist(String configKey) {
@@ -123,52 +131,86 @@ public class QpsControllerManager {
     }
 
     LOGGER.info("Create qpsController, configKey = [{}]", configKey);
-    DynamicProperty property = getDynamicProperty(configKey);
-    QpsController qpsController = new QpsController(configKey, property.getInteger());
+    DynamicProperty limitProperty = DynamicProperty.getInstance(limitKeyPrefix + configKey);
+    DynamicProperty bucketProperty = DynamicProperty.getInstance(bucketKeyPrefix + configKey);
+    AbstractQpsStrategy qpsStrategy = chooseStrategy(configKey, limitProperty.getLong(),
+        bucketProperty.getLong());
 
-    configQpsControllerMap.put(configKey, qpsController);
-
-    property.addCallback(() -> {
-      qpsController.setQpsLimit(property.getInteger());
-      LOGGER.info("Qps limit updated, configKey = [{}], value = [{}]", configKey, property.getString());
+    limitProperty.addCallback(() -> {
+      qpsStrategy.setQpsLimit(limitProperty.getLong());
+      LOGGER.info("Qps limit updated, configKey = [{}], value = [{}]", configKey,
+          limitProperty.getString());
       updateObjMap(configKey);
     });
+    bucketProperty.addCallback(() -> {
+      qpsStrategy.setBucketLimit(bucketProperty.getLong());
+      LOGGER.info("bucket limit updated, configKey = [{}], value = [{}]", configKey,
+          bucketProperty.getString());
+      updateObjMap(configKey);
+    });
+
+    configQpsControllerMap.put(configKey, qpsStrategy);
   }
 
   protected void updateObjMap(String configKey) {
-    for (Entry<String, QpsController> controllerEntry : qualifiedNameControllerMap.entrySet()) {
+    for (Entry<String, AbstractQpsStrategy> controllerEntry : qualifiedNameControllerMap
+        .entrySet()) {
       if (keyMatch(configKey, controllerEntry)) {
-        QpsController qpsController = searchQpsController(controllerEntry.getKey());
-        controllerEntry.setValue(qpsController);
+        AbstractQpsStrategy qpsStrategy = searchQpsController(controllerEntry.getKey());
+        controllerEntry.setValue(qpsStrategy);
         LOGGER.info("QpsController updated, operationId = [{}], configKey = [{}], qpsLimit = [{}]",
-            controllerEntry.getKey(), qpsController.getKey(), qpsController.getQpsLimit());
+            controllerEntry.getKey(), qpsStrategy.getKey(), qpsStrategy.getQpsLimit());
       }
     }
   }
 
-  public QpsControllerManager setConfigKeyPrefix(String configKeyPrefix) {
-    this.configKeyPrefix = configKeyPrefix;
+  public QpsControllerManager setLimitKeyPrefix(String limitKeyPrefix) {
+    this.limitKeyPrefix = limitKeyPrefix;
     return this;
   }
 
-  public QpsControllerManager setGlobalQpsController(String globalConfigKey) {
-    DynamicProperty globalQpsProperty = DynamicProperty.getInstance(globalConfigKey);
-    QpsController qpsController = new QpsController(globalConfigKey, globalQpsProperty.getInteger());
+  public QpsControllerManager setBucketKeyPrefix(String bucketKeyPrefix) {
+    this.bucketKeyPrefix = bucketKeyPrefix;
+    return this;
+  }
 
-    globalQpsProperty.addCallback(() -> {
-      qpsController.setQpsLimit(globalQpsProperty.getInteger());
-      LOGGER.info("Global qps limit update, value = [{}]", globalQpsProperty.getInteger());
+  public QpsControllerManager setGlobalQpsStrategy(String globalLimitKey, String globalBucketKey) {
+    DynamicProperty globalLimitProperty = DynamicProperty.getInstance(globalLimitKey);
+    DynamicProperty globalBucketProperty = DynamicProperty.getInstance(globalBucketKey);
+    globalQpsStrategy = chooseStrategy(globalLimitKey, globalLimitProperty.getLong(),
+        globalBucketProperty.getLong());
+    globalLimitProperty.addCallback(() -> {
+      globalQpsStrategy.setQpsLimit(globalLimitProperty.getLong());
+      LOGGER.info("Global qps limit update, value = [{}]", globalLimitProperty.getInteger());
     });
-
-    this.globalQpsController = qpsController;
+    globalBucketProperty.addCallback(() -> {
+      globalQpsStrategy.setBucketLimit(globalBucketProperty.getLong());
+      LOGGER.info("Global bucket limit update, value = [{}]", globalBucketProperty.getInteger());
+    });
     return this;
   }
 
-  public QpsController getGlobalQpsController() {
-    return globalQpsController;
+  private AbstractQpsStrategy chooseStrategy(String globalConfigKey, Long limit, Long bucket) {
+    String strategyKey = DynamicProperty.getInstance(Config.STRATEGY_KEY_PREFIX).getString();
+    AbstractQpsStrategy strategy;
+    switch (StrategyType.parseStrategyType(strategyKey)) {
+      case FixedWindow:
+        strategy = new FixedWindowStrategy(globalConfigKey, limit);
+        break;
+      case LeakyBucket:
+        strategy = new LeakyBucketStrategy(globalConfigKey, limit);
+        break;
+      case TokenBucket:
+        strategy = new TokenBucketStrategy(globalConfigKey, limit, bucket);
+        break;
+      case SlidingWindow:
+      default:
+        strategy = new FixedWindowStrategy(globalConfigKey, limit);
+    }
+    return strategy;
   }
 
-  protected DynamicProperty getDynamicProperty(String configKey) {
-    return DynamicProperty.getInstance(configKeyPrefix + configKey);
+  public QpsStrategy getGlobalQpsStrategy() {
+    return globalQpsStrategy;
   }
 }

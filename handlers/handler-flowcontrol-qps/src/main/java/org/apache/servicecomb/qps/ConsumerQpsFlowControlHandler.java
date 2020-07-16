@@ -29,7 +29,8 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
  */
 public class ConsumerQpsFlowControlHandler implements Handler {
   static final QpsControllerManager qpsControllerMgr = new QpsControllerManager()
-      .setConfigKeyPrefix(Config.CONSUMER_LIMIT_KEY_PREFIX);
+      .setLimitKeyPrefix(Config.CONSUMER_LIMIT_KEY_PREFIX)
+      .setBucketKeyPrefix(Config.CONSUMER_BUCKET_KEY_PREFIX);
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
@@ -38,8 +39,8 @@ public class ConsumerQpsFlowControlHandler implements Handler {
       return;
     }
 
-    QpsController qpsController = qpsControllerMgr.getOrCreate(invocation.getMicroserviceName(), invocation);
-    if (qpsController.isLimitNewRequest()) {
+    QpsStrategy qpsStrategy = qpsControllerMgr.getOrCreate(invocation.getMicroserviceName(), invocation);
+    if (qpsStrategy.isLimitNewRequest()) {
       // return http status 429
       CommonExceptionData errorData = new CommonExceptionData("rejected by qps flowcontrol");
       asyncResp.consumerFail(
