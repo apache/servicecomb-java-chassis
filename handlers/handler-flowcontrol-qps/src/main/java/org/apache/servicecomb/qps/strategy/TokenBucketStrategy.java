@@ -17,9 +17,6 @@
 
 package org.apache.servicecomb.qps.strategy;
 
-/**
- * @Date 2020/7/16
- **/
 public class TokenBucketStrategy extends LeakyBucketStrategy {
 
   public TokenBucketStrategy(String key, Long qpsLimit, Long bucketLimit) {

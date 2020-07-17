@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicLong;
  * 1. as a meter : it's same as the token bucket.
  * 2. as a queue : the bucket size equal to qpsLimit.
  *
- * @Date 2020/7/7
  **/
 public class LeakyBucketStrategy extends AbstractQpsStrategy {
 
@@ -45,9 +44,6 @@ public class LeakyBucketStrategy extends AbstractQpsStrategy {
     this.setBucketLimit(bucketLimit);
   }
 
-  /**
-   * @return
-   */
   @Override
   public boolean isLimitNewRequest() {
     if (this.getQpsLimit() == null) {
@@ -61,7 +57,7 @@ public class LeakyBucketStrategy extends AbstractQpsStrategy {
     //get the num of te period time
     long leakCount = ((nowTime - lastTime + remainder) / 1000) * this.getQpsLimit();
     remainder = (nowTime - lastTime + remainder) % 1000;
-    // leak the request , if leak
+    // leak the request
     if (requestCount.longValue() > leakCount) {
       requestCount.addAndGet(-leakCount);
     } else {

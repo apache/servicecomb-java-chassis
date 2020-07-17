@@ -133,9 +133,19 @@ public class QpsControllerManager {
     LOGGER.info("Create qpsController, configKey = [{}]", configKey);
     DynamicProperty limitProperty = DynamicProperty.getInstance(limitKeyPrefix + configKey);
     DynamicProperty bucketProperty = DynamicProperty.getInstance(bucketKeyPrefix + configKey);
+    DynamicProperty strategyProperty = DynamicProperty
+        .getInstance(Config.STRATEGY_KEY_PREFIX);
     AbstractQpsStrategy qpsStrategy = chooseStrategy(configKey, limitProperty.getLong(),
-        bucketProperty.getLong());
+        bucketProperty.getLong(), strategyProperty.getString());
 
+    strategyProperty.addCallback(() -> {
+      AbstractQpsStrategy innerQpsStrategy = chooseStrategy(configKey, limitProperty.getLong(),
+          bucketProperty.getLong(), strategyProperty.getString());
+      configQpsControllerMap.put(configKey, innerQpsStrategy);
+      LOGGER.info("Global flow control strategy update, value = [{}]",
+          strategyProperty.getString());
+      updateObjMap(configKey);
+    });
     limitProperty.addCallback(() -> {
       qpsStrategy.setQpsLimit(limitProperty.getLong());
       LOGGER.info("Qps limit updated, configKey = [{}], value = [{}]", configKey,
@@ -177,8 +187,16 @@ public class QpsControllerManager {
   public QpsControllerManager setGlobalQpsStrategy(String globalLimitKey, String globalBucketKey) {
     DynamicProperty globalLimitProperty = DynamicProperty.getInstance(globalLimitKey);
     DynamicProperty globalBucketProperty = DynamicProperty.getInstance(globalBucketKey);
+    DynamicProperty globalStrategyProperty = DynamicProperty
+        .getInstance(Config.STRATEGY_KEY_PREFIX);
     globalQpsStrategy = chooseStrategy(globalLimitKey, globalLimitProperty.getLong(),
-        globalBucketProperty.getLong());
+        globalBucketProperty.getLong(), globalStrategyProperty.getString());
+    globalStrategyProperty.addCallback(() -> {
+      globalQpsStrategy = chooseStrategy(globalLimitKey, globalLimitProperty.getLong(),
+          globalBucketProperty.getLong(), globalStrategyProperty.getString());
+      LOGGER.info("Global flow control strategy update, value = [{}]",
+          globalStrategyProperty.getString());
+    });
     globalLimitProperty.addCallback(() -> {
       globalQpsStrategy.setQpsLimit(globalLimitProperty.getLong());
       LOGGER.info("Global qps limit update, value = [{}]", globalLimitProperty.getInteger());
@@ -190,8 +208,8 @@ public class QpsControllerManager {
     return this;
   }
 
-  private AbstractQpsStrategy chooseStrategy(String globalConfigKey, Long limit, Long bucket) {
-    String strategyKey = DynamicProperty.getInstance(Config.STRATEGY_KEY_PREFIX).getString();
+  private AbstractQpsStrategy chooseStrategy(String globalConfigKey, Long limit, Long bucket,
+      String strategyKey) {
     AbstractQpsStrategy strategy;
     switch (StrategyType.parseStrategyType(strategyKey)) {
       case FixedWindow:

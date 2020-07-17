@@ -19,10 +19,6 @@ package org.apache.servicecomb.qps.strategy;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @Author GuoYl123
- * @Date 2020/7/13
- **/
 public enum StrategyType {
   TokenBucket,
   LeakyBucket,
