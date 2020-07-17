@@ -19,9 +19,7 @@ package org.apache.servicecomb.qps.strategy;
 
 import org.apache.servicecomb.qps.QpsStrategy;
 
-/**
- * @Date 2020/7/14
- **/
+
 public class AbstractQpsStrategy implements QpsStrategy {
 
   private Long qpsLimit;

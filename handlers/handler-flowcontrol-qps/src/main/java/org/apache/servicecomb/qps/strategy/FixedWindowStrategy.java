@@ -18,9 +18,6 @@ package org.apache.servicecomb.qps.strategy;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-/**
- * @Date 2020/7/8
- **/
 public class FixedWindowStrategy extends AbstractQpsStrategy {
 
   // Interval begin time
