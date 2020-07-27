@@ -32,7 +32,7 @@ public enum StrategyType {
     }
 
     try {
-      return StrategyType.valueOf(type.toUpperCase());
+      return StrategyType.valueOf(type);
     } catch (IllegalArgumentException e) {
       return StrategyType.FixedWindow;
     }
