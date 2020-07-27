@@ -23,7 +23,8 @@ public enum StrategyType {
   TokenBucket,
   LeakyBucket,
   FixedWindow,
-  SlidingWindow;
+  SlidingWindow,
+  Custom;
 
 
   public static StrategyType parseStrategyType(String type) {

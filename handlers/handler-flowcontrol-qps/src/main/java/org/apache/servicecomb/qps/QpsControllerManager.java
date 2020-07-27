@@ -22,6 +22,7 @@ import java.util.Map.Entry;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.qps.strategy.AbstractQpsStrategy;
 import org.apache.servicecomb.qps.strategy.FixedWindowStrategy;
 import org.apache.servicecomb.qps.strategy.LeakyBucketStrategy;
@@ -211,6 +212,8 @@ public class QpsControllerManager {
   private AbstractQpsStrategy chooseStrategy(String globalConfigKey, Long limit, Long bucket,
       String strategyKey) {
     AbstractQpsStrategy strategy;
+    AbstractQpsStrategy customStrategy = SPIServiceUtils
+        .getTargetService(AbstractQpsStrategy.class);
     switch (StrategyType.parseStrategyType(strategyKey)) {
       case FixedWindow:
         strategy = new FixedWindowStrategy(globalConfigKey, limit);
@@ -220,6 +223,9 @@ public class QpsControllerManager {
         break;
       case TokenBucket:
         strategy = new TokenBucketStrategy(globalConfigKey, limit, bucket);
+        break;
+      case Custom:
+        strategy = customStrategy;
         break;
       case SlidingWindow:
       default:
