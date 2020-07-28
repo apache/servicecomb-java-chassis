@@ -31,10 +31,7 @@ public class FixedWindowStrategy extends AbstractQpsStrategy {
 
   private static final int CYCLE_LENGTH = 1000;
 
-  public FixedWindowStrategy(String key, Long qpsLimit) {
-    super(qpsLimit, key);
-    this.msCycleBegin = System.currentTimeMillis();
-  }
+  private static final String STRATEGY_NAME = "FixedWindow";
 
   // return true means new request need to be rejected
   public boolean isLimitNewRequest() {
@@ -53,5 +50,10 @@ public class FixedWindowStrategy extends AbstractQpsStrategy {
     // Configuration update and use is at the situation of multi-threaded concurrency
     // It is possible that operation level updated to null,but schema level or microservice level does not updated
     return newCount - lastRequestCount >= this.getQpsLimit();
+  }
+
+  @Override
+  public String name() {
+    return STRATEGY_NAME;
   }
 }

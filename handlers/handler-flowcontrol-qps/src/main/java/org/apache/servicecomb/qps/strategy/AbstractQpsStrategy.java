@@ -20,18 +20,13 @@ package org.apache.servicecomb.qps.strategy;
 import org.apache.servicecomb.qps.QpsStrategy;
 
 
-public class AbstractQpsStrategy implements QpsStrategy {
+public abstract class AbstractQpsStrategy implements QpsStrategy {
 
   private Long qpsLimit;
 
   private Long bucketLimit;
 
   private String key;
-
-  public AbstractQpsStrategy(Long qpsLimit, String key) {
-    this.qpsLimit = qpsLimit;
-    this.key = key;
-  }
 
   public Long getBucketLimit() {
     return bucketLimit;
@@ -42,9 +37,10 @@ public class AbstractQpsStrategy implements QpsStrategy {
   }
 
   @Override
-  public boolean isLimitNewRequest() {
-    return true;
-  }
+  public abstract boolean isLimitNewRequest();
+
+  @Override
+  public abstract String name();
 
   public void setQpsLimit(Long qpsLimit) {
     this.qpsLimit = qpsLimit;

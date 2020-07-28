@@ -34,15 +34,7 @@ public class LeakyBucketStrategy extends AbstractQpsStrategy {
 
   private long remainder = 0;
 
-  public LeakyBucketStrategy(String key, Long qpsLimit) {
-    super(qpsLimit, key);
-    this.setBucketLimit(qpsLimit);
-  }
-
-  public LeakyBucketStrategy(String key, Long qpsLimit, Long bucketLimit) {
-    super(qpsLimit, key);
-    this.setBucketLimit(bucketLimit);
-  }
+  private static final String STRATEGY_NAME = "LeakyBucket";
 
   @Override
   public boolean isLimitNewRequest() {
@@ -72,4 +64,8 @@ public class LeakyBucketStrategy extends AbstractQpsStrategy {
     return true;
   }
 
+  @Override
+  public String name() {
+    return STRATEGY_NAME;
+  }
 }

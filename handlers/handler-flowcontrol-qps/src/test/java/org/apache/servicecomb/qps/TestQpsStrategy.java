@@ -31,7 +31,9 @@ public class TestQpsStrategy {
 
   @Test
   public void testFixedWindowStrategy() {
-    AbstractQpsStrategy qpsStrategy = new FixedWindowStrategy("abc", 100L);
+    AbstractQpsStrategy qpsStrategy = new FixedWindowStrategy();
+    qpsStrategy.setKey("abc");
+    qpsStrategy.setQpsLimit(100L);
     Assert.assertEquals(false, qpsStrategy.isLimitNewRequest());
 
     qpsStrategy.setQpsLimit(1L);
@@ -41,7 +43,9 @@ public class TestQpsStrategy {
 
   @Test
   public void testLeakyBucketStrategy() {
-    LeakyBucketStrategy qpsStrategy = new LeakyBucketStrategy("abc", 100L);
+    LeakyBucketStrategy qpsStrategy = new LeakyBucketStrategy();
+    qpsStrategy.setKey("abc");
+    qpsStrategy.setQpsLimit(100L);
     Assert.assertEquals(false, qpsStrategy.isLimitNewRequest());
 
     qpsStrategy.setQpsLimit(1L);

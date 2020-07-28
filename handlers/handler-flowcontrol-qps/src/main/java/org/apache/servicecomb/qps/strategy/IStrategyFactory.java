@@ -17,12 +17,7 @@
 
 package org.apache.servicecomb.qps.strategy;
 
-public class TokenBucketStrategy extends LeakyBucketStrategy {
+public interface IStrategyFactory {
 
-  private static final String STRATEGY_NAME = "TokenBucket";
-
-  @Override
-  public String name() {
-    return STRATEGY_NAME;
-  }
+  AbstractQpsStrategy createStrategy(String strategyName);
 }

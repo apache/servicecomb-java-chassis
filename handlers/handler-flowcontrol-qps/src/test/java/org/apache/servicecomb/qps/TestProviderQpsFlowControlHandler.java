@@ -99,7 +99,9 @@ public class TestProviderQpsFlowControlHandler {
 
   @Test
   public void testQpsController() {
-    AbstractQpsStrategy qpsStrategy = new FixedWindowStrategy("abc", 100L);
+    AbstractQpsStrategy qpsStrategy = new FixedWindowStrategy();
+    qpsStrategy.setKey("abc");
+    qpsStrategy.setQpsLimit(100L);
     assertFalse(qpsStrategy.isLimitNewRequest());
 
     qpsStrategy.setQpsLimit(1L);
@@ -144,7 +146,10 @@ public class TestProviderQpsFlowControlHandler {
     new MockUp<QpsControllerManager>() {
       @Mock
       protected QpsStrategy create(String qualifiedNameKey) {
-        return new FixedWindowStrategy(qualifiedNameKey, 1L);
+        AbstractQpsStrategy strategy = new FixedWindowStrategy();
+        strategy.setKey(qualifiedNameKey);
+        strategy.setQpsLimit(1L);
+        return strategy;
       }
     };
 
@@ -171,7 +176,10 @@ public class TestProviderQpsFlowControlHandler {
     new MockUp<QpsControllerManager>() {
       @Mock
       protected QpsStrategy create(String qualifiedNameKey) {
-        return new FixedWindowStrategy(qualifiedNameKey, 1L);
+        AbstractQpsStrategy strategy = new FixedWindowStrategy();
+        strategy.setKey(qualifiedNameKey);
+        strategy.setQpsLimit(1L);
+        return strategy;
       }
     };
     handler.handle(invocation, asyncResp);
