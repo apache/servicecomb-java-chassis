@@ -17,21 +17,21 @@
 
 package org.apache.servicecomb.qps;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.qps.strategy.AbstractQpsStrategy;
-import org.apache.servicecomb.qps.strategy.FixedWindowStrategy;
-import org.apache.servicecomb.qps.strategy.LeakyBucketStrategy;
-import org.apache.servicecomb.qps.strategy.StrategyType;
-import org.apache.servicecomb.qps.strategy.TokenBucketStrategy;
+import org.apache.servicecomb.qps.strategy.IStrategyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.netflix.config.DynamicProperty;
+import org.apache.commons.lang3.StringUtils;
 
 public class QpsControllerManager {
   private static final Logger LOGGER = LoggerFactory.getLogger(QpsControllerManager.class);
@@ -210,27 +210,26 @@ public class QpsControllerManager {
   }
 
   private AbstractQpsStrategy chooseStrategy(String globalConfigKey, Long limit, Long bucket,
-      String strategyKey) {
-    AbstractQpsStrategy strategy;
-    AbstractQpsStrategy customStrategy = SPIServiceUtils
-        .getTargetService(AbstractQpsStrategy.class);
-    switch (StrategyType.parseStrategyType(strategyKey)) {
-      case FixedWindow:
-        strategy = new FixedWindowStrategy(globalConfigKey, limit);
-        break;
-      case LeakyBucket:
-        strategy = new LeakyBucketStrategy(globalConfigKey, limit);
-        break;
-      case TokenBucket:
-        strategy = new TokenBucketStrategy(globalConfigKey, limit, bucket);
-        break;
-      case Custom:
-        strategy = customStrategy;
-        break;
-      case SlidingWindow:
-      default:
-        strategy = new FixedWindowStrategy(globalConfigKey, limit);
+      String strategyName) {
+    if (StringUtils.isEmpty(strategyName)) {
+      strategyName = "FixedWindow";
     }
+    AbstractQpsStrategy strategy = null;
+    List<IStrategyFactory> strategyFactories = SPIServiceUtils
+        .getOrLoadSortedService(IStrategyFactory.class);
+    for (IStrategyFactory strategyFactory : strategyFactories) {
+      strategy = strategyFactory.createStrategy(strategyName);
+      if (strategy != null) {
+        break;
+      }
+    }
+    if (strategy == null) {
+      throw new ServiceCombException(
+          "the qps strategy name " + strategyName + " is not exist , please check.");
+    }
+    strategy.setKey(globalConfigKey);
+    strategy.setQpsLimit(limit);
+    strategy.setBucketLimit(bucket);
     return strategy;
   }
 

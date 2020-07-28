@@ -20,4 +20,6 @@ package org.apache.servicecomb.qps;
 public interface QpsStrategy {
 
   boolean isLimitNewRequest();
+
+  String name();
 }

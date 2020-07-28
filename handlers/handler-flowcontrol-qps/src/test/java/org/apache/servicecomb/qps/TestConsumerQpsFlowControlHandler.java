@@ -70,7 +70,9 @@ public class TestConsumerQpsFlowControlHandler {
 
   @Test
   public void testQpsController() {
-    AbstractQpsStrategy qpsStrategy = new FixedWindowStrategy("abc", 100L);
+    AbstractQpsStrategy qpsStrategy = new FixedWindowStrategy();
+    qpsStrategy.setKey("abc");
+    qpsStrategy.setQpsLimit(100L);
     Assert.assertEquals(false, qpsStrategy.isLimitNewRequest());
 
     qpsStrategy.setQpsLimit(1L);
@@ -80,7 +82,9 @@ public class TestConsumerQpsFlowControlHandler {
   @Test
   public void testHandle() throws Exception {
     String key = "svc.schema.opr";
-    AbstractQpsStrategy qpsStrategy = new FixedWindowStrategy("key", 12L);
+    AbstractQpsStrategy qpsStrategy = new FixedWindowStrategy();
+    qpsStrategy.setKey("key");
+    qpsStrategy.setQpsLimit(12L);
     Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
     Mockito.when(operationMeta.getSchemaQualifiedName()).thenReturn("schema.opr");
     Mockito.when(invocation.getSchemaId()).thenReturn("schema");
@@ -113,7 +117,9 @@ public class TestConsumerQpsFlowControlHandler {
   @Test
   public void testHandleIsLimitNewRequestAsFalse() throws Exception {
     String key = "service.schema.id";
-    AbstractQpsStrategy qpsStrategy = new FixedWindowStrategy("service", 12L);
+    AbstractQpsStrategy qpsStrategy = new FixedWindowStrategy();
+    qpsStrategy.setKey("service");
+    qpsStrategy.setQpsLimit(12L);
     Mockito.when(invocation.getMicroserviceName()).thenReturn("service");
     Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
 

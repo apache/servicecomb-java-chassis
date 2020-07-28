@@ -14,28 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.qps.strategy;
 
-import org.apache.commons.lang3.StringUtils;
+public class DefaultStrategyFactory implements IStrategyFactory {
 
-public enum StrategyType {
-  TokenBucket,
-  LeakyBucket,
-  FixedWindow,
-  SlidingWindow,
-  Custom;
-
-
-  public static StrategyType parseStrategyType(String type) {
-    if (StringUtils.isEmpty(type)) {
-      return StrategyType.FixedWindow;
-    }
-
-    try {
-      return StrategyType.valueOf(type);
-    } catch (IllegalArgumentException e) {
-      return StrategyType.FixedWindow;
+  public AbstractQpsStrategy createStrategy(String strategyName) {
+    switch (strategyName) {
+      case "TokenBucket":
+        return new TokenBucketStrategy();
+      case "LeakyBucket":
+        return new LeakyBucketStrategy();
+      case "FixedWindow":
+        return new FixedWindowStrategy();
+      default:
+        return null;
     }
   }
 }
