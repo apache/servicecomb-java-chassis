@@ -67,6 +67,7 @@ public class RestProducers implements BeanPostProcessor {
     RestSchema restSchema = beanCls.getAnnotation(RestSchema.class);
     if (restSchema != null) {
       ProducerMeta producerMeta = new ProducerMeta(restSchema.schemaId(), bean);
+      producerMeta.setSchemaInterface(restSchema.schemaInterface());
       producerMetaList.add(producerMeta);
       return;
     }

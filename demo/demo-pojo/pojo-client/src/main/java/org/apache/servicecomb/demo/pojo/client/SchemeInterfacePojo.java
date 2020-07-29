@@ -15,25 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.provider.pojo;
+package org.apache.servicecomb.demo.pojo.client;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+public interface SchemeInterfacePojo {
+  int reduce(int a, int b);
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.springframework.stereotype.Component;
-
-@Inherited
-@Documented
-@Retention(RUNTIME)
-@Target(TYPE)
-@Component
-public @interface RpcSchema {
-  String schemaId() default "";
-
-  Class<?> schemaInterface() default Object.class;
+  int add(int a, int b);
 }

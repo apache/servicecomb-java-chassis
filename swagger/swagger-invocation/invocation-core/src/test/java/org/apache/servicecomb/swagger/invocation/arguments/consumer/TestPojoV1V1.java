@@ -39,9 +39,18 @@ import io.swagger.models.Swagger;
 @SuppressWarnings("unchecked")
 public class TestPojoV1V1 {
   @Test
-  public void add_add() {
+  public void add_add_class() {
+    add_add(PojoAddV1.class);
+  }
+
+  @Test
+  public void add_add_interface() {
+    add_add(ConsumerAddV1.class);
+  }
+
+  public void add_add(Class<?> clazz) {
     SwaggerEnvironment environment = new SwaggerEnvironment();
-    Swagger swagger = SwaggerGenerator.generate(PojoAddV1.class);
+    Swagger swagger = SwaggerGenerator.generate(clazz);
 
     SwaggerConsumer swaggerConsumer = environment.createConsumer(ConsumerAddV1.class, swagger);
     ArgumentsMapper mapper = swaggerConsumer.findOperation("add").getArgumentsMapper();

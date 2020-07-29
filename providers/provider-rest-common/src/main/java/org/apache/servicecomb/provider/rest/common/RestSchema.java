@@ -34,4 +34,6 @@ import org.springframework.stereotype.Component;
 @Component
 public @interface RestSchema {
   String schemaId();
+
+  Class<?> schemaInterface() default Object.class;
 }

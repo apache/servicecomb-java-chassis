@@ -22,6 +22,8 @@ public class ProducerMeta {
 
   private Object instance;
 
+  private Class<?> schemaInterface;
+
   public ProducerMeta() {
   }
 
@@ -44,5 +46,13 @@ public class ProducerMeta {
 
   public void setInstance(Object instance) {
     this.instance = instance;
+  }
+
+  public Class<?> getSchemaInterface() {
+    return schemaInterface;
+  }
+
+  public void setSchemaInterface(Class<?> schemaInterface) {
+    this.schemaInterface = schemaInterface;
   }
 }
