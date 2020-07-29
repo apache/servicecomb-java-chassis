@@ -100,12 +100,13 @@ public class SwaggerEnvironment {
   }
 
   public SwaggerProducer createProducer(Object producerInstance, Swagger swagger) {
-    if (swagger == null) {
-      Class<?> producerCls = BeanUtils.getImplClassFromBean(producerInstance);
-      swagger = SwaggerGenerator.generate(producerCls);
-    }
+    return createProducer(producerInstance, null, swagger);
+  }
 
-    Map<Class<?>, ContextArgumentMapperFactory> contextFactorys = SPIServiceUtils
+  public SwaggerProducer createProducer(Object producerInstance, Class<?> schemaInterface, Swagger swagger) {
+    swagger = checkAndGenerateSwagger(producerInstance, schemaInterface, swagger);
+
+    Map<Class<?>, ContextArgumentMapperFactory> contextFactories = SPIServiceUtils
         .getOrLoadSortedService(ProducerContextArgumentMapperFactory.class)
         .stream()
         .collect(Collectors.toMap(ProducerContextArgumentMapperFactory::getContextClass, Function.identity()));
@@ -135,7 +136,7 @@ public class SwaggerEnvironment {
 
       ProducerArgumentsMapperCreator creator = new ProducerArgumentsMapperCreator(
           Json.mapper().getSerializationConfig(),
-          contextFactorys,
+          contextFactories,
           producerCls,
           producerMethod,
           swaggerOperation);
@@ -156,5 +157,17 @@ public class SwaggerEnvironment {
     }
 
     return producer;
+  }
+
+  private Swagger checkAndGenerateSwagger(Object producerInstance, Class<?> schemaInterface, Swagger swagger) {
+    if (swagger == null) {
+      if (schemaInterface != null && !Object.class.equals(schemaInterface)) {
+        swagger = SwaggerGenerator.generate(schemaInterface);
+      } else {
+        Class<?> producerCls = BeanUtils.getImplClassFromBean(producerInstance);
+        swagger = SwaggerGenerator.generate(producerCls);
+      }
+    }
+    return swagger;
   }
 }

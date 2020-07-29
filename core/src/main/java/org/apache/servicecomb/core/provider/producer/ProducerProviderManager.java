@@ -84,18 +84,22 @@ public class ProducerProviderManager {
 
   private void regsiterProducerMetas(List<ProducerMeta> producerMetas) {
     for (ProducerMeta producerMeta : producerMetas) {
-      registerSchema(producerMeta.getSchemaId(), producerMeta.getInstance());
+      registerSchema(producerMeta.getSchemaId(), producerMeta.getSchemaInterface(), producerMeta.getInstance());
     }
   }
 
   public SchemaMeta registerSchema(String schemaId, Object instance) {
+    return registerSchema(schemaId, null, instance);
+  }
+
+  public SchemaMeta registerSchema(String schemaId, Class<?> schemaInterface, Object instance) {
     MicroserviceMeta producerMicroserviceMeta = scbEngine.getProducerMicroserviceMeta();
     Swagger swagger = scbEngine.getSwaggerLoader().loadLocalSwagger(
         producerMicroserviceMeta.getAppId(),
         producerMicroserviceMeta.getShortName(),
         schemaId);
     SwaggerProducer swaggerProducer = scbEngine.getSwaggerEnvironment()
-        .createProducer(instance, swagger);
+        .createProducer(instance, schemaInterface, swagger);
     swagger = swaggerProducer.getSwagger();
     registerUrlPrefixToSwagger(swagger);
 

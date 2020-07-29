@@ -15,25 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.provider.pojo;
+package org.apache.servicecomb.demo.springmvc.server;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import javax.validation.constraints.Min;
+import javax.ws.rs.core.MediaType;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import org.springframework.stereotype.Component;
-
-@Inherited
-@Documented
-@Retention(RUNTIME)
-@Target(TYPE)
-@Component
-public @interface RpcSchema {
-  String schemaId() default "";
-
-  Class<?> schemaInterface() default Object.class;
+@RequestMapping(path = "/springmvc/schemaInterface", produces = MediaType.APPLICATION_JSON)
+public interface SchemeInterfaceSpringmvc {
+  @GetMapping(path = "/add")
+  public int add(@Min(1) @RequestParam("a") int a, @Min(1) @RequestParam("b") int b);
 }

@@ -75,6 +75,7 @@ public class PojoProducers implements BeanPostProcessor {
 
     PojoProducerMeta pojoProducerMeta = new PojoProducerMeta();
     pojoProducerMeta.setSchemaId(schemaId);
+    pojoProducerMeta.setSchemaInterface(rpcSchema.schemaInterface());
     pojoProducerMeta.setInstance(bean);
 
     registerPojoProducer(pojoProducerMeta);

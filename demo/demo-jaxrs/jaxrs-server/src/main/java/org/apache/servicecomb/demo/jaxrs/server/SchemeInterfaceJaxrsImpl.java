@@ -15,25 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.provider.pojo;
+package org.apache.servicecomb.demo.jaxrs.server;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import javax.validation.constraints.Min;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import org.apache.servicecomb.provider.rest.common.RestSchema;
 
-import org.springframework.stereotype.Component;
+@RestSchema(schemaId = "SchemeInterfaceJaxrs", schemaInterface = SchemeInterfaceJaxrs.class)
+public class SchemeInterfaceJaxrsImpl implements SchemeInterfaceJaxrs {
+  @Override
+  public int add(@Min(1) int a, @Min(1) int b) {
+    return a + b;
+  }
 
-@Inherited
-@Documented
-@Retention(RUNTIME)
-@Target(TYPE)
-@Component
-public @interface RpcSchema {
-  String schemaId() default "";
-
-  Class<?> schemaInterface() default Object.class;
+  public int reduce(int a, int b) {
+    return a - b;
+  }
 }
