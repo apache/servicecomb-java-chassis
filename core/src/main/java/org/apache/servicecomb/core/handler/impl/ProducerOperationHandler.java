@@ -92,8 +92,8 @@ public class ProducerOperationHandler implements Handler {
       });
     } catch (Throwable e) {
       if (shouldPrintErrorLog(e)) {
-        invocation.getTraceIdLogger().error(LOGGER, "unexpected error {},",
-            invocation.getInvocationQualifiedName(), e);
+        invocation.getTraceIdLogger().error(LOGGER, "unexpected error {}, message={}",
+            invocation.getInvocationQualifiedName(), e.getMessage());
       }
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();
@@ -125,8 +125,8 @@ public class ProducerOperationHandler implements Handler {
       invocation.onBusinessFinish();
     } catch (Throwable e) {
       if (shouldPrintErrorLog(e)) {
-        invocation.getTraceIdLogger().error(LOGGER, "unexpected error {},",
-            invocation.getInvocationQualifiedName(), e);
+        invocation.getTraceIdLogger().error(LOGGER, "unexpected error operation={}, message={}",
+            invocation.getInvocationQualifiedName(), e.getMessage());
       }
       invocation.onBusinessMethodFinish();
       invocation.onBusinessFinish();

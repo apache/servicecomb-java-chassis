@@ -33,6 +33,7 @@ import org.apache.servicecomb.core.invocation.InvocationStageTrace;
 import org.apache.servicecomb.foundation.common.http.HttpStatus;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.URIEndpointObject;
+import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
@@ -114,8 +115,8 @@ public class RestClientInvocation {
     }
 
     clientRequest.exceptionHandler(e -> {
-      invocation.getTraceIdLogger().error(LOGGER, "Failed to send request, local:{}, remote:{}.",
-          getLocalAddress(), ipPort.getSocketAddress(), e);
+      invocation.getTraceIdLogger().error(LOGGER, "Failed to send request, local:{}, remote:{}, message={}.",
+          getLocalAddress(), ipPort.getSocketAddress(), ExceptionUtils.getExceptionMessageWithoutTrace(e));
       throwableHandler.handle(e);
     });
 
@@ -128,7 +129,8 @@ public class RestClientInvocation {
         restClientRequest.end();
       } catch (Throwable e) {
         invocation.getTraceIdLogger().error(LOGGER,
-            "send http request failed, local:{}, remote: {}.", getLocalAddress(), ipPort, e);
+            "send http request failed, local:{}, remote: {}, message={}.", getLocalAddress(), ipPort
+            , ExceptionUtils.getExceptionMessageWithoutTrace(e));
         fail((ConnectionBase) clientRequest.connection(), e);
       }
     });
@@ -198,8 +200,9 @@ public class RestClientInvocation {
     }
 
     httpClientResponse.exceptionHandler(e -> {
-      invocation.getTraceIdLogger().error(LOGGER, "Failed to receive response, local:{}, remote:{}.",
-          getLocalAddress(), httpClientResponse.netSocket().remoteAddress(), e);
+      invocation.getTraceIdLogger().error(LOGGER, "Failed to receive response, local:{}, remote:{}, message={}.",
+          getLocalAddress(), httpClientResponse.netSocket().remoteAddress(),
+          ExceptionUtils.getExceptionMessageWithoutTrace(e));
       fail((ConnectionBase) clientRequest.connection(), e);
     });
 
@@ -278,7 +281,8 @@ public class RestClientInvocation {
       }
       asyncResp.fail(invocation.getInvocationType(), e);
     } catch (Throwable e1) {
-      invocation.getTraceIdLogger().error(LOGGER, "failed to invoke asyncResp.fail.", e1);
+      invocation.getTraceIdLogger().error(LOGGER, "failed to invoke asyncResp, message={}"
+          , ExceptionUtils.getExceptionMessageWithoutTrace(e));
     }
   }
 
@@ -287,7 +291,8 @@ public class RestClientInvocation {
       String cseContext = JsonUtils.writeValueAsString(invocation.getContext());
       clientRequest.putHeader(org.apache.servicecomb.core.Const.CSE_CONTEXT, cseContext);
     } catch (Throwable e) {
-      invocation.getTraceIdLogger().error(LOGGER, "Failed to encode and set cseContext.", e);
+      invocation.getTraceIdLogger().error(LOGGER, "Failed to encode and set cseContext, message={}."
+          , ExceptionUtils.getExceptionMessageWithoutTrace(e));
     }
   }
 
