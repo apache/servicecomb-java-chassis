@@ -17,8 +17,12 @@
 
 package org.apache.servicecomb.demo.jaxrs.client;
 
+import org.springframework.data.domain.Page;
+
 public interface SchemeInterfaceJaxrs {
   int add(int a, int b);
 
   int reduce(int a, int b);
+
+  Page<String> interfaceModel(Page<String> model);
 }

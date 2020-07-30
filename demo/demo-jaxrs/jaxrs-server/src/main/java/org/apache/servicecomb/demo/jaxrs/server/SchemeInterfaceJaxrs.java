@@ -23,6 +23,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Path("/jaxrs/schemaInterface")
@@ -31,4 +32,8 @@ public interface SchemeInterfaceJaxrs {
   @Path("/add")
   @GET
   public int add(@Min(1) @RequestParam("a") int a, @Min(1) @RequestParam("b") int b);
+
+  @Path("/interfaceModel")
+  @GET
+  Page<String> interfaceModel(Page<String> model);
 }

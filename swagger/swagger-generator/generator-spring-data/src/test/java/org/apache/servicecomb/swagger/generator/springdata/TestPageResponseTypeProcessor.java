@@ -39,15 +39,14 @@ public class TestPageResponseTypeProcessor {
   public void deserialize() throws IOException {
     Json.mapper().registerModule(new SpringDataModule());
 
-    String json = "{\"content\":[\"c1\",\"c2\"],\"pageable\":{\"page\":1,\"size\":2}}";
+    String json = "{\"content\":[\"c1\",\"c2\"],\"pageable\":{\"pageNumber\":1,\"pageSize\":2}}";
     Page<?> page = Json.mapper().readValue(json, Page.class);
 
     Assert.assertEquals(
-        "{\"content\":[\"c1\",\"c2\"],\"pageable\":{\"offset\":2,\"pageNumber\":1,\"pageSize\":2,"
-            + "\"paged\":true,\"sort\":{\"empty\":true,\"sorted\":false,\"unsorted\":true},"
-            + "\"unpaged\":false},\"empty\":false,\"first\":false,\"last\":true,\"number\":1,"
-            + "\"numberOfElements\":2,\"size\":2,\"sort\":{\"empty\":true,\"sorted\":false,"
-            + "\"unsorted\":true},\"totalElements\":4,\"totalPages\":2}",
+        "{\"content\":[\"c1\",\"c2\"],\"pageable\":{\"pageNumber\":1,\"pageSize\":2,"
+            + "\"offset\":2,\"paged\":true,\"unpaged\":false},\"empty\":false,\"first\":false,"
+            + "\"last\":true,\"number\":1,\"numberOfElements\":2,\"size\":2,"
+            + "\"totalElements\":4,\"totalPages\":2}",
         Json.mapper().writeValueAsString(page));
   }
 }

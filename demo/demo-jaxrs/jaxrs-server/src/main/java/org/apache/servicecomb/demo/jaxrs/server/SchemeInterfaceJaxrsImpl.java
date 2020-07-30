@@ -20,6 +20,7 @@ package org.apache.servicecomb.demo.jaxrs.server;
 import javax.validation.constraints.Min;
 
 import org.apache.servicecomb.provider.rest.common.RestSchema;
+import org.springframework.data.domain.Page;
 
 @RestSchema(schemaId = "SchemeInterfaceJaxrs", schemaInterface = SchemeInterfaceJaxrs.class)
 public class SchemeInterfaceJaxrsImpl implements SchemeInterfaceJaxrs {
@@ -30,5 +31,10 @@ public class SchemeInterfaceJaxrsImpl implements SchemeInterfaceJaxrs {
 
   public int reduce(int a, int b) {
     return a - b;
+  }
+
+  @Override
+  public Page<String> interfaceModel(Page<String> model) {
+    return model;
   }
 }

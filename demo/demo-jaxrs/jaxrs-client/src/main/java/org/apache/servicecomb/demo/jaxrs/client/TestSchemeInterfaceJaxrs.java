@@ -17,15 +17,33 @@
 
 package org.apache.servicecomb.demo.jaxrs.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.pojo.RpcReference;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 @Component
 public class TestSchemeInterfaceJaxrs implements CategorizedTestCase {
   @RpcReference(schemaId = "SchemeInterfaceJaxrs", microserviceName = "jaxrs")
   private SchemeInterfaceJaxrs jaxrs;
+
+  public void testRestTransport() throws Exception {
+    List<String> contents = new ArrayList<>();
+    contents.add("hello");
+    Sort sort = Sort.by(new String[0]);
+    Pageable pageable = PageRequest.of(1, 10, sort);
+    Page<String> pages = new PageImpl<>(contents, pageable, 1);
+    Page<String> result = jaxrs.interfaceModel(pages);
+    TestMgr.check("hello", result.stream().findFirst().get());
+  }
 
   public void testAllTransport() throws Exception {
     TestMgr.check(3, jaxrs.add(1, 2));

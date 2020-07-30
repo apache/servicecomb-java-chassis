@@ -33,3 +33,6 @@ servicecomb:
         default: bizkeeper-provider
   uploads:
     directory: target
+
+  codec:
+    printErrorMessage: true
