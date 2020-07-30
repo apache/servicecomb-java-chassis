@@ -48,13 +48,20 @@ public class SpringDataModule extends SimpleModule implements SPIOrder {
   @JsonPropertyOrder(alphabetic = true)
   public static class PageableMixin {
     @JsonCreator
-    public PageableMixin(@JsonProperty(value = "page") int page,
-        @JsonProperty("size") int size) {
+    public PageableMixin(@JsonProperty(value = "pageNumber") int page,
+        @JsonProperty("pageSize") int size, @JsonProperty(value = "sort") Sort sort) {
     }
   }
 
   @JsonPropertyOrder(alphabetic = true)
+  @JsonDeserialize(as = Sort.class)
   public static class SortMixin {
+    // Notice:
+    // spring data model changed from version to version
+    // for the tested version, sort is not consistency in serialization and deserialization
+    @JsonCreator
+    public SortMixin(String... properties) {
+    }
   }
 
   public SpringDataModule() {
