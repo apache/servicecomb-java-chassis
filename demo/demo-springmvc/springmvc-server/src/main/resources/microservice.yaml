@@ -62,7 +62,15 @@ servicecomb:
   handler:
     chain:
       Provider:
-        default: bizkeeper-provider
+        default: bizkeeper-provider, qps-flowcontrol-provider
+  flowcontrol:
+    strategy: MyStrategy
+    Provider:
+      qps:
+        enabled: true
+        global:
+          limit: 10
+          bucket: 30
   tracing:
     enabled: true
     samplingRate: 0.5
