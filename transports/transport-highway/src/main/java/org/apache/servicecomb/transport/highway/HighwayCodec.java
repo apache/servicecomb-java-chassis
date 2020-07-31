@@ -26,14 +26,13 @@ import org.apache.servicecomb.codec.protobuf.definition.RequestRootDeserializer;
 import org.apache.servicecomb.codec.protobuf.definition.ResponseRootDeserializer;
 import org.apache.servicecomb.codec.protobuf.definition.ResponseRootSerializer;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpData;
 import org.apache.servicecomb.foundation.vertx.tcp.TcpOutputStream;
-import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.transport.highway.message.RequestHeader;
 import org.apache.servicecomb.transport.highway.message.ResponseHeader;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.google.common.base.Defaults;
 
 import io.swagger.models.parameters.Parameter;
@@ -59,7 +58,6 @@ public final class HighwayCodec {
     return os;
   }
 
-  @SuppressWarnings({"rawtypes", "unchecked"})
   private static Map<String, Object> addPrimitiveTypeDefaultValues(Invocation invocation,
       Map<String, Object> swaggerArguments) {
     // proto buffer never serialize default values, put it back in provider
@@ -70,18 +68,13 @@ public final class HighwayCodec {
         if (swaggerArguments.get(parameter.getName()) == null) {
           Type type = invocation.getOperationMeta().getSwaggerProducerOperation()
               .getSwaggerParameterType(parameter.getName());
-          if (type instanceof Class) {
-            if (((Class) type).isPrimitive()) {
-              swaggerArguments.put(parameter.getName(), Defaults.defaultValue((Class) type));
-            }
-          }
+          swaggerArguments.put(parameter.getName(), defaultPrimitiveValue(null, type));
         }
       }
     }
     return swaggerArguments;
   }
 
-  @SuppressWarnings({"rawtypes", "unchecked"})
   public static void decodeRequest(Invocation invocation, RequestHeader header, OperationProtobuf operationProtobuf,
       Buffer bodyBuffer) throws Exception {
     RequestRootDeserializer<Object> requestDeserializer = operationProtobuf.getRequestRootDeserializer();
@@ -112,12 +105,26 @@ public final class HighwayCodec {
 
     ResponseRootDeserializer<Object> bodySchema = operationProtobuf
         .findResponseRootDeserializer(header.getStatusCode());
+    JavaType type = invocation.findResponseType(header.getStatusCode());
     Object body = bodySchema
-        .deserialize(tcpData.getBodyBuffer().getBytes(), invocation.findResponseType(header.getStatusCode()));
+        .deserialize(tcpData.getBodyBuffer().getBytes(), type);
 
-    Response response = Response.create(header.getStatusCode(), header.getReasonPhrase(), body);
+    Response response = Response.create(header.getStatusCode(), header.getReasonPhrase()
+        , defaultPrimitiveValue(body, type));
     response.setHeaders(header.getHeaders());
 
     return response;
+  }
+
+  private static Object defaultPrimitiveValue(Object body, Type type) {
+    if (body == null) {
+      if (type instanceof Class<?> && ((Class<?>) type).isPrimitive()) {
+        return Defaults.defaultValue((Class<?>) type);
+      }
+      if (type instanceof JavaType && ((JavaType) type).isPrimitive()) {
+        return Defaults.defaultValue(((JavaType) type).getRawClass());
+      }
+    }
+    return body;
   }
 }

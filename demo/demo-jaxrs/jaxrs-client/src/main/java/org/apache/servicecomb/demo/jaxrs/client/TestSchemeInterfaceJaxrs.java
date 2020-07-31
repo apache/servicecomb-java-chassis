@@ -47,6 +47,7 @@ public class TestSchemeInterfaceJaxrs implements CategorizedTestCase {
 
   public void testAllTransport() throws Exception {
     TestMgr.check(3, jaxrs.add(1, 2));
+    TestMgr.check(0, jaxrs.add(-1, 1));
 
     try {
       jaxrs.reduce(1, 3);

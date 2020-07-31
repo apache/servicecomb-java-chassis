@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface SchemeInterfaceJaxrs {
   @Path("/add")
   @GET
-  public int add(@Min(1) @RequestParam("a") int a, @Min(1) @RequestParam("b") int b);
+  int add(@Min(-100) @RequestParam("a") int a, @Min(1) @RequestParam("b") int b);
 
   @Path("/interfaceModel")
   @GET

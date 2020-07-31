@@ -17,15 +17,13 @@
 
 package org.apache.servicecomb.demo.jaxrs.server;
 
-import javax.validation.constraints.Min;
-
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.springframework.data.domain.Page;
 
 @RestSchema(schemaId = "SchemeInterfaceJaxrs", schemaInterface = SchemeInterfaceJaxrs.class)
 public class SchemeInterfaceJaxrsImpl implements SchemeInterfaceJaxrs {
   @Override
-  public int add(@Min(1) int a, @Min(1) int b) {
+  public int add(int a, int b) {
     return a + b;
   }
 
