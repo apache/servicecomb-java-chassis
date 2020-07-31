@@ -85,10 +85,19 @@ public class RegistrationManager {
   }
 
   public Microservice getMicroservice() {
+    assertPrimaryNotNull();
     return primary.getMicroservice();
   }
 
+  private void assertPrimaryNotNull() {
+    if (primary == null) {
+      throw new NullPointerException("At least one Registration implementation configured. Missed"
+          + " to include dependency ? e.g. <artifactId>registry-service-center</artifactId>");
+    }
+  }
+
   public String getAppId() {
+    assertPrimaryNotNull();
     return primary.getAppId();
   }
 
