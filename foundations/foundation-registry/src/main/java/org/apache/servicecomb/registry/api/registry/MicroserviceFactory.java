@@ -24,10 +24,15 @@ import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_MICROSERVICE_NAME;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_SERVICECOMB_ENV;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.SERVICECOMB_ENV;
+import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.APP_MAPPING;
+import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.SERVICE_MAPPING;
+import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.VERSION_MAPPING;
 
 import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.EnvironmentConfiguration;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.registry.config.ConfigurePropertyUtils;
 import org.apache.servicecomb.registry.config.MicroservicePropertiesLoader;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
@@ -49,14 +54,34 @@ public class MicroserviceFactory {
 
   private Microservice createMicroserviceFromDefinition(Configuration configuration) {
     Microservice microservice = new Microservice();
-    microservice.setServiceName(configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY,
-        DEFAULT_MICROSERVICE_NAME));
-    microservice.setAppId(configuration.getString(CONFIG_APPLICATION_ID_KEY, DefinitionConst.DEFAULT_APPLICATION_ID));
-    String version = configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY,
-        DefinitionConst.DEFAULT_MICROSERVICE_VERSION);
+
+    EnvironmentConfiguration envConfig = new EnvironmentConfiguration();
+    if (!StringUtils.isEmpty(envConfig.getString(APP_MAPPING)) &&
+        !StringUtils.isEmpty(envConfig.getString(envConfig.getString(APP_MAPPING)))) {
+      microservice.setAppId(envConfig.getString(envConfig.getString(APP_MAPPING)));
+    } else {
+      microservice.setAppId(configuration
+          .getString(CONFIG_APPLICATION_ID_KEY, DefinitionConst.DEFAULT_APPLICATION_ID));
+    }
+    if (!StringUtils.isEmpty(envConfig.getString(SERVICE_MAPPING)) &&
+        !StringUtils.isEmpty(envConfig.getString(envConfig.getString(SERVICE_MAPPING)))) {
+      microservice.setServiceName(envConfig.getString(envConfig.getString(SERVICE_MAPPING)));
+    } else {
+      microservice.setServiceName(configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY,
+          DEFAULT_MICROSERVICE_NAME));
+    }
+    String version;
+    if (!StringUtils.isEmpty(envConfig.getString(VERSION_MAPPING)) &&
+        !StringUtils.isEmpty(envConfig.getString(envConfig.getString(VERSION_MAPPING)))) {
+      version = envConfig.getString(envConfig.getString(VERSION_MAPPING));
+    } else {
+      version = configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY,
+          DefinitionConst.DEFAULT_MICROSERVICE_VERSION);
+    }
     // just check version format
     new Version(version);
     microservice.setVersion(version);
+
     setDescription(configuration, microservice);
     microservice.setLevel(configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_ROLE_KEY, "FRONT"));
     microservice.setPaths(ConfigurePropertyUtils.getMicroservicePaths(configuration));
@@ -92,6 +117,6 @@ public class MicroserviceFactory {
   }
 
   private boolean allowCrossApp(Map<String, String> propertiesMap) {
-    return Boolean.valueOf(propertiesMap.get(DefinitionConst.CONFIG_ALLOW_CROSS_APP_KEY));
+    return Boolean.parseBoolean(propertiesMap.get(DefinitionConst.CONFIG_ALLOW_CROSS_APP_KEY));
   }
 }
