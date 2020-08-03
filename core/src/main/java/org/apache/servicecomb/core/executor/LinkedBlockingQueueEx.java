@@ -16,28 +16,13 @@
  */
 package org.apache.servicecomb.core.executor;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.RejectedExecutionException;
 
-public class LinkedBlockingQueueEx<E> extends LinkedBlockingQueue<E> {
+public class LinkedBlockingQueueEx extends LinkedBlockingQueue<Runnable> {
   private static final long serialVersionUID = -1L;
 
-  private static final int COUNT_BITS = Integer.SIZE - 3;
-
-  private static final int CAPACITY = (1 << COUNT_BITS) - 1;
-
-  private static int workerCountOf(int c) {
-    return c & CAPACITY;
-  }
-
-  private static Method addWrokerMethod;
-
   private transient volatile ThreadPoolExecutorEx owner = null;
-
-  private AtomicInteger ctl;
 
   public LinkedBlockingQueueEx(int capacity) {
     super(capacity);
@@ -45,52 +30,36 @@ public class LinkedBlockingQueueEx<E> extends LinkedBlockingQueue<E> {
 
   public void setOwner(ThreadPoolExecutorEx owner) {
     this.owner = owner;
-    try {
-      addWrokerMethod = ThreadPoolExecutor.class.getDeclaredMethod("addWorker", Runnable.class, boolean.class);
-      addWrokerMethod.setAccessible(true);
-
-      Field field = ThreadPoolExecutor.class.getDeclaredField("ctl");
-      field.setAccessible(true);
-      ctl = (AtomicInteger) field.get(owner);
-    } catch (Throwable e) {
-      throw new IllegalStateException("failed to init queue.", e);
-    }
   }
 
   @Override
-  public boolean offer(E runnable) {
+  public boolean offer(Runnable runnable) {
     // task can come before owner available
     if (owner == null) {
       return super.offer(runnable);
     }
-
     // can not create more thread, just queue the task
-    if (workerCountOf(ctl.get()) == owner.getMaximumPoolSize()) {
+    if (owner.getPoolSize() == owner.getMaximumPoolSize()) {
       return super.offer(runnable);
     }
     // no need to create more thread, just queue the task
-    if (owner.getNotFinished() <= workerCountOf(ctl.get())) {
+    if (owner.getNotFinished() <= owner.getPoolSize()) {
       return super.offer(runnable);
     }
     // all threads are busy, and can create new thread, not queue the task
-    if (workerCountOf(ctl.get()) < owner.getMaximumPoolSize()) {
-      try {
-        // low frequency event, reflect is no problem
-        if (!(Boolean) addWrokerMethod.invoke(owner, runnable, false)) {
-          // failed to create new thread, queue the task
-          // if failed to queue the task, owner will try to addWorker again,
-          // if still failed, the will reject the task
-          return super.offer(runnable);
-        }
-
-        // create new thread successfully, treat it as queue success
-        return true;
-      } catch (Throwable e) {
-        // reflection exception, should never happened
-        return super.offer(runnable);
-      }
+    if (owner.getPoolSize() < owner.getMaximumPoolSize()) {
+      return false;
     }
+    return super.offer(runnable);
+  }
 
+  /*
+   * when task is rejected (thread pool if full), force the item onto queue.
+   */
+  public boolean force(Runnable runnable) {
+    if (owner == null || owner.isShutdown()) {
+      throw new RejectedExecutionException("queue is not running.");
+    }
     return super.offer(runnable);
   }
 }
