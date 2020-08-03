@@ -15,16 +15,13 @@
  * limitations under the License.
  */
 
-package org.springframework.web.client;
+package org.apache.servicecomb.provider.springmvc.reference;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.servicecomb.provider.springmvc.reference.CseClientHttpRequest;
-import org.apache.servicecomb.provider.springmvc.reference.CseClientHttpResponse;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpOutputMessage;
 import org.springframework.http.MediaType;
@@ -32,26 +29,14 @@ import org.springframework.http.converter.GenericHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.lang.Nullable;
-import org.springframework.util.ReflectionUtils;
 
-/**
- * 需要访问MessageBodyClientHttpResponseWrapper
- * 这是一个package级别的类，只好放在特殊的包内了
- */
 public class CseHttpMessageConverter implements GenericHttpMessageConverter<Object> {
 
   private static final List<MediaType> ALL_MEDIA_TYPE = Arrays.asList(MediaType.ALL);
 
-  private static final Field RESPONSE_FIELD =
-      ReflectionUtils.findField(MessageBodyClientHttpResponseWrapper.class, "response");
-
-  static {
-    RESPONSE_FIELD.setAccessible(true);
-  }
-
   @Override
   public boolean canRead(Class<?> clazz, MediaType mediaType) {
-    return true;
+    return false;
   }
 
   @Override
@@ -67,14 +52,11 @@ public class CseHttpMessageConverter implements GenericHttpMessageConverter<Obje
   @Override
   public Object read(Class<? extends Object> clazz,
       HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
-    return read(inputMessage);
+    throw new IllegalStateException("not supported");
   }
 
   private Object read(HttpInputMessage inputMessage) {
-    MessageBodyClientHttpResponseWrapper respWrapper = (MessageBodyClientHttpResponseWrapper) inputMessage;
-    CseClientHttpResponse resp =
-        (CseClientHttpResponse) ReflectionUtils.getField(RESPONSE_FIELD, respWrapper);
-    return resp.getResult();
+    throw new IllegalStateException("not supported");
   }
 
   @Override
@@ -90,13 +72,13 @@ public class CseHttpMessageConverter implements GenericHttpMessageConverter<Obje
 
   @Override
   public boolean canRead(Type type, @Nullable Class<?> contextClass, @Nullable MediaType mediaType) {
-    return true;
+    return false;
   }
 
   @Override
   public Object read(Type type, @Nullable Class<?> contextClass, HttpInputMessage inputMessage)
       throws IOException, HttpMessageNotReadableException {
-    return read(inputMessage);
+    throw new IllegalStateException("not supported");
   }
 
   @Override
