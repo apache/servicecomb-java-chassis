@@ -20,19 +20,25 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.servicecomb.it.Consumers;
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 public class TestUpload {
 
@@ -47,6 +53,10 @@ public class TestUpload {
   private static final String message = "cseMessage";
 
   interface UploadIntf {
+    Map<String, String> uploadMultiformMix(Resource file,
+        List<Resource> fileList,
+        String str,
+        List<String> strList);
   }
 
   private static Consumers<UploadIntf> consumersSpringmvc = new Consumers<>("uploadSpringmvcSchema",
@@ -314,6 +324,78 @@ public class TestUpload {
     String result = consumersSpringmvc.getSCBRestTemplate()
         .postForObject("/uploadMix", new HttpEntity<>(map, headers), String.class);
     Assert.assertTrue(containsAll(result, "hello1", "cse4", "cse3", "中文 2", message));
+  }
+
+  @Test
+  public void testUploadMultiformMix_RestTemplate_SpringMVC() {
+    Map<String, Object> map = new HashMap<>();
+    List<Resource> fileList = new ArrayList<>();
+    fileList.add(fileSystemResource2);
+    map.put("file", fileSystemResource1);
+    map.put("fileList", fileList);
+    map.put("str", message);
+    map.put("strList", Collections.singletonList("2.中文测试"));
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+    ResponseEntity<Map<String, String>> response =
+        consumersSpringmvc.getSCBRestTemplate().exchange("/uploadMultiformMix", HttpMethod.POST,
+            new HttpEntity<>(map, headers), new ParameterizedTypeReference<Map<String, String>>() {
+            });
+    Map<String, String> responseBody = response.getBody();
+    Assert.assertThat(responseBody, Matchers.notNullValue());
+    Assert.assertThat(responseBody.get("file"), Matchers.is("hello1"));
+    Assert.assertThat(responseBody.get("fileList"), Matchers.is("中文 2"));
+    Assert.assertThat(responseBody.get("str"), Matchers.is("cseMessage"));
+    Assert.assertThat(responseBody.get("strList"), Matchers.is("[2.中文测试]"));
+  }
+
+  @Test
+  public void testUploadMultiformMix_Rpc_SpringMVC() {
+    List<Resource> fileList = new ArrayList<>();
+    fileList.add(fileSystemResource2);
+    Map<String, String> responseBody =
+        consumersSpringmvc.getIntf().uploadMultiformMix(
+            fileSystemResource1, fileList, message, Collections.singletonList("2.中文测试"));
+    Assert.assertThat(responseBody.get("file"), Matchers.is("hello1"));
+    Assert.assertThat(responseBody.get("fileList"), Matchers.is("中文 2"));
+    Assert.assertThat(responseBody.get("str"), Matchers.is("cseMessage"));
+    Assert.assertThat(responseBody.get("strList"), Matchers.is("[2.中文测试]"));
+  }
+
+  @Test
+  public void testUploadMultiformMix_RestTemplate_JAXRS() {
+    Map<String, Object> map = new HashMap<>();
+    List<FileSystemResource> fileList = new ArrayList<>();
+    fileList.add(fileSystemResource2);
+    map.put("file", fileSystemResource1);
+    map.put("fileList", fileList);
+    map.put("str", message);
+    map.put("strList", Collections.singletonList("2.中文测试"));
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+    ResponseEntity<Map<String, String>> response =
+        consumersJaxrs.getSCBRestTemplate().exchange("/uploadMultiformMix", HttpMethod.POST,
+            new HttpEntity<>(map, headers), new ParameterizedTypeReference<Map<String, String>>() {
+            });
+    Map<String, String> responseBody = response.getBody();
+    Assert.assertThat(responseBody, Matchers.notNullValue());
+    Assert.assertThat(responseBody.get("file"), Matchers.is("hello1"));
+    Assert.assertThat(responseBody.get("fileList"), Matchers.is("中文 2"));
+    Assert.assertThat(responseBody.get("str"), Matchers.is("cseMessage"));
+    Assert.assertThat(responseBody.get("strList"), Matchers.is("[2.中文测试]"));
+  }
+
+  @Test
+  public void testUploadMultiformMix_Rpc_JAXRS() {
+    List<Resource> fileList = new ArrayList<>();
+    fileList.add(fileSystemResource2);
+    Map<String, String> responseBody =
+        consumersJaxrs.getIntf().uploadMultiformMix(
+            fileSystemResource1, fileList, message, Collections.singletonList("2.中文测试"));
+    Assert.assertThat(responseBody.get("file"), Matchers.is("hello1"));
+    Assert.assertThat(responseBody.get("fileList"), Matchers.is("中文 2"));
+    Assert.assertThat(responseBody.get("str"), Matchers.is("cseMessage"));
+    Assert.assertThat(responseBody.get("strList"), Matchers.is("[2.中文测试]"));
   }
 
   private static boolean containsAll(String str, String... strings) {

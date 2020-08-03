@@ -20,7 +20,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
@@ -94,6 +96,19 @@ public class UploadSpringmvcSchema {
     List<MultipartFile> multipartFileList = Arrays.asList(file2);
     file1.addAll(multipartFileList);
     return _fileUpload(file1) + name;
+  }
+
+  @RequestMapping(path = "/uploadMultiformMix", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public Map<String, String> uploadMultiformMix(@RequestPart(name = "file") MultipartFile file,
+      @RequestPart(name = "fileList") List<MultipartFile> fileList,
+      @RequestPart("str") String str,
+      @RequestPart("strList") List<String> strList) throws IOException {
+    HashMap<String, String> map = new HashMap<>();
+    map.put("file", new String(file.getBytes(), StandardCharsets.UTF_8.name()));
+    map.put("fileList", _fileUpload(fileList));
+    map.put("str", str);
+    map.put("strList", strList.toString());
+    return map;
   }
 
   private static String _fileUpload(List<MultipartFile> fileList) {
