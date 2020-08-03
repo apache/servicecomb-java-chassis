@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.it.edge.handler;
 
-import java.util.concurrent.TimeoutException;
-
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.servicecomb.core.Handler;

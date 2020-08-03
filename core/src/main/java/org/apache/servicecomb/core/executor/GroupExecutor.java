@@ -87,7 +87,7 @@ public class GroupExecutor implements Executor, Closeable {
           maxThreads,
           maxIdleInSecond,
           TimeUnit.SECONDS,
-          new LinkedBlockingQueueEx<>(maxQueueSize),
+          new LinkedBlockingQueueEx(maxQueueSize),
           factory);
       executorList.add(executor);
     }

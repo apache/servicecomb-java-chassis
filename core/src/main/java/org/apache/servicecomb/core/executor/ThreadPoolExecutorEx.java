@@ -42,7 +42,18 @@ public class ThreadPoolExecutorEx extends ThreadPoolExecutor {
   @Override
   public void execute(Runnable command) {
     submittedCount.incrementAndGet();
-    super.execute(command);
+    try {
+      super.execute(command);
+    } catch (RejectedExecutionException e) {
+      if (getQueue() instanceof LinkedBlockingQueueEx) {
+        final LinkedBlockingQueueEx queue = (LinkedBlockingQueueEx) getQueue();
+        if (!queue.force(command)) {
+          throw new RejectedExecutionException("thread pool queue is full");
+        }
+      } else {
+        throw e;
+      }
+    }
   }
 
   public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
