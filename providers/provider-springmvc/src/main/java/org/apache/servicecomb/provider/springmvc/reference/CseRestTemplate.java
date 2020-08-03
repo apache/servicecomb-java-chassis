@@ -20,16 +20,140 @@ package org.apache.servicecomb.provider.springmvc.reference;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.util.Arrays;
+import java.util.Map;
 
 import org.apache.servicecomb.common.rest.RestConst;
-import org.springframework.web.client.CseHttpMessageConverter;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseExtractor;
+import org.springframework.web.client.RestClientException;
 
 public class CseRestTemplate extends AcceptableRestTemplate {
   public CseRestTemplate() {
     setMessageConverters(Arrays.asList(new CseHttpMessageConverter()));
     setRequestFactory(new CseClientHttpRequestFactory());
     setUriTemplateHandler(new CseUriTemplateHandler());
+  }
+
+  // GET
+
+  @Override
+  @Nullable
+  public <T> T getForObject(String url, Class<T> responseType, Object... uriVariables) throws RestClientException {
+    RequestCallback requestCallback = acceptHeaderRequestCallback(responseType);
+    CseHttpMessageConverterExtractor<T> responseExtractor =
+        new CseHttpMessageConverterExtractor<>();
+    return execute(url, HttpMethod.GET, requestCallback, responseExtractor, uriVariables);
+  }
+
+  @Override
+  @Nullable
+  public <T> T getForObject(String url, Class<T> responseType, Map<String, ?> uriVariables) throws RestClientException {
+    RequestCallback requestCallback = acceptHeaderRequestCallback(responseType);
+    CseHttpMessageConverterExtractor<T> responseExtractor =
+        new CseHttpMessageConverterExtractor<>();
+    return execute(url, HttpMethod.GET, requestCallback, responseExtractor, uriVariables);
+  }
+
+  @Override
+  @Nullable
+  public <T> T getForObject(URI url, Class<T> responseType) throws RestClientException {
+    RequestCallback requestCallback = acceptHeaderRequestCallback(responseType);
+    CseHttpMessageConverterExtractor<T> responseExtractor =
+        new CseHttpMessageConverterExtractor<>();
+    return execute(url, HttpMethod.GET, requestCallback, responseExtractor);
+  }
+
+  // HEAD
+  // no override
+
+  // POST
+
+  @Override
+  @Nullable
+  public <T> T postForObject(String url, @Nullable Object request, Class<T> responseType,
+      Object... uriVariables) throws RestClientException {
+
+    RequestCallback requestCallback = httpEntityCallback(request, responseType);
+    CseHttpMessageConverterExtractor<T> responseExtractor =
+        new CseHttpMessageConverterExtractor<>();
+    return execute(url, HttpMethod.POST, requestCallback, responseExtractor, uriVariables);
+  }
+
+  @Override
+  @Nullable
+  public <T> T postForObject(String url, @Nullable Object request, Class<T> responseType,
+      Map<String, ?> uriVariables) throws RestClientException {
+
+    RequestCallback requestCallback = httpEntityCallback(request, responseType);
+    CseHttpMessageConverterExtractor<T> responseExtractor =
+        new CseHttpMessageConverterExtractor<>();
+    return execute(url, HttpMethod.POST, requestCallback, responseExtractor, uriVariables);
+  }
+
+  @Override
+  @Nullable
+  public <T> T postForObject(URI url, @Nullable Object request, Class<T> responseType)
+      throws RestClientException {
+
+    RequestCallback requestCallback = httpEntityCallback(request, responseType);
+    CseHttpMessageConverterExtractor<T> responseExtractor =
+        new CseHttpMessageConverterExtractor<>();
+    return execute(url, HttpMethod.POST, requestCallback, responseExtractor);
+  }
+
+  // PUT
+  // no override
+
+  // PATCH
+
+  @Override
+  @Nullable
+  public <T> T patchForObject(String url, @Nullable Object request, Class<T> responseType,
+      Object... uriVariables) throws RestClientException {
+
+    RequestCallback requestCallback = httpEntityCallback(request, responseType);
+    CseHttpMessageConverterExtractor<T> responseExtractor =
+        new CseHttpMessageConverterExtractor<>();
+    return execute(url, HttpMethod.PATCH, requestCallback, responseExtractor, uriVariables);
+  }
+
+  @Override
+  @Nullable
+  public <T> T patchForObject(String url, @Nullable Object request, Class<T> responseType,
+      Map<String, ?> uriVariables) throws RestClientException {
+
+    RequestCallback requestCallback = httpEntityCallback(request, responseType);
+    CseHttpMessageConverterExtractor<T> responseExtractor =
+        new CseHttpMessageConverterExtractor<>();
+    return execute(url, HttpMethod.PATCH, requestCallback, responseExtractor, uriVariables);
+  }
+
+  @Override
+  @Nullable
+  public <T> T patchForObject(URI url, @Nullable Object request, Class<T> responseType)
+      throws RestClientException {
+
+    RequestCallback requestCallback = httpEntityCallback(request, responseType);
+    CseHttpMessageConverterExtractor<T> responseExtractor =
+        new CseHttpMessageConverterExtractor<>();
+    return execute(url, HttpMethod.PATCH, requestCallback, responseExtractor);
+  }
+
+  // DELETE
+  // no override
+
+  // OPTIONS
+  // no override
+
+  // exchange
+  // no override
+
+  @Override
+  public <T> ResponseExtractor<ResponseEntity<T>> responseEntityExtractor(Type responseType) {
+    return new CseResponseEntityResponseExtractor<>(responseType);
   }
 
   @Override

@@ -90,7 +90,6 @@ public class CseClientHttpResponse implements ClientHttpResponse {
 
   @Override
   public HttpStatus getStatusCode() throws IOException {
-    // TODO:springmvc不允许自定义http错误码
     return HttpStatus.valueOf(response.getStatusCode());
   }
 
