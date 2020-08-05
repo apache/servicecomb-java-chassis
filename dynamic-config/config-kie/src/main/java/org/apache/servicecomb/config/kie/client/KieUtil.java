@@ -17,13 +17,11 @@
 
 package org.apache.servicecomb.config.kie.client;
 
-import java.io.StringReader;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -34,10 +32,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.kie.model.KVDoc;
 import org.apache.servicecomb.config.kie.model.KVResponse;
 import org.apache.servicecomb.config.kie.model.ValueType;
+import org.apache.servicecomb.config.parser.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.config.YamlPropertiesFactoryBean;
-import org.springframework.core.io.ByteArrayResource;
 
 public class KieUtil {
 
@@ -109,32 +106,15 @@ public class KieUtil {
     return resultMap;
   }
 
-  public static Map<String, String> processValueType(KVDoc kvDoc) {
+  public static Map<String, Object> processValueType(KVDoc kvDoc) {
     ValueType valueType = parseValueType(kvDoc.getValueType());
-
-    Properties properties = new Properties();
-    Map<String, String> kvMap = new HashMap<>();
-    try {
-      if (valueType == (ValueType.YAML) || valueType == (ValueType.YML)) {
-        YamlPropertiesFactoryBean yamlFactory = new YamlPropertiesFactoryBean();
-        yamlFactory.setResources(new ByteArrayResource(kvDoc.getValue().getBytes()));
-        properties = yamlFactory.getObject();
-      } else if (valueType == (ValueType.PROPERTIES)) {
-        properties.load(new StringReader(kvDoc.getValue()));
-      } else if (valueType == (ValueType.TEXT) || valueType == (ValueType.STRING)) {
-        kvMap.put(kvDoc.getKey(), kvDoc.getValue());
-        return kvMap;
-      } else {
-        // ValueType.JSON
-        kvMap.put(kvDoc.getKey(), kvDoc.getValue());
-        return kvMap;
-      }
-      kvMap = toMap(kvDoc.getKey(), properties);
-      return kvMap;
-    } catch (Exception e) {
-      LOGGER.error("read config failed", e);
+    if (valueType == (ValueType.YAML) || valueType == (ValueType.YML)) {
+      return Parser.findParser(Parser.CONTENT_TYPE_YAML).parse(kvDoc.getValue(), kvDoc.getKey(), true);
+    } else if (valueType == (ValueType.PROPERTIES)) {
+      return Parser.findParser(Parser.CONTENT_TYPE_PROPERTIES).parse(kvDoc.getValue(), kvDoc.getKey(), true);
+    } else {
+      return Parser.findParser(Parser.CONTENT_TYPE_RAW).parse(kvDoc.getValue(), kvDoc.getKey(), true);
     }
-    return Collections.emptyMap();
   }
 
   private static ValueType parseValueType(String valueType) {

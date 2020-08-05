@@ -61,7 +61,7 @@ public class NacosClientTest {
     UpdateHandler updateHandler = impl.new UpdateHandler();
     NacosClient nacosClient = new NacosClient(updateHandler);
 
-    NacosClient.ConfigRefresh cr = nacosClient.new ConfigRefresh("","","");
+    NacosClient.ConfigRefresh cr = nacosClient.new ConfigRefresh();
 
     try {
       Deencapsulation.invoke(cr, "compareChangedConfig", before, after);

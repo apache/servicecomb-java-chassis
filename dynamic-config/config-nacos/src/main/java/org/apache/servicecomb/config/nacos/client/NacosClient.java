@@ -21,36 +21,27 @@ import static org.apache.servicecomb.config.nacos.client.ConfigurationAction.CRE
 import static org.apache.servicecomb.config.nacos.client.ConfigurationAction.DELETE;
 import static org.apache.servicecomb.config.nacos.client.ConfigurationAction.SET;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.nacos.archaius.sources.NacosConfigurationSourceImpl.UpdateHandler;
+import org.apache.servicecomb.config.parser.Parser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 
-import org.apache.servicecomb.config.nacos.archaius.sources.NacosConfigurationSourceImpl.UpdateHandler;
-import org.apache.servicecomb.foundation.common.utils.JsonUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-
 public class NacosClient {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NacosClient.class);
 
-  private static final NacosConfig NACOS_CONFIG = NacosConfig.INSTANCE;
-
   private static final Map<String, Object> originalConfigMap = new ConcurrentHashMap<>();
-
-  private final String serverAddr = NACOS_CONFIG.getServerAddr();
-
-  private final String dataId = NACOS_CONFIG.getDataId();
-
-  private final String group = NACOS_CONFIG.getGroup();
 
   private final UpdateHandler updateHandler;
 
@@ -59,57 +50,53 @@ public class NacosClient {
   }
 
   public void refreshNacosConfig() {
-    new ConfigRefresh(serverAddr, dataId, group).refreshConfig();
+    new ConfigRefresh().refreshConfig();
   }
 
   class ConfigRefresh {
-    private final String serverAddr;
+    Parser contentParser = Parser.findParser(NacosConfig.INSTANCE.getContentType());
 
-    private final String dataId;
+    String keyPrefix = NacosConfig.INSTANCE.getGroup() + "." +
+        NacosConfig.INSTANCE.getDataId();
 
-    private final String group;
-
-    ConfigRefresh(String serverAddr, String dataId, String group) {
-      this.serverAddr = serverAddr;
-      this.dataId = dataId;
-      this.group = group;
+    ConfigRefresh() {
     }
 
     @SuppressWarnings("unchecked")
     void refreshConfig() {
       Properties properties = new Properties();
-      properties.put("serverAddr", serverAddr);
-      properties.put("dataId", dataId);
-      properties.put("group", group);
+      properties.put("serverAddr", NacosConfig.INSTANCE.getServerAddr());
+      properties.put("namespace", NacosConfig.INSTANCE.getNameSpace());
+
       try {
         ConfigService configService = NacosFactory.createConfigService(properties);
-        String content = configService.getConfig(dataId, group, 5000);
-        Map<String, Object> body = JsonUtils.OBJ_MAPPER.readValue(content,
-            new TypeReference<Map<String, Object>>() {
-            });
-        refreshConfigItems(body);
-        configService.addListener(dataId, group, new Listener() {
-          @Override
-          public void receiveConfigInfo(String configInfo) {
-            LOGGER.info("receive from nacos:" + configInfo);
-            try {
-              Map<String, Object> body = JsonUtils.OBJ_MAPPER.readValue(configInfo,
-                  new TypeReference<Map<String, Object>>() {
-                  });
-              refreshConfigItems(body);
-            } catch (IOException e) {
-              LOGGER.error("JsonObject parse config center response error: ", e);
-            }
-          }
+        String content = configService.getConfig(NacosConfig.INSTANCE.getDataId(),
+            NacosConfig.INSTANCE.getGroup(), 5000);
+        processContent(content);
+        configService.addListener(NacosConfig.INSTANCE.getDataId(),
+            NacosConfig.INSTANCE.getGroup(), new Listener() {
+              @Override
+              public void receiveConfigInfo(String configInfo) {
+                LOGGER.info("receive from nacos:" + configInfo);
+                processContent(configInfo);
+              }
 
-          @Override
-          public Executor getExecutor() {
-            return null;
-          }
-        });
+              @Override
+              public Executor getExecutor() {
+                return null;
+              }
+            });
       } catch (Exception e) {
         LOGGER.error("Receive nacos config error: ", e);
       }
+    }
+
+    private void processContent(String content) {
+      if (StringUtils.isEmpty(content)) {
+        return;
+      }
+
+      refreshConfigItems(contentParser.parse(content, keyPrefix, NacosConfig.INSTANCE.getAddPrefix()));
     }
 
     private void refreshConfigItems(Map<String, Object> map) {

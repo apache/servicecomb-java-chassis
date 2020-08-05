@@ -47,8 +47,6 @@ public class NacosConfigurationSourceImpl implements ConfigCenterConfigurationSo
 
   private List<WatchedUpdateListener> listeners = new CopyOnWriteArrayList<>();
 
-  private static final String SERVER_ADDR = "nacos.config.serverAddr";
-
   public NacosConfigurationSourceImpl() {
   }
 
@@ -56,7 +54,7 @@ public class NacosConfigurationSourceImpl implements ConfigCenterConfigurationSo
 
   @Override
   public boolean isValidSource(Configuration localConfiguration) {
-    if (localConfiguration.getProperty(SERVER_ADDR) == null) {
+    if (localConfiguration.getProperty(NacosConfig.SERVER_ADDR) == null) {
       LOGGER.warn("Nacos configuration source is not configured!");
       return false;
     }
