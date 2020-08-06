@@ -68,4 +68,10 @@ public interface ServiceCombConstants {
   String DEVELOPMENT_SERVICECOMB_ENV = "development";
 
   String PRODUCTION_SERVICECOMB_ENV = "production";
+
+  String SERVICE_MAPPING = "SERVICE_MAPPING";
+
+  String VERSION_MAPPING = "VERSION_MAPPING";
+
+  String APP_MAPPING = "APP_MAPPING";
 }
