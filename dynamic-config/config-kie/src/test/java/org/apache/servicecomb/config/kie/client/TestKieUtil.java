@@ -29,7 +29,7 @@ public class TestKieUtil {
     KVDoc kvDoc = new KVDoc();
     kvDoc.setKey("hello");
     kvDoc.setValue("world");
-    Map<String, String> result = KieUtil.processValueType(kvDoc);
+    Map<String, Object> result = KieUtil.processValueType(kvDoc);
     Assert.assertEquals("world", result.get("hello"));
 
     kvDoc.setValueType("text");

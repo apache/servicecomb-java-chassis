@@ -24,11 +24,17 @@ public class NacosConfig {
 
   private static Configuration finalConfig;
 
-  private static final String DATA_ID = "servicecomb.nacos.dataId";
+  public static final String DATA_ID = "servicecomb.nacos.dataId";
 
-  private static final String SERVER_ADDR = "servicecomb.nacos.serverAddr";
+  public static final String SERVER_ADDR = "servicecomb.nacos.serverAddr";
 
-  private static final String GROUP = "servicecomb.nacos.group";
+  public static final String GROUP = "servicecomb.nacos.group";
+
+  public static final String ADD_PREFIX = "servicecomb.nacos.addPrefix";
+
+  public static final String NAME_SPACE = "servicecomb.nacos.namespace";
+
+  public static final String CONTENT_TYPE = "servicecomb.nacos.contentType";
 
   private NacosConfig() {
   }
@@ -37,19 +43,27 @@ public class NacosConfig {
     finalConfig = config;
   }
 
-  public Configuration getConcurrentCompositeConfiguration() {
-    return finalConfig;
-  }
-
   public String getServerAddr() {
     return finalConfig.getString(SERVER_ADDR);
   }
 
-  public String getDataId(){
+  public String getDataId() {
     return finalConfig.getString(DATA_ID);
   }
 
-  public String getGroup(){
+  public String getGroup() {
     return finalConfig.getString(GROUP);
+  }
+
+  public String getNameSpace() {
+    return finalConfig.getString(NAME_SPACE, "public");
+  }
+
+  public String getContentType() {
+    return finalConfig.getString(CONTENT_TYPE, "yaml");
+  }
+
+  public boolean getAddPrefix() {
+    return finalConfig.getBoolean(ADD_PREFIX, true);
   }
 }
