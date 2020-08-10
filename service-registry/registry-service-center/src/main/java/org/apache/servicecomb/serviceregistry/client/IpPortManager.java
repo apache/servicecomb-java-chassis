@@ -31,9 +31,9 @@ import org.apache.servicecomb.registry.cache.CacheEndpoint;
 import org.apache.servicecomb.registry.cache.InstanceCache;
 import org.apache.servicecomb.registry.cache.InstanceCacheManager;
 import org.apache.servicecomb.registry.cache.InstanceCacheManagerNew;
-import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.registry.consumer.AppManager;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,6 +73,7 @@ public class IpPortManager {
     }
     int initialIndex = new Random().nextInt(defaultIpPort.size());
     currentAvailableIndex = new AtomicInteger(initialIndex);
+    LOGGER.info("Initial service center address is {}", getAvailableAddress());
     maxRetryTimes = defaultIpPort.size();
   }
 

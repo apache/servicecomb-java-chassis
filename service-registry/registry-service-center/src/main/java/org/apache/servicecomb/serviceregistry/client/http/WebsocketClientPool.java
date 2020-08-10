@@ -18,14 +18,14 @@
 package org.apache.servicecomb.serviceregistry.client.http;
 
 public class WebsocketClientPool extends AbstractClientPool {
+  private String clientName;
 
-  /**
-   * The default instance, for default sc cluster.
-   */
-  public static final WebsocketClientPool INSTANCE = new WebsocketClientPool();
+  WebsocketClientPool(String clientName) {
+    this.clientName = clientName;
+  }
 
   @Override
   public String getName() {
-    return RegistryWatchHttpClientOptionsSPI.CLIENT_NAME;
+    return this.clientName;
   }
 }

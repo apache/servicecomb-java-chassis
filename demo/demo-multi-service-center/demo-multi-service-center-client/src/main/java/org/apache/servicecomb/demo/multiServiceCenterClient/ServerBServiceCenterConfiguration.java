@@ -28,6 +28,10 @@ public class ServerBServiceCenterConfiguration {
   public ServiceRegistryConfig serverBServiceCenterConfig() {
     ServiceRegistryConfig config = ServiceRegistryConfig.buildFromConfiguration();
     return ServiceRegistryConfigCustomizer.from(config)
-        .addressListFromConfiguration("servicecomb.service.registry-serverB.address").get();
+        .addressListFromConfiguration("servicecomb.service.registry-serverB.address")
+        // use a different http client instance
+        .setClientName("registry-serverB")
+        .setWatchClientName("registry-watch-serverB")
+        .get();
   }
 }
