@@ -22,3 +22,4 @@ org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.GetAnnotatio
 org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.PostAnnotationProcessor
 org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.PutAnnotationProcessor
 org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.DeleteAnnotationProcessor
+org.apache.servicecomb.swagger.generator.jaxrs.processor.annotation.PatchAnnotationProcessor

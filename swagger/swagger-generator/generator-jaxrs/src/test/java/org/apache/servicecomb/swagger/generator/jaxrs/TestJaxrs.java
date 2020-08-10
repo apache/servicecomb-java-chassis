@@ -139,6 +139,11 @@ public class TestJaxrs {
   }
 
   @Test
+  public void should_support_patch_http_method() {
+    UnitTestSwaggerUtils.testSwagger("schemas/patch.yaml", Echo.class, "patch");
+  }
+
+  @Test
   public void beanParamComplexField() {
     UnitTestSwaggerUtils.testException(
         "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.jaxrs.Echo:beanParamComplexField.",
@@ -159,7 +164,6 @@ public class TestJaxrs {
   }
 
   @Test
-
   public void beanParamInvalidDefaultBody() {
     UnitTestSwaggerUtils.testException(
         "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.jaxrs.Echo:beanParamInvalidDefaultBody.",

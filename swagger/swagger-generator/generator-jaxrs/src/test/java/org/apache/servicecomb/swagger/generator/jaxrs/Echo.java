@@ -25,6 +25,7 @@ import javax.ws.rs.CookieParam;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -49,6 +50,11 @@ import io.swagger.annotations.ApiResponse;
 
 @Path(value = "Echo")
 public class Echo {
+  @PATCH
+  public void patch() {
+    
+  }
+
   @POST
   @ApiResponse(response = int.class, code = 200, message = "")
   public Response response() {
