@@ -77,7 +77,7 @@ public interface ServiceRegistry {
       String microserviceVersionRule);
 
   MicroserviceInstances findServiceInstances(String appId, String microserviceName,
-      String microserviceVersionRule, String revision);
+      String microserviceVersionRule);
 
   MicroserviceCache findMicroserviceCache(MicroserviceCacheKey microserviceCacheKey);
 

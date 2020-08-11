@@ -29,7 +29,7 @@ public class MicroserviceCacheKey {
 
   private String serviceName;
 
-  private static final String VERSION_RULE = DefinitionConst.VERSION_RULE_ALL;
+  private String versionRule = DefinitionConst.VERSION_RULE_ALL;
 
   public static MicroserviceCacheKeyBuilder builder() {
     return new MicroserviceCacheKeyBuilder();
@@ -42,6 +42,7 @@ public class MicroserviceCacheKey {
     Objects.requireNonNull(this.env, "microserviceCacheKey.env is null");
     Objects.requireNonNull(this.appId, "microserviceCacheKey.appId is null");
     Objects.requireNonNull(this.serviceName, "microserviceCacheKey.serviceName is null");
+    Objects.requireNonNull(this.versionRule, "microserviceCacheKey.versionRule is null");
   }
 
   public String getEnv() {
@@ -57,11 +58,11 @@ public class MicroserviceCacheKey {
   }
 
   public String getVersionRule() {
-    return VERSION_RULE;
+    return versionRule;
   }
 
   public String plainKey() {
-    return serviceName + "@" + appId + "@" + env;
+    return serviceName + "@" + appId + "@" + env + "@" + versionRule;
   }
 
   @Override
@@ -75,12 +76,13 @@ public class MicroserviceCacheKey {
     MicroserviceCacheKey that = (MicroserviceCacheKey) o;
     return Objects.equals(env, that.env) &&
         Objects.equals(appId, that.appId) &&
-        Objects.equals(serviceName, that.serviceName);
+        Objects.equals(serviceName, that.serviceName) &&
+        Objects.equals(versionRule, that.versionRule);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(env, appId, serviceName);
+    return Objects.hash(env, appId, serviceName, versionRule);
   }
 
   @Override
@@ -112,6 +114,11 @@ public class MicroserviceCacheKey {
 
     public MicroserviceCacheKeyBuilder serviceName(String serviceName) {
       microserviceCacheKey.serviceName = serviceName;
+      return this;
+    }
+
+    public MicroserviceCacheKeyBuilder versionRule(String versionRule) {
+      microserviceCacheKey.versionRule = versionRule;
       return this;
     }
 

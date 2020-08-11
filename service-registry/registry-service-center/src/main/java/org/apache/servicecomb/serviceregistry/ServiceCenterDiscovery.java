@@ -79,8 +79,7 @@ public class ServiceCenterDiscovery implements Discovery {
   public MicroserviceInstances findServiceInstances(String appId, String serviceName, String versionRule) {
     return RegistryUtils.findServiceInstances(appId,
         serviceName,
-        versionRule,
-        revision);
+        versionRule);
   }
 
   @Override

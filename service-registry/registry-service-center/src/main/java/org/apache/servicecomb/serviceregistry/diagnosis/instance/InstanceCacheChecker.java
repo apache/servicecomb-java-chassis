@@ -87,8 +87,7 @@ public class InstanceCacheChecker {
     MicroserviceInstances microserviceInstances = RegistryUtils
         .findServiceInstances(microserviceVersions.getAppId(),
             microserviceVersions.getMicroserviceName(),
-            DefinitionConst.VERSION_RULE_ALL,
-            null);
+            DefinitionConst.VERSION_RULE_ALL);
     if (microserviceInstances == null) {
       instanceCacheResult.setStatus(Status.UNKNOWN);
       instanceCacheResult.setDetail("failed to find instances from service center");

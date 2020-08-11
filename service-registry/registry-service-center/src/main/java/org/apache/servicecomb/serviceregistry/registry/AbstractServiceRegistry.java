@@ -19,8 +19,6 @@ package org.apache.servicecomb.serviceregistry.registry;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_DEFAULT_REGISTER_BY;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_FRAMEWORK_DEFAULT_NAME;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,10 +38,7 @@ import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
-import org.apache.servicecomb.registry.consumer.MicroserviceManager;
-import org.apache.servicecomb.registry.consumer.StaticMicroserviceVersions;
 import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
-import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.Const;
@@ -196,20 +191,25 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     return true;
   }
 
+  @Override
   public List<MicroserviceInstance> findServiceInstance(String appId, String serviceName,
       String versionRule) {
-    MicroserviceInstances instances = findServiceInstances(appId, serviceName, versionRule, null);
+    MicroserviceInstances instances = findServiceInstances(appId, serviceName, versionRule);
     if (instances == null || instances.isMicroserviceNotExist()) {
       return null;
     }
     return instances.getInstancesResponse().getInstances();
   }
 
+  @Override
   public MicroserviceInstances findServiceInstances(String appId, String serviceName,
-      String versionRule, String revision) {
+      String versionRule) {
     MicroserviceCache microserviceCache = serviceRegistryCache
         .findServiceCache(MicroserviceCacheKey.builder()
-            .serviceName(serviceName).appId(appId).env(microservice.getEnvironment()).build());
+            .serviceName(serviceName).appId(appId)
+            .env(microservice.getEnvironment())
+            .versionRule(versionRule)
+            .build());
     return RegistryUtils.convertCacheToMicroserviceInstances(microserviceCache);
   }
 
@@ -228,6 +228,7 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
     return success;
   }
 
+  @Override
   public boolean updateInstanceProperties(Map<String, String> instanceProperties) {
     MicroserviceInstance microserviceInstance = microservice.getInstance();
     boolean success = srClient.updateInstanceProperties(microserviceInstance.getServiceId(),

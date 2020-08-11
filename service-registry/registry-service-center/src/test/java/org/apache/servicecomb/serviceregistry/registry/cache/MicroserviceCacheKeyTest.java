@@ -35,7 +35,7 @@ public class MicroserviceCacheKeyTest {
     Assert.assertEquals("svc", microserviceCacheKey.getServiceName());
     Assert.assertEquals("app", microserviceCacheKey.getAppId());
     Assert.assertEquals("env", microserviceCacheKey.getEnv());
-    Assert.assertEquals("svc@app@env", microserviceCacheKey.toString());
+    Assert.assertEquals("svc@app@env@0.0.0.0+", microserviceCacheKey.toString());
 
     microserviceCacheKey =
         MicroserviceCacheKey.builder().serviceName("app:svc").appId("app").env("env").build();
@@ -83,6 +83,6 @@ public class MicroserviceCacheKeyTest {
   public void plainKey() {
     MicroserviceCacheKey microserviceCacheKey =
         MicroserviceCacheKey.builder().env("env").appId("app").serviceName("svc").build();
-    Assert.assertEquals("svc@app@env", microserviceCacheKey.plainKey());
+    Assert.assertEquals("svc@app@env@0.0.0.0+", microserviceCacheKey.plainKey());
   }
 }
