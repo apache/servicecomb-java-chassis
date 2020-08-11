@@ -47,7 +47,7 @@ public final class WebsocketClientUtil {
   private List<AuthHeaderProvider> authHeaderProviders;
 
   WebsocketClientUtil(ServiceRegistryConfig serviceRegistryConfig) {
-    websocketClientPool = new WebsocketClientPool();
+    websocketClientPool = new WebsocketClientPool(serviceRegistryConfig.getWatchClientName());
     authHeaderProviders = serviceRegistryConfig.getAuthHeaderProviders();
   }
 

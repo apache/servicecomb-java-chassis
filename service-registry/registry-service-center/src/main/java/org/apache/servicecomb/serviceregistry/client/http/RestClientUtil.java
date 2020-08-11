@@ -61,7 +61,7 @@ final class RestClientUtil {
     this.authHeaderProviders = serviceRegistryConfig.getAuthHeaderProviders();
     this.requestTimeout = serviceRegistryConfig.getRequestTimeout();
     this.tenantName = serviceRegistryConfig.getTenantName();
-    this.httpClientPool = new HttpClientPool();
+    this.httpClientPool = new HttpClientPool(serviceRegistryConfig.getClientName());
   }
 
   public void httpDo(RequestContext requestContext, Handler<RestResponse> responseHandler) {

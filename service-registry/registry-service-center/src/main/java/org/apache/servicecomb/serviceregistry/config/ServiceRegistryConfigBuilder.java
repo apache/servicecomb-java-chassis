@@ -29,6 +29,8 @@ import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.VertxConst;
+import org.apache.servicecomb.serviceregistry.client.http.RegistryHttpClientOptionsSPI;
+import org.apache.servicecomb.serviceregistry.client.http.RegistryWatchHttpClientOptionsSPI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +52,8 @@ class ServiceRegistryConfigBuilder {
         .setInstances(getInstances())
         .setIpPort(getIpPort())
         .setSsl(isSsl())
+        .setClientName(RegistryHttpClientOptionsSPI.CLIENT_NAME)
+        .setWatchClientName(RegistryWatchHttpClientOptionsSPI.CLIENT_NAME)
         .setConnectionTimeout(getConnectionTimeout())
         .setIdleConnectionTimeout(getIdleConnectionTimeout())
         .setRequestTimeout(getRequestTimeout())

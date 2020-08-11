@@ -254,15 +254,6 @@ public final class RegistryUtils {
   }
 
   /**
-   * @throws NullPointerException serviceRegistryConfig is null
-   * @throws IllegalArgumentException config value is illegal
-   */
-  public static void validateRegistryConfig(ServiceRegistryConfig serviceRegistryConfig) {
-    Objects.requireNonNull(serviceRegistryConfig);
-    validateRegistryName(serviceRegistryConfig.getRegistryName());
-  }
-
-  /**
    * To validate whether the name is legal value.
    * @param name name of the {@link ServiceRegistry}
    * @throws IllegalArgumentException the input value is illegal

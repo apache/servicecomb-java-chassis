@@ -73,6 +73,10 @@ public class ServiceRegistryConfig {
   // TODO SCB-1691 getter of this field's behavior changed, should check
   private boolean ssl = true;
 
+  private String clientName;
+
+  private String watchClientName;
+
   private ArrayList<IpPort> ipPort;
 
   private int connectionTimeout;
@@ -172,6 +176,24 @@ public class ServiceRegistryConfig {
 
   public ServiceRegistryConfig setSsl(boolean ssl) {
     this.ssl = ssl;
+    return this;
+  }
+
+  public String getClientName() {
+    return this.clientName;
+  }
+
+  public ServiceRegistryConfig setClientName(String clientName) {
+    this.clientName = clientName;
+    return this;
+  }
+
+  public String getWatchClientName() {
+    return this.watchClientName;
+  }
+
+  public ServiceRegistryConfig setWatchClientName(String watchClientName) {
+    this.watchClientName = watchClientName;
     return this;
   }
 

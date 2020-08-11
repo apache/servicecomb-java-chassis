@@ -41,6 +41,16 @@ public class ServiceRegistryConfigCustomizer {
     return new ServiceRegistryConfigCustomizer(original);
   }
 
+  public ServiceRegistryConfigCustomizer setClientName(String clientName) {
+    this.original.setClientName(clientName);
+    return this;
+  }
+
+  public ServiceRegistryConfigCustomizer setWatchClientName(String watchClientName) {
+    this.original.setWatchClientName(watchClientName);
+    return this;
+  }
+
   public ServiceRegistryConfigCustomizer addressListFromConfiguration(String configuration) {
     String address = DynamicPropertyFactory.getInstance()
         .getStringProperty(configuration, null)

@@ -15,17 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.serviceregistry.client.http;
+package org.apache.servicecomb.demo.multiServiceCenterClient;
 
-class HttpClientPool extends AbstractClientPool {
-  private String clientName;
+import org.apache.servicecomb.serviceregistry.client.http.RegistryHttpClientOptionsSPI;
 
-  HttpClientPool(String clientName) {
-    this.clientName = clientName;
+public class ServerBRegistryHttpClientOptionsSPI extends RegistryHttpClientOptionsSPI {
+  public static final String CLIENT_NAME = "registry-serverB";
+
+  @Override
+  public String clientName() {
+    return CLIENT_NAME;
   }
 
   @Override
-  public String getName() {
-    return this.clientName;
+  public String getConfigTag() {
+    return "sc.serverB.consumer";
+  }
+
+  @Override
+  public boolean isSsl() {
+    return false;
   }
 }
