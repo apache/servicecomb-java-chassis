@@ -154,7 +154,9 @@ public final class RegistryUtils {
       String versionRule) {
     MicroserviceCache serviceCache = aggregateServiceRegistryCache.findServiceCache(
         MicroserviceCacheKey.builder()
-            .appId(appId).serviceName(serviceName).env(getMicroservice().getEnvironment())
+            .appId(appId).serviceName(serviceName)
+            .env(getMicroservice().getEnvironment())
+            .versionRule(versionRule)
             .build()
     );
     return MicroserviceCacheStatus.SERVICE_NOT_FOUND.equals(serviceCache.getStatus()) ?
@@ -176,9 +178,13 @@ public final class RegistryUtils {
   }
 
   public static MicroserviceInstances findServiceInstances(String appId, String serviceName,
-      String versionRule, String revision) {
+      String versionRule) {
     MicroserviceCache serviceCache = aggregateServiceRegistryCache.findServiceCache(
-        MicroserviceCacheKey.builder().appId(appId).serviceName(serviceName).env(getMicroservice().getEnvironment())
+        MicroserviceCacheKey.builder()
+            .appId(appId)
+            .serviceName(serviceName)
+            .env(getMicroservice().getEnvironment())
+            .versionRule(versionRule)
             .build());
     return convertCacheToMicroserviceInstances(serviceCache);
   }

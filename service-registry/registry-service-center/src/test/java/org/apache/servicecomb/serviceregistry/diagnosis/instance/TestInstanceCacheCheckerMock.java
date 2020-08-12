@@ -104,7 +104,7 @@ public class TestInstanceCacheCheckerMock {
     new MockUp<RegistryUtils>() {
       @Mock
       MicroserviceInstances findServiceInstances(String appId, String serviceName,
-          String versionRule, String revision) {
+          String versionRule) {
         return findHolder.value;
       }
     };
@@ -141,7 +141,7 @@ public class TestInstanceCacheCheckerMock {
     new MockUp<RegistryUtils>() {
       @Mock
       MicroserviceInstances findServiceInstances(String appId, String serviceName,
-          String versionRule, String revision) {
+          String versionRule) {
         return findHolder.value;
       }
     };
@@ -178,7 +178,7 @@ public class TestInstanceCacheCheckerMock {
     new MockUp<RegistryUtils>() {
       @Mock
       MicroserviceInstances findServiceInstances(String appId, String serviceName,
-          String versionRule, String revision) {
+          String versionRule) {
         return findHolder.value;
       }
     };
@@ -211,7 +211,7 @@ public class TestInstanceCacheCheckerMock {
     new MockUp<RegistryUtils>() {
       @Mock
       MicroserviceInstances findServiceInstances(String appId, String serviceName,
-          String versionRule, String revision) {
+          String versionRule) {
         return findHolder.value;
       }
     };

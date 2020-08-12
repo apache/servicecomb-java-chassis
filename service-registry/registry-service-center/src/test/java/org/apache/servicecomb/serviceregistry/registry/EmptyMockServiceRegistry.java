@@ -95,7 +95,7 @@ public class EmptyMockServiceRegistry implements ServiceRegistry {
 
   @Override
   public MicroserviceInstances findServiceInstances(String appId, String microserviceName,
-      String microserviceVersionRule, String revision) {
+      String microserviceVersionRule) {
     return null;
   }
 
