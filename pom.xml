@@ -29,7 +29,7 @@
 
   <groupId>org.apache.servicecomb</groupId>
   <artifactId>java-chassis</artifactId>
-  <version>2.1.1</version>
+  <version>2.1.2-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>ServiceComb Java Chassis</name>
@@ -212,7 +212,7 @@
             <exclude>.travis.yml</exclude>
             <exclude>**/*.md</exclude>
             <excldue>**/*.MD</excldue>
-            <exclude>**/target/*</exclude>
+            <excldue>.github/**</excldue>
             <!-- Skip the code style configuration file -->
             <exclude>**/etc/eclipse-java-google-style.xml</exclude>
             <exclude>**/etc/intellij-java-google-style.xml</exclude>
