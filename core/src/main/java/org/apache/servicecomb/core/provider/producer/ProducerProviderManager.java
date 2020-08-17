@@ -61,7 +61,7 @@ public class ProducerProviderManager {
   }
 
   public void init() {
-    regsiterProducerMetas(producerMetas);
+    registerProducerMetas(producerMetas);
 
     for (ProducerProvider provider : producerProviderList) {
       List<ProducerMeta> producerMetas = provider.init();
@@ -70,7 +70,7 @@ public class ProducerProviderManager {
         continue;
       }
 
-      regsiterProducerMetas(producerMetas);
+      registerProducerMetas(producerMetas);
     }
   }
 
@@ -82,7 +82,7 @@ public class ProducerProviderManager {
     producerMetas.add(producerMeta);
   }
 
-  private void regsiterProducerMetas(List<ProducerMeta> producerMetas) {
+  private void registerProducerMetas(List<ProducerMeta> producerMetas) {
     for (ProducerMeta producerMeta : producerMetas) {
       registerSchema(producerMeta.getSchemaId(), producerMeta.getSchemaInterface(), producerMeta.getInstance());
     }
