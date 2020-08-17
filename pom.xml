@@ -212,7 +212,7 @@
             <exclude>.travis.yml</exclude>
             <exclude>**/*.md</exclude>
             <excldue>**/*.MD</excldue>
-            <exclude>**/target/*</exclude>
+            <excldue>.github/**</excldue>
             <!-- Skip the code style configuration file -->
             <exclude>**/etc/eclipse-java-google-style.xml</exclude>
             <exclude>**/etc/intellij-java-google-style.xml</exclude>
