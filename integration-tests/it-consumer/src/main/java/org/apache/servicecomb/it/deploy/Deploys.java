@@ -53,8 +53,6 @@ public class Deploys {
 
   private MicroserviceDeploy springBoot2ServletProducer;
 
-  private MicroserviceDeploy zuul;
-
   private String itInstanceMaxHeapSizeOption;
 
   public ServiceCenterDeploy getServiceCenter() {
@@ -63,10 +61,6 @@ public class Deploys {
 
   public MicroserviceDeploy getEdge() {
     return edge;
-  }
-
-  public MicroserviceDeploy getZuul() {
-    return zuul;
   }
 
   public MicroserviceDeploy getBaseProducer() {
@@ -106,11 +100,6 @@ public class Deploys {
     initBaseHttp2Producer();
     initSpringBoot2StandaloneProducer();
     initSpringBoot2ServletProducer();
-//    initZuul();
-  }
-
-  public void setPomVersion(String pomVersion) {
-    this.pomVersion = pomVersion;
   }
 
   private void initPomVersion() throws Throwable {
@@ -296,14 +285,4 @@ public class Deploys {
 
     edge = new MicroserviceDeploy(definition);
   }
-
-  //  private void initZuul() {
-  //    MicroserviceDeployDefinition zuulDefinition = new MicroserviceDeployDefinition();
-  //    zuulDefinition.setDeployName("zuul");
-  //    zuulDefinition.setCmd("it-zuul");
-  //
-  //    initDeployDefinition(zuulDefinition);
-  //
-  //    zuul = new MicroserviceDeploy(zuulDefinition);
-  //  }
 }
