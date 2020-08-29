@@ -80,7 +80,7 @@ public class BootStrapProperties {
 
   public static final String CONFIG_SERVICE_PATHS = "servicecomb.service.paths";
 
-  // service instance definition keys of old version
+  // service instance definition keys of new version
   public static final String CONFIG_SERVICE_INSTANCE_PROPERTIES = "servicecomb.instance.properties";
 
   public static final String CONFIG_SERVICE_INSTANCE_EXTENDED_CLASS = "servicecomb.instance.propertyExtendedClass";
@@ -276,7 +276,7 @@ public class BootStrapProperties {
 
     while (keysIterator.hasNext()) {
       String key = keysIterator.next();
-      propertiesMap.put(key.substring(prefix.length() + 1), configuration.getString(key, null));
+      propertiesMap.put(key.substring(prefix.length() + 1), String.valueOf(configuration.getProperty(key)));
     }
     return propertiesMap;
   }
