@@ -17,9 +17,8 @@
 
 package org.apache.servicecomb.registry.config;
 
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICE_DESCRIPTION_KEY;
-
 import org.apache.commons.configuration.Configuration;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -27,14 +26,9 @@ import com.netflix.config.DynamicConfiguration;
 
 public class TestAbstractPropertiesLoader {
   @Test
-  public void testMergeStrings() {
-    Assert.assertEquals("abc123efg", AbstractPropertiesLoader.mergeStrings("abc", "123", "efg"));
-  }
-
-  @Test
   public void testExtendedClassCompatible() {
     Configuration configuration = new DynamicConfiguration();
-    configuration.setProperty(CONFIG_SERVICE_DESCRIPTION_KEY + AbstractPropertiesLoader.EXTENDED_CLASS, "invalidClass");
+    configuration.setProperty(BootStrapProperties.CONFIG_SERVICE_EXTENDED_CLASS, "invalidClass");
 
     AbstractPropertiesLoader loader = MicroservicePropertiesLoader.INSTANCE;
     try {

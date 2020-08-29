@@ -21,11 +21,11 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.foundation.common.concurrency.SuppressedRunnableWrapper;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,8 +40,8 @@ public class RemoteServiceRegistry extends AbstractServiceRegistry {
       .getOrLoadSortedService(ServiceRegistryTaskInitializer.class);
 
   public RemoteServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
-      MicroserviceDefinition microserviceDefinition) {
-    super(eventBus, serviceRegistryConfig, microserviceDefinition);
+      Configuration configuration) {
+    super(eventBus, serviceRegistryConfig, configuration);
   }
 
   @Override

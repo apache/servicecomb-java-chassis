@@ -17,6 +17,11 @@
 
 package org.apache.servicecomb.registry.config;
 
+import java.util.Map;
+
+import org.apache.commons.configuration.Configuration;
+import org.apache.servicecomb.config.BootStrapProperties;
+
 public final class InstancePropertiesLoader extends AbstractPropertiesLoader {
 
   public static final InstancePropertiesLoader INSTANCE = new InstancePropertiesLoader();
@@ -24,8 +29,14 @@ public final class InstancePropertiesLoader extends AbstractPropertiesLoader {
   private InstancePropertiesLoader() {
   }
 
+
   @Override
-  protected String getConfigOptionPrefix() {
-    return "instance_description";
+  protected Map<String, String> readProperties(Configuration configuration) {
+    return BootStrapProperties.readServiceInstanceProperties(configuration);
+  }
+
+  @Override
+  protected String readPropertiesExtendedClass(Configuration configuration) {
+    return BootStrapProperties.readServiceInstanceExtendedClass(configuration);
   }
 }

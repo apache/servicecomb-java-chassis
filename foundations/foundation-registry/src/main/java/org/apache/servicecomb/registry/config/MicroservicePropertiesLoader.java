@@ -17,7 +17,10 @@
 
 package org.apache.servicecomb.registry.config;
 
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICE_DESCRIPTION_KEY;
+import java.util.Map;
+
+import org.apache.commons.configuration.Configuration;
+import org.apache.servicecomb.config.BootStrapProperties;
 
 public final class MicroservicePropertiesLoader extends AbstractPropertiesLoader {
 
@@ -27,7 +30,12 @@ public final class MicroservicePropertiesLoader extends AbstractPropertiesLoader
   }
 
   @Override
-  protected String getConfigOptionPrefix() {
-    return CONFIG_SERVICE_DESCRIPTION_KEY;
+  protected Map<String, String> readProperties(Configuration configuration) {
+    return BootStrapProperties.readServiceProperties(configuration);
+  }
+
+  @Override
+  protected String readPropertiesExtendedClass(Configuration configuration) {
+    return BootStrapProperties.readServiceExtendedClass(configuration);
   }
 }

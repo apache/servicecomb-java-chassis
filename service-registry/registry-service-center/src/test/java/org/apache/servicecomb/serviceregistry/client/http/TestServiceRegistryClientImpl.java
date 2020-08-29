@@ -29,15 +29,19 @@ import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.foundation.common.net.IpPort;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
+import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterConfig;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
 import org.apache.servicecomb.serviceregistry.api.response.GetExistenceResponse;
@@ -47,7 +51,6 @@ import org.apache.servicecomb.serviceregistry.api.response.GetServiceResponse;
 import org.apache.servicecomb.serviceregistry.client.ClientException;
 import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl.ResponseWrapper;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -102,8 +105,10 @@ public class TestServiceRegistryClientImpl {
 
   @Test
   public void testPrivateMethodCreateHttpClientOptions() {
+    ArchaiusUtils.setProperty(BootStrapProperties.CONFIG_SERVICE_APPLICATION, "app");
+    ArchaiusUtils.setProperty(BootStrapProperties.CONFIG_SERVICE_NAME, "ms");
     MicroserviceFactory microserviceFactory = new MicroserviceFactory();
-    Microservice microservice = microserviceFactory.create("app", "ms");
+    Microservice microservice = microserviceFactory.create();
     oClient.registerMicroservice(microservice);
     oClient.registerMicroserviceInstance(microservice.getInstance());
     try {
@@ -114,12 +119,15 @@ public class TestServiceRegistryClientImpl {
     } catch (Exception e) {
       Assert.assertNotNull(e);
     }
+    ArchaiusUtils.resetConfig();
   }
 
   @Test
   public void testException() {
+    ArchaiusUtils.setProperty(BootStrapProperties.CONFIG_SERVICE_APPLICATION, "app");
+    ArchaiusUtils.setProperty(BootStrapProperties.CONFIG_SERVICE_NAME, "ms");
     MicroserviceFactory microserviceFactory = new MicroserviceFactory();
-    Microservice microservice = microserviceFactory.create("app", "ms");
+    Microservice microservice = microserviceFactory.create();
     Assert.assertNull(oClient.registerMicroservice(microservice));
     Assert.assertNull(oClient.registerMicroserviceInstance(microservice.getInstance()));
     oClient.init();
@@ -137,6 +145,8 @@ public class TestServiceRegistryClientImpl {
     Assert.assertNull(oClient.findServiceInstances("selfMicroserviceId", "appId", "serviceName", "versionRule", "0"));
 
     Assert.assertEquals("a", new ClientException("a").getMessage());
+
+    ArchaiusUtils.resetConfig();
   }
 
   static abstract class RegisterSchemaTester {

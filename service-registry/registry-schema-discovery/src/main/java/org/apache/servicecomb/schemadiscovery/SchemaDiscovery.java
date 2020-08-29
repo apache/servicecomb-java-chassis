@@ -21,8 +21,8 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.core.invocation.endpoint.EndpointUtils;
-import org.apache.servicecomb.foundation.common.base.ServiceCombConstants;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.registry.api.Discovery;
 import org.apache.servicecomb.registry.api.registry.Microservice;
@@ -88,9 +88,7 @@ public class SchemaDiscovery implements Discovery {
     if (this.schemaDiscoveryService == null) {
       // For schema discovery, assume all instances of different microservices
       // are instances of this microservice.
-      String serviceName = DynamicPropertyFactory.getInstance()
-          .getStringProperty(ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY,
-              ServiceCombConstants.DEFAULT_MICROSERVICE_NAME).get();
+      String serviceName = BootStrapProperties.readServiceName();
 
       schemaDiscoveryService = Invoker
           .createProxy(serviceName, SchemaDiscoveryService.SCHEMA_ID,

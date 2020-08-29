@@ -128,11 +128,10 @@ public final class ConfigUtil {
       loader.getConfigModels().add(model);
     }
 
-    LOGGER.info("create local config:");
     boolean isPrintUrl = DynamicPropertyFactory.getInstance()
         .getBooleanProperty(IS_PRINT_URL, true).get();
     if (isPrintUrl) {
-      LOGGER.info(" {}.", StringUtils.join(loader.getConfigModels(), ","));
+      LOGGER.info("create local config from paths=[{}]", StringUtils.join(loader.getConfigModels(), ","));
     }
 
     ConcurrentCompositeConfiguration config = ConfigUtil.createLocalConfig(loader.getConfigModels());
@@ -140,7 +139,7 @@ public final class ConfigUtil {
     return config;
   }
 
-  public static ConcurrentCompositeConfiguration createLocalConfig(List<ConfigModel> configModelList) {
+  private static ConcurrentCompositeConfiguration createLocalConfig(List<ConfigModel> configModelList) {
     ConcurrentCompositeConfiguration config = new ConcurrentCompositeConfiguration();
 
     duplicateCseConfigToServicecomb(config,

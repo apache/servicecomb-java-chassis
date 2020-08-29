@@ -17,10 +17,10 @@
 
 package org.apache.servicecomb.serviceregistry.registry;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.foundation.common.event.SimpleEventBus;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 
 import com.google.common.eventbus.EventBus;
 
@@ -29,15 +29,15 @@ public final class ServiceRegistryFactory {
   }
 
   public static ServiceRegistry create(ServiceRegistryConfig serviceRegistryConfig,
-      MicroserviceDefinition microserviceDefinition) {
-    return create(null, serviceRegistryConfig, microserviceDefinition);
+      Configuration configuration) {
+    return create(null, serviceRegistryConfig, configuration);
   }
 
   public static ServiceRegistry create(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
-      MicroserviceDefinition microserviceDefinition) {
+      Configuration configuration) {
     if (null == eventBus) {
       eventBus = new SimpleEventBus();
     }
-    return new RemoteServiceRegistry(eventBus, serviceRegistryConfig, microserviceDefinition);
+    return new RemoteServiceRegistry(eventBus, serviceRegistryConfig, configuration);
   }
 }

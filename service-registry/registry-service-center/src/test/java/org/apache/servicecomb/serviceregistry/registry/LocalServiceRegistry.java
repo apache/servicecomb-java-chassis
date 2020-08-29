@@ -16,10 +16,10 @@
  */
 package org.apache.servicecomb.serviceregistry.registry;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 
 import com.google.common.eventbus.EventBus;
 
@@ -27,8 +27,8 @@ public class LocalServiceRegistry extends AbstractServiceRegistry {
   private String localFile;
 
   public LocalServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
-      MicroserviceDefinition microserviceDefinition) {
-    super(eventBus, serviceRegistryConfig, microserviceDefinition);
+      Configuration configuration) {
+    super(eventBus, serviceRegistryConfig, configuration);
   }
 
   public LocalServiceRegistry localFile(String localFile) {

@@ -17,11 +17,9 @@
 
 package org.apache.servicecomb.config.client;
 
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_SERVICECOMB_ENV;
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.SERVICECOMB_ENV;
-
 import java.util.List;
 
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.deployment.Deployment;
 import org.apache.servicecomb.deployment.DeploymentProvider;
 import org.apache.servicecomb.foundation.vertx.VertxConst;
@@ -51,14 +49,6 @@ public final class ConfigCenterConfig {
   private static final String REFRESH_INTERVAL = "servicecomb.config.client.refresh_interval";
 
   private static final String FIRST_REFRESH_INTERVAL = "servicecomb.config.client.first_refresh_interval";
-
-  private static final String SERVICE_NAME = "service_description.name";
-
-  private static final String SERVICE_VERSION = "service_description.version";
-
-  private static final String APPLICATION_NAME = "APPLICATION_ID";
-
-  private static final String INSTANCE_TAGS = "instance_description.properties.tags";
 
   public static final String CONNECTION_TIME_OUT = "servicecomb.config.client.timeout.connection";
 
@@ -141,19 +131,19 @@ public final class ConfigCenterConfig {
 
   @SuppressWarnings("unchecked")
   public String getServiceName() {
-    String service = finalConfig.getString(SERVICE_NAME);
-    String appName = finalConfig.getString(APPLICATION_NAME);
+    String service = BootStrapProperties.readServiceName(finalConfig);
+    String appName = BootStrapProperties.readApplication(finalConfig);
     String tags;
     if (appName != null) {
       service = service + "@" + appName;
     }
 
-    String serviceVersion = finalConfig.getString(SERVICE_VERSION);
+    String serviceVersion = BootStrapProperties.readServiceVersion(finalConfig);
     if (serviceVersion != null) {
       service = service + "#" + serviceVersion;
     }
 
-    Object o = finalConfig.getProperty(INSTANCE_TAGS);
+    Object o = BootStrapProperties.readServiceInstanceTags(finalConfig);
     if (o == null) {
       return service;
     }
@@ -191,6 +181,6 @@ public final class ConfigCenterConfig {
   }
 
   public String getEnvironment() {
-    return finalConfig.getString(SERVICECOMB_ENV, DEFAULT_SERVICECOMB_ENV);
+    return BootStrapProperties.readServiceEnvironment(finalConfig);
   }
 }

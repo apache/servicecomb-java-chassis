@@ -49,8 +49,6 @@ public interface ServiceRegistry {
 
   EventBus getEventBus();
 
-  Set<String> getCombinedMicroserviceNames();
-
   /**
    * Get the AppId of this microservice instance itself.
    */

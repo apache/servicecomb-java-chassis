@@ -30,8 +30,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.apache.servicecomb.localregistry.RegistryBean.Instance;
@@ -40,7 +38,6 @@ import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
-import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import org.yaml.snakeyaml.Yaml;
@@ -74,10 +71,8 @@ public class LocalRegistryStore {
   }
 
   public void init() {
-    MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
-    MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
     MicroserviceFactory microserviceFactory = new MicroserviceFactory();
-    selfMicroservice = microserviceFactory.create(microserviceDefinition);
+    selfMicroservice = microserviceFactory.create();
     selfMicroserviceInstance = selfMicroservice.getInstance();
     microserviceMap.clear();
     microserviceInstanceMap.clear();

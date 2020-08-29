@@ -21,24 +21,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.registry.api.PropertyExtended;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 /**
- * 加载微服务和微服务实例的properties
+ * Loading microservice properties
  */
 public abstract class AbstractPropertiesLoader {
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractPropertiesLoader.class);
-
-  protected static final String PROPERTIES = ".properties";
-
-  protected static final String EXTENDED_CLASS_FOR_COMPATIBLE = ".propertyExtentedClass";
-
-  protected static final String EXTENDED_CLASS = ".propertyExtendedClass";
-
-  protected abstract String getConfigOptionPrefix();
 
   public Map<String, String> loadProperties(Configuration configuration) {
     Map<String, String> propertiesMap = new HashMap<>();
@@ -48,23 +41,21 @@ public abstract class AbstractPropertiesLoader {
     return propertiesMap;
   }
 
-  protected void loadPropertiesFromConfigMap(Configuration configuration, Map<String, String> propertiesMap) {
-    String configKeyPrefix = mergeStrings(getConfigOptionPrefix(), PROPERTIES);
-    propertiesMap.putAll(ConfigurePropertyUtils.getPropertiesWithPrefix(configuration, configKeyPrefix));
+  abstract protected Map<String, String> readProperties(Configuration configuration);
+
+  abstract protected String readPropertiesExtendedClass(Configuration configuration);
+
+  private void loadPropertiesFromConfigMap(Configuration configuration, Map<String, String> propertiesMap) {
+    propertiesMap.putAll(readProperties(configuration));
   }
 
-  protected void loadPropertiesFromExtendedClass(Configuration configuration, Map<String, String> propertiesMap) {
-    String extendedPropertyClass = readExtendedPropertyClassName(configuration, EXTENDED_CLASS);
+  private void loadPropertiesFromExtendedClass(Configuration configuration, Map<String, String> propertiesMap) {
+    String extendedPropertyClass = readPropertiesExtendedClass(configuration);
+
     if (StringUtils.isEmpty(extendedPropertyClass)) {
-      extendedPropertyClass = readExtendedPropertyClassName(configuration, EXTENDED_CLASS_FOR_COMPATIBLE);
-      if (StringUtils.isEmpty(extendedPropertyClass)) {
-        return;
-      } else {
-        LOGGER.warn("The property `{}` is deprecated and will be removed soon, please use the new property `{}`.",
-            mergeStrings(getConfigOptionPrefix(), EXTENDED_CLASS_FOR_COMPATIBLE),
-            mergeStrings(getConfigOptionPrefix(), EXTENDED_CLASS));
-      }
+      return;
     }
+
     try {
       Class<?> classExternalProperty = Class.forName(extendedPropertyClass);
       if (!PropertyExtended.class.isAssignableFrom(classExternalProperty)) {
@@ -85,14 +76,5 @@ public abstract class AbstractPropertiesLoader {
       LOGGER.error(errMsg);
       throw new Error(errMsg, e);
     }
-  }
-
-  private String readExtendedPropertyClassName(Configuration configuration, String keyName) {
-    String configKey = mergeStrings(getConfigOptionPrefix(), keyName);
-    return configuration.getString(configKey, "");
-  }
-
-  protected static String mergeStrings(String... strArr) {
-    return String.join("", strArr);
   }
 }

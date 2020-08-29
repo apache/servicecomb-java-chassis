@@ -17,28 +17,22 @@
 
 package org.apache.servicecomb.serviceregistry.api.registry;
 
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_DESCRIPTION_KEY;
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY;
 import static org.apache.servicecomb.registry.definition.DefinitionConst.CONFIG_ALLOW_CROSS_APP_KEY;
-import static org.apache.servicecomb.registry.definition.DefinitionConst.DEFAULT_MICROSERVICE_VERSION;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
-import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
+import org.apache.servicecomb.config.BootStrapProperties;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
-import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.Mockito;
 
 import mockit.Deencapsulation;
-import mockit.Expectations;
-import mockit.Mocked;
 
 public class TestMicroserviceFactory {
   @Rule
@@ -62,12 +56,8 @@ public class TestMicroserviceFactory {
 
   @Test
   public void testInit() {
-    MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
-    loader.loadAndSort();
-
-    MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
     MicroserviceFactory factory = new MicroserviceFactory();
-    Microservice microservice = factory.create(microserviceDefinition);
+    Microservice microservice = factory.create(ConfigUtil.createLocalConfig());
 
     String microserviceName = "default";
 
@@ -76,83 +66,60 @@ public class TestMicroserviceFactory {
 
   @Test
   public void testSetDescription() {
-    Microservice microservice = new Microservice();
     MicroserviceFactory factory = new MicroserviceFactory();
-    Configuration configuration = Mockito.mock(Configuration.class);
-
-    Mockito.when(configuration.getStringArray(CONFIG_QUALIFIED_MICROSERVICE_DESCRIPTION_KEY))
-        .thenReturn(new String[] {"test1", "test2"});
-
-    Deencapsulation.invoke(factory, "setDescription", configuration, microservice);
-
+    Configuration configuration = ConfigUtil.createLocalConfig();
+    configuration.setProperty(BootStrapProperties.CONFIG_SERVICE_DESCRIPTION, new String[] {"test1", "test2"});
+    Microservice microservice = factory.create(configuration);
     Assert.assertEquals("test1,test2", microservice.getDescription());
   }
 
   @Test
   public void testSetDescriptionOnNullDescription() {
-    Microservice microservice = new Microservice();
+    Configuration configuration = ConfigUtil.createLocalConfig();
+    configuration.clearProperty(BootStrapProperties.CONFIG_SERVICE_DESCRIPTION);
+
     MicroserviceFactory factory = new MicroserviceFactory();
-    Configuration configuration = Mockito.mock(Configuration.class);
-
-    Mockito.when(configuration.getStringArray(CONFIG_QUALIFIED_MICROSERVICE_DESCRIPTION_KEY))
-        .thenReturn(null);
-
-    Deencapsulation.invoke(factory, "setDescription", configuration, microservice);
-
+    Microservice microservice = factory.create(configuration);
     Assert.assertNull(microservice.getDescription());
 
-    Mockito.when(configuration.getStringArray(CONFIG_QUALIFIED_MICROSERVICE_DESCRIPTION_KEY))
-        .thenReturn(new String[] {});
-
-    Deencapsulation.invoke(factory, "setDescription", configuration, microservice);
+    configuration.setProperty(BootStrapProperties.CONFIG_SERVICE_DESCRIPTION, new String[] {});
+    microservice = factory.create(configuration);
 
     Assert.assertNull(microservice.getDescription());
   }
 
   @Test
   public void testSetDescriptionOnEmptyDescription() {
-    Microservice microservice = new Microservice();
+    Configuration configuration = ConfigUtil.createLocalConfig();
+    configuration.setProperty(BootStrapProperties.CONFIG_SERVICE_DESCRIPTION, new String[] {"", ""});
+
     MicroserviceFactory factory = new MicroserviceFactory();
-    Configuration configuration = Mockito.mock(Configuration.class);
 
-    Mockito.when(configuration.getStringArray(CONFIG_QUALIFIED_MICROSERVICE_DESCRIPTION_KEY))
-        .thenReturn(new String[] {"", ""});
-
-    Deencapsulation.invoke(factory, "setDescription", configuration, microservice);
+    Microservice microservice = factory.create(configuration);
 
     Assert.assertEquals(",", microservice.getDescription());
   }
 
   @Test
   public void testSetDescriptionOnBlankDescription() {
-    Microservice microservice = new Microservice();
+    Configuration configuration = ConfigUtil.createLocalConfig();
+    configuration.setProperty(BootStrapProperties.CONFIG_SERVICE_DESCRIPTION, new String[] {" ", " "});
+
     MicroserviceFactory factory = new MicroserviceFactory();
-    Configuration configuration = Mockito.mock(Configuration.class);
 
-    Mockito.when(configuration.getStringArray(CONFIG_QUALIFIED_MICROSERVICE_DESCRIPTION_KEY))
-        .thenReturn(new String[] {" ", " "});
-
-    Deencapsulation.invoke(factory, "setDescription", configuration, microservice);
+    Microservice microservice = factory.create(configuration);
 
     Assert.assertEquals(" , ", microservice.getDescription());
   }
 
   @Test
-  public void testCreateMicroserviceFromDefinitionWithInvalidVersion(@Mocked Configuration configuration,
-      @Mocked MicroserviceDefinition microserviceDefinition) {
+  public void testCreateMicroserviceFromDefinitionWithInvalidVersion() {
+    Configuration configuration = ConfigUtil.createLocalConfig();
+    configuration.setProperty(BootStrapProperties.CONFIG_SERVICE_VERSION, "x.y.x.1");
 
-    new Expectations() {
-      {
-        configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY,
-            DEFAULT_MICROSERVICE_VERSION);
-        result = "x.y.x.1";
-        microserviceDefinition.getConfiguration();
-        result = configuration;
-      }
-    };
     expectedException.equals(IllegalStateException.class);
     expectedException.expectMessage("Invalid major \"x\", version \"x.y.x.1\".");
     MicroserviceFactory microserviceFactory = new MicroserviceFactory();
-    microserviceFactory.create(microserviceDefinition);
+    microserviceFactory.create(configuration);
   }
 }

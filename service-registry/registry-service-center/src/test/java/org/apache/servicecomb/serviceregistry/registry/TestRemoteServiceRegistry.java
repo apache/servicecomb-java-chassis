@@ -21,16 +21,16 @@ import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.registry.api.event.task.ShutdownEvent;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
-import org.apache.servicecomb.registry.api.event.task.ShutdownEvent;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -46,8 +46,8 @@ import mockit.MockUp;
 public class TestRemoteServiceRegistry {
   class TestingRemoteServiceRegistry extends RemoteServiceRegistry {
     public TestingRemoteServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
-        MicroserviceDefinition microserviceDefinition) {
-      super(eventBus, serviceRegistryConfig, microserviceDefinition);
+        Configuration configuration) {
+      super(eventBus, serviceRegistryConfig, configuration);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class TestRemoteServiceRegistry {
   public ExpectedException expectedException = ExpectedException.none();
 
   @Test
-  public void testLifeCycle(@Injectable ServiceRegistryConfig config, @Injectable MicroserviceDefinition definition,
+  public void testLifeCycle(@Injectable ServiceRegistryConfig config,
       @Injectable ServiceRegistry registry) throws InterruptedException {
     ArrayList<IpPort> ipPortList = new ArrayList<>();
     ipPortList.add(new IpPort("127.0.0.1", 9980));
@@ -76,8 +76,6 @@ public class TestRemoteServiceRegistry {
 
     new Expectations(SPIServiceUtils.class) {
       {
-        definition.getConfiguration();
-        result = ConfigUtil.createLocalConfig();
         config.getHeartbeatInterval();
         result = 30;
         config.getInstancePullInterval();
@@ -92,7 +90,7 @@ public class TestRemoteServiceRegistry {
     ServiceRegistry oldRegistry = RegistryUtils.getServiceRegistry();
     RegistryUtils.setServiceRegistry(registry);
     EventBus bus = new EventBus();
-    RemoteServiceRegistry remote = new TestingRemoteServiceRegistry(bus, config, definition);
+    RemoteServiceRegistry remote = new TestingRemoteServiceRegistry(bus, config, ConfigUtil.createLocalConfig());
     remote.init();
     remote.run();
 

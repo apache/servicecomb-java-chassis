@@ -17,9 +17,7 @@
 
 package org.apache.servicecomb.config.kie.client;
 
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_SERVICECOMB_ENV;
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.SERVICECOMB_ENV;
-
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.foundation.vertx.VertxConst;
 
 import com.netflix.config.ConcurrentCompositeConfiguration;
@@ -39,14 +37,6 @@ public class KieConfig {
   private static final String DOMAIN_NAME = "servicecomb.kie.domainName";
 
   private static final String ENABLE_LONG_POLLING = "servicecomb.kie.enableLongPolling";
-
-  private static final String APPLICATION_NAME = "APPLICATION_ID";
-
-  private static final String SERVICE_NAME = "service_description.name";
-
-  private static final String SERVICE_VERSION = "service_description.version";
-
-  private static final String INSTANCE_TAGS = "instance_description.properties.tags";
 
   public static final String CONNECTION_TIME_OUT = "servicecomb.kie.client.timeout.connection";
 
@@ -90,23 +80,23 @@ public class KieConfig {
   }
 
   public String getVersion() {
-    return finalConfig.getString(SERVICE_VERSION);
+    return BootStrapProperties.readServiceVersion(finalConfig);
   }
 
   public String getServiceName() {
-    return finalConfig.getString(SERVICE_NAME);
+    return BootStrapProperties.readServiceName(finalConfig);
   }
 
   public String getTags() {
-    return finalConfig.getString(INSTANCE_TAGS);
+    return BootStrapProperties.readServiceInstanceTags(finalConfig);
   }
 
   public String getEnvironment() {
-    return finalConfig.getString(SERVICECOMB_ENV, DEFAULT_SERVICECOMB_ENV);
+    return BootStrapProperties.readServiceEnvironment(finalConfig);
   }
 
   public String getAppName() {
-    return finalConfig.getString(APPLICATION_NAME);
+    return BootStrapProperties.readApplication(finalConfig);
   }
 
   public String getDomainName() {
@@ -148,5 +138,4 @@ public class KieConfig {
   public String getProxyPasswd() {
     return finalConfig.getString(VertxConst.PROXY_PASSWD, null);
   }
-
 }

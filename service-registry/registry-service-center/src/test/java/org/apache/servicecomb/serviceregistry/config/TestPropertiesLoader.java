@@ -17,45 +17,41 @@
 
 package org.apache.servicecomb.serviceregistry.config;
 
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_SERVICE_DESCRIPTION_KEY;
-
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
-import org.apache.servicecomb.config.archaius.sources.ConfigModel;
+import org.apache.servicecomb.config.BootStrapProperties;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
-import org.apache.servicecomb.registry.config.AbstractPropertiesLoader;
-import org.apache.servicecomb.registry.config.MicroservicePropertiesLoader;
-import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.registry.LocalServiceRegistryFactory;
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.netflix.config.DynamicConfiguration;
 
 public class TestPropertiesLoader {
   private static MicroserviceFactory microserviceFactory = new MicroserviceFactory();
 
   @Test
   public void testEmptyExtendedClass() {
-    Microservice microservice = microserviceFactory.create("default", "emptyExtendedClass");
-    Assert.assertEquals(0, microservice.getProperties().size());
+    Configuration configuration = ConfigUtil.createLocalConfig();
+    configuration.setProperty(BootStrapProperties.CONFIG_SERVICE_NAME, "emptyExtendedClass");
+    configuration.clearProperty(BootStrapProperties.CONFIG_SERVICE_PROPERTIES);
+    configuration.clearProperty(BootStrapProperties.OLD_CONFIG_SERVICE_PROPERTIES);
+    Microservice microservice = microserviceFactory.create(configuration);
+    // microservice.yaml has 3 properties
+    Assert.assertEquals(3, microservice.getProperties().size());
   }
 
   @Test
   public void testInvalidExtendedClass() {
-    ConfigModel configModel = MicroserviceDefinition.createConfigModel("default", "invalidExtendedClass");
-    @SuppressWarnings("unchecked")
-    Map<String, Object> desc =
-        (Map<String, Object>) configModel.getConfig().get(CONFIG_SERVICE_DESCRIPTION_KEY);
-    desc.put("propertyExtentedClass", "invalidClass");
-    MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(Arrays.asList(configModel));
+    Configuration configuration = ConfigUtil.createLocalConfig();
+    configuration.setProperty(BootStrapProperties.CONFIG_SERVICE_NAME, "invalidExtendedClass");
+    configuration.setProperty(BootStrapProperties.CONFIG_SERVICE_EXTENDED_CLASS, "invalidClass");
+
     try {
-      microserviceFactory.create(microserviceDefinition);
+      microserviceFactory.create(configuration);
       Assert.fail("Must throw exception");
     } catch (Error e) {
       Assert.assertEquals(ClassNotFoundException.class, e.getCause().getClass());
@@ -65,14 +61,12 @@ public class TestPropertiesLoader {
 
   @Test
   public void testCanNotAssignExtendedClass() {
-    ConfigModel configModel = MicroserviceDefinition.createConfigModel("default", "invalidExtendedClass");
-    @SuppressWarnings("unchecked")
-    Map<String, Object> desc =
-        (Map<String, Object>) configModel.getConfig().get(CONFIG_SERVICE_DESCRIPTION_KEY);
-    desc.put("propertyExtentedClass", "java.lang.String");
-    MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(Arrays.asList(configModel));
+    Configuration configuration = ConfigUtil.createLocalConfig();
+    configuration.setProperty(BootStrapProperties.CONFIG_SERVICE_NAME, "invalidExtendedClass");
+    configuration.setProperty(BootStrapProperties.CONFIG_SERVICE_EXTENDED_CLASS, "java.lang.String");
+
     try {
-      microserviceFactory.create(microserviceDefinition);
+      microserviceFactory.create(configuration);
       Assert.fail("Must throw exception");
     } catch (Error e) {
       Assert.assertEquals(
@@ -100,5 +94,4 @@ public class TestPropertiesLoader {
     expectedMap.put("ek0", "ev0");
     Assert.assertEquals(expectedMap, instance.getProperties());
   }
-
 }

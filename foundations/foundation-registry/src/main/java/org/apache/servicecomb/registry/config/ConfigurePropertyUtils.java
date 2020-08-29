@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.foundation.common.utils.ClassLoaderScopeContext;
 import org.apache.servicecomb.registry.api.registry.BasePath;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
@@ -62,7 +63,7 @@ public final class ConfigurePropertyUtils {
   @SuppressWarnings("unchecked")
   public static List<BasePath> getMicroservicePaths(Configuration configuration) {
     List<BasePath> basePaths = new ArrayList<>();
-    for (Object path : configuration.getList("service_description.paths")) {
+    for (Object path : BootStrapProperties.readServicePaths(configuration)) {
       BasePath basePath = new BasePath();
       Map<String, ?> pathMap = (Map<String, ?>) path;
       basePath.setPath(buildPath((String) pathMap.get("path")));
