@@ -87,7 +87,7 @@ public class KieUtil {
             serviceList.add(kvDoc);
           }
           if (labelsMap.containsKey(LABEL_VERSION) && labelsMap.get(LABEL_VERSION)
-              .equals(KieConfig.INSTANCE.getServiceName())) {
+              .equals(KieConfig.INSTANCE.getVersion())) {
             versionList.add(kvDoc);
           }
         }
