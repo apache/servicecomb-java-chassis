@@ -17,16 +17,17 @@
 
 package org.apache.servicecomb.serviceregistry.registry;
 
-import java.util.Collections;
-
+import org.apache.commons.configuration.Configuration;
+import org.apache.servicecomb.config.BootStrapProperties;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.client.LocalServiceRegistryClientImpl;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.google.common.eventbus.EventBus;
 
@@ -38,27 +39,25 @@ public class TestServiceRegistryFactory {
   // even there is no any reference to registryClient, DO NOT delete it.
   // because what changed is class ServiceRegistryClientImpl
   public void testGetRemoteRegistryClient(@Mocked ServiceRegistryClientImpl registryClient) {
+    Configuration configuration = ConfigUtil.createLocalConfig();
     EventBus eventBus = new EventBus();
     ServiceRegistryConfig serviceRegistryConfig = ServiceRegistryConfig.INSTANCE;
-    MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(Collections.emptyList());
 
     ServiceRegistry serviceRegistry =
-        ServiceRegistryFactory.create(eventBus, serviceRegistryConfig, microserviceDefinition);
+        ServiceRegistryFactory.create(eventBus, serviceRegistryConfig, configuration);
     serviceRegistry.init();
     ServiceRegistryClient client = serviceRegistry.getServiceRegistryClient();
     Assert.assertTrue(client instanceof ServiceRegistryClientImpl);
 
     serviceRegistry = ServiceRegistryFactory.create(eventBus,
-        serviceRegistryConfig,
-        microserviceDefinition);
+        serviceRegistryConfig, configuration);
     Assert.assertTrue(serviceRegistry instanceof RemoteServiceRegistry);
 
-    serviceRegistry = LocalServiceRegistryFactory.createLocal(eventBus, serviceRegistryConfig, microserviceDefinition);
+    serviceRegistry = LocalServiceRegistryFactory.createLocal(eventBus, serviceRegistryConfig, configuration);
     serviceRegistry.init();
     client = serviceRegistry.getServiceRegistryClient();
     Assert.assertTrue(client instanceof LocalServiceRegistryClientImpl);
     Assert.assertTrue(LocalServiceRegistryFactory.createLocal(eventBus,
-        serviceRegistryConfig,
-        microserviceDefinition) instanceof LocalServiceRegistry);
+        serviceRegistryConfig, configuration) instanceof LocalServiceRegistry);
   }
 }

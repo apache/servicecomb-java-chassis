@@ -19,11 +19,14 @@ package org.apache.servicecomb.serviceregistry.client.http;
 
 import java.util.concurrent.CountDownLatch;
 
+import org.apache.commons.configuration.Configuration;
+import org.apache.servicecomb.config.BootStrapProperties;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.client.Endpoints;
 import org.apache.servicecomb.serviceregistry.client.IpPortManager;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -34,6 +37,7 @@ import org.mockito.Mockito;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import mockit.Expectations;
+import mockit.Injectable;
 import mockit.Mock;
 import mockit.MockUp;
 import mockit.Mocked;
@@ -44,6 +48,9 @@ public class TestClientHttp {
   @SuppressWarnings("unchecked")
   @Test
   public void testServiceRegistryClientImpl(@Mocked IpPortManager manager) {
+    Configuration configuration = ConfigUtil.createLocalConfig();
+    configuration.setProperty(BootStrapProperties.CONFIG_SERVICE_APPLICATION, "app");
+    configuration.setProperty(BootStrapProperties.CONFIG_SERVICE_NAME, "ms");
     IpPort ipPort = new IpPort("127.0.0.1", 8853);
     new Expectations() {
       {
@@ -87,7 +94,7 @@ public class TestClientHttp {
     };
 
     MicroserviceFactory microserviceFactory = new MicroserviceFactory();
-    Microservice microservice = microserviceFactory.create("app", "ms");
+    Microservice microservice = microserviceFactory.create(configuration);
 
     ServiceRegistryClientImpl oClient = new ServiceRegistryClientImpl(ServiceRegistryConfig.INSTANCE);
     oClient.init();

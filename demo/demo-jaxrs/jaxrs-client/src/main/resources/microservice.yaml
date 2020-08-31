@@ -15,12 +15,11 @@
 ## limitations under the License.
 ## ---------------------------------------------------------------------------
 
-APPLICATION_ID: jaxrstest
-service_description:
-  name: jaxrsClient
-  version: 0.0.1
 servicecomb:
   service:
+    application: jaxrstest
+    name: jaxrsClient
+    version: 0.0.1
     registry:
       address: http://127.0.0.1:30100
   handler:

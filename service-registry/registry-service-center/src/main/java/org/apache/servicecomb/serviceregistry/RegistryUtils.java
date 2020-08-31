@@ -27,8 +27,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
@@ -38,7 +38,6 @@ import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
-import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
 import org.apache.servicecomb.serviceregistry.registry.ServiceRegistryFactory;
@@ -75,9 +74,7 @@ public final class RegistryUtils {
       return;
     }
 
-    MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
-    MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
-    initializeServiceRegistriesWithConfig(microserviceDefinition);
+    initializeServiceRegistriesWithConfig(ConfigUtil.createLocalConfig());
 
     initAggregateServiceRegistryCache();
   }
@@ -95,16 +92,16 @@ public final class RegistryUtils {
             .register(aggregateServiceRegistryCache));
   }
 
-  private static void initializeServiceRegistriesWithConfig(MicroserviceDefinition microserviceDefinition) {
+  private static void initializeServiceRegistriesWithConfig(Configuration configuration) {
     serviceRegistry =
-        ServiceRegistryFactory.create(ServiceRegistryConfig.INSTANCE, microserviceDefinition);
-    initializeServiceRegistries(microserviceDefinition);
+        ServiceRegistryFactory.create(ServiceRegistryConfig.INSTANCE, configuration);
+    initializeServiceRegistries(configuration);
   }
 
-  private static void initializeServiceRegistries(MicroserviceDefinition microserviceDefinition) {
+  private static void initializeServiceRegistries(Configuration configuration) {
     Map<String, ServiceRegistryConfig> configs = BeanUtils.getBeansOfType(ServiceRegistryConfig.class);
     configs.forEach((k, v) -> {
-      ServiceRegistry serviceRegistry = ServiceRegistryFactory.create(v, microserviceDefinition);
+      ServiceRegistry serviceRegistry = ServiceRegistryFactory.create(v, configuration);
       addExtraServiceRegistry(serviceRegistry);
     });
     executeOnEachServiceRegistry(ServiceRegistry::init);

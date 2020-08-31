@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.serviceregistry.client;
 
-import static org.apache.servicecomb.registry.definition.DefinitionConst.DEFAULT_APPLICATION_ID;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,22 +29,23 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
+import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
+import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
-import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterConfig;
-import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
-import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
-import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
-import org.apache.servicecomb.serviceregistry.api.response.HeartbeatResponse;
-import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
-import org.apache.servicecomb.serviceregistry.client.http.Holder;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.registry.version.Version;
 import org.apache.servicecomb.registry.version.VersionRule;
 import org.apache.servicecomb.registry.version.VersionRuleUtils;
 import org.apache.servicecomb.registry.version.VersionUtils;
+import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterConfig;
+import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
+import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
+import org.apache.servicecomb.serviceregistry.api.response.HeartbeatResponse;
+import org.apache.servicecomb.serviceregistry.client.http.Holder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -118,7 +117,7 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
         List<String> schemas = (List<String>) serviceConfig.get("schemaIds");
 
         Microservice microservice = new Microservice();
-        microservice.setAppId(appId == null ? DEFAULT_APPLICATION_ID : appId);
+        microservice.setAppId(appId == null ? BootStrapProperties.DEFAULT_APPLICATION : appId);
         microservice.setServiceName(name);
         microservice.setVersion(version);
         microservice.setServiceId(serviceId == null ? UUID.randomUUID().toString() : serviceId);

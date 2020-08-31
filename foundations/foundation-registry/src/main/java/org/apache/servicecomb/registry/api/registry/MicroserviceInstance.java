@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.StringUtils;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.registry.config.InstancePropertiesLoader;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 
@@ -53,7 +54,7 @@ public class MicroserviceInstance {
   private HealthCheck healthCheck;
 
   /**
-   * Will be abandoned, use {@link Microservice#environment} instead
+   * Will be abandoned, use Microservice Environment instead
    */
   @Deprecated
   private String environment;
@@ -173,12 +174,9 @@ public class MicroserviceInstance {
     // default hard coded values
     microserviceInstance.setStage(DefinitionConst.DEFAULT_STAGE);
     microserviceInstance
-        .setEnvironment(
-            configuration.getString(
-                DefinitionConst.CONFIG_QUALIFIED_INSTANCE_ENVIRONMENT_KEY, DefinitionConst.DEFAULT_INSTANCE_ENVIRONMENT));
+        .setEnvironment(BootStrapProperties.readServiceInstanceEnvironment(configuration));
     microserviceInstance.setStatus(MicroserviceInstanceStatus
-        .valueOf(configuration.getString(
-            DefinitionConst.CONFIG_QUALIFIED_INSTANCE_INITIAL_STATUS, DefinitionConst.DEFAULT_INSTANCE_INITIAL_STATUS)));
+        .valueOf(BootStrapProperties.readServiceInstanceInitialStatus()));
     HealthCheck healthCheck = new HealthCheck();
     healthCheck.setMode(HealthCheckMode.HEARTBEAT);
     microserviceInstance.setHealthCheck(healthCheck);

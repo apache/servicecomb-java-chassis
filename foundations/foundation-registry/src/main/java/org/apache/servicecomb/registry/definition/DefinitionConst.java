@@ -17,25 +17,10 @@
 
 package org.apache.servicecomb.registry.definition;
 
-import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
-
 public interface DefinitionConst {
-
-  String CONFIG_QUALIFIED_INSTANCE_ENVIRONMENT_KEY = "instance_description.environment";
-
-  String CONFIG_QUALIFIED_INSTANCE_INITIAL_STATUS = "instance_description.initialStatus";
-
   String CONFIG_ALLOW_CROSS_APP_KEY = "allowCrossApp";
 
-  String DEFAULT_APPLICATION_ID = "default";
-
-  String DEFAULT_MICROSERVICE_VERSION = "1.0.0.0";
-
   String DEFAULT_STAGE = "prod";
-
-  String DEFAULT_INSTANCE_ENVIRONMENT = "production";
-
-  String DEFAULT_INSTANCE_INITIAL_STATUS = MicroserviceInstanceStatus.UP.name();
 
   String VERSION_RULE_LATEST = "latest";
 
@@ -45,13 +30,13 @@ public interface DefinitionConst {
 
   String URL_PREFIX = "urlPrefix";
 
-  public static final String INSTANCE_PUBKEY_PRO = "publickey";
+  String INSTANCE_PUBKEY_PRO = "publickey";
 
-  public static final String REGISTER_URL_PREFIX = "servicecomb.service.registry.registerUrlPrefix";
+  String REGISTER_URL_PREFIX = "servicecomb.service.registry.registerUrlPrefix";
 
-  public static final String REGISTER_SERVICE_PATH = "servicecomb.service.registry.registerPath";
+  String REGISTER_SERVICE_PATH = "servicecomb.service.registry.registerPath";
 
-  public static final String REGISTRY_APP_ID = "default";
+  String REGISTRY_APP_ID = "default";
 
-  public static final String REGISTRY_SERVICE_NAME = "SERVICECENTER";
+  String REGISTRY_SERVICE_NAME = "SERVICECENTER";
 }

@@ -17,8 +17,6 @@
 
 package org.apache.servicecomb.localregistry;
 
-import static org.apache.servicecomb.registry.definition.DefinitionConst.DEFAULT_APPLICATION_ID;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,9 +25,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.foundation.common.base.ServiceCombConstants;
-
-import com.netflix.config.DynamicPropertyFactory;
+import org.apache.servicecomb.config.BootStrapProperties;
+import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
 
 /**
  * Configuration bean for local services. Bean configuration is token
@@ -117,12 +114,7 @@ public class RegistryBean {
     if (!StringUtils.isEmpty(configAppId)) {
       return configAppId;
     }
-    if (DynamicPropertyFactory.getInstance()
-        .getStringProperty(ServiceCombConstants.CONFIG_APPLICATION_ID_KEY, null).get() != null) {
-      return DynamicPropertyFactory.getInstance()
-          .getStringProperty(ServiceCombConstants.CONFIG_APPLICATION_ID_KEY, null).get();
-    }
-    return DEFAULT_APPLICATION_ID;
+    return BootStrapProperties.readApplication();
   }
 
   public String getId() {

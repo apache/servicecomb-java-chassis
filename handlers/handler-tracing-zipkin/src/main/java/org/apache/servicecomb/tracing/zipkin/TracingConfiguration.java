@@ -17,17 +17,16 @@
 
 package org.apache.servicecomb.tracing.zipkin;
 
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_TRACING_COLLECTOR_ADDRESS;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_TRACING_COLLECTOR_API_V1;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_TRACING_COLLECTOR_API_V2;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_TRACING_COLLECTOR_API_VERSION;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_TRACING_COLLECTOR_PATH;
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_MICROSERVICE_NAME;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_TRACING_COLLECTOR_ADDRESS;
 
 import java.text.MessageFormat;
 
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.config.DynamicProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -81,8 +80,7 @@ class TracingConfiguration {
   Tracing tracing(Reporter<Span> reporter, DynamicProperties dynamicProperties,
       CurrentTraceContext currentTraceContext) {
     return Tracing.newBuilder()
-        .localServiceName(dynamicProperties.getStringProperty(CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY,
-            DEFAULT_MICROSERVICE_NAME))
+        .localServiceName(BootStrapProperties.readServiceName())
         .currentTraceContext(currentTraceContext) // puts trace IDs into logs
         .spanReporter(reporter)
         .build();

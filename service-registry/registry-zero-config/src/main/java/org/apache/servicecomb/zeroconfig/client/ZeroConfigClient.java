@@ -16,8 +16,15 @@
  */
 package org.apache.servicecomb.zeroconfig.client;
 
-import com.google.common.annotations.VisibleForTesting;
-import io.vertx.core.json.Json;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.ENCODE;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.EVENT;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.GROUP;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.HEARTBEAT_EVENT;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.INSTANCE_ID;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.PORT;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.SERVICE_ID;
+import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.UNREGISTER_EVENT;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -26,15 +33,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
-import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
-import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.registry.version.Version;
 import org.apache.servicecomb.registry.version.VersionRule;
 import org.apache.servicecomb.registry.version.VersionRuleUtils;
@@ -45,7 +50,9 @@ import org.apache.servicecomb.zeroconfig.server.ZeroConfigRegistryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.apache.servicecomb.zeroconfig.ZeroConfigRegistryConstants.*;
+import com.google.common.annotations.VisibleForTesting;
+
+import io.vertx.core.json.Json;
 
 public class ZeroConfigClient {
 
@@ -55,10 +62,12 @@ public class ZeroConfigClient {
 
   // Constructor Parameters
   private ZeroConfigRegistryService zeroConfigRegistryService;
+
   private MulticastSocket multicastSocket;
 
   // registration objects
   private Microservice selfMicroservice;
+
   private MicroserviceInstance selfMicroserviceInstance;
 
   // Constructor
@@ -78,11 +87,8 @@ public class ZeroConfigClient {
   }
 
   public void init() {
-    MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
-    MicroserviceDefinition microserviceDefinition = new MicroserviceDefinition(
-        loader.getConfigModels());
     MicroserviceFactory microserviceFactory = new MicroserviceFactory();
-    selfMicroservice = microserviceFactory.create(microserviceDefinition);
+    selfMicroservice = microserviceFactory.create();
     selfMicroserviceInstance = selfMicroservice.getInstance();
 
     // set serviceId
@@ -97,7 +103,6 @@ public class ZeroConfigClient {
       String instanceId = ClientUtil.generateServiceInstanceId();
       selfMicroserviceInstance.setInstanceId(instanceId);
     }
-
   }
 
   // builder method
@@ -115,7 +120,8 @@ public class ZeroConfigClient {
   }
 
   public boolean register() {
-    String serviceInstanceId = doRegister(ClientUtil.convertToRegisterDataModel(selfMicroserviceInstance, selfMicroservice));
+    String serviceInstanceId = doRegister(
+        ClientUtil.convertToRegisterDataModel(selfMicroserviceInstance, selfMicroservice));
     return StringUtils.isNotEmpty(serviceInstanceId);
   }
 
@@ -165,7 +171,6 @@ public class ZeroConfigClient {
           foundInstance.getServiceId(), foundInstance.getInstanceId(), e);
       return false;
     }
-
   }
 
   public List<Microservice> getAllMicroservices() {
@@ -295,5 +300,4 @@ public class ZeroConfigClient {
       MicroserviceInstance selfMicroserviceInstance) {
     this.selfMicroserviceInstance = selfMicroserviceInstance;
   }
-
 }

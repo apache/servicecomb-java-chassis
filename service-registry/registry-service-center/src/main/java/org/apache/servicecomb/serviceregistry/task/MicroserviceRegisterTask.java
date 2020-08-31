@@ -26,14 +26,15 @@ import java.util.Set;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.foundation.common.base.ServiceCombConstants;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.registry.api.registry.Microservice;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.adapter.EnvAdapterManager;
 import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.Holder;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
-import org.apache.servicecomb.serviceregistry.adapter.EnvAdapterManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -226,7 +227,7 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
         "There is a schema only existing in local microservice: [" + localSchemaEntry.getKey()
             + "], which means there are interfaces changed. "
             + "You need to increment microservice version before deploying, "
-            + "or you can configure service_description.environment="
+            + "or you can configure " + BootStrapProperties.CONFIG_SERVICE_ENVIRONMENT + "="
             + ServiceCombConstants.DEVELOPMENT_SERVICECOMB_ENV
             + " to work in development environment and ignore this error");
   }
@@ -279,7 +280,7 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
           "The schema(id=[" + localSchemaEntry.getKey()
               + "]) content held by this instance and the service center is different. "
               + "You need to increment microservice version before deploying. "
-              + "Or you can configure service_description.environment="
+              + "Or you can configure " + BootStrapProperties.CONFIG_SERVICE_ENVIRONMENT + "="
               + ServiceCombConstants.DEVELOPMENT_SERVICECOMB_ENV
               + " to work in development environment and ignore this error");
     }
@@ -320,7 +321,7 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
         throw new IllegalStateException("There are schemas only existing in service center: " + scSchemaMap.keySet()
             + ", which means there are interfaces changed. "
             + "You need to increment microservice version before deploying, "
-            + "or if service_description.environment="
+            + "or if " + BootStrapProperties.CONFIG_SERVICE_ENVIRONMENT + "="
             + ServiceCombConstants.DEVELOPMENT_SERVICECOMB_ENV
             + ", you can delete microservice information in service center and restart this instance.");
       }

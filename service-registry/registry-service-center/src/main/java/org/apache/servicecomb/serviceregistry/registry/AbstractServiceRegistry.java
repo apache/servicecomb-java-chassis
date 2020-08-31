@@ -22,9 +22,9 @@ import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.foundation.common.concurrency.SuppressedRunnableWrapper;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
@@ -38,7 +38,6 @@ import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceFactory;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
-import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
 import org.apache.servicecomb.serviceregistry.api.Const;
@@ -65,8 +64,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
 
   protected EventBus eventBus;
 
-  protected MicroserviceDefinition microserviceDefinition;
-
   protected Microservice microservice;
 
   protected ServiceRegistryClient srClient;
@@ -82,12 +79,11 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   RefreshableServiceRegistryCache serviceRegistryCache;
 
   public AbstractServiceRegistry(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
-      MicroserviceDefinition microserviceDefinition) {
+      Configuration configuration) {
     setName(serviceRegistryConfig.getRegistryName());
     this.eventBus = eventBus;
     this.serviceRegistryConfig = serviceRegistryConfig;
-    this.microserviceDefinition = microserviceDefinition;
-    this.microservice = microserviceFactory.create(microserviceDefinition);
+    this.microservice = microserviceFactory.create(configuration);
   }
 
   @Override
@@ -113,11 +109,6 @@ public abstract class AbstractServiceRegistry implements ServiceRegistry {
   @Override
   public EventBus getEventBus() {
     return eventBus;
-  }
-
-  @Override
-  public Set<String> getCombinedMicroserviceNames() {
-    return microserviceDefinition.getCombinedFrom();
   }
 
   @Override

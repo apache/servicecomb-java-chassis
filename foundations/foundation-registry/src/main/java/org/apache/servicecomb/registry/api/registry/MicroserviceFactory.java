@@ -16,14 +16,6 @@
  */
 package org.apache.servicecomb.registry.api.registry;
 
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_APPLICATION_ID_KEY;
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_DESCRIPTION_KEY;
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY;
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_ROLE_KEY;
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY;
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_MICROSERVICE_NAME;
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.DEFAULT_SERVICECOMB_ENV;
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.SERVICECOMB_ENV;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.APP_MAPPING;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.SERVICE_MAPPING;
 import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.VERSION_MAPPING;
@@ -33,26 +25,28 @@ import java.util.Map;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.EnvironmentConfiguration;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.BootStrapProperties;
+import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.registry.config.ConfigurePropertyUtils;
 import org.apache.servicecomb.registry.config.MicroservicePropertiesLoader;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
-import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 import org.apache.servicecomb.registry.version.Version;
 
+import com.google.common.annotations.VisibleForTesting;
+
 public class MicroserviceFactory {
-  public Microservice create(String appId, String microserviceName) {
-    MicroserviceDefinition microserviceDefinition = MicroserviceDefinition.create(appId, microserviceName);
-    return create(microserviceDefinition);
+  public Microservice create() {
+    return create(ConfigUtil.createLocalConfig());
   }
 
-  public Microservice create(MicroserviceDefinition microserviceDefinition) {
-    Configuration configuration = microserviceDefinition.getConfiguration();
-    Microservice microservice = createMicroserviceFromDefinition(configuration);
+  @VisibleForTesting
+  public Microservice create(Configuration configuration) {
+    Microservice microservice = createMicroserviceFromConfiguration(configuration);
     microservice.setInstance(MicroserviceInstance.createFromDefinition(configuration));
     return microservice;
   }
 
-  private Microservice createMicroserviceFromDefinition(Configuration configuration) {
+  private Microservice createMicroserviceFromConfiguration(Configuration configuration) {
     Microservice microservice = new Microservice();
 
     EnvironmentConfiguration envConfig = new EnvironmentConfiguration();
@@ -60,34 +54,31 @@ public class MicroserviceFactory {
         !StringUtils.isEmpty(envConfig.getString(envConfig.getString(APP_MAPPING)))) {
       microservice.setAppId(envConfig.getString(envConfig.getString(APP_MAPPING)));
     } else {
-      microservice.setAppId(configuration
-          .getString(CONFIG_APPLICATION_ID_KEY, DefinitionConst.DEFAULT_APPLICATION_ID));
+      microservice.setAppId(BootStrapProperties.readApplication(configuration));
     }
     if (!StringUtils.isEmpty(envConfig.getString(SERVICE_MAPPING)) &&
         !StringUtils.isEmpty(envConfig.getString(envConfig.getString(SERVICE_MAPPING)))) {
       microservice.setServiceName(envConfig.getString(envConfig.getString(SERVICE_MAPPING)));
     } else {
-      microservice.setServiceName(configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY,
-          DEFAULT_MICROSERVICE_NAME));
+      microservice.setServiceName(BootStrapProperties.readServiceName(configuration));
     }
     String version;
     if (!StringUtils.isEmpty(envConfig.getString(VERSION_MAPPING)) &&
         !StringUtils.isEmpty(envConfig.getString(envConfig.getString(VERSION_MAPPING)))) {
       version = envConfig.getString(envConfig.getString(VERSION_MAPPING));
     } else {
-      version = configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_VERSION_KEY,
-          DefinitionConst.DEFAULT_MICROSERVICE_VERSION);
+      version = BootStrapProperties.readServiceVersion(configuration);
     }
     // just check version format
     new Version(version);
     microservice.setVersion(version);
 
-    setDescription(configuration, microservice);
-    microservice.setLevel(configuration.getString(CONFIG_QUALIFIED_MICROSERVICE_ROLE_KEY, "FRONT"));
+    microservice.setDescription(BootStrapProperties.readServiceDescription(configuration));
+    microservice.setLevel(BootStrapProperties.readServiceRole(configuration));
     microservice.setPaths(ConfigurePropertyUtils.getMicroservicePaths(configuration));
     Map<String, String> propertiesMap = MicroservicePropertiesLoader.INSTANCE.loadProperties(configuration);
     microservice.setProperties(propertiesMap);
-    microservice.setEnvironment(configuration.getString(SERVICECOMB_ENV, DEFAULT_SERVICECOMB_ENV));
+    microservice.setEnvironment(BootStrapProperties.readServiceEnvironment(configuration));
 
     // set alias name when allow cross app
     if (allowCrossApp(propertiesMap)) {
@@ -96,24 +87,6 @@ public class MicroserviceFactory {
     }
 
     return microservice;
-  }
-
-  /**
-   * {@code service_description.description} is split by {@code ,},
-   * need to combine the description array to raw description.
-   */
-  private void setDescription(Configuration configuration, Microservice microservice) {
-    String[] descriptionArray = configuration.getStringArray(CONFIG_QUALIFIED_MICROSERVICE_DESCRIPTION_KEY);
-    if (null == descriptionArray || descriptionArray.length < 1) {
-      return;
-    }
-
-    StringBuilder rawDescriptionBuilder = new StringBuilder();
-    for (String desc : descriptionArray) {
-      rawDescriptionBuilder.append(desc).append(",");
-    }
-
-    microservice.setDescription(rawDescriptionBuilder.substring(0, rawDescriptionBuilder.length() - 1));
   }
 
   private boolean allowCrossApp(Map<String, String> propertiesMap) {

@@ -19,7 +19,6 @@ package org.apache.servicecomb.serviceregistry.registry;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
@@ -54,11 +53,6 @@ public class EmptyMockServiceRegistry implements ServiceRegistry {
 
   @Override
   public EventBus getEventBus() {
-    return null;
-  }
-
-  @Override
-  public Set<String> getCombinedMicroserviceNames() {
     return null;
   }
 

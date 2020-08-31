@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
-import org.apache.servicecomb.config.ConfigUtil;
-import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.registry.api.Discovery;
 import org.apache.servicecomb.registry.api.registry.Microservice;
@@ -34,7 +32,6 @@ import org.apache.servicecomb.registry.cache.InstanceCacheManager;
 import org.apache.servicecomb.registry.cache.InstanceCacheManagerNew;
 import org.apache.servicecomb.registry.consumer.AppManager;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
-import org.apache.servicecomb.registry.definition.MicroserviceDefinition;
 
 import com.google.common.annotations.VisibleForTesting;
 
@@ -47,7 +44,6 @@ public class DiscoveryManager {
 
   private final InstanceCacheManager instanceCacheManager;
 
-  private final MicroserviceDefinition microserviceDefinition;
 
   private DiscoveryManager() {
     appManager = new AppManager();
@@ -56,9 +52,6 @@ public class DiscoveryManager {
         .stream()
         .filter((discovery -> discovery.enabled()))
         .collect(Collectors.toList());
-
-    MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
-    microserviceDefinition = new MicroserviceDefinition(loader.getConfigModels());
   }
 
   @VisibleForTesting

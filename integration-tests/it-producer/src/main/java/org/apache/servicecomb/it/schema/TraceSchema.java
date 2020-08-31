@@ -16,19 +16,16 @@
  */
 package org.apache.servicecomb.it.schema;
 
-import static org.apache.servicecomb.foundation.common.base.ServiceCombConstants.CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY;
-
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.provider.pojo.Invoker;
 import org.apache.servicecomb.provider.rest.common.RestSchema;
 import org.apache.servicecomb.swagger.invocation.context.InvocationContext;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import com.netflix.config.DynamicPropertyFactory;
 
 @RestSchema(schemaId = "trace")
 @RequestMapping(path = "/v1/trace")
@@ -38,7 +35,7 @@ public class TraceSchema {
   }
 
   TraceSchemaIntf intf = Invoker.createProxy(
-      DynamicPropertyFactory.getInstance().getStringProperty(CONFIG_QUALIFIED_MICROSERVICE_NAME_KEY, null).get(),
+      BootStrapProperties.readServiceName(),
       "trace",
       TraceSchemaIntf.class);
 
