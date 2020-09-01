@@ -20,6 +20,8 @@ package org.apache.servicecomb.loadbalance;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.junit.After;
 import org.junit.Test;
 
 import mockit.Mock;
@@ -29,6 +31,10 @@ import mockit.MockUp;
  *
  */
 public class TestConfiguration {
+  @After
+  public void after() {
+    ArchaiusUtils.resetConfig();
+  }
 
   @Test
   public void testConstants() {
@@ -39,6 +45,7 @@ public class TestConfiguration {
     assertEquals("retryOnNext", Configuration.PROP_RETRY_ONNEXT);
     assertEquals("retryOnSame", Configuration.PROP_RETRY_ONSAME);
     assertEquals("SessionStickinessRule.successiveFailedTimes", Configuration.SUCCESSIVE_FAILED_TIMES);
+    assertEquals("maxSingleTestWindow", Configuration.FILTER_MAX_SINGLE_TEST_WINDOW);
 
     assertNotNull(Configuration.INSTANCE);
   }
@@ -149,5 +156,13 @@ public class TestConfiguration {
   @Test
   public void testGetSessionTimeoutInSeconds() {
     assertNotNull(Configuration.INSTANCE.getSessionTimeoutInSeconds("test"));
+  }
+
+  @Test
+  public void testGetMaxSingleTestWindow() {
+    assertEquals(60000, Configuration.INSTANCE.getMaxSingleTestWindow());
+
+    ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.maxSingleTestWindow", 5000);
+    assertEquals(5000, Configuration.INSTANCE.getMaxSingleTestWindow());
   }
 }

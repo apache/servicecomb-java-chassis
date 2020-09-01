@@ -27,6 +27,7 @@ import org.apache.servicecomb.loadbalance.Configuration;
 import org.apache.servicecomb.loadbalance.ServiceCombLoadBalancerStats;
 import org.apache.servicecomb.loadbalance.ServiceCombServer;
 import org.apache.servicecomb.loadbalance.ServiceCombServerStats;
+import org.apache.servicecomb.loadbalance.TestServiceCombServerStats;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.serviceregistry.cache.CacheEndpoint;
 import org.apache.servicecomb.serviceregistry.discovery.DiscoveryContext;
@@ -80,13 +81,13 @@ public class IsolationDiscoveryFilterTest {
     discoveryTreeNode.data(data);
 
     filter = new IsolationDiscoveryFilter();
-    ServiceCombServerStats.releaseTryingChance();
+    TestServiceCombServerStats.releaseTryingChance();
   }
 
   @After
   public void after() {
     Deencapsulation.invoke(ServiceCombLoadBalancerStats.INSTANCE, "init");
-    ServiceCombServerStats.releaseTryingChance();
+    TestServiceCombServerStats.releaseTryingChance();
   }
 
   @Test
@@ -137,8 +138,7 @@ public class IsolationDiscoveryFilterTest {
     ServiceCombLoadBalancerStats.INSTANCE.markIsolated(server0, true);
 
     Assert.assertTrue(ServiceCombServerStats.isolatedServerCanTry());
-    Assert.assertFalse(
-        Boolean.TRUE.equals(invocation.getLocalContext(IsolationDiscoveryFilter.TRYING_INSTANCES_EXISTING)));
+    Assert.assertNull(TestServiceCombServerStats.getTryingIsolatedServerInvocation());
     DiscoveryTreeNode childNode = filter.discovery(discoveryContext, discoveryTreeNode);
     Map<String, MicroserviceInstance> childNodeData = childNode.data();
     Assert.assertThat(childNodeData.keySet(), Matchers.containsInAnyOrder("i0", "i1", "i2"));
@@ -147,8 +147,7 @@ public class IsolationDiscoveryFilterTest {
     Assert.assertEquals(data.get("i2"), childNodeData.get("i2"));
     Assert.assertTrue(serviceCombServerStats.isIsolated());
     Assert.assertFalse(ServiceCombServerStats.isolatedServerCanTry());
-    Assert.assertTrue(
-        Boolean.TRUE.equals(invocation.getLocalContext(IsolationDiscoveryFilter.TRYING_INSTANCES_EXISTING)));
+    Assert.assertSame(invocation, TestServiceCombServerStats.getTryingIsolatedServerInvocation());
   }
 
   @Test
@@ -180,7 +179,8 @@ public class IsolationDiscoveryFilterTest {
     Assert.assertEquals(data.get("i1"), childNodeData.get("i1"));
     Assert.assertEquals(data.get("i2"), childNodeData.get("i2"));
 
-    ServiceCombServerStats.releaseTryingChance(); // after the first invocation releases the trying chance
+    ServiceCombServerStats
+        .checkAndReleaseTryingChance(invocation); // after the first invocation releases the trying chance
 
     // Other invocation can get the trying chance
     childNode = filter.discovery(discoveryContext, discoveryTreeNode);
