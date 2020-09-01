@@ -66,6 +66,8 @@ public final class Configuration {
 
   public static final String FILTER_SINGLE_TEST = "singleTestTime";
 
+  public static final String FILTER_MAX_SINGLE_TEST_WINDOW = "maxSingleTestWindow";
+
   public static final String FILTER_MIN_ISOLATION_TIME = "minIsolationTime";
 
   public static final String FILTER_CONTINUOUS_FAILURE_THRESHOLD = "continuousFailureThreshold";
@@ -183,7 +185,21 @@ public final class Configuration {
         return result;
       }
       return defaultValue;
+    } catch (NumberFormatException e) {
+      return defaultValue;
+    }
+  }
 
+  public int getMaxSingleTestWindow() {
+    final int defaultValue = 60000;
+    String p = getStringProperty(Integer.toString(defaultValue),
+        ROOT + FILTER_ISOLATION + FILTER_MAX_SINGLE_TEST_WINDOW);
+    try {
+      int result = Integer.parseInt(p);
+      if (result >= 0) {
+        return result;
+      }
+      return defaultValue;
     } catch (NumberFormatException e) {
       return defaultValue;
     }

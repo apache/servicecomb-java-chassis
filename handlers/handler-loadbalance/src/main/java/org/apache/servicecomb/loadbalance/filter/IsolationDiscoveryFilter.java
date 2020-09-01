@@ -144,13 +144,7 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
     if (!checkThresholdAllowed(settings, serverStats)) {
       if (serverStats.isIsolated()
           && (System.currentTimeMillis() - serverStats.getLastVisitTime()) > settings.singleTestTime) {
-        if (!ServiceCombServerStats.applyForTryingChance()) {
-          // this server hasn't been isolated for enough long time, or there is no trying chance
-          return false;
-        }
-        // [1]we can implement better recovery based on several attempts, but here we do not know if this attempt is success
-        invocation.addLocalContext(TRYING_INSTANCES_EXISTING, Boolean.TRUE);
-        return true;
+        return ServiceCombServerStats.applyForTryingChance(invocation);
       }
       if (!serverStats.isIsolated()) {
         serverStats.markIsolated(true);
