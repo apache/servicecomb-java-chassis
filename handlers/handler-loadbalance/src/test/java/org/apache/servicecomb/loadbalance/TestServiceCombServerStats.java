@@ -17,16 +17,32 @@
 
 package org.apache.servicecomb.loadbalance;
 
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.foundation.common.Holder;
+import org.apache.servicecomb.foundation.common.testing.MockClock;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import mockit.Mock;
 import mockit.MockUp;
 
 public class TestServiceCombServerStats {
+  @Before
+  public void before() {
+    releaseTryingChance();
+  }
+
+  @After
+  public void after() {
+    releaseTryingChance();
+  }
+
   @Test
   public void testSimpleThread() {
     long time = System.currentTimeMillis();
@@ -93,5 +109,48 @@ public class TestServiceCombServerStats {
     Assert.assertEquals(stats.getTotalRequests(), 1);
     Assert.assertEquals(stats.getFailedRate(), 0);
     Assert.assertEquals(stats.getSuccessRate(), 100);
+  }
+
+  @Test
+  public void testGlobalAllowIsolatedServerTryingFlag_apply_with_null_precondition() {
+    Invocation invocation = new Invocation();
+    Assert.assertTrue(ServiceCombServerStats.applyForTryingChance(invocation));
+    Assert.assertSame(invocation, ServiceCombServerStats.globalAllowIsolatedServerTryingFlag.get().getInvocation());
+  }
+
+  @Test
+  public void testGlobalAllowIsolatedServerTryingFlag_apply_with_chance_occupied() {
+    Invocation invocation = new Invocation();
+    Assert.assertTrue(ServiceCombServerStats.applyForTryingChance(invocation));
+    Assert.assertSame(invocation, ServiceCombServerStats.globalAllowIsolatedServerTryingFlag.get().getInvocation());
+
+    Invocation otherInvocation = new Invocation();
+    Assert.assertFalse(ServiceCombServerStats.applyForTryingChance(otherInvocation));
+    Assert.assertSame(invocation, ServiceCombServerStats.globalAllowIsolatedServerTryingFlag.get().getInvocation());
+  }
+
+  @Test
+  public void testGlobalAllowIsolatedServerTryingFlag_apply_with_flag_outdated() {
+    Invocation invocation = new Invocation();
+    Assert.assertTrue(ServiceCombServerStats.applyForTryingChance(invocation));
+    Assert.assertSame(invocation, ServiceCombServerStats.globalAllowIsolatedServerTryingFlag.get().getInvocation());
+    ServiceCombServerStats.globalAllowIsolatedServerTryingFlag.get().clock = new MockClock(new Holder<>(
+        ServiceCombServerStats.globalAllowIsolatedServerTryingFlag.get().startTryingTimestamp + 60000
+    ));
+
+    Invocation otherInvocation = new Invocation();
+    Assert.assertTrue(ServiceCombServerStats.applyForTryingChance(otherInvocation));
+    Assert
+        .assertSame(otherInvocation, ServiceCombServerStats.globalAllowIsolatedServerTryingFlag.get().getInvocation());
+  }
+
+  public static void releaseTryingChance() {
+    ServiceCombServerStats.globalAllowIsolatedServerTryingFlag.set(null);
+  }
+
+  public static Invocation getTryingIsolatedServerInvocation() {
+    return Optional.ofNullable(ServiceCombServerStats.globalAllowIsolatedServerTryingFlag.get())
+        .map(TryingIsolatedServerMarker::getInvocation)
+        .orElse(null);
   }
 }
