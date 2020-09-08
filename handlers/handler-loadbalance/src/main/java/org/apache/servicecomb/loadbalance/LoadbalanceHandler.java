@@ -40,7 +40,6 @@ import org.apache.servicecomb.core.provider.consumer.SyncResponseExecutor;
 import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
-import org.apache.servicecomb.loadbalance.filter.IsolationDiscoveryFilter;
 import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryFilter;
@@ -196,9 +195,7 @@ public class LoadbalanceHandler implements Handler {
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
     AsyncResponse response = asyncResp;
     asyncResp = async -> {
-      if (Boolean.TRUE.equals(invocation.getLocalContext(IsolationDiscoveryFilter.TRYING_INSTANCES_EXISTING))) {
-        ServiceCombServerStats.releaseTryingChance();
-      }
+      ServiceCombServerStats.checkAndReleaseTryingChance(invocation);
       response.handle(async);
     };
 

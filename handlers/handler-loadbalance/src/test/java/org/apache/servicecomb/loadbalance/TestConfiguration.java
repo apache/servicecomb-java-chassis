@@ -21,9 +21,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import com.netflix.config.ConcurrentCompositeConfiguration;
 import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.junit.After;
 import org.junit.Test;
+
+import com.netflix.config.ConcurrentCompositeConfiguration;
 
 import mockit.Mock;
 import mockit.MockUp;
@@ -32,6 +35,10 @@ import mockit.MockUp;
  *
  */
 public class TestConfiguration {
+  @After
+  public void after() {
+    ArchaiusUtils.resetConfig();
+  }
 
   @Test
   public void testConstants() {
@@ -42,6 +49,7 @@ public class TestConfiguration {
     assertEquals("retryOnNext", Configuration.RETRY_ON_NEXT);
     assertEquals("retryOnSame", Configuration.RETRY_ON_SAME);
     assertEquals("SessionStickinessRule.successiveFailedTimes", Configuration.SUCCESSIVE_FAILED_TIMES);
+    assertEquals("maxSingleTestWindow", Configuration.FILTER_MAX_SINGLE_TEST_WINDOW);
 
     assertNotNull(Configuration.INSTANCE);
   }
@@ -172,5 +180,13 @@ public class TestConfiguration {
     System.setProperty("servicecomb.loadbalance.stats.timerIntervalInMilis", "100");
     localConfiguration = ConfigUtil.createLocalConfig();
     assertEquals("100", localConfiguration.getProperty(Configuration.TIMER_INTERVAL_IN_MILLIS));
+  }
+
+  @Test
+  public void testGetMaxSingleTestWindow() {
+    assertEquals(60000, Configuration.INSTANCE.getMaxSingleTestWindow());
+
+    ArchaiusUtils.setProperty("servicecomb.loadbalance.isolation.maxSingleTestWindow", 5000);
+    assertEquals(5000, Configuration.INSTANCE.getMaxSingleTestWindow());
   }
 }

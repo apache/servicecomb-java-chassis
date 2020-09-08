@@ -94,7 +94,7 @@ public class TestLoadBalanceHandler2 {
 
     // avoid mock
     ServiceCombLoadBalancerStats.INSTANCE.init();
-    ServiceCombServerStats.releaseTryingChance();
+    TestServiceCombServerStats.releaseTryingChance();
 
     mockTimeMillis = new Holder<>(1L);
     new MockUp<System>() {
@@ -107,7 +107,7 @@ public class TestLoadBalanceHandler2 {
 
   @After
   public void teardown() {
-    ServiceCombServerStats.releaseTryingChance();
+    TestServiceCombServerStats.releaseTryingChance();
   }
 
   @Test
@@ -866,7 +866,7 @@ public class TestLoadBalanceHandler2 {
           aysnc.success("OK");
         });
 
-    Assert.assertTrue(ServiceCombServerStats.applyForTryingChance());
+    Assert.assertTrue(ServiceCombServerStats.applyForTryingChance(invocation));
     invocation.addLocalContext(IsolationDiscoveryFilter.TRYING_INSTANCES_EXISTING, true);
     try {
       handler.handle(invocation, (response) -> Assert.assertEquals("OK", response.getResult()));
@@ -923,7 +923,7 @@ public class TestLoadBalanceHandler2 {
           }
         });
 
-    Assert.assertTrue(ServiceCombServerStats.applyForTryingChance());
+    Assert.assertTrue(ServiceCombServerStats.applyForTryingChance(invocation));
     invocation.addLocalContext(IsolationDiscoveryFilter.TRYING_INSTANCES_EXISTING, true);
     try {
       handler.handle(invocation, (response) -> Assert.assertEquals("OK", response.getResult()));
