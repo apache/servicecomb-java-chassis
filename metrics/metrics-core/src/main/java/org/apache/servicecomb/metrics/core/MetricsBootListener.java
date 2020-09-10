@@ -25,10 +25,11 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrap;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
-import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
 import org.apache.servicecomb.metrics.core.publish.MetricsRestPublisher;
 import org.apache.servicecomb.metrics.core.publish.SlowInvocationLogger;
 import org.springframework.stereotype.Component;
+
+import com.netflix.config.DynamicPropertyFactory;
 
 @Component
 public class MetricsBootListener implements BootListener {
@@ -66,9 +67,9 @@ public class MetricsBootListener implements BootListener {
   }
 
   private void registerSchemas() {
-    producerSchemaFactory.getOrCreateProducerSchema("healthEndpoint",
-        HealthCheckerRestPublisher.class,
-        new HealthCheckerRestPublisher());
+    if (!DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.metrics.endpoint.enabled", true).get()) {
+      return;
+    }
 
     MetricsRestPublisher metricsRestPublisher =
         SPIServiceUtils.getTargetService(MetricsInitializer.class, MetricsRestPublisher.class);

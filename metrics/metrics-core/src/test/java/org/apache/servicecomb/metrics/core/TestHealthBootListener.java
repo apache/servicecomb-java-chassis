@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.servicecomb.metrics.core;
 
 import java.util.ArrayList;
@@ -23,23 +24,19 @@ import org.apache.servicecomb.core.BootListener.BootEvent;
 import org.apache.servicecomb.core.BootListener.EventType;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.definition.schema.ProducerSchemaFactory;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
-import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.metrics.core.publish.MetricsRestPublisher;
-import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import mockit.Deencapsulation;
 import mockit.Mock;
 import mockit.MockUp;
 
-public class TestMetricsBootListener {
-  MetricsBootListener listener = new MetricsBootListener();
+public class TestHealthBootListener {
+  HealthBootListener listener = new HealthBootListener();
 
   @Before
   public void setUp() {
@@ -52,10 +49,10 @@ public class TestMetricsBootListener {
   }
 
   @Test
-  public void registerSchemas() {
+  public void onBootEvent_on_BEFORE_PRODUCER_PROVIDER_event_health_endpoint_enabled_by_default() {
     List<Object[]> argsList = new ArrayList<>();
 
-    ProducerSchemaFactory producerSchemaFactory = new MockUp<ProducerSchemaFactory>() {
+    listener.producerSchemaFactory = new MockUp<ProducerSchemaFactory>() {
       @Mock
       SchemaMeta getOrCreateProducerSchema(String schemaId,
           Class<?> producerClass,
@@ -64,30 +61,25 @@ public class TestMetricsBootListener {
         return null;
       }
     }.getMockInstance();
-    Deencapsulation.setField(listener, "producerSchemaFactory", producerSchemaFactory);
-
-    Microservice microservice = new Microservice();
-    microservice.setServiceName("name");
 
     BootEvent event = new BootEvent();
     event.setEventType(EventType.BEFORE_PRODUCER_PROVIDER);
     listener.onBootEvent(event);
 
-    MetricsRestPublisher metricsRestPublisher =
-        SPIServiceUtils.getTargetService(MetricsInitializer.class, MetricsRestPublisher.class);
+    Assert.assertEquals(1, argsList.size());
     Object[] args = argsList.get(0);
     //we have remove parameter microserviceName
-    Assert.assertEquals("metricsEndpoint", args[0]);
-    Assert.assertEquals(MetricsRestPublisher.class, args[1]);
-    Assert.assertSame(metricsRestPublisher, args[2]);
+    Assert.assertEquals("healthEndpoint", args[0]);
+    Assert.assertEquals(HealthCheckerRestPublisher.class, args[1]);
+    Assert.assertEquals(HealthCheckerRestPublisher.class, args[2].getClass());
   }
 
   @Test
-  public void registerSchemas_health_endpoint_disabled() {
-    ArchaiusUtils.setProperty("servicecomb.metrics.endpoint.enabled", false);
+  public void onBootEvent_on_BEFORE_PRODUCER_PROVIDER_event_health_endpoint_disabled() {
+    ArchaiusUtils.setProperty("servicecomb.health.endpoint.enabled", false);
     List<Object[]> argsList = new ArrayList<>();
 
-    ProducerSchemaFactory producerSchemaFactory = new MockUp<ProducerSchemaFactory>() {
+    listener.producerSchemaFactory = new MockUp<ProducerSchemaFactory>() {
       @Mock
       SchemaMeta getOrCreateProducerSchema(String schemaId,
           Class<?> producerClass,
@@ -96,7 +88,6 @@ public class TestMetricsBootListener {
         return null;
       }
     }.getMockInstance();
-    Deencapsulation.setField(listener, "producerSchemaFactory", producerSchemaFactory);
 
     BootEvent event = new BootEvent();
     event.setEventType(EventType.BEFORE_PRODUCER_PROVIDER);
