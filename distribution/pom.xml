@@ -50,6 +50,10 @@
     <!-- clients -->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
+      <artifactId>http-client-common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>kie-client</artifactId>
     </dependency>
     <dependency>

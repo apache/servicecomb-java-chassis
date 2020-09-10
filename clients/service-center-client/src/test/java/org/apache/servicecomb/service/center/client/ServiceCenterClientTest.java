@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicecomb.service.center.client.http.HttpResponse;
+import org.apache.servicecomb.http.client.common.HttpResponse;
 import org.apache.servicecomb.service.center.client.model.HeartbeatsRequest;
 import org.apache.servicecomb.service.center.client.model.InstancesRequest;
 import org.apache.servicecomb.service.center.client.model.Microservice;
@@ -29,6 +29,8 @@ import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstanceStatus;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstancesResponse;
 import org.apache.servicecomb.service.center.client.model.MicroservicesResponse;
+import org.apache.servicecomb.service.center.client.model.RegisteredMicroserviceInstanceResponse;
+import org.apache.servicecomb.service.center.client.model.RegisteredMicroserviceResponse;
 import org.apache.servicecomb.service.center.client.model.SchemaInfo;
 import org.junit.Assert;
 import org.junit.Test;
@@ -109,7 +111,6 @@ public class ServiceCenterClientTest {
 
     Microservice microservice = new Microservice();
     microservice.setServiceName("Test");
-    microservice.setServiceId("111111");
     ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
 
@@ -118,10 +119,10 @@ public class ServiceCenterClientTest {
         .thenReturn(httpResponse);
 
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
-    String actualResponse = serviceCenterClient.registerMicroservice(microservice);
+    RegisteredMicroserviceResponse actualResponse = serviceCenterClient.registerMicroservice(microservice);
 
     Assert.assertNotNull(actualResponse);
-    Assert.assertEquals("{\"serviceId\": \"111111\"}", actualResponse);
+    Assert.assertEquals("111111", actualResponse.getServiceId());
   }
 
   @Test
@@ -226,10 +227,10 @@ public class ServiceCenterClientTest {
 
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
     Microservice microservice = new Microservice("Test111");
-    String actualServiceId = serviceCenterClient.queryServiceId(microservice);
+    RegisteredMicroserviceResponse actualServiceId = serviceCenterClient.queryServiceId(microservice);
 
     Assert.assertNotNull(actualServiceId);
-    Assert.assertEquals("{\"serviceId\": \"111111\"}", actualServiceId);
+    Assert.assertEquals("111111", actualServiceId.getServiceId());
   }
 
   @Test
@@ -253,10 +254,10 @@ public class ServiceCenterClientTest {
         .thenReturn(httpResponse);
 
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
-    String actualResponse = serviceCenterClient.registerMicroserviceInstance(instance, "222222");
+    RegisteredMicroserviceInstanceResponse actualResponse = serviceCenterClient.registerMicroserviceInstance(instance);
 
     Assert.assertNotNull(actualResponse);
-    Assert.assertEquals("{\"instanceId\": \"111111\"}", actualResponse);
+    Assert.assertEquals("111111", actualResponse.getInstanceId());
   }
 
   @Test
@@ -484,7 +485,7 @@ public class ServiceCenterClientTest {
 
     ServiceCenterClient serviceCenterClient = new ServiceCenterClient(serviceCenterRawClient);
     boolean result = serviceCenterClient
-        .updateServiceSchemaContext("111", "222", new SchemaInfo());
+        .updateServiceSchemaContext("111", new SchemaInfo());
 
     Assert.assertNotNull(result);
     Assert.assertEquals(true, result);

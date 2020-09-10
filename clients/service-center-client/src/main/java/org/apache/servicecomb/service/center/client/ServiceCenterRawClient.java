@@ -21,12 +21,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.servicecomb.service.center.client.http.HttpRequest;
-import org.apache.servicecomb.service.center.client.http.HttpResponse;
-import org.apache.servicecomb.service.center.client.http.HttpTransport;
-import org.apache.servicecomb.service.center.client.http.HttpTransportFactory;
-import org.apache.servicecomb.service.center.client.http.TLSConfig;
-import org.apache.servicecomb.service.center.client.http.TLSHttpsTransport;
+import org.apache.servicecomb.http.client.common.HttpRequest;
+import org.apache.servicecomb.http.client.common.HttpResponse;
+import org.apache.servicecomb.http.client.common.HttpTransport;
+import org.apache.servicecomb.http.client.common.HttpTransportFactory;
+import org.apache.servicecomb.http.client.common.TLSConfig;
+import org.apache.servicecomb.http.client.common.TLSHttpsTransport;
 
 /**
  * Created by   on 2019/10/16.
@@ -107,7 +107,6 @@ public class ServiceCenterRawClient {
     }
     headers.put(HEADER_TENANT_NAME, tenantName);
     HttpRequest httpRequest = new HttpRequest(basePath + url, headers, content, method);
-
     return httpTransport.doRequest(httpRequest);
   }
 

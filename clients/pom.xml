@@ -32,6 +32,7 @@
   <name>ServiceComb::Client</name>
   <packaging>pom</packaging>
   <modules>
+    <module>http-client-common</module>
     <module>kie-client</module>
     <module>service-center-client</module>
   </modules>

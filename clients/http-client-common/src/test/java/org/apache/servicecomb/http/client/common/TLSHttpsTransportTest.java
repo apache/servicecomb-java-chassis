@@ -15,11 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.service.center.client;
+package org.apache.servicecomb.http.client.common;
 
-import org.apache.servicecomb.service.center.client.http.HttpTransport;
-import org.apache.servicecomb.service.center.client.http.TLSConfig;
-import org.apache.servicecomb.service.center.client.http.TLSHttpsTransport;
 import org.junit.Assert;
 import org.junit.Test;
 

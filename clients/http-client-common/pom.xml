@@ -26,15 +26,35 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>service-center-client</artifactId>
-  <name>ServiceComb::Clients::Service Center Client</name>
+  <artifactId>http-client-common</artifactId>
+  <name>ServiceComb::Clients::HTTP Client Common</name>
 
   <dependencies>
     <!-- Make this client simple and portable to many frameworks.
        Do not import other dependencies if really need. -->
     <dependency>
-      <groupId>org.apache.servicecomb</groupId>
-      <artifactId>http-client-common</artifactId>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
     </dependency>
 
     <dependency>
