@@ -19,6 +19,7 @@ package org.apache.servicecomb.service.center.client;
 
 import org.apache.servicecomb.service.center.client.exception.OperationException;
 import org.apache.servicecomb.service.center.client.model.CreateSchemaRequest;
+import org.apache.servicecomb.service.center.client.model.FindMicroserviceInstancesResponse;
 import org.apache.servicecomb.service.center.client.model.Microservice;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstanceStatus;
@@ -98,6 +99,16 @@ public interface ServiceCenterOperation {
    * @throws OperationException If some problems happened to contact service center or non http 200 returned.
    */
   MicroserviceInstance getMicroserviceInstance(String serviceId, String instanceId);
+
+  /**
+   * Find MicroserviceInstance by properties.
+   *
+   * @return FindMicroserviceInstancesResponse
+   * @throws OperationException If some problems happened to contact service center or non http 200 returned.n
+   */
+  FindMicroserviceInstancesResponse findMicroserviceInstance(String consumerId, String appId, String serviceName,
+      String versionRule,
+      String revision);
 
   /**
    * Update status of microservice Instance

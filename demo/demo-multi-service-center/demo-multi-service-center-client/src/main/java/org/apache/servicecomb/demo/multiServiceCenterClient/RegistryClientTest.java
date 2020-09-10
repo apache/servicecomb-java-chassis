@@ -25,12 +25,14 @@ import java.util.concurrent.TimeUnit;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.event.SimpleEventBus;
+import org.apache.servicecomb.service.center.client.DiscoveryEvents.InstanceChangedEvent;
 import org.apache.servicecomb.service.center.client.RegistrationEvents;
 import org.apache.servicecomb.service.center.client.RegistrationEvents.HeartBeatEvent;
 import org.apache.servicecomb.service.center.client.RegistrationEvents.MicroserviceInstanceRegistrationEvent;
 import org.apache.servicecomb.service.center.client.RegistrationEvents.MicroserviceRegistrationEvent;
 import org.apache.servicecomb.service.center.client.RegistrationEvents.SchemaRegistrationEvent;
 import org.apache.servicecomb.service.center.client.ServiceCenterClient;
+import org.apache.servicecomb.service.center.client.ServiceCenterDiscovery;
 import org.apache.servicecomb.service.center.client.ServiceCenterRegistration;
 import org.apache.servicecomb.service.center.client.model.Microservice;
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstance;
@@ -46,7 +48,11 @@ import com.google.common.hash.Hashing;
 public class RegistryClientTest implements CategorizedTestCase {
   private List<RegistrationEvents> events = new ArrayList<>();
 
-  private CountDownLatch counter = new CountDownLatch(1);
+  private CountDownLatch registrationCounter = new CountDownLatch(1);
+
+  private CountDownLatch discoveryCounter = new CountDownLatch(1);
+
+  private List<MicroserviceInstance> instances;
 
   // auto test only tests 'hasRegistered=false', can run this client many times to test 'hasRegistered=true'
   private boolean hasRegistered = true;
@@ -91,7 +97,7 @@ public class RegistryClientTest implements CategorizedTestCase {
     eventBus.register(this);
 
     serviceCenterRegistration.startRegistration();
-    counter.await(30000, TimeUnit.MILLISECONDS);
+    registrationCounter.await(30000, TimeUnit.MILLISECONDS);
     if (hasRegistered) {
       TestMgr.check(events.size() >= 3, true);
       TestMgr.check(events.get(0).isSuccess(), true);
@@ -111,6 +117,14 @@ public class RegistryClientTest implements CategorizedTestCase {
       TestMgr.check(events.get(3).isSuccess(), true);
       TestMgr.check(events.get(3) instanceof HeartBeatEvent, true);
     }
+
+    ServiceCenterDiscovery discovery = new ServiceCenterDiscovery(serviceCenterClient, eventBus);
+    discovery.updateMySelf(microservice);
+    discovery.startDiscovery();
+    discovery.register(microservice);
+    discoveryCounter.await(30000, TimeUnit.MILLISECONDS);
+    TestMgr.check(instances != null, true);
+    TestMgr.check(instances.size(), 1);
   }
 
   @Subscribe
@@ -132,6 +146,12 @@ public class RegistryClientTest implements CategorizedTestCase {
   @Subscribe
   public void onHeartBeatEvent(HeartBeatEvent event) {
     events.add(event);
-    counter.countDown();
+    registrationCounter.countDown();
+  }
+
+  @Subscribe
+  public void onInstanceChangedEvent(InstanceChangedEvent event) {
+    instances = event.getInstances();
+    discoveryCounter.countDown();
   }
 }

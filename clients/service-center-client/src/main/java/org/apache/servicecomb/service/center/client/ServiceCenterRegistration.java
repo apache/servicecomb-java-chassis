@@ -18,9 +18,6 @@
 package org.apache.servicecomb.service.center.client;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.service.center.client.RegistrationEvents.HeartBeatEvent;
@@ -38,14 +35,12 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.eventbus.EventBus;
 
-public class ServiceCenterRegistration {
+public class ServiceCenterRegistration extends AbstractTask {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCenterRegistration.class);
 
   private final ServiceCenterClient serviceCenterClient;
 
   private final EventBus eventBus;
-
-  private final ExecutorService taskPool;
 
   private Microservice microservice;
 
@@ -54,10 +49,9 @@ public class ServiceCenterRegistration {
   private List<SchemaInfo> schemaInfos;
 
   public ServiceCenterRegistration(ServiceCenterClient serviceCenterClient, EventBus eventBus) {
+    super("service-center-registration-task");
     this.serviceCenterClient = serviceCenterClient;
     this.eventBus = eventBus;
-    this.taskPool = Executors.newSingleThreadExecutor((task) ->
-        new Thread(task, "service-center-registration-task"));
   }
 
   public void setMicroserviceInstance(MicroserviceInstance microserviceInstance) {
@@ -74,25 +68,6 @@ public class ServiceCenterRegistration {
 
   public void startRegistration() {
     startTask(new RegisterMicroserviceTask(0));
-  }
-
-  private void startTask(Task task) {
-    try {
-      this.taskPool.execute(() -> {
-        try {
-          task.execute();
-        } catch (Throwable e) {
-          LOGGER.error("unexpected error execute task {}", task.getClass().getName(), e);
-        }
-      });
-    } catch (RejectedExecutionException e) {
-      LOGGER.error("execute task rejected {}", task.getClass().getName(), e);
-    }
-  }
-
-
-  interface Task {
-    void execute();
   }
 
   class RegisterMicroserviceTask implements Task {
@@ -240,37 +215,6 @@ public class ServiceCenterRegistration {
         eventBus.post(new HeartBeatEvent(false));
         startTask(new BackOffSleepTask(failedCount + 1, new SendHeartBeatTask(failedCount + 1)));
       }
-    }
-  }
-
-  class BackOffSleepTask implements Task {
-    final long base = 3000;
-
-    final long max = 60000;
-
-    long waitTime;
-
-    Task nextTask;
-
-    BackOffSleepTask(int failedCount, Task nextTask) {
-      this.waitTime = failedCount * base;
-      this.nextTask = nextTask;
-    }
-
-    BackOffSleepTask(long waitTime, Task nextTask) {
-      this.waitTime = waitTime;
-      this.nextTask = nextTask;
-    }
-
-    @Override
-    public void execute() {
-      long time = Math.min(max, waitTime);
-      try {
-        Thread.sleep(time);
-      } catch (InterruptedException e) {
-        LOGGER.error("unexpected interrupt during sleep", e);
-      }
-      startTask(nextTask);
     }
   }
 }

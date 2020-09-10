@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.http.client.common;
 
+import org.apache.http.Header;
+
 public class HttpResponse {
 
   private int statusCode;
@@ -25,14 +27,17 @@ public class HttpResponse {
 
   private String content;
 
+  private Header[] headers;
+
   public HttpResponse() {
 
   }
 
-  HttpResponse(int statusCode, String message, String content) {
+  HttpResponse(int statusCode, String message, String content, Header[] headers) {
     this.statusCode = statusCode;
     this.content = content;
     this.message = message;
+    this.headers = headers;
   }
 
   public int getStatusCode() {
@@ -57,5 +62,17 @@ public class HttpResponse {
 
   public void setContent(String content) {
     this.content = content;
+  }
+
+  public String getHeader(String key) {
+    if (headers == null) {
+      return null;
+    }
+    for (Header header : headers) {
+      if (header.getName().equals(key)) {
+        return header.getValue();
+      }
+    }
+    return null;
   }
 }

@@ -86,11 +86,10 @@ public class HttpTransportImpl implements HttpTransport {
     //get Http response
     org.apache.http.HttpResponse response = httpClient.execute(httpRequest.getRealRequest());
 
-    int statusCode = response.getStatusLine().getStatusCode();
-    String messgae = response.getStatusLine().getReasonPhrase();
-    String context = EntityUtils.toString(response.getEntity(), "UTF-8");
-
-    return new HttpResponse(statusCode, messgae, context);
+    return new HttpResponse(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase(),
+        response.getEntity() == null ? null :
+            EntityUtils.toString(response.getEntity(), "UTF-8"),
+        response.getAllHeaders());
   }
 
   @Override
