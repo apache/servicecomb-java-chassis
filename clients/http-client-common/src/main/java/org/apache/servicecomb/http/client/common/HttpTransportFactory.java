@@ -17,14 +17,61 @@
 
 package org.apache.servicecomb.http.client.common;
 
-public class HttpTransportFactory {
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.servicecomb.foundation.ssl.SSLManager;
 
-  private static final HttpTransport httpTransport = new HttpTransportImpl();
+public class HttpTransportFactory {
+  // All parameters set to 5 seconds now.
+  public static final int CONNECT_TIMEOUT = 5000;
+
+  public static final int CONNECTION_REQUEST_TIMEOUT = 5000;
+
+  public static final int SOCKET_TIMEOUT = 5000;
+
+  public static final int MAX_TOTAL = 100;
+
+  public static final int DEFAULT_MAX_PER_ROUTE = 10;
 
   private HttpTransportFactory() {
   }
 
-  public static HttpTransport getDefaultHttpTransport() {
-    return httpTransport;
+  public static HttpTransport createHttpTransport(HttpConfiguration.SSLProperties sslProperties) {
+    RequestConfig config = RequestConfig.custom()
+        .setConnectTimeout(CONNECT_TIMEOUT)
+        .setConnectionRequestTimeout(
+            CONNECTION_REQUEST_TIMEOUT)
+        .setSocketTimeout(SOCKET_TIMEOUT).build();
+
+    //register http/https socket factory
+    RegistryBuilder<ConnectionSocketFactory> builder = RegistryBuilder.<ConnectionSocketFactory>create();
+    builder.register("http", PlainConnectionSocketFactory.INSTANCE);
+    if (sslProperties.isEnabled()) {
+      builder.register("https",
+          new SSLConnectionSocketFactory(
+              SSLManager.createSSLContext(sslProperties.getSslOption(), sslProperties.getSslCustom()),
+              NoopHostnameVerifier.INSTANCE));
+    }
+    Registry<ConnectionSocketFactory> connectionSocketFactoryRegistry = builder.build();
+
+    //connection pool management
+    PoolingHttpClientConnectionManager connectionManager = new PoolingHttpClientConnectionManager(
+        connectionSocketFactoryRegistry);
+    connectionManager.setMaxTotal(MAX_TOTAL);
+    connectionManager.setDefaultMaxPerRoute(DEFAULT_MAX_PER_ROUTE);
+
+    HttpClientBuilder httpClientBuilder = HttpClientBuilder.create().
+        setDefaultRequestConfig(config).
+        setConnectionManager(connectionManager).
+        disableCookieManagement();
+
+    return new HttpTransportImpl(httpClientBuilder.build());
   }
 }

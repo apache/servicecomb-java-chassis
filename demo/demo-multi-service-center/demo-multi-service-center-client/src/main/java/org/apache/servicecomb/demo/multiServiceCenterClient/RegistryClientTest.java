@@ -18,6 +18,7 @@
 package org.apache.servicecomb.demo.multiServiceCenterClient;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +26,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.event.SimpleEventBus;
+import org.apache.servicecomb.http.client.common.HttpConfiguration.SSLProperties;
+import org.apache.servicecomb.service.center.client.AddressManager;
 import org.apache.servicecomb.service.center.client.DiscoveryEvents.InstanceChangedEvent;
 import org.apache.servicecomb.service.center.client.RegistrationEvents;
 import org.apache.servicecomb.service.center.client.RegistrationEvents.HeartBeatEvent;
@@ -59,7 +62,10 @@ public class RegistryClientTest implements CategorizedTestCase {
 
   @Override
   public void testRestTransport() throws Exception {
-    ServiceCenterClient serviceCenterClient = new ServiceCenterClient("127.0.0.1", 30100);
+    AddressManager addressManager = new AddressManager("default", Arrays.asList("http://127.0.0.1:30100"));
+    SSLProperties sslProperties = new SSLProperties();
+    sslProperties.setEnabled(false);
+    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(addressManager, sslProperties, "default", null);
     EventBus eventBus = new SimpleEventBus();
     ServiceCenterRegistration serviceCenterRegistration = new ServiceCenterRegistration(serviceCenterClient, eventBus);
     Microservice microservice = new Microservice();
@@ -125,6 +131,9 @@ public class RegistryClientTest implements CategorizedTestCase {
     discoveryCounter.await(30000, TimeUnit.MILLISECONDS);
     TestMgr.check(instances != null, true);
     TestMgr.check(instances.size(), 1);
+    discovery.stop();
+    serviceCenterRegistration.stop();
+    serviceCenterClient.deleteMicroserviceInstance(microservice.getServiceId(), microserviceInstance.getInstanceId());
   }
 
   @Subscribe

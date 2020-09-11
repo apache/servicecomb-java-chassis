@@ -17,31 +17,39 @@
 
 package org.apache.servicecomb.http.client.common;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.apache.servicecomb.foundation.ssl.SSLCustom;
+import org.apache.servicecomb.foundation.ssl.SSLOption;
 
-/**
- * Created by   on 2019/10/31.
- */
-public class TLSHttpsTransportTest {
+public interface HttpConfiguration {
+  class SSLProperties {
+    private boolean enabled;
 
-  /**
-   * test TLS HttpTransport
-   */
-  @Test
-  public void TestTLSConfig() {
+    private SSLOption sslOption;
 
-    TLSConfig tlsConfig = new TLSConfig();
+    private SSLCustom sslCustom;
 
-    tlsConfig.setKeyStoreType(TLSConfig.KeyStoreInstanceType.PKCS12);
-    tlsConfig.setKeyStore(this.getClass().getResource("/tls/client.p12").getFile().toString());
-    tlsConfig.setKeyStoreValue("123456");
+    public boolean isEnabled() {
+      return enabled;
+    }
 
-    tlsConfig.setTrustStore(this.getClass().getResource("/tls/server.jks").getFile().toString());
-    tlsConfig.setTrustStoreValue("123456");
+    public void setEnabled(boolean enabled) {
+      this.enabled = enabled;
+    }
 
-    HttpTransport tlsHttpTransport = new TLSHttpsTransport(tlsConfig);
+    public SSLOption getSslOption() {
+      return sslOption;
+    }
 
-    Assert.assertNotNull(tlsHttpTransport);
+    public void setSslOption(SSLOption sslOption) {
+      this.sslOption = sslOption;
+    }
+
+    public SSLCustom getSslCustom() {
+      return sslCustom;
+    }
+
+    public void setSslCustom(SSLCustom sslCustom) {
+      this.sslCustom = sslCustom;
+    }
   }
 }

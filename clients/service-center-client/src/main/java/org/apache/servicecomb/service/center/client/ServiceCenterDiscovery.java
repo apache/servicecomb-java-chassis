@@ -114,6 +114,17 @@ public class ServiceCenterDiscovery extends AbstractTask {
               .findMicroserviceInstance(myself.getServiceId(), k.appId, k.serviceName, ALL_VERSION, v.revision);
           if (instancesResponse.isModified()) {
             // java chassis 实现了空实例保护，这里暂时不实现。
+            LOGGER.info("Instance changed event, "
+                    + "current: revision={}, instances={}; "
+                    + "origin: revision={}, instances={}; "
+                    + "appId={}, serviceName={}",
+                instancesResponse.getRevision(),
+                instanceToString(instancesResponse.getMicroserviceInstancesResponse().getInstances()),
+                v.revision,
+                instanceToString(v.instancesCache),
+                k.appId,
+                k.serviceName
+            );
             v.instancesCache = instancesResponse.getMicroserviceInstancesResponse().getInstances();
             v.revision = instancesResponse.getRevision();
             eventBus.post(new InstanceChangedEvent(k.appId, k.serviceName,
@@ -125,6 +136,22 @@ public class ServiceCenterDiscovery extends AbstractTask {
       });
 
       startTask(new BackOffSleepTask(POLL_INTERVAL, new PullInstanceTask()));
+    }
+
+    private String instanceToString(List<MicroserviceInstance> instances) {
+      if (instances == null) {
+        return "";
+      }
+
+      StringBuilder sb = new StringBuilder();
+      for (MicroserviceInstance instance : instances) {
+        for (String endpoint : instance.getEndpoints()) {
+          sb.append(endpoint.length() > 20 ? endpoint.substring(0, 20) : endpoint);
+          sb.append("|");
+        }
+      }
+      sb.append("#");
+      return sb.toString();
     }
   }
 }

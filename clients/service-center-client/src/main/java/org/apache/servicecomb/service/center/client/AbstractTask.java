@@ -82,4 +82,8 @@ public class AbstractTask {
       LOGGER.error("execute task rejected {}", task.getClass().getName(), e);
     }
   }
+
+  public void stop() {
+    this.taskPool.shutdownNow();
+  }
 }
