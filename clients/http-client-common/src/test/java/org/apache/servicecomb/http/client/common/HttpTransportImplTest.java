@@ -50,8 +50,7 @@ public class HttpTransportImplTest {
 
     when(httpClient.execute(Mockito.any())).thenReturn(httpResponse);
 
-    HttpTransportImpl httpTransport = new HttpTransportImpl();
-    httpTransport.setHttpClient(httpClient);
+    HttpTransportImpl httpTransport = new HttpTransportImpl(httpClient);
     Map<String, String> extraHeaders = new HashMap<>();
     extraHeaders.put("test", "testContext");
     httpTransport.addHeaders(extraHeaders);

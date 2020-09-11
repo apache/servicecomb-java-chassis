@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 /**
@@ -33,12 +32,12 @@ public class HttpTransportImpl implements HttpTransport {
 
   private static final String HEADER_USER_AGENT = "User-Agent";
 
-  protected HttpClient httpClient;
+  private HttpClient httpClient;
 
   private Map<String, String> globalHeaders;
 
-  public HttpTransportImpl() {
-    httpClient = HttpClients.createDefault();
+  public HttpTransportImpl(HttpClient httpClient) {
+    this.httpClient = httpClient;
   }
 
   public HttpClient getHttpClient() {

@@ -24,64 +24,25 @@ import java.util.Map;
 import org.apache.servicecomb.http.client.common.HttpRequest;
 import org.apache.servicecomb.http.client.common.HttpResponse;
 import org.apache.servicecomb.http.client.common.HttpTransport;
-import org.apache.servicecomb.http.client.common.HttpTransportFactory;
-import org.apache.servicecomb.http.client.common.TLSConfig;
-import org.apache.servicecomb.http.client.common.TLSHttpsTransport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * Created by   on 2019/10/16.
- */
 public class ServiceCenterRawClient {
-
-  private static final String DEFAULT_HOST = "localhost";
-
-  private static final int DEFAULT_PORT = 30100;
-
-  private static final String PROJECT_NAME = "default";
-
-  private static final String V4_PREFIX = "v4";
+  private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCenterRawClient.class);
 
   private static final String HEADER_TENANT_NAME = "x-domain-name";
-
-  private static final String DEFAULT_HEADER_TENANT_NAME = "default";
-
-  private String basePath;
-
-  private String host;
-
-  private int port;
-
-  private String projectName;
 
   private String tenantName;
 
   private HttpTransport httpTransport;
 
-  public ServiceCenterRawClient() {
-    this(DEFAULT_HOST, DEFAULT_PORT, PROJECT_NAME, HttpTransportFactory.getDefaultHttpTransport(),
-        DEFAULT_HEADER_TENANT_NAME);
-  }
+  private AddressManager addressManager;
 
-  private ServiceCenterRawClient(String host, int port, String projectName, HttpTransport httpTransport,
-      String tenantName) {
-    this.host = host;
-    this.port = port;
-    this.projectName = projectName;
+  private ServiceCenterRawClient(String tenantName, HttpTransport httpTransport,
+      AddressManager addressManager) {
     this.httpTransport = httpTransport;
     this.tenantName = tenantName;
-
-    // check that host has scheme or not
-    String hostLowercase = host.toLowerCase();
-    if (!hostLowercase.startsWith("https://") && !hostLowercase.startsWith("http://")) {
-      // no protocol in host, use default 'http'
-      if (httpTransport instanceof TLSHttpsTransport) {
-        host = "https://" + host;
-      } else {
-        host = "http://" + host;
-      }
-    }
-
-    this.basePath = host + ":" + port + "/" + V4_PREFIX + "/" + projectName;
+    this.addressManager = addressManager;
   }
 
   public HttpResponse getHttpRequest(String url, Map<String, String> headers, String content) throws IOException {
@@ -106,66 +67,37 @@ public class ServiceCenterRawClient {
       headers = new HashMap<>();
     }
     headers.put(HEADER_TENANT_NAME, tenantName);
-    HttpRequest httpRequest = new HttpRequest(basePath + url, headers, content, method);
-    return httpTransport.doRequest(httpRequest);
+    HttpRequest httpRequest = new HttpRequest(addressManager.address() + url, headers, content, method);
+
+    try {
+      return httpTransport.doRequest(httpRequest);
+    } catch (IOException e) {
+      LOGGER.warn("send request to {} failed and retry to {} once. ", addressManager.address(),
+          addressManager.nextAddress(), e);
+      httpRequest = new HttpRequest(addressManager.address() + url, headers, content, method);
+      try {
+        return httpTransport.doRequest(httpRequest);
+      } catch (IOException ioException) {
+        LOGGER.warn("retry to {} failed again, and change next address {}. ", addressManager.address()
+            , addressManager.nextAddress());
+        throw ioException;
+      }
+    }
   }
 
   public static class Builder {
-    private String host;
-
-    private int port;
-
-    private String projectName;
-
     private String tenantName;
 
-    private HttpTransport httpTransport = HttpTransportFactory.getDefaultHttpTransport();
+    private HttpTransport httpTransport;
+
+    private AddressManager addressManager;
 
     public Builder() {
-      this.host = DEFAULT_HOST;
-      this.port = DEFAULT_PORT;
-      this.projectName = PROJECT_NAME;
-      this.tenantName = DEFAULT_HEADER_TENANT_NAME;
     }
 
-    public String getProjectName() {
-      return projectName;
-    }
-
-    public Builder setProjectName(String projectName) {
-      if (projectName == null) {
-        projectName = PROJECT_NAME;
-      }
-      this.projectName = projectName;
+    public Builder setTenantName(String tenantName) {
+      this.tenantName = tenantName;
       return this;
-    }
-
-    public int getPort() {
-      return port;
-    }
-
-    public Builder setPort(int port) {
-      if (port <= 0) {
-        port = DEFAULT_PORT;
-      }
-      this.port = port;
-      return this;
-    }
-
-    public String getHost() {
-      return host;
-    }
-
-    public Builder setHost(String host) {
-      if (host == null) {
-        host = DEFAULT_HOST;
-      }
-      this.host = host;
-      return this;
-    }
-
-    public HttpTransport getHttpTransport() {
-      return httpTransport;
     }
 
     public Builder setHttpTransport(HttpTransport httpTransport) {
@@ -173,21 +105,13 @@ public class ServiceCenterRawClient {
       return this;
     }
 
-    public Builder setTLSConf(TLSConfig tlsConfig) {
-      this.httpTransport = new TLSHttpsTransport(tlsConfig);
-      return this;
-    }
-
-    public Builder setTenantName(String tenantName) {
-      if (tenantName == null) {
-        tenantName = DEFAULT_HEADER_TENANT_NAME;
-      }
-      this.tenantName = tenantName;
+    public Builder setAddressManager(AddressManager addressManager) {
+      this.addressManager = addressManager;
       return this;
     }
 
     public ServiceCenterRawClient build() {
-      return new ServiceCenterRawClient(host, port, projectName, httpTransport, tenantName);
+      return new ServiceCenterRawClient(tenantName, httpTransport, addressManager);
     }
   }
 }

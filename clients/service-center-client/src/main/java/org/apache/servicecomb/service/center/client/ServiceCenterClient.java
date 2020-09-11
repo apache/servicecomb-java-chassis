@@ -26,12 +26,11 @@ import java.util.Map;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.servicecomb.http.client.common.HttpConfiguration.SSLProperties;
 import org.apache.servicecomb.http.client.common.HttpResponse;
 import org.apache.servicecomb.http.client.common.HttpTransport;
 import org.apache.servicecomb.http.client.common.HttpTransportFactory;
 import org.apache.servicecomb.http.client.common.HttpUtils;
-import org.apache.servicecomb.http.client.common.TLSConfig;
-import org.apache.servicecomb.http.client.common.TLSHttpsTransport;
 import org.apache.servicecomb.service.center.client.exception.OperationException;
 import org.apache.servicecomb.service.center.client.model.CreateMicroserviceInstanceRequest;
 import org.apache.servicecomb.service.center.client.model.CreateMicroserviceRequest;
@@ -60,74 +59,19 @@ public class ServiceCenterClient implements ServiceCenterOperation {
 
   private ServiceCenterRawClient httpClient;
 
-  /**
-   * Use default config parameter
-   */
-  public ServiceCenterClient() {
-    this(new ServiceCenterRawClient());
+  public ServiceCenterClient(ServiceCenterRawClient httpClient) {
+    this.httpClient = httpClient;
   }
 
-  /**
-   * Add TLS config of client
-   * @param tlsConfig
-   */
-  public ServiceCenterClient(TLSConfig tlsConfig) {
-    this(tlsConfig, null);
-  }
-
-  /**
-   * Add extraGlobalHeaders to http request
-   * @param extraGlobalHeaders
-   */
-  public ServiceCenterClient(Map<String, String> extraGlobalHeaders) {
-    this(null, 0, null, null, null, extraGlobalHeaders);
-  }
-
-  /**
-   * Add TLS config and extraGlobalHeaders
-   * @param tlsConfig
-   * @param extraGlobalHeaders
-   */
-  public ServiceCenterClient(TLSConfig tlsConfig, Map<String, String> extraGlobalHeaders) {
-    this(null, 0, null, null, tlsConfig, extraGlobalHeaders);
-  }
-
-  /**
-   * Customized host,port,
-   * @param host
-   * @param port
-   */
-  public ServiceCenterClient(String host, int port) {
-    this(host, port, null, null, null, null);
-  }
-
-  /**
-   * Customized host, port, projectName, tenantName, TLSConf, headers and any one parameter can be null.
-   * @param host
-   * @param port
-   * @param projectName
-   * @param tenantName
-   * @param tlsConfig
-   * @param extraGlobalHeaders
-   */
-  public ServiceCenterClient(String host, int port, String projectName, String tenantName, TLSConfig tlsConfig,
+  public ServiceCenterClient(AddressManager addressManager, SSLProperties sslProperties, String tenantName,
       Map<String, String> extraGlobalHeaders) {
-    HttpTransport httpTransport = HttpTransportFactory.getDefaultHttpTransport();
-    if (tlsConfig != null) {
-      httpTransport = new TLSHttpsTransport(tlsConfig);
-    }
+    HttpTransport httpTransport = HttpTransportFactory.createHttpTransport(sslProperties);
     httpTransport.addHeaders(extraGlobalHeaders);
 
     this.httpClient = new ServiceCenterRawClient.Builder()
-        .setHost(host)
-        .setPort(port)
-        .setProjectName(projectName)
         .setTenantName(tenantName)
+        .setAddressManager(addressManager)
         .setHttpTransport(httpTransport).build();
-  }
-
-  public ServiceCenterClient(ServiceCenterRawClient serviceCenterRawClient) {
-    this.httpClient = serviceCenterRawClient;
   }
 
   @Override
@@ -216,7 +160,6 @@ public class ServiceCenterClient implements ServiceCenterOperation {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public Microservice getMicroserviceByServiceId(String serviceId) {
     try {
       HttpResponse response = httpClient.getHttpRequest("/registry/microservices/" + serviceId, null, null);
