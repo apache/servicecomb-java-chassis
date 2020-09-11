@@ -19,8 +19,8 @@ package org.apache.servicecomb.service.center.client;
 
 import java.io.IOException;
 
-import org.apache.servicecomb.service.center.client.http.HttpResponse;
-import org.apache.servicecomb.service.center.client.http.HttpTransport;
+import org.apache.servicecomb.http.client.common.HttpResponse;
+import org.apache.servicecomb.http.client.common.HttpTransport;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;

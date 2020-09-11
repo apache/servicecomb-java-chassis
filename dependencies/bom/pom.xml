@@ -59,6 +59,11 @@
       <!-- Service Comb : clients -->
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
+        <artifactId>http-client-common</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
         <artifactId>kie-client</artifactId>
         <version>${project.version}</version>
       </dependency>

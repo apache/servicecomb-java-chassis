@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.service.center.client;
+package org.apache.servicecomb.http.client.common;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -29,9 +29,6 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.servicecomb.service.center.client.http.HttpRequest;
-import org.apache.servicecomb.service.center.client.http.HttpResponse;
-import org.apache.servicecomb.service.center.client.http.HttpTransportImpl;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
