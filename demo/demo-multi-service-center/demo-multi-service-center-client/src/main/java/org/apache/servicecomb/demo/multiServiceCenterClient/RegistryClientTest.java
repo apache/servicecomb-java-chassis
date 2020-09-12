@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.foundation.common.event.SimpleEventBus;
+import org.apache.servicecomb.http.client.common.HttpConfiguration.AKSKProperties;
 import org.apache.servicecomb.http.client.common.HttpConfiguration.SSLProperties;
 import org.apache.servicecomb.service.center.client.AddressManager;
 import org.apache.servicecomb.service.center.client.DiscoveryEvents.InstanceChangedEvent;
@@ -65,7 +66,10 @@ public class RegistryClientTest implements CategorizedTestCase {
     AddressManager addressManager = new AddressManager("default", Arrays.asList("http://127.0.0.1:30100"));
     SSLProperties sslProperties = new SSLProperties();
     sslProperties.setEnabled(false);
-    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(addressManager, sslProperties, "default", null);
+    AKSKProperties akskProperties = new AKSKProperties();
+    akskProperties.setEnabled(false);
+    ServiceCenterClient serviceCenterClient = new ServiceCenterClient(addressManager, sslProperties, akskProperties,
+        "default", null);
     EventBus eventBus = new SimpleEventBus();
     ServiceCenterRegistration serviceCenterRegistration = new ServiceCenterRegistration(serviceCenterClient, eventBus);
     Microservice microservice = new Microservice();

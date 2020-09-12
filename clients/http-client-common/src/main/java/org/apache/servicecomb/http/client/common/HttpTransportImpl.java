@@ -22,6 +22,8 @@ import java.util.Map;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.util.EntityUtils;
+import org.apache.servicecomb.http.client.common.HttpConfiguration.AKSKProperties;
+import org.apache.servicecomb.http.client.common.auth.AKSKHeaderUtil;
 
 /**
  * Created by   on 2019/10/16.
@@ -36,8 +38,11 @@ public class HttpTransportImpl implements HttpTransport {
 
   private Map<String, String> globalHeaders;
 
-  public HttpTransportImpl(HttpClient httpClient) {
+  private AKSKProperties akskProperties;
+
+  public HttpTransportImpl(HttpClient httpClient, AKSKProperties akskProperties) {
     this.httpClient = httpClient;
+    this.akskProperties = akskProperties;
   }
 
   public HttpClient getHttpClient() {
@@ -81,6 +86,8 @@ public class HttpTransportImpl implements HttpTransport {
     if (globalHeaders != null) {
       globalHeaders.forEach(httpRequest::addHeader);
     }
+
+    AKSKHeaderUtil.addAKSKHeader(httpRequest, akskProperties);
 
     //get Http response
     org.apache.http.HttpResponse response = httpClient.execute(httpRequest.getRealRequest());

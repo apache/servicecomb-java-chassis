@@ -52,4 +52,63 @@ public interface HttpConfiguration {
       this.sslCustom = sslCustom;
     }
   }
+
+  class AKSKProperties {
+    private boolean enabled;
+
+    private String accessKey;
+
+    private String secretKey;
+
+    private String cipher;
+
+    private String project;
+
+    public boolean isEnabled() {
+      return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+      this.enabled = enabled;
+    }
+
+    public String getAccessKey() {
+      return accessKey;
+    }
+
+    public void setAccessKey(String accessKey) {
+      this.accessKey = accessKey;
+    }
+
+    public String getSecretKey() {
+      if ("ShaAKSKCipher".equalsIgnoreCase(this.cipher)) {
+        return this.secretKey;
+      }
+      try {
+        return HttpUtils.sha256Encode(this.secretKey, this.accessKey);
+      } catch (Exception e) {
+        throw new IllegalArgumentException("not able to encode ak sk.", e);
+      }
+    }
+
+    public void setSecretKey(String secretKey) {
+      this.secretKey = secretKey;
+    }
+
+    public String getCipher() {
+      return cipher;
+    }
+
+    public void setCipher(String cipher) {
+      this.cipher = cipher;
+    }
+
+    public String getProject() {
+      return project;
+    }
+
+    public void setProject(String project) {
+      this.project = project;
+    }
+  }
 }

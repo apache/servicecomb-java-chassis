@@ -29,6 +29,7 @@ import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
+import org.apache.servicecomb.http.client.common.HttpConfiguration.AKSKProperties;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -38,6 +39,8 @@ public class HttpTransportImplTest {
   @Test
   public void TestHttpTransport() throws IOException {
     HttpClient httpClient = mock(HttpClient.class);
+    AKSKProperties akskProperties = new AKSKProperties();
+    akskProperties.setEnabled(false);
 
     org.apache.http.HttpResponse httpResponse = mock(org.apache.http.HttpResponse.class);
     StatusLine statusLine = mock(StatusLine.class);
@@ -50,7 +53,7 @@ public class HttpTransportImplTest {
 
     when(httpClient.execute(Mockito.any())).thenReturn(httpResponse);
 
-    HttpTransportImpl httpTransport = new HttpTransportImpl(httpClient);
+    HttpTransportImpl httpTransport = new HttpTransportImpl(httpClient, akskProperties);
     Map<String, String> extraHeaders = new HashMap<>();
     extraHeaders.put("test", "testContext");
     httpTransport.addHeaders(extraHeaders);

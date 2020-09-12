@@ -43,7 +43,8 @@ public class HttpTransportFactory {
   private HttpTransportFactory() {
   }
 
-  public static HttpTransport createHttpTransport(HttpConfiguration.SSLProperties sslProperties) {
+  public static HttpTransport createHttpTransport(HttpConfiguration.SSLProperties sslProperties,
+      HttpConfiguration.AKSKProperties akskProperties) {
     RequestConfig config = RequestConfig.custom()
         .setConnectTimeout(CONNECT_TIMEOUT)
         .setConnectionRequestTimeout(
@@ -72,6 +73,6 @@ public class HttpTransportFactory {
         setConnectionManager(connectionManager).
         disableCookieManagement();
 
-    return new HttpTransportImpl(httpClientBuilder.build());
+    return new HttpTransportImpl(httpClientBuilder.build(), akskProperties);
   }
 }

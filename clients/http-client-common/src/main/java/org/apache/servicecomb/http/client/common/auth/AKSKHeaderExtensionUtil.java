@@ -15,18 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.service.center.client;
+package org.apache.servicecomb.http.client.common.auth;
 
-public interface ServiceCenterConfiguration {
-  class AddressProperties {
-    private boolean address;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.Map;
 
-    public boolean isAddress() {
-      return address;
+public class AKSKHeaderExtensionUtil {
+
+  private static AKSKHeaderExtension headerExtension = new FileSystemMountAKSKHeaderExtension();
+
+  public static Map<String, String> genAuthHeaders() {
+    if (Files.exists(Paths.get(AKSKHeaderExtension.DEFAULT_SECRET_AUTH_PATH,
+        AKSKHeaderExtension.DEFAULT_SECRET_AUTH_NAME))) {
+      return headerExtension.getHeaders();
     }
-
-    public void setAddress(boolean address) {
-      this.address = address;
-    }
+    return Collections.emptyMap();
   }
 }
