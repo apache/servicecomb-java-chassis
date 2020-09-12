@@ -146,7 +146,7 @@ public class ServiceCenterDiscovery extends AbstractTask {
       StringBuilder sb = new StringBuilder();
       for (MicroserviceInstance instance : instances) {
         for (String endpoint : instance.getEndpoints()) {
-          sb.append(endpoint.length() > 20 ? endpoint.substring(0, 20) : endpoint);
+          sb.append(endpoint.length() > 64 ? endpoint.substring(0, 64) : endpoint);
           sb.append("|");
         }
       }

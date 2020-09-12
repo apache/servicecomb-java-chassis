@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.servicecomb.http.client.common.HttpConfiguration.AKSKProperties;
 import org.apache.servicecomb.http.client.common.HttpConfiguration.SSLProperties;
 import org.apache.servicecomb.http.client.common.HttpResponse;
 import org.apache.servicecomb.http.client.common.HttpTransport;
@@ -63,9 +64,11 @@ public class ServiceCenterClient implements ServiceCenterOperation {
     this.httpClient = httpClient;
   }
 
-  public ServiceCenterClient(AddressManager addressManager, SSLProperties sslProperties, String tenantName,
+  public ServiceCenterClient(AddressManager addressManager, SSLProperties sslProperties,
+      AKSKProperties akskProperties,
+      String tenantName,
       Map<String, String> extraGlobalHeaders) {
-    HttpTransport httpTransport = HttpTransportFactory.createHttpTransport(sslProperties);
+    HttpTransport httpTransport = HttpTransportFactory.createHttpTransport(sslProperties, akskProperties);
     httpTransport.addHeaders(extraGlobalHeaders);
 
     this.httpClient = new ServiceCenterRawClient.Builder()

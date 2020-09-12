@@ -22,6 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonRootName;
+
+@JsonRootName("instance")
 public class MicroserviceInstance {
   // even disconnected from service center
   // instanceId will not be changed
