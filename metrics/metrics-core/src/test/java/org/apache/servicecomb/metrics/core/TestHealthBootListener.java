@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.apache.servicecomb.metrics.core;
 
 import java.util.ArrayList;
@@ -24,14 +25,15 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.provider.producer.ProducerMeta;
 import org.apache.servicecomb.core.provider.producer.ProducerProviderManager;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
-import org.apache.servicecomb.metrics.core.publish.MetricsRestPublisher;
+import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class TestMetricsBootListener {
+public class TestHealthBootListener {
+
   @Before
   public void setUp() {
     ArchaiusUtils.resetConfig();
@@ -43,8 +45,8 @@ public class TestMetricsBootListener {
   }
 
   @Test
-  public void onBeforeProducerProvider_metrics_endpoint_enabled_by_default() {
-    final MetricsBootListener listener = new MetricsBootListener();
+  public void onBeforeProducerProvider_health_endpoint_enabled_by_default() {
+    final HealthBootListener listener = new HealthBootListener();
 
     final List<ProducerMeta> producerMetas = new ArrayList<>();
     final BootEvent event = new BootEvent();
@@ -69,14 +71,14 @@ public class TestMetricsBootListener {
     listener.onBeforeProducerProvider(event);
 
     Assert.assertThat(producerMetas, Matchers.contains(producerMeta));
-    Assert.assertThat(producerMeta.getSchemaId(), Matchers.equalTo("metricsEndpoint"));
-    Assert.assertThat(producerMeta.getInstance(), Matchers.instanceOf(MetricsRestPublisher.class));
+    Assert.assertThat(producerMeta.getSchemaId(), Matchers.equalTo("healthEndpoint"));
+    Assert.assertThat(producerMeta.getInstance(), Matchers.instanceOf(HealthCheckerRestPublisher.class));
   }
 
   @Test
-  public void onBeforeProducerProvider_metrics_endpoint_disabled() {
-    ArchaiusUtils.setProperty("servicecomb.metrics.endpoint.enabled", false);
-    final MetricsBootListener listener = new MetricsBootListener();
+  public void onBeforeProducerProvider_health_endpoint_disabled() {
+    ArchaiusUtils.setProperty("servicecomb.health.endpoint.enabled", false);
+    final HealthBootListener listener = new HealthBootListener();
 
     final List<ProducerMeta> producerMetas = new ArrayList<>();
     final BootEvent event = new BootEvent();
