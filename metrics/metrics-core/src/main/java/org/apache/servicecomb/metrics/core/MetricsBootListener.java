@@ -22,7 +22,6 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.metrics.MetricsBootstrap;
 import org.apache.servicecomb.foundation.metrics.MetricsInitializer;
 import org.apache.servicecomb.foundation.metrics.registry.GlobalRegistry;
-import org.apache.servicecomb.metrics.core.publish.HealthCheckerRestPublisher;
 import org.apache.servicecomb.metrics.core.publish.MetricsRestPublisher;
 import org.apache.servicecomb.metrics.core.publish.SlowInvocationLogger;
 
@@ -46,9 +45,6 @@ public class MetricsBootListener implements BootListener {
     if (!DynamicPropertyFactory.getInstance().getBooleanProperty("servicecomb.metrics.endpoint.enabled", true).get()) {
       return;
     }
-
-    event.getScbEngine().getProducerProviderManager()
-        .addProducerMeta("healthEndpoint", new HealthCheckerRestPublisher());
 
     MetricsRestPublisher metricsRestPublisher =
         SPIServiceUtils.getTargetService(MetricsInitializer.class, MetricsRestPublisher.class);
