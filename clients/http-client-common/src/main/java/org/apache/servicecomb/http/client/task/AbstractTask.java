@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.service.center.client;
+package org.apache.servicecomb.http.client.task;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -25,11 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class AbstractTask {
-  interface Task {
-    void execute();
-  }
-
-  class BackOffSleepTask implements Task {
+  public class BackOffSleepTask implements Task {
     final long base = 3000;
 
     final long max = 60000;
@@ -38,12 +34,12 @@ public class AbstractTask {
 
     Task nextTask;
 
-    BackOffSleepTask(int failedCount, Task nextTask) {
+    public BackOffSleepTask(int failedCount, Task nextTask) {
       this.waitTime = failedCount * base;
       this.nextTask = nextTask;
     }
 
-    BackOffSleepTask(long waitTime, Task nextTask) {
+    public BackOffSleepTask(long waitTime, Task nextTask) {
       this.waitTime = waitTime;
       this.nextTask = nextTask;
     }
@@ -60,7 +56,7 @@ public class AbstractTask {
     }
   }
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ServiceCenterRegistration.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AbstractTask.class);
 
   private final ExecutorService taskPool;
 

@@ -26,6 +26,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Hex;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,6 +36,10 @@ public final class HttpUtils {
   private static final ObjectMapper MAPPER = new MessageObjectMapper();
 
   public static <T> T deserialize(String content, Class<T> clazz) throws IOException {
+    return MAPPER.readValue(content, clazz);
+  }
+
+  public static <T> T deserialize(String content, TypeReference<T> clazz) throws IOException {
     return MAPPER.readValue(content, clazz);
   }
 
