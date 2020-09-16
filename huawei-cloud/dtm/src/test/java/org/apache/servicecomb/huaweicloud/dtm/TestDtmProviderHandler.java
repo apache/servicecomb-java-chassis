@@ -22,8 +22,8 @@ import java.util.Map;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeAll;
 
 import com.huawei.middleware.dtm.client.context.DTMContext;
 
@@ -32,8 +32,8 @@ import mockit.Mocked;
 
 public class TestDtmProviderHandler {
 
-  @BeforeAll
-  public void init() {
+  @BeforeClass
+  public static void init() {
     DTMContext.TRACE_ID = "";
     DTMContext.GLOBAL_TX_ID = "";
   }
