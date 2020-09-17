@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <!--
   ~ Licensed to the Apache Software Foundation (ASF) under one or more
   ~ contributor license agreements.  See the NOTICE file distributed with
@@ -21,21 +20,33 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
+    <artifactId>clients</artifactId>
     <groupId>org.apache.servicecomb</groupId>
-    <artifactId>java-chassis-parent</artifactId>
     <version>2.1.2-SNAPSHOT</version>
-    <relativePath>../parents/default</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>clients</artifactId>
-  <name>ServiceComb::Client</name>
-  <packaging>pom</packaging>
-  <modules>
-    <module>http-client-common</module>
-    <module>kie-client</module>
-    <module>service-center-client</module>
-    <module>config-center-client</module>
-  </modules>
+  <artifactId>config-center-client</artifactId>
+  <name>ServiceComb::Clients::Config Center Client</name>
 
+  <dependencies>
+    <!-- Make this client simple and portable to many frameworks.
+       Do not import other dependencies if really need. -->
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>http-client-common</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>

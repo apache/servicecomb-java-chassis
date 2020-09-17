@@ -20,6 +20,8 @@ package org.apache.servicecomb.service.center.client;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.http.client.task.AbstractTask;
+import org.apache.servicecomb.http.client.task.Task;
 import org.apache.servicecomb.service.center.client.RegistrationEvents.HeartBeatEvent;
 import org.apache.servicecomb.service.center.client.RegistrationEvents.MicroserviceInstanceRegistrationEvent;
 import org.apache.servicecomb.service.center.client.RegistrationEvents.MicroserviceRegistrationEvent;
