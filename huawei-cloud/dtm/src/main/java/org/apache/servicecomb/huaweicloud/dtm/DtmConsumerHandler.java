@@ -34,12 +34,13 @@ public class DtmConsumerHandler implements Handler {
 
   @Override
   public void init(MicroserviceMeta microserviceMeta, InvocationType invocationType) {
+    String className = DtmConfig.INSTANCE.getDtmContextClassName();
     try {
-      Class<?> clazz = Class.forName("com.huawei.middleware.dtm.client.context.DTMContext");
-      dtmContextExMethod = clazz.getMethod("getContextData");
+      Class<?> clazz = Class.forName(className);
+      dtmContextExMethod = clazz.getMethod(DtmConfig.DTM_EXPORT_METHOD);
     } catch (Throwable e) {
       // ignore just warn
-      LOG.warn("Failed to init method com.huawei.middleware.dtm.client.context.DTMContext#getContextData", e);
+      LOG.warn("Failed to init method {}#{}", className, DtmConfig.DTM_EXPORT_METHOD, e);
     }
   }
 
@@ -54,7 +55,7 @@ public class DtmConsumerHandler implements Handler {
         }
       }
     } catch (Throwable e) {
-      // ignore
+      LOG.warn("Failed to execute method DTMContext#{}, please check", DtmConfig.DTM_EXPORT_METHOD, e);
     }
     invocation.next(asyncResp);
   }

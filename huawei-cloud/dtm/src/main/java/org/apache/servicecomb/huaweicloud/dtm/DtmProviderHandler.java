@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.huaweicloud.dtm;
 
+import static org.apache.servicecomb.huaweicloud.dtm.DtmConfig.DTM_TRACE_ID_KEY;
+
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -31,18 +33,17 @@ import org.slf4j.LoggerFactory;
 public class DtmProviderHandler implements Handler {
   private static final Logger LOG = LoggerFactory.getLogger(DtmProviderHandler.class);
 
-  private static final String DTM_TRACE_ID_KEY = "X-Dtm-Trace-Id-Key";
-
   private Method dtmContextImMethod;
 
   @Override
   public void init(MicroserviceMeta microserviceMeta, InvocationType invocationType) {
+    String className = DtmConfig.INSTANCE.getDtmContextClassName();
     try {
-      Class<?> clazz = Class.forName("com.huawei.middleware.dtm.client.context.DTMContext");
-      dtmContextImMethod = clazz.getMethod("setContextData", Map.class);
+      Class<?> clazz = Class.forName(className);
+      dtmContextImMethod = clazz.getMethod(DtmConfig.DTM_IMPORT_METHOD, Map.class);
     } catch (Throwable e) {
       // ignore just warn
-      LOG.warn("Failed to init method com.huawei.middleware.dtm.client.context.DTMContext#setContextData", e);
+      LOG.warn("Failed to init method {}#{}", className, DtmConfig.DTM_IMPORT_METHOD, e);
     }
   }
 
@@ -55,7 +56,7 @@ public class DtmProviderHandler implements Handler {
         dtmContextImMethod.invoke(null, invocation.getContext());
       }
     } catch (Throwable e) {
-      // ignore
+      LOG.warn("Failed to execute method DTMContext#{}, please check", DtmConfig.DTM_IMPORT_METHOD, e);
     }
     invocation.next(asyncResp);
   }
