@@ -58,6 +58,8 @@ public class ConfigCenterClient implements ConfigCenterOperation {
 
     Map<String, Object> configurations = new HashMap<>();
     try {
+      Map<String, String> headers = new HashMap<>();
+      headers.put("x-environment", request.getEnvironment());
       HttpRequest httpRequest = new HttpRequest(addressManager.address() + "/configuration/items?dimensionsInfo="
           + HttpUtils.encodeURLParam(dimensionsInfo) + "&revision=" + request.getRevision(), null, null,
           HttpRequest.GET);

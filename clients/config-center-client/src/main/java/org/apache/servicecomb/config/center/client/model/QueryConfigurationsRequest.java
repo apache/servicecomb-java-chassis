@@ -18,7 +18,7 @@
 package org.apache.servicecomb.config.center.client.model;
 
 public class QueryConfigurationsRequest {
-  private String project;
+  private String environment;
 
   private String application;
 
@@ -28,12 +28,12 @@ public class QueryConfigurationsRequest {
 
   private String revision;
 
-  public String getProject() {
-    return project;
+  public String getEnvironment() {
+    return environment;
   }
 
-  public QueryConfigurationsRequest setProject(String project) {
-    this.project = project;
+  public QueryConfigurationsRequest setEnvironment(String environment) {
+    this.environment = environment;
     return this;
   }
 
