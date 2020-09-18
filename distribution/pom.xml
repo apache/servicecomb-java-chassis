@@ -214,10 +214,10 @@
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>registry-local</artifactId>
     </dependency>
-      <dependency>
-        <groupId>org.apache.servicecomb</groupId>
-        <artifactId>registry-schema-discovery</artifactId>
-      </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>registry-schema-discovery</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>registry-service-center</artifactId>
@@ -251,6 +251,12 @@
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
       <artifactId>servicestage</artifactId>
+    </dependency>
+
+    <!-- ServiceComb dtm extension -->
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>dtm</artifactId>
     </dependency>
 
     <!-- swagger -->

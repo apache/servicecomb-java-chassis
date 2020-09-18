@@ -298,6 +298,12 @@
         <artifactId>servicestage</artifactId>
         <version>${project.version}</version>
       </dependency>
+      <!-- ServiceComb Dtm extension -->
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>dtm</artifactId>
+        <version>${project.version}</version>
+      </dependency>
       <!-- ServiceComb: swagger -->
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
