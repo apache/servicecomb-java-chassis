@@ -47,6 +47,8 @@ import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 import org.apache.servicecomb.foundation.common.utils.bean.ShortGetter;
 import org.apache.servicecomb.foundation.common.utils.bean.ShortSetter;
 
+import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
+
 public final class LambdaMetafactoryUtils {
   private static final Lookup LOOKUP = MethodHandles.lookup();
 
@@ -148,6 +150,19 @@ public final class LambdaMetafactoryUtils {
     return createLambda(getMethod, getterCls);
   }
 
+  @SuppressWarnings("unchecked")
+  public static Getter<Object, Object> createObjectGetter(Method getMethod) {
+    return createLambda(getMethod, Getter.class);
+  }
+
+  public static Getter<Object, Object> createObjectGetter(BeanPropertyDefinition propertyDefinition) {
+    if (propertyDefinition.hasGetter()) {
+      return createObjectGetter(propertyDefinition.getGetter().getAnnotated());
+    }
+
+    return createGetter(propertyDefinition.getField().getAnnotated());
+  }
+
   // slower than reflect directly
   @SuppressWarnings("unchecked")
   public static <C, F> Getter<C, F> createGetter(Field field) {
@@ -175,6 +190,47 @@ public final class LambdaMetafactoryUtils {
   public static <T> T createSetter(Method setMethod) {
     Class<?> setterCls = SETTER_MAP.getOrDefault(setMethod.getParameterTypes()[0], Setter.class);
     return createLambda(setMethod, setterCls);
+  }
+
+  // just for avoid java 9~11 bug: https://bugs.openjdk.java.net/browse/JDK-8174983
+  // otherwise can be replaced by: createLambda(setMethod, Setter.class)
+  @SuppressWarnings("unchecked")
+  public static Setter<Object, Object> createObjectSetter(Method setMethod) {
+    Object setter = createSetter(setMethod);
+    if (setter instanceof BoolSetter) {
+      return (Instance, value) -> ((BoolSetter) setter).set(Instance, (boolean) value);
+    }
+    if (setter instanceof ByteSetter) {
+      return (Instance, value) -> ((ByteSetter) setter).set(Instance, (byte) value);
+    }
+    if (setter instanceof CharSetter) {
+      return (Instance, value) -> ((CharSetter) setter).set(Instance, (char) value);
+    }
+    if (setter instanceof DoubleSetter) {
+      return (Instance, value) -> ((DoubleSetter) setter).set(Instance, (double) value);
+    }
+    if (setter instanceof FloatSetter) {
+      return (Instance, value) -> ((FloatSetter) setter).set(Instance, (float) value);
+    }
+    if (setter instanceof IntSetter) {
+      return (Instance, value) -> ((IntSetter) setter).set(Instance, (int) value);
+    }
+    if (setter instanceof LongSetter) {
+      return (Instance, value) -> ((LongSetter) setter).set(Instance, (long) value);
+    }
+    if (setter instanceof ShortSetter) {
+      return (Instance, value) -> ((ShortSetter) setter).set(Instance, (short) value);
+    }
+
+    return (Setter<Object, Object>) setter;
+  }
+
+  public static Setter<Object, Object> createObjectSetter(BeanPropertyDefinition propertyDefinition) {
+    if (propertyDefinition.hasSetter()) {
+      return createObjectSetter(propertyDefinition.getSetter().getAnnotated());
+    }
+
+    return createSetter(propertyDefinition.getField().getAnnotated());
   }
 
   // slower than reflect directly

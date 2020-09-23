@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.swagger.generator.jaxrs.model;
 
+import java.util.List;
+
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
@@ -37,6 +39,12 @@ public class AggregatedParam {
 
   @HeaderParam("header2")
   private String headerVal;
+
+  @QueryParam("query-array")
+  private String[] queryArray;
+
+  @QueryParam("query-list")
+  private List<String> queryList;
 
   public String getStrVal() {
     return strVal;
@@ -79,5 +87,23 @@ public class AggregatedParam {
 
   public void setHeaderVal(String headerVal) {
     this.headerVal = headerVal;
+  }
+
+  public String[] getQueryArray() {
+    return queryArray;
+  }
+
+  public AggregatedParam setQueryArray(String[] queryArray) {
+    this.queryArray = queryArray;
+    return this;
+  }
+
+  public List<String> getQueryList() {
+    return queryList;
+  }
+
+  public AggregatedParam setQueryList(List<String> queryList) {
+    this.queryList = queryList;
+    return this;
   }
 }

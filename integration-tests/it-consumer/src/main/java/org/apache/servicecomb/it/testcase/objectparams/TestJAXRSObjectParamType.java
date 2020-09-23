@@ -17,11 +17,15 @@
 
 package org.apache.servicecomb.it.testcase.objectparams;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.ws.rs.QueryParam;
 
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.schema.objectparams.BeanParamRequest;
@@ -44,11 +48,17 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
+import io.swagger.annotations.ApiOperation;
 import io.vertx.core.json.Json;
 
 public class TestJAXRSObjectParamType {
   interface JAXRSObjectParamTypeSchema extends ObjectParamTypeSchema {
-    BeanParamRequest testBeanParamRequest(String header, String path, int query);
+    BeanParamRequest testBeanParamRequest(String header, String path, int query,
+        @QueryParam("query_array") String[] queryArray, @QueryParam("query_list") List<String> queryList);
+
+    @ApiOperation(value = "", nickname = "testBeanParamRequest")
+    BeanParamRequest testBeanParamRequestAggr(BeanParamRequest request);
+
     FluentSetterBeanParamRequest testFluentSetterBeanParamRequest(String header, String path, int query);
   }
 
@@ -105,7 +115,8 @@ public class TestJAXRSObjectParamType {
   @Test
   public void testFluentSetterFlattenObjectParam_rpc() {
     FluentSetterFlattenObjectRequest fluentRequest = createFluentSetterFlattenObjectRequest();
-    FluentSetterFlattenObjectResponse fluentResponse = consumers.getIntf().testFluentSetterFlattenObjectParam(fluentRequest);
+    FluentSetterFlattenObjectResponse fluentResponse = consumers.getIntf()
+        .testFluentSetterFlattenObjectParam(fluentRequest);
     Assert.assertEquals(Json.encode(fluentRequest), Json.encode(fluentResponse));
 
     fluentRequest = new FluentSetterFlattenObjectRequest();
@@ -314,20 +325,28 @@ public class TestJAXRSObjectParamType {
 
   @Test
   public void testBeanParamRequest() {
-    BeanParamRequest response = consumers.getIntf().testBeanParamRequest("ss1", "ss2", 123);
-    BeanParamRequest expected = new BeanParamRequest("ss2", 123, "ss1");
-    Assert.assertEquals(expected, response);
+    String[] queryArray = {"a", "b"};
+    List<String> queryList = Arrays.asList("c", "d");
+    BeanParamRequest expected = new BeanParamRequest("ss2", 123, "ss1", queryArray, queryList);
+    String expectedJson = Json.encodePrettily(expected);
+
+    BeanParamRequest response = consumers.getIntf().testBeanParamRequest("ss1", "ss2", 123, queryArray, queryList);
+    assertThat(Json.encodePrettily(response)).isEqualTo(expectedJson);
+
+    response = consumers.getIntf().testBeanParamRequestAggr(expected);
+    assertThat(Json.encodePrettily(response)).isEqualTo(expectedJson);
 
     HttpHeaders headers = new HttpHeaders();
     headers.add("header", "ss1");
+    String url = "/beanParamRequest/ss2?query=123&query_array=a&query_array=b&query_list=c&query_list=d";
     ResponseEntity<BeanParamRequest> responseEntity = consumers.getSCBRestTemplate()
-        .exchange("/beanParamRequest/ss2?query=123", HttpMethod.GET, new HttpEntity<>(headers), BeanParamRequest.class);
-    Assert.assertEquals(expected, responseEntity.getBody());
+        .exchange(url, HttpMethod.GET, new HttpEntity<>(headers), BeanParamRequest.class);
+    assertThat(Json.encodePrettily(responseEntity.getBody())).isEqualTo(expectedJson);
     Assert.assertEquals(200, responseEntity.getStatusCodeValue());
 
     responseEntity = consumers.getEdgeRestTemplate()
-        .exchange("/beanParamRequest/ss2?query=123", HttpMethod.GET, new HttpEntity<>(headers), BeanParamRequest.class);
-    Assert.assertEquals(expected, responseEntity.getBody());
+        .exchange(url, HttpMethod.GET, new HttpEntity<>(headers), BeanParamRequest.class);
+    assertThat(Json.encodePrettily(responseEntity.getBody())).isEqualTo(expectedJson);
     Assert.assertEquals(200, responseEntity.getStatusCodeValue());
   }
 
@@ -340,12 +359,14 @@ public class TestJAXRSObjectParamType {
     HttpHeaders headers = new HttpHeaders();
     headers.add("header", "ss1");
     ResponseEntity<FluentSetterBeanParamRequest> responseEntity = consumers.getSCBRestTemplate()
-        .exchange("/fluentSetterBeanParamRequest/ss2?query=123", HttpMethod.GET, new HttpEntity<>(headers), FluentSetterBeanParamRequest.class);
+        .exchange("/fluentSetterBeanParamRequest/ss2?query=123", HttpMethod.GET, new HttpEntity<>(headers),
+            FluentSetterBeanParamRequest.class);
     Assert.assertEquals(expected, responseEntity.getBody());
     Assert.assertEquals(200, responseEntity.getStatusCodeValue());
 
     responseEntity = consumers.getEdgeRestTemplate()
-        .exchange("/fluentSetterBeanParamRequest/ss2?query=123", HttpMethod.GET, new HttpEntity<>(headers), FluentSetterBeanParamRequest.class);
+        .exchange("/fluentSetterBeanParamRequest/ss2?query=123", HttpMethod.GET, new HttpEntity<>(headers),
+            FluentSetterBeanParamRequest.class);
     Assert.assertEquals(expected, responseEntity.getBody());
     Assert.assertEquals(200, responseEntity.getStatusCodeValue());
   }

@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.utils.LambdaMetafactoryUtils;
-import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.invocation.arguments.AbstractArgumentsMapperCreator;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
@@ -113,15 +112,8 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
                 providerMethod.getDeclaringClass().getName(), providerMethod.getName(), parameterName));
       }
 
-      Setter<Object, Object> setter;
-      if (propertyDefinition.hasSetter()) {
-        setter = LambdaMetafactoryUtils.createLambda(propertyDefinition.getSetter().getAnnotated(), Setter.class);
-      } else {
-        setter = LambdaMetafactoryUtils.createSetter(propertyDefinition.getField().getAnnotated());
-      }
-
       swaggerParameterTypes.put(parameterName, propertyDefinition.getPrimaryType());
-      mapper.addField(parameterName, setter);
+      mapper.addField(parameterName, LambdaMetafactoryUtils.createObjectSetter(propertyDefinition));
       processedSwaggerParamters.add(parameterName);
     }
     mappers.add(mapper);
