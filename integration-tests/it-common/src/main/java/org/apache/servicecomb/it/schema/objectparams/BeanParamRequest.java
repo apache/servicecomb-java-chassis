@@ -18,7 +18,6 @@
 package org.apache.servicecomb.it.schema.objectparams;
 
 import java.util.List;
-import java.util.Objects;
 
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.PathParam;
@@ -35,16 +34,24 @@ public class BeanParamRequest {
   @HeaderParam("header")
   private String header;
 
+  @QueryParam("query_array")
+  private String[] queryArray;
+
+  @QueryParam("query_list")
+  private List<String> queryList;
+
   @JsonIgnore
   private List<FlattenObjectRequest> ignored;
 
   public BeanParamRequest() {
   }
 
-  public BeanParamRequest(String path, int query, String header) {
+  public BeanParamRequest(String path, int query, String header, String[] queryArray, List<String> queryList) {
     this.path = path;
     this.query = query;
     this.header = header;
+    this.queryArray = queryArray;
+    this.queryList = queryList;
   }
 
   public String getPath() {
@@ -72,42 +79,29 @@ public class BeanParamRequest {
     this.header = header;
   }
 
+  public String[] getQueryArray() {
+    return queryArray;
+  }
+
+  public BeanParamRequest setQueryArray(String[] queryArray) {
+    this.queryArray = queryArray;
+    return this;
+  }
+
+  public List<String> getQueryList() {
+    return queryList;
+  }
+
+  public BeanParamRequest setQueryList(List<String> queryList) {
+    this.queryList = queryList;
+    return this;
+  }
+
   public List<FlattenObjectRequest> getIgnored() {
     return ignored;
   }
 
   public void setIgnored(List<FlattenObjectRequest> ignored) {
     this.ignored = ignored;
-  }
-
-  @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder("BeanParamRequest{");
-    sb.append("path='").append(path).append('\'');
-    sb.append(", query=").append(query);
-    sb.append(", header='").append(header).append('\'');
-    sb.append(", ignored=").append(ignored);
-    sb.append('}');
-    return sb.toString();
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    BeanParamRequest that = (BeanParamRequest) o;
-    return query == that.query &&
-        Objects.equals(path, that.path) &&
-        Objects.equals(header, that.header) &&
-        Objects.equals(ignored, that.ignored);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(path, query, header, ignored);
   }
 }

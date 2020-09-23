@@ -23,7 +23,6 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 import org.apache.servicecomb.foundation.common.utils.LambdaMetafactoryUtils;
-import org.apache.servicecomb.foundation.common.utils.bean.Getter;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
 import org.apache.servicecomb.swagger.invocation.arguments.AbstractArgumentsMapperCreator;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
@@ -117,14 +116,7 @@ public class ConsumerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
         continue;
       }
 
-      Getter<Object, Object> getter;
-      if (propertyDefinition.hasGetter()) {
-        getter = LambdaMetafactoryUtils.createLambda(propertyDefinition.getGetter().getAnnotated(), Getter.class);
-      } else {
-        getter = LambdaMetafactoryUtils.createGetter(propertyDefinition.getField().getAnnotated());
-      }
-
-      mapper.addField(parameterName, getter);
+      mapper.addField(parameterName, LambdaMetafactoryUtils.createObjectGetter(propertyDefinition));
       processedSwaggerParamters.add(parameterName);
     }
     mappers.add(mapper);

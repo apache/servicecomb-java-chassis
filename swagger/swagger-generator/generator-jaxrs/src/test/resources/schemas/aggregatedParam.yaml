@@ -58,6 +58,20 @@ paths:
         in: "header"
         required: false
         type: "string"
+      - name: "query-array"
+        in: "query"
+        required: false
+        type: "array"
+        items:
+          type: "string"
+        collectionFormat: "multi"
+      - name: "query-list"
+        in: "query"
+        required: false
+        type: "array"
+        items:
+          type: "string"
+        collectionFormat: "multi"
       responses:
         "200":
           description: "response of 200"
