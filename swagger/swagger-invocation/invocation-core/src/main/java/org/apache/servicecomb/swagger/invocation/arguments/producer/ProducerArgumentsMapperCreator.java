@@ -28,7 +28,6 @@ import java.util.Map;
 import org.apache.servicecomb.foundation.common.utils.LambdaMetafactoryUtils;
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
-import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
 import org.apache.servicecomb.swagger.invocation.arguments.AbstractArgumentsMapperCreator;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentMapper;
 import org.apache.servicecomb.swagger.invocation.arguments.ContextArgumentMapperFactory;
@@ -37,6 +36,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.SerializationConfig;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.common.reflect.TypeToken;
 
 public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreator {
   // swagger parameter types relate to producer
@@ -76,8 +76,9 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
   @Override
   protected ArgumentMapper createKnownParameterMapper(int providerParamIdx, Integer swaggerIdx) {
     String swaggerArgumentName = swaggerParameters.get(swaggerIdx).getName();
-    final Type providerType = ParamUtils.getGenericParameterType(this.providerClass, this.providerMethod,
-        this.providerMethod.getParameters()[providerParamIdx]);
+    Type providerType = TypeToken.of(providerClass)
+        .resolveType(providerMethod.getGenericParameterTypes()[providerParamIdx])
+        .getType();
     swaggerParameterTypes
         .put(swaggerArgumentName, providerType);
     return new ProducerArgumentSame(providerMethod.getParameters()[providerParamIdx].getName(), swaggerArgumentName);
@@ -87,10 +88,10 @@ public class ProducerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
   protected ArgumentMapper createSwaggerBodyFieldMapper(int producerParamIdx, String parameterName,
       int swaggerBodyIdx) {
     String swaggerArgumentName = swaggerParameters.get(swaggerBodyIdx).getName();
-    swaggerParameterTypes
-        .put(swaggerArgumentName, Object.class);
-    Type parameterType = ParamUtils.getGenericParameterType(this.providerClass, this.providerMethod,
-        providerMethod.getParameters()[producerParamIdx]);
+    swaggerParameterTypes.put(swaggerArgumentName, Object.class);
+    Type parameterType = TypeToken.of(providerClass)
+        .resolveType(providerMethod.getGenericParameterTypes()[producerParamIdx])
+        .getType();
     return new SwaggerBodyFieldToProducerArgument(providerMethod.getParameters()[producerParamIdx].getName(),
         swaggerArgumentName,
         parameterName, parameterType);

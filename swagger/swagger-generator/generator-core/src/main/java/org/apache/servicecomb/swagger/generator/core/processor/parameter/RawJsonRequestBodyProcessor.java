@@ -17,12 +17,12 @@
 
 package org.apache.servicecomb.swagger.generator.core.processor.parameter;
 
-import java.lang.reflect.Type;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.extend.annotations.RawJsonRequestBody;
 import org.apache.servicecomb.swagger.generator.ParameterProcessor;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
+
+import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
@@ -51,7 +51,7 @@ public class RawJsonRequestBodyProcessor implements ParameterProcessor<BodyParam
   }
 
   @Override
-  public void fillParameter(Swagger swagger, Operation operation, BodyParameter parameter, Type type,
+  public void fillParameter(Swagger swagger, Operation operation, BodyParameter parameter, JavaType type,
       RawJsonRequestBody annotation) {
     parameter.setVendorExtension("x-raw-json", true);
     parameter.setRequired(annotation.required());

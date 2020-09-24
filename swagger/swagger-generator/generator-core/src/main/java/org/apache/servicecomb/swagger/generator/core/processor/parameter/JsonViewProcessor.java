@@ -24,6 +24,7 @@ import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
@@ -47,7 +48,7 @@ public class JsonViewProcessor implements ParameterProcessor<Parameter, Annotati
   }
 
   @Override
-  public void fillParameter(Swagger swagger, Operation operation, Parameter parameter, Type type,
+  public void fillParameter(Swagger swagger, Operation operation, Parameter parameter, JavaType type,
       Annotation annotation) {
     if (!(annotation instanceof JsonView)) {
       throw new IllegalArgumentException(

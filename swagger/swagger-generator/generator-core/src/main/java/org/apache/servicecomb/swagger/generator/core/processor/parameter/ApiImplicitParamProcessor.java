@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.generator.ParameterProcessor;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.google.inject.util.Types;
 
 import io.swagger.annotations.ApiImplicitParam;
@@ -65,7 +66,7 @@ public class ApiImplicitParamProcessor implements ParameterProcessor<Parameter, 
   }
 
   @Override
-  public void fillParameter(Swagger swagger, Operation operation, Parameter parameter, Type type,
+  public void fillParameter(Swagger swagger, Operation operation, Parameter parameter, JavaType type,
       ApiImplicitParam apiImplicitParam) {
     // no need fill, will process by io.swagger.util.ParameterProcessor.applyAnnotations
   }

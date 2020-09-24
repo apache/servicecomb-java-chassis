@@ -55,10 +55,9 @@ public class PojoConsumerMeta {
           .createOperationGenerator(swaggerConsumerOperation.getConsumerMethod());
       intfOperationGenerator.generateResponse();
       PojoConsumerOperationMeta pojoConsumerOperationMeta = new PojoConsumerOperationMeta(this, operationMeta,
-          swaggerConsumerOperation, intfSwaggerGenerator.getSwagger(), intfOperationGenerator.getOperation());
+          swaggerConsumerOperation);
 
-      operationMetas.put(swaggerConsumerOperation.getConsumerMethod(),
-          pojoConsumerOperationMeta);
+      operationMetas.put(swaggerConsumerOperation.getConsumerMethod(), pojoConsumerOperationMeta);
     }
   }
 

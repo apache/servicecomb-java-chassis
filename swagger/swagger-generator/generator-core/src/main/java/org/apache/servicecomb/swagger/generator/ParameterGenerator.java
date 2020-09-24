@@ -24,6 +24,9 @@ import java.util.Map;
 
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
 import io.swagger.models.parameters.Parameter;
 
 public class ParameterGenerator {
@@ -34,13 +37,13 @@ public class ParameterGenerator {
   /**
    * when wrap parameters to body, genericType is null
    */
-  private Type genericType;
+  private JavaType genericType;
 
   private HttpParameterType httpParameterType;
 
   private Parameter generatedParameter;
 
-  public ParameterGenerator(String parameterName, List<Annotation> annotations, Type genericType,
+  public ParameterGenerator(String parameterName, List<Annotation> annotations, JavaType genericType,
       HttpParameterType httpParameterType, Parameter generatedParameter) {
     this.parameterName = parameterName;
     this.annotations = annotations;
@@ -57,7 +60,8 @@ public class ParameterGenerator {
     this.annotations = SwaggerGeneratorUtils.collectParameterAnnotations(parameterAnnotations,
         methodAnnotationMap,
         parameterName);
-    this.genericType = SwaggerGeneratorUtils.collectGenericType(annotations, genericType);
+    this.genericType = TypeFactory.defaultInstance()
+        .constructType(SwaggerGeneratorUtils.collectGenericType(annotations, genericType));
     this.httpParameterType = SwaggerGeneratorUtils.collectHttpParameterType(annotations, genericType);
   }
 
@@ -73,7 +77,8 @@ public class ParameterGenerator {
   public ParameterGenerator(String parameterName, List<Annotation> annotations) {
     this.parameterName = parameterName;
     this.annotations = annotations;
-    this.genericType = SwaggerGeneratorUtils.collectGenericType(annotations, null);
+    this.genericType = TypeFactory.defaultInstance()
+        .constructType(SwaggerGeneratorUtils.collectGenericType(annotations, null));
     this.httpParameterType = SwaggerGeneratorUtils.collectHttpParameterType(annotations, genericType);
   }
 
@@ -85,7 +90,7 @@ public class ParameterGenerator {
     return annotations;
   }
 
-  public Type getGenericType() {
+  public JavaType getGenericType() {
     return genericType;
   }
 

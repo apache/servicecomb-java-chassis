@@ -16,10 +16,10 @@
  */
 package org.apache.servicecomb.swagger.generator.core.processor.parameter;
 
-import java.lang.reflect.Type;
-
 import org.apache.servicecomb.swagger.generator.ParameterProcessor;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
+
+import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.annotations.ApiParam;
 import io.swagger.models.Operation;
@@ -43,7 +43,8 @@ public class ApiParamProcessor implements ParameterProcessor<Parameter, ApiParam
   }
 
   @Override
-  public void fillParameter(Swagger swagger, Operation operation, Parameter parameter, Type type, ApiParam annotation) {
+  public void fillParameter(Swagger swagger, Operation operation, Parameter parameter, JavaType type,
+      ApiParam annotation) {
     // no need fill, will process by io.swagger.util.ParameterProcessor.applyAnnotations
   }
 }
