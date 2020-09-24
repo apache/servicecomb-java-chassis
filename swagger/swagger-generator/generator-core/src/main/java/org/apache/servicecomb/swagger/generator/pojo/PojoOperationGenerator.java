@@ -18,7 +18,6 @@ package org.apache.servicecomb.swagger.generator.pojo;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,6 +35,8 @@ import org.apache.servicecomb.swagger.generator.core.AbstractOperationGenerator;
 import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
+
+import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.ModelImpl;
@@ -133,7 +134,7 @@ public class PojoOperationGenerator extends AbstractOperationGenerator {
   }
 
   @Override
-  protected void fillParameter(Swagger swagger, Parameter parameter, String parameterName, Type type,
+  protected void fillParameter(Swagger swagger, Parameter parameter, String parameterName, JavaType type,
       List<Annotation> annotations) {
     if (isWrapBody(parameter)) {
       return;

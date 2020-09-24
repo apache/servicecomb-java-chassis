@@ -45,7 +45,6 @@ public class DynamicConfigurationIT {
     vertx.close();
   }
 
-
   @Test
   public void testDynamicConfiguration() {
     Assert.assertEquals(6666, DynamicPropertyFactory.getInstance().getIntProperty("timeout", 0).get());

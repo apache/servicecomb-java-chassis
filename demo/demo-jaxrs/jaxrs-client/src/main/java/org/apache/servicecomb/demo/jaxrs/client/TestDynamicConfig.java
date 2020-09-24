@@ -28,9 +28,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class TestDynamicConfig implements BootListener {
-
   @InjectProperties(prefix = "jaxrstest.jaxrsclient")
-  public class Configuration {
+  public static class Configuration {
     /*
      * 方法的 prefix 属性值 "override" 会覆盖标注在类定义的 @InjectProperties
      * 注解的 prefix 属性值。
@@ -101,6 +100,7 @@ public class TestDynamicConfig implements BootListener {
     public String strDef;
   }
 
+  @Override
   public void onAfterRegistry(BootEvent event) {
     Configuration configuration = SCBEngine.getInstance().getPriorityPropertyManager()
         .createConfigObject(Configuration.class,

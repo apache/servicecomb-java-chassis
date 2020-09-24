@@ -24,13 +24,10 @@ import javax.servlet.http.Part;
 
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
-import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-
-import io.swagger.models.Operation;
-import io.swagger.models.Swagger;
+import com.google.common.reflect.TypeToken;
 
 public class PojoConsumerOperationMeta {
   private PojoConsumerMeta pojoConsumerMeta;
@@ -42,17 +39,15 @@ public class PojoConsumerOperationMeta {
   private JavaType responseType;
 
   public PojoConsumerOperationMeta(PojoConsumerMeta pojoConsumerMeta, OperationMeta operationMeta,
-      SwaggerConsumerOperation swaggerConsumerOperation,
-      Swagger intfSwagger, Operation intfOperation) {
+      SwaggerConsumerOperation swaggerConsumerOperation) {
     this.pojoConsumerMeta = pojoConsumerMeta;
     this.operationMeta = operationMeta;
     this.swaggerConsumerOperation = swaggerConsumerOperation;
 
-    Type intfResponseType = ParamUtils
-        .getGenericParameterType(swaggerConsumerOperation.getConsumerClass(),
-            swaggerConsumerOperation.getConsumerMethod().getDeclaringClass(),
-            swaggerConsumerOperation.getConsumerMethod().getGenericReturnType());
-
+    Type intfResponseType =
+        TypeToken.of(swaggerConsumerOperation.getConsumerClass())
+            .resolveType(swaggerConsumerOperation.getConsumerMethod().getGenericReturnType())
+            .getType();
     if (intfResponseType instanceof Class && Part.class.isAssignableFrom((Class<?>) intfResponseType)) {
       responseType = TypeFactory.defaultInstance().constructType(Part.class);
       return;

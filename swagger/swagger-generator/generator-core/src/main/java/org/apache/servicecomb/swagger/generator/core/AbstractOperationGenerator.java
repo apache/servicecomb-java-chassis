@@ -48,12 +48,12 @@ import org.apache.servicecomb.swagger.generator.ResponseTypeProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
-import org.apache.servicecomb.swagger.generator.core.utils.ParamUtils;
 
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.google.common.reflect.TypeToken;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -226,7 +226,9 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
   protected void initMethodParameterGenerators(Map<String, List<Annotation>> methodAnnotationMap) {
     for (java.lang.reflect.Parameter methodParameter : method.getParameters()) {
-      Type genericType = ParamUtils.getGenericParameterType(clazz, method, methodParameter);
+      Type genericType = TypeToken.of(clazz)
+          .resolveType(methodParameter.getParameterizedType())
+          .getType();
       ParameterGenerator parameterGenerator = new ParameterGenerator(method, methodAnnotationMap, methodParameter,
           genericType);
       validateParameter(parameterGenerator.getGenericType());
@@ -264,7 +266,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
           methodAnnotationMap,
           propertyDefinition.getName(),
           annotations,
-          propertyDefinition.getPrimaryType().getRawClass());
+          propertyDefinition.getPrimaryType());
       parameterGenerators.add(propertyParameterGenerator);
     }
   }
@@ -306,8 +308,8 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
         .add(annotation);
   }
 
-  protected void validateParameter(Type type) {
-    if (type instanceof HttpServletResponse) {
+  protected void validateParameter(JavaType type) {
+    if (type.isTypeOrSubTypeOf(HttpServletResponse.class)) {
       // not support, log the reason
       throw new IllegalStateException(
           "all input/output of ServiceComb operation are models, not allow to use HttpServletResponse.");
@@ -359,7 +361,7 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     }
   }
 
-  protected void fillParameter(Swagger swagger, Parameter parameter, String parameterName, Type type,
+  protected void fillParameter(Swagger swagger, Parameter parameter, String parameterName, JavaType type,
       List<Annotation> annotations) {
     for (Annotation annotation : annotations) {
       ParameterProcessor<Parameter, Annotation> processor = findParameterProcessors(annotation.annotationType());
@@ -492,8 +494,10 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
   }
 
   protected Model createResponseModel() {
-    Type responseType = ParamUtils
-        .getGenericParameterType(clazz, method.getDeclaringClass(), method.getGenericReturnType());
+    Type responseType =
+        TypeToken.of(clazz)
+            .resolveType(method.getGenericReturnType())
+            .getType();
     if (ReflectionUtils.isVoid(responseType)) {
       return null;
     }

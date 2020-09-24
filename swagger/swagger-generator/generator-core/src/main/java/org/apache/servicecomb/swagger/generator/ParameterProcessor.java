@@ -20,11 +20,18 @@ import java.lang.reflect.Type;
 
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
+import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
 
 public interface ParameterProcessor<SWAGGER_PARAMETER, ANNOTATION> {
   Type getProcessType();
+
+  default JavaType getProcessJavaType() {
+    return TypeFactory.defaultInstance().constructType(getProcessType());
+  }
 
   String getParameterName(ANNOTATION parameterAnnotation);
 
@@ -34,6 +41,11 @@ public interface ParameterProcessor<SWAGGER_PARAMETER, ANNOTATION> {
 
   HttpParameterType getHttpParameterType(ANNOTATION parameterAnnotation);
 
-  void fillParameter(Swagger swagger, Operation operation, SWAGGER_PARAMETER parameter, Type type,
+  void fillParameter(Swagger swagger, Operation operation, SWAGGER_PARAMETER parameter, JavaType type,
       ANNOTATION annotation);
+
+  default void fillParameter(Swagger swagger, Operation operation, SWAGGER_PARAMETER parameter, Type type,
+      ANNOTATION annotation) {
+    fillParameter(swagger, operation, parameter, TypeFactory.defaultInstance().constructType(type), annotation);
+  }
 }

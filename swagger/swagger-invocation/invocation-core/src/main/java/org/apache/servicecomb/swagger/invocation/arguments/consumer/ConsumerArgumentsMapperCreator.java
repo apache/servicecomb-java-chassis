@@ -101,6 +101,7 @@ public class ConsumerArgumentsMapperCreator extends AbstractArgumentsMapperCreat
         this.swaggerParameters.get(swaggerBodyIdx).getName(), parameterName);
   }
 
+  @Override
   protected void processBeanParameter(int consumerParamIdx, java.lang.reflect.Parameter consumerParameter) {
     ConsumerBeanParamMapper mapper = new ConsumerBeanParamMapper(
         this.providerMethod.getParameters()[consumerParamIdx].getName());

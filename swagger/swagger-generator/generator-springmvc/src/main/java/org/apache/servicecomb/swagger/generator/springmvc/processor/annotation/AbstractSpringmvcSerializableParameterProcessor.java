@@ -17,12 +17,12 @@
 
 package org.apache.servicecomb.swagger.generator.springmvc.processor.annotation;
 
-import java.lang.reflect.Type;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.generator.core.processor.parameter.AbstractSerializableParameterProcessor;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.ValueConstants;
+
+import com.fasterxml.jackson.databind.JavaType;
 
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
@@ -31,7 +31,7 @@ import io.swagger.models.parameters.AbstractSerializableParameter;
 public abstract class AbstractSpringmvcSerializableParameterProcessor<SWAGGER_PARAMETER extends AbstractSerializableParameter<?>, ANNOTATION> extends
     AbstractSerializableParameterProcessor<SWAGGER_PARAMETER, ANNOTATION> {
   @Override
-  public void fillParameter(Swagger swagger, Operation operation, SWAGGER_PARAMETER parameter, Type type,
+  public void fillParameter(Swagger swagger, Operation operation, SWAGGER_PARAMETER parameter, JavaType type,
       ANNOTATION annotation) {
     super.fillParameter(swagger, operation, parameter, type, annotation);
 

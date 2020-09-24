@@ -19,7 +19,6 @@ package org.apache.servicecomb.swagger.generator.jaxrs;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +29,7 @@ import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.rest.RestOperationGenerator;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.google.common.base.Defaults;
 
 import io.swagger.models.Swagger;
@@ -56,20 +56,20 @@ public class JaxrsOperationGenerator extends RestOperationGenerator {
 
   @Override
   protected void fillParameter(Swagger swagger, io.swagger.models.parameters.Parameter parameter, String parameterName,
-      Type type, List<Annotation> annotations) {
+      JavaType type, List<Annotation> annotations) {
     super.fillParameter(swagger, parameter, parameterName, type, annotations);
 
     if (!(parameter instanceof AbstractSerializableParameter)) {
       return;
     }
 
-    if (!(type instanceof Class && ((Class) type).isPrimitive())) {
+    if (!type.isPrimitive()) {
       return;
     }
 
     AbstractSerializableParameter<?> serializableParameter = (AbstractSerializableParameter<?>) parameter;
     if (serializableParameter.getDefault() == null && !parameter.getRequired()) {
-      serializableParameter.setDefaultValue(String.valueOf(Defaults.defaultValue((Class<?>) type)));
+      serializableParameter.setDefaultValue(String.valueOf(Defaults.defaultValue(type.getRawClass())));
     }
   }
 }

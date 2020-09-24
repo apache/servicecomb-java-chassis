@@ -23,6 +23,8 @@ import org.apache.servicecomb.swagger.generator.ParameterProcessor;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.fasterxml.jackson.databind.JavaType;
+
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.BodyParameter;
@@ -44,7 +46,7 @@ public class RequestBodyAnnotationProcessor implements ParameterProcessor<BodyPa
   }
 
   @Override
-  public void fillParameter(Swagger swagger, Operation operation, BodyParameter bodyParameter, Type type,
+  public void fillParameter(Swagger swagger, Operation operation, BodyParameter bodyParameter, JavaType type,
       RequestBody requestBody) {
     bodyParameter.setRequired(requestBody.required());
   }

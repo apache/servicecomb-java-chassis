@@ -218,14 +218,14 @@ public final class SwaggerUtils {
     }
   }
 
-  public static void setParameterType(Swagger swagger, Type type, AbstractSerializableParameter<?> parameter) {
+  public static void setParameterType(Swagger swagger, JavaType type, AbstractSerializableParameter<?> parameter) {
     addDefinitions(swagger, type);
     Property property = ModelConverters.getInstance().readAsProperty(type);
 
     if (isComplexProperty(property)) {
       // cannot set a simple parameter(header, query, etc.) as complex type
       String msg = String
-          .format("not allow complex type for %s parameter, type=%s.", parameter.getIn(), type.getTypeName());
+          .format("not allow complex type for %s parameter, type=%s.", parameter.getIn(), type.toCanonical());
       throw new IllegalStateException(msg);
     }
     parameter.setProperty(property);

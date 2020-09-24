@@ -36,8 +36,10 @@ import org.apache.servicecomb.swagger.generator.core.processor.response.DefaultR
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 import io.swagger.models.parameters.Parameter;
 import io.swagger.util.Json;
@@ -46,15 +48,17 @@ public final class SwaggerGeneratorUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(SwaggerGeneratorUtils.class);
 
   // all static fields load from SPI and stateless
-  private static Set<Type> contextTypes = SPIServiceUtils.getOrLoadSortedService(SwaggerContextRegister.class).stream()
-      .map(SwaggerContextRegister::getContextType)
+  private static Set<JavaType> contextTypes = SPIServiceUtils.getOrLoadSortedService(SwaggerContextRegister.class)
+      .stream()
+      .map(swaggerContextRegister -> TypeFactory.defaultInstance()
+          .constructType(swaggerContextRegister.getContextType()))
       .collect(Collectors.toSet());
 
   private static Map<Type, ClassAnnotationProcessor<?>> classAnnotationProcessors = new HashMap<>();
 
   private static Map<Type, MethodAnnotationProcessor<?>> methodAnnotationProcessors = new HashMap<>();
 
-  private static Map<Type, ParameterProcessor<?, ?>> parameterProcessors = new HashMap<>();
+  private static Map<JavaType, ParameterProcessor<?, ?>> parameterProcessors = new HashMap<>();
 
   private static Map<Type, ResponseTypeProcessor> responseTypeProcessors = new HashMap<>();
 
@@ -79,9 +83,10 @@ public final class SwaggerGeneratorUtils {
     }
 
     for (ParameterProcessor<?, ?> processor : SPIServiceUtils.getOrLoadSortedService(ParameterProcessor.class)) {
-      if (parameterProcessors.putIfAbsent(processor.getProcessType(), processor) != null) {
+      JavaType javaType = processor.getProcessJavaType();
+      if (parameterProcessors.putIfAbsent(javaType, processor) != null) {
         LOGGER.info("ignore duplicated ParameterProcessor, type={}, processor={}.",
-            processor.getProcessType().getTypeName(), processor.getClass().getName());
+            javaType.toCanonical(), processor.getClass().getName());
       }
     }
 
@@ -112,6 +117,7 @@ public final class SwaggerGeneratorUtils {
   @SuppressWarnings("unchecked")
   public static <SWAGGER_PARAMETER, ANNOTATION> ParameterProcessor<SWAGGER_PARAMETER, ANNOTATION> findParameterProcessors(
       Type type) {
+    type = TypeFactory.defaultInstance().constructType(type);
     return (ParameterProcessor<SWAGGER_PARAMETER, ANNOTATION>) parameterProcessors.get(type);
   }
 
@@ -128,7 +134,7 @@ public final class SwaggerGeneratorUtils {
     return defaultResponseTypeProcessor;
   }
 
-  public static boolean isContextParameter(Type type) {
+  public static boolean isContextParameter(JavaType type) {
     return contextTypes.contains(type);
   }
 

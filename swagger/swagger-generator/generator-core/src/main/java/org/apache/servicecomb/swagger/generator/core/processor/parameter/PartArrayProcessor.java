@@ -24,6 +24,8 @@ import javax.servlet.http.Part;
 import org.apache.servicecomb.swagger.generator.ParameterProcessor;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 
+import com.fasterxml.jackson.databind.JavaType;
+
 import io.swagger.models.Operation;
 import io.swagger.models.Swagger;
 import io.swagger.models.parameters.FormParameter;
@@ -48,7 +50,7 @@ public class PartArrayProcessor implements ParameterProcessor<FormParameter, Ann
   }
 
   @Override
-  public void fillParameter(Swagger swagger, Operation operation, FormParameter parameter, Type type,
+  public void fillParameter(Swagger swagger, Operation operation, FormParameter parameter, JavaType type,
       Annotation annotation) {
     Property property = new ArrayProperty(new FileProperty());
     parameter.setProperty(property);
