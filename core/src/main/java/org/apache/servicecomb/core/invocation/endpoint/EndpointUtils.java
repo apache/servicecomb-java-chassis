@@ -93,7 +93,7 @@ public final class EndpointUtils {
     Transport transport = SCBEngine.getInstance().getTransportManager().findTransport(uri.getScheme());
     if (transport == null) {
       LOGGER.error("not deployed transport, uri={}.", uriEndpoint);
-      throw Exceptions.genericConsumer("the endpoint's trnasport is not found.");
+      throw Exceptions.genericConsumer("the endpoint's transport is not found.");
     }
 
     return new Endpoint(transport, uriEndpoint);

@@ -31,6 +31,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
+import org.apache.servicecomb.swagger.generator.core.AbstractOperationGenerator;
+import org.apache.servicecomb.swagger.generator.core.AbstractSwaggerGenerator;
 import org.apache.servicecomb.swagger.generator.core.model.HttpParameterType;
 import org.apache.servicecomb.swagger.generator.core.processor.response.DefaultResponseTypeProcessor;
 import org.slf4j.Logger;
@@ -63,6 +65,9 @@ public final class SwaggerGeneratorUtils {
   private static Map<Type, ResponseTypeProcessor> responseTypeProcessors = new HashMap<>();
 
   private static DefaultResponseTypeProcessor defaultResponseTypeProcessor = new DefaultResponseTypeProcessor();
+
+  private static List<OperationPostProcessor> operationPostProcessors = SPIServiceUtils
+      .getOrLoadSortedService(OperationPostProcessor.class);
 
   static {
     // low order value has high priority
@@ -102,6 +107,15 @@ public final class SwaggerGeneratorUtils {
   }
 
   private SwaggerGeneratorUtils() {
+  }
+
+  public static void postProcessOperation(AbstractSwaggerGenerator swaggerGenerator,
+      AbstractOperationGenerator operationGenerator) {
+    for (OperationPostProcessor processor : operationPostProcessors) {
+      if (processor.shouldProcess(swaggerGenerator, operationGenerator)) {
+        processor.process(swaggerGenerator, operationGenerator);
+      }
+    }
   }
 
   @SuppressWarnings("unchecked")

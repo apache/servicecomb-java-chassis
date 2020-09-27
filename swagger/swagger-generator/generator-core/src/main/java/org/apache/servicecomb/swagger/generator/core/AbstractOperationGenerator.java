@@ -21,6 +21,7 @@ import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.fin
 import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findParameterProcessors;
 import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.findResponseTypeProcessor;
 import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.isContextParameter;
+import static org.apache.servicecomb.swagger.generator.SwaggerGeneratorUtils.postProcessOperation;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -153,8 +154,9 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
     scanMethodAnnotation();
     scanMethodParameters();
     scanResponse();
-
     correctOperation();
+
+    postProcessOperation(swaggerGenerator, this);
   }
 
   protected void scanMethodAnnotation() {
@@ -504,5 +506,17 @@ public abstract class AbstractOperationGenerator implements OperationGenerator {
 
     ResponseTypeProcessor processor = findResponseTypeProcessor(responseType);
     return processor.process(swaggerGenerator, this, responseType);
+  }
+
+  public Method getMethod() {
+    return method;
+  }
+
+  public List<ParameterGenerator> getParameterGenerators() {
+    return parameterGenerators;
+  }
+
+  public Operation getSwaggerOperation() {
+    return swaggerOperation;
   }
 }
