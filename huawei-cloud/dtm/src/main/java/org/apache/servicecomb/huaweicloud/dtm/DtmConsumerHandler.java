@@ -21,9 +21,7 @@ import java.util.Map;
 
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,8 +30,7 @@ public class DtmConsumerHandler implements Handler {
 
   private Method dtmContextExMethod;
 
-  @Override
-  public void init(MicroserviceMeta microserviceMeta, InvocationType invocationType) {
+  public DtmConsumerHandler() {
     String className = DtmConfig.INSTANCE.getDtmContextClassName();
     try {
       Class<?> clazz = Class.forName(className);
