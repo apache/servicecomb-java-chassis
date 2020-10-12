@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.demo.jaxrs.client;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,18 +25,41 @@ import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.server.User;
+import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
+import org.apache.servicecomb.provider.pojo.RpcReference;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
 @Component
-public class TestInvokerUtils implements CategorizedTestCase {
+public class TestCodeFirstJaxrs implements CategorizedTestCase {
+  interface DownloadInf {
+    ReadStreamPart testDeleteAfterFinished(String name, String content);
+  }
+
   private static final String SERVICE_NAME = "jaxrs";
 
   private static final String SCHEMA_ID = "codeFirst";
 
+  @RpcReference(microserviceName = SERVICE_NAME, schemaId = SCHEMA_ID)
+  private DownloadInf downloadInf;
+
+  @Override
   public void testAllTransport() throws Exception {
     testCodeFirstJaxrs();
+  }
+
+  @Override
+  public void testRestTransport() throws Exception {
+    testDeleteAfterFinished();
+  }
+
+  private void testDeleteAfterFinished() throws Exception {
+    ReadStreamPart part = downloadInf.testDeleteAfterFinished("hello", "hello content");
+    TestMgr.check(part.saveAsString().get(), "hello content");
+    File systemTempFile = new File(System.getProperty("java.io.tmpdir"));
+    File file = new File(systemTempFile, "hello");
+    TestMgr.check(file.exists(), false);
   }
 
   // invoke CodeFirstJaxrs
