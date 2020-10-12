@@ -44,5 +44,6 @@ public class SchemaDefParser extends AbstractSingleBeanDefinitionParser {
       BeanDefinitionBuilder builder) {
     builder.addPropertyValue(PojoConst.FIELD_SCHEMA_ID, element.getAttribute(PojoConst.SCHEMA_ID));
     builder.addPropertyValue(PojoConst.IMPL, element.getAttribute(PojoConst.IMPL));
+    builder.addPropertyValue(PojoConst.FIELD_SCHEMA_INTERFACE, element.getAttribute(PojoConst.SCHEMA_INTERFACE));
   }
 }

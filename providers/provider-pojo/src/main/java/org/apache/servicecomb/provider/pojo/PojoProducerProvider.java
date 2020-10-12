@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.core.provider.producer.AbstractProducerProvider;
 import org.apache.servicecomb.core.provider.producer.ProducerMeta;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
@@ -64,30 +65,44 @@ public class PojoProducerProvider extends AbstractProducerProvider {
   }
 
   private void initPojoProducerMeta(PojoProducerMeta pojoProducerMeta) {
+    parseSchemaInterface(pojoProducerMeta);
+    parseImplementation(pojoProducerMeta);
+  }
+
+  private void parseImplementation(PojoProducerMeta pojoProducerMeta) {
     if (pojoProducerMeta.getInstance() != null) {
       return;
     }
 
-    String[] nameAndValue = parseImplementation(pojoProducerMeta.getImplementation());
-
-    InstanceFactory factory = instanceFactoryMgr.get(nameAndValue[0]);
-    if (factory == null) {
-      throw new IllegalStateException("failed to find instance factory, name=" + nameAndValue[0]);
-    }
-
-    Object instance = factory.create(nameAndValue[1]);
-    pojoProducerMeta.setInstance(instance);
-  }
-
-  private String[] parseImplementation(String implementation) {
+    String implementation = pojoProducerMeta.getImplementation();
     String implName = PojoConst.POJO;
-    String implValue = implementation;
+    String implValue = pojoProducerMeta.getImplementation();
     int idx = implementation.indexOf(':');
     if (idx != -1) {
       implName = implementation.substring(0, idx);
       implValue = implementation.substring(idx + 1);
     }
 
-    return new String[] {implName, implValue};
+    InstanceFactory factory = instanceFactoryMgr.get(implName);
+    if (factory == null) {
+      throw new IllegalStateException("failed to find instance factory, name=" + implName);
+    }
+
+    Object instance = factory.create(implValue);
+    pojoProducerMeta.setInstance(instance);
+  }
+
+  private void parseSchemaInterface(PojoProducerMeta pojoProducerMeta) {
+    if (pojoProducerMeta.getSchemaInterface() != null || StringUtils
+        .isEmpty(pojoProducerMeta.getSchemaInterfaceName())) {
+      return;
+    }
+
+    try {
+      Class<?> si = Class.forName(pojoProducerMeta.getSchemaInterfaceName());
+      pojoProducerMeta.setSchemaInterface(si);
+    } catch (Exception e) {
+      throw new Error("can not find schema interface " + pojoProducerMeta.getSchemaInterfaceName(), e);
+    }
   }
 }
