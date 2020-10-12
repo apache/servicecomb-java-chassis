@@ -18,6 +18,7 @@ package org.apache.servicecomb.foundation.common.utils;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.List;
 
 import javax.servlet.http.Part;
 
@@ -28,41 +29,51 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 
 public final class PartUtils {
-  private PartUtils() {
-  }
-
-  public static Part getSinglePart(String name, Object value) {
-    if (value == null) {
-      return null;
+    private PartUtils() {
     }
 
-    if (value instanceof Part) {
-      return (Part) value;
+    public static Part getSinglePart(String name, Object value) {
+        if (value == null) {
+            return null;
+        }
+
+        if (value instanceof Part) {
+            return (Part) value;
+        }
+
+        if (value instanceof InputStream) {
+            return new InputStreamPart(name, (InputStream) value);
+        }
+
+        if (value instanceof Resource) {
+            return new ResourcePart(name, (Resource) value);
+        }
+
+        if (value instanceof File) {
+            return new FilePart(name, (File) value);
+        }
+
+        if (value instanceof byte[]) {
+            return new ResourcePart(name, new ByteArrayResource((byte[]) value));
+        }
+
+        throw new IllegalStateException(
+                String.format("File input parameter of %s could be %s / %s / %s / byte[] or %s, but got %s.",
+                        name,
+                        Part.class.getName(),
+                        InputStream.class.getName(),
+                        Resource.class.getName(),
+                        File.class.getName(),
+                        value.getClass().getName()));
     }
 
-    if (value instanceof InputStream) {
-      return new InputStreamPart(name, (InputStream) value);
+    public static Part getSinglePart(String name, Object value, List<Object> contentType) {
+        if (value instanceof Resource && contentType != null && !contentType.isEmpty()) {
+            ResourcePart part = new ResourcePart(name, (Resource) value);
+            contentType.forEach(type -> part.contentType(type.toString()));
+            return part;
+        } else {
+            return new ResourcePart(name, (Resource) value);
+        }
     }
-
-    if (value instanceof Resource) {
-      return new ResourcePart(name, (Resource) value);
-    }
-
-    if (value instanceof File) {
-      return new FilePart(name, (File) value);
-    }
-
-    if (value instanceof byte[]) {
-      return new ResourcePart(name, new ByteArrayResource((byte[]) value));
-    }
-
-    throw new IllegalStateException(
-        String.format("File input parameter of %s could be %s / %s / %s / byte[] or %s, but got %s.",
-            name,
-            Part.class.getName(),
-            InputStream.class.getName(),
-            Resource.class.getName(),
-            File.class.getName(),
-            value.getClass().getName()));
-  }
 }

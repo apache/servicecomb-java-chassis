@@ -22,6 +22,7 @@ import static org.apache.servicecomb.common.rest.filter.inner.RestServerCodecFil
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.http.HttpHeaders;
 import org.apache.servicecomb.common.rest.RestConst;
 import org.apache.servicecomb.common.rest.codec.RestCodec;
 import org.apache.servicecomb.common.rest.codec.produce.ProduceProcessor;
@@ -40,6 +41,8 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import com.netflix.config.DynamicPropertyFactory;
 
 import io.netty.buffer.Unpooled;
+
+import javax.servlet.http.Part;
 
 public class ServerRestArgsFilter implements HttpServerFilter {
   private static final boolean enabled = DynamicPropertyFactory.getInstance().getBooleanProperty
@@ -75,7 +78,13 @@ public class ServerRestArgsFilter implements HttpServerFilter {
     }
 
     if (null != invocation && isDownloadFileResponseType(invocation, response)) {
-      return responseEx.sendPart(PartUtils.getSinglePart(null, body));
+      Part part;
+      if (null != response.getHeaders()) {
+        part = PartUtils.getSinglePart(null, body, response.getHeaders().getHeader(HttpHeaders.CONTENT_TYPE));
+      }else {
+        part = PartUtils.getSinglePart(null, body);
+      }
+      return responseEx.sendPart(part);
     }
 
     responseEx.setContentType(produceProcessor.getName() + "; charset=utf-8");
