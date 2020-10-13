@@ -28,4 +28,7 @@
 
   <cse:rpc-schema schema-id="smartcare"
     implementation="org.apache.servicecomb.demo.pojo.server.SmartCareImpl"></cse:rpc-schema>
+
+  <cse:rpc-schema schema-id="SchemaInterface" schema-interface="org.apache.servicecomb.demo.pojo.server.SchemaInterface"
+    implementation="org.apache.servicecomb.demo.pojo.server.SchemaInterfaceImpl"></cse:rpc-schema>
 </beans>

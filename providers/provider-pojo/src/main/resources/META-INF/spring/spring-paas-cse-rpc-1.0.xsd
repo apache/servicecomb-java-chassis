@@ -18,24 +18,23 @@
   -->
 
 <xsd:schema xmlns="http://www.huawei.com/schema/paas/cse/rpc"
-	xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.huawei.com/schema/paas/cse/rpc"
-	elementFormDefault="qualified" attributeFormDefault="unqualified">
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.huawei.com/schema/paas/cse/rpc"
+  elementFormDefault="qualified" attributeFormDefault="unqualified">
 
-	<xsd:element name="rpc-schema">
-		<xsd:complexType>
-			<xsd:attribute name="schema-id" type="xsd:string" use="required"></xsd:attribute>
-			<xsd:attribute name="implementation" type="xsd:string"
-				use="required"></xsd:attribute>
-		</xsd:complexType>
-	</xsd:element>
+  <xsd:element name="rpc-schema">
+    <xsd:complexType>
+      <xsd:attribute name="schema-id" type="xsd:string" use="required"/>
+      <xsd:attribute name="implementation" type="xsd:string" use="required"/>
+      <xsd:attribute name="schema-interface" type="xsd:string" use="optional"/>
+    </xsd:complexType>
+  </xsd:element>
 
-	<xsd:element name="rpc-reference">
-		<xsd:complexType>
-			<xsd:attribute name="id" type="xsd:string" use="required"></xsd:attribute>
-			<xsd:attribute name="microservice-name" type="xsd:string"
-				use="required"></xsd:attribute>
-			<xsd:attribute name="schema-id" type="xsd:string" use="optional"></xsd:attribute>
-			<xsd:attribute name="interface" type="xsd:string" use="optional"></xsd:attribute>
-		</xsd:complexType>
-	</xsd:element>
+  <xsd:element name="rpc-reference">
+    <xsd:complexType>
+      <xsd:attribute name="id" type="xsd:string" use="required"/>
+      <xsd:attribute name="microservice-name" type="xsd:string" use="required"/>
+      <xsd:attribute name="schema-id" type="xsd:string" use="optional"/>
+      <xsd:attribute name="interface" type="xsd:string" use="optional"/>
+    </xsd:complexType>
+  </xsd:element>
 </xsd:schema>
