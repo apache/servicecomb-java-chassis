@@ -271,6 +271,14 @@ public final class RegistryUtils {
     }
   }
 
+  public static ServiceRegistry getServiceRegistry(String registryName) {
+    if (ServiceRegistry.DEFAULT_REGISTRY_NAME.equals(registryName)) {
+      return getServiceRegistry();
+    }
+
+    return EXTRA_SERVICE_REGISTRIES.get(registryName);
+  }
+
   public static class AfterServiceInstanceRegistryHandler {
     private static AtomicInteger instanceRegisterCounter = new AtomicInteger(EXTRA_SERVICE_REGISTRIES.size() + 1);
 

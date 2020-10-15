@@ -16,3 +16,4 @@
 #
 
 org.apache.servicecomb.serviceregistry.client.http.EmptyAuthHeaderProvider
+org.apache.servicecomb.serviceregistry.auth.TokenAuthHeaderProvider
