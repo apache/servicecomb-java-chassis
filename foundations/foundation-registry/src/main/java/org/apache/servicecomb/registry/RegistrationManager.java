@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.registry;
 
+import java.net.Inet6Address;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -266,6 +267,9 @@ public class RegistrationManager {
       InetSocketAddress socketAddress = ipPort.getSocketAddress();
       if (socketAddress.getAddress().isAnyLocalAddress()) {
         String host = NetUtils.getHostAddress();
+        if (Inet6Address.class.isInstance(socketAddress.getAddress())) {
+          host = NetUtils.getIpv6HostAddress();
+        }
         LOGGER.warn("address {}, auto select a host address to publish {}:{}, maybe not the correct one",
             socketAddress,
             host,

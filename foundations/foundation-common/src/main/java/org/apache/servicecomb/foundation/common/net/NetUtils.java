@@ -37,6 +37,10 @@ public final class NetUtils {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(NetUtils.class);
 
+  private static final String IPV4_KEY = "_v4";
+
+  private static final String IPV6_KEY = "_v6";
+
   // one interface can bind to multiple address
   // we only save one ip for each interface name.
   // eg:
@@ -47,12 +51,14 @@ public final class NetUtils {
   //    eth0:1 -> ip3
   //    on interface name conflict, all data saved
 
-  // key is network interface name
+  // key is network interface name and type
   private static Map<String, InetAddress> allInterfaceAddresses = new HashMap<>();
 
   private static String hostName;
 
   private static String hostAddress;
+
+  private static String hostAddressIpv6;
 
   static {
     doGetHostNameAndHostAddress();
@@ -60,22 +66,31 @@ public final class NetUtils {
 
   private static void doGetHostNameAndHostAddress() {
     try {
-      doGetIpv4AddressFromNetworkInterface();
+      doGetAddressFromNetworkInterface();
       // getLocalHost will throw exception in some docker image and sometimes will do a hostname lookup and time consuming
       InetAddress localHost = InetAddress.getLocalHost();
       hostName = localHost.getHostName();
       if ((localHost.isAnyLocalAddress() || localHost.isLoopbackAddress() || localHost.isMulticastAddress())
           && !allInterfaceAddresses.isEmpty()) {
-        InetAddress availabelAddress = allInterfaceAddresses.values().iterator().next();
-        hostAddress = availabelAddress.getHostAddress();
-        LOGGER.warn("cannot find a proper host address, choose {}, may not be correct.", hostAddress);
+        allInterfaceAddresses.forEach((key, val) -> {
+          if (key.endsWith(IPV4_KEY)) {
+            hostAddress = val.getHostAddress();
+            LOGGER.warn("cannot find a proper ipv4 host address, choose {} , may not be correct.", hostAddress);
+          } else {
+            hostAddressIpv6 = val.getHostAddress();
+            int index = hostAddressIpv6.indexOf("%");
+            if (index > 0) {
+              hostAddressIpv6 = hostAddressIpv6.substring(0, index);
+            }
+            LOGGER.warn("cannot find a proper ipv6 host address, choose {} , may not be correct.", hostAddressIpv6);
+          }
+        });
       } else {
         LOGGER.info("get localhost address: {}", localHost.getHostAddress());
         hostAddress = localHost.getHostAddress();
       }
 
-      LOGGER.info(
-          "add host name from localhost:" + hostName + ",host address:" + hostAddress);
+      LOGGER.info("add host name from localhost:" + hostName + ",host address:" + hostAddress);
     } catch (Exception e) {
       LOGGER.error("got exception when trying to get addresses:", e);
       if (allInterfaceAddresses.size() >= 1) {
@@ -83,8 +98,7 @@ public final class NetUtils {
         // get host name will do a reverse name lookup and is time consuming
         hostName = entry.getHostName();
         hostAddress = entry.getHostAddress();
-        LOGGER.info(
-            "add host name from interfaces:" + hostName + ",host address:" + hostAddress);
+        LOGGER.info("add host name from interfaces:" + hostName + ",host address:" + hostAddress);
       }
     }
   }
@@ -96,7 +110,7 @@ public final class NetUtils {
    * docker环境中，有时无法通过InetAddress.getLocalHost()获取 ，会报unknown host Exception， system error
    * 此时，通过遍历网卡接口的方式规避，出来的数据不一定对
    */
-  private static void doGetIpv4AddressFromNetworkInterface() throws SocketException {
+  private static void doGetAddressFromNetworkInterface() throws SocketException {
     Enumeration<NetworkInterface> iterNetwork = NetworkInterface.getNetworkInterfaces();
 
     while (iterNetwork.hasMoreElements()) {
@@ -110,15 +124,18 @@ public final class NetUtils {
       while (iterAddress.hasMoreElements()) {
         InetAddress address = iterAddress.nextElement();
 
-        if (address.isAnyLocalAddress() || address.isLoopbackAddress() || address.isMulticastAddress()
-            || Inet6Address.class.isInstance(address)) {
+        if (address.isAnyLocalAddress() || address.isLoopbackAddress() || address.isMulticastAddress()) {
           continue;
         }
 
         if (Inet4Address.class.isInstance(address)) {
           LOGGER.info(
-              "add network interface name:" + network.getName() + ",host address:" + address.getHostAddress());
-          allInterfaceAddresses.put(network.getName(), address);
+              "add network interface name:" + network.getName() + ",ipv4 host address:" + address.getHostAddress());
+          allInterfaceAddresses.put(network.getName() + IPV4_KEY, address);
+        } else if (Inet6Address.class.isInstance(address)) {
+          LOGGER.info(
+              "add network interface name:" + network.getName() + ",ipv6 host address:" + address.getHostAddress());
+          allInterfaceAddresses.put(network.getName() + IPV6_KEY, address);
         }
       }
     }
@@ -248,6 +265,15 @@ public final class NetUtils {
       doGetHostNameAndHostAddress();
     }
     return hostAddress;
+  }
+
+  public static String getIpv6HostAddress() {
+    //If failed to get host address ,micro-service will registry failed
+    //So I add retry mechanism
+    if (hostAddressIpv6 == null) {
+      doGetHostNameAndHostAddress();
+    }
+    return hostAddressIpv6;
   }
 
   public static InetAddress getInterfaceAddress(String interfaceName) {
