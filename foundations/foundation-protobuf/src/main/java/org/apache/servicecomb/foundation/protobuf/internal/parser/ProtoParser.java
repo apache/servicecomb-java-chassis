@@ -32,6 +32,8 @@ import io.protostuff.compiler.parser.ProtoContext;
  * can be reused
  */
 public class ProtoParser {
+  private static final String DEFAULT_PROTO_NAME = "default.proto";
+
   private Injector injector = Guice.createInjector(new ParserModule());
 
   private FileReaderFactory fileReaderFactory = injector.getInstance(FileReaderFactory.class);
@@ -48,7 +50,7 @@ public class ProtoParser {
       if (classLoader == null) {
         Thread.currentThread().setContextClassLoader(ProtoParser.class.getClassLoader());
       }
-      ProtoContext context = loader.load(new ContentFileReader(defaultReader), content);
+      ProtoContext context = loader.load(new ContentFileReader(defaultReader, content), DEFAULT_PROTO_NAME);
       return context.getProto();
     } finally {
       Thread.currentThread().setContextClassLoader(classLoader);

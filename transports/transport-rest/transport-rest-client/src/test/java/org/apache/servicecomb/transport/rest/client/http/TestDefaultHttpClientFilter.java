@@ -159,7 +159,7 @@ public class TestDefaultHttpClientFilter {
         "InvocationException: code=400;msg=CommonExceptionData [message=method null, path null, statusCode 400, reasonPhrase null, response content-type null is not supported]",
         invocationException.getMessage());
     Assert.assertEquals("Unrecognized token 'abc': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n"
-            + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 7]",
+            + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 4]",
         invocationException.getCause().getMessage());
     Assert.assertEquals(CommonExceptionData.class, invocationException.getErrorData().getClass());
     CommonExceptionData commonExceptionData = (CommonExceptionData) invocationException.getErrorData();
@@ -205,7 +205,7 @@ public class TestDefaultHttpClientFilter {
         "InvocationException: code=400;msg=CommonExceptionData [message=method null, path null, statusCode 200, reasonPhrase null, response content-type null is not supported]",
         invocationException.getMessage());
     Assert.assertEquals("Unrecognized token 'abc': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n"
-            + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 7]",
+            + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 4]",
         invocationException.getCause().getMessage());
     Assert.assertEquals(CommonExceptionData.class, invocationException.getErrorData().getClass());
     CommonExceptionData commonExceptionData = (CommonExceptionData) invocationException.getErrorData();
