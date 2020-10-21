@@ -372,7 +372,7 @@ public class TestVertxServerResponseToHttpServletResponse {
     CompletableFuture<Void> future = new CompletableFuture<>();
     new MockUp<PumpFromPart>() {
       @Mock
-      CompletableFuture<Void> toWriteStream(WriteStream<Buffer> writeStream) {
+      CompletableFuture<Void> toWriteStream(WriteStream<Buffer> writeStream, Handler<Throwable> throwableHandler) {
         return future;
       }
     };

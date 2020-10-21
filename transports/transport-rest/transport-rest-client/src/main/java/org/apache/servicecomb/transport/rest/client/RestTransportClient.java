@@ -77,6 +77,7 @@ public class RestTransportClient {
     HttpClientOptions httpClientOptions = new HttpClientOptions();
     httpClientOptions.setMaxPoolSize(TransportClientConfig.getConnectionMaxPoolSize())
         .setIdleTimeout(TransportClientConfig.getConnectionIdleTimeoutInSeconds())
+        .setKeepAliveTimeout(TransportClientConfig.getConnectionIdleTimeoutInSeconds())
         .setKeepAlive(TransportClientConfig.getConnectionKeepAlive())
         .setTryUseCompression(TransportClientConfig.getConnectionCompression())
         .setMaxHeaderSize(TransportClientConfig.getMaxHeaderSize())
