@@ -29,6 +29,5 @@ public class MicroserviceServiceCenterTask extends CompositeTask {
     addTask(new MicroserviceInstanceRegisterTask(eventBus, serviceRegistryConfig, srClient, microservice));
     addTask(new MicroserviceWatchTask(eventBus, serviceRegistryConfig, srClient, microservice));
     addTask(new MicroserviceInstanceHeartbeatTask(eventBus, srClient, microservice));
-//    addTask(new MicroserviceInstanceStatusSyncTask(eventBus, srClient, microservice));
   }
 }
