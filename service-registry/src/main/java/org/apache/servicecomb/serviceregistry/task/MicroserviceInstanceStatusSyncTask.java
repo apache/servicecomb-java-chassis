@@ -71,8 +71,7 @@ public class MicroserviceInstanceStatusSyncTask extends AbstractTask {
 	}
 
 	private boolean isInstanceNotRegistered() {
-		if (StringUtils.isEmpty(microservice.getServiceId()) ||
-				StringUtils.isEmpty(RegistryUtils.getMicroserviceInstance().getInstanceId())) {
+		if (StringUtils.isEmpty(microservice.getServiceId()) || StringUtils.isEmpty(RegistryUtils.getMicroserviceInstance().getInstanceId())) {
 			LOGGER.warn("instance status synchronization condition not met, serviceId = [{}], instanceId = [{}]",
 					microservice.getServiceId(), RegistryUtils.getMicroserviceInstance().getInstanceId());
 			return true;
