@@ -109,6 +109,8 @@ public class RestServerVerticle extends AbstractVerticle {
           endpointMetric.onRejectByConnectionLimit();
         }
       });
+      List<HttpServerExceptionHandler> httpServerExceptionHandlers =
+          SPIServiceUtils.getAllService(HttpServerExceptionHandler.class);
       httpServer.exceptionHandler(e -> {
         if (e instanceof ClosedChannelException) {
           // This is quite normal in between browser and ege, so do not print out.
@@ -116,6 +118,9 @@ public class RestServerVerticle extends AbstractVerticle {
         } else {
           LOGGER.error("Unexpected error in server.{}", ExceptionUtils.getExceptionMessageWithoutTrace(e));
         }
+        httpServerExceptionHandlers.forEach(httpServerExceptionHandler -> {
+          httpServerExceptionHandler.handle(e);
+        });
       });
       startListen(httpServer, startFuture);
     } catch (Throwable e) {
