@@ -257,6 +257,14 @@ public final class ServiceRegistryConfig {
     return property.get();
   }
 
+  public boolean isIgnoreSwaggerDifferent() {
+    DynamicBooleanProperty property =
+        DynamicPropertyFactory.getInstance()
+            .getBooleanProperty("servicecomb.service.registry.instance.ignoreSwaggerDifferent",
+                false);
+    return property.get();
+  }
+
   public boolean isPreferIpAddress() {
     DynamicBooleanProperty property =
         DynamicPropertyFactory.getInstance()

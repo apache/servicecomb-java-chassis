@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.ws.rs.core.Response.Status;
 
+import io.swagger.models.Swagger;
 import org.apache.servicecomb.foundation.common.base.ServiceCombConstants;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
@@ -32,6 +33,7 @@ import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.Holder;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -261,6 +263,21 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
       String scSchemaContent = srClient.getSchema(microservice.getServiceId(), scSchema.getSchemaId());
       String localSchemaContent = localSchemaEntry.getValue();
 
+      if (isIllegalValue(scSchemaContent) && isIllegalValue(localSchemaContent)) {
+        Swagger scSwagger = SwaggerUtils.parseSwagger(scSchemaContent);
+        Swagger localSwagger = SwaggerUtils.parseSwagger(localSchemaContent);
+        if (scSwagger.equals(localSwagger)) {
+          if (ServiceRegistryConfig.INSTANCE.isIgnoreSwaggerDifferent()) {
+            LOGGER.warn(
+                "the local schema[{}]'s content is same with the service center schema's content, but the order of some "
+                    + " parameters in the configuration file is inconsistent:\n service center schema:\n[{}]\n local schema:\n[{}]",
+                localSchemaEntry.getKey(),
+                scSchemaContent,
+                localSchemaContent);
+          }
+          return false;
+        }
+      }
       LOGGER.warn(
           "service center schema and local schema both are different:\n service center schema:\n[{}\n local schema:\n[{}]",
           scSchemaContent,
@@ -337,6 +354,12 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
         || ServiceRegistryConfig.INSTANCE.isAlwaysOverrideSchema();
   }
 
+  private boolean isIllegalValue(String context) {
+    if (context == null || context == "" || context.isEmpty()) {
+      return false;
+    }
+    return true;
+  }
   /**
    * Register a schema directly.
    * @return true if register success, otherwise false
