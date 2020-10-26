@@ -28,6 +28,7 @@ import org.apache.servicecomb.foundation.vertx.http.DownloadUtils;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
 
 import io.vertx.core.Context;
+import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.streams.ReadStream;
 import io.vertx.core.streams.WriteStream;
@@ -62,9 +63,9 @@ public class PumpFromPart {
     return future;
   }
 
-  public CompletableFuture<Void> toWriteStream(WriteStream<Buffer> writeStream) {
+  public CompletableFuture<Void> toWriteStream(WriteStream<Buffer> writeStream, Handler<Throwable> throwableHandler) {
     return prepareReadStream()
-        .thenCompose(readStream -> new PumpCommon().pump(context, readStream, writeStream))
+        .thenCompose(readStream -> new PumpCommon().pump(context, readStream, writeStream, throwableHandler))
         .whenComplete((v, e) -> DownloadUtils.clearPartResource(part));
   }
 
@@ -79,7 +80,7 @@ public class PumpFromPart {
   private CompletableFuture<Void> toOutputStreamAsync(OutputStream outputStream, boolean autoCloseOutputStream) {
     OutputStreamToWriteStream outputStreamToWriteStream = new OutputStreamToWriteStream(context, outputStream,
         autoCloseOutputStream);
-    return toWriteStream(outputStreamToWriteStream);
+    return toWriteStream(outputStreamToWriteStream, null);
   }
 
   // DO NOT use a mocked sync context to unify the pump logic
