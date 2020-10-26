@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpMethod;
+import io.vertx.core.http.WebSocket;
 import io.vertx.core.http.WebSocketConnectOptions;
 
 /**
@@ -52,7 +53,8 @@ public final class WebsocketUtils {
           onConnectFailed.handle(asyncResult.cause());
         } else {
           onOpen.handle(null);
-          asyncResult.result().exceptionHandler(v -> {
+          WebSocket webSocket = asyncResult.result();
+          webSocket.exceptionHandler(v -> {
             onException.handle(v);
             try {
               asyncResult.result().close();
@@ -60,10 +62,10 @@ public final class WebsocketUtils {
               LOGGER.error("ws close error.", err);
             }
           });
-          asyncResult.result().closeHandler(v -> {
+          webSocket.closeHandler(v -> {
             onClose.handle(v);
           });
-          asyncResult.result().pongHandler(pong -> {
+          webSocket.pongHandler(pong -> {
             // ignore, just prevent NPE.
           });
           asyncResult.result().frameHandler((frame) -> onMessage.handle(frame.binaryData()));
