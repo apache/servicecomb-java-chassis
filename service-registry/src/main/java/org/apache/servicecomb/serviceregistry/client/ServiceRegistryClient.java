@@ -23,6 +23,7 @@ import java.util.Map;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
 import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.api.response.HeartbeatResponse;
@@ -172,4 +173,13 @@ public interface ServiceRegistryClient {
    * get ServiceCenterVersionInfo
    */
   ServiceCenterInfo getServiceCenterInfo();
+
+  /**
+   * Update the instance status registered in service center.
+   * @param microserviceId the microserviceId of the instance
+   * @param instanceId the instanceId of the instance
+   * @param status update to this status
+   * @return whether this operation success
+   */
+  boolean updateMicroserviceInstanceStatus(String microserviceId, String instanceId, MicroserviceInstanceStatus status);
 }
