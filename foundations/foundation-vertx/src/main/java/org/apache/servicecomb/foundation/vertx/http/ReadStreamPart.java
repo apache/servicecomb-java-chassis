@@ -91,7 +91,7 @@ public class ReadStreamPart extends AbstractPart {
    * so the return future only means finished read from readStream.
    */
   public CompletableFuture<Void> saveToWriteStream(WriteStream<Buffer> writeStream) {
-    return new PumpCommon().pump(context, readStream, writeStream);
+    return new PumpCommon().pump(context, readStream, writeStream, null);
   }
 
   public CompletableFuture<byte[]> saveAsBytes() {

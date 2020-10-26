@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 import org.apache.servicecomb.foundation.common.io.AsyncCloseable;
 
 import io.vertx.core.Context;
+import io.vertx.core.Handler;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.streams.Pump;
@@ -39,7 +40,8 @@ public class PumpCommon {
    * <p>  if writeStream is not AsyncCloseable, future only means read complete
    */
   @SuppressWarnings("unchecked")
-  public CompletableFuture<Void> pump(Context context, ReadStream<Buffer> readStream, WriteStream<Buffer> writeStream) {
+  public CompletableFuture<Void> pump(Context context, ReadStream<Buffer> readStream, WriteStream<Buffer> writeStream,
+      Handler<Throwable> throwableHandler) {
     CompletableFuture<Void> readFuture = new CompletableFuture<>();
 
     writeStream.exceptionHandler(e -> {
@@ -53,6 +55,9 @@ public class PumpCommon {
         // can not find a way to cancel/terminate request
         // so can only close the connection.
         ((HttpClientResponse) readStream).request().connection().close();
+      }
+      if (throwableHandler != null) {
+        throwableHandler.handle(e);
       }
       readFuture.completeExceptionally(e);
     });
