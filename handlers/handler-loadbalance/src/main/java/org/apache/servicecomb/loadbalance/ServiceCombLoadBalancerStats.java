@@ -17,7 +17,6 @@
 
 package org.apache.servicecomb.loadbalance;
 
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -50,10 +49,12 @@ public class ServiceCombLoadBalancerStats {
   private int serverExpireInSeconds = DynamicPropertyFactory.getInstance()
       .getIntProperty(Configuration.RPOP_SERVER_EXPIRED_IN_SECONDS, 300).get();
 
-  private long timerIntervalInMilis = DynamicPropertyFactory.getInstance()
+  private long timerIntervalInMillis = DynamicPropertyFactory.getInstance()
       .getLongProperty(Configuration.RPOP_TIMER_INTERVAL_IN_MINIS, 10000).get();
 
   private LoadingCache<ServiceCombServer, ServiceCombServerStats> serverStatsCache;
+
+  private Map<String, ServiceCombServer> serviceCombServers = new ConcurrentHashMap<>();
 
   public static final ServiceCombLoadBalancerStats INSTANCE;
 
@@ -104,6 +105,10 @@ public class ServiceCombLoadBalancerStats {
   }
 
   public ServiceCombServer getServiceCombServer(MicroserviceInstance instance) {
+    return serviceCombServers.get(instance.getInstanceId());
+  }
+
+  public ServiceCombServer getServiceCombServerOld(MicroserviceInstance instance) {
     for (ServiceCombServer server : serverStatsCache.asMap().keySet()) {
       if (server.getInstance().equals(instance)) {
         return server;
@@ -118,8 +123,8 @@ public class ServiceCombLoadBalancerStats {
   }
 
   @VisibleForTesting
-  void setTimerIntervalInMilis(int milis) {
-    this.timerIntervalInMilis = milis;
+  void setTimerIntervalInMillis(int milis) {
+    this.timerIntervalInMillis = milis;
   }
 
   @VisibleForTesting
@@ -142,8 +147,11 @@ public class ServiceCombLoadBalancerStats {
             .removalListener(new RemovalListener<ServiceCombServer, ServiceCombServerStats>() {
               @Override
               public void onRemoval(RemovalNotification<ServiceCombServer, ServiceCombServerStats> notification) {
-                LOGGER.info("stats of instance {} removed.", notification.getKey().getInstance().getInstanceId());
+                ServiceCombServer server = notification.getKey();
+                LOGGER.info("stats of instance {} removed. host is {}",
+                    server.getInstance().getInstanceId(), server.getHost());
                 pingView.remove(notification.getKey());
+                serviceCombServers.remove(notification.getKey());
               }
             })
             .build(
@@ -151,6 +159,7 @@ public class ServiceCombLoadBalancerStats {
                   public ServiceCombServerStats load(ServiceCombServer server) {
                     ServiceCombServerStats stats = new ServiceCombServerStats();
                     pingView.put(server, stats);
+                    serviceCombServers.put(server.getInstance().getInstanceId(), server);
                     return stats;
                   }
                 });
@@ -166,8 +175,8 @@ public class ServiceCombLoadBalancerStats {
           allServers.entrySet().forEach(serviceCombServerServiceCombServerStatsEntry -> {
             ServiceCombServer server = serviceCombServerServiceCombServerStatsEntry.getKey();
             ServiceCombServerStats stats = serviceCombServerServiceCombServerStatsEntry.getValue();
-            if ((System.currentTimeMillis() - stats.getLastVisitTime() > timerIntervalInMilis) && !ping
-                    .ping(server.getInstance())) {
+            if ((System.currentTimeMillis() - stats.getLastVisitTime() > timerIntervalInMillis) && !ping
+                .ping(server.getInstance())) {
               LOGGER.info("ping mark server {} failure.", server.getInstance().getInstanceId());
               stats.markFailure();
             }
@@ -177,7 +186,7 @@ public class ServiceCombLoadBalancerStats {
           LOGGER.warn("LoadBalancerStatsTimer error.", e);
         }
       }
-    }, timerIntervalInMilis, timerIntervalInMilis);
+    }, timerIntervalInMillis, timerIntervalInMillis);
   }
 }
 
