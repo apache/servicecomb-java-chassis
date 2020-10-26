@@ -167,6 +167,16 @@ public final class Const {
         SERVICECENTER_VERSION = V4_PREFIX + "/version";
       }
     }
+
+    public static final String MICROSERVICE_INSTANCE_STATUS;
+
+    static {
+      if (VERSION_V3.equals(CURRENT_VERSION)) {
+        MICROSERVICE_INSTANCE_STATUS = "/registry/v3/microservices/%s/instances/%s/status";
+      } else {
+        MICROSERVICE_INSTANCE_STATUS = V4_PREFIX + "/microservices/%s/instances/%s/status";
+      }
+    }
   }
 
   public static final String REGISTRY_APP_ID = "default";

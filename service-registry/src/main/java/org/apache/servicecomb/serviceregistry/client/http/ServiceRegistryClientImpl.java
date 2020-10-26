@@ -39,6 +39,7 @@ import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
 import org.apache.servicecomb.serviceregistry.api.request.CreateSchemaRequest;
 import org.apache.servicecomb.serviceregistry.api.request.CreateServiceRequest;
@@ -77,7 +78,9 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
   private static final Logger LOGGER = LoggerFactory.getLogger(ServiceRegistryClientImpl.class);
 
   private static final String ERROR_CODE = "errorCode";
+
   private static final String ERR_SERVICE_NOT_EXISTS = "400012";
+
   private static final String ERR_SCHEMA_NOT_EXISTS = "400016";
 
   private IpPortManager ipPortManager;
@@ -900,5 +903,38 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
       LOGGER.error("query servicecenter version info failed.", e);
     }
     return null;
+  }
+
+  @Override
+  public boolean updateMicroserviceInstanceStatus(String microserviceId, String instanceId,
+      MicroserviceInstanceStatus status) {
+    if (null == status) {
+      throw new IllegalArgumentException("null status is now allowed");
+    }
+
+    Holder<HttpClientResponse> holder = new Holder<>();
+    IpPort ipPort = ipPortManager.getAvailableAddress();
+    try {
+      LOGGER.debug("update status of microservice instance: {}", status);
+      String url = String.format(Const.REGISTRY_API.MICROSERVICE_INSTANCE_STATUS, microserviceId, instanceId);
+      Map<String, String[]> queryParams = new HashMap<>();
+      queryParams.put("value", new String[] {status.toString()});
+      CountDownLatch countDownLatch = new CountDownLatch(1);
+      RestUtils.put(ipPort, url, new RequestParam().setQueryParams(queryParams),
+          syncHandler(countDownLatch, HttpClientResponse.class, holder));
+      countDownLatch.await();
+      if (holder.value != null) {
+        if (holder.value.statusCode() == Status.OK.getStatusCode()) {
+          return true;
+        }
+        LOGGER.warn(holder.value.statusMessage());
+      }
+    } catch (Exception e) {
+      LOGGER.error("update status of microservice instance {}/{} failed",
+          microserviceId,
+          instanceId,
+          e);
+    }
+    return false;
   }
 }

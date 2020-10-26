@@ -33,6 +33,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterConfig;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
 import org.apache.servicecomb.serviceregistry.api.response.FindInstancesResponse;
@@ -428,5 +429,29 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
     info.setApiVersion("4.0.0");
     info.setConfig(new ServiceCenterConfig());
     return info;
+  }
+
+  @Override
+  public boolean updateMicroserviceInstanceStatus(String microserviceId, String instanceId,
+      MicroserviceInstanceStatus status) {
+    if (null == status) {
+      throw new IllegalArgumentException("null status is now allowed");
+    }
+
+    Map<String, MicroserviceInstance> instanceMap = microserviceInstanceMap.get(microserviceId);
+    if (instanceMap == null) {
+      throw new IllegalArgumentException("Invalid serviceId, serviceId=" + microserviceId);
+    }
+
+    MicroserviceInstance microserviceInstance = instanceMap.get(instanceId);
+    if (microserviceInstance == null) {
+      throw new IllegalArgumentException(
+          String.format("Invalid argument. microserviceId=%s, instanceId=%s.",
+              microserviceId,
+              instanceId));
+    }
+
+    microserviceInstance.setStatus(status);
+    return true;
   }
 }

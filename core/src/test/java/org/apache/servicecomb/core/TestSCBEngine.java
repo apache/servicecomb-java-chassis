@@ -34,6 +34,9 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.VertxUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
+import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.consumer.AppManager;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.hamcrest.Matchers;
@@ -57,9 +60,18 @@ public class TestSCBEngine {
   public void test(@Injectable ProducerProviderManager producerProviderManager,
       @Injectable ConsumerProviderManager consumerProviderManager,
       @Injectable TransportManager transportManager,
-      @Injectable AppManager appManager) {
+      @Injectable AppManager appManager,
+      @Injectable Microservice microservice,
+      @Injectable MicroserviceInstance microserviceInstance,
+      @Injectable ServiceRegistryClient serviceRegistryClient) {
     new Expectations(RegistryUtils.class) {
       {
+        RegistryUtils.getMicroservice();
+        result = microservice;
+        RegistryUtils.getMicroserviceInstance();
+        result = microserviceInstance;
+        RegistryUtils.getServiceRegistryClient();
+        result = serviceRegistryClient;
         RegistryUtils.getServiceRegistry().getAppManager();
         RegistryUtils.getInstanceCacheManager();
         RegistryUtils.run();
