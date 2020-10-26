@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -35,8 +36,11 @@ public class TestLoadBalancer {
     List<ServiceCombServer> newServers = new ArrayList<>();
     ServiceCombServer server = Mockito.mock(ServiceCombServer.class);
     Invocation invocation = Mockito.mock(Invocation.class);
+    MicroserviceInstance microserviceInstance = Mockito.mock(MicroserviceInstance.class);
     newServers.add(server);
     when(invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST)).thenReturn(newServers);
+    when(server.getInstance()).thenReturn(microserviceInstance);
+    when(microserviceInstance.getInstanceId()).thenReturn("123456");
     LoadBalancer loadBalancer = new LoadBalancer(rule, "test");
     loadBalancer.chooseServer(invocation);
 
