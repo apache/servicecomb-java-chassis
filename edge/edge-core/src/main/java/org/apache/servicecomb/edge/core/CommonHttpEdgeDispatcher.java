@@ -125,6 +125,11 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
       public String getConfigTransportName() {
         return "rest";
       }
+
+      @Override
+      public String getMicroserviceName() {
+        return configurationItem.getMicroserviceName();
+      }
     };
 
     LoadBalancer loadBalancer = getOrCreateLoadBalancer(invocation, configurationItem.getMicroserviceName(),
