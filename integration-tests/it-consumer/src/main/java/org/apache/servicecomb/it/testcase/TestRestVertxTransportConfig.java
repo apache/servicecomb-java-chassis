@@ -30,7 +30,7 @@ import io.netty.handler.codec.TooLongFrameException;
 
 public class TestRestVertxTransportConfig {
   // GET /v1/restServerConfig/testMaxInitialLineLength?q=...... HTTP/1.1
-  private static final String INITIAL_LINE_SUFFIX = " HTTP/1.1";
+  private static final String INITIAL_LINE_SUFFIX = " HTTP/1.1\r";
 
   private static final String INITIAL_LINE_PREFIX = "GET /v1/restVertxTransportConfig/testMaxInitialLineLength?q=";
 
