@@ -24,10 +24,11 @@ import com.google.common.eventbus.EventBus;
 
 public class MicroserviceServiceCenterTask extends CompositeTask {
   public MicroserviceServiceCenterTask(EventBus eventBus, ServiceRegistryConfig serviceRegistryConfig,
-      ServiceRegistryClient srClient, Microservice microservice) {
+                                       ServiceRegistryClient srClient, Microservice microservice) {
     addTask(new MicroserviceRegisterTask(eventBus, srClient, microservice));
     addTask(new MicroserviceInstanceRegisterTask(eventBus, serviceRegistryConfig, srClient, microservice));
     addTask(new MicroserviceWatchTask(eventBus, serviceRegistryConfig, srClient, microservice));
     addTask(new MicroserviceInstanceHeartbeatTask(eventBus, srClient, microservice));
+    addTask(new MicroserviceInstanceStatusSyncTask(eventBus, srClient, microservice));
   }
 }
