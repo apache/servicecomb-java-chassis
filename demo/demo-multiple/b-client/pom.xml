@@ -22,7 +22,7 @@
   <parent>
     <groupId>org.apache.servicecomb.demo</groupId>
     <artifactId>demo-multiple</artifactId>
-    <version>1.3.1-SNAPSHOT</version>
+    <version>1.3.1</version>
   </parent>
   <artifactId>b-client</artifactId>
   <name>Java Chassis::Demo::Multiple::B client</name>
