@@ -263,24 +263,27 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
       String scSchemaContent = srClient.getSchema(microservice.getServiceId(), scSchema.getSchemaId());
       String localSchemaContent = localSchemaEntry.getValue();
 
+      //if content of local schema and service center schema is equal then return true.
       if (!StringUtils.isEmpty(scSchemaContent) && !StringUtils.isEmpty(localSchemaContent)) {
         Swagger scSwagger = SwaggerUtils.parseSwagger(scSchemaContent);
         Swagger localSwagger = SwaggerUtils.parseSwagger(localSchemaContent);
         if (scSwagger.equals(localSwagger)) {
           return true;
         }
-        if (ServiceRegistryConfig.INSTANCE.isIgnoreSwaggerDifference()) {
-          LOGGER.warn(
-              "service center schema and local schema both are different:\n service center schema:\n[{}]\n local schema:\n[{}]"
-                  + "\nYou need to increment microservice version before deploying. "
-                  + "Or you can configure service_description.environment=[{}]"
-                  + " to work in development environment and ignore this error",
-              ServiceCombConstants.DEVELOPMENT_SERVICECOMB_ENV,
-              scSchemaContent,
-              localSchemaContent);
-          return true;
-        }
       }
+
+      //if the content of local schema and service center schema is different. But the value of isIgnoreSwaggerDifference is true.
+      if (ServiceRegistryConfig.INSTANCE.isIgnoreSwaggerDifference()) {
+        LOGGER.warn(
+            "service center schema and local schema both are different:\n service center "
+            + "schema:\n[{}]\n local schema:\n[{}]\nYou have configured to ignore difference "
+            + "check. It's recommended to increment microservice version before deploying when "
+            + "schema change.",
+            scSchemaContent,
+            localSchemaContent);
+        return true;
+      }
+
       LOGGER.warn(
           "service center schema and local schema both are different:\n service center schema:\n[{}\n local schema:\n[{}]",
           scSchemaContent,
