@@ -263,19 +263,22 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
       String scSchemaContent = srClient.getSchema(microservice.getServiceId(), scSchema.getSchemaId());
       String localSchemaContent = localSchemaEntry.getValue();
 
-      if (isIllegalValue(scSchemaContent) && isIllegalValue(localSchemaContent)) {
+      if (!StringUtils.isEmpty(scSchemaContent) && !StringUtils.isEmpty(localSchemaContent)) {
         Swagger scSwagger = SwaggerUtils.parseSwagger(scSchemaContent);
         Swagger localSwagger = SwaggerUtils.parseSwagger(localSchemaContent);
         if (scSwagger.equals(localSwagger)) {
-          if (ServiceRegistryConfig.INSTANCE.isIgnoreSwaggerDifferent()) {
-            LOGGER.warn(
-                "the local schema[{}]'s content is same with the service center schema's content, but the order of some "
-                    + " parameters in the configuration file is inconsistent:\n service center schema:\n[{}]\n local schema:\n[{}]",
-                localSchemaEntry.getKey(),
-                scSchemaContent,
-                localSchemaContent);
-          }
-          return false;
+          return true;
+        }
+        if (ServiceRegistryConfig.INSTANCE.isIgnoreSwaggerDifference()) {
+          LOGGER.warn(
+              "service center schema and local schema both are different:\n service center schema:\n[{}]\n local schema:\n[{}]"
+                  + "\nYou need to increment microservice version before deploying. "
+                  + "Or you can configure service_description.environment=[{}]"
+                  + " to work in development environment and ignore this error",
+              ServiceCombConstants.DEVELOPMENT_SERVICECOMB_ENV,
+              scSchemaContent,
+              localSchemaContent);
+          return true;
         }
       }
       LOGGER.warn(
@@ -354,12 +357,6 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
         || ServiceRegistryConfig.INSTANCE.isAlwaysOverrideSchema();
   }
 
-  private boolean isIllegalValue(String context) {
-    if (context == null || context == "" || context.isEmpty()) {
-      return false;
-    }
-    return true;
-  }
   /**
    * Register a schema directly.
    * @return true if register success, otherwise false
