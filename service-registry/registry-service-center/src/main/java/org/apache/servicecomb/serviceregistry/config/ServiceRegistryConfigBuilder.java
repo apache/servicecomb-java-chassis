@@ -63,6 +63,7 @@ class ServiceRegistryConfigBuilder {
         .setRegistryAutoDiscovery(isRegistryAutoDiscovery())
         .setResendHeartBeatTimes(getResendHeartBeatTimes())
         .setAlwaysOverrideSchema(isAlwaysOverrideSchema())
+        .setIgnoreSwaggerDifference(isIgnoreSwaggerDifference())
         .setPreferIpAddress(isPreferIpAddress())
         .setWatch(isWatch())
         .setRegistryApiVersion(getRegistryApiVersion())
@@ -216,6 +217,14 @@ class ServiceRegistryConfigBuilder {
     DynamicBooleanProperty property =
         DynamicPropertyFactory.getInstance()
             .getBooleanProperty("servicecomb.service.registry.instance.alwaysOverrideSchema",
+                false);
+    return property.get();
+  }
+
+  public boolean isIgnoreSwaggerDifference() {
+    DynamicBooleanProperty property =
+        DynamicPropertyFactory.getInstance()
+            .getBooleanProperty("servicecomb.service.registry.instance.ignoreSwaggerDifference",
                 false);
     return property.get();
   }

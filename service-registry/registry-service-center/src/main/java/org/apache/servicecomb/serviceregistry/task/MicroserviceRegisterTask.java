@@ -25,6 +25,7 @@ import java.util.Set;
 
 import javax.ws.rs.core.Response.Status;
 
+import io.swagger.models.Swagger;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.foundation.common.base.ServiceCombConstants;
@@ -35,6 +36,7 @@ import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
 import org.apache.servicecomb.serviceregistry.client.http.Holder;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
+import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -263,6 +265,27 @@ public class MicroserviceRegisterTask extends AbstractRegisterTask {
       //if local schema and service center schema is different then print the both schemas and print difference in local schema.
       String scSchemaContent = srClient.getSchema(microservice.getServiceId(), scSchema.getSchemaId());
       String localSchemaContent = localSchemaEntry.getValue();
+
+      //if content of local schema and service center schema is equal then return true.
+      if (!StringUtils.isEmpty(scSchemaContent) && !StringUtils.isEmpty(localSchemaContent)) {
+        Swagger scSwagger = SwaggerUtils.parseSwagger(scSchemaContent);
+        Swagger localSwagger = SwaggerUtils.parseSwagger(localSchemaContent);
+        if (scSwagger.equals(localSwagger)) {
+          return true;
+        }
+      }
+
+      //if the content of local schema and service center schema is different. But the value of isIgnoreSwaggerDifference is true.
+      if (ServiceRegistryConfig.INSTANCE.isIgnoreSwaggerDifference()) {
+        LOGGER.warn(
+            "service center schema and local schema both are different:\n service center "
+                + "schema:\n[{}]\n local schema:\n[{}]\nYou have configured to ignore difference "
+                + "check. It's recommended to increment microservice version before deploying when "
+                + "schema change.",
+            scSchemaContent,
+            localSchemaContent);
+        return true;
+      }
 
       LOGGER.warn(
           "service center schema and local schema both are different:\n service center schema:\n[{}\n local schema:\n[{}]",
