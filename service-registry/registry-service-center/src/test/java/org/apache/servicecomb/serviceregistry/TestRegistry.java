@@ -83,6 +83,7 @@ public class TestRegistry {
   public void testDelegate() {
     ServiceRegistry serviceRegistry = LocalServiceRegistryFactory.createLocal();
     serviceRegistry.init();
+    RegistryUtils.init();
     serviceRegistry.run();
 
     RegistryUtils.setServiceRegistry(serviceRegistry);
