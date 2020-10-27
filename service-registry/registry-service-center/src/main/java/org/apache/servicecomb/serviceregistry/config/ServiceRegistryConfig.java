@@ -98,6 +98,8 @@ public class ServiceRegistryConfig {
 
   private boolean alwaysOverrideSchema;
 
+  private boolean ignoreSwaggerDifference;
+
   private boolean preferIpAddress;
 
   private boolean watch;
@@ -284,6 +286,15 @@ public class ServiceRegistryConfig {
 
   public ServiceRegistryConfig setAlwaysOverrideSchema(boolean alwaysOverrideSchema) {
     this.alwaysOverrideSchema = alwaysOverrideSchema;
+    return this;
+  }
+
+  public boolean isIgnoreSwaggerDifference() {
+    return ignoreSwaggerDifference;
+  }
+
+  public ServiceRegistryConfig setIgnoreSwaggerDifference(boolean ignoreSwaggerDifference) {
+    this.ignoreSwaggerDifference = ignoreSwaggerDifference;
     return this;
   }
 
