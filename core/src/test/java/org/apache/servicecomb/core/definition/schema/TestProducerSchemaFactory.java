@@ -170,8 +170,8 @@ public class TestProducerSchemaFactory {
     Assert.assertEquals(true, holder.value.isFailed());
     exception = holder.value.getResult();
     data = (CommonExceptionData) exception.getErrorData();
-    Assert.assertEquals(Status.BAD_REQUEST.getStatusCode(), exception.getStatusCode());
-    Assert.assertEquals("Parameters not valid or types not match.", data.getMessage());
+    Assert.assertEquals(590, exception.getStatusCode());
+    Assert.assertEquals("Cse Internal Server Error", data.getMessage());
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartBusinessMethod());
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishBusiness());
   }
@@ -235,8 +235,8 @@ public class TestProducerSchemaFactory {
     Assert.assertEquals(true, holder.value.isFailed());
     exception = holder.value.getResult();
     data = (CommonExceptionData) exception.getErrorData();
-    Assert.assertEquals(Status.BAD_REQUEST.getStatusCode(), exception.getStatusCode());
-    Assert.assertEquals("Parameters not valid or types not match.", data.getMessage());
+    Assert.assertEquals(590, exception.getStatusCode());
+    Assert.assertEquals("Cse Internal Server Error", data.getMessage());
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getStartBusinessMethod());
     Assert.assertEquals(nanoTime, invocation.getInvocationStageTrace().getFinishBusiness());
   }
