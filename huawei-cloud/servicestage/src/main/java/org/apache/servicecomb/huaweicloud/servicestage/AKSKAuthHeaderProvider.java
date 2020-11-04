@@ -17,14 +17,20 @@
 
 package org.apache.servicecomb.huaweicloud.servicestage;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.foundation.auth.Cipher;
 import org.apache.servicecomb.foundation.auth.DefaultCipher;
+import org.apache.servicecomb.foundation.auth.ShaAKSKCipher;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 
 public class AKSKAuthHeaderProvider implements AuthHeaderProvider {
@@ -86,7 +92,14 @@ public class AKSKAuthHeaderProvider implements AuthHeaderProvider {
 
   private String getSecretKey() {
     String secretKey = configuration.getString(CONFIG_SECRET_KEY, "");
-    return new String(findCipher().decrypt(secretKey.toCharArray()));
+    String decodedSecretKey = new String(findCipher().decrypt(secretKey.toCharArray()));
+
+    // ShaAKSKCipher 解密为 plain , 其他算法解密为 plain。 然后 encode 为 ShaAKSKCipher 去认证。
+    if (ShaAKSKCipher.CIPHER_NAME.equalsIgnoreCase(getCipher())) {
+      return decodedSecretKey;
+    } else {
+      return sha256Encode(decodedSecretKey, getAccessKey());
+    }
   }
 
   private String getProject() {
@@ -94,12 +107,24 @@ public class AKSKAuthHeaderProvider implements AuthHeaderProvider {
   }
 
   private Cipher findCipher() {
-    if (DefaultCipher.DEFAULT_CYPHER.equals(getCipher())) {
+    if (DefaultCipher.CIPHER_NAME.equals(getCipher())) {
       return DefaultCipher.getInstance();
     }
 
     Map<String, Cipher> cipherBeans = BeanUtils.getBeansOfType(Cipher.class);
     return cipherBeans.values().stream().filter(c -> c.name().equals(getCipher())).findFirst()
         .orElseThrow(() -> new IllegalArgumentException("failed to find cipher named " + getCipher()));
+  }
+
+  public static String sha256Encode(String key, String data) {
+    try {
+      Mac sha256HMAC = Mac.getInstance("HmacSHA256");
+      SecretKeySpec secretKey = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8),
+          "HmacSHA256");
+      sha256HMAC.init(secretKey);
+      return Hex.encodeHexString(sha256HMAC.doFinal(data.getBytes(StandardCharsets.UTF_8)));
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Can not encode ak sk. Please check the value is correct.", e);
+    }
   }
 }

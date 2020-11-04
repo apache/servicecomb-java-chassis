@@ -17,17 +17,8 @@
 
 package org.apache.servicecomb.foundation.auth;
 
-public final class DefaultCipher implements Cipher {
-  public static final String CIPHER_NAME = "default";
-
-  private static final DefaultCipher INSTANCE = new DefaultCipher();
-
-  public static DefaultCipher getInstance() {
-    return INSTANCE;
-  }
-
-  private DefaultCipher() {
-  }
+public class ShaAKSKCipher implements Cipher {
+  public static final String CIPHER_NAME = "ShaAKSKCipher";
 
   @Override
   public String name() {

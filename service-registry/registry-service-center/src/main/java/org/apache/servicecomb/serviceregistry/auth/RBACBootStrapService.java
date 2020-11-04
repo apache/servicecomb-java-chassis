@@ -73,11 +73,11 @@ public class RBACBootStrapService implements BootStrapService {
         DEFAULT_REGISTRY_NAME,
         getStringProperty(environment, null, ACCOUNT_NAME_KEY),
         getStringProperty(environment, null, PASSWORD_KEY),
-        getCipher(getStringProperty(environment, DefaultCipher.DEFAULT_CYPHER, CIPHER_KEY)));
+        getCipher(getStringProperty(environment, DefaultCipher.CIPHER_NAME, CIPHER_KEY)));
   }
 
   private Cipher getCipher(String cipherName) {
-    if (DefaultCipher.DEFAULT_CYPHER.equals(cipherName)) {
+    if (DefaultCipher.CIPHER_NAME.equals(cipherName)) {
       return DefaultCipher.getInstance();
     }
 

@@ -96,10 +96,10 @@
       <artifactId>metrics-core</artifactId>
     </dependency>
 
-    <!-- inspector -->
+    <!-- servicestage -->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>inspector</artifactId>
+      <artifactId>servicestage</artifactId>
     </dependency>
 
   </dependencies>
