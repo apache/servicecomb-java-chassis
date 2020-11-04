@@ -15,25 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.serviceregistry.auth;
+package org.apache.servicecomb.foundation.bootstrap;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.core.env.Environment;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
-
-public class TokenAuthHeaderProvider implements AuthHeaderProvider {
-  @Override
-  public Map<String, String> authHeaders() {
-    String token = TokenCacheManager.getInstance().getToken(RBACBootStrapService.DEFAULT_REGISTRY_NAME);
-    if (StringUtils.isEmpty(token)) {
-      return new HashMap<>();
-    }
-
-    HashMap<String, String> header = new HashMap<>();
-    header.put("Authorization", "Bearer " + token);
-    return Collections.unmodifiableMap(header);
-  }
+/**
+ * A boot strap service is loaded after Spring Environment is created.
+ *
+ * In boot strap service, user's can only read configurations from Environment. Dynamic configurations
+ *
+ * from config center is not available.
+ *
+ * e.g. an authentication service must be connected before connecting to config center, service center, etc.
+ */
+public interface BootStrapService {
+  void startup(Environment environment);
 }

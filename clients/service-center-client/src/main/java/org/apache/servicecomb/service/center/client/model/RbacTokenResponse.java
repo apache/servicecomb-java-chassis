@@ -15,25 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.serviceregistry.auth;
+package org.apache.servicecomb.service.center.client.model;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+public class RbacTokenResponse {
+  private int statusCode;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
+  private String token;
 
-public class TokenAuthHeaderProvider implements AuthHeaderProvider {
-  @Override
-  public Map<String, String> authHeaders() {
-    String token = TokenCacheManager.getInstance().getToken(RBACBootStrapService.DEFAULT_REGISTRY_NAME);
-    if (StringUtils.isEmpty(token)) {
-      return new HashMap<>();
-    }
+  public int getStatusCode() {
+    return statusCode;
+  }
 
-    HashMap<String, String> header = new HashMap<>();
-    header.put("Authorization", "Bearer " + token);
-    return Collections.unmodifiableMap(header);
+  public void setStatusCode(int statusCode) {
+    this.statusCode = statusCode;
+  }
+
+  public String getToken() {
+    return token;
+  }
+
+  public void setToken(String token) {
+    this.token = token;
   }
 }

@@ -15,25 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.serviceregistry.auth;
+package org.apache.servicecomb.demo.multiServiceCenterClient;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
-
-public class TokenAuthHeaderProvider implements AuthHeaderProvider {
-  @Override
-  public Map<String, String> authHeaders() {
-    String token = TokenCacheManager.getInstance().getToken(RBACBootStrapService.DEFAULT_REGISTRY_NAME);
-    if (StringUtils.isEmpty(token)) {
-      return new HashMap<>();
-    }
-
-    HashMap<String, String> header = new HashMap<>();
-    header.put("Authorization", "Bearer " + token);
-    return Collections.unmodifiableMap(header);
-  }
+public interface IConfigurationEndpoint {
+  String getValue(String key, int type);
 }

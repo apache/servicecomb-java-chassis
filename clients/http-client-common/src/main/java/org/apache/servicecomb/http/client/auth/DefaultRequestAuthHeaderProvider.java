@@ -15,38 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.serviceregistry.api.request;
+package org.apache.servicecomb.http.client.auth;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.HashMap;
+import java.util.Map;
 
-public class RbacTokenRequest {
-  @JsonProperty("name")
-  private String accountName;
+import org.apache.servicecomb.foundation.auth.SignRequest;
 
-  private String password;
-
-  public String getAccountName() {
-    return accountName;
-  }
-
-  public void setAccountName(String accountName) {
-    this.accountName = accountName;
-  }
-
-  public String getPassword() {
-    return password;
-  }
-
-  public void setPassword(String password) {
-    this.password = password;
-  }
-
+public class DefaultRequestAuthHeaderProvider implements RequestAuthHeaderProvider {
   @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder("RbacTokenRequest{");
-    sb.append("accountName='").append(accountName).append('\'');
-    sb.append(", password='").append(password).append('\'');
-    sb.append('}');
-    return sb.toString();
+  public Map<String, String> loadAuthHeader(SignRequest signRequest) {
+    return new HashMap<>(0);
   }
 }

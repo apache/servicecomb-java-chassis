@@ -20,7 +20,6 @@ package org.apache.servicecomb.serviceregistry.client.http;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.fail;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,13 +29,11 @@ import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.servicecomb.config.BootStrapProperties;
 import org.apache.servicecomb.foundation.common.net.IpPort;
-import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.apache.servicecomb.registry.api.registry.Microservice;
@@ -46,12 +43,10 @@ import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterConfig;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
-import org.apache.servicecomb.serviceregistry.api.request.RbacTokenRequest;
 import org.apache.servicecomb.serviceregistry.api.response.GetExistenceResponse;
 import org.apache.servicecomb.serviceregistry.api.response.GetSchemaResponse;
 import org.apache.servicecomb.serviceregistry.api.response.GetSchemasResponse;
 import org.apache.servicecomb.serviceregistry.api.response.GetServiceResponse;
-import org.apache.servicecomb.serviceregistry.api.response.RbacTokenResponse;
 import org.apache.servicecomb.serviceregistry.client.ClientException;
 import org.apache.servicecomb.serviceregistry.client.http.ServiceRegistryClientImpl.ResponseWrapper;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -627,104 +622,5 @@ public class TestServiceRegistryClientImpl {
 
   private void shouldThrowException() {
     fail("an exception is expected");
-  }
-
-  @Test
-  public void getRbacToken() {
-    mockForGetRbacToken(200, "{\"token\":\"test_token_content\"}");
-    RbacTokenRequest request = new RbacTokenRequest();
-    request.setAccountName("test_account_name");
-    request.setPassword("test_password");
-    RbacTokenResponse response = oClient.getRbacToken(request);
-
-    Assert.assertEquals(200, response.getStatusCode());
-    Assert.assertEquals("test_token_content", response.getToken());
-  }
-
-  @Test
-  public void getRbacToken_waiting_response_interrupted() {
-    InterruptedException e = new InterruptedException();
-    new MockUp<CountDownLatch>() {
-      @Mock
-      public void await() throws InterruptedException {
-        throw e;
-      }
-    };
-    new MockUp<RestClientUtil>() {
-      @Mock
-      void post(IpPort ipPort, String uri, RequestParam requestParam,
-          Handler<RestResponse> responseHandler) {
-      }
-    };
-    RbacTokenRequest request = new RbacTokenRequest();
-    request.setAccountName("test_account_name");
-    request.setPassword("test_password");
-
-    RbacTokenResponse response = oClient.getRbacToken(request);
-
-    Assert.assertEquals(0, response.getStatusCode());
-    Assert.assertNull(response.getToken());
-  }
-
-  @Test
-  public void getRbacToken_serialize_request_exception() {
-    mockForGetRbacToken(200, "{\"token\":\"test_token_content\"}");
-    RbacTokenRequest request = new RbacTokenRequest() {
-      @Override
-      public String getAccountName() {
-        throw new IllegalStateException("mock serialization error");
-      }
-    };
-    request.setAccountName("test_account_name");
-    request.setPassword("test_password");
-
-    RbacTokenResponse response = oClient.getRbacToken(request);
-
-    Assert.assertEquals(0, response.getStatusCode());
-    Assert.assertNull(response.getToken());
-  }
-
-  @Test
-  public void getRbacToken_auth_failed() {
-    mockForGetRbacToken(401, "{\"detail\":\"wrong user name or password\","
-        + "\"errorCode\":\"401002\","
-        + "\"errorMessage\":\"Request unauthorized\"}");
-    RbacTokenRequest request = new RbacTokenRequest();
-    request.setAccountName("test_account_name");
-    request.setPassword("test_password");
-    RbacTokenResponse response = oClient.getRbacToken(request);
-
-    Assert.assertEquals(401, response.getStatusCode());
-    Assert.assertNull(response.getToken());
-  }
-
-  private void mockForGetRbacToken(final int responseStatusCode, final String responseBody) {
-    new MockUp<RestClientUtil>() {
-      @Mock
-      void post(IpPort ipPort, String uri, RequestParam requestParam, Handler<RestResponse> responseHandler) {
-        Assert.assertEquals("/v4/token", uri);
-        try {
-          RbacTokenRequest rbacTokenRequest = JsonUtils.readValue(requestParam.getBody(), RbacTokenRequest.class);
-          Assert.assertEquals("test_account_name", rbacTokenRequest.getAccountName());
-          Assert.assertEquals("test_password", rbacTokenRequest.getPassword());
-        } catch (IOException e) {
-          fail("malformed request body");
-          e.printStackTrace();
-        }
-        HttpClientResponse httpClientResponse = new MockUp<HttpClientResponse>() {
-          @Mock
-          int statusCode() {
-            return responseStatusCode;
-          }
-
-          @Mock
-          HttpClientResponse bodyHandler(Handler<Buffer> bodyHandler) {
-            bodyHandler.handle(Buffer.buffer(responseBody));
-            return null;
-          }
-        }.getMockInstance();
-        responseHandler.handle(new RestResponse(null, httpClientResponse));
-      }
-    };
   }
 }

@@ -63,6 +63,11 @@
     </dependency>
 
     <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-spi</artifactId>
+    </dependency>
+
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>

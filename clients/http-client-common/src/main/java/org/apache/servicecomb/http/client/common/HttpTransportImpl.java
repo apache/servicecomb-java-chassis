@@ -22,8 +22,8 @@ import java.util.Map;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.util.EntityUtils;
-import org.apache.servicecomb.http.client.common.HttpConfiguration.AKSKProperties;
-import org.apache.servicecomb.http.client.common.auth.AKSKHeaderUtil;
+import org.apache.servicecomb.foundation.auth.SignRequest;
+import org.apache.servicecomb.http.client.auth.RequestAuthHeaderProvider;
 
 /**
  * Created by   on 2019/10/16.
@@ -38,11 +38,11 @@ public class HttpTransportImpl implements HttpTransport {
 
   private Map<String, String> globalHeaders;
 
-  private AKSKProperties akskProperties;
+  private RequestAuthHeaderProvider requestAuthHeaderProvider;
 
-  public HttpTransportImpl(HttpClient httpClient, AKSKProperties akskProperties) {
+  public HttpTransportImpl(HttpClient httpClient, RequestAuthHeaderProvider requestAuthHeaderProvider) {
     this.httpClient = httpClient;
-    this.akskProperties = akskProperties;
+    this.requestAuthHeaderProvider = requestAuthHeaderProvider;
   }
 
   public HttpClient getHttpClient() {
@@ -87,7 +87,7 @@ public class HttpTransportImpl implements HttpTransport {
       globalHeaders.forEach(httpRequest::addHeader);
     }
 
-    AKSKHeaderUtil.addAKSKHeader(httpRequest, akskProperties);
+    httpRequest.getHeaders().putAll(requestAuthHeaderProvider.loadAuthHeader(createSignRequest()));
 
     //get Http response
     org.apache.http.HttpResponse response = httpClient.execute(httpRequest.getRealRequest());
@@ -96,6 +96,11 @@ public class HttpTransportImpl implements HttpTransport {
         response.getEntity() == null ? null :
             EntityUtils.toString(response.getEntity(), "UTF-8"),
         response.getAllHeaders());
+  }
+
+  private static SignRequest createSignRequest() {
+    // Now the implementations do not process SignRequest, so return null. Maybe future will use it.
+    return null;
   }
 
   @Override

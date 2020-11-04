@@ -36,7 +36,7 @@ import com.netflix.config.DynamicPropertyFactory;
  *
  */
 public final class SSLOption {
-  private static final SSLOption DEFAULT_OPTION = new SSLOption();
+  public static final SSLOption DEFAULT_OPTION = new SSLOption();
 
   public static final String DEFAULT_CIPHERS = "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,"
       + "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256";

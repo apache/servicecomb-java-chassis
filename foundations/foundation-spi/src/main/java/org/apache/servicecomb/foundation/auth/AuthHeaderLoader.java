@@ -15,22 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.http.client.common.auth;
+package org.apache.servicecomb.foundation.auth;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class AKSKHeaderExtensionUtil {
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 
-  private static AKSKHeaderExtension headerExtension = new FileSystemMountAKSKHeaderExtension();
+public class AuthHeaderLoader {
+  private final List<AuthHeaderProvider> authHeaderProviders =
+      SPIServiceUtils.getSortedService(AuthHeaderProvider.class);
 
-  public static Map<String, String> genAuthHeaders() {
-    if (Files.exists(Paths.get(AKSKHeaderExtension.DEFAULT_SECRET_AUTH_PATH,
-        AKSKHeaderExtension.DEFAULT_SECRET_AUTH_NAME))) {
-      return headerExtension.getHeaders();
-    }
-    return Collections.emptyMap();
+  private static final AuthHeaderLoader INSTANCE = new AuthHeaderLoader();
+
+  public static AuthHeaderLoader getInstance() {
+    return INSTANCE;
+  }
+
+  public Map<String, String> loadAuthHeaders(SignRequest signRequest) {
+    Map<String, String> result = new HashMap<>();
+    authHeaderProviders.forEach(provider -> result.putAll(provider.getSignAuthHeaders(signRequest)));
+    return result;
   }
 }

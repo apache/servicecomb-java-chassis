@@ -27,6 +27,7 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.servicecomb.foundation.ssl.SSLManager;
+import org.apache.servicecomb.http.client.auth.RequestAuthHeaderProvider;
 
 public class HttpTransportFactory {
   // All parameters set to 5 seconds now.
@@ -44,7 +45,7 @@ public class HttpTransportFactory {
   }
 
   public static HttpTransport createHttpTransport(HttpConfiguration.SSLProperties sslProperties,
-      HttpConfiguration.AKSKProperties akskProperties) {
+      RequestAuthHeaderProvider requestAuthHeaderProvider) {
     RequestConfig config = RequestConfig.custom()
         .setConnectTimeout(CONNECT_TIMEOUT)
         .setConnectionRequestTimeout(
@@ -73,6 +74,6 @@ public class HttpTransportFactory {
         setConnectionManager(connectionManager).
         disableCookieManagement();
 
-    return new HttpTransportImpl(httpClientBuilder.build(), akskProperties);
+    return new HttpTransportImpl(httpClientBuilder.build(), requestAuthHeaderProvider);
   }
 }

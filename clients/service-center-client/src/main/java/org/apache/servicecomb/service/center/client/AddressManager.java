@@ -33,7 +33,7 @@ public class AddressManager {
   public AddressManager(String projectName, List<String> addresses) {
     this.projectName = projectName;
     this.addresses = new ArrayList<>(addresses.size());
-    addresses.forEach((address -> this.addresses.add(formatAddress(address))));
+    addresses.forEach((address -> this.addresses.add(address)));
     this.index = new Random().nextInt(addresses.size());
   }
 
@@ -56,6 +56,12 @@ public class AddressManager {
   }
 
   public String address() {
+    synchronized (this) {
+      return formatAddress(addresses.get(index));
+    }
+  }
+
+  public String nonFormattedAddress() {
     synchronized (this) {
       return addresses.get(index);
     }
