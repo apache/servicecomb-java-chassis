@@ -94,7 +94,7 @@ public class AKSKAuthHeaderProvider implements AuthHeaderProvider {
     String secretKey = configuration.getString(CONFIG_SECRET_KEY, "");
     String decodedSecretKey = new String(findCipher().decrypt(secretKey.toCharArray()));
 
-    // ShaAKSKCipher 解密为 plain , 其他算法解密为 plain。 然后 encode 为 ShaAKSKCipher 去认证。
+    // ShaAKSKCipher 不解密, 认证的时候不处理；其他算法解密为 plain，需要 encode 为 ShaAKSKCipher 去认证。
     if (ShaAKSKCipher.CIPHER_NAME.equalsIgnoreCase(getCipher())) {
       return decodedSecretKey;
     } else {
