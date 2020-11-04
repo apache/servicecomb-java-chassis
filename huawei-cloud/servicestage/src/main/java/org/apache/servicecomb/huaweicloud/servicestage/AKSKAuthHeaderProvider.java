@@ -26,14 +26,18 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
 import org.apache.servicecomb.foundation.auth.Cipher;
 import org.apache.servicecomb.foundation.auth.DefaultCipher;
 import org.apache.servicecomb.foundation.auth.ShaAKSKCipher;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class AKSKAuthHeaderProvider implements AuthHeaderProvider {
+  private static final Logger LOGGER = LoggerFactory.getLogger(AKSKAuthHeaderProvider.class);
 
   private static final String CONFIG_AKSK_ENABLED = "servicecomb.credentials.akskEnabled";
 
@@ -65,6 +69,12 @@ public class AKSKAuthHeaderProvider implements AuthHeaderProvider {
 
   public Map<String, String> authHeaders() {
     if (!enabled) {
+      return headers;
+    }
+
+    if (StringUtils.isEmpty(getAccessKey())) {
+      LOGGER.warn("ak sk auth enabled but access key is not configured. Config [{}] to false to disable it.",
+          CONFIG_AKSK_ENABLED);
       return headers;
     }
 
