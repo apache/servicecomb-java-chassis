@@ -73,7 +73,7 @@ public class AKSKAuthHeaderProvider implements AuthHeaderProvider {
     }
 
     if (StringUtils.isEmpty(getAccessKey())) {
-      LOGGER.warn("ak sk auth enabled but access key is not configured, disable is at runtime. "
+      LOGGER.warn("ak sk auth enabled but access key is not configured, disable it at runtime. "
               + "Config [{}] to false to disable it implicitly.",
           CONFIG_AKSK_ENABLED);
       enabled = false;
