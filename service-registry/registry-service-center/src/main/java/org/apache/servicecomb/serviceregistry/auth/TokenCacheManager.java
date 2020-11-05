@@ -35,12 +35,9 @@ import org.apache.servicecomb.foundation.auth.Cipher;
 import org.apache.servicecomb.foundation.common.concurrency.SuppressedRunnableWrapper;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.TimeUtils;
-import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
-import org.apache.servicecomb.serviceregistry.ServiceRegistry;
-import org.apache.servicecomb.serviceregistry.api.request.RbacTokenRequest;
-import org.apache.servicecomb.serviceregistry.api.response.RbacTokenResponse;
-import org.apache.servicecomb.serviceregistry.client.ServiceRegistryClient;
+import org.apache.servicecomb.service.center.client.ServiceCenterClient;
+import org.apache.servicecomb.service.center.client.model.RbacTokenRequest;
+import org.apache.servicecomb.service.center.client.model.RbacTokenResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +51,8 @@ public final class TokenCacheManager {
   private ScheduledExecutorService tokenCacheWorker;
 
   private Map<String, TokenCache> tokenCacheMap;
+
+  private Map<String, ServiceCenterClient> serviceCenterClients;
 
   public static TokenCacheManager getInstance() {
     return INSTANCE;
@@ -73,6 +72,10 @@ public final class TokenCacheManager {
     tokenCacheMap = new ConcurrentHashMapEx<>();
   }
 
+  public void setServiceCenterClients(Map<String, ServiceCenterClient> serviceCenterClients) {
+    this.serviceCenterClients = serviceCenterClients;
+  }
+
   public void addTokenCache(String registryName, String accountName, String password, Cipher cipher) {
     Objects.requireNonNull(registryName, "registryName should not be null!");
     if (tokenCacheMap.containsKey(registryName)) {
@@ -83,8 +86,6 @@ public final class TokenCacheManager {
     TokenCache tokenCache = new TokenCache(registryName, accountName, password, cipher, this.clock);
     tokenCache.setTokenCacheWorker(this.tokenCacheWorker);
     tokenCacheMap.put(registryName, tokenCache);
-    HttpClients.load();
-    RegistryUtils.init();
     tokenCache.refreshToken();
   }
 
@@ -94,7 +95,7 @@ public final class TokenCacheManager {
         .orElse("");
   }
 
-  public static class TokenCache {
+  public class TokenCache {
     private final String registryName;
 
     private final String accountName;
@@ -160,20 +161,12 @@ public final class TokenCacheManager {
     }
 
     private void refreshToken() {
-      ServiceRegistry serviceRegistry = RegistryUtils.getServiceRegistry(registryName);
-      ServiceRegistryClient serviceRegistryClient =
-          serviceRegistry == null ? null : serviceRegistry.getServiceRegistryClient();
-      if ((serviceRegistry == null || serviceRegistryClient == null)
-          && ServiceRegistry.DEFAULT_REGISTRY_NAME.equals(registryName)) {
-        LOGGER.error("failed to get default serviceRegistry");
-        tokenCacheWorker.schedule( // retry after 1 second
-            this::refreshToken, 1, TimeUnit.SECONDS);
-        return;
-      }
+      ServiceCenterClient serviceCenterClient = serviceCenterClients.get(this.registryName);
+
       RbacTokenRequest request = new RbacTokenRequest();
-      request.setAccountName(new String(cipher.decrypt(accountName.toCharArray())));
+      request.setName(new String(cipher.decrypt(accountName.toCharArray())));
       request.setPassword(new String(cipher.decrypt(password.toCharArray())));
-      RbacTokenResponse rbacTokenResponse = serviceRegistryClient.getRbacToken(request);
+      RbacTokenResponse rbacTokenResponse = serviceCenterClient.queryToken(request);
       LOGGER.info("refresh token successfully {}", rbacTokenResponse.getStatusCode());
       if (StringUtils.isEmpty(this.token)) {
         if (Status.UNAUTHORIZED.getStatusCode() == rbacTokenResponse.getStatusCode()) {
@@ -188,7 +181,6 @@ public final class TokenCacheManager {
       }
       this.token = rbacTokenResponse.getToken();
       this.nextRefreshTime = clock.millis() + tokenLife;
-
     }
   }
 }

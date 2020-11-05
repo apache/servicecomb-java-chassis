@@ -134,6 +134,10 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
+      <artifactId>foundation-spi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
       <artifactId>foundation-ssl</artifactId>
     </dependency>
     <dependency>

@@ -26,6 +26,8 @@ import org.apache.servicecomb.service.center.client.model.MicroserviceInstanceSt
 import org.apache.servicecomb.service.center.client.model.MicroserviceInstancesResponse;
 import org.apache.servicecomb.service.center.client.model.MicroservicesResponse;
 import org.apache.servicecomb.service.center.client.model.ModifySchemasRequest;
+import org.apache.servicecomb.service.center.client.model.RbacTokenRequest;
+import org.apache.servicecomb.service.center.client.model.RbacTokenResponse;
 import org.apache.servicecomb.service.center.client.model.RegisteredMicroserviceInstanceResponse;
 import org.apache.servicecomb.service.center.client.model.RegisteredMicroserviceResponse;
 import org.apache.servicecomb.service.center.client.model.SchemaInfo;
@@ -148,4 +150,12 @@ public interface ServiceCenterOperation {
    * @throws OperationException If some problems happened to contact service center or non http 200 returned.
    */
   boolean sendHeartBeat(String serviceId, String instanceId);
+
+  /**
+   * query token using user confidential
+   *
+   * @return if heartbeat is successful
+   * @throws OperationException If some problems happened to contact service center or non http 200 returned.
+   */
+  RbacTokenResponse queryToken(RbacTokenRequest request);
 }

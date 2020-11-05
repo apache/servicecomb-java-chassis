@@ -43,11 +43,9 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.Const;
-import org.apache.servicecomb.serviceregistry.api.Const.REGISTRY_API;
 import org.apache.servicecomb.serviceregistry.api.registry.ServiceCenterInfo;
 import org.apache.servicecomb.serviceregistry.api.request.CreateSchemaRequest;
 import org.apache.servicecomb.serviceregistry.api.request.CreateServiceRequest;
-import org.apache.servicecomb.serviceregistry.api.request.RbacTokenRequest;
 import org.apache.servicecomb.serviceregistry.api.request.RegisterInstanceRequest;
 import org.apache.servicecomb.serviceregistry.api.request.UpdatePropertiesRequest;
 import org.apache.servicecomb.serviceregistry.api.response.CreateServiceResponse;
@@ -59,7 +57,6 @@ import org.apache.servicecomb.serviceregistry.api.response.GetSchemasResponse;
 import org.apache.servicecomb.serviceregistry.api.response.GetServiceResponse;
 import org.apache.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceResponse;
-import org.apache.servicecomb.serviceregistry.api.response.RbacTokenResponse;
 import org.apache.servicecomb.serviceregistry.api.response.RegisterInstanceResponse;
 import org.apache.servicecomb.serviceregistry.client.ClientException;
 import org.apache.servicecomb.serviceregistry.client.IpPortManager;
@@ -70,7 +67,6 @@ import org.apache.servicecomb.serviceregistry.task.MicroserviceInstanceHeartbeat
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -958,38 +954,5 @@ public final class ServiceRegistryClientImpl implements ServiceRegistryClient {
     if (HeartbeatResult.SUCCESS.equals(event.getHeartbeatResult())) {
       ipPortManager.initAutoDiscovery();
     }
-  }
-
-  @Override
-  public RbacTokenResponse getRbacToken(RbacTokenRequest request) {
-    Holder<RbacTokenResponse> holder = new Holder<>();
-    IpPort ipPort = ipPortManager.getAvailableAddress();
-
-    byte[] requestBody;
-    try {
-      requestBody = JsonUtils.writeValueAsBytes(request);
-    } catch (JsonProcessingException e) {
-      LOGGER.error("failed to write request as byte array");
-      return new RbacTokenResponse();
-    }
-
-    CountDownLatch countDownLatch = new CountDownLatch(1);
-    restClientUtil.post(ipPort, REGISTRY_API.RBAC_TOKEN,
-        new RequestParam().setBody(requestBody),
-        syncHandler(countDownLatch, RbacTokenResponse.class, holder));
-    try {
-      countDownLatch.await();
-    } catch (InterruptedException e) {
-      LOGGER.error("failed to wait for rbac token response", e);
-    }
-
-    if (holder.value != null) {
-      holder.value.setStatusCode(holder.getStatusCode());
-      return holder.value;
-    }
-
-    RbacTokenResponse response = new RbacTokenResponse();
-    response.setStatusCode(holder.getStatusCode());
-    return response;
   }
 }

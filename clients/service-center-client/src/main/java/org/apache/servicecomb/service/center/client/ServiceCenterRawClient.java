@@ -46,28 +46,35 @@ public class ServiceCenterRawClient {
   }
 
   public HttpResponse getHttpRequest(String url, Map<String, String> headers, String content) throws IOException {
-    return doHttpRequest(url, headers, content, HttpRequest.GET);
+    return doHttpRequest(url, false, headers, content, HttpRequest.GET);
+  }
+
+  public HttpResponse postHttpRequestAbsoluteUrl(String url, Map<String, String> headers, String content)
+      throws IOException {
+    return doHttpRequest(url, true, headers, content, HttpRequest.POST);
   }
 
   public HttpResponse postHttpRequest(String url, Map<String, String> headers, String content) throws IOException {
-    return doHttpRequest(url, headers, content, HttpRequest.POST);
+    return doHttpRequest(url, false, headers, content, HttpRequest.POST);
   }
 
   public HttpResponse putHttpRequest(String url, Map<String, String> headers, String content) throws IOException {
-    return doHttpRequest(url, headers, content, HttpRequest.PUT);
+    return doHttpRequest(url, false, headers, content, HttpRequest.PUT);
   }
 
   public HttpResponse deleteHttpRequest(String url, Map<String, String> headers, String content) throws IOException {
-    return doHttpRequest(url, headers, content, HttpRequest.DELETE);
+    return doHttpRequest(url, false, headers, content, HttpRequest.DELETE);
   }
 
-  private HttpResponse doHttpRequest(String url, Map<String, String> headers, String content, String method)
+  private HttpResponse doHttpRequest(String url, boolean absoluteUrl, Map<String, String> headers, String content,
+      String method)
       throws IOException {
     if (headers == null) {
       headers = new HashMap<>();
     }
     headers.put(HEADER_TENANT_NAME, tenantName);
-    HttpRequest httpRequest = new HttpRequest(addressManager.address() + url, headers, content, method);
+    String address = absoluteUrl ? addressManager.nonFormattedAddress() + url : addressManager.address() + url;
+    HttpRequest httpRequest = new HttpRequest(address, headers, content, method);
 
     try {
       return httpTransport.doRequest(httpRequest);

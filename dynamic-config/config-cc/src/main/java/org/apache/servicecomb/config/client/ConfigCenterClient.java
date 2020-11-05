@@ -38,13 +38,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.servicecomb.config.archaius.sources.ConfigCenterConfigurationSourceImpl;
-import org.apache.servicecomb.foundation.auth.AuthHeaderProvider;
+import org.apache.servicecomb.foundation.auth.AuthHeaderLoader;
 import org.apache.servicecomb.foundation.auth.SignRequest;
 import org.apache.servicecomb.foundation.common.event.EventManager;
 import org.apache.servicecomb.foundation.common.net.IpPort;
 import org.apache.servicecomb.foundation.common.net.NetUtils;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
-import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClientWithContext;
 import org.apache.servicecomb.foundation.vertx.client.http.HttpClients;
 import org.slf4j.Logger;
@@ -94,9 +93,6 @@ public class ConfigCenterClient {
   private ConfigCenterConfigurationSourceImpl.UpdateHandler updateHandler;
 
   private boolean isWatching = false;
-
-  private final List<AuthHeaderProvider> authHeaderProviders =
-      SPIServiceUtils.getSortedService(AuthHeaderProvider.class);
 
   private URIConst uriConst = new URIConst();
 
@@ -153,8 +149,8 @@ public class ConfigCenterClient {
         if (ConfigCenterConfig.INSTANCE.getToken() != null) {
           request.headers().add("X-Auth-Token", ConfigCenterConfig.INSTANCE.getToken());
         }
-        authHeaderProviders.forEach(provider -> request.headers()
-            .addAll(provider.getSignAuthHeaders(signReq)));
+        request.headers()
+            .addAll(AuthHeaderLoader.getInstance().loadAuthHeaders(signReq));
         request.exceptionHandler(e -> {
           LOGGER.error("Fetch member from {} failed. Error message is [{}].", configCenter, e.getMessage());
           logIfDnsFailed(e);
@@ -216,7 +212,7 @@ public class ConfigCenterClient {
 
       vertxHttpClient.runOnContext(client -> {
         Map<String, String> authHeaders = new HashMap<>();
-        authHeaderProviders.forEach(provider -> authHeaders.putAll(provider.getSignAuthHeaders(
+        authHeaders.putAll(AuthHeaderLoader.getInstance().loadAuthHeaders((
             createSignRequest(null, configCenter + url, headers, null))));
         WebSocketConnectOptions options = new WebSocketConnectOptions();
         options.setHost(ipPort.getHostOrIp()).setPort(refreshPort).setURI(url)
@@ -354,11 +350,11 @@ public class ConfigCenterClient {
         }
         headers.put("x-environment", environment);
         request.headers().addAll(headers);
-        authHeaderProviders.forEach(provider -> request.headers()
-            .addAll(provider.getSignAuthHeaders(createSignRequest(request.method().toString(),
+        request.headers()
+            .addAll(AuthHeaderLoader.getInstance().loadAuthHeaders(createSignRequest(request.method().toString(),
                 configcenter + path,
                 headers,
-                null))));
+                null)));
         request.exceptionHandler(e -> {
           EventManager.post(new ConnFailEvent("fetch config fail"));
           LOGGER.error("Config update from {} failed. Error message is [{}].",

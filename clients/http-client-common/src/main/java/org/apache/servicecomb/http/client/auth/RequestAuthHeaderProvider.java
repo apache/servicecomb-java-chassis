@@ -15,35 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.servicecomb.serviceregistry.api.response;
+package org.apache.servicecomb.http.client.auth;
 
-public class RbacTokenResponse {
-  private transient int statusCode;
+import java.util.Map;
 
-  private String token;
+import org.apache.servicecomb.foundation.auth.SignRequest;
 
-  public int getStatusCode() {
-    return statusCode;
-  }
-
-  public void setStatusCode(int statusCode) {
-    this.statusCode = statusCode;
-  }
-
-  public String getToken() {
-    return token;
-  }
-
-  public void setToken(String token) {
-    this.token = token;
-  }
-
-  @Override
-  public String toString() {
-    final StringBuilder sb = new StringBuilder("RbacTokenResponse{");
-    sb.append("statusCode=").append(statusCode);
-    sb.append(", token='").append(token).append('\'');
-    sb.append('}');
-    return sb.toString();
-  }
+public interface RequestAuthHeaderProvider {
+  Map<String, String> loadAuthHeader(SignRequest signRequest);
 }

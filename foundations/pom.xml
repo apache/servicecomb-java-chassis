@@ -28,6 +28,7 @@
   <name>Java Chassis::Foundations</name>
   <packaging>pom</packaging>
   <modules>
+    <module>foundation-spi</module>
     <module>foundation-vertx</module>
     <module>foundation-common</module>
     <module>foundation-config</module>

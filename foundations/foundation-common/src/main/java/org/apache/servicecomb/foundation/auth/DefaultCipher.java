@@ -18,7 +18,7 @@
 package org.apache.servicecomb.foundation.auth;
 
 public final class DefaultCipher implements Cipher {
-  public static final String DEFAULT_CYPHER = "default";
+  public static final String CIPHER_NAME = "default";
 
   private static final DefaultCipher INSTANCE = new DefaultCipher();
 
@@ -31,7 +31,7 @@ public final class DefaultCipher implements Cipher {
 
   @Override
   public String name() {
-    return DEFAULT_CYPHER;
+    return CIPHER_NAME;
   }
 
   @Override

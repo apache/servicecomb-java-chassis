@@ -27,9 +27,25 @@ public class ServerBTest implements CategorizedTestCase {
   @RpcReference(microserviceName = "demo-multi-service-center-serverB", schemaId = "ServerEndpoint")
   private IServerEndpoint serverEndpoint;
 
+  @RpcReference(microserviceName = "demo-multi-service-center-serverB", schemaId = "ConfigurationEndpoint")
+  private IConfigurationEndpoint configurationEndpoint;
+
   @Override
   public void testRestTransport() throws Exception {
     TestMgr.check("hello", serverEndpoint.getName("hello"));
+
+    TestMgr.check("key1-boot", configurationEndpoint.getValue("demo.multi.service.center.serverB.key1", 1));
+    TestMgr.check("key1-boot", configurationEndpoint.getValue("demo.multi.service.center.serverB.key1", 2));
+    TestMgr.check("key1-boot", configurationEndpoint.getValue("demo.multi.service.center.serverB.key1", 3));
+    TestMgr.check("key2-override", configurationEndpoint.getValue("demo.multi.service.center.serverB.key2", 1));
+    TestMgr.check("key2-override", configurationEndpoint.getValue("demo.multi.service.center.serverB.key2", 2));
+    TestMgr.check("key2-override", configurationEndpoint.getValue("demo.multi.service.center.serverB.key2", 3));
+    TestMgr.check("key3", configurationEndpoint.getValue("demo.multi.service.center.serverB.key3", 1));
+    TestMgr.check("key3", configurationEndpoint.getValue("demo.multi.service.center.serverB.key3", 2));
+    TestMgr.check("key3", configurationEndpoint.getValue("demo.multi.service.center.serverB.key3", 3));
+    TestMgr.check("key4-boot", configurationEndpoint.getValue("demo.multi.service.center.serverB.key4", 1));
+    TestMgr.check("key4-boot", configurationEndpoint.getValue("demo.multi.service.center.serverB.key4", 2));
+    TestMgr.check("key4-boot", configurationEndpoint.getValue("demo.multi.service.center.serverB.key4", 3));
   }
 
   @Override

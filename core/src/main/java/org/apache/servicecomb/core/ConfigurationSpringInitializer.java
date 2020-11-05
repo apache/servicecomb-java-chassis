@@ -26,7 +26,10 @@ import java.util.Properties;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.servicecomb.config.ConfigUtil;
+import org.apache.servicecomb.config.YAMLUtil;
+import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
+import org.apache.servicecomb.foundation.bootstrap.BootStrapService;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,8 +44,6 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.StringUtils;
 
-import com.google.common.collect.Lists;
-import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.ConfigurationManager;
 import com.netflix.config.DynamicPropertyFactory;
 
@@ -66,6 +67,9 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
 
   public static final String EXTRA_CONFIG_SOURCE_PREFIX = "extraConfig-";
 
+  private final List<BootStrapService> bootStrapServices =
+      SPIServiceUtils.getSortedService(BootStrapService.class);
+
   public ConfigurationSpringInitializer() {
     setOrder(Ordered.LOWEST_PRECEDENCE / 2);
     setIgnoreUnresolvablePlaceholders(true);
@@ -82,14 +86,66 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
 
     Map<String, Object> extraConfig = getAllProperties(environment);
 
+    addMicroserviceYAMLToSpring(environment);
+
+    startupBootStrapService(environment);
+
     ConfigUtil.addExtraConfig(EXTRA_CONFIG_SOURCE_PREFIX + environmentName, extraConfig);
 
     ConfigUtil.installDynamicConfig();
 
-    setUpSpringPropertySource(environment);
+    addDynamicConfigurationToSpring(environment);
   }
 
-  private void setUpSpringPropertySource(Environment environment) {
+  private void startupBootStrapService(Environment environment) {
+    bootStrapServices.forEach(bootStrapService -> bootStrapService.startup(environment));
+  }
+
+  private void addMicroserviceYAMLToSpring(Environment environment) {
+    if (environment instanceof ConfigurableEnvironment) {
+      ConfigurableEnvironment ce = (ConfigurableEnvironment) environment;
+      MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
+      loader.loadAndSort();
+
+      ce.getPropertySources()
+          .addLast(new EnumerablePropertySource<MicroserviceConfigLoader>("microservice.yaml",
+              loader) {
+
+            private boolean parsed = false;
+
+            private Map<String, Object> values = null;
+
+            private String[] propertyNames = null;
+
+            @Override
+            public String[] getPropertyNames() {
+              if (!parsed) {
+                parseData();
+              }
+
+              return propertyNames;
+            }
+
+            @Override
+            public Object getProperty(String s) {
+              if (!parsed) {
+                parseData();
+              }
+
+              return this.values.get(s);
+            }
+
+            private void parseData() {
+              values = new HashMap<>();
+              loader.getConfigModels()
+                  .forEach(configModel -> values.putAll(YAMLUtil.retrieveItems("", configModel.getConfig())));
+              propertyNames = values.keySet().toArray(new String[values.size()]);
+            }
+          });
+    }
+  }
+
+  private void addDynamicConfigurationToSpring(Environment environment) {
     if (environment instanceof ConfigurableEnvironment) {
       ConfigurableEnvironment ce = (ConfigurableEnvironment) environment;
       ConfigCenterConfigurationSource configCenterConfigurationSource =
@@ -102,26 +158,6 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
           LOGGER.warn("set up spring property source failed. msg: {}", e.getMessage());
         }
       }
-      ConcurrentCompositeConfiguration concurrentCompositeConfiguration = ConfigUtil.createLocalConfig();
-      ce.getPropertySources().addLast(
-          new EnumerablePropertySource<ConcurrentCompositeConfiguration>("microservice.yaml",
-              concurrentCompositeConfiguration) {
-            private String[] propertyNames = null;
-
-            @Override
-            public String[] getPropertyNames() {
-              if (propertyNames == null) {
-                List<String> keyList = Lists.newArrayList(this.source.getKeys());
-                propertyNames = keyList.toArray(new String[keyList.size()]);
-              }
-              return propertyNames;
-            }
-
-            @Override
-            public Object getProperty(String s) {
-              return this.source.getProperty(s);
-            }
-          });
     }
   }
 
