@@ -19,21 +19,23 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
+    <artifactId>huawei-cloud</artifactId>
     <groupId>org.apache.servicecomb</groupId>
-    <artifactId>java-chassis-parent</artifactId>
     <version>2.1.3-SNAPSHOT</version>
-    <relativePath>../parents/default</relativePath>
   </parent>
-
-  <artifactId>huawei-cloud</artifactId>
-  <name>Java Chassis::Huawei Cloud</name>
-  <packaging>pom</packaging>
   <modelVersion>4.0.0</modelVersion>
+  <artifactId>servicestage-environment</artifactId>
+  <name>Java Chassis::Huawei Cloud::ServiceStage</name>
 
-  <modules>
-    <module>servicestage</module>
-    <module>environment</module>
-    <module>dtm</module>
-  </modules>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>java-chassis-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>registry-service-center</artifactId>
+    </dependency>
+  </dependencies>
 
 </project>

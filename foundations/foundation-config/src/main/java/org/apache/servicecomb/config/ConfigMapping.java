@@ -31,6 +31,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 
 /**
  * Created by   on 2017/1/5.
@@ -90,7 +91,17 @@ public final class ConfigMapping {
     return retMap;
   }
 
-  private static void putConfigsToRetMap(Map<String, Object> retMap, Map.Entry<String, Object> entry, Object configValue) {
+  public static Map<String, Object> getConvertedMap(Environment environment) {
+    if (configMap == null) {
+      return new LinkedHashMap<>();
+    }
+    Map<String, Object> retMap = new LinkedHashMap<>();
+    configMap.entrySet().forEach(entry -> putConfigsToRetMap(retMap, entry, environment.getProperty(entry.getKey())));
+    return retMap;
+  }
+
+  private static void putConfigsToRetMap(Map<String, Object> retMap, Map.Entry<String, Object> entry,
+      Object configValue) {
     if (configValue != null) {
       if (entry.getValue() instanceof List) {
         @SuppressWarnings("unchecked")

@@ -15,20 +15,6 @@
 # limitations under the License.
 #
 
-CAS_APPLICATION_ID:
-  - servicecomb.huaweicloud.servicestage.cas.application-id
-CAS_COMPONENT_NAME:
-  - servicecomb.huaweicloud.servicestage.cas.component-name
-CAS_INSTANCE_VERSION:
-  - servicecomb.huaweicloud.servicestage.cas.instance-version
-CAS_INSTANCE_ID:
-  - servicecomb.huaweicloud.servicestage.cas.instance-id
-CAS_ENVIRONMENT_ID:
-  - servicecomb.huaweicloud.servicestage.cas.environment-id
 
-servicecomb.monitor.client.enable:
-  - servicecomb.monitor.client.enabled
-servicecomb.monitor.client.sslEnalbed:
-  - servicecomb.monitor.client.sslEnabled
-servicecomb.engine.engineName:
-  - servicecomb.engine.name
+demo.multi.service.center.serverB.actual.key5:
+  - demo.multi.service.center.serverB.key5
