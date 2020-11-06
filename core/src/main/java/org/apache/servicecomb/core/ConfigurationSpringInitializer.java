@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.servicecomb.config.ConfigMapping;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.config.YAMLUtil;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
@@ -88,6 +89,8 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
 
     addMicroserviceYAMLToSpring(environment);
 
+    addMappingToString(environment);
+
     startupBootStrapService(environment);
 
     ConfigUtil.addExtraConfig(EXTRA_CONFIG_SOURCE_PREFIX + environmentName, extraConfig);
@@ -142,6 +145,14 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
               propertyNames = values.keySet().toArray(new String[values.size()]);
             }
           });
+    }
+  }
+
+  private void addMappingToString(Environment environment) {
+    if (environment instanceof ConfigurableEnvironment) {
+      ConfigurableEnvironment ce = (ConfigurableEnvironment) environment;
+      Map<String, Object> mappings = ConfigMapping.getConvertedMap(environment);
+      ce.getPropertySources().addFirst(new MapPropertySource("mapping.yaml", mappings));
     }
   }
 

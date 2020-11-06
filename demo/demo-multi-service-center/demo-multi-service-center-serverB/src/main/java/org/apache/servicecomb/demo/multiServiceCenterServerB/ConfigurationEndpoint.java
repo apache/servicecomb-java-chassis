@@ -52,6 +52,9 @@ public class ConfigurationEndpoint {
   @Value("${demo.multi.service.center.serverB.key4}")
   private String key4;
 
+  @Value("${demo.multi.service.center.serverB.key5}")
+  private String key5;
+
   @GetMapping(path = "/config")
   public String getValue(@RequestParam(name = "key") String key, @RequestParam(name = "type") int type) {
     if (type == 1) {
@@ -68,6 +71,8 @@ public class ConfigurationEndpoint {
           return key3;
         case "demo.multi.service.center.serverB.key4":
           return key4;
+        case "demo.multi.service.center.serverB.key5":
+          return key5;
         default:
           return null;
       }

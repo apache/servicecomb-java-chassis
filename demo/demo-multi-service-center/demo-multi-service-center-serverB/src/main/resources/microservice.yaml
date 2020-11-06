@@ -20,3 +20,6 @@ servicecomb-config-order: 1
 demo.multi.service.center.serverB:
   key1: key1-override
   key2: key2-override
+  key5: key5
+  actual:
+    key5: key5-high

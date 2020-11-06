@@ -300,13 +300,17 @@
       <!-- ServiceComb ServiceStage extension -->
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>servicestage</artifactId>
+        <artifactId>dtm</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <!-- ServiceComb Dtm extension -->
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
-        <artifactId>dtm</artifactId>
+        <artifactId>servicestage-environment</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
+        <artifactId>servicestage</artifactId>
         <version>${project.version}</version>
       </dependency>
       <!-- ServiceComb: swagger -->

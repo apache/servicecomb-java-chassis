@@ -254,13 +254,16 @@
     <!-- ServiceComb ServiceStage extension -->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>servicestage</artifactId>
+      <artifactId>dtm</artifactId>
     </dependency>
-
-    <!-- ServiceComb dtm extension -->
     <dependency>
       <groupId>org.apache.servicecomb</groupId>
-      <artifactId>dtm</artifactId>
+      <artifactId>servicestage-environment</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>servicestage</artifactId>
     </dependency>
 
     <!-- swagger -->

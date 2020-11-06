@@ -46,6 +46,9 @@ public class ServerBTest implements CategorizedTestCase {
     TestMgr.check("key4-boot", configurationEndpoint.getValue("demo.multi.service.center.serverB.key4", 1));
     TestMgr.check("key4-boot", configurationEndpoint.getValue("demo.multi.service.center.serverB.key4", 2));
     TestMgr.check("key4-boot", configurationEndpoint.getValue("demo.multi.service.center.serverB.key4", 3));
+    TestMgr.check("key5-high", configurationEndpoint.getValue("demo.multi.service.center.serverB.key5", 1));
+    TestMgr.check("key5-high", configurationEndpoint.getValue("demo.multi.service.center.serverB.key5", 2));
+    TestMgr.check("key5-high", configurationEndpoint.getValue("demo.multi.service.center.serverB.key5", 3));
   }
 
   @Override
