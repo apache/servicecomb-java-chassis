@@ -188,8 +188,8 @@ public class HighwayServerInvoke {
       // for temporary qps enhance purpose, we'll remove it when handler mechanism is refactored
       invocation.mergeContext(header.getContext());
 
-      Holder<Boolean> qpsFlowControlReject = checkQpsFlowControl(operationMeta);
-      if (qpsFlowControlReject.value) {
+      boolean qpsFlowControlReject = checkQpsFlowControl(operationMeta);
+      if (qpsFlowControlReject) {
         return;
       }
 
@@ -202,12 +202,16 @@ public class HighwayServerInvoke {
     }
   }
 
-  private Holder<Boolean> checkQpsFlowControl(OperationMeta operationMeta) {
+  private boolean checkQpsFlowControl(OperationMeta operationMeta) {
     Holder<Boolean> qpsFlowControlReject = new Holder<>(false);
     @SuppressWarnings("deprecation")
     Handler providerQpsFlowControlHandler = operationMeta.getProviderQpsFlowControlHandler();
     if (null != providerQpsFlowControlHandler) {
       try {
+        Handler marKHandler = operationMeta.getMarkHandler();
+        if (marKHandler != null) {
+          marKHandler.handle(invocation, null);
+        }
         providerQpsFlowControlHandler.handle(invocation, response -> {
           qpsFlowControlReject.value = true;
           sendResponse(header.getContext(), response);
@@ -218,6 +222,6 @@ public class HighwayServerInvoke {
         sendResponse(header.getContext(), Response.providerFailResp(e));
       }
     }
-    return qpsFlowControlReject;
+    return qpsFlowControlReject.value;
   }
 }

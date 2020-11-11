@@ -20,6 +20,11 @@ package org.apache.servicecomb.qps;
 import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
+import org.apache.servicecomb.match.RequestMarkHandler;
+import org.apache.servicecomb.match.policy.RateLimitingPolicy;
+import org.apache.servicecomb.match.service.PolicyService;
+import org.apache.servicecomb.match.service.PolicyServiceImpl;
+import org.apache.servicecomb.qps.strategy.LeakyBucketStrategy;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -31,36 +36,48 @@ public class ProviderQpsFlowControlHandler implements Handler {
       .setBucketKeyPrefix(Config.PROVIDER_BUCKET_KEY_PREFIX)
       .setGlobalQpsStrategy(Config.PROVIDER_LIMIT_KEY_GLOBAL, Config.PROVIDER_BUCKET_KEY_GLOBAL);
 
+  private PolicyService policyService = new PolicyServiceImpl();
+
+  private LeakyBucketStrategy qpsStrategy = new LeakyBucketStrategy();
+
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
-    if (invocation.getHandlerIndex() > 0) {
-      // handlerIndex > 0, which means this handler is executed in handler chain.
-      // As this flow control logic has been executed in advance, this time it should be ignored.
-      invocation.next(asyncResp);
-      return;
-    }
-
     // The real executing position of this handler is no longer in handler chain, but in AbstractRestInvocation.
     // Therefore, the Invocation#next() method should not be called below.
     if (!Config.INSTANCE.isProviderEnabled()) {
       return;
     }
 
+    if (isRateLimiting(invocation, asyncResp)) {
+      CommonExceptionData errorData = new CommonExceptionData("rejected by qps flowcontrol");
+      asyncResp.producerFail(new InvocationException(QpsConst.TOO_MANY_REQUESTS_STATUS, errorData));
+    }
+  }
+
+  private boolean isRateLimiting(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    String match = invocation.getContext().get(RequestMarkHandler.MARK_KEY);
+    RateLimitingPolicy ratePolicy = (RateLimitingPolicy) policyService.getCustomPolicy("RateLimiting", match);
+    if (ratePolicy == null) {
+      return oldProcess(invocation, asyncResp);
+    }
+    if (invocation.getHandlerIndex() > 1) {
+      invocation.next(asyncResp);
+      return false;
+    }
+    qpsStrategy.setQpsLimit(ratePolicy.getRate().longValue());
+    return qpsStrategy.isLimitNewRequest();
+  }
+
+  private boolean oldProcess(Invocation invocation, AsyncResponse asyncResp) throws Exception {
+    if (invocation.getHandlerIndex() > 0) {
+      invocation.next(asyncResp);
+      return false;
+    }
     String microserviceName = invocation.getContext(Const.SRC_MICROSERVICE);
     QpsStrategy qpsStrategy =
         StringUtils.isEmpty(microserviceName)
             ? qpsControllerMgr.getGlobalQpsStrategy()
             : qpsControllerMgr.getOrCreate(microserviceName, invocation);
-    isLimitNewRequest(qpsStrategy, asyncResp);
-  }
-
-  private boolean isLimitNewRequest(QpsStrategy qpsStrategy, AsyncResponse asyncResp) {
-    if (qpsStrategy.isLimitNewRequest()) {
-      CommonExceptionData errorData = new CommonExceptionData("rejected by qps flowcontrol");
-      asyncResp.producerFail(new InvocationException(QpsConst.TOO_MANY_REQUESTS_STATUS, errorData));
-      return true;
-    } else {
-      return false;
-    }
+    return qpsStrategy.isLimitNewRequest();
   }
 }

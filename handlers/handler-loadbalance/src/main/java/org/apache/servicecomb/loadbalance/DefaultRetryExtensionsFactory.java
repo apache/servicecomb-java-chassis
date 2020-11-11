@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.servicecomb.match.policy.RetryPolicy;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.springframework.stereotype.Component;
 
@@ -63,10 +64,19 @@ public class DefaultRetryExtensionsFactory implements ExtensionsFactory {
     return ACCEPT_KEYS.contains(key) && ACCEPT_VALUES.contains(value);
   }
 
-  public RetryHandler createRetryHandler(String retryName, String microservice) {
-    return new DefaultLoadBalancerRetryHandler(
-        Configuration.INSTANCE.getRetrySameServer(microservice),
-        Configuration.INSTANCE.getRetryNextServer(microservice), true) {
+  public RetryHandler createRetryHandler(String retryName, String microservice, RetryPolicy retryPolicy) {
+    int retryNext = Configuration.INSTANCE.getRetryNextServer(microservice);
+    int retrySame = Configuration.INSTANCE.getRetrySameServer(microservice);
+    if (retryPolicy != null) {
+      if (retryPolicy.isOnSame()) {
+        retrySame = retryPolicy.getMaxAttempts();
+        retryNext = 0;
+      } else {
+        retrySame = 0;
+        retryNext = retryPolicy.getMaxAttempts();
+      }
+    }
+    return new DefaultLoadBalancerRetryHandler(retrySame, retryNext, true) {
 
       @Override
       public boolean isRetriableException(Throwable e, boolean sameServer) {

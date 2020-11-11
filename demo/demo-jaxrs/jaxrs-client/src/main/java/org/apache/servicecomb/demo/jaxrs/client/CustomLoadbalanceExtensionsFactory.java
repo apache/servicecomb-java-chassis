@@ -61,7 +61,7 @@ public class CustomLoadbalanceExtensionsFactory implements ExtensionsFactory {
   }
 
   @Override
-  public RetryHandler createRetryHandler(String retryName, String microservice) {
+  public RetryHandler createRetryHandler(String retryName, String microservice, String mark) {
     return new MyCustomHandler(1, 1, true);
   }
 }

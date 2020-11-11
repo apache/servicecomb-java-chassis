@@ -41,6 +41,10 @@
       <artifactId>ribbon</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.servicecomb</groupId>
+      <artifactId>handler-match</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.netflix.ribbon</groupId>
       <artifactId>ribbon-loadbalancer</artifactId>
     </dependency>

@@ -40,6 +40,7 @@ import org.apache.servicecomb.core.Handler;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.core.filter.FilterNode;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
@@ -138,8 +139,8 @@ public abstract class AbstractRestInvocation {
       return;
     }
 
-    Holder<Boolean> qpsFlowControlReject = checkQpsFlowControl(operationMeta);
-    if (qpsFlowControlReject.value) {
+    boolean qpsFlowControlReject = checkQpsFlowControl(operationMeta);
+    if (qpsFlowControlReject) {
       return;
     }
 
@@ -172,12 +173,16 @@ public abstract class AbstractRestInvocation {
     }
   }
 
-  private Holder<Boolean> checkQpsFlowControl(OperationMeta operationMeta) {
+  private boolean checkQpsFlowControl(OperationMeta operationMeta) {
     Holder<Boolean> qpsFlowControlReject = new Holder<>(false);
     @SuppressWarnings("deprecation")
     Handler providerQpsFlowControlHandler = operationMeta.getProviderQpsFlowControlHandler();
     if (null != providerQpsFlowControlHandler) {
       try {
+        Handler marKHandler = operationMeta.getMarkHandler();
+        if (marKHandler != null) {
+          marKHandler.handle(invocation, null);
+        }
         providerQpsFlowControlHandler.handle(invocation, response -> {
           qpsFlowControlReject.value = true;
           produceProcessor = ProduceProcessorManager.INSTANCE.findDefaultJsonProcessor();
@@ -189,7 +194,7 @@ public abstract class AbstractRestInvocation {
         sendFailResponse(e);
       }
     }
-    return qpsFlowControlReject;
+    return qpsFlowControlReject.value;
   }
 
   private boolean isInQueueTimeout() {

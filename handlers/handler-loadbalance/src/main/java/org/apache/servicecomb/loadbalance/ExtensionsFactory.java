@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.loadbalance;
 
+import org.apache.servicecomb.match.policy.RetryPolicy;
+
 import com.netflix.client.RetryHandler;
 
 /**
@@ -32,7 +34,7 @@ public interface ExtensionsFactory {
     return null;
   }
 
-  default RetryHandler createRetryHandler(String retryName, String microservice) {
+  default RetryHandler createRetryHandler(String retryName, String microservice, RetryPolicy retryPolicy) {
     return null;
   }
 }

@@ -39,6 +39,7 @@
     <module>handler-fault-injection</module>
     <module>handler-publickey-auth</module>
     <module>handler-router</module>
+    <module>handler-match</module>
   </modules>
 
 </project>

@@ -16,6 +16,7 @@
  */
 package org.apache.servicecomb.core.definition;
 
+import java.util.List;
 import java.util.concurrent.Executor;
 
 import org.apache.servicecomb.core.Const;
@@ -161,6 +162,19 @@ public class OperationMeta {
   @Deprecated
   public Handler getProviderQpsFlowControlHandler() {
     return getMicroserviceMeta().getProviderQpsFlowControlHandler();
+  }
+
+  public Handler getMarkHandler() {
+    List<Handler> filters = this.getMicroserviceMeta().getHandlerChain();
+    Handler markHandler = null;
+    for (Handler handler : filters) {
+      // matching by class name is more or less better than importing an extra maven dependency
+      if ("org.apache.servicecomb.match.RequestMarkHandler".equals(handler.getClass().getName())) {
+        markHandler = handler;
+        break;
+      }
+    }
+    return markHandler;
   }
 
   public InvocationRuntimeType buildBaseProviderRuntimeType() {

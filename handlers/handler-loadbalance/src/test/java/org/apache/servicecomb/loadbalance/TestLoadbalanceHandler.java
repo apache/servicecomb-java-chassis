@@ -36,6 +36,7 @@ import org.apache.servicecomb.core.transport.TransportManager;
 import org.apache.servicecomb.foundation.common.Holder;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.match.policy.RetryPolicy;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.cache.CacheEndpoint;
 import org.apache.servicecomb.registry.cache.InstanceCacheManager;
@@ -246,9 +247,10 @@ public class TestLoadbalanceHandler {
   @Test
   public void sendWithRetry(@Injectable LoadBalancer loadBalancer) {
     Holder<String> result = new Holder<>();
+    RetryPolicy policy = new RetryPolicy();
     Deencapsulation.invoke(handler, "sendWithRetry", invocation, (AsyncResponse) resp -> {
       result.value = resp.getResult();
-    }, loadBalancer);
+    }, loadBalancer, policy);
 
     // no exception
   }

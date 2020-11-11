@@ -41,6 +41,10 @@ import org.apache.servicecomb.foundation.common.cache.VersionedCache;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
 import org.apache.servicecomb.loadbalance.filter.ServerDiscoveryFilter;
+import org.apache.servicecomb.match.RequestMarkHandler;
+import org.apache.servicecomb.match.policy.RetryPolicy;
+import org.apache.servicecomb.match.service.PolicyService;
+import org.apache.servicecomb.match.service.PolicyServiceImpl;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryTree;
@@ -75,6 +79,8 @@ public class LoadbalanceHandler implements Handler {
   public static final boolean supportDefinedEndpoint =
       DynamicPropertyFactory.getInstance()
           .getBooleanProperty("servicecomb.loadbalance.userDefinedEndpoint.enabled", false).get();
+
+  private PolicyService policyService = new PolicyServiceImpl();
 
   // just a wrapper to make sure in retry mode to choose a different server.
   class RetryLoadBalancer implements ILoadBalancer {
@@ -214,10 +220,13 @@ public class LoadbalanceHandler implements Handler {
 
     LoadBalancer loadBalancer = getOrCreateLoadBalancer(invocation);
 
-    if (!Configuration.INSTANCE.isRetryEnabled(invocation.getMicroserviceName())) {
+    RetryPolicy retryPolicy = (RetryPolicy) policyService
+        .getCustomPolicy("Retry", invocation.getContext().get(RequestMarkHandler.MARK_KEY));
+    if (!Configuration.INSTANCE.isRetryEnabled(invocation.getMicroserviceName()) &&
+        retryPolicy == null) {
       send(invocation, asyncResp, loadBalancer);
     } else {
-      sendWithRetry(invocation, asyncResp, loadBalancer);
+      sendWithRetry(invocation, asyncResp, loadBalancer, retryPolicy);
     }
   }
 
@@ -293,7 +302,7 @@ public class LoadbalanceHandler implements Handler {
   }
 
   private void sendWithRetry(Invocation invocation, AsyncResponse asyncResp,
-      LoadBalancer chosenLB) throws Exception {
+      LoadBalancer chosenLB, RetryPolicy retryPolicy) throws Exception {
     long time = System.currentTimeMillis();
     // retry in loadbalance, 2.0 feature
     int currentHandler = invocation.getHandlerIndex();
@@ -390,7 +399,7 @@ public class LoadbalanceHandler implements Handler {
     LoadBalancerCommand<Response> command = LoadBalancerCommand.<Response>builder()
         .withLoadBalancer(new RetryLoadBalancer(chosenLB))
         .withServerLocator(invocation)
-        .withRetryHandler(ExtensionsManager.createRetryHandler(invocation.getMicroserviceName()))
+        .withRetryHandler(ExtensionsManager.createRetryHandler(invocation.getMicroserviceName(), retryPolicy))
         .withListeners(listeners)
         .withExecutionContext(context)
         .build();

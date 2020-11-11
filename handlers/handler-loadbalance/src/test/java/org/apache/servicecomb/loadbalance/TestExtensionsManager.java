@@ -86,7 +86,7 @@ public class TestExtensionsManager {
     extensionsFactories.add(new DefaultRetryExtensionsFactory());
     Deencapsulation.setField(holder, "extentionsFactories", extensionsFactories);
     holder.init();
-    RetryHandler retryHandler = ExtensionsManager.createRetryHandler("mytest1");
+    RetryHandler retryHandler = ExtensionsManager.createRetryHandler("mytest1", null);
     Assert.assertTrue(DefaultLoadBalancerRetryHandler.class.isInstance(retryHandler));
     Assert.assertFalse(retryHandler.isRetriableException(new InvocationException(400, "", ""), false));
     Assert.assertFalse(retryHandler.isRetriableException(new InvocationException(400, "", ""), true));

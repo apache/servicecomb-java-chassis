@@ -212,6 +212,11 @@
       </dependency>
       <dependency>
         <groupId>org.apache.servicecomb</groupId>
+        <artifactId>handler-match</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.servicecomb</groupId>
         <artifactId>handler-tracing-zipkin</artifactId>
         <version>${project.version}</version>
       </dependency>

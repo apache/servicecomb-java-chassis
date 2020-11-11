@@ -19,6 +19,7 @@ package org.apache.servicecomb.loadbalance;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.servicecomb.match.policy.RetryPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,11 +54,11 @@ public class ExtensionsManager {
     return rule;
   }
 
-  public static RetryHandler createRetryHandler(String microservice) {
+  public static RetryHandler createRetryHandler(String microservice, RetryPolicy retryPolicy) {
     RetryHandler handler = null;
     for (ExtensionsFactory factory : extentionFactories) {
       if (factory.isSupport(Configuration.RETRY_HANDLER, Configuration.INSTANCE.getRetryHandler(microservice))) {
-        handler = factory.createRetryHandler(Configuration.INSTANCE.getRetryHandler(microservice), microservice);
+        handler = factory.createRetryHandler(Configuration.INSTANCE.getRetryHandler(microservice), microservice, retryPolicy);
         break;
       }
     }

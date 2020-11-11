@@ -42,7 +42,7 @@ public class TestDefaultRetryhandler {
   @Before
   public void setup() {
     DefaultRetryExtensionsFactory factory = new DefaultRetryExtensionsFactory();
-    retryHandler = factory.createRetryHandler(RETYR_NAME, MICROSERVICE_NAME);
+    retryHandler = factory.createRetryHandler(RETYR_NAME, MICROSERVICE_NAME, null);
   }
 
   @Test
@@ -117,7 +117,7 @@ public class TestDefaultRetryhandler {
     boolean retriable = retryHandler.isRetriableException(root, false);
     Assert.assertTrue(retriable);
   }
-  
+
   @Test
   public void testRetryOverTen() {
     Exception target = new ConnectException("connectin refused");
