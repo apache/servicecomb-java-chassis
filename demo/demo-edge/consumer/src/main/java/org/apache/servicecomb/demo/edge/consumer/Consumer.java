@@ -284,16 +284,16 @@ public class Consumer {
   }
 
   protected void invokeBusiness(String urlPrefix, ChannelRequestBase request) {
-    String url = urlPrefix + "/channel/news/subscribe";
+    for (int i = 0; i < 3; i++) {
+      String url = urlPrefix + "/channel/news/subscribe";
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_JSON);
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_JSON);
 
-    HttpEntity<ChannelRequestBase> entity = new HttpEntity<>(request, headers);
+      HttpEntity<ChannelRequestBase> entity = new HttpEntity<>(request, headers);
 
-    ResponseEntity<AppClientDataRsp> response = template.postForEntity(url, entity, AppClientDataRsp.class);
-    System.out.println("urlPrefix: " + urlPrefix);
-    System.out.println(response.getHeaders());
-    System.out.println(response.getBody().toString());
+      ResponseEntity<AppClientDataRsp> response = template.postForEntity(url, entity, AppClientDataRsp.class);
+      Assert.isTrue(response.getBody().getRsp().equals("result from 1.1.0"), response.getBody().getRsp());
+    }
   }
 }

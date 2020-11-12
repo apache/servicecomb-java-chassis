@@ -23,9 +23,9 @@ import org.apache.servicecomb.registry.version.VersionRuleUtils;
 @InjectProperties(prefix = "servicecomb")
 public class MicroserviceConfig {
   @InjectProperty(keys = {
-      "servicecomb.references.version-rule.${service}",
-      "servicecomb.references.${service}.version-rule", // Deprecated
-      "servicecomb.references.version-rule"
+      "references.version-rule.${service}",
+      "references.${service}.version-rule", // Deprecated
+      "references.version-rule"
   }, defaultValue = "0.0.0.0+")
   private String versionRule;
 

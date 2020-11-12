@@ -29,8 +29,11 @@ import org.apache.servicecomb.core.definition.CoreMetaUtils;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
+import org.apache.servicecomb.registry.DiscoveryManager;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.consumer.AppManager;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersion;
+import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.registry.discovery.AbstractDiscoveryFilter;
 import org.apache.servicecomb.registry.discovery.DiscoveryContext;
 import org.apache.servicecomb.registry.discovery.DiscoveryTreeNode;
@@ -65,7 +68,6 @@ import com.netflix.config.DynamicPropertyFactory;
  *         {"i3": instance-i3}, {"i4": instance-i4}, {"i5": instance-i5}
  *       },
  *     }
- *     ms1.s1.o1 and ms1.s1.o2 should share the same map instance
  *
  *     that means, if invoke o1 or o2, can use 5 instances, but if invoke o3, can only use 3 instances
  *     by this filter, we can make sure that new operations will not route to old instances
@@ -98,10 +100,7 @@ public class OperationInstancesDiscoveryFilter extends AbstractDiscoveryFilter {
   public void init(DiscoveryContext context, DiscoveryTreeNode parent) {
     Invocation invocation = context.getInputParameters();
     // sort versions
-    List<MicroserviceVersion> microserviceVersions = CoreMetaUtils.getMicroserviceVersions(invocation)
-        .getVersions().values().stream()
-        .sorted(Comparator.comparing(MicroserviceVersion::getVersion))
-        .collect(Collectors.toList());
+    List<MicroserviceVersion> microserviceVersions = sortedMicroserviceVersion(invocation, parent.data());
 
     Map<String, DiscoveryTreeNode> operationNodes = new ConcurrentHashMapEx<>();
     for (MicroserviceVersion microserviceVersion : microserviceVersions) {
@@ -124,6 +123,24 @@ public class OperationInstancesDiscoveryFilter extends AbstractDiscoveryFilter {
     }
 
     parent.children(operationNodes);
+  }
+
+  protected List<MicroserviceVersion> sortedMicroserviceVersion(Invocation invocation,
+      Map<String, MicroserviceInstance> instances) {
+    OperationMeta latestOperationMeta = invocation.getOperationMeta();
+    MicroserviceMeta latestMicroserviceMeta = latestOperationMeta.getSchemaMeta().getMicroserviceMeta();
+    AppManager appManager = DiscoveryManager.INSTANCE.getAppManager();
+    MicroserviceVersions microserviceVersions =
+        appManager.getOrCreateMicroserviceVersions(latestMicroserviceMeta.getAppId(),
+            latestMicroserviceMeta.getMicroserviceName());
+
+    Map<String, MicroserviceVersion> uniqueMicroserviceVersion = new HashMap<>();
+    for (MicroserviceInstance instance : instances.values()) {
+      MicroserviceVersion microserviceVersion = microserviceVersions.getVersion(instance.getServiceId());
+      uniqueMicroserviceVersion.put(instance.getServiceId(), microserviceVersion);
+    }
+    return uniqueMicroserviceVersion.values().stream().sorted(Comparator.comparing(MicroserviceVersion::getVersion))
+        .collect(Collectors.toList());
   }
 
   private DiscoveryTreeNode createOperationNode(DiscoveryTreeNode parent, MicroserviceVersion microserviceVersion) {

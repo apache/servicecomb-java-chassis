@@ -29,3 +29,5 @@ servicecomb:
     chain:
       Consumer:
         default: loadbalance
+  references:
+    version-rule: 1.1.0
