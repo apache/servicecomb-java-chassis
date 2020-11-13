@@ -50,7 +50,6 @@
     <module>demo-multiple</module>
     <module>demo-multi-service-center</module>
     <module>demo-signature</module>
-    <module>perf</module>
   </modules>
 
   <dependencyManagement>

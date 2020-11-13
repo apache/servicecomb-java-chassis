@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.demo.edge.consumer;
 
+import org.apache.servicecomb.demo.edge.model.ChannelRequestBase;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 
@@ -26,6 +27,7 @@ public class ConsumerMain {
     BeanUtils.init();
 
     new Consumer().testEncrypt();
+    new Consumer().invokeBusiness("cse://business/business/v1", new ChannelRequestBase());
 
     System.out.println("Running api dispatcher.");
     new Consumer().run("api");

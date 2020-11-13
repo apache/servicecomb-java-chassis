@@ -107,7 +107,7 @@
     <tcnetty.version>2.0.31.Final</tcnetty.version>
     <tec-zkclient.version>0.10</tec-zkclient.version>
     <tomakehurst.version>2.6.0</tomakehurst.version>
-    <vertx.version>3.8.5</vertx.version>
+    <vertx.version>3.9.4</vertx.version>
     <xstream.version>1.4.11.1</xstream.version>
     <zipkin.version>2.19.1</zipkin.version>
     <zipkin-reporter.version>2.7.13</zipkin-reporter.version>

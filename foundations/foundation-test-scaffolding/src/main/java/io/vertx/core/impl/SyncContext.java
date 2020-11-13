@@ -59,7 +59,7 @@ public class SyncContext extends EventLoopContext {
       return;
     }
 
-    res.future().setHandler(asyncResultHandler);
+    res.future().onComplete(asyncResultHandler);
   }
 
   @Override
