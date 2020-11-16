@@ -39,11 +39,14 @@ public class ServiceCombServer extends Server {
   // 所属服务实例
   private final MicroserviceInstance instance;
 
+  private final String microserviceName;
+
   @VisibleForTesting
-  ServiceCombServer(Endpoint endpoint, MicroserviceInstance instance) {
+  ServiceCombServer(String microserviceName, Endpoint endpoint, MicroserviceInstance instance) {
     super(null);
     this.endpoint = endpoint;
     this.instance = instance;
+    this.microserviceName = microserviceName;
 
     // Different types of Robin Component Rule have different usages for server status and list.
     // e.g. RoundRobinRule using getAllServers & alive & readyToServe
@@ -54,9 +57,9 @@ public class ServiceCombServer extends Server {
     this.setReadyToServe(true);
   }
 
-  public ServiceCombServer(Transport transport, CacheEndpoint cacheEndpoint) {
+  public ServiceCombServer(String microserviceName, Transport transport, CacheEndpoint cacheEndpoint) {
     super(null);
-
+    this.microserviceName = microserviceName;
     endpoint = new Endpoint(transport, cacheEndpoint.getEndpoint(), cacheEndpoint.getInstance());
     instance = cacheEndpoint.getInstance();
 
@@ -73,6 +76,10 @@ public class ServiceCombServer extends Server {
       setPort(endpointURI.getPort());
     } catch (URISyntaxException ignored) {
     }
+  }
+
+  public String getMicroserviceName() {
+    return this.microserviceName;
   }
 
   public Endpoint getEndpoint() {

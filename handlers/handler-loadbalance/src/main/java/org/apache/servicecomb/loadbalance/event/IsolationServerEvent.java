@@ -57,7 +57,7 @@ public class IsolationServerEvent extends AlarmEvent {
     this.microserviceName = invocation.getMicroserviceName();
     this.endpoint = endpoint;
     this.currentTotalRequest = serverStats.getTotalRequests();
-    this.currentCountinuousFailureCount = serverStats.getCountinuousFailureCount();
+    this.currentCountinuousFailureCount = serverStats.getContinuousFailureCount();
     this.currentErrorPercentage = serverStats.getFailedRate();
     this.minIsolationTime = settings.minIsolationTime;
     this.enableRequestThreshold = settings.enableRequestThreshold;

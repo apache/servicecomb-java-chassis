@@ -50,7 +50,7 @@ public class TestSessionSticknessRule {
     MicroserviceInstance instance1 = new MicroserviceInstance();
     instance1.setInstanceId("1234");
     ServiceCombServer mockedServer =
-        new ServiceCombServer(transport, new CacheEndpoint("rest:127.0.0.1:8889", instance1));
+        new ServiceCombServer(null, transport, new CacheEndpoint("rest:127.0.0.1:8889", instance1));
     Invocation invocation = mock(Invocation.class);
     LoadBalancerStats stats = mock(LoadBalancerStats.class);
     Mockito.when(mockedLb.getLoadBalancerStats()).thenReturn(stats);
@@ -242,7 +242,7 @@ public class TestSessionSticknessRule {
     MicroserviceInstance instance1 = new MicroserviceInstance();
     instance1.setInstanceId("1234");
     ServiceCombServer mockedServer =
-        new ServiceCombServer(transport, new CacheEndpoint("rest:127.0.0.1:8890", instance1));
+        new ServiceCombServer(null, transport, new CacheEndpoint("rest:127.0.0.1:8890", instance1));
     mockedServer.setAlive(true);
     mockedServer.setReadyToServe(true);
     mockedServer.setId("mockedServer");
@@ -250,7 +250,7 @@ public class TestSessionSticknessRule {
     LoadBalancer lb = new LoadBalancer(rule, "mockedServer");
     when(invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST)).thenReturn(allServers);
     rule.setLoadBalancer(lb);
-    ServiceCombServer server = new ServiceCombServer(transport, new CacheEndpoint("rest:127.0.0.1:8890", instance1));
+    ServiceCombServer server = new ServiceCombServer(null, transport, new CacheEndpoint("rest:127.0.0.1:8890", instance1));
     Deencapsulation.setField(rule, "lastServer", server);
 
     new MockUp<SessionStickinessRule>(rule) {

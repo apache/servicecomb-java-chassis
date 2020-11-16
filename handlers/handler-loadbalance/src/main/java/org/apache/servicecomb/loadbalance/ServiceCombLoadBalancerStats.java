@@ -147,7 +147,7 @@ public class ServiceCombLoadBalancerStats {
             .build(
                 new CacheLoader<ServiceCombServer, ServiceCombServerStats>() {
                   public ServiceCombServerStats load(ServiceCombServer server) {
-                    ServiceCombServerStats stats = new ServiceCombServerStats();
+                    ServiceCombServerStats stats = new ServiceCombServerStats(server.getMicroserviceName());
                     pingView.put(server, stats);
                     serviceCombServers.put(server.getInstance().getInstanceId(), server);
                     return stats;
@@ -166,7 +166,7 @@ public class ServiceCombLoadBalancerStats {
             ServiceCombServer server = serviceCombServerServiceCombServerStatsEntry.getKey();
             ServiceCombServerStats stats = serviceCombServerServiceCombServerStatsEntry.getValue();
             if ((System.currentTimeMillis() - stats.getLastVisitTime() > timerIntervalInMillis) && !ping
-                    .ping(server.getInstance())) {
+                .ping(server.getInstance())) {
               LOGGER.info("ping mark server {} failure.", server.getInstance().getInstanceId());
               stats.markFailure();
             }

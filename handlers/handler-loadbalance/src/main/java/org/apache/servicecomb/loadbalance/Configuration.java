@@ -64,6 +64,8 @@ public final class Configuration {
 
   public static final String FILTER_ENABLE_REQUEST = "enableRequestThreshold";
 
+  public static final String FILTER_RECOVER_IMMEDIATELY_WHEN_SUCCESS = "recoverImmediatelyWhenSuccess";
+
   public static final String FILTER_SINGLE_TEST = "singleTestTime";
 
   public static final String FILTER_MAX_SINGLE_TEST_WINDOW = "maxSingleTestWindow";
@@ -219,6 +221,13 @@ public final class Configuration {
     } catch (NumberFormatException e) {
       return defaultValue;
     }
+  }
+
+  public boolean isRecoverImmediatelyWhenSuccess(String microservice) {
+    String p = getStringProperty("true",
+        ROOT + microservice + "." + FILTER_ISOLATION + FILTER_RECOVER_IMMEDIATELY_WHEN_SUCCESS,
+        ROOT + FILTER_ISOLATION + FILTER_RECOVER_IMMEDIATELY_WHEN_SUCCESS);
+    return Boolean.parseBoolean(p);
   }
 
   public Map<String, String> getFlowsplitFilterOptions(String microservice) {

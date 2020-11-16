@@ -78,7 +78,7 @@ public class TestEndpointDiscoveryFilter {
 
   @Test
   public void createEndpointNullTransport() {
-    Assert.assertNull(filter.createEndpoint(Const.RESTFUL, "", null));
+    Assert.assertNull(filter.createEndpoint(null, Const.RESTFUL, "", null));
   }
 
   @Test
@@ -95,7 +95,7 @@ public class TestEndpointDiscoveryFilter {
       }
     };
 
-    Endpoint ep = (Endpoint) filter.createEndpoint(Const.RESTFUL, endpoint, instance);
+    Endpoint ep = (Endpoint) filter.createEndpoint(null, Const.RESTFUL, endpoint, instance);
     Assert.assertSame(transport, ep.getTransport());
     Assert.assertSame(address, ep.getAddress());
     Assert.assertSame(instance, ep.getMicroserviceInstance());
