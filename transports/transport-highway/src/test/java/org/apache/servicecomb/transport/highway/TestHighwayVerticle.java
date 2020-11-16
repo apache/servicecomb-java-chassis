@@ -28,7 +28,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.vertx.core.Context;
-import io.vertx.core.Future;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.json.JsonObject;
 import mockit.Expectations;
@@ -60,11 +60,11 @@ public class TestHighwayVerticle {
 
     highwayVerticle.init(vertx, context);
     @SuppressWarnings("unchecked")
-    Future<Void> startFuture = Mockito.mock(Future.class);
-    highwayVerticle.startListen(startFuture);
+    Promise<Void> startPromise = Mockito.mock(Promise.class);
+    highwayVerticle.startListen(startPromise);
     MockUtil.getInstance().mockHighwayConfig();
     try {
-      highwayVerticle.startListen(startFuture);
+      highwayVerticle.startListen(startPromise);
       assertTrue(true);
     } catch (Exception e) {
       Assert.fail();

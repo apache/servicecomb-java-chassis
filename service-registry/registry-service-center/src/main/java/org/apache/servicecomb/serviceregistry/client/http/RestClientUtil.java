@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 import io.vertx.core.Handler;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.CaseInsensitiveHeaders;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.HttpMethod;
 
@@ -199,7 +198,7 @@ final class RestClientUtil {
   }
 
   public MultiMap getDefaultHeaders() {
-    return new CaseInsensitiveHeaders().addAll(defaultHeaders());
+    return MultiMap.caseInsensitiveMultiMap().addAll(defaultHeaders());
   }
 
   public void get(IpPort ipPort, String uri, RequestParam requestParam,

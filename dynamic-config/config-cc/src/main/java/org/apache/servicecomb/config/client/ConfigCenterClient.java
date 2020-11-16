@@ -52,8 +52,8 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
+import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.CaseInsensitiveHeaders;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.WebSocket;
 import io.vertx.core.http.WebSocketConnectOptions;
@@ -216,7 +216,7 @@ public class ConfigCenterClient {
             createSignRequest(null, configCenter + url, headers, null))));
         WebSocketConnectOptions options = new WebSocketConnectOptions();
         options.setHost(ipPort.getHostOrIp()).setPort(refreshPort).setURI(url)
-            .setHeaders(new CaseInsensitiveHeaders().addAll(headers)
+            .setHeaders(MultiMap.caseInsensitiveMultiMap().addAll(headers)
                 .addAll(authHeaders));
         client.webSocket(options, asyncResult -> {
           if (asyncResult.failed()) {

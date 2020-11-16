@@ -20,6 +20,7 @@ package org.apache.servicecomb.foundation.vertx;
 import static org.hamcrest.CoreMatchers.is;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
@@ -45,7 +46,7 @@ public class TestAddressResolverConfig {
   }
 
   @Test
-  public void testGetResoverFromResource(@Mocked Configuration finalConfig) {
+  public void testGetResolverFromResource(@Mocked Configuration finalConfig) {
     ArchaiusUtils.resetConfig();
     ArchaiusUtils.setProperty("addressResolver.servers", "8.8.8.8,8.8.4.4");
     new Expectations() {
@@ -60,18 +61,18 @@ public class TestAddressResolverConfig {
         result = -2;
       }
     };
-    AddressResolverOptions aroc = AddressResolverConfig.getAddressResover("test", finalConfig);
-    Assert.assertThat(aroc.getServers(), is(Arrays.asList("6.6.6.6", "6.6.4.4")));
-    Assert.assertThat(aroc.getSearchDomains(),
-        is(Arrays.asList("default.svc.local.cluster")));
-    Assert.assertEquals(aroc.getQueryTimeout(),
+    AddressResolverOptions resolverOptions = AddressResolverConfig.getAddressResover("test", finalConfig);
+    Assert.assertThat(resolverOptions.getServers(), is(Arrays.asList("6.6.6.6", "6.6.4.4")));
+    Assert.assertThat(resolverOptions.getSearchDomains(),
+        is(Collections.singletonList("default.svc.local.cluster")));
+    Assert.assertEquals(resolverOptions.getQueryTimeout(),
         2000);
-    Assert.assertNotEquals(aroc.getMaxQueries(),
+    Assert.assertNotEquals(resolverOptions.getMaxQueries(),
         -2);
   }
 
   @Test
-  public void testGetResover() {
+  public void testGetResolver() {
     ArchaiusUtils.resetConfig();
     ArchaiusUtils.setProperty("addressResolver.servers", "8.8.8.8,8.8.4.4");
     ArchaiusUtils.setProperty("addressResolver.optResourceEnabled", true);
@@ -95,19 +96,20 @@ public class TestAddressResolverConfig {
     AddressResolverOptions aroc1 = AddressResolverConfig.getAddressResover("test1");
     Assert.assertThat(aroc1.getSearchDomains(),
         is(Arrays.asList("default.svc.local.cluster", "svc.local.cluster", "local.cluster")));
+    Assert.assertTrue(aroc.isOptResourceEnabled());
   }
 
   @Test
-  public void testGetResoverDefault() {
+  public void testGetResolverDefault() {
     ArchaiusUtils.resetConfig();
     ArchaiusUtils.setProperty("addressResolver.servers", "8.8.8.8,8.8.4.4");
     ArchaiusUtils.setProperty("addressResolver.maxQueries", 3);
     ArchaiusUtils.setProperty("addressResolver.rdFlag", false);
-    AddressResolverOptions aroc = AddressResolverConfig.getAddressResover("test");
-    Assert.assertThat(aroc.getServers(), is(Arrays.asList("8.8.8.8", "8.8.4.4")));
-    Assert.assertEquals(3, aroc.getMaxQueries());
-    Assert.assertEquals(Integer.MAX_VALUE, aroc.getCacheMaxTimeToLive());
-    Assert.assertTrue(aroc.isOptResourceEnabled());
-    Assert.assertNull(aroc.getSearchDomains());
+    AddressResolverOptions resolverOptions = AddressResolverConfig.getAddressResover("test");
+    Assert.assertThat(resolverOptions.getServers(), is(Arrays.asList("8.8.8.8", "8.8.4.4")));
+    Assert.assertEquals(3, resolverOptions.getMaxQueries());
+    Assert.assertEquals(Integer.MAX_VALUE, resolverOptions.getCacheMaxTimeToLive());
+    Assert.assertFalse(resolverOptions.isOptResourceEnabled());
+    Assert.assertNull(resolverOptions.getSearchDomains());
   }
 }
