@@ -30,7 +30,8 @@ public class CustomEndpointDiscoveryFilter extends AbstractEndpointDiscoveryFilt
   }
 
   @Override
-  protected Object createEndpoint(String transportName, String endpoint, MicroserviceInstance instance) {
+  protected Object createEndpoint(DiscoveryContext context, String transportName, String endpoint,
+      MicroserviceInstance instance) {
     return endpoint;
   }
 

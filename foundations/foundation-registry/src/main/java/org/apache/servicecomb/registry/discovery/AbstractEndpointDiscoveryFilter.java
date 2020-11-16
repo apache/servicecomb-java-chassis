@@ -56,7 +56,7 @@ public abstract class AbstractEndpointDiscoveryFilter implements DiscoveryFilter
             continue;
           }
 
-          Object objEndpoint = createEndpoint(transportName, endpoint, instance);
+          Object objEndpoint = createEndpoint(context, transportName, endpoint, instance);
           if (objEndpoint == null) {
             continue;
           }
@@ -79,5 +79,6 @@ public abstract class AbstractEndpointDiscoveryFilter implements DiscoveryFilter
 
   protected abstract String findTransportName(DiscoveryContext context, DiscoveryTreeNode parent);
 
-  protected abstract Object createEndpoint(String transportName, String endpoint, MicroserviceInstance instance);
+  protected abstract Object createEndpoint(DiscoveryContext context, String transportName, String endpoint,
+      MicroserviceInstance instance);
 }

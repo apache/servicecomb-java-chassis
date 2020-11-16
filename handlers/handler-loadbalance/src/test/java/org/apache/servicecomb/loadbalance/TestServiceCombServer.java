@@ -41,7 +41,7 @@ public class TestServiceCombServer {
   public void setUp() {
     MicroserviceInstance instance = new MicroserviceInstance();
     instance.setInstanceId("123456");
-    cs = new ServiceCombServer(transport, new CacheEndpoint("abcd", instance));
+    cs = new ServiceCombServer(null, transport, new CacheEndpoint("abcd", instance));
   }
 
   @Test
@@ -61,12 +61,12 @@ public class TestServiceCombServer {
 
     MicroserviceInstance instance1 = new MicroserviceInstance();
     instance1.setInstanceId("1234");
-    ServiceCombServer other = new ServiceCombServer(transport, new CacheEndpoint("1234", instance1));
+    ServiceCombServer other = new ServiceCombServer(null, transport, new CacheEndpoint("1234", instance1));
     Assert.assertFalse(cs.equals(other));
 
     MicroserviceInstance instance2 = new MicroserviceInstance();
     instance2.setInstanceId("123456");
-    other = new ServiceCombServer(transport, new CacheEndpoint("abcd", instance2));
+    other = new ServiceCombServer(null, transport, new CacheEndpoint("abcd", instance2));
     Assert.assertTrue(cs.equals(other));
   }
 

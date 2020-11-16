@@ -163,7 +163,7 @@ public class TestLoadbalanceHandler {
     MicroserviceInstance instance1 = new MicroserviceInstance();
     instance1.setInstanceId("1234");
     CacheEndpoint cacheEndpoint = new CacheEndpoint("rest://localhost:8080", instance1);
-    ServiceCombServer server = new ServiceCombServer(restTransport, cacheEndpoint);
+    ServiceCombServer server = new ServiceCombServer(null, restTransport, cacheEndpoint);
     LoadBalancerStats stats = new LoadBalancerStats("test");
     new Expectations(loadBalancer) {
       {
@@ -192,7 +192,7 @@ public class TestLoadbalanceHandler {
     MicroserviceInstance instance1 = new MicroserviceInstance();
     instance1.setInstanceId("1234");
     CacheEndpoint cacheEndpoint = new CacheEndpoint("rest://localhost:8080", instance1);
-    ServiceCombServer server = new ServiceCombServer(restTransport, cacheEndpoint);
+    ServiceCombServer server = new ServiceCombServer(null, restTransport, cacheEndpoint);
     LoadBalancerStats stats = new LoadBalancerStats("test");
     new Expectations(loadBalancer) {
       {
@@ -221,7 +221,7 @@ public class TestLoadbalanceHandler {
     MicroserviceInstance instance1 = new MicroserviceInstance();
     instance1.setInstanceId("1234");
     CacheEndpoint cacheEndpoint = new CacheEndpoint("rest://localhost:8080", instance1);
-    ServiceCombServer server = new ServiceCombServer(restTransport, cacheEndpoint);
+    ServiceCombServer server = new ServiceCombServer(null, restTransport, cacheEndpoint);
     LoadBalancerStats stats = new LoadBalancerStats("test");
     new Expectations(loadBalancer) {
       {

@@ -43,7 +43,8 @@ public class EndpointDiscoveryFilter extends AbstractEndpointDiscoveryFilter {
   }
 
   @Override
-  protected Object createEndpoint(String transportName, String endpoint, MicroserviceInstance instance) {
+  protected Object createEndpoint(DiscoveryContext context, String transportName, String endpoint,
+      MicroserviceInstance instance) {
     Transport transport = SCBEngine.getInstance().getTransportManager().findTransport(transportName);
     if (transport == null) {
       LOGGER.info("not deployed transport {}, ignore {}.", transportName, endpoint);

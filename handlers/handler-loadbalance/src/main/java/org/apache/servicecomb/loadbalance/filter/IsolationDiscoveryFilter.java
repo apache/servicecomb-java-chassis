@@ -147,6 +147,7 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
         return ServiceCombServerStats.applyForTryingChance(invocation);
       }
       if (!serverStats.isIsolated()) {
+        // checkThresholdAllowed is not concurrent control, may print several logs/events in current access.
         serverStats.markIsolated(true);
         eventBus.post(
             new IsolationServerEvent(invocation, instance, serverStats,
@@ -159,7 +160,7 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
     if (serverStats.isIsolated()) {
       // [2] so that we add a feature to isolate for at least a minimal time, and we can avoid
       // high volume of concurrent requests with a percentage of error(e.g. 50%) scenario with no isolation
-      if ((System.currentTimeMillis() - serverStats.getLastVisitTime()) <= settings.minIsolationTime) {
+      if ((System.currentTimeMillis() - serverStats.getIsolatedTime()) <= settings.minIsolationTime) {
         return false;
       }
       serverStats.markIsolated(false);
@@ -178,7 +179,7 @@ public class IsolationDiscoveryFilter implements DiscoveryFilter {
 
     if (settings.continuousFailureThreshold > 0) {
       // continuousFailureThreshold has higher priority to decide the result
-      if (serverStats.getCountinuousFailureCount() >= settings.continuousFailureThreshold) {
+      if (serverStats.getContinuousFailureCount() >= settings.continuousFailureThreshold) {
         return false;
       }
     }

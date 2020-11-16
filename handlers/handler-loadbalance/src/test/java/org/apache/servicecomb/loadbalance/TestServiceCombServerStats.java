@@ -43,12 +43,12 @@ public class TestServiceCombServerStats {
   @Test
   public void testSimpleThread() {
     long time = System.currentTimeMillis();
-    ServiceCombServerStats stats = new ServiceCombServerStats();
+    ServiceCombServerStats stats = new ServiceCombServerStats(null);
     stats.markFailure();
     stats.markFailure();
-    Assert.assertEquals(2, stats.getCountinuousFailureCount());
+    Assert.assertEquals(2, stats.getContinuousFailureCount());
     stats.markSuccess();
-    Assert.assertEquals(0, stats.getCountinuousFailureCount());
+    Assert.assertEquals(0, stats.getContinuousFailureCount());
     stats.markSuccess();
     Assert.assertEquals(4, stats.getTotalRequests());
     Assert.assertEquals(50, stats.getFailedRate());
@@ -60,7 +60,7 @@ public class TestServiceCombServerStats {
   @Test
   public void testMiltiThread() throws Exception {
     long time = System.currentTimeMillis();
-    ServiceCombServerStats stats = new ServiceCombServerStats();
+    ServiceCombServerStats stats = new ServiceCombServerStats(null);
     CountDownLatch latch = new CountDownLatch(10);
     for (int i = 0; i < 10; i++) {
       new Thread(() -> {
@@ -81,7 +81,7 @@ public class TestServiceCombServerStats {
 
   @Test
   public void testTimeWindow() {
-    ServiceCombServerStats stats = new ServiceCombServerStats(new MockClock(new Holder<>(1000L)));
+    ServiceCombServerStats stats = new ServiceCombServerStats(null, new MockClock(new Holder<>(1000L)));
     Assert.assertEquals(1000, stats.getLastVisitTime());
     stats.markSuccess();
     stats.markFailure();
