@@ -33,8 +33,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.servicecomb.config.archaius.sources.ConfigModel;
-import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
@@ -97,7 +95,7 @@ public class TestConfigUtil {
     ConfigUtil.addConfig("service_description.version", "1.0.2");
     ConfigUtil.addConfig("cse.test.enabled", true);
     ConfigUtil.addConfig("cse.test.num", 10);
-    AbstractConfiguration configuration = ConfigUtil.createDynamicConfig();
+    AbstractConfiguration configuration = ConfigUtil.createLocalConfig();
     Assert.assertEquals(configuration.getString("service_description.name"), "service_name_test");
     Assert.assertTrue(configuration.getBoolean("cse.test.enabled"));
     Assert.assertEquals(configuration.getInt("cse.test.num"), 10);
@@ -105,26 +103,8 @@ public class TestConfigUtil {
 
   @Test
   public void testCreateDynamicConfigNoConfigCenterSPI() {
-    new Expectations(SPIServiceUtils.class) {
-      {
-        SPIServiceUtils.getTargetService(ConfigCenterConfigurationSource.class);
-        result = null;
-      }
-    };
-
-    AbstractConfiguration dynamicConfig = ConfigUtil.createDynamicConfig();
-    MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader(dynamicConfig);
-    List<ConfigModel> list = loader.getConfigModels();
-    Assert.assertEquals(loader, ConfigUtil.getMicroserviceConfigLoader(dynamicConfig));
-    Assert.assertEquals(1, list.size());
+    AbstractConfiguration dynamicConfig = ConfigUtil.createLocalConfig();
     Assert.assertNotEquals(DynamicWatchedConfiguration.class,
-        ((ConcurrentCompositeConfiguration) dynamicConfig).getConfiguration(0).getClass());
-  }
-
-  @Test
-  public void testCreateDynamicConfigHasConfigCenter() {
-    AbstractConfiguration dynamicConfig = ConfigUtil.createDynamicConfig();
-    Assert.assertEquals(DynamicWatchedConfiguration.class,
         ((ConcurrentCompositeConfiguration) dynamicConfig).getConfiguration(0).getClass());
   }
 

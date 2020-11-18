@@ -55,6 +55,11 @@ public class ApolloConfigurationSourceImpl implements ConfigCenterConfigurationS
   private final UpdateHandler updateHandler = new UpdateHandler();
 
   @Override
+  public int getOrder() {
+    return ORDER_BASE * 3;
+  }
+
+  @Override
   public boolean isValidSource(Configuration localConfiguration) {
     if (localConfiguration.getProperty(APOLLO_CONFIG_URL_KEY) == null) {
       LOGGER.warn("Apollo configuration source is not configured!");

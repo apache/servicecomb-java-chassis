@@ -36,6 +36,7 @@ import javax.annotation.Nonnull;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.EnvironmentConfiguration;
+import org.apache.commons.configuration.MapConfiguration;
 import org.apache.commons.configuration.SystemConfiguration;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
@@ -44,6 +45,7 @@ import org.apache.servicecomb.config.archaius.sources.ConfigModel;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigLoader;
 import org.apache.servicecomb.config.archaius.sources.MicroserviceConfigurationSource;
 import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSource;
+import org.apache.servicecomb.config.spi.ConfigCenterConfigurationSourceLoader;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,8 +62,6 @@ import com.netflix.config.WatchedUpdateResult;
 
 public final class ConfigUtil {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigUtil.class);
-
-  private static final String MICROSERVICE_CONFIG_LOADER_KEY = "cse-microservice-config-loader";
 
   private static final String IS_PRINT_URL = "servicecomb.config.log.verbose";
 
@@ -107,18 +107,6 @@ public final class ConfigUtil {
         .collect(Collectors.toList());
   }
 
-  private static void setMicroserviceConfigLoader(Configuration config, MicroserviceConfigLoader loader) {
-    config.setProperty(MICROSERVICE_CONFIG_LOADER_KEY, loader);
-  }
-
-  public static MicroserviceConfigLoader getMicroserviceConfigLoader() {
-    return (MicroserviceConfigLoader) getProperty(MICROSERVICE_CONFIG_LOADER_KEY);
-  }
-
-  public static MicroserviceConfigLoader getMicroserviceConfigLoader(Configuration config) {
-    return (MicroserviceConfigLoader) getProperty(config, MICROSERVICE_CONFIG_LOADER_KEY);
-  }
-
   public static ConcurrentCompositeConfiguration createLocalConfig() {
     MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
     loader.loadAndSort();
@@ -135,7 +123,6 @@ public final class ConfigUtil {
     }
 
     ConcurrentCompositeConfiguration config = ConfigUtil.createLocalConfig(loader.getConfigModels());
-    ConfigUtil.setMicroserviceConfigLoader(config, loader);
     return config;
   }
 
@@ -153,7 +140,7 @@ public final class ConfigUtil {
         .stream()
         .filter(mapEntry -> !mapEntry.getValue().isEmpty())
         .forEachOrdered(configMapEntry -> duplicateCseConfigToServicecomb(config,
-            new ConcurrentMapConfiguration(configMapEntry.getValue()),
+            new ConcurrentMapConfiguration(new MapConfiguration(configMapEntry.getValue())),
             configMapEntry.getKey()));
     // we have already copy the cse config to the serviceComb config when we load the config from local yaml files
     // hence, we do not need duplicate copy it.
@@ -161,7 +148,7 @@ public final class ConfigUtil {
             new MicroserviceConfigurationSource(configModelList), new NeverStartPollingScheduler()),
         "configFromYamlFile");
     duplicateCseConfigToServicecombAtFront(config,
-        new ConcurrentMapConfiguration(ConfigMapping.getConvertedMap(config)),
+        new ConcurrentMapConfiguration(new MapConfiguration(ConfigMapping.getConvertedMap(config))),
         "configFromMapping");
     return config;
   }
@@ -219,18 +206,15 @@ public final class ConfigUtil {
 
   private static ConfigCenterConfigurationSource createConfigCenterConfigurationSource(
       Configuration localConfiguration) {
-    ConfigCenterConfigurationSource configCenterConfigurationSource =
-        SPIServiceUtils.getTargetService(ConfigCenterConfigurationSource.class);
+    ConfigCenterConfigurationSource configCenterConfigurationSource = ConfigCenterConfigurationSourceLoader
+        .getConfigCenterConfigurationSource(localConfiguration);
+
     if (null == configCenterConfigurationSource) {
-      LOGGER.info(
-          "config center SPI service can not find, skip to load configuration from config center");
+      LOGGER.info("none of config center source enabled.");
       return null;
     }
 
-    if (!configCenterConfigurationSource.isValidSource(localConfiguration)) {
-      LOGGER.warn("Config Source serverUri is not correctly configured.");
-      return null;
-    }
+    LOGGER.info("use config center source {}", configCenterConfigurationSource.getClass().getName());
     return configCenterConfigurationSource;
   }
 
@@ -247,20 +231,10 @@ public final class ConfigUtil {
     localConfiguration.addConfigurationAtFront(configFromConfigCenter, "configCenterConfig");
   }
 
-  public static AbstractConfiguration createDynamicConfig() {
-    ConcurrentCompositeConfiguration compositeConfig = ConfigUtil.createLocalConfig();
-    ConfigCenterConfigurationSource configCenterConfigurationSource =
-        createConfigCenterConfigurationSource(compositeConfig);
-    if (configCenterConfigurationSource != null) {
-      createDynamicWatchedConfiguration(compositeConfig, configCenterConfigurationSource);
-    }
-    return compositeConfig;
-  }
-
-  public static void installDynamicConfig() {
+  public static ConfigCenterConfigurationSource installDynamicConfig() {
     if (ConfigurationManager.isConfigurationInstalled()) {
       LOGGER.warn("Configuration installed by others, will ignore this configuration.");
-      return;
+      return null;
     }
 
     ConcurrentCompositeConfiguration compositeConfig = ConfigUtil.createLocalConfig();
@@ -275,6 +249,8 @@ public final class ConfigUtil {
     if (configCenterConfigurationSource != null) {
       configCenterConfigurationSource.init(compositeConfig);
     }
+
+    return configCenterConfigurationSource;
   }
 
   public static void destroyConfigCenterConfigurationSource() {

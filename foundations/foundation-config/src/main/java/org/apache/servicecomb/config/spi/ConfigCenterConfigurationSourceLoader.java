@@ -17,19 +17,26 @@
 
 package org.apache.servicecomb.config.spi;
 
+import java.util.List;
+
 import org.apache.commons.configuration.Configuration;
-import org.apache.servicecomb.foundation.common.utils.SPIOrder;
+import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 
-import com.netflix.config.WatchedConfigurationSource;
+public class ConfigCenterConfigurationSourceLoader {
+  private static List<ConfigCenterConfigurationSource> configCenterConfigurationSources =
+      SPIServiceUtils.getSortedService(ConfigCenterConfigurationSource.class);
 
-public interface ConfigCenterConfigurationSource extends WatchedConfigurationSource, SPIOrder {
-  int ORDER_BASE = 100;
+  public static ConfigCenterConfigurationSource getConfigCenterConfigurationSource(Configuration localConfiguration) {
 
-  boolean isValidSource(Configuration localConfiguration);
+    ConfigCenterConfigurationSource configCenterConfigurationSource = null;
 
-  void init(Configuration localConfiguration);
+    for (ConfigCenterConfigurationSource item : configCenterConfigurationSources) {
+      if (item.isValidSource(localConfiguration)) {
+        configCenterConfigurationSource = item;
+        break;
+      }
+    }
 
-  default void destroy() {
-
+    return configCenterConfigurationSource;
   }
 }
