@@ -35,3 +35,5 @@ servicecomb:
 
   codec:
     printErrorMessage: true
+
+  executors.Provider.ReactiveSchema: servicecomb.executor.reactive

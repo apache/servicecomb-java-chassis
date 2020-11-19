@@ -35,6 +35,8 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.vertx.core.Vertx;
+
 public final class InvokerUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(InvokerUtils.class);
 
@@ -130,6 +132,9 @@ public final class InvokerUtils {
    */
   public static Response innerSyncInvoke(Invocation invocation) {
     try {
+      if (Vertx.currentContext() != null && Vertx.currentContext().isEventLoopContext()) {
+        throw new IllegalStateException("Can not execute sync logic in event loop. ");
+      }
       invocation.onStart(null, System.nanoTime());
       SyncResponseExecutor respExecutor = new SyncResponseExecutor();
       invocation.setResponseExecutor(respExecutor);
