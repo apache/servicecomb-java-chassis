@@ -31,6 +31,10 @@ public class SchemeInterfaceJaxrsImpl implements SchemeInterfaceJaxrs {
     return a - b;
   }
 
+  public int add(String a, String b) {
+    return Integer.valueOf(a) + Integer.valueOf(b);
+  }
+
   @Override
   public Page<String> interfaceModel(Page<String> model) {
     return model;

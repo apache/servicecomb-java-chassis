@@ -164,12 +164,14 @@ public class MessageReadSchema<T> implements SchemaEx<T> {
         n = input.readFieldNumber();
       }
     } catch (Throwable e) {
-      Field protoField = fieldSchema.getProtoField();
-      LOGGER.error("Failed to mergeFrom, field={}:{}, type={}",
-          protoField.getType().getCanonicalName(),
-          protoField.getName(),
-          protoField.getTypeName(),
-          e.getMessage());
+      if (fieldSchema != null) {
+        Field protoField = fieldSchema.getProtoField();
+        LOGGER.error("Failed to mergeFrom, field={}:{}, type={}",
+            protoField.getType().getCanonicalName(),
+            protoField.getName(),
+            protoField.getTypeName(),
+            e.getMessage());
+      }
       throw e;
     }
   }
