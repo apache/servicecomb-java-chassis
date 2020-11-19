@@ -119,7 +119,7 @@ public final class ConfigUtil {
     return (MicroserviceConfigLoader) getProperty(config, MICROSERVICE_CONFIG_LOADER_KEY);
   }
 
-  public static ConcurrentCompositeConfiguration  createLocalConfig() {
+  public static ConcurrentCompositeConfiguration createLocalConfig() {
     MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
     loader.loadAndSort();
     if (localConfig.size() > 0) {

@@ -20,6 +20,7 @@ import org.apache.servicecomb.loadbalance.Configuration;
 import org.apache.servicecomb.loadbalance.ExtensionsFactory;
 import org.apache.servicecomb.loadbalance.RoundRobinRuleExt;
 import org.apache.servicecomb.loadbalance.RuleExt;
+import org.apache.servicecomb.match.policy.RetryPolicy;
 import org.springframework.stereotype.Component;
 
 import com.netflix.client.DefaultLoadBalancerRetryHandler;
@@ -61,7 +62,7 @@ public class CustomLoadbalanceExtensionsFactory implements ExtensionsFactory {
   }
 
   @Override
-  public RetryHandler createRetryHandler(String retryName, String microservice, String mark) {
+  public RetryHandler createRetryHandler(String retryName, String microservice, RetryPolicy retryPolicy) {
     return new MyCustomHandler(1, 1, true);
   }
 }

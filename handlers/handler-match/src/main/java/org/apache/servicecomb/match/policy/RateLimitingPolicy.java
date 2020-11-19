@@ -18,7 +18,9 @@ package org.apache.servicecomb.match.policy;
 
 public class RateLimitingPolicy extends AbstractPolicy {
 
-  public static final int DEFAULT_RATE = 1000;
+  private static final int DEFAULT_RATE = 1000;
+
+  public static final String NAME = "RateLimitingPolicy";
 
   private Integer rate;
 
@@ -40,6 +42,6 @@ public class RateLimitingPolicy extends AbstractPolicy {
 
   @Override
   public String name() {
-    return "RateLimitingPolicy";
+    return NAME;
   }
 }

@@ -24,6 +24,8 @@ import java.util.Map.Entry;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.match.policy.AbstractPolicy;
 import org.apache.servicecomb.match.policy.Policy;
+import org.apache.servicecomb.match.policy.RateLimitingPolicy;
+import org.apache.servicecomb.match.policy.RetryPolicy;
 import org.apache.servicecomb.match.propertirs.RateLimitProperties;
 import org.apache.servicecomb.match.propertirs.RetryProperties;
 
@@ -41,9 +43,9 @@ public class PolicyServiceImpl implements PolicyService {
       return null;
     }
     switch (kind) {
-      case "RateLimiting":
+      case RateLimitingPolicy.NAME:
         return match(rateLimitProperties.covert(), mark);
-      case "Retry":
+      case RetryPolicy.NAME:
         return match(retryProperties.covert(), mark);
       default:
         return null;

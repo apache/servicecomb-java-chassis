@@ -358,7 +358,7 @@ public class ServiceCenterClient implements ServiceCenterOperation {
   public boolean sendHeartBeat(String serviceId, String instanceId) {
     try {
       HttpResponse response = httpClient
-            .putHttpRequest("/registry/microservices/" + serviceId + "/instances/" + instanceId + "/heartbeat",
+          .putHttpRequest("/registry/microservices/" + serviceId + "/instances/" + instanceId + "/heartbeat",
               null, null);
 
       if (response.getStatusCode() == HttpStatus.SC_OK) {

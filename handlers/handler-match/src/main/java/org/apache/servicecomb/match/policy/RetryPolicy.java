@@ -18,7 +18,9 @@ package org.apache.servicecomb.match.policy;
 
 public class RetryPolicy extends AbstractPolicy {
 
-  public static final int DEFAULT_MAX_ATTEMPTS = 3;
+  private static final int DEFAULT_MAX_ATTEMPTS = 3;
+
+  public static final String NAME = "RetryPolicy";
 
   private Integer maxAttempts;
 
@@ -50,6 +52,6 @@ public class RetryPolicy extends AbstractPolicy {
 
   @Override
   public String name() {
-    return "RetryPolicy";
+    return NAME;
   }
 }

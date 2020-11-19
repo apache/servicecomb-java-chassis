@@ -208,10 +208,7 @@ public class HighwayServerInvoke {
     Handler providerQpsFlowControlHandler = operationMeta.getProviderQpsFlowControlHandler();
     if (null != providerQpsFlowControlHandler) {
       try {
-        Handler marKHandler = operationMeta.getMarkHandler();
-        if (marKHandler != null) {
-          marKHandler.handle(invocation, null);
-        }
+        processMatch(operationMeta);
         providerQpsFlowControlHandler.handle(invocation, response -> {
           qpsFlowControlReject.value = true;
           sendResponse(header.getContext(), response);
@@ -223,5 +220,16 @@ public class HighwayServerInvoke {
       }
     }
     return qpsFlowControlReject.value;
+  }
+
+  private void processMatch(OperationMeta operationMeta) {
+    Handler marKHandler = operationMeta.getMarkHandler();
+    if (marKHandler != null) {
+      try {
+        marKHandler.handle(invocation, null);
+      } catch (Exception e) {
+        LOGGER.error("failed to execute MarKHandler", e);
+      }
+    }
   }
 }
