@@ -81,9 +81,6 @@ public class TestConfigurationSpringInitializer {
     Assert.assertEquals(3, listO.size());
     Assert.assertNull(ConfigUtil.getProperty("notExist"));
 
-    MicroserviceConfigLoader loader = ConfigUtil.getMicroserviceConfigLoader();
-    Assert.assertNotNull(loader);
-
     Configuration instance = ConfigurationManager.getConfigInstance();
     ConfigUtil.installDynamicConfig();
     // must not reinstall

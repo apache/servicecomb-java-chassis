@@ -58,7 +58,7 @@ public class LoadBalancer {
     List<ServiceCombServer> servers = invocation.getLocalContext(LoadbalanceHandler.CONTEXT_KEY_SERVER_LIST);
     int serversCount = servers.size();
     for (ServerListFilterExt filterExt : filters) {
-      if(!filterExt.enabled()) {
+      if (!filterExt.enabled()) {
         continue;
       }
       servers = filterExt.getFilteredListOfServers(servers, invocation);
@@ -76,6 +76,8 @@ public class LoadBalancer {
       LOGGER.info("The Service {}'s instance {} has been isolated for a while, give a single test opportunity.",
           invocation.getMicroserviceName(),
           server.getInstance().getInstanceId());
+      LOGGER.info("stats: {}-{}-{}-{}", serverStats.getTotalRequests(), serverStats.getSuccessRequests(),
+          serverStats.getFailedRequests(), serverStats.getContinuousFailureCount());
     }
     return server;
   }

@@ -23,10 +23,12 @@ import com.google.common.collect.ImmutableMap;
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.WatchedUpdateListener;
 import com.netflix.config.WatchedUpdateResult;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.servicecomb.config.ConfigMapping;
 import org.apache.servicecomb.config.kie.client.KieClient;
@@ -48,6 +50,11 @@ public class KieConfigurationSourceImpl implements ConfigCenterConfigurationSour
   private UpdateHandler updateHandler = new UpdateHandler();
 
   private KieClient kieClient;
+
+  @Override
+  public int getOrder() {
+    return ORDER_BASE * 2;
+  }
 
   @Override
   public boolean isValidSource(Configuration localConfiguration) {

@@ -95,9 +95,9 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
 
     ConfigUtil.addExtraConfig(EXTRA_CONFIG_SOURCE_PREFIX + environmentName, extraConfig);
 
-    ConfigUtil.installDynamicConfig();
+    ConfigCenterConfigurationSource configCenterConfigurationSource = ConfigUtil.installDynamicConfig();
 
-    addDynamicConfigurationToSpring(environment);
+    addDynamicConfigurationToSpring(environment, configCenterConfigurationSource);
   }
 
   private void startupBootStrapService(Environment environment) {
@@ -156,11 +156,10 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
     }
   }
 
-  private void addDynamicConfigurationToSpring(Environment environment) {
+  private void addDynamicConfigurationToSpring(Environment environment,
+      ConfigCenterConfigurationSource configCenterConfigurationSource) {
     if (environment instanceof ConfigurableEnvironment) {
       ConfigurableEnvironment ce = (ConfigurableEnvironment) environment;
-      ConfigCenterConfigurationSource configCenterConfigurationSource =
-          SPIServiceUtils.getTargetService(ConfigCenterConfigurationSource.class);
       if (configCenterConfigurationSource != null) {
         try {
           ce.getPropertySources()
@@ -177,9 +176,9 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
     Properties properties = super.mergeProperties();
 
     AbstractConfiguration config = ConfigurationManager.getConfigInstance();
-    Iterator<String> iter = config.getKeys();
-    while (iter.hasNext()) {
-      String key = iter.next();
+    Iterator<String> iterator = config.getKeys();
+    while (iterator.hasNext()) {
+      String key = iterator.next();
       Object value = config.getProperty(key);
       properties.put(key, value);
     }

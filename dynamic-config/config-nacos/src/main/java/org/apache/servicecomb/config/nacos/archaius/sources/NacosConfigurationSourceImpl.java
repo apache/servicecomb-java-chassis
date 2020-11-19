@@ -53,6 +53,11 @@ public class NacosConfigurationSourceImpl implements ConfigCenterConfigurationSo
   private final UpdateHandler updateHandler = new UpdateHandler();
 
   @Override
+  public int getOrder() {
+    return ORDER_BASE * 4;
+  }
+
+  @Override
   public boolean isValidSource(Configuration localConfiguration) {
     if (localConfiguration.getProperty(NacosConfig.SERVER_ADDR) == null) {
       LOGGER.warn("Nacos configuration source is not configured!");

@@ -19,26 +19,32 @@ package org.apache.servicecomb.serviceregistry.registry;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.netflix.config.ConcurrentCompositeConfiguration;
-import com.netflix.config.ConcurrentMapConfiguration;
-import com.netflix.config.ConfigurationManager;
-import com.netflix.config.DynamicPropertyFactory;
-import mockit.Deencapsulation;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.servicecomb.config.ConfigUtil;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.ServiceRegistry;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import com.netflix.config.ConcurrentCompositeConfiguration;
+import com.netflix.config.ConcurrentMapConfiguration;
+import com.netflix.config.ConfigurationManager;
+import com.netflix.config.DynamicPropertyFactory;
+
+import mockit.Deencapsulation;
 
 public class TestLocalServiceRegistry {
   private static final AbstractConfiguration inMemoryConfig = new ConcurrentMapConfiguration();
 
   @BeforeClass
   public static void initSetup() throws Exception {
-    AbstractConfiguration dynamicConfig = ConfigUtil.createDynamicConfig();
+    AbstractConfiguration localConfig = ConfigUtil.createLocalConfig();
     ConcurrentCompositeConfiguration configuration = new ConcurrentCompositeConfiguration();
-    configuration.addConfiguration(dynamicConfig);
+    configuration.addConfiguration(localConfig);
     configuration.addConfiguration(inMemoryConfig);
 
     ConfigurationManager.install(configuration);

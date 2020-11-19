@@ -128,7 +128,7 @@ public class TestMicroServiceInstance {
 
   @Test
   public void testCreateMicroserviceInstanceFromFile() {
-    AbstractConfiguration config = ConfigUtil.createDynamicConfig();
+    AbstractConfiguration config = ConfigUtil.createLocalConfig();
     ConcurrentCompositeConfiguration configuration = new ConcurrentCompositeConfiguration();
     configuration.addConfiguration(config);
     ConfigurationManager.install(configuration);

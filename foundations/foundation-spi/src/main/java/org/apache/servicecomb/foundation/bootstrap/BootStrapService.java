@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.foundation.bootstrap;
 
+import org.apache.servicecomb.foundation.common.utils.SPIOrder;
 import org.springframework.core.env.Environment;
 
 /**
@@ -26,8 +27,9 @@ import org.springframework.core.env.Environment;
  *
  * from config center is not available.
  *
- * e.g. an authentication service must be connected before connecting to config center, service center, etc.
+ * e.g. an authentication service must be connected before connecting to config center.
+ * e.g. an config center configurations must be read before connecting to config center.
  */
-public interface BootStrapService {
+public interface BootStrapService extends SPIOrder {
   void startup(Environment environment);
 }

@@ -57,7 +57,7 @@ public class TestRegistry {
 
   @BeforeClass
   public static void initSetup() {
-    AbstractConfiguration dynamicConfig = ConfigUtil.createDynamicConfig();
+    AbstractConfiguration dynamicConfig = ConfigUtil.createLocalConfig();
     ConcurrentCompositeConfiguration configuration = new ConcurrentCompositeConfiguration();
     configuration.addConfiguration(dynamicConfig);
     configuration.addConfiguration(inMemoryConfig);

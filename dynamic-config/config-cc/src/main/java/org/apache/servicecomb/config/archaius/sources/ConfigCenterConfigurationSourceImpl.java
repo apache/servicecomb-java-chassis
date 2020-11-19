@@ -57,6 +57,11 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
   }
 
   @Override
+  public int getOrder() {
+    return ORDER_BASE * 1;
+  }
+
+  @Override
   public boolean isValidSource(Configuration localConfiguration) {
     if (Deployment.getSystemBootStrapInfo(DeploymentProvider.SYSTEM_KEY_CONFIG_CENTER) == null) {
       return false;
