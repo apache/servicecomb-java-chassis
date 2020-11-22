@@ -129,6 +129,8 @@ public class TestDataTypePrimitive {
     String queryArrPIPES(String[] queryArr);
 
     String queryArrMULTI(String[] queryArr);
+
+    String queryArrJSON(String[] queryArr);
   }
 
   private static Consumers<DataTypePojoIntf> consumersPojo = new Consumers<>("dataTypePojo", DataTypePojoIntf.class);
@@ -1130,6 +1132,10 @@ public class TestDataTypePrimitive {
               .queryArrMULTI(new String[] {null, "a", null, null, "b", null, "", null, "c", null}));
       assertEquals("[a, ,  , b, c]5",
           consumersSpringmvc.getIntf().queryArrMULTI(new String[] {"a", "", " ", "b", "c"}));
+
+      // customize json
+      assertEquals("[a, b, c]3",
+          consumersSpringmvc.getIntf().queryArrJSON(new String[] {"a", "b", "c"}));
     }
   }
 
@@ -1174,6 +1180,14 @@ public class TestDataTypePrimitive {
     assertEquals("[a, ,  , b, c]5",
         consumersSpringmvc.getSCBRestTemplate()
             .getForObject("/queryArrMULTI?queryArr=a&queryArr=&queryArr= &queryArr=b&queryArr=c", String.class));
+
+    // customize json
+    assertEquals("[a, b, c]3",
+        consumersSpringmvc.getSCBRestTemplate()
+            .getForObject("/queryArrJSON?queryArr=[\"a\",\"b\",\"c\"]", String.class));
+    assertEquals("[a, b, c]3",
+        consumersSpringmvc.getEdgeRestTemplate()
+            .getForObject("/queryArrJSON?queryArr=[\"a\",\"b\",\"c\"]", String.class));
   }
 
   @Test

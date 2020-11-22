@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nonnull;
+
 import org.apache.servicecomb.common.rest.codec.param.QueryProcessorCreator;
 import org.apache.servicecomb.common.rest.definition.RestParam;
 
@@ -127,7 +129,7 @@ public class URLPathBuilder {
       return this;
     }
 
-    public URLPathStringBuilder appendQuery(String key, String value) {
+    public URLPathStringBuilder appendQuery(@Nonnull String name, @Nonnull String encodedValue) {
       if (queryPrefixNotWrite) {
         stringBuilder.append('?');
         queryPrefixNotWrite = false;
@@ -135,7 +137,7 @@ public class URLPathBuilder {
         stringBuilder.append('&');
       }
 
-      stringBuilder.append(key).append("=").append(value);
+      stringBuilder.append(name).append("=").append(encodedValue);
       return this;
     }
 
