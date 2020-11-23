@@ -18,49 +18,38 @@ package org.apache.servicecomb.it.extend.engine;
 
 import java.lang.reflect.Proxy;
 
-import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.provider.pojo.Invoker;
+import org.apache.servicecomb.provider.pojo.PojoInvocationCreator;
+import org.apache.servicecomb.provider.pojo.definition.PojoConsumerOperationMeta;
 
 /**
  * allow set transport, that makes integration test easier
  */
 public class ITInvoker extends Invoker {
+  @SuppressWarnings("unchecked")
   public static <T> T createProxy(String microserviceName, String schemaId, String transport, Class<?> consumerIntf) {
     ITInvoker invoker = new ITInvoker(microserviceName, schemaId, transport, consumerIntf);
-    return invoker.getProxy();
+    return (T) Proxy.newProxyInstance(consumerIntf.getClassLoader(), new Class<?>[] {consumerIntf}, invoker);
   }
 
-  private String transport;
+  class ITPojoInvocationCreator extends PojoInvocationCreator {
+    @Override
+    public ReferenceConfig createReferenceConfig(PojoConsumerOperationMeta consumerOperationMeta) {
+      return consumerOperationMeta.getPojoConsumerMeta().getMicroserviceReferenceConfig()
+          .createReferenceConfig(transport, consumerOperationMeta.getOperationMeta());
+    }
+  }
 
-  private Object proxy;
+  private final String transport;
 
-  public ITInvoker(String microserviceName, String schemaId, String transport,
-      Class<?> consumerIntf) {
+  public ITInvoker(String microserviceName, String schemaId, String transport, Class<?> consumerIntf) {
     super(microserviceName, schemaId, consumerIntf);
     this.transport = transport;
-    this.proxy = Proxy.newProxyInstance(consumerIntf.getClassLoader(), new Class<?>[] {consumerIntf}, this);
-  }
-
-  public String getMicroserviceName() {
-    return microserviceName;
-  }
-
-  public String getSchemaId() {
-    return schemaId;
-  }
-
-  public String getTransport() {
-    return transport;
-  }
-
-  @SuppressWarnings("unchecked")
-  public <T> T getProxy() {
-    return (T) proxy;
   }
 
   @Override
-  protected ReferenceConfig findReferenceConfig(OperationMeta operationMeta) {
-    return consumerMeta.getMicroserviceReferenceConfig().createReferenceConfig(transport, operationMeta);
+  public PojoInvocationCreator createInvocationCreator() {
+    return new ITPojoInvocationCreator();
   }
 }

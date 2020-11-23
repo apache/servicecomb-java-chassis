@@ -18,6 +18,7 @@
 package org.apache.servicecomb.provider.pojo;
 
 import java.io.File;
+import java.lang.reflect.Method;
 
 import javax.servlet.http.Part;
 
@@ -26,7 +27,6 @@ import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.vertx.http.ReadStreamPart;
-import org.apache.servicecomb.provider.pojo.definition.PojoConsumerMeta;
 import org.apache.servicecomb.registry.DiscoveryManager;
 import org.junit.After;
 import org.junit.Assert;
@@ -34,8 +34,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JavaType;
-
-import mockit.Deencapsulation;
 
 public class TestInvoker {
   public interface DownloadIntf {
@@ -60,15 +58,17 @@ public class TestInvoker {
   }
 
   @Test
-  public void should_generate_response_meta_for_download() {
+  public void should_generate_response_meta_for_download() throws NoSuchMethodException {
     SCBEngine scbEngine = SCBBootstrap.createSCBEngineForTest()
         .addProducerMeta("download", new DownloadSchema()).run();
-    Invoker invoker = new Invoker(scbEngine.getProducerMicroserviceMeta().getMicroserviceName(), "download",
-        DownloadIntf.class);
-    Deencapsulation.invoke(invoker, "ensureStatusUp");
-    PojoConsumerMeta meta = Deencapsulation.invoke(invoker, "refreshMeta");
 
-    JavaType javaType = meta.findOperationMeta("download").getResponsesType();
+    PojoConsumerMetaRefresher refresher = new PojoConsumerMetaRefresher(
+        scbEngine.getProducerMicroserviceMeta().getMicroserviceName(),
+        "download",
+        DownloadIntf.class);
+
+    Method method = DownloadIntf.class.getMethod("download");
+    JavaType javaType = refresher.getLatestMeta().ensureFindOperationMeta(method).getResponsesType();
     Assert.assertSame(Part.class, javaType.getRawClass());
 
     scbEngine.destroy();

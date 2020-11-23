@@ -19,7 +19,8 @@ package org.apache.servicecomb.provider.pojo.definition;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
+
+import javax.annotation.Nonnull;
 
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
@@ -30,14 +31,12 @@ import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
-import com.google.common.annotations.VisibleForTesting;
-
 public class PojoConsumerMeta {
-  private MicroserviceReferenceConfig microserviceReferenceConfig;
+  private final MicroserviceReferenceConfig microserviceReferenceConfig;
 
-  private SchemaMeta schemaMeta;
+  private final SchemaMeta schemaMeta;
 
-  private Map<Method, PojoConsumerOperationMeta> operationMetas = new HashMap<>();
+  private final Map<Method, PojoConsumerOperationMeta> operationMetas = new HashMap<>();
 
   public PojoConsumerMeta(MicroserviceReferenceConfig microserviceReferenceConfig, SwaggerConsumer swaggerConsumer,
       SchemaMeta schemaMeta) {
@@ -77,17 +76,19 @@ public class PojoConsumerMeta {
     return schemaMeta;
   }
 
-  @VisibleForTesting
-  public PojoConsumerOperationMeta findOperationMeta(String consumerMethodName) {
-    for (Entry<Method, PojoConsumerOperationMeta> operationMetaEntry : operationMetas.entrySet()) {
-      if (operationMetaEntry.getKey().getName().equals(consumerMethodName)) {
-        return operationMetaEntry.getValue();
-      }
+  @Nonnull
+  public PojoConsumerOperationMeta ensureFindOperationMeta(Method method) {
+    PojoConsumerOperationMeta pojoConsumerOperationMeta = operationMetas.get(method);
+    if (pojoConsumerOperationMeta == null) {
+      throw new IllegalStateException(
+          String.format(
+              "Consumer method %s:%s not exist in contract, microserviceName=%s, schemaId=%s; "
+                  + "new producer not running or not deployed.",
+              method.getDeclaringClass().getName(),
+              method.getName(),
+              schemaMeta.getMicroserviceName(),
+              schemaMeta.getSchemaId()));
     }
-    return null;
-  }
-
-  public PojoConsumerOperationMeta findOperationMeta(Method consumerMethod) {
-    return operationMetas.get(consumerMethod);
+    return pojoConsumerOperationMeta;
   }
 }

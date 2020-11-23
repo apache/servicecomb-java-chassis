@@ -22,7 +22,9 @@ import java.lang.reflect.Type;
 
 import javax.servlet.http.Part;
 
+import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -38,25 +40,22 @@ public class PojoConsumerOperationMeta {
 
   private JavaType responseType;
 
+  private InvocationRuntimeType invocationRuntimeType;
+
   public PojoConsumerOperationMeta(PojoConsumerMeta pojoConsumerMeta, OperationMeta operationMeta,
       SwaggerConsumerOperation swaggerConsumerOperation) {
     this.pojoConsumerMeta = pojoConsumerMeta;
     this.operationMeta = operationMeta;
     this.swaggerConsumerOperation = swaggerConsumerOperation;
+    initResponseType();
+    initRuntimeType();
+  }
 
-    Type intfResponseType =
-        TypeToken.of(swaggerConsumerOperation.getConsumerClass())
-            .resolveType(swaggerConsumerOperation.getConsumerMethod().getGenericReturnType())
-            .getType();
-    if (intfResponseType instanceof Class && Part.class.isAssignableFrom((Class<?>) intfResponseType)) {
-      responseType = TypeFactory.defaultInstance().constructType(Part.class);
-      return;
-    }
-
-    intfResponseType = findResponseTypeProcessor(intfResponseType).extractResponseType(intfResponseType);
-    if (intfResponseType != null) {
-      responseType = TypeFactory.defaultInstance().constructType(intfResponseType);
-    }
+  private void initRuntimeType() {
+    invocationRuntimeType = operationMeta.buildBaseConsumerRuntimeType();
+    invocationRuntimeType.setArgumentsMapper(swaggerConsumerOperation.getArgumentsMapper());
+    invocationRuntimeType.setAssociatedClass(swaggerConsumerOperation.getConsumerClass());
+    invocationRuntimeType.setAssociatedMethod(swaggerConsumerOperation.getConsumerMethod());
   }
 
   public PojoConsumerMeta getPojoConsumerMeta() {
@@ -73,5 +72,30 @@ public class PojoConsumerOperationMeta {
 
   public JavaType getResponsesType() {
     return responseType;
+  }
+
+  public InvocationRuntimeType getInvocationRuntimeType() {
+    return invocationRuntimeType;
+  }
+
+  public ReferenceConfig createReferenceConfig(PojoConsumerOperationMeta consumerOperationMeta) {
+    return pojoConsumerMeta.getMicroserviceReferenceConfig()
+        .createReferenceConfig(consumerOperationMeta.getOperationMeta());
+  }
+
+  private void initResponseType() {
+    Type intfResponseType =
+        TypeToken.of(swaggerConsumerOperation.getConsumerClass())
+            .resolveType(swaggerConsumerOperation.getConsumerMethod().getGenericReturnType())
+            .getType();
+    if (intfResponseType instanceof Class && Part.class.isAssignableFrom((Class<?>) intfResponseType)) {
+      responseType = TypeFactory.defaultInstance().constructType(Part.class);
+      return;
+    }
+
+    intfResponseType = findResponseTypeProcessor(intfResponseType).extractResponseType(intfResponseType);
+    if (intfResponseType != null) {
+      responseType = TypeFactory.defaultInstance().constructType(intfResponseType);
+    }
   }
 }
