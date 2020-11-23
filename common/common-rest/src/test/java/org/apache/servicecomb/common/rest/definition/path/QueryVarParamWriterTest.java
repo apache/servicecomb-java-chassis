@@ -33,7 +33,6 @@ import org.junit.Test;
 import io.swagger.models.parameters.QueryParameter;
 
 public class QueryVarParamWriterTest {
-
   private static QueryVarParamWriter queryVarParamWriterCsv;
 
   private static QueryVarParamWriter queryVarParamWriterMulti;
@@ -118,7 +117,7 @@ public class QueryVarParamWriterTest {
 
     // pass blank string
     stringBuilder = new URLPathStringBuilder();
-    parameters.put("q",  new String[] {""});
+    parameters.put("q", new String[] {""});
     queryVarParamWriterCsv.write(stringBuilder, parameters);
     Assert.assertEquals("?q=", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
@@ -130,7 +129,7 @@ public class QueryVarParamWriterTest {
 
     // pass empty
     stringBuilder = new URLPathStringBuilder();
-    parameters.put("q",  new String[] {});
+    parameters.put("q", new String[] {});
     queryVarParamWriterCsv.write(stringBuilder, parameters);
     Assert.assertEquals("", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();
@@ -192,7 +191,7 @@ public class QueryVarParamWriterTest {
 
     // pass blank string
     stringBuilder = new URLPathStringBuilder();
-    parameters.put("q",  Collections.singletonList(""));
+    parameters.put("q", Collections.singletonList(""));
     queryVarParamWriterCsv.write(stringBuilder, parameters);
     Assert.assertEquals("?q=", stringBuilder.build());
     stringBuilder = new URLPathStringBuilder();

@@ -57,10 +57,10 @@ public class RestParam {
 
   protected void init(Parameter parameter, Type genericParamType) {
     String paramType = parameter.getIn();
-    ParamValueProcessorCreator creater =
+    ParamValueProcessorCreator creator =
         ParamValueProcessorCreatorManager.INSTANCE.ensureFindValue(paramType);
 
-    this.setParamProcessor(creater.create(parameter, genericParamType));
+    this.setParamProcessor(creator.create(parameter, genericParamType));
   }
 
   @SuppressWarnings("unchecked")

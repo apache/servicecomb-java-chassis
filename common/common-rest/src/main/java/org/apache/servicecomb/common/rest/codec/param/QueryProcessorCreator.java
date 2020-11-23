@@ -24,7 +24,8 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.codec.RestClientRequest;
-import org.apache.servicecomb.swagger.converter.property.SwaggerParamCollectionFormat;
+import org.apache.servicecomb.common.rest.codec.query.QueryCodec;
+import org.apache.servicecomb.common.rest.codec.query.QueryCodecsUtils;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -53,40 +54,28 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
 
     private boolean repeatedType;
 
-    private SwaggerParamCollectionFormat collectionFormat;
+    private QueryCodec queryCodec;
 
     public QueryProcessor(QueryParameter queryParameter, JavaType targetType) {
       super(queryParameter.getName(), targetType, queryParameter.getDefaultValue(), queryParameter.getRequired());
 
       this.repeatedType = ArrayProperty.isType(queryParameter.getType());
-      if (StringUtils.isNotEmpty(queryParameter.getCollectionFormat())) {
-        this.collectionFormat = SwaggerParamCollectionFormat
-            .valueOf(queryParameter.getCollectionFormat().toUpperCase());
-      }
+      this.queryCodec = QueryCodecsUtils.find(queryParameter.getCollectionFormat());
     }
 
     @Override
     public Object getValue(HttpServletRequest request) {
-      if (repeatedType
-          && SwaggerParamCollectionFormat.MULTI.equals(collectionFormat)) {
-        //Even if the paramPath does not exist, value won't be null at now
-        String[] value = request.getParameterValues(paramPath);
-        return convertValue(value, targetType);
-      }
+      return queryCodec.decode(this, request);
+    }
 
+    public Object getAndCheckParameter(HttpServletRequest request) {
       Object value = request.getParameter(paramPath);
       // make some old systems happy
       if (emptyAsNull && StringUtils.isEmpty((String) value)) {
         value = null;
       }
-      if (value == null) {
-        value = checkRequiredAndDefaultValue();
-      }
-      if (null != collectionFormat) {
-        value = collectionFormat.splitParam((String) value);
-      }
 
-      return convertValue(value, targetType);
+      return value != null ? value : checkRequiredAndDefaultValue();
     }
 
     private Object checkRequiredAndDefaultValue() {
@@ -111,8 +100,16 @@ public class QueryProcessorCreator implements ParamValueProcessorCreator {
       return PARAMTYPE;
     }
 
-    public SwaggerParamCollectionFormat getCollectionFormat() {
-      return collectionFormat;
+    public QueryCodec getQueryCodec() {
+      return queryCodec;
+    }
+
+    public boolean isRepeatedType() {
+      return repeatedType;
+    }
+
+    public Object convertValue(Object value) {
+      return convertValue(value, targetType);
     }
   }
 

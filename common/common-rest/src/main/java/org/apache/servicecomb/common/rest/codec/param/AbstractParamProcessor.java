@@ -45,8 +45,13 @@ public abstract class AbstractParamProcessor implements ParamValueProcessor {
     }
   }
 
+  @Override
   public String getParameterPath() {
     return paramPath;
+  }
+
+  public JavaType getTargetType() {
+    return targetType;
   }
 
   public boolean isRequired() {
