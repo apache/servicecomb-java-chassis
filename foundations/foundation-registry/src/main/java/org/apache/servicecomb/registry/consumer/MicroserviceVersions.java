@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.apache.servicecomb.foundation.common.VendorExtensions;
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
@@ -33,6 +34,7 @@ import org.apache.servicecomb.registry.api.event.DestroyMicroserviceEvent;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.registry.api.event.task.SafeModeChangeEvent;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.registry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.registry.config.ServiceRegistryCommonConfig;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
@@ -184,7 +186,16 @@ public class MicroserviceVersions {
 
   protected void safeSetInstances(List<MicroserviceInstance> pulledInstances, String rev) {
     try {
-      setInstances(pulledInstances, rev);
+      List<MicroserviceInstance> filteredInstance = pulledInstances;
+      // 增加一个配置项只使用 `UP` 实例。 在使用 `TESTING` 进行拨测， 并且配置了
+      // servicecomb.references.version-rule=latest 场景，需要保证不使用
+      // `TESTING` 实例。 不能依赖 InstanceStatusDiscoveryFilter, 避免
+      // 构建的 VersionRule 实例列表为空。
+      if (ServiceRegistryCommonConfig.useUpInstancesOnly()) {
+        filteredInstance = pulledInstances.stream().filter(item -> MicroserviceInstanceStatus.UP == item.getStatus())
+            .collect(Collectors.toList());
+      }
+      setInstances(filteredInstance, rev);
     } catch (Throwable e) {
       waitingDelete = true;
       LOGGER.error("Failed to setInstances, appId={}, microserviceName={}.",
@@ -209,7 +220,7 @@ public class MicroserviceVersions {
     }
   }
 
-  protected void setInstances(List<MicroserviceInstance> pulledInstances, String rev) {
+  private void setInstances(List<MicroserviceInstance> pulledInstances, String rev) {
     synchronized (lock) {
       MergedInstances mergedInstances = mergeInstances(pulledInstances, instances);
       instances = mergedInstances.instanceIdMap.values();
