@@ -17,9 +17,12 @@
 package org.apache.servicecomb.swagger.engine;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.servicecomb.swagger.generator.core.model.SwaggerOperation;
-import org.apache.servicecomb.swagger.generator.core.utils.MethodUtils;
 import org.apache.servicecomb.swagger.invocation.arguments.ArgumentsMapper;
 import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
 
@@ -28,15 +31,13 @@ public class SwaggerConsumerOperation {
 
   private Method consumerMethod;
 
+  private String[] consumerParameterNames;
+
   private SwaggerOperation swaggerOperation;
 
   private ArgumentsMapper argumentsMapper;
 
   private ConsumerResponseMapper responseMapper;
-
-  public String getSchemaOperationId() {
-    return MethodUtils.findSwaggerMethodName(consumerMethod);
-  }
 
   public Method getConsumerMethod() {
     return consumerMethod;
@@ -44,6 +45,10 @@ public class SwaggerConsumerOperation {
 
   public void setConsumerMethod(Method consumerMethod) {
     this.consumerMethod = consumerMethod;
+
+    this.consumerParameterNames = Arrays.stream(consumerMethod.getParameters())
+        .map(Parameter::getName)
+        .toArray(String[]::new);
   }
 
   public Class<?> getConsumerClass() {
@@ -76,5 +81,13 @@ public class SwaggerConsumerOperation {
 
   public void setResponseMapper(ConsumerResponseMapper responseMapper) {
     this.responseMapper = responseMapper;
+  }
+
+  public Map<String, Object> toInvocationArguments(Object[] args) {
+    Map<String, Object> arguments = new HashMap<>();
+    for (int i = 0; i < consumerParameterNames.length; i++) {
+      arguments.put(consumerParameterNames[i], args[i]);
+    }
+    return arguments;
   }
 }
