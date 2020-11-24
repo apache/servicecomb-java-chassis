@@ -18,61 +18,82 @@
 package org.apache.servicecomb.registry.consumer;
 
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
+import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
 import org.apache.servicecomb.registry.api.registry.Microservice;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
-import org.apache.servicecomb.registry.RegistrationManager;
 import org.apache.servicecomb.registry.version.Version;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableMap;
+
 import io.swagger.models.Swagger;
 
 public class StaticMicroserviceVersions extends MicroserviceVersions {
-
   private static final Logger LOGGER = LoggerFactory.getLogger(StaticMicroserviceVersions.class);
 
-  private Class<?> schemaIntfCls;
+  protected final Microservice microservice = new Microservice();
 
-  private Microservice microservice = new Microservice();
-
-  private MicroserviceInstances microserviceInstances = new MicroserviceInstances();
+  protected final MicroserviceInstances microserviceInstances = new MicroserviceInstances();
 
   public StaticMicroserviceVersions(AppManager appManager, String appId, String microserviceName) {
     super(appManager, appId, microserviceName);
   }
 
   public StaticMicroserviceVersions init(Class<?> schemaIntfCls, String version,
-      List<MicroserviceInstance> addedInstances) {
-    this.schemaIntfCls = schemaIntfCls;
-    Swagger swagger = RegistrationManager.INSTANCE.getSwaggerLoader()
-        .registerSwagger(appId, shortName, shortName, schemaIntfCls);
-    String swaggerContent = SwaggerUtils.swaggerToString(swagger);
-    LOGGER.info("generate swagger for 3rd party service [{}]/[{}], swagger: {}",
-        getMicroserviceName(), version, swaggerContent);
-    microservice.addSchema(shortName, swaggerContent);
+      List<MicroserviceInstance> instances) {
+    return init(ImmutableMap.of(microserviceName, schemaIntfCls), version, instances);
+  }
 
+  public StaticMicroserviceVersions init(Map<String, Class<?>> schemaByIdMap, String version,
+      List<MicroserviceInstance> instances) {
     createMicroservice(version);
-
-    for (MicroserviceInstance instance : addedInstances) {
-      instance.setServiceId(microservice.getServiceId());
-      instance.setInstanceId(microservice.getServiceId() + "-" + UUID.randomUUID());
-    }
-    microserviceInstances.setMicroserviceNotExist(false);
-    microserviceInstances.setInstancesResponse(new FindInstancesResponse());
-    microserviceInstances.getInstancesResponse().setInstances(addedInstances);
-
+    addSchemas(schemaByIdMap);
+    addInstances(instances);
     pullInstances();
 
     return this;
   }
 
-  public Class<?> getSchemaIntfCls() {
-    return schemaIntfCls;
+  protected void createMicroservice(String version) {
+    String environment = RegistrationManager.INSTANCE.getMicroservice().getEnvironment();
+
+    microservice.setAppId(this.getAppId());
+    microservice.setServiceName(this.getShortName());
+    microservice.setVersion(new Version(version).getVersion());
+    microservice.setServiceId(this.getAppId() + "-"
+        + environment + "-"
+        + this.getMicroserviceName() + "-"
+        + microservice.getVersion());
+    microservice.setEnvironment(environment);
+  }
+
+  protected void addSchemas(Map<String, Class<?>> schemaByIdMap) {
+    schemaByIdMap.forEach(this::addSchema);
+  }
+
+  protected void addSchema(String schemaId, Class<?> schemaClass) {
+    Swagger swagger = RegistrationManager.INSTANCE.getSwaggerLoader()
+        .registerSwagger(appId, shortName, schemaId, schemaClass);
+    String swaggerContent = SwaggerUtils.swaggerToString(swagger);
+    LOGGER.debug("generate swagger for 3rd party service [{}], swagger: {}", microserviceName, swaggerContent);
+    microservice.addSchema(schemaId, swaggerContent);
+  }
+
+  protected void addInstances(List<MicroserviceInstance> instances) {
+    for (int idx = 0; idx < instances.size(); idx++) {
+      MicroserviceInstance instance = instances.get(idx);
+      instance.setServiceId(microservice.getServiceId());
+      instance.setInstanceId(microservice.getServiceId() + "-" + idx);
+    }
+    microserviceInstances.setMicroserviceNotExist(false);
+    microserviceInstances.setInstancesResponse(new FindInstancesResponse());
+    microserviceInstances.getInstancesResponse().setInstances(instances);
   }
 
   @Override
@@ -86,18 +107,5 @@ public class StaticMicroserviceVersions extends MicroserviceVersions {
   @Override
   protected MicroserviceVersion createMicroserviceVersion(String microserviceId, List<MicroserviceInstance> instances) {
     return new MicroserviceVersion(this, microservice, microserviceName, instances);
-  }
-
-  private void createMicroservice(String version) {
-    String environment = RegistrationManager.INSTANCE.getMicroservice().getEnvironment();
-
-    microservice.setAppId(this.getAppId());
-    microservice.setServiceName(this.getShortName());
-    microservice.setVersion(new Version(version).getVersion());
-    microservice.setServiceId(this.getAppId() + "-"
-        + environment + "-"
-        + this.getMicroserviceName() + "-"
-        + microservice.getVersion());
-    microservice.setEnvironment(environment);
   }
 }
