@@ -22,10 +22,19 @@ import com.netflix.config.DynamicPropertyFactory;
 public class ServiceRegistryCommonConfig {
   private static final String REGISTRY_EMPTY_PROTECTION = "servicecomb.service.registry.instance.empty.protection";
 
+  private static final String REGISTRY_FILTER_UP_INSTANCES = "servicecomb.service.registry.instance.useUpInstancesOnly";
+
   public static boolean isEmptyInstanceProtectionEnabled() {
     return
         DynamicPropertyFactory.getInstance()
             .getBooleanProperty(REGISTRY_EMPTY_PROTECTION,
                 true).get();
+  }
+
+  public static boolean useUpInstancesOnly() {
+    return
+        DynamicPropertyFactory.getInstance()
+            .getBooleanProperty(REGISTRY_FILTER_UP_INSTANCES,
+                false).get();
   }
 }
