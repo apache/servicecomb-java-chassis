@@ -36,6 +36,8 @@ public class Invoker implements InvocationHandler {
 
   protected final PojoInvocationCreator invocationCreator;
 
+  protected final DefaultMethodMeta defaultMethodMeta = new DefaultMethodMeta();
+
   @SuppressWarnings("unchecked")
   public static <T> T createProxy(String microserviceName, String schemaId, Class<?> consumerIntf) {
     Invoker invoker = new Invoker(microserviceName, schemaId, consumerIntf);
@@ -58,6 +60,11 @@ public class Invoker implements InvocationHandler {
 
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+    if (method.isDefault()) {
+      return defaultMethodMeta.getOrCreateMethodHandle(proxy, method)
+          .invokeWithArguments(args);
+    }
+    
     PojoConsumerMeta pojoConsumerMeta = metaRefresher.getLatestMeta();
     PojoConsumerOperationMeta consumerOperationMeta = pojoConsumerMeta.ensureFindOperationMeta(method);
     Invocation invocation = invocationCreator.create(consumerOperationMeta, args);

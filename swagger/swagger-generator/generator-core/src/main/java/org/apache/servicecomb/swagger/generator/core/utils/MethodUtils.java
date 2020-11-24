@@ -67,6 +67,9 @@ public class MethodUtils {
    * false if this method should be added in to Swagger schema
    */
   public static boolean isSkipMethod(Class<?> cls, Method method) {
+    if (method.isDefault()) {
+      return true;
+    }
     if (method.getDeclaringClass() == Object.class) {
       return true;
     }
