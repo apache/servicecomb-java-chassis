@@ -18,6 +18,7 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.deserializer.
 
 import java.io.IOException;
 
+import org.apache.servicecomb.foundation.common.base.DynamicEnum;
 import org.apache.servicecomb.foundation.common.utils.bean.IntSetter;
 import org.apache.servicecomb.foundation.common.utils.bean.Setter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
@@ -44,6 +45,10 @@ public class EnumsReadSchemas {
 
     if (int.class.equals(javaType.getRawClass())) {
       return new IntPrimitiveEnumSchema<>(protoField, propertyDescriptor);
+    }
+
+    if (javaType.isTypeOrSubTypeOf(DynamicEnum.class)) {
+      return new DynamicEnumSchema<>(protoField, propertyDescriptor);
     }
 
     ProtoUtils.throwNotSupportMerge(protoField, propertyDescriptor.getJavaType());
@@ -73,6 +78,21 @@ public class EnumsReadSchemas {
       throw new IllegalStateException(
           String.format("invalid enum value %d for %s, proto field=%s:%s",
               value,
+              javaType.getRawClass().getName(),
+              ((Type) protoField.getParent()).getCanonicalName(),
+              protoField.getName()));
+    }
+  }
+
+  private static class DynamicEnumSchema<T> extends FieldSchema<T> {
+    public DynamicEnumSchema(Field protoField, PropertyDescriptor propertyDescriptor) {
+      super(protoField, propertyDescriptor.getJavaType());
+    }
+
+    @Override
+    public int mergeFrom(InputEx input, T message) throws IOException {
+      throw new IllegalStateException(
+          String.format("currently, protobuf not support dynamic enum, type=%s, proto field=%s:%s",
               javaType.getRawClass().getName(),
               ((Type) protoField.getParent()).getCanonicalName(),
               protoField.getName()));

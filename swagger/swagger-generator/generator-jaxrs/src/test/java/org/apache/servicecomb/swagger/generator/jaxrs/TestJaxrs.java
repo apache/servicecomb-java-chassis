@@ -144,6 +144,16 @@ public class TestJaxrs {
   }
 
   @Test
+  public void should_support_dynamic_enum() {
+    UnitTestSwaggerUtils.testSwagger("schemas/dynamicStatusEnum.yaml", Echo.class, "dynamicStatusEnum");
+  }
+
+  @Test
+  public void should_support_jdk_enum() {
+    UnitTestSwaggerUtils.testSwagger("schemas/jdkStatusEnum.yaml", Echo.class, "jdkStatusEnum");
+  }
+
+  @Test
   public void beanParamComplexField() {
     UnitTestSwaggerUtils.testException(
         "generate swagger operation failed, method=org.apache.servicecomb.swagger.generator.jaxrs.Echo:beanParamComplexField.",

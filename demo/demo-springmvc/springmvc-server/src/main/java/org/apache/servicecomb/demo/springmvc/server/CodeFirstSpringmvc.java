@@ -335,7 +335,7 @@ public class CodeFirstSpringmvc {
     return name;
   }
 
-  enum NameType {
+  public enum NameType {
     abc,
     def
   }

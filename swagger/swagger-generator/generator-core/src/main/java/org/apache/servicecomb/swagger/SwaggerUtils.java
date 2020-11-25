@@ -40,8 +40,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.servicecomb.foundation.common.base.DynamicEnum;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.ReflectUtils;
+import org.apache.servicecomb.swagger.extend.PropertyModelConverterExt;
 import org.apache.servicecomb.swagger.generator.SwaggerConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,7 +70,6 @@ import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.ObjectProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.RefProperty;
-import io.swagger.models.utils.PropertyModelConverter;
 import io.swagger.util.Yaml;
 
 public final class SwaggerUtils {
@@ -205,7 +206,12 @@ public final class SwaggerUtils {
   }
 
   public static void addDefinitions(Swagger swagger, Type paramType) {
-    Map<String, Model> models = ModelConverters.getInstance().readAll(paramType);
+    JavaType javaType = TypeFactory.defaultInstance().constructType(paramType);
+    if (javaType.isTypeOrSubTypeOf(DynamicEnum.class)) {
+      return;
+    }
+
+    Map<String, Model> models = ModelConverters.getInstance().readAll(javaType);
     for (Entry<String, Model> entry : models.entrySet()) {
       if (null != swagger.getDefinitions()) {
         Model tempModel = swagger.getDefinitions().get(entry.getKey());
@@ -232,7 +238,7 @@ public final class SwaggerUtils {
   }
 
   public static boolean isBean(Model model) {
-    return isBean(new PropertyModelConverter().modelToProperty(model));
+    return isBean(PropertyModelConverterExt.toProperty(model));
   }
 
   public static boolean isBean(Property property) {
@@ -392,7 +398,7 @@ public final class SwaggerUtils {
     }
 
     JavaType javaType = TypeFactory.defaultInstance().constructType(type);
-    if (javaType.isContainerType() || javaType.isEnumType()) {
+    if (javaType.isContainerType() || javaType.isEnumType() || javaType.isTypeOrSubTypeOf(DynamicEnum.class)) {
       return false;
     }
 
