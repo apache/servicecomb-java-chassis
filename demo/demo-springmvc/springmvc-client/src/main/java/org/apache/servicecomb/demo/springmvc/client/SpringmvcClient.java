@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.demo.springmvc.client;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +27,7 @@ import org.apache.servicecomb.demo.DemoConst;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.demo.controller.Controller;
 import org.apache.servicecomb.demo.controller.Person;
+import org.apache.servicecomb.demo.springmvc.client.ThirdSvc.ThirdSvcClient;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.Log4jUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
@@ -205,7 +207,16 @@ public class SpringmvcClient {
       testRequiredBody(templateUrlWithServiceName, microserviceName);
       testSpringMvcDefaultValuesAllTransport(templateUrlWithServiceName, microserviceName);
       testSpringMvcDefaultValuesJavaPrimitiveAllTransport(templateUrlWithServiceName, microserviceName);
+      testThirdService();
     }
+  }
+
+  private static void testThirdService() {
+    ThirdSvcClient client = BeanUtils.getContext().getBean(ThirdSvcClient.class);
+
+    Date date = new Date();
+    ResponseEntity<Date> responseEntity = client.responseEntity(date);
+    TestMgr.check(date, responseEntity.getBody());
   }
 
   private static void testControllerRest(RestTemplate template, String microserviceName) {
