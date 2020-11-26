@@ -25,7 +25,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.http.HttpStatus;
 import org.apache.servicecomb.common.rest.codec.RestObjectMapperFactory;
-import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.demo.CategorizedTestCaseRunner;
 import org.apache.servicecomb.demo.CodeFirstRestTemplate;
 import org.apache.servicecomb.demo.DemoConst;
@@ -84,7 +83,6 @@ public class JaxrsClient {
     codeFirstClient.testCodeFirst(templateNew, "jaxrs", "/codeFirstJaxrs/");
     testCompute(templateNew);
     testValidator(templateNew);
-    testClientTimeOut(templateNew);
     testJaxRSDefaultValuesAllTransport(templateNew);
     testSpringMvcDefaultValuesJavaPrimitiveAllTransport(templateNew);
 
@@ -479,47 +477,6 @@ public class JaxrsClient {
     TestMgr.check("hello test 15", result);
   }
 
-  private static void testClientTimeOut(RestTemplate template) {
-    String microserviceName = "jaxrs";
-    for (String transport : DemoConst.transports) {
-      if (transport.equals(Const.ANY_TRANSPORT)) {
-        continue;
-      }
-      ArchaiusUtils.setProperty("servicecomb.references.transport." + microserviceName, transport);
-      TestMgr.setMsg(microserviceName, transport);
-
-      String cseUrlPrefix = "cse://" + microserviceName + "/clientreqtimeout/";
-
-      testClientTimeoutSayHi(template, cseUrlPrefix);
-      testClientTimeoutAdd(template, cseUrlPrefix);
-    }
-  }
-
-  private static void testClientTimeoutSayHi(RestTemplate template, String cseUrlPrefix) {
-    Student student = new Student();
-    student.setName("timeout");
-    student.setAge(30);
-    Student result = template.postForObject(cseUrlPrefix + "sayhello", student, Student.class);
-    TestMgr.check("hello timeout 30", result);
-  }
-
-  private static void testClientTimeoutAdd(RestTemplate template, String cseUrlPrefix) {
-    Map<String, String> params = new HashMap<>();
-    params.put("a", "5");
-    params.put("b", "20");
-    boolean isExcep = false;
-    try {
-      template.postForObject(cseUrlPrefix + "add", params, Integer.class);
-    } catch (InvocationException e) {
-      isExcep = true;
-      // implement timeout with same error code and message for rest and highway
-      TestMgr.check(408, e.getStatus().getStatusCode());
-      TestMgr.check(true,
-          e.getErrorData().toString().contains("CommonExceptionData [message=Request Timeout. Details:"));
-    }
-
-    TestMgr.check(true, isExcep);
-  }
 
   private static void testSpringMvcDefaultValuesJavaPrimitiveRest(RestTemplate template) {
     String microserviceName = "jaxrs";
