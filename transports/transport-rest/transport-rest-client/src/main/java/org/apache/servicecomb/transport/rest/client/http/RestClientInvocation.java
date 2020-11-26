@@ -84,6 +84,8 @@ public class RestClientInvocation {
 
   private Handler<Throwable> throwableHandler = e -> fail((ConnectionBase) clientRequest.connection(), e);
 
+  private boolean alreadyFailed = false;
+
   public RestClientInvocation(HttpClientWithContext httpClientWithContext, List<HttpClientFilter> httpClientFilters) {
     this.httpClientWithContext = httpClientWithContext;
     this.httpClientFilters = httpClientFilters;
@@ -115,8 +117,10 @@ public class RestClientInvocation {
     }
 
     clientRequest.exceptionHandler(e -> {
-      invocation.getTraceIdLogger().error(LOGGER, "Failed to send request, local:{}, remote:{}, message={}.",
-          getLocalAddress(), ipPort.getSocketAddress(), ExceptionUtils.getExceptionMessageWithoutTrace(e));
+      invocation.getTraceIdLogger()
+          .error(LOGGER, "Failed to send request, alreadyFailed:{}, local:{}, remote:{}, message={}.",
+              alreadyFailed, getLocalAddress(), ipPort.getSocketAddress(),
+              ExceptionUtils.getExceptionMessageWithoutTrace(e));
       throwableHandler.handle(e);
     });
 
@@ -129,7 +133,9 @@ public class RestClientInvocation {
         restClientRequest.end();
       } catch (Throwable e) {
         invocation.getTraceIdLogger().error(LOGGER,
-            "send http request failed, local:{}, remote: {}, message={}.", getLocalAddress(), ipPort
+            "send http request failed, alreadyFailed:{}, local:{}, remote: {}, message={}.",
+            alreadyFailed,
+            getLocalAddress(), ipPort
             , ExceptionUtils.getExceptionMessageWithoutTrace(e));
         fail((ConnectionBase) clientRequest.connection(), e);
       }
@@ -249,9 +255,11 @@ public class RestClientInvocation {
   }
 
   protected void fail(ConnectionBase connection, Throwable e) {
-    if (invocation.isFinished()) {
+    if (alreadyFailed) {
       return;
     }
+
+    alreadyFailed = true;
 
     InvocationStageTrace stageTrace = invocation.getInvocationStageTrace();
     // connection maybe null when exception happens such as ssl handshake failure
