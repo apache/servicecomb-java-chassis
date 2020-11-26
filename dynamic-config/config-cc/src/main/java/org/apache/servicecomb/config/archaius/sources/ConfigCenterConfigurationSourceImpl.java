@@ -145,7 +145,7 @@ public class ConfigCenterConfigurationSourceImpl implements ConfigCenterConfigur
         LOGGER.error("action: {} is invalid.", action);
         return;
       }
-      LOGGER.warn("Config value cache changed: action:{}; item:{}", action, configuration.keySet());
+      LOGGER.info("Config value cache changed: action:{}; item:{}", action, configuration.keySet());
     }
   }
 }

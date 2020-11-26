@@ -243,16 +243,26 @@ public class ConfigCenterClient {
                 // ignore, just prevent NPE.
               });
               asyncResult.result().frameHandler(frame -> {
-                Buffer action = frame.binaryData();
-                LOGGER.info("watching config recieved {}", action);
-                Map<String, Object> mAction = action.toJsonObject().getMap();
-                if ("CREATE".equals(mAction.get("action"))) {
-                  //event loop can not be blocked,we just keep nothing changed in push mode
-                  refreshConfig(configCenter, false);
-                } else if ("MEMBER_CHANGE".equals(mAction.get("action"))) {
-                  refreshMembers(memberdis);
-                } else {
-                  parseConfigUtils.refreshConfigItemsIncremental(mAction);
+                if (frame.isText() || frame.isBinary()) {
+                  Buffer action = frame.binaryData();
+                  LOGGER.debug("watching config received {}", action);
+                  Map<String, Object> mAction = null;
+
+                  try {
+                    mAction = action.toJsonObject().getMap();
+                  } catch (Exception e) {
+                    LOGGER.error("parse config item failed.", e);
+                    return;
+                  }
+
+                  if ("CREATE".equals(mAction.get("action"))) {
+                    //event loop can not be blocked,we just keep nothing changed in push mode
+                    refreshConfig(configCenter, false);
+                  } else if ("MEMBER_CHANGE".equals(mAction.get("action"))) {
+                    refreshMembers(memberdis);
+                  } else {
+                    parseConfigUtils.refreshConfigItemsIncremental(mAction);
+                  }
                 }
               });
               startHeartBeatThread(asyncResult.result());

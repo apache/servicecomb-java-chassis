@@ -78,7 +78,13 @@ public final class WebsocketClientUtil {
           asyncResult.result().pongHandler(pong -> {
             // ignore, just prevent NPE.
           });
-          asyncResult.result().frameHandler((frame) -> onMessage.handle(frame.binaryData()));
+          asyncResult.result().frameHandler((frame) ->
+              {
+                if (frame.isBinary() || frame.isText()) {
+                  onMessage.handle(frame.binaryData());
+                }
+              }
+          );
         }
       });
     });
