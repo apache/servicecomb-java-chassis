@@ -441,7 +441,8 @@ public class LoadbalanceHandler implements Handler {
       if (InvocationException.class.isInstance(resp.getResult())) {
         InvocationException e = (InvocationException) resp.getResult();
         return e.getStatusCode() == ExceptionFactory.CONSUMER_INNER_STATUS_CODE
-            || e.getStatusCode() == 503;
+            || e.getStatusCode() == Status.SERVICE_UNAVAILABLE.getStatusCode()
+            || e.getStatusCode() == Status.REQUEST_TIMEOUT.getStatusCode();
       } else {
         return true;
       }
