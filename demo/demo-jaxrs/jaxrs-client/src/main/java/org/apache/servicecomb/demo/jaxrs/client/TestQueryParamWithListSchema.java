@@ -61,16 +61,16 @@ public class TestQueryParamWithListSchema implements CategorizedTestCase {
   }
 
   private void testCSVRest() {
-    TestMgr.check("[]",
+    TestMgr.check("0:[]",
         restTemplate.getForObject("cse://jaxrs/queryList/queryListCSV?", String.class));
   }
 
   private void testSSV() {
-    TestMgr.check("[1, 2]",
+    TestMgr.check("2:[1, 2]",
         restTemplate.getForObject("cse://jaxrs/queryList/queryListSSV?queryList=1%202", String.class));
-    TestMgr.check("[, ]",
+    TestMgr.check("2:[, ]",
         restTemplate.getForObject("cse://jaxrs/queryList/queryListSSV?queryList=%20", String.class));
-    TestMgr.check("[]",
+    TestMgr.check("1:[]",
         restTemplate.getForObject("cse://jaxrs/queryList/queryListSSV?queryList=", String.class));
   }
 
@@ -80,17 +80,17 @@ public class TestQueryParamWithListSchema implements CategorizedTestCase {
   }
 
   private void testTSVRest() {
-    TestMgr.check("[]",
+    TestMgr.check("0:[]",
         restTemplate.getForObject("cse://jaxrs/queryList/queryListTSV?", String.class));
   }
 
   private void testTSV() {
-    TestMgr.check("[1, 2]",
+    TestMgr.check("2:[1, 2]",
         restTemplate
             .getForObject("cse://jaxrs/queryList/queryListTSV?queryList={1}", String.class, "1\t2"));
-    TestMgr.check("[, ]",
+    TestMgr.check("2:[, ]",
         restTemplate.getForObject("cse://jaxrs/queryList/queryListTSV?queryList={1}", String.class, "\t"));
-    TestMgr.check("[]",
+    TestMgr.check("1:[]",
         restTemplate.getForObject("cse://jaxrs/queryList/queryListTSV?queryList=", String.class));
   }
 
@@ -100,17 +100,17 @@ public class TestQueryParamWithListSchema implements CategorizedTestCase {
   }
 
   private void testPipesRest() {
-    TestMgr.check("[]",
+    TestMgr.check("0:[]",
         restTemplate.getForObject("cse://jaxrs/queryList/queryListPIPES?", String.class));
   }
 
   private void testPipes() {
-    TestMgr.check("[1, 2]",
+    TestMgr.check("2:[1, 2]",
         restTemplate
             .getForObject("cse://jaxrs/queryList/queryListPIPES?queryList={1}", String.class, "1|2"));
-    TestMgr.check("[, ]",
+    TestMgr.check("2:[, ]",
         restTemplate.getForObject("cse://jaxrs/queryList/queryListPIPES?queryList={1}", String.class, "|"));
-    TestMgr.check("[]",
+    TestMgr.check("1:[]",
         restTemplate.getForObject("cse://jaxrs/queryList/queryListPIPES?queryList=", String.class));
   }
 
@@ -120,16 +120,16 @@ public class TestQueryParamWithListSchema implements CategorizedTestCase {
   }
 
   private void testSSVRest() {
-    TestMgr.check("[]",
+    TestMgr.check("0:[]",
         restTemplate.getForObject("cse://jaxrs/queryList/queryListSSV?", String.class));
   }
 
   private void testCSV() {
-    TestMgr.check("[1, 2]",
+    TestMgr.check("2:[1, 2]",
         restTemplate.getForObject("cse://jaxrs/queryList/queryListCSV?queryList=1,2", String.class));
-    TestMgr.check("[, ]",
+    TestMgr.check("2:[, ]",
         restTemplate.getForObject("cse://jaxrs/queryList/queryListCSV?queryList=,", String.class));
-    TestMgr.check("[]",
+    TestMgr.check("1:[]",
         restTemplate.getForObject("cse://jaxrs/queryList/queryListCSV?queryList=", String.class));
   }
 
@@ -139,16 +139,16 @@ public class TestQueryParamWithListSchema implements CategorizedTestCase {
   }
 
   private void testMultiRest() {
-    TestMgr.check("[]",
+    TestMgr.check("0:[]",
         restTemplate.getForObject("cse://jaxrs/queryList/queryListMULTI?", String.class));
   }
 
   private void testMulti() {
-    TestMgr.check("[1, 2]",
+    TestMgr.check("2:[1, 2]",
         restTemplate.getForObject("cse://jaxrs/queryList/queryListMULTI?queryList=1&queryList=2", String.class));
-    TestMgr.check("[, ]",
+    TestMgr.check("2:[, ]",
         restTemplate.getForObject("cse://jaxrs/queryList/queryListMULTI?queryList=&queryList=", String.class));
-    TestMgr.check("[]",
+    TestMgr.check("1:[]",
         restTemplate.getForObject("cse://jaxrs/queryList/queryListMULTI?queryList=", String.class));
   }
 }
