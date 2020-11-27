@@ -215,4 +215,8 @@ public final class ITJUnitUtils {
       throw new IllegalStateException(e);
     }
   }
+
+  public static boolean isRestTransport() {
+    return Const.RESTFUL.equals(transport);
+  }
 }

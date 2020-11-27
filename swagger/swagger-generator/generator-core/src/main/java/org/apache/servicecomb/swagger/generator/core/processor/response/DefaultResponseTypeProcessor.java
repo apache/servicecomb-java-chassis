@@ -24,6 +24,7 @@ import java.lang.reflect.Type;
 import javax.servlet.http.Part;
 
 import org.apache.servicecomb.swagger.SwaggerUtils;
+import org.apache.servicecomb.swagger.extend.PropertyModelConverterExt;
 import org.apache.servicecomb.swagger.generator.OperationGenerator;
 import org.apache.servicecomb.swagger.generator.ResponseTypeProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
@@ -31,7 +32,6 @@ import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 import io.swagger.converter.ModelConverters;
 import io.swagger.models.Model;
 import io.swagger.models.properties.Property;
-import io.swagger.models.utils.PropertyModelConverter;
 import io.swagger.util.ReflectionUtils;
 
 public class DefaultResponseTypeProcessor implements ResponseTypeProcessor {
@@ -88,6 +88,6 @@ public class DefaultResponseTypeProcessor implements ResponseTypeProcessor {
     }
     SwaggerUtils.addDefinitions(swaggerGenerator.getSwagger(), responseType);
     Property property = ModelConverters.getInstance().readAsProperty(responseType);
-    return new PropertyModelConverter().propertyToModel(property);
+    return PropertyModelConverterExt.toModel(property);
   }
 }

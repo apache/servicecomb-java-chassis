@@ -23,10 +23,13 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.foundation.common.base.DynamicEnum;
+import org.apache.servicecomb.foundation.common.base.EnumUtils;
 import org.apache.servicecomb.foundation.common.exceptions.ServiceCombException;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.converter.property.StringPropertyConverter;
@@ -48,8 +51,10 @@ import io.swagger.converter.ModelConverterContext;
 import io.swagger.jackson.ModelResolver;
 import io.swagger.models.Model;
 import io.swagger.models.ModelImpl;
+import io.swagger.models.properties.IntegerProperty;
 import io.swagger.models.properties.Property;
 import io.swagger.models.properties.StringProperty;
+import io.swagger.util.PrimitiveType;
 
 public class ModelResolverExt extends ModelResolver {
   private Map<Class<?>, PropertyCreator> propertyCreatorMap = new HashMap<>();
@@ -164,12 +169,34 @@ public class ModelResolverExt extends ModelResolver {
       return creator.createProperty();
     }
 
+    if (EnumUtils.isDynamicEnum(propType.getRawClass())) {
+      return resolveDynamicEnum(propType);
+    }
+
     Property property = super.resolveProperty(propType, context, annotations, next);
     if (StringProperty.class.isInstance(property)) {
       if (StringPropertyConverter.isEnum((StringProperty) property)) {
         setType(propType, property.getVendorExtensions());
       }
     }
+    return property;
+  }
+
+  private Property resolveDynamicEnum(JavaType propType) {
+    Class<?> enumClass = propType.getRawClass();
+    Class<?> enumValueClass = propType.findTypeParameters(DynamicEnum.class)[0].getRawClass();
+    Property property = PrimitiveType.createProperty(enumValueClass);
+
+    if (property instanceof StringProperty) {
+      List<String> enums = SwaggerEnum.DYNAMIC.readEnumValues(enumClass);
+      ((StringProperty) property).setEnum(enums);
+    }
+
+    if (property instanceof IntegerProperty) {
+      List<Integer> enums = SwaggerEnum.DYNAMIC.readEnumValues(enumClass);
+      ((IntegerProperty) property).setEnum(enums);
+    }
+
     return property;
   }
 }

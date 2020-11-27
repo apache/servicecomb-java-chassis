@@ -216,6 +216,12 @@ public class DataTypeJaxrsSchema {
     return color;
   }
 
+  @Path("dynamicEnum")
+  @POST
+  public DynamicColor dynamicEnum(DynamicColor color) {
+    return color;
+  }
+
   // query array
   @Path("queryArr")
   @GET
@@ -250,6 +256,12 @@ public class DataTypeJaxrsSchema {
   @Path("queryArrMULTI")
   @GET
   public String queryArrMULTI(@ApiParam(collectionFormat = "multi") @QueryParam("queryArr") String[] queryArr) {
+    return Arrays.toString(queryArr) + queryArr.length;
+  }
+
+  @Path("queryArrJSON")
+  @GET
+  public String queryArrJSON(@ApiParam(collectionFormat = "json") @QueryParam("queryArr") String[] queryArr) {
     return Arrays.toString(queryArr) + queryArr.length;
   }
 

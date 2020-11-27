@@ -59,4 +59,8 @@ public class DataTypePojoSchema {
   public Color enumBody(Color color) {
     return color;
   }
+
+  public DynamicColor dynamicEnum(DynamicColor color) {
+    return color;
+  }
 }

@@ -26,6 +26,7 @@ import org.apache.servicecomb.foundation.test.scaffolding.model.Color;
 import org.apache.servicecomb.it.Consumers;
 import org.apache.servicecomb.it.extend.engine.ITSCBRestTemplate;
 import org.apache.servicecomb.it.junit.ITJUnitUtils;
+import org.apache.servicecomb.it.schema.DynamicColor;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -52,6 +53,8 @@ public class TestDataTypePrimitive {
     float floatAdd(float num1, float num2);
 
     Color enumBody(Color color);
+
+    DynamicColor dynamicEnum(DynamicColor color);
   }
 
   public interface DataTypeRestIntf {
@@ -116,6 +119,8 @@ public class TestDataTypePrimitive {
 
     // enum
     Color enumBody(Color color);
+
+    DynamicColor dynamicEnum(DynamicColor color);
 
     // query array
     String queryArr(String[] queryArr);
@@ -226,11 +231,28 @@ public class TestDataTypePrimitive {
   }
 
   @Test
+  public void dynamic_enum_pojo_intf() {
+    if (ITJUnitUtils.isRestTransport()) {
+      assertEquals(DynamicColor.BLUE, consumersPojo.getIntf().dynamicEnum(DynamicColor.BLUE));
+    }
+  }
+
+  @Test
   public void enumBody_pojo_rt() {
     Map<String, Color> body = new HashMap<>();
     body.put("color", Color.BLUE);
     assertEquals(Color.BLUE,
         consumersPojo.getSCBRestTemplate().postForObject("/enumBody", body, Color.class));
+  }
+
+  @Test
+  public void dynamic_enum_pojo_rt() {
+    if (ITJUnitUtils.isRestTransport()) {
+      Map<String, DynamicColor> body = new HashMap<>();
+      body.put("color", DynamicColor.BLUE);
+      assertEquals(DynamicColor.BLUE,
+          consumersPojo.getSCBRestTemplate().postForObject("/dynamicEnum", body, DynamicColor.class));
+    }
   }
 
   @Test
@@ -588,9 +610,24 @@ public class TestDataTypePrimitive {
   }
 
   @Test
+  public void dynamic_enum_jaxrs_intf() {
+    if (ITJUnitUtils.isRestTransport()) {
+      assertEquals(DynamicColor.BLUE, consumersJaxrs.getIntf().dynamicEnum(DynamicColor.BLUE));
+    }
+  }
+
+  @Test
   public void enumBody_jaxrs_rt() {
     assertEquals(Color.BLUE,
         consumersJaxrs.getSCBRestTemplate().postForObject("/enumBody", Color.BLUE, Color.class));
+  }
+
+  @Test
+  public void dynamic_enum_jaxrs_rt() {
+    if (ITJUnitUtils.isRestTransport()) {
+      assertEquals(DynamicColor.BLUE,
+          consumersJaxrs.getSCBRestTemplate().postForObject("/dynamicEnum", DynamicColor.BLUE, DynamicColor.class));
+    }
   }
 
   @Test

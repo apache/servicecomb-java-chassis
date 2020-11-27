@@ -83,6 +83,7 @@ definitions:
         format: "double"
       enumValue:
         type: "string"
+        description: "- RED: \n- YELLOW: \n- BLUE: \n"
         enum:
         - "RED"
         - "YELLOW"

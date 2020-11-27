@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.swagger.extend.PropertyModelConverterExt;
 import org.apache.servicecomb.swagger.generator.core.processor.annotation.models.ResponseConfig;
 import org.apache.servicecomb.swagger.generator.core.processor.annotation.models.ResponseConfigBase;
 import org.apache.servicecomb.swagger.generator.core.processor.annotation.models.ResponseHeaderConfig;
@@ -40,7 +41,6 @@ import io.swagger.models.Swagger;
 import io.swagger.models.properties.ArrayProperty;
 import io.swagger.models.properties.MapProperty;
 import io.swagger.models.properties.Property;
-import io.swagger.models.utils.PropertyModelConverter;
 import io.swagger.util.ReflectionUtils;
 
 public final class AnnotationUtils {
@@ -148,7 +148,7 @@ public final class AnnotationUtils {
 
     Property property = generateResponseProperty(swagger, responseConfig);
     if (property != null) {
-      Model model = new PropertyModelConverter().propertyToModel(property);
+      Model model = PropertyModelConverterExt.toModel(property);
       response.setResponseSchema(model);
     }
     response.setDescription(responseConfig.getDescription());

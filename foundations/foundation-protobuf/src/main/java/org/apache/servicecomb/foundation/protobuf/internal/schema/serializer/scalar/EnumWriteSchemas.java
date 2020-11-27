@@ -18,6 +18,7 @@ package org.apache.servicecomb.foundation.protobuf.internal.schema.serializer.sc
 
 import java.io.IOException;
 
+import org.apache.servicecomb.foundation.common.base.DynamicEnum;
 import org.apache.servicecomb.foundation.common.utils.bean.Getter;
 import org.apache.servicecomb.foundation.protobuf.internal.ProtoUtils;
 import org.apache.servicecomb.foundation.protobuf.internal.bean.PropertyDescriptor;
@@ -77,6 +78,12 @@ public class EnumWriteSchemas {
     public final void writeTo(OutputEx output, Object value) throws IOException {
       if (value instanceof Enum) {
         stringWrite(output, ((Enum<?>) value).name());
+        return;
+      }
+
+      if (value instanceof DynamicEnum) {
+        // protobuf can not support unknown enum, because protobuf encode enum as tag value
+        writeTo(output, ((DynamicEnum<?>) value).getValue());
         return;
       }
 

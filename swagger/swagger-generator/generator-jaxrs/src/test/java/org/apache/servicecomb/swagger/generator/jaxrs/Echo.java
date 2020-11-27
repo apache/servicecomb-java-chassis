@@ -44,15 +44,22 @@ import org.apache.servicecomb.swagger.generator.jaxrs.model.BeanParamDefaultBody
 import org.apache.servicecomb.swagger.generator.jaxrs.model.BeanParamInvalidDefaultBody;
 import org.apache.servicecomb.swagger.generator.jaxrs.model.BeanParamWithJsonIgnoredTagged;
 import org.apache.servicecomb.swagger.generator.jaxrs.model.BeanParamWithPart;
+import org.apache.servicecomb.swagger.generator.jaxrs.model.enums.DynamicStatus;
+import org.apache.servicecomb.swagger.generator.jaxrs.model.enums.DynamicStatusBeanParam;
+import org.apache.servicecomb.swagger.generator.jaxrs.model.enums.DynamicStatusModel;
+import org.apache.servicecomb.swagger.generator.jaxrs.model.enums.JdkStatus;
+import org.apache.servicecomb.swagger.generator.jaxrs.model.enums.JdkStatusBeanParam;
+import org.apache.servicecomb.swagger.generator.jaxrs.model.enums.JdkStatusModel;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 
 @Path(value = "Echo")
 public class Echo {
   @PATCH
   public void patch() {
-    
+
   }
 
   @POST
@@ -175,5 +182,21 @@ public class Echo {
   @POST
   public List<List<String>> nestedListString(List<List<String>> param) {
     return param;
+  }
+
+  @Path("/dynamicStatusEnum")
+  @POST
+  public DynamicStatus dynamicStatusEnum(@BeanParam DynamicStatusBeanParam statusBeanParam,
+      @QueryParam("status") @ApiParam(value = "dynamic desc direct") DynamicStatus status,
+      DynamicStatusModel model) {
+    return null;
+  }
+
+  @Path("/jdkStatusEnum")
+  @POST
+  public JdkStatus jdkStatusEnum(@BeanParam JdkStatusBeanParam statusBeanParam,
+      @QueryParam("status") @ApiParam(value = "jdk desc direct") JdkStatus status,
+      JdkStatusModel model) {
+    return null;
   }
 }
