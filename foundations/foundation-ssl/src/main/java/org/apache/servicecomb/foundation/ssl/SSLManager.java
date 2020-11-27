@@ -189,7 +189,7 @@ public final class SSLManager {
     return r;
   }
 
-  public static String[] getEnalbedCiphers(String enabledCiphers) {
+  public static String[] getEnabledCiphers(String enabledCiphers) {
     SSLOption option = new SSLOption();
     option.setProtocols("TLSv1.2");
     option.setCiphers(enabledCiphers);
