@@ -105,7 +105,7 @@
     <stax2-api.version>4.2</stax2-api.version>
     <swagger.version>1.5.22</swagger.version>
     <swagger2markup.version>1.3.3</swagger2markup.version>
-    <tcnetty.version>2.0.29.Final</tcnetty.version>
+    <tcnetty.version>2.0.31.Final</tcnetty.version>
     <tec-zkclient.version>0.10</tec-zkclient.version>
     <tomakehurst.version>2.6.0</tomakehurst.version>
     <vertx.version>3.8.3</vertx.version>
