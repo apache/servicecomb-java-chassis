@@ -23,6 +23,10 @@ import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 
 public class VertxContextExecutor implements Executor {
+  public static VertxContextExecutor create(Vertx vertx) {
+    return new VertxContextExecutor(vertx.getOrCreateContext());
+  }
+
   public static VertxContextExecutor create(Context context) {
     return new VertxContextExecutor(context);
   }

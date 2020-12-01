@@ -259,7 +259,8 @@ public class RestOperationMeta {
         }
         ProduceProcessor processor = ProduceProcessorManager.INSTANCE.findProcessor(produce, serialViewClass);
         if (processor == null) {
-          LOGGER.error("produce {} is not supported", produce);
+          LOGGER.error("produce {} is not supported, operation={}.", produce,
+              operationMeta.getMicroserviceQualifiedName());
           continue;
         }
         this.produceProcessorMap.put(produce, processor);

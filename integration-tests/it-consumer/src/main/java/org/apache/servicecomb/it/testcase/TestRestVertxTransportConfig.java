@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.it.testcase;
 
+import static javax.ws.rs.core.Response.Status.REQUEST_URI_TOO_LONG;
 import static org.junit.Assert.fail;
 
 import org.apache.servicecomb.foundation.common.utils.ExceptionUtils;
@@ -66,7 +67,7 @@ public class TestRestVertxTransportConfig {
       consumers.getIntf().testMaxInitialLineLength(q);
       fail("an exception is expected!");
     } catch (InvocationException e) {
-      Assert.assertEquals(414, e.getStatusCode());
+      Assert.assertEquals(REQUEST_URI_TOO_LONG.getStatusCode(), e.getStatusCode());
     }
   }
 

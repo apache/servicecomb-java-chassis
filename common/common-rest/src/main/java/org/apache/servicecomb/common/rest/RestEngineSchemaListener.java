@@ -29,6 +29,11 @@ import com.google.common.eventbus.Subscribe;
 
 public class RestEngineSchemaListener implements BootListener {
   @Override
+  public int getOrder() {
+    return -10000;
+  }
+
+  @Override
   public void onBeforeRegistry(BootEvent event) {
     createServicePathManager(event.getScbEngine().getProducerMicroserviceMeta())
         .buildProducerPaths();
