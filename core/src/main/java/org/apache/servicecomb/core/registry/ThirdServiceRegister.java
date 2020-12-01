@@ -136,7 +136,7 @@ public abstract class ThirdServiceRegister implements BootListener, EnvironmentA
   }
 
   @Override
-  public void onAfterRegistry(BootEvent event) {
+  public void onBeforeRegistry(BootEvent event) {
     appId = event.getScbEngine().getAppId();
     registerMicroserviceMapping();
   }

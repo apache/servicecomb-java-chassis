@@ -15,6 +15,8 @@
  */
 package org.apache.servicecomb.demo.springmvc.client;
 
+import static javax.ws.rs.core.Response.Status.REQUEST_URI_TOO_LONG;
+
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.springmvc.reference.RestTemplateBuilder;
@@ -45,7 +47,7 @@ public class TestMaxHttpUrlLength implements CategorizedTestCase {
           String.class);
       TestMgr.check(true, false);
     } catch (InvocationException e) {
-      TestMgr.check(414, e.getStatusCode());
+      TestMgr.check(REQUEST_URI_TOO_LONG.getStatusCode(), e.getStatusCode());
     }
   }
 
