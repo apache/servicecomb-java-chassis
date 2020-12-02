@@ -66,7 +66,7 @@ public class TestSpringmvcConsumerResponseMapper {
   @Test
   public void responseEntityWithHeader() {
     SwaggerConsumerOperation operation = swaggerConsumer.findOperation("responseEntity");
-    response.getHeaders().addHeader("h", "v");
+    response.addHeader("h", "v");
 
     @SuppressWarnings("unchecked")
     ResponseEntity<String> responseEntity = (ResponseEntity<String>) operation.getResponseMapper()
@@ -90,8 +90,8 @@ public class TestSpringmvcConsumerResponseMapper {
   @Test
   public void asyncResponseEntityWithHeader() {
     SwaggerConsumerOperation operation = swaggerConsumer.findOperation("asyncResponseEntity");
-    response.getHeaders().addHeader("h", "v1").addHeader("h", "v2");
-    response.getHeaders().getHeaderMap().put("h1", null);
+    response.addHeader("h", "v1").addHeader("h", "v2");
+    response.addHeader("h1", null);
 
     @SuppressWarnings("unchecked")
     ResponseEntity<String> responseEntity = (ResponseEntity<String>) operation.getResponseMapper()

@@ -36,7 +36,6 @@ import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.response.Headers;
 import org.apache.servicecomb.transport.highway.message.RequestHeader;
 import org.apache.servicecomb.transport.highway.message.ResponseHeader;
 import org.junit.AfterClass;
@@ -44,6 +43,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.json.Json;
 import mockit.Expectations;
@@ -64,7 +64,7 @@ public class HighwayServerCodecFilterTest {
   @Mocked
   HighwayTransportContext transportContext;
 
-  Headers headers = new Headers();
+  MultiMap headers = MultiMap.caseInsensitiveMultiMap();
 
   FilterNode nextNode = new FilterNode((invocation, next) -> {
     Response response = Response.ok("ok");
@@ -153,8 +153,8 @@ public class HighwayServerCodecFilterTest {
 
     new Verifications() {
       {
-        Headers captureHeaders;
-        responseHeader.setHeaders(captureHeaders = withCapture());
+        MultiMap captureHeaders;
+        responseHeader.fromMultiMap(captureHeaders = withCapture());
         assertThat(captureHeaders).isSameAs(headers);
       }
     };

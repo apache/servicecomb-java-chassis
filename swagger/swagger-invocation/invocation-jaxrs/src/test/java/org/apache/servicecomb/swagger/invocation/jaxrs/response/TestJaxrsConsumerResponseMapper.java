@@ -69,8 +69,8 @@ public class TestJaxrsConsumerResponseMapper {
   @Test
   public void jaxrsResponseWithHeaders() {
     SwaggerConsumerOperation operation = swaggerConsumer.findOperation("jaxrsResponse");
-    response.getHeaders().addHeader("h", "v1").addHeader("h", "v2").addHeader("h", (Object) null);
-    response.getHeaders().getHeaderMap().put("h1", null);
+    response.addHeader("h", "v1").addHeader("h", "v2").addHeader("h", null);
+    response.addHeader("h1", null);
 
     Response jaxrsResponse = (Response) operation.getResponseMapper().mapResponse(response);
     Assert.assertEquals(result, jaxrsResponse.getEntity());

@@ -139,7 +139,7 @@ public class HighwayServerInvoke {
     header.setStatusCode(response.getStatusCode());
     header.setReasonPhrase(response.getReasonPhrase());
     header.setContext(context);
-    header.setHeaders(response.getHeaders());
+    header.fromMultiMap(response.getHeaders());
 
     ResponseRootSerializer bodySchema = operationProtobuf.findResponseRootSerializer(response.getStatusCode());
     Object body = response.getResult();

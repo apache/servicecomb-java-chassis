@@ -214,7 +214,7 @@ public class TestJsonView {
   }
 
   @Test
-  public void testJsonViewPlainDefaultWithSummary() {
+  public void should_not_affect_text_plain_by_json_view() {
     String restPersonViewSpringMvc = consumersSpringmvc.getSCBRestTemplate()
         .getForObject("/jsonViewPlainDefaultWithSummary", String.class);
     assertEquals(EXPECT_NO_VIEW.toString(), restPersonViewSpringMvc);

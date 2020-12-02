@@ -20,19 +20,14 @@ package org.apache.servicecomb.common.accessLog.core.element.impl;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.servicecomb.core.event.InvocationFinishEvent;
 import org.apache.servicecomb.core.event.ServerAccessLogEvent;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.response.Headers;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import io.vertx.core.MultiMap;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.http.impl.headers.VertxHttpHeaders;
 import io.vertx.ext.web.RoutingContext;
@@ -83,13 +78,10 @@ public class ResponseHeaderItemTest {
   @Test
   public void clientFormattedElement() {
     String headerValue = "headerValue";
-    Headers headers = new Headers();
-    Map<String, List<Object>> headerMap = new HashMap<>();
-    headerMap.put(VAR_NAME, Arrays.asList(headerValue));
 
-    headers.setHeaderMap(headerMap);
+    response = Response.ok(null)
+        .setHeader(VAR_NAME, headerValue);
     when(finishEvent.getResponse()).thenReturn(response);
-    when(response.getHeaders()).thenReturn(headers);
 
     ELEMENT.appendClientFormattedItem(finishEvent, strBuilder);
     assertEquals(headerValue, strBuilder.toString());
@@ -143,10 +135,8 @@ public class ResponseHeaderItemTest {
   @Test
   public void clientFormattedElementOnNotFound() {
     String headerValue = "headerValue";
-    Headers headers = new Headers();
-    Map<String, List<Object>> headerMap = new HashMap<>();
-    headerMap.put("anotherHeader", Arrays.asList(headerValue));
-    headers.setHeaderMap(headerMap);
+    MultiMap headers = MultiMap.caseInsensitiveMultiMap();
+    headers.set("anotherHeader", headerValue);
     when(finishEvent.getResponse()).thenReturn(response);
     when(response.getHeaders()).thenReturn(headers);
 

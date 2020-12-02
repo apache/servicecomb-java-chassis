@@ -287,7 +287,7 @@ public class TestDefaultHttpClientFilter {
 
     Response response = filter.afterReceiveResponse(invocation, responseEx);
     Assert.assertSame(decodedResult, response.getResult());
-    Assert.assertEquals(1, response.getHeaders().getHeaderMap().size());
-    Assert.assertEquals(response.getHeaders().getHeader("b"), Arrays.asList("bValue"));
+    Assert.assertEquals(1, response.getHeaders().size());
+    Assert.assertEquals(response.getHeaders("b"), Arrays.asList("bValue"));
   }
 }

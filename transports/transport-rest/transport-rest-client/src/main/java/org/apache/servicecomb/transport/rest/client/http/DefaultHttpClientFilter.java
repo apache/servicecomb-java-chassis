@@ -133,7 +133,7 @@ public class DefaultHttpClientFilter implements HttpClientFilter {
       }
       Collection<String> headerValues = responseEx.getHeaders(headerName);
       for (String headerValue : headerValues) {
-        response.getHeaders().addHeader(headerName, headerValue);
+        response.addHeader(headerName, headerValue);
       }
     }
 

@@ -49,11 +49,12 @@ public class ResponseHeaderAccessItem implements AccessLogItem<RoutingContext> {
   @Override
   public void appendClientFormattedItem(InvocationFinishEvent finishEvent, StringBuilder builder) {
     Response response = finishEvent.getResponse();
-    if (null == response || null == response.getHeaders() || null == response.getHeaders().getFirst(varName)) {
+    String value = response != null ? response.getHeader(varName) : null;
+    if (null == value) {
       builder.append(RESULT_NOT_FOUND);
       return;
     }
-    builder.append(response.getHeaders().getFirst(varName));
+    builder.append(value);
   }
 
   public String getVarName() {

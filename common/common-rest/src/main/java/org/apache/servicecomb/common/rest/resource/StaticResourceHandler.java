@@ -66,8 +66,8 @@ public abstract class StaticResourceHandler {
   public Response handler(Part part) {
     // todo: cache control
     Response response = Response.ok(part);
-    response.getHeaders().addHeader(HttpHeaders.CONTENT_TYPE, part.getContentType());
-    response.getHeaders().addHeader(HttpHeaders.CONTENT_DISPOSITION, "inline");
+    response.setHeader(HttpHeaders.CONTENT_TYPE, part.getContentType());
+    response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "inline");
     return response;
   }
 }

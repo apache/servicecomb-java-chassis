@@ -23,7 +23,6 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.apache.servicecomb.core.exception.Exceptions.exceptionToResponse;
 import static org.apache.servicecomb.swagger.invocation.InvocationType.PRODUCER;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
@@ -47,6 +46,7 @@ import org.apache.servicecomb.foundation.vertx.stream.BufferOutputStream;
 import org.apache.servicecomb.swagger.invocation.Response;
 
 import io.netty.buffer.Unpooled;
+import io.vertx.core.MultiMap;
 
 @FilterMeta(name = "rest-server-codec", invocationType = PRODUCER)
 public class RestServerCodecFilter implements Filter {
@@ -86,7 +86,7 @@ public class RestServerCodecFilter implements Filter {
   public static CompletableFuture<Response> encodeResponse(Response response, boolean download,
       ProduceProcessor produceProcessor, HttpServletResponseEx responseEx) {
     responseEx.setStatus(response.getStatusCode(), response.getReasonPhrase());
-    copyHeadersToHttpResponse(response.getHeaders().getHeaderMap(), responseEx);
+    copyHeadersToHttpResponse(response.getHeaders(), responseEx);
 
     if (download) {
       return CompletableFuture.completedFuture(response);
@@ -115,18 +115,15 @@ public class RestServerCodecFilter implements Filter {
         invocation.findResponseType(response.getStatusCode()).getRawClass());
   }
 
-  public static void copyHeadersToHttpResponse(Map<String, List<Object>> headerMap, HttpServletResponseEx responseEx) {
-    if (headerMap == null) {
+  public static void copyHeadersToHttpResponse(MultiMap headers, HttpServletResponseEx responseEx) {
+    if (headers == null) {
       return;
     }
 
-    for (Entry<String, List<Object>> entry : headerMap.entrySet()) {
-      for (Object value : entry.getValue()) {
-        if (!entry.getKey().equalsIgnoreCase(CONTENT_LENGTH)
-            && !entry.getKey().equalsIgnoreCase(TRANSFER_ENCODING)) {
-          responseEx.addHeader(entry.getKey(), String.valueOf(value));
-        }
-      }
+    headers.remove(CONTENT_LENGTH);
+    headers.remove(TRANSFER_ENCODING);
+    for (Entry<String, String> entry : headers.entries()) {
+      responseEx.addHeader(entry.getKey(), entry.getValue());
     }
   }
 }

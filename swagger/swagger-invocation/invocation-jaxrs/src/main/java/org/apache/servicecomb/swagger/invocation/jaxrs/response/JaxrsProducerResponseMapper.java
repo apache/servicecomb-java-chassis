@@ -33,11 +33,16 @@ public class JaxrsProducerResponseMapper implements ProducerResponseMapper {
     Response cseResponse = Response.status(jaxrsResponse.getStatusInfo()).entity(jaxrsResponse.getEntity());
     MultivaluedMap<String, Object> headers = jaxrsResponse.getHeaders();
     for (Entry<String, List<Object>> entry : headers.entrySet()) {
-      if (entry.getValue() == null || entry.getValue().isEmpty()) {
+      if (entry.getValue() == null) {
         continue;
       }
 
-      cseResponse.getHeaders().addHeader(entry.getKey(), entry.getValue());
+      for (Object value : entry.getValue()) {
+        if (value == null) {
+          continue;
+        }
+        cseResponse.addHeader(entry.getKey(), value.toString());
+      }
     }
     return cseResponse;
   }

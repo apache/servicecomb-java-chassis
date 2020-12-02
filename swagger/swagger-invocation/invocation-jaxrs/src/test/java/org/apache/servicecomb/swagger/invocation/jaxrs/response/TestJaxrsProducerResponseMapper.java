@@ -47,7 +47,7 @@ public class TestJaxrsProducerResponseMapper {
     Response response = mapper.mapResponse(null, jaxrsResponse);
     Assert.assertEquals(Status.OK, response.getStatus());
     Assert.assertEquals("result", response.getResult());
-    Assert.assertNull(response.getHeaders().getHeaderMap());
+    Assert.assertNull(response.getHeaders());
   }
 
   @Test
@@ -68,7 +68,7 @@ public class TestJaxrsProducerResponseMapper {
     Response response = mapper.mapResponse(null, jaxrsResponse);
     Assert.assertEquals(Status.OK, response.getStatus());
     Assert.assertEquals("result", response.getResult());
-    Assert.assertEquals(1, response.getHeaders().getHeaderMap().size());
-    Assert.assertThat(response.getHeaders().getHeader("h"), Matchers.contains("v"));
+    Assert.assertEquals(1, response.getHeaders().size());
+    Assert.assertThat(response.getHeaders("h"), Matchers.contains("v"));
   }
 }

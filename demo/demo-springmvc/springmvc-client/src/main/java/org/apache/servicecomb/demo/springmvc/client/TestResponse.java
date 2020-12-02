@@ -64,8 +64,8 @@ public class TestResponse {
     String srcName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
     Response cseResponse = intf.cseResponse();
     TestMgr.check("User [name=nameA, age=100, index=0]", cseResponse.getResult());
-    TestMgr.check("h1v " + srcName, cseResponse.getHeaders().getFirst("h1"));
-    TestMgr.check("h2v " + srcName, cseResponse.getHeaders().getFirst("h2"));
+    TestMgr.check("h1v " + srcName, cseResponse.getHeader("h1"));
+    TestMgr.check("h2v " + srcName, cseResponse.getHeader("h2"));
     TestMgr.check(cseResponse.getStatusCode(), 202);
   }
 
@@ -73,8 +73,8 @@ public class TestResponse {
     String srcName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
     Response cseResponse = intf.cseResponseCorrect();
     TestMgr.check("User [name=nameA, age=100, index=0]", cseResponse.getResult());
-    TestMgr.check("h1v " + srcName, cseResponse.getHeaders().getFirst("h1"));
-    TestMgr.check("h2v " + srcName, cseResponse.getHeaders().getFirst("h2"));
+    TestMgr.check("h1v " + srcName, cseResponse.getHeader("h1"));
+    TestMgr.check("h2v " + srcName, cseResponse.getHeader("h2"));
     TestMgr.check(cseResponse.getStatusCode(), 202);
   }
 

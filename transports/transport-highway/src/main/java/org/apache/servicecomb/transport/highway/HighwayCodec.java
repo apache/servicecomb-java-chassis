@@ -111,7 +111,7 @@ public final class HighwayCodec {
 
     Response response = Response.create(header.getStatusCode(), header.getReasonPhrase()
         , defaultPrimitiveValue(body, type));
-    response.setHeaders(header.getHeaders());
+    response.setHeaders(header.toMultiMap());
 
     return response;
   }
