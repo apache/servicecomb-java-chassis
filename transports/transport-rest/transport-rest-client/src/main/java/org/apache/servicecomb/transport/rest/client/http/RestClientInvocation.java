@@ -45,6 +45,7 @@ import org.apache.servicecomb.foundation.vertx.metrics.metric.DefaultHttpSocketM
 import org.apache.servicecomb.registry.definition.DefinitionConst;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -284,7 +285,7 @@ public class RestClientInvocation {
       if (e instanceof TimeoutException) {
         // give an accurate cause for timeout exception
         asyncResp.consumerFail(new InvocationException(Status.REQUEST_TIMEOUT,
-            String.format("Request Timeout. Details: %s", e.getMessage())));
+            new CommonExceptionData(String.format("Request Timeout. Details: %s", e.getMessage()))));
         return;
       }
       asyncResp.fail(invocation.getInvocationType(), e);

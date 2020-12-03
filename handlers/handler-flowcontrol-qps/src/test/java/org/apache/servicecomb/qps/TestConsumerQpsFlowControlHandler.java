@@ -44,7 +44,7 @@ import mockit.MockUp;
 
 public class TestConsumerQpsFlowControlHandler {
 
-  ConsumerQpsFlowControlHandler handler = new ConsumerQpsFlowControlHandler();
+  ConsumerQpsFlowControlHandler handler;
 
   Invocation invocation = Mockito.mock(Invocation.class);
 
@@ -58,14 +58,13 @@ public class TestConsumerQpsFlowControlHandler {
   @Before
   public void setUP() {
     ArchaiusUtils.resetConfig();
-    QpsControllerManagerTest.clearState(ConsumerQpsFlowControlHandler.qpsControllerMgr);
+    handler = new ConsumerQpsFlowControlHandler();
   }
 
 
   @After
   public void afterTest() {
     ArchaiusUtils.resetConfig();
-    QpsControllerManagerTest.clearState(ConsumerQpsFlowControlHandler.qpsControllerMgr);
   }
 
   @Test

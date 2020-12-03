@@ -43,3 +43,11 @@ servicecomb:
   metrics:
     window_time: 12000
     publisher.defaultLog.enabled: false # when in testing , can turn on
+  flowcontrol:
+    Consumer:
+      qps:
+        limit:
+          pojo:
+            FlowControlClientSchema:
+              foo: 3
+              bar: 3000

@@ -97,6 +97,9 @@ public class ResponsesMeta {
 
     responseMap.putIfAbsent(ExceptionFactory.CONSUMER_INNER_STATUS_CODE, COMMON_EXCEPTION_JAVA_TYPE);
     responseMap.putIfAbsent(ExceptionFactory.PRODUCER_INNER_STATUS_CODE, COMMON_EXCEPTION_JAVA_TYPE);
+    responseMap.putIfAbsent(Status.TOO_MANY_REQUESTS.getStatusCode(), COMMON_EXCEPTION_JAVA_TYPE);
+    responseMap.putIfAbsent(Status.REQUEST_TIMEOUT.getStatusCode(), COMMON_EXCEPTION_JAVA_TYPE);
+    responseMap.putIfAbsent(Status.SERVICE_UNAVAILABLE.getStatusCode(), COMMON_EXCEPTION_JAVA_TYPE);
 
     if (defaultResponse == null) {
       // swagger中没有定义default，加上default专用于处理exception

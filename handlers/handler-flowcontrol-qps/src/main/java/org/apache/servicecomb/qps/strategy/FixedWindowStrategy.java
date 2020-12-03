@@ -36,7 +36,7 @@ public class FixedWindowStrategy extends AbstractQpsStrategy {
   // return true means new request need to be rejected
   public boolean isLimitNewRequest() {
     if (this.getQpsLimit() == null) {
-      this.setQpsLimit(Long.MAX_VALUE);
+      throw new IllegalStateException("should not happen");
     }
     long newCount = requestCount.incrementAndGet();
     long msNow = System.currentTimeMillis();
