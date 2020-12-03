@@ -477,7 +477,6 @@ public class JaxrsClient {
     TestMgr.check("hello test 15", result);
   }
 
-
   private static void testSpringMvcDefaultValuesJavaPrimitiveRest(RestTemplate template) {
     String microserviceName = "jaxrs";
     String cseUrlPrefix = "cse://" + microserviceName + "/JaxRSDefaultValues/";
