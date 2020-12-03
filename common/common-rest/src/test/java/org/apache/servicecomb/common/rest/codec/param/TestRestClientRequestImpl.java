@@ -34,7 +34,6 @@ import com.google.common.collect.Multimap;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.CaseInsensitiveHeaders;
 import io.vertx.core.http.HttpClientRequest;
 import mockit.Deencapsulation;
 import mockit.Expectations;
@@ -60,7 +59,7 @@ public class TestRestClientRequestImpl {
   public void testCookie() throws Exception {
     HttpClientRequest request = new MockUp<HttpClientRequest>() {
 
-      MultiMap map = new CaseInsensitiveHeaders();
+      MultiMap map = MultiMap.caseInsensitiveMultiMap();
 
       @Mock
       public HttpClientRequest putHeader(CharSequence key, CharSequence val) {

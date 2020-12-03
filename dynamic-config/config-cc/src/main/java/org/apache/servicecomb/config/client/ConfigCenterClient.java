@@ -63,10 +63,10 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.vertx.core.DeploymentOptions;
+import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
 import io.vertx.core.buffer.Buffer;
-import io.vertx.core.http.CaseInsensitiveHeaders;
 import io.vertx.core.http.HttpClientOptions;
 import io.vertx.core.http.HttpClientRequest;
 import io.vertx.core.http.WebSocket;
@@ -288,7 +288,7 @@ public class ConfigCenterClient {
             createSignRequest(null, configCenter + url, headers, null))));
         WebSocketConnectOptions options = new WebSocketConnectOptions();
         options.setHost(ipPort.getHostOrIp()).setPort(refreshPort).setURI(url)
-            .setHeaders(new CaseInsensitiveHeaders().addAll(headers)
+            .setHeaders(MultiMap.caseInsensitiveMultiMap().addAll(headers)
                 .addAll(authHeaders));
         client.webSocket(options, asyncResult -> {
           if (asyncResult.failed()) {
@@ -299,24 +299,24 @@ public class ConfigCenterClient {
                 asyncResult.cause().getMessage());
             waiter.countDown();
           } else {
-            {
-              asyncResult.result().exceptionHandler(e -> {
-                LOGGER.error("watch config read fail", e);
-                stopHeartBeatThread();
-                isWatching = false;
-              });
-              asyncResult.result().closeHandler(v -> {
-                LOGGER.warn("watching config connection is closed accidentally");
-                stopHeartBeatThread();
-                isWatching = false;
-              });
+            asyncResult.result().exceptionHandler(e -> {
+              LOGGER.error("watch config read fail", e);
+              stopHeartBeatThread();
+              isWatching = false;
+            });
+            asyncResult.result().closeHandler(v -> {
+              LOGGER.warn("watching config connection is closed accidentally");
+              stopHeartBeatThread();
+              isWatching = false;
+            });
 
-              asyncResult.result().pongHandler(pong -> {
-                // ignore, just prevent NPE.
-              });
-              asyncResult.result().frameHandler(frame -> {
+            asyncResult.result().pongHandler(pong -> {
+              // ignore, just prevent NPE.
+            });
+            asyncResult.result().frameHandler(frame -> {
+              if (frame.isText() || frame.isBinary()) {
                 Buffer action = frame.binaryData();
-                LOGGER.info("watching config recieved {}", action);
+                LOGGER.debug("watching config recieved {}", action);
                 Map<String, Object> mAction = action.toJsonObject().getMap();
                 if ("CREATE".equals(mAction.get("action"))) {
                   //event loop can not be blocked,we just keep nothing changed in push mode
@@ -326,11 +326,11 @@ public class ConfigCenterClient {
                 } else {
                   parseConfigUtils.refreshConfigItemsIncremental(mAction);
                 }
-              });
-              startHeartBeatThread(asyncResult.result());
-              isWatching = true;
-              waiter.countDown();
-            }
+              }
+            });
+            startHeartBeatThread(asyncResult.result());
+            isWatching = true;
+            waiter.countDown();
           }
         });
       });

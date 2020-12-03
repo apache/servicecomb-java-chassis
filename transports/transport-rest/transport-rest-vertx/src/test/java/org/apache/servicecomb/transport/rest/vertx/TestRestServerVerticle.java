@@ -38,8 +38,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import io.vertx.core.Context;
-import io.vertx.core.Future;
 import io.vertx.core.Handler;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServerResponse;
@@ -58,14 +58,12 @@ public class TestRestServerVerticle {
 
   private RestServerVerticle instance = null;
 
-  Future<Void> startFuture = null;
+  Promise<Void> startPromise = null;
 
   @Before
-  @SuppressWarnings("deprecation")
-  // TODO: vert.x 3.8.3 does not update startListen to promise, so we keep use deprecated API now. update in newer version.
   public void setUp() {
     instance = new RestServerVerticle();
-    startFuture = Future.future();
+    startPromise = Promise.promise();
 
     CseContext.getInstance().setTransportManager(new TransportManager());
   }
@@ -73,13 +71,13 @@ public class TestRestServerVerticle {
   @After
   public void tearDown() {
     instance = null;
-    startFuture = null;
+    startPromise = null;
   }
 
   @Test
   public void testRestServerVerticleWithRouter(@Mocked Transport transport, @Mocked Vertx vertx,
       @Mocked Context context,
-      @Mocked JsonObject jsonObject, @Mocked Future<Void> startFuture) throws Exception {
+      @Mocked JsonObject jsonObject, @Mocked Promise<Void> startPromise) throws Exception {
     URIEndpointObject endpointObject = new URIEndpointObject("http://127.0.0.1:8080");
     new Expectations() {
       {
@@ -100,13 +98,13 @@ public class TestRestServerVerticle {
     RestServerVerticle server = new RestServerVerticle();
     // process stuff done by Expectations
     server.init(vertx, context);
-    server.start(startFuture);
+    server.start(startPromise);
   }
 
   @Test
   public void testRestServerVerticleWithRouterSSL(@Mocked Transport transport, @Mocked Vertx vertx,
       @Mocked Context context,
-      @Mocked JsonObject jsonObject, @Mocked Future<Void> startFuture) throws Exception {
+      @Mocked JsonObject jsonObject, @Mocked Promise<Void> startPromise) throws Exception {
     URIEndpointObject endpointObject = new URIEndpointObject("http://127.0.0.1:8080?sslEnabled=true");
     new Expectations() {
       {
@@ -127,13 +125,13 @@ public class TestRestServerVerticle {
     RestServerVerticle server = new RestServerVerticle();
     // process stuff done by Expectations
     server.init(vertx, context);
-    server.start(startFuture);
+    server.start(startPromise);
   }
 
   @Test
   public void testRestServerVerticleWithHttp2(@Mocked Transport transport, @Mocked Vertx vertx,
       @Mocked Context context,
-      @Mocked JsonObject jsonObject, @Mocked Future<Void> startFuture) {
+      @Mocked JsonObject jsonObject, @Mocked Promise<Void> startPromise) {
     URIEndpointObject endpointObject = new URIEndpointObject("http://127.0.0.1:8080?protocol=http2");
     new Expectations() {
       {
@@ -155,7 +153,7 @@ public class TestRestServerVerticle {
     boolean status = false;
     try {
       server.init(vertx, context);
-      server.start(startFuture);
+      server.start(startPromise);
     } catch (Exception e) {
       status = true;
     }
@@ -166,7 +164,7 @@ public class TestRestServerVerticle {
   public void testStartFutureAddressEmpty() {
     boolean status = false;
     try {
-      instance.start(startFuture);
+      instance.start(startPromise);
     } catch (Exception ex) {
       status = true;
     }
@@ -179,7 +177,7 @@ public class TestRestServerVerticle {
     MockForRestServerVerticle.getInstance().mockTransportConfig();
     MockForRestServerVerticle.getInstance().mockRestServerVerticle();
     try {
-      instance.start(startFuture);
+      instance.start(startPromise);
     } catch (Exception ex) {
       status = true;
     }

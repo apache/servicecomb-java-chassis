@@ -114,18 +114,6 @@ public class RestClientInvocation {
           getLocalAddress(), ipPort.getSocketAddress(), e);
       throwableHandler.handle(e);
     });
-    clientRequest.connectionHandler(connection -> {
-      LOGGER.debug("http connection connected, local:{}, remote:{}.",
-          connection.localAddress(), connection.remoteAddress());
-      connection.closeHandler(v ->
-          LOGGER.debug("http connection closed, local:{}, remote:{}.",
-              connection.localAddress(), connection.remoteAddress())
-      );
-      connection.exceptionHandler(e ->
-          LOGGER.info("http connection exception, local:{}, remote:{}.",
-              connection.localAddress(), connection.remoteAddress(), e)
-      );
-    });
 
     // 从业务线程转移到网络线程中去发送
     invocation.getInvocationStageTrace().startSend();
