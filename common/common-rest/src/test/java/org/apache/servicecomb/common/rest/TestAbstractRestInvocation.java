@@ -17,6 +17,9 @@
 
 package org.apache.servicecomb.common.rest;
 
+import static com.google.common.net.HttpHeaders.CONTENT_LENGTH;
+import static com.google.common.net.HttpHeaders.TRANSFER_ENCODING;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
@@ -69,7 +72,6 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.HttpStatus;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.apache.servicecomb.swagger.invocation.response.Headers;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -80,6 +82,7 @@ import org.junit.rules.ExpectedException;
 
 import com.google.common.eventbus.Subscribe;
 
+import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import mockit.Deencapsulation;
 import mockit.Expectations;
@@ -630,8 +633,11 @@ public class TestAbstractRestInvocation {
   }
 
   @Test
-  public void testDoSendResponseHeaderNull(@Mocked Response response) {
-    Headers headers = new Headers();
+  public void should_ignore_content_length_and_transfer_encoding_when_copy_header_to_http_response(
+      @Mocked Response response) {
+    MultiMap headers = MultiMap.caseInsensitiveMultiMap()
+        .set(CONTENT_LENGTH, "10")
+        .set(TRANSFER_ENCODING, "encoding");
 
     new Expectations() {
       {
@@ -642,7 +648,7 @@ public class TestAbstractRestInvocation {
       }
     };
 
-    Headers resultHeaders = new Headers();
+    MultiMap resultHeaders = MultiMap.caseInsensitiveMultiMap();
     responseEx = new MockUp<HttpServletResponseEx>() {
       private Map<String, Object> attributes = new HashMap<>();
 
@@ -658,27 +664,24 @@ public class TestAbstractRestInvocation {
 
       @Mock
       void addHeader(String name, String value) {
-        resultHeaders.addHeader(name, value);
+        resultHeaders.add(name, value);
       }
     }.getMockInstance();
 
     invocation.onStart(0);
     initRestInvocation();
 
-    try {
-      restInvocation.sendResponse(response);
-      Assert.fail("must throw exception");
-    } catch (Error e) {
-      Assert.assertNull(resultHeaders.getHeaderMap());
-    }
+    restInvocation.sendResponse(response);
+    assertThat(headers).isEmpty();
+    assertThat(resultHeaders).isEmpty();
   }
 
   @Test
   public void testDoSendResponseHeaderNormal(@Mocked Response response) {
-    Headers headers = new Headers();
-    headers.addHeader("h1", "h1v1");
-    headers.addHeader("h1", "h1v2");
-    headers.addHeader("h2", "h2v");
+    MultiMap headers = MultiMap.caseInsensitiveMultiMap();
+    headers.add("h1", "h1v1");
+    headers.add("h1", "h1v2");
+    headers.add("h2", "h2v");
 
     new Expectations() {
       {
@@ -689,7 +692,7 @@ public class TestAbstractRestInvocation {
       }
     };
 
-    Headers resultHeaders = new Headers();
+    MultiMap resultHeaders = MultiMap.caseInsensitiveMultiMap();
     responseEx = new MockUp<HttpServletResponseEx>() {
       private Map<String, Object> attributes = new HashMap<>();
 
@@ -705,7 +708,7 @@ public class TestAbstractRestInvocation {
 
       @Mock
       void addHeader(String name, String value) {
-        resultHeaders.addHeader(name, value);
+        resultHeaders.add(name, value);
       }
     }.getMockInstance();
 
@@ -716,7 +719,7 @@ public class TestAbstractRestInvocation {
       restInvocation.sendResponse(response);
       Assert.fail("must throw exception");
     } catch (Error e) {
-      assertEquals(headers.getHeaderMap(), resultHeaders.getHeaderMap());
+      assertEquals(headers.toString(), resultHeaders.toString());
     }
   }
 
@@ -759,8 +762,8 @@ public class TestAbstractRestInvocation {
 
   @Test
   public void testDoSendResponseResultOKFilter(@Mocked Response response) {
-    Headers headers = new Headers();
-    headers.addHeader("Content-Type", "application/json");
+    MultiMap headers = MultiMap.caseInsensitiveMultiMap();
+    headers.set("Content-Type", "application/json");
     new Expectations() {
       {
         response.getHeaders();

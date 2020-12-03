@@ -19,14 +19,14 @@ package org.apache.servicecomb.provider.springmvc.reference;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.response.Headers;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
+
+import io.vertx.core.MultiMap;
 
 /**
  * cse应答在transport层已经完成了码流到对象的转换
@@ -36,6 +36,7 @@ public class CseClientHttpResponse implements ClientHttpResponse {
   // 让springmvc client以为应答有body
   // mark、reset都是有锁的，这里通过重写取消了锁
   private static final InputStream BODY_INPUT_STREAM = new InputStream() {
+    @Override
     public boolean markSupported() {
       return true;
     }
@@ -49,6 +50,7 @@ public class CseClientHttpResponse implements ClientHttpResponse {
       return 0;
     }
 
+    @Override
     public void reset() throws IOException {
     }
   };
@@ -74,12 +76,10 @@ public class CseClientHttpResponse implements ClientHttpResponse {
   public HttpHeaders getHeaders() {
     if (httpHeaders == null) {
       HttpHeaders tmpHeaders = new HttpHeaders();
-      Headers headers = response.getHeaders();
-      if (headers.getHeaderMap() != null) {
-        for (Entry<String, List<Object>> entry : headers.getHeaderMap().entrySet()) {
-          for (Object value : entry.getValue()) {
-            tmpHeaders.add(entry.getKey(), String.valueOf(value));
-          }
+      MultiMap headers = response.getHeaders();
+      if (headers != null) {
+        for (Entry<String, String> entry : headers.entries()) {
+          tmpHeaders.add(entry.getKey(), entry.getValue());
         }
       }
 

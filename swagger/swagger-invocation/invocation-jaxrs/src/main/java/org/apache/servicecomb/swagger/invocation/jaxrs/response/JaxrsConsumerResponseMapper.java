@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.swagger.invocation.jaxrs.response;
 
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -25,27 +23,21 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.response.consumer.ConsumerResponseMapper;
 
+import io.vertx.core.MultiMap;
+
 public class JaxrsConsumerResponseMapper implements ConsumerResponseMapper {
   @Override
   public Object mapResponse(Response response) {
     ResponseBuilder responseBuilder =
         javax.ws.rs.core.Response.status(response.getStatus()).entity(response.getResult());
 
-    Map<String, List<Object>> headers = response.getHeaders().getHeaderMap();
+    MultiMap headers = response.getHeaders();
     if (headers == null) {
       return responseBuilder.build();
     }
 
-    for (Entry<String, List<Object>> entry : headers.entrySet()) {
-      if (entry.getValue() == null) {
-        continue;
-      }
-
-      for (Object value : entry.getValue()) {
-        if (value != null) {
-          responseBuilder.header(entry.getKey(), value);
-        }
-      }
+    for (Entry<String, String> entry : headers.entries()) {
+      responseBuilder.header(entry.getKey(), entry.getValue());
     }
 
     return responseBuilder.build();

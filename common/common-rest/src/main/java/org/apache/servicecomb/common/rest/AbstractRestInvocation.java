@@ -268,7 +268,7 @@ public abstract class AbstractRestInvocation {
 
   @SuppressWarnings("deprecation")
   protected void sendResponse(Response response) {
-    RestServerCodecFilter.copyHeadersToHttpResponse(response.getHeaders().getHeaderMap(), responseEx);
+    RestServerCodecFilter.copyHeadersToHttpResponse(response.getHeaders(), responseEx);
 
     responseEx.setStatus(response.getStatusCode(), response.getReasonPhrase());
     responseEx.setAttribute(RestConst.INVOCATION_HANDLER_RESPONSE, response);

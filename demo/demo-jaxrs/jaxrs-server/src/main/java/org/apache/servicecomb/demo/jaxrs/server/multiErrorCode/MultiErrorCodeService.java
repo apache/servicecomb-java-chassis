@@ -82,14 +82,14 @@ public class MultiErrorCodeService {
       // If got many types for different status code, we can only using InvocationException for failed error code like 400-500.
       // The result for Failed Family(e.g. 400-500), can not set return value as target type directly or will give exception.
       response.setResult(new InvocationException(Status.BAD_REQUEST, r));
-      response.getHeaders().addHeader("x-code", "400");
+      response.setHeader("x-code", "400");
     } else if (request.getCode() == 500) {
       MultiResponse500 r = new MultiResponse500();
       r.setCode(500);
       r.setMessage("internal error");
       response.setStatus(Status.INTERNAL_SERVER_ERROR);
       response.setResult(new InvocationException(Status.INTERNAL_SERVER_ERROR, r));
-      response.getHeaders().addHeader("x-code", "500");
+      response.setHeader("x-code", "500");
     } else {
       MultiResponse200 r = new MultiResponse200();
       r.setCode(200);
@@ -97,7 +97,7 @@ public class MultiErrorCodeService {
       response.setStatus(Status.OK);
       // If error code is OK family(like 200), we can use the target type.
       response.setResult(r);
-      response.getHeaders().addHeader("x-code", "200");
+      response.setHeader("x-code", "200");
     }
     return response;
   }

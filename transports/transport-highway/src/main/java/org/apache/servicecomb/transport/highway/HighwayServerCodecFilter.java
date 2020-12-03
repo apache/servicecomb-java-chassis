@@ -65,7 +65,7 @@ public class HighwayServerCodecFilter implements Filter {
     header.setStatusCode(response.getStatusCode());
     header.setReasonPhrase(response.getReasonPhrase());
     header.setContext(invocation.getContext());
-    header.setHeaders(response.getHeaders());
+    header.fromMultiMap(response.getHeaders());
 
     HighwayTransportContext transportContext = invocation.getTransportContext();
     long msgId = transportContext.getMsgId();

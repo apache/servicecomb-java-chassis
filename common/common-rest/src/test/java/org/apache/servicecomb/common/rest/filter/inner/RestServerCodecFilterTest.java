@@ -43,7 +43,6 @@ import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
 import org.apache.servicecomb.foundation.test.scaffolding.exception.RuntimeExceptionWithoutStackTrace;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.response.Headers;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -51,6 +50,7 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import io.vertx.core.MultiMap;
 import io.vertx.core.json.Json;
 import mockit.Expectations;
 import mockit.Mocked;
@@ -76,7 +76,7 @@ public class RestServerCodecFilterTest {
   @Mocked
   HttpServletResponseEx responseEx;
 
-  Headers headers = new Headers();
+  MultiMap headers = MultiMap.caseInsensitiveMultiMap();
 
   FilterNode nextNode = new FilterNode((invocation, next) -> {
     Response response = Response.ok("ok");
@@ -169,7 +169,7 @@ public class RestServerCodecFilterTest {
 
   @Test
   public void should_encode_response_header() throws ExecutionException, InterruptedException {
-    headers.addHeader("h1", "v1");
+    headers.add("h1", "v1");
     success_invocation();
 
     new Verifications() {
@@ -185,9 +185,9 @@ public class RestServerCodecFilterTest {
 
   @Test
   public void should_not_encode_content_length_header() throws ExecutionException, InterruptedException {
-    headers.addHeader("h1", "v1")
-        .addHeader("h2", "v2")
-        .addHeader(CONTENT_LENGTH, 10);
+    headers.add("h1", "v1")
+        .add("h2", "v2")
+        .add(CONTENT_LENGTH, "10");
     success_invocation();
 
     new Verifications() {
@@ -203,9 +203,9 @@ public class RestServerCodecFilterTest {
 
   @Test
   public void should_not_encode_transfer_encoding_header() throws ExecutionException, InterruptedException {
-    headers.addHeader("h1", "v1")
-        .addHeader("h2", "v2")
-        .addHeader(TRANSFER_ENCODING, "test");
+    headers.add("h1", "v1")
+        .add("h2", "v2")
+        .add(TRANSFER_ENCODING, "test");
     success_invocation();
 
     new Verifications() {

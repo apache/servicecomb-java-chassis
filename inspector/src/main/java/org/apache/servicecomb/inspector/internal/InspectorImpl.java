@@ -218,9 +218,9 @@ public class InspectorImpl {
 
     Response response = Response.ok(part);
     if (!download) {
-      response.getHeaders().addHeader(HttpHeaders.CONTENT_DISPOSITION, "inline");
+      response.setHeader(HttpHeaders.CONTENT_DISPOSITION, "inline");
     }
-    response.getHeaders().addHeader(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_HTML);
+    response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_HTML);
     return response;
   }
 
