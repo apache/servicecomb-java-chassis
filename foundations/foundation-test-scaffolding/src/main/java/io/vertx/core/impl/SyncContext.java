@@ -21,7 +21,6 @@ import java.util.concurrent.Executor;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Promise;
-import io.vertx.core.Vertx;
 import io.vertx.core.spi.metrics.PoolMetrics;
 
 public class SyncContext extends EventLoopContext {
@@ -59,7 +58,7 @@ public class SyncContext extends EventLoopContext {
       return;
     }
 
-    res.future().setHandler(asyncResultHandler);
+    res.future().onComplete(asyncResultHandler);
   }
 
   @Override

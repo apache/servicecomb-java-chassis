@@ -46,7 +46,6 @@ import com.fasterxml.jackson.databind.type.SimpleType;
 import io.vertx.core.MultiMap;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.buffer.impl.BufferImpl;
-import io.vertx.core.http.CaseInsensitiveHeaders;
 import mockit.Expectations;
 import mockit.Injectable;
 import mockit.Mock;
@@ -161,7 +160,8 @@ public class TestDefaultHttpClientFilter {
     Assert.assertEquals(
         "InvocationException: code=400;msg=CommonExceptionData [message=method null, path null, statusCode 400, reasonPhrase null, response content-type null is not supported]",
         invocationException.getMessage());
-    Assert.assertEquals("Unrecognized token 'abc': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n"
+    Assert.assertEquals(
+        "Unrecognized token 'abc': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n"
             + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 7]",
         invocationException.getCause().getMessage());
     Assert.assertEquals(CommonExceptionData.class, invocationException.getErrorData().getClass());
@@ -209,7 +209,8 @@ public class TestDefaultHttpClientFilter {
     Assert.assertEquals(
         "InvocationException: code=400;msg=CommonExceptionData [message=method null, path null, statusCode 200, reasonPhrase null, response content-type null is not supported]",
         invocationException.getMessage());
-    Assert.assertEquals("Unrecognized token 'abc': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n"
+    Assert.assertEquals(
+        "Unrecognized token 'abc': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n"
             + " at [Source: (org.apache.servicecomb.foundation.vertx.stream.BufferInputStream); line: 1, column: 7]",
         invocationException.getCause().getMessage());
     Assert.assertEquals(CommonExceptionData.class, invocationException.getErrorData().getClass());
@@ -266,7 +267,7 @@ public class TestDefaultHttpClientFilter {
       @Mocked ResponseMeta responseMeta,
       @Mocked RestOperationMeta swaggerRestOperation,
       @Mocked ProduceProcessor produceProcessor) throws Exception {
-    MultiMap responseHeader = new CaseInsensitiveHeaders();
+    MultiMap responseHeader = MultiMap.caseInsensitiveMultiMap();
     responseHeader.add("b", "bValue");
 
     Object decodedResult = new Object();

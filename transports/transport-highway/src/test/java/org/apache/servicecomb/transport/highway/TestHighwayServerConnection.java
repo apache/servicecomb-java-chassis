@@ -16,8 +16,6 @@
  */
 package org.apache.servicecomb.transport.highway;
 
-import java.net.InetSocketAddress;
-
 import javax.xml.ws.Holder;
 
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
@@ -68,7 +66,7 @@ public class TestHighwayServerConnection {
     new Expectations(CseContext.getInstance()) {
       {
         netSocket.remoteAddress();
-        result = new SocketAddressImpl(new InetSocketAddress("127.0.0.1", 80));
+        result = new SocketAddressImpl(80, "127.0.0.1");
       }
     };
     connection = new HighwayServerConnection(endpoint);
