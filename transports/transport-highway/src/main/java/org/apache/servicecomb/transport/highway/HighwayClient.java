@@ -35,6 +35,7 @@ import org.apache.servicecomb.foundation.vertx.client.ClientVerticle;
 import org.apache.servicecomb.foundation.vertx.client.tcp.TcpClientConfig;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -117,7 +118,7 @@ public class HighwayClient {
           if (ar.cause() instanceof TimeoutException) {
             // give an accurate cause for timeout exception
             asyncResp.consumerFail(new InvocationException(Status.REQUEST_TIMEOUT,
-                String.format("Request Timeout. Details: %s", ar.cause().getMessage())));
+                new CommonExceptionData(String.format("Request Timeout. Details: %s", ar.cause().getMessage()))));
             return;
           }
           asyncResp.consumerFail(ar.cause());

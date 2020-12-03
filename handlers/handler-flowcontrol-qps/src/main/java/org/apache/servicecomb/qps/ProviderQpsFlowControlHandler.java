@@ -23,13 +23,9 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.springframework.util.StringUtils;
 
 public class ProviderQpsFlowControlHandler implements Handler {
-  static final QpsControllerManager qpsControllerMgr = new QpsControllerManager()
-      .setLimitKeyPrefix(Config.PROVIDER_LIMIT_KEY_PREFIX)
-      .setBucketKeyPrefix(Config.PROVIDER_BUCKET_KEY_PREFIX)
-      .setGlobalQpsStrategy(Config.PROVIDER_LIMIT_KEY_GLOBAL, Config.PROVIDER_BUCKET_KEY_GLOBAL);
+  private final QpsControllerManager qpsControllerMgr = new QpsControllerManager(true);
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
@@ -47,10 +43,7 @@ public class ProviderQpsFlowControlHandler implements Handler {
     }
 
     String microserviceName = invocation.getContext(Const.SRC_MICROSERVICE);
-    QpsStrategy qpsStrategy =
-        StringUtils.isEmpty(microserviceName)
-            ? qpsControllerMgr.getGlobalQpsStrategy()
-            : qpsControllerMgr.getOrCreate(microserviceName, invocation);
+    QpsStrategy qpsStrategy = qpsControllerMgr.getOrCreate(microserviceName, invocation);
     isLimitNewRequest(qpsStrategy, asyncResp);
   }
 

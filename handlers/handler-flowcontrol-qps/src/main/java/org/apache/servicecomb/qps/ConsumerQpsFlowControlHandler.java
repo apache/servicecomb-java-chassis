@@ -28,9 +28,7 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
  * Support 3 levels of microservice/schema/operation.
  */
 public class ConsumerQpsFlowControlHandler implements Handler {
-  static final QpsControllerManager qpsControllerMgr = new QpsControllerManager()
-      .setLimitKeyPrefix(Config.CONSUMER_LIMIT_KEY_PREFIX)
-      .setBucketKeyPrefix(Config.CONSUMER_BUCKET_KEY_PREFIX);
+  private final QpsControllerManager qpsControllerMgr = new QpsControllerManager(false);
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {

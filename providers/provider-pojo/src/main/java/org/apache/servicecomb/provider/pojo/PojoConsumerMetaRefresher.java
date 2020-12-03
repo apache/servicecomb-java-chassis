@@ -25,6 +25,7 @@ import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.core.provider.consumer.MicroserviceReferenceConfig;
 import org.apache.servicecomb.provider.pojo.definition.PojoConsumerMeta;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumer;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +65,7 @@ public class PojoConsumerMetaRefresher {
         String message =
             "The request is rejected. Cannot process the request due to SCBEngine not ready.";
         LOGGER.warn(message);
-        throw new InvocationException(Status.SERVICE_UNAVAILABLE, message);
+        throw new InvocationException(Status.SERVICE_UNAVAILABLE, new CommonExceptionData(message));
       }
 
       this.scbEngine = SCBEngine.getInstance();

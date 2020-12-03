@@ -39,11 +39,10 @@ public class LeakyBucketStrategy extends AbstractQpsStrategy {
   @Override
   public boolean isLimitNewRequest() {
     if (this.getQpsLimit() == null) {
-      this.setQpsLimit(Long.MAX_VALUE);
+      throw new IllegalStateException("should not happen");
     }
     if (this.getBucketLimit() == null) {
-      this.setBucketLimit(
-          this.getQpsLimit() <= Long.MAX_VALUE / 2 ? this.getQpsLimit() * 2 : this.getQpsLimit());
+      this.setBucketLimit(Math.max(2 * this.getQpsLimit(), Integer.MAX_VALUE));
     }
     long nowTime = System.currentTimeMillis();
     //get the num of te period time

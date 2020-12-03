@@ -62,6 +62,7 @@ import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.registry.definition.MicroserviceNameParser;
 import org.apache.servicecomb.registry.swagger.SwaggerLoader;
 import org.apache.servicecomb.swagger.engine.SwaggerEnvironment;
+import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -498,7 +499,7 @@ public class SCBEngine {
       String message =
           "The request is rejected. Cannot process the request due to STATUS = " + currentStatus;
       LOGGER.warn(message);
-      throw new InvocationException(Status.SERVICE_UNAVAILABLE, message);
+      throw new InvocationException(Status.SERVICE_UNAVAILABLE, new CommonExceptionData(message));
     }
   }
 

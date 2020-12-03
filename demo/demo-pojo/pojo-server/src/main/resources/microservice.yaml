@@ -30,9 +30,16 @@ servicecomb:
         useAlpnEnabled: false
   highway:
     address: 0.0.0.0:7070
-  #executors:
-    #default: test
-    #Provider:
-      #server: test
-      #server.wrapParam: test
+  handler:
+    chain:
+      Provider:
+        default: qps-flowcontrol-provider
+  flowcontrol:
+    Provider:
+      qps:
+        limit:
+          ANY:
+            FlowControlSchema:
+              foo: 3
+              bar: 3000
 

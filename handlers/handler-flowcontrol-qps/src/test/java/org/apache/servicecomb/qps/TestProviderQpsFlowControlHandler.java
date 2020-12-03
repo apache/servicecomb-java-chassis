@@ -45,7 +45,7 @@ import mockit.Mock;
 import mockit.MockUp;
 
 public class TestProviderQpsFlowControlHandler {
-  ProviderQpsFlowControlHandler handler = new ProviderQpsFlowControlHandler();
+  ProviderQpsFlowControlHandler handler;
 
   Invocation invocation = Mockito.mock(Invocation.class);
 
@@ -57,14 +57,13 @@ public class TestProviderQpsFlowControlHandler {
   @Before
   public void setUP() {
     ArchaiusUtils.resetConfig();
-    QpsControllerManagerTest.clearState(ProviderQpsFlowControlHandler.qpsControllerMgr);
+    handler = new ProviderQpsFlowControlHandler();
     ArchaiusUtils.setProperty(Config.PROVIDER_LIMIT_KEY_PREFIX + "test", 1);
   }
 
   @After
   public void afterTest() {
     ArchaiusUtils.resetConfig();
-    QpsControllerManagerTest.clearState(ProviderQpsFlowControlHandler.qpsControllerMgr);
   }
 
   @Test
@@ -111,11 +110,12 @@ public class TestProviderQpsFlowControlHandler {
   @Test
   public void testHandleOnSourceMicroserviceNameIsNull() throws Exception {
     Mockito.when(invocation.getContext(Const.SRC_MICROSERVICE)).thenReturn(null);
+    OperationMeta operationMeta = QpsControllerManagerTest.getMockOperationMeta("pojo", "server", "opr");
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+    Mockito.when(invocation.getSchemaId()).thenReturn("server");
     // only when handler index <= 0, the qps logic works
     Mockito.when(invocation.getHandlerIndex()).thenReturn(0);
     ArchaiusUtils.setProperty("servicecomb.flowcontrol.Provider.qps.global.limit", 1);
-    ProviderQpsFlowControlHandler.qpsControllerMgr
-        .setGlobalQpsStrategy(Config.PROVIDER_LIMIT_KEY_GLOBAL, Config.PROVIDER_BUCKET_KEY_GLOBAL);
 
     handler.handle(invocation, asyncResp);
     handler.handle(invocation, asyncResp);
