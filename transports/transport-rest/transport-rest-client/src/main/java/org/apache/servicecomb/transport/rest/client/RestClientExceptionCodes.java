@@ -18,5 +18,10 @@ package org.apache.servicecomb.transport.rest.client;
 
 public interface RestClientExceptionCodes {
   String FAILED_TO_CREATE_REST_CLIENT_TRANSPORT_CONTEXT = "scb_rest_client.40000000";
+
   String FAILED_TO_ENCODE_REST_CLIENT_REQUEST = "scb_rest_client.40000001";
+
+  String FAILED_TO_DECODE_REST_SUCCESS_RESPONSE = "scb_rest_client.40000002";
+
+  String FAILED_TO_DECODE_REST_FAIL_RESPONSE = "scb_rest_client.40000003";
 }
