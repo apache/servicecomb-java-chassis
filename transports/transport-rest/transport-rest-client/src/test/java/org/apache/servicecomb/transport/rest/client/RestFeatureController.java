@@ -16,7 +16,14 @@
  */
 package org.apache.servicecomb.transport.rest.client;
 
+import java.io.File;
+import java.util.List;
+
+import javax.ws.rs.CookieParam;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 
@@ -28,5 +35,41 @@ public class RestFeatureController {
   @Path("/query")
   public String query(@QueryParam("query") String query) {
     return query;
+  }
+
+  @GET
+  @Path("/header")
+  public String header(@HeaderParam("header") String header) {
+    return header;
+  }
+
+  @GET
+  @Path("/cookie")
+  public String cookie(@CookieParam("cookie1") String cookie1, @CookieParam("cookie2") String cookie2) {
+    return cookie1 + ":" + cookie2;
+  }
+
+  @POST
+  @Path("/form")
+  public String form(@FormParam("form1") String form1, @FormParam("form2") String form2) {
+    return form1 + ":" + form2;
+  }
+
+  @POST
+  @Path("/formWithUpload")
+  public String formWithUpload(@FormParam("form1") String form1, @FormParam("form2") File form2) {
+    return form1 + ":" + form2.getName();
+  }
+
+  @POST
+  @Path("/formWithUploadList")
+  public String formWithUploadList(@FormParam("files") List<File> files) {
+    return files.toString();
+  }
+
+  @POST
+  @Path("/body")
+  public String body(String body) {
+    return body;
   }
 }
