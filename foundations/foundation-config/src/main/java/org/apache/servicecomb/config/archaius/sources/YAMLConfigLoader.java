@@ -22,16 +22,13 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
 
-import org.yaml.snakeyaml.Yaml;
+import org.apache.servicecomb.config.YAMLUtil;
 
 public class YAMLConfigLoader extends AbstractConfigLoader {
-  @SuppressWarnings("unchecked")
   @Override
   protected Map<String, Object> loadData(URL url) throws IOException {
-    Yaml yaml = new Yaml();
-
     try (InputStream inputStream = url.openStream()) {
-      return yaml.loadAs(inputStream, Map.class);
+      return YAMLUtil.yaml2Properties(inputStream);
     }
   }
 }
