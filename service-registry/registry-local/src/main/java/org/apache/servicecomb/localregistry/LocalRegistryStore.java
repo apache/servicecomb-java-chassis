@@ -30,6 +30,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import org.apache.servicecomb.config.YAMLUtil;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 import org.apache.servicecomb.foundation.common.utils.JvmUtils;
 import org.apache.servicecomb.localregistry.RegistryBean.Instance;
@@ -40,7 +41,6 @@ import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
-import org.yaml.snakeyaml.Yaml;
 
 import com.google.common.annotations.VisibleForTesting;
 
@@ -111,37 +111,38 @@ public class LocalRegistryStore {
   private List<RegistryBean> loadYamlBeans() {
     List<RegistryBean> beans = new ArrayList<>();
 
-    InputStream is = null;
-
     try {
       ClassLoader loader = JvmUtils.findClassLoader();
       Enumeration<URL> urls = loader.getResources(REGISTRY_FILE_NAME);
+
       while (urls.hasMoreElements()) {
         URL url = urls.nextElement();
-        is = url.openStream();
-        if (is != null) {
-          beans.addAll(initFromData(is));
+
+        InputStream is = null;
+        try {
+          is = url.openStream();
+          if (is != null) {
+            beans.addAll(initFromData(is));
+          }
+        } finally {
+          if (is != null) {
+            try {
+              is.close();
+            } catch (IOException e) {
+              // nothing to do
+            }
+          }
         }
       }
     } catch (IOException e) {
       throw new IllegalStateException(e);
-    } finally {
-      if (is != null) {
-        try {
-          is.close();
-        } catch (IOException e) {
-          // nothing to do
-        }
-      }
     }
 
     return beans;
   }
 
-  @SuppressWarnings("unchecked")
   private List<RegistryBean> initFromData(InputStream is) {
-    Yaml yaml = new Yaml();
-    Map<String, Object> data = yaml.loadAs(is, Map.class);
+    Map<String, Object> data = YAMLUtil.yaml2Properties(is);
     return initFromData(data);
   }
 

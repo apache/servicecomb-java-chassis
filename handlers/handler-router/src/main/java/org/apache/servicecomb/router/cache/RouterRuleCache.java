@@ -16,20 +16,22 @@
  */
 package org.apache.servicecomb.router.cache;
 
-import com.google.common.collect.Interner;
-import com.google.common.collect.Interners;
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicStringProperty;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.servicecomb.config.YAMLUtil;
 import org.apache.servicecomb.router.model.PolicyRuleItem;
 import org.apache.servicecomb.router.model.ServiceInfoCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.yaml.snakeyaml.Yaml;
+
+import com.google.common.collect.Interner;
+import com.google.common.collect.Interners;
+import com.netflix.config.DynamicPropertyFactory;
+import com.netflix.config.DynamicStringProperty;
 
 /**
  * @Author GuoYl123
@@ -78,11 +80,10 @@ public class RouterRuleCache {
     if (StringUtils.isEmpty(ruleStr)) {
       return false;
     }
-    Yaml yaml = new Yaml();
     List<PolicyRuleItem> policyRuleItemList;
     try {
       policyRuleItemList = Arrays
-          .asList(yaml.loadAs(ruleStr, PolicyRuleItem[].class));
+          .asList(YAMLUtil.parserObject(ruleStr, PolicyRuleItem[].class));
     } catch (Exception e) {
       LOGGER.error("route management Serialization failed: {}", e.getMessage());
       return false;

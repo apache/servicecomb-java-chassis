@@ -17,10 +17,12 @@
 package org.apache.servicecomb.router.custom;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.common.rest.filter.HttpServerFilter;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.foundation.common.utils.JsonUtils;
@@ -30,8 +32,6 @@ import org.apache.servicecomb.swagger.invocation.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.yaml.snakeyaml.Yaml;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.netflix.config.DynamicPropertyFactory;
@@ -118,8 +118,7 @@ public class RouterInvokeFilter implements HttpServerFilter {
     }
     try {
       if (CollectionUtils.isEmpty(allHeader)) {
-        Yaml yaml = new Yaml();
-        allHeader = yaml.load(str);
+        allHeader = Arrays.asList(str.split(","));
       }
     } catch (Exception e) {
       LOGGER.error("route management Serialization failed: {}", e.getMessage());

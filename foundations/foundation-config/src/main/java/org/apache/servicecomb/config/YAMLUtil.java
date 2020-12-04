@@ -24,12 +24,17 @@ import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 /**
  * Created by   on 2017/1/5.
  */
 public final class YAMLUtil {
+  private static final Yaml SAFE_PARSER = new Yaml(new SafeConstructor());
+
   private YAMLUtil() {
   }
 
@@ -45,9 +50,13 @@ public final class YAMLUtil {
   @SuppressWarnings("unchecked")
   public static Map<String, Object> yaml2Properties(InputStream input) {
     Map<String, Object> configurations = new LinkedHashMap<>();
-    Yaml yaml = new Yaml();
-    yaml.loadAll(input).forEach(data -> configurations.putAll(retrieveItems("", (Map<String, Object>) data)));
+    SAFE_PARSER.loadAll(input).forEach(data -> configurations.putAll(retrieveItems("", (Map<String, Object>) data)));
     return configurations;
+  }
+
+  public static <T> T parserObject(String yamlContent, Class<T> clazz) {
+    Yaml parser = new Yaml(new Constructor(new TypeDescription(clazz, clazz)));
+    return parser.loadAs(yamlContent, clazz);
   }
 
   @SuppressWarnings("unchecked")
