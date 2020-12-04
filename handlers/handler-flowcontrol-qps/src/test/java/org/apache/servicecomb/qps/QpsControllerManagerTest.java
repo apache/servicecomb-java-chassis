@@ -17,19 +17,17 @@
 
 package org.apache.servicecomb.qps;
 
-import java.util.Map;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.qps.strategy.AbstractQpsStrategy;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import mockit.Deencapsulation;
 import mockit.Expectations;
 import mockit.Mocked;
 
@@ -57,33 +55,33 @@ public class QpsControllerManagerTest {
         result = "server.test";
       }
     };
-    QpsControllerManager testQpsControllerManager = new QpsControllerManager()
-        .setConfigKeyPrefix(Config.CONSUMER_LIMIT_KEY_PREFIX);
-    initTestQpsControllerManager(testQpsControllerManager, invocation, operationMeta);
+    QpsControllerManager testQpsControllerManager = new QpsControllerManager(false);
+    initTestQpsControllerManager(false, testQpsControllerManager, invocation, operationMeta);
 
     // pojo
-    setConfigWithDefaultPrefix("pojo", 100);
-    QpsController qpsController = testQpsControllerManager.getOrCreate("pojo", invocation);
-    Assert.assertEquals("pojo", qpsController.getKey());
-    Assert.assertTrue(100 == qpsController.getQpsLimit());
-    qpsController = testQpsControllerManager.getOrCreate("pojo2", invocation);
-    Assert.assertEquals("pojo2", qpsController.getKey());
-    Assert.assertNull(qpsController.getQpsLimit());
-    qpsController = testQpsControllerManager.getOrCreate("poj", invocation);
-    Assert.assertEquals("poj", qpsController.getKey());
-    Assert.assertNull(qpsController.getQpsLimit());
+    setConfigWithDefaultPrefix(false, "pojo", 100);
+    QpsStrategy qpsStrategy = testQpsControllerManager.getOrCreate("pojo", invocation);
+    Assert.assertEquals("pojo", ((AbstractQpsStrategy) qpsStrategy).getKey());
+    Assert.assertTrue(100 == ((AbstractQpsStrategy) qpsStrategy).getQpsLimit());
+    qpsStrategy = testQpsControllerManager.getOrCreate("pojo2", invocation);
+    Assert.assertEquals(Config.CONSUMER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
+    Assert.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
+
+    qpsStrategy = testQpsControllerManager.getOrCreate("poj", invocation);
+    Assert.assertEquals(Config.CONSUMER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
+    Assert.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
 
     ArchaiusUtils.setProperty("servicecomb.flowcontrol.Consumer.qps.limit.poj.server", 10000);
-    qpsController = testQpsControllerManager.getOrCreate("poj", invocation);
-    Assert.assertEquals("poj.server", qpsController.getKey());
-    Assert.assertEquals(qpsController.getQpsLimit(), (Integer) 10000);
+    qpsStrategy = testQpsControllerManager.getOrCreate("poj", invocation);
+    Assert.assertEquals("poj.server", ((AbstractQpsStrategy) qpsStrategy).getKey());
+    Assert.assertEquals(((AbstractQpsStrategy) qpsStrategy).getQpsLimit(), (Long) 10000L);
 
     ArchaiusUtils.setProperty("servicecomb.flowcontrol.Consumer.qps.limit.poj.server.test", 20000);
-    qpsController = testQpsControllerManager.getOrCreate("poj", invocation);
-    Assert.assertEquals("poj.server.test", qpsController.getKey());
-    Assert.assertEquals(qpsController.getQpsLimit(), (Integer) 20000);
+    qpsStrategy = testQpsControllerManager.getOrCreate("poj", invocation);
+    Assert.assertEquals("poj.server.test", ((AbstractQpsStrategy) qpsStrategy).getKey());
+    Assert.assertEquals(((AbstractQpsStrategy) qpsStrategy).getQpsLimit(), (Long) 20000L);
 
-    testGetOrCreateCommon(testQpsControllerManager, invocation, operationMeta);
+    testGetOrCreateCommon(false, testQpsControllerManager, invocation, operationMeta);
   }
 
   @Test
@@ -99,35 +97,33 @@ public class QpsControllerManagerTest {
       }
     };
 
-    QpsControllerManager testQpsControllerManager = new QpsControllerManager()
-        .setGlobalQpsController(Config.PROVIDER_LIMIT_KEY_GLOBAL)
-        .setConfigKeyPrefix(Config.CONSUMER_LIMIT_KEY_PREFIX);
+    QpsControllerManager testQpsControllerManager = new QpsControllerManager(true);
 
     // global
     setConfig(Config.PROVIDER_LIMIT_KEY_GLOBAL, 50);
-    QpsController qpsController = testQpsControllerManager.getOrCreate("pojo", invocation);
-    Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, qpsController.getKey());
-    Assert.assertTrue(50 == qpsController.getQpsLimit());
-    qpsController = testQpsControllerManager.getOrCreate("pojo2", invocation);
-    Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, qpsController.getKey());
-    Assert.assertTrue(50 == qpsController.getQpsLimit());
-    qpsController = testQpsControllerManager.getOrCreate("poj", invocation);
-    Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, qpsController.getKey());
-    Assert.assertTrue(50 == qpsController.getQpsLimit());
+    QpsStrategy qpsStrategy = testQpsControllerManager.getOrCreate("pojo", invocation);
+    Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
+    Assert.assertTrue(50 == ((AbstractQpsStrategy) qpsStrategy).getQpsLimit());
+    qpsStrategy = testQpsControllerManager.getOrCreate("pojo2", invocation);
+    Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
+    Assert.assertTrue(50 == ((AbstractQpsStrategy) qpsStrategy).getQpsLimit());
+    qpsStrategy = testQpsControllerManager.getOrCreate("poj", invocation);
+    Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
+    Assert.assertTrue(50 == ((AbstractQpsStrategy) qpsStrategy).getQpsLimit());
 
     // pojo
-    setConfigWithDefaultPrefix("pojo", 100);
-    qpsController = testQpsControllerManager.getOrCreate("pojo", invocation);
-    Assert.assertEquals("pojo", qpsController.getKey());
-    Assert.assertTrue(100 == qpsController.getQpsLimit());
-    qpsController = testQpsControllerManager.getOrCreate("pojo2", invocation);
-    Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, qpsController.getKey());
-    Assert.assertTrue(50 == qpsController.getQpsLimit());
-    qpsController = testQpsControllerManager.getOrCreate("poj", invocation);
-    Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, qpsController.getKey());
-    Assert.assertTrue(50 == qpsController.getQpsLimit());
+    setConfigWithDefaultPrefix(true, "pojo", 100);
+    qpsStrategy = testQpsControllerManager.getOrCreate("pojo", invocation);
+    Assert.assertEquals("pojo", ((AbstractQpsStrategy) qpsStrategy).getKey());
+    Assert.assertTrue(100 == ((AbstractQpsStrategy) qpsStrategy).getQpsLimit());
+    qpsStrategy = testQpsControllerManager.getOrCreate("pojo2", invocation);
+    Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
+    Assert.assertTrue(50 == ((AbstractQpsStrategy) qpsStrategy).getQpsLimit());
+    qpsStrategy = testQpsControllerManager.getOrCreate("poj", invocation);
+    Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
+    Assert.assertTrue(50 == ((AbstractQpsStrategy) qpsStrategy).getQpsLimit());
 
-    testGetOrCreateCommon(testQpsControllerManager, invocation, operationMeta);
+    testGetOrCreateCommon(true, testQpsControllerManager, invocation, operationMeta);
   }
 
   @Test
@@ -142,10 +138,11 @@ public class QpsControllerManagerTest {
         result = "schema.opr";
       }
     };
-    QpsControllerManager qpsControllerManager = new QpsControllerManager();
-    QpsController qpsController = qpsControllerManager.getOrCreate("service", invocation);
-    Assert.assertEquals("service", qpsController.getKey());
-    Assert.assertNull(qpsController.getQpsLimit());
+    QpsControllerManager qpsControllerManager = new QpsControllerManager(true);
+    QpsStrategy qpsStrategy = qpsControllerManager.getOrCreate("service", invocation);
+    Assert.assertEquals("servicecomb.flowcontrol.Provider.qps.global.limit",
+        ((AbstractQpsStrategy) qpsStrategy).getKey());
+    Assert.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
 
     new Expectations() {
       {
@@ -157,9 +154,10 @@ public class QpsControllerManagerTest {
         result = "test_schema.test_opr";
       }
     };
-    qpsController = qpsControllerManager.getOrCreate("test_service", invocation);
-    Assert.assertEquals("test_service", qpsController.getKey());
-    Assert.assertNull(qpsController.getQpsLimit());
+    qpsStrategy = qpsControllerManager.getOrCreate("test_service", invocation);
+    Assert.assertEquals("servicecomb.flowcontrol.Provider.qps.global.limit",
+        ((AbstractQpsStrategy) qpsStrategy).getKey());
+    Assert.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
 
     new Expectations() {
       {
@@ -171,9 +169,10 @@ public class QpsControllerManagerTest {
         result = "test-schema.test-opr";
       }
     };
-    qpsController = qpsControllerManager.getOrCreate("test-service", invocation);
-    Assert.assertEquals("test-service", qpsController.getKey());
-    Assert.assertNull(qpsController.getQpsLimit());
+    qpsStrategy = qpsControllerManager.getOrCreate("test-service", invocation);
+    Assert.assertEquals("servicecomb.flowcontrol.Provider.qps.global.limit",
+        ((AbstractQpsStrategy) qpsStrategy).getKey());
+    Assert.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
 
     new Expectations() {
       {
@@ -185,9 +184,10 @@ public class QpsControllerManagerTest {
         result = "schema.opr.tail";
       }
     };
-    qpsController = qpsControllerManager.getOrCreate("svc", invocation);
-    Assert.assertEquals("svc", qpsController.getKey());
-    Assert.assertNull(qpsController.getQpsLimit());
+    qpsStrategy = qpsControllerManager.getOrCreate("svc", invocation);
+    Assert.assertEquals("servicecomb.flowcontrol.Provider.qps.global.limit",
+        ((AbstractQpsStrategy) qpsStrategy).getKey());
+    Assert.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
 
     new Expectations() {
       {
@@ -199,12 +199,14 @@ public class QpsControllerManagerTest {
         result = "schema.opr2.tail";
       }
     };
-    qpsController = qpsControllerManager.getOrCreate("svc", invocation);
-    Assert.assertEquals("svc", qpsController.getKey());
-    Assert.assertNull(qpsController.getQpsLimit());
+    qpsStrategy = qpsControllerManager.getOrCreate("svc", invocation);
+    Assert.assertEquals("servicecomb.flowcontrol.Provider.qps.global.limit",
+        ((AbstractQpsStrategy) qpsStrategy).getKey());
+    Assert.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
   }
 
-  private void testGetOrCreateCommon(QpsControllerManager testQpsControllerManager, Invocation invocation,
+  private void testGetOrCreateCommon(boolean isProvider, QpsControllerManager testQpsControllerManager,
+      Invocation invocation,
       OperationMeta operationMeta) {
     new Expectations() {
       {
@@ -214,10 +216,10 @@ public class QpsControllerManagerTest {
         result = "server.test";
       }
     };
-    setConfigWithDefaultPrefix("pojo.server", 200);
-    QpsController qpsController = testQpsControllerManager.getOrCreate("pojo", invocation);
-    Assert.assertEquals("pojo.server", qpsController.getKey());
-    Assert.assertTrue(200 == qpsController.getQpsLimit());
+    setConfigWithDefaultPrefix(isProvider, "pojo.server", 200);
+    QpsStrategy qpsStrategy = testQpsControllerManager.getOrCreate("pojo", invocation);
+    Assert.assertEquals("pojo.server", ((AbstractQpsStrategy) qpsStrategy).getKey());
+    Assert.assertTrue(200 == ((AbstractQpsStrategy) qpsStrategy).getQpsLimit());
     new Expectations() {
       {
         invocation.getOperationMeta();
@@ -226,9 +228,9 @@ public class QpsControllerManagerTest {
         result = "server2.test";
       }
     };
-    qpsController = testQpsControllerManager.getOrCreate("pojo", invocation);
-    Assert.assertEquals("pojo", qpsController.getKey());
-    Assert.assertTrue(100 == qpsController.getQpsLimit());
+    qpsStrategy = testQpsControllerManager.getOrCreate("pojo", invocation);
+    Assert.assertEquals("pojo", ((AbstractQpsStrategy) qpsStrategy).getKey());
+    Assert.assertTrue(100 == ((AbstractQpsStrategy) qpsStrategy).getQpsLimit());
     new Expectations() {
       {
         invocation.getOperationMeta();
@@ -237,9 +239,9 @@ public class QpsControllerManagerTest {
         result = "serve.test";
       }
     };
-    qpsController = testQpsControllerManager.getOrCreate("pojo", invocation);
-    Assert.assertEquals("pojo", qpsController.getKey());
-    Assert.assertTrue(100 == qpsController.getQpsLimit());
+    qpsStrategy = testQpsControllerManager.getOrCreate("pojo", invocation);
+    Assert.assertEquals("pojo", ((AbstractQpsStrategy) qpsStrategy).getKey());
+    Assert.assertTrue(100 == ((AbstractQpsStrategy) qpsStrategy).getQpsLimit());
 
     // pojo.server.test
     new Expectations() {
@@ -250,10 +252,10 @@ public class QpsControllerManagerTest {
         result = "server.test";
       }
     };
-    setConfigWithDefaultPrefix("pojo.server.test", 300);
-    qpsController = testQpsControllerManager.getOrCreate("pojo", invocation);
-    Assert.assertEquals("pojo.server.test", qpsController.getKey());
-    Assert.assertTrue(300 == qpsController.getQpsLimit());
+    setConfigWithDefaultPrefix(isProvider, "pojo.server.test", 300);
+    qpsStrategy = testQpsControllerManager.getOrCreate("pojo", invocation);
+    Assert.assertEquals("pojo.server.test", ((AbstractQpsStrategy) qpsStrategy).getKey());
+    Assert.assertTrue(300 == ((AbstractQpsStrategy) qpsStrategy).getQpsLimit());
     new Expectations() {
       {
         invocation.getOperationMeta();
@@ -262,9 +264,9 @@ public class QpsControllerManagerTest {
         result = "server.test2";
       }
     };
-    qpsController = testQpsControllerManager.getOrCreate("pojo", invocation);
-    Assert.assertEquals("pojo.server", qpsController.getKey());
-    Assert.assertTrue(200 == qpsController.getQpsLimit());
+    qpsStrategy = testQpsControllerManager.getOrCreate("pojo", invocation);
+    Assert.assertEquals("pojo.server", ((AbstractQpsStrategy) qpsStrategy).getKey());
+    Assert.assertTrue(200 == ((AbstractQpsStrategy) qpsStrategy).getQpsLimit());
     new Expectations() {
       {
         invocation.getOperationMeta();
@@ -274,15 +276,16 @@ public class QpsControllerManagerTest {
         result = "server.tes";
       }
     };
-    qpsController = testQpsControllerManager.getOrCreate("pojo", invocation);
-    Assert.assertEquals("pojo.server", qpsController.getKey());
-    Assert.assertTrue(200 == qpsController.getQpsLimit());
+    qpsStrategy = testQpsControllerManager.getOrCreate("pojo", invocation);
+    Assert.assertEquals("pojo.server", ((AbstractQpsStrategy) qpsStrategy).getKey());
+    Assert.assertTrue(200 == ((AbstractQpsStrategy) qpsStrategy).getQpsLimit());
   }
 
   /**
    * Init testQpsControllerManager to test search function.
    */
-  private void initTestQpsControllerManager(QpsControllerManager testQpsControllerManager, Invocation invocation,
+  private void initTestQpsControllerManager(boolean isProvider, QpsControllerManager testQpsControllerManager,
+      Invocation invocation,
       OperationMeta operationMeta) {
     // pojo.server.test
     new Expectations() {
@@ -295,9 +298,13 @@ public class QpsControllerManagerTest {
         result = "server.test";
       }
     };
-    QpsController qpsController = testQpsControllerManager.getOrCreate("pojo", invocation);
-    Assert.assertEquals("pojo", qpsController.getKey());
-    Assert.assertNull(qpsController.getQpsLimit());
+    QpsStrategy qpsStrategy = testQpsControllerManager.getOrCreate("pojo", invocation);
+    if (isProvider) {
+      Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
+    } else {
+      Assert.assertEquals(Config.CONSUMER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
+    }
+    Assert.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
 
     // pojo.server.test2
     new Expectations() {
@@ -311,6 +318,12 @@ public class QpsControllerManagerTest {
       }
     };
     testQpsControllerManager.getOrCreate("pojo", invocation);
+    if (isProvider) {
+      Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
+    } else {
+      Assert.assertEquals(Config.CONSUMER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
+    }
+    Assert.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
 
     // pojo.server.tes
     new Expectations() {
@@ -324,6 +337,12 @@ public class QpsControllerManagerTest {
       }
     };
     testQpsControllerManager.getOrCreate("pojo", invocation);
+    if (isProvider) {
+      Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
+    } else {
+      Assert.assertEquals(Config.CONSUMER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
+    }
+    Assert.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
 
     // pojo.server2.test
     new Expectations() {
@@ -337,6 +356,12 @@ public class QpsControllerManagerTest {
       }
     };
     testQpsControllerManager.getOrCreate("pojo", invocation);
+    if (isProvider) {
+      Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
+    } else {
+      Assert.assertEquals(Config.CONSUMER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
+    }
+    Assert.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
 
     // pojo.serve.test
     new Expectations() {
@@ -350,6 +375,12 @@ public class QpsControllerManagerTest {
       }
     };
     testQpsControllerManager.getOrCreate("pojo", invocation);
+    if (isProvider) {
+      Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
+    } else {
+      Assert.assertEquals(Config.CONSUMER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
+    }
+    Assert.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
 
     // pojo2.server.test
     new Expectations() {
@@ -362,9 +393,13 @@ public class QpsControllerManagerTest {
         result = "server.test";
       }
     };
-    qpsController = testQpsControllerManager.getOrCreate("pojo2", invocation);
-    Assert.assertEquals("pojo2", qpsController.getKey());
-    Assert.assertNull(qpsController.getQpsLimit());
+    qpsStrategy = testQpsControllerManager.getOrCreate("pojo2", invocation);
+    if (isProvider) {
+      Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
+    } else {
+      Assert.assertEquals(Config.CONSUMER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
+    }
+    Assert.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
 
     // poj.server.test
     new Expectations() {
@@ -377,9 +412,13 @@ public class QpsControllerManagerTest {
         result = "server.test";
       }
     };
-    qpsController = testQpsControllerManager.getOrCreate("poj", invocation);
-    Assert.assertEquals("poj", qpsController.getKey());
-    Assert.assertNull(qpsController.getQpsLimit());
+    qpsStrategy = testQpsControllerManager.getOrCreate("poj", invocation);
+    if (isProvider) {
+      Assert.assertEquals(Config.PROVIDER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
+    } else {
+      Assert.assertEquals(Config.CONSUMER_LIMIT_KEY_GLOBAL, ((AbstractQpsStrategy) qpsStrategy).getKey());
+    }
+    Assert.assertEquals(Integer.MAX_VALUE, ((AbstractQpsStrategy) qpsStrategy).getQpsLimit().intValue());
   }
 
   @Test
@@ -425,16 +464,12 @@ public class QpsControllerManagerTest {
     ArchaiusUtils.setProperty(key, value);
   }
 
-  public static void setConfigWithDefaultPrefix(String key, int value) {
+  private static void setConfigWithDefaultPrefix(boolean isProvider, String key, int value) {
     String configKey = Config.CONSUMER_LIMIT_KEY_PREFIX + key;
-    ArchaiusUtils.setProperty(configKey, value);
-  }
+    if (isProvider) {
+      configKey = Config.PROVIDER_LIMIT_KEY_PREFIX + key;
+    }
 
-  public static void clearState(QpsControllerManager qpsControllerManager) {
-    Map<String, QpsController> objMap = Deencapsulation.getField(qpsControllerManager, "qualifiedNameControllerMap");
-    objMap.clear();
-    Map<String, QpsController> configQpsControllerMap = Deencapsulation
-        .getField(qpsControllerManager, "configQpsControllerMap");
-    configQpsControllerMap.clear();
+    ArchaiusUtils.setProperty(configKey, value);
   }
 }

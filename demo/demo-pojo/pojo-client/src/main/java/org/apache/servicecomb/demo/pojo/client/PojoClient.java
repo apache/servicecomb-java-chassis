@@ -108,6 +108,7 @@ public class PojoClient {
       TestMgr.setMsg(microserviceName, transport);
       LOGGER.info("test {}, transport {}", microserviceName, transport);
 
+      testFlowControl();
       testNull(testFromXml);
       testNull(test);
       testEmpty(test);
@@ -238,6 +239,11 @@ public class PojoClient {
 
   private static void testEmpty(Test test) {
     TestMgr.check("code is ''", test.getTestString(""));
+  }
+
+  private static void testFlowControl() throws Exception {
+    TestFlowControl flowControl = BeanUtils.getBean("TestFlowControl");
+    flowControl.testAllTransport();
   }
 
   private static void testNull(Test test) {
