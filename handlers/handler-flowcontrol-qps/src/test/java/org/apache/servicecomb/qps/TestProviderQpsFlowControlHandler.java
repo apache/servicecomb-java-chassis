@@ -26,6 +26,8 @@ import org.apache.servicecomb.core.Const;
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.test.scaffolding.config.ArchaiusUtils;
+import org.apache.servicecomb.qps.strategy.AbstractQpsStrategy;
+import org.apache.servicecomb.qps.strategy.FixedWindowStrategy;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
@@ -43,13 +45,11 @@ import mockit.Mock;
 import mockit.MockUp;
 
 public class TestProviderQpsFlowControlHandler {
-  ProviderQpsFlowControlHandler handler = new ProviderQpsFlowControlHandler();
+  ProviderQpsFlowControlHandler handler;
 
   Invocation invocation = Mockito.mock(Invocation.class);
 
   AsyncResponse asyncResp = Mockito.mock(AsyncResponse.class);
-
-  OperationMeta operationMeta = Mockito.mock(OperationMeta.class);
 
   @Rule
   public ExpectedException expectedException = ExpectedException.none();
@@ -57,14 +57,13 @@ public class TestProviderQpsFlowControlHandler {
   @Before
   public void setUP() {
     ArchaiusUtils.resetConfig();
-    QpsControllerManagerTest.clearState(ProviderQpsFlowControlHandler.qpsControllerMgr);
+    handler = new ProviderQpsFlowControlHandler();
     ArchaiusUtils.setProperty(Config.PROVIDER_LIMIT_KEY_PREFIX + "test", 1);
   }
 
   @After
   public void afterTest() {
     ArchaiusUtils.resetConfig();
-    QpsControllerManagerTest.clearState(ProviderQpsFlowControlHandler.qpsControllerMgr);
   }
 
   @Test
@@ -84,7 +83,6 @@ public class TestProviderQpsFlowControlHandler {
         result = new RuntimeException("test error");
       }
     };
-    mockUpSystemTime();
 
     ProviderQpsFlowControlHandler gHandler = new ProviderQpsFlowControlHandler();
     gHandler.handle(invocation, asyncResp);
@@ -100,22 +98,24 @@ public class TestProviderQpsFlowControlHandler {
 
   @Test
   public void testQpsController() {
-    mockUpSystemTime();
-    QpsController qpsController = new QpsController("abc", 100);
-    assertFalse(qpsController.isLimitNewRequest());
+    AbstractQpsStrategy qpsStrategy = new FixedWindowStrategy();
+    qpsStrategy.setKey("abc");
+    qpsStrategy.setQpsLimit(100L);
+    assertFalse(qpsStrategy.isLimitNewRequest());
 
-    qpsController.setQpsLimit(1);
-    assertTrue(qpsController.isLimitNewRequest());
+    qpsStrategy.setQpsLimit(1L);
+    assertTrue(qpsStrategy.isLimitNewRequest());
   }
 
   @Test
   public void testHandleOnSourceMicroserviceNameIsNull() throws Exception {
     Mockito.when(invocation.getContext(Const.SRC_MICROSERVICE)).thenReturn(null);
+    OperationMeta operationMeta = QpsControllerManagerTest.getMockOperationMeta("pojo", "server", "opr");
+    Mockito.when(invocation.getOperationMeta()).thenReturn(operationMeta);
+    Mockito.when(invocation.getSchemaId()).thenReturn("server");
     // only when handler index <= 0, the qps logic works
     Mockito.when(invocation.getHandlerIndex()).thenReturn(0);
     ArchaiusUtils.setProperty("servicecomb.flowcontrol.Provider.qps.global.limit", 1);
-    ProviderQpsFlowControlHandler.qpsControllerMgr
-        .setGlobalQpsController("servicecomb.flowcontrol.Provider.qps.global.limit");
 
     handler.handle(invocation, asyncResp);
     handler.handle(invocation, asyncResp);
@@ -145,8 +145,11 @@ public class TestProviderQpsFlowControlHandler {
 
     new MockUp<QpsControllerManager>() {
       @Mock
-      protected QpsController create(String qualifiedNameKey) {
-        return new QpsController(qualifiedNameKey, 1);
+      protected QpsStrategy create(String qualifiedNameKey) {
+        AbstractQpsStrategy strategy = new FixedWindowStrategy();
+        strategy.setKey(qualifiedNameKey);
+        strategy.setQpsLimit(1L);
+        return strategy;
       }
     };
 
@@ -172,23 +175,16 @@ public class TestProviderQpsFlowControlHandler {
 
     new MockUp<QpsControllerManager>() {
       @Mock
-      protected QpsController create(String qualifiedNameKey) {
-        return new QpsController(qualifiedNameKey, 1);
+      protected QpsStrategy create(String qualifiedNameKey) {
+        AbstractQpsStrategy strategy = new FixedWindowStrategy();
+        strategy.setKey(qualifiedNameKey);
+        strategy.setQpsLimit(1L);
+        return strategy;
       }
     };
     handler.handle(invocation, asyncResp);
 
     Mockito.verify(invocation, times(0)).next(asyncResp);
     Mockito.verify(asyncResp, times(0)).producerFail(Mockito.any(Exception.class));
-  }
-
-  private void mockUpSystemTime() {
-    // to avoid time influence on QpsController
-    new MockUp<System>() {
-      @Mock
-      long currentTimeMillis() {
-        return 1L;
-      }
-    };
   }
 }

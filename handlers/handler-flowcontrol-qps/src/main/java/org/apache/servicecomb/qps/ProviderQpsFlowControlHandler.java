@@ -23,12 +23,9 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.springframework.util.StringUtils;
 
 public class ProviderQpsFlowControlHandler implements Handler {
-  static final QpsControllerManager qpsControllerMgr = new QpsControllerManager()
-      .setConfigKeyPrefix(Config.PROVIDER_LIMIT_KEY_PREFIX)
-      .setGlobalQpsController(Config.PROVIDER_LIMIT_KEY_GLOBAL);
+  private final QpsControllerManager qpsControllerMgr = new QpsControllerManager(true);
 
   @Override
   public void handle(Invocation invocation, AsyncResponse asyncResp) throws Exception {
@@ -46,15 +43,12 @@ public class ProviderQpsFlowControlHandler implements Handler {
     }
 
     String microserviceName = invocation.getContext(Const.SRC_MICROSERVICE);
-    QpsController qpsController =
-        StringUtils.isEmpty(microserviceName)
-            ? qpsControllerMgr.getGlobalQpsController()
-            : qpsControllerMgr.getOrCreate(microserviceName, invocation);
-    isLimitNewRequest(qpsController, asyncResp);
+    QpsStrategy qpsStrategy = qpsControllerMgr.getOrCreate(microserviceName, invocation);
+    isLimitNewRequest(qpsStrategy, asyncResp);
   }
 
-  private boolean isLimitNewRequest(QpsController qpsController, AsyncResponse asyncResp) {
-    if (qpsController.isLimitNewRequest()) {
+  private boolean isLimitNewRequest(QpsStrategy qpsStrategy, AsyncResponse asyncResp) {
+    if (qpsStrategy.isLimitNewRequest()) {
       CommonExceptionData errorData = new CommonExceptionData("rejected by qps flowcontrol");
       asyncResp.producerFail(new InvocationException(QpsConst.TOO_MANY_REQUESTS_STATUS, errorData));
       return true;

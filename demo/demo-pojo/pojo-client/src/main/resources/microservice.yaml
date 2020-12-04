@@ -39,3 +39,11 @@ servicecomb:
   loadbalance:
     strategy:
       name: Random
+  flowcontrol:
+    Consumer:
+      qps:
+        limit:
+          pojo:
+            FlowControlClientSchema:
+              foo: 3
+              bar: 3000
