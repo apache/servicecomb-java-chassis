@@ -17,27 +17,29 @@
 
 package org.apache.servicecomb.router;
 
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.config.DynamicStringProperty;
-import com.netflix.loadbalancer.Server;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import mockit.Expectations;
+
 import org.apache.servicecomb.router.cache.RouterRuleCache;
 import org.apache.servicecomb.router.distribute.AbstractRouterDistributor;
 import org.apache.servicecomb.router.distribute.RouterDistributor;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.netflix.config.DynamicPropertyFactory;
+import com.netflix.config.DynamicStringProperty;
+import com.netflix.loadbalancer.Server;
+
+import mockit.Expectations;
+
 /**
- * @Author GuoYl123
- * @Date 2019/11/4
+ * @author GuoYl123
  **/
 public class RouterDistributorTest {
 
-  private static String ruleStr = ""
+  private static final String RULE_STRING = ""
       + "      - precedence: 2 #优先级\n"
       + "        match:        #匹配策略\n"
       + "          source: xx #匹配某个服务名\n"
@@ -66,7 +68,7 @@ public class RouterDistributorTest {
       + "              version: 1\n"
       + "              app: a";
 
-  private static String targetServiceName = "test_server";
+  private static final String TARGET_SERVICE_NAME = "test_server";
 
   @Test
   public void testHeaderIsNull() {
@@ -77,13 +79,13 @@ public class RouterDistributorTest {
 
   @Test
   public void testVersionNotMatch() {
-    Map<String, String> headermap = new HashMap<>();
-    headermap.put("userId", "01");
-    headermap.put("appId", "01");
-    headermap.put("formate", "json");
+    Map<String, String> headerMap = new HashMap<>();
+    headerMap.put("userId", "01");
+    headerMap.put("appId", "01");
+    headerMap.put("format", "json");
     List<ServiceIns> list = getMockList();
     list.remove(1);
-    List<ServiceIns> serverList = mainFilter(list, headermap);
+    List<ServiceIns> serverList = mainFilter(list, headerMap);
     Assert.assertEquals(1, serverList.size());
     Assert.assertEquals("01", serverList.get(0).getHost());
   }
@@ -93,43 +95,45 @@ public class RouterDistributorTest {
     Map<String, String> headermap = new HashMap<>();
     headermap.put("userId", "01");
     headermap.put("appId", "01");
-    headermap.put("formate", "json");
+    headermap.put("format", "json");
     List<ServiceIns> serverList = mainFilter(getMockList(), headermap);
     Assert.assertEquals(1, serverList.size());
     Assert.assertEquals("02", serverList.get(0).getHost());
   }
 
   private List<ServiceIns> getMockList() {
-    List<ServiceIns> serverlist = new ArrayList<>();
+    List<ServiceIns> serverList = new ArrayList<>();
     ServiceIns ins1 = new ServiceIns("01");
     ins1.setVersion("2.0");
     ServiceIns ins2 = new ServiceIns("02");
     ins2.addTags("app", "a");
-    serverlist.add(ins1);
-    serverlist.add(ins2);
-    return serverlist;
+    serverList.add(ins1);
+    serverList.add(ins2);
+    return serverList;
   }
 
   private List<ServiceIns> mainFilter(List<ServiceIns> serverlist, Map<String, String> headermap) {
-    RouterDistributor<ServiceIns, ServiceIns> testDistributer = new TestDistributer();
+    RouterDistributor<ServiceIns, ServiceIns> testDistributer = new TestDistributor();
     DynamicPropertyFactory dpf = DynamicPropertyFactory.getInstance();
-    DynamicStringProperty strp = new DynamicStringProperty("", ruleStr);
+    DynamicStringProperty rule = new DynamicStringProperty("", RULE_STRING);
     new Expectations(dpf) {
       {
         dpf.getStringProperty(anyString, null, (Runnable) any);
-        result = strp;
+        result = rule;
       }
     };
     RouterRuleCache.refresh();
     return RouterFilter
-        .getFilteredListOfServers(serverlist, targetServiceName, headermap,
+        .getFilteredListOfServers(serverlist, TARGET_SERVICE_NAME, headermap,
             testDistributer);
   }
 
-  class ServiceIns extends Server {
+  static class ServiceIns extends Server {
 
     String version = "1.1";
-    String serverName = targetServiceName;
+
+    String serverName = TARGET_SERVICE_NAME;
+
     Map<String, String> tags = new HashMap<>();
 
     public ServiceIns(String id) {
@@ -152,18 +156,14 @@ public class RouterDistributorTest {
       this.version = version;
     }
 
-    public void setServerName(String serverName) {
-      this.serverName = serverName;
-    }
-
     public void addTags(String key, String v) {
       tags.put(key, v);
     }
   }
 
-  class TestDistributer extends AbstractRouterDistributor<ServiceIns, ServiceIns> {
+  static class TestDistributor extends AbstractRouterDistributor<ServiceIns, ServiceIns> {
 
-    public TestDistributer() {
+    public TestDistributor() {
       init(a -> a, ServiceIns::getVersion, ServiceIns::getServerName, ServiceIns::getTags);
     }
   }

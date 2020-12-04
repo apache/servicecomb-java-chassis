@@ -17,6 +17,7 @@
 
 package org.apache.servicecomb.serviceregistry.client;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.config.BootStrapProperties;
+import org.apache.servicecomb.config.YAMLUtil;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
 import org.apache.servicecomb.registry.api.event.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.registry.api.registry.FindInstancesResponse;
@@ -48,7 +50,6 @@ import org.apache.servicecomb.serviceregistry.api.response.HeartbeatResponse;
 import org.apache.servicecomb.serviceregistry.client.http.Holder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.yaml.snakeyaml.Yaml;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
@@ -94,10 +95,16 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   private void initFromData(InputStream is) {
-    Yaml yaml = new Yaml();
-    @SuppressWarnings("unchecked")
-    Map<String, Object> data = yaml.loadAs(is, Map.class);
-    initFromData(data);
+    try {
+      Map<String, Object> data = YAMLUtil.yaml2Properties(is);
+      initFromData(data);
+    } finally {
+      try {
+        is.close();
+      } catch (IOException e) {
+        LOGGER.error("", e);
+      }
+    }
   }
 
   private void initFromData(Map<String, Object> data) {
