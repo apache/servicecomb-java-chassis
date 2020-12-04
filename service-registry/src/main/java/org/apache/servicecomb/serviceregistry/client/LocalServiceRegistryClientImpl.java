@@ -19,6 +19,7 @@ package org.apache.servicecomb.serviceregistry.client;
 
 import static org.apache.servicecomb.serviceregistry.definition.DefinitionConst.DEFAULT_APPLICATION_ID;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.servicecomb.config.YAMLUtil;
 import org.apache.servicecomb.foundation.vertx.AsyncResultCallback;
 import org.apache.servicecomb.serviceregistry.api.registry.Microservice;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
@@ -49,7 +51,6 @@ import org.apache.servicecomb.serviceregistry.version.VersionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
-import org.yaml.snakeyaml.Yaml;
 
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
@@ -81,7 +82,15 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
       return;
     }
 
-    initFromData(is);
+    try {
+      initFromData(is);
+    } finally {
+      try {
+        is.close();
+      } catch (IOException e) {
+        LOGGER.error("", e);
+      }
+    }
   }
 
   public LocalServiceRegistryClientImpl(InputStream is) {
@@ -93,9 +102,7 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
   }
 
   private void initFromData(InputStream is) {
-    Yaml yaml = new Yaml();
-    @SuppressWarnings("unchecked")
-    Map<String, Object> data = yaml.loadAs(is, Map.class);
+    Map<String, Object> data = YAMLUtil.yaml2Properties(is);
     initFromData(data);
   }
 
