@@ -118,19 +118,9 @@ public class LocalRegistryStore {
       while (urls.hasMoreElements()) {
         URL url = urls.nextElement();
 
-        InputStream is = null;
-        try {
-          is = url.openStream();
+        try (InputStream is = url.openStream()) {
           if (is != null) {
             beans.addAll(initFromData(is));
-          }
-        } finally {
-          if (is != null) {
-            try {
-              is.close();
-            } catch (IOException e) {
-              // nothing to do
-            }
           }
         }
       }
