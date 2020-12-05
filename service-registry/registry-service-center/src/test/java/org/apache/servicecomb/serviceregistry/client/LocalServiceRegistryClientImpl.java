@@ -51,6 +51,7 @@ import org.apache.servicecomb.serviceregistry.client.http.Holder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 
@@ -78,33 +79,26 @@ public class LocalServiceRegistryClientImpl implements ServiceRegistryClient {
       return;
     }
 
-    InputStream is = this.getClass().getClassLoader().getResourceAsStream(localFile);
-    if (is == null) {
-      return;
+    try {
+      try (InputStream is = this.getClass().getClassLoader().getResourceAsStream(localFile)) {
+        if (is == null) {
+          return;
+        }
+        initFromData(is);
+      }
+    } catch (IOException e) {
+      LOGGER.error("", e);
     }
-
-    initFromData(is);
   }
 
-  public LocalServiceRegistryClientImpl(InputStream is) {
+  @VisibleForTesting
+  LocalServiceRegistryClientImpl(InputStream is) {
     initFromData(is);
-  }
-
-  public LocalServiceRegistryClientImpl(Map<String, Object> data) {
-    initFromData(data);
   }
 
   private void initFromData(InputStream is) {
-    try {
-      Map<String, Object> data = YAMLUtil.yaml2Properties(is);
-      initFromData(data);
-    } finally {
-      try {
-        is.close();
-      } catch (IOException e) {
-        LOGGER.error("", e);
-      }
-    }
+    Map<String, Object> data = YAMLUtil.yaml2Properties(is);
+    initFromData(data);
   }
 
   private void initFromData(Map<String, Object> data) {

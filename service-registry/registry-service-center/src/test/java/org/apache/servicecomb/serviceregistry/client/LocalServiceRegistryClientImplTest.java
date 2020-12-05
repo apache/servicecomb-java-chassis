@@ -49,10 +49,11 @@ public class LocalServiceRegistryClientImplTest {
   public ExpectedException expectedException = ExpectedException.none();
 
   @Before
-  public void loadRegistryFile() {
+  public void loadRegistryFile() throws Exception {
     ClassLoader loader = Thread.currentThread().getContextClassLoader();
-    InputStream is = loader.getResourceAsStream("registry.yaml");
-    registryClient = new LocalServiceRegistryClientImpl(is);
+    try (InputStream is = loader.getResourceAsStream("registry.yaml")) {
+      registryClient = new LocalServiceRegistryClientImpl(is);
+    }
   }
 
   @Test
