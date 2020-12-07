@@ -42,7 +42,7 @@ class RestClientCodecFilterTest extends RestClientTestBase {
       .setDecoder(decoder);
 
   @Test
-  void should_publish_start_and_finish_client_filters_event_when_succeed() {
+  void should_record_start_and_finish_client_filters_time_when_succeed() {
     init("query", null, false);
 
     Response response = codecFilter.onFilter(invocation, FilterNode.EMPTY).join();
@@ -53,7 +53,7 @@ class RestClientCodecFilterTest extends RestClientTestBase {
   }
 
   @Test
-  void should_publish_start_and_finish_client_filters_event_when_failed() {
+  void should_record_start_and_finish_client_filters_time_when_failed() {
     init("query", null, false);
 
     RuntimeExceptionWithoutStackTrace mockThrowable = new RuntimeExceptionWithoutStackTrace("mock filter failed");

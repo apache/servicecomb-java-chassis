@@ -86,8 +86,9 @@ public class Response {
     return headers;
   }
 
-  public void setHeaders(MultiMap headers) {
+  public Response setHeaders(MultiMap headers) {
     this.headers = headers;
+    return this;
   }
 
   public Response addHeader(String name, String value) {

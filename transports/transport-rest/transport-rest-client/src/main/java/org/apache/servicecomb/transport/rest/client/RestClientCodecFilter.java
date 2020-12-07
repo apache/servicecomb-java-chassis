@@ -55,17 +55,17 @@ public class RestClientCodecFilter implements Filter {
 
   @Override
   public CompletableFuture<Response> onFilter(Invocation invocation, FilterNode nextNode) {
-    publishClientFiltersStartEvent(invocation);
+    startClientFiltersRequest(invocation);
 
     return CompletableFuture.completedFuture(null)
         .thenAccept(v -> prepareTransportContext(invocation))
         .thenAccept(v -> encoder.encode(invocation))
         .thenCompose(v -> nextNode.onFilter(invocation))
         .thenApply(response -> decoder.decode(invocation, response))
-        .whenComplete((response, throwable) -> publishClientFiltersFinishEvent(invocation));
+        .whenComplete((response, throwable) -> finishClientFiltersResponse(invocation));
   }
 
-  protected void publishClientFiltersStartEvent(Invocation invocation) {
+  protected void startClientFiltersRequest(Invocation invocation) {
     invocation.getInvocationStageTrace().startClientFiltersRequest();
   }
 
@@ -74,7 +74,7 @@ public class RestClientCodecFilter implements Filter {
     invocation.setTransportContext(transportContext);
   }
 
-  protected void publishClientFiltersFinishEvent(Invocation invocation) {
+  protected void finishClientFiltersResponse(Invocation invocation) {
     invocation.getInvocationStageTrace().finishClientFiltersResponse();
   }
 }
