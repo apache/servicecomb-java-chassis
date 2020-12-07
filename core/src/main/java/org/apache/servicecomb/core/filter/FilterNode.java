@@ -29,7 +29,7 @@ import org.apache.servicecomb.swagger.invocation.Response;
 public class FilterNode {
   public static final FilterNode EMPTY = new FilterNode(null) {
     @Override
-    public CompletableFuture<Response> onFilter(Invocation invocation1) {
+    public CompletableFuture<Response> onFilter(Invocation invocation) {
       return CompletableFuture.completedFuture(Response.ok(null));
     }
   };

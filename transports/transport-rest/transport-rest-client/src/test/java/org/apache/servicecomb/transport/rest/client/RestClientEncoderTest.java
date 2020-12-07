@@ -36,18 +36,17 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
 class RestClientEncoderTest extends RestClientTestBase {
-  RestClientEncoder encoder;
+  RestClientEncoder encoder = new RestClientEncoder();
 
   void init(String operationId, Map<String, Object> swaggerArgs) {
     init(operationId, swaggerArgs, false);
-    encoder = new RestClientEncoder(invocation);
   }
 
   @Test
   void should_encode_header_parameter() {
     init("header", ImmutableMap.of("header", "value"));
 
-    encoder.encode();
+    encoder.encode(invocation);
 
     assertThat(httpClientRequest.headers().get("header"))
         .isEqualTo("value");
@@ -57,7 +56,7 @@ class RestClientEncoderTest extends RestClientTestBase {
   void should_encode_servicecomb_headers() {
     init("header", ImmutableMap.of("header", "value"));
 
-    encoder.encode();
+    encoder.encode(invocation);
 
     assertThat(httpClientRequest.headers().toString())
         .isEqualTo("header: value\n"
@@ -71,7 +70,7 @@ class RestClientEncoderTest extends RestClientTestBase {
     referenceConfig.setThirdPartyService(true);
     operationMeta.getConfig().setClientRequestHeaderFilterEnabled(true);
 
-    encoder.encode();
+    encoder.encode(invocation);
 
     assertThat(httpClientRequest.headers().toString())
         .isEqualTo("header: value\n");
@@ -83,7 +82,7 @@ class RestClientEncoderTest extends RestClientTestBase {
     referenceConfig.setThirdPartyService(true);
     operationMeta.getConfig().setClientRequestHeaderFilterEnabled(false);
 
-    encoder.encode();
+    encoder.encode(invocation);
 
     assertThat(httpClientRequest.headers().toString())
         .isEqualTo("header: value\n"
@@ -95,7 +94,7 @@ class RestClientEncoderTest extends RestClientTestBase {
   void should_encode_cookie_parameter() {
     init("cookie", ImmutableMap.of("cookie1", "v1", "cookie2", "v2"));
 
-    encoder.encode();
+    encoder.encode(invocation);
 
     assertThat(httpClientRequest.headers().get(HttpHeaders.COOKIE))
         .isEqualTo("cookie1=v1; cookie2=v2");
@@ -105,7 +104,7 @@ class RestClientEncoderTest extends RestClientTestBase {
   void should_encode_body_parameter() {
     init("body", ImmutableMap.of("body", "value"));
 
-    encoder.encode();
+    encoder.encode(invocation);
 
     assertThat(transportContext.getRequestParameters().getBodyBuffer().toString())
         .isEqualTo("\"value\"");
@@ -115,7 +114,7 @@ class RestClientEncoderTest extends RestClientTestBase {
   void should_encode_form_attribute_parameter() {
     init("form", ImmutableMap.of("form1", "v1", "form2", "v2"));
 
-    encoder.encode();
+    encoder.encode(invocation);
 
     assertThat(httpClientRequest.headers().get(HttpHeaders.CONTENT_TYPE))
         .isEqualTo(MediaType.APPLICATION_FORM_URLENCODED);
@@ -130,7 +129,7 @@ class RestClientEncoderTest extends RestClientTestBase {
     swaggerArgs.put("form2", null);
     init("form", swaggerArgs);
 
-    encoder.encode();
+    encoder.encode(invocation);
 
     assertThat(httpClientRequest.headers().get(HttpHeaders.CONTENT_TYPE))
         .isEqualTo(MediaType.APPLICATION_FORM_URLENCODED);
@@ -142,7 +141,7 @@ class RestClientEncoderTest extends RestClientTestBase {
   void should_encode_form_with_upload_parameter() {
     init("formWithUpload", ImmutableMap.of("form1", "v1", "form2", new File("form2")));
 
-    encoder.encode();
+    encoder.encode(invocation);
 
     RestClientRequestParameters requestParameters = transportContext.getRequestParameters();
     assertThat(requestParameters.getBodyBuffer().toString())
@@ -160,7 +159,7 @@ class RestClientEncoderTest extends RestClientTestBase {
   void should_encode_form_with_upload_list() {
     init("formWithUploadList", ImmutableMap.of("files", Arrays.asList(new File("f1"), new File("f2"))));
 
-    encoder.encode();
+    encoder.encode(invocation);
 
     checkUploadList();
   }
@@ -169,7 +168,7 @@ class RestClientEncoderTest extends RestClientTestBase {
   void should_encode_form_with_upload_array() {
     init("formWithUploadList", ImmutableMap.of("files", new File[] {new File("f1"), new File("f2")}));
 
-    encoder.encode();
+    encoder.encode(invocation);
 
     checkUploadList();
   }
