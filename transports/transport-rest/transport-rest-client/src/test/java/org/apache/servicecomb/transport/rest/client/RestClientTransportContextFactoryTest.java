@@ -96,4 +96,18 @@ class RestClientTransportContextFactoryTest extends RestClientTestBase {
 
     assertThat(transportContext.getLocalAddress()).isEqualTo("not connected");
   }
+
+  @Test
+  void should_allowed_modify_host() {
+    factory.setHttpClientRequestFactory((invocation, httpClient, method, options) -> {
+      options.setHost(invocation.getSwaggerArgument("clusterId") + "." + options.getHost());
+      return httpClient.request(method, options);
+    });
+
+    init(ImmutableMap.of("clusterId", "my-id"), true);
+
+    assertThat(absoluteURI()).isEqualTo("https://my-id.localhost:1234/query");
+
+    factory.setHttpClientRequestFactory(HttpClientRequestFactory.DEFAULT);
+  }
 }
