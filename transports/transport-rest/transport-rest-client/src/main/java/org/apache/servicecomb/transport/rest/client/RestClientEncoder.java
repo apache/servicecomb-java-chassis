@@ -42,6 +42,7 @@ import org.apache.servicecomb.foundation.common.utils.StringBuilderUtils;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -54,145 +55,150 @@ import io.vertx.core.http.HttpClientRequest;
 /**
  * encode all send data except upload
  */
+@Component
 public class RestClientEncoder {
   private static final Logger LOGGER = LoggerFactory.getLogger(RestClientEncoder.class);
 
   public static final int FORM_BUFFER_SIZE = 1024;
 
-  protected final Invocation invocation;
-
-  protected final RestClientTransportContext transportContext;
-
-  protected final RestClientRequestParameters requestParameters;
-
-  protected final HttpClientRequest httpClientRequest;
-
-  public RestClientEncoder(Invocation invocation) {
-    this.invocation = invocation;
-    this.transportContext = invocation.getTransportContext();
-    this.requestParameters = transportContext.getRequestParameters();
-    this.httpClientRequest = transportContext.getHttpClientRequest();
-  }
-
-  public void encode() {
+  public void encode(Invocation invocation) {
     try {
-      doEncode();
+      EncoderSession encoderSession = new EncoderSession(invocation);
+      encoderSession.doEncode();
     } catch (Exception e) {
       throw new InvocationException(BAD_REQUEST, FAILED_TO_ENCODE_REST_CLIENT_REQUEST, e.getMessage(), e);
     }
   }
 
-  protected void doEncode() throws Exception {
-    LOGGER.debug("rest client request, method={}, operation={}, endpoint={}, path={}.",
-        httpClientRequest.method(),
-        invocation.getMicroserviceQualifiedName(),
-        invocation.getEndpoint().getEndpoint(),
-        httpClientRequest.uri());
+  public static class EncoderSession {
+    protected final Invocation invocation;
 
-    swaggerArgumentsToRequest();
+    protected final RestClientTransportContext transportContext;
 
-    writeCookies(requestParameters.getCookieMap());
-    writeScbHeaders();
-    writeForm(requestParameters.getFormMap());
-  }
+    protected final RestClientRequestParameters requestParameters;
 
-  protected void swaggerArgumentsToRequest() throws Exception {
-    RestCodec.argsToRest(invocation.getSwaggerArguments(), transportContext.getRestOperationMeta(), requestParameters);
-  }
+    protected final HttpClientRequest httpClientRequest;
 
-  protected void writeCookies(@Nullable Map<String, String> cookieMap) {
-    if (CollectionUtils.isEmpty(cookieMap)) {
-      return;
+    public EncoderSession(Invocation invocation) {
+      this.invocation = invocation;
+      this.transportContext = invocation.getTransportContext();
+      this.requestParameters = this.transportContext.getRequestParameters();
+      this.httpClientRequest = this.transportContext.getHttpClientRequest();
     }
 
-    StringBuilder builder = new StringBuilder();
-    for (Entry<String, String> entry : cookieMap.entrySet()) {
-      builder.append(entry.getKey())
-          .append('=')
-          .append(entry.getValue())
-          .append("; ");
-    }
-    StringBuilderUtils.deleteLast(builder, 2);
-    httpClientRequest.putHeader(HttpHeaders.COOKIE, builder.toString());
-  }
+    protected void doEncode() throws Exception {
+      RestClientEncoder.LOGGER.debug("rest client request, method={}, operation={}, endpoint={}, path={}.",
+          httpClientRequest.method(),
+          invocation.getMicroserviceQualifiedName(),
+          invocation.getEndpoint().getEndpoint(),
+          httpClientRequest.uri());
 
-  protected void writeScbHeaders() throws JsonProcessingException {
-    OperationConfig operationConfig = invocation.getOperationMeta().getConfig();
-    if (invocation.isThirdPartyInvocation() && operationConfig.isClientRequestHeaderFilterEnabled()) {
-      return;
+      swaggerArgumentsToRequest();
+
+      writeCookies(requestParameters.getCookieMap());
+      writeScbHeaders();
+      writeForm(requestParameters.getFormMap());
     }
 
-    httpClientRequest.putHeader(Const.TARGET_MICROSERVICE, invocation.getMicroserviceName());
-    httpClientRequest.putHeader(Const.CSE_CONTEXT,
-        RestObjectMapperFactory.getRestObjectMapper().writeValueAsString(invocation.getContext()));
-  }
-
-  protected void writeForm(@Nullable Map<String, Object> formMap) throws Exception {
-    if (requestParameters.getUploads() == null) {
-      writeUrlEncodedForm(formMap);
-      return;
+    protected void swaggerArgumentsToRequest() throws Exception {
+      RestCodec
+          .argsToRest(invocation.getSwaggerArguments(), transportContext.getRestOperationMeta(), requestParameters);
     }
 
-    writeChunkedForm(formMap);
-  }
+    protected void writeCookies(@Nullable Map<String, String> cookieMap) {
+      if (CollectionUtils.isEmpty(cookieMap)) {
+        return;
+      }
 
-  protected void writeUrlEncodedForm(@Nullable Map<String, Object> formMap) throws Exception {
-    if (formMap == null) {
-      return;
+      StringBuilder builder = new StringBuilder();
+      for (Entry<String, String> entry : cookieMap.entrySet()) {
+        builder.append(entry.getKey())
+            .append('=')
+            .append(entry.getValue())
+            .append("; ");
+      }
+      StringBuilderUtils.deleteLast(builder, 2);
+      httpClientRequest.putHeader(HttpHeaders.COOKIE, builder.toString());
     }
 
-    httpClientRequest.putHeader(CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED);
+    protected void writeScbHeaders() throws JsonProcessingException {
+      OperationConfig operationConfig = invocation.getOperationMeta().getConfig();
+      if (invocation.isThirdPartyInvocation() && operationConfig.isClientRequestHeaderFilterEnabled()) {
+        return;
+      }
 
-    Buffer bodyBuffer = genUrlEncodedFormBuffer(formMap);
-    requestParameters.setBodyBuffer(bodyBuffer);
-  }
-
-  protected Buffer genUrlEncodedFormBuffer(@Nonnull Map<String, Object> formMap) throws Exception {
-    // 2x faster than UriComponentsBuilder
-    ByteBuf byteBuf = Unpooled.buffer(FORM_BUFFER_SIZE);
-    for (Entry<String, Object> entry : formMap.entrySet()) {
-      writeCharSequence(byteBuf, entry.getKey());
-      byteBuf.writeByte('=');
-
-      String value = QueryCodec.convertToString(entry.getValue());
-      String encodedValue = URLEncoder.encode(value, StandardCharsets.UTF_8.name());
-      writeCharSequence(byteBuf, encodedValue);
-
-      byteBuf.markWriterIndex();
-      byteBuf.writeByte('&');
+      httpClientRequest.putHeader(Const.TARGET_MICROSERVICE, invocation.getMicroserviceName());
+      httpClientRequest.putHeader(Const.CSE_CONTEXT,
+          RestObjectMapperFactory.getRestObjectMapper().writeValueAsString(invocation.getContext()));
     }
 
-    byteBuf.resetWriterIndex();
-    return Buffer.buffer(byteBuf);
-  }
+    protected void writeForm(@Nullable Map<String, Object> formMap) throws Exception {
+      if (requestParameters.getUploads() == null) {
+        writeUrlEncodedForm(formMap);
+        return;
+      }
 
-  protected void writeChunkedForm(@Nullable Map<String, Object> formMap) throws Exception {
-    String boundary = transportContext.getOrCreateBoundary();
-
-    httpClientRequest.setChunked(true);
-    httpClientRequest.putHeader(CONTENT_TYPE, MULTIPART_FORM_DATA + "; charset=UTF-8; boundary=" + boundary);
-
-    if (formMap == null) {
-      return;
+      writeChunkedForm(formMap);
     }
 
-    Buffer bodyBuffer = genChunkedFormBuffer(formMap, boundary);
-    requestParameters.setBodyBuffer(bodyBuffer);
-  }
+    protected void writeUrlEncodedForm(@Nullable Map<String, Object> formMap) throws Exception {
+      if (formMap == null) {
+        return;
+      }
 
-  protected Buffer genChunkedFormBuffer(@Nonnull Map<String, Object> formMap, String boundary) throws Exception {
-    ByteBuf byteBuf = Unpooled.buffer(FORM_BUFFER_SIZE);
-    for (Entry<String, Object> entry : formMap.entrySet()) {
-      writeCharSequence(byteBuf, "\r\n--");
-      writeCharSequence(byteBuf, boundary);
-      writeCharSequence(byteBuf, "\r\nContent-Disposition: form-data; name=\"");
-      writeCharSequence(byteBuf, entry.getKey());
-      writeCharSequence(byteBuf, "\"\r\n\r\n");
+      httpClientRequest.putHeader(CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED);
 
-      String value = QueryCodec.convertToString(entry.getValue());
-      writeCharSequence(byteBuf, value);
+      Buffer bodyBuffer = genUrlEncodedFormBuffer(formMap);
+      requestParameters.setBodyBuffer(bodyBuffer);
     }
-    return Buffer.buffer(byteBuf);
+
+    protected Buffer genUrlEncodedFormBuffer(@Nonnull Map<String, Object> formMap) throws Exception {
+      // 2x faster than UriComponentsBuilder
+      ByteBuf byteBuf = Unpooled.buffer(RestClientEncoder.FORM_BUFFER_SIZE);
+      for (Entry<String, Object> entry : formMap.entrySet()) {
+        writeCharSequence(byteBuf, entry.getKey());
+        byteBuf.writeByte('=');
+
+        String value = QueryCodec.convertToString(entry.getValue());
+        String encodedValue = URLEncoder.encode(value, StandardCharsets.UTF_8.name());
+        writeCharSequence(byteBuf, encodedValue);
+
+        byteBuf.markWriterIndex();
+        byteBuf.writeByte('&');
+      }
+
+      byteBuf.resetWriterIndex();
+      return Buffer.buffer(byteBuf);
+    }
+
+    protected void writeChunkedForm(@Nullable Map<String, Object> formMap) throws Exception {
+      String boundary = transportContext.getOrCreateBoundary();
+
+      httpClientRequest.setChunked(true);
+      httpClientRequest.putHeader(CONTENT_TYPE, MULTIPART_FORM_DATA + "; charset=UTF-8; boundary=" + boundary);
+
+      if (formMap == null) {
+        return;
+      }
+
+      Buffer bodyBuffer = genChunkedFormBuffer(formMap, boundary);
+      requestParameters.setBodyBuffer(bodyBuffer);
+    }
+
+    protected Buffer genChunkedFormBuffer(@Nonnull Map<String, Object> formMap, String boundary) throws Exception {
+      ByteBuf byteBuf = Unpooled.buffer(RestClientEncoder.FORM_BUFFER_SIZE);
+      for (Entry<String, Object> entry : formMap.entrySet()) {
+        writeCharSequence(byteBuf, "\r\n--");
+        writeCharSequence(byteBuf, boundary);
+        writeCharSequence(byteBuf, "\r\nContent-Disposition: form-data; name=\"");
+        writeCharSequence(byteBuf, entry.getKey());
+        writeCharSequence(byteBuf, "\"\r\n\r\n");
+
+        String value = QueryCodec.convertToString(entry.getValue());
+        writeCharSequence(byteBuf, value);
+      }
+      return Buffer.buffer(byteBuf);
+    }
   }
 
   protected static void writeCharSequence(ByteBuf byteBuf, String value) {

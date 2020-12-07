@@ -54,7 +54,7 @@ public class URIEndpointObject extends IpPort {
     querys = splitQuery(uri);
     sslEnabled = Boolean.parseBoolean(getFirst(SSL_ENABLED_KEY));
     String httpVersion = getFirst(PROTOCOL_KEY);
-    if (httpVersion != null && httpVersion.equals(HTTP2)) {
+    if (HTTP2.equals(httpVersion)) {
       http2Enabled = true;
     }
   }
