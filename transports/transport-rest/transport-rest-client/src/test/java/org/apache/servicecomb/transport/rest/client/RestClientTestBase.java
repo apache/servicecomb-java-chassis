@@ -29,7 +29,6 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.Transport;
 import org.apache.servicecomb.core.bootstrap.SCBBootstrap;
-import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
@@ -84,7 +83,7 @@ public class RestClientTestBase {
     restOperationMeta = RestMetaUtils.getRestOperationMeta(operationMeta);
 
     invocation = InvocationFactory.forConsumer(
-        referenceConfig, operationMeta, new InvocationRuntimeType(null), swaggerArgs);
+        referenceConfig, operationMeta, operationMeta.buildBaseConsumerRuntimeType(), swaggerArgs);
 
     String url = "rest://localhost:1234?sslEnabled=" + ssl;
     invocation.setEndpoint(new Endpoint(restTransport, url));
