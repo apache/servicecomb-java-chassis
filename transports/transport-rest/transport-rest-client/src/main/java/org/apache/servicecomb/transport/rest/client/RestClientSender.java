@@ -73,7 +73,7 @@ public class RestClientSender {
     // can read metrics of connection in vertx success/exception callback
     // but after the callback, maybe the connection will be reused or closed, metrics is not valid any more
     // so must attach callback before actual send
-    CompletableFuture<Response> actualFuture = future.whenComplete(this::processConnectionMetrics);
+    CompletableFuture<Response> actualFuture = future.whenComplete(this::afterSend);
     VertxContextExecutor.create(transportContext.getVertxContext()).execute(this::runInVertxContext);
     return actualFuture;
   }
@@ -159,7 +159,19 @@ public class RestClientSender {
         .entity(result);
   }
 
-  protected void processConnectionMetrics(Response response, Throwable throwable) {
+  protected void afterSend(Response response, Throwable throwable) {
+    processMetrics();
+
+    if (throwable != null) {
+      LOGGER.error("rest client request, method={}, operation={}, endpoint={}, path={}.",
+          httpClientRequest.method(),
+          invocation.getMicroserviceQualifiedName(),
+          invocation.getEndpoint().getEndpoint(),
+          httpClientRequest.uri());
+    }
+  }
+
+  protected void processMetrics() {
     InvocationStageTrace stageTrace = invocation.getInvocationStageTrace();
 
     // connection maybe null when exception happens such as ssl handshake failure
@@ -173,5 +185,6 @@ public class RestClientSender {
     // even failed and did not received response, still set time for it
     // that will help to know the real timeout time
     stageTrace.finishReceiveResponse();
+    stageTrace.startClientFiltersResponse();
   }
 }
