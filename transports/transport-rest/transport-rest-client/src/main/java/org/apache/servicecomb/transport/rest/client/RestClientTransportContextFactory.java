@@ -41,9 +41,17 @@ import io.vertx.core.http.RequestOptions;
 public class RestClientTransportContextFactory {
   private BoundaryFactory boundaryFactory = BoundaryFactory.DEFAULT;
 
+  private HttpClientRequestFactory httpClientRequestFactory = HttpClientRequestFactory.DEFAULT;
+
   @Autowired(required = false)
   public RestClientTransportContextFactory setBoundaryFactory(BoundaryFactory boundaryFactory) {
     this.boundaryFactory = boundaryFactory;
+    return this;
+  }
+
+  @Autowired(required = false)
+  public RestClientTransportContextFactory setHttpClientRequestFactory(HttpClientRequestFactory factory) {
+    this.httpClientRequestFactory = factory;
     return this;
   }
 
@@ -66,7 +74,7 @@ public class RestClientTransportContextFactory {
         httpClientRequest,
         boundaryFactory);
   }
-  
+
   protected HttpClientWithContext findHttpClientPool(Invocation invocation) {
     URIEndpointObject endpoint = (URIEndpointObject) invocation.getEndpoint().getAddress();
     if (endpoint.isHttp2Enabled()) {
@@ -85,7 +93,7 @@ public class RestClientTransportContextFactory {
         .setSsl(endpoint.isSslEnabled())
         .setURI(createRequestPath(invocation, restOperationMeta));
     HttpMethod method = HttpMethod.valueOf(restOperationMeta.getHttpMethod());
-    return httpClient.request(method, requestOptions);
+    return httpClientRequestFactory.create(invocation, httpClient, method, requestOptions);
   }
 
   protected String createRequestPath(Invocation invocation, RestOperationMeta restOperationMeta) throws Exception {
