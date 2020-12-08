@@ -25,13 +25,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map.Entry;
 
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.filter.config.FilterChainsConfig;
 import org.apache.servicecomb.core.filter.config.TransportFiltersConfig;
-import org.apache.servicecomb.swagger.invocation.InvocationType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -110,23 +108,24 @@ public class FilterChainsManager {
   }
 
   public String collectResolvedChains() {
-    // currently not implement consumer filter chain, so not print consumer information now.
-
     StringBuilder sb = new StringBuilder();
-    //    appendLine(sb, "consumer filters: %s", filterManager.getConsumerFilters());
-    appendLine(sb, "producer filters: %s", filterManager.getProducerFilters());
-    //    collectChainsByInvocationType(sb, consumerChainsConfig, CONSUMER);
-    collectChainsByInvocationType(sb, producerChainsConfig, PRODUCER);
+
+    appendLine(sb, "consumer: ");
+    appendLine(sb, "  filters: %s", filterManager.getConsumerFilters());
+    collectChainsByInvocationType(sb, consumerChainsConfig);
+
+    appendLine(sb, "producer: ");
+    appendLine(sb, "  filters: %s", filterManager.getProducerFilters());
+    collectChainsByInvocationType(sb, producerChainsConfig);
 
     return deleteLast(sb, 1).toString();
   }
 
-  private void collectChainsByInvocationType(StringBuilder sb, FilterChainsConfig chainsConfig,
-      InvocationType invocationType) {
-    appendLine(sb, "%s chains:", invocationType.name().toLowerCase(Locale.US));
-    appendLine(sb, "  default: %s", chainsConfig.getDefaultChain());
+  private void collectChainsByInvocationType(StringBuilder sb, FilterChainsConfig chainsConfig) {
+    appendLine(sb, "  chains:");
+    appendLine(sb, "    default: %s", chainsConfig.getDefaultChain());
     for (Entry<String, List<Object>> entry : chainsConfig.getMicroserviceChains().entrySet()) {
-      appendLine(sb, "  %s: %s", entry.getKey(), entry.getValue());
+      appendLine(sb, "    %s: %s", entry.getKey(), entry.getValue());
     }
   }
 

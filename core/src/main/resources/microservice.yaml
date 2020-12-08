@@ -21,15 +21,14 @@ servicecomb:
   filter-chains:
     enabled: false
     transport-filters:
-      #default-consumer-transport:
-      #  rest: rest-client-codec
-      #  highway: highway-client-codec
+      default-consumer-transport:
+        rest: rest-client-codec, rest-client-sender
+        highway: highway-client
       default-producer-transport:
         rest: rest-server-codec
         highway: highway-server-codec
     consumer:
-      default: simple-load-balance
-      #default: simple-load-balance, default-consumer-transport, transport-client
+      default: simple-load-balance, default-consumer-transport
       # samples for customize microservice filter chain
       #policies:
       #  ms-1: retry, load-balance, transport-client, ms-1-consumer-transport

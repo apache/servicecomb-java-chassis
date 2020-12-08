@@ -16,12 +16,13 @@
  */
 package org.apache.servicecomb.it.extend.engine;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.provider.pojo.Invoker;
+import org.apache.servicecomb.provider.pojo.PojoConsumerMetaRefresher;
+import org.apache.servicecomb.provider.pojo.PojoInvocation;
 import org.apache.servicecomb.provider.pojo.PojoInvocationCreator;
-import org.apache.servicecomb.provider.pojo.definition.PojoConsumerOperationMeta;
 
 /**
  * allow set transport, that makes integration test easier
@@ -35,9 +36,10 @@ public class ITInvoker extends Invoker {
 
   class ITPojoInvocationCreator extends PojoInvocationCreator {
     @Override
-    public ReferenceConfig createReferenceConfig(PojoConsumerOperationMeta consumerOperationMeta) {
-      return consumerOperationMeta.getPojoConsumerMeta().getMicroserviceReferenceConfig()
-          .createReferenceConfig(transport, consumerOperationMeta.getOperationMeta());
+    public PojoInvocation create(Method method, PojoConsumerMetaRefresher metaRefresher, Object[] args) {
+      PojoInvocation invocation = super.create(method, metaRefresher, args);
+      invocation.getReferenceConfig().setTransport(transport);
+      return invocation;
     }
   }
 
