@@ -23,20 +23,23 @@ import org.apache.servicecomb.swagger.invocation.context.VertxTransportContext;
 
 import io.vertx.core.Context;
 import io.vertx.core.http.HttpClientRequest;
+import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.HttpConnection;
 
 public class RestClientTransportContext implements VertxTransportContext {
-  private final RestOperationMeta restOperationMeta;
+  protected final RestOperationMeta restOperationMeta;
 
-  private final Context vertxContext;
+  protected final Context vertxContext;
 
-  private final HttpClientRequest httpClientRequest;
+  protected final HttpClientRequest httpClientRequest;
 
-  private final RestClientRequestParameters requestParameters;
+  protected final RestClientRequestParameters requestParameters;
 
-  private final BoundaryFactory boundaryFactory;
+  protected final BoundaryFactory boundaryFactory;
 
-  private String boundary;
+  protected String boundary;
+
+  protected HttpClientResponse httpClientResponse;
 
   public RestClientTransportContext(RestOperationMeta restOperationMeta, Context vertxContext,
       HttpClientRequest httpClientRequest, BoundaryFactory boundaryFactory) {
@@ -74,6 +77,15 @@ public class RestClientTransportContext implements VertxTransportContext {
     }
 
     return boundary;
+  }
+
+  public HttpClientResponse getHttpClientResponse() {
+    return httpClientResponse;
+  }
+
+  public RestClientTransportContext setHttpClientResponse(HttpClientResponse httpClientResponse) {
+    this.httpClientResponse = httpClientResponse;
+    return this;
   }
 
   public String getLocalAddress() {
