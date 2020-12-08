@@ -42,8 +42,11 @@ import org.slf4j.LoggerFactory;
 import com.netflix.config.ConcurrentCompositeConfiguration;
 import com.netflix.config.DynamicPropertyFactory;
 
+import io.vertx.core.Handler;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpClientRequest;
+import io.vertx.core.http.HttpClientResponse;
 import io.vertx.core.http.RequestOptions;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.RoutingContext;
@@ -155,9 +158,7 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
           httpClientResponse.headers().forEach((header) -> {
             context.response().headers().set(header.getKey(), header.getValue());
           });
-          httpClientResponse.handler(data -> {
-            context.response().write(data);
-          });
+          httpClientResponse.handler(this.responseHandler(context, httpClientResponse));
           httpClientResponse.endHandler((v) -> context.response().end());
         });
     context.request().headers().forEach((header) -> {
@@ -165,6 +166,10 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
     });
     context.request().handler(data -> httpClientRequest.write(data));
     context.request().endHandler((v) -> httpClientRequest.end());
+  }
+
+  protected Handler<Buffer> responseHandler(RoutingContext routingContext, HttpClientResponse httpClientResponse) {
+    return data -> routingContext.response().write(data);
   }
 
   protected LoadBalancer getOrCreateLoadBalancer(Invocation invocation, String microserviceName, String versionRule) {
