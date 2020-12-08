@@ -20,6 +20,8 @@ package org.apache.servicecomb.core.provider.consumer;
 import java.lang.reflect.Type;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
 import org.apache.servicecomb.core.definition.InvocationRuntimeType;
@@ -35,6 +37,7 @@ import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.vertx.core.Context;
 import io.vertx.core.Vertx;
 
 public final class InvokerUtils {
@@ -85,7 +88,6 @@ public final class InvokerUtils {
     return invocation;
   }
 
-
   /**
    *
    * use of this method , the response type can not be determined.
@@ -125,6 +127,14 @@ public final class InvokerUtils {
     throw ExceptionFactory.convertConsumerException(response.getResult());
   }
 
+  public static boolean isInEventLoop() {
+    return isInEventLoop(Vertx.currentContext());
+  }
+
+  public static boolean isInEventLoop(@Nullable Context context) {
+    return context != null && context.isEventLoopContext();
+  }
+
   /**
    * This is an internal API, caller make sure already invoked SCBEngine.ensureStatusUp
    * @param invocation
@@ -132,7 +142,7 @@ public final class InvokerUtils {
    */
   public static Response innerSyncInvoke(Invocation invocation) {
     try {
-      if (Vertx.currentContext() != null && Vertx.currentContext().isEventLoopContext()) {
+      if (isInEventLoop()) {
         throw new IllegalStateException("Can not execute sync logic in event loop. ");
       }
       invocation.onStart(null, System.nanoTime());
