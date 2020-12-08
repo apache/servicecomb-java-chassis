@@ -18,19 +18,7 @@ package org.apache.servicecomb.provider.pojo;
 
 import java.lang.reflect.Method;
 
-import org.apache.servicecomb.provider.pojo.definition.PojoConsumerMeta;
-import org.apache.servicecomb.provider.pojo.definition.PojoConsumerOperationMeta;
-
-public class PojoInvocationCreator {
-  public PojoInvocation create(Method method, PojoConsumerMetaRefresher metaRefresher, Object[] args) {
-    PojoConsumerMeta pojoConsumerMeta = metaRefresher.getLatestMeta();
-    PojoConsumerOperationMeta consumerOperationMeta = pojoConsumerMeta.ensureFindOperationMeta(method);
-
-    PojoInvocation invocation = new PojoInvocation(consumerOperationMeta);
-    invocation.setSuccessResponseType(consumerOperationMeta.getResponsesType());
-    invocation.setInvocationArguments(consumerOperationMeta.getSwaggerConsumerOperation().toInvocationArguments(args));
-    invocation.setSync(consumerOperationMeta.isSync());
-
-    return invocation;
-  }
+public interface InvocationCaller {
+  Object call(Method method, PojoConsumerMetaRefresher metaRefresher, PojoInvocationCreator invocationCreator,
+      Object[] args);
 }

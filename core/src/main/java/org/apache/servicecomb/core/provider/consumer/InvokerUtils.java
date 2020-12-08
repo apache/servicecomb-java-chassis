@@ -31,6 +31,7 @@ import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.MicroserviceMeta;
 import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.core.definition.SchemaMeta;
+import org.apache.servicecomb.core.exception.Exceptions;
 import org.apache.servicecomb.core.invocation.InvocationFactory;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -213,5 +214,30 @@ public final class InvokerUtils {
   public static boolean isAsyncMethod(@Nonnull Method method) {
     // todo: should be extendable to support other reactive return type, eg: rxJava / project-reactor
     return method.getReturnType().equals(CompletableFuture.class);
+  }
+
+  /**
+   * should never throw exception directly
+   *
+   * @param invocation invocation
+   * @return CompletableFuture<Response>
+   */
+  public static CompletableFuture<Response> invoke(Invocation invocation) {
+    invocation.onStart(null, System.nanoTime());
+    invocation.getInvocationStageTrace().startHandlersRequest();
+
+    return invocation.getMicroserviceMeta().getFilterChain()
+        .onFilter(invocation)
+        .exceptionally(throwable -> convertException(invocation, throwable))
+        .whenComplete((response, throwable) -> processMetrics(invocation, response));
+  }
+
+  private static Response convertException(Invocation invocation, Throwable throwable) {
+    throw Exceptions.convert(invocation, throwable);
+  }
+
+  private static void processMetrics(Invocation invocation, Response response) {
+    invocation.getInvocationStageTrace().finishHandlersResponse();
+    invocation.onFinish(response);
   }
 }

@@ -24,6 +24,7 @@ import javax.servlet.http.Part;
 
 import org.apache.servicecomb.core.definition.InvocationRuntimeType;
 import org.apache.servicecomb.core.definition.OperationMeta;
+import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
 
@@ -42,11 +43,14 @@ public class PojoConsumerOperationMeta {
 
   private InvocationRuntimeType invocationRuntimeType;
 
+  private boolean sync;
+
   public PojoConsumerOperationMeta(PojoConsumerMeta pojoConsumerMeta, OperationMeta operationMeta,
       SwaggerConsumerOperation swaggerConsumerOperation) {
     this.pojoConsumerMeta = pojoConsumerMeta;
     this.operationMeta = operationMeta;
     this.swaggerConsumerOperation = swaggerConsumerOperation;
+    this.sync = InvokerUtils.isSyncMethod(swaggerConsumerOperation.getConsumerMethod());
     initResponseType();
     initRuntimeType();
   }
@@ -78,9 +82,9 @@ public class PojoConsumerOperationMeta {
     return invocationRuntimeType;
   }
 
-  public ReferenceConfig createReferenceConfig(PojoConsumerOperationMeta consumerOperationMeta) {
+  public ReferenceConfig createReferenceConfig() {
     return pojoConsumerMeta.getMicroserviceReferenceConfig()
-        .createReferenceConfig(consumerOperationMeta.getOperationMeta());
+        .createReferenceConfig(operationMeta);
   }
 
   private void initResponseType() {
@@ -97,5 +101,9 @@ public class PojoConsumerOperationMeta {
     if (intfResponseType != null) {
       responseType = TypeFactory.defaultInstance().constructType(intfResponseType);
     }
+  }
+
+  public boolean isSync() {
+    return sync;
   }
 }

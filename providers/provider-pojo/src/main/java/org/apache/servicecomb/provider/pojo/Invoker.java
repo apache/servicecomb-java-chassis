@@ -20,16 +20,8 @@ package org.apache.servicecomb.provider.pojo;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.concurrent.CompletableFuture;
 
-import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
-import org.apache.servicecomb.provider.pojo.definition.PojoConsumerMeta;
-import org.apache.servicecomb.provider.pojo.definition.PojoConsumerOperationMeta;
-import org.apache.servicecomb.swagger.engine.SwaggerConsumerOperation;
-import org.apache.servicecomb.swagger.invocation.Response;
-import org.apache.servicecomb.swagger.invocation.context.InvocationContextCompletableFuture;
-import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
+import org.apache.servicecomb.core.SCBEngine;
 
 public class Invoker implements InvocationHandler {
   protected final PojoConsumerMetaRefresher metaRefresher;
@@ -37,6 +29,8 @@ public class Invoker implements InvocationHandler {
   protected final PojoInvocationCreator invocationCreator;
 
   protected final DefaultMethodMeta defaultMethodMeta = new DefaultMethodMeta();
+
+  protected InvocationCaller invocationCaller;
 
   @SuppressWarnings("unchecked")
   public static <T> T createProxy(String microserviceName, String schemaId, Class<?> consumerIntf) {
@@ -58,6 +52,14 @@ public class Invoker implements InvocationHandler {
     return new PojoInvocationCreator();
   }
 
+  protected InvocationCaller createInvocationCaller() {
+    if (SCBEngine.getInstance().isFilterChainEnabled()) {
+      return new FilterInvocationCaller();
+    }
+
+    return new HandlerInvocationCaller();
+  }
+
   @Override
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     if (method.isDefault()) {
@@ -65,38 +67,15 @@ public class Invoker implements InvocationHandler {
           .invokeWithArguments(args);
     }
 
-    PojoConsumerMeta pojoConsumerMeta = metaRefresher.getLatestMeta();
-    PojoConsumerOperationMeta consumerOperationMeta = pojoConsumerMeta.ensureFindOperationMeta(method);
-    Invocation invocation = invocationCreator.create(consumerOperationMeta, args);
-
-    if (CompletableFuture.class.equals(method.getReturnType())) {
-      return completableFutureInvoke(invocation, consumerOperationMeta.getSwaggerConsumerOperation());
-    }
-
-    return syncInvoke(invocation, consumerOperationMeta.getSwaggerConsumerOperation());
+    prepareInvocationCaller();
+    return invocationCaller.call(method, metaRefresher, invocationCreator, args);
   }
 
-  protected Object syncInvoke(Invocation invocation, SwaggerConsumerOperation consumerOperation) {
-    Response response = InvokerUtils.innerSyncInvoke(invocation);
-    if (response.isSucceed()) {
-      return consumerOperation.getResponseMapper().mapResponse(response);
+  protected void prepareInvocationCaller() {
+    if (invocationCaller != null) {
+      return;
     }
 
-    throw ExceptionFactory.convertConsumerException(response.getResult());
-  }
-
-  protected CompletableFuture<Object> completableFutureInvoke(Invocation invocation,
-      SwaggerConsumerOperation consumerOperation) {
-    CompletableFuture<Object> future = new InvocationContextCompletableFuture<>(invocation);
-    InvokerUtils.reactiveInvoke(invocation, response -> {
-      if (response.isSucceed()) {
-        Object result = consumerOperation.getResponseMapper().mapResponse(response);
-        future.complete(result);
-        return;
-      }
-
-      future.completeExceptionally(response.getResult());
-    });
-    return future;
+    this.invocationCaller = createInvocationCaller();
   }
 }

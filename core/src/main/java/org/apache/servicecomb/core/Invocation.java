@@ -64,7 +64,7 @@ public class Invocation extends SwaggerInvocation {
     return SPIServiceUtils.getPriorityHighestServices(TraceIdGenerator::getName, TraceIdGenerator.class);
   }
 
-  private ReferenceConfig referenceConfig;
+  protected ReferenceConfig referenceConfig;
 
   private InvocationRuntimeType invocationRuntimeType;
 

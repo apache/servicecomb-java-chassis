@@ -32,17 +32,18 @@ public final class InvocationFactory {
   private InvocationFactory() {
   }
 
-  private static String getMicroserviceName() {
-    return RegistrationManager.INSTANCE.getMicroservice().getServiceName();
-  }
-
   public static Invocation forConsumer(ReferenceConfig referenceConfig, OperationMeta operationMeta,
       InvocationRuntimeType invocationRuntimeType, Map<String, Object> swaggerArguments) {
     Invocation invocation = new Invocation(referenceConfig,
         operationMeta,
         invocationRuntimeType,
         swaggerArguments);
-    invocation.addContext(Const.SRC_MICROSERVICE, getMicroserviceName());
+    return setSrcMicroservice(invocation);
+  }
+
+  public static Invocation setSrcMicroservice(Invocation invocation) {
+    String microserviceName = RegistrationManager.INSTANCE.getMicroservice().getServiceName();
+    invocation.addContext(Const.SRC_MICROSERVICE, microserviceName);
     return invocation;
   }
 
