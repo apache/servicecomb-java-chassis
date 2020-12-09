@@ -55,7 +55,7 @@ public final class DownloadUtils {
   }
 
   public static void clearPartResource(Part part) {
-    if (FilePartForSend.class.isInstance(part) && ((FilePartForSend) part).isDeleteAfterFinished()) {
+    if (part instanceof FilePartForSend && ((FilePartForSend) part).isDeleteAfterFinished()) {
       try {
         part.delete();
       } catch (IOException e) {

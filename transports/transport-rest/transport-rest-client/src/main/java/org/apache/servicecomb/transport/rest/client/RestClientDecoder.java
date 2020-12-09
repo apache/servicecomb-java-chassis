@@ -75,10 +75,11 @@ public class RestClientDecoder {
 
     HttpClientRequest httpClientRequest = transportContext.getHttpClientRequest();
     LOGGER.warn(
-        "method {}, endpoint {}, uri {}, statusCode {}, reasonPhrase {}, response content-type {} is not supported in operation.",
+        "operation={}, method={}, endpoint={}, uri={}, statusCode={}, reasonPhrase={}, response content-type={} is not supported in operation.",
+        invocation.getMicroserviceQualifiedName(),
         httpClientRequest.method(),
         invocation.getEndpoint().getEndpoint(),
-        httpClientRequest.absoluteURI(),
+        httpClientRequest.uri(),
         response.getStatusCode(),
         response.getReasonPhrase(),
         response.getHeader(HttpHeaders.CONTENT_TYPE));
@@ -103,10 +104,11 @@ public class RestClientDecoder {
     HttpClientRequest httpClientRequest = transportContext.getHttpClientRequest();
 
     LOGGER.warn(
-        "failed to decode response body, method={}, endpoint={}, uri={}, statusCode={}, reasonPhrase={}, content-type={}.",
+        "failed to decode response body, operation={}, method={}, endpoint={}, uri={}, statusCode={}, reasonPhrase={}, content-type={}.",
+        invocation.getMicroserviceQualifiedName(),
         httpClientRequest.method(),
         invocation.getEndpoint().getEndpoint(),
-        httpClientRequest.absoluteURI(),
+        httpClientRequest.uri(),
         response.getStatusCode(),
         response.getReasonPhrase(),
         response.getHeader(HttpHeaders.CONTENT_TYPE));

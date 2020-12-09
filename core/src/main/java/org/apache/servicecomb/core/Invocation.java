@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -39,10 +40,12 @@ import org.apache.servicecomb.core.event.InvocationRunInExecutorFinishEvent;
 import org.apache.servicecomb.core.event.InvocationRunInExecutorStartEvent;
 import org.apache.servicecomb.core.event.InvocationStartEvent;
 import org.apache.servicecomb.core.invocation.InvocationStageTrace;
+import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.core.provider.consumer.ReferenceConfig;
 import org.apache.servicecomb.core.tracing.TraceIdGenerator;
 import org.apache.servicecomb.core.tracing.TraceIdLogger;
 import org.apache.servicecomb.foundation.common.event.EventManager;
+import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.swagger.invocation.AsyncResponse;
@@ -465,5 +468,14 @@ public class Invocation extends SwaggerInvocation {
 
   public boolean isThirdPartyInvocation() {
     return referenceConfig.is3rdPartyService();
+  }
+
+  // ensure sync consumer invocation response flow not run in eventLoop
+  public <T> CompletableFuture<T> optimizeSyncConsumerThread(CompletableFuture<T> future) {
+    if (sync && !InvokerUtils.isInEventLoop()) {
+      AsyncUtils.waitQuietly(future);
+    }
+
+    return future;
   }
 }

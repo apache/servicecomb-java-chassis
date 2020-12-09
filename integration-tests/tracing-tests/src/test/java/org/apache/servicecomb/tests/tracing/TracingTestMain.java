@@ -20,7 +20,6 @@ package org.apache.servicecomb.tests.tracing;
 import org.apache.servicecomb.foundation.common.utils.BeanUtils;
 
 public class TracingTestMain {
-
   public static void main(String[] args) {
     BeanUtils.init();
   }

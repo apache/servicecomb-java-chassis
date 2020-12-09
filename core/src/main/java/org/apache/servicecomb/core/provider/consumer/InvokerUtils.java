@@ -17,9 +17,12 @@
 
 package org.apache.servicecomb.core.provider.consumer;
 
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.apache.servicecomb.core.Invocation;
@@ -201,5 +204,14 @@ public final class InvokerUtils {
       LOGGER.error("invoke failed, {}", invocation.getOperationMeta().getMicroserviceQualifiedName());
       asyncResp.handle(response);
     }
+  }
+
+  public static boolean isSyncMethod(@Nonnull Method method) {
+    return !isAsyncMethod(method);
+  }
+
+  public static boolean isAsyncMethod(@Nonnull Method method) {
+    // todo: should be extendable to support other reactive return type, eg: rxJava / project-reactor
+    return method.getReturnType().equals(CompletableFuture.class);
   }
 }

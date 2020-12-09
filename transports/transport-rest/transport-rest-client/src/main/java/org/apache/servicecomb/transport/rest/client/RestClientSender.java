@@ -100,7 +100,9 @@ public class RestClientSender {
       return CompletableFuture.completedFuture(null);
     }
 
-    httpClientRequest.write(requestParameters.getBodyBuffer());
+    if (requestParameters.getBodyBuffer() != null) {
+      httpClientRequest.write(requestParameters.getBodyBuffer());
+    }
     return sendFiles();
   }
 
@@ -163,9 +165,9 @@ public class RestClientSender {
     processMetrics();
 
     if (throwable != null) {
-      LOGGER.error("rest client request, method={}, operation={}, endpoint={}, path={}.",
-          httpClientRequest.method(),
+      LOGGER.error("rest client send or receive failed, operation={}, method={}, endpoint={}, uri={}.",
           invocation.getMicroserviceQualifiedName(),
+          httpClientRequest.method(),
           invocation.getEndpoint().getEndpoint(),
           httpClientRequest.uri());
     }

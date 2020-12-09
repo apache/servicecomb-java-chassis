@@ -20,8 +20,37 @@ import java.util.concurrent.CompletableFuture;
 
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.SCBEngine;
+import org.apache.servicecomb.core.provider.consumer.InvokerUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 
+/**
+ * <pre>
+ * unified extension for replace old version extensions:
+ *   1. Handler
+ *   2. HttpClientFilter
+ *   3. HttpServerFilter
+ *
+ * thread rule:
+ *   assume a producer filter chains is: f1, f2, schedule, f3, f4
+ *
+ *   schedule is a builtIn filter, which will dispatch invocations to operation related threadPool
+ *
+ *   f1 and f2 are before "schedule" filter, default to run in eventLoop
+ *   if developers customize filters and switch to other threads
+ *   it's better to switch back to eventLoop, unless you know what you are doing
+ *
+ *   f3 and f4 are after "schedule" filter, default thread depend on controller's method signature
+ *     1. if controller method not return CompletableFuture
+ *        then will run in a real threadPool
+ *     2. if controller method return CompletableFuture
+ *        then will still run in eventLoop
+ *   so filters after "schedule" filter, are more complex than filters before "schedule"
+ *   if developers need to do some BLOCK logic, MUST use different Strategy when running in different thread:
+ *     1. threadPool: run do BLOCK logic directly
+ *     2. eventLoop: MUST submit to a threadPool, and then switch back
+ *        (<a href="https://vertx.io/docs/vertx-core/java/#golden_rule">reactive golden rule</a>)
+ * </pre>
+ */
 public interface Filter {
   default boolean enabled() {
     return true;
@@ -29,6 +58,10 @@ public interface Filter {
 
   default void init(SCBEngine engine) {
 
+  }
+
+  default boolean isInEventLoop() {
+    return InvokerUtils.isInEventLoop();
   }
 
   /**

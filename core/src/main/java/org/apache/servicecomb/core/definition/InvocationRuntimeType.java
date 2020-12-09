@@ -30,9 +30,9 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 /**
  * An InvocationRuntimeType indicates the associated java type information of this invocation.
  *
- * For provider, java type information may NOT be changed for each invocation.
+ * For producer, java type information NOT be changed for each invocation.
  *
- * For Consumer, java type information may be changed for each invocation, or not available when in edge or
+ * For Consumer, java type information depend on method signature, or not available when in edge or
  * invoked by raw type way like RestTemplate or InvokerUtils.
  */
 public class InvocationRuntimeType {

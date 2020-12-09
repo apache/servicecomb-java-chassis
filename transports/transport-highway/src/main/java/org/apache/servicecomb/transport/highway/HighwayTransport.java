@@ -37,6 +37,7 @@ public class HighwayTransport extends AbstractTransport {
     return Const.HIGHWAY;
   }
 
+  @Override
   public boolean init() throws Exception {
     highwayClient.init(transportVertx);
 
@@ -52,5 +53,9 @@ public class HighwayTransport extends AbstractTransport {
   @Override
   public void send(Invocation invocation, AsyncResponse asyncResp) throws Exception {
     highwayClient.send(invocation, asyncResp);
+  }
+
+  public HighwayClient getHighwayClient() {
+    return highwayClient;
   }
 }
