@@ -89,7 +89,11 @@ public class ServiceRegistryListener {
       for (String schemaId : microservice.getSchemas()) {
         Swagger swagger = scbEngine.getSwaggerLoader().loadSwagger(microservice, microserviceVersion.getInstances(),
             schemaId);
-        microserviceMeta.registerSchemaMeta(schemaId, swagger);
+        // allow users register schemaId, but without schema contents. This is useful when cooperate with other
+        // non java-chassis framework.
+        if (swagger != null) {
+          microserviceMeta.registerSchemaMeta(schemaId, swagger);
+        }
       }
     }
 

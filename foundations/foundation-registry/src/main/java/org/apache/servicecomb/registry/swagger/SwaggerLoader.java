@@ -94,21 +94,6 @@ public class SwaggerLoader {
     }
   }
 
-  public void registerSwagger(String schemaId, Swagger swagger) {
-    registerSwagger(RegistrationManager.INSTANCE.getMicroservice().getServiceName(), schemaId, swagger);
-  }
-
-  public void registerSwagger(String microserviceName, String schemaId, String swaggerContent) {
-    try {
-      Swagger swagger = SwaggerUtils.parseAndValidateSwagger(swaggerContent);
-      registerSwagger(microserviceName, schemaId, swagger);
-    } catch (Throwable e) {
-      throw new IllegalStateException(
-          String.format("Parse the swagger for %s:%s failed", microserviceName, schemaId),
-          e);
-    }
-  }
-
   public void registerSwagger(String microserviceName, String schemaId, Swagger swagger) {
     MicroserviceNameParser parser = new MicroserviceNameParser(
         RegistrationManager.INSTANCE.getMicroservice().getAppId(), microserviceName);
@@ -200,13 +185,14 @@ public class SwaggerLoader {
       return SwaggerUtils.parseAndValidateSwagger(schemaContent);
     }
 
-    throw new IllegalStateException(
-        String.format("no schema in local, and can not get schema from service center, "
-                + "appId=%s, microserviceName=%s, version=%s, serviceId=%s, schemaId=%s.",
-            microservice.getAppId(),
-            microservice.getServiceName(),
-            microservice.getVersion(),
-            microservice.getServiceId(),
-            schemaId));
+    LOGGER.warn("no schema in local, and can not get schema from service center, "
+            + "appId={}, microserviceName={}, version={}, serviceId={}, schemaId={}.",
+        microservice.getAppId(),
+        microservice.getServiceName(),
+        microservice.getVersion(),
+        microservice.getServiceId(),
+        schemaId);
+
+    return null;
   }
 }

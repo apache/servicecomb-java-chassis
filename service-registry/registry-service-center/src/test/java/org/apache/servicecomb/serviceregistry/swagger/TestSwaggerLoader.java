@@ -129,10 +129,7 @@ public class TestSwaggerLoader extends TestRegistryBase {
     Microservice microservice = appManager.getOrCreateMicroserviceVersions("other", "ms3")
         .getVersions().values().iterator().next().getMicroservice();
 
-    expectedException.expect(IllegalStateException.class);
-    expectedException.expectMessage(
-        "no schema in local, and can not get schema from service center, appId=other, microserviceName=ms3, version=1.0, serviceId=003, schemaId=hello.");
-    RegistrationManager.INSTANCE.getSwaggerLoader().loadSwagger(microservice, null, schemaId);
+    Assert.assertNull(RegistrationManager.INSTANCE.getSwaggerLoader().loadSwagger(microservice, null, schemaId));
   }
 
   @Test
