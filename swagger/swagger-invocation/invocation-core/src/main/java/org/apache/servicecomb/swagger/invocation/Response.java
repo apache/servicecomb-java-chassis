@@ -42,12 +42,17 @@ public class Response {
   // 失败场景中，result是Throwable
   private Object result;
 
-  public boolean isSuccessed() {
+  public boolean isSucceed() {
     return HttpStatus.isSuccess(status);
   }
 
+  @Deprecated
+  public boolean isSuccessed() {
+    return isSucceed();
+  }
+
   public boolean isFailed() {
-    return !isSuccessed();
+    return !isSucceed();
   }
 
   public int getStatusCode() {

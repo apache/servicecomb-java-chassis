@@ -121,7 +121,7 @@ public final class InvokerUtils {
    */
   public static Object syncInvoke(Invocation invocation) throws InvocationException {
     Response response = innerSyncInvoke(invocation);
-    if (response.isSuccessed()) {
+    if (response.isSucceed()) {
       return response.getResult();
     }
     throw ExceptionFactory.convertConsumerException(response.getResult());

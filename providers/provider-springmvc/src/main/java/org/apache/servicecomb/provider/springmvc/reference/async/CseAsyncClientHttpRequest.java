@@ -57,13 +57,13 @@ public class CseAsyncClientHttpRequest extends CseClientHttpRequest implements
     Invocation invocation = prepareInvocation(swaggerArguments);
     invocation.getHandlerContext().put(RestConst.CONSUMER_HEADER, this.getHeaders());
     CompletableFuture<ClientHttpResponse> clientHttpResponseCompletableFuture = doAsyncInvoke(invocation);
-    return new CompletableToListenableFutureAdapter<ClientHttpResponse>(clientHttpResponseCompletableFuture);
+    return new CompletableToListenableFutureAdapter<>(clientHttpResponseCompletableFuture);
   }
 
   protected CompletableFuture<ClientHttpResponse> doAsyncInvoke(Invocation invocation) {
     CompletableFuture<ClientHttpResponse> completableFuture = new CompletableFuture<>();
     InvokerUtils.reactiveInvoke(invocation, (Response response) -> {
-      if (response.isSuccessed()) {
+      if (response.isSucceed()) {
         completableFuture.complete(new CseClientHttpResponse(response));
       } else {
         completableFuture.completeExceptionally(response.getResult());
@@ -71,7 +71,6 @@ public class CseAsyncClientHttpRequest extends CseClientHttpRequest implements
     });
     return completableFuture;
   }
-
 
   @Override
   public ListenableFuture<ClientHttpResponse> executeAsync() {

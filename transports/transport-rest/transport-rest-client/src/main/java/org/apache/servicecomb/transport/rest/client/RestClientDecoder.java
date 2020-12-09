@@ -111,7 +111,7 @@ public class RestClientDecoder {
         response.getReasonPhrase(),
         response.getHeader(HttpHeaders.CONTENT_TYPE));
 
-    if (response.isSuccessed()) {
+    if (response.isSucceed()) {
       return Exceptions.consumer(FAILED_TO_DECODE_REST_SUCCESS_RESPONSE, "failed to decode success response body.", e);
     }
     return Exceptions.consumer(FAILED_TO_DECODE_REST_FAIL_RESPONSE, "failed to decode fail response body.", e);

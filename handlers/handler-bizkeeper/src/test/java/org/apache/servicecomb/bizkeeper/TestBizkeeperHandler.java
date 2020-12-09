@@ -146,7 +146,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
     System.setProperty("servicecomb.fallback.Group_Name.testHandleForceReturnnull.force", "true");
     System.setProperty("servicecomb.fallbackpolicy.Group_Name.testHandleForceReturnnull.policy", "returnnull");
     bizkeeperHandler.handle(invocation, f -> {
-      Assert.assertTrue(f.isSuccessed());
+      Assert.assertTrue(f.isSucceed());
       Assert.assertNull(f.getResult());
     });
   }
@@ -203,7 +203,7 @@ public class TestBizkeeperHandler extends BizkeeperHandler {
       }
     }).when(invocation).next(Mockito.any(AsyncResponse.class));
     bizkeeperHandler.handle(invocation, f -> {
-      Assert.assertTrue(f.isSuccessed());
+      Assert.assertTrue(f.isSucceed());
     });
   }
 }
