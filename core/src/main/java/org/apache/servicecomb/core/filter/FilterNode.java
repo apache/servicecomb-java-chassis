@@ -82,7 +82,7 @@ public class FilterNode {
       return nextNode.onFilter(invocation);
     }
 
-    return AsyncUtils.tryCatch(() -> filter.onFilter(invocation, nextNode))
+    return AsyncUtils.tryCatchSupplierFuture(() -> filter.onFilter(invocation, nextNode))
         .thenApply(this::rethrowExceptionInResponse);
   }
 

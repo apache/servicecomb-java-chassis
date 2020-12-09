@@ -16,10 +16,9 @@
  */
 package org.apache.servicecomb.core.invocation;
 
-import java.util.concurrent.CompletableFuture;
-
 import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.exception.Exceptions;
+import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletRequestEx;
 import org.apache.servicecomb.foundation.vertx.http.HttpServletResponseEx;
 import org.apache.servicecomb.swagger.invocation.Response;
@@ -49,8 +48,7 @@ public abstract class ProducerInvocationFlow {
   }
 
   public void run() {
-    CompletableFuture.completedFuture(null)
-        .thenApply(v -> invocationCreator.create())
+    AsyncUtils.tryCatchSupplier(invocationCreator::create)
         .exceptionally(this::sendCreateInvocationException)
         .thenAccept(this::tryRunInvocation);
   }

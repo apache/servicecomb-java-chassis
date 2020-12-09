@@ -23,7 +23,16 @@ public final class AsyncUtils {
   private AsyncUtils() {
   }
 
-  public static <T> CompletableFuture<T> tryCatch(Supplier<CompletableFuture<T>> supplier) {
+  public static <T> CompletableFuture<T> tryCatchSupplier(Supplier<T> supplier) {
+    try {
+      T value = supplier.get();
+      return CompletableFuture.completedFuture(value);
+    } catch (Throwable e) {
+      return completeExceptionally(e);
+    }
+  }
+
+  public static <T> CompletableFuture<T> tryCatchSupplierFuture(Supplier<CompletableFuture<T>> supplier) {
     try {
       return supplier.get();
     } catch (Throwable e) {
