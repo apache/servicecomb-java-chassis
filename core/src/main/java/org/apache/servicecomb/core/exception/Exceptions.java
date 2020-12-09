@@ -36,8 +36,12 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.ExceptionFactory;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public final class Exceptions {
+  private static final Logger LOGGER = LoggerFactory.getLogger(Exceptions.class);
+
   @SuppressWarnings("unchecked")
   private static final List<ExceptionConverter<Throwable>> CONVERTERS = SPIServiceUtils
       .getOrLoadSortedService(ExceptionConverter.class).stream()
@@ -108,6 +112,10 @@ public final class Exceptions {
   public static Response exceptionToResponse(@Nullable Invocation invocation, Throwable exception,
       StatusType genericStatus) {
     InvocationException invocationException = Exceptions.convert(invocation, exception, genericStatus);
+    if (invocation != null) {
+      LOGGER.error("failed to process {} invocation, operation={}.",
+          invocation.getInvocationType(), invocation.getMicroserviceQualifiedName(), invocationException);
+    }
     return Response.status(invocationException.getStatus())
         .entity(invocationException.getErrorData());
   }
