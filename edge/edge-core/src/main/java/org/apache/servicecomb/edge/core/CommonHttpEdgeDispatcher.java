@@ -138,6 +138,13 @@ public class CommonHttpEdgeDispatcher extends AbstractEdgeDispatcher {
     LoadBalancer loadBalancer = getOrCreateLoadBalancer(invocation, configurationItem.getMicroserviceName(),
         configurationItem.getVersionRule());
     ServiceCombServer server = loadBalancer.chooseServer(invocation);
+    if (server == null) {
+      context.response().setStatusCode(503);
+      context.response().setStatusMessage("service not ready");
+      context.response().end();
+      return;
+    }
+
     URIEndpointObject endpointObject = new URIEndpointObject(server.getEndpoint().getEndpoint());
 
     RequestOptions requestOptions = new RequestOptions();
