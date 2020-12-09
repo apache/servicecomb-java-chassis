@@ -249,6 +249,14 @@ public final class ServiceRegistryConfig {
     return property.get();
   }
 
+  public boolean useUpInstancesOnly() {
+    DynamicBooleanProperty property =
+        DynamicPropertyFactory.getInstance()
+            .getBooleanProperty("servicecomb.service.registry.instance.useUpInstancesOnly",
+                false);
+    return property.get();
+  }
+
   public boolean isAlwaysOverrideSchema() {
     DynamicBooleanProperty property =
         DynamicPropertyFactory.getInstance()

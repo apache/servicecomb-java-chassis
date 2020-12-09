@@ -22,12 +22,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import org.apache.servicecomb.foundation.common.concurrent.ConcurrentHashMapEx;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.api.Const;
 import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstance;
+import org.apache.servicecomb.serviceregistry.api.registry.MicroserviceInstanceStatus;
 import org.apache.servicecomb.serviceregistry.api.response.MicroserviceInstanceChangedEvent;
 import org.apache.servicecomb.serviceregistry.client.http.MicroserviceInstances;
 import org.apache.servicecomb.serviceregistry.config.ServiceRegistryConfig;
@@ -164,7 +166,17 @@ public class MicroserviceVersions {
 
   protected void safeSetInstances(List<MicroserviceInstance> pulledInstances, String rev) {
     try {
-      setInstances(pulledInstances, rev);
+      List<MicroserviceInstance> filteredInstance = pulledInstances;
+      // 增加一个配置项只使用 `UP` 实例。 在使用 `TESTING` 进行拨测， 并且配置了
+      // servicecomb.references.version-rule=latest 场景，需要保证不使用
+      // `TESTING` 实例。 不能依赖 InstanceStatusDiscoveryFilter, 避免
+      // 构建的 VersionRule 实例列表为空。
+      if (ServiceRegistryConfig.INSTANCE.useUpInstancesOnly()) {
+        filteredInstance = pulledInstances.stream().filter(item -> MicroserviceInstanceStatus.UP == item.getStatus())
+            .collect(Collectors.toList());
+      }
+      setInstances(filteredInstance, rev);
+
       validated = true;
     } catch (Throwable e) {
       LOGGER.error("Failed to setInstances, appId={}, microserviceName={}.",
