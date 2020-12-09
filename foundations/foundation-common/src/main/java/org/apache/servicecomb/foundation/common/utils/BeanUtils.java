@@ -105,7 +105,7 @@ public final class BeanUtils {
 
     // add main class package
     for (Class<?> mainClass : new Class<?>[] {JvmUtils.findMainClass(), JvmUtils.findMainClassByStackTrace()}) {
-      if (mainClass != null) {
+      if (mainClass != null && mainClass.getPackage() != null) {
         String pkg = mainClass.getPackage().getName();
         addItem(scanPackags, pkg);
       }
