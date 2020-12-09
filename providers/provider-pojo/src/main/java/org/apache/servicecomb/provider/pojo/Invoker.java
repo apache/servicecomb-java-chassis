@@ -64,7 +64,7 @@ public class Invoker implements InvocationHandler {
       return defaultMethodMeta.getOrCreateMethodHandle(proxy, method)
           .invokeWithArguments(args);
     }
-    
+
     PojoConsumerMeta pojoConsumerMeta = metaRefresher.getLatestMeta();
     PojoConsumerOperationMeta consumerOperationMeta = pojoConsumerMeta.ensureFindOperationMeta(method);
     Invocation invocation = invocationCreator.create(consumerOperationMeta, args);
@@ -78,7 +78,7 @@ public class Invoker implements InvocationHandler {
 
   protected Object syncInvoke(Invocation invocation, SwaggerConsumerOperation consumerOperation) {
     Response response = InvokerUtils.innerSyncInvoke(invocation);
-    if (response.isSuccessed()) {
+    if (response.isSucceed()) {
       return consumerOperation.getResponseMapper().mapResponse(response);
     }
 
@@ -89,7 +89,7 @@ public class Invoker implements InvocationHandler {
       SwaggerConsumerOperation consumerOperation) {
     CompletableFuture<Object> future = new InvocationContextCompletableFuture<>(invocation);
     InvokerUtils.reactiveInvoke(invocation, response -> {
-      if (response.isSuccessed()) {
+      if (response.isSucceed()) {
         Object result = consumerOperation.getResponseMapper().mapResponse(response);
         future.complete(result);
         return;

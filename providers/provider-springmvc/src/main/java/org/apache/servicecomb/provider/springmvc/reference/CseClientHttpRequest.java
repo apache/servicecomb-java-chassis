@@ -233,7 +233,7 @@ public class CseClientHttpRequest implements ClientHttpRequest {
     Invocation invocation = prepareInvocation(swaggerArguments);
     Response response = doInvoke(invocation);
 
-    if (response.isSuccessed()) {
+    if (response.isSucceed()) {
       return new CseClientHttpResponse(response);
     }
 

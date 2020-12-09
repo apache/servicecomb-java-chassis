@@ -47,10 +47,10 @@ public class TestConfig {
     String objectString = new String("Unit Testing");
     Response oResponse = Response.success(objectString, Status.OK);
 
-    Assert.assertEquals(true, oResponse.isSuccessed());
+    Assert.assertEquals(true, oResponse.isSucceed());
 
     oResponse = Response.succResp(objectString);
-    Assert.assertEquals(true, oResponse.isSuccessed());
+    Assert.assertEquals(true, oResponse.isSucceed());
     Assert.assertEquals(200, oResponse.getStatusCode());
 
     Throwable oThrowable = new Throwable("Error");
