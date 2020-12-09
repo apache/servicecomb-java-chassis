@@ -141,15 +141,16 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
     String result = testRestTemplateUpload(template, cseUrlPrefix, file1, someFile);
     TestMgr.check(expect, result);
 
+    result = uploadPartAndFile.fileUpload(new FilePart(null, file1), someFile);
+    TestMgr.check(expect, result);
+
+    expect = "hello world";
     MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
     map.add("file1", new FileSystemResource(file1));
-
     result = template.postForObject(
         cseUrlPrefix + "/upload1",
-        new HttpEntity<MultiValueMap<String, Object>>(map),
+        new HttpEntity<>(map),
         String.class);
-
-    result = uploadPartAndFile.fileUpload(new FilePart(null, file1), someFile);
     TestMgr.check(expect, result);
 
     expect = String.format("null:%s:%s\n"
@@ -172,7 +173,7 @@ public class CodeFirstRestTemplateSpringmvc extends CodeFirstRestTemplate {
 
     return template.postForObject(
         cseUrlPrefix + "/upload",
-        new HttpEntity<MultiValueMap<String, Object>>(map),
+        new HttpEntity<>(map),
         String.class);
   }
 

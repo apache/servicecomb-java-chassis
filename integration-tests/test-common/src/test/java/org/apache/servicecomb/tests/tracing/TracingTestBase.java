@@ -64,10 +64,10 @@ public class TracingTestBase {
     List<Span> spans = zipkin.getTrace(traceId(loggedIds));
     List<String> tracedValues = tracedValues(spans);
     int times = 100;
-    while(tracedValues.size() < values.length && times > 0) {
+    while (tracedValues.size() < values.length && times > 0) {
       try {
         Thread.sleep(10);
-        times --;
+        times--;
         spans = zipkin.getTrace(traceId(loggedIds));
         tracedValues = tracedValues(spans);
       } catch (InterruptedException e) {
@@ -89,7 +89,7 @@ public class TracingTestBase {
         .filter(span -> "call.path".equals(span.getKey()) || "http.path".equals(span.getKey())
             || "http.status_code".equals(span.getKey()))
         .filter(span -> span.getValue() != null)
-        .map(annotation -> new String(annotation.getValue()))
+        .map(annotation -> annotation.getValue())
         .distinct()
         .collect(Collectors.toList());
   }

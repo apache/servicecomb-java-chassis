@@ -24,7 +24,6 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.servicecomb.codec.protobuf.definition.OperationProtobuf;
 import org.apache.servicecomb.codec.protobuf.definition.ProtobufManager;
 import org.apache.servicecomb.core.Invocation;
-import org.apache.servicecomb.core.definition.OperationMeta;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.apache.servicecomb.foundation.ssl.SSLOption;
 import org.apache.servicecomb.foundation.ssl.SSLOptionFactory;
@@ -37,8 +36,6 @@ import org.apache.servicecomb.swagger.invocation.AsyncResponse;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.exception.CommonExceptionData;
 import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.netflix.config.DynamicPropertyFactory;
 
@@ -46,8 +43,6 @@ import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 
 public class HighwayClient {
-  private static final Logger LOGGER = LoggerFactory.getLogger(HighwayClient.class);
-
   private static final String SSL_KEY = "highway.consumer";
 
   private ClientPoolManager<HighwayClientConnectionPool> clientMgr;
@@ -90,22 +85,11 @@ public class HighwayClient {
     invocation.getInvocationStageTrace().startClientFiltersRequest();
     invocation.getInvocationStageTrace().startSend();
 
-    HighwayClientConnectionPool tcpClientPool = clientMgr.findClientPool(invocation.isSync());
+    HighwayClientConnection tcpClient = findClientPool(invocation);
 
-    OperationMeta operationMeta = invocation.getOperationMeta();
     OperationProtobuf operationProtobuf = ProtobufManager.getOrCreateOperation(invocation);
+    HighwayClientPackage clientPackage = createClientPackage(invocation, operationProtobuf);
 
-    HighwayClientConnection tcpClient =
-        tcpClientPool.findOrCreateClient(invocation.getEndpoint().getEndpoint());
-
-    invocation.getInvocationStageTrace().finishGetConnection(System.nanoTime());
-
-    HighwayClientPackage clientPackage = new HighwayClientPackage(invocation, operationProtobuf,
-        operationMeta.getConfig().getMsRequestTimeout());
-
-    LOGGER.debug("Sending request by highway, qualifiedName={}, endpoint={}.",
-        invocation.getMicroserviceQualifiedName(),
-        invocation.getEndpoint().getEndpoint());
     tcpClient.send(clientPackage, ar -> {
       invocation.getInvocationStageTrace().finishWriteToBuffer(clientPackage.getFinishWriteToBuffer());
       invocation.getInvocationStageTrace().finishReceiveResponse();
@@ -139,5 +123,19 @@ public class HighwayClient {
         }
       });
     });
+  }
+
+  public HighwayClientPackage createClientPackage(Invocation invocation, OperationProtobuf operationProtobuf) {
+    long msRequestTimeout = invocation.getOperationMeta().getConfig().getMsRequestTimeout();
+    return new HighwayClientPackage(invocation, operationProtobuf, msRequestTimeout);
+  }
+
+  public HighwayClientConnection findClientPool(Invocation invocation) {
+    HighwayClientConnection tcpClient = clientMgr.findClientPool(invocation.isSync())
+        .findOrCreateClient(invocation.getEndpoint().getEndpoint());
+
+    invocation.getInvocationStageTrace().finishGetConnection(System.nanoTime());
+
+    return tcpClient;
   }
 }

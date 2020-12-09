@@ -26,6 +26,7 @@ public class HighwayFilterProvider implements FilterProvider {
   @Override
   public List<Class<? extends Filter>> getFilters() {
     return Arrays.asList(
+        HighwayClientFilter.class,
         HighwayServerCodecFilter.class
     );
   }

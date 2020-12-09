@@ -16,7 +16,6 @@
  */
 package org.apache.servicecomb.transport.rest.client;
 
-import static org.apache.servicecomb.core.provider.consumer.InvokerUtils.isInEventLoop;
 import static org.apache.servicecomb.swagger.invocation.InvocationType.CONSUMER;
 
 import java.util.concurrent.CompletableFuture;
@@ -25,7 +24,6 @@ import org.apache.servicecomb.core.Invocation;
 import org.apache.servicecomb.core.filter.Filter;
 import org.apache.servicecomb.core.filter.FilterMeta;
 import org.apache.servicecomb.core.filter.FilterNode;
-import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.invocation.Response;
 
 @FilterMeta(name = "rest-client-sender", invocationType = CONSUMER)
@@ -35,9 +33,6 @@ public class RestClientSenderFilter implements Filter {
     CompletableFuture<Response> future = new RestClientSender(invocation)
         .send();
 
-    if (invocation.isSync() && !isInEventLoop()) {
-      AsyncUtils.toSync(future);
-    }
-    return future;
+    return invocation.optimizeSyncConsumerThread(future);
   }
 }

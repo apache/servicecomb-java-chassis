@@ -87,9 +87,9 @@ public class RestClientEncoder {
     }
 
     protected void doEncode() throws Exception {
-      RestClientEncoder.LOGGER.debug("rest client request, method={}, operation={}, endpoint={}, path={}.",
-          httpClientRequest.method(),
+      RestClientEncoder.LOGGER.debug("encode rest client request, operation={}, method={}, endpoint={}, uri={}.",
           invocation.getMicroserviceQualifiedName(),
+          httpClientRequest.method(),
           invocation.getEndpoint().getEndpoint(),
           httpClientRequest.uri());
 
@@ -212,7 +212,7 @@ public class RestClientEncoder {
     writeCharSequence(byteBuf, boundary);
     writeCharSequence(byteBuf, "\r\nContent-Disposition: form-data; name=\"");
     writeCharSequence(byteBuf, name);
-    writeCharSequence(byteBuf, "\" filename=\"");
+    writeCharSequence(byteBuf, "\"; filename=\"");
     writeCharSequence(byteBuf, String.valueOf(part.getSubmittedFileName()));
     writeCharSequence(byteBuf, "\"\r\n");
 

@@ -29,14 +29,13 @@ import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 
 public class ZipkinTracingIntegrationTest extends TracingTestBase {
-
   @Before
-  public void setUp() throws Exception {
+  public void setUp() {
     TracingTestMain.main(new String[0]);
   }
 
   @Test
-  public void sendsTracingToConfiguredAddress() throws InterruptedException, NoSuchMethodException {
+  public void sendsTracingToConfiguredAddress() throws NoSuchMethodException {
     ResponseEntity<String> entity = restTemplate.getForEntity("http://localhost:8080/hello", String.class);
 
     assertThat(entity.getStatusCode(), is(OK));

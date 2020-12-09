@@ -56,4 +56,12 @@ public final class AsyncUtils {
       return null;
     }
   }
+
+  public static void waitQuietly(CompletableFuture<?> future) {
+    try {
+      future.get();
+    } catch (Exception e) {
+      // just eat the exception
+    }
+  }
 }

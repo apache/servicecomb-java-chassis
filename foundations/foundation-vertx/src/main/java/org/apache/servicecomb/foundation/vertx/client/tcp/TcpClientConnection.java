@@ -22,6 +22,7 @@ import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeoutException;
@@ -101,6 +102,18 @@ public class TcpClientConnection extends TcpConnection {
 
   protected boolean onLoginResponse(Buffer bodyBuffer) {
     return true;
+  }
+
+  public CompletableFuture<TcpData> send(AbstractTcpClientPackage tcpClientPackage) {
+    CompletableFuture<TcpData> future = new CompletableFuture<>();
+    send(tcpClientPackage, ar -> {
+      if (ar.failed()) {
+        future.completeExceptionally(ar.cause());
+        return;
+      }
+      future.complete(ar.result());
+    });
+    return future;
   }
 
   public void send(AbstractTcpClientPackage tcpClientPackage, TcpResponseCallback callback) {
