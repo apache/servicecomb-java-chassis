@@ -54,13 +54,13 @@ public class DefaultExceptionConverter implements ExceptionConverter<Throwable> 
 
   @Override
   public InvocationException convert(@Nullable Invocation invocation, Throwable throwable, StatusType genericStatus) {
-    LOGGER.error("convert unknown exception to InvocationException.", throwable);
-
     String msg = throwable.getMessage();
     if (msg == null) {
       msg = "Unexpected exception when processing.";
     }
 
+    LOGGER.error("convert unknown exception({}) to InvocationException, message={}.",
+        throwable.getClass().getName(), msg);
     return new InvocationException(genericStatus, ExceptionConverter.getGenericCode(genericStatus),
         msg, throwable);
   }

@@ -30,7 +30,6 @@ import org.apache.servicecomb.foundation.common.utils.AsyncUtils;
 import org.apache.servicecomb.swagger.engine.SwaggerProducerOperation;
 import org.apache.servicecomb.swagger.invocation.Response;
 import org.apache.servicecomb.swagger.invocation.context.ContextUtils;
-import org.apache.servicecomb.swagger.invocation.exception.InvocationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +47,7 @@ public class ProducerOperationFilter implements Filter {
     Object[] args = invocation.toProducerArguments();
     return invoke(invocation, instance, method, args)
         .thenApply(result -> convertResultToResponse(invocation, producerOperation, result))
-        .whenComplete((response, throwable) -> whenComplete(invocation, throwable));
+        .whenComplete((response, throwable) -> processMetrics(invocation));
   }
 
   @SuppressWarnings("unchecked")
@@ -74,23 +73,8 @@ public class ProducerOperationFilter implements Filter {
     return producerOperation.getResponseMapper().mapResponse(invocation.getStatus(), result);
   }
 
-  protected void whenComplete(Invocation invocation, Throwable throwable) {
-    if (throwable != null) {
-      Throwable unwrapped = Exceptions.unwrap(throwable);
-      if (shouldPrintErrorLog(unwrapped)) {
-        LOGGER.error("unexpected error, invocation={},", invocation.getInvocationQualifiedName(), unwrapped);
-      }
-    }
-
+  protected void processMetrics(Invocation invocation) {
     invocation.onBusinessMethodFinish();
     invocation.onBusinessFinish();
-  }
-
-  protected boolean shouldPrintErrorLog(Throwable throwable) {
-    if (throwable == null) {
-      return false;
-    }
-
-    return !(throwable instanceof InvocationException);
   }
 }

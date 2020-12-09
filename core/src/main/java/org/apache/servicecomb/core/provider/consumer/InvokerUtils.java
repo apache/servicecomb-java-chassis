@@ -233,7 +233,14 @@ public final class InvokerUtils {
   }
 
   private static Response convertException(Invocation invocation, Throwable throwable) {
-    throw Exceptions.convert(invocation, throwable);
+    InvocationException invocationException = Exceptions.convert(invocation, throwable);
+
+    LOGGER.error("failed to invoke {}, endpoint={}.",
+        invocation.getMicroserviceQualifiedName(),
+        invocation.getEndpoint(),
+        invocationException);
+
+    throw invocationException;
   }
 
   private static void processMetrics(Invocation invocation, Response response) {
