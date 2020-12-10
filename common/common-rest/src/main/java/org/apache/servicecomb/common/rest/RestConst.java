@@ -29,7 +29,11 @@ public final class RestConst {
 
   public static final String SCHEME = "cse";
 
+  public static final String SCHEME_NEW = "servicecomb";
+
   public static final String URI_PREFIX = SCHEME + "://";
+
+  public static final String URI_PREFIX_NEW = SCHEME_NEW + "://";
 
   // in HttpServletRequest attribute
   public static final String PATH_PARAMETERS = "servicecomb-paths";

@@ -58,6 +58,8 @@ public class CrossappClient {
     RestTemplate restTemplate = RestTemplateBuilder.create();
     result = restTemplate.getForObject("cse://appServer:appService/helloworld/hello", String.class);
     TestMgr.check("hello world", result);
+    result = restTemplate.getForObject("servicecomb://appServer:appService/helloworld/hello", String.class);
+    TestMgr.check("hello world", result);
 
     result = helloWorld.sayHello();
     TestMgr.check("hello world", result);
