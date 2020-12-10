@@ -20,6 +20,7 @@ package org.apache.servicecomb.demo;
 import java.io.File;
 import java.net.URL;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.foundation.ssl.SSLCustom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +37,21 @@ public class DemoSSLCustom extends SSLCustom {
   public String getFullPath(String filename) {
     LOGGER.info("current working dir :" + System.getProperty("user.dir"));
 
-    // local
-    File localFile = new File(System.getProperty("user.dir") + "/src/main/resources/certificates/" + filename);
+    if (StringUtils.isEmpty(filename)) {
+      return null;
+    }
+
+    // local for different IDEs
+    File localFile = new File(
+        System.getProperty("user.dir") + "/demo/demo-springmvc/springmvc-server/src/main/resources/certificates/"
+            + filename);
+    if (localFile.isFile()) {
+      return localFile.getAbsolutePath();
+    }
+
+    localFile = new File(
+        System.getProperty("user.dir") + "/src/main/resources/certificates/"
+            + filename);
     if (localFile.isFile()) {
       return localFile.getAbsolutePath();
     }
@@ -53,12 +67,8 @@ public class DemoSSLCustom extends SSLCustom {
       return localFile.getAbsolutePath();
     }
 
-    // debug
-    URL url = Thread.currentThread().getContextClassLoader().getResource("certificates/" + filename);
-    if (url == null) {
-      return filename;
-    }
-
-    return url.getPath();
+    // in jar, maybe
+    LOGGER.info("not found file {} in file system, maybe in jar.", filename);
+    return "certificates/" + filename;
   }
 }
