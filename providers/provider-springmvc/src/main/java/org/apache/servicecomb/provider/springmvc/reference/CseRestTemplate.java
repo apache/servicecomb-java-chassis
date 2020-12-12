@@ -172,11 +172,11 @@ public class CseRestTemplate extends AcceptableRestTemplate {
 
   @Override
   public boolean isAcceptable(String uri) {
-    return uri.startsWith(RestConst.URI_PREFIX);
+    return uri.startsWith(RestConst.URI_PREFIX) || uri.startsWith(RestConst.URI_PREFIX_NEW);
   }
 
   @Override
   public boolean isAcceptable(URI uri) {
-    return RestConst.SCHEME.equals(uri.getScheme());
+    return RestConst.SCHEME.equals(uri.getScheme()) || RestConst.SCHEME_NEW.equals(uri.getScheme());
   }
 }

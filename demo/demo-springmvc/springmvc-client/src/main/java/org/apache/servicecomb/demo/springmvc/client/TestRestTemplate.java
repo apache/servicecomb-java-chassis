@@ -53,11 +53,17 @@ public class TestRestTemplate {
     ResponseEntity<Void> resultEntity = restTemplate
         .getForEntity("cse://springmvc/codeFirstSpringmvc/testVoidInRestTemplate", Void.class);
     Assert.isTrue(200 == resultEntity.getStatusCodeValue(), "Void return type invocation failed");
+    resultEntity = restTemplate
+        .getForEntity("servicecomb://springmvc/codeFirstSpringmvc/testVoidInRestTemplate", Void.class);
+    Assert.isTrue(200 == resultEntity.getStatusCodeValue(), "Void return type invocation failed");
   }
 
   private void checkAllVoidTestResult() {
     ResponseEntity<Boolean> resultEntity = restTemplate
         .getForEntity("cse://springmvc/codeFirstSpringmvc/checkVoidResult", boolean.class);
+    Assert.isTrue(resultEntity.getBody(), "not all void test is passed");
+    restTemplate
+        .getForEntity("servicecomb://springmvc/codeFirstSpringmvc/checkVoidResult", boolean.class);
     Assert.isTrue(resultEntity.getBody(), "not all void test is passed");
   }
 
