@@ -227,6 +227,16 @@ public class SSLManagerTest {
   }
 
   @Test
+  public void testCreateSSLContextResource() {
+    SSLOption option = SSLOption.build(DIR + "/server.ssl.resource.properties");
+
+    SSLCustom custom = SSLCustom.defaultSSLCustom();
+
+    SSLContext context = SSLManager.createSSLContext(option, custom);
+    Assert.assertNotNull(context);
+  }
+
+  @Test
   public void testCreateSSLContextException() {
     SSLOption option = SSLOption.build(DIR + "/server.ssl.properties");
 

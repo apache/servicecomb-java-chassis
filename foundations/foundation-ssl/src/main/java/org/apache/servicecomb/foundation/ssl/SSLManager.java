@@ -47,29 +47,29 @@ public final class SSLManager {
   public static SSLContext createSSLContext(SSLOption option, SSLCustom custom) {
     try {
       String keyStoreName = custom.getFullPath(option.getKeyStore());
-      KeyManager[] keymanager;
-      if (keyStoreName != null && new File(keyStoreName).exists()) {
-        char[] keyStoreValue =
-            custom.decode(option.getKeyStoreValue().toCharArray());
-        KeyStore keyStore =
-            KeyStoreUtil.createKeyStore(keyStoreName,
-                option.getKeyStoreType(),
-                keyStoreValue);
-        keymanager =
+      char[] keyStoreValue = option.getKeyStoreValue() == null ? new char[0] :
+          custom.decode(option.getKeyStoreValue().toCharArray());
+      KeyStore keyStore =
+          KeyStoreUtil.createKeyStore(keyStoreName,
+              option.getKeyStoreType(),
+              keyStoreValue);
+
+      KeyManager[] keyManager = null;
+      if (keyStore != null) {
+        keyManager =
             KeyStoreUtil.createKeyManagers(keyStore, keyStoreValue);
-      } else {
-        keymanager = null;
       }
 
       String trustStoreName = custom.getFullPath(option.getTrustStore());
+      char[] trustStoreValue = option.getTrustStoreValue() == null ? new char[0] :
+          custom.decode(option.getTrustStoreValue().toCharArray());
+      KeyStore trustStore =
+          KeyStoreUtil.createKeyStore(trustStoreName,
+              option.getTrustStoreType(),
+              trustStoreValue);
+
       TrustManager[] trustManager;
-      if (trustStoreName != null && new File(trustStoreName).exists()) {
-        char[] trustStoreValue =
-            custom.decode(option.getTrustStoreValue().toCharArray());
-        KeyStore trustStore =
-            KeyStoreUtil.createKeyStore(trustStoreName,
-                option.getTrustStoreType(),
-                trustStoreValue);
+      if (trustStore != null) {
         trustManager =
             KeyStoreUtil.createTrustManagers(trustStore);
       } else {
@@ -85,7 +85,7 @@ public final class SSLManager {
 
       // ?: ssl context version
       SSLContext context = SSLContext.getInstance("TLS");
-      context.init(keymanager, wrapped, new SecureRandom());
+      context.init(keyManager, wrapped, new SecureRandom());
       return context;
     } catch (NoSuchAlgorithmException e) {
       throw new IllegalArgumentException("NoSuchAlgorithmException."
