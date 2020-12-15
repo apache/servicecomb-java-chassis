@@ -17,6 +17,10 @@
 
 package org.apache.servicecomb.demo.multiServiceCenterClient;
 
+import java.util.List;
+
 public interface IConfigurationEndpoint {
   String getValue(String key, int type);
+
+  List<String> getValueList(String key, int type);
 }

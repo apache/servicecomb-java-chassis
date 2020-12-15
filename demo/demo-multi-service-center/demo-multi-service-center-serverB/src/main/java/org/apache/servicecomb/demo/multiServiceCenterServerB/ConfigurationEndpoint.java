@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.demo.multiServiceCenterServerB;
 
+import java.util.List;
+
 import javax.ws.rs.core.MediaType;
 
 import org.apache.servicecomb.provider.rest.common.RestSchema;
@@ -55,6 +57,12 @@ public class ConfigurationEndpoint {
   @Value("${demo.multi.service.center.serverB.key5}")
   private String key5;
 
+  @Value("${demo.multi.service.center.serverB.key6}")
+  private String key6;
+
+  @Value("${demo.multi.service.center.serverB.key7}")
+  private List<String> key7;
+
   @GetMapping(path = "/config")
   public String getValue(@RequestParam(name = "key") String key, @RequestParam(name = "type") int type) {
     if (type == 1) {
@@ -73,6 +81,23 @@ public class ConfigurationEndpoint {
           return key4;
         case "demo.multi.service.center.serverB.key5":
           return key5;
+        case "demo.multi.service.center.serverB.key6":
+          return key6;
+        default:
+          return null;
+      }
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  @GetMapping(path = "/configList")
+  public List<String> getValueList(@RequestParam(name = "key") String key, @RequestParam(name = "type") int type) {
+    if (type == 1) {
+      return environment.getProperty(key, List.class);
+    } else {
+      switch (key) {
+        case "demo.multi.service.center.serverB.key7":
+          return key7;
         default:
           return null;
       }

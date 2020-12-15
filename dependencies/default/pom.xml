@@ -46,8 +46,6 @@
     <commons-logging.version>1.2</commons-logging.version>
     <cxf.version>3.3.1</cxf.version>
     <dyuproject-protostuff.version>1.0.7.fixed.3500</dyuproject-protostuff.version>
-    <embed.version>8.5.32</embed.version>
-    <embed-logging-juli.version>8.5.2</embed-logging-juli.version>
     <esotericsoftware.version>4.0.2</esotericsoftware.version>
     <findbugs-annotations.version>2.0.0</findbugs-annotations.version>
     <findbugs-jsr305.version>3.0.2</findbugs-jsr305.version>
@@ -99,8 +97,8 @@
     <slf4j.version>1.7.30</slf4j.version>
     <snakeyaml.version>1.27</snakeyaml.version>
     <spectator.version>0.83.0</spectator.version>
-    <spring.version>5.1.14.RELEASE</spring.version>
-    <spring-boot.version>2.1.6.RELEASE</spring-boot.version>
+    <spring.version>5.2.9.RELEASE</spring.version>
+    <spring-boot.version>2.3.4.RELEASE</spring-boot.version>
     <stax2-api.version>4.2</stax2-api.version>
     <swagger.version>1.5.24</swagger.version>
     <swagger2markup.version>1.3.3</swagger2markup.version>
@@ -664,27 +662,6 @@
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-slf4j-impl</artifactId>
         <version>${log4j2.version}</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.tomcat.embed</groupId>
-        <artifactId>tomcat-embed-core</artifactId>
-        <version>${embed.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.tomcat.embed</groupId>
-        <artifactId>tomcat-embed-el</artifactId>
-        <version>${embed.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.tomcat.embed</groupId>
-        <artifactId>tomcat-embed-logging-juli</artifactId>
-        <version>${embed-logging-juli.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.tomcat.embed</groupId>
-        <artifactId>tomcat-embed-websocket</artifactId>
-        <version>${embed.version}</version>
       </dependency>
 
       <dependency>

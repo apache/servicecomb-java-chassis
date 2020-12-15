@@ -17,6 +17,8 @@
 
 package org.apache.servicecomb.demo.multiServiceCenterClient;
 
+import java.util.Arrays;
+
 import org.apache.servicecomb.demo.CategorizedTestCase;
 import org.apache.servicecomb.demo.TestMgr;
 import org.apache.servicecomb.provider.pojo.RpcReference;
@@ -49,6 +51,13 @@ public class ServerBTest implements CategorizedTestCase {
     TestMgr.check("key5-high", configurationEndpoint.getValue("demo.multi.service.center.serverB.key5", 1));
     TestMgr.check("key5-high", configurationEndpoint.getValue("demo.multi.service.center.serverB.key5", 2));
     TestMgr.check("key5-high", configurationEndpoint.getValue("demo.multi.service.center.serverB.key5", 3));
+    TestMgr.check("key6", configurationEndpoint.getValue("demo.multi.service.center.serverB.key6", 1));
+    TestMgr.check("key6", configurationEndpoint.getValue("demo.multi.service.center.serverB.key6", 2));
+    TestMgr.check("key6", configurationEndpoint.getValue("demo.multi.service.center.serverB.key6", 3));
+    TestMgr.check(Arrays.asList("key71", "key72"),
+        configurationEndpoint.getValueList("demo.multi.service.center.serverB.key7", 1));
+    TestMgr.check(Arrays.asList("key71", "key72"),
+        configurationEndpoint.getValueList("demo.multi.service.center.serverB.key7", 2));
   }
 
   @Override

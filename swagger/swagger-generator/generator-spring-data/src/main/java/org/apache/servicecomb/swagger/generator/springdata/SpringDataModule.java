@@ -16,6 +16,8 @@
  */
 package org.apache.servicecomb.swagger.generator.springdata;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.servicecomb.foundation.common.utils.SPIOrder;
@@ -24,12 +26,17 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.databind.util.Converter;
 
 public class SpringDataModule extends SimpleModule implements SPIOrder {
   private static final long serialVersionUID = 1L;
@@ -53,14 +60,63 @@ public class SpringDataModule extends SimpleModule implements SPIOrder {
     }
   }
 
+  public static class SortConverter implements Converter<SortMixin, Sort> {
+    @Override
+    public Sort convert(SortMixin value) {
+      return Sort.by(value.getProperties());
+    }
+
+    @Override
+    public JavaType getInputType(TypeFactory typeFactory) {
+      return typeFactory.constructType(SortMixin.class);
+    }
+
+    @Override
+    public JavaType getOutputType(TypeFactory typeFactory) {
+      return typeFactory.constructType(Sort.class);
+    }
+  }
+
+  public static class SortMixinConverter implements Converter<Sort, SortMixin> {
+    @Override
+    public SortMixin convert(Sort value) {
+      List<String> properties = new ArrayList<>();
+      Iterator<Order> iterator = value.iterator();
+      while (iterator.hasNext()) {
+        properties.add(iterator.next().getProperty());
+      }
+      SortMixin result = new SortMixin();
+      result.setProperties(properties.toArray(new String[0]));
+      return result;
+    }
+
+    @Override
+    public JavaType getInputType(TypeFactory typeFactory) {
+      return typeFactory.constructType(Sort.class);
+    }
+
+    @Override
+    public JavaType getOutputType(TypeFactory typeFactory) {
+      return typeFactory.constructType(SortMixin.class);
+    }
+  }
+
   @JsonPropertyOrder(alphabetic = true)
-  @JsonDeserialize(as = Sort.class)
+  @JsonDeserialize(converter = SortConverter.class)
+  @JsonSerialize(converter = SortMixinConverter.class)
   public static class SortMixin {
-    // Notice:
-    // spring data model changed from version to version
-    // for the tested version, sort is not consistency in serialization and deserialization
+    private String[] properties;
+
     @JsonCreator
-    public SortMixin(String... properties) {
+    public SortMixin() {
+    }
+
+    public void setProperties(String[] properties) {
+      this.properties = properties;
+    }
+
+    public String[] getProperties() {
+      return this.properties;
     }
   }
 

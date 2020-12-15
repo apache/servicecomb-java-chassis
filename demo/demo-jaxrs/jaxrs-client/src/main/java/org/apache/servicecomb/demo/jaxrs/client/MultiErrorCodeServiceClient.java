@@ -103,7 +103,10 @@ public class MultiErrorCodeServiceClient implements CategorizedTestCase {
           .postForEntity(serverDirectURL + "/MultiErrorCodeService/errorCode", entity, MultiResponse200.class);
     } catch (HttpClientErrorException e) {
       TestMgr.check(e.getRawStatusCode(), 400);
-      TestMgr.check(e.getMessage(), "400 Bad Request");
+      TestMgr.check(e.getMessage(),
+          "400 Bad Request: [{\"message\":\"Parameter is not valid for operation "
+              + "[jaxrs.MultiErrorCodeService.errorCode]. Parameter is [request]. "
+              + "Processor is [body].\"}]");
     }
 
     entity = new HttpEntity<>(null, headers);
