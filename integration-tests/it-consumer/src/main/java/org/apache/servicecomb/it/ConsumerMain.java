@@ -48,6 +48,7 @@ import org.apache.servicecomb.it.testcase.TestRequestBodySpringMvcSchema;
 import org.apache.servicecomb.it.testcase.TestRestController;
 import org.apache.servicecomb.it.testcase.TestRestServerConfigEdge;
 import org.apache.servicecomb.it.testcase.TestRestVertxTransportConfig;
+import org.apache.servicecomb.it.testcase.TestSpringConfiguration;
 import org.apache.servicecomb.it.testcase.TestTrace;
 import org.apache.servicecomb.it.testcase.TestTraceEdge;
 import org.apache.servicecomb.it.testcase.TestTransportContext;
@@ -91,6 +92,8 @@ public class ConsumerMain {
   }
 
   protected static void run() throws Throwable {
+    ITJUnitUtils.run(TestSpringConfiguration.class);
+
     // deploy edge/zuul
     // if not ready, will start a new instance and wait for ready
     deploys.getEdge().ensureReady();
