@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.servicecomb.config.ConfigMapping;
@@ -105,47 +106,46 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
   }
 
   private void addMicroserviceYAMLToSpring(Environment environment) {
-    if (environment instanceof ConfigurableEnvironment) {
-      ConfigurableEnvironment ce = (ConfigurableEnvironment) environment;
-      MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
-      loader.loadAndSort();
-
-      ce.getPropertySources()
-          .addLast(new EnumerablePropertySource<MicroserviceConfigLoader>("microservice.yaml",
-              loader) {
-
-            private boolean parsed = false;
-
-            private Map<String, Object> values = null;
-
-            private String[] propertyNames = null;
-
-            @Override
-            public String[] getPropertyNames() {
-              if (!parsed) {
-                parseData();
-              }
-
-              return propertyNames;
-            }
-
-            @Override
-            public Object getProperty(String s) {
-              if (!parsed) {
-                parseData();
-              }
-
-              return this.values.get(s);
-            }
-
-            private void parseData() {
-              values = new HashMap<>();
-              loader.getConfigModels()
-                  .forEach(configModel -> values.putAll(YAMLUtil.retrieveItems("", configModel.getConfig())));
-              propertyNames = values.keySet().toArray(new String[values.size()]);
-            }
-          });
+    if (!(environment instanceof ConfigurableEnvironment)) {
+      return;
     }
+
+    ((ConfigurableEnvironment) environment).getPropertySources()
+        .addLast(new EnumerablePropertySource<MicroserviceConfigLoader>("microservice.yaml") {
+          private final Map<String, Object> values = new HashMap<>();
+
+          private final String[] propertyNames;
+
+          {
+            MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
+            loader.loadAndSort();
+
+            loader.getConfigModels()
+                .forEach(configModel -> values.putAll(YAMLUtil.retrieveItems("", configModel.getConfig())));
+
+            propertyNames = values.keySet().toArray(new String[values.size()]);
+          }
+
+          @Override
+          public String[] getPropertyNames() {
+            return propertyNames;
+          }
+
+          @SuppressWarnings("unchecked")
+          @Override
+          public Object getProperty(String name) {
+            Object value = this.values.get(name);
+
+            // spring will not resolve nested placeholder of list, so try to fix the problem
+            if (value instanceof List) {
+              value = ((List<Object>) value).stream()
+                  .filter(item -> item instanceof String)
+                  .map(item -> environment.resolvePlaceholders((String) item))
+                  .collect(Collectors.toList());
+            }
+            return value;
+          }
+        });
   }
 
   private void addMappingToString(Environment environment) {

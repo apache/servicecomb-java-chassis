@@ -21,3 +21,9 @@ servicecomb:
   rest:
     client:
       maxHeaderSize: 10000
+
+placeholder:
+  - ${placeholder-key1}
+  - ${placeholder-key2}
+placeholder-key1: actual-value1
+placeholder-key2: actual-value2
