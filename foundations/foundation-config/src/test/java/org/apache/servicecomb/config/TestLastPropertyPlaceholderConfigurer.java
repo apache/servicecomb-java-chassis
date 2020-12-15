@@ -22,15 +22,15 @@ import java.util.Properties;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.EmbeddedValueResolverAware;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringValueResolver;
 
 public class TestLastPropertyPlaceholderConfigurer {
   @Component
-  static class Bean extends PropertyPlaceholderConfigurer implements EmbeddedValueResolverAware {
+  static class Bean extends PropertySourcesPlaceholderConfigurer implements EmbeddedValueResolverAware {
     StringValueResolver resolver;
 
     public Bean() {

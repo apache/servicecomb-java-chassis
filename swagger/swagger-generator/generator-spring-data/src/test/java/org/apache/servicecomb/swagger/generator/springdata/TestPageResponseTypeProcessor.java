@@ -17,11 +17,17 @@
 package org.apache.servicecomb.swagger.generator.springdata;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.servicecomb.swagger.generator.core.unittest.UnitTestSwaggerUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 
 import io.swagger.util.Json;
 
@@ -39,14 +45,17 @@ public class TestPageResponseTypeProcessor {
   public void deserialize() throws IOException {
     Json.mapper().registerModule(new SpringDataModule());
 
-    String json = "{\"content\":[\"c1\",\"c2\"],\"pageable\":{\"pageNumber\":1,\"pageSize\":2}}";
-    Page<?> page = Json.mapper().readValue(json, Page.class);
-
+    Sort sort = Sort.by(Direction.ASC, "name");
+    Pageable pageable = PageRequest.of(1, 10, sort);
+    Page<String> page = new PageImpl<>(Arrays.asList("c1", "c2"), pageable, 2);
+    String json = Json.mapper().writeValueAsString(page);
     Assert.assertEquals(
-        "{\"content\":[\"c1\",\"c2\"],\"pageable\":{\"pageNumber\":1,\"pageSize\":2,"
-            + "\"offset\":2,\"paged\":true,\"unpaged\":false},\"empty\":false,\"first\":false,"
-            + "\"last\":true,\"number\":1,\"numberOfElements\":2,\"size\":2,"
-            + "\"totalElements\":4,\"totalPages\":2}",
-        Json.mapper().writeValueAsString(page));
+        "{\"content\":[\"c1\",\"c2\"],\"pageable\":{\"pageNumber\":1,\"pageSize\":10,\"sort\":{\"properties\":[\"name\"]},\"offset\":10,\"paged\":true,\"unpaged\":false},\"empty\":false,\"first\":false,\"last\":true,\"number\":1,\"numberOfElements\":2,\"size\":10,\"sort\":{\"properties\":[\"name\"]},\"totalElements\":12,\"totalPages\":2}",
+        json);
+
+    Page<?> page2 = Json.mapper().readValue(json, Page.class);
+
+    Assert.assertEquals(json,
+        Json.mapper().writeValueAsString(page2));
   }
 }

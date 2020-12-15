@@ -35,8 +35,8 @@ import org.apache.servicecomb.foundation.bootstrap.BootStrapService;
 import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.EnvironmentAware;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -47,7 +47,6 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.util.StringUtils;
 
 import com.netflix.config.ConfigurationManager;
-import com.netflix.config.DynamicPropertyFactory;
 
 /**
  *  Adapt spring PropertySource and Archaius Configuration
@@ -64,7 +63,7 @@ import com.netflix.config.DynamicPropertyFactory;
  *  related to precedence of a KEY-VAlUE. That is cse.test in dynamic config may not override servicecomb.test in yml.
  *  Users need to use the same key as what is in config file to override.
  */
-public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigurer implements EnvironmentAware {
+public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderConfigurer implements EnvironmentAware {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationSpringInitializer.class);
 
   public static final String EXTRA_CONFIG_SOURCE_PREFIX = "extraConfig-";
@@ -183,15 +182,6 @@ public class ConfigurationSpringInitializer extends PropertyPlaceholderConfigure
       properties.put(key, value);
     }
     return properties;
-  }
-
-  @Override
-  protected String resolvePlaceholder(String placeholder, Properties props) {
-    String propertyValue = super.resolvePlaceholder(placeholder, props);
-    if (propertyValue == null) {
-      return DynamicPropertyFactory.getInstance().getStringProperty(placeholder, null).get();
-    }
-    return propertyValue;
   }
 
   /**
