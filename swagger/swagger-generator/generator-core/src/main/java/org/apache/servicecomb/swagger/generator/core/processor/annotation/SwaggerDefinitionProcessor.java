@@ -19,15 +19,20 @@ package org.apache.servicecomb.swagger.generator.core.processor.annotation;
 
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
+import javax.annotation.Nonnull;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.servicecomb.swagger.SwaggerUtils;
 import org.apache.servicecomb.swagger.generator.ClassAnnotationProcessor;
 import org.apache.servicecomb.swagger.generator.SwaggerGenerator;
 
+import io.swagger.annotations.Scope;
+import io.swagger.annotations.SecurityDefinition;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.models.Contact;
 import io.swagger.models.ExternalDocs;
@@ -36,6 +41,11 @@ import io.swagger.models.License;
 import io.swagger.models.Scheme;
 import io.swagger.models.Swagger;
 import io.swagger.models.Tag;
+import io.swagger.models.auth.ApiKeyAuthDefinition;
+import io.swagger.models.auth.BasicAuthDefinition;
+import io.swagger.models.auth.In;
+import io.swagger.models.auth.OAuth2Definition;
+import io.swagger.models.auth.SecuritySchemeDefinition;
 import io.swagger.util.BaseReaderUtils;
 
 public class SwaggerDefinitionProcessor implements ClassAnnotationProcessor<SwaggerDefinition> {
@@ -57,15 +67,16 @@ public class SwaggerDefinitionProcessor implements ClassAnnotationProcessor<Swag
 
     SwaggerUtils.setConsumes(swagger, definitionAnnotation.consumes());
     SwaggerUtils.setProduces(swagger, definitionAnnotation.produces());
-    convertSchemes(definitionAnnotation, swagger);
-    convertTags(definitionAnnotation, swagger);
-    convertInfo(definitionAnnotation.info(), swagger);
+    swagger.setSchemes(convertSchemes(definitionAnnotation.schemes()));
+    swagger.setTags(convertTags(definitionAnnotation.tags()));
+    swagger.setSecurityDefinitions(convertSecurityDefinitions(definitionAnnotation.securityDefinition()));
+    swagger.setInfo(convertInfo(definitionAnnotation.info()));
     swagger.setExternalDocs(convertExternalDocs(definitionAnnotation.externalDocs()));
   }
 
-  private void convertInfo(io.swagger.annotations.Info infoAnnotation, Swagger swagger) {
+  private Info convertInfo(io.swagger.annotations.Info infoAnnotation) {
     if (infoAnnotation == null) {
-      return;
+      return null;
     }
 
     Info info = new Info();
@@ -82,7 +93,7 @@ public class SwaggerDefinitionProcessor implements ClassAnnotationProcessor<Swag
     info.setLicense(convertLicense(infoAnnotation.license()));
     info.getVendorExtensions().putAll(BaseReaderUtils.parseExtensions(infoAnnotation.extensions()));
 
-    swagger.setInfo(info);
+    return info;
   }
 
   private License convertLicense(io.swagger.annotations.License licenseAnnotation) {
@@ -124,21 +135,16 @@ public class SwaggerDefinitionProcessor implements ClassAnnotationProcessor<Swag
     return contact;
   }
 
-  private void convertTags(SwaggerDefinition definitionAnnotation, Swagger swagger) {
-    if (definitionAnnotation.tags() == null) {
-      return;
+  private List<Tag> convertTags(io.swagger.annotations.Tag[] tagArray) {
+    if (tagArray == null) {
+      return null;
     }
 
-    Stream<io.swagger.annotations.Tag> stream =
-        Arrays.asList(definitionAnnotation.tags()).stream();
-    List<Tag> tags = stream
+    List<Tag> tags = Arrays.stream(tagArray)
         .filter(t -> !t.name().isEmpty())
         .map(this::convertTag)
         .collect(Collectors.toList());
-    if (tags.isEmpty()) {
-      return;
-    }
-    swagger.setTags(tags);
+    return tags.isEmpty() ? null : tags;
   }
 
   private Tag convertTag(io.swagger.annotations.Tag tagAnnotation) {
@@ -167,15 +173,14 @@ public class SwaggerDefinitionProcessor implements ClassAnnotationProcessor<Swag
     return externalDocs;
   }
 
-  private void convertSchemes(SwaggerDefinition definitionAnnotation, Swagger swagger) {
-    if (definitionAnnotation.schemes() == null) {
-      return;
+  private List<Scheme> convertSchemes(SwaggerDefinition.Scheme[] schemeArray) {
+    if (schemeArray == null) {
+      return null;
     }
 
-    Stream<io.swagger.annotations.SwaggerDefinition.Scheme> stream =
-        Arrays.asList(definitionAnnotation.schemes()).stream();
-    List<Scheme> schemes = stream.map(this::convertScheme).collect(Collectors.toList());
-    swagger.setSchemes(schemes);
+    return Arrays.stream(schemeArray)
+        .map(this::convertScheme)
+        .collect(Collectors.toList());
   }
 
   private Scheme convertScheme(io.swagger.annotations.SwaggerDefinition.Scheme annotationScheme) {
@@ -183,5 +188,81 @@ public class SwaggerDefinitionProcessor implements ClassAnnotationProcessor<Swag
       return Scheme.HTTP;
     }
     return Scheme.forValue(annotationScheme.name());
+  }
+
+  private Map<String, SecuritySchemeDefinition> convertSecurityDefinitions(
+      SecurityDefinition securityDefinition) {
+    Map<String, SecuritySchemeDefinition> definitionMap = new LinkedHashMap<>();
+
+    Arrays.stream(securityDefinition.oAuth2Definitions())
+        .forEach(annotation -> addSecurityDefinition(definitionMap, annotation.key(), convertOAuth2(annotation)));
+    Arrays.stream(securityDefinition.apiKeyAuthDefinitions())
+        .forEach(annotation -> addSecurityDefinition(definitionMap, annotation.key(), convertApiKey(annotation)));
+    Arrays.stream(securityDefinition.basicAuthDefinitions())
+        .forEach(annotation -> addSecurityDefinition(definitionMap, annotation.key(), convertBasicAuth(annotation)));
+
+    return definitionMap.isEmpty() ? null : definitionMap;
+  }
+
+  private void addSecurityDefinition(Map<String, SecuritySchemeDefinition> definitionMap,
+      String key, SecuritySchemeDefinition definition) {
+    if (StringUtils.isEmpty(key) || definition == null) {
+      return;
+    }
+
+    definitionMap.put(key, definition);
+  }
+
+  private String emptyAsNull(@Nonnull String value) {
+    return value.isEmpty() ? null : value;
+  }
+
+  private OAuth2Definition convertOAuth2(io.swagger.annotations.OAuth2Definition annotation) {
+    OAuth2Definition definition = new OAuth2Definition();
+
+    definition.setDescription(emptyAsNull(annotation.description()));
+    definition.setFlow(emptyAsNull(annotation.flow().name()));
+    definition.setAuthorizationUrl(emptyAsNull(annotation.authorizationUrl()));
+    definition.setTokenUrl(emptyAsNull(annotation.tokenUrl()));
+    for (Scope scope : annotation.scopes()) {
+      if (StringUtils.isEmpty(scope.name())) {
+        continue;
+      }
+      definition.addScope(scope.name(), scope.description());
+    }
+
+    if (definition.getDescription() == null
+        && definition.getFlow() == null
+        && definition.getAuthorizationUrl() == null
+        && definition.getTokenUrl() == null
+        && definition.getScopes() == null) {
+      return null;
+    }
+
+    return definition;
+  }
+
+  private SecuritySchemeDefinition convertApiKey(io.swagger.annotations.ApiKeyAuthDefinition annotation) {
+    if (StringUtils.isEmpty(annotation.name())) {
+      return null;
+    }
+
+    ApiKeyAuthDefinition definition = new ApiKeyAuthDefinition();
+
+    definition.setDescription(emptyAsNull(annotation.description()));
+    definition.setIn(In.forValue(annotation.in().name()));
+    definition.setName(annotation.name());
+
+    return definition;
+  }
+
+  private SecuritySchemeDefinition convertBasicAuth(io.swagger.annotations.BasicAuthDefinition annotation) {
+    if (annotation.description().isEmpty()) {
+      return null;
+    }
+
+    BasicAuthDefinition definition = new BasicAuthDefinition();
+    definition.setDescription(annotation.description());
+    return definition;
   }
 }

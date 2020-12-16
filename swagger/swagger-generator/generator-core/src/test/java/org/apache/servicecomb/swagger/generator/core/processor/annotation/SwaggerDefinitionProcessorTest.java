@@ -29,10 +29,17 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiKeyAuthDefinition;
+import io.swagger.annotations.ApiKeyAuthDefinition.ApiKeyLocation;
+import io.swagger.annotations.BasicAuthDefinition;
 import io.swagger.annotations.Contact;
 import io.swagger.annotations.ExternalDocs;
 import io.swagger.annotations.Info;
 import io.swagger.annotations.License;
+import io.swagger.annotations.OAuth2Definition;
+import io.swagger.annotations.OAuth2Definition.Flow;
+import io.swagger.annotations.Scope;
+import io.swagger.annotations.SecurityDefinition;
 import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.annotations.SwaggerDefinition.Scheme;
 import io.swagger.annotations.Tag;
@@ -59,6 +66,46 @@ public class SwaggerDefinitionProcessorTest {
 
   @SwaggerDefinition()
   private class EmptySwaggerDefinition {
+  }
+
+  @SwaggerDefinition(securityDefinition = @SecurityDefinition(
+      oAuth2Definitions = {
+          @OAuth2Definition(key = "", flow = Flow.IMPLICIT),
+          @OAuth2Definition(key = "oauth2-only-flow", flow = Flow.IMPLICIT),
+          @OAuth2Definition(key = "oauth2-desc", description = "desc", flow = Flow.PASSWORD),
+          @OAuth2Definition(key = "oauth2-authorizationUrl", authorizationUrl = "url", flow = Flow.PASSWORD),
+          @OAuth2Definition(key = "oauth2-tokenUrl", tokenUrl = "url", flow = Flow.PASSWORD),
+          @OAuth2Definition(key = "oauth2-scope", flow = Flow.PASSWORD,
+              scopes = {
+                  @Scope(name = "", description = ""),
+                  @Scope(name = "", description = "desc"),
+                  @Scope(name = "scope-1", description = ""),
+                  @Scope(name = "scope-2", description = "desc")
+              }),
+      })
+  )
+  private class SecurityOAuth2 {
+  }
+
+  @SwaggerDefinition(securityDefinition = @SecurityDefinition(
+      apiKeyAuthDefinitions = {
+          @ApiKeyAuthDefinition(key = "", in = ApiKeyLocation.HEADER, name = "h1"),
+          @ApiKeyAuthDefinition(key = "apikey-no-name", in = ApiKeyLocation.QUERY, name = ""),
+          @ApiKeyAuthDefinition(key = "apikey-no-desc", in = ApiKeyLocation.QUERY, name = "q1"),
+          @ApiKeyAuthDefinition(key = "apikey-desc", description = "desc", in = ApiKeyLocation.QUERY, name = "q2")
+      }
+  ))
+  private class SecurityApiKey {
+  }
+
+  @SwaggerDefinition(securityDefinition = @SecurityDefinition(
+      basicAuthDefinitions = {
+          @BasicAuthDefinition(key = ""),
+          @BasicAuthDefinition(key = "basic-no-desc"),
+          @BasicAuthDefinition(key = "basic-desc", description = "desc")
+      }
+  ))
+  private class SecurityBasic {
   }
 
   @Test
@@ -93,5 +140,20 @@ public class SwaggerDefinitionProcessorTest {
   @Test
   public void emptySwaggerDefinitionMediaType() {
     UnitTestSwaggerUtils.testSwagger("schemas/emptySwaggerDefinition.yaml", EmptySwaggerDefinition.class);
+  }
+
+  @Test
+  public void should_process_security_oauth2() {
+    UnitTestSwaggerUtils.testSwagger("schemas/security-oauth2.yaml", SecurityOAuth2.class);
+  }
+
+  @Test
+  public void should_process_security_apikey() {
+    UnitTestSwaggerUtils.testSwagger("schemas/security-apikey.yaml", SecurityApiKey.class);
+  }
+
+  @Test
+  public void should_process_security_basic() {
+    UnitTestSwaggerUtils.testSwagger("schemas/security-basic.yaml", SecurityBasic.class);
   }
 }
