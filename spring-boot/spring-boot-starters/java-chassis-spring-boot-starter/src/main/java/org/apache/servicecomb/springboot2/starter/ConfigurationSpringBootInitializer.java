@@ -14,29 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.apache.servicecomb.springboot2.starter;
 
-package org.apache.servicecomb.it;
-
-import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.servicecomb.core.ConfigurationSpringInitializer;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.env.EnvironmentPostProcessor;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.core.env.ConfigurableEnvironment;
 
-@SpringBootApplication
-@EnableServiceComb
-public class SpringBoot2StandaloneApplication {
-  // inject this bean to ensure @ConditionalOnProperty can work with configuration from microservice.yaml
-  private ConditionBean conditionBean;
-
-  @Autowired
-  public SpringBoot2StandaloneApplication setDynamicBean(ConditionBean conditionBean) {
-    this.conditionBean = conditionBean;
-    return this;
-  }
-
-  public static void main(String[] args) {
-    new CommandReceiver();
-
-    SpringApplication.run(SpringBoot2StandaloneApplication.class, args);
+/**
+ * when run with springboot, add microservice.yaml to Environment earlier<br>
+ * to affect {@link Conditional}<br>
+ */
+public class ConfigurationSpringBootInitializer implements EnvironmentPostProcessor {
+  @Override
+  public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
+    ConfigurationSpringInitializer.syncToSpring(environment);
   }
 }

@@ -14,29 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.servicecomb.it;
 
-import org.apache.servicecomb.springboot2.starter.EnableServiceComb;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 
-@SpringBootApplication
-@EnableServiceComb
-public class SpringBoot2StandaloneApplication {
-  // inject this bean to ensure @ConditionalOnProperty can work with configuration from microservice.yaml
-  private ConditionBean conditionBean;
+@ConditionalOnProperty(value = "condition-bean-flag-from-microservice-yaml", havingValue = "true")
+@Component
+public class ConditionBean {
+  private static final Logger LOGGER = LoggerFactory.getLogger(ConditionBean.class);
 
-  @Autowired
-  public SpringBoot2StandaloneApplication setDynamicBean(ConditionBean conditionBean) {
-    this.conditionBean = conditionBean;
-    return this;
-  }
-
-  public static void main(String[] args) {
-    new CommandReceiver();
-
-    SpringApplication.run(SpringBoot2StandaloneApplication.class, args);
+  public ConditionBean() {
+    LOGGER.warn("ConditionBean created.");
   }
 }
