@@ -36,6 +36,7 @@ import io.vertx.core.Context;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
+import io.vertx.core.dns.AddressResolverOptions;
 
 /**
  *  load and manages a set of HttpClient at boot up.
@@ -65,7 +66,7 @@ public class HttpClients {
   }
 
   /* used for configurations module: these module must be boot before other HttpClients is initialized. so can
-  *  not load by SPI, must add manually  */
+   * not load by SPI, must add manually  */
   public static void addNewClientPoolManager(HttpClientOptionsSPI option) {
     httpClients.put(option.clientName(), createClientPoolManager(option));
   }
@@ -80,20 +81,7 @@ public class HttpClients {
   }
 
   private static ClientPoolManager<HttpClientWithContext> createClientPoolManager(HttpClientOptionsSPI option) {
-    Vertx vertx;
-
-    if (option.useSharedVertx()) {
-      vertx = SharedVertxFactory.getSharedVertx();
-    } else {
-      VertxOptions vertxOptions = new VertxOptions()
-          .setAddressResolverOptions(AddressResolverConfig
-              .getAddressResover(option.getConfigTag(), option.getConfigReader()))
-          .setEventLoopPoolSize(option.getEventLoopPoolSize());
-
-      // Maybe we can deploy only one vert.x for the application. However this has did it like this.
-      vertx = VertxUtils.getOrCreateVertxByName(option.clientName(), vertxOptions);
-    }
-
+    Vertx vertx = getOrCreateVertx(option);
     ClientPoolManager<HttpClientWithContext> clientPoolManager = new ClientPoolManager<>(vertx,
         new HttpClientPoolFactory(HttpClientOptionsSPI.createHttpClientOptions(option)));
 
@@ -104,10 +92,25 @@ public class HttpClients {
         .setWorkerPoolSize(option.getWorkerPoolSize());
     try {
       VertxUtils.blockDeploy(vertx, ClientVerticle.class, deployOptions);
+      return clientPoolManager;
     } catch (InterruptedException e) {
       throw new IllegalStateException(e);
     }
-    return clientPoolManager;
+  }
+
+  private static Vertx getOrCreateVertx(HttpClientOptionsSPI option) {
+    if (option.useSharedVertx()) {
+      return SharedVertxFactory.getSharedVertx();
+    }
+
+    AddressResolverOptions resolverOptions = AddressResolverConfig
+        .getAddressResover(option.getConfigTag(), option.getConfigReader());
+    VertxOptions vertxOptions = new VertxOptions()
+        .setAddressResolverOptions(resolverOptions)
+        .setEventLoopPoolSize(option.getEventLoopPoolSize());
+
+    // Maybe we can deploy only one vert.x for the application. However this has did it like this.
+    return VertxUtils.getOrCreateVertxByName(option.clientName(), vertxOptions);
   }
 
   /**
@@ -116,11 +119,12 @@ public class HttpClients {
    * @return the deployed instance name
    */
   public static HttpClientWithContext getClient(String clientName) {
-    if (httpClients.get(clientName) == null) {
+    ClientPoolManager<HttpClientWithContext> poolManager = httpClients.get(clientName);
+    if (poolManager == null) {
       LOGGER.error("client name [{}] not exists, should only happen in tests.", clientName);
       return null;
     }
-    return httpClients.get(clientName).findThreadBindClientPool();
+    return poolManager.findThreadBindClientPool();
   }
 
   /**
@@ -130,11 +134,12 @@ public class HttpClients {
    * @return the deployed instance name
    */
   public static HttpClientWithContext getClient(String clientName, boolean sync) {
-    if (httpClients.get(clientName) == null) {
+    ClientPoolManager<HttpClientWithContext> poolManager = httpClients.get(clientName);
+    if (poolManager == null) {
       LOGGER.error("client name [{}] not exists, should only happen in tests.", clientName);
       return null;
     }
-    return httpClients.get(clientName).findClientPool(sync);
+    return poolManager.findClientPool(sync);
   }
 
   /**
@@ -145,10 +150,11 @@ public class HttpClients {
    * @return the deployed instance name
    */
   public static HttpClientWithContext getClient(String clientName, boolean sync, Context targetContext) {
-    if (httpClients.get(clientName) == null) {
+    ClientPoolManager<HttpClientWithContext> poolManager = httpClients.get(clientName);
+    if (poolManager == null) {
       LOGGER.error("client name [{}] not exists, should only happen in tests.", clientName);
       return null;
     }
-    return httpClients.get(clientName).findClientPool(sync, targetContext);
+    return poolManager.findClientPool(sync, targetContext);
   }
 }
