@@ -24,7 +24,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.apache.servicecomb.foundation.common.utils.TimeUtils;
-import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstance;
 import org.apache.servicecomb.registry.api.registry.MicroserviceInstances;
 import org.apache.servicecomb.registry.consumer.AppManager;
@@ -32,6 +31,7 @@ import org.apache.servicecomb.registry.consumer.MicroserviceManager;
 import org.apache.servicecomb.registry.consumer.MicroserviceVersions;
 import org.apache.servicecomb.registry.consumer.StaticMicroserviceVersions;
 import org.apache.servicecomb.registry.definition.DefinitionConst;
+import org.apache.servicecomb.serviceregistry.RegistryUtils;
 import org.apache.servicecomb.serviceregistry.diagnosis.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ import io.vertx.core.json.Json;
 
 public class InstanceCacheChecker {
   private static final Logger LOGGER = LoggerFactory.getLogger(InstanceCacheChecker.class);
-  
+
   Clock clock = TimeUtils.getSystemDefaultZoneClock();
 
   private AppManager appManager;
@@ -117,6 +117,11 @@ public class InstanceCacheChecker {
     String local = Json.encode(microserviceVersions.getPulledInstances());
     String remote = Json.encode(remoteInstances);
     if (local.equals(remote)) {
+      LOGGER.info("instance cache match. appId={}, microservice={}.\n"
+              + "current cache: {}\n",
+          microserviceVersions.getAppId(),
+          microserviceVersions.getMicroserviceName(),
+          remoteInstances.toString());
       instanceCacheResult.setStatus(Status.NORMAL);
       return instanceCacheResult;
     }
@@ -126,8 +131,8 @@ public class InstanceCacheChecker {
             + "remote cache: {}",
         microserviceVersions.getAppId(),
         microserviceVersions.getMicroserviceName(),
-        local,
-        remote);
+        microserviceVersions.getPulledInstances().toString(),
+        remoteInstances.toString());
     instanceCacheResult.setStatus(Status.ABNORMAL);
     instanceCacheResult.setDetail("instance cache not match");
 

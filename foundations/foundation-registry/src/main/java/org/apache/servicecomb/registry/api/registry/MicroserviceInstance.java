@@ -65,6 +65,16 @@ public class MicroserviceInstance {
 
   private String timestamp;
 
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("instanceId=" + instanceId + ";");
+    sb.append("serviceId=" + serviceId + ";");
+    sb.append("status=" + status + ";");
+    sb.append("endpoints=" + endpoints.toString());
+    return sb.toString();
+  }
+
   public String getTimestamp() {
     return timestamp;
   }
