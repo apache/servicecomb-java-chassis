@@ -86,6 +86,7 @@ public class TestMicroServiceInstance {
     Assert.assertNull(oMicroserviceInstance.getHealthCheck());
     Assert.assertNull(oMicroserviceInstance.getStage());
     Assert.assertEquals(MicroserviceInstanceStatus.UP, oMicroserviceInstance.getStatus());
+    Assert.assertEquals("instanceId=null;serviceId=null;status=UP;endpoints=[]", oMicroserviceInstance.toString());
   }
 
   @SuppressWarnings("deprecation")
@@ -110,6 +111,8 @@ public class TestMicroServiceInstance {
     Assert.assertNotEquals(oMicroserviceInstance.hashCode(), other.hashCode());
     Assert.assertEquals(oMicroserviceInstance, same);
     Assert.assertEquals(oMicroserviceInstance.hashCode(), same.hashCode());
+    Assert.assertEquals("instanceId=testInstanceID;serviceId=testServiceID;status=DOWN;endpoints=[testEndpoints]",
+        oMicroserviceInstance.toString());
   }
 
   @SuppressWarnings("deprecation")

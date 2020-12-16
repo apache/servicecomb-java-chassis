@@ -124,7 +124,7 @@ public class InstanceCacheCheckTask implements ServiceRegistryTaskInitializer {
       InstanceCacheSummary instanceCacheSummary = checker.check();
       eventBus.post(instanceCacheSummary);
 
-      LOGGER.info("check instance cache, result={}.", Json.encode(instanceCacheSummary));
+      LOGGER.info("check instance cache, result={}.", instanceCacheSummary.getStatus());
     } catch (Throwable e) {
       LOGGER.error("failed check instance cache..", e);
     }
