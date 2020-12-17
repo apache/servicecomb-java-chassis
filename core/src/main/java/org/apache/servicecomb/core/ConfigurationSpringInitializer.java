@@ -36,6 +36,7 @@ import org.apache.servicecomb.foundation.common.utils.SPIServiceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.EnvironmentAware;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.CompositePropertySource;
@@ -43,6 +44,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.util.StringUtils;
 
@@ -68,6 +70,10 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
 
   public static final String EXTRA_CONFIG_SOURCE_PREFIX = "extraConfig-";
 
+  public static final String MICROSERVICE_PROPERTY_SOURCE_NAME = "microservice.yaml";
+
+  public static final String MAPPING_PROPERTY_SOURCE_NAME = "mapping.yaml";
+
   private final List<BootStrapService> bootStrapServices =
       SPIServiceUtils.getSortedService(BootStrapService.class);
 
@@ -82,77 +88,95 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
    */
   @Override
   public void setEnvironment(Environment environment) {
+    syncFromSpring(environment);
+    syncToSpring(environment);
+
+    startupBootStrapService(environment);
+    ConfigCenterConfigurationSource configCenterConfigurationSource = ConfigUtil.installDynamicConfig();
+    addDynamicConfigurationToSpring(environment, configCenterConfigurationSource);
+  }
+
+  private void syncFromSpring(Environment environment) {
     String environmentName = generateNameForEnvironment(environment);
     LOGGER.info("Environment received, will get configurations from [{}].", environmentName);
 
     Map<String, Object> extraConfig = getAllProperties(environment);
-
-    addMicroserviceYAMLToSpring(environment);
-
-    addMappingToString(environment);
-
-    startupBootStrapService(environment);
-
     ConfigUtil.addExtraConfig(EXTRA_CONFIG_SOURCE_PREFIX + environmentName, extraConfig);
+  }
 
-    ConfigCenterConfigurationSource configCenterConfigurationSource = ConfigUtil.installDynamicConfig();
-
-    addDynamicConfigurationToSpring(environment, configCenterConfigurationSource);
+  public static void syncToSpring(Environment environment) {
+    addMicroserviceYAMLToSpring(environment);
+    addMappingToSpring(environment);
   }
 
   private void startupBootStrapService(Environment environment) {
     bootStrapServices.forEach(bootStrapService -> bootStrapService.startup(environment));
   }
 
-  private void addMicroserviceYAMLToSpring(Environment environment) {
+  /**
+   * make springboot have a change to add microservice.yaml source earlier<br>
+   * to affect {@link Conditional}
+   * @param environment environment
+   */
+  private static void addMicroserviceYAMLToSpring(Environment environment) {
     if (!(environment instanceof ConfigurableEnvironment)) {
       return;
     }
 
-    ((ConfigurableEnvironment) environment).getPropertySources()
-        .addLast(new EnumerablePropertySource<MicroserviceConfigLoader>("microservice.yaml") {
-          private final Map<String, Object> values = new HashMap<>();
+    MutablePropertySources propertySources = ((ConfigurableEnvironment) environment).getPropertySources();
+    if (propertySources.contains(MICROSERVICE_PROPERTY_SOURCE_NAME)) {
+      return;
+    }
 
-          private final String[] propertyNames;
+    propertySources.addLast(new EnumerablePropertySource<MicroserviceConfigLoader>(MICROSERVICE_PROPERTY_SOURCE_NAME) {
+      private final Map<String, Object> values = new HashMap<>();
 
-          {
-            MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
-            loader.loadAndSort();
+      private final String[] propertyNames;
 
-            loader.getConfigModels()
-                .forEach(configModel -> values.putAll(YAMLUtil.retrieveItems("", configModel.getConfig())));
+      {
+        MicroserviceConfigLoader loader = new MicroserviceConfigLoader();
+        loader.loadAndSort();
 
-            propertyNames = values.keySet().toArray(new String[values.size()]);
-          }
+        loader.getConfigModels()
+            .forEach(configModel -> values.putAll(YAMLUtil.retrieveItems("", configModel.getConfig())));
 
-          @Override
-          public String[] getPropertyNames() {
-            return propertyNames;
-          }
+        propertyNames = values.keySet().toArray(new String[values.size()]);
+      }
 
-          @SuppressWarnings("unchecked")
-          @Override
-          public Object getProperty(String name) {
-            Object value = this.values.get(name);
+      @Override
+      public String[] getPropertyNames() {
+        return propertyNames;
+      }
 
-            // spring will not resolve nested placeholder of list, so try to fix the problem
-            if (value instanceof List) {
-              value = ((List<Object>) value).stream()
-                  .filter(item -> item instanceof String)
-                  .map(item -> environment.resolvePlaceholders((String) item))
-                  .collect(Collectors.toList());
-            }
-            return value;
-          }
-        });
+      @SuppressWarnings("unchecked")
+      @Override
+      public Object getProperty(String name) {
+        Object value = this.values.get(name);
+
+        // spring will not resolve nested placeholder of list, so try to fix the problem
+        if (value instanceof List) {
+          value = ((List<Object>) value).stream()
+              .filter(item -> item instanceof String)
+              .map(item -> environment.resolvePlaceholders((String) item))
+              .collect(Collectors.toList());
+        }
+        return value;
+      }
+    });
   }
 
-  private void addMappingToString(Environment environment) {
-    if (environment instanceof ConfigurableEnvironment) {
-      ConfigurableEnvironment ce = (ConfigurableEnvironment) environment;
-      Map<String, Object> mappings = ConfigMapping.getConvertedMap(environment);
-      ce.getPropertySources().addFirst(new MapPropertySource("mapping.yaml", mappings));
+  private static void addMappingToSpring(Environment environment) {
+    if (!(environment instanceof ConfigurableEnvironment)) {
+      return;
     }
+
+    MutablePropertySources propertySources = ((ConfigurableEnvironment) environment).getPropertySources();
+    if (propertySources.contains(MAPPING_PROPERTY_SOURCE_NAME)) {
+      return;
+    }
+
+    Map<String, Object> mappings = ConfigMapping.getConvertedMap(environment);
+    propertySources.addFirst(new MapPropertySource(MAPPING_PROPERTY_SOURCE_NAME, mappings));
   }
 
   private void addDynamicConfigurationToSpring(Environment environment,
@@ -220,6 +244,10 @@ public class ConfigurationSpringInitializer extends PropertySourcesPlaceholderCo
     }
 
     for (PropertySource<?> propertySource : configurableEnvironment.getPropertySources()) {
+      if (MICROSERVICE_PROPERTY_SOURCE_NAME.equals(propertySource.getName())
+          || MAPPING_PROPERTY_SOURCE_NAME.equals(propertySource.getName())) {
+        continue;
+      }
       getProperties(configurableEnvironment, propertySource, configFromSpringBoot);
     }
     return configFromSpringBoot;

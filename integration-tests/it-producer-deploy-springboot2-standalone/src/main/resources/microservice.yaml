@@ -23,3 +23,5 @@ servicecomb:
   rest:
     server:
       maxInitialLineLength: 5000
+
+condition-bean-flag-from-microservice-yaml: true
