@@ -111,7 +111,7 @@
     <zipkin-reporter.version>2.7.13</zipkin-reporter.version>
     <zookeeper.version>3.4.14</zookeeper.version>
     <nacos-client.version>1.1.4</nacos-client.version>
-
+    <resilience4j.versioin>1.5.0</resilience4j.versioin>
     <!-- Base dir of main -->
     <main.basedir>${basedir}/../..</main.basedir>
   </properties>
@@ -863,6 +863,14 @@
         <groupId>com.alibaba.nacos</groupId>
         <artifactId>nacos-client</artifactId>
         <version>${nacos-client.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.github.resilience4j</groupId>
+        <artifactId>resilience4j-bom</artifactId>
+        <version>${resilience4j.versioin}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
 
       <dependency>

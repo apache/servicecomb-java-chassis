@@ -126,6 +126,7 @@
     <module>inspector</module>
     <module>solutions</module>
     <module>clients</module>
+    <module>governance</module>
     <module>huawei-cloud</module>
   </modules>
 
