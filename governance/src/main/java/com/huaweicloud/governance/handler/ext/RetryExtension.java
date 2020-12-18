@@ -20,7 +20,7 @@ package com.huaweicloud.governance.handler.ext;
 import java.util.List;
 
 public interface RetryExtension {
-  boolean isRetry(List<Integer> statusList);
+  boolean isRetry(List<Integer> statusList, Object result);
 
   Class<? extends Throwable>[] retryExceptions();
 }

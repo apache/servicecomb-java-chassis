@@ -24,12 +24,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import com.huaweicloud.governance.policy.AbstractPolicy;
 import com.huaweicloud.governance.policy.Policy;
 import com.huaweicloud.governance.properties.GovProperties;
 
+@Component
 public class PolicyServiceImpl implements PolicyService {
 
   private static final String MATCH_NONE = "none";
@@ -44,7 +46,7 @@ public class PolicyServiceImpl implements PolicyService {
     }
     Map<String, Policy> policies = new HashMap<>();
     for (GovProperties<? extends AbstractPolicy> properties : propertiesList) {
-      Policy policy = match(properties.covert(), marks);
+      Policy policy = match(properties.getParsedEntity(), marks);
       if (policy != null) {
         policies.put(properties.getClass().getName(), policy);
       }
@@ -56,7 +58,7 @@ public class PolicyServiceImpl implements PolicyService {
   public Policy getCustomPolicy(String kind, List<String> marks) {
     for (GovProperties<? extends AbstractPolicy> properties : propertiesList) {
       if (properties.getClass().getName().startsWith(kind)) {
-        return match(properties.covert(), marks);
+        return match(properties.getParsedEntity(), marks);
       }
     }
     return null;

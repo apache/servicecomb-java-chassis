@@ -18,19 +18,20 @@ package com.huaweicloud.governance.properties;
 
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.huaweicloud.governance.event.DynamicConfigListener;
 import com.huaweicloud.governance.marker.TrafficMarker;
 
 @Component
-public class MatchProperties {
+public class MatchProperties extends GovProperties<TrafficMarker> {
+  public static final String MATCH_POLICY_KEY = "servicecomb.match";
 
-  @Autowired
-  SerializeCache<TrafficMarker> cache;
+  public MatchProperties() {
+    super(MATCH_POLICY_KEY);
+  }
 
-  public Map<String, TrafficMarker> covert() {
-    return cache.get(DynamicConfigListener.loadData(DynamicConfigListener.getPolicyData()), TrafficMarker.class);
+  @Override
+  public Map<String, TrafficMarker> covert(Map<String, String> properties) {
+    return parseEntity(properties, TrafficMarker.class);
   }
 }

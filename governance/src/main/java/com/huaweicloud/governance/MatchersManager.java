@@ -16,20 +16,18 @@
  */
 package com.huaweicloud.governance;
 
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.huaweicloud.governance.marker.GovHttpRequest;
 import com.huaweicloud.governance.policy.Policy;
 import com.huaweicloud.governance.service.MatchersService;
 import com.huaweicloud.governance.service.PolicyService;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-/**
- * @Author GuoYl123
- * @Date 2020/5/11
- **/
+@Component
 public class MatchersManager {
 
   @Autowired
@@ -45,7 +43,7 @@ public class MatchersManager {
     /**
      * 1.获取该请求携带的marker
      */
-    List<String> marks = matchersService.getMatchStr(request);
+    List<String> marks = matchersService.getMatchedNames(request);
     /**
      * 2.通过 marker获取到所有的policy
      */

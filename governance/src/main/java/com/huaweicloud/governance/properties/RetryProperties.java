@@ -18,21 +18,20 @@ package com.huaweicloud.governance.properties;
 
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.huaweicloud.governance.event.DynamicConfigListener;
 import com.huaweicloud.governance.policy.RetryPolicy;
 
 @Component
-public class RetryProperties implements GovProperties<RetryPolicy> {
+public class RetryProperties extends GovProperties<RetryPolicy> {
+  public static final String MATCH_RETRY_KEY = "servicecomb.retry";
 
-  Map<String, String> retry;
+  public RetryProperties() {
+    super(MATCH_RETRY_KEY);
+  }
 
-  @Autowired
-  SerializeCache<RetryPolicy> cache;
-
-  public Map<String, RetryPolicy> covert() {
-    return cache.get(DynamicConfigListener.loadData(DynamicConfigListener.getRetryData()), RetryPolicy.class);
+  @Override
+  public Map<String, RetryPolicy> covert(Map<String, String> properties) {
+    return parseEntity(properties, RetryPolicy.class);
   }
 }

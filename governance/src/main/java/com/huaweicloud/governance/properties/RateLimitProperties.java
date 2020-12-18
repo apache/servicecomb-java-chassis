@@ -19,22 +19,20 @@ package com.huaweicloud.governance.properties;
 
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.huaweicloud.governance.event.DynamicConfigListener;
 import com.huaweicloud.governance.policy.RateLimitingPolicy;
 
 @Component
-public class RateLimitProperties implements GovProperties<RateLimitingPolicy> {
+public class RateLimitProperties extends GovProperties<RateLimitingPolicy> {
+  public static final String MATCH_RATE_LIMIT_KEY = "servicecomb.rateLimiting";
 
-  Map<String, String> rateLimiting;
+  public RateLimitProperties() {
+    super(MATCH_RATE_LIMIT_KEY);
+  }
 
-  @Autowired
-  SerializeCache<RateLimitingPolicy> cache;
-
-  public Map<String, RateLimitingPolicy> covert() {
-    return cache
-        .get(DynamicConfigListener.loadData(DynamicConfigListener.getRateLimitingData()), RateLimitingPolicy.class);
+  @Override
+  public Map<String, RateLimitingPolicy> covert(Map<String, String> properties) {
+    return parseEntity(properties, RateLimitingPolicy.class);
   }
 }

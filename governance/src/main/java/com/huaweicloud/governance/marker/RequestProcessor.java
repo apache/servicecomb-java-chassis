@@ -20,11 +20,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.huaweicloud.governance.marker.operator.MatchOperator;
 import com.huaweicloud.governance.marker.operator.RawOperator;
 
-
+@Component
 public class RequestProcessor {
 
   private static final String OPERATOR_SUFFIX = "Operator";

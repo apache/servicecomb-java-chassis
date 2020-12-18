@@ -22,5 +22,5 @@ import java.util.List;
 
 public interface MatchersService {
 
-  List<String> getMatchStr(GovHttpRequest govHttpRequest);
+  List<String> getMatchedNames(GovHttpRequest govHttpRequest);
 }

@@ -18,21 +18,20 @@ package com.huaweicloud.governance.properties;
 
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.huaweicloud.governance.event.DynamicConfigListener;
 import com.huaweicloud.governance.policy.CircuitBreakerPolicy;
 
 @Component
-public class CircuitBreakerProperties implements GovProperties<CircuitBreakerPolicy> {
+public class CircuitBreakerProperties extends GovProperties<CircuitBreakerPolicy> {
+  public static final String MATCH_CIRCUITBREAKER_KEY = "servicecomb.circuitBreaker";
 
-  @Autowired
-  SerializeCache<CircuitBreakerPolicy> cache;
+  public CircuitBreakerProperties() {
+    super(MATCH_CIRCUITBREAKER_KEY);
+  }
 
   @Override
-  public Map<String, CircuitBreakerPolicy> covert() {
-    return cache
-        .get(DynamicConfigListener.loadData(DynamicConfigListener.getCircuitBreakerData()), CircuitBreakerPolicy.class);
+  public Map<String, CircuitBreakerPolicy> covert(Map<String, String> properties) {
+    return parseEntity(properties, CircuitBreakerPolicy.class);
   }
 }
